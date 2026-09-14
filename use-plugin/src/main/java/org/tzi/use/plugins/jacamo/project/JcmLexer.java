@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Small lexical scanner for discovery only; it does not parse dimension syntax. */
-final class JcmLexer {
-    record Token(String text, int line, int column) {
-        SourceSpan span(Path path) {
+public final class JcmLexer {
+    public record Token(String text, int line, int column) {
+        public SourceSpan span(Path path) {
             return new SourceSpan(path, line, column, line, column + Math.max(0, text.length() - 1));
         }
     }
 
-    static List<Token> scan(String input) {
+    public static List<Token> scan(String input) {
         List<Token> tokens = new ArrayList<>();
         int line = 1, column = 1;
         for (int i = 0; i < input.length();) {

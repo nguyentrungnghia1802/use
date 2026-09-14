@@ -1,0 +1,22 @@
+mas auction {
+  agent auctioneer : auctioneer.asl {
+    beliefs: auction_open budget(1000)
+    goals: start
+    focus: market.auction1
+    roles: auctioneer in auction_group
+  }
+  workspace market {
+    artifact auction1 : auction.AuctionArtifact()
+  }
+  organisation auction_org : auction.xml {
+    group auction_group : auction_group {
+      players: auctioneer auctioneer
+      responsible-for: auction_scheme
+    }
+    scheme auction_scheme : auction_scheme
+  }
+  asl-path: src/agt
+  org-path: src/org
+  java-path: src/env
+  platform: local(pool,2) cartago()
+}

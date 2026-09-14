@@ -134,6 +134,15 @@ Parse:
 
 Không cần implement full Jason interpreter.
 
+Phase 3 parser strategy:
+- JCM discovery/parser handles the documented declarations and execution paths;
+- AgentSpeak is parsed as a source-preserving supported subset, and unsupported
+  expressions remain visible through diagnostics;
+- Java artifacts use the JDK compiler tree API in parse-only mode, never class
+  loading or execution;
+- Moise XML uses a DTD/entity-disabled DOM parser;
+- resolution is exact ID, owner-qualified name, or unique typed scope only.
+
 ### CArtAgO
 Extract:
 - artifact class;
