@@ -102,11 +102,11 @@ Read:
 - current USE plugin examples/source
 
 ## P1.1 Pin environment
-- [ ] Record USE commit/version.
-- [ ] Record Java version.
-- [ ] Record Maven version.
-- [ ] Record JaCaMo target version.
-- [ ] Add compatibility manifest.
+- [x] Record USE commit/version.
+- [x] Record Java version.
+- [x] Record Maven version.
+- [x] Record JaCaMo target version.
+- [x] Add compatibility manifest.
 
 ## P1.2 Module
 - [ ] Create plugin module following current USE plugin mechanism.
