@@ -160,3 +160,25 @@ Chứa:
 - OCL profile hashes;
 - timestamp;
 - warnings/errors count.
+
+---
+
+## 13. Phase 5 instance-validation blockers
+
+The 2026-09-15 Auction materialization gate exposed contradictions that the structural mapping audit could not
+exercise because concrete instances were previously out of scope:
+
+- R053 (`Plan.hasAction`) and R055 (`Body.bodyterm`) are both mapped as USE compositions. The current Jason
+  extraction represents one source action as one semantic `Action` and links it through both references. USE
+  correctly rejects that object as having two aggregate owners. Choosing either relation as non-owning or creating
+  duplicate semantic objects would change semantics and therefore requires an explicit contract decision.
+- `Norm`, `Group`, `Role`, and `Scheme` inherit from `Organisation` in the frozen Ecore. Consequently every such
+  instance inherits mandatory R004-R007 association ends. The Auction source does not establish all of those links.
+- Required R015, R020, R021, R047, and R048 links are also absent for some imported Auction objects. They cannot be
+  synthesized from name similarity or default values.
+
+The implementation preserves the deterministic object/value/link plan and emits located
+`MATERIALIZATION_COMPOSITION_CONFLICT` and `MATERIALIZATION_REQUIRED_LINK_MISSING` diagnostics. It must not
+weaken frozen multiplicities, drop one containment silently, duplicate objects, or fabricate links. Phase 5 initial
+state acceptance stays blocked until the Ecore/mapping ownership semantics or an explicit source/binding rule is
+reconciled and re-frozen.

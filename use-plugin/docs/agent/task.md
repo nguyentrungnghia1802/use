@@ -327,38 +327,48 @@ Read:
 - `docs/project/09-traceability-binding-resolver.md`
 
 ## P5.1 Object plan
-- [ ] One target object per mapped semantic instance where appropriate.
-- [ ] Deterministic object names.
-- [ ] Correct target class.
+- [x] One target object per mapped semantic instance where appropriate.
+- [x] Deterministic object names.
+- [x] Correct target class.
 
 ## P5.2 Values
-- [ ] Materialize resolved scalar values.
-- [ ] Preserve unset/undefined.
-- [ ] Do not invent Ecore clipped defaults.
+- [x] Materialize resolved scalar values.
+- [x] Preserve unset/undefined.
+- [x] Do not invent Ecore clipped defaults.
 
 ## P5.3 Links
-- [ ] Composition links.
-- [ ] Association links.
-- [ ] Correct association identity.
-- [ ] Duplicate link prevention.
+- [x] Composition links.
+- [x] Association links.
+- [x] Correct association identity.
+- [x] Duplicate link prevention.
 
 ## P5.4 Text backend
-- [ ] Generate `.use`.
-- [ ] Generate initial `.cmd`.
-- [ ] Stable ordering.
-- [ ] Golden tests.
+- [x] Generate `.use`.
+- [x] Generate initial `.cmd`.
+- [x] Stable ordering.
+- [x] Golden tests.
 
 ## P5.5 Direct USE backend
-- [ ] Build/load `MModel` through supported USE API.
-- [ ] Create/update `MSystemState`.
-- [ ] Ensure same semantics as text backend.
-- [ ] Contract tests compare outputs/state.
+- [x] Build/load `MModel` through supported USE API.
+- [x] Create/update `MSystemState`.
+- [x] Ensure same semantics as text backend.
+- [x] Contract tests compare outputs/state.
 
 ## P5.6 Initial validation
-- [ ] USE structure check.
-- [ ] Multiplicity check.
-- [ ] Initial invariant check.
-- [ ] Diagnostics with trace.
+- [x] USE structure check.
+- [x] Multiplicity check.
+- [x] Initial invariant check.
+- [x] Diagnostics with trace.
+
+Blocking acceptance evidence (2026-09-15): generated Auction state is deterministic and both backends agree,
+but the frozen structural contract cannot currently produce a valid initial state without an explicit semantic decision.
+`R053 Plan.hasAction` and `R055 Body.bodyterm` are both compositions and the current source-derived Action is linked
+through both, which USE rejects as multiple aggregate owners. In addition, `Norm`, `Group`, `Role`, and `Scheme`
+inherit required `Organisation` links R004-R007, while the imported sources do not provide evidence for those links;
+Auction also lacks source evidence for required R015, R020, R021, R047, and R048 links. The materializer emits
+located `MATERIALIZATION_COMPOSITION_CONFLICT` and `MATERIALIZATION_REQUIRED_LINK_MISSING` diagnostics rather
+than fabricating links or weakening multiplicities. Acceptance remains unchecked pending reconciliation of the
+frozen Ecore/mapping or an explicit source-to-instance ownership/binding contract.
 
 Acceptance:
 - [ ] Imported Auction initial state matches semantic model and passes expected baseline checks.
