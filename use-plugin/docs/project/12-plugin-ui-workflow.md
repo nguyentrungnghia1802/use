@@ -16,6 +16,10 @@ Một người dùng USE phải có thể:
 
 ## 2. Main actions
 
+Phase 1 provides only `Plugins > JaCaMo > Status` and the `jacamo status`
+shell command to confirm plugin loading. The actions below belong to later
+phases and are not enabled by the skeleton.
+
 Menu/toolbar:
 - `Import JaCaMo Project...`
 - `Rebuild JaCaMo Model`

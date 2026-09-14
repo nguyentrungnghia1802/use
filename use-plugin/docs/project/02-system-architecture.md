@@ -193,6 +193,11 @@ Target build:
 - optional sample Auction project;
 - tests.
 
+Phase 1 boundary: `JaCaMoFacade` is the UI-facing entry point. The status menu
+action and shell command use its skeleton implementation. `ImportService`,
+`VerificationService`, and `RuntimeService` are interfaces only; no import,
+verification, or runtime behavior is available in Phase 1.
+
 ---
 
 ## 5. Error model

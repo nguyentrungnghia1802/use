@@ -7,6 +7,6 @@ import org.tzi.use.runtime.shell.IPluginShellCmdDelegate;
 public final class JaCaMoStatusCommand implements IPluginShellCmdDelegate {
     @Override
     public void performCommand(IPluginShellCmd command) {
-        System.out.println("JaCaMo plugin ready (Phase 1 skeleton)");
+        System.out.println(SkeletonJaCaMoFacade.INSTANCE.status());
     }
 }

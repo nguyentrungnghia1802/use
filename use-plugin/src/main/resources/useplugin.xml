@@ -7,4 +7,10 @@
                  class="org.tzi.use.plugins.jacamo.JaCaMoStatusCommand"
                  help="Show JaCaMo plugin skeleton status"/>
     </commands>
+    <actions>
+        <action id="org.tzi.use.plugins.jacamo.status.action" label="JaCaMo status"
+                class="org.tzi.use.plugins.jacamo.JaCaMoStatusAction"
+                icon="icons/status.gif" tooltip="Show JaCaMo plugin status"
+                menu="JaCaMo" menuitem="Status" toolbaritem="false"/>
+    </actions>
 </plugin>

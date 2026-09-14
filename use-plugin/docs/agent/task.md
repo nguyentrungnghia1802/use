@@ -124,11 +124,11 @@ Read:
 - [x] Add automated smoke test where feasible.
 
 ## P1.4 Service boundaries
-- [ ] Define plugin facade.
-- [ ] Define import service interface.
-- [ ] Define verification service interface.
-- [ ] Define runtime service interface.
-- [ ] UI calls facade only.
+- [x] Define plugin facade.
+- [x] Define import service interface.
+- [x] Define verification service interface.
+- [x] Define runtime service interface.
+- [x] UI calls facade only.
 
 Acceptance:
 - [ ] Plugin loads without patching unrelated USE behavior.

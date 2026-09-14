@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.jar.Attributes;
@@ -16,6 +17,8 @@ import java.util.jar.Manifest;
 import org.junit.jupiter.api.Test;
 import org.tzi.use.runtime.MainPluginRuntime;
 import org.tzi.use.runtime.IPlugin;
+import org.tzi.use.runtime.gui.IPluginActionDelegate;
+import org.tzi.use.runtime.gui.impl.ActionExtensionPoint;
 import org.tzi.use.runtime.impl.PluginRuntime;
 import org.tzi.use.runtime.model.PluginModel;
 import org.tzi.use.runtime.shell.impl.ShellExtensionPoint;
@@ -72,5 +75,29 @@ class JaCaMoPluginTest {
             System.setOut(original);
         }
         assertTrue(bytes.toString().contains("JaCaMo plugin ready"));
+
+        var actions = descriptor.getPluginModel().getActions();
+        assertEquals(1, actions.size(), "a model-independent status menu action is registered");
+        Class<?> actionClass = descriptor.getPluginClassLoader()
+                .loadClass(actions.get(0).getActionClass());
+        assertTrue(IPluginActionDelegate.class.isAssignableFrom(actionClass));
+        IPluginActionDelegate action = (IPluginActionDelegate)
+                actionClass.getDeclaredConstructor().newInstance();
+        assertTrue(action.shouldBeEnabled(null), "status action works before a USE model is loaded");
+        var useActions = ((ActionExtensionPoint) ActionExtensionPoint.getInstance())
+                .createPluginActions(null, null);
+        assertEquals(1, useActions.size(), "USE action extension point must expose the menu action");
+        var useAction = useActions.values().iterator().next();
+        useAction.calculateEnabled();
+        assertTrue(useAction.isEnabled());
+    }
+
+    @Test
+    void menuActionGetsStatusFromFacadeWithoutAUseModel() {
+        var shown = new ArrayList<String>();
+        var action = new JaCaMoStatusAction(() -> "facade supplied status", shown::add);
+        assertTrue(action.shouldBeEnabled(null));
+        action.performAction(null);
+        assertEquals(java.util.List.of("facade supplied status"), shown);
     }
 }
