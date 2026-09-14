@@ -115,5 +115,6 @@ fabric.properties
 /use-core/target
 /use-gui/target
 /use-assembly/target
+/use-plugin/target
 
 **/.DS_Store
