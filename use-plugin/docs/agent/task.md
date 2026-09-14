@@ -143,11 +143,11 @@ Read:
 - `docs/project/02-system-architecture.md`
 
 ## P2.1 Project model
-- [ ] Implement project root abstraction.
-- [ ] Implement source file abstraction.
-- [ ] Implement source hash.
-- [ ] Implement source span.
-- [ ] Implement diagnostic model.
+- [x] Implement project root abstraction.
+- [x] Implement source file abstraction.
+- [x] Implement source hash.
+- [x] Implement source span.
+- [x] Implement diagnostic model.
 
 ## P2.2 Semantic identity
 - [ ] Implement canonical semantic ID format.
