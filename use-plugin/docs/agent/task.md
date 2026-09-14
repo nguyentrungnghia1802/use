@@ -150,9 +150,9 @@ Read:
 - [x] Implement diagnostic model.
 
 ## P2.2 Semantic identity
-- [ ] Implement canonical semantic ID format.
-- [ ] Add deterministic ID tests.
-- [ ] Add collision tests.
+- [x] Implement canonical semantic ID format.
+- [x] Add deterministic ID tests.
+- [x] Add collision tests.
 
 ## P2.3 Semantic IR
 - [ ] Implement root `JaCaMoSemanticModel`.
