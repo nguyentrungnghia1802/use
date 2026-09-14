@@ -109,11 +109,11 @@ Read:
 - [x] Add compatibility manifest.
 
 ## P1.2 Module
-- [ ] Create plugin module following current USE plugin mechanism.
-- [ ] Add minimum plugin metadata/resources.
-- [ ] Add dependency on allowed USE APIs.
-- [ ] Ensure root Maven build sees module if architecture requires it.
-- [ ] Add unit test module skeleton.
+- [x] Create plugin module following current USE plugin mechanism.
+- [x] Add minimum plugin metadata/resources.
+- [x] Add dependency on allowed USE APIs.
+- [x] Ensure root Maven build sees module if architecture requires it.
+- [x] Add unit test module skeleton.
 
 ## P1.3 Load smoke test
 - [ ] Package plugin JAR.
