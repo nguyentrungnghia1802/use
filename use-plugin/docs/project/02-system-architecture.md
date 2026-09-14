@@ -156,9 +156,13 @@ jacamo:<projectId>:<dimension>:<kind>:<ownerPath>:<localId>
 Ví dụ:
 
 ```text
-jacamo:auction:agent:Agent:MAS/auctioneer
-jacamo:auction:environment:Artifact:MAS/ws/auction1
+jacamo:auction:agent:Agent:MAS:auctioneer
+jacamo:auction:environment:Artifact:MAS/ws:auction1
 ```
+
+The six fields are separated by `:`. `ownerPath` segments are separated by
+`/`; each segment and `localId` use UTF-8 percent encoding for reserved
+characters, so different source identities cannot collapse to the same ID.
 
 ### 3.3 USE identity
 ```text
