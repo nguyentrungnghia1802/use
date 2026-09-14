@@ -30,6 +30,8 @@ class StaticProjectImporterTest {
                 MetamodelKind.Organisation, MetamodelKind.Role, MetamodelKind.Group, MetamodelKind.Link,
                 MetamodelKind.FormationConstraints, MetamodelKind.Scheme, MetamodelKind.Mission,
                 MetamodelKind.OGoal, MetamodelKind.OPlan, MetamodelKind.Norm)));
+        assertTrue(result.model().mas().references().stream().map(ref -> ref.feature()).collect(Collectors.toSet())
+                .containsAll(Set.of("agent", "workspace", "organisation")));
         SemanticElement operation = only(result, MetamodelKind.Operation, "placeBid");
         assertEquals(new AttributeValue.Text("String item,int amount"), operation.attributes().get("parameters"));
         assertEquals(new AttributeValue.Text("signal(\"bid\", item, amount)"), operation.attributes().get("signalExpression"));
