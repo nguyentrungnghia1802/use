@@ -1,0 +1,40 @@
+{
+  "status": "FROZEN",
+  "date": "2026-09-14",
+  "layer": "METAMODEL_MAPPING",
+  "schemaVersion": "1.1.0",
+  "useVersion": "7.5.0",
+  "useRevision": "30d480dbcca2f404b1350039516a56f46c1efb1f",
+  "coverage": {
+    "classes": 37,
+    "attributes": 67,
+    "references": 63,
+    "inheritance": 14,
+    "projections": 7
+  },
+  "gates": {
+    "ecoreEMF": "PASS",
+    "schema": "PASS",
+    "sourceTargetResolution": "PASS",
+    "projectionAudit": "7/7",
+    "positiveControl": "PASS",
+    "pythonMutationScenarios": 50,
+    "USEPositiveCompilations": 2,
+    "USENegativeControls": 7
+  },
+  "hashes": {
+    "Core/JaCaMo-Metamodel.ecore": "c0aafab786c5ff3fcb468aeaf1b18b62865292e6590ffca2b9b2e962a9067fe7",
+    "mapping/jacamo-use-mapping-v1.json": "3279f46cb128a252247c2667cd5ceb9329366162487dbd864950792aa2cd61b8",
+    "mapping/jacamo-use-mapping.schema.json": "57fb10f99b0f1f1ef349ae1e980834c029b5a0fcd9fea85eed75fe412f81b84d",
+    "mapping/requirements-validation.txt": "44ff0dc2f1e40311b8239e83146749ab9d9cee2a650e699f5464755d552ee20d",
+    "audit/check_mapping.py": "dac106c60af8986dd40d778a21f350dcd8b53ae0c984d1cd6bb4577b9889a94b",
+    "audit/test_mapping_check.py": "ef0612b8f39d0131d0815106bd085610a38f08fde9921b912d5d698dc873b500",
+    "audit/test_mapping_contract.py": "aa64ebdecee2fef00652c42bacc65dfca898883b96dc51b935e2bc44b0136fbe",
+    "audit/compile_mapping_use.py": "a05f5e43c41446d53c1a5943bf7ef9f1cbc4b917596bf520d9aadda62f9d4c39",
+    "audit/ValidateMappingUse.java": "b63223d86644a3bf6c4de2fa4c36153bc2b5df1587a24e3d98776aa8dd034079",
+    "audit/mapping-validation.json": "87fd96e45df524387ef1576c4a605af813b5fdb4047bdf94a4ba01dc2270da38",
+    "audit/mapping-tests.txt": "b88f81e8d159430688f205bc7de9ae16cbef1ae88a6458054b6bded6ec8c695e",
+    "audit/use-mapping-validation.txt": "4159b81789b230892426d20e7d366ea56a703d1b52a650b65d23301b4f7dd4e7"
+  },
+  "limitations": "Conditional projection inputs and concrete/runtime layers are outside the frozen contract; Core unresolved evidence is unchanged."
+}

@@ -1,0 +1,5385 @@
+{
+  "schemaVersion": "1.1.0",
+  "mappingId": "DSML4JaCaMo-2024-reconstructed__to__USE-v1",
+  "status": "FROZEN",
+  "createdDate": "2026-09-12",
+  "purpose": "Metamodel correspondence from canonical DSML4JaCaMo Ecore declarations to USE-side metamodel concepts. Project parsing, concrete binding, runtime state and execution are later layers.",
+  "architecture": {
+    "verificationInput": {
+      "kind": "JACAMO_PROJECT",
+      "entryPoint": "*.jcm",
+      "resolvedDependentSources": [
+        "*.asl",
+        "CArtAgO Java artifact sources/classes",
+        "Moise organisation XML and referenced organisational sources"
+      ],
+      "directEcoreAsProjectInput": false
+    },
+    "semanticBoundary": {
+      "inputToMapper": "JaCaMo semantic model parsed from the project",
+      "conformsTo": "dSML4JaCaMo Ecore",
+      "rule": "Mapping never relies on filename/class-name heuristics as formal semantics."
+    },
+    "outputs": [
+      {
+        "kind": "USE_MODEL",
+        "defaultFileName": "generated-jacamo.use",
+        "contains": [
+          "classes",
+          "attributes",
+          "inheritance",
+          "associations/compositions",
+          "verification-projected operations"
+        ],
+        "internalRoot": "MModel"
+      },
+      {
+        "kind": "USE_STATE_SCRIPT",
+        "defaultFileName": "generated-jacamo.cmd",
+        "contains": [
+          "!create",
+          "!set",
+          "!insert",
+          "optional !openter/!opexit for operation-event replay"
+        ],
+        "internalRoot": "MSystemState"
+      }
+    ],
+    "oclStage": {
+      "mappingFileContainsOclConstraints": false,
+      "policy": "OCL profiles/constraints are applied after structural/verification projection; Norm is never translated into OCL merely because it is normative."
+    }
+  },
+  "sourceMetamodel": {
+    "artifact": "Core/JaCaMo-Metamodel.ecore",
+    "packageName": "dSML4JaCaMo",
+    "nsURI": "urn:dsml4jacamo:2024:reconstructed",
+    "nsPrefix": "dSML4JaCaMo",
+    "sha256": "c0aafab786c5ff3fcb468aeaf1b18b62865292e6590ffca2b9b2e962a9067fe7",
+    "artifactStatus": "paper-derived-conservative-reconstruction-not-original-author-artifact",
+    "expectedStatistics": {
+      "EClasses": 37,
+      "EAttributes": 67,
+      "EReferences": 63,
+      "EGeneralizations": 14
+    }
+  },
+  "targetUSE": {
+    "repository": "https://github.com/useocl/use/",
+    "manual": "https://github.com/useocl/use/blob/main/manual/main.md",
+    "textualModelExtension": ".use",
+    "stateScriptExtension": ".cmd",
+    "constructs": {
+      "model": "MModel / model",
+      "class": "MClass / class",
+      "attribute": "MAttribute / attributes",
+      "association": "MAssociation / association",
+      "composition": "MAssociation / composition",
+      "operation": "MOperation / operations",
+      "systemState": "MSystemState / shell state",
+      "constraints": "OCL invariant / precondition / postcondition"
+    },
+    "validatedRevision": "30d480dbcca2f404b1350039516a56f46c1efb1f",
+    "validatedVersion": "7.5.0",
+    "validationScope": "Static metamodel compilation only; no MSystemState, object binding or operation replay."
+  },
+  "policies": {
+    "datatypeMappings": [
+      {
+        "source": "EString",
+        "target": "String"
+      },
+      {
+        "source": "EInt",
+        "target": "Integer"
+      },
+      {
+        "source": "EBoolean",
+        "target": "Boolean"
+      }
+    ],
+    "classMapping": "Each EClass becomes a USE class with the same name. abstract=true is preserved.",
+    "attributeMapping": "Each declared EAttribute becomes a scalar USE attribute. The current baseline contains only 0..1 scalar EAttributes. The mapper copies resolved semantic values; it does not invent values for reconstruction-clipped attributes.",
+    "inheritanceMapping": "Each eSuperType becomes USE class inheritance without semantic normalization.",
+    "containmentReferenceMapping": {
+      "target": "composition",
+      "firstEnd": "container/source class (diamond end)",
+      "firstEndMultiplicity": "0..1 because an EObject has at most one container for this containment link",
+      "secondEndMultiplicity": "copy EReference lower/upper",
+      "forwardRole": "exact EReference name",
+      "reverseRole": "source_<EReferenceName>; on collision source_<SourceOwner>_<EReferenceName>",
+      "reverseNavigationAuthoritative": false
+    },
+    "nonContainmentReferenceMapping": {
+      "target": "association",
+      "firstEndMultiplicity": "* because no eOpposite/reverse bound is declared in this reconstruction",
+      "secondEndMultiplicity": "copy EReference lower/upper",
+      "forwardRole": "exact EReference name",
+      "reverseRole": "source_<EReferenceName>; on collision source_<SourceOwner>_<EReferenceName>",
+      "reverseNavigationAuthoritative": false
+    },
+    "identifierPolicy": {
+      "metamodelElements": "Preserve source spelling and owner-qualified identity exactly. Three USE keyword attributes use explicit reversible targetAttributeEscapes; no Core rename.",
+      "projectObjectIdentifiers": "deterministically sanitize to USE identifiers; preserve original JaCaMo identifier in transformation trace",
+      "generatedConcreteArtifactClass": "use resolved Java simple class name; on collision append a stable short hash of the fully-qualified name",
+      "targetAttributeEscapes": {
+        "FormationConstraints.from": "ecore_FormationConstraints_from",
+        "Link.from": "ecore_Link_from",
+        "OPlan.Sequence": "ecore_OPlan_Sequence"
+      }
+    },
+    "sourceExpressionPolicy": "Jason expressions, rules, contexts, signal/await expressions and Moise string-valued fields remain String unless a later verified semantic parser introduces a typed representation. They are not silently parsed as OCL.",
+    "constraintPolicy": "Mapping establishes the USE semantic substrate. OCL constraints are maintained separately and bind to mapped USE classes/operations.",
+    "evolutionPolicy": {
+      "fingerprintMismatch": "RECONCILE_REQUIRED",
+      "stableSourceKey": "dSML4JaCaMo::<EClass>[#<feature>]",
+      "unchangedElement": "reuse mapping",
+      "addedEClassOrFeature": "generate mapping suggestion using generic rules but mark REVIEW_REQUIRED before accepting",
+      "changedTypeBoundsContainmentOrSupertype": "BLOCK until mapping is reconciled",
+      "removedOrRenamedElement": "mark stale mapping and BLOCK; never silently retarget by name similarity",
+      "versioning": "increment mapping minor version for compatible additions; major version for semantic/breaking changes"
+    }
+  },
+  "classMappings": [
+    {
+      "source": "dSML4JaCaMo::MAS",
+      "sourceKind": "EClass",
+      "dimension": "core",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "MAS",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C001"
+    },
+    {
+      "source": "dSML4JaCaMo::Organisation",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Organisation",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C002"
+    },
+    {
+      "source": "dSML4JaCaMo::NormativeSpecification",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "NormativeSpecification",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C003"
+    },
+    {
+      "source": "dSML4JaCaMo::StructuralSpecification",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "StructuralSpecification",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C004"
+    },
+    {
+      "source": "dSML4JaCaMo::FunctionalSpecification",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "FunctionalSpecification",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C005"
+    },
+    {
+      "source": "dSML4JaCaMo::Norm",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Norm",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C006"
+    },
+    {
+      "source": "dSML4JaCaMo::Group",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Group",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C007"
+    },
+    {
+      "source": "dSML4JaCaMo::Role",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Role",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C008"
+    },
+    {
+      "source": "dSML4JaCaMo::FormationConstraints",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "FormationConstraints",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C009"
+    },
+    {
+      "source": "dSML4JaCaMo::Link",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Link",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C010"
+    },
+    {
+      "source": "dSML4JaCaMo::Scheme",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Scheme",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C011"
+    },
+    {
+      "source": "dSML4JaCaMo::OPlan",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "OPlan",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C012"
+    },
+    {
+      "source": "dSML4JaCaMo::OGoal",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "OGoal",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C013"
+    },
+    {
+      "source": "dSML4JaCaMo::Mission",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Mission",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C014"
+    },
+    {
+      "source": "dSML4JaCaMo::Workspace",
+      "sourceKind": "EClass",
+      "dimension": "environment",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Workspace",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C015"
+    },
+    {
+      "source": "dSML4JaCaMo::Artifact",
+      "sourceKind": "EClass",
+      "dimension": "environment",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Artifact",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C016"
+    },
+    {
+      "source": "dSML4JaCaMo::Port",
+      "sourceKind": "EClass",
+      "dimension": "environment",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Port",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C017"
+    },
+    {
+      "source": "dSML4JaCaMo::ObsProperty",
+      "sourceKind": "EClass",
+      "dimension": "environment",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "ObsProperty",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C018"
+    },
+    {
+      "source": "dSML4JaCaMo::AbsOperation",
+      "sourceKind": "EClass",
+      "dimension": "environment",
+      "sourceAbstract": true,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "AbsOperation",
+        "abstract": true
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C019"
+    },
+    {
+      "source": "dSML4JaCaMo::LinkedOperation",
+      "sourceKind": "EClass",
+      "dimension": "environment",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "LinkedOperation",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C020"
+    },
+    {
+      "source": "dSML4JaCaMo::InternalOperation",
+      "sourceKind": "EClass",
+      "dimension": "environment",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "InternalOperation",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C021"
+    },
+    {
+      "source": "dSML4JaCaMo::GuardOperation",
+      "sourceKind": "EClass",
+      "dimension": "environment",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "GuardOperation",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C022"
+    },
+    {
+      "source": "dSML4JaCaMo::Operation",
+      "sourceKind": "EClass",
+      "dimension": "environment",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Operation",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C023"
+    },
+    {
+      "source": "dSML4JaCaMo::Agent",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Agent",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C024"
+    },
+    {
+      "source": "dSML4JaCaMo::Belief",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Belief",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C025"
+    },
+    {
+      "source": "dSML4JaCaMo::Rule",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Rule",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C026"
+    },
+    {
+      "source": "dSML4JaCaMo::Goal",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Goal",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C027"
+    },
+    {
+      "source": "dSML4JaCaMo::Context",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Context",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C028"
+    },
+    {
+      "source": "dSML4JaCaMo::Plan",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Plan",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C029"
+    },
+    {
+      "source": "dSML4JaCaMo::Body",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Body",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C030"
+    },
+    {
+      "source": "dSML4JaCaMo::BodyTerm",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": true,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "BodyTerm",
+        "abstract": true
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C031"
+    },
+    {
+      "source": "dSML4JaCaMo::Action",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": true,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Action",
+        "abstract": true
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C032"
+    },
+    {
+      "source": "dSML4JaCaMo::ExternalAction",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "ExternalAction",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C033"
+    },
+    {
+      "source": "dSML4JaCaMo::InternalAction",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "InternalAction",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C034"
+    },
+    {
+      "source": "dSML4JaCaMo::MentalNotes",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "MentalNotes",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C035"
+    },
+    {
+      "source": "dSML4JaCaMo::Message",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Message",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C036"
+    },
+    {
+      "source": "dSML4JaCaMo::TriggeringEvent",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "TriggeringEvent",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C037"
+    }
+  ],
+  "attributeMappings": [
+    {
+      "source": "dSML4JaCaMo::MAS#Name",
+      "sourceKind": "EAttribute",
+      "dimension": "core",
+      "sourceOwner": "MAS",
+      "sourceName": "Name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "MAS",
+        "name": "Name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A001"
+    },
+    {
+      "source": "dSML4JaCaMo::MAS#PlatformParamters",
+      "sourceKind": "EAttribute",
+      "dimension": "core",
+      "sourceOwner": "MAS",
+      "sourceName": "PlatformParamters",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "MAS",
+        "name": "PlatformParamters",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A002"
+    },
+    {
+      "source": "dSML4JaCaMo::Organisation#id",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Organisation",
+      "sourceName": "id",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Organisation",
+        "name": "id",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A003"
+    },
+    {
+      "source": "dSML4JaCaMo::Norm#type",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Norm",
+      "sourceName": "type",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Norm",
+        "name": "type",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A004"
+    },
+    {
+      "source": "dSML4JaCaMo::Norm#timeConstraint",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Norm",
+      "sourceName": "timeConstraint",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Norm",
+        "name": "timeConstraint",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A005"
+    },
+    {
+      "source": "dSML4JaCaMo::Group#Name",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Group",
+      "sourceName": "Name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Group",
+        "name": "Name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A006"
+    },
+    {
+      "source": "dSML4JaCaMo::Group#min",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Group",
+      "sourceName": "min",
+      "sourceType": "EInt",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Group",
+        "name": "min",
+        "type": "Integer"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A007"
+    },
+    {
+      "source": "dSML4JaCaMo::Group#max",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Group",
+      "sourceName": "max",
+      "sourceType": "EInt",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Group",
+        "name": "max",
+        "type": "Integer"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A008"
+    },
+    {
+      "source": "dSML4JaCaMo::Role#Name",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Role",
+      "sourceName": "Name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Role",
+        "name": "Name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A009"
+    },
+    {
+      "source": "dSML4JaCaMo::Role#min",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Role",
+      "sourceName": "min",
+      "sourceType": "EInt",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Role",
+        "name": "min",
+        "type": "Integer"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A010"
+    },
+    {
+      "source": "dSML4JaCaMo::Role#max",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Role",
+      "sourceName": "max",
+      "sourceType": "EInt",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Role",
+        "name": "max",
+        "type": "Integer"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A011"
+    },
+    {
+      "source": "dSML4JaCaMo::FormationConstraints#Name",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "FormationConstraints",
+      "sourceName": "Name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "FormationConstraints",
+        "name": "Name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A012"
+    },
+    {
+      "source": "dSML4JaCaMo::FormationConstraints#biDir",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "FormationConstraints",
+      "sourceName": "biDir",
+      "sourceType": "EBoolean",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "FormationConstraints",
+        "name": "biDir",
+        "type": "Boolean"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "sourceExplicitDefaultLiteral": "false",
+      "id": "A013"
+    },
+    {
+      "source": "dSML4JaCaMo::FormationConstraints#scope",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "FormationConstraints",
+      "sourceName": "scope",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "FormationConstraints",
+        "name": "scope",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "sourceExplicitDefaultLiteral": "intra-group",
+      "id": "A014"
+    },
+    {
+      "source": "dSML4JaCaMo::FormationConstraints#type",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "FormationConstraints",
+      "sourceName": "type",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "FormationConstraints",
+        "name": "type",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A015"
+    },
+    {
+      "source": "dSML4JaCaMo::FormationConstraints#to",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "FormationConstraints",
+      "sourceName": "to",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "FormationConstraints",
+        "name": "to",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A016"
+    },
+    {
+      "source": "dSML4JaCaMo::FormationConstraints#from",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "FormationConstraints",
+      "sourceName": "from",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "FormationConstraints",
+        "name": "ecore_FormationConstraints_from",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A017"
+    },
+    {
+      "source": "dSML4JaCaMo::Link#type",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Link",
+      "sourceName": "type",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Link",
+        "name": "type",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A018"
+    },
+    {
+      "source": "dSML4JaCaMo::Link#biDir",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Link",
+      "sourceName": "biDir",
+      "sourceType": "EBoolean",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Link",
+        "name": "biDir",
+        "type": "Boolean"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "sourceExplicitDefaultLiteral": "false",
+      "id": "A019"
+    },
+    {
+      "source": "dSML4JaCaMo::Link#scope",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Link",
+      "sourceName": "scope",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Link",
+        "name": "scope",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "sourceExplicitDefaultLiteral": "intra-group",
+      "id": "A020"
+    },
+    {
+      "source": "dSML4JaCaMo::Link#from",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Link",
+      "sourceName": "from",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Link",
+        "name": "ecore_Link_from",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A021"
+    },
+    {
+      "source": "dSML4JaCaMo::Link#to",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Link",
+      "sourceName": "to",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Link",
+        "name": "to",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A022"
+    },
+    {
+      "source": "dSML4JaCaMo::Scheme#PlanOperator",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Scheme",
+      "sourceName": "PlanOperator",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Scheme",
+        "name": "PlanOperator",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A023"
+    },
+    {
+      "source": "dSML4JaCaMo::OPlan#Sequence",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "OPlan",
+      "sourceName": "Sequence",
+      "sourceType": "EBoolean",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "OPlan",
+        "name": "ecore_OPlan_Sequence",
+        "type": "Boolean"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "sourceExplicitDefaultLiteral": "false",
+      "id": "A024"
+    },
+    {
+      "source": "dSML4JaCaMo::OPlan#Parallel",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "OPlan",
+      "sourceName": "Parallel",
+      "sourceType": "EBoolean",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "OPlan",
+        "name": "Parallel",
+        "type": "Boolean"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "sourceExplicitDefaultLiteral": "false",
+      "id": "A025"
+    },
+    {
+      "source": "dSML4JaCaMo::OGoal#Name",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "OGoal",
+      "sourceName": "Name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "OGoal",
+        "name": "Name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A026"
+    },
+    {
+      "source": "dSML4JaCaMo::OGoal#isRootGoal",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "OGoal",
+      "sourceName": "isRootGoal",
+      "sourceType": "EBoolean",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "OGoal",
+        "name": "isRootGoal",
+        "type": "Boolean"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "sourceExplicitDefaultLiteral": "false",
+      "id": "A027"
+    },
+    {
+      "source": "dSML4JaCaMo::Mission#min",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Mission",
+      "sourceName": "min",
+      "sourceType": "EInt",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Mission",
+        "name": "min",
+        "type": "Integer"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A028"
+    },
+    {
+      "source": "dSML4JaCaMo::Mission#max",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Mission",
+      "sourceName": "max",
+      "sourceType": "EInt",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Mission",
+        "name": "max",
+        "type": "Integer"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A029"
+    },
+    {
+      "source": "dSML4JaCaMo::Workspace#Name",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "Workspace",
+      "sourceName": "Name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Workspace",
+        "name": "Name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A030"
+    },
+    {
+      "source": "dSML4JaCaMo::Workspace#Path",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "Workspace",
+      "sourceName": "Path",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Workspace",
+        "name": "Path",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A031"
+    },
+    {
+      "source": "dSML4JaCaMo::Workspace#Host",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "Workspace",
+      "sourceName": "Host",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Workspace",
+        "name": "Host",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A032"
+    },
+    {
+      "source": "dSML4JaCaMo::Artifact#artifactName",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "Artifact",
+      "sourceName": "artifactName",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Artifact",
+        "name": "artifactName",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A033"
+    },
+    {
+      "source": "dSML4JaCaMo::Artifact#className",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "Artifact",
+      "sourceName": "className",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Artifact",
+        "name": "className",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A034"
+    },
+    {
+      "source": "dSML4JaCaMo::Artifact#Parameter",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "Artifact",
+      "sourceName": "Parameter",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Artifact",
+        "name": "Parameter",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A035"
+    },
+    {
+      "source": "dSML4JaCaMo::Artifact#IDVar",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "Artifact",
+      "sourceName": "IDVar",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Artifact",
+        "name": "IDVar",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A036"
+    },
+    {
+      "source": "dSML4JaCaMo::Artifact#isInitial",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "Artifact",
+      "sourceName": "isInitial",
+      "sourceType": "EBoolean",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Artifact",
+        "name": "isInitial",
+        "type": "Boolean"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "sourceExplicitDefaultLiteral": "false",
+      "id": "A037"
+    },
+    {
+      "source": "dSML4JaCaMo::Port#Name",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "Port",
+      "sourceName": "Name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Port",
+        "name": "Name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A038"
+    },
+    {
+      "source": "dSML4JaCaMo::ObsProperty#ParamName",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "ObsProperty",
+      "sourceName": "ParamName",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "ObsProperty",
+        "name": "ParamName",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A039"
+    },
+    {
+      "source": "dSML4JaCaMo::ObsProperty#Name",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "ObsProperty",
+      "sourceName": "Name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "ObsProperty",
+        "name": "Name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A040"
+    },
+    {
+      "source": "dSML4JaCaMo::AbsOperation#className",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "AbsOperation",
+      "sourceName": "className",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "AbsOperation",
+        "name": "className",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A041"
+    },
+    {
+      "source": "dSML4JaCaMo::AbsOperation#signalExpression",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "AbsOperation",
+      "sourceName": "signalExpression",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "AbsOperation",
+        "name": "signalExpression",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A042"
+    },
+    {
+      "source": "dSML4JaCaMo::AbsOperation#awaitExpression",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "AbsOperation",
+      "sourceName": "awaitExpression",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "AbsOperation",
+        "name": "awaitExpression",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A043"
+    },
+    {
+      "source": "dSML4JaCaMo::AbsOperation#await_timeExpression",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "AbsOperation",
+      "sourceName": "await_timeExpression",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "AbsOperation",
+        "name": "await_timeExpression",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A044"
+    },
+    {
+      "source": "dSML4JaCaMo::Agent#Name",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Agent",
+      "sourceName": "Name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Agent",
+        "name": "Name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A045"
+    },
+    {
+      "source": "dSML4JaCaMo::Belief#Name",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Belief",
+      "sourceName": "Name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Belief",
+        "name": "Name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A046"
+    },
+    {
+      "source": "dSML4JaCaMo::Belief#isInitial",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Belief",
+      "sourceName": "isInitial",
+      "sourceType": "EBoolean",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Belief",
+        "name": "isInitial",
+        "type": "Boolean"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "sourceExplicitDefaultLiteral": "false",
+      "id": "A047"
+    },
+    {
+      "source": "dSML4JaCaMo::Rule#Expression",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Rule",
+      "sourceName": "Expression",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Rule",
+        "name": "Expression",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A048"
+    },
+    {
+      "source": "dSML4JaCaMo::Goal#Name",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Goal",
+      "sourceName": "Name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Goal",
+        "name": "Name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A049"
+    },
+    {
+      "source": "dSML4JaCaMo::Context#Expression",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Context",
+      "sourceName": "Expression",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Context",
+        "name": "Expression",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A050"
+    },
+    {
+      "source": "dSML4JaCaMo::Plan#Name",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Plan",
+      "sourceName": "Name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Plan",
+        "name": "Name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A051"
+    },
+    {
+      "source": "dSML4JaCaMo::Plan#asBeliefAddition",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Plan",
+      "sourceName": "asBeliefAddition",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Plan",
+        "name": "asBeliefAddition",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A052"
+    },
+    {
+      "source": "dSML4JaCaMo::Plan#asQuery",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Plan",
+      "sourceName": "asQuery",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Plan",
+        "name": "asQuery",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A053"
+    },
+    {
+      "source": "dSML4JaCaMo::Plan#isAtomic",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Plan",
+      "sourceName": "isAtomic",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Plan",
+        "name": "isAtomic",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A054"
+    },
+    {
+      "source": "dSML4JaCaMo::Plan#atomicLabel",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Plan",
+      "sourceName": "atomicLabel",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Plan",
+        "name": "atomicLabel",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A055"
+    },
+    {
+      "source": "dSML4JaCaMo::Plan#argID",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Plan",
+      "sourceName": "argID",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Plan",
+        "name": "argID",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A056"
+    },
+    {
+      "source": "dSML4JaCaMo::Plan#isInitial",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Plan",
+      "sourceName": "isInitial",
+      "sourceType": "EBoolean",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Plan",
+        "name": "isInitial",
+        "type": "Boolean"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "sourceExplicitDefaultLiteral": "false",
+      "id": "A057"
+    },
+    {
+      "source": "dSML4JaCaMo::Body#Name",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Body",
+      "sourceName": "Name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Body",
+        "name": "Name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A058"
+    },
+    {
+      "source": "dSML4JaCaMo::Action#Name",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Action",
+      "sourceName": "Name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Action",
+        "name": "Name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A059"
+    },
+    {
+      "source": "dSML4JaCaMo::Action#Expression",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Action",
+      "sourceName": "Expression",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Action",
+        "name": "Expression",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A060"
+    },
+    {
+      "source": "dSML4JaCaMo::Message#content",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Message",
+      "sourceName": "content",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Message",
+        "name": "content",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A061"
+    },
+    {
+      "source": "dSML4JaCaMo::Message#isBroadcast",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Message",
+      "sourceName": "isBroadcast",
+      "sourceType": "EBoolean",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Message",
+        "name": "isBroadcast",
+        "type": "Boolean"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A062"
+    },
+    {
+      "source": "dSML4JaCaMo::TriggeringEvent#isSeparateIntention",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "TriggeringEvent",
+      "sourceName": "isSeparateIntention",
+      "sourceType": "EBoolean",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "TriggeringEvent",
+        "name": "isSeparateIntention",
+        "type": "Boolean"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "sourceExplicitDefaultLiteral": "false",
+      "id": "A063"
+    },
+    {
+      "source": "dSML4JaCaMo::TriggeringEvent#isInitial",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "TriggeringEvent",
+      "sourceName": "isInitial",
+      "sourceType": "EBoolean",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "TriggeringEvent",
+        "name": "isInitial",
+        "type": "Boolean"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "sourceExplicitDefaultLiteral": "false",
+      "id": "A064"
+    },
+    {
+      "source": "dSML4JaCaMo::TriggeringEvent#ttf",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "TriggeringEvent",
+      "sourceName": "ttf",
+      "sourceType": "EInt",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "TriggeringEvent",
+        "name": "ttf",
+        "type": "Integer"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A065"
+    },
+    {
+      "source": "dSML4JaCaMo::TriggeringEvent#ds",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "TriggeringEvent",
+      "sourceName": "ds",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "TriggeringEvent",
+        "name": "ds",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "id": "A066"
+    },
+    {
+      "source": "dSML4JaCaMo::TriggeringEvent#deletion",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "TriggeringEvent",
+      "sourceName": "deletion",
+      "sourceType": "EBoolean",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "TriggeringEvent",
+        "name": "deletion",
+        "type": "Boolean"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_VALUE_IS_UNSET",
+      "sourceExplicitDefaultLiteral": "false",
+      "id": "A067"
+    }
+  ],
+  "inheritanceMappings": [
+    {
+      "source": "dSML4JaCaMo::Norm->super::Organisation",
+      "sourceKind": "eSuperType",
+      "dimension": "organisation",
+      "target": {
+        "kind": "USE_GENERALIZATION",
+        "subclass": "Norm",
+        "superclass": "Organisation"
+      },
+      "policy": "PRESERVE_SOURCE_INHERITANCE",
+      "id": "I001"
+    },
+    {
+      "source": "dSML4JaCaMo::Group->super::Organisation",
+      "sourceKind": "eSuperType",
+      "dimension": "organisation",
+      "target": {
+        "kind": "USE_GENERALIZATION",
+        "subclass": "Group",
+        "superclass": "Organisation"
+      },
+      "policy": "PRESERVE_SOURCE_INHERITANCE",
+      "id": "I002"
+    },
+    {
+      "source": "dSML4JaCaMo::Role->super::Organisation",
+      "sourceKind": "eSuperType",
+      "dimension": "organisation",
+      "target": {
+        "kind": "USE_GENERALIZATION",
+        "subclass": "Role",
+        "superclass": "Organisation"
+      },
+      "policy": "PRESERVE_SOURCE_INHERITANCE",
+      "id": "I003"
+    },
+    {
+      "source": "dSML4JaCaMo::Scheme->super::Organisation",
+      "sourceKind": "eSuperType",
+      "dimension": "organisation",
+      "target": {
+        "kind": "USE_GENERALIZATION",
+        "subclass": "Scheme",
+        "superclass": "Organisation"
+      },
+      "policy": "PRESERVE_SOURCE_INHERITANCE",
+      "id": "I004"
+    },
+    {
+      "source": "dSML4JaCaMo::LinkedOperation->super::AbsOperation",
+      "sourceKind": "eSuperType",
+      "dimension": "environment",
+      "target": {
+        "kind": "USE_GENERALIZATION",
+        "subclass": "LinkedOperation",
+        "superclass": "AbsOperation"
+      },
+      "policy": "PRESERVE_SOURCE_INHERITANCE",
+      "id": "I005"
+    },
+    {
+      "source": "dSML4JaCaMo::InternalOperation->super::AbsOperation",
+      "sourceKind": "eSuperType",
+      "dimension": "environment",
+      "target": {
+        "kind": "USE_GENERALIZATION",
+        "subclass": "InternalOperation",
+        "superclass": "AbsOperation"
+      },
+      "policy": "PRESERVE_SOURCE_INHERITANCE",
+      "id": "I006"
+    },
+    {
+      "source": "dSML4JaCaMo::GuardOperation->super::AbsOperation",
+      "sourceKind": "eSuperType",
+      "dimension": "environment",
+      "target": {
+        "kind": "USE_GENERALIZATION",
+        "subclass": "GuardOperation",
+        "superclass": "AbsOperation"
+      },
+      "policy": "PRESERVE_SOURCE_INHERITANCE",
+      "id": "I007"
+    },
+    {
+      "source": "dSML4JaCaMo::Operation->super::AbsOperation",
+      "sourceKind": "eSuperType",
+      "dimension": "environment",
+      "target": {
+        "kind": "USE_GENERALIZATION",
+        "subclass": "Operation",
+        "superclass": "AbsOperation"
+      },
+      "policy": "PRESERVE_SOURCE_INHERITANCE",
+      "id": "I008"
+    },
+    {
+      "source": "dSML4JaCaMo::Action->super::BodyTerm",
+      "sourceKind": "eSuperType",
+      "dimension": "agent",
+      "target": {
+        "kind": "USE_GENERALIZATION",
+        "subclass": "Action",
+        "superclass": "BodyTerm"
+      },
+      "policy": "PRESERVE_SOURCE_INHERITANCE",
+      "id": "I009"
+    },
+    {
+      "source": "dSML4JaCaMo::ExternalAction->super::Action",
+      "sourceKind": "eSuperType",
+      "dimension": "agent",
+      "target": {
+        "kind": "USE_GENERALIZATION",
+        "subclass": "ExternalAction",
+        "superclass": "Action"
+      },
+      "policy": "PRESERVE_SOURCE_INHERITANCE",
+      "id": "I010"
+    },
+    {
+      "source": "dSML4JaCaMo::InternalAction->super::Action",
+      "sourceKind": "eSuperType",
+      "dimension": "agent",
+      "target": {
+        "kind": "USE_GENERALIZATION",
+        "subclass": "InternalAction",
+        "superclass": "Action"
+      },
+      "policy": "PRESERVE_SOURCE_INHERITANCE",
+      "id": "I011"
+    },
+    {
+      "source": "dSML4JaCaMo::MentalNotes->super::BodyTerm",
+      "sourceKind": "eSuperType",
+      "dimension": "agent",
+      "target": {
+        "kind": "USE_GENERALIZATION",
+        "subclass": "MentalNotes",
+        "superclass": "BodyTerm"
+      },
+      "policy": "PRESERVE_SOURCE_INHERITANCE",
+      "id": "I012"
+    },
+    {
+      "source": "dSML4JaCaMo::Message->super::InternalAction",
+      "sourceKind": "eSuperType",
+      "dimension": "agent",
+      "target": {
+        "kind": "USE_GENERALIZATION",
+        "subclass": "Message",
+        "superclass": "InternalAction"
+      },
+      "policy": "PRESERVE_SOURCE_INHERITANCE",
+      "id": "I013"
+    },
+    {
+      "source": "dSML4JaCaMo::TriggeringEvent->super::Action",
+      "sourceKind": "eSuperType",
+      "dimension": "agent",
+      "target": {
+        "kind": "USE_GENERALIZATION",
+        "subclass": "TriggeringEvent",
+        "superclass": "Action"
+      },
+      "policy": "PRESERVE_SOURCE_INHERITANCE",
+      "id": "I014"
+    }
+  ],
+  "referenceMappings": [
+    {
+      "source": "dSML4JaCaMo::MAS#agent",
+      "sourceKind": "EReference",
+      "dimension": "core",
+      "sourceOwner": "MAS",
+      "sourceName": "agent",
+      "sourceTarget": "Agent",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": -1,
+        "text": "1..*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "MAS_agent_Agent",
+        "firstEnd": {
+          "class": "MAS",
+          "multiplicity": "0..1",
+          "role": "source_agent"
+        },
+        "secondEnd": {
+          "class": "Agent",
+          "multiplicity": "1..*",
+          "role": "agent",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "MAS.agent",
+        "sourceAuthoritative": true,
+        "reverse": "Agent.source_agent",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<MAS_object>, <Agent_object>) into MAS_agent_Agent",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R001",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::MAS#workspace",
+      "sourceKind": "EReference",
+      "dimension": "core",
+      "sourceOwner": "MAS",
+      "sourceName": "workspace",
+      "sourceTarget": "Workspace",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "MAS_workspace_Workspace",
+        "firstEnd": {
+          "class": "MAS",
+          "multiplicity": "0..1",
+          "role": "source_workspace"
+        },
+        "secondEnd": {
+          "class": "Workspace",
+          "multiplicity": "*",
+          "role": "workspace",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "MAS.workspace",
+        "sourceAuthoritative": true,
+        "reverse": "Workspace.source_workspace",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<MAS_object>, <Workspace_object>) into MAS_workspace_Workspace",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R002",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::MAS#organisation",
+      "sourceKind": "EReference",
+      "dimension": "core",
+      "sourceOwner": "MAS",
+      "sourceName": "organisation",
+      "sourceTarget": "Organisation",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "MAS_organisation_Organisation",
+        "firstEnd": {
+          "class": "MAS",
+          "multiplicity": "0..1",
+          "role": "source_organisation"
+        },
+        "secondEnd": {
+          "class": "Organisation",
+          "multiplicity": "*",
+          "role": "organisation",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "MAS.organisation",
+        "sourceAuthoritative": true,
+        "reverse": "Organisation.source_organisation",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<MAS_object>, <Organisation_object>) into MAS_organisation_Organisation",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R003",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Organisation#normativespecification",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Organisation",
+      "sourceName": "normativespecification",
+      "sourceTarget": "NormativeSpecification",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Organisation_normativespecification_NormativeSpecification",
+        "firstEnd": {
+          "class": "Organisation",
+          "multiplicity": "0..1",
+          "role": "source_normativespecification"
+        },
+        "secondEnd": {
+          "class": "NormativeSpecification",
+          "multiplicity": "1",
+          "role": "normativespecification",
+          "ordered": false
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Organisation.normativespecification",
+        "sourceAuthoritative": true,
+        "reverse": "NormativeSpecification.source_normativespecification",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Organisation_object>, <NormativeSpecification_object>) into Organisation_normativespecification_NormativeSpecification",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R004",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Organisation#structuralspecification",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Organisation",
+      "sourceName": "structuralspecification",
+      "sourceTarget": "StructuralSpecification",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Organisation_structuralspecification_StructuralSpecification",
+        "firstEnd": {
+          "class": "Organisation",
+          "multiplicity": "0..1",
+          "role": "source_structuralspecification"
+        },
+        "secondEnd": {
+          "class": "StructuralSpecification",
+          "multiplicity": "1",
+          "role": "structuralspecification",
+          "ordered": false
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Organisation.structuralspecification",
+        "sourceAuthoritative": true,
+        "reverse": "StructuralSpecification.source_structuralspecification",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Organisation_object>, <StructuralSpecification_object>) into Organisation_structuralspecification_StructuralSpecification",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R005",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Organisation#functionalspecification",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Organisation",
+      "sourceName": "functionalspecification",
+      "sourceTarget": "FunctionalSpecification",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Organisation_functionalspecification_FunctionalSpecification",
+        "firstEnd": {
+          "class": "Organisation",
+          "multiplicity": "0..1",
+          "role": "source_functionalspecification"
+        },
+        "secondEnd": {
+          "class": "FunctionalSpecification",
+          "multiplicity": "1",
+          "role": "functionalspecification",
+          "ordered": false
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Organisation.functionalspecification",
+        "sourceAuthoritative": true,
+        "reverse": "FunctionalSpecification.source_functionalspecification",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Organisation_object>, <FunctionalSpecification_object>) into Organisation_functionalspecification_FunctionalSpecification",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R006",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Organisation#deploysAgent",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Organisation",
+      "sourceName": "deploysAgent",
+      "sourceTarget": "Agent",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": -1,
+        "text": "1..*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Organisation_deploysAgent_Agent",
+        "firstEnd": {
+          "class": "Organisation",
+          "multiplicity": "*",
+          "role": "source_deploysAgent"
+        },
+        "secondEnd": {
+          "class": "Agent",
+          "multiplicity": "1..*",
+          "role": "deploysAgent",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "Organisation.deploysAgent",
+        "sourceAuthoritative": true,
+        "reverse": "Agent.source_deploysAgent",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Organisation_object>, <Agent_object>) into Organisation_deploysAgent_Agent",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R007",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::NormativeSpecification#norm",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "NormativeSpecification",
+      "sourceName": "norm",
+      "sourceTarget": "Norm",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "NormativeSpecification_norm_Norm",
+        "firstEnd": {
+          "class": "NormativeSpecification",
+          "multiplicity": "0..1",
+          "role": "source_norm"
+        },
+        "secondEnd": {
+          "class": "Norm",
+          "multiplicity": "*",
+          "role": "norm",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "NormativeSpecification.norm",
+        "sourceAuthoritative": true,
+        "reverse": "Norm.source_norm",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<NormativeSpecification_object>, <Norm_object>) into NormativeSpecification_norm_Norm",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R008",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::StructuralSpecification#group",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "StructuralSpecification",
+      "sourceName": "group",
+      "sourceTarget": "Group",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "StructuralSpecification_group_Group",
+        "firstEnd": {
+          "class": "StructuralSpecification",
+          "multiplicity": "0..1",
+          "role": "source_group"
+        },
+        "secondEnd": {
+          "class": "Group",
+          "multiplicity": "*",
+          "role": "group",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "StructuralSpecification.group",
+        "sourceAuthoritative": true,
+        "reverse": "Group.source_group",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<StructuralSpecification_object>, <Group_object>) into StructuralSpecification_group_Group",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R009",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::StructuralSpecification#role",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "StructuralSpecification",
+      "sourceName": "role",
+      "sourceTarget": "Role",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "StructuralSpecification_role_Role",
+        "firstEnd": {
+          "class": "StructuralSpecification",
+          "multiplicity": "0..1",
+          "role": "source_role"
+        },
+        "secondEnd": {
+          "class": "Role",
+          "multiplicity": "*",
+          "role": "role",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "StructuralSpecification.role",
+        "sourceAuthoritative": true,
+        "reverse": "Role.source_role",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<StructuralSpecification_object>, <Role_object>) into StructuralSpecification_role_Role",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R010",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::FunctionalSpecification#scheme",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "FunctionalSpecification",
+      "sourceName": "scheme",
+      "sourceTarget": "Scheme",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "FunctionalSpecification_scheme_Scheme",
+        "firstEnd": {
+          "class": "FunctionalSpecification",
+          "multiplicity": "0..1",
+          "role": "source_scheme"
+        },
+        "secondEnd": {
+          "class": "Scheme",
+          "multiplicity": "*",
+          "role": "scheme",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "FunctionalSpecification.scheme",
+        "sourceAuthoritative": true,
+        "reverse": "Scheme.source_scheme",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<FunctionalSpecification_object>, <Scheme_object>) into FunctionalSpecification_scheme_Scheme",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R011",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Norm#Nrole",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Norm",
+      "sourceName": "Nrole",
+      "sourceTarget": "Role",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Norm_Nrole_Role",
+        "firstEnd": {
+          "class": "Norm",
+          "multiplicity": "*",
+          "role": "source_Nrole"
+        },
+        "secondEnd": {
+          "class": "Role",
+          "multiplicity": "1",
+          "role": "Nrole",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "forward": "Norm.Nrole",
+        "sourceAuthoritative": true,
+        "reverse": "Role.source_Nrole",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Norm_object>, <Role_object>) into Norm_Nrole_Role",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R012",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Norm#NMission",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Norm",
+      "sourceName": "NMission",
+      "sourceTarget": "Mission",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Norm_NMission_Mission",
+        "firstEnd": {
+          "class": "Norm",
+          "multiplicity": "*",
+          "role": "source_NMission"
+        },
+        "secondEnd": {
+          "class": "Mission",
+          "multiplicity": "1",
+          "role": "NMission",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "forward": "Norm.NMission",
+        "sourceAuthoritative": true,
+        "reverse": "Mission.source_NMission",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Norm_object>, <Mission_object>) into Norm_NMission_Mission",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R013",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Group#hasSubGroups",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Group",
+      "sourceName": "hasSubGroups",
+      "sourceTarget": "Group",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Group_hasSubGroups_Group",
+        "firstEnd": {
+          "class": "Group",
+          "multiplicity": "*",
+          "role": "source_hasSubGroups"
+        },
+        "secondEnd": {
+          "class": "Group",
+          "multiplicity": "*",
+          "role": "hasSubGroups",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "Group.hasSubGroups",
+        "sourceAuthoritative": true,
+        "reverse": "Group.source_hasSubGroups",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Group_object>, <Group_object>) into Group_hasSubGroups_Group",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R014",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Group#RefRole",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Group",
+      "sourceName": "RefRole",
+      "sourceTarget": "Role",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": -1,
+        "text": "1..*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Group_RefRole_Role",
+        "firstEnd": {
+          "class": "Group",
+          "multiplicity": "*",
+          "role": "source_RefRole"
+        },
+        "secondEnd": {
+          "class": "Role",
+          "multiplicity": "1..*",
+          "role": "RefRole",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "Group.RefRole",
+        "sourceAuthoritative": true,
+        "reverse": "Role.source_RefRole",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Group_object>, <Role_object>) into Group_RefRole_Role",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R015",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Group#formationconstraints",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Group",
+      "sourceName": "formationconstraints",
+      "sourceTarget": "FormationConstraints",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Group_formationconstraints_FormationConstraints",
+        "firstEnd": {
+          "class": "Group",
+          "multiplicity": "0..1",
+          "role": "source_formationconstraints"
+        },
+        "secondEnd": {
+          "class": "FormationConstraints",
+          "multiplicity": "*",
+          "role": "formationconstraints",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Group.formationconstraints",
+        "sourceAuthoritative": true,
+        "reverse": "FormationConstraints.source_formationconstraints",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Group_object>, <FormationConstraints_object>) into Group_formationconstraints_FormationConstraints",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R016",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Group#link",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Group",
+      "sourceName": "link",
+      "sourceTarget": "Link",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Group_link_Link",
+        "firstEnd": {
+          "class": "Group",
+          "multiplicity": "0..1",
+          "role": "source_link"
+        },
+        "secondEnd": {
+          "class": "Link",
+          "multiplicity": "*",
+          "role": "link",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Group.link",
+        "sourceAuthoritative": true,
+        "reverse": "Link.source_link",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Group_object>, <Link_object>) into Group_link_Link",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R017",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Role#Extendsrole",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Role",
+      "sourceName": "Extendsrole",
+      "sourceTarget": "Role",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Role_Extendsrole_Role",
+        "firstEnd": {
+          "class": "Role",
+          "multiplicity": "*",
+          "role": "source_Extendsrole"
+        },
+        "secondEnd": {
+          "class": "Role",
+          "multiplicity": "0..1",
+          "role": "Extendsrole",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "forward": "Role.Extendsrole",
+        "sourceAuthoritative": true,
+        "reverse": "Role.source_Extendsrole",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Role_object>, <Role_object>) into Role_Extendsrole_Role",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R018",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Role#players",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Role",
+      "sourceName": "players",
+      "sourceTarget": "Agent",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Role_players_Agent",
+        "firstEnd": {
+          "class": "Role",
+          "multiplicity": "*",
+          "role": "source_players"
+        },
+        "secondEnd": {
+          "class": "Agent",
+          "multiplicity": "*",
+          "role": "players",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "Role.players",
+        "sourceAuthoritative": true,
+        "reverse": "Agent.source_players",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Role_object>, <Agent_object>) into Role_players_Agent",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R019",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Scheme#mission",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Scheme",
+      "sourceName": "mission",
+      "sourceTarget": "Mission",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": -1,
+        "text": "1..*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Scheme_mission_Mission",
+        "firstEnd": {
+          "class": "Scheme",
+          "multiplicity": "0..1",
+          "role": "source_mission"
+        },
+        "secondEnd": {
+          "class": "Mission",
+          "multiplicity": "1..*",
+          "role": "mission",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Scheme.mission",
+        "sourceAuthoritative": true,
+        "reverse": "Mission.source_mission",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Scheme_object>, <Mission_object>) into Scheme_mission_Mission",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R020",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Scheme#SchemeOgoal",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Scheme",
+      "sourceName": "SchemeOgoal",
+      "sourceTarget": "OGoal",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": -1,
+        "text": "1..*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Scheme_SchemeOgoal_OGoal",
+        "firstEnd": {
+          "class": "Scheme",
+          "multiplicity": "0..1",
+          "role": "source_SchemeOgoal"
+        },
+        "secondEnd": {
+          "class": "OGoal",
+          "multiplicity": "1..*",
+          "role": "SchemeOgoal",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Scheme.SchemeOgoal",
+        "sourceAuthoritative": true,
+        "reverse": "OGoal.source_SchemeOgoal",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Scheme_object>, <OGoal_object>) into Scheme_SchemeOgoal_OGoal",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R021",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Scheme#SchemeOPlan",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Scheme",
+      "sourceName": "SchemeOPlan",
+      "sourceTarget": "OPlan",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Scheme_SchemeOPlan_OPlan",
+        "firstEnd": {
+          "class": "Scheme",
+          "multiplicity": "0..1",
+          "role": "source_SchemeOPlan"
+        },
+        "secondEnd": {
+          "class": "OPlan",
+          "multiplicity": "*",
+          "role": "SchemeOPlan",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Scheme.SchemeOPlan",
+        "sourceAuthoritative": true,
+        "reverse": "OPlan.source_SchemeOPlan",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Scheme_object>, <OPlan_object>) into Scheme_SchemeOPlan_OPlan",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R022",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Scheme#Splan",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Scheme",
+      "sourceName": "Splan",
+      "sourceTarget": "TriggeringEvent",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Scheme_Splan_TriggeringEvent",
+        "firstEnd": {
+          "class": "Scheme",
+          "multiplicity": "*",
+          "role": "source_Scheme_Splan"
+        },
+        "secondEnd": {
+          "class": "TriggeringEvent",
+          "multiplicity": "*",
+          "role": "Splan",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "Scheme.Splan",
+        "sourceAuthoritative": true,
+        "reverse": "TriggeringEvent.source_Scheme_Splan",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Scheme_object>, <TriggeringEvent_object>) into Scheme_Splan_TriggeringEvent",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R023",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::OPlan#FirstOgoal",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "OPlan",
+      "sourceName": "FirstOgoal",
+      "sourceTarget": "OGoal",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "OPlan_FirstOgoal_OGoal",
+        "firstEnd": {
+          "class": "OPlan",
+          "multiplicity": "*",
+          "role": "source_FirstOgoal"
+        },
+        "secondEnd": {
+          "class": "OGoal",
+          "multiplicity": "1",
+          "role": "FirstOgoal",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "forward": "OPlan.FirstOgoal",
+        "sourceAuthoritative": true,
+        "reverse": "OGoal.source_FirstOgoal",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<OPlan_object>, <OGoal_object>) into OPlan_FirstOgoal_OGoal",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R024",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::OPlan#Splan",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "OPlan",
+      "sourceName": "Splan",
+      "sourceTarget": "TriggeringEvent",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "OPlan_Splan_TriggeringEvent",
+        "firstEnd": {
+          "class": "OPlan",
+          "multiplicity": "*",
+          "role": "source_OPlan_Splan"
+        },
+        "secondEnd": {
+          "class": "TriggeringEvent",
+          "multiplicity": "*",
+          "role": "Splan",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "OPlan.Splan",
+        "sourceAuthoritative": true,
+        "reverse": "TriggeringEvent.source_OPlan_Splan",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<OPlan_object>, <TriggeringEvent_object>) into OPlan_Splan_TriggeringEvent",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R025",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::OGoal#NextOgoal",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "OGoal",
+      "sourceName": "NextOgoal",
+      "sourceTarget": "OGoal",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "OGoal_NextOgoal_OGoal",
+        "firstEnd": {
+          "class": "OGoal",
+          "multiplicity": "*",
+          "role": "source_NextOgoal"
+        },
+        "secondEnd": {
+          "class": "OGoal",
+          "multiplicity": "0..1",
+          "role": "NextOgoal",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "forward": "OGoal.NextOgoal",
+        "sourceAuthoritative": true,
+        "reverse": "OGoal.source_NextOgoal",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<OGoal_object>, <OGoal_object>) into OGoal_NextOgoal_OGoal",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R026",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::OGoal#OGoalToOPlan",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "OGoal",
+      "sourceName": "OGoalToOPlan",
+      "sourceTarget": "OPlan",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "OGoal_OGoalToOPlan_OPlan",
+        "firstEnd": {
+          "class": "OGoal",
+          "multiplicity": "*",
+          "role": "source_OGoalToOPlan"
+        },
+        "secondEnd": {
+          "class": "OPlan",
+          "multiplicity": "0..1",
+          "role": "OGoalToOPlan",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "forward": "OGoal.OGoalToOPlan",
+        "sourceAuthoritative": true,
+        "reverse": "OPlan.source_OGoalToOPlan",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<OGoal_object>, <OPlan_object>) into OGoal_OGoalToOPlan_OPlan",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R027",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::OGoal#OGoalToGoal",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "OGoal",
+      "sourceName": "OGoalToGoal",
+      "sourceTarget": "Goal",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "OGoal_OGoalToGoal_Goal",
+        "firstEnd": {
+          "class": "OGoal",
+          "multiplicity": "*",
+          "role": "source_OGoalToGoal"
+        },
+        "secondEnd": {
+          "class": "Goal",
+          "multiplicity": "0..1",
+          "role": "OGoalToGoal",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "forward": "OGoal.OGoalToGoal",
+        "sourceAuthoritative": true,
+        "reverse": "Goal.source_OGoalToGoal",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<OGoal_object>, <Goal_object>) into OGoal_OGoalToGoal_Goal",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R028",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Mission#ogoal",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Mission",
+      "sourceName": "ogoal",
+      "sourceTarget": "OGoal",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": -1,
+        "text": "1..*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Mission_ogoal_OGoal",
+        "firstEnd": {
+          "class": "Mission",
+          "multiplicity": "*",
+          "role": "source_ogoal"
+        },
+        "secondEnd": {
+          "class": "OGoal",
+          "multiplicity": "1..*",
+          "role": "ogoal",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "Mission.ogoal",
+        "sourceAuthoritative": true,
+        "reverse": "OGoal.source_ogoal",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Mission_object>, <OGoal_object>) into Mission_ogoal_OGoal",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R029",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Mission#Mplan",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Mission",
+      "sourceName": "Mplan",
+      "sourceTarget": "TriggeringEvent",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Mission_Mplan_TriggeringEvent",
+        "firstEnd": {
+          "class": "Mission",
+          "multiplicity": "*",
+          "role": "source_Mplan"
+        },
+        "secondEnd": {
+          "class": "TriggeringEvent",
+          "multiplicity": "*",
+          "role": "Mplan",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "Mission.Mplan",
+        "sourceAuthoritative": true,
+        "reverse": "TriggeringEvent.source_Mplan",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Mission_object>, <TriggeringEvent_object>) into Mission_Mplan_TriggeringEvent",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R030",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Workspace#artifact",
+      "sourceKind": "EReference",
+      "dimension": "environment",
+      "sourceOwner": "Workspace",
+      "sourceName": "artifact",
+      "sourceTarget": "Artifact",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Workspace_artifact_Artifact",
+        "firstEnd": {
+          "class": "Workspace",
+          "multiplicity": "0..1",
+          "role": "source_Workspace_artifact"
+        },
+        "secondEnd": {
+          "class": "Artifact",
+          "multiplicity": "*",
+          "role": "artifact",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Workspace.artifact",
+        "sourceAuthoritative": true,
+        "reverse": "Artifact.source_Workspace_artifact",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Workspace_object>, <Artifact_object>) into Workspace_artifact_Artifact",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R031",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Workspace#hasSubworkspace",
+      "sourceKind": "EReference",
+      "dimension": "environment",
+      "sourceOwner": "Workspace",
+      "sourceName": "hasSubworkspace",
+      "sourceTarget": "Workspace",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Workspace_hasSubworkspace_Workspace",
+        "firstEnd": {
+          "class": "Workspace",
+          "multiplicity": "*",
+          "role": "source_hasSubworkspace"
+        },
+        "secondEnd": {
+          "class": "Workspace",
+          "multiplicity": "*",
+          "role": "hasSubworkspace",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "Workspace.hasSubworkspace",
+        "sourceAuthoritative": true,
+        "reverse": "Workspace.source_hasSubworkspace",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Workspace_object>, <Workspace_object>) into Workspace_hasSubworkspace_Workspace",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R032",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Artifact#port",
+      "sourceKind": "EReference",
+      "dimension": "environment",
+      "sourceOwner": "Artifact",
+      "sourceName": "port",
+      "sourceTarget": "Port",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Artifact_port_Port",
+        "firstEnd": {
+          "class": "Artifact",
+          "multiplicity": "0..1",
+          "role": "source_port"
+        },
+        "secondEnd": {
+          "class": "Port",
+          "multiplicity": "*",
+          "role": "port",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Artifact.port",
+        "sourceAuthoritative": true,
+        "reverse": "Port.source_port",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Artifact_object>, <Port_object>) into Artifact_port_Port",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R033",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Artifact#obsproperty",
+      "sourceKind": "EReference",
+      "dimension": "environment",
+      "sourceOwner": "Artifact",
+      "sourceName": "obsproperty",
+      "sourceTarget": "ObsProperty",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Artifact_obsproperty_ObsProperty",
+        "firstEnd": {
+          "class": "Artifact",
+          "multiplicity": "0..1",
+          "role": "source_obsproperty"
+        },
+        "secondEnd": {
+          "class": "ObsProperty",
+          "multiplicity": "*",
+          "role": "obsproperty",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Artifact.obsproperty",
+        "sourceAuthoritative": true,
+        "reverse": "ObsProperty.source_obsproperty",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Artifact_object>, <ObsProperty_object>) into Artifact_obsproperty_ObsProperty",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R034",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Artifact#operation",
+      "sourceKind": "EReference",
+      "dimension": "environment",
+      "sourceOwner": "Artifact",
+      "sourceName": "operation",
+      "sourceTarget": "AbsOperation",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Artifact_operation_AbsOperation",
+        "firstEnd": {
+          "class": "Artifact",
+          "multiplicity": "0..1",
+          "role": "source_Artifact_operation"
+        },
+        "secondEnd": {
+          "class": "AbsOperation",
+          "multiplicity": "*",
+          "role": "operation",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Artifact.operation",
+        "sourceAuthoritative": true,
+        "reverse": "AbsOperation.source_Artifact_operation",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Artifact_object>, <AbsOperation_object>) into Artifact_operation_AbsOperation",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R035",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Port#linkArtifacts",
+      "sourceKind": "EReference",
+      "dimension": "environment",
+      "sourceOwner": "Port",
+      "sourceName": "linkArtifacts",
+      "sourceTarget": "Artifact",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Port_linkArtifacts_Artifact",
+        "firstEnd": {
+          "class": "Port",
+          "multiplicity": "*",
+          "role": "source_linkArtifacts"
+        },
+        "secondEnd": {
+          "class": "Artifact",
+          "multiplicity": "*",
+          "role": "linkArtifacts",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "Port.linkArtifacts",
+        "sourceAuthoritative": true,
+        "reverse": "Artifact.source_linkArtifacts",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Port_object>, <Artifact_object>) into Port_linkArtifacts_Artifact",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R036",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::ObsProperty#obsproperty",
+      "sourceKind": "EReference",
+      "dimension": "environment",
+      "sourceOwner": "ObsProperty",
+      "sourceName": "obsproperty",
+      "sourceTarget": "Belief",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "ObsProperty_obsproperty_Belief",
+        "firstEnd": {
+          "class": "ObsProperty",
+          "multiplicity": "*",
+          "role": "source_obsproperty"
+        },
+        "secondEnd": {
+          "class": "Belief",
+          "multiplicity": "*",
+          "role": "obsproperty",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "ObsProperty.obsproperty",
+        "sourceAuthoritative": true,
+        "reverse": "Belief.source_obsproperty",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<ObsProperty_object>, <Belief_object>) into ObsProperty_obsproperty_Belief",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R037",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::AbsOperation#RefObsproperty",
+      "sourceKind": "EReference",
+      "dimension": "environment",
+      "sourceOwner": "AbsOperation",
+      "sourceName": "RefObsproperty",
+      "sourceTarget": "ObsProperty",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "AbsOperation_RefObsproperty_ObsProperty",
+        "firstEnd": {
+          "class": "AbsOperation",
+          "multiplicity": "*",
+          "role": "source_RefObsproperty"
+        },
+        "secondEnd": {
+          "class": "ObsProperty",
+          "multiplicity": "*",
+          "role": "RefObsproperty",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "AbsOperation.RefObsproperty",
+        "sourceAuthoritative": true,
+        "reverse": "ObsProperty.source_RefObsproperty",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<AbsOperation_object>, <ObsProperty_object>) into AbsOperation_RefObsproperty_ObsProperty",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R038",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Operation#guardedBy",
+      "sourceKind": "EReference",
+      "dimension": "environment",
+      "sourceOwner": "Operation",
+      "sourceName": "guardedBy",
+      "sourceTarget": "GuardOperation",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Operation_guardedBy_GuardOperation",
+        "firstEnd": {
+          "class": "Operation",
+          "multiplicity": "*",
+          "role": "source_guardedBy"
+        },
+        "secondEnd": {
+          "class": "GuardOperation",
+          "multiplicity": "0..1",
+          "role": "guardedBy",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "forward": "Operation.guardedBy",
+        "sourceAuthoritative": true,
+        "reverse": "GuardOperation.source_guardedBy",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Operation_object>, <GuardOperation_object>) into Operation_guardedBy_GuardOperation",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R039",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Operation#callsInternal",
+      "sourceKind": "EReference",
+      "dimension": "environment",
+      "sourceOwner": "Operation",
+      "sourceName": "callsInternal",
+      "sourceTarget": "InternalOperation",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Operation_callsInternal_InternalOperation",
+        "firstEnd": {
+          "class": "Operation",
+          "multiplicity": "*",
+          "role": "source_callsInternal"
+        },
+        "secondEnd": {
+          "class": "InternalOperation",
+          "multiplicity": "0..1",
+          "role": "callsInternal",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "forward": "Operation.callsInternal",
+        "sourceAuthoritative": true,
+        "reverse": "InternalOperation.source_callsInternal",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Operation_object>, <InternalOperation_object>) into Operation_callsInternal_InternalOperation",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R040",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Agent#belief",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Agent",
+      "sourceName": "belief",
+      "sourceTarget": "Belief",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Agent_belief_Belief",
+        "firstEnd": {
+          "class": "Agent",
+          "multiplicity": "0..1",
+          "role": "source_belief"
+        },
+        "secondEnd": {
+          "class": "Belief",
+          "multiplicity": "*",
+          "role": "belief",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Agent.belief",
+        "sourceAuthoritative": true,
+        "reverse": "Belief.source_belief",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Agent_object>, <Belief_object>) into Agent_belief_Belief",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R041",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Agent#rule",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Agent",
+      "sourceName": "rule",
+      "sourceTarget": "Rule",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Agent_rule_Rule",
+        "firstEnd": {
+          "class": "Agent",
+          "multiplicity": "0..1",
+          "role": "source_rule"
+        },
+        "secondEnd": {
+          "class": "Rule",
+          "multiplicity": "*",
+          "role": "rule",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Agent.rule",
+        "sourceAuthoritative": true,
+        "reverse": "Rule.source_rule",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Agent_object>, <Rule_object>) into Agent_rule_Rule",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R042",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Agent#plan",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Agent",
+      "sourceName": "plan",
+      "sourceTarget": "Plan",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Agent_plan_Plan",
+        "firstEnd": {
+          "class": "Agent",
+          "multiplicity": "0..1",
+          "role": "source_plan"
+        },
+        "secondEnd": {
+          "class": "Plan",
+          "multiplicity": "*",
+          "role": "plan",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Agent.plan",
+        "sourceAuthoritative": true,
+        "reverse": "Plan.source_plan",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Agent_object>, <Plan_object>) into Agent_plan_Plan",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R043",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Agent#hasGoal",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Agent",
+      "sourceName": "hasGoal",
+      "sourceTarget": "Goal",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Agent_hasGoal_Goal",
+        "firstEnd": {
+          "class": "Agent",
+          "multiplicity": "0..1",
+          "role": "source_hasGoal"
+        },
+        "secondEnd": {
+          "class": "Goal",
+          "multiplicity": "*",
+          "role": "hasGoal",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Agent.hasGoal",
+        "sourceAuthoritative": true,
+        "reverse": "Goal.source_hasGoal",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Agent_object>, <Goal_object>) into Agent_hasGoal_Goal",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R044",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Agent#joinWorkspace",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Agent",
+      "sourceName": "joinWorkspace",
+      "sourceTarget": "Workspace",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Agent_joinWorkspace_Workspace",
+        "firstEnd": {
+          "class": "Agent",
+          "multiplicity": "*",
+          "role": "source_joinWorkspace"
+        },
+        "secondEnd": {
+          "class": "Workspace",
+          "multiplicity": "*",
+          "role": "joinWorkspace",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "Agent.joinWorkspace",
+        "sourceAuthoritative": true,
+        "reverse": "Workspace.source_joinWorkspace",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Agent_object>, <Workspace_object>) into Agent_joinWorkspace_Workspace",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R045",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Agent#artifact",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Agent",
+      "sourceName": "artifact",
+      "sourceTarget": "Artifact",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Agent_artifact_Artifact",
+        "firstEnd": {
+          "class": "Agent",
+          "multiplicity": "*",
+          "role": "source_Agent_artifact"
+        },
+        "secondEnd": {
+          "class": "Artifact",
+          "multiplicity": "*",
+          "role": "artifact",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "Agent.artifact",
+        "sourceAuthoritative": true,
+        "reverse": "Artifact.source_Agent_artifact",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Agent_object>, <Artifact_object>) into Agent_artifact_Artifact",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R046",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Belief#triggeredBy",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Belief",
+      "sourceName": "triggeredBy",
+      "sourceTarget": "TriggeringEvent",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Belief_triggeredBy_TriggeringEvent",
+        "firstEnd": {
+          "class": "Belief",
+          "multiplicity": "*",
+          "role": "source_Belief_triggeredBy"
+        },
+        "secondEnd": {
+          "class": "TriggeringEvent",
+          "multiplicity": "1",
+          "role": "triggeredBy",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "forward": "Belief.triggeredBy",
+        "sourceAuthoritative": true,
+        "reverse": "TriggeringEvent.source_Belief_triggeredBy",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Belief_object>, <TriggeringEvent_object>) into Belief_triggeredBy_TriggeringEvent",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R047",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Goal#triggeredBy",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Goal",
+      "sourceName": "triggeredBy",
+      "sourceTarget": "TriggeringEvent",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": -1,
+        "text": "1..*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Goal_triggeredBy_TriggeringEvent",
+        "firstEnd": {
+          "class": "Goal",
+          "multiplicity": "*",
+          "role": "source_Goal_triggeredBy"
+        },
+        "secondEnd": {
+          "class": "TriggeringEvent",
+          "multiplicity": "1..*",
+          "role": "triggeredBy",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "Goal.triggeredBy",
+        "sourceAuthoritative": true,
+        "reverse": "TriggeringEvent.source_Goal_triggeredBy",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Goal_object>, <TriggeringEvent_object>) into Goal_triggeredBy_TriggeringEvent",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R048",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Context#contextRule",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Context",
+      "sourceName": "contextRule",
+      "sourceTarget": "Rule",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Context_contextRule_Rule",
+        "firstEnd": {
+          "class": "Context",
+          "multiplicity": "*",
+          "role": "source_contextRule"
+        },
+        "secondEnd": {
+          "class": "Rule",
+          "multiplicity": "*",
+          "role": "contextRule",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "Context.contextRule",
+        "sourceAuthoritative": true,
+        "reverse": "Rule.source_contextRule",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Context_object>, <Rule_object>) into Context_contextRule_Rule",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R049",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Context#contextBelief",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Context",
+      "sourceName": "contextBelief",
+      "sourceTarget": "Belief",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Context_contextBelief_Belief",
+        "firstEnd": {
+          "class": "Context",
+          "multiplicity": "*",
+          "role": "source_contextBelief"
+        },
+        "secondEnd": {
+          "class": "Belief",
+          "multiplicity": "*",
+          "role": "contextBelief",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "Context.contextBelief",
+        "sourceAuthoritative": true,
+        "reverse": "Belief.source_contextBelief",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Context_object>, <Belief_object>) into Context_contextBelief_Belief",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R050",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Plan#hasBody",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Plan",
+      "sourceName": "hasBody",
+      "sourceTarget": "Body",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Plan_hasBody_Body",
+        "firstEnd": {
+          "class": "Plan",
+          "multiplicity": "0..1",
+          "role": "source_hasBody"
+        },
+        "secondEnd": {
+          "class": "Body",
+          "multiplicity": "1",
+          "role": "hasBody",
+          "ordered": false
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Plan.hasBody",
+        "sourceAuthoritative": true,
+        "reverse": "Body.source_hasBody",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Plan_object>, <Body_object>) into Plan_hasBody_Body",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R051",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Plan#hasContext",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Plan",
+      "sourceName": "hasContext",
+      "sourceTarget": "Context",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Plan_hasContext_Context",
+        "firstEnd": {
+          "class": "Plan",
+          "multiplicity": "0..1",
+          "role": "source_hasContext"
+        },
+        "secondEnd": {
+          "class": "Context",
+          "multiplicity": "1",
+          "role": "hasContext",
+          "ordered": false
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Plan.hasContext",
+        "sourceAuthoritative": true,
+        "reverse": "Context.source_hasContext",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Plan_object>, <Context_object>) into Plan_hasContext_Context",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R052",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Plan#hasAction",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Plan",
+      "sourceName": "hasAction",
+      "sourceTarget": "Action",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Plan_hasAction_Action",
+        "firstEnd": {
+          "class": "Plan",
+          "multiplicity": "0..1",
+          "role": "source_hasAction"
+        },
+        "secondEnd": {
+          "class": "Action",
+          "multiplicity": "*",
+          "role": "hasAction",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Plan.hasAction",
+        "sourceAuthoritative": true,
+        "reverse": "Action.source_hasAction",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Plan_object>, <Action_object>) into Plan_hasAction_Action",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R053",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Plan#RefArtifact",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Plan",
+      "sourceName": "RefArtifact",
+      "sourceTarget": "Artifact",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Plan_RefArtifact_Artifact",
+        "firstEnd": {
+          "class": "Plan",
+          "multiplicity": "*",
+          "role": "source_RefArtifact"
+        },
+        "secondEnd": {
+          "class": "Artifact",
+          "multiplicity": "*",
+          "role": "RefArtifact",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "Plan.RefArtifact",
+        "sourceAuthoritative": true,
+        "reverse": "Artifact.source_RefArtifact",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Plan_object>, <Artifact_object>) into Plan_RefArtifact_Artifact",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R054",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Body#bodyterm",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Body",
+      "sourceName": "bodyterm",
+      "sourceTarget": "BodyTerm",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Body_bodyterm_BodyTerm",
+        "firstEnd": {
+          "class": "Body",
+          "multiplicity": "0..1",
+          "role": "source_bodyterm"
+        },
+        "secondEnd": {
+          "class": "BodyTerm",
+          "multiplicity": "*",
+          "role": "bodyterm",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "forward": "Body.bodyterm",
+        "sourceAuthoritative": true,
+        "reverse": "BodyTerm.source_bodyterm",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Body_object>, <BodyTerm_object>) into Body_bodyterm_BodyTerm",
+      "policy": "CONTAINMENT_TO_COMPOSITION",
+      "id": "R055",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Body#firstAction",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Body",
+      "sourceName": "firstAction",
+      "sourceTarget": "Action",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Body_firstAction_Action",
+        "firstEnd": {
+          "class": "Body",
+          "multiplicity": "*",
+          "role": "source_firstAction"
+        },
+        "secondEnd": {
+          "class": "Action",
+          "multiplicity": "1",
+          "role": "firstAction",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "forward": "Body.firstAction",
+        "sourceAuthoritative": true,
+        "reverse": "Action.source_firstAction",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Body_object>, <Action_object>) into Body_firstAction_Action",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R056",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Action#nextAction",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Action",
+      "sourceName": "nextAction",
+      "sourceTarget": "Action",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Action_nextAction_Action",
+        "firstEnd": {
+          "class": "Action",
+          "multiplicity": "*",
+          "role": "source_nextAction"
+        },
+        "secondEnd": {
+          "class": "Action",
+          "multiplicity": "0..1",
+          "role": "nextAction",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "forward": "Action.nextAction",
+        "sourceAuthoritative": true,
+        "reverse": "Action.source_nextAction",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Action_object>, <Action_object>) into Action_nextAction_Action",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R057",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::ExternalAction#operation",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "ExternalAction",
+      "sourceName": "operation",
+      "sourceTarget": "AbsOperation",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "ExternalAction_operation_AbsOperation",
+        "firstEnd": {
+          "class": "ExternalAction",
+          "multiplicity": "*",
+          "role": "source_ExternalAction_operation"
+        },
+        "secondEnd": {
+          "class": "AbsOperation",
+          "multiplicity": "0..1",
+          "role": "operation",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "forward": "ExternalAction.operation",
+        "sourceAuthoritative": true,
+        "reverse": "AbsOperation.source_ExternalAction_operation",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<ExternalAction_object>, <AbsOperation_object>) into ExternalAction_operation_AbsOperation",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R058",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::MentalNotes#impliesG",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "MentalNotes",
+      "sourceName": "impliesG",
+      "sourceTarget": "Goal",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "MentalNotes_impliesG_Goal",
+        "firstEnd": {
+          "class": "MentalNotes",
+          "multiplicity": "*",
+          "role": "source_impliesG"
+        },
+        "secondEnd": {
+          "class": "Goal",
+          "multiplicity": "1",
+          "role": "impliesG",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "forward": "MentalNotes.impliesG",
+        "sourceAuthoritative": true,
+        "reverse": "Goal.source_impliesG",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<MentalNotes_object>, <Goal_object>) into MentalNotes_impliesG_Goal",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R059",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::MentalNotes#impliesB",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "MentalNotes",
+      "sourceName": "impliesB",
+      "sourceTarget": "Belief",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "MentalNotes_impliesB_Belief",
+        "firstEnd": {
+          "class": "MentalNotes",
+          "multiplicity": "*",
+          "role": "source_impliesB"
+        },
+        "secondEnd": {
+          "class": "Belief",
+          "multiplicity": "1",
+          "role": "impliesB",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "forward": "MentalNotes.impliesB",
+        "sourceAuthoritative": true,
+        "reverse": "Belief.source_impliesB",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<MentalNotes_object>, <Belief_object>) into MentalNotes_impliesB_Belief",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R060",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::Message#messageToagent",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Message",
+      "sourceName": "messageToagent",
+      "sourceTarget": "Agent",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Message_messageToagent_Agent",
+        "firstEnd": {
+          "class": "Message",
+          "multiplicity": "*",
+          "role": "source_messageToagent"
+        },
+        "secondEnd": {
+          "class": "Agent",
+          "multiplicity": "*",
+          "role": "messageToagent",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "forward": "Message.messageToagent",
+        "sourceAuthoritative": true,
+        "reverse": "Agent.source_messageToagent",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<Message_object>, <Agent_object>) into Message_messageToagent_Agent",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R061",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::TriggeringEvent#planoperator",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "TriggeringEvent",
+      "sourceName": "planoperator",
+      "sourceTarget": "OPlan",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "TriggeringEvent_planoperator_OPlan",
+        "firstEnd": {
+          "class": "TriggeringEvent",
+          "multiplicity": "*",
+          "role": "source_planoperator"
+        },
+        "secondEnd": {
+          "class": "OPlan",
+          "multiplicity": "0..1",
+          "role": "planoperator",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "forward": "TriggeringEvent.planoperator",
+        "sourceAuthoritative": true,
+        "reverse": "OPlan.source_planoperator",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<TriggeringEvent_object>, <OPlan_object>) into TriggeringEvent_planoperator_OPlan",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R062",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    },
+    {
+      "source": "dSML4JaCaMo::TriggeringEvent#triggersPlan",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "TriggeringEvent",
+      "sourceName": "triggersPlan",
+      "sourceTarget": "Plan",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "TriggeringEvent_triggersPlan_Plan",
+        "firstEnd": {
+          "class": "TriggeringEvent",
+          "multiplicity": "*",
+          "role": "source_triggersPlan"
+        },
+        "secondEnd": {
+          "class": "Plan",
+          "multiplicity": "1",
+          "role": "triggersPlan",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "forward": "TriggeringEvent.triggersPlan",
+        "sourceAuthoritative": true,
+        "reverse": "Plan.source_triggersPlan",
+        "reverseAuthoritative": false
+      },
+      "runtimeLinkCommand": "!insert (<TriggeringEvent_object>, <Plan_object>) into TriggeringEvent_triggersPlan_Plan",
+      "policy": "REFERENCE_TO_ASSOCIATION",
+      "id": "R063",
+      "sourceOrdered": true,
+      "sourceUnique": true
+    }
+  ],
+  "verificationProjections": [
+    {
+      "id": "VP001",
+      "name": "ConcreteArtifactTypeProjection",
+      "status": "ENABLED_WHEN_RESOLVED",
+      "source": "Parsed JaCaMo project: concrete CArtAgO artifact implementation type referenced by the project",
+      "preconditions": [
+        "artifact implementation type is resolved",
+        "type is a CArtAgO Artifact subtype or is confirmed by the parser"
+      ],
+      "target": {
+        "kind": "USE_CLASS",
+        "rule": "Generate one concrete USE subclass of Artifact per distinct resolved artifact implementation type."
+      },
+      "trace": "Keep fully-qualified Java artifact class name as transformation metadata. Do not infer a domain class from an Agent name.",
+      "metamodelContract": {
+        "sourceElements": [
+          "dSML4JaCaMo::Artifact",
+          "dSML4JaCaMo::Artifact#className"
+        ],
+        "structuralBindings": [
+          "C016"
+        ],
+        "targetConcept": "MClass",
+        "baseClass": "Artifact",
+        "dependsOn": [],
+        "mode": "TYPE_TEMPLATE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Expose a resolved implementation type as an Artifact subtype without changing the baseline Artifact class.",
+        "assumptions": [
+          "External semantic parser supplies an implementation type with proven Artifact ancestry.",
+          "Concrete identifiers are not allocated by this metamodel contract."
+        ],
+        "informationLoss": "No baseline information is removed. Java implementation behavior is not represented by the subtype declaration.",
+        "externalInputRequired": true,
+        "baselineMutation": false
+      }
+    },
+    {
+      "id": "VP002",
+      "name": "ObservablePropertyStateProjection",
+      "status": "ENABLED_ONLY_WITH_RESOLVED_NAME_AND_TYPE",
+      "source": "Parsed concrete observable property owned by a concrete Artifact instance/type",
+      "structuralRepresentation": "Preserve ObsProperty object/link according to R-mappings.",
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "owner": "generated concrete Artifact subclass",
+        "name": "resolved observable property name",
+        "type": "resolved USE-compatible type"
+      },
+      "runtime": "Current observable property value materializes as !set on the concrete artifact object.",
+      "fallback": "If name/type cannot be resolved reliably, DO NOT invent a USE attribute; retain only the structural ObsProperty representation and emit a diagnostic.",
+      "reason": "Enables state invariants and operation pre/postconditions over natural artifact state.",
+      "metamodelContract": {
+        "sourceElements": [
+          "dSML4JaCaMo::Artifact",
+          "dSML4JaCaMo::ObsProperty",
+          "dSML4JaCaMo::Artifact#obsproperty"
+        ],
+        "structuralBindings": [
+          "C016",
+          "C018",
+          "R034"
+        ],
+        "targetConcept": "MAttribute",
+        "baseClass": "Artifact",
+        "dependsOn": [
+          "VP001"
+        ],
+        "mode": "ATTRIBUTE_TEMPLATE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Provide a typed USE attribute concept for a resolved observable property while retaining structural ObsProperty.",
+        "assumptions": [
+          "External input must supply a property name and USE-compatible type; do not use the clipped initialValue type.",
+          "Generated member name must not collide with inherited attributes or navigation roles."
+        ],
+        "informationLoss": "Structural identity/link is retained. Java value representation and update semantics are outside this projection.",
+        "externalInputRequired": true,
+        "baselineMutation": false
+      }
+    },
+    {
+      "id": "VP003",
+      "name": "CArtAgOOperationProjection",
+      "status": "ENABLED_ONLY_WITH_RESOLVED_SIGNATURE",
+      "source": "Parsed concrete CArtAgO operation owned by a concrete Artifact implementation",
+      "structuralRepresentation": "Preserve AbsOperation/Operation object and Artifact.operation composition according to structural mappings.",
+      "target": {
+        "kind": "USE_OPERATION",
+        "internalConcept": "MOperation",
+        "owner": "generated concrete Artifact subclass",
+        "name": "resolved operation name",
+        "parameters": "resolved parameter names/types",
+        "resultType": "resolved result type when meaningful, otherwise no result"
+      },
+      "fallback": "If owner/name/signature cannot be resolved from the JaCaMo/CArtAgO source, DO NOT guess from filenames or Agent actions; keep only structural operation representation and emit a diagnostic.",
+      "oclCapability": "This projection is the anchor for USE OCL preconditions and postconditions.",
+      "metamodelContract": {
+        "sourceElements": [
+          "dSML4JaCaMo::Artifact",
+          "dSML4JaCaMo::AbsOperation",
+          "dSML4JaCaMo::Operation",
+          "dSML4JaCaMo::LinkedOperation",
+          "dSML4JaCaMo::InternalOperation",
+          "dSML4JaCaMo::GuardOperation",
+          "dSML4JaCaMo::Artifact#operation"
+        ],
+        "structuralBindings": [
+          "C016",
+          "C019",
+          "R035"
+        ],
+        "targetConcept": "MOperation",
+        "baseClass": "Artifact",
+        "dependsOn": [
+          "VP001"
+        ],
+        "mode": "OPERATION_TEMPLATE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Map a resolved artifact operation signature to the USE operation metaconcept without turning Operation EClass into EOperation.",
+        "assumptions": [
+          "External input must supply owner/name and complete ordered parameter types/names, plus optional result.",
+          "Signature must be representable in USE and unique on the generated subtype; unsupported Java signatures remain unprojected."
+        ],
+        "informationLoss": "Structural operation object remains. Java execution, guards and effects are not encoded by the declaration.",
+        "externalInputRequired": true,
+        "baselineMutation": false
+      }
+    },
+    {
+      "id": "VP004",
+      "name": "ExternalActionOperationConsistency",
+      "status": "STRUCTURAL_LINK_PRESERVED",
+      "source": "ExternalAction.operation -> AbsOperation",
+      "target": "Keep the mapped USE association from ExternalAction to AbsOperation and, when VP003 exists, add transformation trace from the AbsOperation object to its projected USE operation.",
+      "purpose": "Supports cross-dimensional Jason action <-> CArtAgO operation verification without collapsing Agent into Artifact.",
+      "metamodelContract": {
+        "sourceElements": [
+          "dSML4JaCaMo::ExternalAction",
+          "dSML4JaCaMo::AbsOperation",
+          "dSML4JaCaMo::ExternalAction#operation"
+        ],
+        "structuralBindings": [
+          "R058"
+        ],
+        "targetConcept": "MAssociation",
+        "baseClass": null,
+        "dependsOn": [],
+        "mode": "STRUCTURAL_REUSE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Identify the existing action-to-operation association as a future verification anchor; do not create a second association.",
+        "assumptions": [
+          "Optional trace to a projected operation belongs to a later layer and requires VP003."
+        ],
+        "informationLoss": "No structural loss; no receiver resolution or action execution is inferred.",
+        "externalInputRequired": false,
+        "baselineMutation": false
+      }
+    },
+    {
+      "id": "VP005",
+      "name": "ObservablePropertyBeliefConsistency",
+      "status": "STRUCTURAL_LINK_PRESERVED",
+      "source": "ObsProperty.obsproperty -> Belief",
+      "target": "Use mapped USE association unchanged. VP002 may additionally expose the concrete state value as an artifact attribute.",
+      "purpose": "Supports environment percept <-> Jason belief consistency checks.",
+      "metamodelContract": {
+        "sourceElements": [
+          "dSML4JaCaMo::ObsProperty",
+          "dSML4JaCaMo::Belief",
+          "dSML4JaCaMo::ObsProperty#obsproperty"
+        ],
+        "structuralBindings": [
+          "R037"
+        ],
+        "targetConcept": "MAssociation",
+        "baseClass": null,
+        "dependsOn": [],
+        "mode": "STRUCTURAL_REUSE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Identify the existing observable-property-to-belief association without reversing its direction.",
+        "assumptions": [
+          "Optional state projection is VP002; it does not replace this association."
+        ],
+        "informationLoss": "No structural loss; correspondence does not assert percept delivery or belief synchronization.",
+        "externalInputRequired": false,
+        "baselineMutation": false
+      }
+    },
+    {
+      "id": "VP006",
+      "name": "OrganisationalGoalAgentGoalConsistency",
+      "status": "STRUCTURAL_LINK_PRESERVED",
+      "source": "OGoal.OGoalToGoal -> Goal",
+      "target": "Use mapped USE association unchanged.",
+      "purpose": "Supports Moise organisational goal <-> Jason goal consistency checks.",
+      "metamodelContract": {
+        "sourceElements": [
+          "dSML4JaCaMo::OGoal",
+          "dSML4JaCaMo::Goal",
+          "dSML4JaCaMo::OGoal#OGoalToGoal"
+        ],
+        "structuralBindings": [
+          "R028"
+        ],
+        "targetConcept": "MAssociation",
+        "baseClass": null,
+        "dependsOn": [],
+        "mode": "STRUCTURAL_REUSE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Identify the organisational-goal-to-agent-goal association for later verification.",
+        "assumptions": [
+          "No satisfaction or achievement semantics are inferred from the link."
+        ],
+        "informationLoss": "No structural loss; achievement/runtime semantics are outside scope.",
+        "externalInputRequired": false,
+        "baselineMutation": false
+      }
+    },
+    {
+      "id": "VP007",
+      "name": "NormPreservation",
+      "status": "LOCKED",
+      "source": "Norm, Nrole, NMission and their attributes",
+      "target": "Represent Norm as USE class/object plus associations only.",
+      "forbiddenTransformation": "Do not translate obligation/permission/prohibition labels into OCL constraints automatically.",
+      "purpose": "Keeps deontic/normative semantics distinct from OCL state/operation constraints.",
+      "metamodelContract": {
+        "sourceElements": [
+          "dSML4JaCaMo::Norm",
+          "dSML4JaCaMo::Norm#type",
+          "dSML4JaCaMo::Norm#timeConstraint",
+          "dSML4JaCaMo::Norm#Nrole",
+          "dSML4JaCaMo::Norm#NMission"
+        ],
+        "structuralBindings": [
+          "C006",
+          "A004",
+          "A005",
+          "R012",
+          "R013"
+        ],
+        "targetConcept": "MClass",
+        "baseClass": "Norm",
+        "dependsOn": [],
+        "mode": "STRUCTURAL_REUSE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Keep the normative representation as ordinary class/attributes/associations, without deontic-to-OCL translation.",
+        "assumptions": [
+          "Normative strings are preserved as strings; no semantic interpretation is performed."
+        ],
+        "informationLoss": "No structural loss; deontic interpretation is intentionally not translated.",
+        "externalInputRequired": false,
+        "baselineMutation": false
+      }
+    }
+  ],
+  "runtimeMaterialization": {
+    "initialSnapshot": [
+      {
+        "semanticElement": "mapped model instance",
+        "useAction": "!create <object> : <MappedClass>"
+      },
+      {
+        "semanticElement": "resolved scalar EAttribute value",
+        "useAction": "!set <object>.<attribute> := <OCL literal>"
+      },
+      {
+        "semanticElement": "resolved EReference link",
+        "useAction": "!insert (<sourceObject>, <targetObject>) into <MappedAssociation>"
+      }
+    ],
+    "operationReplay": {
+      "when": "runtime/event adapter provides a concrete projected operation invocation",
+      "enter": "!openter <artifactObject> <operation>(<args>)",
+      "exit": "!opexit",
+      "effectMaterialization": "Apply observed !set/!insert/!delete changes between enter and exit before postcondition evaluation."
+    },
+    "directApiAlternative": "A plugin may construct/update MModel and MSystemState directly instead of materializing .use/.cmd files, but it must obey the same mapping semantics."
+  },
+  "unresolvedSourceFeatures": [
+    {
+      "source": "dSML4JaCaMo::ObsProperty#initialValue",
+      "owner": "ObsProperty",
+      "visibleAttribute": "initialValue",
+      "evidence": "Figure 1 class box clips the datatype below the visible attribute name.",
+      "decision": "No EAttribute declared: EType and default cannot be established from Section III or Listing 1; do not guess.",
+      "status": "known-name-unresolved-type",
+      "mappingStatus": "NOT_MAPPED_NOT_AN_EATTRIBUTE"
+    },
+    {
+      "source": "dSML4JaCaMo::AbsOperation#paramName",
+      "owner": "AbsOperation",
+      "visibleAttribute": "paramName",
+      "evidence": "Figure 1 class box clips the datatype below the visible attribute name.",
+      "decision": "No EAttribute declared: EType and default cannot be established from Section III or Listing 1; do not guess.",
+      "status": "known-name-unresolved-type",
+      "mappingStatus": "NOT_MAPPED_NOT_AN_EATTRIBUTE"
+    },
+    {
+      "source": "dSML4JaCaMo::TriggeringEvent#addAndDel",
+      "owner": "TriggeringEvent",
+      "visibleAttribute": "addAndDel",
+      "evidence": "Figure 1 class box clips the datatype below the visible attribute name.",
+      "decision": "No EAttribute declared: EType and default cannot be established from Section III or Listing 1; do not guess.",
+      "status": "known-name-unresolved-type",
+      "mappingStatus": "NOT_MAPPED_NOT_AN_EATTRIBUTE"
+    }
+  ],
+  "reviewFlags": [
+    {
+      "source": "dSML4JaCaMo::Norm->super::Organisation",
+      "severity": "VERIFIED",
+      "mappingAction": "PRESERVE_AS_DECLARED",
+      "note": "Figure 1 inheritance confirmed by the existing forensic audit; preserve canonical Ecore unchanged."
+    },
+    {
+      "source": "dSML4JaCaMo::Group->super::Organisation",
+      "severity": "VERIFIED",
+      "mappingAction": "PRESERVE_AS_DECLARED",
+      "note": "Figure 1 inheritance confirmed by the existing forensic audit; preserve canonical Ecore unchanged."
+    },
+    {
+      "source": "dSML4JaCaMo::Role->super::Organisation",
+      "severity": "VERIFIED",
+      "mappingAction": "PRESERVE_AS_DECLARED",
+      "note": "Figure 1 inheritance confirmed by the existing forensic audit; preserve canonical Ecore unchanged."
+    },
+    {
+      "source": "dSML4JaCaMo::Scheme->super::Organisation",
+      "severity": "VERIFIED",
+      "mappingAction": "PRESERVE_AS_DECLARED",
+      "note": "Figure 1 inheritance confirmed by the existing forensic audit; preserve canonical Ecore unchanged."
+    },
+    {
+      "source": "dSML4JaCaMo::TriggeringEvent->super::Action",
+      "severity": "VERIFIED",
+      "mappingAction": "PRESERVE_AS_DECLARED",
+      "note": "Figure 1 inheritance confirmed by the existing forensic audit; preserve canonical Ecore unchanged."
+    }
+  ],
+  "statistics": {
+    "classMappings": 37,
+    "attributeMappings": 67,
+    "referenceMappings": 63,
+    "inheritanceMappings": 14,
+    "verificationProjectionRules": 7,
+    "unresolvedNamedButUndeclaredAttributes": 3
+  },
+  "$schema": "jacamo-use-mapping.schema.json",
+  "contract": {
+    "layer": "METAMODEL_MAPPING",
+    "version": "1.1.0",
+    "sourceIdentity": "dSML4JaCaMo::<EClass>[#<declaredFeature>] or dSML4JaCaMo::<Subclass>->super::<Superclass>",
+    "inScope": [
+      "EClass",
+      "EAttribute",
+      "EReference",
+      "eSuperType",
+      "conditional metamodel projection"
+    ],
+    "outOfScope": [
+      "concrete-model binding",
+      "runtime object identity",
+      "receiver resolution",
+      "live USE MSystemState",
+      "event subscription",
+      "JaCaMo parsing",
+      "OCL/deontic execution"
+    ],
+    "legacySections": {
+      "architecture.verificationInput": "LATER_LAYER_CONTEXT",
+      "architecture.outputs": "LATER_LAYER_CONTEXT",
+      "runtimeMaterialization": "LATER_LAYER_CONTEXT",
+      "referenceMappings.runtimeLinkCommand": "NON_EXECUTABLE_LEGACY_TEMPLATE"
+    },
+    "identityRule": "Feature identity always includes declaring owner; bare feature names are not lookup keys. Inherited features resolve through their declaring owner.",
+    "reverseRoleRule": "Retain unique source_<feature>; for colliding reverse roles use source_<declaringOwner>_<feature>. Legacy ambiguous aliases are not valid identifiers.",
+    "orderingRule": "Copy EReference ordered/unique metadata; ordered=true on many-valued forward USE association ends; inverse order is unspecified.",
+    "containmentRule": "Map source containment to USE composition at firstEnd; per-link inverse 0..1. No runtime global-container guarantee is asserted by a metamodel declaration.",
+    "valueRule": "Preserve EType/default provenance. USE scalar values can be undefined; applying source defaults and distinguishing unset from effective default belong to later materialization.",
+    "projectionRule": "VP001-003 are typed metamodel templates with explicit external-input preconditions, not concrete target declarations. VP004-007 reuse existing structural bindings without duplicating them.",
+    "compatibility": "1.1.0 adds schema/contract/projection anchors and order metadata. Eight previously ambiguous, invalid USE reverse roles are repaired; C/A/R/I IDs, source keys and forward names are unchanged. Consumers of legacy reverse strings must use the documented replacement names. Three source attribute names rejected by the USE lexer (from, Sequence) receive explicit target-only escapes; source keys remain unchanged."
+  }
+}
