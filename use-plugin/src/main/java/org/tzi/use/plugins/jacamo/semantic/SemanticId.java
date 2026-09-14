@@ -9,9 +9,15 @@ import java.util.stream.Collectors;
 public final class SemanticId {
     private static final char[] HEX = "0123456789ABCDEF".toCharArray();
     private final String value;
+    private final String projectId;
+    private final Dimension dimension;
+    private final String metamodelKind;
 
-    private SemanticId(String value) {
+    private SemanticId(String value, String projectId, Dimension dimension, String metamodelKind) {
         this.value = value;
+        this.projectId = projectId;
+        this.dimension = dimension;
+        this.metamodelKind = metamodelKind;
     }
 
     public static SemanticId of(String projectId, Dimension dimension, String metamodelKind,
@@ -22,7 +28,8 @@ public final class SemanticId {
         }
         String owner = ownerPath.stream().map(SemanticId::encode).collect(Collectors.joining("/"));
         return new SemanticId("jacamo:" + encode(projectId) + ":" + dimension.key() + ":"
-                + encode(metamodelKind) + ":" + owner + ":" + encode(localId));
+                + encode(metamodelKind) + ":" + owner + ":" + encode(localId),
+                projectId, dimension, metamodelKind);
     }
 
     private static String encode(String segment) {
@@ -46,6 +53,10 @@ public final class SemanticId {
     public String value() {
         return value;
     }
+
+    public String projectId() { return projectId; }
+    public Dimension dimension() { return dimension; }
+    public String metamodelKind() { return metamodelKind; }
 
     @Override public boolean equals(Object other) {
         return other instanceof SemanticId id && value.equals(id.value);
