@@ -155,13 +155,13 @@ Read:
 - [x] Add collision tests.
 
 ## P2.3 Semantic IR
-- [ ] Implement root `JaCaMoSemanticModel`.
-- [ ] Implement Agent-dimension nodes required by Ecore.
-- [ ] Implement Environment-dimension nodes required by Ecore.
-- [ ] Implement Organisation-dimension nodes required by Ecore.
-- [ ] Implement generic attributes/references representation where appropriate.
-- [ ] Preserve metamodel kind for every node.
-- [ ] Preserve source provenance.
+- [x] Implement root `JaCaMoSemanticModel`.
+- [x] Implement Agent-dimension nodes required by Ecore.
+- [x] Implement Environment-dimension nodes required by Ecore.
+- [x] Implement Organisation-dimension nodes required by Ecore.
+- [x] Implement generic attributes/references representation where appropriate.
+- [x] Preserve metamodel kind for every node.
+- [x] Preserve source provenance.
 
 ## P2.4 JCM entry loader
 - [ ] Accept `.jcm` path.
