@@ -3,6 +3,7 @@ package org.tzi.use.plugins.jacamo.extraction;
 import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.AssignmentTree;
 import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.LiteralTree;
 import com.sun.source.tree.MethodInvocationTree;
@@ -79,6 +80,19 @@ final class CartagoSourceExtractor {
             }
             SourcePositions positions = Trees.instance(task).getSourcePositions();
             new TreeScanner<Void, Void>() {
+                @Override public Void visitClass(ClassTree type, Void unused) {
+                    if (type.getSimpleName().toString().equals(simpleName((AttributeValue.Text)
+                            artifact.attributes.get("className")))) {
+                        boolean confirmed = type.getExtendsClause() != null
+                                && type.getExtendsClause().toString().endsWith("Artifact");
+                        artifact.attributes.put("artifactTypeConfirmed", new AttributeValue.Bool(confirmed));
+                        if (!confirmed) context.diagnostic("CARTAGO_TYPE_UNCONFIRMED", Severity.WARNING,
+                                Phase.PARSING, artifact.provenance.getFirst().span(), artifact.id.value(),
+                                "Java type is not statically confirmed as a CArtAgO Artifact subtype",
+                                type.getSimpleName().toString(), "Extend cartago.Artifact or provide explicit parser evidence");
+                    }
+                    return super.visitClass(type, unused);
+                }
                 @Override public Void visitMethod(MethodTree method, Void unused) {
                     extractMethod(context, artifact, path, unit, positions, method);
                     return null;
@@ -199,6 +213,11 @@ final class CartagoSourceExtractor {
             return value == null ? "undefined" : value.getClass().getSimpleName();
         }
         return "unresolved";
+    }
+
+    private String simpleName(AttributeValue.Text type) {
+        String name = type.value();
+        return name.substring(name.lastIndexOf('.') + 1);
     }
 
     private int line(CompilationUnitTree unit, SourcePositions positions, com.sun.source.tree.Tree tree) {

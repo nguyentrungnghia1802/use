@@ -1,6 +1,6 @@
 package auction;
 
-public class AuctionArtifact {
+public class AuctionArtifact extends Artifact {
     void init() { defineObsProperty("open", true); }
 
     @OPERATION(guard="canBid")
