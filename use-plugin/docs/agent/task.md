@@ -131,8 +131,8 @@ Read:
 - [x] UI calls facade only.
 
 Acceptance:
-- [ ] Plugin loads without patching unrelated USE behavior.
-- [ ] Clean build passes.
+- [x] Plugin loads without patching unrelated USE behavior.
+- [x] Clean build passes.
 
 ---
 
