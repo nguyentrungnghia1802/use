@@ -116,12 +116,12 @@ Read:
 - [x] Add unit test module skeleton.
 
 ## P1.3 Load smoke test
-- [ ] Package plugin JAR.
-- [ ] Install/copy into USE plugin path.
-- [ ] Start USE.
-- [ ] Verify plugin discovered.
-- [ ] Add one harmless command/menu action.
-- [ ] Add automated smoke test where feasible.
+- [x] Package plugin JAR.
+- [x] Install/copy into USE plugin path.
+- [x] Start USE.
+- [x] Verify plugin discovered.
+- [x] Add one harmless command/menu action.
+- [x] Add automated smoke test where feasible.
 
 ## P1.4 Service boundaries
 - [ ] Define plugin facade.

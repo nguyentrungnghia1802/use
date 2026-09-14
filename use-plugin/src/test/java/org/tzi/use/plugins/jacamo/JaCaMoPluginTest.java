@@ -5,9 +5,20 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 import org.junit.jupiter.api.Test;
+import org.tzi.use.runtime.MainPluginRuntime;
 import org.tzi.use.runtime.IPlugin;
+import org.tzi.use.runtime.impl.PluginRuntime;
 import org.tzi.use.runtime.model.PluginModel;
+import org.tzi.use.runtime.shell.impl.ShellExtensionPoint;
 import org.tzi.use.runtime.util.PluginParser;
 import org.xml.sax.InputSource;
 
@@ -23,5 +34,43 @@ class JaCaMoPluginTest {
             IPlugin plugin = (IPlugin) pluginClass.getDeclaredConstructor().newInstance();
             assertEquals(model.getName(), plugin.getName());
         }
+    }
+
+    @Test
+    void useDiscoversJarAndRegistersStatusCommand() throws Exception {
+        Path pluginDirectory = Path.of("target/plugin-smoke");
+        Files.createDirectories(pluginDirectory);
+        Path jar = pluginDirectory.resolve("jacamo.jar");
+        Manifest manifest = new Manifest();
+        manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+        manifest.getMainAttributes().put(Attributes.Name.MAIN_CLASS, JaCaMoPlugin.class.getName());
+        Path classes = Path.of("target/classes");
+        try (JarOutputStream output = new JarOutputStream(Files.newOutputStream(jar), manifest);
+             var entries = Files.walk(classes)) {
+            for (Path file : entries.filter(Files::isRegularFile).toList()) {
+                output.putNextEntry(new JarEntry(classes.relativize(file).toString().replace('\\', '/')));
+                Files.copy(file, output);
+                output.closeEntry();
+            }
+        }
+
+        MainPluginRuntime.run(pluginDirectory);
+        var descriptor = ((PluginRuntime) PluginRuntime.getInstance()).getPlugin("JaCaMo");
+        assertNotNull(descriptor, "USE must discover the plugin JAR");
+        assertEquals("JaCaMo", descriptor.getPluginClass().getName());
+        var commands = ((ShellExtensionPoint) ShellExtensionPoint.getInstance()).getRegisteredCmds();
+        var statusCommand = commands.stream().filter(command ->
+                "jacamo status".equals(command.getPluginCmdModel().getShellCmd())
+                && command.getCmdClass() != null).findFirst();
+        assertTrue(statusCommand.isPresent());
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        PrintStream original = System.out;
+        try {
+            System.setOut(new PrintStream(bytes));
+            statusCommand.get().getCmdClass().performCommand(null);
+        } finally {
+            System.setOut(original);
+        }
+        assertTrue(bytes.toString().contains("JaCaMo plugin ready"));
     }
 }
