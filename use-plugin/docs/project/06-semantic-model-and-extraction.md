@@ -94,6 +94,14 @@ Typed subclasses/records cho:
 - Norm
 - remaining metamodel concepts.
 
+Phase 2 IR hiện dùng `MetamodelKind` enum có đúng một giá trị cho mỗi EClass
+trong Ecore đóng băng; `SemanticElement` là record bất biến mang kind đó,
+attribute scalar có kiểu và reference giữ nguyên spelling dù chưa resolve.
+`JaCaMoSemanticModel` giữ MAS, source index, symbol index (nhiều ID khi tên
+trùng), diagnostics và các node theo thứ tự ID ổn định. Parser Phase 3 sẽ
+tạo các node này; discovery Phase 2 chỉ xây project graph, không giả lập
+semantic node cho source chưa parse.
+
 ---
 
 ## 4. Parser responsibilities

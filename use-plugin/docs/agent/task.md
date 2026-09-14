@@ -143,37 +143,37 @@ Read:
 - `docs/project/02-system-architecture.md`
 
 ## P2.1 Project model
-- [ ] Implement project root abstraction.
-- [ ] Implement source file abstraction.
-- [ ] Implement source hash.
-- [ ] Implement source span.
-- [ ] Implement diagnostic model.
+- [x] Implement project root abstraction.
+- [x] Implement source file abstraction.
+- [x] Implement source hash.
+- [x] Implement source span.
+- [x] Implement diagnostic model.
 
 ## P2.2 Semantic identity
-- [ ] Implement canonical semantic ID format.
-- [ ] Add deterministic ID tests.
-- [ ] Add collision tests.
+- [x] Implement canonical semantic ID format.
+- [x] Add deterministic ID tests.
+- [x] Add collision tests.
 
 ## P2.3 Semantic IR
-- [ ] Implement root `JaCaMoSemanticModel`.
-- [ ] Implement Agent-dimension nodes required by Ecore.
-- [ ] Implement Environment-dimension nodes required by Ecore.
-- [ ] Implement Organisation-dimension nodes required by Ecore.
-- [ ] Implement generic attributes/references representation where appropriate.
-- [ ] Preserve metamodel kind for every node.
-- [ ] Preserve source provenance.
+- [x] Implement root `JaCaMoSemanticModel`.
+- [x] Implement Agent-dimension nodes required by Ecore.
+- [x] Implement Environment-dimension nodes required by Ecore.
+- [x] Implement Organisation-dimension nodes required by Ecore.
+- [x] Implement generic attributes/references representation where appropriate.
+- [x] Preserve metamodel kind for every node.
+- [x] Preserve source provenance.
 
 ## P2.4 JCM entry loader
-- [ ] Accept `.jcm` path.
-- [ ] Validate project root.
-- [ ] Resolve include directives.
-- [ ] Resolve source paths.
-- [ ] Build project graph.
-- [ ] Detect cycles/path errors.
-- [ ] Add fixtures.
+- [x] Accept `.jcm` path.
+- [x] Validate project root.
+- [x] Resolve include directives.
+- [x] Resolve source paths.
+- [x] Build project graph.
+- [x] Detect cycles/path errors.
+- [x] Add fixtures.
 
 Acceptance:
-- [ ] Minimal `.jcm` project can be discovered without USE dependency.
+- [x] Minimal `.jcm` project can be discovered without USE dependency.
 
 ---
 

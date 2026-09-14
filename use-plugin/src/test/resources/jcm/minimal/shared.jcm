@@ -1,0 +1,3 @@
+mas shared {
+  agent bob : bob.asl
+}
