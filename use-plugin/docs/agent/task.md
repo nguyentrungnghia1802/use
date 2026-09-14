@@ -262,61 +262,61 @@ Read:
 - `docs/project/08-use-transformation.md`
 
 ## P4.1 Mapping loader
-- [ ] Load JSON.
-- [ ] Validate schema.
-- [ ] Validate Ecore fingerprint.
-- [ ] Validate source keys against canonical Ecore.
-- [ ] Return typed mapping model.
-- [ ] Add bad mapping tests.
+- [x] Load JSON.
+- [x] Validate schema.
+- [x] Validate Ecore fingerprint.
+- [x] Validate source keys against canonical Ecore.
+- [x] Return typed mapping model.
+- [x] Add bad mapping tests.
 
 ## P4.2 Transformation plan
-- [ ] Define target class spec.
-- [ ] Define target attribute spec.
-- [ ] Define association/composition spec.
-- [ ] Define inheritance spec.
-- [ ] Define operation projection spec.
-- [ ] Define projection diagnostic.
-- [ ] Generate deterministic plan from semantic model + mapping.
+- [x] Define target class spec.
+- [x] Define target attribute spec.
+- [x] Define association/composition spec.
+- [x] Define inheritance spec.
+- [x] Define operation projection spec.
+- [x] Define projection diagnostic.
+- [x] Generate deterministic plan from semantic model + mapping.
 
 ## P4.3 USE naming
-- [ ] Implement identifier sanitizer.
-- [ ] Preserve original name in trace.
-- [ ] Handle collisions deterministically.
-- [ ] Add reserved word tests.
+- [x] Implement identifier sanitizer.
+- [x] Preserve original name in trace.
+- [x] Handle collisions deterministically.
+- [x] Add reserved word tests.
 
 ## P4.4 Structural model
-- [ ] Generate mapped base classes.
-- [ ] Generate attributes.
-- [ ] Generate inheritance.
-- [ ] Generate associations/compositions.
-- [ ] Preserve multiplicities.
-- [ ] Validate no duplicate target names.
+- [x] Generate mapped base classes.
+- [x] Generate attributes.
+- [x] Generate inheritance.
+- [x] Generate associations/compositions.
+- [x] Preserve multiplicities.
+- [x] Validate no duplicate target names.
 
 ## P4.5 VP001 concrete Artifact type
-- [ ] Generate concrete Artifact subclass when resolved.
-- [ ] Stable naming from fully-qualified Java type.
-- [ ] Collision test.
+- [x] Generate concrete Artifact subclass when resolved.
+- [x] Stable naming from fully-qualified Java type.
+- [x] Collision test.
 
 ## P4.6 VP002 observable property
-- [ ] Project typed state only when name/type resolved.
-- [ ] Keep structural ObsProperty representation.
-- [ ] Diagnostic when projection unsupported.
+- [x] Project typed state only when name/type resolved.
+- [x] Keep structural ObsProperty representation.
+- [x] Diagnostic when projection unsupported.
 
 ## P4.7 VP003 operation
-- [ ] Project resolved operation signature.
-- [ ] Keep structural operation object representation.
-- [ ] Link trace between both.
-- [ ] Diagnostic when unresolved.
+- [x] Project resolved operation signature.
+- [x] Keep structural operation object representation.
+- [x] Link trace between both.
+- [x] Diagnostic when unresolved.
 
 ## P4.8 VP004–VP007
-- [ ] Preserve ExternalAction-operation cross-dimension.
-- [ ] Preserve ObsProperty-belief cross-dimension.
-- [ ] Preserve OGoal-Goal cross-dimension.
-- [ ] Preserve Norm structurally without auto OCL deontic compilation.
+- [x] Preserve ExternalAction-operation cross-dimension.
+- [x] Preserve ObsProperty-belief cross-dimension.
+- [x] Preserve OGoal-Goal cross-dimension.
+- [x] Preserve Norm structurally without auto OCL deontic compilation.
 
 Acceptance:
-- [ ] Deterministic transformation plan for Auction.
-- [ ] Generated USE model compiles.
+- [x] Deterministic transformation plan for Auction.
+- [x] Generated USE model compiles.
 
 ---
 
