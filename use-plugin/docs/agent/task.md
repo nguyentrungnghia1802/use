@@ -164,16 +164,16 @@ Read:
 - [x] Preserve source provenance.
 
 ## P2.4 JCM entry loader
-- [ ] Accept `.jcm` path.
-- [ ] Validate project root.
-- [ ] Resolve include directives.
-- [ ] Resolve source paths.
-- [ ] Build project graph.
-- [ ] Detect cycles/path errors.
-- [ ] Add fixtures.
+- [x] Accept `.jcm` path.
+- [x] Validate project root.
+- [x] Resolve include directives.
+- [x] Resolve source paths.
+- [x] Build project graph.
+- [x] Detect cycles/path errors.
+- [x] Add fixtures.
 
 Acceptance:
-- [ ] Minimal `.jcm` project can be discovered without USE dependency.
+- [x] Minimal `.jcm` project can be discovered without USE dependency.
 
 ---
 
