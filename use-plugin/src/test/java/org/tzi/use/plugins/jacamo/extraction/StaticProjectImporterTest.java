@@ -36,6 +36,9 @@ class StaticProjectImporterTest {
         assertEquals(new AttributeValue.Text("await(\"open\")"), operation.attributes().get("awaitExpression"));
         assertTrue(operation.references().stream().anyMatch(ref -> ref.feature().equals("guardedBy")
                 && ref.targetId() != null));
+        SemanticElement artifact = only(result, MetamodelKind.Artifact, "auction1");
+        assertTrue(artifact.references().stream().anyMatch(ref -> ref.feature().equals("obsproperty")
+                && ref.targetId() != null), "reference name must match frozen Artifact.obsproperty exactly");
         SemanticElement action = only(result, MetamodelKind.ExternalAction, "placeBid");
         assertTrue(action.references().stream().anyMatch(ref -> ref.feature().equals("operation")
                 && ref.targetId() != null && ref.targetId().equals(operation.id())));
