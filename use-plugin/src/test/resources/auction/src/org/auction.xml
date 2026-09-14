@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<organisational-specification id="auction-spec">
+  <structural-specification>
+    <role-def id="auctioneer" min="1" max="1"/>
+    <group-specification id="auction_group" min="1" max="1">
+      <roles><role id="auctioneer"/></roles>
+      <links><link from="auctioneer" to="auctioneer" type="communication" scope="intra-group" bi-dir="true"/></links>
+      <formation-constraints><cardinality object="auctioneer" min="1" max="1"/></formation-constraints>
+    </group-specification>
+  </structural-specification>
+  <functional-specification>
+    <scheme id="auction_scheme">
+      <goal id="sell_item" root="true"/>
+      <mission id="run_auction" min="1" max="1"><goal id="sell_item"/></mission>
+      <plan operator="sequence"><goal id="sell_item"/></plan>
+    </scheme>
+  </functional-specification>
+  <normative-specification>
+    <norm id="n1" role="auctioneer" mission="run_auction" type="obligation" time-constraint="before auction closes"/>
+  </normative-specification>
+</organisational-specification>
