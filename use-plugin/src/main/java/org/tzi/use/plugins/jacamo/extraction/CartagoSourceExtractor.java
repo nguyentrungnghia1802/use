@@ -46,6 +46,13 @@ final class CartagoSourceExtractor {
             else if (matches.size() > 1) context.diagnostic("CARTAGO_SOURCE_AMBIGUOUS", Severity.ERROR,
                     Phase.PARSING, artifact.provenance.getFirst().span(), artifact.id.value(),
                     "Artifact Java source is ambiguous", matches.toString(), "Configure a unique java-path");
+            else if (context.graph.sources().stream().anyMatch(source ->
+                    source.kind() == SourceKind.CLASS || source.kind() == SourceKind.JAR)) {
+                context.diagnostic("CARTAGO_BYTECODE_UNSUPPORTED", Severity.WARNING, Phase.PARSING,
+                        artifact.provenance.getFirst().span(), artifact.id.value(),
+                        "Artifact type resolves only to bytecode; static members remain unresolved",
+                        type.value(), "Provide matching Java source or keep runtime-dependent semantics unresolved");
+            }
         }
     }
 
