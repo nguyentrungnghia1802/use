@@ -144,3 +144,16 @@ Trace tests phải bao phủ:
 - duplicate operation names across artifacts;
 - multi-agent same source file;
 - multiple organisation instances.
+
+## 10. Phase 7 implementation contract
+
+- Trace V1 records class, attribute, association, object, and projected operation targets. The in-memory index
+  supports semantic ID, USE ID, and optional runtime key lookups; JSON persistence is validated by
+  `trace-v1.schema.json`.
+- Binding V1 stores canonical source/target IDs, kind, reason, provenance, source hash, and ACTIVE/STALE state.
+  A source hash mismatch marks the entry STALE before resolution; JSON is validated by `binding-v1.schema.json`.
+- Formal resolution order is exact canonical ID, explicit target ID, owner-qualified exact name, unique exact typed
+  scope, and finally one ACTIVE binding. A binding is considered only after two or more exact typed candidates exist;
+  it cannot create a relation when the source spelling has zero candidates.
+- Invalid target kinds and multiple active bindings fail explicitly. Similar spelling, case folding, edit distance,
+  nearest file, and global fuzzy selection are never formal resolution strategies.
