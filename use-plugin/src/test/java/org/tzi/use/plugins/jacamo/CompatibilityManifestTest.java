@@ -27,6 +27,8 @@ class CompatibilityManifestTest {
 
         assertEquals(directChild(rootPom.getDocumentElement(), "version"),
                 requirements.path("use").path("version").asText());
+        assertTrue(requirements.path("use").path("commit").asText().matches("[0-9a-f]{40}"),
+                "the pinned USE baseline must remain a full commit SHA");
         assertEquals(directChild((Element) rootPom.getElementsByTagName("properties").item(0),
                 "maven.compiler.target"), requirements.path("java").path("minimum").asText());
         assertEquals(dependencyVersion(pluginPom, "io.github.jason-lang", "jason-interpreter"),
@@ -35,7 +37,8 @@ class CompatibilityManifestTest {
                 requirements.path("jacamo").path("components").path("cartago").asText());
         assertEquals(dependencyVersion(pluginPom, "org.jacamo", "moise"),
                 requirements.path("jacamo").path("components").path("moise").asText());
-        assertFalse(requirements.path("jacamo").path("targetVersion").asText().isBlank());
+        assertTrue(requirements.path("jacamo").path("targetVersion").asText().matches("\\d+\\.\\d+\\.\\d+"),
+                "the JaCaMo target must remain a pinned semantic version");
 
         JsonNode evidence = manifest.path("evidence");
         assertTrue(evidence.isArray() && !evidence.isEmpty());

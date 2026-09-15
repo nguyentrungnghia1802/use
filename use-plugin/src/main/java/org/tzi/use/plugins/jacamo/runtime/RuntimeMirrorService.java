@@ -160,7 +160,7 @@ public final class RuntimeMirrorService implements RuntimeService {
             observer.eventReceived(event);
             synchronized (gate) {
                 if (!streamOpen[0]) {
-                    observer.eventRejected(event, new IllegalStateException("RUNTIME_EVENT_STREAM_CLOSED"));
+                    rejectReceived(event, new IllegalStateException("RUNTIME_EVENT_STREAM_CLOSED"));
                 } else if (ready[0] == null) buffered.add(event);
                 else submitReceived(ready[0], event);
             }
@@ -175,6 +175,7 @@ public final class RuntimeMirrorService implements RuntimeService {
             applySnapshot(snapshot);
         } catch (RuntimeException exception) {
             nextSubscription.close();
+            mutations.eventStreamClosed();
             observer.eventStreamClosed();
             throw exception;
         }
@@ -188,6 +189,7 @@ public final class RuntimeMirrorService implements RuntimeService {
                     throw new IllegalStateException(result.diagnostic());
                 }
             } finally {
+                mutations.eventCompleted(event);
                 observer.eventCompleted(event);
             }
         });
@@ -200,8 +202,7 @@ public final class RuntimeMirrorService implements RuntimeService {
                 if (event.sequence() > snapshot.sequence()) {
                     submitReceived(nextQueue, event);
                 } else {
-                    observer.eventRejected(event,
-                            new IllegalArgumentException("RUNTIME_EVENT_COVERED_BY_SNAPSHOT"));
+                    rejectReceived(event, new IllegalArgumentException("RUNTIME_EVENT_COVERED_BY_SNAPSHOT"));
                 }
             }
             buffered.clear();
@@ -214,7 +215,10 @@ public final class RuntimeMirrorService implements RuntimeService {
             if (subscription != null) { subscription.close(); subscription = null; }
             if (queue != null) { queue.stopGracefully(Duration.ofSeconds(5)); queue = null; }
         } finally {
-            if (hadStream) observer.eventStreamClosed();
+            if (hadStream) {
+                mutations.eventStreamClosed();
+                observer.eventStreamClosed();
+            }
         }
     }
 
@@ -222,9 +226,14 @@ public final class RuntimeMirrorService implements RuntimeService {
         try {
             target.submit(event);
         } catch (RuntimeException exception) {
-            observer.eventRejected(event, exception);
+            rejectReceived(event, exception);
             throw exception;
         }
+    }
+
+    private void rejectReceived(RuntimeEvent event, RuntimeException exception) {
+        mutations.eventRejected(event, exception);
+        observer.eventRejected(event, exception);
     }
 
     private void stopDriftMonitor() {

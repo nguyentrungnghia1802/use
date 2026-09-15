@@ -17,6 +17,7 @@ import org.tzi.use.plugins.jacamo.runtime.RuntimeDriftReport;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeEvent;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeEventKind;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeEventObserver;
+import org.tzi.use.plugins.jacamo.runtime.RuntimeQueueBackpressureException;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeSnapshot;
 import org.tzi.use.plugins.jacamo.trace.TraceIndex;
 import org.tzi.use.uml.mm.MOperation;
@@ -42,11 +43,13 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     private final VerificationService verification;
     private final ConstraintDependencyIndex dependencies;
     private final LongSupplier nanoTime;
-    private final Map<String, OperationCheck> activeOperations = new java.util.LinkedHashMap<>();
+    private final Object operationLifecycle = new Object();
+    private final ConcurrentMap<String, VerificationOperationState> operationCorrelations = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, Long> receivedNanos = new ConcurrentHashMap<>();
     private final List<RuntimeVerificationReport> reports = new ArrayList<>();
     private MirrorState connectionState = MirrorState.OFFLINE;
     private long snapshotVersion;
+    private long completedThroughSequence = -1;
     private String snapshotFingerprint = "";
 
     public RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace) {
@@ -78,15 +81,34 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
 
     @Override public void eventRejected(RuntimeEvent event, RuntimeException reason) {
         receivedNanos.remove(event.eventId());
+        if (!isOperationTerminal(event) || event.correlationId() == null
+                || !(reason instanceof RuntimeQueueBackpressureException backpressure)) return;
+        synchronized (operationLifecycle) {
+            operationCorrelations.compute(event.correlationId(), (correlation, current) ->
+                    current != null && current.sequence() > event.sequence() ? current
+                            : backpressure.acceptedThroughSequence() <= completedThroughSequence ? null
+                            : VerificationOperationState.rejected(event.sequence(), backpressure.acceptedThroughSequence()));
+        }
     }
 
     @Override public void eventCompleted(RuntimeEvent event) {
         receivedNanos.remove(event.eventId());
+        synchronized (operationLifecycle) {
+            completedThroughSequence = Math.max(completedThroughSequence, event.sequence());
+            operationCorrelations.entrySet().removeIf(entry -> entry.getValue().rejected()
+                    && entry.getValue().retireAfterSequence() <= completedThroughSequence);
+        }
     }
 
     @Override public synchronized void eventStreamClosed() {
         receivedNanos.clear();
-        activeOperations.clear();
+        resetOperationLifecycle();
+    }
+
+    int pendingOperationRejections() {
+        synchronized (operationLifecycle) {
+            return (int) operationCorrelations.values().stream().filter(VerificationOperationState::rejected).count();
+        }
     }
 
     @Override public synchronized void snapshotApplied(RuntimeSnapshot snapshot) {
@@ -109,7 +131,17 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
             OperationRequest request = new OperationRequest(objectName, operationName, arguments,
                     event.correlationId(), List.of(event.eventId()));
             OperationCheck check = verification.beginOperation(system, registry, trace, request);
-            if (activeOperations.putIfAbsent(event.correlationId(), check) != null)
+            boolean[] duplicate = { false };
+            synchronized (operationLifecycle) {
+                operationCorrelations.compute(event.correlationId(), (ignored, current) -> {
+                    if (current == null || current.rejected() && current.sequence() < event.sequence()) {
+                        return VerificationOperationState.active(event.sequence(), check);
+                    }
+                    if (!current.rejected()) duplicate[0] = true;
+                    return current;
+                });
+            }
+            if (duplicate[0])
                 throw new IllegalArgumentException("OPERATION_CORRELATION_ACTIVE: " + event.correlationId());
             append(event, enrich(check.preconditions(), event), nanoTime.getAsLong() - started,
                     List.of("RUNTIME_OPERATION_PRE_CAPTURED"));
@@ -166,7 +198,7 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     }
 
     private void complete(RuntimeEvent event, long started) {
-        OperationCheck check = activeOperations.remove(event.correlationId());
+        OperationCheck check = removeActiveOperation(event);
         if (check == null) {
             append(event, diagnostic("RUNTIME_OPERATION_EXIT_UNMATCHED", VerificationOutcome.ERROR,
                     "operation exit has no captured pre-state", event), nanoTime.getAsLong() - started,
@@ -178,12 +210,35 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     }
 
     private void abort(RuntimeEvent event, long started) {
-        OperationCheck check = activeOperations.remove(event.correlationId());
+        OperationCheck check = removeActiveOperation(event);
         String explanation = check == null ? "failed operation has no captured pre-state"
                 : "JaCaMo operation aborted/failed; postconditions were not evaluated";
         append(event, diagnostic("RUNTIME_OPERATION_ABORTED", check == null ? VerificationOutcome.ERROR
                 : VerificationOutcome.SKIPPED, explanation, event), nanoTime.getAsLong() - started,
                 List.of(check == null ? "RUNTIME_OPERATION_CORRELATION_MISSING" : "RUNTIME_OPERATION_ABORTED"));
+    }
+
+    private OperationCheck removeActiveOperation(RuntimeEvent event) {
+        OperationCheck[] matched = { null };
+        synchronized (operationLifecycle) {
+            operationCorrelations.compute(event.correlationId(), (ignored, current) -> {
+                if (current == null || current.sequence() > event.sequence()) return current;
+                if (!current.rejected()) matched[0] = current.check();
+                return null;
+            });
+        }
+        return matched[0];
+    }
+
+    private boolean isOperationTerminal(RuntimeEvent event) {
+        return event.kind() == RuntimeEventKind.OP_EXIT || event.kind() == RuntimeEventKind.OP_FAIL;
+    }
+
+    private void resetOperationLifecycle() {
+        synchronized (operationLifecycle) {
+            operationCorrelations.clear();
+            completedThroughSequence = -1;
+        }
     }
 
     private Set<String> changedDependencies(RuntimeEvent event) {
@@ -270,5 +325,17 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
 
     private long eventStart(RuntimeEvent event) {
         return receivedNanos.getOrDefault(event.eventId(), nanoTime.getAsLong());
+    }
+
+    private record VerificationOperationState(long sequence, OperationCheck check, long retireAfterSequence) {
+        private static VerificationOperationState active(long sequence, OperationCheck check) {
+            return new VerificationOperationState(sequence, check, -1);
+        }
+
+        private static VerificationOperationState rejected(long sequence, long retireAfterSequence) {
+            return new VerificationOperationState(sequence, null, retireAfterSequence);
+        }
+
+        private boolean rejected() { return check == null; }
     }
 }

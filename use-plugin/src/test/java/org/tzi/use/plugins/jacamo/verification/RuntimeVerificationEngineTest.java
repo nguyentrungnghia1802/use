@@ -33,6 +33,7 @@ import org.tzi.use.plugins.jacamo.ocl.OclGenerator;
 import org.tzi.use.plugins.jacamo.ocl.OclProfileLoader;
 import org.tzi.use.plugins.jacamo.runtime.DriftResyncPolicy;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeDriftReport;
+import org.tzi.use.plugins.jacamo.runtime.RuntimeQueueBackpressureException;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeEvent;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeEventCodec;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeEventKind;
@@ -274,6 +275,127 @@ class RuntimeVerificationEngineTest {
     }
 
     @Test
+    void rejectedOperationTerminalCannotBeResurrectedByBlockedPreStateCapture() throws Exception {
+        Fixture fixture = fixture(true);
+        BlockingVerificationService verification = new BlockingVerificationService(true);
+        RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
+                fixture.registry(), fixture.trace(), verification);
+        RuntimeEvent enter = event(1, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(), fixture.artifactSemanticId(),
+                Map.of("operation", "placeBid", "arguments", List.of("item1", 10)), "rejected-terminal");
+        RuntimeEvent rejectedExit = event(2, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                fixture.artifactSemanticId(), Map.of(), "rejected-terminal");
+        RuntimeEvent laterExit = event(3, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                fixture.artifactSemanticId(), Map.of(), "rejected-terminal");
+
+        verifier.eventReceived(enter);
+        ExecutorService thread = Executors.newSingleThreadExecutor();
+        Future<?> capture = thread.submit(() -> verifier.beforeMutation(enter));
+        assertTrue(verification.started.await(5, TimeUnit.SECONDS));
+        verifier.eventReceived(rejectedExit);
+        verifier.eventRejected(rejectedExit, new RuntimeQueueBackpressureException(1));
+        verification.release.countDown();
+        capture.get(5, TimeUnit.SECONDS);
+        verifier.eventCompleted(enter);
+        thread.shutdownNow();
+
+        verifier.eventReceived(laterExit);
+        verifier.beforeMutation(laterExit);
+        verifier.afterMutation(laterExit, org.tzi.use.plugins.jacamo.runtime.MutationResult.applied());
+        verifier.eventCompleted(laterExit);
+
+        assertEquals("RUNTIME_OPERATION_EXIT_UNMATCHED",
+                verifier.latestReport().verification().results().getFirst().constraintId(),
+                "a later exit must not complete pre-state abandoned by a rejected terminal event");
+    }
+
+    @Test
+    void lateClosedStreamTerminalCannotPoisonNextStreamPreState() {
+        Fixture fixture = fixture(true);
+        RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
+                fixture.registry(), fixture.trace(), new DefaultVerificationService());
+        RuntimeEvent lateExit = event(10, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                fixture.artifactSemanticId(), Map.of(), "next-stream");
+        RuntimeEvent nextEnter = event(1, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(),
+                fixture.artifactSemanticId(),
+                Map.of("operation", "placeBid", "arguments", List.of("item1", 10)), "next-stream");
+        RuntimeEvent nextExit = event(2, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                fixture.artifactSemanticId(), Map.of(), "next-stream");
+
+        verifier.eventStreamClosed();
+        verifier.eventReceived(lateExit);
+        verifier.eventRejected(lateExit, new IllegalStateException("RUNTIME_EVENT_STREAM_CLOSED"));
+        verifier.eventReceived(nextEnter);
+        verifier.beforeMutation(nextEnter);
+        verifier.afterMutation(nextEnter, org.tzi.use.plugins.jacamo.runtime.MutationResult.applied());
+        verifier.eventCompleted(nextEnter);
+        verifier.eventReceived(nextExit);
+        verifier.beforeMutation(nextExit);
+        verifier.afterMutation(nextExit, org.tzi.use.plugins.jacamo.runtime.MutationResult.applied());
+        verifier.eventCompleted(nextExit);
+
+        assertTrue(verifier.latestReport().verification().results().stream()
+                .anyMatch(result -> result.constraintId().equals("POST-AUCTION-OPEN")),
+                "late callbacks from a closed stream must not block the next stream's operation capture");
+    }
+
+    @Test
+    void backpressureTombstonesRetireAfterTheAcceptedWatermarkCompletes() {
+        Fixture fixture = fixture(false);
+        RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
+                fixture.registry(), fixture.trace(), new DefaultVerificationService());
+        verifier.eventCompleted(eventWithId("accepted-watermark-7", 7, fixture, true));
+        for (int index = 0; index < 100; index++) {
+            RuntimeEvent rejected = event(100 + index, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                    fixture.artifactSemanticId(), Map.of(), "rejected-" + index);
+            verifier.eventReceived(rejected);
+            verifier.eventRejected(rejected, new RuntimeQueueBackpressureException(7));
+        }
+        assertEquals(0, verifier.pendingOperationRejections(),
+                "a completion that wins the race must prevent later tombstone insertion");
+
+        for (int index = 0; index < 100; index++) {
+            RuntimeEvent rejected = event(300 + index, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                    fixture.artifactSemanticId(), Map.of(), "pending-" + index);
+            verifier.eventReceived(rejected);
+            verifier.eventRejected(rejected, new RuntimeQueueBackpressureException(8));
+        }
+        assertEquals(100, verifier.pendingOperationRejections());
+        verifier.eventCompleted(eventWithId("accepted-watermark-8", 8, fixture, true));
+
+        assertEquals(0, verifier.pendingOperationRejections(),
+                "unique rejected correlations must not accumulate for the life of the stream");
+    }
+
+    @Test
+    void completionBeforeRejectedTerminalStillInvalidatesTheOlderVerificationCorrelation() {
+        Fixture fixture = fixture(true);
+        RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
+                fixture.registry(), fixture.trace(), new DefaultVerificationService());
+        RuntimeEvent enter = event(1, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(), fixture.artifactSemanticId(),
+                Map.of("operation", "placeBid", "arguments", List.of("item1", 10)),
+                "completed-before-rejection");
+        RuntimeEvent rejectedExit = event(2, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                fixture.artifactSemanticId(), Map.of(), "completed-before-rejection");
+        RuntimeEvent laterExit = event(3, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                fixture.artifactSemanticId(), Map.of(), "completed-before-rejection");
+
+        verifier.eventReceived(enter);
+        verifier.beforeMutation(enter);
+        verifier.afterMutation(enter, org.tzi.use.plugins.jacamo.runtime.MutationResult.applied());
+        verifier.eventCompleted(enter);
+        verifier.eventReceived(rejectedExit);
+        verifier.eventRejected(rejectedExit, new RuntimeQueueBackpressureException(1));
+        verifier.eventReceived(laterExit);
+        verifier.beforeMutation(laterExit);
+        verifier.afterMutation(laterExit, org.tzi.use.plugins.jacamo.runtime.MutationResult.applied());
+        verifier.eventCompleted(laterExit);
+
+        assertEquals("RUNTIME_OPERATION_EXIT_UNMATCHED",
+                verifier.latestReport().verification().results().getFirst().constraintId(),
+                "the rejected terminal must abandon an older pre-state even after its watermark completed");
+    }
+
+    @Test
     void streamCloseDiscardsOperationCorrelationBeforeTheNextStream() {
         Fixture fixture = fixture(true);
         RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
@@ -427,6 +549,13 @@ class RuntimeVerificationEngineTest {
         private final VerificationService delegate = new DefaultVerificationService();
         private final CountDownLatch started = new CountDownLatch(1);
         private final CountDownLatch release = new CountDownLatch(1);
+        private final boolean blockBeginOperation;
+
+        private BlockingVerificationService() { this(false); }
+
+        private BlockingVerificationService(boolean blockBeginOperation) {
+            this.blockBeginOperation = blockBeginOperation;
+        }
 
         @Override public VerificationReport runFullVerification(org.tzi.use.uml.sys.MSystem system,
                                                                  ConstraintRegistry registry, TraceIndex trace) {
@@ -435,6 +564,17 @@ class RuntimeVerificationEngineTest {
 
         @Override public VerificationReport runTargetedVerification(org.tzi.use.uml.sys.MSystem system,
                 ConstraintRegistry registry, TraceIndex trace, Set<String> constraintIds, String runId) {
+            if (!blockBeginOperation) block();
+            return delegate.runTargetedVerification(system, registry, trace, constraintIds, runId);
+        }
+
+        @Override public OperationCheck beginOperation(org.tzi.use.uml.sys.MSystem system,
+                ConstraintRegistry registry, TraceIndex trace, OperationRequest request) {
+            if (blockBeginOperation) block();
+            return delegate.beginOperation(system, registry, trace, request);
+        }
+
+        private void block() {
             started.countDown();
             try {
                 if (!release.await(5, TimeUnit.SECONDS)) throw new IllegalStateException("test gate timed out");
@@ -442,12 +582,6 @@ class RuntimeVerificationEngineTest {
                 Thread.currentThread().interrupt();
                 throw new IllegalStateException(exception);
             }
-            return delegate.runTargetedVerification(system, registry, trace, constraintIds, runId);
-        }
-
-        @Override public OperationCheck beginOperation(org.tzi.use.uml.sys.MSystem system,
-                ConstraintRegistry registry, TraceIndex trace, OperationRequest request) {
-            return delegate.beginOperation(system, registry, trace, request);
         }
 
         @Override public VerificationReport completeOperation(OperationCheck check,
