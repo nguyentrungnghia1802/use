@@ -144,3 +144,18 @@ Export:
 - optional CSV for experiment analysis.
 
 Report must include versions/hashes để reproducibility.
+
+## 11. Phase 8 implementation contract
+
+- `ConstraintRegistry` joins every compiled USE invariant/pre/postcondition to translated, core, case, or user
+  provenance. It preserves dependencies, source spans, OCL text, and SHA-256 fingerprints of the generated model,
+  translated manifest, and loaded profiles.
+- `DefaultVerificationService` checks structure/multiplicity separately, then evaluates compiled invariants per
+  context object so OCL undefined remains `ERROR` instead of being collapsed into `FAIL`. Disabled constraints are
+  `SKIPPED`.
+- Operation checks snapshot the USE pre-state at enter, bind `self` and arguments, evaluate preconditions, and later
+  evaluate postconditions against the captured pre-state and supplied post-state. Correlation IDs and runtime event
+  IDs are retained in every operation result.
+- JSON and Markdown exports contain the four outcomes, context, explanation, OCL source, JaCaMo semantic trace,
+  correlation, event IDs, and reproducibility fingerprints. The service remains headless and does not require a
+  live JaCaMo runtime.
