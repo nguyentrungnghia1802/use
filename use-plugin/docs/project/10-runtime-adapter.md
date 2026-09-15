@@ -196,3 +196,20 @@ Treat imported project as untrusted:
 - prevent path traversal;
 - isolate reflection/class loading where possible;
 - do not run Java code merely to inspect static structure unless user explicitly runs project/runtime.
+
+## 11. Phase 9 foundation contract
+
+- `RuntimeConnector` exposes lifecycle, capability reporting, authoritative full snapshots, and event
+  subscriptions. `SyntheticRuntimeConnector` implements this contract from a schema-validated JSON replay file.
+- Runtime Event V1 carries a monotonic sequence, timestamp, dimension, runtime/source identities, typed payload,
+  and optional correlation ID. `runtime-event-v1.schema.json` rejects unknown structural fields, while kind-specific
+  validation enforces mutation payload requirements.
+- `RuntimeMutationEngine` is the single USE mutation boundary. It implements object create/destroy, attribute set,
+  link insert/delete, and operation enter/exit/failure correlation. An event without a runtime/semantic trace is
+  quarantined and cannot mutate state.
+- `OrderedRuntimeEventQueue` is single-consumer and bounded. Out-of-order or backpressured submissions fail
+  explicitly, metrics record depth/high-watermark/processed/rejected/failed, silent drops remain zero, and graceful
+  stop drains accepted work.
+- `RuntimeMirrorService` becomes `LIVE` only after a full snapshot applies successfully. Disconnect marks it
+  `STALE`; reconnect performs a full resync before returning to `LIVE` and records the authoritative snapshot
+  fingerprint.

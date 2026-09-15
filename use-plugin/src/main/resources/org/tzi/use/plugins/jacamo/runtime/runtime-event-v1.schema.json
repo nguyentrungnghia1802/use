@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["schemaVersion", "eventId", "timestamp", "sequence", "dimension", "kind", "runtimeSourceId", "payload"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "eventId": { "type": "string", "minLength": 1 },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "sequence": { "type": "integer", "minimum": 0 },
+    "dimension": { "enum": ["AGENT", "ENVIRONMENT", "ORGANISATION"] },
+    "kind": { "enum": ["CREATE_OBJECT", "DESTROY_OBJECT", "SET_ATTRIBUTE", "INSERT_LINK", "DELETE_LINK", "OP_ENTER", "OP_EXIT", "OP_FAIL"] },
+    "runtimeSourceId": { "type": "string", "minLength": 1 },
+    "semanticSourceId": { "type": ["string", "null"] },
+    "payload": { "type": "object" },
+    "correlationId": { "type": ["string", "null"] }
+  }
+}

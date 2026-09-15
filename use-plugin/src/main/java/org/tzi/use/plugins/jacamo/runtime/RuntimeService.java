@@ -2,8 +2,11 @@ package org.tzi.use.plugins.jacamo.runtime;
 
 import java.net.URI;
 
-/** Contract for future runtime connectivity; no implementation exists in Phase 1. */
-public interface RuntimeService {
+public interface RuntimeService extends AutoCloseable {
     void connect(URI endpoint);
     void disconnect();
+    void resync();
+    MirrorState state();
+    QueueMetrics metrics();
+    @Override void close();
 }

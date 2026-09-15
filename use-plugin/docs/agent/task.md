@@ -525,42 +525,42 @@ Read:
 - reference current USE `plugin_monitor` architecture/source
 
 ## P9.1 Connector abstraction
-- [ ] Define lifecycle.
-- [ ] Define capability reporting.
-- [ ] Define snapshot API.
-- [ ] Define event subscription API.
+- [x] Define lifecycle.
+- [x] Define capability reporting.
+- [x] Define snapshot API.
+- [x] Define event subscription API.
 
 ## P9.2 Normalized events
-- [ ] Implement event types.
-- [ ] sequence/timestamp.
-- [ ] correlation ID.
-- [ ] payload schema.
-- [ ] serialization test.
+- [x] Implement event types.
+- [x] sequence/timestamp.
+- [x] correlation ID.
+- [x] payload schema.
+- [x] serialization test.
 
 ## P9.3 Mutation engine
-- [ ] CREATE.
-- [ ] DESTROY.
-- [ ] SET.
-- [ ] INSERT.
-- [ ] DELETE.
-- [ ] OP_ENTER.
-- [ ] OP_EXIT.
-- [ ] OP_FAIL.
+- [x] CREATE.
+- [x] DESTROY.
+- [x] SET.
+- [x] INSERT.
+- [x] DELETE.
+- [x] OP_ENTER.
+- [x] OP_EXIT.
+- [x] OP_FAIL.
 
 ## P9.4 Event queue
-- [ ] Single correctness-first ordered queue.
-- [ ] Backpressure metrics.
-- [ ] No silent drop.
-- [ ] graceful stop.
+- [x] Single correctness-first ordered queue.
+- [x] Backpressure metrics.
+- [x] No silent drop.
+- [x] graceful stop.
 
 ## P9.5 Synthetic connector
-- [ ] Replay JSON event stream.
-- [ ] Full snapshot.
-- [ ] disconnect/reconnect.
-- [ ] drift/resync tests.
+- [x] Replay JSON event stream.
+- [x] Full snapshot.
+- [x] disconnect/reconnect.
+- [x] drift/resync tests.
 
 Acceptance:
-- [ ] Runtime mirror works end-to-end with synthetic events.
+- [x] Runtime mirror works end-to-end with synthetic events.
 
 ---
 
