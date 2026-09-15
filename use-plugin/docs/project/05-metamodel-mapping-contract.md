@@ -210,6 +210,14 @@ and blocks transformation. Restore the frozen file, or rerun the complete mappin
 audit before deliberately reconciling the manifest. This check does not authorize
 automatic reconciliation. Git preserves the exact Ecore and mapping JSON bytes.
 
+Each load reads mapping, schema, Ecore and freeze manifest once into private byte
+snapshots. Schema validation, source-identity parsing and fingerprint checks use
+those same snapshots; the manifest is parsed once for both fingerprint checks.
+Replacing a path during a load cannot authorize semantics from an earlier read
+using bytes from a later read. This is per-file snapshot consistency, not an
+atomic filesystem transaction across four files; inconsistent versions still
+fail the applicable schema, identity or fingerprint check.
+
 ---
 
 ## 8. Evolution policy

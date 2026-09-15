@@ -807,6 +807,12 @@ in-process component versions. Production hardening commits: `34768a6e`, `0f24e5
 These checkboxes record implementation/validation completion; Phase 13 branch
 merge and push are still pending and are not authorized by this task.
 
+Review fix (2026-09-16): mapping/Ecore/schema/manifest now use one private byte
+snapshot per load. Three deterministic snapshot regressions were RED for the
+expected inconsistent-read behavior, then GREEN (mapping tests 9/9; module
+111/111; full reactor `mvn verify` 254/254). The existing Phase 13 evidence section and task report contain the
+superseding results; earlier 108/251 counts above identify the pre-review revision.
+
 ---
 
 # Phase 14 — Auction Final E2E and Thesis Evidence

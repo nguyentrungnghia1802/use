@@ -69,6 +69,67 @@ class MappingTransformationTest {
     }
 
     @Test
+    void mappingDigestMustCoverTheSnapshotUsedForReturnedSemantics() throws Exception {
+        Path mapping = Path.of("Core/Mapping/jacamo-use-mapping-v1.json");
+        String canonical = Files.readString(mapping);
+        byte[] modified = canonical.replaceFirst("\"multiplicity\": \"0\\.\\.1\"",
+                "\"multiplicity\": \"*\"").getBytes(StandardCharsets.UTF_8);
+        assertNotEquals(canonical, new String(modified, StandardCharsets.UTF_8));
+        var reads = new java.util.HashMap<Path, Integer>();
+        MappingLoader loader = new MappingLoader(path -> {
+            path = path.normalize();
+            int count = reads.merge(path, 1, Integer::sum);
+            return path.equals(mapping) && count == 1 ? modified : Files.readAllBytes(path);
+        });
+
+        MappingException mismatch = assertThrows(MappingException.class, () -> loader.loadCanonical(Path.of(".")),
+                "hashing a later canonical snapshot must not authorize modified parsed semantics");
+        assertEquals("MAPPING_HASH_MISMATCH", mismatch.code());
+    }
+
+    @Test
+    void ecoreIdentityValidationUsesTheSameSnapshotAsItsDigest() throws Exception {
+        Path ecore = Path.of("Core/Metamodel/JaCaMo-Metamodel.ecore");
+        byte[] replaced = Files.readString(ecore).replace("name=\"MAS\"", "name=\"ReplacedMAS\"")
+                .getBytes(StandardCharsets.UTF_8);
+        assertFalse(java.util.Arrays.equals(Files.readAllBytes(ecore), replaced));
+        var reads = new java.util.HashMap<Path, Integer>();
+        MappingLoader loader = new MappingLoader(path -> {
+            path = path.normalize();
+            int count = reads.merge(path, 1, Integer::sum);
+            return path.equals(ecore) && count > 1 ? replaced : Files.readAllBytes(path);
+        });
+
+        MappingModel result = assertDoesNotThrow(() -> loader.loadCanonical(Path.of(".")),
+                "identity validation must parse the canonical Ecore snapshot whose hash was accepted");
+        assertEquals(37, result.classes().size());
+        assertEquals(1, reads.get(ecore));
+    }
+
+    @Test
+    void oneManifestSnapshotAuthorizesBothMappingAndEcore() throws Exception {
+        Path freeze = Path.of("Core/Mapping/freeze-manifest.json");
+        var json = new com.fasterxml.jackson.databind.ObjectMapper();
+        var first = json.readTree(Files.readAllBytes(freeze));
+        ((com.fasterxml.jackson.databind.node.ObjectNode) first.path("hashes"))
+                .put("mapping/jacamo-use-mapping-v1.json", "0".repeat(64));
+        byte[] firstBytes = json.writeValueAsBytes(first);
+        var reads = new java.util.HashMap<Path, Integer>();
+        MappingLoader loader = new MappingLoader(path -> {
+            path = path.normalize();
+            int count = reads.merge(path, 1, Integer::sum);
+            return path.equals(freeze) && count == 1 ? firstBytes : Files.readAllBytes(path);
+        });
+
+        MappingException mismatch = assertThrows(MappingException.class, () -> loader.loadCanonical(Path.of(".")),
+                "a later manifest must not replace the first snapshot's mapping authorization");
+        assertEquals("MAPPING_HASH_MISMATCH", mismatch.code());
+        assertEquals(4, reads.size());
+        assertTrue(reads.values().stream().allMatch(count -> count == 1),
+                "all four authoritative inputs must be read once per load");
+    }
+
+    @Test
     void auctionPlanIsDeterministicAndGeneratedUseCompiles() {
         var semantic = new StaticProjectImporter().importProject(Path.of("src/test/resources/auction/auction.jcm")).model();
         MappingModel mapping = new MappingLoader().loadCanonical(Path.of("."));

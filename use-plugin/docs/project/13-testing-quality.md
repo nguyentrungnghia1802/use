@@ -287,3 +287,24 @@ the installed JDK, Maven, Git and host configuration remain shared. The exact
 final evidence commit is subsequently rebuilt with `mvn clean verify` in that
 separate clone; its SHA and final results are recorded in the task execution
 report to avoid a self-referencing commit hash in this document.
+
+### Review fix: consistent frozen-input snapshots (2026-09-16)
+
+The results above identify the earlier `0f24e5c2`/`b7486661` revisions. Independent
+review then found that `MappingLoader` reopened mapping/Ecore/manifest paths for
+hashing and parsing. Each input is now read once into privately owned byte arrays;
+hashes and parsed semantics use the same bytes. The secure XML settings remain.
+
+Three deterministic tests in `MappingTransformationTest` inject successive byte
+snapshots through a package-private reader seam: modified mapping then canonical
+mapping; canonical Ecore then a renamed classifier; and a rejecting manifest then
+a permitting manifest. Before the fix, **9 tests / 3 expected failures** reproduced
+the mismatch. After the fix, **9/9** passed; module package passed **111/111**,
+including unchanged golden and real Auction integration. Independent mapping
+audit, **14 Python mutation methods**, and USE baseline/projection compilation plus
+seven negative compiler cases passed again.
+Full reactor `mvn verify` also passed **254/254** (111 plugin + 13 core + 130 GUI,
+including Failsafe), all five modules, in 2m10s.
+Logs are
+`use-plugin/target/phase13-task2-fix1-*`; the appended task report records the fix
+commit and final reactor/clean-checkout results. Earlier counts remain historical.
