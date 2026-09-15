@@ -2,6 +2,8 @@ package org.tzi.use.plugins.jacamo.runtime;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Coordinates lifecycle, full synchronization and the ordered delta path. */
 public final class RuntimeMirrorService implements RuntimeService {
@@ -30,8 +32,7 @@ public final class RuntimeMirrorService implements RuntimeService {
         try {
             connector.connect(endpoint);
             state = MirrorState.SYNCING;
-            applySnapshot(connector.fullSnapshot());
-            startEvents();
+            synchronizeSnapshot();
             state = MirrorState.LIVE;
         } catch (RuntimeException exception) {
             state = MirrorState.ERROR;
@@ -56,8 +57,7 @@ public final class RuntimeMirrorService implements RuntimeService {
         state = MirrorState.SYNCING;
         stopEvents();
         try {
-            applySnapshot(connector.fullSnapshot());
-            startEvents();
+            synchronizeSnapshot();
             state = MirrorState.LIVE;
         } catch (RuntimeException exception) {
             state = MirrorState.ERROR;
@@ -77,6 +77,14 @@ public final class RuntimeMirrorService implements RuntimeService {
     }
     public String lastSnapshotFingerprint() { return lastSnapshotFingerprint; }
 
+    /** Refreshes externally observable connector health without claiming stale data as live. */
+    public synchronized void refreshConnectionState() {
+        if (state == MirrorState.LIVE && connector.state() != ConnectorState.CONNECTED) {
+            stopEvents();
+            state = MirrorState.STALE;
+        }
+    }
+
     @Override public synchronized void close() {
         disconnect();
         state = MirrorState.OFFLINE;
@@ -87,16 +95,39 @@ public final class RuntimeMirrorService implements RuntimeService {
         lastSnapshotFingerprint = snapshot.fingerprint();
     }
 
-    private void startEvents() {
-        queue = new OrderedRuntimeEventQueue(queueCapacity, event -> {
+    private void synchronizeSnapshot() {
+        Object gate = new Object();
+        List<RuntimeEvent> buffered = new ArrayList<>();
+        OrderedRuntimeEventQueue[] ready = new OrderedRuntimeEventQueue[1];
+        RuntimeSubscription nextSubscription = connector.subscribe(event -> {
+            synchronized (gate) {
+                if (ready[0] == null) buffered.add(event);
+                else ready[0].submit(event);
+            }
+        });
+        RuntimeSnapshot snapshot;
+        try {
+            snapshot = connector.fullSnapshot();
+            applySnapshot(snapshot);
+        } catch (RuntimeException exception) {
+            nextSubscription.close();
+            throw exception;
+        }
+        OrderedRuntimeEventQueue nextQueue = new OrderedRuntimeEventQueue(queueCapacity, event -> {
             MutationResult result = mutations.apply(event);
             if (result.status() != MutationStatus.APPLIED) {
                 state = MirrorState.ERROR;
                 throw new IllegalStateException(result.diagnostic());
             }
         });
-        queue.start();
-        subscription = connector.subscribe(queue::submit);
+        nextQueue.start();
+        synchronized (gate) {
+            ready[0] = nextQueue;
+            buffered.stream().filter(event -> event.sequence() > snapshot.sequence()).forEach(nextQueue::submit);
+            buffered.clear();
+        }
+        queue = nextQueue;
+        subscription = nextSubscription;
     }
 
     private void stopEvents() {
