@@ -34,6 +34,7 @@ public interface JaCaMoFacade {
     default void disconnectRuntime() { throw new UnsupportedOperationException("RUNTIME_NOT_CONFIGURED"); }
     default void resyncRuntime() { throw new UnsupportedOperationException("RUNTIME_NOT_CONFIGURED"); }
     default RuntimeStatus runtimeStatus() { return RuntimeStatus.offline(); }
+    /** Returns the latest measured pipeline and runtime values; zero means that no measurement is available yet. */
     default PerformanceMetrics performanceMetrics() { return PerformanceMetrics.empty(); }
     default void persistBinding(Path destination, BindingRequest request, String selectedTargetId, String reason) {
         throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED");
@@ -56,6 +57,10 @@ public interface JaCaMoFacade {
             return new RuntimeStatus(MirrorState.OFFLINE, 0, 0, 0, 0, 0, 0, null, "", 0, 0, 0);
         }
     }
+    /**
+     * Durations are observed nanoseconds, not performance guarantees. Runtime latency spans connector receipt through
+     * its reported verification result; used memory is the current JVM heap sample in bytes.
+     */
     record PerformanceMetrics(long importNanos, long generationNanos, long fullCheckNanos,
                               long runtimeLastLatencyNanos, long usedMemoryBytes) {
         public static PerformanceMetrics empty() { return new PerformanceMetrics(0, 0, 0, 0, 0); }

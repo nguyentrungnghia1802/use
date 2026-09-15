@@ -318,7 +318,8 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             BasicFileAttributes attributes = Files.readAttributes(current, BasicFileAttributes.class,
                     LinkOption.NOFOLLOW_LINKS);
             if (attributes.isSymbolicLink() || attributes.isOther())
-                throw new IllegalArgumentException("REPORT_EXPORT_SYMLINK: " + current);
+                throw new IllegalArgumentException("REPORT_EXPORT_SYMLINK: " + current
+                        + "; choose a non-linked destination");
         }
     }
 

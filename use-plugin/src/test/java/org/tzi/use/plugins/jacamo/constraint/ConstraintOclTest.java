@@ -141,5 +141,6 @@ class ConstraintOclTest {
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
                 () -> new OclProfileLoader().loadCase(project, link.getFileName().resolve("outside.ocl")));
         assertTrue(error.getMessage().contains("OCL_PROFILE_PATH_ESCAPE"));
+        assertTrue(error.getMessage().contains("choose a profile within the allowed root"));
     }
 }

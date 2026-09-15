@@ -51,6 +51,7 @@ public final class RuntimeMirrorService implements RuntimeService {
             observer.snapshotApplied(lastSnapshot);
         } catch (RuntimeException exception) {
             transition(MirrorState.ERROR);
+            stopEvents();
             connector.disconnect();
             throw exception;
         }
@@ -154,50 +155,76 @@ public final class RuntimeMirrorService implements RuntimeService {
         Object gate = new Object();
         List<RuntimeEvent> buffered = new ArrayList<>();
         OrderedRuntimeEventQueue[] ready = new OrderedRuntimeEventQueue[1];
-        RuntimeSubscription nextSubscription = connector.subscribe(event -> {
+        boolean[] streamOpen = new boolean[] { true };
+        RuntimeSubscription connectorSubscription = connector.subscribe(event -> {
+            observer.eventReceived(event);
             synchronized (gate) {
-                if (ready[0] == null) buffered.add(event);
-                else {
-                    observer.eventReceived(event);
-                    ready[0].submit(event);
-                }
+                if (!streamOpen[0]) {
+                    observer.eventRejected(event, new IllegalStateException("RUNTIME_EVENT_STREAM_CLOSED"));
+                } else if (ready[0] == null) buffered.add(event);
+                else submitReceived(ready[0], event);
             }
         });
+        RuntimeSubscription nextSubscription = () -> {
+            synchronized (gate) { streamOpen[0] = false; }
+            connectorSubscription.close();
+        };
         RuntimeSnapshot snapshot;
         try {
             snapshot = connector.fullSnapshot();
             applySnapshot(snapshot);
         } catch (RuntimeException exception) {
             nextSubscription.close();
+            observer.eventStreamClosed();
             throw exception;
         }
         OrderedRuntimeEventQueue nextQueue = new OrderedRuntimeEventQueue(queueCapacity, event -> {
-            observer.beforeMutation(event);
-            MutationResult result = mutations.apply(event);
-            observer.afterMutation(event, result);
-            if (result.status() != MutationStatus.APPLIED) {
-                transition(MirrorState.ERROR);
-                throw new IllegalStateException(result.diagnostic());
+            try {
+                observer.beforeMutation(event);
+                MutationResult result = mutations.apply(event);
+                observer.afterMutation(event, result);
+                if (result.status() != MutationStatus.APPLIED) {
+                    transition(MirrorState.ERROR);
+                    throw new IllegalStateException(result.diagnostic());
+                }
+            } finally {
+                observer.eventCompleted(event);
             }
         });
         nextQueue.start();
+        queue = nextQueue;
+        subscription = nextSubscription;
         synchronized (gate) {
             ready[0] = nextQueue;
             for (RuntimeEvent event : buffered) {
                 if (event.sequence() > snapshot.sequence()) {
-                    observer.eventReceived(event);
-                    nextQueue.submit(event);
+                    submitReceived(nextQueue, event);
+                } else {
+                    observer.eventRejected(event,
+                            new IllegalArgumentException("RUNTIME_EVENT_COVERED_BY_SNAPSHOT"));
                 }
             }
             buffered.clear();
         }
-        queue = nextQueue;
-        subscription = nextSubscription;
     }
 
     private void stopEvents() {
-        if (subscription != null) { subscription.close(); subscription = null; }
-        if (queue != null) { queue.stopGracefully(Duration.ofSeconds(5)); queue = null; }
+        boolean hadStream = subscription != null || queue != null;
+        try {
+            if (subscription != null) { subscription.close(); subscription = null; }
+            if (queue != null) { queue.stopGracefully(Duration.ofSeconds(5)); queue = null; }
+        } finally {
+            if (hadStream) observer.eventStreamClosed();
+        }
+    }
+
+    private void submitReceived(OrderedRuntimeEventQueue target, RuntimeEvent event) {
+        try {
+            target.submit(event);
+        } catch (RuntimeException exception) {
+            observer.eventRejected(event, exception);
+            throw exception;
+        }
     }
 
     private void stopDriftMonitor() {

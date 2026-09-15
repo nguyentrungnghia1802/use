@@ -9,7 +9,15 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.tzi.use.plugins.jacamo.constraint.ConstraintExtractor;
@@ -165,6 +173,157 @@ class RuntimeVerificationEngineTest {
     }
 
     @Test
+    void connectorReceiptIsNotBlockedByAnOngoingVerification() throws Exception {
+        Fixture fixture = fixture(false);
+        BlockingVerificationService verification = new BlockingVerificationService();
+        RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
+                fixture.registry(), fixture.trace(), verification);
+        RuntimeEvent checking = event(1, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                fixture.artifactSemanticId(),
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", false), null);
+        RuntimeEvent arriving = event(2, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                fixture.artifactSemanticId(),
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", true), null);
+        ExecutorService threads = Executors.newFixedThreadPool(2);
+        try {
+            verifier.eventReceived(checking);
+            Future<?> ongoing = threads.submit(() -> verifier.afterMutation(checking,
+                    org.tzi.use.plugins.jacamo.runtime.MutationResult.applied()));
+            assertTrue(verification.started.await(5, TimeUnit.SECONDS), "verification did not reach controlled gate");
+
+            Future<?> receipt = threads.submit(() -> verifier.eventReceived(arriving));
+            boolean receivedWhileCheckWasBlocked;
+            try {
+                receipt.get(500, TimeUnit.MILLISECONDS);
+                receivedWhileCheckWasBlocked = true;
+            } catch (TimeoutException expected) {
+                receivedWhileCheckWasBlocked = false;
+            } finally {
+                verification.release.countDown();
+            }
+            ongoing.get(5, TimeUnit.SECONDS);
+            receipt.get(5, TimeUnit.SECONDS);
+
+            assertTrue(receivedWhileCheckWasBlocked,
+                    "connector receipt must not contend on the long-running verification monitor");
+        } finally {
+            verification.release.countDown();
+            threads.shutdownNow();
+        }
+    }
+
+    @Test
+    void operationReportsUseTheSameReceiptToResultLatencyContract() {
+        Fixture fixture = fixture(true);
+        AtomicLong clock = new AtomicLong(1_000);
+        RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
+                fixture.registry(), fixture.trace(), new DefaultVerificationService(), clock::get);
+        RuntimeMutationEngine mutations = new RuntimeMutationEngine(fixture.direct().system(), fixture.trace());
+        RuntimeEvent enter = event(1, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(), fixture.artifactSemanticId(),
+                Map.of("operation", "placeBid", "arguments", List.of("item1", 10)), "latency-op");
+
+        verifier.eventReceived(enter);
+        clock.set(1_060);
+        verifier.beforeMutation(enter);
+        assertEquals(60, verifier.latestReport().latencyNanos());
+        verifier.afterMutation(enter, mutations.apply(enter));
+
+        RuntimeEvent failure = event(2, RuntimeEventKind.OP_FAIL, fixture.runtimeKey(), fixture.artifactSemanticId(),
+                Map.of("operation", "placeBid", "error", "synthetic"), "latency-op");
+        clock.set(2_000);
+        verifier.eventReceived(failure);
+        clock.set(2_080);
+        verifier.beforeMutation(failure);
+        verifier.afterMutation(failure, mutations.apply(failure));
+
+        assertEquals(80, verifier.latestReport().latencyNanos());
+    }
+
+    @Test
+    void rejectedAndClosedEventsCannotLeaveReusableReceiptTimestamps() {
+        Fixture fixture = fixture(false);
+        AtomicLong clock = new AtomicLong(100);
+        RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
+                fixture.registry(), fixture.trace(), new DefaultVerificationService(), clock::get);
+        RuntimeMutationEngine mutations = new RuntimeMutationEngine(fixture.direct().system(), fixture.trace());
+        RuntimeEvent rejected = eventWithId("reused-after-rejection", 1, fixture, false);
+
+        verifier.eventReceived(rejected);
+        verifier.eventRejected(rejected, new IllegalArgumentException("RUNTIME_QUEUE_OUT_OF_ORDER"));
+        clock.set(1_000);
+        RuntimeEvent accepted = eventWithId("reused-after-rejection", 2, fixture, false);
+        verifier.eventReceived(accepted);
+        clock.set(1_060);
+        verifier.beforeMutation(accepted);
+        verifier.afterMutation(accepted, mutations.apply(accepted));
+        verifier.eventCompleted(accepted);
+        assertEquals(60, verifier.latestReport().latencyNanos());
+
+        clock.set(2_000);
+        RuntimeEvent abandoned = eventWithId("reused-after-close", 3, fixture, true);
+        verifier.eventReceived(abandoned);
+        verifier.eventStreamClosed();
+        clock.set(3_000);
+        RuntimeEvent afterReconnect = eventWithId("reused-after-close", 4, fixture, true);
+        verifier.eventReceived(afterReconnect);
+        clock.set(3_040);
+        verifier.beforeMutation(afterReconnect);
+        verifier.afterMutation(afterReconnect, mutations.apply(afterReconnect));
+        verifier.eventCompleted(afterReconnect);
+        assertEquals(40, verifier.latestReport().latencyNanos());
+    }
+
+    @Test
+    void streamCloseDiscardsOperationCorrelationBeforeTheNextStream() {
+        Fixture fixture = fixture(true);
+        RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
+                fixture.registry(), fixture.trace(), new DefaultVerificationService());
+        RuntimeMutationEngine mutations = new RuntimeMutationEngine(fixture.direct().system(), fixture.trace());
+        RuntimeEvent enter = event(1, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(), fixture.artifactSemanticId(),
+                Map.of("operation", "placeBid", "arguments", List.of("item1", 10)), "closed-operation");
+        RuntimeEvent exit = event(2, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(), fixture.artifactSemanticId(),
+                Map.of(), "closed-operation");
+
+        verifier.eventReceived(enter);
+        verifier.beforeMutation(enter);
+        verifier.afterMutation(enter, mutations.apply(enter));
+        verifier.eventCompleted(enter);
+        verifier.eventStreamClosed();
+
+        verifier.eventReceived(exit);
+        verifier.beforeMutation(exit);
+        verifier.afterMutation(exit, mutations.apply(exit));
+        verifier.eventCompleted(exit);
+
+        assertEquals("RUNTIME_OPERATION_EXIT_UNMATCHED",
+                verifier.latestReport().verification().results().getFirst().constraintId(),
+                "an exit after reconnect must not complete an operation from a closed stream");
+    }
+
+    @Test
+    void bufferedEventLatencyStartsAtOriginalConnectorReceipt() {
+        Fixture fixture = fixture(false);
+        AtomicLong clock = new AtomicLong(100);
+        RuntimeEvent buffered = event(1, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                fixture.artifactSemanticId(),
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", false), null);
+        BufferedTimingConnector connector = new BufferedTimingConnector(buffered, clock);
+        RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
+                fixture.registry(), fixture.trace(), new DefaultVerificationService(), clock::get);
+        RuntimeMirrorService mirror = new RuntimeMirrorService(connector,
+                new RuntimeMutationEngine(fixture.direct().system(), fixture.trace()), 8, verifier);
+
+        mirror.connect(URI.create("synthetic://buffered-timing"));
+        mirror.awaitIdle(Duration.ofSeconds(5));
+
+        RuntimeVerificationReport report = verifier.reports().stream()
+                .filter(value -> value.event() != null && value.event().eventId().equals(buffered.eventId()))
+                .findFirst().orElseThrow();
+        assertEquals(100, report.latencyNanos());
+        mirror.close();
+    }
+
+    @Test
     void authoritativeDriftIsDiagnosedAndPeriodicAutoResyncRepairsMirror() throws Exception {
         Fixture fixture = fixture(false);
         RuntimeEvent open = event(1, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(), fixture.artifactSemanticId(),
@@ -241,6 +400,12 @@ class RuntimeVerificationEngineTest {
                 Dimension.ENVIRONMENT, kind, runtimeKey, semanticId, payload, correlation);
     }
 
+    private RuntimeEvent eventWithId(String eventId, long sequence, Fixture fixture, boolean open) {
+        return RuntimeEvent.create(eventId, Instant.ofEpochSecond(sequence), sequence, Dimension.ENVIRONMENT,
+                RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(), fixture.artifactSemanticId(),
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", open), null);
+    }
+
     private boolean open(Fixture fixture) {
         var object = fixture.direct().system().state().objectByName(
                 fixture.artifactTrace().targetUseId().substring("object:".length()));
@@ -257,4 +422,74 @@ class RuntimeVerificationEngineTest {
 
     private record Fixture(DirectUseBackend.Result direct, TraceIndex trace, ConstraintRegistry registry,
                            TraceRecord artifactTrace, String runtimeKey, String artifactSemanticId) { }
+
+    private static final class BlockingVerificationService implements VerificationService {
+        private final VerificationService delegate = new DefaultVerificationService();
+        private final CountDownLatch started = new CountDownLatch(1);
+        private final CountDownLatch release = new CountDownLatch(1);
+
+        @Override public VerificationReport runFullVerification(org.tzi.use.uml.sys.MSystem system,
+                                                                 ConstraintRegistry registry, TraceIndex trace) {
+            return delegate.runFullVerification(system, registry, trace);
+        }
+
+        @Override public VerificationReport runTargetedVerification(org.tzi.use.uml.sys.MSystem system,
+                ConstraintRegistry registry, TraceIndex trace, Set<String> constraintIds, String runId) {
+            started.countDown();
+            try {
+                if (!release.await(5, TimeUnit.SECONDS)) throw new IllegalStateException("test gate timed out");
+            } catch (InterruptedException exception) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException(exception);
+            }
+            return delegate.runTargetedVerification(system, registry, trace, constraintIds, runId);
+        }
+
+        @Override public OperationCheck beginOperation(org.tzi.use.uml.sys.MSystem system,
+                ConstraintRegistry registry, TraceIndex trace, OperationRequest request) {
+            return delegate.beginOperation(system, registry, trace, request);
+        }
+
+        @Override public VerificationReport completeOperation(OperationCheck check,
+                org.tzi.use.uml.sys.MSystemState postState, org.tzi.use.uml.ocl.value.Value result,
+                List<String> exitRuntimeEventIds) {
+            return delegate.completeOperation(check, postState, result, exitRuntimeEventIds);
+        }
+    }
+
+    private static final class BufferedTimingConnector implements org.tzi.use.plugins.jacamo.runtime.RuntimeConnector {
+        private final RuntimeEvent buffered;
+        private final AtomicLong clock;
+        private Consumer<RuntimeEvent> listener;
+        private org.tzi.use.plugins.jacamo.runtime.ConnectorState state =
+                org.tzi.use.plugins.jacamo.runtime.ConnectorState.DISCONNECTED;
+
+        private BufferedTimingConnector(RuntimeEvent buffered, AtomicLong clock) {
+            this.buffered = buffered;
+            this.clock = clock;
+        }
+
+        @Override public String connectorId() { return "buffered-timing"; }
+        @Override public Set<org.tzi.use.plugins.jacamo.runtime.ConnectorCapability> capabilities() {
+            return Set.of(org.tzi.use.plugins.jacamo.runtime.ConnectorCapability.FULL_SNAPSHOT,
+                    org.tzi.use.plugins.jacamo.runtime.ConnectorCapability.EVENT_SUBSCRIPTION);
+        }
+        @Override public org.tzi.use.plugins.jacamo.runtime.ConnectorState state() { return state; }
+        @Override public void connect(URI endpoint) {
+            state = org.tzi.use.plugins.jacamo.runtime.ConnectorState.CONNECTED;
+        }
+        @Override public RuntimeSnapshot fullSnapshot() {
+            listener.accept(buffered);
+            clock.set(200);
+            return new RuntimeSnapshot("buffered-base", Instant.EPOCH, 0, List.of(), "buffered-base");
+        }
+        @Override public org.tzi.use.plugins.jacamo.runtime.RuntimeSubscription subscribe(
+                Consumer<RuntimeEvent> listener) {
+            this.listener = listener;
+            return () -> this.listener = null;
+        }
+        @Override public void disconnect() {
+            state = org.tzi.use.plugins.jacamo.runtime.ConnectorState.DISCONNECTED;
+        }
+    }
 }

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.LongSupplier;
 import org.tzi.use.plugins.jacamo.runtime.MirrorState;
 import org.tzi.use.plugins.jacamo.runtime.MutationResult;
@@ -41,7 +43,7 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     private final ConstraintDependencyIndex dependencies;
     private final LongSupplier nanoTime;
     private final Map<String, OperationCheck> activeOperations = new java.util.LinkedHashMap<>();
-    private final Map<String, Long> stateChangeStartedNanos = new java.util.LinkedHashMap<>();
+    private final ConcurrentMap<String, Long> receivedNanos = new ConcurrentHashMap<>();
     private final List<RuntimeVerificationReport> reports = new ArrayList<>();
     private MirrorState connectionState = MirrorState.OFFLINE;
     private long snapshotVersion;
@@ -70,10 +72,21 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
 
     @Override public synchronized void stateChanged(MirrorState state) { connectionState = state; }
 
-    @Override public synchronized void eventReceived(RuntimeEvent event) {
-        if (STATE_CHANGES.contains(event.kind())) {
-            stateChangeStartedNanos.put(event.eventId(), nanoTime.getAsLong());
-        }
+    @Override public void eventReceived(RuntimeEvent event) {
+        receivedNanos.putIfAbsent(event.eventId(), nanoTime.getAsLong());
+    }
+
+    @Override public void eventRejected(RuntimeEvent event, RuntimeException reason) {
+        receivedNanos.remove(event.eventId());
+    }
+
+    @Override public void eventCompleted(RuntimeEvent event) {
+        receivedNanos.remove(event.eventId());
+    }
+
+    @Override public synchronized void eventStreamClosed() {
+        receivedNanos.clear();
+        activeOperations.clear();
     }
 
     @Override public synchronized void snapshotApplied(RuntimeSnapshot snapshot) {
@@ -86,7 +99,7 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
 
     @Override public synchronized void beforeMutation(RuntimeEvent event) {
         if (event.kind() != RuntimeEventKind.OP_ENTER) return;
-        long started = nanoTime.getAsLong();
+        long started = eventStart(event);
         try {
             String objectName = objectName(event);
             String operationName = text(event.payload(), "operation");
@@ -108,8 +121,7 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     }
 
     @Override public synchronized void afterMutation(RuntimeEvent event, MutationResult mutation) {
-        long started = stateChangeStartedNanos.getOrDefault(event.eventId(), nanoTime.getAsLong());
-        stateChangeStartedNanos.remove(event.eventId());
+        long started = eventStart(event);
         if (mutation.status() != MutationStatus.APPLIED) {
             append(event, diagnostic("RUNTIME_MUTATION", VerificationOutcome.ERROR, mutation.diagnostic(), event),
                     nanoTime.getAsLong() - started, List.of("RUNTIME_MUTATION_NOT_APPLIED"));
@@ -254,5 +266,9 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
         LinkedHashSet<String> result = new LinkedHashSet<>(existing);
         result.add(eventId);
         return List.copyOf(result);
+    }
+
+    private long eventStart(RuntimeEvent event) {
+        return receivedNanos.getOrDefault(event.eventId(), nanoTime.getAsLong());
     }
 }

@@ -163,6 +163,7 @@ class DefaultJaCaMoFacadeTest {
                     () -> facade.exportVerificationReport(linked.resolve("report.json")));
 
             assertTrue(error.getMessage().contains("REPORT_EXPORT_SYMLINK"));
+            assertTrue(error.getMessage().contains("choose a non-linked destination"));
             assertFalse(Files.exists(outside.resolve("report.json")));
         }
     }

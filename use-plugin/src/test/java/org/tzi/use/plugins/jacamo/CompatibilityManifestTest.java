@@ -2,11 +2,14 @@ package org.tzi.use.plugins.jacamo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.Set;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -16,34 +19,38 @@ import org.w3c.dom.NodeList;
 
 class CompatibilityManifestTest {
     @Test
-    void manifestMatchesBuildPinsRuntimeDependenciesAndVerifiedHost() throws Exception {
+    void manifestSeparatesBuildRequirementsFromAppendOnlyHostEvidence() throws Exception {
         JsonNode manifest = new ObjectMapper().readTree(Files.readString(Path.of("compatibility.json")));
         Document rootPom = parse(Path.of("../pom.xml"));
         Document pluginPom = parse(Path.of("pom.xml"));
+        JsonNode requirements = manifest.path("requirements");
 
         assertEquals(directChild(rootPom.getDocumentElement(), "version"),
-                manifest.path("use").path("version").asText());
+                requirements.path("use").path("version").asText());
         assertEquals(directChild((Element) rootPom.getElementsByTagName("properties").item(0),
-                "maven.compiler.target"), manifest.path("java").path("minimum").asText());
-        assertEquals(System.getProperty("java.version"), manifest.path("java").path("version").asText());
+                "maven.compiler.target"), requirements.path("java").path("minimum").asText());
         assertEquals(dependencyVersion(pluginPom, "io.github.jason-lang", "jason-interpreter"),
-                manifest.path("jacamo").path("components").path("jason").asText());
+                requirements.path("jacamo").path("components").path("jason").asText());
         assertEquals(dependencyVersion(pluginPom, "org.jacamo", "cartago"),
-                manifest.path("jacamo").path("components").path("cartago").asText());
+                requirements.path("jacamo").path("components").path("cartago").asText());
         assertEquals(dependencyVersion(pluginPom, "org.jacamo", "moise"),
-                manifest.path("jacamo").path("components").path("moise").asText());
-        assertEquals("verified-in-process", manifest.path("jacamo").path("integrationStatus").asText());
-        assertFalse(manifest.path("jacamo").path("targetVersion").asText().isBlank());
+                requirements.path("jacamo").path("components").path("moise").asText());
+        assertFalse(requirements.path("jacamo").path("targetVersion").asText().isBlank());
 
-        JsonNode host = manifest.path("verification").path("host");
-        assertEquals(System.getProperty("os.name"), host.path("osName").asText());
-        assertEquals(System.getProperty("os.version"), host.path("osVersion").asText());
-        assertEquals(System.getProperty("os.arch"), host.path("architecture").asText());
-        assertEquals(System.getProperty("java.version"), host.path("mavenJavaVersion").asText());
-        assertEquals(System.getProperty("java.vendor"), host.path("mavenJavaVendor").asText());
-        assertEquals(manifest.path("maven").path("version").asText(), host.path("mavenVersion").asText());
-        assertEquals("not-run", manifest.path("verification").path("cleanEnvironmentStatus").asText());
-        assertFalse(manifest.path("verification").path("runtimeScope").asText().isBlank());
+        JsonNode evidence = manifest.path("evidence");
+        assertTrue(evidence.isArray() && !evidence.isEmpty());
+        for (JsonNode record : evidence) {
+            LocalDate.parse(record.path("date").asText());
+            JsonNode host = record.path("host");
+            assertFalse(host.path("osName").asText().isBlank());
+            assertFalse(host.path("osVersion").asText().isBlank());
+            assertFalse(host.path("architecture").asText().isBlank());
+            assertFalse(host.path("mavenVersion").asText().isBlank());
+            assertFalse(host.path("mavenJavaVersion").asText().isBlank());
+            assertFalse(record.path("runtimeScope").asText().isBlank());
+            assertTrue(Set.of("not-run", "passed", "failed")
+                    .contains(record.path("cleanEnvironment").path("status").asText()));
+        }
     }
 
     private Document parse(Path path) throws Exception {

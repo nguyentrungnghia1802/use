@@ -206,6 +206,52 @@ class RuntimeFoundationTest {
         mirror.close();
     }
 
+    @Test
+    void mirrorReportsOrderingAndShutdownRejectionsAndClosesTimingLifecycle() {
+        Fixture fixture = fixture();
+        LateEventConnector connector = new LateEventConnector();
+        TrackingObserver observer = new TrackingObserver();
+        RuntimeMirrorService mirror = new RuntimeMirrorService(connector, fixture.engine(), 8, observer);
+        RuntimeEvent accepted = event(2, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(),
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", false), null);
+        RuntimeEvent outOfOrder = event(1, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(),
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", true), null);
+        RuntimeEvent afterShutdown = event(3, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(),
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", true), null);
+
+        mirror.connect(URI.create("synthetic://late-events"));
+        connector.emit(accepted);
+        mirror.awaitIdle(Duration.ofSeconds(5));
+        assertThrows(IllegalArgumentException.class, () -> connector.emit(outOfOrder));
+        mirror.disconnect();
+        connector.emit(afterShutdown);
+
+        assertEquals(List.of(outOfOrder.eventId(), afterShutdown.eventId()), observer.rejected);
+        assertEquals(1, observer.streamClosed);
+        mirror.close();
+    }
+
+    @Test
+    void mirrorRejectsCallbackDeliveredAfterFailedInitialSynchronization() {
+        Fixture fixture = fixture();
+        LateEventConnector connector = new LateEventConnector(true);
+        TrackingObserver observer = new TrackingObserver();
+        RuntimeMirrorService mirror = new RuntimeMirrorService(connector, fixture.engine(), 8, observer);
+        RuntimeEvent late = event(1, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(),
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", false), null);
+
+        assertThrows(IllegalStateException.class, () -> mirror.connect(URI.create("synthetic://failed-sync")));
+        connector.emit(late);
+
+        assertEquals(List.of(late.eventId()), observer.rejected,
+                "a callback after its stream closes must not retain observer timing state");
+        assertEquals(1, observer.streamClosed);
+    }
+
     private RuntimeEvent event(long sequence, RuntimeEventKind kind, String runtimeSourceId,
                                String semanticSourceId, Map<String, Object> payload, String correlationId) {
         return RuntimeEvent.create("event-" + sequence + "-" + kind, Instant.ofEpochSecond(sequence), sequence,
@@ -270,5 +316,42 @@ class RuntimeFoundationTest {
         }
         @Override public void disconnect() { state = ConnectorState.DISCONNECTED; }
         void dropConnection() { state = ConnectorState.DISCONNECTED; }
+    }
+
+    private static final class TrackingObserver implements RuntimeEventObserver {
+        private final List<String> rejected = new ArrayList<>();
+        private int streamClosed;
+
+        @Override public void eventRejected(RuntimeEvent event, RuntimeException reason) {
+            rejected.add(event.eventId());
+        }
+        @Override public void eventStreamClosed() { streamClosed++; }
+    }
+
+    private static final class LateEventConnector implements RuntimeConnector {
+        private Consumer<RuntimeEvent> listener;
+        private ConnectorState state = ConnectorState.DISCONNECTED;
+        private final boolean failSnapshot;
+
+        private LateEventConnector() { this(false); }
+
+        private LateEventConnector(boolean failSnapshot) { this.failSnapshot = failSnapshot; }
+
+        @Override public String connectorId() { return "late-events"; }
+        @Override public Set<ConnectorCapability> capabilities() {
+            return Set.of(ConnectorCapability.FULL_SNAPSHOT, ConnectorCapability.EVENT_SUBSCRIPTION);
+        }
+        @Override public ConnectorState state() { return state; }
+        @Override public void connect(URI endpoint) { state = ConnectorState.CONNECTED; }
+        @Override public RuntimeSnapshot fullSnapshot() {
+            if (failSnapshot) throw new IllegalStateException("RUNTIME_SYNTHETIC_SNAPSHOT_FAILURE");
+            return new RuntimeSnapshot("empty", Instant.EPOCH, 0, List.of(), "empty");
+        }
+        @Override public RuntimeSubscription subscribe(Consumer<RuntimeEvent> listener) {
+            this.listener = listener;
+            return () -> { };
+        }
+        @Override public void disconnect() { state = ConnectorState.DISCONNECTED; }
+        private void emit(RuntimeEvent event) { listener.accept(event); }
     }
 }
