@@ -124,6 +124,11 @@ Record:
 - runtime event-to-result latency;
 - memory.
 
+`JaCaMoFacade.performanceMetrics()` exposes the latest observed values: durations are nanoseconds, used memory is
+the current JVM heap sample in bytes, and zero means the corresponding measurement is not yet available. Runtime
+event-to-result latency begins at connector receipt and ends when that event's verification result is reported; it
+therefore includes queueing and mutation work. These values are evidence/diagnostics, not performance guarantees.
+
 Set project-specific thresholds after baseline measurements; do not invent performance guarantees before data.
 
 ---
