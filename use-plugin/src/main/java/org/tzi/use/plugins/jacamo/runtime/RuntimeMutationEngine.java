@@ -83,6 +83,21 @@ public final class RuntimeMutationEngine {
     public synchronized Map<String, OperationRuntimeOutcome> operationHistory() { return Map.copyOf(operationHistory); }
     public synchronized long lastSequence() { return lastSequence; }
 
+    /** Compares authoritative snapshot mutations with the current USE mirror without changing either side. */
+    public synchronized List<RuntimeDriftDifference> compareSnapshot(RuntimeSnapshot snapshot) {
+        List<RuntimeDriftDifference> differences = new ArrayList<>();
+        for (RuntimeEvent event : snapshot.mutations()) {
+            try {
+                compare(event, differences);
+            } catch (RuntimeException exception) {
+                differences.add(new RuntimeDriftDifference("RUNTIME_DRIFT_COMPARE_ERROR", event.eventId(),
+                        event.runtimeSourceId(), event.kind().name(), "comparable authoritative value",
+                        exception.getMessage()));
+            }
+        }
+        return List.copyOf(differences);
+    }
+
     private MutationResult create(RuntimeEvent event) throws Exception {
         if (event.semanticSourceId() == null || trace.bySemanticId(event.semanticSourceId()).isEmpty()) {
             quarantined.add(event);
@@ -98,6 +113,59 @@ public final class RuntimeMutationEngine {
             throw new IllegalArgumentException("USE_OBJECT_CLASS_MISMATCH: " + objectName);
         dynamicRuntimeObjects.put(event.runtimeSourceId(), objectName);
         return MutationResult.applied();
+    }
+
+    private void compare(RuntimeEvent event, List<RuntimeDriftDifference> differences) {
+        if (event.kind() == RuntimeEventKind.CREATE_OBJECT) {
+            String objectName = text(event.payload(), "useObject");
+            String className = text(event.payload(), "useClass");
+            MObject object = system.state().objectByName(objectName);
+            if (object == null || !object.cls().name().equals(className))
+                difference(differences, event, "object:" + objectName, className,
+                        object == null ? "<missing>" : object.cls().name());
+            return;
+        }
+        String objectName = resolveObject(event.runtimeSourceId());
+        if (objectName == null) {
+            difference(differences, event, "runtime:" + event.runtimeSourceId(), "resolved trace", "<unresolved>");
+            return;
+        }
+        if (event.kind() == RuntimeEventKind.DESTROY_OBJECT) {
+            MObject object = system.state().objectByName(objectName);
+            if (object != null) difference(differences, event, "object:" + objectName, "<absent>", object.cls().name());
+            return;
+        }
+        if (event.kind() == RuntimeEventKind.SET_ATTRIBUTE
+                || event.kind() == RuntimeEventKind.OBS_PROPERTY_ADDED
+                || event.kind() == RuntimeEventKind.OBS_PROPERTY_CHANGED
+                || event.kind() == RuntimeEventKind.OBS_PROPERTY_REMOVED) {
+            if (!event.payload().containsKey("attribute")) return;
+            MObject object = requireObject(objectName);
+            String attributeName = text(event.payload(), "attribute");
+            var attribute = object.cls().attribute(attributeName, true);
+            if (attribute == null) throw new IllegalArgumentException("USE_ATTRIBUTE_MISSING: " + attributeName);
+            Value expected = event.kind() == RuntimeEventKind.OBS_PROPERTY_REMOVED
+                    ? UndefinedValue.instance : value(event.payload());
+            Value actual = object.state(system.state()).attributeValue(attribute);
+            if (!expected.equals(actual)) difference(differences, event, "object:" + objectName + "." + attributeName,
+                    expected.toString(), actual.toString());
+            return;
+        }
+        if (event.kind() == RuntimeEventKind.INSERT_LINK || event.kind() == RuntimeEventKind.DELETE_LINK) {
+            var association = system.model().getAssociation(text(event.payload(), "association"));
+            if (association == null) throw new IllegalArgumentException("USE_ASSOCIATION_MISSING");
+            List<MObject> participants = participants(event.payload());
+            boolean present = system.state().hasLinkBetweenObjects(association, participants.toArray(MObject[]::new));
+            boolean expected = event.kind() == RuntimeEventKind.INSERT_LINK;
+            if (present != expected) difference(differences, event, "association:" + association.name(),
+                    Boolean.toString(expected), Boolean.toString(present));
+        }
+    }
+
+    private void difference(List<RuntimeDriftDifference> differences, RuntimeEvent event, String target,
+                            String expected, String actual) {
+        differences.add(new RuntimeDriftDifference("RUNTIME_MIRROR_DRIFT", event.eventId(),
+                event.runtimeSourceId(), target, expected, actual));
     }
 
     private MutationResult destroy(String runtimeSourceId, String objectName) {
