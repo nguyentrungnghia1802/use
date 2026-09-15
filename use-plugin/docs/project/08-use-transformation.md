@@ -163,22 +163,32 @@ Chứa:
 
 ---
 
-## 13. Phase 5 instance-validation blockers
+## 13. JaCaMo Verification Metamodel/Profile V1
 
-The 2026-09-15 Auction materialization gate exposed contradictions that the structural mapping audit could not
-exercise because concrete instances were previously out of scope:
+Concrete verification uses an explicit semantic layer over the immutable Mapping V1 transformation plan. The
+profile is packaged as `jacamo-verification-profile-v1.json`; its decisions are applied only to a copied effective
+plan and never rewrite the frozen Ecore or Mapping V1.
 
-- R053 (`Plan.hasAction`) and R055 (`Body.bodyterm`) are both mapped as USE compositions. The current Jason
-  extraction represents one source action as one semantic `Action` and links it through both references. USE
-  correctly rejects that object as having two aggregate owners. Choosing either relation as non-owning or creating
-  duplicate semantic objects would change semantics and therefore requires an explicit contract decision.
-- `Norm`, `Group`, `Role`, and `Scheme` inherit from `Organisation` in the frozen Ecore. Consequently every such
-  instance inherits mandatory R004-R007 association ends. The Auction source does not establish all of those links.
-- Required R015, R020, R021, R047, and R048 links are also absent for some imported Auction objects. They cannot be
-  synthesized from name similarity or default values.
+- `[OUR-EXT]` VSP001-VSP004 remove `Norm`, `Group`, `Role`, and `Scheme` inheritance from `Organisation` only in
+  the effective verification model. Concrete declarations therefore do not inherit the aggregate obligations
+  R004-R007.
+- `[SEMANTIC-CLARIFICATION]` VSP005 changes the effective forward multiplicity of R047
+  (`Belief.triggeredBy`) from `1` to `0..1`, because an initial belief has source existence independent of a
+  `TriggeringEvent`. The frozen mapping remains unchanged.
+- No other multiplicity or association kind is changed by Profile V1. Every decision is checked against the
+  expected baseline class/rule before application; a mismatch fails with `VERIFICATION_PROFILE_BASELINE_MISMATCH`.
 
-The implementation preserves the deterministic object/value/link plan and emits located
-`MATERIALIZATION_COMPOSITION_CONFLICT` and `MATERIALIZATION_REQUIRED_LINK_MISSING` diagnostics. It must not
-weaken frozen multiplicities, drop one containment silently, duplicate objects, or fabricate links. Phase 5 initial
-state acceptance stays blocked until the Ecore/mapping ownership semantics or an explicit source/binding rule is
-reconciled and re-frozen.
+The source extraction contract for Auction is:
+
+- one Jason plan-body action is one semantic object owned through R053 (`Plan.hasAction`); it is not also inserted
+  into R055 (`Body.bodyterm`) and is never duplicated. R055 remains available for independently represented
+  non-Action body terms;
+- inherited Action features such as R057 (`Action.nextAction`) apply to `ExternalAction` and `InternalAction`;
+- Moise/JCM evidence produces R007, R015, R019, R020, and R021 in the frozen Ecore direction;
+- a Jason achievement goal is linked by R048 only when its exact same-agent triggering event is present;
+- unresolved or ambiguous references stay unresolved and may require binding. Binding is never used to fabricate a
+  mandatory link.
+
+Phase 5 validation on 2026-09-15 confirms deterministic text and direct backends from the same effective plan. The
+Auction initial state passes USE structure, multiplicity, and initial invariant checks with no
+`MATERIALIZATION_COMPOSITION_CONFLICT`, `MATERIALIZATION_REQUIRED_LINK_MISSING`, or other ERROR diagnostic.

@@ -47,11 +47,35 @@ class StaticProjectImporterTest {
         SemanticElement agent = only(result, MetamodelKind.Agent, "auctioneer");
         assertTrue(agent.references().stream().anyMatch(ref -> ref.feature().equals("artifact")
                 && ref.targetId() != null));
-        assertTrue(agent.references().stream().anyMatch(ref -> ref.feature().equals("role")
-                && ref.targetId() != null));
         SemanticElement norm = only(result, MetamodelKind.Norm, "n1");
         assertEquals(new AttributeValue.Text("obligation"), norm.attributes().get("type"));
         assertTrue(norm.references().stream().allMatch(ref -> ref.targetId() != null));
+        SemanticElement group = only(result, MetamodelKind.Group, "auction_group");
+        assertTrue(group.references().stream().anyMatch(ref -> ref.feature().equals("RefRole")
+                && ref.targetId() != null));
+        SemanticElement role = only(result, MetamodelKind.Role, "auctioneer");
+        assertTrue(role.references().stream().anyMatch(ref -> ref.feature().equals("players")
+                && ref.targetId() != null));
+        SemanticElement scheme = only(result, MetamodelKind.Scheme, "auction_scheme");
+        assertTrue(scheme.references().stream().anyMatch(ref -> ref.feature().equals("mission")
+                && ref.targetId() != null));
+        assertTrue(scheme.references().stream().anyMatch(ref -> ref.feature().equals("SchemeOgoal")
+                && ref.targetId() != null));
+        SemanticElement goal = only(result, MetamodelKind.Goal, "start");
+        assertTrue(goal.references().stream().anyMatch(ref -> ref.feature().equals("triggeredBy")
+                && ref.targetId() != null));
+        SemanticElement plan = only(result, MetamodelKind.Plan, "plan@5");
+        SemanticElement body = only(result, MetamodelKind.Body, "body@5");
+        assertTrue(plan.references().stream().anyMatch(ref -> ref.feature().equals("hasAction")));
+        assertTrue(body.references().stream().noneMatch(ref -> ref.feature().equals("bodyterm")),
+                "Plan actions have one composition owner through R053; R055 remains available for other BodyTerms");
+        assertTrue(only(result, MetamodelKind.Organisation, "auction_org").references().stream()
+                .anyMatch(ref -> ref.feature().equals("deploysAgent") && ref.targetId() != null));
+        assertTrue(agent.references().stream().noneMatch(ref -> ref.feature().equals("role")));
+        SemanticElement organisation = only(result, MetamodelKind.Organisation, "auction_org");
+        assertTrue(organisation.references().stream()
+                .noneMatch(ref -> ref.feature().equals("group") || ref.feature().equals("scheme")),
+                "JCM convenience references are promoted to their frozen Ecore directions");
         assertEquals(3, result.model().sourceIndex().values().stream().filter(source ->
                 source.kind().name().matches("ASL|JAVA|MOISE_XML")).count());
     }

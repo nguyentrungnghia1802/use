@@ -360,18 +360,16 @@ Read:
 - [x] Initial invariant check.
 - [x] Diagnostics with trace.
 
-Blocking acceptance evidence (2026-09-15): generated Auction state is deterministic and both backends agree,
-but the frozen structural contract cannot currently produce a valid initial state without an explicit semantic decision.
-`R053 Plan.hasAction` and `R055 Body.bodyterm` are both compositions and the current source-derived Action is linked
-through both, which USE rejects as multiple aggregate owners. In addition, `Norm`, `Group`, `Role`, and `Scheme`
-inherit required `Organisation` links R004-R007, while the imported sources do not provide evidence for those links;
-Auction also lacks source evidence for required R015, R020, R021, R047, and R048 links. The materializer emits
-located `MATERIALIZATION_COMPOSITION_CONFLICT` and `MATERIALIZATION_REQUIRED_LINK_MISSING` diagnostics rather
-than fabricating links or weakening multiplicities. Acceptance remains unchecked pending reconciliation of the
-frozen Ecore/mapping or an explicit source-to-instance ownership/binding contract.
+Acceptance evidence (2026-09-15): JaCaMo Verification Profile V1 is applied as a separate effective semantic layer;
+the frozen Ecore and Mapping V1 are unchanged. `[OUR-EXT]` VSP001-VSP004 remove concrete verification inheritance
+from `Organisation`, and `[SEMANTIC-CLARIFICATION]` VSP005 makes R047 optional only in the verification plan.
+Jason extraction gives each Action one composition owner through R053 without duplication, Moise/JCM extraction
+produces source-backed R007/R015/R019/R020/R021 links, and exact Jason goal triggers produce R048. Deterministic
+text and direct USE backends agree; Auction passes structure, multiplicity, and initial invariant checks without
+materialization ERROR diagnostics or fabricated binding links.
 
 Acceptance:
-- [ ] Imported Auction initial state matches semantic model and passes expected baseline checks.
+- [x] Imported Auction initial state matches semantic model and passes expected baseline/verification checks.
 
 ---
 

@@ -1,0 +1,49 @@
+{
+  "profileId": "JACAMO_VERIFICATION_PROFILE_V1",
+  "version": "1.0.0",
+  "status": "ACTIVE",
+  "baselineMappingId": "DSML4JaCaMo-2024-reconstructed__to__USE-v1",
+  "decisions": [
+    {
+      "id": "VSP001",
+      "classification": "OUR-EXT",
+      "kind": "REMOVE_INHERITANCE",
+      "subclass": "Norm",
+      "superclass": "Organisation",
+      "rationale": "Concrete verification Norm instances are normative declarations, not Organisation aggregate instances."
+    },
+    {
+      "id": "VSP002",
+      "classification": "OUR-EXT",
+      "kind": "REMOVE_INHERITANCE",
+      "subclass": "Group",
+      "superclass": "Organisation",
+      "rationale": "Concrete verification Group instances do not inherit Organisation aggregate obligations."
+    },
+    {
+      "id": "VSP003",
+      "classification": "OUR-EXT",
+      "kind": "REMOVE_INHERITANCE",
+      "subclass": "Role",
+      "superclass": "Organisation",
+      "rationale": "Concrete verification Role instances do not inherit Organisation aggregate obligations."
+    },
+    {
+      "id": "VSP004",
+      "classification": "OUR-EXT",
+      "kind": "REMOVE_INHERITANCE",
+      "subclass": "Scheme",
+      "superclass": "Organisation",
+      "rationale": "Concrete verification Scheme instances do not inherit Organisation aggregate obligations."
+    },
+    {
+      "id": "VSP005",
+      "classification": "SEMANTIC-CLARIFICATION",
+      "kind": "OVERRIDE_FORWARD_MULTIPLICITY",
+      "mappingRuleId": "R047",
+      "from": "1",
+      "to": "0..1",
+      "rationale": "An initial belief exists before and independently of any belief-triggering event."
+    }
+  ]
+}

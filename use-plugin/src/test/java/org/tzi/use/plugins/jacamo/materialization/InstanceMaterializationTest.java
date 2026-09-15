@@ -8,16 +8,21 @@ import java.security.MessageDigest;
 import java.util.HashSet;
 import org.junit.jupiter.api.Test;
 import org.tzi.use.plugins.jacamo.extraction.StaticProjectImporter;
+import org.tzi.use.plugins.jacamo.diagnostics.Severity;
 import org.tzi.use.plugins.jacamo.mapping.MappingLoader;
 import org.tzi.use.plugins.jacamo.mapping.TransformationPlanner;
 import org.tzi.use.plugins.jacamo.semantic.MetamodelKind;
+import org.tzi.use.plugins.jacamo.verification.profile.VerificationProfileLoader;
+import org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayer;
 
 class InstanceMaterializationTest {
     @Test
     void auctionPlanMaterializesEveryElementValueAndResolvedLinkDeterministically() {
         var semantic = new StaticProjectImporter().importProject(Path.of("src/test/resources/auction/auction.jcm")).model();
         var mapping = new MappingLoader().loadCanonical(Path.of("."));
-        var structure = new TransformationPlanner().plan(semantic, mapping);
+        var baseline = new TransformationPlanner().plan(semantic, mapping);
+        var structure = new VerificationSemanticLayer().apply(baseline,
+                new VerificationProfileLoader().loadV1()).transformation();
         InstancePlan first = new InstancePlanner().plan(semantic, mapping, structure);
         InstancePlan second = new InstancePlanner().plan(semantic, mapping, structure);
         assertEquals(first, second);
@@ -33,25 +38,27 @@ class InstanceMaterializationTest {
     }
 
     @Test
-    void textAndDirectBackendsShareOnePlanAndExposeFrozenBaselineBlockers() {
+    void textAndDirectBackendsShareOneVerificationPlanAndPassInitialValidation() {
         var semantic = new StaticProjectImporter().importProject(Path.of("src/test/resources/auction/auction.jcm")).model();
         var mapping = new MappingLoader().loadCanonical(Path.of("."));
-        var structure = new TransformationPlanner().plan(semantic, mapping);
+        var baseline = new TransformationPlanner().plan(semantic, mapping);
+        var structure = new VerificationSemanticLayer().apply(baseline,
+                new VerificationProfileLoader().loadV1()).transformation();
         var instances = new InstancePlanner().plan(semantic, mapping, structure);
         TextBackend.GeneratedArtifacts artifacts = new TextBackend().generate("auction", structure, instances);
-        assertEquals("0a3d4f643de9803bea97a399950145d578640c40cb7b31bf5840956f1a3544ae", sha256(artifacts.useModel()));
-        assertEquals("007565e969f544f4a085bcbbd3e643ffc31150315e46313066d82d4f9de18b7e", sha256(artifacts.initialCommands()));
+        assertEquals("46454dd8816ff84283f0901decfce97bf328566ca06a4e24f28924d1d6795bb1", sha256(artifacts.useModel()));
+        assertEquals("e0742bab87a53fa4e6529754bdedf114baf463540dfd7a610021a1f19d2294b4", sha256(artifacts.initialCommands()));
         DirectUseBackend.Result direct = new DirectUseBackend().materialize(artifacts, instances);
         assertEquals(instances.objects().size(), direct.system().state().numObjects());
         assertEquals(instances.links().size(), direct.system().state().allLinks().size());
-        assertFalse(direct.structureValid(), "frozen model currently has contradictory instance constraints");
-        assertFalse(direct.invariantsValid(), "combined validation cannot pass while structure is invalid");
-        assertTrue(direct.diagnostics().stream().anyMatch(diagnostic ->
+        assertTrue(direct.structureValid(), direct.validationOutput());
+        assertTrue(direct.invariantsValid(), direct.validationOutput());
+        assertTrue(direct.diagnostics().stream().noneMatch(diagnostic ->
                 diagnostic.code().equals("MATERIALIZATION_COMPOSITION_CONFLICT")
-                        && diagnostic.semanticId() != null && diagnostic.sourceLocation() != null));
-        assertTrue(direct.diagnostics().stream().anyMatch(diagnostic ->
-                diagnostic.code().equals("MATERIALIZATION_REQUIRED_LINK_MISSING")
-                        && diagnostic.mappingRuleId() != null && diagnostic.sourceLocation() != null));
+                        || diagnostic.code().equals("MATERIALIZATION_REQUIRED_LINK_MISSING")),
+                () -> direct.diagnostics().toString());
+        assertTrue(direct.diagnostics().stream().noneMatch(diagnostic -> diagnostic.severity() == Severity.ERROR),
+                () -> direct.diagnostics().toString());
         var artifact = direct.system().state().allObjects().stream()
                 .filter(object -> object.cls().name().startsWith("AuctionArtifact")).findFirst().orElseThrow();
         assertEquals("true", artifact.state(direct.system().state()).attributeValue("open").toString());

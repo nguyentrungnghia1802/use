@@ -93,8 +93,10 @@ final class MoiseXmlParser {
         int formation = 0, link = 0;
         for (Element element : descendants(root, "group-specification")) {
             String name = attr(element, "id", null); if (name == null) continue;
-            ElementDraft group = context.element(MetamodelKind.Group, name,
+            ElementDraft group = declaredInstance(context, MetamodelKind.Group, organisation, name);
+            if (group == null) group = context.element(MetamodelKind.Group, name,
                     List.of("MAS", organisation, "structural"), path, 1, 1, "moise-xml-parser", name);
+            else context.addProvenance(group, path, 1, 1, "moise-xml-parser", name);
             group.attributes.put("Name", new AttributeValue.Text(name));
             integerAttribute(group, element, "min"); integerAttribute(group, element, "max");
             structural.references.add(new SemanticReference("group", name, group.id));
@@ -130,8 +132,10 @@ final class MoiseXmlParser {
         int planIndex = 0;
         for (Element element : descendants(root, "scheme")) {
             String name = attr(element, "id", null); if (name == null) continue;
-            ElementDraft scheme = context.element(MetamodelKind.Scheme, name,
+            ElementDraft scheme = declaredInstance(context, MetamodelKind.Scheme, organisation, name);
+            if (scheme == null) scheme = context.element(MetamodelKind.Scheme, name,
                     List.of("MAS", organisation, "functional"), path, 1, 1, "moise-xml-parser", name);
+            else context.addProvenance(scheme, path, 1, 1, "moise-xml-parser", name);
             functional.references.add(new SemanticReference("scheme", name, scheme.id));
             for (Element goal : descendants(element, "goal")) {
                 String goalName = attr(goal, "id", null); if (goalName == null) continue;
@@ -188,6 +192,15 @@ final class MoiseXmlParser {
         var nodes = root.getElementsByTagName(tag);
         for (int i = 0; i < nodes.getLength(); i++) if (nodes.item(i) instanceof Element element) matches.add(element);
         return matches;
+    }
+
+    private ElementDraft declaredInstance(ExtractionContext context, MetamodelKind kind,
+                                          String organisation, String specificationType) {
+        List<ElementDraft> matches = context.elements.stream().filter(candidate -> candidate.kind == kind
+                && candidate.id.ownerPath().contains(organisation)
+                && candidate.attributes.get("specificationType") instanceof AttributeValue.Text type
+                && type.value().equals(specificationType)).toList();
+        return matches.size() == 1 ? matches.getFirst() : null;
     }
 
     private void copy(ElementDraft draft, Element element, String... names) {

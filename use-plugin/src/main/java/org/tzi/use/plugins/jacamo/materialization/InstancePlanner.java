@@ -32,7 +32,8 @@ public final class InstancePlanner {
         Map<String, Map<String, AttributeValue>> valuesById = new LinkedHashMap<>();
         for (SemanticElement element : semantic.elements()) {
             Map<String, AttributeValue> values = new LinkedHashMap<>();
-            mapping.attributes().stream().filter(entry -> entry.sourceOwner().equals(element.kind().name()))
+            Set<String> owners = ownersFor(element, transformation);
+            mapping.attributes().stream().filter(entry -> owners.contains(entry.sourceOwner()))
                     .forEach(entry -> {
                         AttributeValue value = element.attributes().get(entry.sourceName());
                         if (value != null) values.put(entry.name(), value);
@@ -47,9 +48,10 @@ public final class InstancePlanner {
         List<Diagnostic> diagnostics = new ArrayList<>();
         Set<String> uniqueLinks = new HashSet<>();
         for (SemanticElement source : semantic.elements()) {
+            Set<String> owners = ownersFor(source, transformation);
             for (var reference : source.references()) {
                 var mappingEntry = mapping.associations().stream().filter(entry ->
-                        entry.sourceOwner().equals(source.kind().name()) && entry.sourceName().equals(reference.feature()))
+                        owners.contains(entry.sourceOwner()) && entry.sourceName().equals(reference.feature()))
                         .findFirst();
                 if (mappingEntry.isEmpty()) {
                     diagnostics.add(diagnostic("MATERIALIZATION_REFERENCE_UNMAPPED", Severity.ERROR, source, null,
@@ -76,7 +78,7 @@ public final class InstancePlanner {
                         mappingEntry.get().id()));
             }
         }
-        validateRequiredLinks(semantic, mapping, links, diagnostics);
+        validateRequiredLinks(semantic, transformation, links, diagnostics);
         validateCompositionOwnership(elements, links, diagnostics);
         return new InstancePlan(objects, links, diagnostics);
     }
@@ -128,27 +130,35 @@ public final class InstancePlanner {
         } catch (NumberFormatException exception) { return null; }
     }
 
-    private void validateRequiredLinks(JaCaMoSemanticModel semantic, MappingModel mapping, List<LinkPlan> links,
+    private void validateRequiredLinks(JaCaMoSemanticModel semantic, TransformationPlan transformation, List<LinkPlan> links,
                                        List<Diagnostic> diagnostics) {
         for (SemanticElement element : semantic.elements()) {
-            Set<String> owners = new HashSet<>(); owners.add(element.kind().name());
-            boolean changed;
-            do {
-                changed = false;
-                for (var edge : mapping.inheritance()) if (owners.contains(edge.subclass()))
-                    changed |= owners.add(edge.superclass());
-            } while (changed);
-            for (var association : mapping.associations()) {
-                if (!owners.contains(association.sourceOwner()) || lower(association.secondEnd().multiplicity()) == 0) continue;
+            Set<String> owners = ownersFor(element, transformation);
+            for (var association : transformation.associations()) {
+                if (!owners.contains(association.firstEnd().className()) || lower(association.secondEnd().multiplicity()) == 0) continue;
                 long count = links.stream().filter(link -> link.sourceSemanticId().equals(element.id().value())
-                        && link.mappingRuleId().equals(association.id())).count();
+                        && link.mappingRuleId().equals(association.ruleId())).count();
                 if (count < lower(association.secondEnd().multiplicity())) diagnostics.add(diagnostic(
-                        "MATERIALIZATION_REQUIRED_LINK_MISSING", Severity.ERROR, element, association.id(),
-                        "Resolved source data does not satisfy a frozen forward multiplicity",
-                        association.source() + " requires " + association.secondEnd().multiplicity() + " but has " + count,
+                        "MATERIALIZATION_REQUIRED_LINK_MISSING", Severity.ERROR, element, association.ruleId(),
+                        "Resolved source data does not satisfy the effective verification multiplicity",
+                        association.sourceIdentity() + " requires " + association.secondEnd().multiplicity() + " but has " + count,
                         "Supply explicit source evidence; do not fabricate a target link"));
             }
         }
+    }
+
+    private Set<String> ownersFor(SemanticElement element, TransformationPlan transformation) {
+        Map<String, List<String>> superclasses = transformation.classes().stream().collect(
+                java.util.stream.Collectors.toMap(spec -> spec.name(), spec -> spec.superclasses()));
+        Set<String> owners = new HashSet<>();
+        owners.add(targetClass(element, transformation));
+        boolean changed;
+        do {
+            changed = false;
+            for (String owner : List.copyOf(owners))
+                changed |= owners.addAll(superclasses.getOrDefault(owner, List.of()));
+        } while (changed);
+        return owners;
     }
 
     private void validateCompositionOwnership(Map<String, SemanticElement> elements, List<LinkPlan> links,
