@@ -55,6 +55,20 @@ class MappingTransformationTest {
     }
 
     @Test
+    void alteredMappingTargetsAreBlockedByTheFrozenMappingFingerprint() throws Exception {
+        Path changed = temporary.resolve("changed.json");
+        String canonical = Files.readString(Path.of("Core/Mapping/jacamo-use-mapping-v1.json"));
+        // Preserve every source identity and a schema-valid target, but change semantics.
+        Files.writeString(changed, canonical.replaceFirst("\"multiplicity\": \"0\\.\\.1\"", "\"multiplicity\": \"*\""));
+        assertNotEquals(canonical, Files.readString(changed));
+        MappingException mismatch = assertThrows(MappingException.class, () -> new MappingLoader().load(
+                changed, Path.of("Core/Mapping/jacamo-use-mapping.schema.json"),
+                Path.of("Core/Metamodel/JaCaMo-Metamodel.ecore"), Path.of("Core/Mapping/freeze-manifest.json")));
+        assertEquals("MAPPING_HASH_MISMATCH", mismatch.code());
+        assertTrue(mismatch.getMessage().contains("Restore the frozen mapping"));
+    }
+
+    @Test
     void auctionPlanIsDeterministicAndGeneratedUseCompiles() {
         var semantic = new StaticProjectImporter().importProject(Path.of("src/test/resources/auction/auction.jcm")).model();
         MappingModel mapping = new MappingLoader().loadCanonical(Path.of("."));

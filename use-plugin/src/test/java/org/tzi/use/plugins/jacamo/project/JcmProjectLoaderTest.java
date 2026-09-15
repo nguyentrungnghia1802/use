@@ -10,6 +10,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.tzi.use.plugins.jacamo.PathLinkSupport;
 
 class JcmProjectLoaderTest {
     @TempDir Path temporary;
@@ -102,6 +103,41 @@ class JcmProjectLoaderTest {
         assertTrue(result.graph().sources().stream().anyMatch(source ->
                 source.kind() == SourceKind.JAR && source.path().equals(jar.toAbsolutePath().normalize())));
         assertEquals(1, result.graph().edges().size());
+    }
+
+    @Test
+    void secondMasDeclarationIsRejectedInsteadOfSilentlyIgnored() throws Exception {
+        Files.writeString(temporary.resolve("app.jcm"), "mas app {}\nmas ignored {}\n");
+        ProjectDiscoveryResult result = new JcmProjectLoader().discover(temporary.resolve("app.jcm"));
+        assertFalse(result.success());
+        assertTrue(result.diagnostics().stream().anyMatch(d -> d.code().equals("JCM_TRAILING_CONTENT")
+                && d.sourceLocation().startLine() == 2 && !d.remediation().isBlank()));
+    }
+
+    @Test
+    void defaultClasspathCannotEscapeThroughALinkedDirectory() throws Exception {
+        Path project = Files.createDirectory(temporary.resolve("project"));
+        Path outside = Files.createDirectory(temporary.resolve("outside"));
+        Files.createDirectories(outside.resolve("demo"));
+        Files.write(outside.resolve("demo/Counter.class"), new byte[] { 0, 1, 2 });
+        PathLinkSupport.createDirectoryLink(project.resolve("lib"), outside);
+        Files.writeString(project.resolve("app.jcm"), "mas app { workspace w { artifact c:demo.Counter() } }\n");
+        ProjectDiscoveryResult result = new JcmProjectLoader().discover(project.resolve("app.jcm"));
+        assertFalse(result.success());
+        assertTrue(result.diagnostics().stream().anyMatch(d -> d.code().equals("JCM_PATH_ESCAPE")));
+        assertTrue(result.graph().sources().stream().noneMatch(s -> s.kind() == SourceKind.CLASS));
+    }
+
+    @Test
+    void invalidClasspathArchiveProducesALocatedDiagnostic() throws Exception {
+        Files.writeString(temporary.resolve("broken.jar"), "not a zip archive");
+        Files.writeString(temporary.resolve("app.jcm"),
+                "mas app { workspace w { artifact c:demo.Counter() } class-path:broken.jar }\n");
+        ProjectDiscoveryResult result = new JcmProjectLoader().discover(temporary.resolve("app.jcm"));
+        assertFalse(result.success());
+        assertTrue(result.diagnostics().stream().anyMatch(d -> d.code().equals("JCM_CLASSPATH_INVALID")
+                && d.sourceLocation() != null && !d.remediation().isBlank()));
+        assertTrue(result.graph().edges().isEmpty());
     }
 
     @Test

@@ -44,11 +44,23 @@ public final class MappingLoader {
             validateFingerprint(root, ecorePath, freezePath);
             EcoreKeys keys = ecoreKeys(ecorePath);
             validateSources(root, keys);
+            validateMappingFingerprint(mappingPath, freezePath);
             return parse(root);
         } catch (MappingException exception) {
             throw exception;
         } catch (Exception exception) {
             throw new MappingException("MAPPING_LOAD_FAILED", "Cannot load mapping: " + mappingPath, exception);
+        }
+    }
+
+    private void validateMappingFingerprint(Path mapping, Path freeze) throws Exception {
+        JsonNode manifest = JSON.readTree(Files.readString(freeze, StandardCharsets.UTF_8));
+        String expected = manifest.path("hashes").path("mapping/jacamo-use-mapping-v1.json").asText();
+        String actual = sha256(Files.readAllBytes(mapping));
+        if (expected.isBlank() || !expected.equals(actual)) {
+            throw new MappingException("MAPPING_HASH_MISMATCH",
+                    "Frozen mapping fingerprint " + expected + " does not match " + actual
+                            + ". Restore the frozen mapping or rerun the full mapping audit before reconciling the manifest.");
         }
     }
 
