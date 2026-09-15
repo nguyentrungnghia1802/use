@@ -77,19 +77,20 @@ class JaCaMoPluginTest {
         assertTrue(bytes.toString().contains("JaCaMo plugin ready"));
 
         var actions = descriptor.getPluginModel().getActions();
-        assertEquals(1, actions.size(), "a model-independent status menu action is registered");
-        Class<?> actionClass = descriptor.getPluginClassLoader()
-                .loadClass(actions.get(0).getActionClass());
-        assertTrue(IPluginActionDelegate.class.isAssignableFrom(actionClass));
-        IPluginActionDelegate action = (IPluginActionDelegate)
-                actionClass.getDeclaredConstructor().newInstance();
-        assertTrue(action.shouldBeEnabled(null), "status action works before a USE model is loaded");
+        assertEquals(2, actions.size(), "status and workbench actions are registered");
+        for (var actionModel : actions) {
+            Class<?> actionClass = descriptor.getPluginClassLoader().loadClass(actionModel.getActionClass());
+            assertTrue(IPluginActionDelegate.class.isAssignableFrom(actionClass));
+            IPluginActionDelegate action = (IPluginActionDelegate) actionClass.getDeclaredConstructor().newInstance();
+            assertTrue(action.shouldBeEnabled(null), "JaCaMo actions work before a USE model is loaded");
+        }
         var useActions = ((ActionExtensionPoint) ActionExtensionPoint.getInstance())
                 .createPluginActions(null, null);
-        assertEquals(1, useActions.size(), "USE action extension point must expose the menu action");
-        var useAction = useActions.values().iterator().next();
-        useAction.calculateEnabled();
-        assertTrue(useAction.isEnabled());
+        assertEquals(2, useActions.size(), "USE action extension point must expose both menu actions");
+        useActions.values().forEach(useAction -> {
+            useAction.calculateEnabled();
+            assertTrue(useAction.isEnabled());
+        });
     }
 
     @Test
@@ -99,5 +100,18 @@ class JaCaMoPluginTest {
         assertTrue(action.shouldBeEnabled(null));
         action.performAction(null);
         assertEquals(java.util.List.of("facade supplied status"), shown);
+    }
+
+    @Test
+    void workbenchActionLaunchesTheInjectedFacadeWithoutAUseModel() throws Exception {
+        JaCaMoFacade facade = () -> "ready";
+        var opened = new ArrayList<JaCaMoFacade>();
+        var action = new JaCaMoWorkbenchAction(facade, (parent, service) -> opened.add(service));
+
+        action.performAction(null);
+        javax.swing.SwingUtilities.invokeAndWait(() -> { });
+
+        assertEquals(java.util.List.of(facade), opened);
+        assertTrue(action.shouldBeEnabled(null));
     }
 }
