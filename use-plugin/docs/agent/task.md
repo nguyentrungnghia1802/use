@@ -638,40 +638,57 @@ Read:
 - `docs/project/07-constraint-translation-and-ocl.md`
 
 ## P11.1 Event-driven checks
-- [ ] Check after state-changing event.
-- [ ] Correlate results with event ID.
-- [ ] Store snapshot/version.
+- [x] Check after state-changing event.
+- [x] Correlate results with event ID.
+- [x] Store snapshot/version.
 
 ## P11.2 Runtime operation contracts
-- [ ] Operation start resolves USE operation.
-- [ ] Evaluate precondition.
-- [ ] Capture pre-state.
-- [ ] Apply runtime deltas.
-- [ ] Evaluate postcondition at exit.
-- [ ] Handle failure/abort.
+- [x] Operation start resolves USE operation.
+- [x] Evaluate precondition.
+- [x] Capture pre-state.
+- [x] Apply runtime deltas.
+- [x] Evaluate postcondition at exit.
+- [x] Handle failure/abort.
 
 ## P11.3 Incremental dependencies
-- [ ] Build constraint dependency index.
-- [ ] Reevaluate affected constraints only.
-- [ ] Keep full-check fallback.
-- [ ] Equivalence regression: targeted vs full results.
+- [x] Build constraint dependency index.
+- [x] Reevaluate affected constraints only.
+- [x] Keep full-check fallback.
+- [x] Equivalence regression: targeted vs full results.
 
 ## P11.4 Drift detection
-- [ ] Periodic authoritative snapshot.
-- [ ] Compare mirror.
-- [ ] Diagnostic differences.
-- [ ] Resync policy.
+- [x] Periodic authoritative snapshot.
+- [x] Compare mirror.
+- [x] Diagnostic differences.
+- [x] Resync policy.
 
 ## P11.5 Runtime report
-- [ ] current connection state;
-- [ ] event;
-- [ ] constraint;
-- [ ] violation;
-- [ ] source trace;
-- [ ] latency.
+- [x] current connection state;
+- [x] event;
+- [x] constraint;
+- [x] violation;
+- [x] source trace;
+- [x] latency.
 
 Acceptance:
-- [ ] Runtime violation detected from real JaCaMo execution with correct trace.
+- [x] Runtime violation detected from real JaCaMo execution with correct trace.
+
+Evidence (2026-09-15): `RuntimeVerificationEngine` observes the single ordered mutation boundary, captures
+operation pre-state before `OP_ENTER`, evaluates preconditions without blocking JaCaMo, preserves event/correlation
+IDs, evaluates source-backed postconditions with USE's pre/post evaluator (`@pre`), and reports failed/aborted
+operations explicitly. `ConstraintDependencyIndex` selects declared dependencies plus conservatively global
+constraints and falls back to a full check when no safe selection can be proven. Authoritative snapshot comparison
+reports exact object/attribute/link differences and supports report-only or periodic automatic full resync.
+`RuntimeVerificationReport` JSON/Markdown includes connection state, event, snapshot version/fingerprint,
+constraint outcome, violation context, JaCaMo trace, diagnostics, and measured evaluation latency.
+
+- `mvn -pl use-plugin test`: PASS, 61 tests.
+- Real `LiveJaCaMoAuctionIntegrationTest`: PASS against Jason 3.3.0, CArtAgO 3.1, and Moise 1.1; closing the
+  live Auction and executing `placeBid(item1, 0)` produce event-correlated OCL failures whose source trace is the
+  exact imported Auction Artifact semantic ID.
+- `RuntimeVerificationEngineTest`: PASS for state-event violation, invalid precondition, abort, explicit
+  postcondition with `@pre`, dependency selection/full fallback, targeted/full equivalence, drift diagnostic,
+  periodic auto-resync, report JSON, snapshot version, event correlation, and source trace.
 
 ---
 

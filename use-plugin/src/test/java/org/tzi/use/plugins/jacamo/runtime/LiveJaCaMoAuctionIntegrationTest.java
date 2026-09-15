@@ -2,12 +2,14 @@ package org.tzi.use.plugins.jacamo.runtime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import cartago.ArtifactId;
 import cartago.CartagoEnvironment;
 import cartago.Op;
 import cartago.util.agent.CartagoBasicContext;
+import cartago.util.agent.ActionFailedException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -27,16 +29,23 @@ import moise.os.ns.NS;
 import moise.os.ns.Norm;
 import org.junit.jupiter.api.Test;
 import org.tzi.use.plugins.jacamo.extraction.StaticProjectImporter;
+import org.tzi.use.plugins.jacamo.constraint.ConstraintExtractor;
 import org.tzi.use.plugins.jacamo.mapping.MappingLoader;
 import org.tzi.use.plugins.jacamo.mapping.TransformationPlanner;
 import org.tzi.use.plugins.jacamo.materialization.DirectUseBackend;
 import org.tzi.use.plugins.jacamo.materialization.InstancePlanner;
 import org.tzi.use.plugins.jacamo.materialization.TextBackend;
+import org.tzi.use.plugins.jacamo.ocl.OclGenerator;
+import org.tzi.use.plugins.jacamo.ocl.OclProfileLoader;
 import org.tzi.use.plugins.jacamo.semantic.JaCaMoSemanticModel;
 import org.tzi.use.plugins.jacamo.semantic.MetamodelKind;
 import org.tzi.use.plugins.jacamo.trace.TraceBuilder;
 import org.tzi.use.plugins.jacamo.trace.TraceIndex;
 import org.tzi.use.plugins.jacamo.trace.TraceRecord;
+import org.tzi.use.plugins.jacamo.verification.ConstraintOrigin;
+import org.tzi.use.plugins.jacamo.verification.ConstraintRegistry;
+import org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngine;
+import org.tzi.use.plugins.jacamo.verification.VerificationOutcome;
 import org.tzi.use.plugins.jacamo.verification.profile.VerificationProfileLoader;
 import org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayer;
 import org.tzi.use.uml.ocl.value.BooleanValue;
@@ -53,9 +62,17 @@ class LiveJaCaMoAuctionIntegrationTest {
         var structure = new VerificationSemanticLayer().apply(baseline,
                 new VerificationProfileLoader().loadV1()).transformation();
         var instances = new InstancePlanner().plan(semantic, mapping, structure);
+        OclProfileLoader ocl = new OclProfileLoader();
+        var caseProfile = ocl.loadCase(Path.of("src/test/resources/auction"), Path.of("verification/auction.ocl"));
+        var generatedOcl = new OclGenerator().generate("auction", structure,
+                new ConstraintExtractor().extract(semantic, structure, Map.of()), List.of(ocl.loadCore(), caseProfile));
         var generated = new TextBackend().generate("auction", structure, instances);
-        DirectUseBackend.Result direct = new DirectUseBackend().materialize(generated, instances);
+        DirectUseBackend.Result direct = new DirectUseBackend().materialize(
+                new TextBackend.GeneratedArtifacts(generatedOcl.useModel(), generated.initialCommands()), instances);
         TraceIndex trace = new TraceBuilder().build(semantic, mapping, structure, instances);
+        ConstraintRegistry registry = ConstraintRegistry.load(direct.system().model(), generatedOcl,
+                List.of(ConstraintRegistry.profile(ConstraintOrigin.CORE, ocl.loadCore()),
+                        ConstraintRegistry.profile(ConstraintOrigin.CASE, caseProfile)));
 
         String agentSemantic = semanticId(semantic, MetamodelKind.Agent, "auctioneer");
         String artifactSemantic = semanticId(semantic, MetamodelKind.Artifact, "auction1");
@@ -110,14 +127,17 @@ class LiveJaCaMoAuctionIntegrationTest {
 
         CompositeRuntimeConnector composite = new CompositeRuntimeConnector("jacamo-live",
                 List.of(jason, cartago, moise));
+        RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(direct.system(), registry, trace);
         RuntimeMirrorService mirror = new RuntimeMirrorService(composite,
-                new RuntimeMutationEngine(direct.system(), trace), 64);
+                new RuntimeMutationEngine(direct.system(), trace), 64, verifier);
         try {
             mirror.connect(URI.create("jacamo://local/auction"));
             assertEquals(MirrorState.LIVE, mirror.state());
             assertTrue(openValue(direct, trace, artifactSemantic));
 
             context.doAction(artifact, new Op("closeAuction"));
+            assertThrows(ActionFailedException.class,
+                    () -> context.doAction(artifact, new Op("placeBid", "item1", 0)));
             jasonAgent.getTS().getC().addEvent(new Event(
                     Trigger.parseTrigger("+bid_seen(item1)"), Intention.EmptyInt));
             scheme.getGoal("sell_item").setAchieved(organisationalAgent);
@@ -126,6 +146,12 @@ class LiveJaCaMoAuctionIntegrationTest {
             assertFalse(openValue(direct, trace, artifactSemantic));
             assertEquals(0, mirror.metrics().dropped());
             assertTrue(mirror.metrics().processed() >= 5);
+            assertTrue(verifier.reports().stream().anyMatch(report -> report.event() != null
+                    && report.hasViolation() && report.verification().results().stream().anyMatch(result ->
+                    result.outcome() == VerificationOutcome.FAIL
+                            && result.sourceTrace().contains(artifactSemantic)
+                            && result.runtimeEventIds().contains(report.event().eventId()))),
+                    "real CArtAgO execution must produce an event-correlated violation with JaCaMo trace");
 
             mirror.disconnect();
             assertEquals(MirrorState.STALE, mirror.state());

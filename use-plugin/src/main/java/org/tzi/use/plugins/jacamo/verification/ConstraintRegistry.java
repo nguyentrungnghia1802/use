@@ -99,6 +99,9 @@ public final class ConstraintRegistry {
 
     public List<ConstraintDescriptor> descriptors() { return descriptors; }
     public Map<String, String> fingerprints() { return fingerprints; }
+    public ConstraintDescriptor byId(String id) {
+        return descriptors.stream().filter(descriptor -> descriptor.id().equals(id)).findFirst().orElse(null);
+    }
     ConstraintDescriptor descriptor(MClassInvariant invariant) { return compiled.get(invariantKey(invariant)); }
     ConstraintDescriptor descriptor(MPrePostCondition condition) { return compiled.get(conditionKey(condition)); }
 
