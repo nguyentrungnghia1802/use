@@ -209,3 +209,21 @@ Generated OCL phải:
 - deterministic;
 - có positive/negative fixture;
 - fail build nếu generator sinh OCL invalid.
+
+## 11. Phase 6 supported contract
+
+- `[OUR-EXT]` The typed Constraint IR records expression type, context/operation binding, status, source provenance,
+  assumptions, and semantic dependencies without depending on USE parser types.
+- `[SEMANTIC-CLARIFICATION]` CArtAgO `@GUARD` methods are translated only when the source AST contains a return
+  expression in the supported logical/comparison/arithmetic subset and the guarded projected operation is exact.
+  Auction `canBid(int amount) { return amount > 0; }` becomes the `placeBid` precondition.
+- `[SEMANTIC-CLARIFICATION]` Jason contexts are parsed with an explicit variable/property environment. Auction's
+  belief predicates have no state binding in Phase 6 and therefore remain `UNSUPPORTED`; no partial formula is
+  emitted and no belief-to-property link is guessed.
+- `[OUR-EXT]` Authored postconditions require an explicit source-backed contract. `@pre` is represented directly in
+  the IR; arbitrary Java effects never produce a postcondition.
+- `[OUR-EXT]` `jacamo-core.ocl` contains reusable cross-dimensional checks and an adjacent manifest with rationale
+  and evidence. Case OCL is loaded only from within the project root, retains its origin and SHA-256, and is compiled
+  together with translated/core constraints against the generated model.
+- `[SEMANTIC-CLARIFICATION]` Moise Norm elements remain structural. The extractor never emits a Norm-derived OCL
+  obligation, permission, or prohibition.

@@ -1,0 +1,3 @@
+-- [OUR-EXT] Auction verification fixture: the positive imported state starts open.
+context AuctionArtifact inv AuctionInitiallyOpen:
+  self.open = true

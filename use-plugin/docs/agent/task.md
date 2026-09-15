@@ -380,59 +380,59 @@ Read:
 - `docs/project/16-research-evidence-boundaries.md`
 
 ## P6.1 Constraint IR
-- [ ] Implement expression node types.
-- [ ] Implement context binding.
-- [ ] Implement variable/type environment.
-- [ ] Implement translation status.
-- [ ] Implement provenance/assumptions/dependencies.
+- [x] Implement expression node types.
+- [x] Implement context binding.
+- [x] Implement variable/type environment.
+- [x] Implement translation status.
+- [x] Implement provenance/assumptions/dependencies.
 
 ## P6.2 Jason context extractor
-- [ ] Convert supported context expressions to Constraint IR.
-- [ ] Resolve variables/references.
-- [ ] Mark unsupported constructs.
-- [ ] Add exact/subset/unsupported tests.
+- [x] Convert supported context expressions to Constraint IR.
+- [x] Resolve variables/references.
+- [x] Mark unsupported constructs.
+- [x] Add exact/subset/unsupported tests.
 
 ## P6.3 CArtAgO guard extractor
-- [ ] Resolve guard owner/operation.
-- [ ] Convert supported condition to Constraint IR.
-- [ ] Link projected state.
-- [ ] Mark arbitrary Java semantics unsupported instead of guessing.
+- [x] Resolve guard owner/operation.
+- [x] Convert supported condition to Constraint IR.
+- [x] Link projected state.
+- [x] Mark arbitrary Java semantics unsupported instead of guessing.
 
 ## P6.4 OCL generator
-- [ ] Generate valid context.
-- [ ] Generate logical/comparison/arithmetic expressions.
-- [ ] Generate property navigation.
-- [ ] Generate collection expressions required by supported subset.
-- [ ] Escape identifiers/literals correctly.
-- [ ] Deterministic formatting.
-- [ ] Provenance sidecar/manifest.
+- [x] Generate valid context.
+- [x] Generate logical/comparison/arithmetic expressions.
+- [x] Generate property navigation.
+- [x] Generate collection expressions required by supported subset.
+- [x] Escape identifiers/literals correctly.
+- [x] Deterministic formatting.
+- [x] Provenance sidecar/manifest.
 
 ## P6.5 Operation preconditions
-- [ ] Attach translatable guards/conditions to projected operations.
-- [ ] Verify USE compiles precondition.
+- [x] Attach translatable guards/conditions to projected operations.
+- [x] Verify USE compiles precondition.
 
 ## P6.6 Postconditions
-- [ ] Support explicit/source-backed postconditions only.
-- [ ] Support `@pre` when semantic effect known.
-- [ ] Do not infer arbitrary Java implementation effects.
+- [x] Support explicit/source-backed postconditions only.
+- [x] Support `@pre` when semantic effect known.
+- [x] Do not infer arbitrary Java implementation effects.
 
 ## P6.7 Core OCL
-- [ ] Create reusable cross-dimensional OCL profile.
-- [ ] Each invariant has rationale/evidence.
-- [ ] Avoid duplicate checks already guaranteed by USE multiplicity unless diagnostic purpose documented.
+- [x] Create reusable cross-dimensional OCL profile.
+- [x] Each invariant has rationale/evidence.
+- [x] Avoid duplicate checks already guaranteed by USE multiplicity unless diagnostic purpose documented.
 
 ## P6.8 Case OCL loader
-- [ ] Load project `.ocl` profile.
-- [ ] Validate compile/type.
-- [ ] Track origin.
+- [x] Load project `.ocl` profile.
+- [x] Validate compile/type.
+- [x] Track origin.
 
 ## P6.9 Norm boundary
-- [ ] Ensure Norm is not auto-converted to OCL obligation invariant.
-- [ ] Add regression test preventing accidental deontic collapse.
+- [x] Ensure Norm is not auto-converted to OCL obligation invariant.
+- [x] Add regression test preventing accidental deontic collapse.
 
 Acceptance:
-- [ ] Translated/core/case OCL compile.
-- [ ] Positive and negative fixture results match expectations.
+- [x] Translated/core/case OCL compile.
+- [x] Positive and negative fixture results match expectations.
 
 ---
 
