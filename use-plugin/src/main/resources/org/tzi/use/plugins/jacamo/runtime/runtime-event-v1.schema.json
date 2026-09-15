@@ -9,7 +9,7 @@
     "timestamp": { "type": "string", "format": "date-time" },
     "sequence": { "type": "integer", "minimum": 0 },
     "dimension": { "enum": ["AGENT", "ENVIRONMENT", "ORGANISATION"] },
-    "kind": { "enum": ["CREATE_OBJECT", "DESTROY_OBJECT", "SET_ATTRIBUTE", "INSERT_LINK", "DELETE_LINK", "OP_ENTER", "OP_EXIT", "OP_FAIL"] },
+    "kind": { "enum": ["CREATE_OBJECT", "DESTROY_OBJECT", "SET_ATTRIBUTE", "INSERT_LINK", "DELETE_LINK", "OP_ENTER", "OP_EXIT", "OP_FAIL", "BELIEF_ADDED", "BELIEF_REMOVED", "GOAL_ADOPTED", "GOAL_REMOVED", "GOAL_ACHIEVED", "GOAL_FAILED", "ACTION_STARTED", "ACTION_SUCCEEDED", "ACTION_FAILED", "MESSAGE_SENT", "MESSAGE_RECEIVED", "ARTIFACT_CREATED", "ARTIFACT_DISPOSED", "OBS_PROPERTY_ADDED", "OBS_PROPERTY_CHANGED", "OBS_PROPERTY_REMOVED", "SIGNAL", "ORGANISATION_DISCOVERED", "GROUP_CREATED", "GROUP_DISPOSED", "SCHEME_CREATED", "SCHEME_DISPOSED", "ROLE_ADOPTED", "ROLE_REMOVED", "MISSION_COMMITTED", "MISSION_REMOVED", "SCHEME_STATE_CHANGED", "NORM_STATE_CHANGED"] },
     "runtimeSourceId": { "type": "string", "minLength": 1 },
     "semanticSourceId": { "type": ["string", "null"] },
     "payload": { "type": "object" },

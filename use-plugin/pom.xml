@@ -11,6 +11,13 @@
     <artifactId>use-plugin</artifactId>
     <name>USE JaCaMo Plugin</name>
 
+    <repositories>
+        <repository>
+            <id>jacamo</id>
+            <url>https://raw.githubusercontent.com/jacamo-lang/mvn-repo/master</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>com.networknt</groupId>
@@ -21,6 +28,24 @@
             <groupId>org.tzi.use</groupId>
             <artifactId>use-gui</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.jason-lang</groupId>
+            <artifactId>jason-interpreter</artifactId>
+            <version>3.3.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jacamo</groupId>
+            <artifactId>cartago</artifactId>
+            <version>3.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jacamo</groupId>
+            <artifactId>moise</artifactId>
+            <version>1.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

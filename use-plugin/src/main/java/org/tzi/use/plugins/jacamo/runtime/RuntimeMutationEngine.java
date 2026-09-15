@@ -49,6 +49,20 @@ public final class RuntimeMutationEngine {
                 case OP_EXIT -> exit(event, OperationRuntimeOutcome.EXITED);
                 case OP_FAIL -> exit(event, OperationRuntimeOutcome.FAILED);
                 case CREATE_OBJECT -> throw new IllegalStateException("handled above");
+                case OBS_PROPERTY_ADDED, OBS_PROPERTY_CHANGED ->
+                        event.payload().containsKey("attribute") ? set(objectName, event.payload()) : MutationResult.applied();
+                case OBS_PROPERTY_REMOVED -> event.payload().containsKey("attribute")
+                        ? set(objectName, undefined(event.payload())) : MutationResult.applied();
+                case BELIEF_ADDED, BELIEF_REMOVED,
+                        GOAL_ADOPTED, GOAL_REMOVED, GOAL_ACHIEVED, GOAL_FAILED,
+                        ACTION_STARTED, ACTION_SUCCEEDED, ACTION_FAILED,
+                        MESSAGE_SENT, MESSAGE_RECEIVED,
+                        ARTIFACT_CREATED, ARTIFACT_DISPOSED,
+                        SIGNAL,
+                        ORGANISATION_DISCOVERED, GROUP_CREATED, GROUP_DISPOSED,
+                        SCHEME_CREATED, SCHEME_DISPOSED,
+                        ROLE_ADOPTED, ROLE_REMOVED, MISSION_COMMITTED, MISSION_REMOVED,
+                        SCHEME_STATE_CHANGED, NORM_STATE_CHANGED -> MutationResult.applied();
             };
         } catch (Exception exception) {
             return MutationResult.failed("RUNTIME_MUTATION_FAILED[" + event.kind() + "]: " + exception.getMessage());
@@ -167,6 +181,13 @@ public final class RuntimeMutationEngine {
             case "UNDEFINED" -> UndefinedValue.instance;
             default -> throw new IllegalArgumentException("RUNTIME_VALUE_TYPE_UNSUPPORTED: " + type);
         };
+    }
+
+    private Map<String, Object> undefined(Map<String, Object> payload) {
+        Map<String, Object> result = new LinkedHashMap<>(payload);
+        result.put("valueType", "UNDEFINED");
+        result.put("value", "undefined");
+        return result;
     }
 
     private String text(Map<String, Object> payload, String key) {

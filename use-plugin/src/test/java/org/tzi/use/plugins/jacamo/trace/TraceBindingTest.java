@@ -47,7 +47,9 @@ class TraceBindingTest {
         TraceRecord artifact = trace.bySemanticId(artifactId).stream()
                 .filter(record -> record.targetKind().equals("OBJECT")).findFirst().orElseThrow();
         trace.registerRuntimeKey(artifact.traceId(), "cartago:artifact:market/auction1");
+        trace.registerRuntimeKey(artifact.traceId(), "cartago:artifact:remote/auction1");
         assertEquals(artifact.traceId(), trace.byRuntimeKey("cartago:artifact:market/auction1").orElseThrow().traceId());
+        assertEquals(artifact.traceId(), trace.byRuntimeKey("cartago:artifact:remote/auction1").orElseThrow().traceId());
         assertEquals(artifact.traceId(), trace.byUseId(artifact.targetUseId()).stream()
                 .filter(record -> record.traceId().equals(artifact.traceId())).findFirst().orElseThrow().traceId());
         Path file = temporary.resolve("trace.json");

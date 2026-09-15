@@ -9,6 +9,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.tzi.use.plugins.jacamo.extraction.StaticProjectImporter;
@@ -154,6 +156,30 @@ class RuntimeFoundationTest {
         mirror.close();
     }
 
+    @Test
+    void initialSynchronizationBuffersConcurrentDeltaAndDetectsLostConnection() {
+        Fixture fixture = fixture();
+        String runtimeKey = fixture.runtimeKey();
+        String semanticId = fixture.artifactTrace().sourceSemanticId();
+        RuntimeEvent snapshotOpen = event(1, RuntimeEventKind.SET_ATTRIBUTE, runtimeKey, semanticId,
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", true), null);
+        RuntimeEvent concurrentClosed = event(2, RuntimeEventKind.SET_ATTRIBUTE, runtimeKey, semanticId,
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", false), null);
+        SnapshotRaceConnector connector = new SnapshotRaceConnector(snapshotOpen, concurrentClosed);
+        RuntimeMirrorService mirror = new RuntimeMirrorService(connector, fixture.engine(), 8);
+
+        mirror.connect(URI.create("jacamo://local/auction"));
+        mirror.awaitIdle(Duration.ofSeconds(5));
+        assertEquals(MirrorState.LIVE, mirror.state());
+        assertFalse(((BooleanValue) fixture.attribute("open")).value(),
+                "delta observed while snapshotting must not be lost");
+
+        connector.dropConnection();
+        mirror.refreshConnectionState();
+        assertEquals(MirrorState.STALE, mirror.state());
+        mirror.close();
+    }
+
     private RuntimeEvent event(long sequence, RuntimeEventKind kind, String runtimeSourceId,
                                String semanticSourceId, Map<String, Object> payload, String correlationId) {
         return RuntimeEvent.create("event-" + sequence + "-" + kind, Instant.ofEpochSecond(sequence), sequence,
@@ -188,5 +214,35 @@ class RuntimeFoundationTest {
                     artifactTrace.targetUseId().substring("object:".length()));
             return object.state(direct.system().state()).attributeValue(object.cls().attribute(name, true));
         }
+    }
+
+    private static final class SnapshotRaceConnector implements RuntimeConnector {
+        private final RuntimeEvent snapshot;
+        private final RuntimeEvent concurrent;
+        private Consumer<RuntimeEvent> listener;
+        private ConnectorState state = ConnectorState.DISCONNECTED;
+
+        private SnapshotRaceConnector(RuntimeEvent snapshot, RuntimeEvent concurrent) {
+            this.snapshot = snapshot;
+            this.concurrent = concurrent;
+        }
+        @Override public String connectorId() { return "snapshot-race"; }
+        @Override public Set<ConnectorCapability> capabilities() {
+            return Set.of(ConnectorCapability.FULL_SNAPSHOT, ConnectorCapability.EVENT_SUBSCRIPTION,
+                    ConnectorCapability.RECONNECT);
+        }
+        @Override public ConnectorState state() { return state; }
+        @Override public void connect(URI endpoint) { state = ConnectorState.CONNECTED; }
+        @Override public RuntimeSnapshot fullSnapshot() {
+            listener.accept(concurrent);
+            return new RuntimeSnapshot("snapshot-race", Instant.now(), snapshot.sequence(),
+                    List.of(snapshot), "snapshot-race-hash");
+        }
+        @Override public RuntimeSubscription subscribe(Consumer<RuntimeEvent> listener) {
+            this.listener = listener;
+            return () -> this.listener = null;
+        }
+        @Override public void disconnect() { state = ConnectorState.DISCONNECTED; }
+        void dropConnection() { state = ConnectorState.DISCONNECTED; }
     }
 }
