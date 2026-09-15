@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["schemaVersion", "records"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["traceId", "sourceSemanticId", "targetUseId", "sourceKind", "targetKind", "status"],
+        "properties": {
+          "traceId": { "type": "string", "pattern": "^trace:[0-9a-f]{24}$" },
+          "sourceSemanticId": { "type": "string", "minLength": 1 },
+          "targetUseId": { "type": "string", "minLength": 1 },
+          "sourceKind": { "type": "string", "minLength": 1 },
+          "targetKind": { "type": "string", "minLength": 1 },
+          "mappingRuleId": { "type": ["string", "null"] },
+          "projectionRuleId": { "type": ["string", "null"] },
+          "sourceHash": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+          "runtimeKey": { "type": ["string", "null"] },
+          "status": { "enum": ["RESOLVED", "PROJECTED", "AMBIGUOUS", "UNRESOLVED", "STALE"] },
+          "sourceSpan": {
+            "type": "object",
+            "required": ["path", "startLine", "startColumn", "endLine", "endColumn"],
+            "properties": {
+              "path": { "type": "string", "minLength": 1 },
+              "startLine": { "type": "integer", "minimum": 1 },
+              "startColumn": { "type": "integer", "minimum": 1 },
+              "endLine": { "type": "integer", "minimum": 1 },
+              "endColumn": { "type": "integer", "minimum": 1 }
+            }
+          }
+        }
+      }
+    }
+  }
+}

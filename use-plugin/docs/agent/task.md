@@ -442,39 +442,39 @@ Read:
 - `docs/project/09-traceability-binding-resolver.md`
 
 ## P7.1 Trace schema/model
-- [ ] Define trace JSON schema.
-- [ ] Implement in-memory trace index.
-- [ ] Record class/attribute/association/object/operation traces.
-- [ ] Persist trace.
+- [x] Define trace JSON schema.
+- [x] Implement in-memory trace index.
+- [x] Record class/attribute/association/object/operation traces.
+- [x] Persist trace.
 
 ## P7.2 Runtime key support
-- [ ] Add runtime identity fields without requiring live runtime.
-- [ ] Lookup indexes by semantic ID/runtime ID/USE ID.
+- [x] Add runtime identity fields without requiring live runtime.
+- [x] Lookup indexes by semantic ID/runtime ID/USE ID.
 
 ## P7.3 Resolver
-- [ ] Exact ID.
-- [ ] Explicit reference.
-- [ ] Owner-qualified.
-- [ ] Unique typed scope.
-- [ ] Explicit binding.
-- [ ] Failure.
+- [x] Exact ID.
+- [x] Explicit reference.
+- [x] Owner-qualified.
+- [x] Unique typed scope.
+- [x] Explicit binding.
+- [x] Failure.
 
 ## P7.4 Binding schema
-- [ ] Create JSON schema.
-- [ ] Validate canonical IDs.
-- [ ] Persist user choice.
-- [ ] Add reason/provenance.
-- [ ] Detect stale binding after project change.
+- [x] Create JSON schema.
+- [x] Validate canonical IDs.
+- [x] Persist user choice.
+- [x] Add reason/provenance.
+- [x] Detect stale binding after project change.
 
 ## P7.5 Ambiguity tests
-- [ ] Same operation name on two artifacts.
-- [ ] Same local symbol in multiple agents.
-- [ ] Multiple organisation instances.
-- [ ] Invalid target kind.
-- [ ] Binding resolves exactly one target.
+- [x] Same operation name on two artifacts.
+- [x] Same local symbol in multiple agents.
+- [x] Multiple organisation instances.
+- [x] Invalid target kind.
+- [x] Binding resolves exactly one target.
 
 Acceptance:
-- [ ] No formal resolution depends on fuzzy name matching.
+- [x] No formal resolution depends on fuzzy name matching.
 
 ---
 
