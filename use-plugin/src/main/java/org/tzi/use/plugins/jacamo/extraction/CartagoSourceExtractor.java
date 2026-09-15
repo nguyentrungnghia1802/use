@@ -163,7 +163,7 @@ final class CartagoSourceExtractor {
             property.attributes.put("initialExpression", new AttributeValue.Text(initial.toString()));
             property.attributes.put("resolvedType", new AttributeValue.Text(literalType(initial)));
         }
-        artifact.references.add(new SemanticReference("obsProperty", name, property.id));
+        artifact.references.add(new SemanticReference("obsproperty", name, property.id));
     }
 
     private void extractPort(ExtractionContext context, ElementDraft artifact, Path path,

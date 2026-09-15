@@ -20,6 +20,7 @@ final class SemanticResolver {
             Map.entry("joinWorkspace", EnumSet.of(MetamodelKind.Workspace)),
             Map.entry("role", EnumSet.of(MetamodelKind.Role)),
             Map.entry("players", EnumSet.of(MetamodelKind.Agent)),
+            Map.entry("deploysAgent", EnumSet.of(MetamodelKind.Agent)),
             Map.entry("RefRole", EnumSet.of(MetamodelKind.Role)),
             Map.entry("hasSubGroups", EnumSet.of(MetamodelKind.Group)),
             Map.entry("ogoal", EnumSet.of(MetamodelKind.OGoal)),
@@ -34,6 +35,10 @@ final class SemanticResolver {
         for (ElementDraft source : context.elements) {
             List<SemanticReference> resolved = new ArrayList<>();
             for (SemanticReference reference : source.references) {
+                if (source.kind == MetamodelKind.Agent && reference.feature().equals("role")) {
+                    promoteRoleAssignment(context, source, reference);
+                    continue;
+                }
                 if (reference.targetId() != null || !TARGETS.containsKey(reference.feature())) {
                     resolved.add(reference); continue;
                 }
@@ -56,6 +61,25 @@ final class SemanticResolver {
             source.references.clear();
             source.references.addAll(resolved);
         }
+    }
+
+    /** JCM declares Agent -> Role, while the frozen Ecore stores the evidenced relation as Role.players -> Agent. */
+    private void promoteRoleAssignment(ExtractionContext context, ElementDraft agent, SemanticReference reference) {
+        List<ElementDraft> roles = candidates(context, reference.originalSpelling(), EnumSet.of(MetamodelKind.Role));
+        if (roles.size() == 1) {
+            ElementDraft role = roles.getFirst();
+            boolean exists = role.references.stream().anyMatch(candidate -> candidate.feature().equals("players")
+                    && agent.id.equals(candidate.targetId()));
+            if (!exists) role.references.add(new SemanticReference("players", agent.name, agent.id));
+            return;
+        }
+        context.diagnostic(roles.isEmpty() ? "RESOLUTION_UNRESOLVED" : "RESOLUTION_AMBIGUOUS", Severity.WARNING,
+                Phase.RESOLUTION, agent.provenance.getFirst().span(), agent.id.value(),
+                roles.isEmpty() ? "JCM role assignment has no exact Role declaration"
+                        : "JCM role assignment has multiple exact Role declarations",
+                "role=" + reference.originalSpelling() + "; candidates="
+                        + roles.stream().map(candidate -> candidate.id.value()).toList(),
+                "Provide an owner-qualified role assignment when the source is ambiguous");
     }
 
     private List<ElementDraft> candidates(ExtractionContext context, String spelling, Set<MetamodelKind> kinds) {

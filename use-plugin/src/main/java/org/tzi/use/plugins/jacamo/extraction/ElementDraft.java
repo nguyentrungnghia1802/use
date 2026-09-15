@@ -20,7 +20,7 @@ final class ElementDraft {
     final List<SemanticReference> references = new ArrayList<>();
 
     ElementDraft(SemanticId id, MetamodelKind kind, String name, SourceProvenance provenance) {
-        this.id = id; this.kind = kind; this.name = name; this.provenance = List.of(provenance);
+        this.id = id; this.kind = kind; this.name = name; this.provenance = new ArrayList<>(List.of(provenance));
     }
 
     SemanticElement freeze() {

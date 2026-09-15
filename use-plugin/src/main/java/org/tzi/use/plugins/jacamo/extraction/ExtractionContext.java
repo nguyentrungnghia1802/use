@@ -25,15 +25,23 @@ final class ExtractionContext {
 
     ElementDraft element(MetamodelKind kind, String name, List<String> owner, Path path,
                          int line, int column, String parser, String spelling) {
-        SourceFile source = source(path);
-        int end = Math.max(column, column + Math.max(0, spelling.length() - 1));
-        SourceSpan span = new SourceSpan(path, Math.max(1, line), Math.max(1, column),
-                Math.max(1, line), Math.max(1, end));
-        SourceProvenance provenance = new SourceProvenance(span, parser, source.sha256(), spelling);
+        SourceProvenance provenance = provenance(path, line, column, parser, spelling);
         SemanticId id = SemanticId.of(graph.root().projectId(), kind.dimension(), kind.name(), owner, name);
         ElementDraft draft = new ElementDraft(id, kind, name, provenance);
         elements.add(draft);
         return draft;
+    }
+
+    void addProvenance(ElementDraft draft, Path path, int line, int column, String parser, String spelling) {
+        draft.provenance.add(provenance(path, line, column, parser, spelling));
+    }
+
+    private SourceProvenance provenance(Path path, int line, int column, String parser, String spelling) {
+        SourceFile source = source(path);
+        int end = Math.max(column, column + Math.max(0, spelling.length() - 1));
+        SourceSpan span = new SourceSpan(path, Math.max(1, line), Math.max(1, column),
+                Math.max(1, line), Math.max(1, end));
+        return new SourceProvenance(span, parser, source.sha256(), spelling);
     }
 
     SourceFile source(Path path) {

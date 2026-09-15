@@ -125,6 +125,18 @@ final class JasonSourceParser {
                 List.of("MAS", agent.name, planName), path, line, 1, "jason-parser", triggerExpression);
         trigger.attributes.put("Expression", new AttributeValue.Text(triggerExpression));
         trigger.references.add(new SemanticReference("triggersPlan", planName, plan.id));
+        List<ElementDraft> triggeredGoals = context.elements.stream().filter(candidate ->
+                candidate.kind == MetamodelKind.Goal && candidate.name.equals(triggerName)
+                        && candidate.id.ownerPath().contains(agent.name)).toList();
+        if (triggeredGoals.size() == 1) {
+            triggeredGoals.getFirst().references.add(new SemanticReference("triggeredBy", triggerName, trigger.id));
+        } else if (triggeredGoals.size() > 1) {
+            context.diagnostic("JASON_TRIGGER_GOAL_AMBIGUOUS", Severity.WARNING, Phase.RESOLUTION,
+                    trigger.provenance.getFirst().span(), trigger.id.value(),
+                    "Triggering event matches multiple exact goals in the same agent scope",
+                    triggeredGoals.stream().map(candidate -> candidate.id.value()).toList().toString(),
+                    "Provide an owner-qualified goal binding");
+        }
         if (contextExpression != null) {
             ElementDraft condition = context.element(MetamodelKind.Context, "context@" + line,
                     List.of("MAS", agent.name, planName), path, line, colon + 1, "jason-parser", contextExpression);
@@ -157,7 +169,6 @@ final class JasonSourceParser {
             if (kind == MetamodelKind.ExternalAction) {
                 action.references.add(new SemanticReference("operation", name, null));
             }
-            body.references.add(new SemanticReference("bodyterm", name, action.id));
             plan.references.add(new SemanticReference("hasAction", name, action.id));
             if (previous != null) previous.references.add(new SemanticReference("nextAction", name, action.id));
             else body.references.add(new SemanticReference("firstAction", name, action.id));

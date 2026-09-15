@@ -50,6 +50,7 @@ final class JcmSemanticParser {
                     String name = tokens.get(i + 1).text();
                     ElementDraft agent = context.element(MetamodelKind.Agent, name, List.of("MAS"), path,
                             tokens.get(i).line(), tokens.get(i).column(), "jcm-parser", name);
+                    if (mas != null) mas.references.add(new SemanticReference("agent", name, agent.id));
                     agent.attributes.put("Name", new AttributeValue.Text(name));
                     String sourceName = name + ".asl";
                     int cursor = i + 2;
@@ -66,6 +67,7 @@ final class JcmSemanticParser {
                     String name = tokens.get(i + 1).text();
                     ElementDraft workspace = context.element(MetamodelKind.Workspace, name, List.of("MAS"), path,
                             tokens.get(i).line(), tokens.get(i).column(), "jcm-parser", name);
+                    if (mas != null) mas.references.add(new SemanticReference("workspace", name, workspace.id));
                     workspace.attributes.put("Name", new AttributeValue.Text(name));
                     int brace = indexOf(tokens, "{", i + 2);
                     int end = brace < 0 ? -1 : matchingBrace(tokens, brace);
@@ -77,6 +79,7 @@ final class JcmSemanticParser {
                     String name = tokens.get(i + 1).text();
                     ElementDraft organisation = context.element(MetamodelKind.Organisation, name,
                             List.of("MAS"), path, tokens.get(i).line(), tokens.get(i).column(), "jcm-parser", name);
+                    if (mas != null) mas.references.add(new SemanticReference("organisation", name, organisation.id));
                     organisation.attributes.put("id", new AttributeValue.Text(name));
                     int cursor = i + 2;
                     String sourceName = name + ".xml";
@@ -160,7 +163,6 @@ final class JcmSemanticParser {
             if (i + 3 < body.size() && body.get(i + 2).text().equals(":")) {
                 instance.attributes.put("specificationType", new AttributeValue.Text(body.get(i + 3).text()));
             }
-            organisation.references.add(new SemanticReference(keyword, name, null));
             int brace = i + 4 < body.size() && body.get(i + 4).text().equals("{") ? i + 4 : -1;
             if (keyword.equals("group") && brace >= 0) {
                 int end = matchingBrace(body, brace);
@@ -169,10 +171,12 @@ final class JcmSemanticParser {
                     for (int p = 0; p + 1 < config.size(); p++) {
                         if (config.get(p).text().equals("players") && config.get(p + 1).text().equals(":")) {
                             int stop = nextKey(config, p + 2);
-                            for (int q = p + 2; q + 1 < stop; q += 2) {
-                                if (!config.get(q).text().equals(",")) {
-                                    instance.references.add(new SemanticReference("players", config.get(q).text(), null));
-                                }
+                            List<String> assignments = config.subList(p + 2, stop).stream().map(JcmLexer.Token::text)
+                                    .filter(value -> !value.equals(",")).toList();
+                            for (int q = 0; q + 1 < assignments.size(); q += 2) {
+                                String agentName = assignments.get(q), roleName = assignments.get(q + 1);
+                                instance.references.add(new SemanticReference("RefRole", roleName, null));
+                                organisation.references.add(new SemanticReference("deploysAgent", agentName, null));
                             }
                         }
                     }
