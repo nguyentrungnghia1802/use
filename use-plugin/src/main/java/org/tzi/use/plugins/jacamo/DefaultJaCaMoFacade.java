@@ -2,8 +2,12 @@ package org.tzi.use.plugins.jacamo;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
@@ -56,6 +60,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     private RuntimeMirrorService runtime;
     private RuntimeVerificationEngine runtimeVerification;
     private List<Diagnostic> lastDiagnostics = List.of();
+    private long lastFullCheckNanos;
 
     public DefaultJaCaMoFacade(Path checkout) {
         this.checkout = checkout.toAbsolutePath().normalize();
@@ -93,8 +98,10 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
 
     @Override public synchronized VerificationReport runFullVerification() {
         requireWorkspace();
+        long started = System.nanoTime();
         workspace.latest = new DefaultVerificationService().runFullVerification(workspace.direct.system(),
                 workspace.registry, workspace.trace);
+        lastFullCheckNanos = System.nanoTime() - started;
         return workspace.latest;
     }
 
@@ -115,16 +122,45 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     @Override public synchronized void exportVerificationReport(Path destination) {
         requireWorkspace();
         if (workspace.latest == null) runFullVerification();
+        Path temporary = null;
         try {
             Path output = destination.toAbsolutePath().normalize();
+            String name = output.getFileName() == null ? "" : output.getFileName().toString().toLowerCase();
+            if (!name.endsWith(".json") && !name.endsWith(".md"))
+                throw new IllegalArgumentException("REPORT_EXPORT_EXTENSION: use .json or .md");
+            rejectSymbolicPath(output);
             Path parent = output.getParent();
             if (parent != null) Files.createDirectories(parent);
-            String content = output.getFileName().toString().toLowerCase().endsWith(".json")
+            String content = name.endsWith(".json")
                     ? new VerificationReportExporter().toJson(workspace.latest)
                     : new VerificationReportExporter().toMarkdown(workspace.latest);
-            Files.writeString(output, content, StandardCharsets.UTF_8);
+            temporary = Files.createTempFile(parent, ".jacamo-report-", ".tmp");
+            Files.writeString(temporary, content, StandardCharsets.UTF_8);
+            try { Files.move(temporary, output, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING); }
+            catch (AtomicMoveNotSupportedException ignored) {
+                Files.move(temporary, output, StandardCopyOption.REPLACE_EXISTING);
+            }
+            temporary = null;
         } catch (Exception exception) {
-            throw new IllegalArgumentException("REPORT_EXPORT_FAILED: " + exception.getMessage(), exception);
+            Exception cleanup = cleanupTemporaryReport(temporary, exception);
+            boolean reportDiagnostic = exception instanceof IllegalArgumentException
+                    && exception.getMessage() != null && exception.getMessage().startsWith("REPORT_EXPORT_");
+            if (reportDiagnostic && cleanup == null) throw (IllegalArgumentException) exception;
+            String message = reportDiagnostic ? exception.getMessage()
+                    : "REPORT_EXPORT_FAILED: " + exception.getMessage();
+            if (cleanup != null) message += "; REPORT_EXPORT_CLEANUP_FAILED: " + cleanup.getMessage();
+            throw new IllegalArgumentException(message, exception);
+        }
+    }
+
+    static Exception cleanupTemporaryReport(Path temporary, Exception primary) {
+        if (temporary == null) return null;
+        try {
+            Files.deleteIfExists(temporary);
+            return null;
+        } catch (Exception cleanup) {
+            primary.addSuppressed(cleanup);
+            return cleanup;
         }
     }
 
@@ -171,6 +207,14 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 version, violations);
     }
 
+    @Override public synchronized PerformanceMetrics performanceMetrics() {
+        if (workspace == null) return PerformanceMetrics.empty();
+        RuntimeStatus runtimeStatus = runtimeStatus();
+        Runtime jvm = Runtime.getRuntime();
+        return new PerformanceMetrics(workspace.importNanos, workspace.generationNanos, lastFullCheckNanos,
+                runtimeStatus.lastLatencyNanos(), jvm.totalMemory() - jvm.freeMemory());
+    }
+
     @Override public synchronized void persistBinding(Path destination, BindingRequest request,
                                                       String selectedTargetId, String reason) {
         requireWorkspace();
@@ -192,9 +236,12 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     @Override public synchronized void close() { if (runtime != null) runtime.close(); }
 
     private Workspace build(Path jcmFile, Path verificationProfile) {
+        long importStarted = System.nanoTime();
         ImportResult imported = new StaticProjectImporter().importProject(jcmFile);
+        long importNanos = System.nanoTime() - importStarted;
         lastDiagnostics = imported.diagnostics();
         if (!imported.success()) throw new IllegalArgumentException("IMPORT_FAILED: " + imported.diagnostics());
+        long generationStarted = System.nanoTime();
         MappingModel mapping = new MappingLoader().loadCanonical(checkout);
         var baseline = new TransformationPlanner().plan(imported.model(), mapping);
         var structure = new VerificationSemanticLayer().apply(baseline,
@@ -222,7 +269,10 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             registrations.add(ConstraintRegistry.profile(origin, profile));
         }
         ConstraintRegistry registry = ConstraintRegistry.load(direct.system().model(), generated, registrations);
+        long generationNanos = System.nanoTime() - generationStarted;
+        long verificationStarted = System.nanoTime();
         VerificationReport latest = new DefaultVerificationService().runFullVerification(direct.system(), registry, trace);
+        lastFullCheckNanos = System.nanoTime() - verificationStarted;
         List<Diagnostic> diagnostics = new ArrayList<>(imported.diagnostics());
         diagnostics.addAll(direct.diagnostics());
         lastDiagnostics = List.copyOf(diagnostics);
@@ -248,7 +298,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         Map<String, String> sourceHashes = imported.model().elements().stream().collect(java.util.stream.Collectors.toMap(
                 element -> element.id().value(), element -> element.provenance().getFirst().sourceHash()));
         return new Workspace(summary, sources, List.copyOf(diagnostics), traces, direct, trace, registry, latest,
-                sourceHashes);
+                sourceHashes, importNanos, generationNanos);
     }
 
     private String dimension(String semanticId) {
@@ -258,6 +308,18 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
 
     private void requireWorkspace() {
         if (workspace == null) throw new IllegalStateException("PROJECT_NOT_IMPORTED");
+    }
+
+    private void rejectSymbolicPath(Path output) throws java.io.IOException {
+        Path current = output.getRoot();
+        for (Path part : output) {
+            current = current == null ? part : current.resolve(part);
+            if (!Files.exists(current, LinkOption.NOFOLLOW_LINKS)) continue;
+            BasicFileAttributes attributes = Files.readAttributes(current, BasicFileAttributes.class,
+                    LinkOption.NOFOLLOW_LINKS);
+            if (attributes.isSymbolicLink() || attributes.isOther())
+                throw new IllegalArgumentException("REPORT_EXPORT_SYMLINK: " + current);
+        }
     }
 
     private static Path detectCheckout() {
@@ -278,11 +340,14 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         private final TraceIndex trace;
         private final ConstraintRegistry registry;
         private final Map<String, String> sourceHashes;
+        private final long importNanos;
+        private final long generationNanos;
         private VerificationReport latest;
 
         private Workspace(ProjectSummary summary, List<SourceRow> sources, List<Diagnostic> diagnostics,
                           List<TraceRow> traces, DirectUseBackend.Result direct, TraceIndex trace,
-                          ConstraintRegistry registry, VerificationReport latest, Map<String, String> sourceHashes) {
+                          ConstraintRegistry registry, VerificationReport latest, Map<String, String> sourceHashes,
+                          long importNanos, long generationNanos) {
             this.summary = summary;
             this.sources = sources;
             this.diagnostics = diagnostics;
@@ -292,6 +357,8 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             this.registry = registry;
             this.latest = latest;
             this.sourceHashes = Map.copyOf(sourceHashes);
+            this.importNanos = importNanos;
+            this.generationNanos = generationNanos;
         }
     }
 }

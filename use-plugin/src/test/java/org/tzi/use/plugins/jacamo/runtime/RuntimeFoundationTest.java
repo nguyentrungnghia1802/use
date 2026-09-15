@@ -180,6 +180,32 @@ class RuntimeFoundationTest {
         mirror.close();
     }
 
+    @Test
+    void useMutationFailureMovesMirrorToErrorAndDoesNotCorruptExistingState() {
+        Fixture fixture = fixture();
+        String runtimeKey = fixture.runtimeKey();
+        String semanticId = fixture.artifactTrace().sourceSemanticId();
+        RuntimeEvent initial = event(1, RuntimeEventKind.SET_ATTRIBUTE, runtimeKey, semanticId,
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", true), null);
+        RuntimeEvent invalid = event(2, RuntimeEventKind.SET_ATTRIBUTE, runtimeKey, semanticId,
+                Map.of("attribute", "missingAttribute", "valueType", "BOOLEAN", "value", false), null);
+        RuntimeEventCodec codec = new RuntimeEventCodec();
+        Path replay = temporary.resolve("invalid-mutation.json");
+        codec.writeEvents(replay, List.of(invalid));
+        SyntheticRuntimeConnector connector = new SyntheticRuntimeConnector("mutation-error",
+                new RuntimeSnapshot("initial", Instant.now(), 1, List.of(initial), "initial-hash"), replay, codec);
+        RuntimeMirrorService mirror = new RuntimeMirrorService(connector, fixture.engine(), 8);
+
+        mirror.connect(URI.create("synthetic://mutation-error"));
+        connector.replayAll();
+        mirror.awaitIdle(Duration.ofSeconds(5));
+
+        assertEquals(MirrorState.ERROR, mirror.state());
+        assertEquals(1, mirror.metrics().failed());
+        assertTrue(((BooleanValue) fixture.attribute("open")).value());
+        mirror.close();
+    }
+
     private RuntimeEvent event(long sequence, RuntimeEventKind kind, String runtimeSourceId,
                                String semanticSourceId, Map<String, Object> payload, String correlationId) {
         return RuntimeEvent.create("event-" + sequence + "-" + kind, Instant.ofEpochSecond(sequence), sequence,

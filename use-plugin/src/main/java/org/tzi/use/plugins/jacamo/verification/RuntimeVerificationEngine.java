@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.LongSupplier;
 import org.tzi.use.plugins.jacamo.runtime.MirrorState;
 import org.tzi.use.plugins.jacamo.runtime.MutationResult;
 import org.tzi.use.plugins.jacamo.runtime.MutationStatus;
@@ -38,7 +39,9 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     private final TraceIndex trace;
     private final VerificationService verification;
     private final ConstraintDependencyIndex dependencies;
+    private final LongSupplier nanoTime;
     private final Map<String, OperationCheck> activeOperations = new java.util.LinkedHashMap<>();
+    private final Map<String, Long> stateChangeStartedNanos = new java.util.LinkedHashMap<>();
     private final List<RuntimeVerificationReport> reports = new ArrayList<>();
     private MirrorState connectionState = MirrorState.OFFLINE;
     private long snapshotVersion;
@@ -50,28 +53,40 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
 
     public RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
                                      VerificationService verification) {
-        if (system == null || registry == null || trace == null || verification == null)
+        this(system, registry, trace, verification, System::nanoTime);
+    }
+
+    RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
+                              VerificationService verification, LongSupplier nanoTime) {
+        if (system == null || registry == null || trace == null || verification == null || nanoTime == null)
             throw new IllegalArgumentException("RUNTIME_VERIFICATION_INVALID");
         this.system = system;
         this.registry = registry;
         this.trace = trace;
         this.verification = verification;
+        this.nanoTime = nanoTime;
         this.dependencies = new ConstraintDependencyIndex(registry.descriptors());
     }
 
     @Override public synchronized void stateChanged(MirrorState state) { connectionState = state; }
 
+    @Override public synchronized void eventReceived(RuntimeEvent event) {
+        if (STATE_CHANGES.contains(event.kind())) {
+            stateChangeStartedNanos.put(event.eventId(), nanoTime.getAsLong());
+        }
+    }
+
     @Override public synchronized void snapshotApplied(RuntimeSnapshot snapshot) {
         snapshotVersion++;
         snapshotFingerprint = snapshot.fingerprint();
-        long started = System.nanoTime();
+        long started = nanoTime.getAsLong();
         VerificationReport full = runtimeFull("snapshot:" + snapshot.snapshotId());
-        append(null, full, System.nanoTime() - started, List.of("RUNTIME_AUTHORITATIVE_SNAPSHOT"));
+        append(null, full, nanoTime.getAsLong() - started, List.of("RUNTIME_AUTHORITATIVE_SNAPSHOT"));
     }
 
     @Override public synchronized void beforeMutation(RuntimeEvent event) {
         if (event.kind() != RuntimeEventKind.OP_ENTER) return;
-        long started = System.nanoTime();
+        long started = nanoTime.getAsLong();
         try {
             String objectName = objectName(event);
             String operationName = text(event.payload(), "operation");
@@ -83,20 +98,21 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
             OperationCheck check = verification.beginOperation(system, registry, trace, request);
             if (activeOperations.putIfAbsent(event.correlationId(), check) != null)
                 throw new IllegalArgumentException("OPERATION_CORRELATION_ACTIVE: " + event.correlationId());
-            append(event, enrich(check.preconditions(), event), System.nanoTime() - started,
+            append(event, enrich(check.preconditions(), event), nanoTime.getAsLong() - started,
                     List.of("RUNTIME_OPERATION_PRE_CAPTURED"));
         } catch (RuntimeException exception) {
             append(event, diagnostic("RUNTIME_OPERATION_ENTER_ERROR", VerificationOutcome.ERROR,
-                    exception.getMessage(), event), System.nanoTime() - started,
+                    exception.getMessage(), event), nanoTime.getAsLong() - started,
                     List.of("RUNTIME_OPERATION_ENTER_FAILED"));
         }
     }
 
     @Override public synchronized void afterMutation(RuntimeEvent event, MutationResult mutation) {
-        long started = System.nanoTime();
+        long started = stateChangeStartedNanos.getOrDefault(event.eventId(), nanoTime.getAsLong());
+        stateChangeStartedNanos.remove(event.eventId());
         if (mutation.status() != MutationStatus.APPLIED) {
             append(event, diagnostic("RUNTIME_MUTATION", VerificationOutcome.ERROR, mutation.diagnostic(), event),
-                    System.nanoTime() - started, List.of("RUNTIME_MUTATION_NOT_APPLIED"));
+                    nanoTime.getAsLong() - started, List.of("RUNTIME_MUTATION_NOT_APPLIED"));
             return;
         }
         if (event.kind() == RuntimeEventKind.OP_EXIT) {
@@ -114,7 +130,7 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
                 ? runtimeFull("event:" + event.eventId())
                 : verification.runTargetedVerification(system, registry, trace, selection.constraintIds(),
                         "event:" + event.eventId());
-        append(event, enrich(report, event), System.nanoTime() - started, List.of(selection.reason()));
+        append(event, enrich(report, event), nanoTime.getAsLong() - started, List.of(selection.reason()));
     }
 
     @Override public synchronized void driftChecked(RuntimeDriftReport report) {
@@ -141,12 +157,12 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
         OperationCheck check = activeOperations.remove(event.correlationId());
         if (check == null) {
             append(event, diagnostic("RUNTIME_OPERATION_EXIT_UNMATCHED", VerificationOutcome.ERROR,
-                    "operation exit has no captured pre-state", event), System.nanoTime() - started,
+                    "operation exit has no captured pre-state", event), nanoTime.getAsLong() - started,
                     List.of("RUNTIME_OPERATION_CORRELATION_MISSING"));
             return;
         }
         VerificationReport post = verification.completeOperation(check, system.state(), null, List.of(event.eventId()));
-        append(event, enrich(post, event), System.nanoTime() - started, List.of("RUNTIME_OPERATION_POST_CHECKED"));
+        append(event, enrich(post, event), nanoTime.getAsLong() - started, List.of("RUNTIME_OPERATION_POST_CHECKED"));
     }
 
     private void abort(RuntimeEvent event, long started) {
@@ -154,7 +170,7 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
         String explanation = check == null ? "failed operation has no captured pre-state"
                 : "JaCaMo operation aborted/failed; postconditions were not evaluated";
         append(event, diagnostic("RUNTIME_OPERATION_ABORTED", check == null ? VerificationOutcome.ERROR
-                : VerificationOutcome.SKIPPED, explanation, event), System.nanoTime() - started,
+                : VerificationOutcome.SKIPPED, explanation, event), nanoTime.getAsLong() - started,
                 List.of(check == null ? "RUNTIME_OPERATION_CORRELATION_MISSING" : "RUNTIME_OPERATION_ABORTED"));
     }
 

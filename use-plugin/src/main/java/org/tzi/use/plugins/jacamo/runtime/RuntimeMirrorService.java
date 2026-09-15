@@ -157,7 +157,10 @@ public final class RuntimeMirrorService implements RuntimeService {
         RuntimeSubscription nextSubscription = connector.subscribe(event -> {
             synchronized (gate) {
                 if (ready[0] == null) buffered.add(event);
-                else ready[0].submit(event);
+                else {
+                    observer.eventReceived(event);
+                    ready[0].submit(event);
+                }
             }
         });
         RuntimeSnapshot snapshot;
@@ -180,7 +183,12 @@ public final class RuntimeMirrorService implements RuntimeService {
         nextQueue.start();
         synchronized (gate) {
             ready[0] = nextQueue;
-            buffered.stream().filter(event -> event.sequence() > snapshot.sequence()).forEach(nextQueue::submit);
+            for (RuntimeEvent event : buffered) {
+                if (event.sequence() > snapshot.sequence()) {
+                    observer.eventReceived(event);
+                    nextQueue.submit(event);
+                }
+            }
             buffered.clear();
         }
         queue = nextQueue;

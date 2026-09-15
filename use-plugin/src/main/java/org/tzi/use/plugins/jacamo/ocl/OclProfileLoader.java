@@ -20,7 +20,11 @@ public final class OclProfileLoader {
             Path root = projectRoot.toAbsolutePath().normalize();
             Path resolved = profile.isAbsolute() ? profile.normalize() : root.resolve(profile).normalize();
             if (!resolved.startsWith(root)) throw new IllegalArgumentException(diagnosticPrefix + "_PATH_ESCAPE");
-            return loaded(resolved, Files.readString(resolved, StandardCharsets.UTF_8));
+            Path realRoot = root.toRealPath();
+            Path realProfile = resolved.toRealPath();
+            if (!realProfile.startsWith(realRoot))
+                throw new IllegalArgumentException(diagnosticPrefix + "_PATH_ESCAPE");
+            return loaded(resolved, Files.readString(realProfile, StandardCharsets.UTF_8));
         } catch (IOException exception) {
             throw new IllegalArgumentException(diagnosticPrefix + "_IO: " + exception.getMessage(), exception);
         }

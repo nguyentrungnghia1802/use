@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.tzi.use.plugins.jacamo.constraint.ConstraintExtractor;
@@ -80,9 +81,13 @@ class RuntimeVerificationEngineTest {
         connector.replayAll();
         mirror.awaitIdle(Duration.ofSeconds(5));
 
-        assertTrue(verifier.reports().stream().anyMatch(report -> report.event() != null
-                && report.event().eventId().startsWith("event-2-") && report.hasViolation()
-                && report.verification().results().stream().anyMatch(result -> result.sourceTrace().contains(semanticId))));
+        RuntimeVerificationReport stateChange = verifier.reports().stream().filter(report -> report.event() != null
+                && report.event().eventId().startsWith("event-2-")).findFirst().orElseThrow();
+        assertTrue(stateChange.hasViolation());
+        assertTrue(stateChange.verification().results().stream()
+                .anyMatch(result -> result.sourceTrace().contains(semanticId)));
+        assertTrue(stateChange.latencyNanos() > 0);
+        System.out.printf("PHASE13_RUNTIME eventToResult=%dns%n", stateChange.latencyNanos());
         assertTrue(verifier.reports().stream().anyMatch(report -> report.event() != null
                 && report.event().eventId().startsWith("event-3-")
                 && report.verification().results().stream().anyMatch(result -> result.outcome() == VerificationOutcome.FAIL
@@ -135,6 +140,28 @@ class RuntimeVerificationEngineTest {
         assertEquals(fullResult.outcome(), targetedResult.outcome());
         assertEquals(fullResult.contextObject(), targetedResult.contextObject());
         assertEquals(fullResult.sourceTrace(), targetedResult.sourceTrace());
+    }
+
+    @Test
+    void stateChangeLatencyCoversMutationThroughVerificationResult() {
+        Fixture fixture = fixture(false);
+        AtomicLong clock = new AtomicLong(1_000);
+        RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
+                fixture.registry(), fixture.trace(), new DefaultVerificationService(), clock::get);
+        RuntimeEvent event = event(1, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                fixture.artifactSemanticId(),
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", false), null);
+
+        verifier.eventReceived(event);
+        clock.addAndGet(20);
+        verifier.beforeMutation(event);
+        clock.addAndGet(30);
+        var mutation = new RuntimeMutationEngine(fixture.direct().system(), fixture.trace()).apply(event);
+        clock.addAndGet(50);
+        verifier.afterMutation(event, mutation);
+
+        assertEquals(100, verifier.latestReport().latencyNanos(),
+                "event-to-result latency must include USE mutation and verification");
     }
 
     @Test

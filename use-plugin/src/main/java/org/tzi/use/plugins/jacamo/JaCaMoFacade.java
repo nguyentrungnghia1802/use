@@ -34,6 +34,7 @@ public interface JaCaMoFacade {
     default void disconnectRuntime() { throw new UnsupportedOperationException("RUNTIME_NOT_CONFIGURED"); }
     default void resyncRuntime() { throw new UnsupportedOperationException("RUNTIME_NOT_CONFIGURED"); }
     default RuntimeStatus runtimeStatus() { return RuntimeStatus.offline(); }
+    default PerformanceMetrics performanceMetrics() { return PerformanceMetrics.empty(); }
     default void persistBinding(Path destination, BindingRequest request, String selectedTargetId, String reason) {
         throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED");
     }
@@ -54,6 +55,10 @@ public interface JaCaMoFacade {
         public static RuntimeStatus offline() {
             return new RuntimeStatus(MirrorState.OFFLINE, 0, 0, 0, 0, 0, 0, null, "", 0, 0, 0);
         }
+    }
+    record PerformanceMetrics(long importNanos, long generationNanos, long fullCheckNanos,
+                              long runtimeLastLatencyNanos, long usedMemoryBytes) {
+        public static PerformanceMetrics empty() { return new PerformanceMetrics(0, 0, 0, 0, 0); }
     }
     record BindingRequest(String sourceId, String owner, String type, Path sourcePath, String sourceHash,
                           List<BindingCandidate> candidates) {

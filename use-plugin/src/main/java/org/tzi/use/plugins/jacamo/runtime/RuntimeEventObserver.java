@@ -6,6 +6,7 @@ public interface RuntimeEventObserver {
 
     default void stateChanged(MirrorState state) { }
     default void snapshotApplied(RuntimeSnapshot snapshot) { }
+    default void eventReceived(RuntimeEvent event) { }
     default void beforeMutation(RuntimeEvent event) { }
     default void afterMutation(RuntimeEvent event, MutationResult result) { }
     default void driftChecked(RuntimeDriftReport report) { }

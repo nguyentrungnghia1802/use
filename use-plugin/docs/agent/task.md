@@ -772,25 +772,25 @@ Read:
 - [ ] mapping mismatch.
 - [ ] stale binding.
 - [ ] disconnect.
-- [ ] USE mutation error.
+- [x] USE mutation error.
 
 ## P13.3 Security
-- [ ] path traversal tests.
-- [ ] no arbitrary code execution during static import.
-- [ ] safe classpath handling.
-- [ ] safe export paths.
+- [x] path traversal tests.
+- [x] no arbitrary code execution during static import.
+- [x] safe classpath handling.
+- [x] safe export paths.
 
 ## P13.4 Performance
-- [ ] baseline import timing.
-- [ ] baseline full-check timing.
-- [ ] runtime latency metrics.
+- [x] baseline import timing.
+- [x] baseline full-check timing.
+- [x] runtime latency metrics.
 - [ ] optimize only measured bottlenecks.
-- [ ] regression benchmark.
+- [x] regression benchmark.
 
 ## P13.5 Compatibility
-- [ ] pinned USE version.
-- [ ] pinned JaCaMo version.
-- [ ] compatibility matrix.
+- [x] pinned USE version.
+- [x] pinned JaCaMo version.
+- [x] compatibility matrix.
 - [ ] clean environment test.
 
 Acceptance:
