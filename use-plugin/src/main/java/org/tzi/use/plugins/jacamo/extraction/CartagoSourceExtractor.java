@@ -8,6 +8,7 @@ import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.LiteralTree;
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.ReturnTree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
@@ -126,6 +127,14 @@ final class CartagoSourceExtractor {
         }
         ElementDraft owningOperation = operation;
         new TreeScanner<Void, Void>() {
+            @Override public Void visitReturn(ReturnTree statement, Void unused) {
+                if (owningOperation != null && owningOperation.kind == MetamodelKind.GuardOperation
+                        && statement.getExpression() != null) {
+                    owningOperation.attributes.put("guardExpression",
+                            new AttributeValue.Text(statement.getExpression().toString()));
+                }
+                return super.visitReturn(statement, unused);
+            }
             @Override public Void visitMethodInvocation(MethodInvocationTree invocation, Void unused) {
                 String select = invocation.getMethodSelect().toString();
                 String name = select.substring(select.lastIndexOf('.') + 1);
