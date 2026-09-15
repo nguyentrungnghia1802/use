@@ -756,22 +756,22 @@ Read:
 - `docs/project/18-risk-register.md`
 
 ## P13.1 Full test matrix
-- [ ] unit.
-- [ ] parser fixtures.
-- [ ] mapping audit.
-- [ ] golden.
-- [ ] USE integration.
-- [ ] runtime synthetic.
-- [ ] runtime live.
-- [ ] Auction E2E.
+- [x] unit.
+- [x] parser fixtures.
+- [x] mapping audit.
+- [x] golden.
+- [x] USE integration.
+- [x] runtime synthetic.
+- [x] runtime live.
+- [x] Auction E2E.
 
 ## P13.2 Error resilience
-- [ ] malformed project.
-- [ ] partial source.
-- [ ] unsupported syntax.
-- [ ] mapping mismatch.
-- [ ] stale binding.
-- [ ] disconnect.
+- [x] malformed project.
+- [x] partial source.
+- [x] unsupported syntax.
+- [x] mapping mismatch.
+- [x] stale binding.
+- [x] disconnect.
 - [x] USE mutation error.
 
 ## P13.3 Security
@@ -784,17 +784,28 @@ Read:
 - [x] baseline import timing.
 - [x] baseline full-check timing.
 - [x] runtime latency metrics.
-- [ ] optimize only measured bottlenecks.
+- [x] optimize only measured bottlenecks.
 - [x] regression benchmark.
 
 ## P13.5 Compatibility
 - [x] pinned USE version.
 - [x] pinned JaCaMo version.
 - [x] compatibility matrix.
-- [ ] clean environment test.
+- [x] clean environment test.
 
 Acceptance:
-- [ ] Stable repeated runs without semantic drift.
+- [x] Stable repeated runs without semantic drift.
+
+Evidence (2026-09-16): [Phase 13 coverage, commands, measurements and limits](../project/13-testing-quality.md#8-phase-13-verification-evidence-2026-09-16).
+Module package 108/108; full reactor `verify` 251/251 including 130 Failsafe tests;
+independent mapping audit/mutations/Ecore+EMF/USE compilation passed. Three focused
+runs each passed golden, real Auction and performance/verification tests (4/4).
+A separate clone with an initially empty Maven repository passed 251/251 and
+remained clean. No measured bottleneck warranted optimization; timing thresholds
+were not invented. Compatibility is limited to the recorded Windows/JDK and real
+in-process component versions. Production hardening commits: `34768a6e`, `0f24e5c2`.
+These checkboxes record implementation/validation completion; Phase 13 branch
+merge and push are still pending and are not authorized by this task.
 
 ---
 

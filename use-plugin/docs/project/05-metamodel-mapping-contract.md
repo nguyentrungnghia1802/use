@@ -203,6 +203,13 @@ Mapping chỉ được freeze khi:
 - JSON schema validation passes;
 - Ecore fingerprint matches freeze manifest.
 
+The plugin also checks the SHA-256 of the mapping file itself against the frozen
+manifest, after schema and source-identity validation. A schema-valid target edit
+(for example, changing a reference multiplicity) raises `MAPPING_HASH_MISMATCH`
+and blocks transformation. Restore the frozen file, or rerun the complete mapping
+audit before deliberately reconciling the manifest. This check does not authorize
+automatic reconciliation. Git preserves the exact Ecore and mapping JSON bytes.
+
 ---
 
 ## 8. Evolution policy
