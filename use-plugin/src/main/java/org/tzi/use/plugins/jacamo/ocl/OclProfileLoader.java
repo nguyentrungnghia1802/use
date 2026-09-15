@@ -10,12 +10,20 @@ import java.security.MessageDigest;
 /** Loads authored OCL without changing it; compilation is performed against the generated USE model. */
 public final class OclProfileLoader {
     public LoadedProfile loadCase(Path projectRoot, Path profile) {
+        return loadWithin(projectRoot, profile, "OCL_PROFILE");
+    }
+    public LoadedProfile loadUser(Path allowedRoot, Path profile) {
+        return loadWithin(allowedRoot, profile, "OCL_USER_PROFILE");
+    }
+    private LoadedProfile loadWithin(Path projectRoot, Path profile, String diagnosticPrefix) {
         try {
             Path root = projectRoot.toAbsolutePath().normalize();
             Path resolved = profile.isAbsolute() ? profile.normalize() : root.resolve(profile).normalize();
-            if (!resolved.startsWith(root)) throw new IllegalArgumentException("OCL_PROFILE_PATH_ESCAPE");
+            if (!resolved.startsWith(root)) throw new IllegalArgumentException(diagnosticPrefix + "_PATH_ESCAPE");
             return loaded(resolved, Files.readString(resolved, StandardCharsets.UTF_8));
-        } catch (IOException exception) { throw new IllegalArgumentException("OCL_PROFILE_IO: " + exception.getMessage(), exception); }
+        } catch (IOException exception) {
+            throw new IllegalArgumentException(diagnosticPrefix + "_IO: " + exception.getMessage(), exception);
+        }
     }
     public LoadedProfile loadCore() {
         String resource = "/org/tzi/use/plugins/jacamo/ocl/jacamo-core.ocl";

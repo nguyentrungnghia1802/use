@@ -1,6 +1,14 @@
 package org.tzi.use.plugins.jacamo.verification;
 
-/** Contract for future USE verification; no implementation exists in Phase 1. */
+import java.util.List;
+import org.tzi.use.plugins.jacamo.trace.TraceIndex;
+import org.tzi.use.uml.ocl.value.Value;
+import org.tzi.use.uml.sys.MSystem;
+import org.tzi.use.uml.sys.MSystemState;
+
 public interface VerificationService {
-    void runFullVerification();
+    VerificationReport runFullVerification(MSystem system, ConstraintRegistry registry, TraceIndex trace);
+    OperationCheck beginOperation(MSystem system, ConstraintRegistry registry, TraceIndex trace, OperationRequest request);
+    VerificationReport completeOperation(OperationCheck check, MSystemState postState, Value result,
+                                         List<String> exitRuntimeEventIds);
 }
