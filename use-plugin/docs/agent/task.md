@@ -698,41 +698,54 @@ Read:
 - `docs/project/12-plugin-ui-workflow.md`
 
 ## P12.1 Import UI
-- [ ] `.jcm` chooser.
-- [ ] project summary.
-- [ ] parse diagnostics.
-- [ ] mapping compatibility.
-- [ ] generation result.
+- [x] `.jcm` chooser.
+- [x] project summary.
+- [x] parse diagnostics.
+- [x] mapping compatibility.
+- [x] generation result.
 
 ## P12.2 Trace/mapping view
-- [ ] source → target table/tree.
-- [ ] filter by dimension/status.
-- [ ] navigate source.
-- [ ] show projection rule.
+- [x] source → target table/tree.
+- [x] filter by dimension/status.
+- [x] navigate source.
+- [x] show projection rule.
 
 ## P12.3 Verification dashboard
-- [ ] constraint list.
-- [ ] result status.
-- [ ] context object.
-- [ ] violation detail.
-- [ ] source navigation.
+- [x] constraint list.
+- [x] result status.
+- [x] context object.
+- [x] violation detail.
+- [x] source navigation.
 
 ## P12.4 Runtime dashboard
-- [ ] OFFLINE/CONNECTING/SYNCING/LIVE/STALE/ERROR.
-- [ ] event counters.
-- [ ] queue depth.
-- [ ] last sync.
-- [ ] reconnect/resync controls.
+- [x] OFFLINE/CONNECTING/SYNCING/LIVE/STALE/ERROR.
+- [x] event counters.
+- [x] queue depth.
+- [x] last sync.
+- [x] reconnect/resync controls.
 
 ## P12.5 Binding resolution dialog
-- [ ] show ambiguous source.
-- [ ] exact candidates.
-- [ ] candidate owner/type/source.
-- [ ] persist explicit binding.
-- [ ] no fuzzy auto-select.
+- [x] show ambiguous source.
+- [x] exact candidates.
+- [x] candidate owner/type/source.
+- [x] persist explicit binding.
+- [x] no fuzzy auto-select.
 
 Acceptance:
-- [ ] Full workflow usable from USE UI.
+- [x] Full workflow usable from USE UI.
+
+Evidence (2026-09-15, implementation commit `f54e6276`): the USE plugin descriptor exposes an always-enabled
+`Open Workbench...` action backed by `DefaultJaCaMoFacade`. The Swing workbench delegates import, rebuild,
+verification, report export, runtime lifecycle and binding persistence to the facade; it contains no parser,
+mapping, transformation or runtime mutation logic. Project, source hash, dimension, mapping/generation,
+diagnostic, trace/projection, verification/context/violation/source, and live runtime service data are displayed.
+Binding candidates start with no selection and only an exact candidate ID selected by the user can be persisted.
+
+- `mvn -pl use-plugin test`: PASS, 75 tests, including 7 Swing workbench tests, 6 real facade tests, USE plugin
+  discovery/action smoke, real Auction import/offline verification, synthetic runtime lifecycle and live JaCaMo
+  Auction integration.
+- `mvn -pl use-plugin package -DskipTests`: PASS; `target/use-plugin-7.5.0.jar` built.
+- `mvn test`: PASS for all five reactor modules; use-core 12 tests, use-gui 1 test, use-plugin 75 tests.
 
 ---
 
