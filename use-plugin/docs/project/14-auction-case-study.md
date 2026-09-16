@@ -110,7 +110,9 @@ Negative:
 - bidder valid;
 - placeBid positive;
 - state update valid;
-- pre/post pass.
+- applicable preconditions pass. This fixture does not model a highest-bid
+  value and has no authored Auction operation postcondition; the generic
+  pre/post verification path is covered by separate operation-contract tests.
 
 ### R2 Bid while closed
 Expected precondition fail.
@@ -159,6 +161,11 @@ the event log and report and records real connector versions, bindings, event
 counts, and the authoritative resync fingerprint. A clean checkout can
 regenerate the outputs; runtime timestamps, UUIDs and the resync fingerprint
 are run-specific and should not be compared byte-for-byte across runs.
+Before either evidence generator records the repository commit, it verifies
+that all eleven canonical, profile, and Auction source inputs match that commit
+after LF normalization. A dirty input fails with
+`EVIDENCE_SOURCE_DIFFERS_FROM_COMMIT`; the manifest never silently attributes
+changed fixture bytes to an older commit.
 
 The source fixture is the checked-in `.jcm`, Jason `.asl`, CArtAgO Java
 Artifact, and Moise XML. The live test compiles and instantiates that Artifact
@@ -187,3 +194,8 @@ demonstrated scope. A guard that remains false can suspend an operation with
 no terminal callback; the verification lifecycle therefore begins at the
 actual `opStarted`, not at `opRequested`, and the invalid-amount acceptance
 scenario passes the guard before deterministically failing in the body.
+The runtime event log records the live deltas before disconnect. The scenario
+summary records both full synchronization snapshots and the post-reconnect
+authoritative comparison, including zero drift differences. It also records
+zero failed, rejected, and dropped event mutations; `processed` alone does not
+establish successful mirroring.

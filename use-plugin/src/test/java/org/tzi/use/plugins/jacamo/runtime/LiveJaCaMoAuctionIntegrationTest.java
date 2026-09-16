@@ -37,6 +37,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.tzi.use.plugins.jacamo.extraction.StaticProjectImporter;
 import org.tzi.use.plugins.jacamo.constraint.ConstraintExtractor;
 import org.tzi.use.plugins.jacamo.evidence.EvidenceNormalizer;
+import org.tzi.use.plugins.jacamo.evidence.EvidenceSourceCommit;
 import org.tzi.use.plugins.jacamo.mapping.MappingLoader;
 import org.tzi.use.plugins.jacamo.mapping.TransformationPlanner;
 import org.tzi.use.plugins.jacamo.materialization.DirectUseBackend;
@@ -65,6 +66,7 @@ class LiveJaCaMoAuctionIntegrationTest {
 
     @Test
     void mirrorsRealJasonCartagoAndMoiseAuctionThenReconnectsWithFullResync() throws Exception {
+        String sourceCommit = EvidenceSourceCommit.verify(Path.of(".."), EvidenceSourceCommit.PHASE14_INPUTS);
         Path project = Path.of("src/test/resources/auction").toAbsolutePath().normalize();
         var imported = new StaticProjectImporter().importProject(
                 project.resolve("auction.jcm"));
@@ -191,6 +193,10 @@ class LiveJaCaMoAuctionIntegrationTest {
 
             QueueMetrics scenarioMetrics = mirror.metrics();
             List<RuntimeEvent> scenarioEvents = evidenceEvents.events();
+            assertEquals(MirrorState.LIVE, mirror.state());
+            assertEquals(0, scenarioMetrics.failed(), "no received event may fail USE mutation");
+            assertEquals(0, scenarioMetrics.rejected(), "no received event may be rejected");
+            assertEquals(0, scenarioMetrics.dropped(), "no received event may be dropped");
             mirror.disconnect();
             assertEquals(MirrorState.STALE, mirror.state());
             context.doAction(artifact, new Op("removeOpen"));
@@ -198,13 +204,25 @@ class LiveJaCaMoAuctionIntegrationTest {
             assertEquals(MirrorState.LIVE, mirror.state());
             assertEquals(UndefinedValue.instance, attributeValue(direct, trace, artifactSemantic, "open"));
             assertFalse(mirror.lastSnapshotFingerprint().isBlank());
+            RuntimeDriftReport reconnectComparison = mirror.checkDrift(DriftResyncPolicy.REPORT_ONLY);
+            assertFalse(reconnectComparison.drifted(),
+                    "the full USE mirror must equal the authoritative runtime snapshot after reconnect");
+            assertEquals(mirror.lastSnapshotFingerprint(), reconnectComparison.fingerprint());
             writeRuntimeEvidence(Path.of("target/phase14-auction-evidence/runtime"), verifier.reports(), scenarioEvents,
                     registry,
-                    scenarioMetrics, mirror.lastSnapshotFingerprint(), validBid, invalidAmount, closedBid,
-                    project, artifact.getArtifactType());
+                    scenarioMetrics, reconnectComparison, evidenceEvents.snapshots(), validBid, invalidAmount, closedBid,
+                    project, artifact.getArtifactType(), sourceCommit);
             assertBalancedLifecycleForInvalidAmount(scenarioEvents);
             var scenario = new ObjectMapper().readTree(
                     Path.of("target/phase14-auction-evidence/runtime/scenario-summary.json").toFile());
+            assertEquals(0, scenario.path("reconnectDriftDifferenceCount").asInt(-1),
+                    "R5 evidence must record a full authoritative snapshot comparison after reconnect");
+            assertEquals(2, scenario.path("synchronizations").size(),
+                    "R5 evidence must retain both initial and reconnect snapshot provenance");
+            assertEquals(0, scenario.path("failedEvents").asInt(-1),
+                    "an event may be processed but still fail during USE mutation");
+            assertEquals(0, scenario.path("rejectedEvents").asInt(-1),
+                    "the scenario must not silently reject a received runtime event");
             assertEquals("PROGRAMMATIC_REAL_MOISE_API_SUBSET_NOT_LOADED_FROM_STATIC_XML",
                     scenario.path("moiseRuntimeProvenance").asText());
             assertEquals("STATIC_IMPORT_PROVENANCE_ONLY", scenario.path("moiseXmlRole").asText());
@@ -245,11 +263,13 @@ class LiveJaCaMoAuctionIntegrationTest {
     private void writeRuntimeEvidence(Path output, List<RuntimeVerificationReport> reports,
                                       List<RuntimeEvent> authoritativeEvents,
                                       ConstraintRegistry registry, QueueMetrics metrics,
-                                      String resyncFingerprint, List<RuntimeVerificationReport> validBid,
+                                      RuntimeDriftReport reconnectComparison, List<RuntimeSnapshot> synchronizations,
+                                      List<RuntimeVerificationReport> validBid,
                                       List<RuntimeVerificationReport> invalidAmount,
                                       List<RuntimeVerificationReport> closedBid, Path project,
-                                      String artifactRuntimeClass) throws Exception {
+                                      String artifactRuntimeClass, String sourceCommit) throws Exception {
         Files.createDirectories(output);
+        assertEquals(2, synchronizations.size(), "initial connect and reconnect must each apply a full snapshot");
         assertEquals(metrics.processed(), authoritativeEvents.size(),
                 "event evidence must come from the complete authoritative runtime stream");
         assertEquals(13, authoritativeEvents.size(), "the evidence scenario must preserve all 13 runtime events");
@@ -268,7 +288,7 @@ class LiveJaCaMoAuctionIntegrationTest {
         var summary = json.createObjectNode().put("schemaVersion", "1.0.0")
                 .put("artifactKind", "PHASE_14_RUNTIME_SCENARIO_SUMMARY")
                 .put("hashPolicy", "LF_NORMALIZED_UTF8")
-                .put("repositoryBaseCommit", gitHead(Path.of("..")))
+                .put("repositoryBaseCommit", sourceCommit)
                 .put("pluginVersion", "7.5.0")
                 .put("auctionArtifactRuntimeClass", artifactRuntimeClass)
                 .put("auctionArtifactSource", "<auction>/src/env/auction/AuctionArtifact.java")
@@ -286,12 +306,24 @@ class LiveJaCaMoAuctionIntegrationTest {
                         ? "EXPECTED_CASE_PRECONDITION_FAIL" : "MISSING_FAIL")
                 .put("closedAuctionBid", hasFailure(closedBid, registry, "AuctionOpenForBid")
                         ? "EXPECTED_CASE_PRECONDITION_FAIL" : "MISSING_FAIL")
-                .put("reconnectResync", resyncFingerprint.isBlank() ? "MISSING_FINGERPRINT" : "PASS")
+                .put("reconnectResync", reconnectComparison.drifted() ? "DRIFT_REMAINS" : "PASS")
                 .put("processedEvents", metrics.processed()).put("droppedEvents", metrics.dropped())
+                .put("failedEvents", metrics.failed()).put("rejectedEvents", metrics.rejected())
                 .put("eventEvidenceCount", authoritativeEvents.size()).put("runtimeReportCount", reports.size())
-                .put("resyncFingerprint", resyncFingerprint)
+                .put("resyncFingerprint", synchronizations.get(1).fingerprint())
+                .put("reconnectComparedSnapshotId", reconnectComparison.snapshotId())
+                .put("reconnectComparedFingerprint", reconnectComparison.fingerprint())
+                .put("reconnectDriftDifferenceCount", reconnectComparison.differences().size())
                 .put("eventLogSha256", sha256(output.resolve("event-log.json")))
                 .put("verificationReportsSha256", sha256(output.resolve("verification-reports.json")));
+        var snapshotArray = summary.putArray("synchronizations");
+        for (int index = 0; index < synchronizations.size(); index++) {
+            RuntimeSnapshot snapshot = synchronizations.get(index);
+            snapshotArray.addObject().put("phase", index == 0 ? "INITIAL_CONNECT" : "RECONNECT")
+                    .put("snapshotId", snapshot.snapshotId())
+                    .put("fingerprint", snapshot.fingerprint())
+                    .put("mutationCount", snapshot.mutations().size());
+        }
         Path verificationProfile = Path.of("src/main/resources/org/tzi/use/plugins/jacamo/verification/"
                 + "jacamo-verification-profile-v1.json");
         summary.putObject("verificationProfile")
@@ -327,24 +359,21 @@ class LiveJaCaMoAuctionIntegrationTest {
         return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(normalized));
     }
 
-    private String gitHead(Path repository) throws Exception {
-        Process process = new ProcessBuilder("git", "rev-parse", "HEAD")
-                .directory(repository.toAbsolutePath().normalize().toFile()).redirectErrorStream(true).start();
-        String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8).strip();
-        if (process.waitFor() != 0 || !output.matches("[0-9a-f]{40}"))
-            throw new IllegalStateException("PHASE14_SOURCE_COMMIT_UNAVAILABLE: " + output);
-        return output;
-    }
 
     private static final class EvidenceEventObserver implements RuntimeEventObserver {
         private final RuntimeEventObserver delegate;
         private final CopyOnWriteArrayList<RuntimeEvent> events = new CopyOnWriteArrayList<>();
+        private final CopyOnWriteArrayList<RuntimeSnapshot> snapshots = new CopyOnWriteArrayList<>();
 
         private EvidenceEventObserver(RuntimeEventObserver delegate) { this.delegate = delegate; }
         private List<RuntimeEvent> events() { return List.copyOf(events); }
+        private List<RuntimeSnapshot> snapshots() { return List.copyOf(snapshots); }
 
         @Override public void stateChanged(MirrorState state) { delegate.stateChanged(state); }
-        @Override public void snapshotApplied(RuntimeSnapshot snapshot) { delegate.snapshotApplied(snapshot); }
+        @Override public void snapshotApplied(RuntimeSnapshot snapshot) {
+            snapshots.add(snapshot);
+            delegate.snapshotApplied(snapshot);
+        }
         @Override public void eventReceived(RuntimeEvent event) {
             events.add(event);
             delegate.eventReceived(event);

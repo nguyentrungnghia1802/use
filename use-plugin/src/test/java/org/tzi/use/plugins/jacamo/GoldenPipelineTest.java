@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.tzi.use.plugins.jacamo.constraint.ConstraintExtractor;
 import org.tzi.use.plugins.jacamo.evidence.EvidenceNormalizer;
+import org.tzi.use.plugins.jacamo.evidence.EvidenceSourceCommit;
 import org.tzi.use.plugins.jacamo.extraction.StaticProjectImporter;
 import org.tzi.use.plugins.jacamo.mapping.MappingLoader;
 import org.tzi.use.plugins.jacamo.mapping.TransformationPlanner;
@@ -41,6 +42,7 @@ class GoldenPipelineTest {
 
     @Test
     void auctionArtifactsMatchReviewedGoldenDigests() throws Exception {
+        String sourceCommit = EvidenceSourceCommit.verify(Path.of(".."), EvidenceSourceCommit.PHASE14_INPUTS);
         Path fixture = Path.of("src/test/resources/auction");
         Path project = Files.createDirectory(temporary.resolve("auction")).toRealPath();
         // Fixed LF fixture bytes keep provenance hashes independent of Git autocrlf.
@@ -125,7 +127,7 @@ class GoldenPipelineTest {
                 .put("projectId", semantic.projectId())
                 .put("projectEntry", "<auction>/auction.jcm")
                 .put("sourceRevisionPolicy", "CHECKED_IN_FIXTURE_CONTENT_HASHES")
-                .put("repositoryBaseCommit", gitHead(Path.of("..")))
+                .put("repositoryBaseCommit", sourceCommit)
                 .put("auctionJcmSha256", sha256(project.resolve("auction.jcm")))
                 .put("artifactSourceSha256", sha256(project.resolve("src/env/auction/AuctionArtifact.java")))
                 .put("agentSourceSha256", sha256(project.resolve("src/agt/auctioneer.asl")))
@@ -236,12 +238,4 @@ class GoldenPipelineTest {
         return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(normalized));
     }
 
-    private String gitHead(Path repository) throws Exception {
-        Process process = new ProcessBuilder("git", "rev-parse", "HEAD")
-                .directory(repository.toAbsolutePath().normalize().toFile()).redirectErrorStream(true).start();
-        String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8).strip();
-        if (process.waitFor() != 0 || !output.matches("[0-9a-f]{40}"))
-            throw new IllegalStateException("PHASE14_SOURCE_COMMIT_UNAVAILABLE: " + output);
-        return output;
-    }
 }
