@@ -16,20 +16,20 @@ Một người dùng USE phải có thể:
 
 ## 2. Main actions
 
-Phase 1 provides only `Plugins > JaCaMo > Status` and the `jacamo status`
-shell command to confirm plugin loading. The actions below belong to later
-phases and are not enabled by the skeleton.
+Use `Plugins > JaCaMo > Open Workbench...` to open the workbench. `Plugins >
+JaCaMo > Status` and the `jacamo status` shell command confirm plugin loading.
 
-Menu/toolbar:
-- `Import JaCaMo Project...`
-- `Rebuild JaCaMo Model`
-- `Validate Mapping`
-- `Load Verification Profile...`
-- `Run Full Verification`
-- `Connect JaCaMo Runtime`
-- `Disconnect Runtime`
-- `Resync Runtime State`
-- `Export Verification Report`
+Workbench toolbar:
+- `Import JaCaMo Project...`;
+- `Rebuild`;
+- `Load OCL...`;
+- `Run Full Verification`;
+- `Export Report...`.
+
+The Runtime tab contains Connect, Disconnect, Reconnect, Resync, and Refresh.
+The six tabs are Project, Trace, Diagnostics, Verification, Runtime, and Binding.
+Mapping compatibility is shown in Project; exact binding candidates are handled
+in Binding. The source path and line can be copied from the Trace tab.
 
 ---
 

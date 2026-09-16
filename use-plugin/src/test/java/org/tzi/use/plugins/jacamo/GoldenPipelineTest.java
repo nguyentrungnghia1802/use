@@ -136,7 +136,7 @@ class GoldenPipelineTest {
                 .put("jasonVersion", "3.3.0")
                 .put("cartagoVersion", "3.1")
                 .put("moiseVersion", "1.1")
-                .put("pluginVersion", "7.5.0")
+                .put("pluginVersion", "1.0.0")
                 .put("javaVersion", System.getProperty("java.version"))
                 .put("sourceFiles", semantic.sourceIndex().size())
                 .put("semanticElements", semantic.elements().size())
@@ -205,6 +205,8 @@ class GoldenPipelineTest {
         Path manifestPath = output.resolve("manifest.json");
         assertTrue(Files.exists(manifestPath), "Phase 14 evidence must include an explicit manifest");
         var manifest = new ObjectMapper().readTree(manifestPath.toFile());
+        assertEquals("1.0.0", manifest.path("pluginVersion").asText(),
+                "Auction evidence must identify the plugin release, not the USE parent Maven version");
         assertEquals("LF_NORMALIZED_UTF8", manifest.path("hashPolicy").asText());
         assertEquals(64, manifest.path("ecoreSha256").asText().length());
         assertEquals(64, manifest.path("mappingSha256").asText().length());

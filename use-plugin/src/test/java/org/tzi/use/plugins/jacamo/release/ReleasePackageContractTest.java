@@ -21,6 +21,8 @@ class ReleasePackageContractTest {
             "Core/Metamodel/JaCaMo-Metamodel.ecore",
             "KNOWN-LIMITATIONS.md",
             "LICENSE",
+            "licenses/APACHE-2.0.txt",
+            "licenses/SLF4J-MIT.txt",
             "NOTICE",
             "README.md",
             "compatibility.json",
@@ -61,7 +63,7 @@ class ReleasePackageContractTest {
             assertFalse(source.isBlank(), "every package entry needs a repository source");
             assertFalse(target.isBlank(), "every package entry needs an archive path");
             if (entry.path("generated").asBoolean()) {
-                assertEquals("target/use-plugin-7.5.0.jar", source,
+                assertEquals("target/use-plugin-1.0.0.jar", source,
                         "only the Maven-built plugin JAR may be a generated package input");
             } else {
                 assertTrue(Files.isRegularFile(root.resolve(source)), () -> "missing release source: " + source);

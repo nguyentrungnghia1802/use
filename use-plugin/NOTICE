@@ -7,3 +7,10 @@ must be supplied separately by the user.
 
 The canonical JaCaMo metamodel, mapping, verification resources and Auction example
 included here are the exact files audited by this repository's release tests.
+
+The plugin JAR embeds JSON Schema Validator 2.0.1 (NetworkNT), itu 1.14.0,
+Jackson 2.18.3, and SnakeYAML 2.3 under Apache License 2.0. It also embeds
+SLF4J API 2.0.17 under its MIT license. The corresponding license texts are
+in licenses/APACHE-2.0.txt and licenses/SLF4J-MIT.txt. Jackson and its
+FastDoubleParser third-party notices and license texts remain in the JAR's
+META-INF resources.

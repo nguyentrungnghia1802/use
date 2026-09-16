@@ -197,16 +197,17 @@ USE repository hiện có core/gui/assembly và plugin loading. Plugin phải:
 - tham khảo `plugin_monitor` để hiểu runtime verification integration patterns;
 - không phụ thuộc vào undocumented internals khi có alternative.
 
-Target build:
-- plugin JAR;
-- resources Ecore/mapping/OCL;
-- optional sample Auction project;
-- tests.
+The release build produces a plugin JAR and ZIP. The JAR embeds the canonical
+Ecore, mapping JSON/schema/freeze manifest, core OCL, plugin descriptor,
+compatibility metadata, and release manifest. The ZIP also carries the source
+copies, Auction example, documentation, license, and SHA-256 sidecar. The
+packaging integration test compares embedded bytes with canonical sources and
+loads the JAR extracted from the ZIP through the pinned USE plugin runtime.
 
-Phase 1 boundary: `JaCaMoFacade` is the UI-facing entry point. The status menu
-action and shell command use its skeleton implementation. `ImportService`,
-`VerificationService`, and `RuntimeService` are interfaces only; no import,
-verification, or runtime behavior is available in Phase 1.
+`JaCaMoFacade` is the UI boundary for implemented import, transformation,
+verification, binding, reporting, and runtime lifecycle services. The workbench
+delegates these operations to the facade. Jason, CArtAgO, and Moise runtime
+libraries are provided by the host classpath, as recorded in `compatibility.json`.
 
 ---
 

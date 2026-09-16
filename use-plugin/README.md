@@ -9,9 +9,12 @@ Jason 3.3.0, CArtAgO 3.1 and Moise 1.1 integration scope.
 1. Use JDK 21 and USE 7.5.0.
 2. Extract this archive into the USE installation root. This places the plugin JAR
    in `lib/plugins` and the frozen metamodel/mapping under `Core`.
+   The JAR also embeds byte-identical canonical Ecore, mapping, freeze manifest,
+   compatibility metadata, and release manifest resources.
 3. Make Jason 3.3.0, CArtAgO 3.1, Moise 1.1 and their required runtime dependencies
    available on the USE JVM classpath. They are intentionally not redistributed in
-   this archive.
+   this archive. The plugin's JSON Schema validator and its dependencies are
+   embedded in the plugin JAR.
 4. Start USE from the installation root and confirm `Plugins > JaCaMo > Status` or
    run `jacamo status` in the USE shell.
 

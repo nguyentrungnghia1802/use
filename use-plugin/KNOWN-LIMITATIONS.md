@@ -15,3 +15,5 @@
 - Runtime verification observes and reports; it does not block JaCaMo actions.
 - Interactive installed-distribution GUI testing and other OS/JDK/component versions
   are outside the automated release gate.
+- The plugin requires its documented host/runtime libraries on the USE classpath;
+  the release does not redistribute the JaCaMo component dependencies.

@@ -28,6 +28,8 @@
         <file><source>KNOWN-LIMITATIONS.md</source><outputDirectory>/</outputDirectory></file>
         <file><source>NOTICE</source><outputDirectory>/</outputDirectory></file>
         <file><source>../COPYING</source><outputDirectory>/</outputDirectory><destName>LICENSE</destName></file>
+        <file><source>licenses/APACHE-2.0.txt</source><outputDirectory>licenses</outputDirectory></file>
+        <file><source>licenses/SLF4J-MIT.txt</source><outputDirectory>licenses</outputDirectory></file>
         <file><source>compatibility.json</source><outputDirectory>/</outputDirectory></file>
         <file><source>release/release-manifest.json</source><outputDirectory>/</outputDirectory><destName>release-manifest.json</destName></file>
         <file><source>docs/project/02-system-architecture.md</source><outputDirectory>docs</outputDirectory><destName>architecture.md</destName></file>

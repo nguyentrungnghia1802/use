@@ -9,6 +9,7 @@
         <version>7.5.0</version>
     </parent>
     <artifactId>use-plugin</artifactId>
+    <version>1.0.0</version>
     <name>USE JaCaMo Plugin</name>
 
     <repositories>
@@ -27,7 +28,7 @@
         <dependency>
             <groupId>org.tzi.use</groupId>
             <artifactId>use-gui</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -79,6 +80,19 @@
                 <targetPath>org/tzi/use/plugins/jacamo/release</targetPath>
                 <includes><include>release-manifest.json</include></includes>
             </resource>
+            <resource>
+                <directory>.</directory>
+                <targetPath>org/tzi/use/plugins/jacamo/release</targetPath>
+                <includes><include>compatibility.json</include></includes>
+            </resource>
+            <resource>
+                <directory>licenses</directory>
+                <targetPath>org/tzi/use/plugins/jacamo/release/licenses</targetPath>
+                <includes>
+                    <include>APACHE-2.0.txt</include>
+                    <include>SLF4J-MIT.txt</include>
+                </includes>
+            </resource>
         </resources>
         <plugins>
             <plugin>
@@ -86,12 +100,48 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.4.2</version>
                 <configuration>
+                    <forceCreation>true</forceCreation>
                     <archive>
                         <manifest>
                             <mainClass>org.tzi.use.plugins.jacamo.JaCaMoPlugin</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals><goal>shade</goal></goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>META-INF/MANIFEST.MF</exclude>
+                                        <exclude>module-info.class</exclude>
+                                        <exclude>META-INF/versions/*/module-info.class</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>org.tzi.use.plugins.jacamo.JaCaMoPlugin</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

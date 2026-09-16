@@ -10,3 +10,8 @@
   drift detection and reconnect/full-resync.
 - Added the USE workbench UI, Auction positive/negative/live acceptance evidence and
   reproducible release packaging.
+- Embedded byte-verified canonical Ecore, mapping/schema/freeze data, compatibility
+  metadata, and release manifest in the plugin JAR; verified release ZIP contents
+  and plugin discovery from the packaged JAR.
+- Bundled the JSON Schema validator and its runtime dependencies for installed
+  mapping import; aligned Maven artifact metadata with plugin release 1.0.0.
