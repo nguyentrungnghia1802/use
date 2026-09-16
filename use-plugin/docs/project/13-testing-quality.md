@@ -322,5 +322,11 @@ most once, and every validator/hash/parser still consumes the same owned bytes.
 The focused mapping class passed **10/10** and the full plugin package passed
 **112/112**, including golden, plugin-load, live Auction and runtime tests. Final
 reactor `mvn verify` passed **255/255** (112 plugin + 13 core + 130 GUI, including
-Failsafe) across all five modules. Clean-checkout and independent review results
-are recorded in the task execution report for the exact fix-round commit.
+Failsafe) across all five modules. Exact production commit `eae54750` then passed
+`mvn clean verify` from a separate clone: **255/255**, zero failures, errors or
+skips; the clone remained clean after its build log was retained outside the
+checkout. Independent review of `f50a6af2..eae54750` found no Critical or Important
+issue and confirmed the fix preserves snapshot ownership, canonical Core bytes and
+public API behavior. The only Minor finding was this evidence's earlier reference
+to a Git-ignored execution report; the directly tracked evidence here supersedes
+that reference.
