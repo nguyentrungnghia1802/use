@@ -916,17 +916,17 @@ Read:
 - [x] release manifest.
 
 ## P15.4 Git
-- [ ] final phase branch clean.
-- [ ] final commits.
-- [ ] merge.
-- [ ] push.
-- [ ] tag release.
-- [ ] push tag.
+- [x] final phase branch clean.
+- [x] final commits.
+- [x] merge.
+- [x] push.
+- [x] tag release.
+- [x] push tag.
 
 ## P15.5 Final acceptance
-- [ ] Every checkbox in `docs/project/17-end-to-end-acceptance.md` verified.
-- [ ] No known P0/P1 correctness blocker.
-- [ ] Final report generated.
+- [x] Every checkbox in `docs/project/17-end-to-end-acceptance.md` verified.
+- [x] No known P0/P1 correctness blocker.
+- [x] Final report generated.
 
 Pre-integration evidence (2026-09-16): `mvn -pl use-plugin verify` passed
 119 unit tests and 3 release integration tests; full reactor `mvn verify`
@@ -950,3 +950,9 @@ Exact release implementation commit `6cccfc65` was cloned without prior build
 outputs and passed `mvn clean verify`: 265/265 tests, 0 failures, 0 errors and
 0 skips. Git integration, the final tagged-commit regression, tag push and
 remote package verification remain release gates.
+
+Final integration evidence (2026-09-16): remote branch `phase/15-release` was
+verified at `558a3047`, then merged into `main` as `a4951e91`. The post-merge
+full reactor passed 265/265 tests with no failures, errors or skips. The final
+main commit was regression-tested, pushed, tagged `use-jacamo-plugin-v1.0.0`,
+and the remote main/tag targets plus release ZIP/JAR/SHA-256 were verified.
