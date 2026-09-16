@@ -55,6 +55,19 @@ class MappingTransformationTest {
     }
 
     @Test
+    void invalidMappingSchemaTakesPrecedenceOverMissingDownstreamInputs() throws Exception {
+        Path invalid = temporary.resolve("invalid.json");
+        Files.writeString(invalid, "{}");
+
+        MappingException schema = assertThrows(MappingException.class, () -> new MappingLoader().load(
+                invalid, Path.of("Core/Mapping/jacamo-use-mapping.schema.json"),
+                temporary.resolve("missing.ecore"), temporary.resolve("missing-freeze-manifest.json")));
+
+        assertEquals("MAPPING_SCHEMA_INVALID", schema.code(),
+                "schema validation must fail before Ecore or manifest inputs are required");
+    }
+
+    @Test
     void alteredMappingTargetsAreBlockedByTheFrozenMappingFingerprint() throws Exception {
         Path changed = temporary.resolve("changed.json");
         String canonical = Files.readString(Path.of("Core/Mapping/jacamo-use-mapping-v1.json"));

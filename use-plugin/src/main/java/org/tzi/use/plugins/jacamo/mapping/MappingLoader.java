@@ -43,11 +43,9 @@ public final class MappingLoader {
 
     public MappingModel load(Path mappingPath, Path schemaPath, Path ecorePath, Path freezePath) {
         try {
-            // Own each snapshot: validation, hashing and parsing must never reopen an input.
+            // Own each snapshot when its validation stage begins; never reopen an input.
             byte[] mappingBytes = reader.read(mappingPath).clone();
             byte[] schemaBytes = reader.read(schemaPath).clone();
-            byte[] ecoreBytes = reader.read(ecorePath).clone();
-            byte[] freezeBytes = reader.read(freezePath).clone();
             String mappingText = new String(mappingBytes, StandardCharsets.UTF_8);
             String schemaText = new String(schemaBytes, StandardCharsets.UTF_8);
             var schema = SchemaRegistry.withDefaultDialect(SpecificationVersion.DRAFT_2020_12)
@@ -57,7 +55,9 @@ public final class MappingLoader {
                 throw new MappingException("MAPPING_SCHEMA_INVALID", errors.toString());
             }
             JsonNode root = JSON.readTree(mappingText);
+            byte[] freezeBytes = reader.read(freezePath).clone();
             JsonNode manifest = JSON.readTree(freezeBytes);
+            byte[] ecoreBytes = reader.read(ecorePath).clone();
             validateFingerprint(root, ecoreBytes, manifest);
             EcoreKeys keys = ecoreKeys(ecoreBytes);
             validateSources(root, keys);

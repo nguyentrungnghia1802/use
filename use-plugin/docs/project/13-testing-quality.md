@@ -308,3 +308,19 @@ including Failsafe), all five modules, in 2m10s.
 Logs are
 `use-plugin/target/phase13-task2-fix1-*`; the appended task report records the fix
 commit and final reactor/clean-checkout results. Earlier counts remain historical.
+
+### Review fix round 2: validation precedence (2026-09-16)
+
+Independent re-review found that fix round 1 eagerly snapshotted Ecore and the
+freeze manifest before validating the mapping schema. A missing downstream input
+could therefore replace the actionable `MAPPING_SCHEMA_INVALID` diagnostic with
+the generic `MAPPING_LOAD_FAILED`. The deterministic regression uses an invalid
+mapping file and absent Ecore/manifest paths. It failed RED with the generic code,
+then passed after downstream snapshots were moved behind successful schema and
+mapping JSON validation. Mapping, schema, manifest and Ecore are still each read at
+most once, and every validator/hash/parser still consumes the same owned bytes.
+The focused mapping class passed **10/10** and the full plugin package passed
+**112/112**, including golden, plugin-load, live Auction and runtime tests. Final
+reactor `mvn verify` passed **255/255** (112 plugin + 13 core + 130 GUI, including
+Failsafe) across all five modules. Clean-checkout and independent review results
+are recorded in the task execution report for the exact fix-round commit.

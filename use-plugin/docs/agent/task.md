@@ -813,6 +813,14 @@ expected inconsistent-read behavior, then GREEN (mapping tests 9/9; module
 111/111; full reactor `mvn verify` 254/254). The existing Phase 13 evidence section and task report contain the
 superseding results; earlier 108/251 counts above identify the pre-review revision.
 
+Review fix round 2 (2026-09-16): downstream Ecore/manifest snapshots are now taken
+only after mapping schema and JSON validation, restoring `MAPPING_SCHEMA_INVALID`
+precedence when later inputs are missing without weakening the immutable
+single-snapshot contract. The deterministic regression was RED with
+`MAPPING_LOAD_FAILED`, then GREEN; mapping tests passed 10/10 and the module passed
+112/112. Full reactor `mvn verify` passed 255/255; exact-commit clean-checkout and
+independent review evidence is recorded in the append-only task report.
+
 ---
 
 # Phase 14 — Auction Final E2E and Thesis Evidence
