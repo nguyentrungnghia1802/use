@@ -55,16 +55,24 @@ class ReleasePackageIT {
             try (InputStream input = zip.getInputStream(zip.getEntry("lib/plugins/use-jacamo-plugin-1.0.0.jar"))) {
                 pluginJar = input.readAllBytes();
             }
-            boolean descriptor = false;
-            boolean pluginClass = false;
+            Set<String> requiredJarEntries = Set.of(
+                    "useplugin.xml",
+                    "org/tzi/use/plugins/jacamo/JaCaMoPlugin.class",
+                    "org/tzi/use/plugins/jacamo/canonical/JaCaMo-Metamodel.ecore",
+                    "org/tzi/use/plugins/jacamo/canonical/jacamo-use-mapping-v1.json",
+                    "org/tzi/use/plugins/jacamo/canonical/jacamo-use-mapping.schema.json",
+                    "org/tzi/use/plugins/jacamo/canonical/freeze-manifest.json",
+                    "org/tzi/use/plugins/jacamo/ocl/jacamo-core.ocl",
+                    "org/tzi/use/plugins/jacamo/release/release-manifest.json");
+            Set<String> jarEntries = new LinkedHashSet<>();
             try (JarInputStream jar = new JarInputStream(new java.io.ByteArrayInputStream(pluginJar))) {
                 for (var entry = jar.getNextJarEntry(); entry != null; entry = jar.getNextJarEntry()) {
-                    descriptor |= entry.getName().equals("useplugin.xml");
-                    pluginClass |= entry.getName().equals("org/tzi/use/plugins/jacamo/JaCaMoPlugin.class");
+                    if (!entry.isDirectory()) jarEntries.add(entry.getName());
                 }
             }
-            assertTrue(descriptor, "plugin descriptor must be present in the packaged JAR");
-            assertTrue(pluginClass, "plugin entry class must be present in the packaged JAR");
+            assertTrue(jarEntries.containsAll(requiredJarEntries),
+                    () -> "plugin JAR is missing required release resources: "
+                            + requiredJarEntries.stream().filter(entry -> !jarEntries.contains(entry)).toList());
         }
 
         String expected = Files.readString(checksum).strip().split("\\s+")[0].toLowerCase();

@@ -56,6 +56,30 @@
         </dependency>
     </dependencies>
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>Core/Metamodel</directory>
+                <targetPath>org/tzi/use/plugins/jacamo/canonical</targetPath>
+                <includes><include>JaCaMo-Metamodel.ecore</include></includes>
+            </resource>
+            <resource>
+                <directory>Core/Mapping</directory>
+                <targetPath>org/tzi/use/plugins/jacamo/canonical</targetPath>
+                <includes>
+                    <include>jacamo-use-mapping-v1.json</include>
+                    <include>jacamo-use-mapping.schema.json</include>
+                    <include>freeze-manifest.json</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>release</directory>
+                <targetPath>org/tzi/use/plugins/jacamo/release</targetPath>
+                <includes><include>release-manifest.json</include></includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
