@@ -892,7 +892,7 @@ Read:
 - `docs/project/17-end-to-end-acceptance.md`
 
 ## P15.1 Release build
-- [ ] clean checkout.
+- [x] clean checkout.
 - [x] full build.
 - [x] full tests.
 - [x] mapping audit.
@@ -945,3 +945,8 @@ resources matched source bytes, and its SHA-256 sidecar matched the archive.
 Auction evidence contained 14 artifacts, 13 runtime events, 11 reports, and
 zero reconnect drift differences. Exact release-commit clean clone, Git
 integration, tag, and final package verification remain release gates.
+
+Exact release implementation commit `6cccfc65` was cloned without prior build
+outputs and passed `mvn clean verify`: 265/265 tests, 0 failures, 0 errors and
+0 skips. Git integration, the final tagged-commit regression, tag push and
+remote package verification remain release gates.
