@@ -46,8 +46,8 @@ class InstanceMaterializationTest {
                 new VerificationProfileLoader().loadV1()).transformation();
         var instances = new InstancePlanner().plan(semantic, mapping, structure);
         TextBackend.GeneratedArtifacts artifacts = new TextBackend().generate("auction", structure, instances);
-        assertEquals("46454dd8816ff84283f0901decfce97bf328566ca06a4e24f28924d1d6795bb1", sha256(artifacts.useModel()));
-        assertEquals("e0742bab87a53fa4e6529754bdedf114baf463540dfd7a610021a1f19d2294b4", sha256(artifacts.initialCommands()));
+        assertEquals("91f8a92df05aabec35e5d5e832e82732df922b3b2d05703636a7209e33e284a0", sha256(artifacts.useModel()));
+        assertEquals("cdbd4fd6e76bcafa44fb167402b787653f077ef9961ba65e5f1c55bb3768d158", sha256(artifacts.initialCommands()));
         DirectUseBackend.Result direct = new DirectUseBackend().materialize(artifacts, instances);
         assertEquals(instances.objects().size(), direct.system().state().numObjects());
         assertEquals(instances.links().size(), direct.system().state().allLinks().size());

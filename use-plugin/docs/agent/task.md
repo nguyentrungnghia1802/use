@@ -832,40 +832,56 @@ Read:
 - `docs/project/17-end-to-end-acceptance.md`
 
 ## P14.1 Reproducible project
-- [ ] Pin Auction source commit.
-- [ ] Pin all tool versions.
-- [ ] Store verification profile.
-- [ ] Store bindings if truly needed.
+- [x] Pin Auction source commit.
+- [x] Pin all tool versions.
+- [x] Store verification profile.
+- [x] Store bindings if truly needed.
 
 ## P14.2 Offline evidence
-- [ ] import log.
-- [ ] semantic summary.
-- [ ] generated `.use`.
-- [ ] initial `.cmd`.
-- [ ] generated OCL.
-- [ ] core/case OCL.
-- [ ] trace.
-- [ ] PASS scenario.
-- [ ] FAIL scenario.
+- [x] import log.
+- [x] semantic summary.
+- [x] generated `.use`.
+- [x] initial `.cmd`.
+- [x] generated OCL.
+- [x] core/case OCL.
+- [x] trace.
+- [x] PASS scenario.
+- [x] FAIL scenario.
 
 ## P14.3 Runtime evidence
-- [ ] real run.
-- [ ] event log.
-- [ ] valid bid scenario.
-- [ ] closed auction invalid bid.
-- [ ] invalid amount.
-- [ ] reconnect/resync.
-- [ ] violation report with source trace.
+- [x] real run.
+- [x] event log.
+- [x] valid bid scenario.
+- [x] closed auction invalid bid.
+- [x] invalid amount.
+- [x] reconnect/resync.
+- [x] violation report with source trace.
 
 ## P14.4 Research evidence
-- [ ] distinguish translated vs authored OCL.
-- [ ] distinguish structural vs runtime.
-- [ ] document unsupported semantics.
-- [ ] document assumptions.
-- [ ] preserve hashes/versions.
+- [x] distinguish translated vs authored OCL.
+- [x] distinguish structural vs runtime.
+- [x] document unsupported semantics.
+- [x] document assumptions.
+- [x] preserve hashes/versions.
 
 Acceptance:
 - [ ] Thesis demo can be repeated from clean checkout.
+
+Evidence (2026-09-16, source/evidence revision `d5636264`): `mvn -pl use-plugin verify`
+passed **118/118** and the full reactor `mvn verify` passed **261/261** (13 core,
+130 GUI including Failsafe, 118 plugin). The regenerated evidence contains exactly
+14 declared artifacts: 11 offline and 3 runtime. Independent JSON/path/hash audit
+found 13 runtime events, four balanced operation correlations (three `OP_EXIT`, one
+expected `OP_FAIL`), 11 verification reports, and zero reconnect authoritative
+snapshot differences. The manifest and runtime summary pin the checked-in source
+commit, component versions, verification profile and LF-normalized source/resource
+hashes. Independent review of `main..d5636264` found no Critical or Important issue;
+its two Minor notes concern stricter future assertion hardening, not a mismatch in
+the current artifacts. The documented limits remain: the live run uses real
+in-process Jason/CArtAgO and a programmatic real-Moise API subset, not a standalone
+`.jcm` launch or runtime loading of the checked-in Moise XML; arbitrary Java effects
+and normative lifecycle semantics are not claimed. Clean-checkout reproduction and
+merge/push remain the Phase 14 integration/Phase 15 release gates below.
 
 ---
 

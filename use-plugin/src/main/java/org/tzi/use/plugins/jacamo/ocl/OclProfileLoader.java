@@ -7,7 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 
-/** Loads authored OCL without changing it; compilation is performed against the generated USE model. */
+/** Loads authored OCL with canonical LF line endings; compilation uses the generated USE model. */
 public final class OclProfileLoader {
     public LoadedProfile loadCase(Path projectRoot, Path profile) {
         return loadWithin(projectRoot, profile, "OCL_PROFILE");
@@ -38,10 +38,11 @@ public final class OclProfileLoader {
         } catch (IOException exception) { throw new IllegalArgumentException("OCL_CORE_PROFILE_IO", exception); }
     }
     private LoadedProfile loaded(Path origin, String content) {
-        if (content.isBlank()) throw new IllegalArgumentException("OCL_PROFILE_EMPTY");
+        String canonical = content.replace("\r\n", "\n");
+        if (canonical.isBlank()) throw new IllegalArgumentException("OCL_PROFILE_EMPTY");
         try {
-            byte[] digest = MessageDigest.getInstance("SHA-256").digest(content.getBytes(StandardCharsets.UTF_8));
-            return new LoadedProfile(origin, content, java.util.HexFormat.of().formatHex(digest));
+            byte[] digest = MessageDigest.getInstance("SHA-256").digest(canonical.getBytes(StandardCharsets.UTF_8));
+            return new LoadedProfile(origin, canonical, java.util.HexFormat.of().formatHex(digest));
         } catch (Exception exception) { throw new IllegalStateException(exception); }
     }
     private IllegalArgumentException pathEscape(String diagnosticPrefix, Path attempted, Path allowedRoot) {
