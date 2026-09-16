@@ -1,0 +1,9 @@
+USE JaCaMo Plugin 1.0.0
+
+This package is distributed with the USE project under GNU GPL version 2; see
+LICENSE. The package does not redistribute Jason, CArtAgO or Moise binaries.
+Those optional runtime dependencies retain their respective upstream licenses and
+must be supplied separately by the user.
+
+The canonical JaCaMo metamodel, mapping, verification resources and Auction example
+included here are the exact files audited by this repository's release tests.

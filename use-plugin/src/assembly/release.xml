@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 https://maven.apache.org/xsd/assembly-1.1.3.xsd">
+    <id>release</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <files>
+        <file><source>${project.build.directory}/${project.build.finalName}.jar</source><outputDirectory>lib/plugins</outputDirectory><destName>use-jacamo-plugin-1.0.0.jar</destName></file>
+        <file><source>Core/Metamodel/JaCaMo-Metamodel.ecore</source><outputDirectory>Core/Metamodel</outputDirectory></file>
+        <file><source>Core/Mapping/jacamo-use-mapping-v1.json</source><outputDirectory>Core/Mapping</outputDirectory></file>
+        <file><source>Core/Mapping/jacamo-use-mapping.schema.json</source><outputDirectory>Core/Mapping</outputDirectory></file>
+        <file><source>Core/Mapping/freeze-manifest.json</source><outputDirectory>Core/Mapping</outputDirectory></file>
+        <file><source>src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v1.json</source><outputDirectory>profiles</outputDirectory></file>
+        <file><source>src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core.ocl</source><outputDirectory>ocl</outputDirectory></file>
+        <file><source>src/main/resources/org/tzi/use/plugins/jacamo/binding/binding-v1.schema.json</source><outputDirectory>schemas</outputDirectory></file>
+        <file><source>src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-event-v1.schema.json</source><outputDirectory>schemas</outputDirectory></file>
+        <file><source>src/main/resources/org/tzi/use/plugins/jacamo/trace/trace-v1.schema.json</source><outputDirectory>schemas</outputDirectory></file>
+        <file><source>src/test/resources/auction/auction.jcm</source><outputDirectory>examples/auction</outputDirectory></file>
+        <file><source>src/test/resources/auction/src/agt/auctioneer.asl</source><outputDirectory>examples/auction/src/agt</outputDirectory></file>
+        <file><source>src/test/resources/auction/src/env/auction/AuctionArtifact.java</source><outputDirectory>examples/auction/src/env/auction</outputDirectory></file>
+        <file><source>src/test/resources/auction/src/org/auction.xml</source><outputDirectory>examples/auction/src/org</outputDirectory></file>
+        <file><source>src/test/resources/auction/verification/auction.ocl</source><outputDirectory>examples/auction/verification</outputDirectory></file>
+        <file><source>README.md</source><outputDirectory>/</outputDirectory></file>
+        <file><source>CHANGELOG.md</source><outputDirectory>/</outputDirectory></file>
+        <file><source>KNOWN-LIMITATIONS.md</source><outputDirectory>/</outputDirectory></file>
+        <file><source>NOTICE</source><outputDirectory>/</outputDirectory></file>
+        <file><source>../COPYING</source><outputDirectory>/</outputDirectory><destName>LICENSE</destName></file>
+        <file><source>compatibility.json</source><outputDirectory>/</outputDirectory></file>
+        <file><source>release/release-manifest.json</source><outputDirectory>/</outputDirectory><destName>release-manifest.json</destName></file>
+        <file><source>docs/project/02-system-architecture.md</source><outputDirectory>docs</outputDirectory><destName>architecture.md</destName></file>
+        <file><source>docs/project/12-plugin-ui-workflow.md</source><outputDirectory>docs</outputDirectory><destName>user-workflow.md</destName></file>
+        <file><source>docs/project/15-build-release-operations.md</source><outputDirectory>docs</outputDirectory><destName>build-release.md</destName></file>
+    </files>
+</assembly>
