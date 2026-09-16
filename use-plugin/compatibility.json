@@ -1,4 +1,8 @@
 {
+  "plugin": {
+    "version": "1.0.0",
+    "tag": "use-jacamo-plugin-v1.0.0"
+  },
   "requirements": {
     "use": {
       "version": "7.5.0",

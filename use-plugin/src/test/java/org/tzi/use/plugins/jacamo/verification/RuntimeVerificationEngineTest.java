@@ -17,6 +17,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -37,6 +38,7 @@ import org.tzi.use.plugins.jacamo.runtime.RuntimeQueueBackpressureException;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeEvent;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeEventCodec;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeEventKind;
+import org.tzi.use.plugins.jacamo.runtime.RuntimeEventObserver;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeMirrorService;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeMutationEngine;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeSnapshot;
@@ -456,10 +458,14 @@ class RuntimeVerificationEngineTest {
         SyntheticRuntimeConnector connector = new SyntheticRuntimeConnector("drift",
                 new RuntimeSnapshot("authoritative", Instant.now(), 1, List.of(open), "authoritative-open"),
                 empty, codec);
-        RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
-                fixture.registry(), fixture.trace());
+        AtomicReference<RuntimeDriftReport> resyncReport = new AtomicReference<>();
+        RuntimeEventObserver observer = new RuntimeEventObserver() {
+            @Override public void driftChecked(RuntimeDriftReport report) {
+                if (report.resyncTriggered()) resyncReport.compareAndSet(null, report);
+            }
+        };
         RuntimeMirrorService mirror = new RuntimeMirrorService(connector,
-                new RuntimeMutationEngine(fixture.direct().system(), fixture.trace()), 8, verifier);
+                new RuntimeMutationEngine(fixture.direct().system(), fixture.trace()), 8, observer);
         mirror.connect(URI.create("synthetic://drift"));
         setOpen(fixture, false);
 
@@ -470,9 +476,9 @@ class RuntimeVerificationEngineTest {
 
         mirror.enablePeriodicDriftChecks(Duration.ofMillis(20), DriftResyncPolicy.AUTO_RESYNC);
         long deadline = System.nanoTime() + Duration.ofSeconds(3).toNanos();
-        while (!open(fixture) && System.nanoTime() < deadline) Thread.sleep(10);
+        while ((!open(fixture) || resyncReport.get() == null) && System.nanoTime() < deadline) Thread.sleep(10);
         assertTrue(open(fixture), "periodic authoritative check must trigger full resync");
-        assertTrue(mirror.lastDriftReport().resyncTriggered());
+        assertNotNull(resyncReport.get(), "the triggering drift report must not be lost when a later clean check runs");
         mirror.close();
     }
 
