@@ -1,6 +1,7 @@
 package org.tzi.use.plugins.jacamo.runtime;
 
 import cartago.Artifact;
+import cartago.GUARD;
 import cartago.OPERATION;
 
 public class TestAuctionArtifact extends Artifact {
@@ -12,8 +13,10 @@ public class TestAuctionArtifact extends Artifact {
 
     @OPERATION public void removeOpen() { removeObsProperty("open"); }
 
-    @OPERATION public void placeBid(String item, int amount) {
+    @OPERATION(guard = "canRequestBid") public void placeBid(String item, int amount) {
         if (amount <= 0) failed("amount must be positive");
         signal("bid", item, amount);
     }
+
+    @GUARD public boolean canRequestBid(String item, int amount) { return amount >= 0; }
 }

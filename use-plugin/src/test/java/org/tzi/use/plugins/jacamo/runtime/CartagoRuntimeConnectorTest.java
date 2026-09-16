@@ -11,6 +11,7 @@ import cartago.util.agent.CartagoBasicContext;
 import cartago.util.agent.ActionFailedException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -73,6 +74,7 @@ class CartagoRuntimeConnectorTest {
                     && String.valueOf(event.payload().get("error")).contains("positive")));
             assertTrue(events.stream().anyMatch(event -> event.kind() == RuntimeEventKind.OBS_PROPERTY_REMOVED
                     && event.payload().get("property").equals("open")));
+            assertBalancedOperationLifecycles(events);
             assertTrue(connector.fullSnapshot().mutations().stream().anyMatch(
                     event -> event.kind() == RuntimeEventKind.OBS_PROPERTY_REMOVED
                             && "open".equals(event.payload().get("property"))
@@ -86,6 +88,23 @@ class CartagoRuntimeConnectorTest {
             environment.unregisterLogger("/main", basicLogger);
         }
         assertEquals(ConnectorState.DISCONNECTED, connector.state());
+    }
+
+    private void assertBalancedOperationLifecycles(List<RuntimeEvent> events) {
+        Map<String, List<RuntimeEvent>> byCorrelation = new LinkedHashMap<>();
+        events.stream().filter(event -> event.kind() == RuntimeEventKind.OP_ENTER
+                        || event.kind() == RuntimeEventKind.OP_EXIT
+                        || event.kind() == RuntimeEventKind.OP_FAIL)
+                .forEach(event -> byCorrelation.computeIfAbsent(event.correlationId(), ignored -> new ArrayList<>())
+                        .add(event));
+        assertTrue(!byCorrelation.isEmpty(), "the real Artifact run must expose operation lifecycles");
+        byCorrelation.forEach((correlation, lifecycle) -> {
+            assertEquals(1, lifecycle.stream().filter(event -> event.kind() == RuntimeEventKind.OP_ENTER).count(),
+                    () -> "exactly one operation start is required for " + correlation + ": " + lifecycle);
+            assertEquals(1, lifecycle.stream().filter(event -> event.kind() == RuntimeEventKind.OP_EXIT
+                            || event.kind() == RuntimeEventKind.OP_FAIL).count(),
+                    () -> "exactly one terminal event is required for " + correlation + ": " + lifecycle);
+        });
     }
 
 }

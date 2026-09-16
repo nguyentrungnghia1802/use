@@ -23,6 +23,13 @@ import org.tzi.use.uml.mm.MPrePostCondition;
 public final class ConstraintRegistry {
     private static final Pattern PROFILE_INVARIANT = Pattern.compile(
             "(?ms)^\\s*context\\s+([A-Za-z_][A-Za-z0-9_]*)\\s+inv\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*:\\s*(.*?)(?=^\\s*context\\s+|\\z)");
+    private static final Pattern PROFILE_OPERATION_CONTEXT = Pattern.compile(
+            "(?m)^[ \\t]*context[ \\t]+([A-Za-z_][A-Za-z0-9_]*)::([A-Za-z_][A-Za-z0-9_]*)"
+                    + "[ \\t]*\\([^\\r\\n]*\\)[ \\t]*$");
+    private static final Pattern PROFILE_CONTEXT_START = Pattern.compile("(?m)^[ \\t]*context[ \\t]+");
+    private static final Pattern PROFILE_OPERATION_CLAUSE = Pattern.compile(
+            "(?ms)^[ \\t]*(pre|post)[ \\t]+([A-Za-z_][A-Za-z0-9_]*)[ \\t]*:[ \\t]*(.*?)"
+                    + "(?=^[ \\t]*(?:pre|post)[ \\t]+[A-Za-z_][A-Za-z0-9_]*[ \\t]*:|\\z)");
     private final List<ConstraintDescriptor> descriptors;
     private final Map<String, ConstraintDescriptor> compiled;
     private final Map<String, String> fingerprints;
@@ -63,12 +70,34 @@ public final class ConstraintRegistry {
                 Path path = registration.profile().origin();
                 String context = matcher.group(1);
                 String name = matcher.group(2);
-                String expression = matcher.group(3).strip();
-                String id = registration.origin() + ":" + path + ":" + name;
+                String expression = stripTrailingProfileComments(matcher.group(3));
+                String id = authoredId(registration.origin(), path, context, null, ConstraintKind.INV, name);
                 SourceSpan span = new SourceSpan(path, line, 1, line, Math.max(1, matcher.group().length()));
                 ConstraintDescriptor descriptor = new ConstraintDescriptor(id, name, context, null,
                         ConstraintKind.INV, registration.origin(), path, span, List.of(), true, expression);
                 sourceDescriptors.put(key(descriptor), descriptor);
+            }
+            Matcher contextMatcher = PROFILE_OPERATION_CONTEXT.matcher(content);
+            while (contextMatcher.find()) {
+                int nextContext = content.length();
+                Matcher next = PROFILE_CONTEXT_START.matcher(content);
+                if (next.find(contextMatcher.end())) nextContext = next.start();
+                Matcher clause = PROFILE_OPERATION_CLAUSE.matcher(content.substring(contextMatcher.end(), nextContext));
+                while (clause.find()) {
+                    int start = contextMatcher.end() + clause.start();
+                    int line = 1 + (int) content.substring(0, start).chars().filter(c -> c == '\n').count();
+                    Path path = registration.profile().origin();
+                    ConstraintKind kind = "pre".equals(clause.group(1)) ? ConstraintKind.PRE : ConstraintKind.POST;
+                    String name = clause.group(2);
+                    String id = authoredId(registration.origin(), path, contextMatcher.group(1),
+                            contextMatcher.group(2), kind, name);
+                    SourceSpan span = new SourceSpan(path, line, 1, line, Math.max(1, clause.group().length()));
+                    ConstraintDescriptor descriptor = new ConstraintDescriptor(id, name,
+                            contextMatcher.group(1), contextMatcher.group(2), kind,
+                            registration.origin(), path, span, List.of(), true,
+                            stripTrailingProfileComments(clause.group(3)));
+                    sourceDescriptors.put(key(descriptor), descriptor);
+                }
             }
         }
 
@@ -92,7 +121,7 @@ public final class ConstraintRegistry {
         fingerprints.put("useModelSha256", sha256(generated.useModel()));
         fingerprints.put("translatedManifestSha256", sha256(generated.provenanceManifest()));
         for (RegisteredProfile profile : profiles)
-            fingerprints.put(profile.origin().name().toLowerCase() + ":" + profile.profile().origin(),
+            fingerprints.put(profile.origin().name().toLowerCase() + ":" + portable(profile.profile().origin()),
                     profile.profile().sha256());
         return new ConstraintRegistry(all, compiled, fingerprints);
     }
@@ -106,14 +135,14 @@ public final class ConstraintRegistry {
     ConstraintDescriptor descriptor(MPrePostCondition condition) { return compiled.get(conditionKey(condition)); }
 
     private static ConstraintDescriptor fallback(MClassInvariant invariant) {
-        Path path = Path.of("<compiled-model>");
+        Path path = Path.of("compiled-model");
         return new ConstraintDescriptor("COMPILED:" + invariant.qualifiedName(), invariant.name(),
                 invariant.cls().name(), null, ConstraintKind.INV, ConstraintOrigin.USER, path,
                 new SourceSpan(path, 1, 1, 1, 1), List.of(), invariant.isActive(), invariant.bodyExpression().toString());
     }
 
     private static ConstraintDescriptor fallback(MPrePostCondition condition) {
-        Path path = Path.of("<compiled-model>");
+        Path path = Path.of("compiled-model");
         ConstraintKind kind = condition.isPre() ? ConstraintKind.PRE : ConstraintKind.POST;
         return new ConstraintDescriptor("COMPILED:" + condition, condition.name(), condition.cls().name(),
                 condition.operation().name(), kind, ConstraintOrigin.USER, path,
@@ -131,6 +160,20 @@ public final class ConstraintRegistry {
     private static String conditionKey(MPrePostCondition condition) {
         return "P|" + condition.cls().name() + "|" + condition.operation().name() + "|"
                 + (condition.isPre() ? ConstraintKind.PRE : ConstraintKind.POST) + "|" + condition.name();
+    }
+
+    private static String stripTrailingProfileComments(String expression) {
+        return expression.replaceFirst("(?ms)\\s*(?:^\\s*--[^\\r\\n]*(?:\\R|\\z))+\\s*\\z", "").strip();
+    }
+
+    private static String portable(Path path) {
+        return path.toString().replace('\\', '/');
+    }
+
+    private static String authoredId(ConstraintOrigin origin, Path path, String context, String operation,
+                                     ConstraintKind kind, String name) {
+        return origin + ":" + portable(path) + ":" + context + ":"
+                + (operation == null ? "" : operation + ":") + kind + ":" + name;
     }
 
     private static String sha256(String value) {

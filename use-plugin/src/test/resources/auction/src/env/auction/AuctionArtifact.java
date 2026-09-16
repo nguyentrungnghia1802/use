@@ -1,17 +1,24 @@
 package auction;
 
+import cartago.Artifact;
+import cartago.GUARD;
+import cartago.OPERATION;
+
 public class AuctionArtifact extends Artifact {
-    void init() { defineObsProperty("open", true); }
+    public void init() { defineObsProperty("open", true); }
 
     @OPERATION(guard="canBid")
-    void placeBid(String item, int amount) {
+    public void placeBid(String item, int amount) {
+        if (amount <= 0) failed("amount must be positive");
         signal("bid", item, amount);
-        await("open");
     }
 
     @GUARD
-    boolean canBid(int amount) { return amount > 0; }
+    public boolean canBid(String item, int amount) { return amount >= 0; }
 
-    @INTERNAL_OPERATION
-    void closeAuction() { }
+    @OPERATION
+    public void closeAuction() { getObsProperty("open").updateValue(false); }
+
+    @OPERATION
+    public void removeOpen() { removeObsProperty("open"); }
 }

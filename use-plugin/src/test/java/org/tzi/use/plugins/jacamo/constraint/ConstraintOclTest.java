@@ -28,6 +28,8 @@ import org.tzi.use.plugins.jacamo.materialization.TextBackend;
 import org.tzi.use.plugins.jacamo.ocl.OclGenerator;
 import org.tzi.use.plugins.jacamo.ocl.OclProfileLoader;
 import org.tzi.use.plugins.jacamo.semantic.MetamodelKind;
+import org.tzi.use.plugins.jacamo.verification.ConstraintOrigin;
+import org.tzi.use.plugins.jacamo.verification.ConstraintRegistry;
 import org.tzi.use.plugins.jacamo.verification.profile.VerificationProfileLoader;
 import org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayer;
 import org.tzi.use.uml.mm.ModelFactory;
@@ -35,6 +37,68 @@ import org.tzi.use.uml.ocl.value.BooleanValue;
 
 class ConstraintOclTest {
     @TempDir Path temporary;
+
+    @Test
+    void profileFingerprintAndContentAreIndependentOfCheckoutLineEndings() throws Exception {
+        Path lf = Files.createDirectories(temporary.resolve("lf")).resolve("case.ocl");
+        Path crlf = Files.createDirectories(temporary.resolve("crlf")).resolve("case.ocl");
+        Files.writeString(lf, "context AuctionArtifact inv Always: true\n");
+        Files.writeString(crlf, "context AuctionArtifact inv Always: true\r\n");
+        OclProfileLoader loader = new OclProfileLoader();
+        var canonical = loader.loadCase(lf.getParent(), Path.of("case.ocl"));
+        var windowsCheckout = loader.loadCase(crlf.getParent(), Path.of("case.ocl"));
+        assertEquals(canonical.sha256(), windowsCheckout.sha256());
+        assertEquals(canonical.content(), windowsCheckout.content());
+    }
+
+    @Test
+    void multipleContractsUnderOneAuthoredOperationContextKeepCaseProvenance() throws Exception {
+        String model = """
+                model Contracts
+                class A
+                operations
+                  ping(x : Integer)
+                end
+                class B
+                operations
+                  ping(x : Integer)
+                end
+                constraints
+                context A::ping(x : Integer)
+                pre First: x > 0
+                pre Second: x < 10
+                post Third: true
+                context B::ping(x : Integer)
+                pre First: x > 0
+                """;
+        Path profile = temporary.resolve("case.ocl");
+        Files.writeString(profile, """
+                context A::ping(x : Integer)
+                pre First: x > 0
+                pre Second: x < 10
+                post Third: true
+                context B::ping(x : Integer)
+                pre First: x > 0
+                """);
+        StringWriter errors = new StringWriter();
+        var compiled = USECompiler.compileSpecification(new ByteArrayInputStream(model.getBytes(StandardCharsets.UTF_8)),
+                "contracts.use", URI.create("memory:/contracts.use"), new PrintWriter(errors), new ModelFactory());
+        assertNotNull(compiled, errors.toString());
+        var loaded = new OclProfileLoader().loadCase(temporary, Path.of("case.ocl"));
+        var registry = ConstraintRegistry.load(compiled, new OclGenerator.GeneratedOcl(model, "", List.of()),
+                List.of(ConstraintRegistry.profile(ConstraintOrigin.CASE, loaded)));
+        for (String name : List.of("First", "Second", "Third")) {
+            var descriptor = registry.descriptors().stream().filter(value -> name.equals(value.name())
+                            && "A".equals(value.context()))
+                    .findFirst().orElseThrow();
+            assertEquals(ConstraintOrigin.CASE, descriptor.origin(), name);
+            assertEquals(profile.toAbsolutePath().normalize(), descriptor.sourcePath(), name);
+        }
+        assertEquals(4, registry.descriptors().stream().map(value -> value.id()).distinct().count(),
+                "same-named contracts on different operation owners must have distinct IDs");
+        for (var descriptor : registry.descriptors())
+            assertEquals(descriptor, registry.byId(descriptor.id()), "ID must identify exactly this descriptor");
+    }
 
     @Test
     void operationContractIsInsertedOnlyInItsBoundOwner() {
@@ -104,10 +168,20 @@ class ConstraintOclTest {
         OclProfileLoader loader = new OclProfileLoader();
         var generated = new OclGenerator().generate("auction", structure, constraints,
                 List.of(loader.loadCore(), loader.loadCase(project, Path.of("verification/auction.ocl"))));
-        assertTrue(generated.useModel().contains("pre Guard_canBid: (amount > 0)"));
+        assertTrue(generated.useModel().contains("pre Guard_canBid: (amount >= 0)"));
+        assertTrue(generated.useModel().contains("pre AuctionOpenForBid:"));
+        assertTrue(generated.useModel().contains("self.open = true"));
+        assertTrue(generated.useModel().contains("pre PositiveBidAmount:"));
+        assertTrue(generated.useModel().contains("amount > 0"));
         assertTrue(generated.useModel().contains("post OpenUnchanged: (self.open = self.open@pre)"));
         assertTrue(generated.provenanceManifest().contains("CARTAGO_GUARD|EXACT"));
+        assertFalse(generated.provenanceManifest().contains("\\"),
+                "generated provenance paths must be portable across operating systems");
+        assertTrue(generated.provenanceManifest().contains(
+                "PROFILE|/org/tzi/use/plugins/jacamo/ocl/jacamo-core.ocl|"));
         assertEquals(64, loader.loadCase(project, Path.of("verification/auction.ocl")).sha256().length());
+        assertEquals("8dfca43030d61307e14ce711ab4fe191ed5cd84301b2b701bc2c72c1587879b7",
+                loader.loadCore().sha256(), "core profile fingerprint must use canonical LF content");
 
         StringWriter errors = new StringWriter();
         assertNotNull(USECompiler.compileSpecification(new ByteArrayInputStream(generated.useModel().getBytes(StandardCharsets.UTF_8)),
@@ -116,6 +190,24 @@ class ConstraintOclTest {
         var commands = new TextBackend().generate("auction", structure, instances).initialCommands();
         DirectUseBackend.Result direct = new DirectUseBackend().materialize(
                 new TextBackend.GeneratedArtifacts(generated.useModel(), commands), instances);
+        var registry = ConstraintRegistry.load(direct.system().model(), generated,
+                List.of(ConstraintRegistry.profile(ConstraintOrigin.CORE, loader.loadCore()),
+                        ConstraintRegistry.profile(ConstraintOrigin.CASE,
+                                loader.loadCase(project, Path.of("verification/auction.ocl")))));
+        var openPrecondition = registry.descriptors().stream()
+                .filter(descriptor -> descriptor.name().equals("AuctionOpenForBid"))
+                .findFirst().orElseThrow();
+        assertEquals(ConstraintOrigin.CASE, openPrecondition.origin());
+        assertEquals(project.resolve("verification/auction.ocl").toAbsolutePath().normalize(),
+                openPrecondition.sourcePath());
+        assertFalse(openPrecondition.id().contains("\\"), "constraint IDs must use portable path separators");
+        assertTrue(registry.fingerprints().keySet().stream().noneMatch(key -> key.contains("\\")),
+                "fingerprint keys must use portable path separators");
+        var initialOpen = registry.descriptors().stream()
+                .filter(descriptor -> descriptor.name().equals("AuctionInitiallyOpen"))
+                .findFirst().orElseThrow();
+        assertEquals("self.open = true", initialOpen.oclSource(),
+                "a constraint must not absorb the comment belonging to the next context");
         assertTrue(direct.invariantsValid(), direct.validationOutput());
         var artifact = direct.system().state().allObjects().stream()
                 .filter(object -> object.cls().name().equals("AuctionArtifact")).findFirst().orElseThrow();
