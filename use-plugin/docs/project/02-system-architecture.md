@@ -123,6 +123,12 @@ Trách nhiệm:
 
 Không reparse toàn project trên mỗi event.
 
+`RuntimeEventObserver` is the headless observation boundary around the ordered mutation path. `eventReceived` is
+called synchronously at connector receipt and implementations must not block submission. Every received event has
+one terminal lifecycle notification: `eventRejected` if it cannot enter the stream, `eventCompleted` after the
+worker handles an accepted event (including mutation failure), or `eventStreamClosed` when the stream ends.
+Observers discard stream-scoped timing and correlation state on close; they never mutate JaCaMo execution state.
+
 ### 2.7 UI
 Trách nhiệm:
 - import project;

@@ -82,3 +82,21 @@ Mitigation:
 - phase gates;
 - each phase independently testable;
 - runtime monitor baseline remains observe-only.
+
+---
+
+## Phase 13 verification update (2026-09-16)
+
+R3/R9: malformed/partial/unsupported inputs and stale bindings are covered by
+located-diagnostic and unresolved-target regressions. Static imports do not
+initialize source or classpath classes. R6: ordered queue, disconnect/resync,
+late callbacks, rejected terminal events and bounded correlation cleanup pass
+synthetic regressions and the real in-process Auction integration.
+
+R7/R8: pins are verified against POMs and resolved dependencies; a fresh clone
+with an empty Maven repository passes the full reactor on Windows/JDK 21. Other
+OS/JDK combinations and the standalone JaCaMo launcher are not verified.
+R10: import/generation/check/runtime/heap measurements are recorded in
+[the Phase 13 testing evidence](13-testing-quality.md#8-phase-13-verification-evidence-2026-09-16).
+No measured bottleneck justifies optimization for this fixture; larger-project
+and long-duration performance remain open evidence boundaries.

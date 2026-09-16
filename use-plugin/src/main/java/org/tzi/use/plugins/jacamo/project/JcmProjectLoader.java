@@ -304,6 +304,14 @@ public final class JcmProjectLoader {
                 }
                 if (text.equals("}")) {
                     depth--;
+                    if (depth == 0) {
+                        if (i + 1 < tokens.size()) {
+                            error("JCM_TRAILING_CONTENT", tokens.get(i + 1).span(file),
+                                    "Unexpected content after the mas body", tokens.get(i + 1).text(),
+                                    "Keep one mas declaration per file; move shared declarations to an included project");
+                        }
+                        break;
+                    }
                     if (depth == 1) inWorkspace = false;
                     if (depth < 0) break;
                     continue;

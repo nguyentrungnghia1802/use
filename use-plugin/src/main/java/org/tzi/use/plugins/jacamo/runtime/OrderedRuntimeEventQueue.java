@@ -44,7 +44,7 @@ public final class OrderedRuntimeEventQueue implements AutoCloseable {
         }
         if (!queue.offer(event)) {
             rejected++;
-            throw new IllegalStateException("RUNTIME_QUEUE_BACKPRESSURE");
+            throw new RuntimeQueueBackpressureException(lastAcceptedSequence);
         }
         lastAcceptedSequence = event.sequence();
         accepted++;

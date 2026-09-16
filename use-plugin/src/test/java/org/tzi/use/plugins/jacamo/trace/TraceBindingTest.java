@@ -122,6 +122,14 @@ class TraceBindingTest {
                 .entries().getFirst().status());
         assertEquals(BindingEntry.Status.STALE, store.read(file, Map.of(source.id().value(), "9".repeat(64)))
                 .entries().getFirst().status());
+        SemanticElement other = element(MetamodelKind.Operation, List.of("MAS", "w", "y"), "act", "3");
+        var request = new ResolutionRequest(source.id().value(), "act", Set.of(MetamodelKind.Operation), null, List.of());
+        for (Map<String, String> hashes : List.of(Map.of(source.id().value(), "9".repeat(64)), Map.<String, String>of())) {
+            var resolution = new ExactSemanticResolver(List.of(source, target, other), store.read(file, hashes))
+                    .resolve(request);
+            assertEquals(ResolutionResult.Status.AMBIGUOUS, resolution.status());
+            assertNull(resolution.target(), "changed or absent source must not reuse a stale binding");
+        }
     }
 
     private SemanticElement element(MetamodelKind kind, List<String> owner, String name, String hashDigit) {

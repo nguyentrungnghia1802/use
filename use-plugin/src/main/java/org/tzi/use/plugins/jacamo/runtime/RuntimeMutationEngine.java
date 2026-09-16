@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import org.tzi.use.plugins.jacamo.trace.TraceIndex;
 import org.tzi.use.uml.ocl.value.BooleanValue;
 import org.tzi.use.uml.ocl.value.IntegerValue;
@@ -18,11 +20,13 @@ import org.tzi.use.uml.sys.MSystem;
 public final class RuntimeMutationEngine {
     private final MSystem system;
     private final TraceIndex trace;
+    private final Object operationLifecycle = new Object();
     private final Map<String, String> dynamicRuntimeObjects = new LinkedHashMap<>();
-    private final Map<String, String> activeOperations = new LinkedHashMap<>();
+    private final ConcurrentMap<String, RuntimeOperationState> operationCorrelations = new ConcurrentHashMap<>();
     private final Map<String, OperationRuntimeOutcome> operationHistory = new LinkedHashMap<>();
     private final List<RuntimeEvent> quarantined = new ArrayList<>();
     private long lastSequence = -1;
+    private long completedThroughSequence = -1;
 
     public RuntimeMutationEngine(MSystem system, TraceIndex trace) {
         this.system = system;
@@ -70,6 +74,7 @@ public final class RuntimeMutationEngine {
     }
 
     public synchronized void applySnapshot(RuntimeSnapshot snapshot) {
+        resetOperationLifecycle();
         lastSequence = -1;
         for (RuntimeEvent event : snapshot.mutations()) {
             MutationResult result = apply(event);
@@ -82,6 +87,36 @@ public final class RuntimeMutationEngine {
     public synchronized List<RuntimeEvent> quarantinedEvents() { return List.copyOf(quarantined); }
     public synchronized Map<String, OperationRuntimeOutcome> operationHistory() { return Map.copyOf(operationHistory); }
     public synchronized long lastSequence() { return lastSequence; }
+
+    /** A rejected event cannot participate in a later operation lifecycle. */
+    public void eventRejected(RuntimeEvent event, RuntimeException reason) {
+        if (!isOperationTerminal(event) || event.correlationId() == null
+                || !(reason instanceof RuntimeQueueBackpressureException backpressure)) return;
+        synchronized (operationLifecycle) {
+            operationCorrelations.compute(event.correlationId(), (correlation, current) ->
+                    current != null && current.sequence() > event.sequence() ? current
+                            : backpressure.acceptedThroughSequence() <= completedThroughSequence ? null
+                            : RuntimeOperationState.rejected(event.sequence(), backpressure.acceptedThroughSequence()));
+        }
+    }
+
+    /** Retires rejection tombstones once all events accepted before that rejection have completed. */
+    public void eventCompleted(RuntimeEvent event) {
+        synchronized (operationLifecycle) {
+            completedThroughSequence = Math.max(completedThroughSequence, event.sequence());
+            operationCorrelations.entrySet().removeIf(entry -> entry.getValue().rejected()
+                    && entry.getValue().retireAfterSequence() <= completedThroughSequence);
+        }
+    }
+
+    /** Operation correlations are scoped to one connector event stream. */
+    public void eventStreamClosed() { resetOperationLifecycle(); }
+
+    int pendingOperationRejections() {
+        synchronized (operationLifecycle) {
+            return (int) operationCorrelations.values().stream().filter(RuntimeOperationState::rejected).count();
+        }
+    }
 
     /** Compares authoritative snapshot mutations with the current USE mirror without changing either side. */
     public synchronized List<RuntimeDriftDifference> compareSnapshot(RuntimeSnapshot snapshot) {
@@ -200,22 +235,50 @@ public final class RuntimeMutationEngine {
 
     private MutationResult enter(RuntimeEvent event, String objectName) {
         String correlation = event.correlationId();
-        if (activeOperations.containsKey(correlation))
-            throw new IllegalArgumentException("OPERATION_CORRELATION_ACTIVE: " + correlation);
         MObject object = requireObject(objectName);
         String operation = text(event.payload(), "operation");
         if (object.cls().operation(operation, true) == null)
             throw new IllegalArgumentException("USE_OPERATION_MISSING: " + operation);
-        activeOperations.put(correlation, objectName + "::" + operation);
+        boolean[] duplicate = { false };
+        synchronized (operationLifecycle) {
+            operationCorrelations.compute(correlation, (ignored, current) -> {
+                if (current == null || current.rejected() && current.sequence() < event.sequence()) {
+                    return RuntimeOperationState.active(event.sequence(), objectName + "::" + operation);
+                }
+                if (!current.rejected()) duplicate[0] = true;
+                return current;
+            });
+        }
+        if (duplicate[0])
+            throw new IllegalArgumentException("OPERATION_CORRELATION_ACTIVE: " + correlation);
         operationHistory.put(correlation, OperationRuntimeOutcome.ENTERED);
         return MutationResult.applied();
     }
 
     private MutationResult exit(RuntimeEvent event, OperationRuntimeOutcome outcome) {
-        if (activeOperations.remove(event.correlationId()) == null)
+        RuntimeOperationState[] matched = { null };
+        synchronized (operationLifecycle) {
+            operationCorrelations.compute(event.correlationId(), (ignored, current) -> {
+                if (current == null || current.sequence() > event.sequence()) return current;
+                if (!current.rejected()) matched[0] = current;
+                return null;
+            });
+        }
+        if (matched[0] == null)
             throw new IllegalArgumentException("OPERATION_CORRELATION_MISSING: " + event.correlationId());
         operationHistory.put(event.correlationId(), outcome);
         return MutationResult.applied();
+    }
+
+    private boolean isOperationTerminal(RuntimeEvent event) {
+        return event.kind() == RuntimeEventKind.OP_EXIT || event.kind() == RuntimeEventKind.OP_FAIL;
+    }
+
+    private void resetOperationLifecycle() {
+        synchronized (operationLifecycle) {
+            operationCorrelations.clear();
+            completedThroughSequence = -1;
+        }
     }
 
     private String resolveObject(String runtimeSourceId) {
@@ -262,5 +325,17 @@ public final class RuntimeMutationEngine {
         Object value = payload.get(key);
         if (value == null || value.toString().isBlank()) throw new IllegalArgumentException("RUNTIME_PAYLOAD_INVALID: " + key);
         return value.toString();
+    }
+
+    private record RuntimeOperationState(long sequence, String target, long retireAfterSequence) {
+        private static RuntimeOperationState active(long sequence, String target) {
+            return new RuntimeOperationState(sequence, target, -1);
+        }
+
+        private static RuntimeOperationState rejected(long sequence, long retireAfterSequence) {
+            return new RuntimeOperationState(sequence, null, retireAfterSequence);
+        }
+
+        private boolean rejected() { return target == null; }
     }
 }

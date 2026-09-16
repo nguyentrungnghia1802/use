@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -180,6 +182,246 @@ class RuntimeFoundationTest {
         mirror.close();
     }
 
+    @Test
+    void useMutationFailureMovesMirrorToErrorAndDoesNotCorruptExistingState() {
+        Fixture fixture = fixture();
+        String runtimeKey = fixture.runtimeKey();
+        String semanticId = fixture.artifactTrace().sourceSemanticId();
+        RuntimeEvent initial = event(1, RuntimeEventKind.SET_ATTRIBUTE, runtimeKey, semanticId,
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", true), null);
+        RuntimeEvent invalid = event(2, RuntimeEventKind.SET_ATTRIBUTE, runtimeKey, semanticId,
+                Map.of("attribute", "missingAttribute", "valueType", "BOOLEAN", "value", false), null);
+        RuntimeEventCodec codec = new RuntimeEventCodec();
+        Path replay = temporary.resolve("invalid-mutation.json");
+        codec.writeEvents(replay, List.of(invalid));
+        SyntheticRuntimeConnector connector = new SyntheticRuntimeConnector("mutation-error",
+                new RuntimeSnapshot("initial", Instant.now(), 1, List.of(initial), "initial-hash"), replay, codec);
+        RuntimeMirrorService mirror = new RuntimeMirrorService(connector, fixture.engine(), 8);
+
+        mirror.connect(URI.create("synthetic://mutation-error"));
+        connector.replayAll();
+        mirror.awaitIdle(Duration.ofSeconds(5));
+
+        assertEquals(MirrorState.ERROR, mirror.state());
+        assertEquals(1, mirror.metrics().failed());
+        assertTrue(((BooleanValue) fixture.attribute("open")).value());
+        mirror.close();
+    }
+
+    @Test
+    void mirrorReportsOrderingAndShutdownRejectionsAndClosesTimingLifecycle() {
+        Fixture fixture = fixture();
+        LateEventConnector connector = new LateEventConnector();
+        TrackingObserver observer = new TrackingObserver();
+        RuntimeMirrorService mirror = new RuntimeMirrorService(connector, fixture.engine(), 8, observer);
+        RuntimeEvent accepted = event(2, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(),
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", false), null);
+        RuntimeEvent outOfOrder = event(1, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(),
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", true), null);
+        RuntimeEvent afterShutdown = event(3, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(),
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", true), null);
+
+        mirror.connect(URI.create("synthetic://late-events"));
+        connector.emit(accepted);
+        mirror.awaitIdle(Duration.ofSeconds(5));
+        assertThrows(IllegalArgumentException.class, () -> connector.emit(outOfOrder));
+        mirror.disconnect();
+        connector.emit(afterShutdown);
+
+        assertEquals(List.of(outOfOrder.eventId(), afterShutdown.eventId()), observer.rejected);
+        assertEquals(1, observer.streamClosed);
+        mirror.close();
+    }
+
+    @Test
+    void backpressureRejectionCannotResurrectAnInFlightOperationCorrelation() throws Exception {
+        Fixture fixture = fixture();
+        LateEventConnector connector = new LateEventConnector();
+        BlockingMutationObserver observer = new BlockingMutationObserver();
+        RuntimeMirrorService mirror = new RuntimeMirrorService(connector, fixture.engine(), 1, observer);
+        Map<String, Object> operation = Map.of("operation", "placeBid",
+                "arguments", List.of("item1", 10));
+        RuntimeEvent enter = event(1, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(), operation, "reused-correlation");
+        RuntimeEvent queued = event(2, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(),
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", false), null);
+        RuntimeEvent rejectedExit = event(3, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(), Map.of(), "reused-correlation");
+        RuntimeEvent replacementEnter = event(4, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(), operation, "reused-correlation");
+
+        mirror.connect(URI.create("synthetic://rejected-operation-terminal"));
+        try {
+            connector.emit(enter);
+            assertTrue(observer.started.await(5, TimeUnit.SECONDS));
+            connector.emit(queued);
+            assertThrows(IllegalStateException.class, () -> connector.emit(rejectedExit));
+        } finally {
+            observer.release.countDown();
+        }
+        mirror.awaitIdle(Duration.ofSeconds(5));
+
+        connector.emit(replacementEnter);
+        mirror.awaitIdle(Duration.ofSeconds(5));
+
+        assertEquals(MirrorState.LIVE, mirror.state(),
+                "a rejected terminal event must invalidate the abandoned mutation correlation");
+        mirror.close();
+    }
+
+    @Test
+    void staleRejectedTerminalDoesNotInvalidateANewerActiveOperation() {
+        Fixture fixture = fixture();
+        LateEventConnector connector = new LateEventConnector();
+        RuntimeMirrorService mirror = new RuntimeMirrorService(connector, fixture.engine(), 8);
+        Map<String, Object> operation = Map.of("operation", "placeBid",
+                "arguments", List.of("item1", 10));
+        RuntimeEvent enter = event(2, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(), operation, "ordered-correlation");
+        RuntimeEvent staleExit = event(1, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(), Map.of(), "ordered-correlation");
+        RuntimeEvent validExit = event(3, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(), Map.of(), "ordered-correlation");
+
+        mirror.connect(URI.create("synthetic://stale-operation-terminal"));
+        connector.emit(enter);
+        mirror.awaitIdle(Duration.ofSeconds(5));
+        assertThrows(IllegalArgumentException.class, () -> connector.emit(staleExit));
+        connector.emit(validExit);
+        mirror.awaitIdle(Duration.ofSeconds(5));
+
+        assertEquals(MirrorState.LIVE, mirror.state());
+        assertEquals(OperationRuntimeOutcome.EXITED,
+                fixture.engine().operationHistory().get("ordered-correlation"));
+        mirror.close();
+    }
+
+    @Test
+    void outOfOrderTerminalCannotPoisonANewerAcceptedTerminal() throws Exception {
+        Fixture fixture = fixture();
+        LateEventConnector connector = new LateEventConnector();
+        BlockingMutationObserver observer = new BlockingMutationObserver();
+        RuntimeMirrorService mirror = new RuntimeMirrorService(connector, fixture.engine(), 2, observer);
+        Map<String, Object> operation = Map.of("operation", "placeBid",
+                "arguments", List.of("item1", 10));
+        RuntimeEvent enter = event(1, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(), operation, "accepted-terminal");
+        RuntimeEvent acceptedExit = event(4, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(), Map.of(), "accepted-terminal");
+        RuntimeEvent staleExit = event(3, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(), Map.of(), "accepted-terminal");
+
+        mirror.connect(URI.create("synthetic://accepted-terminal-ordering"));
+        try {
+            connector.emit(enter);
+            assertTrue(observer.started.await(5, TimeUnit.SECONDS));
+            connector.emit(acceptedExit);
+            assertThrows(IllegalArgumentException.class, () -> connector.emit(staleExit));
+        } finally {
+            observer.release.countDown();
+        }
+        mirror.awaitIdle(Duration.ofSeconds(5));
+
+        assertEquals(MirrorState.LIVE, mirror.state());
+        assertEquals(OperationRuntimeOutcome.EXITED,
+                fixture.engine().operationHistory().get("accepted-terminal"));
+        mirror.close();
+    }
+
+    @Test
+    void lateClosedStreamTerminalCannotPoisonMutationCorrelation() {
+        Fixture fixture = fixture();
+        RuntimeMutationEngine engine = fixture.engine();
+        Map<String, Object> operation = Map.of("operation", "placeBid",
+                "arguments", List.of("item1", 10));
+        RuntimeEvent lateExit = event(10, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(), Map.of(), "next-stream");
+        RuntimeEvent nextEnter = event(1, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(), operation, "next-stream");
+        RuntimeEvent nextExit = event(2, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(), Map.of(), "next-stream");
+
+        engine.eventStreamClosed();
+        engine.eventRejected(lateExit, new IllegalStateException("RUNTIME_EVENT_STREAM_CLOSED"));
+
+        assertEquals(MutationStatus.APPLIED, engine.apply(nextEnter).status());
+        assertEquals(MutationStatus.APPLIED, engine.apply(nextExit).status());
+    }
+
+    @Test
+    void backpressureTombstonesRetireAfterTheAcceptedWatermarkCompletes() {
+        Fixture fixture = fixture();
+        RuntimeMutationEngine engine = fixture.engine();
+        engine.eventCompleted(event(7, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(),
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", true), null));
+        for (int index = 0; index < 100; index++) {
+            RuntimeEvent rejected = event(100 + index, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                    fixture.artifactTrace().sourceSemanticId(), Map.of(), "rejected-" + index);
+            engine.eventRejected(rejected, new RuntimeQueueBackpressureException(7));
+        }
+        assertEquals(0, engine.pendingOperationRejections(),
+                "a completion that wins the race must prevent later tombstone insertion");
+
+        for (int index = 0; index < 100; index++) {
+            RuntimeEvent rejected = event(300 + index, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                    fixture.artifactTrace().sourceSemanticId(), Map.of(), "pending-" + index);
+            engine.eventRejected(rejected, new RuntimeQueueBackpressureException(8));
+        }
+        assertEquals(100, engine.pendingOperationRejections());
+        engine.eventCompleted(event(8, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(),
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", true), null));
+
+        assertEquals(0, engine.pendingOperationRejections(),
+                "unique rejected correlations must not accumulate for the life of the stream");
+    }
+
+    @Test
+    void completionBeforeRejectedTerminalStillInvalidatesTheOlderMutationCorrelation() {
+        Fixture fixture = fixture();
+        RuntimeMutationEngine engine = fixture.engine();
+        Map<String, Object> operation = Map.of("operation", "placeBid",
+                "arguments", List.of("item1", 10));
+        RuntimeEvent enter = event(1, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(), operation, "completed-before-rejection");
+        RuntimeEvent rejectedExit = event(2, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(), Map.of(), "completed-before-rejection");
+        RuntimeEvent laterExit = event(3, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(), Map.of(), "completed-before-rejection");
+
+        assertEquals(MutationStatus.APPLIED, engine.apply(enter).status());
+        engine.eventCompleted(enter);
+        engine.eventRejected(rejectedExit, new RuntimeQueueBackpressureException(1));
+
+        MutationResult result = engine.apply(laterExit);
+        assertEquals(MutationStatus.FAILED, result.status());
+        assertTrue(result.diagnostic().contains("OPERATION_CORRELATION_MISSING"),
+                "the rejected terminal must abandon an older active correlation even after its watermark completed");
+    }
+
+    @Test
+    void mirrorRejectsCallbackDeliveredAfterFailedInitialSynchronization() {
+        Fixture fixture = fixture();
+        LateEventConnector connector = new LateEventConnector(true);
+        TrackingObserver observer = new TrackingObserver();
+        RuntimeMirrorService mirror = new RuntimeMirrorService(connector, fixture.engine(), 8, observer);
+        RuntimeEvent late = event(1, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(),
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", false), null);
+
+        assertThrows(IllegalStateException.class, () -> mirror.connect(URI.create("synthetic://failed-sync")));
+        connector.emit(late);
+
+        assertEquals(List.of(late.eventId()), observer.rejected,
+                "a callback after its stream closes must not retain observer timing state");
+        assertEquals(1, observer.streamClosed);
+    }
+
     private RuntimeEvent event(long sequence, RuntimeEventKind kind, String runtimeSourceId,
                                String semanticSourceId, Map<String, Object> payload, String correlationId) {
         return RuntimeEvent.create("event-" + sequence + "-" + kind, Instant.ofEpochSecond(sequence), sequence,
@@ -244,5 +486,58 @@ class RuntimeFoundationTest {
         }
         @Override public void disconnect() { state = ConnectorState.DISCONNECTED; }
         void dropConnection() { state = ConnectorState.DISCONNECTED; }
+    }
+
+    private static final class TrackingObserver implements RuntimeEventObserver {
+        private final List<String> rejected = new ArrayList<>();
+        private int streamClosed;
+
+        @Override public void eventRejected(RuntimeEvent event, RuntimeException reason) {
+            rejected.add(event.eventId());
+        }
+        @Override public void eventStreamClosed() { streamClosed++; }
+    }
+
+    private static final class BlockingMutationObserver implements RuntimeEventObserver {
+        private final CountDownLatch started = new CountDownLatch(1);
+        private final CountDownLatch release = new CountDownLatch(1);
+
+        @Override public void beforeMutation(RuntimeEvent event) {
+            if (event.kind() != RuntimeEventKind.OP_ENTER) return;
+            started.countDown();
+            try {
+                if (!release.await(5, TimeUnit.SECONDS)) throw new IllegalStateException("test gate timed out");
+            } catch (InterruptedException exception) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException(exception);
+            }
+        }
+    }
+
+    private static final class LateEventConnector implements RuntimeConnector {
+        private Consumer<RuntimeEvent> listener;
+        private ConnectorState state = ConnectorState.DISCONNECTED;
+        private final boolean failSnapshot;
+
+        private LateEventConnector() { this(false); }
+
+        private LateEventConnector(boolean failSnapshot) { this.failSnapshot = failSnapshot; }
+
+        @Override public String connectorId() { return "late-events"; }
+        @Override public Set<ConnectorCapability> capabilities() {
+            return Set.of(ConnectorCapability.FULL_SNAPSHOT, ConnectorCapability.EVENT_SUBSCRIPTION);
+        }
+        @Override public ConnectorState state() { return state; }
+        @Override public void connect(URI endpoint) { state = ConnectorState.CONNECTED; }
+        @Override public RuntimeSnapshot fullSnapshot() {
+            if (failSnapshot) throw new IllegalStateException("RUNTIME_SYNTHETIC_SNAPSHOT_FAILURE");
+            return new RuntimeSnapshot("empty", Instant.EPOCH, 0, List.of(), "empty");
+        }
+        @Override public RuntimeSubscription subscribe(Consumer<RuntimeEvent> listener) {
+            this.listener = listener;
+            return () -> { };
+        }
+        @Override public void disconnect() { state = ConnectorState.DISCONNECTED; }
+        private void emit(RuntimeEvent event) { listener.accept(event); }
     }
 }

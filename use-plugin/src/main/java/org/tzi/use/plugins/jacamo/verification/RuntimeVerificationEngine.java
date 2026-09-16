@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.LongSupplier;
 import org.tzi.use.plugins.jacamo.runtime.MirrorState;
 import org.tzi.use.plugins.jacamo.runtime.MutationResult;
 import org.tzi.use.plugins.jacamo.runtime.MutationStatus;
@@ -14,6 +17,7 @@ import org.tzi.use.plugins.jacamo.runtime.RuntimeDriftReport;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeEvent;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeEventKind;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeEventObserver;
+import org.tzi.use.plugins.jacamo.runtime.RuntimeQueueBackpressureException;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeSnapshot;
 import org.tzi.use.plugins.jacamo.trace.TraceIndex;
 import org.tzi.use.uml.mm.MOperation;
@@ -38,10 +42,14 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     private final TraceIndex trace;
     private final VerificationService verification;
     private final ConstraintDependencyIndex dependencies;
-    private final Map<String, OperationCheck> activeOperations = new java.util.LinkedHashMap<>();
+    private final LongSupplier nanoTime;
+    private final Object operationLifecycle = new Object();
+    private final ConcurrentMap<String, VerificationOperationState> operationCorrelations = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Long> receivedNanos = new ConcurrentHashMap<>();
     private final List<RuntimeVerificationReport> reports = new ArrayList<>();
     private MirrorState connectionState = MirrorState.OFFLINE;
     private long snapshotVersion;
+    private long completedThroughSequence = -1;
     private String snapshotFingerprint = "";
 
     public RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace) {
@@ -50,28 +58,70 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
 
     public RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
                                      VerificationService verification) {
-        if (system == null || registry == null || trace == null || verification == null)
+        this(system, registry, trace, verification, System::nanoTime);
+    }
+
+    RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
+                              VerificationService verification, LongSupplier nanoTime) {
+        if (system == null || registry == null || trace == null || verification == null || nanoTime == null)
             throw new IllegalArgumentException("RUNTIME_VERIFICATION_INVALID");
         this.system = system;
         this.registry = registry;
         this.trace = trace;
         this.verification = verification;
+        this.nanoTime = nanoTime;
         this.dependencies = new ConstraintDependencyIndex(registry.descriptors());
     }
 
     @Override public synchronized void stateChanged(MirrorState state) { connectionState = state; }
 
+    @Override public void eventReceived(RuntimeEvent event) {
+        receivedNanos.putIfAbsent(event.eventId(), nanoTime.getAsLong());
+    }
+
+    @Override public void eventRejected(RuntimeEvent event, RuntimeException reason) {
+        receivedNanos.remove(event.eventId());
+        if (!isOperationTerminal(event) || event.correlationId() == null
+                || !(reason instanceof RuntimeQueueBackpressureException backpressure)) return;
+        synchronized (operationLifecycle) {
+            operationCorrelations.compute(event.correlationId(), (correlation, current) ->
+                    current != null && current.sequence() > event.sequence() ? current
+                            : backpressure.acceptedThroughSequence() <= completedThroughSequence ? null
+                            : VerificationOperationState.rejected(event.sequence(), backpressure.acceptedThroughSequence()));
+        }
+    }
+
+    @Override public void eventCompleted(RuntimeEvent event) {
+        receivedNanos.remove(event.eventId());
+        synchronized (operationLifecycle) {
+            completedThroughSequence = Math.max(completedThroughSequence, event.sequence());
+            operationCorrelations.entrySet().removeIf(entry -> entry.getValue().rejected()
+                    && entry.getValue().retireAfterSequence() <= completedThroughSequence);
+        }
+    }
+
+    @Override public synchronized void eventStreamClosed() {
+        receivedNanos.clear();
+        resetOperationLifecycle();
+    }
+
+    int pendingOperationRejections() {
+        synchronized (operationLifecycle) {
+            return (int) operationCorrelations.values().stream().filter(VerificationOperationState::rejected).count();
+        }
+    }
+
     @Override public synchronized void snapshotApplied(RuntimeSnapshot snapshot) {
         snapshotVersion++;
         snapshotFingerprint = snapshot.fingerprint();
-        long started = System.nanoTime();
+        long started = nanoTime.getAsLong();
         VerificationReport full = runtimeFull("snapshot:" + snapshot.snapshotId());
-        append(null, full, System.nanoTime() - started, List.of("RUNTIME_AUTHORITATIVE_SNAPSHOT"));
+        append(null, full, nanoTime.getAsLong() - started, List.of("RUNTIME_AUTHORITATIVE_SNAPSHOT"));
     }
 
     @Override public synchronized void beforeMutation(RuntimeEvent event) {
         if (event.kind() != RuntimeEventKind.OP_ENTER) return;
-        long started = System.nanoTime();
+        long started = eventStart(event);
         try {
             String objectName = objectName(event);
             String operationName = text(event.payload(), "operation");
@@ -81,22 +131,32 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
             OperationRequest request = new OperationRequest(objectName, operationName, arguments,
                     event.correlationId(), List.of(event.eventId()));
             OperationCheck check = verification.beginOperation(system, registry, trace, request);
-            if (activeOperations.putIfAbsent(event.correlationId(), check) != null)
+            boolean[] duplicate = { false };
+            synchronized (operationLifecycle) {
+                operationCorrelations.compute(event.correlationId(), (ignored, current) -> {
+                    if (current == null || current.rejected() && current.sequence() < event.sequence()) {
+                        return VerificationOperationState.active(event.sequence(), check);
+                    }
+                    if (!current.rejected()) duplicate[0] = true;
+                    return current;
+                });
+            }
+            if (duplicate[0])
                 throw new IllegalArgumentException("OPERATION_CORRELATION_ACTIVE: " + event.correlationId());
-            append(event, enrich(check.preconditions(), event), System.nanoTime() - started,
+            append(event, enrich(check.preconditions(), event), nanoTime.getAsLong() - started,
                     List.of("RUNTIME_OPERATION_PRE_CAPTURED"));
         } catch (RuntimeException exception) {
             append(event, diagnostic("RUNTIME_OPERATION_ENTER_ERROR", VerificationOutcome.ERROR,
-                    exception.getMessage(), event), System.nanoTime() - started,
+                    exception.getMessage(), event), nanoTime.getAsLong() - started,
                     List.of("RUNTIME_OPERATION_ENTER_FAILED"));
         }
     }
 
     @Override public synchronized void afterMutation(RuntimeEvent event, MutationResult mutation) {
-        long started = System.nanoTime();
+        long started = eventStart(event);
         if (mutation.status() != MutationStatus.APPLIED) {
             append(event, diagnostic("RUNTIME_MUTATION", VerificationOutcome.ERROR, mutation.diagnostic(), event),
-                    System.nanoTime() - started, List.of("RUNTIME_MUTATION_NOT_APPLIED"));
+                    nanoTime.getAsLong() - started, List.of("RUNTIME_MUTATION_NOT_APPLIED"));
             return;
         }
         if (event.kind() == RuntimeEventKind.OP_EXIT) {
@@ -114,7 +174,7 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
                 ? runtimeFull("event:" + event.eventId())
                 : verification.runTargetedVerification(system, registry, trace, selection.constraintIds(),
                         "event:" + event.eventId());
-        append(event, enrich(report, event), System.nanoTime() - started, List.of(selection.reason()));
+        append(event, enrich(report, event), nanoTime.getAsLong() - started, List.of(selection.reason()));
     }
 
     @Override public synchronized void driftChecked(RuntimeDriftReport report) {
@@ -138,24 +198,47 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     }
 
     private void complete(RuntimeEvent event, long started) {
-        OperationCheck check = activeOperations.remove(event.correlationId());
+        OperationCheck check = removeActiveOperation(event);
         if (check == null) {
             append(event, diagnostic("RUNTIME_OPERATION_EXIT_UNMATCHED", VerificationOutcome.ERROR,
-                    "operation exit has no captured pre-state", event), System.nanoTime() - started,
+                    "operation exit has no captured pre-state", event), nanoTime.getAsLong() - started,
                     List.of("RUNTIME_OPERATION_CORRELATION_MISSING"));
             return;
         }
         VerificationReport post = verification.completeOperation(check, system.state(), null, List.of(event.eventId()));
-        append(event, enrich(post, event), System.nanoTime() - started, List.of("RUNTIME_OPERATION_POST_CHECKED"));
+        append(event, enrich(post, event), nanoTime.getAsLong() - started, List.of("RUNTIME_OPERATION_POST_CHECKED"));
     }
 
     private void abort(RuntimeEvent event, long started) {
-        OperationCheck check = activeOperations.remove(event.correlationId());
+        OperationCheck check = removeActiveOperation(event);
         String explanation = check == null ? "failed operation has no captured pre-state"
                 : "JaCaMo operation aborted/failed; postconditions were not evaluated";
         append(event, diagnostic("RUNTIME_OPERATION_ABORTED", check == null ? VerificationOutcome.ERROR
-                : VerificationOutcome.SKIPPED, explanation, event), System.nanoTime() - started,
+                : VerificationOutcome.SKIPPED, explanation, event), nanoTime.getAsLong() - started,
                 List.of(check == null ? "RUNTIME_OPERATION_CORRELATION_MISSING" : "RUNTIME_OPERATION_ABORTED"));
+    }
+
+    private OperationCheck removeActiveOperation(RuntimeEvent event) {
+        OperationCheck[] matched = { null };
+        synchronized (operationLifecycle) {
+            operationCorrelations.compute(event.correlationId(), (ignored, current) -> {
+                if (current == null || current.sequence() > event.sequence()) return current;
+                if (!current.rejected()) matched[0] = current.check();
+                return null;
+            });
+        }
+        return matched[0];
+    }
+
+    private boolean isOperationTerminal(RuntimeEvent event) {
+        return event.kind() == RuntimeEventKind.OP_EXIT || event.kind() == RuntimeEventKind.OP_FAIL;
+    }
+
+    private void resetOperationLifecycle() {
+        synchronized (operationLifecycle) {
+            operationCorrelations.clear();
+            completedThroughSequence = -1;
+        }
     }
 
     private Set<String> changedDependencies(RuntimeEvent event) {
@@ -238,5 +321,21 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
         LinkedHashSet<String> result = new LinkedHashSet<>(existing);
         result.add(eventId);
         return List.copyOf(result);
+    }
+
+    private long eventStart(RuntimeEvent event) {
+        return receivedNanos.getOrDefault(event.eventId(), nanoTime.getAsLong());
+    }
+
+    private record VerificationOperationState(long sequence, OperationCheck check, long retireAfterSequence) {
+        private static VerificationOperationState active(long sequence, OperationCheck check) {
+            return new VerificationOperationState(sequence, check, -1);
+        }
+
+        private static VerificationOperationState rejected(long sequence, long retireAfterSequence) {
+            return new VerificationOperationState(sequence, null, retireAfterSequence);
+        }
+
+        private boolean rejected() { return check == null; }
     }
 }
