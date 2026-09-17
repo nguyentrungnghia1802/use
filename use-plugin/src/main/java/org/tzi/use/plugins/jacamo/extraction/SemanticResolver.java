@@ -31,7 +31,25 @@ final class SemanticResolver {
             Map.entry("OGoalToGoal", EnumSet.of(MetamodelKind.Goal)),
             Map.entry("obsproperty", EnumSet.of(MetamodelKind.Belief)));
 
-    void resolve(ExtractionContext context) {
+    void resolve(ExtractionContext context) { resolve(context, null); }
+
+    void resolve(ExtractionContext context, org.tzi.use.plugins.jacamo.binding.BindingFile bindings) {
+        var exact = bindings == null ? null : new org.tzi.use.plugins.jacamo.resolution.ExactSemanticResolver(
+                context.elements.stream().map(ElementDraft::freeze).toList(), bindings);
+        if (bindings != null) {
+            for (var binding : bindings.entries()) {
+                ElementDraft source = context.elements.stream().filter(e -> e.id.value().equals(binding.source())).findFirst().orElse(null);
+                boolean valid = source != null && source.references.stream().anyMatch(ref -> TARGETS.containsKey(ref.feature())
+                        && candidates(context, ref.originalSpelling(), TARGETS.get(ref.feature())).stream()
+                        .anyMatch(target -> target.id.value().equals(binding.target())));
+                boolean stale = binding.status() != org.tzi.use.plugins.jacamo.binding.BindingEntry.Status.ACTIVE;
+                boolean duplicate = bindings.entries().stream().filter(b -> b.source().equals(binding.source())).count() != 1;
+                if (stale || !valid || duplicate) context.diagnostic(stale ? "BINDING_STALE" : "BINDING_INVALID",
+                        Severity.ERROR, Phase.RESOLUTION, source == null ? null : source.provenance.getFirst().span(),
+                        binding.source(), "Explicit binding cannot be used", binding.target(),
+                        "Regenerate the binding against current source hashes and exact typed candidates");
+            }
+        }
         for (ElementDraft source : context.elements) {
             List<SemanticReference> resolved = new ArrayList<>();
             for (SemanticReference reference : source.references) {
@@ -43,6 +61,14 @@ final class SemanticResolver {
                     resolved.add(reference); continue;
                 }
                 List<ElementDraft> candidates = candidates(context, reference.originalSpelling(), TARGETS.get(reference.feature()));
+                if (exact != null) {
+                    var result = exact.resolve(new org.tzi.use.plugins.jacamo.resolution.ResolutionRequest(
+                            source.id.value(), reference.originalSpelling(), TARGETS.get(reference.feature()), null, List.of()));
+                    if (result.status() == org.tzi.use.plugins.jacamo.resolution.ResolutionResult.Status.RESOLVED) {
+                        resolved.add(new SemanticReference(reference.feature(), reference.originalSpelling(), result.target().id()));
+                        continue;
+                    }
+                }
                 if (candidates.size() == 1) {
                     resolved.add(new SemanticReference(reference.feature(), reference.originalSpelling(), candidates.getFirst().id));
                 } else {

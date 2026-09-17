@@ -1,0 +1,51 @@
+{
+  "archiveSHA256": "4271f497a9716011cac494803054aca029c503b0080e78540da1e25e4b527bcf",
+  "relocatedArchiveSHA256": "4271f497a9716011cac494803054aca029c503b0080e78540da1e25e4b527bcf",
+  "byteIdentical": true,
+  "differentEntries": [],
+  "entryCount": 27,
+  "cloneStatus": "",
+  "validationSnapshotCommit": "e487112e6243b2bdafe2571bb215b33def716a18",
+  "tests": {
+    "workspace": {
+      "use-core": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "use-gui": {
+        "tests": 130,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "use-plugin": {
+        "tests": 128,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "relocated": {
+      "use-core": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "use-gui": {
+        "tests": 130,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "use-plugin": {
+        "tests": 128,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    }
+  }
+}

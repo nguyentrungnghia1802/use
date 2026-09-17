@@ -1,4 +1,4 @@
-# USE JaCaMo Plugin 1.0.0
+# USE JaCaMo Plugin 1.0.1
 
 This release adds conservative, traceable JaCaMo project import and offline/live
 verification to USE 7.5.0. It supports the pinned Auction example and the verified
@@ -35,5 +35,5 @@ The included `examples/auction` project is the release acceptance fixture. See
 
 ## Verify the download
 
-The build produces `use-jacamo-plugin-1.0.0.zip.sha256` beside the archive. Compare
+The build produces `use-jacamo-plugin-1.0.1.zip.sha256` beside the archive. Compare
 the first hexadecimal field with a SHA-256 digest of the ZIP before installation.

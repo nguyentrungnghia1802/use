@@ -8,7 +8,7 @@
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
     <files>
-        <file><source>${project.build.directory}/${project.build.finalName}.jar</source><outputDirectory>lib/plugins</outputDirectory><destName>use-jacamo-plugin-1.0.0.jar</destName></file>
+        <file><source>${project.build.directory}/${project.build.finalName}.jar</source><outputDirectory>lib/plugins</outputDirectory><destName>use-jacamo-plugin-1.0.1.jar</destName></file>
         <file><source>Core/Metamodel/JaCaMo-Metamodel.ecore</source><outputDirectory>Core/Metamodel</outputDirectory></file>
         <file><source>Core/Mapping/jacamo-use-mapping-v1.json</source><outputDirectory>Core/Mapping</outputDirectory></file>
         <file><source>Core/Mapping/jacamo-use-mapping.schema.json</source><outputDirectory>Core/Mapping</outputDirectory></file>

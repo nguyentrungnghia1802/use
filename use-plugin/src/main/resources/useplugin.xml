@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin id="org.tzi.use.plugins.jacamo" name="JaCaMo" version="1.0.0"
+<plugin id="org.tzi.use.plugins.jacamo" name="JaCaMo" version="1.0.1"
         publisher="USE JaCaMo Plugin" class="org.tzi.use.plugins.jacamo.JaCaMoPlugin">
     <commands>
         <command id="org.tzi.use.plugins.jacamo.status" label="JaCaMo status"

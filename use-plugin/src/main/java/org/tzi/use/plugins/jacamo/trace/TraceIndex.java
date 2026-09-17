@@ -30,6 +30,17 @@ public final class TraceIndex {
         if (record.runtimeKey() == null) records.put(traceId, record.withRuntimeKey(runtimeKey));
         else runtimeAliases.put(runtimeKey, record);
     }
+    /** Carry exact runtime identities forward only when the same semantic object still exists. */
+    public void copyRuntimeKeysFrom(TraceIndex previous) {
+        Map<String, TraceRecord> keys = new LinkedHashMap<>(previous.runtimeAliases);
+        previous.records.values().stream().filter(record -> record.runtimeKey() != null)
+                .forEach(record -> keys.put(record.runtimeKey(), record));
+        keys.forEach((key, old) -> bySemanticId(old.sourceSemanticId()).stream()
+                .filter(next -> next.targetKind().equals(old.targetKind()))
+                .filter(next -> next.targetUseId().equals(old.targetUseId()))
+                .findFirst().ifPresent(next -> registerRuntimeKey(next.traceId(), key)));
+    }
+
     private List<TraceRecord> select(java.util.function.Predicate<TraceRecord> predicate) {
         return records.values().stream().filter(predicate).sorted(Comparator.comparing(TraceRecord::traceId)).toList();
     }

@@ -12,9 +12,9 @@ import java.util.concurrent.TimeUnit;
 /** Coordinates lifecycle, full synchronization and the ordered delta path. */
 public final class RuntimeMirrorService implements RuntimeService {
     private final RuntimeConnector connector;
-    private final RuntimeMutationEngine mutations;
+    private RuntimeMutationEngine mutations;
     private final int queueCapacity;
-    private final RuntimeEventObserver observer;
+    private RuntimeEventObserver observer;
     private volatile MirrorState state = MirrorState.OFFLINE;
     private URI endpoint;
     private RuntimeSubscription subscription;
@@ -46,6 +46,32 @@ public final class RuntimeMirrorService implements RuntimeService {
         try {
             connector.connect(endpoint);
             transition(MirrorState.SYNCING);
+            synchronizeSnapshot();
+            transition(MirrorState.LIVE);
+            observer.snapshotApplied(lastSnapshot);
+        } catch (RuntimeException exception) {
+            transition(MirrorState.ERROR);
+            stopEvents();
+            connector.disconnect();
+            throw exception;
+        }
+    }
+
+    /** Drain the old workspace before replacing its consumers; reuse the connected transport. */
+    public synchronized void replaceWorkspace(RuntimeMutationEngine nextMutations, RuntimeEventObserver nextObserver,
+                                               Runnable transferBindings) {
+        boolean live = state == MirrorState.LIVE;
+        stopEvents();
+        if (live) transition(MirrorState.SYNCING);
+        transferBindings.run();
+        mutations = nextMutations;
+        observer = nextObserver;
+        lastSnapshot = null;
+        lastSnapshotFingerprint = null;
+        lastDriftReport = null;
+        if (!live) return;
+        transition(MirrorState.SYNCING);
+        try {
             synchronizeSnapshot();
             transition(MirrorState.LIVE);
             observer.snapshotApplied(lastSnapshot);
@@ -152,15 +178,20 @@ public final class RuntimeMirrorService implements RuntimeService {
     }
 
     private void synchronizeSnapshot() {
+        // Late callbacks belong to the stream that subscribed them, even after workspace replacement.
+        RuntimeMutationEngine streamMutations = mutations;
+        RuntimeEventObserver streamObserver = observer;
         Object gate = new Object();
         List<RuntimeEvent> buffered = new ArrayList<>();
         OrderedRuntimeEventQueue[] ready = new OrderedRuntimeEventQueue[1];
         boolean[] streamOpen = new boolean[] { true };
         RuntimeSubscription connectorSubscription = connector.subscribe(event -> {
-            observer.eventReceived(event);
+            streamObserver.eventReceived(event);
             synchronized (gate) {
                 if (!streamOpen[0]) {
-                    rejectReceived(event, new IllegalStateException("RUNTIME_EVENT_STREAM_CLOSED"));
+                    var closed = new IllegalStateException("RUNTIME_EVENT_STREAM_CLOSED");
+                    streamMutations.eventRejected(event, closed);
+                    streamObserver.eventRejected(event, closed);
                 } else if (ready[0] == null) buffered.add(event);
                 else submitReceived(ready[0], event);
             }
@@ -175,22 +206,22 @@ public final class RuntimeMirrorService implements RuntimeService {
             applySnapshot(snapshot);
         } catch (RuntimeException exception) {
             nextSubscription.close();
-            mutations.eventStreamClosed();
-            observer.eventStreamClosed();
+            streamMutations.eventStreamClosed();
+            streamObserver.eventStreamClosed();
             throw exception;
         }
         OrderedRuntimeEventQueue nextQueue = new OrderedRuntimeEventQueue(queueCapacity, event -> {
             try {
-                observer.beforeMutation(event);
-                MutationResult result = mutations.apply(event);
-                observer.afterMutation(event, result);
+                streamObserver.beforeMutation(event);
+                MutationResult result = streamMutations.apply(event);
+                streamObserver.afterMutation(event, result);
                 if (result.status() != MutationStatus.APPLIED) {
                     transition(MirrorState.ERROR);
                     throw new IllegalStateException(result.diagnostic());
                 }
             } finally {
-                mutations.eventCompleted(event);
-                observer.eventCompleted(event);
+                streamMutations.eventCompleted(event);
+                streamObserver.eventCompleted(event);
             }
         });
         nextQueue.start();

@@ -21,7 +21,7 @@ Plugin JAR phải contain/version:
 - plugin metadata;
 - version manifest.
 
-For release 1.0.0, the canonical Ecore and mapping JSON/schema/freeze manifest
+For release 1.0.1, the canonical Ecore and mapping JSON/schema/freeze manifest
 are under `org/tzi/use/plugins/jacamo/canonical/` inside the built JAR. The
 descriptor is `useplugin.xml`; core OCL and its manifest are under `ocl/`;
 `release/release-manifest.json` and `release/compatibility.json` are embedded
@@ -47,11 +47,11 @@ Track:
 
 Breaking schema changes require major bump tương ứng.
 
-The plugin release tag is `use-jacamo-plugin-v1.0.0`; the artifact is
-`use-jacamo-plugin-1.0.0.zip`. The release manifest records the package inventory,
+The planned plugin release tag is `use-jacamo-plugin-v1.0.1` (not created by this hotfix); the artifact is
+`use-jacamo-plugin-1.0.1.zip`. The release manifest records the package inventory,
 compatibility versions, and known limits. The package does not redistribute
 Jason/CArtAgO/Moise dependencies; supply them on the USE host classpath.
-The plugin Maven module has its own `1.0.0` version; USE remains the `7.5.0`
+The plugin Maven module has its own `1.0.1` version; USE remains the `7.5.0`
 parent and provided API dependency. The plugin JAR embeds its JSON Schema
 validator/runtime dependencies and ships Apache/MIT license texts. The isolated
 release smoke starts a child JVM with the USE distribution JAR and installed ZIP
@@ -111,3 +111,16 @@ Plugin khi load mapping/project cache cũ:
 - compare schema/version/hash;
 - migrate only with explicit migration code;
 - otherwise reject with actionable message.
+
+## v1.0.1 reproducibility and audit
+
+Run `mvn --batch-mode clean verify` from the repository root with JDK 21 and Maven.
+All paths resolve from the checkout/module; no original mapping repository is needed.
+See `Core/Mapping/README.md` for the current mapping gate. Historical external Python/EMF
+records are retained as provenance, not advertised as commands available here.
+
+`project.build.outputTimestamp` pins Maven JAR/assembly timestamps. This is necessary but
+not sufficient to promise byte reproducibility of a shaded JAR across toolchains.
+The hotfix evidence records separate-build archive hashes and extracted-entry comparisons.
+Use the same source bytes, dependency artifacts, JDK and Maven versions when comparing.
+The manifest tag is a planned identifier; v1.0.0 remains untouched, and v1.0.1 is not pushed/tagged.

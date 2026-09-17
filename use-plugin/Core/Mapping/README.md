@@ -6,8 +6,8 @@
 [Audit và freeze evidence](METAMODEL-MAPPING-AUDIT.md).
 
 Contract trả lời: **JaCaMo metamodel element nào tương ứng với USE-side concept nào?**
-Nguồn duy nhất là [Core/JaCaMo-Metamodel.ecore](../Core/JaCaMo-Metamodel.ecore),
-path trong JSON tính từ root repo. Fingerprint Ecore giữ nguyên
+Nguồn duy nhất là [Core/Metamodel/JaCaMo-Metamodel.ecore](../Metamodel/JaCaMo-Metamodel.ecore),
+path trong JSON thuộc repository mapping gốc; checkout này dùng adapter module-local. Fingerprint Ecore giữ nguyên
 `c0aafab786c5ff3fcb468aeaf1b18b62865292e6590ffca2b9b2e962a9067fe7`.
 Không có `bdiMetamodelVersion` riêng; baseline được nhận diện bằng package/URI/hash.
 
@@ -110,33 +110,23 @@ are not requirements of the frozen layer. No runtime logic was implemented.
 
 ## Reproduce checks
 
-Python 3.10+, from repository root:
+Run from the root of **this USE repository**, at any filesystem location, with JDK 21 and Maven:
 
 ```powershell
-python -m pip install -r mapping/requirements-validation.txt
-python validate_dsml4jacamo_ecore.py --self-test
-python audit/check_mapping.py --output audit/mapping-validation.json
-python -m unittest discover -s audit -p "test_mapping*.py" -v
+mvn --batch-mode -pl use-plugin -am '-Dtest=MappingTransformationTest' '-Dsurefire.failIfNoSpecifiedTests=false' test
+mvn --batch-mode clean verify
 ```
 
-Static USE gate uses JDK 21, Maven, USE 7.5.0 pinned at
-`30d480dbcca2f404b1350039516a56f46c1efb1f`. The clone/build belongs in ignored temp/;
-no USE source/JAR is vendored. On a fresh checkout:
+The first command validates frozen hashes, schema, Ecore identities, negative mutations,
+and generated USE models through this reactor's USE compiler. The second includes Auction,
+runtime and packaged plugin load checks. `MappingLoader.loadCanonical` resolves module-local
+paths; it does not interpret the original mapping repository's `sourceMetamodel.path` as a
+path in this checkout. Ecore here is `Core/Metamodel/JaCaMo-Metamodel.ecore` relative to
+use-plugin; canonical mapping and freeze JSON bytes remain unchanged.
 
-```powershell
-git clone https://github.com/useocl/use.git temp/use-source
-git -C temp/use-source checkout --detach 30d480dbcca2f404b1350039516a56f46c1efb1f
-mvn -q -f temp/use-source/pom.xml -pl use-core -am package -DskipTests
-mvn -q -f temp/use-source/use-core/pom.xml dependency:build-classpath -Dmdep.outputFile=dependency-classpath.txt
-$useCp = (Get-Content temp/use-source/use-core/dependency-classpath.txt -Raw).Trim() + [IO.Path]::PathSeparator + (Resolve-Path temp/use-source/use-core/target/use-core-7.5.0.jar).Path
-python audit/compile_mapping_use.py --use-classpath $useCp --java "$env:JAVA_HOME/bin/java.exe" --output audit/use-mapping-validation.txt
-```
-
-Check each exit code before the next command. This builds the external USE compiler,
-not runtime integration; upstream USE's own test suite is not part of the gate.
-The gate compiles baseline/type fixture, rejects four legacy collision pairs and
-three reserved-identifier regressions. [Log](../audit/use-mapping-validation.txt).
-EMF commands remain in [audit README](../audit/README.md).
+The Python/EMF logs mentioned in METAMODEL-MAPPING-AUDIT.md are historical evidence
+from the original mapping repository. Those scripts are not shipped in this checkout;
+this hotfix does not claim to rerun that separate Python/EMF suite.
 
 When Ecore/schema/mapping changes, freeze evidence becomes stale: rerun all gates,
 review structural diff and projections, reconcile hash/version deliberately. Never

@@ -34,7 +34,7 @@ class ReleasePackageContractTest {
             "examples/auction/src/env/auction/AuctionArtifact.java",
             "examples/auction/src/org/auction.xml",
             "examples/auction/verification/auction.ocl",
-            "lib/plugins/use-jacamo-plugin-1.0.0.jar",
+            "lib/plugins/use-jacamo-plugin-1.0.1.jar",
             "ocl/jacamo-core.ocl",
             "profiles/jacamo-verification-profile-v1.json",
             "release-manifest.json",
@@ -49,10 +49,10 @@ class ReleasePackageContractTest {
         assertTrue(Files.isRegularFile(manifestPath), "release manifest is required before packaging");
 
         JsonNode manifest = new ObjectMapper().readTree(manifestPath.toFile());
-        assertEquals("1.0.0", manifest.path("releaseVersion").asText());
-        assertEquals("use-jacamo-plugin-v1.0.0", manifest.path("gitTag").asText());
+        assertEquals("1.0.1", manifest.path("releaseVersion").asText());
+        assertEquals("use-jacamo-plugin-v1.0.1", manifest.path("gitTag").asText());
         assertEquals("7.5.0", manifest.path("compatibility").path("use").asText());
-        assertEquals("1.0.0", manifest.path("compatibility").path("pluginDescriptor").asText());
+        assertEquals("1.0.1", manifest.path("compatibility").path("pluginDescriptor").asText());
         assertEquals("SHA-256", manifest.path("integrity").path("packageAlgorithm").asText());
         assertFalse(manifest.path("limitations").isEmpty());
 
@@ -63,7 +63,7 @@ class ReleasePackageContractTest {
             assertFalse(source.isBlank(), "every package entry needs a repository source");
             assertFalse(target.isBlank(), "every package entry needs an archive path");
             if (entry.path("generated").asBoolean()) {
-                assertEquals("target/use-plugin-1.0.0.jar", source,
+                assertEquals("target/use-plugin-1.0.1.jar", source,
                         "only the Maven-built plugin JAR may be a generated package input");
             } else {
                 assertTrue(Files.isRegularFile(root.resolve(source)), () -> "missing release source: " + source);

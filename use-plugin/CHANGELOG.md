@@ -1,3 +1,10 @@
+# 1.0.1 - Correctness hotfix (unreleased)
+
+- Rebind LIVE runtime mutation and verification on workspace replacement, preserving exact trace aliases.
+- Load and validate project-root binding.json in production import.
+- Pin archive output timestamps and correct plugin-checkout audit instructions.
+- See release/HOTFIX-1.0.1.md and the repository report.md for evidence and limitations.
+
 # Changelog
 
 ## 1.0.0 - 2026-09-16

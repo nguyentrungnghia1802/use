@@ -4,19 +4,19 @@
 
 ## Global Definition of Done
 
-- [ ] Canonical Ecore baseline audited and frozen.
-- [ ] Mapping V1 structurally complete, internally consistent, ambiguity-free.
-- [ ] Plugin loads in pinned USE.
-- [ ] JaCaMo project import works from `.jcm`.
-- [ ] Jason/CArtAgO/Moise extraction works for supported project.
-- [ ] Semantic model + trace complete.
-- [ ] USE model/state generation works.
-- [ ] Constraint translation supported subset works.
-- [ ] Core and case-study OCL work.
-- [ ] Binding/resolver ambiguity path works.
+- [x] Canonical Ecore baseline audited and frozen.
+- [x] Mapping V1 structurally complete, internally consistent, ambiguity-free.
+- [x] Plugin loads in pinned USE.
+- [x] JaCaMo project import works from `.jcm`.
+- [x] Jason/CArtAgO/Moise extraction works for supported project.
+- [x] Semantic model + trace complete.
+- [x] USE model/state generation works.
+- [x] Constraint translation supported subset works.
+- [x] Core and case-study OCL work.
+- [x] Binding/resolver ambiguity path works.
 - [ ] Runtime adapter works against real JaCaMo.
-- [ ] Runtime OCL detects violations.
-- [ ] Auction E2E positive and negative scenarios work.
+- [x] Runtime OCL detects violations.
+- [x] Auction E2E positive and negative scenarios work.
 - [ ] Full tests/build/docs/release complete.
 
 ---
@@ -29,67 +29,67 @@ Read:
 - `docs/project/16-research-evidence-boundaries.md`
 
 ## P0.1 Metamodel audit
-- [ ] Parse canonical `JaCaMo-Metamodel.ecore` programmatically.
-- [ ] Assert expected EClass count from file.
-- [ ] Enumerate all EAttributes with owner/type/bounds/default.
-- [ ] Enumerate all EReferences with owner/target/bounds/containment.
-- [ ] Enumerate all inheritance edges.
-- [ ] Extract unresolved annotations.
-- [ ] Record Ecore SHA-256.
+- [x] Parse canonical `JaCaMo-Metamodel.ecore` programmatically.
+- [x] Assert expected EClass count from file.
+- [x] Enumerate all EAttributes with owner/type/bounds/default.
+- [x] Enumerate all EReferences with owner/target/bounds/containment.
+- [x] Enumerate all inheritance edges.
+- [x] Extract unresolved annotations.
+- [x] Record Ecore SHA-256.
 - [ ] Create/update `metamodel-audit.md`.
 - [ ] Create/update `metamodel-freeze-manifest.json`.
-- [ ] Add tests that fail on unnoticed structural drift.
+- [x] Add tests that fail on unnoticed structural drift.
 
 ## P0.2 Mapping schema
-- [ ] Create `jacamo-use-mapping.schema.json`.
-- [ ] Require qualified source identity.
-- [ ] Define target kinds.
-- [ ] Define multiplicity structure.
-- [ ] Define association/composition end schema.
-- [ ] Define projection schema.
-- [ ] Define unresolved/review flag schema.
-- [ ] Define mapping/evolution metadata.
-- [ ] Add schema validation test.
+- [x] Create `jacamo-use-mapping.schema.json`.
+- [x] Require qualified source identity.
+- [x] Define target kinds.
+- [x] Define multiplicity structure.
+- [x] Define association/composition end schema.
+- [x] Define projection schema.
+- [x] Define unresolved/review flag schema.
+- [x] Define mapping/evolution metadata.
+- [x] Add schema validation test.
 
 ## P0.3 Mapping coverage audit
-- [ ] Verify every EClass has exactly one structural mapping.
-- [ ] Verify every declared EAttribute has mapping.
-- [ ] Verify every EReference has mapping.
-- [ ] Verify every inheritance edge has mapping.
-- [ ] Verify source owner exists.
-- [ ] Verify source feature exists.
-- [ ] Verify reference target matches Ecore.
-- [ ] Verify containment matches Ecore.
-- [ ] Verify forward multiplicity matches Ecore.
-- [ ] Verify target association names unique.
-- [ ] Verify source keys unique.
-- [ ] Reject unqualified `operation`-style IDs.
-- [ ] Explicitly preserve unresolved visible attributes as unresolved, not guessed.
-- [ ] Audit all review-flag inheritance entries.
+- [x] Verify every EClass has exactly one structural mapping.
+- [x] Verify every declared EAttribute has mapping.
+- [x] Verify every EReference has mapping.
+- [x] Verify every inheritance edge has mapping.
+- [x] Verify source owner exists.
+- [x] Verify source feature exists.
+- [x] Verify reference target matches Ecore.
+- [x] Verify containment matches Ecore.
+- [x] Verify forward multiplicity matches Ecore.
+- [x] Verify target association names unique.
+- [x] Verify source keys unique.
+- [x] Reject unqualified `operation`-style IDs.
+- [x] Explicitly preserve unresolved visible attributes as unresolved, not guessed.
+- [x] Audit all review-flag inheritance entries.
 
 ## P0.4 Projection audit
 For each VP001–VP007:
-- [ ] source defined;
-- [ ] target defined;
-- [ ] need/rationale defined;
-- [ ] direction defined;
-- [ ] lossless/lossy status defined;
-- [ ] assumptions defined;
-- [ ] fallback defined;
-- [ ] trace requirement defined;
+- [x] source defined;
+- [x] target defined;
+- [x] need/rationale defined;
+- [x] direction defined;
+- [x] lossless/lossy status defined;
+- [x] assumptions defined;
+- [x] fallback defined;
+- [x] trace requirement defined;
 - [ ] test case defined.
 
 ## P0.5 Freeze Mapping V1
-- [ ] Generate mapping SHA-256.
+- [x] Generate mapping SHA-256.
 - [ ] Create `mapping-audit.md`.
 - [ ] Create `mapping-freeze-manifest.json`.
-- [ ] Record Ecore fingerprint expected by mapping.
+- [x] Record Ecore fingerprint expected by mapping.
 - [ ] Mark status `LOCKED_BASELINE_V1`.
 - [ ] Run full audit from clean checkout.
-- [ ] Commit and merge Phase 0.
+- [x] Commit and merge Phase 0.
 
 Acceptance:
-- [ ] "Mapping V1 is canonical, structurally complete for the frozen metamodel, internally consistent, and has no known mapping ambiguity."
+- [x] "Mapping V1 is canonical, structurally complete for the frozen metamodel, internally consistent, and has no known mapping ambiguity."
 
 ---
 
@@ -865,7 +865,7 @@ Read:
 - [x] preserve hashes/versions.
 
 Acceptance:
-- [ ] Thesis demo can be repeated from clean checkout.
+- [x] Thesis demo can be repeated from clean checkout.
 
 Evidence (2026-09-16, source/evidence revision `d5636264`): `mvn -pl use-plugin verify`
 passed **118/118** and the full reactor `mvn verify` passed **261/261** (13 core,

@@ -31,7 +31,7 @@ class ReleasePackageIT {
         Path root = Path.of(".").toRealPath();
         Path hostJar = root.resolve("../use-gui/target/use-gui.jar").toRealPath();
         Path install = Files.createTempDirectory(root.resolve("target"), "release-install-");
-        try (ZipFile zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.0.zip").toFile())) {
+        try (ZipFile zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1.zip").toFile())) {
             for (var entry : java.util.Collections.list(zip.entries())) {
                 if (entry.isDirectory()) continue;
                 if (!entry.getName().startsWith("Core/") && !entry.getName().startsWith("lib/plugins/")) continue;
@@ -43,7 +43,7 @@ class ReleasePackageIT {
                 }
             }
         }
-        Path pluginJar = install.resolve("lib/plugins/use-jacamo-plugin-1.0.0.jar");
+        Path pluginJar = install.resolve("lib/plugins/use-jacamo-plugin-1.0.1.jar");
         String javaName = System.getProperty("os.name").startsWith("Windows") ? "java.exe" : "java";
         Path javaExecutable = Path.of(System.getProperty("java.home"), "bin", javaName);
         String classpath = hostJar + java.io.File.pathSeparator + root.resolve("target/test-classes");
@@ -61,9 +61,9 @@ class ReleasePackageIT {
         Path root = Path.of(".").toRealPath();
         Path pluginDirectory = root.resolve("target/release-plugin-smoke");
         Files.createDirectories(pluginDirectory);
-        try (ZipFile zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.0.zip").toFile());
-             InputStream input = zip.getInputStream(zip.getEntry("lib/plugins/use-jacamo-plugin-1.0.0.jar"))) {
-            Files.copy(input, pluginDirectory.resolve("use-jacamo-plugin-1.0.0.jar"),
+        try (ZipFile zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1.zip").toFile());
+             InputStream input = zip.getInputStream(zip.getEntry("lib/plugins/use-jacamo-plugin-1.0.1.jar"))) {
+            Files.copy(input, pluginDirectory.resolve("use-jacamo-plugin-1.0.1.jar"),
                     java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         }
         MainPluginRuntime.run(pluginDirectory);
@@ -75,8 +75,8 @@ class ReleasePackageIT {
     @Test
     void builtReleaseMatchesManifestAndPublishedChecksum() throws Exception {
         Path root = Path.of(".").toRealPath();
-        Path archive = root.resolve("target/use-jacamo-plugin-1.0.0.zip");
-        Path checksum = root.resolve("target/use-jacamo-plugin-1.0.0.zip.sha256");
+        Path archive = root.resolve("target/use-jacamo-plugin-1.0.1.zip");
+        Path checksum = root.resolve("target/use-jacamo-plugin-1.0.1.zip.sha256");
         assertTrue(Files.isRegularFile(archive), "release ZIP must be built in package phase");
         assertTrue(Files.isRegularFile(checksum), "release ZIP must have a SHA-256 sidecar");
 
@@ -103,7 +103,7 @@ class ReleasePackageIT {
             }
 
             byte[] pluginJar;
-            try (InputStream input = zip.getInputStream(zip.getEntry("lib/plugins/use-jacamo-plugin-1.0.0.jar"))) {
+            try (InputStream input = zip.getInputStream(zip.getEntry("lib/plugins/use-jacamo-plugin-1.0.1.jar"))) {
                 pluginJar = input.readAllBytes();
             }
             Map<String, String> jarResources = Map.of(
@@ -140,7 +140,7 @@ class ReleasePackageIT {
                     if (entry.getName().equals("META-INF/maven/org.tzi.use/use-plugin/pom.properties")) {
                         Properties coordinates = new Properties();
                         coordinates.load(jar);
-                        assertEquals("1.0.0", coordinates.getProperty("version"),
+                        assertEquals("1.0.1", coordinates.getProperty("version"),
                                 "Maven JAR metadata must identify the plugin release version");
                     }
                 }
