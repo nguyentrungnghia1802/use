@@ -22,7 +22,9 @@
     "docs/project/16-research-evidence-boundaries.md",
     "docs/project/17-end-to-end-acceptance.md",
     "docs/project/18-risk-register.md",
-    "docs/project/19-roadmap.md"
+    "docs/project/19-roadmap.md",
+    "docs/project/190-roadmap-2.md",
+    "docs/project/DOCUMENTATION-SYNC-v1.0.1.md"
   ],
   "notes": [
     "Production code and executable tests are the source of truth for implemented behavior.",
@@ -30,6 +32,6 @@
     "Architecture covers design-time and runtime verification.",
     "Metamodel mapping is separated from instance binding and runtime tracing.",
     "Constraint translation is conservative and provenance-aware.",
-    "agent.md must remain under 400 lines."
+    "agent.md is the authoritative agent operating protocol for the repository."
   ]
 }

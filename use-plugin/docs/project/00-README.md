@@ -222,7 +222,7 @@ Reasonable next work is evidence expansion, not retroactive widening of v1.0.1 c
 ## 12. Documentation map
 
 Documents `01`–`18` describe active scope, architecture, implementation contracts,
-quality, evidence, and limitations. `19-roadmap.md`, `docs/agent/tasks/task-01.md`,
+quality, evidence, and limitations. [19-roadmap.md](19-roadmap.md), [task-01.md](../agent/tasks/task-01.md),
 and `docs/superpowers/plans/` are historical execution records, not current status.
-`release/HOTFIX-1.0.1.md` and `docs/report/report.md` retain release evidence; the
-current synchronization inventory is `DOCUMENTATION-SYNC-v1.0.1.md`.
+[HOTFIX-1.0.1.md](../../release/HOTFIX-1.0.1.md) and [report.md](../../../docs/report/report.md) retain release evidence; the
+current synchronization inventory is [DOCUMENTATION-SYNC-v1.0.1.md](DOCUMENTATION-SYNC-v1.0.1.md).

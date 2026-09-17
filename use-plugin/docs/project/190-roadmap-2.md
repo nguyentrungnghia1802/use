@@ -1,9 +1,9 @@
 # USE–JaCaMo Final Engineering Roadmap
 
-> **Document type:** Final implementation roadmap for logic/coding completion  
-> **Target:** USE–JaCaMo Runtime Verification Framework  
-> **Starting baseline:** after v1.0.1 Correctness Hotfix  
-> **Roadmap scope:** Phase 16 → Phase 22  
+> **Document type:** Final implementation roadmap for logic/coding completion<br>
+> **Target:** USE–JaCaMo Runtime Verification Framework<br>
+> **Starting baseline:** after v1.0.1 Correctness Hotfix<br>
+> **Roadmap scope:** Phase 16 → Phase 22<br>
 > **Primary goal:** complete the in-scope engineering logic of the thesis project without violating frozen semantics, fabricating unsupported semantics, or confusing future research with current implementation.
 >
 > This roadmap is intentionally stricter than a normal feature roadmap. It defines:

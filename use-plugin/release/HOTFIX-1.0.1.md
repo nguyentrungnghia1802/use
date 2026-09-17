@@ -8,7 +8,7 @@ Inventory before edits: 65 open boxes in the canonical task checklist, 11 in the
 Phase 14/15 execution plan, and 2 upstream issue-template boxes. Every item is listed below.
 A = evidence exists; B = genuinely incomplete; C = superseded; D = outside this hotfix/thesis scope.
 Only A items are checked in the canonical checklist. Historical evidence is labelled; an old
-EMF/Python pass is not claimed as a fresh run. Details and fresh test totals are in ../../report.md.
+EMF/Python pass is not claimed as a fresh run. Details and fresh test totals are in ../../docs/report/report.md.
 
 {'A': 56, 'D': 3, 'B': 3, 'C': 16}
 
@@ -100,5 +100,5 @@ repeated from a separate clean validation clone. Both release ZIPs (27 entries) 
 SHA-256 `4271f497a9716011cac494803054aca029c503b0080e78540da1e25e4b527bcf`.
 The same final facade regression tests on baseline code produce four expected failures
 (rebuild, profile, reimport, valid explicit binding) and one passing failed-build control.
-See ../../report.md and evidence/v1.0.1/validation.json for commands, scope and retained logs.
+See ../../docs/report/report.md and evidence/v1.0.1/validation.json for commands, scope and retained logs.
 No hotfix blockers remain. No v1.0.1 tag or push was performed.

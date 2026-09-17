@@ -1,5 +1,7 @@
 # USE JaCaMo Plugin — Full Implementation Task Plan
 
+> **HISTORICAL_EVIDENCE:** This task plan records the original v1.0.0 implementation checklist (Phases 0–15). It has been archived from `docs/agent/task.md` to `docs/agent/tasks/task-01.md` and is retained for provenance. It is not the current HEAD status checklist for v1.0.1 or subsequent roadmaps. For current onboarding and active documentation, see [00-README.md](../../project/00-README.md).
+>
 > Checklist này bao phủ toàn bộ dự án từ baseline freeze đến runtime verification, hardening và release. Không bỏ qua phase vì "để sau". Thứ tự có thể điều chỉnh chỉ khi dependency kỹ thuật bắt buộc, nhưng mọi task vẫn phải hoàn thành trước final release.
 
 ## Global Definition of Done
@@ -796,7 +798,7 @@ Read:
 Acceptance:
 - [x] Stable repeated runs without semantic drift.
 
-Evidence (2026-09-16): [Phase 13 coverage, commands, measurements and limits](../project/13-testing-quality.md#8-phase-13-verification-evidence-2026-09-16).
+Evidence (2026-09-16): [Phase 13 coverage, commands, measurements and limits](../../project/13-testing-quality.md#8-phase-13-verification-evidence-2026-09-16).
 Module package 108/108; full reactor `verify` 251/251 including 130 Failsafe tests;
 independent mapping audit/mutations/Ecore+EMF/USE compilation passed. Three focused
 runs each passed golden, real Auction and performance/verification tests (4/4).

@@ -62,16 +62,22 @@ Baseline is observe-only.
 Do not block, control, repair, or alter JaCaMo execution unless an explicit future task changes that architecture.
 
 # 3. Source of Truth
-Normative hierarchy:
-1. `Core/Metamodel/JaCaMo-Metamodel.ecore`
-2. `Core/Mapping/jacamo-use-mapping-v1.json`
-3. mapping schema / freeze manifest / mapping audit
-4. relevant `docs/project/*`
-5. active `docs/agent/task.md`
-6. implementation code
-7. comments/examples/generated artifacts
-If code conflicts with frozen specification, fix the code.
-If active specifications conflict, stop that part and report the conflict.
+
+Evidence priority for truth:
+1. Current source code
+2. Current executable/build/runtime configuration
+3. Current automated tests
+4. Release/build scripts and machine-readable manifests
+5. Git history and tags
+6. Frozen specification contracts:
+   - `Core/Metamodel/JaCaMo-Metamodel.ecore`
+   - `Core/Mapping/jacamo-use-mapping-v1.json`
+   - Mapping schema / freeze manifest
+7. Current active documentation (`docs/project/*`, `README.md`, `agent.md`)
+8. Historical documentation (`docs/agent/tasks/task-01.md`, historical plans, archived logs)
+9. Assumptions
+
+Source code, executable configuration, and test evidence are authoritative for implemented behavior. Documentation describes intent, architecture, and contracts, but must be kept synchronized with code. Do not modify source code merely to conform to outdated documentation; synchronize documentation with verified implementation truth. If code conflicts with a frozen metamodel/mapping specification contract, evaluate and fix code or resolve through explicit authorized reconciliation.
 Always distinguish:
 ```text
 CURRENT SPECIFICATION
@@ -155,7 +161,7 @@ Old consumers must not mutate a replacement workspace.
 # 6. Reading Protocol
 Do not read the whole repository by default.
 Before each task:
-1. read the active task in `docs/agent/task.md`;
+1. read the active task in `docs/agent/tasks/task-<n>.md` (or `docs/agent/task.md` if present);
 2. read this `agent.md`;
 3. identify the affected subsystem;
 4. read directly relevant `docs/project/*`;
@@ -363,7 +369,7 @@ Potential locations:
 ```text
 README.md
 docs/project/*
-docs/agent/task.md
+docs/agent/tasks/*
 agent.md
 compatibility.json
 KNOWN-LIMITATIONS.md
@@ -451,7 +457,7 @@ Never silently choose one side.
 This is a minimum review set, not an exhaustive list.
 
 # 14. Task Tracking
-`docs/agent/task.md` tracks execution state.
+Active task checklist in `docs/agent/tasks/` tracks execution state (historical v1.0.0 checklist is archived at `docs/agent/tasks/task-01.md`).
 A task becomes `[x]` only after all applicable gates pass.
 A completed task must answer:
 ```text
@@ -481,7 +487,7 @@ A task is DONE only when applicable items pass:
 - [ ] affected docs updated;
 - [ ] stale claims searched;
 - [ ] cross-document consistency checked;
-- [ ] `task.md` updated;
+- [ ] active task checklist updated;
 - [ ] final diff reviewed;
 - [ ] commit exists.
 Do not mark `[x]` before applicable gates pass.

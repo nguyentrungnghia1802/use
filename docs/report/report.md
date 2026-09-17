@@ -24,7 +24,7 @@ Result: final validation below. The same valid-binding regression fails with RES
 
 ## DoD reconciliation
 
-See [the complete CHECKBOX / STATUS / EVIDENCE / ACTION table](use-plugin/release/HOTFIX-1.0.1.md).
+See [the complete CHECKBOX / STATUS / EVIDENCE / ACTION table](../../use-plugin/release/HOTFIX-1.0.1.md).
 Inventory: 65 canonical open items, 11 historical plan items, 2 upstream template items. Classification: A=56, B=3, C=16, D=3. Only the 56 evidence-backed A items were marked complete. Historical structural audit evidence is distinguished from fresh Java gates.
 
 B items retained: publication/tag/push has not occurred; the original external Python/EMF audit suite is not present/rerun here; no new comprehensive per-projection executable audit suite was added. These are documented candidate limitations, not P1/P2 blockers. Superseded audit filenames/status values point to the existing canonical FROZEN manifest rather than duplicate baselines.
@@ -41,7 +41,7 @@ Command: `mvn --batch-mode clean verify` from the repository root, repeated in a
 
 Baseline RED command: `mvn --batch-mode -pl use-plugin -am '-Dtest=HotfixLifecycleTest,HotfixBindingTest' '-Dsurefire.failIfNoSpecifiedTests=false' test` in an unchanged baseline clone plus the new tests. Result: 5 tests, 4 expected failures, 0 errors; all three P1 paths and valid P2 binding fail at their correctness assertions.
 
-Evidence: [baseline-red.log](use-plugin/release/evidence/v1.0.1/baseline-red.log), [final-verify.log](use-plugin/release/evidence/v1.0.1/final-verify.log), [relocated-final-verify.log](use-plugin/release/evidence/v1.0.1/relocated-final-verify.log). Intermediate failed runs are retained and are not final PASS evidence.
+Evidence: [baseline-red.log](../../use-plugin/release/evidence/v1.0.1/baseline-red.log), [final-verify.log](../../use-plugin/release/evidence/v1.0.1/final-verify.log), [relocated-final-verify.log](../../use-plugin/release/evidence/v1.0.1/relocated-final-verify.log). Intermediate failed runs are retained and are not final PASS evidence.
 
 Fresh Ecore XML recount: 37 classes, 67 attributes, 63 references, 14 inheritance edges. SHA-256: c0aafab786c5ff3fcb468aeaf1b18b62865292e6590ffca2b9b2e962a9067fe7. MappingTransformationTest exercises frozen schema/hash/identity checks, negative mutations and USE compilation. ReleasePackageIT checks all archive entries against declared sources, embedded canonical resources, checksum sidecar, USE plugin load and isolated child-JVM loading. AuctionSourceRuntimeTest and LiveJaCaMoAuctionIntegrationTest exercise in-process live Auction behavior.
 
@@ -51,8 +51,8 @@ Result: **V1.0.1 HOTFIX STATUS: PASS**; P1 FIXED; P2 FIXED; DoD RECONCILED; repr
 
 The two 27-entry release ZIPs are byte-identical. SHA-256: `4271f497a9716011cac494803054aca029c503b0080e78540da1e25e4b527bcf`.
 The relocated validation clone is clean after its build; its local-only snapshot commit is `e487112e6243b2bdafe2571bb215b33def716a18`.
-Machine-readable counts/hash comparison: [validation.json](use-plugin/release/evidence/v1.0.1/validation.json).
-Final package: [use-jacamo-plugin-1.0.1.zip](use-plugin/target/use-jacamo-plugin-1.0.1.zip).
+Machine-readable counts/hash comparison: [validation.json](../../use-plugin/release/evidence/v1.0.1/validation.json).
+Final package: [use-jacamo-plugin-1.0.1.zip](../../use-plugin/target/use-jacamo-plugin-1.0.1.zip).
 Remaining blockers: none within the agreed hotfix scope. Publication/tag/push awaits a separate user request.
 
 
