@@ -13,6 +13,15 @@
 - A CArtAgO request whose guard stays false may suspend without a terminal callback;
   operation correlation begins at `opStarted`.
 - Runtime verification observes and reports; it does not block JaCaMo actions.
+- LIVE workspace replacement is supported for rebuild, user OCL profile load, and
+  reimport. It drains the old event stream, rebinds mutation/verification consumers,
+  transfers only exact matching runtime aliases, and applies an authoritative snapshot.
+  In-flight operation correlations and historical runtime reports do not cross the
+  workspace boundary. A snapshot failure leaves consumers aligned and disconnects in
+  `ERROR`; it does not silently retain a stale `LIVE` state.
+- Project-root `binding.json` is production input only for exact typed ambiguity.
+  Invalid, duplicate, wrong-kind, malformed, or source-hash-stale entries block import;
+  bindings do not create candidates or provide fuzzy resolution.
 - Interactive installed-distribution GUI testing and other OS/JDK/component versions
   are outside the automated release gate.
 - The plugin requires its documented host/runtime libraries on the USE classpath;

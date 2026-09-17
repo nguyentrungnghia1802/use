@@ -2,7 +2,7 @@
   "project": "USE JaCaMo Plugin",
   "generated_docs": [
     "docs/agent/agent.md",
-    "docs/agent/task.md",
+    "docs/agent/tasks/task-01.md",
     "docs/project/00-README.md",
     "docs/project/01-vision-scope.md",
     "docs/project/02-system-architecture.md",
@@ -25,6 +25,8 @@
     "docs/project/19-roadmap.md"
   ],
   "notes": [
+    "Production code and executable tests are the source of truth for implemented behavior.",
+    "docs/project/00-README.md is the canonical onboarding and documentation index.",
     "Architecture covers design-time and runtime verification.",
     "Metamodel mapping is separated from instance binding and runtime tracing.",
     "Constraint translation is conservative and provenance-aware.",

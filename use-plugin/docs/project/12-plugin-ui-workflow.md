@@ -31,6 +31,10 @@ The six tabs are Project, Trace, Diagnostics, Verification, Runtime, and Binding
 Mapping compatibility is shown in Project; exact binding candidates are handled
 in Binding. The source path and line can be copied from the Trace tab.
 
+The production workbench does not expose connector construction or endpoint fields.
+`Connect` therefore works only after a host/integration has called the facade's
+`configureRuntime` API. The UI is not a standalone external `.jcm` launcher.
+
 ---
 
 ## 3. Import wizard
@@ -97,7 +101,12 @@ Khi ambiguous:
 - show exact candidates;
 - show owner/type/source;
 - user chooses;
-- persist explicit `binding.json`.
+- persist explicit `<project-root>/binding.json`.
+
+The current panel can persist a request supplied by the host workflow. Production
+import consumes project-root `binding.json` automatically, but import does not itself
+open a binding dialog or invent a request after failure. Without a valid binding, an
+ambiguous formal operation remains `RESOLUTION_AMBIGUOUS`.
 
 Không auto-select candidate bằng fuzzy ranking.
 

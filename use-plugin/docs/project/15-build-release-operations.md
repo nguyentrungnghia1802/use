@@ -47,7 +47,9 @@ Track:
 
 Breaking schema changes require major bump tương ứng.
 
-The planned plugin release tag is `use-jacamo-plugin-v1.0.1` (not created by this hotfix); the artifact is
+The manifest's plugin release tag name is `use-jacamo-plugin-v1.0.1`; no tag with
+that exact name exists in the current checkout. An annotated `v1.0.1` tag exists at
+`7f77b1f4`, one documentation-only commit behind the audit baseline. The artifact is
 `use-jacamo-plugin-1.0.1.zip`. The release manifest records the package inventory,
 compatibility versions, and known limits. The package does not redistribute
 Jason/CArtAgO/Moise dependencies; supply them on the USE host classpath.
@@ -123,4 +125,11 @@ records are retained as provenance, not advertised as commands available here.
 not sufficient to promise byte reproducibility of a shaded JAR across toolchains.
 The hotfix evidence records separate-build archive hashes and extracted-entry comparisons.
 Use the same source bytes, dependency artifacts, JDK and Maven versions when comparing.
-The manifest tag is a planned identifier; v1.0.0 remains untouched, and v1.0.1 is not pushed/tagged.
+The immutable v1.0.0 tag remains untouched. Current documentation must distinguish
+the existing generic `v1.0.1` tag from the absent manifest-named
+`use-jacamo-plugin-v1.0.1` tag and from any remote publication claim.
+
+The verified current total is 271/271: 13 `use-core`, 130 `use-gui`, and 128
+`use-plugin` tests (125 unit/component plus 3 release integration). Two 27-entry
+ZIPs were byte-identical in the recorded identical source/dependency/JDK/Maven
+environment. This does not promise cross-toolchain or cross-platform identity.

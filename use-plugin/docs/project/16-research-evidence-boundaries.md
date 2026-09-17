@@ -33,6 +33,17 @@ Extension:
 - trace/provenance;
 - runtime mirror;
 - constraint translation;
+
+## 3.1 Current status vocabulary
+
+Use `IMPLEMENTED`, `PARTIAL`, `TESTED ONLY`, `NOT IMPLEMENTED`, `OUT OF SCOPE`,
+or `RESEARCH LIMITATION` in release-facing documents. In particular:
+
+- in-process connector evidence is not an external standalone `.jcm` launcher;
+- preserved Norm structure is not full deontic-to-OCL translation;
+- runtime verification is observation/reporting, not enforcement or control;
+- Auction fixture coverage is not generic production support;
+- archive equality under one pinned toolchain is not a cross-toolchain guarantee.
 - verification profiles.
 
 Mỗi extension phải có reason và effect.

@@ -61,12 +61,14 @@ Case-specific binding **không bắt buộc**.
 
 Chỉ dùng khi deterministic resolver không đủ.
 
-Recommended:
+Production location:
 ```text
-verification/binding.json
+<project-root>/binding.json
 ```
 
-Entry:
+The file uses Binding V1 schema (`schemaVersion` plus `entries`). Each entry records
+the canonical source/target IDs, binding kind, reason, provenance, source hash, and
+ACTIVE/STALE status. A conceptual entry is:
 ```json
 {
   "source": "canonical-semantic-id",
@@ -82,12 +84,15 @@ Không dùng binding để sửa parser yếu một cách đại trà.
 
 ## 5. Resolution algorithm
 
-1. exact canonical ID;
-2. explicit source reference;
-3. owner-qualified symbol;
-4. unique candidate in typed scope;
-5. explicit binding;
-6. fail.
+1. preserve an already resolved source reference;
+2. enumerate exact typed candidates for the original spelling;
+3. when a binding file is present, validate source, target kind/candidate membership,
+   uniqueness, and source hash;
+4. allow `ExactSemanticResolver` to select a valid ACTIVE binding or another exact
+   deterministic result;
+5. otherwise accept a single exact typed candidate;
+6. emit `RESOLUTION_AMBIGUOUS` or `RESOLUTION_UNRESOLVED` and fail formal operation
+   resolution rather than guessing.
 
 Không:
 - Levenshtein/fuzzy as formal resolution;
@@ -157,3 +162,13 @@ Trace tests phải bao phủ:
   it cannot create a relation when the source spelling has zero candidates.
 - Invalid target kinds and multiple active bindings fail explicitly. Similar spelling, case folding, edit distance,
   nearest file, and global fuzzy selection are never formal resolution strategies.
+
+## 11. v1.0.1 production integration
+
+`StaticProjectImporter` reads project-root `binding.json` after extraction, computes
+current semantic source hashes, and passes the validated Binding V1 data to
+`SemanticResolver`. `DefaultJaCaMoFacade` uses this importer, so the binding path is
+part of production import rather than a resolver-only test utility. Malformed,
+duplicate, absent-target, wrong-kind, or stale entries block import with
+`BINDING_INVALID` or `BINDING_STALE`. A valid selected identity is retained in the
+semantic reference and subsequent trace.

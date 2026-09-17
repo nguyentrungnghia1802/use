@@ -1,5 +1,9 @@
 # Full Project Roadmap
 
+> **HISTORICAL_EVIDENCE:** This phase plan records how v1.0.0 was developed. It is
+> not the current completion/status source for v1.0.1. See `00-README.md`,
+> `17-end-to-end-acceptance.md`, and the v1.0.1 synchronization report instead.
+
 ## Phase 0 — Baseline Freeze
 Outputs:
 - audited Ecore;

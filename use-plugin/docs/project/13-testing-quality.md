@@ -279,7 +279,8 @@ verify` downloaded dependencies, compiled from absent `target` directories,
 generated parsers/resources and packages, and passed **251/251** in **4m37s**.
 `git status --short` remained empty. The original checkout's branch and HEAD were
 never moved. The clone and logs are retained under
-`C:/Windows/Temp/use-phase13-clean-c487fe3bafa945469a4107f493626c98/` for inspection.
+`<temporary-validation-directory>/` for inspection. The original machine-specific
+path was intentionally removed from active documentation.
 
 This proves clean source/build/dependency resolution on the recorded Windows 11
 amd64 host with Maven 3.9.9 / Oracle JDK 21.0.5. It is not a freshly provisioned OS:
@@ -330,3 +331,26 @@ issue and confirmed the fix preserves snapshot ownership, canonical Core bytes a
 public API behavior. The only Minor finding was this evidence's earlier reference
 to a Git-ignored execution report; the directly tracked evidence here supersedes
 that reference.
+
+## 9. v1.0.1 current verification (2026-09-18)
+
+The earlier Phase 13 counts above are historical evidence and must not be quoted as
+the current suite total. The v1.0.1 retained validation and the documentation-sync
+fresh reactor run both report **271/271 PASS**, zero failures, errors, or skips:
+
+| Module | Tests |
+| --- | ---: |
+| `use-core` | 13 |
+| `use-gui` | 130 |
+| `use-plugin` | 128 (125 unit/component + 3 release integration) |
+
+`HotfixLifecycleTest` covers LIVE rebuild, user OCL profile load, reimport, continued
+events/violations, alias preservation, single subscription, reconnect/resync drift,
+and failed-build preservation. `HotfixBindingTest` covers the real importer/facade path
+for ambiguity without binding, valid binding, exact trace identity, invalid targets,
+malformed JSON, and stale hashes.
+
+Package validation checks 27 declared ZIP entries, source bytes, embedded canonical
+resources, SHA sidecar, USE plugin discovery, and isolated child-JVM loading. Two
+separate builds produced the same ZIP hash only under the recorded identical source,
+dependency, JDK, and Maven scope; no cross-toolchain guarantee is inferred.

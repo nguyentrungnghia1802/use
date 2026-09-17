@@ -278,3 +278,19 @@ test.
 - Live connectors only mutate imported objects with exact trace bindings. Automatic creation of unbound dynamic
   runtime entities is intentionally unsupported because the runtime APIs do not provide enough evidence to invent
   a static semantic identity.
+
+## 13. v1.0.1 workspace lifecycle
+
+P1 is fixed in the production facade. Import, rebuild, and user-profile load build a
+candidate workspace first and install it through one lifecycle operation. If a runtime
+service exists, `RuntimeMirrorService.replaceWorkspace` drains/stops the old queue,
+transfers only runtime keys whose semantic ID, target kind, and USE target still match,
+replaces mutation and verification consumers together, and applies an authoritative
+snapshot before returning `LIVE`.
+
+A failed build leaves the published workspace and live consumers untouched. A failed
+replacement snapshot transitions the mirror to `ERROR` and disconnects; it does not
+continue with a mixed workspace. Late callbacks remain attached to the old stream and
+cannot enter replacement consumers. In-flight operation correlations and historical
+runtime report lists are workspace-local and intentionally end at the replacement
+boundary.
