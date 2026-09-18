@@ -72,7 +72,19 @@
         "Static Auction OS fails Moise 1.1 XSD including after namespace/version repair",
         "Launcher ora4mas.nopl.oe.Group/Scheme state requires an adapter; current connector consumes moise.oe.OE"
       ],
-      "evidence": "docs/project/phase20-runtime-evidence.md"
+      "evidence": "docs/project/phase20-runtime-evidence.md",
+      "host": {
+        "osName": "Windows 11",
+        "osVersion": "10.0",
+        "architecture": "amd64",
+        "mavenVersion": "3.9.9",
+        "mavenJavaVersion": "21.0.5",
+        "mavenJavaVendor": "Oracle Corporation"
+      },
+      "cleanEnvironment": {
+        "status": "not-run",
+        "scope": "Existing pinned local Maven repository; full reactor verify, not a fresh dependency-cache validation"
+      }
     }
   ]
 }

@@ -39,7 +39,7 @@
     "moise": "1.1",
     "jaca": "3.1",
     "npl": "0.6",
-    "sourceCommit": "bbdb6ef7e33574f5845fde4f30e97b32c917c30c",
+    "sourceCommit": "32b95bd58f1537ba247d12d20495bf8c3e2740ca",
     "originalFixtureModified": false,
     "fullRuntimeE2E": false,
     "results": [
@@ -54,7 +54,7 @@
           "PHASE20_INIT_RESULT=3",
           "java.lang.IllegalStateException: PHASE20_PROJECT_PARSE_FAILED:3"
         ],
-        "logSha256": "b13075401600e5e7fb7c911de443d85f4ed4664614bcb70cf2a6ab444f6b44bd"
+        "logSha256": "d2fd8bda0e982c2f99fda8eb4e1b5f74029f5de2a410474a5782916c6834bbe0"
       },
       {
         "scenario": "syntax-path-adapted",
@@ -68,7 +68,7 @@
           "cartago.ArtifactConfigurationFailedException: ora4mas.nopl.OrgBoard",
           "java.lang.IllegalStateException: PHASE20_ORGANISATION_NOT_READY"
         ],
-        "logSha256": "c1f6d8fc51ae6b1ddc4492d6ed527cc2991679314e82c6b0ed19a0f32f9bb61c"
+        "logSha256": "d8e0f0cbb5e158cd7e746d0f009c0387c6b068bbdc1973f5a7faa73f437b31e6"
       },
       {
         "scenario": "builder-control-not-equivalent",
@@ -78,21 +78,22 @@
           "PHASE20_INIT_RESULT=0",
           "PHASE20_PLATFORM_PROBE_RETURNED"
         ],
-        "logSha256": "da57c938d5803d51a393807434a2715c27f98b9c94be7c19ebd4987ae85d3595"
+        "logSha256": "9e0b937510b295e9a871fa68ea3b8933e1637da6bd429dcd87a314a83f15bc76"
       }
     ],
     "limitation": "Static Auction OS violates pinned XSD beyond its namespace. Builder control is not semantically equivalent. Launcher organisation boards expose ora4mas.nopl.oe state, whereas the current connector consumes moise.oe.OE. Closest supported mirror evidence is LiveJaCaMoAuctionIntegrationTest.",
     "moiseSchemaAudit": {
       "results": [
         {
+          "loadable": false,
           "schemaValid": false,
           "file": "auction.xml",
           "diagnostics": [
             "line 2:49 cvc-elt.1.a: Cannot find the declaration of element 'organisational-specification'."
-          ],
-          "loadable": false
+          ]
         },
         {
+          "loadable": false,
           "schemaValid": false,
           "file": "auction-namespace-only.xml",
           "diagnostics": [
@@ -102,14 +103,13 @@
             "line 8:80 cvc-complex-type.4: Attribute 'id' must appear on element 'cardinality'.",
             "line 13:41 cvc-complex-type.3.2.2: Attribute 'root' is not allowed to appear in element 'goal'.",
             "line 15:33 cvc-complex-type.2.4.a: Invalid content was found starting with element '{\"http://moise.sourceforge.net/os\":plan}'. One of '{\"http://moise.sourceforge.net/os\":mission}' is expected."
-          ],
-          "loadable": false
+          ]
         },
         {
+          "loadable": true,
           "schemaValid": true,
           "file": "builder-control.xml",
-          "diagnostics": [],
-          "loadable": true
+          "diagnostics": []
         }
       ],
       "groupBoardStateType": "ora4mas.nopl.oe.Group",
@@ -130,9 +130,9 @@
       "src\\test\\resources\\auction\\src\\org\\auction.xml": "d1af599b6d8f6b0e884f326a9ca3fbe92d741289f4425cbe235a0cce31acb4f4",
       "src\\test\\resources\\auction\\src\\agt\\auctioneer.asl": "55bd55a1676ef55e842c29731434043df46d81c2c52a71b86ea0bdc8b9407fc9",
       "src\\test\\resources\\auction\\src\\env\\auction\\AuctionArtifact.java": "ef4e5466a42ea730376135dfc4da53123117e66da75a33f36ff419abb3e86aba",
-      "tools\\runtime\\LauncherProbe.java": "f7812134d774d705900ed76608a68fcada7a9b1368dfcf9b6cd79bd0665cb7c9",
-      "tools\\runtime\\MoiseSchemaProbe.java": "17c29c359e68749e0b6545732b314220852f8b4ccc079129e49506ac21fa13b1",
-      "tools\\runtime\\launcher_probe.py": "8b11cd15bc654dfdb998c3b23dfb1644ef688068f22430acab8f4c96fc0eba46"
+      "tools\\runtime\\LauncherProbe.java": "15c9b7aacaf974e8d164c98c38e681867607e7929df35620df43c6db4d7157a8",
+      "tools\\runtime\\MoiseSchemaProbe.java": "67f9ebfd2048159b357030bf188be92ba62f269b9fe16a0b01eb99df8264b223",
+      "tools\\runtime\\launcher_probe.py": "d3153ca5f1f081be12c7b0022199ec5b862f6e1d83f30a80b409f1579ee0351e"
     },
     "moiseSchemaSha256": "08d20e351b191064be1f95f716ab49d40de256dca44823d39c23787ad210c16a"
   }
