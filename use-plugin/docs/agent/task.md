@@ -1,0 +1,2893 @@
+# USE–JaCaMo — Full Implementation Task Plan (Phase 16 → Project Closure)
+
+> **Document type:** Active implementation checklist after the current v1.0.1 baseline  
+> **Roadmap source:** `docs/agent/roadmap.md`  
+> **Historical task source:** `docs/agent/tasks/task-01.md` (Phases 0–15; do not reopen completed work unless regression evidence proves it is necessary)  
+> **Goal:** let the Agent complete the remaining engineering A–Z with minimal user interruption.  
+> **Human-dependent work:** collect and defer to Phase 25 whenever it does not block independent engineering work.
+
+---
+
+# 0. Global Execution Contract
+
+## 0.1 Baseline assumptions
+
+Phases 0–15 are considered implemented/historical baseline unless current executable evidence proves otherwise.
+
+The Agent must **not** restart completed subsystems from zero merely because a later phase uses different terminology.
+
+Existing baseline includes at least:
+
+- structural Ecore/Mapping V1;
+- semantic extraction;
+- `.use` generation / direct `MModel`;
+- `.cmd` generation / direct `MSystemState`;
+- TraceIndex / binding;
+- Jason/CArtAgO/Moise runtime connectors;
+- RuntimeEvent foundation;
+- RuntimeMutationEngine;
+- RuntimeMirrorService;
+- RuntimeVerificationEngine;
+- Auction offline/live evidence;
+- OCL infrastructure;
+- packaging/tests/docs baseline.
+
+## 0.2 Selective-reading rule — mandatory
+
+The Agent must **not** read the whole repository documentation before every task.
+
+For each task:
+
+1. read only the files listed under **Read first**;
+2. inspect only the production/test code named by the task or discovered as its direct dependency;
+3. open files under **Read only if needed** only when a concrete question remains unresolved;
+4. do not reread large research/doc trees that were already summarized into a task-local audit artifact;
+5. when a task depends on a prior phase output, prefer that output over rereading all original evidence;
+6. perform a targeted stale-statement search after implementation rather than rereading every document;
+7. update only affected docs plus task status.
+
+### Special rule for runtime mapping tasks
+
+Any task that designs, validates, implements, or freezes JaCaMo runtime mapping **must read the relevant material under**:
+
+`use-plugin/docs/research/jacamo_runtime_research/`
+
+Minimum research files for runtime mapping:
+
+- `00_RESEARCH_BASELINE.md`
+- `01_JACAMO_RUNTIME_ARCHITECTURE.md`
+- `02_RUNTIME_CAPABILITY_MATRIX.md`
+- `03_RUNTIME_IDENTITY_MODEL.md`
+- `04_USE_MAPPING_CANDIDATES.md`
+- `runtime-capabilities-v1.json`
+- `SOURCE_MANIFEST.md`
+
+Read `05_AUCTION_RUNTIME_WALKTHROUGH.md` only for Auction integration/evidence tasks.
+
+Research documents are **evidence/input**, not automatically canonical implementation truth. Current code, pinned dependency APIs, tests, and canonical project contracts must be reconciled with them.
+
+## 0.3 Autonomous execution rule
+
+The Agent should continue automatically through Phases 16–24.
+
+Do **not** ask the user for routine engineering choices such as:
+
+- helper class names;
+- private API layout;
+- JSON serialization library usage already established by the repository;
+- test organization;
+- refactor strategy that preserves semantics;
+- conservative unsupported behavior;
+- diagnostic code naming consistent with current conventions;
+- exact collection implementation;
+- file placement that follows current repository conventions.
+
+When evidence is insufficient for a semantic feature:
+
+- classify it `PARTIAL`, `UNSUPPORTED`, or `DEFERRED`;
+- implement safe diagnostics/boundary behavior;
+- continue independent work;
+- record any genuinely human/researcher-specific decision for Phase 25.
+
+## 0.4 Non-negotiable semantic rules
+
+- [ ] Never hard-code Auction behavior into generic core logic.
+- [ ] Never use fuzzy/name-similarity as formal runtime identity resolution.
+- [ ] Never auto-materialize an unknown runtime entity without exact semantic policy/trace evidence.
+- [ ] Never mutate frozen Structural Mapping V1 merely to carry runtime semantics.
+- [ ] Keep structural mapping and runtime mapping separate.
+- [ ] Keep JaCaMo as the execution engine; USE is the verification mirror.
+- [ ] Runtime connectors observe/acquire; they do not implement OCL business rules.
+- [ ] OCL is evaluated only over a state/operation/trace representation whose synchronization semantics are defined.
+- [ ] No silent runtime event drop in correctness mode.
+- [ ] No silent fallback on invalid mapping/identity/payload.
+- [ ] Unsupported semantics remain explicit and traceable.
+
+## 0.5 Task execution loop
+
+For every coding task:
+
+- [ ] Inspect current production implementation.
+- [ ] Inspect current focused tests.
+- [ ] Determine whether work is new implementation, formalization, correction, or refactor.
+- [ ] Write/update a RED regression test when the behavior is correctness-sensitive and reproducible.
+- [ ] Implement the smallest correct change.
+- [ ] Run focused GREEN tests.
+- [ ] Run affected subsystem regression.
+- [ ] Inspect `git diff` / changed files.
+- [ ] Update affected documentation.
+- [ ] Update this checklist with evidence when working inside the repository.
+- [ ] Do not claim complete without executable evidence.
+
+## 0.6 Phase completion evidence
+
+Every phase must leave:
+
+- [ ] implementation or explicit unsupported boundary;
+- [ ] focused tests;
+- [ ] regression result;
+- [ ] generated/audit artifact when required;
+- [ ] documentation synchronization;
+- [ ] explicit remaining limitations;
+- [ ] clean classification of any deferred human input.
+
+---
+
+# Phase 16 — JaCaMo Runtime Research Integration
+
+**Objective:** turn the external JaCaMo runtime research into repository-local, implementation-reconciled evidence without changing Ecore or extending OCL.
+
+---
+
+## P16.1 — Install and register runtime research pack
+
+### Read first
+
+- `docs/agent/roadmap.md` — Phase 16 only.
+- `docs/project/16-research-evidence-boundaries.md`.
+- `use-plugin/docs/research/jacamo_runtime_research/README.md`.
+- `use-plugin/docs/research/jacamo_runtime_research/00_RESEARCH_BASELINE.md`.
+
+### Tasks
+
+- [ ] Verify `use-plugin/docs/research/jacamo_runtime_research/` exists and contains the expected research files.
+- [ ] Preserve the research pack as research evidence; do not move it into canonical Mapping resources.
+- [ ] Add/update a short repository index entry pointing to the research folder if no index exists.
+- [ ] Record the JaCaMo/Jason/CArtAgO/Moise versions/commits claimed by the research pack.
+- [ ] Compare these versions with current `pom.xml`, `compatibility.json`, and resolved dependency tree.
+- [ ] Create a discrepancy list for any version mismatch (for example current plugin pin vs upstream JaCaMo main).
+- [ ] Do not update dependency versions in this task.
+- [ ] Classify each research source as upstream fact / project interpretation / proposed normalization.
+
+### Tests / evidence
+
+- [ ] Repository docs links to the research pack resolve.
+- [ ] Existing build/tests remain unchanged and green.
+
+### Acceptance
+
+- [ ] Research pack is repository-local and discoverable.
+- [ ] Version drift is explicit.
+- [ ] No canonical semantics changed.
+
+---
+
+## P16.2 — Audit existing runtime implementation against research
+
+### Read first
+
+- `docs/project/10-runtime-adapter.md`.
+- Research:
+  - `01_JACAMO_RUNTIME_ARCHITECTURE.md`
+  - `02_RUNTIME_CAPABILITY_MATRIX.md`
+- Production runtime package only.
+- Existing Jason/CArtAgO/Moise runtime connector tests only.
+
+### Tasks
+
+- [ ] Inventory current runtime connector classes and their actual source APIs.
+- [ ] Inventory current snapshot APIs.
+- [ ] Inventory current event/callback APIs.
+- [ ] Inventory current identity/correlation fields.
+- [ ] Compare each research capability with current code.
+- [ ] Mark each row:
+  - `IMPLEMENTED_MATCH`
+  - `IMPLEMENTED_DIFFERENT`
+  - `RESEARCH_ONLY`
+  - `CODE_ONLY`
+  - `VERSION_CONFLICT`
+  - `UNSUPPORTED`
+- [ ] Record exact class/method/test evidence for every implemented capability.
+- [ ] Detect any connector behavior that is more speculative than the research evidence permits.
+- [ ] Detect any research statement that does not apply to the currently pinned dependency version.
+- [ ] Do not refactor yet unless a concrete correctness bug is found.
+
+### Output
+
+Create/update a concise implementation reconciliation document, e.g.:
+
+`use-plugin/docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md`
+
+### Tests
+
+- [ ] Focused connector tests.
+- [ ] No production behavior change unless a bug fix was required.
+
+### Acceptance
+
+- [ ] Research and implementation differences are explicit.
+- [ ] Every live connector capability has code/test evidence.
+
+---
+
+## P16.3 — Establish project runtime capability matrix
+
+### Read first
+
+- `02_RUNTIME_CAPABILITY_MATRIX.md`.
+- P16.2 reconciliation output.
+- `docs/project/10-runtime-adapter.md` only for current project terminology.
+
+### Tasks
+
+- [ ] Convert the research matrix into a project-current matrix.
+- [ ] For every capability record:
+  - runtime dimension;
+  - upstream API/source;
+  - pinned-version evidence;
+  - snapshot/event/diff strategy;
+  - runtime identity available;
+  - payload available;
+  - correlation available;
+  - normalized event candidate/current event;
+  - current connector support;
+  - current USE mutation support;
+  - status.
+- [ ] Use only statuses:
+  - `SUPPORTED`
+  - `PARTIAL`
+  - `UNSUPPORTED`
+  - `DEFERRED`
+- [ ] Separate “observable upstream” from “safe to mutate USE”.
+- [ ] Explicitly record Moise polling/diff boundaries.
+- [ ] Explicitly record message/intention/norm lifecycle boundaries.
+- [ ] Explicitly record CArtAgO operation/property strength.
+- [ ] Explicitly record Jason belief/goal/action acquisition limitations.
+
+### Output
+
+- [ ] `runtime-capability-matrix.md` or update an existing canonical research matrix.
+- [ ] `runtime-capabilities-v1.json` reconciled to the plugin pin, preserving research provenance.
+
+### Acceptance
+
+- [ ] The matrix can drive Runtime Mapping tasks without rereading upstream repositories.
+
+---
+
+## P16.4 — Runtime authority and duplicate-source policy
+
+### Read first
+
+- `01_JACAMO_RUNTIME_ARCHITECTURE.md`.
+- P16.3 capability matrix.
+- Current composite connector / runtime mirror code.
+
+### Tasks
+
+- [ ] Define authoritative semantic source per dimension:
+  - Jason for agent-mind facts;
+  - CArtAgO for environment/artifact facts;
+  - Moise OE for organisation facts;
+  - or a different evidence-backed rule if current implementation proves it.
+- [ ] Identify duplicate observation paths, especially Moise state also visible via CArtAgO organisation-board artifacts.
+- [ ] Identify Jason external action vs CArtAgO operation correlation overlap.
+- [ ] Define “semantic authority” vs “correlation/diagnostic evidence”.
+- [ ] Define no-double-apply policy.
+- [ ] Add diagnostic behavior for conflicting authoritative observations.
+- [ ] Add focused tests if current code could double-apply the same semantic change.
+
+### Acceptance
+
+- [ ] Each semantic fact family has one authority policy.
+- [ ] Duplicate-source events cannot produce duplicate USE mutation.
+
+---
+
+## P16.5 — Phase 16 regression and documentation closure
+
+### Read first
+
+- Only documents changed in P16.1–P16.4.
+- `docs/project/13-testing-quality.md` for required commands.
+
+### Tasks
+
+- [ ] Run focused runtime connector tests.
+- [ ] Run current Auction live integration test.
+- [ ] Run affected module regression.
+- [ ] Search docs for stale runtime API/version claims touched by this phase.
+- [ ] Update `KNOWN-LIMITATIONS.md` only if support boundaries changed.
+- [ ] Record Phase 16 evidence.
+
+### Exit criteria
+
+- [ ] Runtime research integrated.
+- [ ] Current supported runtime surface is evidence-backed.
+- [ ] Runtime authority policy explicit.
+- [ ] No Ecore/Structural Mapping/OCL semantics changed.
+
+---
+
+# Phase 17 — Runtime Event, Trace & Identity Hardening
+
+**Objective:** make event semantics, ordering, stream lifecycle, and runtime identity exact and independent from future Ecore V2.
+
+---
+
+## P17.1 — Audit RuntimeEvent V1 and schema
+
+### Read first
+
+- `docs/project/10-runtime-adapter.md` sections for RuntimeEvent.
+- Runtime event model/schema classes.
+- Runtime foundation tests.
+- P16.3 capability matrix.
+
+### Tasks
+
+- [ ] Inventory existing RuntimeEvent fields.
+- [ ] Inventory existing event kinds.
+- [ ] Inventory payload types/validation.
+- [ ] Inventory sequence semantics.
+- [ ] Inventory correlation semantics.
+- [ ] Inventory source/runtime/semantic identity fields.
+- [ ] Compare against supported capability matrix.
+- [ ] Do not create `RuntimeEvent2`.
+- [ ] Preserve existing compatible names unless a correctness issue requires migration.
+- [ ] Add missing metadata only when a supported runtime need proves it necessary.
+- [ ] Version schema only if contract compatibility actually changes.
+
+### Tests
+
+- [ ] Serialization round-trip.
+- [ ] Invalid structural field rejection.
+- [ ] Kind-specific payload validation.
+- [ ] Sequence/correlation field tests.
+
+### Acceptance
+
+- [ ] One RuntimeEvent abstraction remains canonical.
+
+---
+
+## P17.2 — Normalize supported event taxonomy
+
+### Read first
+
+- P16.3 capability matrix.
+- P17.1 audit artifact.
+- Existing connector event construction code.
+
+### Tasks
+
+For every supported event kind:
+
+- [ ] Define source runtime.
+- [ ] Define authoritative/non-authoritative status.
+- [ ] Define required runtime identity.
+- [ ] Define payload schema.
+- [ ] Define correlation policy.
+- [ ] Define whether it changes mirrored state.
+- [ ] Define whether it creates an operation checkpoint.
+- [ ] Define terminal event expectations.
+- [ ] Define unsupported conditions.
+
+At minimum review:
+
+- [ ] observable property add/change/remove;
+- [ ] artifact operation requested/started/suspended/resumed/completed/failed;
+- [ ] artifact lifecycle;
+- [ ] workspace membership/focus/links where supported;
+- [ ] Jason belief/goal/action events;
+- [ ] Moise role/mission/group/scheme/goal deltas;
+- [ ] trace-only events.
+
+### Acceptance
+
+- [ ] Event kinds have semantics, not just names.
+
+---
+
+## P17.3 — Implement/complete RuntimeTrace
+
+### Read first
+
+- Existing queue/event observer implementation.
+- Runtime foundation tests.
+- `docs/project/10-runtime-adapter.md` ordering/lifecycle sections.
+
+### Tasks
+
+- [ ] Reuse existing history abstraction if one already exists.
+- [ ] Otherwise implement a generic `RuntimeTrace` domain abstraction.
+- [ ] Store immutable accepted event entries.
+- [ ] Track stream ID/generation.
+- [ ] Track accepted sequence ordering.
+- [ ] Lookup by event ID.
+- [ ] Lookup by correlation ID.
+- [ ] Support deterministic ordered iteration/range query.
+- [ ] Represent reconnect/resync/workspace-replacement boundaries.
+- [ ] Define whether rejected/quarantined events are stored and in what channel.
+- [ ] Bound retention if necessary without affecting correctness of current verification window.
+- [ ] Do not embed Auction operation names.
+
+### Tests
+
+- [ ] in-order append;
+- [ ] duplicate sequence;
+- [ ] decreasing sequence;
+- [ ] correlation query;
+- [ ] stream generation;
+- [ ] reconnect boundary;
+- [ ] late event from retired generation;
+- [ ] deterministic iteration.
+
+### Acceptance
+
+- [ ] Runtime history has one source of truth.
+
+---
+
+## P17.4 — Runtime identity model: Jason
+
+### Read first
+
+- Research `03_RUNTIME_IDENTITY_MODEL.md` — Jason section.
+- `docs/project/09-traceability-binding-resolver.md`.
+- Jason connector + TraceIndex code/tests.
+
+### Tasks
+
+- [ ] Define exact Jason Agent runtime key format.
+- [ ] Define goal/action/message subordinate identity only where needed.
+- [ ] Preserve agent-name-to-semantic-ID binding semantics.
+- [ ] Support multiple runtime aliases for one semantic Agent where proven.
+- [ ] Prevent bare action/goal text from becoming a unique long-lived identity when concurrency makes it unsafe.
+- [ ] Add reverse lookup for diagnostics/reporting.
+- [ ] Add stale generation ownership.
+
+### Tests
+
+- [ ] exact success;
+- [ ] missing binding;
+- [ ] duplicate/ambiguous key;
+- [ ] reconnect alias restoration;
+- [ ] stale alias rejection.
+
+---
+
+## P17.5 — Runtime identity model: CArtAgO
+
+### Read first
+
+- Research `03_RUNTIME_IDENTITY_MODEL.md` — CArtAgO section.
+- Current CArtAgO connector tests.
+- TraceIndex/runtime binding code.
+
+### Tasks
+
+- [ ] Define workspace identity component.
+- [ ] Define Artifact runtime key using upstream identity, not display name alone.
+- [ ] Define observable-property runtime key.
+- [ ] Define operation invocation correlation using `OpId` fields available in pinned API.
+- [ ] Preserve AgentId/ArtifactId/opName/id evidence.
+- [ ] Ensure `OP_START/EXIT/FAIL` use the same exact operation correlation.
+- [ ] Ensure unknown runtime Artifact/property is discoverable but not mutating without semantic target.
+
+### Tests
+
+- [ ] same property name on two artifacts does not collide;
+- [ ] same operation name on two artifacts does not collide;
+- [ ] concurrent operations do not collide;
+- [ ] late operation terminal callback rejected after stream retirement.
+
+---
+
+## P17.6 — Runtime identity model: Moise
+
+### Read first
+
+- Research `03_RUNTIME_IDENTITY_MODEL.md` — Moise section.
+- Current Moise connector/poll-diff implementation.
+- Organisation resolver tests.
+
+### Tasks
+
+- [ ] Separate specification identity from runtime instance identity.
+- [ ] Define keys for OEAgent.
+- [ ] Define keys for GroupInstance.
+- [ ] Define role-player composite identity.
+- [ ] Define SchemeInstance identity.
+- [ ] Define mission-player identity.
+- [ ] Define organisational goal-instance identity.
+- [ ] Preserve organisation context.
+- [ ] Do not collapse runtime instance into static spec object unless current USE representation explicitly does so.
+
+### Tests
+
+- [ ] multiple groups of same spec;
+- [ ] multiple schemes of same spec;
+- [ ] same agent in different group/role contexts;
+- [ ] deterministic snapshot-diff identity.
+
+---
+
+## P17.7 — Stream/generation lifecycle hardening
+
+### Read first
+
+- `RuntimeMirrorService`.
+- `TraceIndex` runtime alias lifecycle.
+- v1.0.1 lifecycle hotfix tests.
+
+### Tasks
+
+- [ ] Ensure each connection/workspace stream has explicit generation ownership.
+- [ ] Retire old event correlations on replacement/resync according to existing contract.
+- [ ] Reject late callbacks from old consumers.
+- [ ] Preserve only aliases whose semantic/USE identity remains exact.
+- [ ] Ensure reimport of incompatible project cannot silently reuse runtime aliases.
+- [ ] Ensure disconnect marks state stale.
+- [ ] Ensure full authoritative synchronization is required before LIVE.
+
+### Tests
+
+- [ ] rebuild while LIVE;
+- [ ] OCL/profile replacement while LIVE;
+- [ ] reimport while LIVE;
+- [ ] failed replacement;
+- [ ] reconnect;
+- [ ] old callback isolation.
+
+---
+
+## P17.8 — Phase 17 closure
+
+### Read first
+
+- Only Phase 17 changed docs/tests.
+- `docs/project/13-testing-quality.md` runtime gates.
+
+### Tasks
+
+- [ ] Run RuntimeEvent/schema tests.
+- [ ] Run RuntimeTrace tests.
+- [ ] Run TraceIndex/binding tests.
+- [ ] Run all runtime connector tests.
+- [ ] Run lifecycle hotfix regression.
+- [ ] Run Auction integration.
+- [ ] Update runtime/trace documentation only where behavior changed.
+
+### Exit criteria
+
+- [ ] RuntimeEvent canonical.
+- [ ] RuntimeTrace deterministic.
+- [ ] Runtime identities exact across 3 dimensions.
+- [ ] Lifecycle generations safe.
+- [ ] No Ecore V2 dependency introduced.
+
+---
+
+# Phase 18 — Runtime Mapping Draft
+
+**Objective:** formalize runtime event/state → generic semantic action → current USE mutation as a declarative draft that can later migrate to Ecore V2.
+
+**All tasks in this phase MUST use the research folder `use-plugin/docs/research/jacamo_runtime_research/` selectively as specified below.**
+
+---
+
+## P18.1 — Audit existing procedural runtime mapping
+
+### Read first
+
+- Research:
+  - `02_RUNTIME_CAPABILITY_MATRIX.md`
+  - `04_USE_MAPPING_CANDIDATES.md`
+  - `runtime-capabilities-v1.json`
+- `docs/project/10-runtime-adapter.md` state mutation mapping section.
+- `RuntimeMutationEngine` and direct callers.
+- Current runtime mutation tests.
+
+### Tasks
+
+- [ ] Enumerate every current event/state → mutation decision in Java.
+- [ ] Record source event kind.
+- [ ] Record identity requirement.
+- [ ] Record target resolution path.
+- [ ] Record mutation kind.
+- [ ] Record verification checkpoint side effect if any.
+- [ ] Record current test.
+- [ ] Detect hard-coded semantic dispatch.
+- [ ] Detect duplicate dispatch logic in connectors vs mutation engine.
+- [ ] Detect Auction-specific code.
+- [ ] Detect mutation paths without exact trace requirement.
+- [ ] Produce an audit table before writing JSON.
+
+### Acceptance
+
+- [ ] Existing runtime semantics are understood before formalization.
+
+---
+
+## P18.2 — Define Generic Runtime Semantic Action vocabulary
+
+### Read first
+
+- P18.1 audit output.
+- Research `04_USE_MAPPING_CANDIDATES.md`.
+- Current mutation enum/types.
+
+### Tasks
+
+Define a vocabulary that does not depend on Ecore class names or Auction names.
+
+At minimum evaluate/define:
+
+- [ ] `ATTRIBUTE_STATE_SET`.
+- [ ] `ATTRIBUTE_STATE_UNSET`.
+- [ ] `OBJECT_AVAILABLE`.
+- [ ] `OBJECT_UNAVAILABLE`.
+- [ ] `RELATION_INSERT`.
+- [ ] `RELATION_DELETE`.
+- [ ] `OPERATION_ENTER`.
+- [ ] `OPERATION_EXIT`.
+- [ ] `OPERATION_FAIL`.
+- [ ] `TRACE_ONLY`.
+- [ ] `NO_MUTATION`.
+- [ ] `UNSUPPORTED`.
+
+For each action:
+
+- [ ] define required identity category;
+- [ ] define payload category;
+- [ ] define idempotency expectations;
+- [ ] define whether a USE mutation is mandatory/optional/forbidden;
+- [ ] define whether it survives metamodel migration unchanged.
+
+### Acceptance
+
+- [ ] Generic action vocabulary is Ecore-independent.
+
+---
+
+## P18.3 — Design runtime mapping draft schema
+
+### Read first
+
+- Research:
+  - `00_RESEARCH_BASELINE.md`
+  - `03_RUNTIME_IDENTITY_MODEL.md`
+  - `04_USE_MAPPING_CANDIDATES.md`
+- Current project JSON schema/versioning conventions.
+- Structural mapping schema only for style/validation patterns, not for semantics duplication.
+
+### Tasks
+
+Create `runtime-mapping.schema.json` in the repository-appropriate runtime resource location.
+
+Each rule must support fields equivalent to:
+
+- [ ] rule ID;
+- [ ] source runtime/dimension;
+- [ ] normalized event kind;
+- [ ] authoritative-source requirement;
+- [ ] required runtime identity kind;
+- [ ] correlation requirement;
+- [ ] payload contract/reference;
+- [ ] generic semantic action;
+- [ ] current V1 target kind/binding anchor;
+- [ ] trace requirement;
+- [ ] concrete RuntimeMutation kind;
+- [ ] verification checkpoint or `NONE`;
+- [ ] support status;
+- [ ] evidence references;
+- [ ] assumptions;
+- [ ] unsupported conditions;
+- [ ] migration risk / Ecore V2 note.
+
+Schema rules:
+
+- [ ] reject unknown structural fields unless project convention explicitly allows extensions;
+- [ ] require unique rule IDs at semantic validation layer;
+- [ ] prohibit Auction object names in canonical generic rules;
+- [ ] encode status including `DRAFT_WAITING_FOR_METAMODEL_V2` at document level;
+- [ ] schema version explicit.
+
+### Tests
+
+- [ ] valid minimal document;
+- [ ] missing required field;
+- [ ] invalid action;
+- [ ] invalid event kind;
+- [ ] malformed identity requirement;
+- [ ] unknown field behavior.
+
+---
+
+## P18.4 — Author `jacamo-use-runtime-mapping-draft.json`
+
+### Read first
+
+- Research:
+  - `02_RUNTIME_CAPABILITY_MATRIX.md`
+  - `03_RUNTIME_IDENTITY_MODEL.md`
+  - `04_USE_MAPPING_CANDIDATES.md`
+  - `runtime-capabilities-v1.json`
+- P18.1 procedural mapping audit.
+- Current Structural Mapping V1 only for target compatibility lookup.
+
+### Tasks
+
+Add rules only where evidence is sufficient.
+
+Required high-priority rules:
+
+- [ ] observable property changed → attribute state set.
+- [ ] observable property removed → attribute state unset/undefined policy.
+- [ ] artifact operation started → operation enter.
+- [ ] artifact operation completed → operation exit.
+- [ ] artifact operation failed → operation fail.
+- [ ] artifact lifecycle → restricted object lifecycle policy.
+- [ ] workspace/focus/link events only if current semantic target exists.
+- [ ] Jason action events → trace/cross-dimensional correlation according to evidence.
+- [ ] belief/goal events only if current target semantics are proven; otherwise `DEFERRED`/`TRACE_ONLY`.
+- [ ] Moise role/mission/goal deltas only where current structural target exists and identity is exact.
+- [ ] normative lifecycle not exposed → explicit unsupported/deferred rules or capability entry; no fabricated mutation.
+
+For every rule:
+
+- [ ] evidence cites source API/research and current code support;
+- [ ] no concrete Auction instance name;
+- [ ] no fuzzy target lookup;
+- [ ] no duplicate semantic authority;
+- [ ] V2 migration risk classified.
+
+### Document metadata
+
+- [ ] status = `DRAFT_WAITING_FOR_METAMODEL_V2`.
+- [ ] current target baseline identified as temporary V1 compatibility target.
+- [ ] do not create freeze manifest yet.
+
+---
+
+## P18.5 — Implement RuntimeMapping domain model + loader
+
+### Read first
+
+- Runtime mapping schema/draft only.
+- Existing project mapping-loader patterns.
+- Diagnostics conventions.
+
+### Tasks
+
+- [ ] Create typed runtime mapping model.
+- [ ] Load mapping bytes once per load.
+- [ ] Validate JSON schema.
+- [ ] Parse typed rules.
+- [ ] Preserve deterministic rule order.
+- [ ] Preserve source/evidence metadata.
+- [ ] Return structured diagnostics.
+- [ ] Fail clearly on malformed document.
+- [ ] Do not silently fallback to hard-coded defaults.
+- [ ] Keep loader independent of Swing/UI.
+
+### Tests
+
+- [ ] valid load;
+- [ ] malformed JSON;
+- [ ] schema invalid;
+- [ ] duplicate rule IDs delegated to semantic validator;
+- [ ] deterministic reload.
+
+---
+
+## P18.6 — Implement semantic RuntimeMappingValidator
+
+### Read first
+
+- Runtime mapping model/schema/draft.
+- Current RuntimeEvent kinds.
+- Current mutation kinds.
+- Trace target kinds.
+- Structural Mapping V1 target/projection registry only as needed.
+
+### Tasks
+
+Validate:
+
+- [ ] duplicate rule IDs;
+- [ ] duplicate/conflicting selector rules;
+- [ ] unsupported source runtime;
+- [ ] unknown event kind;
+- [ ] invalid semantic action;
+- [ ] invalid mutation kind;
+- [ ] impossible payload requirement;
+- [ ] operation rule missing correlation;
+- [ ] mutation rule missing trace requirement where required;
+- [ ] invalid target kind;
+- [ ] target structural anchor does not exist;
+- [ ] rule violates semantic authority policy;
+- [ ] rule could double-apply an organisation fact;
+- [ ] V1 compatibility anchors resolve exactly;
+- [ ] deferred/unsupported rule cannot accidentally mutate.
+
+### Diagnostics
+
+- [ ] each failure has stable diagnostic code;
+- [ ] include rule ID and field/context;
+- [ ] no silent downgrade from ERROR to warning for correctness failures.
+
+---
+
+## P18.7 — Runtime mapping compatibility report
+
+### Read first
+
+- Runtime mapping draft.
+- RuntimeMappingValidator output.
+- Structural Mapping V1 and verification projection registry.
+- Trace target kinds.
+
+### Tasks
+
+Create a machine/human-readable compatibility report:
+
+- [ ] event rule;
+- [ ] generic action;
+- [ ] current V1 semantic anchor;
+- [ ] generated USE target type;
+- [ ] TraceIndex target kind;
+- [ ] mutation support;
+- [ ] status;
+- [ ] V2 migration risk.
+
+Classify each rule:
+
+- [ ] `READY_V1_TEMPORARY`.
+- [ ] `TRACE_ONLY`.
+- [ ] `DEFERRED_FOR_V2`.
+- [ ] `UNSUPPORTED`.
+
+### Acceptance
+
+- [ ] No runtime rule targets a non-existent USE construct.
+
+---
+
+## P18.8 — Phase 18 tests and docs
+
+### Read first
+
+- `docs/project/10-runtime-adapter.md`.
+- `docs/project/09-traceability-binding-resolver.md` only if identity wording changed.
+- `docs/project/13-testing-quality.md`.
+
+### Tasks
+
+- [ ] Schema test suite.
+- [ ] Loader test suite.
+- [ ] Semantic validator test suite.
+- [ ] Negative conflicting-rule tests.
+- [ ] V1 compatibility tests.
+- [ ] Existing runtime tests remain green.
+- [ ] Add `docs/project/runtime-mapping-draft.md` or repository-consistent equivalent.
+- [ ] Document six distinct layers:
+  - upstream runtime fact;
+  - RuntimeEvent;
+  - identity;
+  - generic semantic action;
+  - runtime mapping/binding;
+  - USE mutation.
+- [ ] Explicitly state OCL is not part of this mapping layer.
+
+### Exit criteria
+
+- [ ] Declarative Runtime Mapping Draft exists.
+- [ ] Loader/validator exist.
+- [ ] Draft is not frozen.
+- [ ] Draft can be migrated to V2 by replacing/reconciling target-binding layer.
+
+---
+
+# Phase 19 — Runtime Mapping Integration & Mirror Correctness
+
+**Objective:** use Runtime Mapping Draft as the semantic dispatch source and prove supported JaCaMo authoritative state equals the USE mirror.
+
+---
+
+## P19.1 — Integrate mapping rule selection into runtime pipeline
+
+### Read first
+
+- Runtime mapping draft/model/validator.
+- `RuntimeMutationEngine`.
+- Runtime connector → queue → mutation call path.
+- P18.1 procedural audit.
+
+### Tasks
+
+- [ ] Introduce one mapping-resolution service/interface.
+- [ ] Event semantic dispatch uses declarative rules where a rule exists.
+- [ ] Mutation mechanics remain in RuntimeMutationEngine.
+- [ ] Remove or isolate duplicate Java event→mutation semantic tables.
+- [ ] Preserve unsupported/deferred event diagnostics.
+- [ ] Ensure no fallback Java branch contradicts JSON rule.
+- [ ] Mapping lookup must be deterministic.
+- [ ] Mapping lookup must occur after event validation and before mutation.
+
+### Tests
+
+- [ ] valid rule dispatch;
+- [ ] missing rule;
+- [ ] unsupported rule;
+- [ ] conflicting rule prevented at load;
+- [ ] existing Auction behavior unchanged.
+
+---
+
+## P19.2 — Attribute state synchronization
+
+### Read first
+
+- Research `04_USE_MAPPING_CANDIDATES.md` CArtAgO property rows.
+- Current observable-property connector code.
+- USE adapter attribute mutation methods.
+
+### Tasks
+
+- [ ] Resolve runtime Artifact exactly.
+- [ ] Resolve projected property exactly.
+- [ ] Convert runtime value to compiled USE attribute type.
+- [ ] Apply `ATTRIBUTE_STATE_SET`.
+- [ ] Apply removal/unset as USE undefined according to existing state policy.
+- [ ] Reject unknown/unprojected property mutation.
+- [ ] Preserve diagnostic/evidence for discovered but unbound property.
+- [ ] Ensure snapshot missing bound property clears stale state.
+
+### Tests
+
+- [ ] bool/string/number supported conversions;
+- [ ] undefined/removal;
+- [ ] unknown property;
+- [ ] wrong type;
+- [ ] same property name on two artifacts;
+- [ ] resync removal.
+
+---
+
+## P19.3 — Operation lifecycle synchronization
+
+### Read first
+
+- Research `04_USE_MAPPING_CANDIDATES.md` operation rows.
+- CArtAgO OpId handling.
+- Runtime operation correlation engine/tests.
+
+### Tasks
+
+- [ ] `OP_STARTED` resolves exact Artifact + projected USE operation.
+- [ ] Bind arguments by exact signature/order/type.
+- [ ] Preserve runtime Agent/Artifact/OpId correlation.
+- [ ] Create operation enter state exactly once.
+- [ ] `OP_COMPLETED` closes same correlation.
+- [ ] `OP_FAILED` fails same correlation and cannot masquerade as successful exit.
+- [ ] suspended/resumed events are trace-only unless an explicit operation-state model exists.
+- [ ] requested event is not treated as actual operation enter if upstream semantics do not guarantee start.
+- [ ] retired stream operation cannot receive a late terminal mutation.
+
+### Tests
+
+- [ ] normal enter/exit;
+- [ ] enter/fail;
+- [ ] concurrent same-name ops;
+- [ ] terminal without enter;
+- [ ] duplicate terminal;
+- [ ] stale terminal;
+- [ ] parameter conversion failure.
+
+---
+
+## P19.4 — Object and relation lifecycle rules
+
+### Read first
+
+- Runtime mapping rules for object/relation actions.
+- `docs/project/09-traceability-binding-resolver.md`.
+- USE adapter object/link mutation APIs.
+
+### Tasks
+
+- [ ] Define when `OBJECT_AVAILABLE` may create/activate an object.
+- [ ] Require exact pre-existing semantic trace or explicit dynamic-instance policy.
+- [ ] Unknown runtime artifact must not auto-create arbitrary semantic object.
+- [ ] Define object disposal/tombstone policy.
+- [ ] Define link insert/delete exact association resolution.
+- [ ] Prevent duplicate link insertion.
+- [ ] Prevent deleting an unrelated similarly named link.
+- [ ] Enforce multiplicity failure behavior explicitly.
+
+### Tests
+
+- [ ] traced dynamic lifecycle allowed path;
+- [ ] unknown dynamic object quarantined;
+- [ ] exact link insert/delete;
+- [ ] duplicate link;
+- [ ] wrong association kind;
+- [ ] disposal with dependent correlations.
+
+---
+
+## P19.5 — Organisation state synchronization
+
+### Read first
+
+- Research:
+  - `02_RUNTIME_CAPABILITY_MATRIX.md` Moise rows
+  - `03_RUNTIME_IDENTITY_MODEL.md` Moise section
+  - `04_USE_MAPPING_CANDIDATES.md` Moise section
+- Current Moise snapshot/diff code.
+- Organisation structural mapping targets only as needed.
+
+### Tasks
+
+- [ ] Make Moise OE the semantic authority for organisation state unless code evidence requires documented exception.
+- [ ] Map exact supported role-player deltas.
+- [ ] Map mission-player deltas when target exists.
+- [ ] Map organisational goal-state changes only where current representation has a safe target.
+- [ ] Map group/scheme instance lifecycle only if instance semantics are represented.
+- [ ] Prevent CArtAgO organisation-board events from double-applying Moise state.
+- [ ] Keep derived permission/obligation state trace/report-only until Phase 23 semantic scope.
+
+### Tests
+
+- [ ] deterministic snapshot diff;
+- [ ] role add/remove;
+- [ ] mission add/remove where supported;
+- [ ] no duplicate application from board artifact events;
+- [ ] unbound OE entity blocks/diagnoses according to current LIVE contract.
+
+---
+
+## P19.6 — Jason state synchronization and safe boundaries
+
+### Read first
+
+- P16 capability matrix Jason rows.
+- Current Jason connector.
+- Current structural/instance representation for Belief/Goal/ExternalAction only.
+
+### Tasks
+
+- [ ] Classify each current Jason event as state mutation, correlation evidence, or trace-only.
+- [ ] Belief add/remove mutates USE only if exact semantic/object/link policy exists.
+- [ ] Goal lifecycle mutates USE only if a runtime state slot/representation is defined.
+- [ ] Action events correlate with CArtAgO operation when exact static/runtime relation exists.
+- [ ] Do not create a second USE operation execution for the same physical action/operation lifecycle.
+- [ ] Messages remain trace-only/unsupported unless exact current target semantics are proven.
+- [ ] Intentions remain trace-only/deferred unless current project explicitly models them.
+
+### Tests
+
+- [ ] exact mapped action correlation;
+- [ ] unknown belief/goal quarantined or trace-only;
+- [ ] no duplicate action/operation execution;
+- [ ] message limitation protected.
+
+---
+
+## P19.7 — Idempotency and double-apply protection
+
+### Read first
+
+- Ordered queue.
+- RuntimeTrace.
+- Snapshot synchronization code.
+- Mapping dispatch code.
+
+### Tasks
+
+- [ ] Define accepted event idempotency key.
+- [ ] Prevent same accepted event from mutating twice.
+- [ ] Prevent reconnect replay of old accepted deltas.
+- [ ] Buffer and order deltas around initial snapshot according to existing contract.
+- [ ] Ensure snapshot + buffered delta does not double-apply same fact.
+- [ ] Ensure stream generation protects workspace replacement.
+- [ ] Track processed/rejected/failed/dropped counts separately.
+
+### Tests
+
+- [ ] duplicate event ID;
+- [ ] duplicate sequence;
+- [ ] reconnect replay;
+- [ ] initial sync concurrent delta;
+- [ ] old-stream callback;
+- [ ] zero silent drop assertion.
+
+---
+
+## P19.8 — Authoritative mirror drift comparator
+
+### Read first
+
+- Current drift detection implementation.
+- Runtime snapshot abstraction.
+- USE mirror state reading APIs.
+
+### Tasks
+
+Compare all **supported projected runtime facts**:
+
+- [ ] object existence/lifecycle;
+- [ ] scalar attributes;
+- [ ] supported association links;
+- [ ] operation-open correlations where appropriate;
+- [ ] organisation state where represented.
+
+For each drift:
+
+- [ ] runtime identity;
+- [ ] semantic identity;
+- [ ] USE target;
+- [ ] expected authoritative value;
+- [ ] actual mirror value;
+- [ ] diagnostic code;
+- [ ] recovery policy.
+
+- [ ] `AUTO_RESYNC` must perform fresh authoritative sync.
+- [ ] state returns LIVE only after successful full sync.
+
+### Tests
+
+- [ ] each drift category;
+- [ ] no-drift baseline;
+- [ ] resync repairs drift;
+- [ ] failed resync → ERROR/disconnect.
+
+---
+
+## P19.9 — Runtime evidence export / replay artifacts
+
+### Read first
+
+- Existing Phase 14 evidence generator.
+- Current `.use/.cmd` generator.
+- Runtime report/event serializers.
+
+### Tasks
+
+Keep runtime source of truth in memory; exports are derived evidence.
+
+- [ ] Ensure reproducible `model.use` or project-named `.use` export.
+- [ ] Ensure initial-state `.cmd` export.
+- [ ] Export normalized runtime event log.
+- [ ] Export resolved runtime mapping decisions if useful.
+- [ ] Export trace.
+- [ ] Add optional `runtime-replay.cmd` only if USE command semantics can faithfully represent the supported mutation sequence.
+- [ ] If replay cannot preserve a semantic fact, document omission rather than fabricating commands.
+- [ ] Include manifest/hashes where repository conventions require.
+
+### Acceptance
+
+- [ ] Evidence makes static vs runtime state clearly distinguishable.
+
+---
+
+## P19.10 — Mirror Correctness Gate
+
+### Read first
+
+- P19.8 drift comparator results.
+- P19.9 evidence outputs.
+- `docs/project/13-testing-quality.md`.
+
+### Required gate
+
+For supported runtime subset:
+
+```text
+JaCaMo authoritative runtime state == USE MSystemState mirror
+```
+
+### Tasks
+
+- [ ] Run full initial sync comparison.
+- [ ] Run state-changing event comparison.
+- [ ] Run operation lifecycle comparison.
+- [ ] Run organisation diff comparison.
+- [ ] Run disconnect/reconnect comparison.
+- [ ] Run forced drift + resync comparison.
+- [ ] Assert zero unexplained drift after resync.
+- [ ] Assert zero silent dropped accepted events.
+- [ ] Assert zero wrong-target mutation.
+- [ ] Assert unknown/unbound facts are explicit, not silently ignored.
+- [ ] Produce machine-readable mirror-correctness summary.
+
+### Exit criteria
+
+- [ ] Mirror correctness PASS for supported subset.
+- [ ] Any unsupported facts are explicitly excluded with rationale.
+- [ ] OCL expansion may proceed only after this gate passes.
+
+---
+
+# Phase 20 — Full JaCaMo Runtime End-to-End
+
+**Objective:** move beyond isolated in-process component evidence toward the closest feasible real `.jcm` execution path on the pinned environment.
+
+---
+
+## P20.1 — Audit standalone JaCaMo launch path
+
+### Read first
+
+- Research `01_JACAMO_RUNTIME_ARCHITECTURE.md`.
+- Current compatibility manifest.
+- Existing Auction runtime integration test.
+- JaCaMo launcher integration code/dependency APIs only as needed.
+
+### Tasks
+
+- [ ] Identify exact JaCaMo launcher/runtime API available in pinned dependency set.
+- [ ] Determine whether current plugin dependencies include the full launcher or only component libraries.
+- [ ] Determine classpath/project layout requirements for `.jcm` execution.
+- [ ] Determine safe test isolation/shutdown requirements.
+- [ ] Identify gap between current in-process test and true JaCaMo project launch.
+- [ ] Record blockers as technical, environment, or unsupported-version blockers.
+- [ ] Do not upgrade runtime versions solely to make launcher easier.
+
+---
+
+## P20.2 — Build a standalone/full-project runtime test harness
+
+### Read first
+
+- P20.1 launch-path audit.
+- Existing Auction fixture files.
+- Existing test process/resource conventions.
+
+### Tasks
+
+- [ ] Reuse checked-in Auction project source.
+- [ ] Launch through the most authentic supported JaCaMo path.
+- [ ] Ensure deterministic startup wait/ready condition.
+- [ ] Attach plugin/runtime observation connectors without duplicate listeners.
+- [ ] Ensure controlled shutdown.
+- [ ] Capture stdout/log only when needed for diagnostics.
+- [ ] Avoid arbitrary user-project command execution beyond explicit test fixture.
+
+### Tests
+
+- [ ] launch succeeds;
+- [ ] launch failure has actionable diagnostic;
+- [ ] teardown leaves no runtime thread/listener leak.
+
+---
+
+## P20.3 — Capture actual runtime trace
+
+### Read first
+
+- Research `05_AUCTION_RUNTIME_WALKTHROUGH.md`.
+- RuntimeTrace/event schema.
+- Full-project harness.
+
+### Capture at minimum
+
+- [ ] sequence;
+- [ ] timestamp;
+- [ ] runtime source;
+- [ ] raw callback category;
+- [ ] agent runtime ID;
+- [ ] workspace ID;
+- [ ] artifact ID;
+- [ ] operation ID/name;
+- [ ] arguments;
+- [ ] property name/value;
+- [ ] Moise snapshot delta;
+- [ ] normalized event;
+- [ ] resolved SemanticId;
+- [ ] resolved USE target;
+- [ ] mapping rule ID;
+- [ ] mutation result.
+
+### Scenarios
+
+- [ ] platform boot / initial focus-role setup;
+- [ ] operation start;
+- [ ] improving/state-changing operation;
+- [ ] operation with no state change where applicable;
+- [ ] operation failure;
+- [ ] stop/close;
+- [ ] disconnect/reconnect/resync.
+
+---
+
+## P20.4 — Compare actual trace with capability/mapping contracts
+
+### Read first
+
+- P20.3 captured trace.
+- P16 capability matrix.
+- Runtime Mapping Draft.
+
+### Tasks
+
+- [ ] Confirm every observed event is known or explicitly unknown.
+- [ ] Confirm payload assumptions match actual callbacks.
+- [ ] Confirm operation correlation matches actual lifecycle.
+- [ ] Confirm property delta timing assumptions.
+- [ ] Confirm organisation polling/diff assumptions.
+- [ ] Identify events present in code but absent in scenario without claiming they never occur.
+- [ ] Update mapping/capability docs only when evidence justifies it.
+- [ ] Add regression tests for any discovered mismatch.
+
+---
+
+## P20.5 — Full runtime mirror E2E
+
+### Read first
+
+- Full-project harness.
+- P19 Mirror Correctness Gate.
+
+### Tasks
+
+- [ ] Import project statically.
+- [ ] Generate/load USE model/state.
+- [ ] Start actual JaCaMo project.
+- [ ] Bind runtime identities exactly.
+- [ ] Full authoritative sync.
+- [ ] Reach LIVE.
+- [ ] Execute deterministic scenario.
+- [ ] Apply Runtime Mapping Draft.
+- [ ] Compare mirror to runtime at checkpoints.
+- [ ] Disconnect.
+- [ ] Mutate/advance runtime if scenario supports it.
+- [ ] Reconnect/full resync.
+- [ ] Assert zero post-resync drift.
+
+### Exit criteria
+
+- [ ] Full-project path works, OR
+- [ ] exact technical limitation is documented and the closest supported in-process path remains bounded/evidence-backed.
+
+---
+
+# Phase 21 — Metamodel-Decoupling & V2 Migration Readiness
+
+**Objective:** ensure the runtime core can continue now and later migrate to a new Ecore without rewriting connectors/queue/trace/mutation mechanics.
+
+---
+
+## P21.1 — Audit runtime dependencies on V1 metamodel vocabulary
+
+### Read first
+
+- Runtime package imports/usages.
+- Semantic model enum/kinds.
+- Trace target kinds.
+- Runtime Mapping Draft.
+
+### Tasks
+
+Search for:
+
+- [ ] direct `MetamodelKind` checks inside runtime core;
+- [ ] direct V1 EClass names inside connectors;
+- [ ] direct V1 EAttribute names inside generic runtime dispatch;
+- [ ] structural mapping rule IDs hard-coded into connectors;
+- [ ] Auction-specific names;
+- [ ] generated USE classifier names hard-coded outside target adapter.
+
+Classify each dependency:
+
+- [ ] legitimate adapter boundary;
+- [ ] removable coupling;
+- [ ] required current V1 binding;
+- [ ] test-only;
+- [ ] bug.
+
+---
+
+## P21.2 — Introduce/solidify Ecore-independent runtime target abstraction
+
+### Read first
+
+- P21.1 audit.
+- Runtime Mapping generic action vocabulary.
+- TraceIndex public API.
+
+### Tasks
+
+- [ ] Define generic runtime target request/descriptor if current code lacks one.
+- [ ] Runtime core expresses intent as object/attribute/relation/operation target category, not V1 class names.
+- [ ] Ecore/USE-specific binding is delegated to resolver/adapter.
+- [ ] Preserve exact semantic ID requirement.
+- [ ] Preserve diagnostics/provenance.
+- [ ] Avoid creating another parallel TraceIndex.
+
+### Tests
+
+- [ ] runtime connector tests do not require V1-specific target names except fixture bindings;
+- [ ] adapter tests prove V1 binding still works.
+
+---
+
+## P21.3 — Structural/runtime binding adapter boundary
+
+### Read first
+
+- Structural Mapping V1 output/TransformationPlan target registry.
+- Runtime Mapping Draft.
+- USE adapter.
+
+### Tasks
+
+- [ ] Define one component responsible for current metamodel-specific runtime target binding.
+- [ ] Input: runtime semantic action + exact semantic identity/trace.
+- [ ] Output: exact current USE target or explicit unresolved result.
+- [ ] Keep structural mapping read-only.
+- [ ] Ensure future V2 adapter can replace/reconcile this layer without changing connectors.
+
+### Tests
+
+- [ ] current V1 target success;
+- [ ] missing target;
+- [ ] incompatible target kind;
+- [ ] stale trace;
+- [ ] deterministic result.
+
+---
+
+## P21.4 — Create Metamodel V1→V2 diff/migration tooling skeleton
+
+### Read first
+
+- `docs/project/04-jacamo-metamodel-baseline.md`.
+- `docs/project/05-metamodel-mapping-contract.md`.
+- Existing mapping audit utilities/tests.
+
+### Tasks
+
+Implement tooling capable of later comparing two Ecore baselines:
+
+- [ ] class added/removed/renamed candidate (exact structural diff; no fuzzy auto-rename acceptance);
+- [ ] attribute added/removed/type/bounds change;
+- [ ] reference added/removed/target/bounds/containment change;
+- [ ] inheritance change;
+- [ ] affected structural mapping entries;
+- [ ] affected projection anchors;
+- [ ] affected runtime mapping target bindings;
+- [ ] affected OCL contexts/navigation;
+- [ ] affected golden `.use/.cmd` outputs.
+
+Do not require V2 to exist yet; add synthetic fixture diff tests.
+
+---
+
+## P21.5 — V2 migration-readiness test
+
+### Read first
+
+- P21.2/P21.3 abstractions.
+- Runtime connector tests.
+
+### Tasks
+
+Using a synthetic alternate target vocabulary/adapter:
+
+- [ ] prove Jason connector unchanged;
+- [ ] prove CArtAgO connector unchanged;
+- [ ] prove Moise connector unchanged;
+- [ ] prove RuntimeEvent unchanged;
+- [ ] prove RuntimeTrace unchanged;
+- [ ] prove queue/lifecycle unchanged;
+- [ ] prove mapping rule source semantics can stay while target binding changes;
+- [ ] prove RuntimeMutation mechanics remain reusable.
+
+### Exit criteria
+
+- [ ] Waiting for Ecore V2 no longer blocks runtime engineering.
+- [ ] V2 impact is concentrated in semantic/mapping/binding/transformation layers.
+
+---
+
+# Phase 22 — Runtime Verification Completion
+
+**Objective:** run verification on top of the now-proven mirror, not use OCL to hide synchronization uncertainty.
+
+---
+
+## P22.1 — Verification checkpoint contract
+
+### Read first
+
+- `docs/project/11-verification-engine.md`.
+- Runtime mapping rule checkpoint fields.
+- Current RuntimeVerificationEngine.
+
+### Tasks
+
+Define/validate first-class checkpoints:
+
+- [ ] `SNAPSHOT`.
+- [ ] `AFTER_MUTATION`.
+- [ ] `OPERATION_PRE`.
+- [ ] `OPERATION_POST`.
+- [ ] `STREAM_BOUNDARY`.
+
+For each:
+
+- [ ] trigger;
+- [ ] valid mirror state requirement;
+- [ ] verification mode;
+- [ ] event/trace context;
+- [ ] result handling;
+- [ ] behavior when mirror is STALE/ERROR.
+
+### Acceptance
+
+- [ ] Verification cannot report current runtime truth while mirror is not LIVE/current.
+
+---
+
+## P22.2 — Runtime invariants after mutation/snapshot
+
+### Read first
+
+- Verification engine invariant path.
+- Dependency index.
+- Mirror version/snapshot state.
+
+### Tasks
+
+- [ ] Full invariant check after authoritative snapshot.
+- [ ] Targeted/conservative invariant check after state-changing delta.
+- [ ] Keep full-check fallback.
+- [ ] Preserve event ID/correlation/snapshot version.
+- [ ] OCL undefined remains ERROR where contract says so.
+- [ ] Unknown runtime data does not become false PASS.
+
+### Tests
+
+- [ ] PASS;
+- [ ] FAIL;
+- [ ] ERROR/undefined;
+- [ ] targeted/full equivalence;
+- [ ] STALE state no-current-result behavior.
+
+---
+
+## P22.3 — Runtime operation PRE/POST completion
+
+### Read first
+
+- Current operation verification code.
+- P19.3 operation mapping.
+
+### Tasks
+
+- [ ] PRE occurs on exact mapped operation enter.
+- [ ] Capture pre-state once.
+- [ ] Bind self/args exactly.
+- [ ] Do not block JaCaMo baseline execution.
+- [ ] POST only after successful matching exit.
+- [ ] Preserve `@pre`.
+- [ ] failure/abort → POST `SKIPPED`.
+- [ ] retired correlation cannot produce a POST result.
+- [ ] mapping/argument resolution error → explicit ERROR diagnostic.
+
+### Tests
+
+- [ ] pre pass/fail;
+- [ ] post pass/fail;
+- [ ] @pre;
+- [ ] op fail;
+- [ ] duplicate terminal;
+- [ ] stream boundary.
+
+---
+
+## P22.4 — Runtime ordering/history verification representation
+
+### Read first
+
+- RuntimeTrace implementation.
+- Existing generated verification model/profile extension mechanism.
+- USE/OCL capabilities already used by the project.
+
+### Tasks
+
+Agent chooses the least invasive evidence-backed representation without changing frozen Structural Mapping V1.
+
+Preferred decision order:
+
+1. reuse existing verification-profile extension mechanism if it can expose minimal trace state safely;
+2. otherwise use a dedicated trace evaluator for ordering and clearly distinguish it from OCL;
+3. do not create a large speculative runtime metamodel solely for ordering.
+
+Implement:
+
+- [ ] generic happened-before / start-before-terminal constraints;
+- [ ] stream-generation validity;
+- [ ] correlation ordering;
+- [ ] exact event attribution;
+- [ ] case-specific Auction ordering outside core.
+
+### Tests
+
+- [ ] generic synthetic ordering;
+- [ ] Auction valid order;
+- [ ] Auction invalid order;
+- [ ] retired-stream event violation/rejection.
+
+---
+
+## P22.5 — Runtime violation model and navigation
+
+### Read first
+
+- Verification result/report model.
+- TraceIndex reverse lookup.
+- RuntimeTrace lookup.
+
+### Tasks
+
+Ensure every result carries where available:
+
+- [ ] constraint/rule ID;
+- [ ] checkpoint;
+- [ ] runtime event ID;
+- [ ] sequence;
+- [ ] correlation ID;
+- [ ] runtime key;
+- [ ] SemanticId;
+- [ ] USE context object/operation;
+- [ ] source span/provenance;
+- [ ] mirror version/fingerprint;
+- [ ] PASS/FAIL/ERROR/SKIPPED.
+
+Navigation path:
+
+- [ ] result → USE target;
+- [ ] USE target → trace;
+- [ ] trace → semantic source;
+- [ ] semantic source → runtime identity/event;
+- [ ] no similarly-named fallback.
+
+---
+
+## P22.6 — Runtime verification E2E gate
+
+### Read first
+
+- P19 mirror-correctness evidence.
+- P20 full runtime harness/evidence.
+- Current case OCL only as needed.
+
+### Tasks
+
+- [ ] Run valid scenario.
+- [ ] Run invariant violation scenario.
+- [ ] Run PRE violation scenario.
+- [ ] Run operation failure scenario.
+- [ ] Run ordering violation scenario if supported.
+- [ ] Disconnect/reconnect/resync.
+- [ ] Ensure violations are evaluated against current mirror only.
+- [ ] Ensure exact trace attribution.
+
+### Exit criteria
+
+- [ ] Runtime verification complete for supported mirrored state.
+- [ ] Mirror correctness remains independently tested from OCL correctness.
+
+---
+
+# Phase 23 — Cross-Dimensional & Supported Normative Verification
+
+**Objective:** verify meaningful Agent–Environment–Organisation consistency without inventing semantics.
+
+---
+
+## P23.1 — Cross-dimensional relation inventory
+
+### Read first
+
+- `docs/project/04-jacamo-metamodel-baseline.md` cross-dimensional relations.
+- `docs/project/05-metamodel-mapping-contract.md` VP004–VP007.
+- P16/P19 runtime capability/mapping outputs.
+
+### Tasks
+
+For each candidate relation classify:
+
+- [ ] structural only;
+- [ ] offline verifiable;
+- [ ] runtime verifiable;
+- [ ] requires exact runtime correlation;
+- [ ] requires additional semantics;
+- [ ] unsupported.
+
+Review at minimum:
+
+- [ ] `Agent.artifact`;
+- [ ] `Agent.joinWorkspace`;
+- [ ] `ExternalAction.operation`;
+- [ ] `Plan.RefArtifact`;
+- [ ] `ObsProperty.obsproperty`;
+- [ ] `Role.players`;
+- [ ] `Organisation.deploysAgent`;
+- [ ] `OGoal.OGoalToGoal`.
+
+Do not turn a structural EReference into a behavioral invariant automatically.
+
+---
+
+## P23.2 — Implement safe Agent ↔ Environment checks
+
+### Read first
+
+- P23.1 approved-by-evidence subset.
+- Current trace/correlation data.
+
+### Tasks
+
+Where evidence is sufficient:
+
+- [ ] Agent ↔ Workspace consistency.
+- [ ] Agent ↔ Artifact accessibility/binding consistency.
+- [ ] ExternalAction ↔ Artifact Operation correlation.
+- [ ] Plan.RefArtifact target exactness.
+- [ ] runtime action ↔ CArtAgO operation cross-evidence.
+
+### Tests
+
+- [ ] positive exact link;
+- [ ] wrong target;
+- [ ] same-name wrong artifact negative case;
+- [ ] missing evidence becomes unsupported/error, not guessed pass/fail.
+
+---
+
+## P23.3 — Implement safe Environment ↔ Agent checks
+
+### Read first
+
+- P23.1 inventory.
+- Current ObsProperty↔Belief static trace.
+- Jason/CArtAgO runtime evidence.
+
+### Tasks
+
+- [ ] Verify percept/property↔belief consistency only when project contains an exact semantic relation and connector semantics support the runtime claim.
+- [ ] Do not assume every observable property change becomes a Jason belief.
+- [ ] Preserve unsupported delivery semantics explicitly.
+- [ ] Add positive/negative fixtures for the supported subset.
+
+---
+
+## P23.4 — Implement safe Organisation ↔ Agent/Goal checks
+
+### Read first
+
+- P23.1 inventory.
+- Moise runtime mapping outputs.
+
+### Tasks
+
+Where supported:
+
+- [ ] Role.players ↔ Agent consistency.
+- [ ] Organisation deployment relation consistency.
+- [ ] OGoal ↔ Jason Goal consistency.
+- [ ] mission/goal runtime alignment if identity/evidence exists.
+- [ ] Do not infer action permission/obligation from role unless normative semantics are explicitly established.
+
+---
+
+## P23.5 — Normative runtime API evidence audit
+
+### Read first
+
+- Research capability matrix normative notes.
+- Current pinned Moise APIs/source only for unresolved normative questions.
+- `docs/project/16-research-evidence-boundaries.md` normative section.
+
+### Tasks
+
+For each concept record:
+
+- [ ] role adoption;
+- [ ] mission commitment;
+- [ ] group/scheme membership;
+- [ ] organisational goal state;
+- [ ] derived obligation;
+- [ ] derived permission;
+- [ ] prohibition if exposed;
+- [ ] activation;
+- [ ] fulfilment;
+- [ ] violation;
+- [ ] expiration/deadline.
+
+Classify:
+
+- [ ] `SUPPORTED_EXACT`;
+- [ ] `SUPPORTED_PARTIAL`;
+- [ ] `DERIVABLE_WITH_ASSUMPTION`;
+- [ ] `NOT_EXPOSED`;
+- [ ] `UNSAFE_TO_INFER`.
+
+Do not implement unproven lifecycle semantics.
+
+---
+
+## P23.6 — Implement normative supported subset only
+
+### Read first
+
+- P23.5 classification.
+- Current organisation runtime state representation.
+
+### Tasks
+
+- [ ] Implement only `SUPPORTED_EXACT` by default.
+- [ ] `SUPPORTED_PARTIAL` may be exposed as state/evidence with explicit limitation, not as stronger semantic claim.
+- [ ] Keep structural Norm separate from runtime normative state.
+- [ ] Keep runtime normative state separate from OCL verification result.
+- [ ] Do not auto-compile obligation/permission/prohibition into OCL invariants.
+- [ ] Add unsupported-boundary diagnostics/tests for everything not implemented.
+
+### Exit criteria
+
+- [ ] Cross-dimensional supported rules work.
+- [ ] Normative scope is bounded and evidence-backed.
+
+---
+
+# Phase 24 — Constraint Translation Closure & Multi-Case Validation
+
+**Objective:** close the supported translation subset and prove generic reuse beyond Auction without waiting for human input unless no suitable case exists.
+
+---
+
+## P24.1 — Audit current constraint translation inventory
+
+### Read first
+
+- `docs/project/07-constraint-translation-and-ocl.md`.
+- Constraint IR/translator tests.
+- Current translated/core/case OCL manifests.
+
+### Tasks
+
+For each translator rule record:
+
+- [ ] source construct;
+- [ ] binding requirements;
+- [ ] target OCL form;
+- [ ] status EXACT/SOUND_SUBSET/LOSSY/UNSUPPORTED;
+- [ ] provenance;
+- [ ] positive test;
+- [ ] negative test;
+- [ ] ambiguity test;
+- [ ] limitation.
+
+---
+
+## P24.2 — Complete EXACT translations
+
+### Read first
+
+- P24.1 inventory entries marked EXACT candidates.
+- Source parser/AST code only for those constructs.
+
+### Tasks
+
+- [ ] Finish missing EXACT supported rules.
+- [ ] Deterministic generation.
+- [ ] Exact context/operation binding.
+- [ ] Source dependency trace.
+- [ ] Generated OCL parse/type-check.
+- [ ] Positive + negative fixtures.
+- [ ] No arbitrary Java body translation.
+
+---
+
+## P24.3 — Complete safe SOUND_SUBSET translations
+
+### Read first
+
+- Only P24.1 SOUND_SUBSET candidates.
+- Research/evidence supporting one-direction soundness.
+
+### Tasks
+
+- [ ] Implement only when one-direction guarantee can be documented.
+- [ ] Record assumption and preservation direction.
+- [ ] Do not label as equivalent.
+- [ ] Add regression proving unsupported constructs do not emit partial fake formulas.
+
+---
+
+## P24.4 — Preserve LOSSY/UNSUPPORTED boundaries
+
+### Read first
+
+- P24.1 LOSSY/UNSUPPORTED list.
+
+### Tasks
+
+- [ ] LOSSY rules disabled by default unless already explicitly approved by current project contract.
+- [ ] UNSUPPORTED expressions remain source-traceable.
+- [ ] Diagnostic includes reason.
+- [ ] Unrelated supported extraction continues.
+- [ ] No silent formula truncation.
+- [ ] Add boundary tests.
+
+---
+
+## P24.5 — Select Case Study #2 autonomously if possible
+
+### Read first
+
+- Existing checked-in examples/fixtures list.
+- Local JaCaMo examples available in pinned source/dependencies if repository already vendors/references them.
+- Do not web-research broadly unless project workflow explicitly allows it and no local candidate exists.
+
+### Candidate requirements
+
+Prefer a case with:
+
+- [ ] Agent;
+- [ ] CArtAgO Artifact;
+- [ ] observable property;
+- [ ] external action/operation;
+- [ ] organisation;
+- [ ] role;
+- [ ] goal/mission;
+- [ ] deterministic runnable scenario.
+
+### Tasks
+
+- [ ] Evaluate local candidates.
+- [ ] Select the best technically suitable public/local example without user input if semantics are clear.
+- [ ] Record why selected.
+- [ ] If no suitable candidate exists, record `HUMAN_INPUT_REQUIRED_CASE_STUDY_2` for Phase 25 and continue all other Phase 24 tasks.
+
+---
+
+## P24.6 — Import/transform Case Study #2
+
+### Read first
+
+- Only selected case files.
+- Parser/mapping docs only for failures encountered.
+
+### Tasks
+
+- [ ] Project discovery.
+- [ ] Semantic extraction.
+- [ ] Exact resolution.
+- [ ] USE transformation.
+- [ ] `.use` generation.
+- [ ] `.cmd` generation.
+- [ ] trace generation.
+- [ ] OCL profile only where evidence requires.
+- [ ] runtime connector compatibility.
+- [ ] initial mirror sync.
+
+Forbidden:
+
+- [ ] no core special case for Case Study #2.
+
+---
+
+## P24.7 — Case Study #2 runtime positive/negative scenarios
+
+### Read first
+
+- Selected case source + generated trace.
+- Runtime capability/mapping rules applicable to that case.
+
+### Tasks
+
+- [ ] Positive state synchronization.
+- [ ] At least one negative verification scenario.
+- [ ] Exact violation attribution.
+- [ ] Reconnect/resync.
+- [ ] Cross-dimensional rule where applicable.
+- [ ] Unsupported features reported explicitly.
+
+---
+
+## P24.8 — Generic reuse audit
+
+### Read first
+
+- Core production code diff since Phase 16.
+- Auction and Case Study #2 tests.
+
+### Tasks
+
+Search core for:
+
+- [ ] Auction class names;
+- [ ] Auction operation names;
+- [ ] Case Study #2 names;
+- [ ] hard-coded runtime object IDs;
+- [ ] hidden case bindings;
+- [ ] branch logic keyed by example project.
+
+- [ ] Remove unjustified case-specific core logic.
+- [ ] Keep example-specific configuration under example/test/profile locations.
+
+### Exit criteria
+
+- [ ] Translation supported subset closed.
+- [ ] Generic reuse demonstrated on two cases, OR Case Study #2 is the only remaining explicit Phase 25 input.
+
+---
+
+# Phase 25 — Human Inputs / Research Decisions
+
+**Objective:** collect only the information that could not be safely produced by the Agent after completing all independent engineering work.
+
+The Agent must arrive here with a prepared decision package for every requested input.
+
+---
+
+## P25.1 — Metamodel V2 input package
+
+### Agent prepares before asking
+
+- [ ] Current V1 structural summary.
+- [ ] Runtime concepts actually needed after Phases 16–24.
+- [ ] Classes/attributes/references that appear unused or over-complex.
+- [ ] Proposed minimum verification-oriented vocabulary if useful.
+- [ ] Exact V1→future-V2 impact matrix.
+- [ ] Migration tooling ready.
+
+### Human input
+
+- [ ] User supplies/approves Metamodel V2 if it is externally authored/required.
+- [ ] User states whether V2 replaces V1 canonical baseline or acts as a verification-specific metamodel/profile.
+
+If user decides no V2 is required:
+
+- [ ] record V1 as final target and proceed to Phase 26 accordingly.
+
+---
+
+## P25.2 — Remaining research-semantic decisions
+
+Only ask for entries that could not be resolved by source/runtime evidence.
+
+For each open decision provide:
+
+- [ ] question;
+- [ ] current facts;
+- [ ] safe default;
+- [ ] options;
+- [ ] impact;
+- [ ] recommendation;
+- [ ] exact files/tests affected.
+
+Potential topics only if still unresolved:
+
+- [ ] intentionally LOSSY translation enablement;
+- [ ] interpretation of a normative/deontic semantic not exposed by runtime;
+- [ ] thesis-specific desired cross-dimensional rule not present in source;
+- [ ] alternative RuntimeTrace/OCL representation if current evidence-backed implementation is unacceptable.
+
+---
+
+## P25.3 — Case Study #2 user input if still required
+
+Only if P24.5 found no suitable autonomous candidate:
+
+- [ ] present required selection criteria;
+- [ ] present any partial candidates already evaluated;
+- [ ] request project/case selection from user.
+
+---
+
+## P25.4 — Human input freeze
+
+- [ ] Record all user decisions in a decision log.
+- [ ] Record date/version/source.
+- [ ] Convert decisions into explicit Phase 26 inputs.
+- [ ] No remaining hidden human dependency before Phase 26 starts.
+
+### Exit criteria
+
+- [ ] Metamodel target decided.
+- [ ] Required external case supplied if needed.
+- [ ] Any thesis-specific semantics explicitly approved/rejected.
+
+---
+
+# Phase 26 — Metamodel V2 Reconciliation & Final Runtime Mapping
+
+**Objective:** reconcile the final metamodel decision, regenerate static artifacts, migrate runtime binding, and freeze the final Runtime Mapping contract.
+
+---
+
+## P26.1 — Import and audit final metamodel target
+
+### Read first
+
+- User-supplied/final Ecore only.
+- P21 diff/migration tooling.
+- `docs/project/04-jacamo-metamodel-baseline.md` for evolution policy.
+
+### Tasks
+
+- [ ] Parse final Ecore.
+- [ ] Enumerate EClasses/EAttributes/EReferences/inheritance.
+- [ ] Compute fingerprint/hash.
+- [ ] Diff against V1.
+- [ ] Classify added/removed/changed.
+- [ ] Detect invalid/unresolved structural facts.
+- [ ] Record provenance: reconstructed baseline vs thesis verification extension.
+- [ ] Do not silently infer rename by fuzzy match.
+
+---
+
+## P26.2 — Build/finalize Structural Mapping for final metamodel
+
+### Read first
+
+- Final Ecore diff.
+- Current Structural Mapping contract/schema.
+- Existing mapping engine tests.
+
+### Tasks
+
+- [ ] Create Mapping V2 or reconcile V1 depending on Phase 25 decision.
+- [ ] Map all final classes.
+- [ ] Map attributes.
+- [ ] Map references/containment/multiplicity.
+- [ ] Map inheritance.
+- [ ] Reconcile projection contracts.
+- [ ] Ensure deterministic target names.
+- [ ] Schema validate.
+- [ ] Coverage audit.
+- [ ] Negative mutation tests.
+- [ ] Do not freeze until USE compiler gate passes.
+
+---
+
+## P26.3 — Reconcile Semantic IR / parser outputs
+
+### Read first
+
+- Final Ecore/Mapping diff impact report.
+- Only parser code for affected kinds.
+
+### Tasks
+
+- [ ] Update semantic kind registry/enum.
+- [ ] Preserve stable IDs where semantics remain the same.
+- [ ] Remove obsolete kinds only after references/tests are migrated.
+- [ ] Update parsers/extractors only for affected vocabulary.
+- [ ] Preserve unsupported source facts as diagnostics rather than dropping silently.
+- [ ] Update resolver target kinds.
+- [ ] Update trace schema only if required.
+
+### Tests
+
+- [ ] parser fixtures for affected dimensions;
+- [ ] Auction import;
+- [ ] Case Study #2 import.
+
+---
+
+## P26.4 — Regenerate USE structural model and initial state
+
+### Read first
+
+- Final Mapping.
+- USE transformation tests.
+
+### Tasks
+
+- [ ] Generate final `.use`.
+- [ ] Generate final `.cmd`.
+- [ ] Build direct `MModel`.
+- [ ] Build direct `MSystemState`.
+- [ ] Compare text/direct semantics.
+- [ ] Regenerate trace.
+- [ ] Revalidate multiplicity/structure.
+- [ ] Regenerate golden outputs intentionally.
+- [ ] Review diffs rather than blindly accepting snapshots.
+
+---
+
+## P26.5 — Reconcile runtime mapping target-binding layer
+
+### Read first
+
+- **Required research folder:**
+  - `02_RUNTIME_CAPABILITY_MATRIX.md`
+  - `03_RUNTIME_IDENTITY_MODEL.md`
+  - `04_USE_MAPPING_CANDIDATES.md`
+- Runtime Mapping Draft.
+- Final Ecore/Mapping/Trace target registry.
+- P21 metamodel-decoupling artifacts.
+
+### Tasks
+
+- [ ] Keep source RuntimeEvent selectors unchanged where upstream runtime semantics did not change.
+- [ ] Keep Generic Runtime Semantic Actions unchanged where possible.
+- [ ] Rebind each rule to final semantic/USE target kind.
+- [ ] Remove obsolete V1 anchors.
+- [ ] Add required final-metamo del anchors.
+- [ ] Revalidate exact trace requirements.
+- [ ] Revalidate property/operation projections.
+- [ ] Revalidate organisation target semantics.
+- [ ] Reclassify deferred rules that V2 now enables.
+- [ ] Keep still-unproven semantics unsupported.
+- [ ] Produce migration report showing which runtime rules changed only target binding vs source semantics.
+
+---
+
+## P26.6 — Promote Runtime Mapping Draft to final version
+
+### Read first
+
+- Final reconciled mapping document.
+- RuntimeMappingValidator.
+- Final structural target registry.
+
+### Tasks
+
+- [ ] Rename/version according to repository convention, e.g. `jacamo-use-runtime-mapping-v1.json` if this is the first canonical runtime mapping.
+- [ ] Remove `DRAFT_WAITING_FOR_METAMODEL_V2` status.
+- [ ] Validate schema.
+- [ ] Validate semantic rules.
+- [ ] Validate structural compatibility.
+- [ ] Run negative mutation tests.
+- [ ] Run runtime integration tests.
+- [ ] Create runtime mapping audit document.
+- [ ] Create freeze/version/hash manifest if canonical project conventions require it.
+- [ ] Ensure Java semantic dispatch has no conflicting source of truth.
+
+### Freeze rule
+
+Do **not** update only hashes to make tests pass. Any structural/rule change requires reconciliation and review evidence.
+
+---
+
+## P26.7 — Reconcile OCL and verification profiles
+
+### Read first
+
+- Final generated model diff.
+- Only OCL/profile files whose context/navigation target changed.
+- Constraint provenance manifests.
+
+### Tasks
+
+- [ ] Rebind translated OCL.
+- [ ] Rebind core OCL.
+- [ ] Rebind case OCL.
+- [ ] Remove navigation to deleted classes/features.
+- [ ] Preserve authored vs translated provenance.
+- [ ] Compile/type-check all OCL.
+- [ ] Update positive/negative fixtures.
+
+---
+
+## P26.8 — Final mirror correctness after metamodel reconciliation
+
+### Read first
+
+- Final Runtime Mapping.
+- P19 Mirror Correctness Gate test harness.
+
+### Tasks
+
+- [ ] Initial full sync.
+- [ ] state deltas;
+- [ ] operation lifecycle;
+- [ ] organisation state;
+- [ ] reconnect/resync;
+- [ ] forced drift repair;
+- [ ] unknown/unbound boundary;
+- [ ] zero unexplained drift after resync.
+
+### Exit criteria
+
+- [ ] Final metamodel and Structural Mapping coherent.
+- [ ] Final Runtime Mapping frozen/canonical.
+- [ ] `.use/.cmd` regenerated.
+- [ ] Runtime mirror correct.
+- [ ] OCL compiles against final model.
+
+---
+
+# Phase 27 — Final Engineering Hardening
+
+**Objective:** remove remaining correctness/coding gaps; introduce no new research feature.
+
+---
+
+## P27.1 — Requirement → code → test → evidence traceability audit
+
+### Read first
+
+- `docs/agent/roadmap.md` Phase 16–28.
+- Current `task.md` statuses.
+- `docs/project/17-end-to-end-acceptance.md`.
+
+### Tasks
+
+For every major capability classify:
+
+- [ ] COMPLETE;
+- [ ] SUPPORTED_SUBSET_COMPLETE;
+- [ ] EXPLICITLY_UNSUPPORTED;
+- [ ] OUT_OF_SCOPE;
+- [ ] MISSING;
+- [ ] CONFLICT.
+
+For COMPLETE capabilities record:
+
+- [ ] requirement;
+- [ ] production component;
+- [ ] test;
+- [ ] evidence;
+- [ ] documentation.
+
+Any MISSING/CONFLICT becomes a blocking corrective task.
+
+---
+
+## P27.2 — TODO/FIXME/temporary/unsupported audit
+
+### Read first
+
+- Production source only; search first, open targeted files second.
+
+### Search
+
+- [ ] TODO;
+- [ ] FIXME;
+- [ ] HACK;
+- [ ] TEMP;
+- [ ] workaround;
+- [ ] placeholder;
+- [ ] not implemented;
+- [ ] UnsupportedOperationException;
+- [ ] stale “temporary V1” comments.
+
+### Tasks
+
+- [ ] Resolve correctness-relevant items.
+- [ ] Convert legitimate unsupported items into documented/tested boundaries.
+- [ ] Remove stale comments.
+
+---
+
+## P27.3 — Duplicate/dead logic audit
+
+### Read first
+
+- Search results only.
+
+### Tasks
+
+- [ ] duplicate runtime mapper;
+- [ ] old procedural dispatch bypassing canonical Runtime Mapping;
+- [ ] duplicate trace/history systems;
+- [ ] obsolete verifier path;
+- [ ] obsolete V1-only adapter after V2 migration;
+- [ ] test-only production behavior;
+- [ ] dead binding code.
+
+Remove only with test evidence.
+
+---
+
+## P27.4 — Diagnostic completeness audit
+
+### Read first
+
+- Diagnostics enum/model.
+- Failure branches found by targeted search.
+
+### Tasks
+
+Major failures must carry:
+
+- [ ] stable code;
+- [ ] severity;
+- [ ] phase;
+- [ ] source/semantic/runtime context when available;
+- [ ] actionable message;
+- [ ] evidence/cause where safe.
+
+No silent catch/fallback.
+
+---
+
+## P27.5 — Determinism audit
+
+### Tasks
+
+Verify repeated-run stability for:
+
+- [ ] semantic IDs;
+- [ ] generated USE names;
+- [ ] structural mapping selection;
+- [ ] runtime mapping selection;
+- [ ] trace ordering;
+- [ ] event ordering;
+- [ ] diagnostic ordering;
+- [ ] report ordering;
+- [ ] `.use/.cmd` output;
+- [ ] non-runtime manifest hashes where deterministic.
+
+Runtime UUID/timestamp evidence must be compared semantically, not by impossible byte equality.
+
+---
+
+## P27.6 — Runtime lifecycle/resource audit
+
+### Read first
+
+- RuntimeMirrorService/connectors/queue/executors/polling schedulers.
+- Lifecycle tests.
+
+### Tasks
+
+- [ ] subscribe/unsubscribe;
+- [ ] duplicate listener prevention;
+- [ ] queue drain/shutdown;
+- [ ] thread/executor cleanup;
+- [ ] Moise polling scheduler cleanup;
+- [ ] late callbacks;
+- [ ] reconnect;
+- [ ] resync;
+- [ ] workspace replacement;
+- [ ] profile replacement;
+- [ ] failed synchronization;
+- [ ] ERROR recovery policy.
+
+---
+
+## P27.7 — Security audit
+
+### Read first
+
+- `docs/project/18-risk-register.md`.
+- Existing security/path tests.
+
+### Tasks
+
+- [ ] path traversal;
+- [ ] symlink escape;
+- [ ] archive handling;
+- [ ] classpath handling;
+- [ ] static Java class initialization protection;
+- [ ] XML parser entity/DTD safety;
+- [ ] OCL profile path safety;
+- [ ] export path safety;
+- [ ] no arbitrary command execution from imported project.
+
+---
+
+## P27.8 — Full runtime regression matrix
+
+### Run
+
+- [ ] RuntimeEvent/schema.
+- [ ] RuntimeTrace.
+- [ ] runtime identity.
+- [ ] Runtime Mapping schema/validator.
+- [ ] mapping→mutation integration.
+- [ ] synthetic connector.
+- [ ] Jason live connector.
+- [ ] CArtAgO live connector.
+- [ ] Moise live connector.
+- [ ] snapshot/full sync.
+- [ ] ordering.
+- [ ] drift/resync.
+- [ ] reconnect.
+- [ ] workspace replacement.
+- [ ] PRE/POST.
+- [ ] cross-dimensional rules.
+- [ ] normative supported subset.
+- [ ] violation attribution.
+
+---
+
+## P27.9 — Multi-case E2E
+
+### Tasks
+
+Run both:
+
+- [ ] Auction;
+- [ ] Case Study #2.
+
+Each must demonstrate where applicable:
+
+- [ ] import;
+- [ ] `.use/.cmd`;
+- [ ] exact trace;
+- [ ] initial state;
+- [ ] runtime sync;
+- [ ] Runtime Mapping;
+- [ ] positive verification;
+- [ ] negative verification;
+- [ ] reconnect/resync;
+- [ ] no case-specific core branch.
+
+---
+
+## P27.10 — Performance evidence
+
+### Tasks
+
+Measure without inventing SLA:
+
+- [ ] import duration;
+- [ ] transformation/generation;
+- [ ] full verification;
+- [ ] runtime event→mirror latency;
+- [ ] runtime event→verification result latency;
+- [ ] queue depth/high-water mark;
+- [ ] memory sample where practical.
+
+Optimize only reproducible blocking bottlenecks.
+
+---
+
+## P27.11 — Clean checkout / relocated build
+
+### Tasks
+
+- [ ] clean checkout;
+- [ ] no stale build outputs;
+- [ ] same pinned JDK/Maven/dependencies;
+- [ ] relocated filesystem path if supported;
+- [ ] `mvn clean verify` or repository canonical full command;
+- [ ] record exact test counts/results;
+- [ ] verify worktree cleanliness after build where expected.
+
+---
+
+## P27.12 — Package/plugin load gate
+
+### Read first
+
+- `docs/project/15-build-release-operations.md`.
+- Release integration tests.
+
+### Tasks
+
+- [ ] JAR/ZIP inventory;
+- [ ] canonical Ecore/Structural Mapping resources;
+- [ ] final Runtime Mapping resources;
+- [ ] schemas/manifests;
+- [ ] OCL resources;
+- [ ] compatibility metadata;
+- [ ] license/notice;
+- [ ] checksum;
+- [ ] isolated USE plugin load;
+- [ ] no test-classpath dependency.
+
+---
+
+## P27.13 — Full documentation synchronization audit
+
+### Read first
+
+Do not read everything at once. First search for stale terms/versions/status, then open only affected docs.
+
+### Search at minimum
+
+- [ ] old runtime mapping “draft” wording if mapping is now frozen;
+- [ ] old metamodel V1 counts if V2 is final;
+- [ ] stale dependency versions;
+- [ ] old Auction operation names;
+- [ ] stale “not implemented” statements;
+- [ ] unsupported claims that are now implemented;
+- [ ] supported claims that are too broad;
+- [ ] old test counts;
+- [ ] old known limitations;
+- [ ] obsolete release status.
+
+### Review affected docs
+
+Potentially:
+
+- [ ] README;
+- [ ] architecture;
+- [ ] metamodel baseline;
+- [ ] structural mapping contract;
+- [ ] semantic/extraction;
+- [ ] OCL/constraint translation;
+- [ ] USE transformation;
+- [ ] trace/binding;
+- [ ] runtime adapter;
+- [ ] runtime mapping;
+- [ ] verification engine;
+- [ ] UI workflow;
+- [ ] testing strategy;
+- [ ] case studies;
+- [ ] build/release;
+- [ ] research boundaries;
+- [ ] acceptance;
+- [ ] risk register;
+- [ ] known limitations;
+- [ ] compatibility;
+- [ ] agent/task docs.
+
+### Exit criteria
+
+- [ ] No known in-scope correctness/coding gap remains.
+
+---
+
+# Phase 28 — Final Evidence & Project Closure
+
+**Objective:** produce the final evidence bundle and move engineering status to logic/coding complete only when every in-scope capability has an explicit final status.
+
+---
+
+## P28.1 — Final acceptance matrix
+
+### Read first
+
+- P27.1 traceability audit.
+- Current acceptance criteria.
+- Known limitations.
+
+### Required capability rows
+
+- [ ] metamodel baseline;
+- [ ] Structural Mapping;
+- [ ] static import;
+- [ ] Semantic IR;
+- [ ] `.use` generation;
+- [ ] `.cmd`/initial state;
+- [ ] trace/binding;
+- [ ] RuntimeEvent;
+- [ ] RuntimeTrace;
+- [ ] runtime identity;
+- [ ] Runtime Mapping;
+- [ ] mirror synchronization;
+- [ ] full runtime E2E;
+- [ ] OCL/runtime verification;
+- [ ] PRE/POST;
+- [ ] ordering/history verification;
+- [ ] cross-dimensional verification;
+- [ ] normative supported subset;
+- [ ] constraint translation subset;
+- [ ] violation reporting/navigation;
+- [ ] UI workflow;
+- [ ] packaging;
+- [ ] reproducibility;
+- [ ] Case Study #1 Auction;
+- [ ] Case Study #2.
+
+Allowed final statuses only:
+
+- [ ] `COMPLETE`.
+- [ ] `SUPPORTED_SUBSET_COMPLETE`.
+- [ ] `EXPLICITLY_UNSUPPORTED`.
+- [ ] `OUT_OF_SCOPE`.
+
+No blank/ambiguous status.
+
+---
+
+## P28.2 — Final reproducible evidence bundle
+
+### Tasks
+
+Preserve/generate:
+
+- [ ] final source/project revision;
+- [ ] final Ecore + hash;
+- [ ] final Structural Mapping + schema + audit/hash;
+- [ ] final Runtime Mapping + schema + audit/hash;
+- [ ] generated `.use`;
+- [ ] generated `.cmd`;
+- [ ] OCL profiles + provenance;
+- [ ] trace JSON;
+- [ ] runtime event log;
+- [ ] mirror-correctness summary;
+- [ ] verification results/reports;
+- [ ] reconnect/resync evidence;
+- [ ] multi-case scenario summaries;
+- [ ] compatibility manifest;
+- [ ] test results;
+- [ ] release package/checksum.
+
+---
+
+## P28.3 — Final supported/unsupported boundary report
+
+### Tasks
+
+For every unsupported/subset capability:
+
+- [ ] what is unsupported;
+- [ ] why;
+- [ ] upstream/API evidence;
+- [ ] user-visible behavior;
+- [ ] diagnostic behavior;
+- [ ] test protecting the boundary;
+- [ ] whether future work could enable it.
+
+No vague “future work” without current boundary.
+
+---
+
+## P28.4 — Final test/release verification
+
+### Tasks
+
+- [ ] focused mapping tests;
+- [ ] focused runtime tests;
+- [ ] Auction E2E;
+- [ ] Case Study #2 E2E;
+- [ ] full module verify;
+- [ ] full reactor verify;
+- [ ] clean-checkout verify;
+- [ ] installed plugin smoke;
+- [ ] package inventory/hash verification;
+- [ ] zero unexpected skipped correctness tests.
+
+Record exact commands and counts.
+
+---
+
+## P28.5 — Final documentation status
+
+### Tasks
+
+- [ ] `roadmap.md` reflects completed phases without pretending unsupported features are implemented.
+- [ ] `task.md` checkboxes/evidence synchronized.
+- [ ] README describes final user workflow.
+- [ ] architecture reflects final metamodel/runtime mapping.
+- [ ] known limitations final.
+- [ ] compatibility final.
+- [ ] thesis evidence paths final.
+- [ ] no document uses historical test counts as current evidence without labeling them historical.
+
+---
+
+## P28.6 — Final user acceptance
+
+Agent presents only after all autonomous work is complete:
+
+- [ ] final acceptance matrix;
+- [ ] final test results;
+- [ ] final runtime mapping status;
+- [ ] final metamodel/mapping status;
+- [ ] mirror-correctness result;
+- [ ] multi-case result;
+- [ ] unsupported boundaries;
+- [ ] package/evidence locations;
+- [ ] remaining non-engineering thesis/demo work.
+
+The user only needs to confirm final project acceptance.
+
+### Final exit condition
+
+The project may be marked:
+
+`CORE LOGIC / CODING COMPLETE`
+
+only when:
+
+- [ ] every in-scope capability is implemented/tested/traceable **or** explicitly unsupported/out-of-scope;
+- [ ] no hidden “partially working” state remains;
+- [ ] full regression passes;
+- [ ] final documentation/evidence is synchronized;
+- [ ] user confirms final acceptance.
+
+---
+
+# Final Global Checklist
+
+## Runtime foundation
+
+- [ ] JaCaMo runtime research integrated.
+- [ ] Runtime capability matrix reconciled to pinned implementation.
+- [ ] Runtime authority policy defined.
+- [ ] RuntimeEvent canonical.
+- [ ] RuntimeTrace canonical.
+- [ ] Runtime identities exact.
+
+## Runtime Mapping
+
+- [ ] Generic semantic-action vocabulary defined.
+- [ ] Runtime Mapping schema implemented.
+- [ ] Runtime Mapping Draft implemented.
+- [ ] Loader/validator implemented.
+- [ ] V1 compatibility audited.
+- [ ] Mapping integrated into RuntimeMutationEngine.
+- [ ] Duplicate Java semantic dispatch removed/isolated.
+- [ ] Final Runtime Mapping reconciled to final metamodel.
+- [ ] Final Runtime Mapping frozen/audited.
+
+## Mirror correctness
+
+- [ ] Attribute synchronization exact.
+- [ ] Operation lifecycle exact.
+- [ ] Object/relation lifecycle safe.
+- [ ] Organisation synchronization exact for supported subset.
+- [ ] Jason state/correlation boundaries explicit.
+- [ ] No double application.
+- [ ] No silent drop.
+- [ ] Authoritative drift detection works.
+- [ ] Reconnect/resync repairs drift.
+- [ ] Mirror-correctness gate PASS.
+
+## Full runtime
+
+- [ ] Closest feasible real JaCaMo `.jcm` launch path tested.
+- [ ] Actual runtime trace captured.
+- [ ] Capability/mapping assumptions reconciled with actual trace.
+- [ ] Full runtime → USE mirror E2E evidence exists.
+
+## Metamodel evolution
+
+- [ ] Runtime core decoupled from unnecessary V1 vocabulary.
+- [ ] Metamodel diff/migration tooling exists.
+- [ ] Human Metamodel V2 input handled only in Phase 25.
+- [ ] Final metamodel audited.
+- [ ] Final Structural Mapping built/frozen.
+- [ ] `.use/.cmd` regenerated.
+- [ ] Runtime target bindings migrated.
+
+## Verification
+
+- [ ] Mirror correctness established before OCL expansion.
+- [ ] Verification checkpoints defined.
+- [ ] Runtime invariants work.
+- [ ] PRE/POST work.
+- [ ] Ordering/history verification bounded and implemented.
+- [ ] Exact violation navigation works.
+- [ ] Cross-dimensional supported subset works.
+- [ ] Normative supported subset bounded correctly.
+- [ ] Constraint translation subset closed.
+
+## Genericity
+
+- [ ] No Auction-specific core logic.
+- [ ] Auction passes.
+- [ ] Case Study #2 passes or explicit final scope decision recorded.
+- [ ] Generic reuse audit passes.
+
+## Engineering closure
+
+- [ ] TODO/FIXME/correctness audit clean.
+- [ ] Duplicate/dead logic audit clean.
+- [ ] Diagnostics complete.
+- [ ] Determinism verified.
+- [ ] Runtime resources/lifecycle clean.
+- [ ] Security regression pass.
+- [ ] Performance evidence recorded.
+- [ ] Clean checkout/relocated build pass.
+- [ ] Package/plugin load pass.
+- [ ] Documentation synchronized.
+- [ ] Final acceptance matrix complete.
+- [ ] Final evidence bundle complete.
+- [ ] Final user acceptance received.
