@@ -1,0 +1,1043 @@
+{
+  "schemaVersion": "1.0.0",
+  "status": "DRAFT_WAITING_FOR_METAMODEL_V2",
+  "targetBaseline": "STRUCTURAL_MAPPING_V1_TEMPORARY",
+  "rules": [
+    {
+      "id": "RM-CREATE_OBJECT",
+      "runtime": "NORMALIZED",
+      "dimension": "ANY",
+      "eventKind": "CREATE_OBJECT",
+      "authoritative": true,
+      "identity": "EXACT_TARGET",
+      "correlationRequired": false,
+      "payload": [
+        "useClass",
+        "useObject"
+      ],
+      "action": "OBJECT_AVAILABLE",
+      "targetKind": "OBJECT",
+      "anchor": "classMappings",
+      "traceRequired": true,
+      "mutation": "CREATE_OBJECT",
+      "checkpoint": "AFTER_MUTATION",
+      "support": "READY_V1_TEMPORARY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "Unknown or stale target; unproven dynamic instance policy."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-DESTROY_OBJECT",
+      "runtime": "NORMALIZED",
+      "dimension": "ANY",
+      "eventKind": "DESTROY_OBJECT",
+      "authoritative": true,
+      "identity": "EXACT_TARGET",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "OBJECT_UNAVAILABLE",
+      "targetKind": "OBJECT",
+      "anchor": "classMappings",
+      "traceRequired": true,
+      "mutation": "DESTROY_OBJECT",
+      "checkpoint": "AFTER_MUTATION",
+      "support": "READY_V1_TEMPORARY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "Unknown or stale target; unproven dynamic instance policy."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-SET_ATTRIBUTE",
+      "runtime": "NORMALIZED",
+      "dimension": "ANY",
+      "eventKind": "SET_ATTRIBUTE",
+      "authoritative": true,
+      "identity": "EXACT_TARGET",
+      "correlationRequired": false,
+      "payload": [
+        "attribute",
+        "valueType",
+        "value"
+      ],
+      "action": "ATTRIBUTE_STATE_SET",
+      "targetKind": "ATTRIBUTE",
+      "anchor": "VP002",
+      "traceRequired": true,
+      "mutation": "SET_ATTRIBUTE",
+      "checkpoint": "AFTER_MUTATION",
+      "support": "READY_V1_TEMPORARY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "Unknown or stale target; unproven dynamic instance policy."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-INSERT_LINK",
+      "runtime": "NORMALIZED",
+      "dimension": "ANY",
+      "eventKind": "INSERT_LINK",
+      "authoritative": true,
+      "identity": "EXACT_TARGET",
+      "correlationRequired": false,
+      "payload": [
+        "association",
+        "participants"
+      ],
+      "action": "RELATION_INSERT",
+      "targetKind": "ASSOCIATION",
+      "anchor": "referenceMappings",
+      "traceRequired": true,
+      "mutation": "INSERT_LINK",
+      "checkpoint": "AFTER_MUTATION",
+      "support": "READY_V1_TEMPORARY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "Unknown or stale target; unproven dynamic instance policy."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-DELETE_LINK",
+      "runtime": "NORMALIZED",
+      "dimension": "ANY",
+      "eventKind": "DELETE_LINK",
+      "authoritative": true,
+      "identity": "EXACT_TARGET",
+      "correlationRequired": false,
+      "payload": [
+        "association",
+        "participants"
+      ],
+      "action": "RELATION_DELETE",
+      "targetKind": "ASSOCIATION",
+      "anchor": "referenceMappings",
+      "traceRequired": true,
+      "mutation": "DELETE_LINK",
+      "checkpoint": "AFTER_MUTATION",
+      "support": "READY_V1_TEMPORARY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "Unknown or stale target; unproven dynamic instance policy."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-OP_ENTER",
+      "runtime": "NORMALIZED",
+      "dimension": "ANY",
+      "eventKind": "OP_ENTER",
+      "authoritative": true,
+      "identity": "INVOCATION",
+      "correlationRequired": true,
+      "payload": [
+        "operation",
+        "arguments"
+      ],
+      "action": "OPERATION_ENTER",
+      "targetKind": "OPERATION",
+      "anchor": "VP003",
+      "traceRequired": true,
+      "mutation": "OP_ENTER",
+      "checkpoint": "OPERATION_PRE",
+      "support": "READY_V1_TEMPORARY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "Unknown or stale target; unproven dynamic instance policy."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-OP_EXIT",
+      "runtime": "NORMALIZED",
+      "dimension": "ANY",
+      "eventKind": "OP_EXIT",
+      "authoritative": true,
+      "identity": "INVOCATION",
+      "correlationRequired": true,
+      "payload": [],
+      "action": "OPERATION_EXIT",
+      "targetKind": "OPERATION",
+      "anchor": "VP003",
+      "traceRequired": true,
+      "mutation": "OP_EXIT",
+      "checkpoint": "OPERATION_POST",
+      "support": "READY_V1_TEMPORARY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "Unknown or stale target; unproven dynamic instance policy."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-OP_FAIL",
+      "runtime": "NORMALIZED",
+      "dimension": "ANY",
+      "eventKind": "OP_FAIL",
+      "authoritative": true,
+      "identity": "INVOCATION",
+      "correlationRequired": true,
+      "payload": [
+        "error"
+      ],
+      "action": "OPERATION_FAIL",
+      "targetKind": "OPERATION",
+      "anchor": "VP003",
+      "traceRequired": true,
+      "mutation": "OP_FAIL",
+      "checkpoint": "OPERATION_FAIL",
+      "support": "READY_V1_TEMPORARY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "Unknown or stale target; unproven dynamic instance policy."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-BELIEF_ADDED",
+      "runtime": "JASON",
+      "dimension": "AGENT",
+      "eventKind": "BELIEF_ADDED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-BELIEF_REMOVED",
+      "runtime": "JASON",
+      "dimension": "AGENT",
+      "eventKind": "BELIEF_REMOVED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-GOAL_ADOPTED",
+      "runtime": "JASON",
+      "dimension": "AGENT",
+      "eventKind": "GOAL_ADOPTED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-GOAL_REMOVED",
+      "runtime": "JASON",
+      "dimension": "AGENT",
+      "eventKind": "GOAL_REMOVED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-GOAL_ACHIEVED",
+      "runtime": "JASON",
+      "dimension": "AGENT",
+      "eventKind": "GOAL_ACHIEVED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-GOAL_FAILED",
+      "runtime": "JASON",
+      "dimension": "AGENT",
+      "eventKind": "GOAL_FAILED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-ACTION_STARTED",
+      "runtime": "JASON",
+      "dimension": "AGENT",
+      "eventKind": "ACTION_STARTED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-ACTION_SUCCEEDED",
+      "runtime": "JASON",
+      "dimension": "AGENT",
+      "eventKind": "ACTION_SUCCEEDED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-ACTION_FAILED",
+      "runtime": "JASON",
+      "dimension": "AGENT",
+      "eventKind": "ACTION_FAILED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-MESSAGE_SENT",
+      "runtime": "JASON",
+      "dimension": "AGENT",
+      "eventKind": "MESSAGE_SENT",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-MESSAGE_RECEIVED",
+      "runtime": "JASON",
+      "dimension": "AGENT",
+      "eventKind": "MESSAGE_RECEIVED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-ARTIFACT_CREATED",
+      "runtime": "CARTAGO",
+      "dimension": "ENVIRONMENT",
+      "eventKind": "ARTIFACT_CREATED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-ARTIFACT_DISPOSED",
+      "runtime": "CARTAGO",
+      "dimension": "ENVIRONMENT",
+      "eventKind": "ARTIFACT_DISPOSED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-OBS_PROPERTY_ADDED",
+      "runtime": "CARTAGO",
+      "dimension": "ENVIRONMENT",
+      "eventKind": "OBS_PROPERTY_ADDED",
+      "authoritative": true,
+      "identity": "EXACT_TARGET",
+      "correlationRequired": false,
+      "payload": [
+        "attribute",
+        "valueType",
+        "value"
+      ],
+      "action": "ATTRIBUTE_STATE_SET",
+      "targetKind": "ATTRIBUTE",
+      "anchor": "VP002",
+      "traceRequired": true,
+      "mutation": "SET_ATTRIBUTE",
+      "checkpoint": "AFTER_MUTATION",
+      "support": "READY_V1_TEMPORARY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "Unknown or stale target; unproven dynamic instance policy."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-OBS_PROPERTY_CHANGED",
+      "runtime": "CARTAGO",
+      "dimension": "ENVIRONMENT",
+      "eventKind": "OBS_PROPERTY_CHANGED",
+      "authoritative": true,
+      "identity": "EXACT_TARGET",
+      "correlationRequired": false,
+      "payload": [
+        "attribute",
+        "valueType",
+        "value"
+      ],
+      "action": "ATTRIBUTE_STATE_SET",
+      "targetKind": "ATTRIBUTE",
+      "anchor": "VP002",
+      "traceRequired": true,
+      "mutation": "SET_ATTRIBUTE",
+      "checkpoint": "AFTER_MUTATION",
+      "support": "READY_V1_TEMPORARY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "Unknown or stale target; unproven dynamic instance policy."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-OBS_PROPERTY_REMOVED",
+      "runtime": "CARTAGO",
+      "dimension": "ENVIRONMENT",
+      "eventKind": "OBS_PROPERTY_REMOVED",
+      "authoritative": true,
+      "identity": "EXACT_TARGET",
+      "correlationRequired": false,
+      "payload": [
+        "attribute"
+      ],
+      "action": "ATTRIBUTE_STATE_UNSET",
+      "targetKind": "ATTRIBUTE",
+      "anchor": "VP002",
+      "traceRequired": true,
+      "mutation": "SET_ATTRIBUTE",
+      "checkpoint": "AFTER_MUTATION",
+      "support": "READY_V1_TEMPORARY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "Unknown or stale target; unproven dynamic instance policy."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-SIGNAL",
+      "runtime": "CARTAGO",
+      "dimension": "ENVIRONMENT",
+      "eventKind": "SIGNAL",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-ORGANISATION_DISCOVERED",
+      "runtime": "MOISE",
+      "dimension": "ORGANISATION",
+      "eventKind": "ORGANISATION_DISCOVERED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-GROUP_CREATED",
+      "runtime": "MOISE",
+      "dimension": "ORGANISATION",
+      "eventKind": "GROUP_CREATED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-GROUP_DISPOSED",
+      "runtime": "MOISE",
+      "dimension": "ORGANISATION",
+      "eventKind": "GROUP_DISPOSED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-SCHEME_CREATED",
+      "runtime": "MOISE",
+      "dimension": "ORGANISATION",
+      "eventKind": "SCHEME_CREATED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-SCHEME_DISPOSED",
+      "runtime": "MOISE",
+      "dimension": "ORGANISATION",
+      "eventKind": "SCHEME_DISPOSED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-ROLE_ADOPTED",
+      "runtime": "MOISE",
+      "dimension": "ORGANISATION",
+      "eventKind": "ROLE_ADOPTED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-ROLE_REMOVED",
+      "runtime": "MOISE",
+      "dimension": "ORGANISATION",
+      "eventKind": "ROLE_REMOVED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-MISSION_COMMITTED",
+      "runtime": "MOISE",
+      "dimension": "ORGANISATION",
+      "eventKind": "MISSION_COMMITTED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-MISSION_REMOVED",
+      "runtime": "MOISE",
+      "dimension": "ORGANISATION",
+      "eventKind": "MISSION_REMOVED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-SCHEME_STATE_CHANGED",
+      "runtime": "MOISE",
+      "dimension": "ORGANISATION",
+      "eventKind": "SCHEME_STATE_CHANGED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "TRACE_ONLY",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "TRACE_ONLY",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    },
+    {
+      "id": "RM-NORM_STATE_CHANGED",
+      "runtime": "MOISE",
+      "dimension": "ORGANISATION",
+      "eventKind": "NORM_STATE_CHANGED",
+      "authoritative": false,
+      "identity": "OBSERVATION",
+      "correlationRequired": false,
+      "payload": [],
+      "action": "UNSUPPORTED",
+      "targetKind": "TRACE",
+      "anchor": "NONE",
+      "traceRequired": true,
+      "mutation": "NONE",
+      "checkpoint": "NONE",
+      "support": "UNSUPPORTED",
+      "evidence": [
+        "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+      ],
+      "assumptions": [
+        "Exact current semantic binding is required; normalized generic events are adapter contracts."
+      ],
+      "unsupportedConditions": [
+        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+      ],
+      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+    }
+  ]
+}

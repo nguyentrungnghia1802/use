@@ -14,16 +14,7 @@ final class RuntimeEventValidator {
         if (eventId == null || eventId.isBlank() || timestamp == null || sequence < 0 || dimension == null
                 || kind == null || runtimeSourceId == null || runtimeSourceId.isBlank() || payload == null)
             throw new IllegalArgumentException("RUNTIME_EVENT_INVALID");
-        Dimension authority = switch (kind) {
-            case BELIEF_ADDED, BELIEF_REMOVED, GOAL_ADOPTED, GOAL_REMOVED, GOAL_ACHIEVED, GOAL_FAILED,
-                    ACTION_STARTED, ACTION_SUCCEEDED, ACTION_FAILED, MESSAGE_SENT, MESSAGE_RECEIVED -> Dimension.AGENT;
-            case ARTIFACT_CREATED, ARTIFACT_DISPOSED, OBS_PROPERTY_ADDED, OBS_PROPERTY_CHANGED,
-                    OBS_PROPERTY_REMOVED, SIGNAL -> Dimension.ENVIRONMENT;
-            case ORGANISATION_DISCOVERED, GROUP_CREATED, GROUP_DISPOSED, SCHEME_CREATED, SCHEME_DISPOSED,
-                    ROLE_ADOPTED, ROLE_REMOVED, MISSION_COMMITTED, MISSION_REMOVED,
-                    SCHEME_STATE_CHANGED, NORM_STATE_CHANGED -> Dimension.ORGANISATION;
-            default -> null; // Generic mutation events retain the baseline synthetic adapter contract.
-        };
+        Dimension authority = authority(kind);
         if (authority != null && dimension != authority)
             throw new IllegalArgumentException("RUNTIME_AUTHORITY_CONFLICT: " + kind + " requires " + authority);
         switch (kind) {
@@ -69,6 +60,19 @@ final class RuntimeEventValidator {
             case SCHEME_STATE_CHANGED -> required(payload, "scheme", "goal", "state");
             case NORM_STATE_CHANGED -> required(payload, "norm", "state");
         }
+    }
+
+    static Dimension authority(RuntimeEventKind kind) {
+        return switch (kind) {
+            case BELIEF_ADDED, BELIEF_REMOVED, GOAL_ADOPTED, GOAL_REMOVED, GOAL_ACHIEVED, GOAL_FAILED,
+                    ACTION_STARTED, ACTION_SUCCEEDED, ACTION_FAILED, MESSAGE_SENT, MESSAGE_RECEIVED -> Dimension.AGENT;
+            case ARTIFACT_CREATED, ARTIFACT_DISPOSED, OBS_PROPERTY_ADDED, OBS_PROPERTY_CHANGED,
+                    OBS_PROPERTY_REMOVED, SIGNAL -> Dimension.ENVIRONMENT;
+            case ORGANISATION_DISCOVERED, GROUP_CREATED, GROUP_DISPOSED, SCHEME_CREATED, SCHEME_DISPOSED,
+                    ROLE_ADOPTED, ROLE_REMOVED, MISSION_COMMITTED, MISSION_REMOVED,
+                    SCHEME_STATE_CHANGED, NORM_STATE_CHANGED -> Dimension.ORGANISATION;
+            default -> null; // Generic mutation events retain the baseline synthetic adapter contract.
+        };
     }
 
     private static void required(Map<String, Object> payload, String... fields) {
