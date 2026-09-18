@@ -71,6 +71,9 @@ public final class JasonRuntimeConnector implements RuntimeConnector {
     public synchronized void attachAgent(String agentName, TransitionSystem transitionSystem) {
         if (agentName == null || agentName.isBlank() || transitionSystem == null || !semanticIds.containsKey(agentName))
             throw new IllegalArgumentException("JASON_AGENT_BINDING_INVALID");
+        TransitionSystem previousSystem = agents.get(agentName);
+        Hooks previous = hooks.remove(agentName);
+        if (previous != null) previous.removeFrom(previousSystem);
         agents.put(agentName, transitionSystem);
         if (state == ConnectorState.CONNECTED) installHooks(agentName, transitionSystem);
     }
@@ -149,6 +152,7 @@ public final class JasonRuntimeConnector implements RuntimeConnector {
         if (previous != null) previous.removeFrom(transitionSystem);
         CircumstanceListener circumstance = new CircumstanceListener() {
             @Override public void eventAdded(Event event) {
+                if (state != ConnectorState.CONNECTED || agents.get(agentName) != transitionSystem) return;
                 Trigger trigger = event.getTrigger();
                 if (!trigger.isUpdate()) return;
                 emit(JasonRuntimeConnector.this.event(agentName,
@@ -158,16 +162,19 @@ public final class JasonRuntimeConnector implements RuntimeConnector {
         };
         GoalListener goals = new GoalListener() {
             @Override public void goalStarted(Event goal) {
+                if (state != ConnectorState.CONNECTED || agents.get(agentName) != transitionSystem) return;
                 emit(JasonRuntimeConnector.this.event(agentName, RuntimeEventKind.GOAL_ADOPTED,
                         Map.of("goal", goal.getTrigger().getLiteral().toString()), null));
             }
             @Override public void goalFinished(Trigger goal, GoalStates result) {
+                if (state != ConnectorState.CONNECTED || agents.get(agentName) != transitionSystem) return;
                 RuntimeEventKind kind = result == GoalStates.achieved
                         ? RuntimeEventKind.GOAL_ACHIEVED : RuntimeEventKind.GOAL_REMOVED;
                 emit(JasonRuntimeConnector.this.event(agentName, kind,
                         Map.of("goal", goal.getLiteral().toString(), "state", String.valueOf(result)), null));
             }
             @Override public void goalFailed(Trigger goal, jason.asSyntax.Term reason) {
+                if (state != ConnectorState.CONNECTED || agents.get(agentName) != transitionSystem) return;
                 emit(JasonRuntimeConnector.this.event(agentName, RuntimeEventKind.GOAL_FAILED,
                         Map.of("goal", goal.getLiteral().toString(), "reason", String.valueOf(reason)), null));
             }

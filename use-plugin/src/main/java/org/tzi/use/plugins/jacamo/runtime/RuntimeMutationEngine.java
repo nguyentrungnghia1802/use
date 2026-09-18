@@ -27,13 +27,25 @@ public final class RuntimeMutationEngine {
     private final List<RuntimeEvent> quarantined = new ArrayList<>();
     private long lastSequence = -1;
     private long completedThroughSequence = -1;
+    private final RuntimeTrace runtimeTrace = new RuntimeTrace();
 
     public RuntimeMutationEngine(MSystem system, TraceIndex trace) {
         this.system = system;
         this.trace = trace;
+        runtimeTrace.begin("INITIAL");
     }
 
     public synchronized MutationResult apply(RuntimeEvent event) {
+        try { runtimeTrace.accept(runtimeTrace.generation(), event); }
+        catch (IllegalArgumentException exception) { return MutationResult.failed(exception.getMessage()); }
+        MutationResult result = applyOrdered(event);
+        runtimeTrace.result(runtimeTrace.generation(), event, result);
+        return result;
+    }
+
+    public RuntimeTrace runtimeTrace() { return runtimeTrace; }
+
+    private MutationResult applyOrdered(RuntimeEvent event) {
         if (event.sequence() <= lastSequence)
             return MutationResult.failed("RUNTIME_EVENT_OUT_OF_ORDER: " + event.sequence() + " <= " + lastSequence);
         lastSequence = event.sequence();
@@ -74,6 +86,7 @@ public final class RuntimeMutationEngine {
     }
 
     public synchronized void applySnapshot(RuntimeSnapshot snapshot) {
+        runtimeTrace.begin("AUTHORITATIVE_SNAPSHOT:" + snapshot.snapshotId());
         resetOperationLifecycle();
         lastSequence = -1;
         for (RuntimeEvent event : snapshot.mutations()) {
@@ -90,6 +103,7 @@ public final class RuntimeMutationEngine {
 
     /** A rejected event cannot participate in a later operation lifecycle. */
     public void eventRejected(RuntimeEvent event, RuntimeException reason) {
+        runtimeTrace.reject(runtimeTrace.generation(), event, reason.getMessage());
         if (!isOperationTerminal(event) || event.correlationId() == null
                 || !(reason instanceof RuntimeQueueBackpressureException backpressure)) return;
         synchronized (operationLifecycle) {
@@ -110,7 +124,12 @@ public final class RuntimeMutationEngine {
     }
 
     /** Operation correlations are scoped to one connector event stream. */
-    public void eventStreamClosed() { resetOperationLifecycle(); }
+    public void eventStreamClosed() {
+        resetOperationLifecycle();
+        runtimeTrace.close();
+        // Direct engine clients may open their next stream without a transport snapshot.
+        runtimeTrace.begin("STREAM_BOUNDARY");
+    }
 
     int pendingOperationRejections() {
         synchronized (operationLifecycle) {

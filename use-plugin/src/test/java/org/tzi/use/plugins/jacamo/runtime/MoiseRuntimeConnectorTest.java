@@ -73,6 +73,17 @@ class MoiseRuntimeConnectorTest {
         assertTrue(events.stream().anyMatch(event -> event.kind() == RuntimeEventKind.MISSION_REMOVED));
         assertTrue(events.stream().anyMatch(event -> event.kind() == RuntimeEventKind.ROLE_REMOVED));
         assertFalse(connector.capabilityGaps().isEmpty());
+        organisation.addGroup("second_group", "auction_group");
+        organisation.startScheme("second_scheme", "auction_scheme");
+        var distinct = connector.pollChanges();
+        assertTrue(distinct.stream().anyMatch(event -> event.kind() == RuntimeEventKind.GROUP_CREATED
+                && event.semanticSourceId() == null && event.runtimeSourceId().endsWith("/second_group")));
+        assertTrue(distinct.stream().anyMatch(event -> event.kind() == RuntimeEventKind.SCHEME_CREATED
+                && event.semanticSourceId() == null && event.runtimeSourceId().endsWith("/second_scheme")));
+        var goals = connector.fullSnapshot().mutations().stream()
+                .filter(event -> event.kind() == RuntimeEventKind.SCHEME_STATE_CHANGED)
+                .map(event -> event.payload().get("runtimeFactKey")).toList();
+        assertEquals(2, goals.stream().distinct().count());
         connector.disconnect();
         assertEquals(ConnectorState.DISCONNECTED, connector.state());
     }
