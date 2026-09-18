@@ -1246,13 +1246,13 @@ Execution evidence (2026-09-19): two wrong-target regressions reproduced RED (2/
 
 ### Tasks
 
-- [ ] Identify exact JaCaMo launcher/runtime API available in pinned dependency set.
-- [ ] Determine whether current plugin dependencies include the full launcher or only component libraries.
-- [ ] Determine classpath/project layout requirements for `.jcm` execution.
-- [ ] Determine safe test isolation/shutdown requirements.
-- [ ] Identify gap between current in-process test and true JaCaMo project launch.
-- [ ] Record blockers as technical, environment, or unsupported-version blockers.
-- [ ] Do not upgrade runtime versions solely to make launcher easier.
+- [x] Identify exact JaCaMo launcher/runtime API available in pinned dependency set.
+- [x] Determine whether current plugin dependencies include the full launcher or only component libraries.
+- [x] Determine classpath/project layout requirements for `.jcm` execution.
+- [x] Determine safe test isolation/shutdown requirements.
+- [x] Identify gap between current in-process test and true JaCaMo project launch.
+- [x] Record blockers as technical, environment, or unsupported-version blockers.
+- [x] Do not upgrade runtime versions solely to make launcher easier.
 
 ---
 
@@ -1368,9 +1368,11 @@ Execution evidence (2026-09-19): two wrong-target regressions reproduced RED (2/
 ### Exit criteria
 
 - [ ] Full-project path works, OR
-- [ ] exact technical limitation is documented and the closest supported in-process path remains bounded/evidence-backed.
+- [x] exact technical limitation is documented and the closest supported in-process path remains bounded/evidence-backed.
 
 ---
+
+Execution evidence (2026-09-19): the second P20.5 exit alternative is satisfied, not the full-project-success alternative. `tools/runtime/launcher_probe.py` executes pinned JaCaMo 1.3.0 in isolated JVMs. Original fixture fails .jcm parsing; syntax/path adaptation reaches real Jason/CArtAgO startup but fails Moise XML schema/OrgBoard initialization. See [phase20-runtime-evidence.md](../project/phase20-runtime-evidence.md). Unchecked full-project items remain explicitly unproven; no full Agent -> Artifact -> Organisation claim. Closest supported component timeline and mapping/mirror evidence are exercised by LiveJaCaMoAuctionIntegrationTest. No version upgrade or invented normative fixture semantics.
 
 # Phase 21 — Metamodel-Decoupling & V2 Migration Readiness
 

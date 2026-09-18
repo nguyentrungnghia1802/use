@@ -368,3 +368,11 @@ Strict scalar conversion and exact-object recreation are covered. Golden trace
 negative control verifies byte-identical prior records after excluding newly
 added projected attribute declarations. Live derived evidence is located at
 `target/phase19-mirror-evidence`; its exclusions are part of the gate scope.
+
+## Phase 18-20 execution scope (2026-09-19)
+
+Runtime Mapping Draft is integrated; the supported mirror subset has executable
+zero-drift evidence. Full-project Phase 20 uses its documented technical-limitation
+exit alternative. The pinned launcher probe exposes .jcm syntax and Moise OS schema
+gaps in the static fixture. See [phase20-runtime-evidence.md](phase20-runtime-evidence.md).
+This does not claim full autonomous Agent -> Artifact -> Organisation E2E.
