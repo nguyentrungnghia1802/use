@@ -384,3 +384,8 @@ The Phase 20 probe asserts original/namespace-only OS rejection and successful
 OSBuilder control startup; the control is explicitly not Auction-equivalent.
 Source, input, schema and jar hashes are retained in
 [the combined evidence](evidence/phase18-20-2026-09-19.json).
+
+Post-merge validation at `016e74b6`: `mvn -B -pl use-plugin verify` **142/142 PASS**,
+including all three release/package tests after compatibility and limitations updates.
+The full reactor count above is from the preceding combined gate, not a second full
+reactor run. The final probe is source-hashed separately after Git line-ending normalization.

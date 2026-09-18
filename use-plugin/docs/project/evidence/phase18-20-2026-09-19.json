@@ -135,5 +135,41 @@
       "tools\\runtime\\launcher_probe.py": "d3153ca5f1f081be12c7b0022199ec5b862f6e1d83f30a80b409f1579ee0351e"
     },
     "moiseSchemaSha256": "08d20e351b191064be1f95f716ab49d40de256dca44823d39c23787ad210c16a"
+  },
+  "postMerge": {
+    "sourceCommit": "016e74b6",
+    "command": "mvn -B -pl use-plugin verify",
+    "tests": 142,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "mirror": {
+      "excluded": [
+        "Moise instance state and Jason beliefs/goals are trace-only",
+        "Global causal ordering and cross-dimensional invocation join unproven",
+        "Standalone launcher not covered by this test"
+      ],
+      "fixtureSourceCommit": "016e74b602ff8ff6ba5f08cf752e758c0623cc15",
+      "checkpoints": [
+        "INITIAL_SYNC",
+        "AFTER_STATE_CHANGE",
+        "OPERATION_ENTER_EXIT_FAIL",
+        "RECONNECT_RESYNC"
+      ],
+      "unexplainedDrift": 0,
+      "failed": 0,
+      "rejected": 0,
+      "dropped": 0,
+      "status": "SUPPORTED_SUBSET_COMPLETE"
+    },
+    "mirrorBundleSha256": {
+      "initial-state.cmd": "cdbd4fd6e76bcafa44fb167402b787653f077ef9961ba65e5f1c55bb3768d158",
+      "mirror-correctness.json": "54cf4ffd701758d779cf0366b8b60e6d50f364a4b755175a73df83d636436976",
+      "model.use": "656d5673391c82c61a360b2fa7391ffc592a99023ae1bf3d7e08070d96965125",
+      "runtime-events.json": "146d11749d17a984867f0fd31653e0eb8b34073a5b6a71588e53101257c58c4b",
+      "runtimeMapping": "519b0a8c670b95f79f1709c6f0f5a0f7d28dbac268d3d4760c35894b1f340e8a",
+      "trace.json": "3c22622db772a046372294d5c4e3c8466eb51adda222371bc9d372fc7e465c29"
+    },
+    "compatibilityCorrection": "Missing host fields caught by existing test, then corrected; focused 1/1 and module 142/142 pass"
   }
 }
