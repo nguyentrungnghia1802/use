@@ -176,3 +176,11 @@ semantic reference and subsequent trace.
 ## Phase 17 identity hardening
 
 [Runtime identity contract](runtime-event-identity.md) records canonical aliases, subordinate identity, immutable event evidence and generation boundaries. Runtime keys reject duplicate registration and stale/unresolved trace records; reverse alias lookup is deterministic.
+
+## Phase 19 projected attribute authorization
+
+TraceBuilder emits explicit ATTRIBUTE records for verification-projected attributes.
+Runtime state mutation checks this declaration in addition to the exact object alias;
+an object alias does not authorize an arbitrary attribute. Existing trace records and
+frozen structural mapping bytes remain unchanged. Runtime create may only restore an
+exact originally materialized object/class, not invent a new semantic instance.

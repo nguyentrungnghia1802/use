@@ -62,3 +62,44 @@ Loader/validator tests must validate each rule against embedded frozen V1 anchor
 reject unknown fields/enums, duplicate IDs/selectors, authority conflicts, missing
 trace/correlation, incompatible action/mutation/target and mutating deferred rules.
 Invalid input fails without a procedural fallback. Engine integration is Phase 19.
+
+## Integrated mirror contract (Phase 19)
+
+RuntimeMutationEngine now selects the validated JSON rule before mutation. The
+engine dispatches generic actions; the drift comparator uses the same action,
+and verification obtains AFTER_MUTATION eligibility from the rule checkpoint.
+Missing rules fail explicitly; unsupported rules and unbound property payloads
+are quarantined. Trace-only application carries a diagnostic and makes no claim
+that the observed mental/organisational state exists in MSystemState.
+
+Every mutation resolves an active object trace and checks any supplied SemanticId.
+Projected attributes now have explicit ATTRIBUTE trace records; operations require
+projected OPERATION trace. Links require a resolved association and traced endpoints.
+Scalar conversion rejects malformed booleans, fractional/overflowing integers,
+nonfinite reals and non-string String values. Operation argument count/type is
+checked before registering correlation. A terminal cannot close another object
+or operation; completed correlations cannot be reused within the stream.
+
+Object availability permits only the exact object/class present in the original
+workspace trace. It may recreate that object after explicit disposal; arbitrary
+new instance materialization remains unsupported. Disposal invalidates pending
+operations on that object. Links converge on insert/delete replay. Dynamic aliases
+are retired on stream/snapshot boundaries. Duplicate event IDs and ordering remain
+owned by RuntimeTrace. Failed partial synchronization does not establish LIVE.
+
+The supported mirror gate covers quiescent scalar state, exact generic object/link
+mechanics and observed operation lifecycle. Jason mental state and Moise instance
+facts are retained as observations; runtime instance equivalence and cross-dimensional
+invocation joins are not proven and do not mutate V1. Snapshots do not expose all
+in-flight operations or provide a globally atomic three-runtime cut.
+
+LiveJaCaMoAuctionIntegrationTest derives target/phase19-mirror-evidence containing
+model.use, initial-state.cmd, runtime-events.json, trace.json (mapping decisions),
+mirror-correctness.json and a hash manifest. Initial/state-change/reconnect comparisons
+must show zero unexplained drift; scenario queue failures/rejections/drops must be zero.
+No replay.cmd is emitted because it would omit trace-only and invocation semantics.
+The fixture input commit is recorded separately from the final regression revision.
+
+The golden trace changed only by adding projected attribute declarations. A negative
+control removes those new declarations and verifies the exact previous trace digest;
+all existing model/state/OCL golden bytes and canonical frozen Core files are unchanged.

@@ -227,6 +227,18 @@ class GoldenPipelineTest {
         assertTrue(manifest.path("semanticSummary").path("dimensionCounts").path("ENVIRONMENT").asInt() > 0);
         assertTrue(manifest.path("semanticSummary").path("dimensionCounts").path("ORGANISATION").asInt() > 0);
         assertTrue(manifest.path("semanticSummary").path("referenceCount").asInt() > 0);
+        // Phase 19 adds projected attribute trace; all pre-existing records must remain byte-stable.
+        var traceJson = (com.fasterxml.jackson.databind.node.ObjectNode) new ObjectMapper().readTree(Files.readString(output.resolve("trace.json")));
+        var previousRecords = new ObjectMapper().createArrayNode();
+        traceJson.path("records").forEach(record -> {
+            if (!(record.path("targetKind").asText().equals("ATTRIBUTE") && record.path("status").asText().equals("PROJECTED")))
+                previousRecords.add(record);
+        });
+        assertTrue(previousRecords.size() < traceJson.path("records").size());
+        traceJson.set("records", previousRecords);
+        String oldTrace = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(traceJson) + "\n";
+        assertEquals("f11fd21733bc77ecd0e7138c74394ac82135c34905edb09db94a5a6bb7a14872",
+            HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(oldTrace.replace("\r\n", "\n").getBytes(StandardCharsets.UTF_8))));
         assertAll(actual.keySet().stream().sorted().map(name -> () -> {
             String digest = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
                     .digest(Files.readString(output.resolve(name)).getBytes(StandardCharsets.UTF_8)));

@@ -143,12 +143,13 @@ class LiveJaCaMoAuctionIntegrationTest {
                 List.of(jason, cartago, moise));
         RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(direct.system(), registry, trace);
         EvidenceEventObserver evidenceEvents = new EvidenceEventObserver(verifier);
-        RuntimeMirrorService mirror = new RuntimeMirrorService(composite,
-                new RuntimeMutationEngine(direct.system(), trace), 64, evidenceEvents);
+        RuntimeMutationEngine mutations = new RuntimeMutationEngine(direct.system(), trace);
+        RuntimeMirrorService mirror = new RuntimeMirrorService(composite, mutations, 64, evidenceEvents);
         try {
             mirror.connect(URI.create("jacamo://local/auction"));
             assertEquals(MirrorState.LIVE, mirror.state());
             assertTrue(openValue(direct, trace, artifactSemantic));
+            assertFalse(mirror.checkDrift(DriftResyncPolicy.REPORT_ONLY).drifted());
 
             int checkpoint = verifier.reports().size();
             context.doAction(artifact, new Op("placeBid", "item1", 10));
@@ -169,6 +170,7 @@ class LiveJaCaMoAuctionIntegrationTest {
             context.doAction(artifact, new Op("closeAuction"));
             mirror.awaitIdle(Duration.ofSeconds(5));
             assertFalse(openValue(direct, trace, artifactSemantic));
+            assertFalse(mirror.checkDrift(DriftResyncPolicy.REPORT_ONLY).drifted());
 
             checkpoint = verifier.reports().size();
             context.doAction(artifact, new Op("placeBid", "item1", 10));
@@ -212,6 +214,41 @@ class LiveJaCaMoAuctionIntegrationTest {
                     registry,
                     scenarioMetrics, reconnectComparison, evidenceEvents.snapshots(), validBid, invalidAmount, closedBid,
                     project, artifact.getArtifactType(), sourceCommit);
+            Path mirrorEvidence = Path.of("target/phase19-mirror-evidence");
+            Files.createDirectories(mirrorEvidence);
+            Files.writeString(mirrorEvidence.resolve("model.use"), generatedOcl.useModel());
+            Files.writeString(mirrorEvidence.resolve("initial-state.cmd"), generated.initialCommands());
+            new RuntimeEventCodec().writeEvents(mirrorEvidence.resolve("runtime-events.json"), scenarioEvents);
+            ObjectMapper evidenceJson = new ObjectMapper();
+            var runtimeMapping = new RuntimeMappingLoader().loadDefault();
+            var decisions = mutations.runtimeTrace().entries().stream().map(entry -> {
+                Map<String,Object> row = new java.util.LinkedHashMap<>();
+                row.put("generation", entry.generation()); row.put("eventId", entry.event().eventId());
+                row.put("sequence", entry.event().sequence()); row.put("timestamp", entry.event().timestamp().toString());
+                row.put("runtimeSourceId", entry.event().runtimeSourceId());
+                row.put("semanticId", entry.event().semanticSourceId());
+                row.put("useTarget", trace.byRuntimeKey(entry.event().runtimeSourceId()).map(TraceRecord::targetUseId).orElse(null));
+                row.put("mappingRule", runtimeMapping.select(entry.event()).id());
+                row.put("action", runtimeMapping.select(entry.event()).action().name());
+                row.put("disposition", entry.disposition()); row.put("diagnostic", entry.diagnostic());
+                return row;
+            }).toList();
+            evidenceJson.writerWithDefaultPrettyPrinter().writeValue(mirrorEvidence.resolve("trace.json").toFile(), decisions);
+            evidenceJson.writerWithDefaultPrettyPrinter().writeValue(mirrorEvidence.resolve("mirror-correctness.json").toFile(), Map.of(
+                "status", "SUPPORTED_SUBSET_COMPLETE", "fixtureSourceCommit", sourceCommit,
+                "checkpoints", List.of("INITIAL_SYNC", "AFTER_STATE_CHANGE", "OPERATION_ENTER_EXIT_FAIL", "RECONNECT_RESYNC"),
+                "unexplainedDrift", reconnectComparison.differences().size(), "failed", scenarioMetrics.failed(),
+                "rejected", scenarioMetrics.rejected(), "dropped", scenarioMetrics.dropped(),
+                "excluded", List.of("Moise instance state and Jason beliefs/goals are trace-only", "Global causal ordering and cross-dimensional invocation join unproven", "Standalone launcher not covered by this test")));
+            Map<String,String> hashes = new java.util.TreeMap<>();
+            try (var artifacts = Files.list(mirrorEvidence)) {
+                for (Path path : artifacts.filter(Files::isRegularFile).toList())
+                    if (!path.getFileName().toString().equals("manifest.json"))
+                        hashes.put(path.getFileName().toString(), HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(path))));
+            }
+            hashes.put("runtimeMapping", HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(
+                RuntimeMappingLoader.resource("jacamo-use-runtime-mapping-draft.json"))));
+            evidenceJson.writerWithDefaultPrettyPrinter().writeValue(mirrorEvidence.resolve("manifest.json").toFile(),hashes);
             assertBalancedLifecycleForInvalidAmount(scenarioEvents);
             var scenario = new ObjectMapper().readTree(
                     Path.of("target/phase14-auction-evidence/runtime/scenario-summary.json").toFile());

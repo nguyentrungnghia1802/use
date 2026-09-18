@@ -21,21 +21,13 @@ import org.tzi.use.plugins.jacamo.runtime.RuntimeQueueBackpressureException;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeSnapshot;
 import org.tzi.use.plugins.jacamo.trace.TraceIndex;
 import org.tzi.use.uml.mm.MOperation;
-import org.tzi.use.uml.ocl.value.BooleanValue;
-import org.tzi.use.uml.ocl.value.IntegerValue;
-import org.tzi.use.uml.ocl.value.RealValue;
-import org.tzi.use.uml.ocl.value.StringValue;
-import org.tzi.use.uml.ocl.value.UndefinedValue;
 import org.tzi.use.uml.ocl.value.Value;
 import org.tzi.use.uml.sys.MSystem;
 
 /** Event-driven OCL coordinator. It observes JaCaMo and never blocks or controls its execution. */
 public final class RuntimeVerificationEngine implements RuntimeEventObserver {
-    private static final Set<RuntimeEventKind> STATE_CHANGES = Set.of(
-            RuntimeEventKind.CREATE_OBJECT, RuntimeEventKind.DESTROY_OBJECT,
-            RuntimeEventKind.SET_ATTRIBUTE, RuntimeEventKind.INSERT_LINK, RuntimeEventKind.DELETE_LINK,
-            RuntimeEventKind.OBS_PROPERTY_ADDED, RuntimeEventKind.OBS_PROPERTY_CHANGED,
-            RuntimeEventKind.OBS_PROPERTY_REMOVED);
+    private static final org.tzi.use.plugins.jacamo.runtime.RuntimeMapping RUNTIME_MAPPING =
+        new org.tzi.use.plugins.jacamo.runtime.RuntimeMappingLoader().loadDefault();
 
     private final MSystem system;
     private final ConstraintRegistry registry;
@@ -167,7 +159,7 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
             abort(event, started);
             return;
         }
-        if (!STATE_CHANGES.contains(event.kind())) return;
+        if (!RUNTIME_MAPPING.select(event).checkpoint().equals("AFTER_MUTATION")) return;
         snapshotVersion++;
         ConstraintDependencyIndex.Selection selection = dependencies.select(changedDependencies(event));
         VerificationReport report = selection.fullCheckFallback()
@@ -296,16 +288,7 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
         for (int index = 0; index < values.size(); index++) {
             String type = operation.paramList().varDecl(index).type().toString();
             Object value = values.get(index);
-            result.add(switch (type) {
-                case "Boolean" -> BooleanValue.get(value instanceof Boolean booleanValue ? booleanValue
-                        : Boolean.parseBoolean(String.valueOf(value)));
-                case "Integer" -> IntegerValue.valueOf(value instanceof Number number ? number.intValue()
-                        : Integer.parseInt(String.valueOf(value)));
-                case "Real" -> new RealValue(value instanceof Number number ? number.doubleValue()
-                        : Double.parseDouble(String.valueOf(value)));
-                case "String" -> new StringValue(String.valueOf(value));
-                default -> UndefinedValue.instance;
-            });
+            result.add(org.tzi.use.plugins.jacamo.runtime.RuntimeValues.convert(type, value));
         }
         return result;
     }
