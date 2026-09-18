@@ -16,44 +16,169 @@
   },
   "dimensions": {
     "JASON": {
-      "snapshot": ["AGENT", "BELIEF_BASE", "CIRCUMSTANCE_MAILBOX"],
+      "snapshot": [
+        "AGENT",
+        "BELIEF_BASE",
+        "CIRCUMSTANCE_MAILBOX"
+      ],
       "events": [
-        {"kind": "CIRCUMSTANCE_EVENT_ADDED", "sourceApi": "CircumstanceListener.eventAdded", "status": "NORMALIZE"},
-        {"kind": "GOAL_STARTED", "sourceApi": "GoalListener.goalStarted", "status": "SUPPORTED"},
-        {"kind": "GOAL_FINISHED", "sourceApi": "GoalListener.goalFinished", "status": "SUPPORTED"},
-        {"kind": "GOAL_FAILED", "sourceApi": "GoalListener.goalFailed", "status": "SUPPORTED"},
-        {"kind": "GOAL_SUSPENDED", "sourceApi": "GoalListener.goalSuspended", "status": "SUPPORTED"},
-        {"kind": "GOAL_WAITING", "sourceApi": "GoalListener.goalWaiting", "status": "SUPPORTED"},
-        {"kind": "GOAL_RESUMED", "sourceApi": "GoalListener.goalResumed", "status": "SUPPORTED"},
-        {"kind": "GOAL_EXECUTING", "sourceApi": "GoalListener.goalExecuting", "status": "SUPPORTED"},
-        {"kind": "AGENT_ACTION_STARTED", "sourceApi": "AgArch.act", "status": "SUPPORTED_WITH_BRIDGE"},
-        {"kind": "AGENT_ACTION_RESULT", "sourceApi": "AgArch.actionExecuted", "status": "SUPPORTED_WITH_BRIDGE"},
-        {"kind": "MESSAGE_SENT", "sourceApi": "AgArch.sendMsg/broadcast", "status": "PARTIAL"},
-        {"kind": "MESSAGE_RECEIVED", "sourceApi": "AgArch.checkMail/Circumstance.mailbox", "status": "PARTIAL"}
+        {
+          "kind": "CIRCUMSTANCE_EVENT_ADDED",
+          "sourceApi": "CircumstanceListener.eventAdded",
+          "status": "NORMALIZE"
+        },
+        {
+          "kind": "GOAL_STARTED",
+          "sourceApi": "GoalListener.goalStarted",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "GOAL_FINISHED",
+          "sourceApi": "GoalListener.goalFinished",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "GOAL_FAILED",
+          "sourceApi": "GoalListener.goalFailed",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "GOAL_SUSPENDED",
+          "sourceApi": "GoalListener.goalSuspended",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "GOAL_WAITING",
+          "sourceApi": "GoalListener.goalWaiting",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "GOAL_RESUMED",
+          "sourceApi": "GoalListener.goalResumed",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "GOAL_EXECUTING",
+          "sourceApi": "GoalListener.goalExecuting",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "AGENT_ACTION_STARTED",
+          "sourceApi": "AgArch.act",
+          "status": "SUPPORTED_WITH_BRIDGE"
+        },
+        {
+          "kind": "AGENT_ACTION_RESULT",
+          "sourceApi": "AgArch.actionExecuted",
+          "status": "SUPPORTED_WITH_BRIDGE"
+        },
+        {
+          "kind": "MESSAGE_SENT",
+          "sourceApi": "AgArch.sendMsg/broadcast",
+          "status": "PARTIAL"
+        },
+        {
+          "kind": "MESSAGE_RECEIVED",
+          "sourceApi": "AgArch.checkMail/Circumstance.mailbox",
+          "status": "PARTIAL"
+        }
       ]
     },
     "CARTAGO": {
-      "snapshotApi": ["ICartagoController.getCurrentAgents", "getCurrentArtifacts", "getArtifactInfo"],
-      "events": [
-        {"kind": "OP_REQUESTED", "sourceApi": "ICartagoLogger.opRequested", "status": "SUPPORTED"},
-        {"kind": "OP_STARTED", "sourceApi": "ICartagoLogger.opStarted", "status": "SUPPORTED"},
-        {"kind": "OP_SUSPENDED", "sourceApi": "ICartagoLogger.opSuspended", "status": "SUPPORTED"},
-        {"kind": "OP_RESUMED", "sourceApi": "ICartagoLogger.opResumed", "status": "SUPPORTED"},
-        {"kind": "OP_COMPLETED", "sourceApi": "ICartagoLogger.opCompleted", "status": "SUPPORTED"},
-        {"kind": "OP_FAILED", "sourceApi": "ICartagoLogger.opFailed", "status": "SUPPORTED"},
-        {"kind": "PERCEPT", "sourceApi": "ICartagoLogger.newPercept", "status": "NORMALIZE_INTO_SIGNAL_AND_OBS_PROPERTY_DELTAS"},
-        {"kind": "ARTIFACT_CREATED", "sourceApi": "ICartagoLogger.artifactCreated", "status": "SUPPORTED"},
-        {"kind": "ARTIFACT_DISPOSED", "sourceApi": "ICartagoLogger.artifactDisposed", "status": "SUPPORTED"},
-        {"kind": "ARTIFACT_FOCUSED", "sourceApi": "ICartagoLogger.artifactFocussed", "status": "SUPPORTED"},
-        {"kind": "ARTIFACT_UNFOCUSED", "sourceApi": "ICartagoLogger.artifactNoMoreFocussed", "status": "SUPPORTED"},
-        {"kind": "ARTIFACTS_LINKED", "sourceApi": "ICartagoLogger.artifactsLinked", "status": "SUPPORTED"},
-        {"kind": "AGENT_JOINED", "sourceApi": "ICartagoLogger.agentJoined", "status": "SUPPORTED"},
-        {"kind": "AGENT_QUIT", "sourceApi": "ICartagoLogger.agentQuit", "status": "SUPPORTED"}
+      "snapshotApi": [
+        "ICartagoController.getCurrentAgents",
+        "getCurrentArtifacts",
+        "getArtifactInfo"
       ],
-      "operationIdentity": ["OpId.id", "OpId.artifactId", "OpId.agentId", "OpId.opName"]
+      "events": [
+        {
+          "kind": "OP_REQUESTED",
+          "sourceApi": "ICartagoLogger.opRequested",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "OP_STARTED",
+          "sourceApi": "ICartagoLogger.opStarted",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "OP_SUSPENDED",
+          "sourceApi": "ICartagoLogger.opSuspended",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "OP_RESUMED",
+          "sourceApi": "ICartagoLogger.opResumed",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "OP_COMPLETED",
+          "sourceApi": "ICartagoLogger.opCompleted",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "OP_FAILED",
+          "sourceApi": "ICartagoLogger.opFailed",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "PERCEPT",
+          "sourceApi": "ICartagoLogger.newPercept",
+          "status": "NORMALIZE_INTO_SIGNAL_AND_OBS_PROPERTY_DELTAS"
+        },
+        {
+          "kind": "ARTIFACT_CREATED",
+          "sourceApi": "ICartagoLogger.artifactCreated",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "ARTIFACT_DISPOSED",
+          "sourceApi": "ICartagoLogger.artifactDisposed",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "ARTIFACT_FOCUSED",
+          "sourceApi": "ICartagoLogger.artifactFocussed",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "ARTIFACT_UNFOCUSED",
+          "sourceApi": "ICartagoLogger.artifactNoMoreFocussed",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "ARTIFACTS_LINKED",
+          "sourceApi": "ICartagoLogger.artifactsLinked",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "AGENT_JOINED",
+          "sourceApi": "ICartagoLogger.agentJoined",
+          "status": "SUPPORTED"
+        },
+        {
+          "kind": "AGENT_QUIT",
+          "sourceApi": "ICartagoLogger.agentQuit",
+          "status": "SUPPORTED"
+        }
+      ],
+      "operationIdentity": [
+        "OpId.id",
+        "OpId.artifactId",
+        "OpId.agentId",
+        "OpId.opName"
+      ]
     },
     "MOISE": {
-      "snapshot": ["OEAgent", "GroupInstance", "RolePlayer", "SchemeInstance", "MissionPlayer", "GoalInstance", "PlanInstance"],
+      "snapshot": [
+        "OEAgent",
+        "GroupInstance",
+        "RolePlayer",
+        "SchemeInstance",
+        "MissionPlayer",
+        "GoalInstance",
+        "PlanInstance"
+      ],
       "deltaStrategy": "POLL_AND_DIFF_UNTIL_A_STABLE_PUBLIC_LISTENER_FOR_REQUIRED_STATE_IS_PROVEN",
       "candidateEvents": [
         "ROLE_PLAYER_ADDED",
@@ -73,5 +198,312 @@
         "fullNormLifecycleMapping": "DEFER"
       }
     }
-  }
+  },
+  "projectBaseline": {
+    "status": "DRAFT_WAITING_FOR_METAMODEL_V2",
+    "jacamoTarget": "1.3.0",
+    "jason": "3.3.0",
+    "cartago": "3.1",
+    "moise": "1.1",
+    "reconciliation": "IMPLEMENTATION_RECONCILIATION.md",
+    "researchBaselinePreserved": true
+  },
+  "projectCapabilities": [
+    {
+      "dimension": "JASON",
+      "upstreamKind": "CIRCUMSTANCE_EVENT_ADDED",
+      "sourceApi": "CircumstanceListener.eventAdded",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "JASON",
+      "upstreamKind": "GOAL_STARTED",
+      "sourceApi": "GoalListener.goalStarted",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "JASON",
+      "upstreamKind": "GOAL_FINISHED",
+      "sourceApi": "GoalListener.goalFinished",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "JASON",
+      "upstreamKind": "GOAL_FAILED",
+      "sourceApi": "GoalListener.goalFailed",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "JASON",
+      "upstreamKind": "GOAL_SUSPENDED",
+      "sourceApi": "GoalListener.goalSuspended",
+      "status": "DEFERRED",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "JASON",
+      "upstreamKind": "GOAL_WAITING",
+      "sourceApi": "GoalListener.goalWaiting",
+      "status": "DEFERRED",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "JASON",
+      "upstreamKind": "GOAL_RESUMED",
+      "sourceApi": "GoalListener.goalResumed",
+      "status": "DEFERRED",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "JASON",
+      "upstreamKind": "GOAL_EXECUTING",
+      "sourceApi": "GoalListener.goalExecuting",
+      "status": "DEFERRED",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "JASON",
+      "upstreamKind": "AGENT_ACTION_STARTED",
+      "sourceApi": "AgArch.act",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "JASON",
+      "upstreamKind": "AGENT_ACTION_RESULT",
+      "sourceApi": "AgArch.actionExecuted",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "JASON",
+      "upstreamKind": "MESSAGE_SENT",
+      "sourceApi": "AgArch.sendMsg/broadcast",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "JASON",
+      "upstreamKind": "MESSAGE_RECEIVED",
+      "sourceApi": "AgArch.checkMail/Circumstance.mailbox",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "CARTAGO",
+      "upstreamKind": "OP_REQUESTED",
+      "sourceApi": "ICartagoLogger.opRequested",
+      "status": "DEFERRED",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "CARTAGO",
+      "upstreamKind": "OP_STARTED",
+      "sourceApi": "ICartagoLogger.opStarted",
+      "status": "PARTIAL",
+      "mutationSupported": true,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "CARTAGO",
+      "upstreamKind": "OP_SUSPENDED",
+      "sourceApi": "ICartagoLogger.opSuspended",
+      "status": "DEFERRED",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "CARTAGO",
+      "upstreamKind": "OP_RESUMED",
+      "sourceApi": "ICartagoLogger.opResumed",
+      "status": "DEFERRED",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "CARTAGO",
+      "upstreamKind": "OP_COMPLETED",
+      "sourceApi": "ICartagoLogger.opCompleted",
+      "status": "PARTIAL",
+      "mutationSupported": true,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "CARTAGO",
+      "upstreamKind": "OP_FAILED",
+      "sourceApi": "ICartagoLogger.opFailed",
+      "status": "PARTIAL",
+      "mutationSupported": true,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "CARTAGO",
+      "upstreamKind": "PERCEPT",
+      "sourceApi": "ICartagoLogger.newPercept",
+      "status": "PARTIAL",
+      "mutationSupported": true,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "CARTAGO",
+      "upstreamKind": "ARTIFACT_CREATED",
+      "sourceApi": "ICartagoLogger.artifactCreated",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "CARTAGO",
+      "upstreamKind": "ARTIFACT_DISPOSED",
+      "sourceApi": "ICartagoLogger.artifactDisposed",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "CARTAGO",
+      "upstreamKind": "ARTIFACT_FOCUSED",
+      "sourceApi": "ICartagoLogger.artifactFocussed",
+      "status": "DEFERRED",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "CARTAGO",
+      "upstreamKind": "ARTIFACT_UNFOCUSED",
+      "sourceApi": "ICartagoLogger.artifactNoMoreFocussed",
+      "status": "DEFERRED",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "CARTAGO",
+      "upstreamKind": "ARTIFACTS_LINKED",
+      "sourceApi": "ICartagoLogger.artifactsLinked",
+      "status": "DEFERRED",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "CARTAGO",
+      "upstreamKind": "AGENT_JOINED",
+      "sourceApi": "ICartagoLogger.agentJoined",
+      "status": "DEFERRED",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "CARTAGO",
+      "upstreamKind": "AGENT_QUIT",
+      "sourceApi": "ICartagoLogger.agentQuit",
+      "status": "DEFERRED",
+      "mutationSupported": false,
+      "evidence": "IMPLEMENTATION_RECONCILIATION.md"
+    },
+    {
+      "dimension": "MOISE",
+      "upstreamKind": "ROLE_PLAYER_ADDED",
+      "sourceApi": "OE snapshot/pollChanges",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "MoiseRuntimeConnectorTest"
+    },
+    {
+      "dimension": "MOISE",
+      "upstreamKind": "ROLE_PLAYER_REMOVED",
+      "sourceApi": "OE snapshot/pollChanges",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "MoiseRuntimeConnectorTest"
+    },
+    {
+      "dimension": "MOISE",
+      "upstreamKind": "GROUP_INSTANCE_ADDED",
+      "sourceApi": "OE snapshot/pollChanges",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "MoiseRuntimeConnectorTest"
+    },
+    {
+      "dimension": "MOISE",
+      "upstreamKind": "GROUP_INSTANCE_REMOVED",
+      "sourceApi": "OE snapshot/pollChanges",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "MoiseRuntimeConnectorTest"
+    },
+    {
+      "dimension": "MOISE",
+      "upstreamKind": "SCHEME_INSTANCE_ADDED",
+      "sourceApi": "OE snapshot/pollChanges",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "MoiseRuntimeConnectorTest"
+    },
+    {
+      "dimension": "MOISE",
+      "upstreamKind": "SCHEME_INSTANCE_REMOVED",
+      "sourceApi": "OE snapshot/pollChanges",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "MoiseRuntimeConnectorTest"
+    },
+    {
+      "dimension": "MOISE",
+      "upstreamKind": "MISSION_COMMITTED",
+      "sourceApi": "OE snapshot/pollChanges",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "MoiseRuntimeConnectorTest"
+    },
+    {
+      "dimension": "MOISE",
+      "upstreamKind": "MISSION_UNCOMMITTED",
+      "sourceApi": "OE snapshot/pollChanges",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "MoiseRuntimeConnectorTest"
+    },
+    {
+      "dimension": "MOISE",
+      "upstreamKind": "ORGANISATIONAL_GOAL_STATE_CHANGED",
+      "sourceApi": "OE snapshot/pollChanges",
+      "status": "PARTIAL",
+      "mutationSupported": false,
+      "evidence": "MoiseRuntimeConnectorTest"
+    },
+    {
+      "dimension": "MOISE",
+      "upstreamKind": "RESPONSIBLE_GROUP_ADDED",
+      "sourceApi": "OE snapshot/pollChanges",
+      "status": "DEFERRED",
+      "mutationSupported": false,
+      "evidence": "MoiseRuntimeConnectorTest"
+    },
+    {
+      "dimension": "MOISE",
+      "upstreamKind": "RESPONSIBLE_GROUP_REMOVED",
+      "sourceApi": "OE snapshot/pollChanges",
+      "status": "DEFERRED",
+      "mutationSupported": false,
+      "evidence": "MoiseRuntimeConnectorTest"
+    }
+  ]
 }

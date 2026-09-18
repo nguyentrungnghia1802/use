@@ -45,3 +45,7 @@ Moise runtime       -> organisational entity / agents / role players / groups / 
 ```
 
 JaCaMo itself provides the integration and startup semantics that bind these runtimes together. Runtime Mapping V1 therefore must be designed **per source runtime capability**, then normalized into one plugin event model before any USE mutation is chosen.
+
+## Project implementation reconciliation
+
+See [Phase 16 reconciliation and project capability matrix](IMPLEMENTATION_RECONCILIATION.md). The upstream inventory remains research evidence; projectBaseline records the actual plugin pins. Runtime mapping remains DRAFT_WAITING_FOR_METAMODEL_V2.

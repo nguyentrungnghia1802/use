@@ -294,3 +294,7 @@ continue with a mixed workspace. Late callbacks remain attached to the old strea
 cannot enter replacement consumers. In-flight operation correlations and historical
 runtime report lists are workspace-local and intentionally end at the replacement
 boundary.
+
+## Phase 16 authority audit
+
+The [project capability matrix](../research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md) distinguishes observation from USE mutation. Intrinsic event kinds require their authoritative dimension; conflicts raise RUNTIME_AUTHORITY_CONFLICT. Jason actions are trace-only; CArtAgO owns artifact operation checkpoints. Moise state currently remains trace-only. Upstream API availability is not implemented mirror support.

@@ -1,7 +1,7 @@
 # USE–JaCaMo — Full Implementation Task Plan (Phase 16 → Project Closure)
 
 > **Document type:** Active implementation checklist after the current v1.0.1 baseline  
-> **Roadmap source:** `docs/agent/roadmap.md`  
+> **Roadmap source:** `docs/project/19-roadmap.md`
 > **Historical task source:** `docs/agent/tasks/task-01.md` (Phases 0–15; do not reopen completed work unless regression evidence proves it is necessary)  
 > **Goal:** let the Agent complete the remaining engineering A–Z with minimal user interruption.  
 > **Human-dependent work:** collect and defer to Phase 25 whenever it does not block independent engineering work.
@@ -143,7 +143,7 @@ Every phase must leave:
 
 ### Read first
 
-- `docs/agent/roadmap.md` — Phase 16 only.
+- `docs/project/19-roadmap.md` — Phase 16 only.
 - `docs/project/16-research-evidence-boundaries.md`.
 - `use-plugin/docs/research/jacamo_runtime_research/README.md`.
 - `use-plugin/docs/research/jacamo_runtime_research/00_RESEARCH_BASELINE.md`.
@@ -2327,7 +2327,7 @@ Do **not** update only hashes to make tests pass. Any structural/rule change req
 
 ### Read first
 
-- `docs/agent/roadmap.md` Phase 16–28.
+- `docs/project/19-roadmap.md` Phase 16–28.
 - Current `task.md` statuses.
 - `docs/project/17-end-to-end-acceptance.md`.
 

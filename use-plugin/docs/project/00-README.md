@@ -226,3 +226,7 @@ quality, evidence, and limitations. [19-roadmap.md](19-roadmap.md), [task-01.md]
 and `docs/superpowers/plans/` are historical execution records, not current status.
 [HOTFIX-1.0.1.md](../../release/HOTFIX-1.0.1.md) and [report.md](../../../docs/report/report.md) retain release evidence; the
 current synchronization inventory is [DOCUMENTATION-SYNC-v1.0.1.md](DOCUMENTATION-SYNC-v1.0.1.md).
+
+## Runtime development after baseline
+
+[Runtime research pack](../research/jacamo_runtime_research/README.md) and [Phase 16 reconciliation](../research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md) distinguish pinned implementation from upstream proposals. Follow [active tasks](../agent/task.md) and [roadmap](19-roadmap.md). The version/test counts above describe the retained v1.0.1 baseline, not subsequent development revisions.
