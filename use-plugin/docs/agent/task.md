@@ -150,25 +150,25 @@ Every phase must leave:
 
 ### Tasks
 
-- [ ] Verify `use-plugin/docs/research/jacamo_runtime_research/` exists and contains the expected research files.
-- [ ] Preserve the research pack as research evidence; do not move it into canonical Mapping resources.
-- [ ] Add/update a short repository index entry pointing to the research folder if no index exists.
-- [ ] Record the JaCaMo/Jason/CArtAgO/Moise versions/commits claimed by the research pack.
-- [ ] Compare these versions with current `pom.xml`, `compatibility.json`, and resolved dependency tree.
-- [ ] Create a discrepancy list for any version mismatch (for example current plugin pin vs upstream JaCaMo main).
-- [ ] Do not update dependency versions in this task.
-- [ ] Classify each research source as upstream fact / project interpretation / proposed normalization.
+- [x] Verify `use-plugin/docs/research/jacamo_runtime_research/` exists and contains the expected research files.
+- [x] Preserve the research pack as research evidence; do not move it into canonical Mapping resources.
+- [x] Add/update a short repository index entry pointing to the research folder if no index exists.
+- [x] Record the JaCaMo/Jason/CArtAgO/Moise versions/commits claimed by the research pack.
+- [x] Compare these versions with current `pom.xml`, `compatibility.json`, and resolved dependency tree.
+- [x] Create a discrepancy list for any version mismatch (for example current plugin pin vs upstream JaCaMo main).
+- [x] Do not update dependency versions in this task.
+- [x] Classify each research source as upstream fact / project interpretation / proposed normalization.
 
 ### Tests / evidence
 
-- [ ] Repository docs links to the research pack resolve.
-- [ ] Existing build/tests remain unchanged and green.
+- [x] Repository docs links to the research pack resolve.
+- [x] Existing build/tests remain unchanged and green.
 
 ### Acceptance
 
-- [ ] Research pack is repository-local and discoverable.
-- [ ] Version drift is explicit.
-- [ ] No canonical semantics changed.
+- [x] Research pack is repository-local and discoverable.
+- [x] Version drift is explicit.
+- [x] No canonical semantics changed.
 
 ---
 
@@ -185,22 +185,22 @@ Every phase must leave:
 
 ### Tasks
 
-- [ ] Inventory current runtime connector classes and their actual source APIs.
-- [ ] Inventory current snapshot APIs.
-- [ ] Inventory current event/callback APIs.
-- [ ] Inventory current identity/correlation fields.
-- [ ] Compare each research capability with current code.
-- [ ] Mark each row:
+- [x] Inventory current runtime connector classes and their actual source APIs.
+- [x] Inventory current snapshot APIs.
+- [x] Inventory current event/callback APIs.
+- [x] Inventory current identity/correlation fields.
+- [x] Compare each research capability with current code.
+- [x] Mark each row:
   - `IMPLEMENTED_MATCH`
   - `IMPLEMENTED_DIFFERENT`
   - `RESEARCH_ONLY`
   - `CODE_ONLY`
   - `VERSION_CONFLICT`
   - `UNSUPPORTED`
-- [ ] Record exact class/method/test evidence for every implemented capability.
-- [ ] Detect any connector behavior that is more speculative than the research evidence permits.
-- [ ] Detect any research statement that does not apply to the currently pinned dependency version.
-- [ ] Do not refactor yet unless a concrete correctness bug is found.
+- [x] Record exact class/method/test evidence for every implemented capability.
+- [x] Detect any connector behavior that is more speculative than the research evidence permits.
+- [x] Detect any research statement that does not apply to the currently pinned dependency version.
+- [x] Do not refactor yet unless a concrete correctness bug is found.
 
 ### Output
 
@@ -210,13 +210,13 @@ Create/update a concise implementation reconciliation document, e.g.:
 
 ### Tests
 
-- [ ] Focused connector tests.
-- [ ] No production behavior change unless a bug fix was required.
+- [x] Focused connector tests.
+- [x] No production behavior change unless a bug fix was required.
 
 ### Acceptance
 
-- [ ] Research and implementation differences are explicit.
-- [ ] Every live connector capability has code/test evidence.
+- [x] Research and implementation differences are explicit.
+- [x] Every live connector capability has code/test evidence.
 
 ---
 
@@ -230,8 +230,8 @@ Create/update a concise implementation reconciliation document, e.g.:
 
 ### Tasks
 
-- [ ] Convert the research matrix into a project-current matrix.
-- [ ] For every capability record:
+- [x] Convert the research matrix into a project-current matrix.
+- [x] For every capability record:
   - runtime dimension;
   - upstream API/source;
   - pinned-version evidence;
@@ -243,25 +243,25 @@ Create/update a concise implementation reconciliation document, e.g.:
   - current connector support;
   - current USE mutation support;
   - status.
-- [ ] Use only statuses:
+- [x] Use only statuses:
   - `SUPPORTED`
   - `PARTIAL`
   - `UNSUPPORTED`
   - `DEFERRED`
-- [ ] Separate “observable upstream” from “safe to mutate USE”.
-- [ ] Explicitly record Moise polling/diff boundaries.
-- [ ] Explicitly record message/intention/norm lifecycle boundaries.
-- [ ] Explicitly record CArtAgO operation/property strength.
-- [ ] Explicitly record Jason belief/goal/action acquisition limitations.
+- [x] Separate “observable upstream” from “safe to mutate USE”.
+- [x] Explicitly record Moise polling/diff boundaries.
+- [x] Explicitly record message/intention/norm lifecycle boundaries.
+- [x] Explicitly record CArtAgO operation/property strength.
+- [x] Explicitly record Jason belief/goal/action acquisition limitations.
 
 ### Output
 
-- [ ] `runtime-capability-matrix.md` or update an existing canonical research matrix.
-- [ ] `runtime-capabilities-v1.json` reconciled to the plugin pin, preserving research provenance.
+- [x] `runtime-capability-matrix.md` or update an existing canonical research matrix.
+- [x] `runtime-capabilities-v1.json` reconciled to the plugin pin, preserving research provenance.
 
 ### Acceptance
 
-- [ ] The matrix can drive Runtime Mapping tasks without rereading upstream repositories.
+- [x] The matrix can drive Runtime Mapping tasks without rereading upstream repositories.
 
 ---
 
@@ -275,22 +275,22 @@ Create/update a concise implementation reconciliation document, e.g.:
 
 ### Tasks
 
-- [ ] Define authoritative semantic source per dimension:
+- [x] Define authoritative semantic source per dimension:
   - Jason for agent-mind facts;
   - CArtAgO for environment/artifact facts;
   - Moise OE for organisation facts;
   - or a different evidence-backed rule if current implementation proves it.
-- [ ] Identify duplicate observation paths, especially Moise state also visible via CArtAgO organisation-board artifacts.
-- [ ] Identify Jason external action vs CArtAgO operation correlation overlap.
-- [ ] Define “semantic authority” vs “correlation/diagnostic evidence”.
-- [ ] Define no-double-apply policy.
-- [ ] Add diagnostic behavior for conflicting authoritative observations.
-- [ ] Add focused tests if current code could double-apply the same semantic change.
+- [x] Identify duplicate observation paths, especially Moise state also visible via CArtAgO organisation-board artifacts.
+- [x] Identify Jason external action vs CArtAgO operation correlation overlap.
+- [x] Define “semantic authority” vs “correlation/diagnostic evidence”.
+- [x] Define no-double-apply policy.
+- [x] Add diagnostic behavior for conflicting authoritative observations.
+- [x] Add focused tests if current code could double-apply the same semantic change.
 
 ### Acceptance
 
-- [ ] Each semantic fact family has one authority policy.
-- [ ] Duplicate-source events cannot produce duplicate USE mutation.
+- [x] Each semantic fact family has one authority policy.
+- [x] Duplicate-source events cannot produce duplicate USE mutation.
 
 ---
 
@@ -303,21 +303,23 @@ Create/update a concise implementation reconciliation document, e.g.:
 
 ### Tasks
 
-- [ ] Run focused runtime connector tests.
-- [ ] Run current Auction live integration test.
-- [ ] Run affected module regression.
-- [ ] Search docs for stale runtime API/version claims touched by this phase.
-- [ ] Update `KNOWN-LIMITATIONS.md` only if support boundaries changed.
-- [ ] Record Phase 16 evidence.
+- [x] Run focused runtime connector tests.
+- [x] Run current Auction live integration test.
+- [x] Run affected module regression.
+- [x] Search docs for stale runtime API/version claims touched by this phase.
+- [x] Update `KNOWN-LIMITATIONS.md` only if support boundaries changed.
+- [x] Record Phase 16 evidence.
 
 ### Exit criteria
 
-- [ ] Runtime research integrated.
-- [ ] Current supported runtime surface is evidence-backed.
-- [ ] Runtime authority policy explicit.
-- [ ] No Ecore/Structural Mapping/OCL semantics changed.
+- [x] Runtime research integrated.
+- [x] Current supported runtime surface is evidence-backed.
+- [x] Runtime authority policy explicit.
+- [x] No Ecore/Structural Mapping/OCL semantics changed.
 
 ---
+
+Execution evidence (2026-09-19): implementation commit 898191a5; focused connector/Auction 5/5; authority negative control RED then GREEN; module 126/126; full reactor verify 272/272 (13 core, 130 GUI, 129 plugin including release IT). See [reconciliation](../research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md). No frozen-contract or dependency changes. Integration/push recorded in Git and subsequent closure evidence.
 
 # Phase 17 — Runtime Event, Trace & Identity Hardening
 
