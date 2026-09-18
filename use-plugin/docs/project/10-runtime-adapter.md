@@ -323,3 +323,8 @@ zero-drift evidence. Full-project Phase 20 uses its documented technical-limitat
 exit alternative. The pinned launcher probe exposes .jcm syntax and Moise OS schema
 gaps in the static fixture. See [phase20-runtime-evidence.md](phase20-runtime-evidence.md).
 This does not claim full autonomous Agent -> Artifact -> Organisation E2E.
+
+The pinned launcher exposes organisation state through `ora4mas.nopl.oe.Group`
+and `ora4mas.nopl.oe.Scheme`; the implemented Moise connector accepts `moise.oe.OE`.
+The successful OSBuilder launcher control does not close this adapter gap and must
+not be represented by constructing an unrelated OE beside the real boards.

@@ -21,7 +21,11 @@ public class LauncherProbe {
                 throw new IllegalStateException("PHASE20_ARTIFACT_NOT_READY");
             // The fixture requires organisational infrastructure as well as the environment.
             var org = environment.getController("/main/auction_org");
-            if (org.getCurrentArtifacts().length == 0)
+            var names = java.util.Arrays.stream(org.getCurrentArtifacts()).map(cartago.ArtifactId::getName).toList();
+            if (!names.contains("auction_group") || !names.contains("auction_scheme")
+                    || ora4mas.nopl.OrgBoard.getOrbBoards().isEmpty()
+                    || ora4mas.nopl.GroupBoard.getGroupBoards().stream().noneMatch(board -> board.getSpec() != null)
+                    || ora4mas.nopl.SchemeBoard.getSchemeBoards().stream().noneMatch(board -> board.getSpec() != null))
                 throw new IllegalStateException("PHASE20_ORGANISATION_NOT_READY");
             System.out.println("PHASE20_PLATFORM_PROBE_RETURNED");
             exit = 0;

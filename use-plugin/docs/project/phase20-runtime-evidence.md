@@ -24,8 +24,9 @@ mvn -B -pl use-plugin dependency:build-classpath '-Dmdep.outputFile=target/phase
 python use-plugin/tools/runtime/launcher_probe.py
 ```
 
-Output: `target/phase20-launcher/launcher-audit.json`, per-scenario logs and jar
-SHA-256 values. The helper fails with `PHASE20_PINNED_DEPENDENCY_MISSING` if the
+Output (under `use-plugin/`): `target/phase20-launcher/launcher-audit.json`,
+`moise-schema-audit.json`, per-scenario logs, source/probe hashes, the embedded XSD
+hash and all six runtime jar SHA-256 values. The helper fails with `PHASE20_PINNED_DEPENDENCY_MISSING` if the
 explicit local launcher inputs are absent. It does not download or substitute versions.
 
 ## Actual findings
@@ -39,14 +40,43 @@ explicit local launcher inputs are absent. It does not download or substitute ve
 3. Moise 1.1 cannot load the existing static `auction.xml`:
    `cvc-elt.1.a: Cannot find the declaration of element 'organisational-specification'`.
    OrgBoard initialization then fails (`OS` is null / ArtifactConfigurationFailedException).
-   The launcher can still return from start and exit zero, so the probe correctly
-   classifies this as TECHNICAL_LIMITATION. No full organisational timeline is claimed.
+   The previous probe could return zero because a workspace contains infrastructure
+   artifacts even when OrgBoard initialization failed. The current probe requires
+   the named group/scheme artifacts and initialized board specifications; it exits 3
+   with `PHASE20_ORGANISATION_NOT_READY`. Log classification also rejects upstream
+   errors. No full organisational timeline is claimed.
+4. `MoiseSchemaProbe.java` validates against `/xml/os.xsd` inside the pinned
+   `moise-1.1.jar`. The namespace is `http://moise.sourceforge.net/os` and
+   `os-version` is required. Adding only these two declarations still produces six
+   validation diagnostics: `role-def` must use `role-definitions/role`, cardinality
+   `object` must be `role` or `group` with a separate required `id`, `goal@root` is
+   invalid, and a scheme-level `plan` is invalid (plans belong inside goals).
+5. A separate OSBuilder control passes XSD validation and `OS.loadOSFromURI`, then
+   starts OrgBoard, GroupBoard, SchemeBoard, Jason and the original Java artifact
+   with the same pinned jars. It is explicitly **not equivalent to Auction**: it
+   does not carry the source communication link, formation constraints, scheme-level
+   self-referencing plan, or natural-language normative deadline. Moving the source
+   plan under `sell_item` would give that goal itself as a child; replacing or dropping
+   it is a semantic change, not a demonstrated format-only compatibility fix.
+   The control is `PLATFORM_START_ONLY_NOT_MIRROR_E2E`, never full E2E success.
+6. Reflection on the pinned public API confirms `GroupBoard.getGrpState()` returns
+   `ora4mas.nopl.oe.Group` and `SchemeBoard.getSchState()` returns
+   `ora4mas.nopl.oe.Scheme`. The current `MoiseRuntimeConnector` constructor consumes
+   `moise.oe.OE`. The launcher boards cannot simply be passed to that connector.
+   A board-state observation adapter and explicit identity/snapshot reconciliation
+   are required; fabricating an independent OE would not observe launcher truth.
+
+These are fixture and integration limitations of the current implementation, **not
+proof that the pinned runtime cannot launch a valid project**. The positive control
+demonstrates that it can. XSD validity alone also does not establish valid NPL deadline
+semantics: `time-constraint` is only an XSD string. No deadline meaning is invented.
 
 The canonical fixture is a static import/projection fixture, not a validated JaCaMo
 launcher project. Its organisation XML has not been replaced with a guessed runtime
 normative specification. Closing full-project E2E requires a separate validated
 Moise OS/launcher fixture, with explicit reconciliation of its organisation semantics,
-plus observation of actual Jason-driven operations and organisation board transitions.
+plus the board-state connector adapter and observation of actual Jason-driven
+operations and organisation board transitions.
 This is an engineering follow-up, not a request for a routine user decision.
 
 ## Closest supported evidence

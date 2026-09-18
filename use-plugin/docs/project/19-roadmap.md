@@ -641,3 +641,9 @@ zero-drift evidence. Full-project Phase 20 uses its documented technical-limitat
 exit alternative. The pinned launcher probe exposes .jcm syntax and Moise OS schema
 gaps in the static fixture. See [phase20-runtime-evidence.md](phase20-runtime-evidence.md).
 This does not claim full autonomous Agent -> Artifact -> Organisation E2E.
+
+Continuation verification: Phase 18 draft and Phase 19 supported mirror pass the
+285-test reactor gate. Phase 20's namespace-only repair still fails the pinned XSD;
+a non-equivalent OSBuilder control starts. Remaining full-project work is fixture
+semantic reconciliation and an adapter from launcher `ora4mas.nopl.oe` board state
+to the observation pipeline. It is not established to require a runtime upgrade.
