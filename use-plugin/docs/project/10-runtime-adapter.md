@@ -302,3 +302,10 @@ The [project capability matrix](../research/jacamo_runtime_research/IMPLEMENTATI
 ## Phase 17 event history
 
 See [event and identity contract](runtime-event-identity.md). RuntimeMutationEngine owns a RuntimeTrace ledger with generation/order/duplicate checks and explicit mutation outcomes. CArtAgO unknown/retired observations are quarantined separately; CompositeRuntimeConnector retains retired child events. Existing event wire version remains 1.0.0.
+
+## Runtime mapping draft (2026-09-19)
+
+Phase 18 introduces a strict declarative draft loader, semantic validator and derived
+compatibility report. See [runtime-mapping-draft.md](runtime-mapping-draft.md).
+Initial module regression: 135/135 PASS. V1 target bindings are temporary; no runtime
+mapping freeze or OCL expansion is implied.

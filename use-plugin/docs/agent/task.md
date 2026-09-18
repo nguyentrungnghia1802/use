@@ -605,22 +605,22 @@ Execution evidence (2026-09-19): 4c6b170d; two identity regressions RED then GRE
 
 ### Tasks
 
-- [ ] Enumerate every current event/state → mutation decision in Java.
-- [ ] Record source event kind.
-- [ ] Record identity requirement.
-- [ ] Record target resolution path.
-- [ ] Record mutation kind.
-- [ ] Record verification checkpoint side effect if any.
-- [ ] Record current test.
-- [ ] Detect hard-coded semantic dispatch.
-- [ ] Detect duplicate dispatch logic in connectors vs mutation engine.
-- [ ] Detect Auction-specific code.
-- [ ] Detect mutation paths without exact trace requirement.
-- [ ] Produce an audit table before writing JSON.
+- [x] Enumerate every current event/state → mutation decision in Java.
+- [x] Record source event kind.
+- [x] Record identity requirement.
+- [x] Record target resolution path.
+- [x] Record mutation kind.
+- [x] Record verification checkpoint side effect if any.
+- [x] Record current test.
+- [x] Detect hard-coded semantic dispatch.
+- [x] Detect duplicate dispatch logic in connectors vs mutation engine.
+- [x] Detect Auction-specific code.
+- [x] Detect mutation paths without exact trace requirement.
+- [x] Produce an audit table before writing JSON.
 
 ### Acceptance
 
-- [ ] Existing runtime semantics are understood before formalization.
+- [x] Existing runtime semantics are understood before formalization.
 
 ---
 
@@ -638,30 +638,30 @@ Define a vocabulary that does not depend on Ecore class names or Auction names.
 
 At minimum evaluate/define:
 
-- [ ] `ATTRIBUTE_STATE_SET`.
-- [ ] `ATTRIBUTE_STATE_UNSET`.
-- [ ] `OBJECT_AVAILABLE`.
-- [ ] `OBJECT_UNAVAILABLE`.
-- [ ] `RELATION_INSERT`.
-- [ ] `RELATION_DELETE`.
-- [ ] `OPERATION_ENTER`.
-- [ ] `OPERATION_EXIT`.
-- [ ] `OPERATION_FAIL`.
-- [ ] `TRACE_ONLY`.
-- [ ] `NO_MUTATION`.
-- [ ] `UNSUPPORTED`.
+- [x] `ATTRIBUTE_STATE_SET`.
+- [x] `ATTRIBUTE_STATE_UNSET`.
+- [x] `OBJECT_AVAILABLE`.
+- [x] `OBJECT_UNAVAILABLE`.
+- [x] `RELATION_INSERT`.
+- [x] `RELATION_DELETE`.
+- [x] `OPERATION_ENTER`.
+- [x] `OPERATION_EXIT`.
+- [x] `OPERATION_FAIL`.
+- [x] `TRACE_ONLY`.
+- [x] `NO_MUTATION`.
+- [x] `UNSUPPORTED`.
 
 For each action:
 
-- [ ] define required identity category;
-- [ ] define payload category;
-- [ ] define idempotency expectations;
-- [ ] define whether a USE mutation is mandatory/optional/forbidden;
-- [ ] define whether it survives metamodel migration unchanged.
+- [x] define required identity category;
+- [x] define payload category;
+- [x] define idempotency expectations;
+- [x] define whether a USE mutation is mandatory/optional/forbidden;
+- [x] define whether it survives metamodel migration unchanged.
 
 ### Acceptance
 
-- [ ] Generic action vocabulary is Ecore-independent.
+- [x] Generic action vocabulary is Ecore-independent.
 
 ---
 
@@ -682,40 +682,40 @@ Create `runtime-mapping.schema.json` in the repository-appropriate runtime resou
 
 Each rule must support fields equivalent to:
 
-- [ ] rule ID;
-- [ ] source runtime/dimension;
-- [ ] normalized event kind;
-- [ ] authoritative-source requirement;
-- [ ] required runtime identity kind;
-- [ ] correlation requirement;
-- [ ] payload contract/reference;
-- [ ] generic semantic action;
-- [ ] current V1 target kind/binding anchor;
-- [ ] trace requirement;
-- [ ] concrete RuntimeMutation kind;
-- [ ] verification checkpoint or `NONE`;
-- [ ] support status;
-- [ ] evidence references;
-- [ ] assumptions;
-- [ ] unsupported conditions;
-- [ ] migration risk / Ecore V2 note.
+- [x] rule ID;
+- [x] source runtime/dimension;
+- [x] normalized event kind;
+- [x] authoritative-source requirement;
+- [x] required runtime identity kind;
+- [x] correlation requirement;
+- [x] payload contract/reference;
+- [x] generic semantic action;
+- [x] current V1 target kind/binding anchor;
+- [x] trace requirement;
+- [x] concrete RuntimeMutation kind;
+- [x] verification checkpoint or `NONE`;
+- [x] support status;
+- [x] evidence references;
+- [x] assumptions;
+- [x] unsupported conditions;
+- [x] migration risk / Ecore V2 note.
 
 Schema rules:
 
-- [ ] reject unknown structural fields unless project convention explicitly allows extensions;
-- [ ] require unique rule IDs at semantic validation layer;
-- [ ] prohibit Auction object names in canonical generic rules;
-- [ ] encode status including `DRAFT_WAITING_FOR_METAMODEL_V2` at document level;
-- [ ] schema version explicit.
+- [x] reject unknown structural fields unless project convention explicitly allows extensions;
+- [x] require unique rule IDs at semantic validation layer;
+- [x] prohibit Auction object names in canonical generic rules;
+- [x] encode status including `DRAFT_WAITING_FOR_METAMODEL_V2` at document level;
+- [x] schema version explicit.
 
 ### Tests
 
-- [ ] valid minimal document;
-- [ ] missing required field;
-- [ ] invalid action;
-- [ ] invalid event kind;
-- [ ] malformed identity requirement;
-- [ ] unknown field behavior.
+- [x] valid minimal document;
+- [x] missing required field;
+- [x] invalid action;
+- [x] invalid event kind;
+- [x] malformed identity requirement;
+- [x] unknown field behavior.
 
 ---
 
@@ -737,31 +737,31 @@ Add rules only where evidence is sufficient.
 
 Required high-priority rules:
 
-- [ ] observable property changed → attribute state set.
-- [ ] observable property removed → attribute state unset/undefined policy.
-- [ ] artifact operation started → operation enter.
-- [ ] artifact operation completed → operation exit.
-- [ ] artifact operation failed → operation fail.
-- [ ] artifact lifecycle → restricted object lifecycle policy.
-- [ ] workspace/focus/link events only if current semantic target exists.
-- [ ] Jason action events → trace/cross-dimensional correlation according to evidence.
-- [ ] belief/goal events only if current target semantics are proven; otherwise `DEFERRED`/`TRACE_ONLY`.
-- [ ] Moise role/mission/goal deltas only where current structural target exists and identity is exact.
-- [ ] normative lifecycle not exposed → explicit unsupported/deferred rules or capability entry; no fabricated mutation.
+- [x] observable property changed → attribute state set.
+- [x] observable property removed → attribute state unset/undefined policy.
+- [x] artifact operation started → operation enter.
+- [x] artifact operation completed → operation exit.
+- [x] artifact operation failed → operation fail.
+- [x] artifact lifecycle → restricted object lifecycle policy.
+- [x] workspace/focus/link events only if current semantic target exists.
+- [x] Jason action events → trace/cross-dimensional correlation according to evidence.
+- [x] belief/goal events only if current target semantics are proven; otherwise `DEFERRED`/`TRACE_ONLY`.
+- [x] Moise role/mission/goal deltas only where current structural target exists and identity is exact.
+- [x] normative lifecycle not exposed → explicit unsupported/deferred rules or capability entry; no fabricated mutation.
 
 For every rule:
 
-- [ ] evidence cites source API/research and current code support;
-- [ ] no concrete Auction instance name;
-- [ ] no fuzzy target lookup;
-- [ ] no duplicate semantic authority;
-- [ ] V2 migration risk classified.
+- [x] evidence cites source API/research and current code support;
+- [x] no concrete Auction instance name;
+- [x] no fuzzy target lookup;
+- [x] no duplicate semantic authority;
+- [x] V2 migration risk classified.
 
 ### Document metadata
 
-- [ ] status = `DRAFT_WAITING_FOR_METAMODEL_V2`.
-- [ ] current target baseline identified as temporary V1 compatibility target.
-- [ ] do not create freeze manifest yet.
+- [x] status = `DRAFT_WAITING_FOR_METAMODEL_V2`.
+- [x] current target baseline identified as temporary V1 compatibility target.
+- [x] do not create freeze manifest yet.
 
 ---
 
@@ -775,24 +775,24 @@ For every rule:
 
 ### Tasks
 
-- [ ] Create typed runtime mapping model.
-- [ ] Load mapping bytes once per load.
-- [ ] Validate JSON schema.
-- [ ] Parse typed rules.
-- [ ] Preserve deterministic rule order.
-- [ ] Preserve source/evidence metadata.
-- [ ] Return structured diagnostics.
-- [ ] Fail clearly on malformed document.
-- [ ] Do not silently fallback to hard-coded defaults.
-- [ ] Keep loader independent of Swing/UI.
+- [x] Create typed runtime mapping model.
+- [x] Load mapping bytes once per load.
+- [x] Validate JSON schema.
+- [x] Parse typed rules.
+- [x] Preserve deterministic rule order.
+- [x] Preserve source/evidence metadata.
+- [x] Return structured diagnostics.
+- [x] Fail clearly on malformed document.
+- [x] Do not silently fallback to hard-coded defaults.
+- [x] Keep loader independent of Swing/UI.
 
 ### Tests
 
-- [ ] valid load;
-- [ ] malformed JSON;
-- [ ] schema invalid;
-- [ ] duplicate rule IDs delegated to semantic validator;
-- [ ] deterministic reload.
+- [x] valid load;
+- [x] malformed JSON;
+- [x] schema invalid;
+- [x] duplicate rule IDs delegated to semantic validator;
+- [x] deterministic reload.
 
 ---
 
@@ -810,27 +810,27 @@ For every rule:
 
 Validate:
 
-- [ ] duplicate rule IDs;
-- [ ] duplicate/conflicting selector rules;
-- [ ] unsupported source runtime;
-- [ ] unknown event kind;
-- [ ] invalid semantic action;
-- [ ] invalid mutation kind;
-- [ ] impossible payload requirement;
-- [ ] operation rule missing correlation;
-- [ ] mutation rule missing trace requirement where required;
-- [ ] invalid target kind;
-- [ ] target structural anchor does not exist;
-- [ ] rule violates semantic authority policy;
-- [ ] rule could double-apply an organisation fact;
-- [ ] V1 compatibility anchors resolve exactly;
-- [ ] deferred/unsupported rule cannot accidentally mutate.
+- [x] duplicate rule IDs;
+- [x] duplicate/conflicting selector rules;
+- [x] unsupported source runtime;
+- [x] unknown event kind;
+- [x] invalid semantic action;
+- [x] invalid mutation kind;
+- [x] impossible payload requirement;
+- [x] operation rule missing correlation;
+- [x] mutation rule missing trace requirement where required;
+- [x] invalid target kind;
+- [x] target structural anchor does not exist;
+- [x] rule violates semantic authority policy;
+- [x] rule could double-apply an organisation fact;
+- [x] V1 compatibility anchors resolve exactly;
+- [x] deferred/unsupported rule cannot accidentally mutate.
 
 ### Diagnostics
 
-- [ ] each failure has stable diagnostic code;
-- [ ] include rule ID and field/context;
-- [ ] no silent downgrade from ERROR to warning for correctness failures.
+- [x] each failure has stable diagnostic code;
+- [x] include rule ID and field/context;
+- [x] no silent downgrade from ERROR to warning for correctness failures.
 
 ---
 
@@ -847,25 +847,25 @@ Validate:
 
 Create a machine/human-readable compatibility report:
 
-- [ ] event rule;
-- [ ] generic action;
-- [ ] current V1 semantic anchor;
-- [ ] generated USE target type;
-- [ ] TraceIndex target kind;
-- [ ] mutation support;
-- [ ] status;
-- [ ] V2 migration risk.
+- [x] event rule;
+- [x] generic action;
+- [x] current V1 semantic anchor;
+- [x] generated USE target type;
+- [x] TraceIndex target kind;
+- [x] mutation support;
+- [x] status;
+- [x] V2 migration risk.
 
 Classify each rule:
 
-- [ ] `READY_V1_TEMPORARY`.
-- [ ] `TRACE_ONLY`.
-- [ ] `DEFERRED_FOR_V2`.
-- [ ] `UNSUPPORTED`.
+- [x] `READY_V1_TEMPORARY`.
+- [x] `TRACE_ONLY`.
+- [x] `DEFERRED_FOR_V2`.
+- [x] `UNSUPPORTED`.
 
 ### Acceptance
 
-- [ ] No runtime rule targets a non-existent USE construct.
+- [x] No runtime rule targets a non-existent USE construct.
 
 ---
 
@@ -879,30 +879,32 @@ Classify each rule:
 
 ### Tasks
 
-- [ ] Schema test suite.
-- [ ] Loader test suite.
-- [ ] Semantic validator test suite.
-- [ ] Negative conflicting-rule tests.
-- [ ] V1 compatibility tests.
-- [ ] Existing runtime tests remain green.
-- [ ] Add `docs/project/runtime-mapping-draft.md` or repository-consistent equivalent.
-- [ ] Document six distinct layers:
+- [x] Schema test suite.
+- [x] Loader test suite.
+- [x] Semantic validator test suite.
+- [x] Negative conflicting-rule tests.
+- [x] V1 compatibility tests.
+- [x] Existing runtime tests remain green.
+- [x] Add `docs/project/runtime-mapping-draft.md` or repository-consistent equivalent.
+- [x] Document six distinct layers:
   - upstream runtime fact;
   - RuntimeEvent;
   - identity;
   - generic semantic action;
   - runtime mapping/binding;
   - USE mutation.
-- [ ] Explicitly state OCL is not part of this mapping layer.
+- [x] Explicitly state OCL is not part of this mapping layer.
 
 ### Exit criteria
 
-- [ ] Declarative Runtime Mapping Draft exists.
-- [ ] Loader/validator exist.
-- [ ] Draft is not frozen.
-- [ ] Draft can be migrated to V2 by replacing/reconciling target-binding layer.
+- [x] Declarative Runtime Mapping Draft exists.
+- [x] Loader/validator exist.
+- [x] Draft is not frozen.
+- [x] Draft can be migrated to V2 by replacing/reconciling target-binding layer.
 
 ---
+
+Execution evidence (2026-09-19): draft implementation c2031744; initial RuntimeMappingTest 4/4 and module regression 135/135 PASS. Capability input is the reconciled research runtime-capabilities-v1.json. Derived compatibility report: target/runtime-mapping-compatibility.json. No freeze manifest. Engine integration is Phase 19. Merge/push closure is pending the final reactor gate.
 
 # Phase 19 — Runtime Mapping Integration & Mirror Correctness
 

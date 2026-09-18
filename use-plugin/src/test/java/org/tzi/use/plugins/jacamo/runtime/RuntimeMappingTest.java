@@ -39,6 +39,17 @@ class RuntimeMappingTest {
         doc = document(); ((ObjectNode)doc.path("rules").get(0)).remove("evidence"); rejects(doc,"RUNTIME_MAPPING_SCHEMA_INVALID");
         assertThrows(RuntimeMappingException.class, () -> loader.loadBytes("{".getBytes()));
     }
+    @Test void minimalDocumentAndSemanticNegativeControls() throws Exception {
+        var doc = document();
+        var rules = json.createArrayNode().add(doc.path("rules").get(0)); doc.set("rules",rules);
+        assertEquals(1,loader.loadBytes(json.writeValueAsBytes(doc)).rules().size());
+        doc = document(); ((ObjectNode)doc.path("rules").get(0)).put("anchor","VP003");
+        rejects(doc,"RUNTIME_MAPPING_ANCHOR_INCOMPATIBLE");
+        doc = document(); ((ObjectNode)doc.path("rules").get(2)).putArray("payload").add("impossible");
+        rejects(doc,"RUNTIME_MAPPING_PAYLOAD_CONFLICT");
+        doc = document(); ((ObjectNode)doc.path("rules").get(8)).put("dimension","ORGANISATION").put("runtime","MOISE");
+        rejects(doc,"RUNTIME_MAPPING_AUTHORITY_CONFLICT");
+    }
     @Test void conflictsAndUnsafeMutationsFailClosed() throws Exception {
         String[][] cases = {{"id","RM-DESTROY_OBJECT","DUPLICATE_ID"}, {"eventKind","DESTROY_OBJECT","CONFLICTING_SELECTOR"},
             {"anchor","missing-anchor","ANCHOR_MISSING"}, {"support","DEFERRED_FOR_V2","UNSAFE_MUTATION"},

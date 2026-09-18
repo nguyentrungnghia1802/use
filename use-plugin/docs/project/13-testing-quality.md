@@ -354,3 +354,10 @@ Package validation checks 27 declared ZIP entries, source bytes, embedded canoni
 resources, SHA sidecar, USE plugin discovery, and isolated child-JVM loading. Two
 separate builds produced the same ZIP hash only under the recorded identical source,
 dependency, JDK, and Maven scope; no cross-toolchain guarantee is inferred.
+
+## Runtime mapping draft (2026-09-19)
+
+Phase 18 introduces a strict declarative draft loader, semantic validator and derived
+compatibility report. See [runtime-mapping-draft.md](runtime-mapping-draft.md).
+Initial module regression: 135/135 PASS. V1 target bindings are temporary; no runtime
+mapping freeze or OCL expansion is implied.
