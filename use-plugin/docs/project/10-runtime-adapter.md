@@ -315,3 +315,16 @@ Unknown property mappings are quarantined instead of silently applied; unknown
 CArtAgO operations leave connector quarantine evidence. Object recreation is limited
 to the original exact trace/class, and operation terminals must match the open target.
 See the integrated contract and limitations in runtime-mapping-draft.md.
+
+## Phase 18-20 execution scope (2026-09-19)
+
+Runtime Mapping Draft is integrated; the supported mirror subset has executable
+zero-drift evidence. Full-project Phase 20 uses its documented technical-limitation
+exit alternative. The pinned launcher probe exposes .jcm syntax and Moise OS schema
+gaps in the static fixture. See [phase20-runtime-evidence.md](phase20-runtime-evidence.md).
+This does not claim full autonomous Agent -> Artifact -> Organisation E2E.
+
+The pinned launcher exposes organisation state through `ora4mas.nopl.oe.Group`
+and `ora4mas.nopl.oe.Scheme`; the implemented Moise connector accepts `moise.oe.OE`.
+The successful OSBuilder launcher control does not close this adapter gap and must
+not be represented by constructing an unrelated OE beside the real boards.

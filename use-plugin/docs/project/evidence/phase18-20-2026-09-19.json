@@ -1,0 +1,139 @@
+{
+  "date": "2026-09-19",
+  "regressionCommand": "mvn -B verify",
+  "tests": 285,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "modules": {
+    "use-core": 13,
+    "use-gui": 130,
+    "use-plugin": {
+      "unitComponent": 139,
+      "releaseIntegration": 3
+    }
+  },
+  "mirror": {
+    "unexplainedDrift": 0,
+    "checkpoints": [
+      "INITIAL_SYNC",
+      "AFTER_STATE_CHANGE",
+      "OPERATION_ENTER_EXIT_FAIL",
+      "RECONNECT_RESYNC"
+    ],
+    "fixtureSourceCommit": "bbdb6ef7e33574f5845fde4f30e97b32c917c30c",
+    "excluded": [
+      "Moise instance state and Jason beliefs/goals are trace-only",
+      "Global causal ordering and cross-dimensional invocation join unproven",
+      "Standalone launcher not covered by this test"
+    ],
+    "status": "SUPPORTED_SUBSET_COMPLETE",
+    "dropped": 0,
+    "rejected": 0,
+    "failed": 0
+  },
+  "launcher": {
+    "jacamo": "1.3.0",
+    "jason": "3.3.0",
+    "cartago": "3.1",
+    "moise": "1.1",
+    "jaca": "3.1",
+    "npl": "0.6",
+    "sourceCommit": "32b95bd58f1537ba247d12d20495bf8c3e2740ca",
+    "originalFixtureModified": false,
+    "fullRuntimeE2E": false,
+    "results": [
+      {
+        "scenario": "original",
+        "status": "TECHNICAL_LIMITATION",
+        "exitCode": 3,
+        "diagnostics": [
+          "SEVERE: Error parsing file file:<repository>\\use-plugin\\src\\test\\resources\\auction\\auction.jcm!",
+          "jacamo.project.parser.ParseException: Encountered \" <ATOM> \"budget \"\" at line 3, column 27.",
+          "\tat jacamo.project.parser.JaCaMoProjectParser.generateParseException(JaCaMoProjectParser.java:4024)",
+          "PHASE20_INIT_RESULT=3",
+          "java.lang.IllegalStateException: PHASE20_PROJECT_PARSE_FAILED:3"
+        ],
+        "logSha256": "d2fd8bda0e982c2f99fda8eb4e1b5f74029f5de2a410474a5782916c6834bbe0"
+      },
+      {
+        "scenario": "syntax-path-adapted",
+        "status": "TECHNICAL_LIMITATION",
+        "exitCode": 3,
+        "diagnostics": [
+          "PHASE20_INIT_RESULT=0",
+          "Parser creation error:org.xml.sax.SAXParseException; cvc-elt.1.a: Cannot find the declaration of element 'organisational-specification'.",
+          "java.lang.reflect.InvocationTargetException",
+          "Caused by: java.lang.NullPointerException: Cannot invoke \"moise.os.OS.getAsProlog()\" because \"os\" is null",
+          "cartago.ArtifactConfigurationFailedException: ora4mas.nopl.OrgBoard",
+          "java.lang.IllegalStateException: PHASE20_ORGANISATION_NOT_READY"
+        ],
+        "logSha256": "d8e0f0cbb5e158cd7e746d0f009c0387c6b068bbdc1973f5a7faa73f437b31e6"
+      },
+      {
+        "scenario": "builder-control-not-equivalent",
+        "status": "PLATFORM_START_ONLY_NOT_MIRROR_E2E",
+        "exitCode": 0,
+        "diagnostics": [
+          "PHASE20_INIT_RESULT=0",
+          "PHASE20_PLATFORM_PROBE_RETURNED"
+        ],
+        "logSha256": "9e0b937510b295e9a871fa68ea3b8933e1637da6bd429dcd87a314a83f15bc76"
+      }
+    ],
+    "limitation": "Static Auction OS violates pinned XSD beyond its namespace. Builder control is not semantically equivalent. Launcher organisation boards expose ora4mas.nopl.oe state, whereas the current connector consumes moise.oe.OE. Closest supported mirror evidence is LiveJaCaMoAuctionIntegrationTest.",
+    "moiseSchemaAudit": {
+      "results": [
+        {
+          "loadable": false,
+          "schemaValid": false,
+          "file": "auction.xml",
+          "diagnostics": [
+            "line 2:49 cvc-elt.1.a: Cannot find the declaration of element 'organisational-specification'."
+          ]
+        },
+        {
+          "loadable": false,
+          "schemaValid": false,
+          "file": "auction-namespace-only.xml",
+          "diagnostics": [
+            "line 4:48 cvc-complex-type.2.4.a: Invalid content was found starting with element '{\"http://moise.sourceforge.net/os\":role-def}'. One of '{\"http://moise.sourceforge.net/os\":properties, \"http://moise.sourceforge.net/os\":role-definitions, \"http://moise.sourceforge.net/os\":link-types, \"http://moise.sourceforge.net/os\":group-specification}' is expected.",
+            "line 8:80 cvc-enumeration-valid: Value 'auctioneer' is not facet-valid with respect to enumeration '[role, group]'. It must be a value from the enumeration.",
+            "line 8:80 cvc-attribute.3: The value 'auctioneer' of attribute 'object' on element 'cardinality' is not valid with respect to its type, 'cardinalityObjectType'.",
+            "line 8:80 cvc-complex-type.4: Attribute 'id' must appear on element 'cardinality'.",
+            "line 13:41 cvc-complex-type.3.2.2: Attribute 'root' is not allowed to appear in element 'goal'.",
+            "line 15:33 cvc-complex-type.2.4.a: Invalid content was found starting with element '{\"http://moise.sourceforge.net/os\":plan}'. One of '{\"http://moise.sourceforge.net/os\":mission}' is expected."
+          ]
+        },
+        {
+          "loadable": true,
+          "schemaValid": true,
+          "file": "builder-control.xml",
+          "diagnostics": []
+        }
+      ],
+      "groupBoardStateType": "ora4mas.nopl.oe.Group",
+      "schemeBoardStateType": "ora4mas.nopl.oe.Scheme",
+      "connectorStateType": "moise.oe.OE",
+      "controlEquivalentToAuction": false
+    },
+    "jarSha256": {
+      "jacamo-1.3.0.jar": "c1de5c0d9b39af4059a0b260be7c2399a9fd65db42fd92921e673c0715196304",
+      "jaca-3.1.jar": "f53745d4c0202ab2cb0f9b7eee9f7d21d6ef621706f8bb9b49ed09e63638f72d",
+      "npl-0.6.jar": "fdf43a2cec55145fd31531c5eda95fa96c6440322887d2ff3b0598da3f2f1d43",
+      "jason-interpreter-3.3.0.jar": "721e430bccee6e369e8f2679de9c02eb38064e7a15130fb96e0bce51ef81db9a",
+      "cartago-3.1.jar": "bf03b37b28e304b2d784c8d77267e56c12b943ff70eed35b533c6323e0736866",
+      "moise-1.1.jar": "2b7d0415c5ec0bcf060a430c7d12753aa02bdf769172922d10ff2909870161a8"
+    },
+    "inputSha256": {
+      "src\\test\\resources\\auction\\auction.jcm": "ad05d50f24d185437c5c2e4df7fa545ddd57887fef466bac0714c3a018650a79",
+      "src\\test\\resources\\auction\\src\\org\\auction.xml": "d1af599b6d8f6b0e884f326a9ca3fbe92d741289f4425cbe235a0cce31acb4f4",
+      "src\\test\\resources\\auction\\src\\agt\\auctioneer.asl": "55bd55a1676ef55e842c29731434043df46d81c2c52a71b86ea0bdc8b9407fc9",
+      "src\\test\\resources\\auction\\src\\env\\auction\\AuctionArtifact.java": "ef4e5466a42ea730376135dfc4da53123117e66da75a33f36ff419abb3e86aba",
+      "tools\\runtime\\LauncherProbe.java": "15c9b7aacaf974e8d164c98c38e681867607e7929df35620df43c6db4d7157a8",
+      "tools\\runtime\\MoiseSchemaProbe.java": "67f9ebfd2048159b357030bf188be92ba62f269b9fe16a0b01eb99df8264b223",
+      "tools\\runtime\\launcher_probe.py": "d3153ca5f1f081be12c7b0022199ec5b862f6e1d83f30a80b409f1579ee0351e"
+    },
+    "moiseSchemaSha256": "08d20e351b191064be1f95f716ab49d40de256dca44823d39c23787ad210c16a"
+  }
+}

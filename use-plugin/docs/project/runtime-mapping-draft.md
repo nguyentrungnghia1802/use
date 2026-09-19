@@ -23,8 +23,8 @@ names (target-trace gap). There is no Auction-specific branch in runtime product
 | ORGANISATION_DISCOVERED, GROUP_*, SCHEME_*, ROLE_*, MISSION_*, NORM_STATE_CHANGED | alias lookup then trace-only applied | NONE; MoiseRuntimeConnectorTest; no NPL source |
 
 Connectors supply exact normalized payload and binding facts; they do not choose
-generic mutation semantics. RuntimeVerificationEngine currently maintains its own
-state-changing event set; Phase 19 must reconcile it with rule checkpoints.
+generic mutation semantics. At the audited baseline RuntimeVerificationEngine
+maintained its own state-changing event set; Phase 19 reconciled it with rule checkpoints.
 
 ## Layers and vocabulary
 
@@ -61,7 +61,7 @@ UNSUPPORTED. No semantic target is fabricated to increase supported coverage.
 Loader/validator tests must validate each rule against embedded frozen V1 anchors,
 reject unknown fields/enums, duplicate IDs/selectors, authority conflicts, missing
 trace/correlation, incompatible action/mutation/target and mutating deferred rules.
-Invalid input fails without a procedural fallback. Engine integration is Phase 19.
+Invalid input fails without a procedural fallback. Engine integration was completed in Phase 19.
 
 ## Integrated mirror contract (Phase 19)
 

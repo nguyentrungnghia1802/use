@@ -368,3 +368,19 @@ Strict scalar conversion and exact-object recreation are covered. Golden trace
 negative control verifies byte-identical prior records after excluding newly
 added projected attribute declarations. Live derived evidence is located at
 `target/phase19-mirror-evidence`; its exclusions are part of the gate scope.
+
+## Phase 18-20 execution scope (2026-09-19)
+
+Runtime Mapping Draft is integrated; the supported mirror subset has executable
+zero-drift evidence. Full-project Phase 20 uses its documented technical-limitation
+exit alternative. The pinned launcher probe exposes .jcm syntax and Moise OS schema
+gaps in the static fixture. See [phase20-runtime-evidence.md](phase20-runtime-evidence.md).
+This does not claim full autonomous Agent -> Artifact -> Organisation E2E.
+
+Fresh continuation regression: `mvn -B verify` **285/285 PASS**, zero failures,
+errors or skips (core 13, GUI 130, plugin 139 unit/component + 3 release integration).
+The Phase 19 mirror summary records zero drift and zero failed/rejected/dropped.
+The Phase 20 probe asserts original/namespace-only OS rejection and successful
+OSBuilder control startup; the control is explicitly not Auction-equivalent.
+Source, input, schema and jar hashes are retained in
+[the combined evidence](evidence/phase18-20-2026-09-19.json).

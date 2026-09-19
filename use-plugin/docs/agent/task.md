@@ -904,7 +904,7 @@ Classify each rule:
 
 ---
 
-Execution evidence (2026-09-19): draft implementation c2031744; initial RuntimeMappingTest 4/4 and module regression 135/135 PASS. Capability input is the reconciled research runtime-capabilities-v1.json. Derived compatibility report: target/runtime-mapping-compatibility.json. No freeze manifest. Engine integration is Phase 19. Merge/push closure is pending the final reactor gate.
+Execution evidence (2026-09-19): draft implementation c2031744; initial RuntimeMappingTest 4/4 and module regression 135/135 PASS (historical phase-local counts). Capability input is the reconciled research runtime-capabilities-v1.json. Derived compatibility report: target/runtime-mapping-compatibility.json. No freeze manifest. Engine integration is Phase 19. Fresh combined reactor gate: 285/285 PASS; integration closure is recorded below Phase 20.
 
 # Phase 19 — Runtime Mapping Integration & Mirror Correctness
 
@@ -1227,7 +1227,7 @@ JaCaMo authoritative runtime state == USE MSystemState mirror
 
 ---
 
-Execution evidence (2026-09-19): two wrong-target regressions reproduced RED (2/2 failures), then passed. Module gate 139/139 PASS; live mirror summary records zero unexplained post-resync drift and zero queue failures/rejections/drops. RuntimeMapping drives mutation/comparison/checkpoints; projected attribute trace is now explicit. Golden old-trace negative control confirms only new projection records changed. See runtime-mapping-draft.md for scope and exclusions. Tasks concerning unavailable dynamic Moise/Jason state, cross-dimensional invocation joins and in-flight snapshot operation state are resolved as explicit unsupported boundaries, not implemented equivalence. Full reactor/merge closure follows below.
+Execution evidence (2026-09-19): two wrong-target regressions reproduced RED (2/2 failures), then passed. Fresh module unit/component gate 139/139 plus release integration 3/3 PASS; live mirror summary records zero unexplained post-resync drift and zero queue failures/rejections/drops. RuntimeMapping drives mutation/comparison/checkpoints; projected attribute trace is now explicit. Golden old-trace negative control confirms only new projection records changed. See runtime-mapping-draft.md for scope and exclusions. Tasks concerning unavailable dynamic Moise/Jason state, cross-dimensional invocation joins and in-flight snapshot operation state are resolved as explicit unsupported boundaries, not implemented equivalence. Combined reactor 285/285 PASS; integration closure follows below.
 
 # Phase 20 — Full JaCaMo Runtime End-to-End
 
@@ -1246,13 +1246,13 @@ Execution evidence (2026-09-19): two wrong-target regressions reproduced RED (2/
 
 ### Tasks
 
-- [ ] Identify exact JaCaMo launcher/runtime API available in pinned dependency set.
-- [ ] Determine whether current plugin dependencies include the full launcher or only component libraries.
-- [ ] Determine classpath/project layout requirements for `.jcm` execution.
-- [ ] Determine safe test isolation/shutdown requirements.
-- [ ] Identify gap between current in-process test and true JaCaMo project launch.
-- [ ] Record blockers as technical, environment, or unsupported-version blockers.
-- [ ] Do not upgrade runtime versions solely to make launcher easier.
+- [x] Identify exact JaCaMo launcher/runtime API available in pinned dependency set.
+- [x] Determine whether current plugin dependencies include the full launcher or only component libraries.
+- [x] Determine classpath/project layout requirements for `.jcm` execution.
+- [x] Determine safe test isolation/shutdown requirements.
+- [x] Identify gap between current in-process test and true JaCaMo project launch.
+- [x] Record blockers as technical, environment, or unsupported-version blockers.
+- [x] Do not upgrade runtime versions solely to make launcher easier.
 
 ---
 
@@ -1368,9 +1368,22 @@ Execution evidence (2026-09-19): two wrong-target regressions reproduced RED (2/
 ### Exit criteria
 
 - [ ] Full-project path works, OR
-- [ ] exact technical limitation is documented and the closest supported in-process path remains bounded/evidence-backed.
+- [x] exact technical limitation is documented and the closest supported in-process path remains bounded/evidence-backed.
 
 ---
+
+Execution evidence (2026-09-19): the second P20.5 exit alternative is satisfied, not the full-project-success alternative. `tools/runtime/launcher_probe.py` executes pinned JaCaMo 1.3.0 in isolated JVMs. Original fixture fails .jcm parsing; syntax/path adaptation reaches real Jason/CArtAgO startup but fails Moise XML schema/OrgBoard initialization. See [phase20-runtime-evidence.md](../project/phase20-runtime-evidence.md). Unchecked full-project items remain explicitly unproven; no full Agent -> Artifact -> Organisation claim. Closest supported component timeline and mapping/mirror evidence are exercised by LiveJaCaMoAuctionIntegrationTest. No version upgrade or invented normative fixture semantics.
+
+Continuation audit: repository was already clean at `bbdb6ef7` on `phase/20-runtime-evidence`;
+the earlier Phase 18/19 implementation and validator changes were committed and retained.
+The namespace/version-only XML probe still reports six XSD diagnostics. A separate
+OSBuilder control loads and launches with the pinned jars, so this is not a proven
+runtime-version impossibility. Launcher boards expose `ora4mas.nopl.oe.Group/Scheme`,
+not the connector's `moise.oe.OE`; a proper board-state adapter is still required.
+No semantics-preserving repair of the source self-referencing plan/natural-language
+deadline is established. Full-project acceptance stays unchecked. Probe assertions,
+input/jar/schema hashes and fresh 285/285 reactor results are retained in
+[machine-readable evidence](../project/evidence/phase18-20-2026-09-19.json).
 
 # Phase 21 — Metamodel-Decoupling & V2 Migration Readiness
 

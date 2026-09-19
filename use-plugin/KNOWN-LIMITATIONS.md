@@ -2,8 +2,12 @@
 
 - Compatibility evidence is limited to Windows 11 amd64, Oracle JDK 21.0.5, Maven
   3.9.9, USE 7.5.0, Jason 3.3.0, CArtAgO 3.1 and Moise 1.1.
-- Live evidence uses real in-process component APIs; it does not launch the complete
-  JaCaMo 1.3.0 application from `.jcm`.
+- Mirror evidence uses real in-process component APIs. Phase 20 additionally probes
+  the pinned JaCaMo 1.3.0 `.jcm` launcher, but full-project mirror E2E remains unproven.
+  The static Auction OS violates the pinned XSD beyond its missing namespace.
+  A non-equivalent OSBuilder control starts successfully; launcher board state uses
+  `ora4mas.nopl.oe.Group/Scheme`, while the current connector accepts `moise.oe.OE`.
+  See [launcher evidence](docs/project/phase20-runtime-evidence.md) for exact blockers.
 - The Moise live scenario constructs a real programmatic OS/OE subset. The checked-in
   XML is static import provenance, not the runtime OS used by that scenario.
 - Communication links, formation cardinality, sequence plans, normative time
