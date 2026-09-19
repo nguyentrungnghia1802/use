@@ -1,164 +1,107 @@
 # Repository Structure
 
-## 1. Mục tiêu tổ chức
+This document describes the checked-in structure at v1.0.1. It is not a proposed
+layout. Generated files under `target/` are build outputs and are not sources of truth.
 
-Repository phải giúp:
-- Agent chỉ đọc phần liên quan;
-- core logic không phụ thuộc UI;
-- parser/mapping/runtime test độc lập;
-- generated artifacts không lẫn source-of-truth;
-- tài liệu khớp module.
-
----
-
-## 2. Cấu trúc đề xuất
+## Reactor
 
 ```text
-repo/
+use/
+├── pom.xml
+├── use-core/
+├── use-gui/
+├── use-assembly/
+├── manual/
+├── documentation/
+├── docs/report/
+└── use-plugin/
+```
+
+The root Maven reactor builds five projects: the root POM, `use-core`, `use-gui`,
+`use-assembly`, and `use-plugin`.
+
+## Plugin module
+
+```text
+use-plugin/
 ├── pom.xml
 ├── README.md
-│
+├── CHANGELOG.md
+├── KNOWN-LIMITATIONS.md
+├── compatibility.json
+├── NOTICE
+├── licenses/
 ├── Core/
 │   ├── Metamodel/
 │   │   ├── JaCaMo-Metamodel.ecore
-│   │   ├── metamodel-freeze-manifest.json
-│   │   └── metamodel-audit.md
-│   │
-│   ├── Mapping/
-│   │   ├── jacamo-use-mapping-v1.json
-│   │   ├── jacamo-use-mapping.schema.json
-│   │   ├── mapping-freeze-manifest.json
-│   │   └── mapping-audit.md
-│   │
-│   └── OCL/
-│       ├── core/
-│       │   └── jacamo-core.ocl
-│       ├── generated/
-│       │   └── README.md
-│       └── schema/
-│           └── constraint-provenance.schema.json
-│
+│   │   ├── Metamodel-2024.jpg
+│   │   └── README.md
+│   └── Mapping/
+│       ├── jacamo-use-mapping-v1.json
+│       ├── jacamo-use-mapping.schema.json
+│       ├── freeze-manifest.json
+│       ├── METAMODEL-MAPPING-AUDIT.md
+│       └── README.md
 ├── docs/
+│   ├── DOCUMENTATION-MANIFEST.json
 │   ├── project/
-│   └── agent/
-│
-├── use-plugin/
-│   ├── pom.xml
-│   └── src/
-│       ├── main/
-│       │   ├── java/.../
-│       │   │   ├── plugin/
-│       │   │   ├── project/
-│       │   │   ├── parser/
-│       │   │   │   ├── jcm/
-│       │   │   │   ├── jason/
-│       │   │   │   ├── cartago/
-│       │   │   │   └── moise/
-│       │   │   ├── semantic/
-│       │   │   ├── mapping/
-│       │   │   ├── constraint/
-│       │   │   ├── transform/
-│       │   │   ├── trace/
-│       │   │   ├── binding/
-│       │   │   ├── useadapter/
-│       │   │   ├── runtime/
-│       │   │   ├── verification/
-│       │   │   ├── diagnostics/
-│       │   │   └── ui/
-│       │   └── resources/
-│       │       ├── metamodel/
-│       │       ├── mapping/
-│       │       └── ocl/
-│       └── test/
-│           ├── java/.../
-│           └── resources/
-│
-├── examples/
-│   └── auction/
-│       ├── jacamo/
-│       ├── verification/
-│       │   ├── auction.ocl
-│       │   └── binding.json
-│       ├── expected/
-│       │   ├── generated.use
-│       │   ├── generated.cmd
-│       │   └── trace.json
-│       └── scenarios/
-│
-├── test-fixtures/
-│   ├── jcm/
-│   ├── asl/
-│   ├── cartago/
-│   ├── moise/
-│   ├── mapping/
-│   └── runtime/
-│
-└── scripts/
-    ├── verify-metamodel.*
-    ├── audit-mapping.*
-    ├── run-auction-e2e.*
-    └── package-plugin.*
+│   ├── agent/
+│   │   └── tasks/task-01.md
+│   └── superpowers/plans/
+├── release/
+│   ├── release-manifest.json
+│   ├── HOTFIX-1.0.1.md
+│   └── evidence/v1.0.1/
+└── src/
+    ├── assembly/release.xml
+    ├── main/java/org/tzi/use/plugins/jacamo/
+    ├── main/resources/
+    └── test/
 ```
 
----
+## Production packages
 
-## 3. Quy tắc dependency
+| Package | Responsibility |
+| --- | --- |
+| root plugin package | facade, plugin registration, command/actions |
+| `project` | `.jcm` discovery and project graph |
+| `extraction` | static Jason/CArtAgO/Moise extraction and semantic resolution |
+| `semantic` | source-independent semantic model and stable IDs |
+| `binding`, `resolution` | schema-valid explicit binding and exact typed resolution |
+| `mapping` | frozen mapping load, validation, transformation planning |
+| `materialization` | textual and direct USE model/state materialization |
+| `constraint`, `ocl` | supported expression extraction and OCL generation/loading |
+| `trace` | source-to-USE trace and runtime aliases |
+| `verification` | constraint registry, offline/runtime checks and reports |
+| `runtime` | connectors, ordered queue, mutations, snapshots and lifecycle |
+| `ui` | facade-backed Swing workbench |
+| `evidence` | deterministic acceptance evidence helpers |
+
+## Resources and project-local inputs
+
+The plugin descriptor is `src/main/resources/useplugin.xml`. Canonical Ecore,
+mapping, compatibility, release manifest, schemas, core OCL, and verification
+profile are also embedded as classpath resources during packaging.
+
+A JaCaMo project may contain:
 
 ```text
-parser → semantic
-mapping → semantic + mapping schema
-constraint → semantic + trace
-transform → semantic + mapping + USE adapter
-runtime → trace + USE adapter + verification
-ui → services/facades only
+<project-root>/
+├── <project>.jcm
+├── src/...
+├── binding.json                    # optional exact ambiguity resolution
+└── verification/
+    └── <project-id>.ocl            # optional case OCL
 ```
 
-Không cho:
-- `semantic` import `ui`;
-- parser gọi Swing;
-- runtime parser file lại;
-- OCL translator phụ thuộc case Auction;
-- mapping engine hard-code 37 class bằng `if/else` nếu mapping file đã định nghĩa.
+`binding.json` is at project root, not under `verification/`. Production import
+loads it automatically when present. A user-selected OCL file is separate from the
+automatic case profile.
 
----
+## Test and evidence boundaries
 
-## 4. Generated files
-
-Không commit generated outputs chung vào source, ngoại trừ:
-- golden fixtures;
-- expected outputs của tests;
-- case study artifacts dùng cho thesis reproducibility.
-
-Generated path runtime:
-```text
-build/jacamo-use/<project-id>/
-```
-
-Có thể chứa:
-```text
-model.use
-initial-state.cmd
-generated.ocl
-trace.json
-diagnostics.json
-manifest.json
-```
-
----
-
-## 5. Package naming
-
-Khuyến nghị Java package root:
-
-```text
-org.tzi.use.plugins.jacamo
-```
-
-Subpackages đúng theo structure phía trên.
-
-Không dùng package tên quá generic như:
-- `util`;
-- `common`;
-- `helper`;
-
-trừ khi nội dung thật sự cross-cutting nhỏ và rõ.
+`src/test/resources/auction/` is the pinned acceptance fixture. It may demonstrate
+a supported path without establishing generic support. `release/evidence/v1.0.1/`
+is retained release evidence; it does not replace a fresh test run when current
+verification is required. `docs/agent/tasks/task-01.md` and `docs/superpowers/plans/`
+are historical execution records, not active architecture specifications.

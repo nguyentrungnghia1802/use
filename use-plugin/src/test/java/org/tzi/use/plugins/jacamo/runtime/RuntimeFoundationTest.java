@@ -209,6 +209,32 @@ class RuntimeFoundationTest {
     }
 
     @Test
+    void lateCallbackAfterWorkspaceReplacementBelongsToTheOldObserver() {
+        Fixture old = fixture();
+        Fixture next = fixture();
+        LateEventConnector connector = new LateEventConnector();
+        TrackingObserver previousObserver = new TrackingObserver();
+        TrackingObserver nextObserver = new TrackingObserver();
+        try (RuntimeMirrorService mirror = new RuntimeMirrorService(connector, old.engine(), 8, previousObserver)) {
+            mirror.connect(URI.create("synthetic://replacement"));
+            Consumer<RuntimeEvent> oldListener = connector.listener;
+            mirror.replaceWorkspace(next.engine(), nextObserver, () -> { });
+            RuntimeEvent late = event(1, RuntimeEventKind.SET_ATTRIBUTE, old.runtimeKey(),
+                    old.artifactTrace().sourceSemanticId(),
+                    Map.of("attribute", "open", "valueType", "BOOLEAN", "value", false), null);
+            oldListener.accept(late);
+            assertEquals(List.of(late.eventId()), previousObserver.rejected);
+            assertTrue(nextObserver.rejected.isEmpty());
+            assertEquals(0, mirror.metrics().processed());
+            connector.emit(late);
+            mirror.awaitIdle(Duration.ofSeconds(5));
+            assertEquals(1, mirror.metrics().processed());
+            assertFalse(((BooleanValue) next.attribute("open")).value());
+            assertTrue(((BooleanValue) old.attribute("open")).value());
+        }
+    }
+
+    @Test
     void mirrorReportsOrderingAndShutdownRejectionsAndClosesTimingLifecycle() {
         Fixture fixture = fixture();
         LateEventConnector connector = new LateEventConnector();

@@ -199,3 +199,12 @@ summary records both full synchronization snapshots and the post-reconnect
 authoritative comparison, including zero drift differences. It also records
 zero failed, rejected, and dropped event mutations; `processed` alone does not
 establish successful mirroring.
+
+## 10. v1.0.1 status
+
+The Auction paths remain executable in the 271-test v1.0.1 suite through
+`GoldenPipelineTest`, offline facade/verification tests,
+`AuctionSourceRuntimeTest`, and `LiveJaCaMoAuctionIntegrationTest`. This is
+**TESTED ONLY** evidence for the checked-in fixture and pinned in-process APIs; it
+is not generic standalone `.jcm` launcher support. The hotfix did not widen the
+Auction semantic claims described above.

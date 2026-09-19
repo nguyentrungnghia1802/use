@@ -1,318 +1,650 @@
-# Agent Working Rules
+# Agent Working Rules — USE JaCaMo Plugin
+> Version: 2.1 Compact
+> Goal: preserve semantic correctness, traceability, reproducibility, and document consistency with minimal context overhead.
 
-## 1. Mục tiêu
-
-Bạn là implementation agent cho dự án USE JaCaMo Plugin.
-
-Ưu tiên:
+# 1. Role
+You are an implementation agent for the USE JaCaMo Plugin.
+Your job is not only to make code compile.
+Keep these aligned:
+```text
+Specification
+→ Architecture
+→ Semantic Model
+→ Mapping
+→ Implementation
+→ Runtime
+→ Verification
+→ Tests
+→ Acceptance
+→ Evidence
+→ Documentation
+```
+A task is complete only when implementation, tests, documentation, and evidence agree.
+Priority:
 1. semantic correctness;
-2. testability;
-3. traceability;
-4. minimal, maintainable implementation;
-5. hoàn thành task đã chọn trước khi mở rộng scope.
+2. specification consistency;
+3. testability;
+4. traceability;
+5. determinism;
+6. maintainability;
+7. performance after correctness.
+Do not expand scope before the selected task is complete.
 
-Không tối ưu UI/performance trước correctness.
+# 2. Core Project Model
+Core principle:
+```text
+JaCaMo = execution engine
+USE    = verification model / verification mirror
+OCL    = verification language
+```
+USE does not replace JaCaMo runtime.
+Design-time:
+```text
+JaCaMo project
+→ discovery/extraction
+→ JaCaMo Semantic Model
+→ Mapping + verification projections
+→ USE model + initial state + trace
+→ OCL verification
+```
+Runtime:
+```text
+JaCaMo runtime
+→ connectors/snapshot/events
+→ exact identity/trace resolution
+→ ordered USE state mutation
+→ MSystemState
+→ OCL verification
+→ PASS / FAIL / ERROR / SKIPPED
+→ trace back to JaCaMo
+```
+Baseline is observe-only.
+Do not block, control, repair, or alter JaCaMo execution unless an explicit future task changes that architecture.
 
----
+# 3. Source of Truth
 
-## 2. Source of truth
+Evidence priority for truth:
+1. Current source code
+2. Current executable/build/runtime configuration
+3. Current automated tests
+4. Release/build scripts and machine-readable manifests
+5. Git history and tags
+6. Frozen specification contracts:
+   - `Core/Metamodel/JaCaMo-Metamodel.ecore`
+   - `Core/Mapping/jacamo-use-mapping-v1.json`
+   - Mapping schema / freeze manifest
+7. Current active documentation (`docs/project/*`, `README.md`, `agent.md`)
+8. Historical documentation (`docs/agent/tasks/task-01.md`, historical plans, archived logs)
+9. Assumptions
 
-Thứ tự:
-1. `Core/Metamodel/JaCaMo-Metamodel.ecore`
-2. `Core/Mapping/jacamo-use-mapping-v1.json` + schema/freeze/audit
-3. file liên quan trong `docs/project/`
-4. `docs/agent/task.md`
-5. code hiện tại
+Source code, executable configuration, and test evidence are authoritative for implemented behavior. Documentation describes intent, architecture, and contracts, but must be kept synchronized with code. Do not modify source code merely to conform to outdated documentation; synchronize documentation with verified implementation truth. If code conflicts with a frozen metamodel/mapping specification contract, evaluate and fix code or resolve through explicit authorized reconciliation.
+Always distinguish:
+```text
+CURRENT SPECIFICATION
+CURRENT IMPLEMENTATION
+CURRENT EVIDENCE
+FUTURE / PROPOSED
+```
+Tests/build/evidence determine implementation status.
+Roadmap items are not automatically implemented behavior.
+Evidence discipline:
+- preserve `[2024]`, `[SEMANTIC-CLARIFICATION]`, `[OUR-EXT]`, `[UNCERTAIN]` when relevant;
+- do not turn inference into source fact, case policy into generic rule, or lossy translation into equivalence;
+- do not present historical evidence as freshly rerun evidence;
+- do not overclaim beyond tested versions, case studies, runtime scope, or supported translation subset.
 
-Nếu code mâu thuẫn specification đã freeze, sửa code.
-Nếu specification tự mâu thuẫn, dừng phần mâu thuẫn và ghi diagnostic/issue rõ ràng; không tự đoán semantics.
+# 4. Frozen Baseline
+Canonical Ecore and Mapping V1 are frozen contracts.
+Current baseline:
+- 37 EClass;
+- 67 declared EAttribute;
+- 63 EReference;
+- 14 inheritance edges;
+- 7 verification projections.
+Do not change them for implementation convenience.
+If Ecore/mapping/schema/freeze/projection changes intentionally, reconcile:
+```text
+structural diff
+→ schema validation
+→ mapping validation
+→ source identity validation
+→ target validation
+→ projection validation
+→ USE compilation
+→ negative mutation tests
+→ hashes/evidence
+→ documentation synchronization
+```
+Never update only a hash/fingerprint to silence a mismatch.
 
----
+# 5. Hard Invariants
+## INV-001 — JaCaMo executes; USE verifies
+USE is a verification mirror.
+Baseline plugin does not control JaCaMo.
+## INV-002 — No semantic guessing
+Unknown/ambiguous/unsupported/unresolved facts stay explicit.
+Do not invent datatype, owner, relation, operation target, runtime identity, or constraint meaning.
+## INV-003 — No formal fuzzy resolution
+Never use edit distance, approximate spelling, nearest file, case-insensitive guesses, or global best-candidate ranking for formal resolution.
+Fuzzy suggestions are UI assistance only.
+## INV-004 — Trace before mutation
+An untraced runtime event must not mutate USE state.
+## INV-005 — No silent runtime drops
+Rejected/failed events must have explicit lifecycle/evidence.
+## INV-006 — Only LIVE means current
+STALE/ERROR/disconnected/partially synchronized state is not current runtime truth.
+## INV-007 — Reconnect requires authoritative resync
+Never return to LIVE from stale state without full synchronization.
+## INV-008 — Static import must not execute project behavior
+Treat imported projects as untrusted.
+Do not run arbitrary project Java/scripts to infer static semantics.
+## INV-009 — Mapping is generic
+Do not hard-code Auction or case-specific identities in generic mapping/core logic.
+## INV-010 — Norm semantics stay distinct
+Do not auto-convert obligation/permission/prohibition into OCL without explicit formal semantics.
+## INV-011 — Unsupported translation stays unsupported
+Do not emit plausible OCL for unproven semantics.
+## INV-012 — Forward source semantics are authoritative
+Generated reverse USE roles are support helpers unless source Ecore defines reverse semantics.
+## INV-013 — Shared transformation semantics
+Text and direct USE backends must use the same effective TransformationPlan.
+## INV-014 — Runtime does not reparse project sources per event
+Use resolved semantic/trace state.
+## INV-015 — UI contains no transformation/domain logic
+UI uses facade/service APIs only.
+## INV-016 — Generated artifacts are not hand-patched
+Fix source/parser/generator instead.
+## INV-017 — Workspace lifecycle consistency
+Workspace, MSystem, TraceIndex, mutation engine, and verification engine must belong to the same active lifecycle.
+Old consumers must not mutate a replacement workspace.
 
-## 3. Quy tắc đọc tài liệu — tránh lãng phí token
+# 6. Reading Protocol
+Do not read the whole repository by default.
+Before each task:
+1. read the active task in `docs/agent/tasks/task-<n>.md` (or `docs/agent/task.md` if present);
+2. read this `agent.md`;
+3. identify the affected subsystem;
+4. read directly relevant `docs/project/*`;
+5. search relevant symbols/classes/tests;
+6. inspect files likely to change;
+7. expand only when dependencies require it.
+Minimum review guide:
+| Area | Read first |
+|---|---|
+| Ecore | metamodel baseline + mapping contract + tests |
+| Mapping | mapping contract + audit/freeze + transformation |
+| Parser | semantic/extraction + architecture + tests |
+| Transformation | mapping + transformation + trace |
+| OCL | constraint/OCL + verification |
+| Binding | trace/binding + extraction |
+| Runtime | runtime adapter + verification + tests |
+| UI | UI workflow + architecture |
+| Release | build/release + acceptance |
+Do not dump generated/build/vendor content unless needed.
 
-Không đọc toàn bộ repository hoặc toàn bộ `docs/project/` theo mặc định.
-
-Trước mỗi task:
-1. đọc task tương ứng trong `docs/agent/task.md`;
-2. đọc `agent.md`;
-3. đọc tối đa các tài liệu project được task chỉ định;
-4. search symbol/file liên quan;
-5. chỉ mở source files trực tiếp cần sửa;
-6. mở thêm tài liệu khi dependency thực sự yêu cầu.
-
-Không dump toàn bộ cây source nếu không cần.
-Không đọc file generated/build/vendor trừ khi task yêu cầu.
-
----
-
-## 4. Git workflow bắt buộc
-
-### 4.1 Trước khi làm việc
-Chạy:
+# 7. Task Preflight
+Before modifying code, determine:
+```text
+Task:
+Affected subsystem:
+Normative source:
+Current implementation:
+Acceptance criteria:
+Expected tests:
+Documentation impact:
+Compatibility impact:
+Frozen-contract impact:
+```
+Then run:
 ```bash
 git status
 git branch --show-current
 git log -n 8 --oneline
 ```
+If working tree is dirty:
+1. inspect `git diff`;
+2. inspect `git diff --staged`;
+3. understand existing changes;
+4. never discard work you do not understand;
+5. finish valid current work before unrelated work.
 
-Nếu working tree có thay đổi chưa commit:
-1. xem `git diff` và `git diff --staged`;
-2. xác định thay đổi thuộc task/phase nào;
-3. đọc task/docs liên quan;
-4. nếu là công việc dang dở hợp lệ, hoàn thiện nó;
-5. chạy test;
-6. commit;
-7. push nếu remote branch tồn tại;
-8. chỉ sau đó bắt đầu task mới.
-
-Không discard/reset thay đổi không phải do bạn tạo nếu chưa hiểu rõ.
-
-### 4.2 Branch
-Mỗi phase dùng branch:
+# 8. Git Workflow
+Phase branch:
 ```text
 phase/<NN>-<short-name>
 ```
-
-Ví dụ:
-```text
-phase/04-use-transformation
-```
-
-Nếu task lớn/rủi ro có thể tạo:
+Optional:
 ```text
 feat/<phase>-<feature>
 fix/<phase>-<bug>
 ```
+Do not implement feature work directly on `main`/`master` unless repository policy changes.
+Do not force-push the primary branch.
+Do not destructive-reset/clean unknown work.
+Commit coherent tested units.
+Use Conventional Commits:
+```text
+feat:
+fix:
+test:
+docs:
+refactor:
+build:
+chore:
+```
+Avoid mixing unrelated subsystems in one commit.
 
-Không code feature trực tiếp trên `main`/`master`.
+# 9. Development Loop
+For each task:
+```text
+1. Resolve specification and acceptance criteria
+2. Identify affected invariants
+3. Add/update failing test when practical
+4. Confirm RED for intended reason
+5. Implement smallest correct change
+6. Run focused tests
+7. Run nearby regressions
+8. Inspect diff
+9. Analyze semantic/contract impact
+10. Analyze documentation impact
+11. Update affected docs
+12. Search stale claims/names
+13. Run consistency checks
+14. Run final required regressions
+15. Update task/evidence status
+16. Review final diff
+17. Commit
+```
+Do not claim DONE without executable evidence.
+Cross-cutting rules:
+- generated artifacts are derived; fix source/generator instead of hand-patching outputs;
+- track compatibility/version pins for USE, JaCaMo/Jason/CArtAgO/Moise, mapping, trace, runtime schema and OCL profiles;
+- never claim compatibility outside tested evidence;
+- optimize only after measurable bottlenecks; never trade event ordering, exact resolution, or verification correctness for speed.
 
-### 4.3 Trong khi triển khai
-- commit theo đơn vị thay đổi có test;
-- không gom nhiều subsystem độc lập vào một commit;
-- message theo Conventional Commits:
-  - `feat:`
-  - `fix:`
-  - `test:`
-  - `docs:`
-  - `refactor:`
-  - `build:`
-  - `chore:`
+# 10. Architecture Boundaries
+## Parser / Extraction
+Allowed: parse supported syntax, resolve includes/source paths, preserve source spans, build semantic IR, emit diagnostics.
+Forbidden: UI logic, USE mutation, arbitrary Java execution, fuzzy semantic selection.
+## Semantic Model
+Allowed: stable IDs, typed concepts, provenance, cross-file references, explicit unresolved states.
+Forbidden: UI/runtime connector dependencies.
+## Mapping
+Allowed: declarative mapping, schema/fingerprint validation, transformation planning.
+Forbidden: Auction hard-coding, parser logic, runtime identity guessing.
+## Constraint Translation
+Allowed: typed Constraint IR, EXACT/SOUND_SUBSET/LOSSY/UNSUPPORTED, provenance, assumptions.
+Forbidden: silent best-effort translation, arbitrary Java-effect inference, generic Norm→OCL conversion.
+## USE Adapter
+Allowed: MModel/MSystemState operations, object/link/value mutation, operation verification integration.
+Forbidden: source parsing, case-specific resolution heuristics.
+## Runtime Adapter
+Allowed: supported hooks/listeners, controlled polling, event normalization, trace lookup, ordered mutation, verification trigger.
+Forbidden: reparsing source per event, mutating untraced targets, controlling JaCaMo.
+## UI
+Allowed: interaction, visualization, navigation, facade/service calls.
+Forbidden: parsing, mapping decisions, semantic resolution, runtime mutation.
 
-### 4.4 Kết thúc branch/phase
-1. `git status` sạch;
-2. chạy test bắt buộc của phase;
-3. chạy regression liên quan;
-4. cập nhật checklist `task.md`;
-5. commit docs/test cuối;
-6. push branch;
-7. merge vào branch chính theo policy repository;
-8. chạy smoke test sau merge;
-9. push branch chính;
-10. không xóa branch trước khi xác nhận merge/push thành công.
-
-Không force-push branch chính.
-Không dùng destructive reset/clean nếu chưa chắc chắn.
-
----
-
-## 5. Development loop
-
-Cho mỗi task:
-1. xác định interface/acceptance criteria;
-2. viết hoặc cập nhật failing test trước khi sửa logic khi khả thi;
-3. chạy test và xác nhận fail đúng lý do;
-4. implement nhỏ nhất đúng spec;
-5. chạy test mục tiêu;
-6. chạy regression gần nhất;
-7. inspect diff;
-8. cập nhật docs/checklist nếu contract thay đổi;
-9. commit.
-
-Không claim "done" khi chưa có command/test evidence.
-
----
-
-## 6. Semantic rules
-
-### 6.1 Không đoán
-Nếu:
-- mapping unresolved;
-- symbol ambiguous;
-- runtime entity chưa trace;
-- datatype không biết;
-- operation owner không rõ;
-
-thì:
-- giữ unresolved;
-- emit diagnostic;
-- yêu cầu explicit binding nếu phù hợp.
-
-Không dùng fuzzy/name similarity làm formal semantics.
-
-### 6.2 Phân tầng
-Không trộn:
-- metamodel mapping;
-- instance transformation;
-- binding/resolution;
-- constraint translation;
-- runtime state;
-- OCL verification.
-
-### 6.3 Norm/OCL
-Không tự động biến Moise obligation/permission/prohibition thành OCL invariant.
-Giữ normative semantics riêng.
-Combined verification chỉ làm khi rule/evidence được định nghĩa rõ.
-
-### 6.4 Runtime
-USE là verification mirror.
-JaCaMo là execution engine.
-Baseline plugin quan sát và report; không block Agent action.
-
----
-
-## 7. Architecture boundaries
-
-Parser:
-- không gọi UI;
-- không gọi USE APIs trực tiếp.
-
-Semantic model:
-- không phụ thuộc UI/runtime connector.
-
-Mapping:
-- đọc declarative mapping;
-- không hard-code Auction.
-
-Constraint translator:
-- phải ghi translation status/provenance.
-
-USE adapter:
-- cô lập dependency USE.
-
-Runtime adapter:
-- dùng trace;
-- không reparse project cho mỗi event.
-
-UI:
-- chỉ gọi service/facade;
-- không chứa transformation logic.
-
----
-
-## 8. Testing rules
-
-Bắt buộc test:
+# 11. Testing Rules
+Every meaningful change requires tests appropriate to the layer.
+Minimum where relevant:
 - happy path;
 - invalid input;
 - ambiguity;
 - missing source/reference;
 - deterministic output;
-- regression cho bug.
+- bug regression;
+- negative control.
+Mapping changes:
+- schema validation;
+- semantic mapping validation;
+- frozen hash/fingerprint checks;
+- mutation/negative tests;
+- USE compilation;
+- related regression.
+Parser changes:
+- affected parser fixtures;
+- malformed/partial cases;
+- exact resolution;
+- Auction import when relevant.
+Transformation changes:
+- deterministic output;
+- USE compile/type-check;
+- initial state validation;
+- trace completeness;
+- golden output if affected.
+OCL/verification changes:
+- parse/type-check;
+- positive/negative cases;
+- undefined/error behavior;
+- pre/post where applicable;
+- provenance checks.
+Runtime changes:
+- synthetic events;
+- ordering;
+- trace miss;
+- rejection/backpressure;
+- mutation failure;
+- reconnect/resync;
+- drift;
+- late callback isolation;
+- operation correlation;
+- Auction live integration when relevant.
+Release changes:
+- clean build;
+- full reactor;
+- package verification;
+- plugin load;
+- canonical resource/hash checks;
+- release evidence.
 
-Mapping thay đổi:
-- chạy full mapping audit.
+# 12. Mandatory Documentation Synchronization Gate
+This gate applies after every implementation task.
+Code + tests are not enough if active docs describe old behavior.
+## 14.1 Classify the change
+Use one or more:
+```text
+NO CONTRACT CHANGE
+INTERNAL IMPLEMENTATION CHANGE
+BUG FIX RESTORING EXISTING CONTRACT
+CONTRACT CHANGE
+ARCHITECTURE CHANGE
+MAPPING/METAMODEL CHANGE
+RUNTIME SEMANTICS CHANGE
+TEST/EVIDENCE CHANGE
+RELEASE/COMPATIBILITY CHANGE
+```
+## 14.2 Build affected-document set
+Search documents describing:
+- changed behavior;
+- old names/fields/operations;
+- architecture responsibilities;
+- acceptance criteria;
+- tests/evidence;
+- limitations;
+- compatibility;
+- risks;
+- release status.
+Potential locations:
+```text
+README.md
+docs/project/*
+docs/agent/tasks/*
+agent.md
+compatibility.json
+KNOWN-LIMITATIONS.md
+CHANGELOG.md
+release/*
+Core/Mapping/*
+case-study docs
+evidence manifests
+```
+Do not edit every file mechanically.
+But review every relevant document.
+## 14.3 Trace impact across layers
+For semantic/contract changes inspect:
+```text
+Requirement
+→ Architecture
+→ Semantic Model
+→ Algorithm/Flow
+→ Component contract
+→ Trace/Data model
+→ Runtime behavior
+→ Error handling
+→ Tests
+→ Acceptance
+→ Evidence
+→ Limitations/Risks
+```
+Update each affected statement.
+## 14.4 Search stale statements
+Search for:
+- old class/method names;
+- old fields;
+- old operation names;
+- obsolete constraint semantics;
+- old versions/test counts;
+- outdated “not implemented” claims;
+- outdated “supported” claims;
+- superseded limitations.
+Do not rely only on memory.
+## 14.5 Preserve document meaning
+Keep separate:
+```text
+Specification
+Implementation
+Evidence
+Limitation
+Future Work
+```
+Do not rewrite historical evidence as if it were freshly rerun.
+## 14.6 Cross-document consistency
+Before task completion, ensure affected docs agree on:
+- terminology;
+- operation/state names;
+- mapping/projection IDs;
+- runtime lifecycle;
+- OCL provenance;
+- versions/status;
+- supported scope;
+- acceptance state;
+- release state.
+If conflict remains:
+1. identify sources;
+2. determine authority;
+3. resolve only if task authorizes it;
+4. otherwise record a blocker.
+Never silently choose one side.
 
-Parser thay đổi:
-- chạy fixtures dimension tương ứng + Auction import.
+# 13. Document Impact Matrix
+| Change | Review |
+|---|---|
+| Ecore | metamodel, mapping, audit/freeze, transformation, tests, acceptance, risk |
+| Mapping/schema | mapping docs, audit/freeze, transformation, tests, release/compatibility |
+| Parser | architecture, extraction, trace/binding, tests, acceptance |
+| Semantic identity | semantic model, trace/binding, runtime, tests |
+| Transformation | mapping, transformation, trace, testing |
+| Constraint/OCL | constraint docs, verification, case study, testing, research boundaries |
+| Binding/resolver | trace/binding, extraction, tests, UI if visible |
+| Runtime event/mutation | runtime, verification, architecture, tests, case study, risk |
+| Runtime lifecycle | runtime, verification, UI state, tests, limitations, risk |
+| Reporting | verification, UI, report/release docs, acceptance |
+| UI | UI workflow, README, relevant tests |
+| Compatibility/version | compatibility, build/release, README, changelog |
+| Release | build/release, manifest, README, acceptance |
+| Case study | case-study docs + evidence; generic core only if generic contract changed |
+This is a minimum review set, not an exhaustive list.
 
-Transformation/OCL thay đổi:
-- compile generated USE/OCL.
+# 14. Task Tracking
+Active task checklist in `docs/agent/tasks/` tracks execution state (historical v1.0.0 checklist is archived at `docs/agent/tasks/task-01.md`).
+A task becomes `[x]` only after all applicable gates pass.
+A completed task must answer:
+```text
+What changed?
+Why?
+Which specification authorizes it?
+Which tests prove it?
+Which docs were updated?
+Which risks/limitations remain?
+```
+Do not mark complete based only on code.
 
-Runtime thay đổi:
-- synthetic event tests + reconnect/resync relevant tests.
+# 15. Task Definition of Done
+A task is DONE only when applicable items pass:
+- [ ] specification/acceptance identified;
+- [ ] invariants preserved;
+- [ ] implementation complete;
+- [ ] focused tests pass;
+- [ ] related regressions pass;
+- [ ] correctness bug has regression/negative control when practical;
+- [ ] diagnostics correct;
+- [ ] determinism preserved where required;
+- [ ] traceability preserved;
+- [ ] security/path rules preserved;
+- [ ] semantic impact reviewed;
+- [ ] documentation impact set built;
+- [ ] affected docs updated;
+- [ ] stale claims searched;
+- [ ] cross-document consistency checked;
+- [ ] active task checklist updated;
+- [ ] final diff reviewed;
+- [ ] commit exists.
+Do not mark `[x]` before applicable gates pass.
 
-Trước merge phase:
-- chạy full suite khả thi trong repository;
-- ghi command và kết quả trong commit/phase notes nếu project có convention.
+# 16. Phase Definition of Done
+A phase is DONE only when:
+- [ ] all phase tasks complete;
+- [ ] acceptance criteria pass;
+- [ ] focused regressions pass;
+- [ ] full feasible suite passes;
+- [ ] cross-document audit complete;
+- [ ] docs match final implementation;
+- [ ] evidence matches final revision;
+- [ ] known limitations updated;
+- [ ] release/compatibility updated if affected;
+- [ ] branch merged according to repository policy;
+- [ ] post-merge smoke/regression passes;
+- [ ] push succeeds.
+A compiling phase branch is not enough.
 
----
-
-## 9. Documentation rules
-
-Khi thay public/internal contract:
-- cập nhật đúng file `docs/project/`;
-- cập nhật `task.md`;
-- không tạo tài liệu trùng lặp nếu có file source-of-truth.
-
-Khi phát hiện assumption mới:
-- ghi explicit;
-- phân loại source-derived vs our extension.
-
-Không viết "TBD" để né quyết định trong task đang thực hiện; nếu chưa giải được, tạo explicit blocker/diagnostic với evidence.
-
----
-
-## 10. Generated artifacts
-
-Không chỉnh tay generated output để "làm test pass".
-Sửa generator/source.
-
-Golden files chỉ update khi:
-- behavior change intentional;
-- diff đã review;
-- source/mapping version tương ứng.
-
----
-
-## 11. Error handling
-
-Mọi lỗi user-facing phải:
-- có diagnostic code;
+# 17. Error Handling
+Diagnostics should include where available:
+- code;
+- severity;
 - phase;
-- source location nếu có;
-- message actionable.
+- source location;
+- semantic ID;
+- mapping/trace ID;
+- actionable message;
+- evidence/remediation.
+Never:
+- swallow exceptions;
+- silently downgrade errors;
+- silently fall back to heuristics;
+- collapse unsupported/undefined/trace-miss into generic FAIL.
 
-Không catch exception rồi bỏ qua.
-Không silently fallback sang heuristic.
+# 18. Runtime Correctness
+Expected lifecycle:
+```text
+OFFLINE
+→ MODEL_READY
+→ CONNECTING
+→ SYNCING
+→ LIVE
+```
+Degradation:
+```text
+LIVE → STALE
+SYNCING → ERROR
+LIVE → ERROR
+STALE → SYNCING → LIVE
+```
+Only authoritative synchronization establishes LIVE.
+Workspace replacement must:
+- isolate old consumers;
+- stop/drain old ordered processing as required;
+- preserve only proven identities;
+- reject late callbacks against old stream;
+- synchronize authoritative runtime state before LIVE.
+Operation verification must preserve correlation, pre-state, `@pre`, and explicit OP_FAIL/SKIPPED behavior.
 
----
+# 19. Security
+Treat imported projects as untrusted.
+Do not automatically execute:
+- arbitrary shell commands;
+- project scripts;
+- project Java for static discovery.
+Validate:
+- include paths;
+- project-root boundaries;
+- symlinks;
+- archives;
+- classpath entries;
+- OCL paths;
+- export destinations.
+Prevent path traversal.
+Do not log unnecessary secrets/sensitive paths.
+Reflection/class loading must be isolated and justified.
 
-## 12. Performance
+# 20. Conflict Handling
+If active sources disagree:
+```text
+1. identify exact conflicting statements
+2. classify each source:
+   frozen source / project spec / implementation / evidence / roadmap / historical
+3. apply source-of-truth hierarchy
+4. determine whether task authorizes reconciliation
+5. update affected docs if resolved
+6. otherwise stop that part and record blocker
+```
+Do not silently choose the easier interpretation.
 
-Correctness trước.
-Chỉ optimize sau khi:
-- test coverage có;
-- benchmark chỉ ra bottleneck.
+# 21. Scope Control
+Do not combine unrelated improvements into the active task.
+If adjacent problems appear:
+- record them;
+- raise them explicitly;
+- implement extra work only when workflow/user/task authorizes it.
+If a correctness issue invalidates the current task, stop and surface it.
 
-Không đổi semantics để nhanh hơn.
+# 22. Completion Report
+At task end report:
+```text
+TASK
+<name>
 
----
+SPECIFICATION / CONTRACT
+<source>
 
-## 13. Security
+IMPLEMENTATION
+<what changed>
 
-Không tự chạy arbitrary script từ imported JaCaMo project.
-Validate path/include.
-Không cho path traversal khỏi project root trừ explicit configured source path.
-Reflection/class loading phải được cô lập và document.
+TEST EVIDENCE
+<commands + results>
 
----
+SEMANTIC IMPACT
+<none / description>
 
-## 14. Task completion definition
+DOCUMENTATION IMPACT
+Reviewed:
+- ...
+Updated:
+- ...
+Reviewed but unchanged:
+- ...
 
-Một task chỉ `[x]` khi:
-- code hoàn thành;
-- test mục tiêu pass;
-- regression liên quan pass;
-- diagnostics/docs cập nhật;
-- diff review;
-- commit tồn tại.
+FROZEN CONTRACT IMPACT
+<none / reconciliation>
 
-Một phase chỉ `[x]` khi:
-- tất cả task phase done;
-- acceptance gate pass;
-- branch merged;
-- push thành công.
+COMPATIBILITY IMPACT
+<none / description>
 
----
+KNOWN LIMITATIONS
+<remaining>
 
-## 15. Khi bị gián đoạn
+FINAL STATUS
+DONE / BLOCKED
+```
+Do not report DONE if documentation synchronization failed.
 
-Khi quay lại:
-1. đọc `git status`;
+# 23. Resume Protocol
+When resuming:
+1. run `git status`;
 2. inspect branch/log/diff;
-3. đọc phase task hiện tại;
-4. xác định bước cuối đã hoàn thành bằng evidence;
-5. tiếp tục từ đó.
+3. read active task;
+4. identify last evidence-backed completed step;
+5. continue from there.
+Do not restart from scratch if valid work exists.
+Do not create a parallel implementation before understanding current work.
 
-Không bắt đầu lại từ đầu và không tạo implementation song song nếu nhánh hiện tại đã có công việc hợp lệ.
+# 24. Final Rule
+The agent owns project consistency, not only code generation.
+Preserve:
+```text
+Code must agree with Specification
+Tests must prove Code
+Documentation must describe Specification + Current Implementation
+Evidence must support Status Claims
+```
+If any relationship is broken, the task is not complete.

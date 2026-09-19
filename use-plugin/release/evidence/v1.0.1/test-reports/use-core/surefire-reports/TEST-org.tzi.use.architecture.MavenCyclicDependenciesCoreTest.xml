@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="org.tzi.use.architecture.MavenCyclicDependenciesCoreTest" time="11.119" tests="11" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.specification.version" value="21"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.class.path" value="D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\test-classes;C:\Users\NTNghia\.m2\repository\com\google\guava\listenablefuture\9999.0-empty-to-avoid-conflict-with-guava\listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar;C:\Users\NTNghia\.m2\repository\jline\jline\2.14.6\jline-2.14.6.jar;C:\Users\NTNghia\.m2\repository\com\google\guava\guava-testlib\33.5.0-jre\guava-testlib-33.5.0-jre.jar;C:\Users\NTNghia\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\NTNghia\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;C:\Users\NTNghia\.m2\repository\org\junit\jupiter\junit-jupiter\5.7.0\junit-jupiter-5.7.0.jar;C:\Users\NTNghia\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.7.0\junit-jupiter-api-5.7.0.jar;C:\Users\NTNghia\.m2\repository\org\apiguardian\apiguardian-api\1.1.0\apiguardian-api-1.1.0.jar;C:\Users\NTNghia\.m2\repository\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;C:\Users\NTNghia\.m2\repository\org\junit\platform\junit-platform-commons\1.7.0\junit-platform-commons-1.7.0.jar;C:\Users\NTNghia\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.7.0\junit-jupiter-params-5.7.0.jar;C:\Users\NTNghia\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.7.0\junit-jupiter-engine-5.7.0.jar;C:\Users\NTNghia\.m2\repository\org\junit\platform\junit-platform-engine\1.7.0\junit-platform-engine-1.7.0.jar;C:\Users\NTNghia\.m2\repository\com\tngtech\archunit\archunit-junit5\1.3.0\archunit-junit5-1.3.0.jar;C:\Users\NTNghia\.m2\repository\com\tngtech\archunit\archunit-junit5-api\1.3.0\archunit-junit5-api-1.3.0.jar;C:\Users\NTNghia\.m2\repository\com\tngtech\archunit\archunit\1.3.0\archunit-1.3.0.jar;C:\Users\NTNghia\.m2\repository\org\slf4j\slf4j-api\2.0.12\slf4j-api-2.0.12.jar;C:\Users\NTNghia\.m2\repository\com\tngtech\archunit\archunit-junit5-engine\1.3.0\archunit-junit5-engine-1.3.0.jar;C:\Users\NTNghia\.m2\repository\com\tngtech\archunit\archunit-junit5-engine-api\1.3.0\archunit-junit5-engine-api-1.3.0.jar;"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="user.timezone" value="Asia/Bangkok"/>
+    <property name="os.name" value="Windows 11"/>
+    <property name="java.vm.specification.version" value="21"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="US"/>
+    <property name="sun.boot.library.path" value="D:\DevTools\Java\jdk-21.0.5\bin"/>
+    <property name="sun.java.command" value="org.apache.maven.surefire.booter.ForkedBooter C:\Windows\Temp\surefire4361122795885652965 2026-09-18T01-53-48_481-jvmRun1 surefire-20260918015348959_1tmp surefire_0-20260918015348959_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\test-classes;C:\Users\NTNghia\.m2\repository\com\google\guava\listenablefuture\9999.0-empty-to-avoid-conflict-with-guava\listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar;C:\Users\NTNghia\.m2\repository\jline\jline\2.14.6\jline-2.14.6.jar;C:\Users\NTNghia\.m2\repository\com\google\guava\guava-testlib\33.5.0-jre\guava-testlib-33.5.0-jre.jar;C:\Users\NTNghia\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\NTNghia\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;C:\Users\NTNghia\.m2\repository\org\junit\jupiter\junit-jupiter\5.7.0\junit-jupiter-5.7.0.jar;C:\Users\NTNghia\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.7.0\junit-jupiter-api-5.7.0.jar;C:\Users\NTNghia\.m2\repository\org\apiguardian\apiguardian-api\1.1.0\apiguardian-api-1.1.0.jar;C:\Users\NTNghia\.m2\repository\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;C:\Users\NTNghia\.m2\repository\org\junit\platform\junit-platform-commons\1.7.0\junit-platform-commons-1.7.0.jar;C:\Users\NTNghia\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.7.0\junit-jupiter-params-5.7.0.jar;C:\Users\NTNghia\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.7.0\junit-jupiter-engine-5.7.0.jar;C:\Users\NTNghia\.m2\repository\org\junit\platform\junit-platform-engine\1.7.0\junit-platform-engine-1.7.0.jar;C:\Users\NTNghia\.m2\repository\com\tngtech\archunit\archunit-junit5\1.3.0\archunit-junit5-1.3.0.jar;C:\Users\NTNghia\.m2\repository\com\tngtech\archunit\archunit-junit5-api\1.3.0\archunit-junit5-api-1.3.0.jar;C:\Users\NTNghia\.m2\repository\com\tngtech\archunit\archunit\1.3.0\archunit-1.3.0.jar;C:\Users\NTNghia\.m2\repository\org\slf4j\slf4j-api\2.0.12\slf4j-api-2.0.12.jar;C:\Users\NTNghia\.m2\repository\com\tngtech\archunit\archunit-junit5-engine\1.3.0\archunit-junit5-engine-1.3.0.jar;C:\Users\NTNghia\.m2\repository\com\tngtech\archunit\archunit-junit5-engine-api\1.3.0\archunit-junit5-engine-api-1.3.0.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\NTNghia"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="jdk.module.path" value="D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\classes;C:\Users\NTNghia\.m2\repository\com\google\guava\guava\33.5.0-jre\guava-33.5.0-jre.jar;C:\Users\NTNghia\.m2\repository\com\google\guava\failureaccess\1.0.3\failureaccess-1.0.3.jar;C:\Users\NTNghia\.m2\repository\org\jspecify\jspecify\1.0.0\jspecify-1.0.0.jar;C:\Users\NTNghia\.m2\repository\com\google\errorprone\error_prone_annotations\2.41.0\error_prone_annotations-2.41.0.jar;C:\Users\NTNghia\.m2\repository\com\google\j2objc\j2objc-annotations\3.1\j2objc-annotations-3.1.jar;C:\Users\NTNghia\.m2\repository\org\eclipse\jdt\org.eclipse.jdt.annotation\2.2.600\org.eclipse.jdt.annotation-2.2.600.jar;C:\Users\NTNghia\.m2\repository\org\antlr\antlr-runtime\3.5.3\antlr-runtime-3.5.3.jar;C:\Users\NTNghia\.m2\repository\com\googlecode\combinatoricslib\combinatoricslib\2.3\combinatoricslib-2.3.jar;C:\Users\NTNghia\.m2\repository\org\jruby\jruby-core\9.3.1.0\jruby-core-9.3.1.0.jar;C:\Users\NTNghia\.m2\repository\com\ximpleware\vtd-xml\2.13.4\vtd-xml-2.13.4.jar"/>
+    <property name="java.version.date" value="2024-10-15"/>
+    <property name="java.home" value="D:\DevTools\Java\jdk-21.0.5"/>
+    <property name="file.separator" value="\"/>
+    <property name="basedir" value="D:\_CODE_BANK\Project_\08_Thesis\use\use-core"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="surefire.real.class.path" value="C:\Users\NTNghia\.m2\repository\org\apache\maven\surefire\surefire-booter\3.2.5\surefire-booter-3.2.5.jar;C:\Users\NTNghia\.m2\repository\org\apache\maven\surefire\surefire-api\3.2.5\surefire-api-3.2.5.jar;C:\Users\NTNghia\.m2\repository\org\apache\maven\surefire\surefire-logger-api\3.2.5\surefire-logger-api-3.2.5.jar;C:\Users\NTNghia\.m2\repository\org\apache\maven\surefire\surefire-shared-utils\3.2.5\surefire-shared-utils-3.2.5.jar;C:\Users\NTNghia\.m2\repository\org\apache\maven\surefire\surefire-extensions-spi\3.2.5\surefire-extensions-spi-3.2.5.jar;D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\test-classes;C:\Users\NTNghia\.m2\repository\com\google\guava\listenablefuture\9999.0-empty-to-avoid-conflict-with-guava\listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar;C:\Users\NTNghia\.m2\repository\jline\jline\2.14.6\jline-2.14.6.jar;C:\Users\NTNghia\.m2\repository\com\google\guava\guava-testlib\33.5.0-jre\guava-testlib-33.5.0-jre.jar;C:\Users\NTNghia\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\NTNghia\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;C:\Users\NTNghia\.m2\repository\org\junit\jupiter\junit-jupiter\5.7.0\junit-jupiter-5.7.0.jar;C:\Users\NTNghia\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.7.0\junit-jupiter-api-5.7.0.jar;C:\Users\NTNghia\.m2\repository\org\apiguardian\apiguardian-api\1.1.0\apiguardian-api-1.1.0.jar;C:\Users\NTNghia\.m2\repository\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;C:\Users\NTNghia\.m2\repository\org\junit\platform\junit-platform-commons\1.7.0\junit-platform-commons-1.7.0.jar;C:\Users\NTNghia\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.7.0\junit-jupiter-params-5.7.0.jar;C:\Users\NTNghia\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.7.0\junit-jupiter-engine-5.7.0.jar;C:\Users\NTNghia\.m2\repository\org\junit\platform\junit-platform-engine\1.7.0\junit-platform-engine-1.7.0.jar;C:\Users\NTNghia\.m2\repository\com\tngtech\archunit\archunit-junit5\1.3.0\archunit-junit5-1.3.0.jar;C:\Users\NTNghia\.m2\repository\com\tngtech\archunit\archunit-junit5-api\1.3.0\archunit-junit5-api-1.3.0.jar;C:\Users\NTNghia\.m2\repository\com\tngtech\archunit\archunit\1.3.0\archunit-1.3.0.jar;C:\Users\NTNghia\.m2\repository\org\slf4j\slf4j-api\2.0.12\slf4j-api-2.0.12.jar;C:\Users\NTNghia\.m2\repository\com\tngtech\archunit\archunit-junit5-engine\1.3.0\archunit-junit5-engine-1.3.0.jar;C:\Users\NTNghia\.m2\repository\com\tngtech\archunit\archunit-junit5-engine-api\1.3.0\archunit-junit5-engine-api-1.3.0.jar;C:\Users\NTNghia\.m2\repository\org\apache\maven\surefire\surefire-junit-platform\3.2.5\surefire-junit-platform-3.2.5.jar;C:\Users\NTNghia\.m2\repository\org\apache\maven\surefire\common-java5\3.2.5\common-java5-3.2.5.jar;C:\Users\NTNghia\.m2\repository\org\junit\platform\junit-platform-launcher\1.7.0\junit-platform-launcher-1.7.0.jar"/>
+    <property name="user.script" value=""/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="21.0.5+9-LTS-239"/>
+    <property name="user.name" value="NTNghia"/>
+    <property name="stdout.encoding" value="Cp1252"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="localRepository" value="C:\Users\NTNghia\.m2\repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="C:\WINDOWS\TEMP\"/>
+    <property name="java.version" value="21.0.5"/>
+    <property name="user.dir" value="D:\_CODE_BANK\Project_\08_Thesis\use\use-core"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="native.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="D:\DevTools\Java\jdk-21.0.5\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files\PowerShell\7;C:\Users\NTNghia\.codex\tmp\arg0\codex-arg0uGg00Z;C:\Users\NTNghia\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\libheif\libheif\bin;C:\Users\NTNghia\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\jxrlib\jxrlib\bin;C:\Users\NTNghia\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\poppler\Library\bin;C:\Users\NTNghia\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\override;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;D:\DevTools\Java\jdk-21.0.5\bin;D:\DevTools\Python\;D:\DevTools\Python\Scripts\;D:\Program Files\Git\cmd;D:\DevTools\msys2\ucrt64\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA app\NvDLISR;C:\xampp\php;C:\xampp\php\php.exe;C:\Program Files\MySQL\MySQL Server 8.0\bin;D:\DevTools\apache-maven-3.9.9-bin\apache-maven-3.9.9\bin;C:\ProgramData\chocolatey\bin;C:\Program Files\PostgreSQL\16\bin;D:\DevTools\Redis\;D:\DevTools\SSH\;D:\DevTools\SQLServer\Client SDK\ODBC\110\Tools\Binn\;D:\DevTools\SQLServer\(x86)File\120\Tools\Binn\;D:\DevTools\SQLServer\120\Tools\Binn\;D:\DevTools\SQLServer\120\DTS\Binn\;C:\Users\NTNghia\AppData\Local\nvm;C:\nvm4w\nodejs;D:\Program Files\Git LFS;C:\Program Files\GitHub CLI\;D:\DevTools\sonar-scanner-cli-5.0.1.3006-windows\sonar-scanner-5.0.1.3006-windows\bin;C:\Program Files\dotnet\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Cloudflare\Cloudflare WARP\;C:\Users\NTNghia\AppData\Local\Android\Sdk\platform-tools;C:\Program Files\PowerShell\7\;C:\Users\NTNghia\.local\bin;C:\ProgramData\ComposerSetup\bin;D:\DevTools\SQLServer\(x86)File\160\DTS\Binn\;D:\Program Files\Microsoft VS Code\bin;D:\DevTools\Antigravity IDE\bin;C:\Users\NTNghia\.dotnet\tools;C:\Users\NTNghia\.lmstudio\bin;C:\Users\NTNghia\.bun\bin;C:\Users\NTNghia\AppData\Local\Programs\Antigravity IDE\bin;C:\Users\NTNghia\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\fallback;C:\Users\NTNghia\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin;C:\Users\NTNghia\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\git\cmd;C:\Users\NTNghia\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell;C:\Users\NTNghia\AppData\Local\OpenAI\Codex\bin\52366fb4fdb365a8;C:\Users\NTNghia\AppData\Local\OpenAI\Codex\bin\eab8377aebac6c07;."/>
+    <property name="java.vm.info" value="mixed mode"/>
+    <property name="stderr.encoding" value="Cp1252"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.version" value="21.0.5+9-LTS-239"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="65.0"/>
+  </properties>
+  <testcase name="count_cycles_in_main_package" classname="org.tzi.use.architecture.MavenCyclicDependenciesCoreTest" time="0.166">
+    <system-out><![CDATA[Number of cycles in org.tzi.use.main without tests: 0
+Number of cycles in org.tzi.use.main with tests: 0
+]]></system-out>
+    <system-err><![CDATA[SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+]]></system-err>
+  </testcase>
+  <testcase name="count_cycles_in_analysis_package" classname="org.tzi.use.architecture.MavenCyclicDependenciesCoreTest" time="0.024">
+    <system-out><![CDATA[Number of cycles in org.tzi.use.analysis without tests: 0
+Number of cycles in org.tzi.use.analysis with tests: 0
+]]></system-out>
+  </testcase>
+  <testcase name="count_cycles_in_util_package" classname="org.tzi.use.architecture.MavenCyclicDependenciesCoreTest" time="0.06">
+    <system-out><![CDATA[Number of cycles in org.tzi.use.util without tests: 0
+Number of cycles in org.tzi.use.util with tests: 0
+]]></system-out>
+  </testcase>
+  <testcase name="count_cycles_in_gen_package" classname="org.tzi.use.architecture.MavenCyclicDependenciesCoreTest" time="0.082">
+    <system-out><![CDATA[Number of cycles in org.tzi.use.gen without tests: 1
+Number of cycles in org.tzi.use.gen with tests: 1
+]]></system-out>
+  </testcase>
+  <testcase name="count_cycles_in_parser_package" classname="org.tzi.use.architecture.MavenCyclicDependenciesCoreTest" time="0.274">
+    <system-out><![CDATA[Number of cycles in org.tzi.use.parser without tests: 2
+Number of cycles in org.tzi.use.parser with tests: 36
+]]></system-out>
+  </testcase>
+  <testcase name="count_cycles_in_api_package" classname="org.tzi.use.architecture.MavenCyclicDependenciesCoreTest" time="0.012">
+    <system-out><![CDATA[Number of cycles in org.tzi.use.api without tests: 1
+Number of cycles in org.tzi.use.api with tests: 1
+]]></system-out>
+  </testcase>
+  <testcase name="count_cycles_in_core_with_tests" classname="org.tzi.use.architecture.MavenCyclicDependenciesCoreTest" time="0.181">
+    <system-out><![CDATA[Cycles in core module with tests : 210
+]]></system-out>
+  </testcase>
+  <testcase name="count_cycles_in_graph_package" classname="org.tzi.use.architecture.MavenCyclicDependenciesCoreTest" time="0.006">
+    <system-out><![CDATA[Number of cycles in org.tzi.use.graph without tests: 0
+Number of cycles in org.tzi.use.graph with tests: 0
+]]></system-out>
+  </testcase>
+  <testcase name="count_cycles_in_config_package" classname="org.tzi.use.architecture.MavenCyclicDependenciesCoreTest" time="0.004">
+    <system-out><![CDATA[Number of cycles in org.tzi.use.config without tests: 0
+Number of cycles in org.tzi.use.config with tests: 0
+]]></system-out>
+  </testcase>
+  <testcase name="count_cycles_in_core_without_tests" classname="org.tzi.use.architecture.MavenCyclicDependenciesCoreTest" time="0.125">
+    <system-out><![CDATA[Cycles in core module without tests : 55
+]]></system-out>
+  </testcase>
+  <testcase name="count_cycles_in_uml_package" classname="org.tzi.use.architecture.MavenCyclicDependenciesCoreTest" time="0.028">
+    <system-out><![CDATA[Number of cycles in org.tzi.use.uml without tests: 5
+Number of cycles in org.tzi.use.uml with tests: 5
+]]></system-out>
+  </testcase>
+</testsuite>

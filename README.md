@@ -56,9 +56,9 @@ where you enter commands at a prompt. The output should therefore be
 similar to the following.
 
 ```
-loading properties from: C:\Dev\USE\use-6.0.0\etc\use.properties
+loading properties from: <USE_HOME>\etc\use.properties
 USE version X.X.X, Copyright (C) 1999-2024 University of Bremen & University of Applied Sciences Hamburg
-Plugin path: [C:\Dev\USE\use-6.0.0\lib\plugins]
+Plugin path: [<USE_HOME>\lib\plugins]
 Plugin filename(s) [AssociationExtend.jar,ModelValidatorPlugin-5.2.0-r1.jar,ObjectToClassPlugin-2.0.jar,OCLComplexityPlugin5.1.0.jar,use-filmstrip.jar]
 compiling specification...
 Model Company (3 classes, 3 associations, 4 invariants, 0 operations, 0 pre-/postconditions, 0 state machines)
@@ -102,6 +102,8 @@ See the references at the end of the file.
 
 Some information about issues related to OCL can be found in the file
 README.OCL.
+
+For the JaCaMo verification plugin developed in this repository, see the [USE JaCaMo Plugin README](use-plugin/README.md) and its [Documentation Index](use-plugin/docs/project/00-README.md).
 
 Note, that the documentation was automatically translated from LaTex to Markdown 
 and has still many issues. Feel free to submit changes to the documentation.

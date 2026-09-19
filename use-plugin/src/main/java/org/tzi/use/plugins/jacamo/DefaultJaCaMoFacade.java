@@ -76,15 +76,13 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             throw new IllegalArgumentException("IMPORT_JCM_REQUIRED");
         Path candidate = jcmFile.toAbsolutePath().normalize();
         Workspace next = build(candidate, null);
-        entry = candidate;
-        userProfile = null;
-        workspace = next;
+        installWorkspace(next, candidate, null);
         return workspace.summary;
     }
 
     @Override public synchronized ProjectSummary rebuild() {
         requireWorkspace();
-        workspace = build(entry, userProfile);
+        installWorkspace(build(entry, userProfile), entry, userProfile);
         return workspace.summary;
     }
 
@@ -115,8 +113,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             throw new IllegalArgumentException("OCL_USER_PROFILE_IO");
         Path candidate = profile.toAbsolutePath().normalize();
         Workspace next = build(entry, candidate);
-        userProfile = candidate;
-        workspace = next;
+        installWorkspace(next, entry, candidate);
     }
 
     @Override public synchronized void exportVerificationReport(Path destination) {
@@ -234,6 +231,23 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public synchronized void close() { if (runtime != null) runtime.close(); }
+
+    private void installWorkspace(Workspace next, Path nextEntry, Path nextProfile) {
+        Workspace previous = workspace;
+        var verification = new RuntimeVerificationEngine(next.direct.system(), next.registry, next.trace);
+        Runnable install = () -> {
+            if (previous != null) next.trace.copyRuntimeKeysFrom(previous.trace);
+            workspace = next;
+            entry = nextEntry;
+            userProfile = nextProfile;
+            runtimeVerification = verification;
+            next.latest = null;
+        };
+        if (runtime == null) install.run();
+        else runtime.replaceWorkspace(new RuntimeMutationEngine(next.direct.system(), next.trace), verification, install);
+        // Static verification predates the authoritative runtime snapshot.
+        runFullVerification();
+    }
 
     private Workspace build(Path jcmFile, Path verificationProfile) {
         long importStarted = System.nanoTime();

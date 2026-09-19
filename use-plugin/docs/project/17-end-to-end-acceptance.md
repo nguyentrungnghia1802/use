@@ -1,5 +1,7 @@
 # End-to-End Acceptance Criteria
 
+> **HISTORICAL_EVIDENCE:** This document records the original Phase 15 release acceptance criteria and validation state (v1.0.0, 265 tests passed at commit `a4951e91`, tag `use-jacamo-plugin-v1.0.0`). It is retained as historical evidence. For current v1.0.1 hotfix validation (271 tests), see [13-testing-quality.md](13-testing-quality.md#9-v101-current-verification-2026-09-18), [HOTFIX-1.0.1.md](../../release/HOTFIX-1.0.1.md), and [report.md](../../../docs/report/report.md).
+
 ## 1. Metamodel/Mapping
 
 - [x] Ecore baseline parses.
@@ -88,7 +90,7 @@
 - [x] no destructive warnings ignored.
 - [x] docs updated.
 - [x] release package.
-- [ ] tagged commit.
+- [x] tagged commit.
 
 ## Phase 15 verification evidence (2026-09-16)
 
@@ -104,7 +106,11 @@ manifest-declared entries; its JAR contained byte-identical canonical mapping,
 metamodel, release metadata, and licenses, and an isolated USE child JVM loaded
 the installed JAR and canonical mapping without Maven test dependencies.
 
-The tag checkbox remains open until the final main commit is tagged and the tag
-push is verified. Supported runtime scope and limits are in
-`../../KNOWN-LIMITATIONS.md`, `../../compatibility.json`, and the Auction
-case-study record.
+Supported runtime scope and limits are in `../../KNOWN-LIMITATIONS.md`,
+`../../compatibility.json`, and the Auction case-study record.
+
+Final integration (2026-09-16) merged Phase 15 as `a4951e91`; the post-merge
+five-module reactor passed 265/265 with no failures, errors or skips. The final
+main commit was regression-tested and pushed, and remote tag
+`use-jacamo-plugin-v1.0.0` was verified at that same commit. The generated ZIP,
+embedded JAR resources and SHA-256 sidecar were rechecked before tagging.

@@ -24,7 +24,20 @@ public final class StaticProjectImporter {
         new JasonSourceParser().parse(context);
         new CartagoSourceExtractor().parse(context);
         new MoiseXmlParser().parse(context);
-        new SemanticResolver().resolve(context);
+        org.tzi.use.plugins.jacamo.binding.BindingFile bindings = null;
+        Path bindingPath = discovery.graph().root().path().resolve("binding.json");
+        if (java.nio.file.Files.exists(bindingPath)) {
+            try {
+                var hashes = context.elements.stream().collect(java.util.stream.Collectors.toMap(
+                        element -> element.id.value(), element -> element.provenance.getFirst().sourceHash()));
+                bindings = new org.tzi.use.plugins.jacamo.binding.BindingStore().read(bindingPath, hashes);
+            } catch (IllegalArgumentException exception) {
+                context.diagnostic("BINDING_INVALID", Severity.ERROR, Phase.RESOLUTION, null, null,
+                        "Cannot load project binding.json", exception.getMessage(),
+                        "Correct binding.json schema and source identities");
+            }
+        }
+        new SemanticResolver().resolve(context, bindings);
         List<SemanticElement> frozen = context.elements.stream().map(ElementDraft::freeze).toList();
         SemanticElement mas = frozen.stream().filter(element -> element.kind() == MetamodelKind.MAS).findFirst().orElse(null);
         if (mas == null) {

@@ -1,0 +1,425 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] use                                                                [pom]
+[INFO] use-core                                                           [jar]
+[INFO] use-gui                                                            [jar]
+[INFO] use-assembly                                                       [pom]
+[INFO] USE JaCaMo Plugin                                                  [jar]
+[INFO] 
+[INFO] --------------------------< org.tzi.use:use >---------------------------
+[INFO] Building use 7.5.0                                                 [1/5]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ use ---
+[INFO] 
+[INFO] ------------------------< org.tzi.use:use-core >------------------------
+[INFO] Building use-core 7.5.0                                            [2/5]
+[INFO]   from use-core\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ use-core ---
+[INFO] Deleting C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target
+[INFO] 
+[INFO] --- merge:1.2.0:merge (merge-grammar-files) @ use-core ---
+[INFO] 
+[INFO] --- antlr3:3.5.3:antlr (antlr) @ use-core ---
+[INFO] ANTLR: Processing source directory C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\grammars
+[INFO] 
+[INFO] --- copy-rename:1.0:rename (move-antlr-parser-use) @ use-core ---
+[INFO] Renamed C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\USELexer.java to C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\org\tzi\use\parser\use\USELexer.java
+[INFO] Renamed C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\USEParser.java to C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\org\tzi\use\parser\use\USEParser.java
+[INFO] Renamed C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\GeneratorLexer.java to C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\org\tzi\use\parser\generator\GeneratorLexer.java
+[INFO] Renamed C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\GeneratorParser.java to C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\org\tzi\use\parser\generator\GeneratorParser.java
+[INFO] Renamed C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\OCLLexer.java to C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\org\tzi\use\parser\ocl\OCLLexer.java
+[INFO] Renamed C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\OCLParser.java to C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\org\tzi\use\parser\ocl\OCLParser.java
+[INFO] Renamed C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\ShellCommandLexer.java to C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\org\tzi\use\parser\shell\ShellCommandLexer.java
+[INFO] Renamed C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\ShellCommandParser.java to C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\org\tzi\use\parser\shell\ShellCommandParser.java
+[INFO] Renamed C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\SoilLexer.java to C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\org\tzi\use\parser\soil\SoilLexer.java
+[INFO] Renamed C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\SoilParser.java to C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\org\tzi\use\parser\soil\SoilParser.java
+[INFO] Renamed C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\TestSuiteLexer.java to C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\org\tzi\use\parser\testsuite\TestSuiteLexer.java
+[INFO] Renamed C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\TestSuiteParser.java to C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3\org\tzi\use\parser\testsuite\TestSuiteParser.java
+[INFO] 
+[INFO] --- build-helper:3.6.0:add-source (add-antlr3-generated-source) @ use-core ---
+[INFO] Source directory: C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\generated-sources\antlr3 added.
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-core ---
+[INFO] Copying 512 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- build-helper:3.6.0:add-test-source (add-test-source) @ use-core ---
+[INFO] Test Source directory: C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\src\it\java added.
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-core ---
+[WARNING] *********************************************************************************************************************************************************************************************
+[WARNING] * Required filename-based automodules detected: [antlr-runtime-3.5.3.jar, combinatoricslib-2.3.jar, vtd-xml-2.13.4.jar]. Please don't publish this project to a public artifact repository! *
+[WARNING] *********************************************************************************************************************************************************************************************
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 569 source files with javac [debug target 21 module-path] to target\classes
+[INFO] /C:/Windows/Temp/use-v101-clean-es9i6qkz/checkout/use-core/src/main/java/org/tzi/use/uml/ocl/type/MessageType.java: Some input files use or override a deprecated API.
+[INFO] /C:/Windows/Temp/use-v101-clean-es9i6qkz/checkout/use-core/src/main/java/org/tzi/use/uml/ocl/type/MessageType.java: Recompile with -Xlint:deprecation for details.
+[INFO] /C:/Windows/Temp/use-v101-clean-es9i6qkz/checkout/use-core/target/generated-sources/antlr3/org/tzi/use/parser/generator/GeneratorParser.java: Some input files use unchecked or unsafe operations.
+[INFO] /C:/Windows/Temp/use-v101-clean-es9i6qkz/checkout/use-core/target/generated-sources/antlr3/org/tzi/use/parser/generator/GeneratorParser.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-core ---
+[INFO] Copying 91 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-core ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 52 source files with javac [debug target 21 module-path] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-core ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+[INFO] Running org.tzi.use.architecture.MavenCyclicDependenciesCoreTest
+Number of cycles in org.tzi.use.main without tests: 0
+Number of cycles in org.tzi.use.main with tests: 0
+Number of cycles in org.tzi.use.analysis without tests: 0
+Number of cycles in org.tzi.use.analysis with tests: 0
+Number of cycles in org.tzi.use.util without tests: 0
+Number of cycles in org.tzi.use.util with tests: 0
+Number of cycles in org.tzi.use.gen without tests: 1
+Number of cycles in org.tzi.use.gen with tests: 1
+Number of cycles in org.tzi.use.parser without tests: 2
+Number of cycles in org.tzi.use.parser with tests: 36
+Number of cycles in org.tzi.use.api without tests: 1
+Number of cycles in org.tzi.use.api with tests: 1
+Cycles in core module with tests : 210
+Number of cycles in org.tzi.use.graph without tests: 0
+Number of cycles in org.tzi.use.graph with tests: 0
+Number of cycles in org.tzi.use.config without tests: 0
+Number of cycles in org.tzi.use.config with tests: 0
+Cycles in core module without tests : 55
+Number of cycles in org.tzi.use.uml without tests: 5
+Number of cycles in org.tzi.use.uml with tests: 5
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.23 s -- in org.tzi.use.architecture.MavenCyclicDependenciesCoreTest
+[INFO] Running org.tzi.use.uml.mm.ModelAPITest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.367 s -- in org.tzi.use.uml.mm.ModelAPITest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ use-core ---
+[INFO] Building jar: C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-core\target\use-core-7.5.0.jar
+[INFO] 
+[INFO] --- failsafe:2.22.2:integration-test (default) @ use-core ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+[INFO] Running org.tzi.use.OCLExpressionIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.162 s - in org.tzi.use.OCLExpressionIT
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- failsafe:2.22.2:verify (default) @ use-core ---
+[INFO] 
+[INFO] ------------------------< org.tzi.use:use-gui >-------------------------
+[INFO] Building use-gui 7.5.0                                             [3/5]
+[INFO]   from use-gui\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ use-gui ---
+[INFO] Deleting C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-gui\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-gui ---
+[INFO] Copying 56 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- build-helper:1.5:add-test-source (add-test-source) @ use-gui ---
+[INFO] Test Source directory: C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-gui\src\it\java added.
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-gui ---
+[WARNING] ******************************************************************************************************************************************************************************************************************************************
+[WARNING] * Required filename-based automodules detected: [antlr-runtime-3.5.3.jar, combinatoricslib-2.3.jar, annotations-13.0.jar, itextpdf-5.5.13.3.jar, vtd-xml-2.13.4.jar]. Please don't publish this project to a public artifact repository! *
+[WARNING] ******************************************************************************************************************************************************************************************************************************************
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 307 source files with javac [debug target 21 module-path] to target\classes
+[WARNING] /C:/Windows/Temp/use-v101-clean-es9i6qkz/checkout/use-gui/src/main/java/org/tzi/use/gui/views/diagrams/util/MenuScroller.java:[435,15] finalize() in java.lang.Object has been deprecated and marked for removal
+[INFO] /C:/Windows/Temp/use-v101-clean-es9i6qkz/checkout/use-gui/src/main/java/org/tzi/use/runtime/gui/impl/PluginActionProxy.java: Some input files use or override a deprecated API.
+[INFO] /C:/Windows/Temp/use-v101-clean-es9i6qkz/checkout/use-gui/src/main/java/org/tzi/use/runtime/gui/impl/PluginActionProxy.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- build-helper:1.5:add-test-resource (add-test-resource) @ use-gui ---
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-gui ---
+[INFO] Copying 1 resource from src\test\resources to target\test-classes
+[INFO] Copying 297 resources from src\it\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-gui ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 9 source files with javac [debug target 21 module-path] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-gui ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+[INFO] Running org.tzi.use.architecture.MavenLayeredArchitectureTest
+0
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.83 s -- in org.tzi.use.architecture.MavenLayeredArchitectureTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ use-gui ---
+[INFO] Building jar: C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-gui\target\use-gui-7.5.0.jar
+[INFO] 
+[INFO] --- assembly:3.7.1:single (make-assembly) @ use-gui ---
+[INFO] Building jar: C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-gui\target\use-gui.jar
+[WARNING] Configuration option 'appendAssemblyId' is set to false.
+Instead of attaching the assembly file: C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-gui\target\use-gui.jar, it will become the file for main project artifact.
+NOTE: If multiple descriptors or descriptor-formats are provided for this project, the value of this file will be non-deterministic!
+[WARNING] Replacing pre-existing project main-artifact file: C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-gui\target\use-gui-7.5.0.jar
+with assembly file: C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-gui\target\use-gui.jar
+[INFO] 
+[INFO] --- failsafe:2.22.2:integration-test (default) @ use-gui ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+[INFO] Running org.tzi.use.main.shell.ShellIT
+[INFO] Tests run: 129, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.628 s - in org.tzi.use.main.shell.ShellIT
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 129, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- failsafe:2.22.2:verify (default) @ use-gui ---
+[INFO] 
+[INFO] ----------------------< org.tzi.use:use-assembly >----------------------
+[INFO] Building use-assembly 7.5.0                                        [4/5]
+[INFO]   from use-assembly\pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ use-assembly ---
+[INFO] Deleting C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-assembly\target
+[INFO] 
+[INFO] --- assembly:3.3.0:single (make-assembly) @ use-assembly ---
+[WARNING]  Parameter 'finalName' is read-only, must not be used in configuration
+[INFO] Reading assembly descriptor: src/assembly/assembly.xml
+[INFO] Building tar: C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-assembly\target\use-7.5.0-use-bin.tar.gz
+[WARNING] Entry: use-7.5.0/examples/Documentation/HowToCheckUMLAndOCLModelsWithUSE/independence_attributesDefined.cmd longer than 100 characters.
+[WARNING] Resulting tar file can only be processed successfully by GNU compatible tar commands
+[WARNING] Entry: use-7.5.0/examples/Documentation/HowToCheckUMLAndOCLModelsWithUSE/independence_attributesDefined.gif longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Documentation/HowToCheckUMLAndOCLModelsWithUSE/independence_attributesDefined.pro longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Documentation/HowToCheckUMLAndOCLModelsWithUSE/independence_nameCapitalThenSmallLetters.cmd longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Documentation/HowToCheckUMLAndOCLModelsWithUSE/independence_nameCapitalThenSmallLetters.gif longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Documentation/HowToCheckUMLAndOCLModelsWithUSE/independence_nameCapitalThenSmallLetters.pro longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Papers/2001/RichtersPhDThesis/EmployeeExtended/SplitCommands/EmployeeExtended0.cmd longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Papers/2001/RichtersPhDThesis/EmployeeExtended/SplitCommands/EmployeeExtended1.cmd longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Papers/2001/RichtersPhDThesis/EmployeeExtended/SplitCommands/EmployeeExtended2.cmd longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Papers/2001/RichtersPhDThesis/EmployeeExtended/SplitCommands/EmployeeExtended3.cmd longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Papers/2001/RichtersPhDThesis/EmployeeExtended/SplitCommands/EmployeeExtended4.cmd longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Papers/2001/RichtersPhDThesis/EmployeeExtended/SplitCommands/EmployeeExtendedRaiseSalary.cmd longer than 100 characters.
+[INFO] Building zip: C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-assembly\target\use-7.5.0-use-bin.zip
+[INFO] 
+[INFO] -----------------------< org.tzi.use:use-plugin >-----------------------
+[INFO] Building USE JaCaMo Plugin 1.0.1                                   [5/5]
+[INFO]   from use-plugin\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ use-plugin ---
+[INFO] Deleting C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-plugin\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-plugin ---
+[INFO] Copying 8 resources from src\main\resources to target\classes
+[INFO] Copying 1 resource from Core\Metamodel to target\classes\org\tzi\use\plugins\jacamo\canonical
+[INFO] Copying 3 resources from Core\Mapping to target\classes\org\tzi\use\plugins\jacamo\canonical
+[INFO] Copying 1 resource from release to target\classes\org\tzi\use\plugins\jacamo\release
+[INFO] Copying 1 resource from  to target\classes\org\tzi\use\plugins\jacamo\release
+[INFO] Copying 2 resources from licenses to target\classes\org\tzi\use\plugins\jacamo\release\licenses
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-plugin ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 132 source files with javac [debug target 21] to target\classes
+[INFO] /C:/Windows/Temp/use-v101-clean-es9i6qkz/checkout/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/materialization/DirectUseBackend.java: C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-plugin\src\main\java\org\tzi\use\plugins\jacamo\materialization\DirectUseBackend.java uses or overrides a deprecated API.
+[INFO] /C:/Windows/Temp/use-v101-clean-es9i6qkz/checkout/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/materialization/DirectUseBackend.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-plugin ---
+[INFO] Copying 12 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-plugin ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 36 source files with javac [debug target 21] to target\test-classes
+[INFO] /C:/Windows/Temp/use-v101-clean-es9i6qkz/checkout/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/runtime/AuctionSourceRuntime.java: C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-plugin\src\test\java\org\tzi\use\plugins\jacamo\runtime\AuctionSourceRuntime.java uses or overrides a deprecated API.
+[INFO] /C:/Windows/Temp/use-v101-clean-es9i6qkz/checkout/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/runtime/AuctionSourceRuntime.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-plugin ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running org.tzi.use.plugins.jacamo.CompatibilityManifestTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.218 s -- in org.tzi.use.plugins.jacamo.CompatibilityManifestTest
+[INFO] Running org.tzi.use.plugins.jacamo.constraint.ConstraintOclTest
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.356 s -- in org.tzi.use.plugins.jacamo.constraint.ConstraintOclTest
+[INFO] Running org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest
+PHASE13_PERFORMANCE import=134160500ns generation=37975500ns fullCheck=623900ns memory=26263832B maxMemory=4219469824B
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.717 s -- in org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest
+[INFO] Running org.tzi.use.plugins.jacamo.evidence.EvidenceNormalizerTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in org.tzi.use.plugins.jacamo.evidence.EvidenceNormalizerTest
+[INFO] Running org.tzi.use.plugins.jacamo.evidence.EvidenceSourceCommitTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.496 s -- in org.tzi.use.plugins.jacamo.evidence.EvidenceSourceCommitTest
+[INFO] Running org.tzi.use.plugins.jacamo.extraction.StaticProjectImporterTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.964 s -- in org.tzi.use.plugins.jacamo.extraction.StaticProjectImporterTest
+[INFO] Running org.tzi.use.plugins.jacamo.GoldenPipelineTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.831 s -- in org.tzi.use.plugins.jacamo.GoldenPipelineTest
+[INFO] Running org.tzi.use.plugins.jacamo.HotfixBindingTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.611 s -- in org.tzi.use.plugins.jacamo.HotfixBindingTest
+[INFO] Running org.tzi.use.plugins.jacamo.HotfixLifecycleTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.102 s -- in org.tzi.use.plugins.jacamo.HotfixLifecycleTest
+[INFO] Running org.tzi.use.plugins.jacamo.JaCaMoPluginTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.418 s -- in org.tzi.use.plugins.jacamo.JaCaMoPluginTest
+[INFO] Running org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.455 s -- in org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest
+[INFO] Running org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.268 s -- in org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest
+[INFO] Running org.tzi.use.plugins.jacamo.project.JcmProjectLoaderTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.159 s -- in org.tzi.use.plugins.jacamo.project.JcmProjectLoaderTest
+[INFO] Running org.tzi.use.plugins.jacamo.project.ProjectModelTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in org.tzi.use.plugins.jacamo.project.ProjectModelTest
+[INFO] Running org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.AuctionSourceRuntimeTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.704 s -- in org.tzi.use.plugins.jacamo.runtime.AuctionSourceRuntimeTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.CartagoRuntimeConnectorTest
+[Basic logger ] At 1789671395534 artifact body_useMonitor7f05dc52870f47adb657028f542ba55f type: cartago.AgentBodyArtifact has been created by useMonitor7f05dc52870f47adb657028f542ba55f
+[Basic logger ] At 1789671395534 artifact body_useMonitor7f05dc52870f47adb657028f542ba55f focussed by useMonitor7f05dc52870f47adb657028f542ba55f
+[Basic logger ] At 1789671395534 agent useMonitor7f05dc52870f47adb657028f542ba55f joined the workspace.
+[Basic logger ] At 1789671395534 new percept generated about artifact session_useMonitor7f05dc52870f47adb657028f542ba55f added properties: [Lcartago.ArtifactObsProperty;@171b3f38
+[Basic logger ] At 1789671395535 artifact session_useMonitor7f05dc52870f47adb657028f542ba55f type: cartago.AgentSessionArtifact has been created by useMonitor7f05dc52870f47adb657028f542ba55f
+[Basic logger ] At 1789671395535 artifact session_useMonitor7f05dc52870f47adb657028f542ba55f focussed by useMonitor7f05dc52870f47adb657028f542ba55f
+[Basic logger ] At 1789671395538 operation ( makeArtifact auction7f05dc52870f47adb657028f542ba55f org.tzi.use.plugins.jacamo.runtime.TestAuctionArtifact [Ljava.lang.Object;@3057a923 cartago.OpFeedbackParam@681f5a1e ) requested in artifact workspace by agent useMonitor7f05dc52870f47adb657028f542ba55f 
+[Basic logger ] At 1789671395538 operation ( makeArtifact auction7f05dc52870f47adb657028f542ba55f org.tzi.use.plugins.jacamo.runtime.TestAuctionArtifact [Ljava.lang.Object;@3057a923 cartago.OpFeedbackParam@681f5a1e ) started in artifact workspace
+[Basic logger ] At 1789671395538 new percept generated about artifact auction7f05dc52870f47adb657028f542ba55f added properties: [Lcartago.ArtifactObsProperty;@cfefd7d
+[Basic logger ] At 1789671395538 artifact auction7f05dc52870f47adb657028f542ba55f type: org.tzi.use.plugins.jacamo.runtime.TestAuctionArtifact has been created by useMonitor7f05dc52870f47adb657028f542ba55f
+[Basic logger ] At 1789671395538 new percept generated about artifact workspace added properties: [Lcartago.ArtifactObsProperty;@401a8ae4
+[Basic logger ] At 1789671395538 operation ( makeArtifact auction7f05dc52870f47adb657028f542ba55f org.tzi.use.plugins.jacamo.runtime.TestAuctionArtifact [Ljava.lang.Object;@3057a923 cartago.OpFeedbackParam@681f5a1e ) completed in artifact workspace
+[Basic logger ] At 1789671395542 operation ( closeAuction ) requested in artifact auction7f05dc52870f47adb657028f542ba55f by agent useMonitor7f05dc52870f47adb657028f542ba55f 
+[Basic logger ] At 1789671395544 operation ( closeAuction ) started in artifact auction7f05dc52870f47adb657028f542ba55f
+[Basic logger ] At 1789671395544 new percept generated about artifact auction7f05dc52870f47adb657028f542ba55f changed properties: [Lcartago.ArtifactObsProperty;@29ebb0a7
+[Basic logger ] At 1789671395544 operation ( closeAuction ) completed in artifact auction7f05dc52870f47adb657028f542ba55f
+[Basic logger ] At 1789671395544 operation ( placeBid item1 10 ) requested in artifact auction7f05dc52870f47adb657028f542ba55f by agent useMonitor7f05dc52870f47adb657028f542ba55f 
+[Basic logger ] At 1789671395544 operation ( placeBid item1 10 ) started in artifact auction7f05dc52870f47adb657028f542ba55f
+[Basic logger ] At 1789671395544 new percept generated about artifact auction7f05dc52870f47adb657028f542ba55f signal: bid(item1,10) 
+[Basic logger ] At 1789671395544 operation ( placeBid item1 10 ) completed in artifact auction7f05dc52870f47adb657028f542ba55f
+[Basic logger ] At 1789671395544 operation ( placeBid item1 0 ) requested in artifact auction7f05dc52870f47adb657028f542ba55f by agent useMonitor7f05dc52870f47adb657028f542ba55f 
+[Basic logger ] At 1789671395544 operation ( placeBid item1 0 ) started in artifact auction7f05dc52870f47adb657028f542ba55f
+[Basic logger ] At 1789671395544 operation ( placeBid item1 0 ) failed in artifact auction7f05dc52870f47adb657028f542ba55f - msg:amount must be positive desc:null
+[Basic logger ] At 1789671395547 operation ( removeOpen ) requested in artifact auction7f05dc52870f47adb657028f542ba55f by agent useMonitor7f05dc52870f47adb657028f542ba55f 
+[Basic logger ] At 1789671395547 operation ( removeOpen ) started in artifact auction7f05dc52870f47adb657028f542ba55f
+[Basic logger ] At 1789671395547 new percept generated about artifact auction7f05dc52870f47adb657028f542ba55f removed properties: [Lcartago.ArtifactObsProperty;@4723dd7a
+[Basic logger ] At 1789671395547 operation ( removeOpen ) completed in artifact auction7f05dc52870f47adb657028f542ba55f
+[Basic logger ] At 1789671395550 artifact auction7f05dc52870f47adb657028f542ba55f has been disposed by null
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s -- in org.tzi.use.plugins.jacamo.runtime.CartagoRuntimeConnectorTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.CompositeRuntimeConnectorTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.027 s -- in org.tzi.use.plugins.jacamo.runtime.CompositeRuntimeConnectorTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.JasonRuntimeConnectorTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in org.tzi.use.plugins.jacamo.runtime.JasonRuntimeConnectorTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.282 s -- in org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.MoiseRuntimeConnectorTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in org.tzi.use.plugins.jacamo.runtime.MoiseRuntimeConnectorTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.746 s -- in org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantic.SemanticIdTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in org.tzi.use.plugins.jacamo.semantic.SemanticIdTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantic.SemanticModelTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in org.tzi.use.plugins.jacamo.semantic.SemanticModelTest
+[INFO] Running org.tzi.use.plugins.jacamo.trace.TraceBindingTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.139 s -- in org.tzi.use.plugins.jacamo.trace.TraceBindingTest
+[INFO] Running org.tzi.use.plugins.jacamo.ui.JaCaMoWorkbenchPanelTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.652 s -- in org.tzi.use.plugins.jacamo.ui.JaCaMoWorkbenchPanelTest
+[INFO] Running org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.425 s -- in org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest
+[INFO] Running org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayerTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.103 s -- in org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayerTest
+[INFO] Running org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest
+PHASE13_RUNTIME eventToResult=421800ns
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.678 s -- in org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 125, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.2:jar (default-jar) @ use-plugin ---
+[INFO] Building jar: C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-plugin\target\use-plugin-1.0.1.jar
+[INFO] 
+[INFO] --- shade:3.6.0:shade (default) @ use-plugin ---
+[INFO] Including com.networknt:json-schema-validator:jar:2.0.1 in the shaded jar.
+[INFO] Including com.ethlo.time:itu:jar:1.14.0 in the shaded jar.
+[INFO] Including com.fasterxml.jackson.core:jackson-databind:jar:2.18.3 in the shaded jar.
+[INFO] Including com.fasterxml.jackson.core:jackson-annotations:jar:2.18.3 in the shaded jar.
+[INFO] Including com.fasterxml.jackson.core:jackson-core:jar:2.18.3 in the shaded jar.
+[INFO] Including com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:jar:2.18.3 in the shaded jar.
+[INFO] Including org.yaml:snakeyaml:jar:2.3 in the shaded jar.
+[INFO] Including org.slf4j:slf4j-api:jar:2.0.17 in the shaded jar.
+[INFO] Replacing original artifact with shaded artifact.
+[INFO] Replacing C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-plugin\target\use-plugin-1.0.1.jar with C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-plugin\target\use-plugin-1.0.1-shaded.jar
+[INFO] 
+[INFO] --- assembly:3.7.1:single (release-package) @ use-plugin ---
+[INFO] Reading assembly descriptor: src/assembly/release.xml
+[INFO] Building zip: C:\Windows\Temp\use-v101-clean-es9i6qkz\checkout\use-plugin\target\use-jacamo-plugin-1.0.1.zip
+[INFO] 
+[INFO] --- antrun:3.1.0:run (release-package-checksum) @ use-plugin ---
+[INFO] Executing tasks
+[INFO] Executed tasks
+[INFO] 
+[INFO] --- failsafe:3.2.5:integration-test (default) @ use-plugin ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running org.tzi.use.plugins.jacamo.release.ReleasePackageIT
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.131 s -- in org.tzi.use.plugins.jacamo.release.ReleasePackageIT
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- failsafe:3.2.5:verify (default) @ use-plugin ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] use 7.5.0 .......................................... SUCCESS [  0.203 s]
+[INFO] use-core 7.5.0 ..................................... SUCCESS [ 39.582 s]
+[INFO] use-gui 7.5.0 ...................................... SUCCESS [ 51.182 s]
+[INFO] use-assembly 7.5.0 ................................. SUCCESS [  8.270 s]
+[INFO] USE JaCaMo Plugin 1.0.1 ............................ SUCCESS [ 26.929 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  02:06 min
+[INFO] Finished at: 2026-09-18T01:56:44+07:00
+[INFO] ------------------------------------------------------------------------

@@ -1,4 +1,9 @@
-# USE JaCaMo Plugin 1.0.0
+# USE JaCaMo Plugin 1.0.1
+
+Current repository state: Maven artifact and plugin descriptor version `1.0.1`.
+Annotated tag `v1.0.1` points to `7f77b1f4`; current `main`/`HEAD` is one
+documentation-only commit later. The manifest name `use-jacamo-plugin-v1.0.1`
+is not a Git tag in this checkout, so it must not be reported as published.
 
 This release adds conservative, traceable JaCaMo project import and offline/live
 verification to USE 7.5.0. It supports the pinned Auction example and the verified
@@ -27,13 +32,23 @@ distribution remains a documented manual environment check.
 Open `Plugins > JaCaMo > Open Workbench...`, select a `.jcm` entry, inspect import
 diagnostics and mapping compatibility, generate the USE model/state, run full
 verification, and export JSON or Markdown reports. Runtime verification requires an
-explicit connector configuration; reconnect performs a full authoritative resync.
+explicit connector configuration through the service API; the workbench does not
+launch an external `.jcm` application or provide connector configuration fields.
+Reconnect performs a full authoritative resync.
+
+If exact typed resolution is ambiguous, place the schema-valid `binding.json` in
+the JaCaMo project root. Production import reads and validates it, rejects stale or
+invalid entries, and never guesses a target.
 
 The included `examples/auction` project is the release acceptance fixture. See
 `docs/user-workflow.md`, `docs/architecture.md`, `KNOWN-LIMITATIONS.md`, and
 `compatibility.json` for the exact supported scope.
 
+The latest verified suite is 271/271 tests: 13 in `use-core`, 130 in `use-gui`,
+and 128 in `use-plugin` (125 unit/component plus 3 release integration tests).
+See `docs/project/00-README.md` for the canonical onboarding path.
+
 ## Verify the download
 
-The build produces `use-jacamo-plugin-1.0.0.zip.sha256` beside the archive. Compare
+The build produces `use-jacamo-plugin-1.0.1.zip.sha256` beside the archive. Compare
 the first hexadecimal field with a SHA-256 digest of the ZIP before installation.
