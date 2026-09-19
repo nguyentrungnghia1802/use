@@ -23,7 +23,14 @@ class CompatibilityManifestTest {
         JsonNode manifest = new ObjectMapper().readTree(Files.readString(Path.of("compatibility.json")));
         Document rootPom = parse(Path.of("../pom.xml"));
         Document pluginPom = parse(Path.of("pom.xml"));
+        Document pluginDescriptor = parse(Path.of("src/main/resources/useplugin.xml"));
+        JsonNode release = new ObjectMapper().readTree(Files.readString(Path.of("release/release-manifest.json")));
         JsonNode requirements = manifest.path("requirements");
+
+        assertEquals(release.path("releaseVersion").asText(), manifest.path("plugin").path("version").asText());
+        assertEquals(release.path("gitTag").asText(), manifest.path("plugin").path("tag").asText());
+        assertEquals(pluginDescriptor.getDocumentElement().getAttribute("version"),
+                manifest.path("plugin").path("version").asText());
 
         assertEquals(directChild(rootPom.getDocumentElement(), "version"),
                 requirements.path("use").path("version").asText());

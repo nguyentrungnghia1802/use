@@ -892,28 +892,28 @@ Read:
 - `docs/project/17-end-to-end-acceptance.md`
 
 ## P15.1 Release build
-- [ ] clean checkout.
-- [ ] full build.
-- [ ] full tests.
-- [ ] mapping audit.
-- [ ] Auction E2E.
-- [ ] plugin load smoke.
+- [x] clean checkout.
+- [x] full build.
+- [x] full tests.
+- [x] mapping audit.
+- [x] Auction E2E.
+- [x] plugin load smoke.
 
 ## P15.2 Documentation
-- [ ] README install.
-- [ ] user workflow.
-- [ ] developer architecture.
-- [ ] known limitations.
-- [ ] compatibility matrix.
-- [ ] changelog.
+- [x] README install.
+- [x] user workflow.
+- [x] developer architecture.
+- [x] known limitations.
+- [x] compatibility matrix.
+- [x] changelog.
 
 ## P15.3 Package
-- [ ] plugin JAR.
-- [ ] canonical metamodel/mapping resources.
-- [ ] core OCL.
-- [ ] example.
-- [ ] license/notice as required.
-- [ ] release manifest.
+- [x] plugin JAR.
+- [x] canonical metamodel/mapping resources.
+- [x] core OCL.
+- [x] example.
+- [x] license/notice as required.
+- [x] release manifest.
 
 ## P15.4 Git
 - [ ] final phase branch clean.
@@ -927,3 +927,26 @@ Read:
 - [ ] Every checkbox in `docs/project/17-end-to-end-acceptance.md` verified.
 - [ ] No known P0/P1 correctness blocker.
 - [ ] Final report generated.
+
+Pre-integration evidence (2026-09-16): `mvn -pl use-plugin verify` passed
+119 unit tests and 3 release integration tests; full reactor `mvn verify`
+passed 265/265 across all five modules. A separate clone of the committed
+Phase 15 branch with the candidate diff applied and no prior build outputs
+passed `mvn clean verify` across the full reactor, including the isolated
+installed-ZIP mapping smoke. The smoke was RED before bundling the JSON Schema
+validator (`NoClassDefFoundError: com/networknt/schema/SpecificationVersion`)
+and GREEN after the JAR bundled its runtime dependencies. The focused
+auto-resync, Auction offline/live, and plugin smoke tests passed 7/7.
+Independent canonical JaCaMo revision `849dc33` Ecore/EMF, mapping/schema,
+negative mutation and USE compiler audits passed; all four canonical resource
+hashes matched this plugin checkout. The actual ZIP inventory was 27 entries;
+every ZIP entry matched its declared source, the JAR's canonical/version/license
+resources matched source bytes, and its SHA-256 sidecar matched the archive.
+Auction evidence contained 14 artifacts, 13 runtime events, 11 reports, and
+zero reconnect drift differences. Exact release-commit clean clone, Git
+integration, tag, and final package verification remain release gates.
+
+Exact release implementation commit `6cccfc65` was cloned without prior build
+outputs and passed `mvn clean verify`: 265/265 tests, 0 failures, 0 errors and
+0 skips. Git integration, the final tagged-commit regression, tag push and
+remote package verification remain release gates.
