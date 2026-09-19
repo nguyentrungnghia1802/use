@@ -389,3 +389,12 @@ Post-merge validation at `016e74b6`: `mvn -B -pl use-plugin verify` **142/142 PA
 including all three release/package tests after compatibility and limitations updates.
 The full reactor count above is from the preceding combined gate, not a second full
 reactor run. The final probe is source-hashed separately after Git line-ending normalization.
+
+## Phase 24 regression (2026-09-19)
+
+Full reactor `mvn --batch-mode verify`: 298/298 PASS, zero failures/errors/skips
+(core 13, GUI 130, plugin 152, release integration 3). Includes Auction and the local
+Counter Team in-process case, pure guard closure and unsupported-boundary negatives.
+[Phase 24 evidence](phase24-translation-multicase-evidence.md) records exact scope,
+commands, output/hash locations and the measured ~1.21 s / 33-event Counter scenario.
+Standalone launcher and full normative lifecycle claims remain excluded.

@@ -231,3 +231,12 @@ Sau MVP:
 - preserve stable IDs nếu semantic identity không đổi.
 
 Runtime adapter dùng model đã resolve, không reparse project liên tục.
+
+## Phase 24 guard extraction boundary
+
+Guard extraction accepts one return statement with a whitelisted pure expression
+AST. Assignments, calls and multi-statement bodies retain source provenance and
+CARTAGO_GUARD_BODY_UNSUPPORTED; the constraint extractor preserves an UNSUPPORTED
+record. Source import never executes project code. The second-case integration
+harness separately compiles and runs its trusted checked-in fixture as test setup.
+See [translation inventory](phase24-translation-multicase-evidence.md).

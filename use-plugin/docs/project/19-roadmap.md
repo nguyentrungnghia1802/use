@@ -434,7 +434,7 @@ Chỉ bắt đầu sau khi Phase 19 mirror correctness pass.
 
 # PHASE 24 — Constraint Translation Closure & Multi-Case Validation
 
-**Mode:** AGENT AUTO
+**Mode:** AGENT AUTO — implemented and regression-validated (2026-09-19)
 
 - Audit toàn bộ translator hiện có.
 - Hoàn thiện `EXACT` và approved-safe `SOUND_SUBSET`.
@@ -445,7 +445,10 @@ Chỉ bắt đầu sau khi Phase 19 mirror correctness pass.
 - Kiểm tra core không có Auction-specific branch.
 - Performance/reproducibility evidence.
 
-**Exit:** generic reuse được chứng minh trên nhiều hơn một case.
+**Exit:** PASS for Auction + local Counter Team in-process supported subsets;
+full reactor 298/298 PASS. No SOUND_SUBSET is enabled without a preservation contract.
+See [Phase 24 evidence](phase24-translation-multicase-evidence.md). This does not
+close Phase 20 standalone launcher limitations or Phase 25 research inputs.
 
 ---
 

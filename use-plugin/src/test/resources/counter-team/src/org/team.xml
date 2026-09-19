@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<organisational-specification id="team-spec">
+  <structural-specification>
+    <role-def id="worker" min="1" max="1"/>
+    <group-specification id="team_group" min="1" max="1"><roles><role id="worker"/></roles></group-specification>
+  </structural-specification>
+  <functional-specification>
+    <scheme id="counting"><goal id="count_items" root="true"/><mission id="count" min="1" max="1"><goal id="count_items"/></mission></scheme>
+  </functional-specification>
+  <normative-specification><norm id="can_count" role="worker" mission="count" type="permission"/></normative-specification>
+</organisational-specification>

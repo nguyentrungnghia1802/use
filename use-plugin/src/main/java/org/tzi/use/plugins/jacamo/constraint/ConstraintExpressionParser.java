@@ -11,11 +11,42 @@ public final class ConstraintExpressionParser {
             Parser parser = new Parser(source, environment);
             Expression expression = parser.expression();
             if (!parser.peek().equals("<eof>")) return unsupported(source, "unexpected token " + parser.peek());
-            if (expression instanceof Expression.Unknown unknown) return unsupported(source, unknown.reason());
+            validate(expression);
             return new Result(expression, TranslationStatus.EXACT, List.of());
         } catch (IllegalArgumentException exception) {
             return unsupported(source, exception.getMessage());
         }
+    }
+
+    /** Validates the complete tree: unknown children must never hide behind a Boolean parent. */
+    public static Expression.ValueType validate(Expression expression) {
+        if (expression instanceof Expression.Unknown unknown) throw new IllegalArgumentException(unknown.reason());
+        if (expression instanceof Expression.Literal literal) return literal.type();
+        if (expression instanceof Expression.VariableRef variable) {
+            if (variable.type()==Expression.ValueType.UNKNOWN) throw new IllegalArgumentException("unknown variable type");
+            return variable.type();
+        }
+        if (expression instanceof Expression.PropertyRef property) { validate(property.receiver()); return property.type(); }
+        if (expression instanceof Expression.UnaryOp unary) {
+            var operand=validate(unary.operand());
+            if (unary.operator().equals("not") && operand==Expression.ValueType.BOOLEAN) return Expression.ValueType.BOOLEAN;
+            if (unary.operator().equals("-") && operand==Expression.ValueType.INTEGER) return operand;
+            throw new IllegalArgumentException("unsupported unary operand type");
+        }
+        if (expression instanceof Expression.BinaryOp binary) {
+            var left=validate(binary.left());var right=validate(binary.right());
+            if (left==Expression.ValueType.UNKNOWN || right==Expression.ValueType.UNKNOWN || left!=right)
+                throw new IllegalArgumentException("incompatible operand types");
+            switch(binary.operator()) {
+                case "and", "or" -> { if(left==Expression.ValueType.BOOLEAN) return Expression.ValueType.BOOLEAN; }
+                case "=", "<>" -> { if(left==Expression.ValueType.BOOLEAN || left==Expression.ValueType.INTEGER || left==Expression.ValueType.STRING) return Expression.ValueType.BOOLEAN; }
+                case ">", "<", ">=", "<=" -> { if(left==Expression.ValueType.INTEGER) return Expression.ValueType.BOOLEAN; }
+                case "+", "-", "*" -> { if(left==Expression.ValueType.INTEGER) return Expression.ValueType.INTEGER; }
+                default -> throw new IllegalArgumentException("operator semantics unsupported: "+binary.operator());
+            }
+            throw new IllegalArgumentException("unsupported binary operand type");
+        }
+        throw new IllegalArgumentException("unsupported expression semantics");
     }
 
     private Result unsupported(String source, String reason) {
@@ -40,12 +71,12 @@ public final class ConstraintExpressionParser {
         Expression expression() { return logicalOr(); }
         Expression logicalOr() {
             Expression left = logicalAnd();
-            while (accept("|", "or")) left = new Expression.BinaryOp(left, "or", logicalAnd(), Expression.ValueType.BOOLEAN);
+            while (accept("|", "||", "or")) left = new Expression.BinaryOp(left, "or", logicalAnd(), Expression.ValueType.BOOLEAN);
             return left;
         }
         Expression logicalAnd() {
             Expression left = comparison();
-            while (accept("&", "and")) left = new Expression.BinaryOp(left, "and", comparison(), Expression.ValueType.BOOLEAN);
+            while (accept("&", "&&", "and")) left = new Expression.BinaryOp(left, "and", comparison(), Expression.ValueType.BOOLEAN);
             return left;
         }
         Expression comparison() {
@@ -86,6 +117,8 @@ public final class ConstraintExpressionParser {
                 if (!accept(")")) { do { args.add(expression()); } while (accept(",")); if (!accept(")")) throw new IllegalArgumentException("missing )"); }
                 return new Expression.Unknown(token, "call semantics are not bound: " + token);
             }
+            if (environment.variables().containsKey(token) && environment.properties().containsKey(token))
+                throw new IllegalArgumentException("ambiguous variable/property binding: "+token);
             TypeEnvironment.PropertyBinding property = environment.properties().get(token);
             if (property != null) return navigation(property);
             Expression.ValueType type = environment.variables().get(token);
@@ -118,7 +151,7 @@ public final class ConstraintExpressionParser {
                     result.add(source.substring(i, end)); i = end; continue;
                 }
                 String pair = i + 1 < source.length() ? source.substring(i, i + 2) : "";
-                if (List.of(">=", "<=", "!=", "==", "<>").contains(pair)) { result.add(pair); i += 2; }
+                if (List.of(">=", "<=", "!=", "==", "<>", "&&", "||").contains(pair)) { result.add(pair); i += 2; }
                 else { result.add(Character.toString(c)); i++; }
             }
             return result;

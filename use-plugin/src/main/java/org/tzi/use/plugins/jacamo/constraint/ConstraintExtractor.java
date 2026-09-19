@@ -28,11 +28,11 @@ public final class ConstraintExtractor {
         for (SemanticElement context : semantic.elements().stream().filter(e -> e.kind() == MetamodelKind.Context).toList()) {
             String source = text(context, "Expression");
             if (source == null) continue;
-            var parsed = parser.parse(source, new TypeEnvironment(Map.of(), bindings));
             result.add(new ConstraintSpec("JASON-" + stable(context.id().value()), ConstraintSpec.SourceKind.JASON_CONTEXT,
                     ConstraintSpec.Kind.INVARIANT, "Plan", null, "JasonContext_" + stable(context.id().value()),
-                    parsed.expression(), Expression.ValueType.BOOLEAN, parsed.status(), context.provenance().getFirst(),
-                    parsed.unsupportedReasons(), List.of(context.id().value())));
+                    new Expression.Unknown(source,"UNSUPPORTED_JASON_APPLICABILITY: plan context is not a global invariant"),
+                    Expression.ValueType.BOOLEAN, TranslationStatus.UNSUPPORTED, context.provenance().getFirst(),
+                    List.of("UNSUPPORTED_JASON_APPLICABILITY: exact predicate bindings alone do not establish an invariant checkpoint"), List.of(context.id().value())));
         }
     }
 
@@ -47,16 +47,40 @@ public final class ConstraintExtractor {
             String source = guard == null ? null : text(guard, "guardExpression");
             TargetOperationSpec target = plan.operations().stream().filter(candidate ->
                     candidate.sourceIdentity().equals(operation.id().value())).findFirst().orElse(null);
-            if (guard == null || source == null || target == null) continue;
+            if (guard == null || target == null) continue;
+            if (source==null) source="UNSUPPORTED_GUARD_BODY: no pure return expression";
+            if (!java.util.Objects.equals(text(guard,"parameters"),text(operation,"parameters"))
+                    || !"boolean".equals(text(guard,"returnType")))
+                source="UNSUPPORTED_GUARD_SIGNATURE: exact primitive parameter order/names and boolean return required";
             Map<String, Expression.ValueType> variables = new LinkedHashMap<>();
             for (TargetOperationSpec.Parameter parameter : target.parameters())
-                variables.put(parameter.name(), type(parameter.type()));
+                variables.put(parameter.name(), primitiveParameter(text(guard,"parameters"), parameter.name())
+                        ? type(parameter.type()) : Expression.ValueType.UNKNOWN);
             var parsed = parser.parse(source, new TypeEnvironment(variables, Map.of()));
-            result.add(new ConstraintSpec("GUARD-" + stable(guard.id().value()), ConstraintSpec.SourceKind.CARTAGO_GUARD,
+            // Java integer overflow, truncating division, floating-point and reference/string equality
+            // are not equivalent to mathematical OCL. Only the proven scalar condition subset emits.
+            if (parsed.status()==TranslationStatus.EXACT && (ConstraintExpressionParser.validate(parsed.expression()) != Expression.ValueType.BOOLEAN || !safeJavaCondition(parsed.expression())))
+                parsed=new ConstraintExpressionParser.Result(new Expression.Unknown(source,"UNSUPPORTED_JAVA_VALUE_SEMANTICS"),
+                    TranslationStatus.UNSUPPORTED,List.of("UNSUPPORTED_JAVA_VALUE_SEMANTICS: arithmetic/reference equality requires an explicit contract"));
+            result.add(new ConstraintSpec("GUARD-" + stable(operation.id().value()) + "-" + stable(guard.id().value()), ConstraintSpec.SourceKind.CARTAGO_GUARD,
                     ConstraintSpec.Kind.PRE, target.owner(), target.name(), "Guard_" + guard.name(), parsed.expression(),
                     Expression.ValueType.BOOLEAN, parsed.status(), guard.provenance().getFirst(),
                     parsed.unsupportedReasons(), List.of(operation.id().value(), guard.id().value())));
         }
+    }
+
+    private boolean primitiveParameter(String parameters, String name) {
+        return parameters != null && java.util.Arrays.stream(parameters.split(",")).anyMatch(p ->
+                p.strip().matches("(?:int|boolean) +" + java.util.regex.Pattern.quote(name)));
+    }
+
+    private boolean safeJavaCondition(Expression expression) {
+        if (expression instanceof Expression.Literal literal) return literal.type()==Expression.ValueType.BOOLEAN || literal.type()==Expression.ValueType.INTEGER;
+        if (expression instanceof Expression.VariableRef variable) return variable.type()==Expression.ValueType.BOOLEAN || variable.type()==Expression.ValueType.INTEGER;
+        if (expression instanceof Expression.UnaryOp unary) return unary.operator().equals("not") && safeJavaCondition(unary.operand());
+        if (expression instanceof Expression.BinaryOp binary) return List.of("and","or","=","<>",">","<",">=","<=").contains(binary.operator())
+            && safeJavaCondition(binary.left()) && safeJavaCondition(binary.right());
+        return false;
     }
 
     public ConstraintSpec explicitPostcondition(String id, String owner, String operation, String name,

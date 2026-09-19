@@ -125,16 +125,20 @@ final class CartagoSourceExtractor {
             String guard = annotationValue(method.getModifiers().getAnnotations(), "OPERATION", "guard");
             if (guard != null) operation.references.add(new SemanticReference("guardedBy", guard, null));
         }
+        if (operation != null && operation.kind == MetamodelKind.GuardOperation) {
+            if (method.getBody()!=null && method.getBody().getStatements().size()==1
+                    && method.getBody().getStatements().getFirst() instanceof ReturnTree statement
+                    && pureGuardExpression(statement.getExpression())) {
+                operation.attributes.put("guardExpression",new AttributeValue.Text(statement.getExpression().toString()));
+            } else {
+                operation.attributes.put("guardUnsupported",new AttributeValue.Text("UNSUPPORTED_GUARD_BODY: requires one pure return expression"));
+                context.diagnostic("CARTAGO_GUARD_BODY_UNSUPPORTED",Severity.WARNING,Phase.PARSING,
+                    operation.provenance.getFirst().span(),operation.id.value(),
+                    "Guard body cannot be reduced to one expression",method.toString(),"Retain source; provide an explicit contract if needed");
+            }
+        }
         ElementDraft owningOperation = operation;
         new TreeScanner<Void, Void>() {
-            @Override public Void visitReturn(ReturnTree statement, Void unused) {
-                if (owningOperation != null && owningOperation.kind == MetamodelKind.GuardOperation
-                        && statement.getExpression() != null) {
-                    owningOperation.attributes.put("guardExpression",
-                            new AttributeValue.Text(statement.getExpression().toString()));
-                }
-                return super.visitReturn(statement, unused);
-            }
             @Override public Void visitMethodInvocation(MethodInvocationTree invocation, Void unused) {
                 String select = invocation.getMethodSelect().toString();
                 String name = select.substring(select.lastIndexOf('.') + 1);
@@ -209,6 +213,22 @@ final class CartagoSourceExtractor {
             }
         }
         return null;
+    }
+
+    private boolean pureGuardExpression(ExpressionTree expression) {
+        if (expression == null) return false;
+        return switch (expression.getKind()) {
+            case IDENTIFIER, INT_LITERAL, BOOLEAN_LITERAL -> true;
+            case PARENTHESIZED -> pureGuardExpression(((com.sun.source.tree.ParenthesizedTree) expression).getExpression());
+            case LOGICAL_COMPLEMENT, UNARY_MINUS -> pureGuardExpression(((com.sun.source.tree.UnaryTree) expression).getExpression());
+            case CONDITIONAL_AND, CONDITIONAL_OR, AND, OR, EQUAL_TO, NOT_EQUAL_TO,
+                 LESS_THAN, GREATER_THAN, LESS_THAN_EQUAL, GREATER_THAN_EQUAL,
+                 PLUS, MINUS, MULTIPLY, DIVIDE -> {
+                var binary = (com.sun.source.tree.BinaryTree) expression;
+                yield pureGuardExpression(binary.getLeftOperand()) && pureGuardExpression(binary.getRightOperand());
+            }
+            default -> false;
+        };
     }
 
     private String parameters(List<? extends VariableTree> parameters) {

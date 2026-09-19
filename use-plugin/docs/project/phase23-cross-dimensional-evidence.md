@@ -74,3 +74,8 @@ No speculative implementation or Phase 25 permission is needed to finish this bo
 phase. Frozen contracts and standalone limitations are unchanged.
 
 Full reactor `mvn --batch-mode verify`: 293/293 PASS, zero failures/errors/skips (2026-09-19).
+
+Resume audit: main/origin main contain Phase 23 commit `10225d84` with unrelated
+metrics commit `0e9474a0` preserved as its parent. The recorded post-merge focused
+CrossDimensionalVerifier/Moise connector smoke passed 2/2. No Phase 23 implementation
+was discarded or repeated; Phase 24's full reactor also covers these regressions.

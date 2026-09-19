@@ -1,0 +1,5 @@
+-- [OUR-EXT] Test policy: count must remain nonnegative. The -1 operation is a negative control.
+context Counter inv NonNegative: self.count >= 0
+context Counter::setValue(value : Integer)
+pre AllowedRequest: value >= -1
+post ObservedResult: self.count = value

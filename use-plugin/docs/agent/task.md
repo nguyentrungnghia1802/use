@@ -1912,15 +1912,15 @@ Evidence: [Phase 23 supported subset and boundaries](../project/phase23-cross-di
 
 For each translator rule record:
 
-- [ ] source construct;
-- [ ] binding requirements;
-- [ ] target OCL form;
-- [ ] status EXACT/SOUND_SUBSET/LOSSY/UNSUPPORTED;
-- [ ] provenance;
-- [ ] positive test;
-- [ ] negative test;
-- [ ] ambiguity test;
-- [ ] limitation.
+- [x] source construct;
+- [x] binding requirements;
+- [x] target OCL form;
+- [x] status EXACT/SOUND_SUBSET/LOSSY/UNSUPPORTED;
+- [x] provenance;
+- [x] positive test;
+- [x] negative test;
+- [x] ambiguity test;
+- [x] limitation.
 
 ---
 
@@ -1933,13 +1933,13 @@ For each translator rule record:
 
 ### Tasks
 
-- [ ] Finish missing EXACT supported rules.
-- [ ] Deterministic generation.
-- [ ] Exact context/operation binding.
-- [ ] Source dependency trace.
-- [ ] Generated OCL parse/type-check.
-- [ ] Positive + negative fixtures.
-- [ ] No arbitrary Java body translation.
+- [x] Finish missing EXACT supported rules.
+- [x] Deterministic generation.
+- [x] Exact context/operation binding.
+- [x] Source dependency trace.
+- [x] Generated OCL parse/type-check.
+- [x] Positive + negative fixtures.
+- [x] No arbitrary Java body translation.
 
 ---
 
@@ -1952,10 +1952,10 @@ For each translator rule record:
 
 ### Tasks
 
-- [ ] Implement only when one-direction guarantee can be documented.
-- [ ] Record assumption and preservation direction.
-- [ ] Do not label as equivalent.
-- [ ] Add regression proving unsupported constructs do not emit partial fake formulas.
+- [x] Implement only when one-direction guarantee can be documented.
+- [x] Record assumption and preservation direction.
+- [x] Do not label as equivalent.
+- [x] Add regression proving unsupported constructs do not emit partial fake formulas.
 
 ---
 
@@ -1967,12 +1967,12 @@ For each translator rule record:
 
 ### Tasks
 
-- [ ] LOSSY rules disabled by default unless already explicitly approved by current project contract.
-- [ ] UNSUPPORTED expressions remain source-traceable.
-- [ ] Diagnostic includes reason.
-- [ ] Unrelated supported extraction continues.
-- [ ] No silent formula truncation.
-- [ ] Add boundary tests.
+- [x] LOSSY rules disabled by default unless already explicitly approved by current project contract.
+- [x] UNSUPPORTED expressions remain source-traceable.
+- [x] Diagnostic includes reason.
+- [x] Unrelated supported extraction continues.
+- [x] No silent formula truncation.
+- [x] Add boundary tests.
 
 ---
 
@@ -1988,21 +1988,21 @@ For each translator rule record:
 
 Prefer a case with:
 
-- [ ] Agent;
-- [ ] CArtAgO Artifact;
-- [ ] observable property;
-- [ ] external action/operation;
-- [ ] organisation;
-- [ ] role;
-- [ ] goal/mission;
-- [ ] deterministic runnable scenario.
+- [x] Agent;
+- [x] CArtAgO Artifact;
+- [x] observable property;
+- [x] external action/operation;
+- [x] organisation;
+- [x] role;
+- [x] goal/mission;
+- [x] deterministic runnable scenario.
 
 ### Tasks
 
-- [ ] Evaluate local candidates.
-- [ ] Select the best technically suitable public/local example without user input if semantics are clear.
-- [ ] Record why selected.
-- [ ] If no suitable candidate exists, record `HUMAN_INPUT_REQUIRED_CASE_STUDY_2` for Phase 25 and continue all other Phase 24 tasks.
+- [x] Evaluate local candidates.
+- [x] Select the best technically suitable public/local example without user input if semantics are clear.
+- [x] Record why selected.
+- [x] Conditional fallback assessed: not applicable; local Counter Team fixture selected and validated, no `HUMAN_INPUT_REQUIRED_CASE_STUDY_2` required.
 
 ---
 
@@ -2015,20 +2015,20 @@ Prefer a case with:
 
 ### Tasks
 
-- [ ] Project discovery.
-- [ ] Semantic extraction.
-- [ ] Exact resolution.
-- [ ] USE transformation.
-- [ ] `.use` generation.
-- [ ] `.cmd` generation.
-- [ ] trace generation.
-- [ ] OCL profile only where evidence requires.
-- [ ] runtime connector compatibility.
-- [ ] initial mirror sync.
+- [x] Project discovery.
+- [x] Semantic extraction.
+- [x] Exact resolution.
+- [x] USE transformation.
+- [x] `.use` generation.
+- [x] `.cmd` generation.
+- [x] trace generation.
+- [x] OCL profile only where evidence requires.
+- [x] runtime connector compatibility.
+- [x] initial mirror sync.
 
 Forbidden:
 
-- [ ] no core special case for Case Study #2.
+- [x] no core special case for Case Study #2.
 
 ---
 
@@ -2041,12 +2041,12 @@ Forbidden:
 
 ### Tasks
 
-- [ ] Positive state synchronization.
-- [ ] At least one negative verification scenario.
-- [ ] Exact violation attribution.
-- [ ] Reconnect/resync.
-- [ ] Cross-dimensional rule where applicable.
-- [ ] Unsupported features reported explicitly.
+- [x] Positive state synchronization.
+- [x] At least one negative verification scenario.
+- [x] Exact violation attribution.
+- [x] Reconnect/resync.
+- [x] Cross-dimensional rule where applicable.
+- [x] Unsupported features reported explicitly.
 
 ---
 
@@ -2061,22 +2061,26 @@ Forbidden:
 
 Search core for:
 
-- [ ] Auction class names;
-- [ ] Auction operation names;
-- [ ] Case Study #2 names;
-- [ ] hard-coded runtime object IDs;
-- [ ] hidden case bindings;
-- [ ] branch logic keyed by example project.
+- [x] Auction class names;
+- [x] Auction operation names;
+- [x] Case Study #2 names;
+- [x] hard-coded runtime object IDs;
+- [x] hidden case bindings;
+- [x] branch logic keyed by example project.
 
-- [ ] Remove unjustified case-specific core logic.
-- [ ] Keep example-specific configuration under example/test/profile locations.
+- [x] Remove unjustified case-specific core logic.
+- [x] Keep example-specific configuration under example/test/profile locations.
 
 ### Exit criteria
 
-- [ ] Translation supported subset closed.
-- [ ] Generic reuse demonstrated on two cases, OR Case Study #2 is the only remaining explicit Phase 25 input.
+- [x] Translation supported subset closed.
+- [x] Generic reuse demonstrated on two cases, OR Case Study #2 is the only remaining explicit Phase 25 input.
 
 ---
+
+Evidence: [Phase 24 translation inventory and multi-case validation](../project/phase24-translation-multicase-evidence.md).
+Full reactor 298/298 PASS (2026-09-19). SOUND_SUBSET has zero approved candidates;
+all non-EXACT rules remain non-emitting. Standalone Phase 20 limits remain unchanged.
 
 # Phase 25 — Human Inputs / Research Decisions
 

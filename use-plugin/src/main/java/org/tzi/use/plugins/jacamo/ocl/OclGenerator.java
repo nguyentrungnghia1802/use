@@ -15,8 +15,7 @@ import org.tzi.use.plugins.jacamo.mapping.TransformationPlan;
 public final class OclGenerator {
     public GeneratedOcl generate(String modelName, TransformationPlan plan, List<ConstraintSpec> constraints,
                                  List<OclProfileLoader.LoadedProfile> profiles) {
-        List<ConstraintSpec> emitted = constraints.stream().filter(c -> c.status() == TranslationStatus.EXACT
-                || c.status() == TranslationStatus.SOUND_SUBSET).sorted(Comparator.comparing(ConstraintSpec::id)).toList();
+        List<ConstraintSpec> emitted = constraints.stream().filter(c -> c.status() == TranslationStatus.EXACT).sorted(Comparator.comparing(ConstraintSpec::id)).toList();
         String model = new StructuralUseGenerator().generate(modelName, plan);
         Map<String, List<ConstraintSpec>> contracts = emitted.stream()
                 .filter(c -> c.kind() != ConstraintSpec.Kind.INVARIANT).collect(java.util.stream.Collectors.groupingBy(
@@ -46,6 +45,9 @@ public final class OclGenerator {
         String manifest = emitted.stream().map(c -> c.id() + "|" + c.sourceKind() + "|" + c.status() + "|"
                 + c.provenance().sourceHash() + "|" + String.join(",", c.dependencies()))
                 .collect(java.util.stream.Collectors.joining("\n", "", emitted.isEmpty() ? "" : "\n"));
+        manifest += constraints.stream().filter(c -> c.status()!=TranslationStatus.EXACT).sorted(Comparator.comparing(ConstraintSpec::id))
+            .map(c -> "NOT_EMITTED|"+c.id()+"|"+c.status()+"|"+c.provenance().sourceHash()+"|"+String.join(",",c.dependencies())+"|"+String.join(";",c.assumptions()).replace("\n"," ")+"\n")
+            .collect(java.util.stream.Collectors.joining());
         manifest += profiles.stream().sorted(Comparator.comparing(p -> p.origin().toString()))
                 .map(p -> "PROFILE|" + portable(p.origin()) + "|" + p.sha256() + "\n")
                 .collect(java.util.stream.Collectors.joining());
@@ -57,7 +59,8 @@ public final class OclGenerator {
     }
 
     private String insertInClass(String model, String owner, String signature, String addition) {
-        int classStart = model.indexOf("class " + owner);
+        var ownerLine = java.util.regex.Pattern.compile("(?m)^(?:abstract )?class " + java.util.regex.Pattern.quote(owner) + "(?: *<[^\n]+)?\n").matcher(model);
+        int classStart = ownerLine.find() ? ownerLine.start() : -1;
         if (classStart < 0) throw new IllegalArgumentException("class not found for operation contract: " + owner);
         int classEnd = model.indexOf("\nend\n", classStart);
         int operation = model.indexOf(signature, classStart);

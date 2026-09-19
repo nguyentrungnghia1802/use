@@ -136,15 +136,11 @@ Ví dụ:
 +!bid(A) : auction_open & budget(B) & B >= A
 ```
 
-Chỉ translate nếu resolver xác định:
-- `auction_open` map tới state property nào;
-- `budget(B)` map tới Agent/Artifact state nào;
-- variables/types hợp lệ.
-
-Nếu chỉ biết syntax mà không biết semantic owner:
-- không đoán;
-- emit unresolved binding;
-- optional project binding có thể giải.
+Current Phase 24 implementation: every extracted Jason plan context remains
+`UNSUPPORTED_JASON_APPLICABILITY`. Exact variable/property bindings alone do not
+prove that plan applicability is a global `Plan` invariant or identify the correct
+runtime checkpoint. No partial expression is emitted. The typed expression parser
+remains available for explicit contracts; it does not establish Jason semantics.
 
 ---
 
@@ -210,16 +206,23 @@ Generated OCL phải:
 - có positive/negative fixture;
 - fail build nếu generator sinh OCL invalid.
 
-## 11. Phase 6 supported contract
+## 11. Current supported contract (Phase 24; supersedes Phase 6 translation scope)
 
 - `[OUR-EXT]` The typed Constraint IR records expression type, context/operation binding, status, source provenance,
   assumptions, and semantic dependencies without depending on USE parser types.
-- `[SEMANTIC-CLARIFICATION]` CArtAgO `@GUARD` methods are translated only when the source AST contains a return
-  expression in the supported logical/comparison/arithmetic subset and the guarded projected operation is exact.
-  Auction `canBid(int amount) { return amount > 0; }` becomes the `placeBid` precondition.
-- `[SEMANTIC-CLARIFICATION]` Jason contexts are parsed with an explicit variable/property environment. Auction's
-  belief predicates have no state binding in Phase 6 and therefore remain `UNSUPPORTED`; no partial formula is
-  emitted and no belief-to-property link is guessed.
+- `[SEMANTIC-CLARIFICATION]` CArtAgO guards require exactly one pure return AST,
+  an exact guarded operation and matching parameter order/names/types, and primitive
+  boolean return. Referenced parameters must be primitive `int` or `boolean`.
+  Literals, comparisons, Boolean equality and logical operators are supported.
+  `&&`/`||` preserve truth values because operands are pure, total scalar expressions.
+  Unused parameters of other types are allowed. Arithmetic, assignment, calls,
+  reference equality, floating point and arbitrary method bodies remain unsupported.
+  Auction `canBid(String item, int amount) { return amount >= 0; }` remains exact.
+- `[SEMANTIC-CLARIFICATION]` Jason contexts remain unsupported even with explicit
+  property bindings: plan applicability is not a global invariant.
+- `[OUR-EXT]` Only EXACT constraints emit. No SOUND_SUBSET preservation contract is
+  currently approved; SOUND_SUBSET, LOSSY and UNSUPPORTED remain in the manifest as
+  NOT_EMITTED entries with status, source hash, dependencies and reasons/assumptions.
 - `[OUR-EXT]` Authored postconditions require an explicit source-backed contract. `@pre` is represented directly in
   the IR; arbitrary Java effects never produce a postcondition.
 - `[OUR-EXT]` `jacamo-core.ocl` contains reusable cross-dimensional checks and an adjacent manifest with rationale
@@ -227,3 +230,6 @@ Generated OCL phải:
   together with translated/core constraints against the generated model.
 - `[SEMANTIC-CLARIFICATION]` Moise Norm elements remain structural. The extractor never emits a Norm-derived OCL
   obligation, permission, or prohibition.
+
+The complete rule inventory, positive/negative/ambiguity evidence and two-case
+acceptance are in [Phase 24 evidence](phase24-translation-multicase-evidence.md).

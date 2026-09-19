@@ -47,3 +47,15 @@ The runtime ledger currently retains all accepted/rejected outcomes in memory; l
   state projection remain unsupported.
 - Moise derived obligation/permission snapshots describe public OE API output only,
   separate from structural Norm and OCL truth. No NPL lifecycle is inferred.
+
+## Phase 24 translation and second-case boundary
+
+- Native guard translation is limited to pure Boolean conditions over primitive
+  int/boolean parameters. Java arithmetic/overflow, wrapper/reference semantics,
+  calls, assignment and arbitrary bodies are not translated. Jason applicability
+  is not promoted to an invariant. No approved SOUND_SUBSET or LOSSY rule emits.
+- Counter Team is a test-owned local fixture extending the minimal counter concept.
+  Its real in-process component scenario is driven by the test harness and uses an
+  explicit OSBuilder OE. It adds multi-case reuse evidence, not standalone launcher
+  or autonomous Agent-to-Artifact-to-Organisation evidence. Performance numbers are
+  smoke measurements on the pinned local toolchain, not throughput guarantees.

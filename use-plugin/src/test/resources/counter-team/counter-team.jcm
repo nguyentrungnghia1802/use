@@ -1,0 +1,20 @@
+mas counter_team {
+  agent worker : worker.asl {
+    goals: start
+    focus: world.counter1
+    roles: worker in team_group
+  }
+  workspace world {
+    artifact counter1 : demo.Counter()
+  }
+  organisation team : team.xml {
+    group team_group : team_group {
+      players: worker worker
+      responsible-for: counting
+    }
+    scheme counting : counting
+  }
+  asl-path: src/agt
+  org-path: src/org
+  java-path: src/env
+}
