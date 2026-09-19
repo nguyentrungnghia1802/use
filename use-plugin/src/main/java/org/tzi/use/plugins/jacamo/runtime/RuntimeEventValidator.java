@@ -32,6 +32,30 @@ final class RuntimeEventValidator {
                 required(payload, "error");
                 correlation(correlationId);
             }
+            case BELIEF_ADDED, BELIEF_REMOVED -> required(payload, "belief");
+            case GOAL_ADOPTED, GOAL_REMOVED, GOAL_ACHIEVED, GOAL_FAILED -> required(payload, "goal");
+            case ACTION_STARTED -> {
+                required(payload, "action", "arguments");
+                correlation(correlationId);
+            }
+            case ACTION_SUCCEEDED -> correlation(correlationId);
+            case ACTION_FAILED -> {
+                required(payload, "error");
+                correlation(correlationId);
+            }
+            case MESSAGE_SENT -> required(payload, "receiver", "performative", "content");
+            case MESSAGE_RECEIVED -> required(payload, "sender", "performative", "content");
+            case ARTIFACT_CREATED, ARTIFACT_DISPOSED -> required(payload, "artifact");
+            case OBS_PROPERTY_ADDED, OBS_PROPERTY_CHANGED, OBS_PROPERTY_REMOVED ->
+                    required(payload, "property", "values");
+            case SIGNAL -> required(payload, "signal", "values");
+            case ORGANISATION_DISCOVERED -> required(payload, "organisation");
+            case GROUP_CREATED, GROUP_DISPOSED -> required(payload, "group", "specification");
+            case SCHEME_CREATED, SCHEME_DISPOSED -> required(payload, "scheme", "specification");
+            case ROLE_ADOPTED, ROLE_REMOVED -> required(payload, "agent", "role", "group");
+            case MISSION_COMMITTED, MISSION_REMOVED -> required(payload, "agent", "mission", "scheme");
+            case SCHEME_STATE_CHANGED -> required(payload, "scheme", "goal", "state");
+            case NORM_STATE_CHANGED -> required(payload, "norm", "state");
         }
     }
 

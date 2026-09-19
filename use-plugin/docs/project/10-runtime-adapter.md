@@ -213,3 +213,68 @@ Treat imported project as untrusted:
 - `RuntimeMirrorService` becomes `LIVE` only after a full snapshot applies successfully. Disconnect marks it
   `STALE`; reconnect performs a full resync before returning to `LIVE` and records the authoritative snapshot
   fingerprint.
+
+## 12. Phase 10 live connector evidence and contract
+
+Pinned runtime APIs:
+
+- Jason interpreter `3.3.0`;
+- CArtAgO `3.1`;
+- Moise `1.1` (which itself pins Jason `3.3.0` and CArtAgO `3.1`).
+
+### 12.1 Jason
+
+- Initial state is read from the live Agent belief base.
+- Belief/goal deltas use `CircumstanceListener` and `GoalListener`.
+- Action enter/result uses a custom `AgArch` (`act`/`actionExecuted`) and keeps one correlation ID across the
+  action lifecycle. Connector connect/disconnect owns activation of that architecture bridge.
+- Runtime identity is an explicit Agent-name-to-semantic-ID binding; one semantic trace may have both Jason and
+  Moise runtime aliases.
+- Outbound/inbound message methods are an explicit bridge surface only. Jason 3.3 does not expose mailbox changes
+  through `CircumstanceListener`; automatic inbound message capture is therefore not claimed.
+
+### 12.2 CArtAgO
+
+- Discovery and authoritative snapshots use `ICartagoController.getCurrentArtifacts()` and `getArtifactInfo()`.
+- Lifecycle, observable-property, signal, and operation events use the workspace `ICartagoLogger` callbacks.
+- `OpId` supplies operation and Agent correlation. Enter, exit, and failure events retain the mapped operation,
+  runtime operation, Agent identity, and the same correlation ID.
+- Bindings are exact workspace/artifact/property/operation bindings. Unbound artifacts remain discoverable but do
+  not emit mutations because no semantic trace can be proven.
+- A bound observable property absent from an authoritative snapshot emits `OBS_PROPERTY_REMOVED`; the USE value is
+  set to undefined during resync so a stale value is not reported as current.
+
+The original `CartagoBasicContext.makeArtifact` test blocker was a fixture classloading problem, not connector
+logic. CArtAgO 3.1's default factory loads the supplied name with `Class.forName` and instantiates it with
+`Class.newInstance`; the fixture must therefore be a public top-level `Artifact` with a public zero-argument
+constructor on the test runtime classpath. `CartagoBasicContext.makeArtifact` catches the underlying action failure
+and rethrows a cause-less `CartagoException`, so a workspace logger was required to expose the real failure. The
+runtime fixture now meets that classloading contract, and the real create/init/discover path is covered by the live
+test.
+
+### 12.3 Moise
+
+- Authoritative state is read from a real `moise.oe.OE`: organisation, group instances, scheme instances, role
+  players, mission players, and goal instance state.
+- Moise OE 1.1 has no public state-change listener API. The supported delta mechanism is explicit controlled
+  polling (`pollChanges`) with deterministic snapshot diffing; no synthetic organisation runtime is used.
+- An unbound OE agent/group/scheme is still emitted with no semantic ID, so snapshot application quarantines it and
+  prevents the mirror from claiming `LIVE`; it is not silently ignored.
+- Mission commitment is tested with the actual Moise deontic check: the role-to-mission obligation exists in the
+  real `OS`, otherwise Moise correctly rejects the commitment.
+- `OEAgent.getObligations()`/`getPermissions()` expose derived permissions but not NPL norm activation,
+  fulfilment, violation, or expiration lifecycle. `NORM_STATE_CHANGED` is therefore not emitted or claimed.
+
+### 12.4 Composite synchronization and staleness
+
+- `CompositeRuntimeConnector` combines the three connector snapshots and renumbers child events into one monotonic
+  stream while preserving child event identity and correlation provenance.
+- Initial synchronization subscribes before taking the authoritative snapshot, buffers concurrent deltas, applies
+  the snapshot, then replays only post-snapshot events. `LIVE` is set only after this succeeds.
+- Connector health can be refreshed explicitly. A disconnected child makes the composite unhealthy and the mirror
+  transitions to `STALE`; stale data is not claimed as live.
+- Reconnect always performs a full snapshot before returning to `LIVE`. The live Auction integration test removes
+  a CArtAgO observable property while disconnected and verifies that full resync changes the USE value to undefined.
+- Live connectors only mutate imported objects with exact trace bindings. Automatic creation of unbound dynamic
+  runtime entities is intentionally unsupported because the runtime APIs do not provide enough evidence to invent
+  a static semantic identity.

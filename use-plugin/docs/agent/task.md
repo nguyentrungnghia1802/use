@@ -571,50 +571,62 @@ Read:
 - current JaCaMo/Jason/CArtAgO/Moise APIs only as needed
 
 ## P10.1 Runtime spike/evidence
-- [ ] Identify supported official hook for Agent state/events.
-- [ ] Identify CArtAgO operation/property event hook.
-- [ ] Identify Moise organisation runtime hook.
-- [ ] Document capability gaps.
+- [x] Identify supported official hook for Agent state/events.
+- [x] Identify CArtAgO operation/property event hook.
+- [x] Identify Moise organisation runtime hook.
+- [x] Document capability gaps.
 
 ## P10.2 Jason connector
-- [ ] Connect lifecycle.
-- [ ] Initial Agent snapshot.
-- [ ] Belief change events.
-- [ ] Goal events where accessible.
-- [ ] Action execution events.
-- [ ] Message events if useful.
-- [ ] Runtime Agent identity → trace.
+- [x] Connect lifecycle.
+- [x] Initial Agent snapshot.
+- [x] Belief change events.
+- [x] Goal events where accessible.
+- [x] Action execution events.
+- [x] Message events if useful.
+- [x] Runtime Agent identity → trace.
 
 ## P10.3 CArtAgO connector
-- [ ] Artifact instance discovery.
-- [ ] Observable property snapshot.
-- [ ] Property change events.
-- [ ] Operation enter/exit/failure.
-- [ ] Signal events if supported/needed.
-- [ ] Correlate operation to Artifact/Agent where runtime supplies evidence.
+- [x] Artifact instance discovery.
+- [x] Observable property snapshot.
+- [x] Property change events.
+- [x] Operation enter/exit/failure.
+- [x] Signal events if supported/needed.
+- [x] Correlate operation to Artifact/Agent where runtime supplies evidence.
 
 ## P10.4 Moise connector
-- [ ] Organisation instance discovery.
-- [ ] Role/group state.
-- [ ] Mission/scheme state where exposed.
-- [ ] Normative state only where API semantics clear.
-- [ ] Explicitly document unsupported runtime semantics.
+- [x] Organisation instance discovery.
+- [x] Role/group state.
+- [x] Mission/scheme state where exposed.
+- [x] Normative state only where API semantics clear.
+- [x] Explicitly document unsupported runtime semantics.
 
 ## P10.5 Full synchronization
-- [ ] Build initial runtime snapshot.
-- [ ] Compare with imported static model.
-- [ ] Create dynamic runtime objects/links if design supports them.
-- [ ] Mark mirror LIVE only after successful sync.
+- [x] Build initial runtime snapshot.
+- [x] Compare with imported static model.
+- [x] Create dynamic runtime objects/links if design supports them.
+- [x] Mark mirror LIVE only after successful sync.
 
 ## P10.6 Reconnect/resync
-- [ ] Detect disconnect.
-- [ ] Mark STALE.
-- [ ] Reconnect.
-- [ ] Full resync.
-- [ ] Verify no stale results claimed as current.
+- [x] Detect disconnect.
+- [x] Mark STALE.
+- [x] Reconnect.
+- [x] Full resync.
+- [x] Verify no stale results claimed as current.
 
 Acceptance:
-- [ ] Real JaCaMo Auction state can be mirrored into USE.
+- [x] Real JaCaMo Auction state can be mirrored into USE.
+
+Evidence (2026-09-15, implementation commit `84da2a97`):
+
+- `mvn -pl use-plugin -Dtest='org.tzi.use.plugins.jacamo.runtime.*Test' test`: PASS, 10 tests, including
+  real Jason 3.3.0, CArtAgO 3.1, Moise 1.1, composite ordering, initial-sync race, stale detection, and Auction live
+  reconnect/full-resync coverage.
+- `mvn -pl use-plugin package`: PASS, 57 tests; `target/use-plugin-7.5.0.jar` built.
+- `mvn test`: PASS for all five reactor modules; use-core 12 tests, use-gui 1 test, use-plugin 57 tests.
+- `mvn -pl use-plugin dependency:tree` with the three JaCaMo coordinates filtered: PASS and resolves Jason
+  `3.3.0`, CArtAgO `3.1`, and Moise `1.1` as provided dependencies.
+- Capability choices, `makeArtifact` classloading diagnosis, exact trace policy, and unsupported semantics are
+  recorded in `docs/project/10-runtime-adapter.md` section 12.
 
 ---
 
