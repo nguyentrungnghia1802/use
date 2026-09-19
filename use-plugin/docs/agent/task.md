@@ -327,41 +327,49 @@ Read:
 - `docs/project/09-traceability-binding-resolver.md`
 
 ## P5.1 Object plan
-- [ ] One target object per mapped semantic instance where appropriate.
-- [ ] Deterministic object names.
-- [ ] Correct target class.
+- [x] One target object per mapped semantic instance where appropriate.
+- [x] Deterministic object names.
+- [x] Correct target class.
 
 ## P5.2 Values
-- [ ] Materialize resolved scalar values.
-- [ ] Preserve unset/undefined.
-- [ ] Do not invent Ecore clipped defaults.
+- [x] Materialize resolved scalar values.
+- [x] Preserve unset/undefined.
+- [x] Do not invent Ecore clipped defaults.
 
 ## P5.3 Links
-- [ ] Composition links.
-- [ ] Association links.
-- [ ] Correct association identity.
-- [ ] Duplicate link prevention.
+- [x] Composition links.
+- [x] Association links.
+- [x] Correct association identity.
+- [x] Duplicate link prevention.
 
 ## P5.4 Text backend
-- [ ] Generate `.use`.
-- [ ] Generate initial `.cmd`.
-- [ ] Stable ordering.
-- [ ] Golden tests.
+- [x] Generate `.use`.
+- [x] Generate initial `.cmd`.
+- [x] Stable ordering.
+- [x] Golden tests.
 
 ## P5.5 Direct USE backend
-- [ ] Build/load `MModel` through supported USE API.
-- [ ] Create/update `MSystemState`.
-- [ ] Ensure same semantics as text backend.
-- [ ] Contract tests compare outputs/state.
+- [x] Build/load `MModel` through supported USE API.
+- [x] Create/update `MSystemState`.
+- [x] Ensure same semantics as text backend.
+- [x] Contract tests compare outputs/state.
 
 ## P5.6 Initial validation
-- [ ] USE structure check.
-- [ ] Multiplicity check.
-- [ ] Initial invariant check.
-- [ ] Diagnostics with trace.
+- [x] USE structure check.
+- [x] Multiplicity check.
+- [x] Initial invariant check.
+- [x] Diagnostics with trace.
+
+Acceptance evidence (2026-09-15): JaCaMo Verification Profile V1 is applied as a separate effective semantic layer;
+the frozen Ecore and Mapping V1 are unchanged. `[OUR-EXT]` VSP001-VSP004 remove concrete verification inheritance
+from `Organisation`, and `[SEMANTIC-CLARIFICATION]` VSP005 makes R047 optional only in the verification plan.
+Jason extraction gives each Action one composition owner through R053 without duplication, Moise/JCM extraction
+produces source-backed R007/R015/R019/R020/R021 links, and exact Jason goal triggers produce R048. Deterministic
+text and direct USE backends agree; Auction passes structure, multiplicity, and initial invariant checks without
+materialization ERROR diagnostics or fabricated binding links.
 
 Acceptance:
-- [ ] Imported Auction initial state matches semantic model and passes expected baseline checks.
+- [x] Imported Auction initial state matches semantic model and passes expected baseline/verification checks.
 
 ---
 
