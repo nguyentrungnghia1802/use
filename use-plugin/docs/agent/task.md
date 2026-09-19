@@ -2079,7 +2079,8 @@ Search core for:
 ---
 
 Evidence: [Phase 24 translation inventory and multi-case validation](../project/phase24-translation-multicase-evidence.md).
-Full reactor 298/298 PASS (2026-09-19). SOUND_SUBSET has zero approved candidates;
+Full reactor 298/298 PASS (2026-09-19); post-merge smoke 13/13 PASS at `8a3d8040`.
+SOUND_SUBSET has zero approved candidates;
 all non-EXACT rules remain non-emitting. Standalone Phase 20 limits remain unchanged.
 
 # Phase 25 — Human Inputs / Research Decisions

@@ -11,7 +11,7 @@ Every ConstraintSpec retains source span/hash and semantic dependencies. Generat
 EXACT records retain origin/hash/dependencies; non-emitted records retain status,
 hash/dependencies and reasons/assumptions. ConstraintClosureTest supplies boundary
 negative controls; ConstraintOclTest covers actual USE compilation/evaluation and
-operation-owner provenance. CounterTeamIntegrationTest and AuctionIntegrationTest
+operation-owner provenance. CounterTeamIntegrationTest and LiveJaCaMoAuctionIntegrationTest
 exercise the same production extraction/transformation/runtime services.
 
 | Construct | Binding and OCL form | Status / limits | Evidence |
@@ -113,3 +113,18 @@ Documentation impact: synchronized extraction, constraint/OCL, testing, limitati
 roadmap and active task. Architecture reviewed unchanged (parser/runtime separation);
 Auction policy reviewed unchanged. Canonical contracts and compatibility versions
 reviewed unchanged; this is not a new release or V2 finalization.
+
+## Git closure
+
+Implementation and synchronized task/docs committed as `8a3d8040`, fast-forward
+merged into main. Post-merge smoke on that commit:
+
+```text
+mvn --batch-mode -pl use-plugin test -Dtest=ConstraintClosureTest,ConstraintOclTest,CounterTeamIntegrationTest,LiveJaCaMoAuctionIntegrationTest
+```
+
+**13/13 PASS**, zero failures/errors/skips (2026-09-19). No source changes followed
+this gate. Metrics commit `0e9474a0` remains an ancestor and its workflow bytes are
+unchanged. Phase 23 remains the separate `10225d84` commit. The accompanying docs-only
+closure commit records this post-merge result; push is verified against remote main
+at completion. Phase 25 and later final acceptance gates remain outside this request.
