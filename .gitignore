@@ -115,5 +115,7 @@ fabric.properties
 /use-core/target
 /use-gui/target
 /use-assembly/target
+/use-plugin/target
+/docs/archunit-results/*-current-failure-report.txt
 
 **/.DS_Store

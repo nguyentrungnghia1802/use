@@ -1,0 +1,2067 @@
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.1.0"
+    },
+    "mappingId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "LOCKED_BASELINE_V1",
+        "FROZEN"
+      ]
+    },
+    "createdDate": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "architecture": {
+      "type": "object",
+      "properties": {
+        "verificationInput": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "minLength": 1
+            },
+            "entryPoint": {
+              "type": "string",
+              "minLength": 1
+            },
+            "resolvedDependentSources": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "directEcoreAsProjectInput": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "kind",
+            "entryPoint",
+            "resolvedDependentSources",
+            "directEcoreAsProjectInput"
+          ],
+          "additionalProperties": false
+        },
+        "semanticBoundary": {
+          "type": "object",
+          "properties": {
+            "inputToMapper": {
+              "type": "string",
+              "minLength": 1
+            },
+            "conformsTo": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rule": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "inputToMapper",
+            "conformsTo",
+            "rule"
+          ],
+          "additionalProperties": false
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "minLength": 1
+              },
+              "defaultFileName": {
+                "type": "string",
+                "minLength": 1
+              },
+              "contains": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "internalRoot": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "kind",
+              "defaultFileName",
+              "contains",
+              "internalRoot"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "oclStage": {
+          "type": "object",
+          "properties": {
+            "mappingFileContainsOclConstraints": {
+              "type": "boolean"
+            },
+            "policy": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "mappingFileContainsOclConstraints",
+            "policy"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "verificationInput",
+        "semanticBoundary",
+        "outputs",
+        "oclStage"
+      ],
+      "additionalProperties": false
+    },
+    "sourceMetamodel": {
+      "type": "object",
+      "properties": {
+        "artifact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "packageName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "nsURI": {
+          "type": "string",
+          "minLength": 1
+        },
+        "nsPrefix": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifactStatus": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expectedStatistics": {
+          "type": "object",
+          "properties": {
+            "EClasses": {
+              "type": "integer"
+            },
+            "EAttributes": {
+              "type": "integer"
+            },
+            "EReferences": {
+              "type": "integer"
+            },
+            "EGeneralizations": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "EClasses",
+            "EAttributes",
+            "EReferences",
+            "EGeneralizations"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "artifact",
+        "packageName",
+        "nsURI",
+        "nsPrefix",
+        "sha256",
+        "artifactStatus",
+        "expectedStatistics"
+      ],
+      "additionalProperties": false
+    },
+    "targetUSE": {
+      "const": {
+        "repository": "https://github.com/useocl/use/",
+        "manual": "https://github.com/useocl/use/blob/main/manual/main.md",
+        "textualModelExtension": ".use",
+        "stateScriptExtension": ".cmd",
+        "constructs": {
+          "model": "MModel / model",
+          "class": "MClass / class",
+          "attribute": "MAttribute / attributes",
+          "association": "MAssociation / association",
+          "composition": "MAssociation / composition",
+          "operation": "MOperation / operations",
+          "systemState": "MSystemState / shell state",
+          "constraints": "OCL invariant / precondition / postcondition"
+        },
+        "validatedRevision": "30d480dbcca2f404b1350039516a56f46c1efb1f",
+        "validatedVersion": "7.5.0",
+        "validationScope": "Static metamodel compilation only; no MSystemState, object binding or operation replay."
+      }
+    },
+    "policies": {
+      "const": {
+        "datatypeMappings": [
+          {
+            "source": "EString",
+            "target": "String"
+          },
+          {
+            "source": "EInt",
+            "target": "Integer"
+          },
+          {
+            "source": "EBoolean",
+            "target": "Boolean"
+          }
+        ],
+        "classMapping": "Each EClass becomes a USE class with the same name. abstract=true is preserved.",
+        "attributeMapping": "Each declared EAttribute becomes a scalar USE attribute. The current baseline contains only 0..1 scalar EAttributes. The mapper copies resolved semantic values; it does not invent values for reconstruction-clipped attributes.",
+        "inheritanceMapping": "Each eSuperType becomes USE class inheritance without semantic normalization.",
+        "containmentReferenceMapping": {
+          "target": "composition",
+          "firstEnd": "container/source class (diamond end)",
+          "firstEndMultiplicity": "0..1 because an EObject has at most one container for this containment link",
+          "secondEndMultiplicity": "copy EReference lower/upper",
+          "forwardRole": "exact EReference name",
+          "reverseRole": "source_<EReferenceName>; on collision source_<SourceOwner>_<EReferenceName>",
+          "reverseNavigationAuthoritative": false
+        },
+        "nonContainmentReferenceMapping": {
+          "target": "association",
+          "firstEndMultiplicity": "* because no eOpposite/reverse bound is declared in this reconstruction",
+          "secondEndMultiplicity": "copy EReference lower/upper",
+          "forwardRole": "exact EReference name",
+          "reverseRole": "source_<EReferenceName>; on collision source_<SourceOwner>_<EReferenceName>",
+          "reverseNavigationAuthoritative": false
+        },
+        "identifierPolicy": {
+          "metamodelElements": "Preserve source spelling and owner-qualified identity exactly. Three USE keyword attributes use explicit reversible targetAttributeEscapes; no Core rename.",
+          "projectObjectIdentifiers": "deterministically sanitize to USE identifiers; preserve original JaCaMo identifier in transformation trace",
+          "generatedConcreteArtifactClass": "use resolved Java simple class name; on collision append a stable short hash of the fully-qualified name",
+          "targetAttributeEscapes": {
+            "FormationConstraints.from": "ecore_FormationConstraints_from",
+            "Link.from": "ecore_Link_from",
+            "OPlan.Sequence": "ecore_OPlan_Sequence"
+          }
+        },
+        "sourceExpressionPolicy": "Jason expressions, rules, contexts, signal/await expressions and Moise string-valued fields remain String unless a later verified semantic parser introduces a typed representation. They are not silently parsed as OCL.",
+        "constraintPolicy": "Mapping establishes the USE semantic substrate. OCL constraints are maintained separately and bind to mapped USE classes/operations.",
+        "evolutionPolicy": {
+          "fingerprintMismatch": "RECONCILE_REQUIRED",
+          "stableSourceKey": "dSML4JaCaMo::<EClass>[#<feature>]",
+          "unchangedElement": "reuse mapping",
+          "addedEClassOrFeature": "generate mapping suggestion using generic rules but mark REVIEW_REQUIRED before accepting",
+          "changedTypeBoundsContainmentOrSupertype": "BLOCK until mapping is reconciled",
+          "removedOrRenamedElement": "mark stale mapping and BLOCK; never silently retarget by name similarity",
+          "versioning": "increment mapping minor version for compatible additions; major version for semantic/breaking changes"
+        }
+      }
+    },
+    "classMappings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "pattern": "^dSML4JaCaMo::[A-Za-z_][A-Za-z0-9_]*$"
+          },
+          "sourceKind": {
+            "const": "EClass"
+          },
+          "dimension": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sourceAbstract": {
+            "type": "boolean"
+          },
+          "target": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "minLength": 1
+              },
+              "internalConcept": {
+                "type": "string",
+                "minLength": 1
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "abstract": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "kind",
+              "internalConcept",
+              "name",
+              "abstract"
+            ],
+            "additionalProperties": false
+          },
+          "policy": {
+            "type": "string",
+            "minLength": 1
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^C[0-9]{3}$"
+          }
+        },
+        "required": [
+          "source",
+          "sourceKind",
+          "dimension",
+          "sourceAbstract",
+          "target",
+          "policy",
+          "id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "attributeMappings": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "source": {
+                "type": "string",
+                "pattern": "^dSML4JaCaMo::[A-Za-z_][A-Za-z0-9_]*#[A-Za-z_][A-Za-z0-9_]*$"
+              },
+              "sourceKind": {
+                "const": "EAttribute"
+              },
+              "dimension": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceOwner": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceName": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceType": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceMultiplicity": {
+                "type": "object",
+                "properties": {
+                  "lower": {
+                    "type": "integer"
+                  },
+                  "upper": {
+                    "type": "integer"
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "lower",
+                  "upper",
+                  "text"
+                ],
+                "additionalProperties": false
+              },
+              "target": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "internalConcept": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "owner": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "type": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "kind",
+                  "internalConcept",
+                  "owner",
+                  "name",
+                  "type"
+                ],
+                "additionalProperties": false
+              },
+              "valuePolicy": {
+                "type": "string",
+                "minLength": 1
+              },
+              "absencePolicy": {
+                "type": "string",
+                "minLength": 1
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^A[0-9]{3}$"
+              }
+            },
+            "required": [
+              "source",
+              "sourceKind",
+              "dimension",
+              "sourceOwner",
+              "sourceName",
+              "sourceType",
+              "sourceMultiplicity",
+              "target",
+              "valuePolicy",
+              "absencePolicy",
+              "id"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "source": {
+                "type": "string",
+                "pattern": "^dSML4JaCaMo::[A-Za-z_][A-Za-z0-9_]*#[A-Za-z_][A-Za-z0-9_]*$"
+              },
+              "sourceKind": {
+                "const": "EAttribute"
+              },
+              "dimension": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceOwner": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceName": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceType": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceMultiplicity": {
+                "type": "object",
+                "properties": {
+                  "lower": {
+                    "type": "integer"
+                  },
+                  "upper": {
+                    "type": "integer"
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "lower",
+                  "upper",
+                  "text"
+                ],
+                "additionalProperties": false
+              },
+              "target": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "internalConcept": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "owner": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "type": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "kind",
+                  "internalConcept",
+                  "owner",
+                  "name",
+                  "type"
+                ],
+                "additionalProperties": false
+              },
+              "valuePolicy": {
+                "type": "string",
+                "minLength": 1
+              },
+              "absencePolicy": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceExplicitDefaultLiteral": {
+                "type": "string",
+                "minLength": 1
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^A[0-9]{3}$"
+              }
+            },
+            "required": [
+              "source",
+              "sourceKind",
+              "dimension",
+              "sourceOwner",
+              "sourceName",
+              "sourceType",
+              "sourceMultiplicity",
+              "target",
+              "valuePolicy",
+              "absencePolicy",
+              "sourceExplicitDefaultLiteral",
+              "id"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "inheritanceMappings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "pattern": "^dSML4JaCaMo::[A-Za-z_][A-Za-z0-9_]*->super::[A-Za-z_][A-Za-z0-9_]*$"
+          },
+          "sourceKind": {
+            "const": "eSuperType"
+          },
+          "dimension": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "minLength": 1
+              },
+              "subclass": {
+                "type": "string",
+                "minLength": 1
+              },
+              "superclass": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "kind",
+              "subclass",
+              "superclass"
+            ],
+            "additionalProperties": false
+          },
+          "policy": {
+            "type": "string",
+            "minLength": 1
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^I[0-9]{3}$"
+          }
+        },
+        "required": [
+          "source",
+          "sourceKind",
+          "dimension",
+          "target",
+          "policy",
+          "id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "referenceMappings": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "source": {
+                "type": "string",
+                "pattern": "^dSML4JaCaMo::[A-Za-z_][A-Za-z0-9_]*#[A-Za-z_][A-Za-z0-9_]*$"
+              },
+              "sourceKind": {
+                "const": "EReference"
+              },
+              "dimension": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceOwner": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceName": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceTarget": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceContainment": {
+                "type": "boolean"
+              },
+              "sourceMultiplicity": {
+                "type": "object",
+                "properties": {
+                  "lower": {
+                    "type": "integer"
+                  },
+                  "upper": {
+                    "type": "integer"
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "lower",
+                  "upper",
+                  "text"
+                ],
+                "additionalProperties": false
+              },
+              "target": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "internalConcept": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "firstEnd": {
+                    "type": "object",
+                    "properties": {
+                      "class": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "multiplicity": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "role": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "class",
+                      "multiplicity",
+                      "role"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "secondEnd": {
+                    "type": "object",
+                    "properties": {
+                      "class": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "multiplicity": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "role": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "ordered": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "class",
+                      "multiplicity",
+                      "role",
+                      "ordered"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "diamondEnd": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "kind",
+                  "internalConcept",
+                  "name",
+                  "firstEnd",
+                  "secondEnd",
+                  "diamondEnd"
+                ],
+                "additionalProperties": false
+              },
+              "navigation": {
+                "type": "object",
+                "properties": {
+                  "forward": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "sourceAuthoritative": {
+                    "type": "boolean"
+                  },
+                  "reverse": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "reverseAuthoritative": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "forward",
+                  "sourceAuthoritative",
+                  "reverse",
+                  "reverseAuthoritative"
+                ],
+                "additionalProperties": false
+              },
+              "runtimeLinkCommand": {
+                "type": "string",
+                "minLength": 1
+              },
+              "policy": {
+                "type": "string",
+                "minLength": 1
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^R[0-9]{3}$"
+              },
+              "sourceOrdered": {
+                "type": "boolean"
+              },
+              "sourceUnique": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "source",
+              "sourceKind",
+              "dimension",
+              "sourceOwner",
+              "sourceName",
+              "sourceTarget",
+              "sourceContainment",
+              "sourceMultiplicity",
+              "target",
+              "navigation",
+              "runtimeLinkCommand",
+              "policy",
+              "id",
+              "sourceOrdered",
+              "sourceUnique"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "source": {
+                "type": "string",
+                "pattern": "^dSML4JaCaMo::[A-Za-z_][A-Za-z0-9_]*#[A-Za-z_][A-Za-z0-9_]*$"
+              },
+              "sourceKind": {
+                "const": "EReference"
+              },
+              "dimension": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceOwner": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceName": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceTarget": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceContainment": {
+                "type": "boolean"
+              },
+              "sourceMultiplicity": {
+                "type": "object",
+                "properties": {
+                  "lower": {
+                    "type": "integer"
+                  },
+                  "upper": {
+                    "type": "integer"
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "lower",
+                  "upper",
+                  "text"
+                ],
+                "additionalProperties": false
+              },
+              "target": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "internalConcept": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "firstEnd": {
+                    "type": "object",
+                    "properties": {
+                      "class": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "multiplicity": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "role": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "class",
+                      "multiplicity",
+                      "role"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "secondEnd": {
+                    "type": "object",
+                    "properties": {
+                      "class": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "multiplicity": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "role": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "ordered": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "class",
+                      "multiplicity",
+                      "role",
+                      "ordered"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "kind",
+                  "internalConcept",
+                  "name",
+                  "firstEnd",
+                  "secondEnd"
+                ],
+                "additionalProperties": false
+              },
+              "navigation": {
+                "type": "object",
+                "properties": {
+                  "forward": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "sourceAuthoritative": {
+                    "type": "boolean"
+                  },
+                  "reverse": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "reverseAuthoritative": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "forward",
+                  "sourceAuthoritative",
+                  "reverse",
+                  "reverseAuthoritative"
+                ],
+                "additionalProperties": false
+              },
+              "runtimeLinkCommand": {
+                "type": "string",
+                "minLength": 1
+              },
+              "policy": {
+                "type": "string",
+                "minLength": 1
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^R[0-9]{3}$"
+              },
+              "sourceOrdered": {
+                "type": "boolean"
+              },
+              "sourceUnique": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "source",
+              "sourceKind",
+              "dimension",
+              "sourceOwner",
+              "sourceName",
+              "sourceTarget",
+              "sourceContainment",
+              "sourceMultiplicity",
+              "target",
+              "navigation",
+              "runtimeLinkCommand",
+              "policy",
+              "id",
+              "sourceOrdered",
+              "sourceUnique"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "verificationProjections": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "const": "VP001"
+              },
+              "name": {
+                "const": "ConcreteArtifactTypeProjection"
+              },
+              "status": {
+                "const": "ENABLED_WHEN_RESOLVED"
+              },
+              "source": {
+                "const": "Parsed JaCaMo project: concrete CArtAgO artifact implementation type referenced by the project"
+              },
+              "preconditions": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "target": {
+                "const": {
+                  "kind": "USE_CLASS",
+                  "rule": "Generate one concrete USE subclass of Artifact per distinct resolved artifact implementation type."
+                }
+              },
+              "trace": {
+                "type": "string",
+                "minLength": 1
+              },
+              "metamodelContract": {
+                "type": "object",
+                "properties": {
+                  "sourceElements": {
+                    "const": [
+                      "dSML4JaCaMo::Artifact",
+                      "dSML4JaCaMo::Artifact#className"
+                    ]
+                  },
+                  "structuralBindings": {
+                    "const": [
+                      "C016"
+                    ]
+                  },
+                  "targetConcept": {
+                    "const": "MClass"
+                  },
+                  "baseClass": {
+                    "const": "Artifact"
+                  },
+                  "dependsOn": {
+                    "const": []
+                  },
+                  "mode": {
+                    "const": "TYPE_TEMPLATE"
+                  },
+                  "direction": {
+                    "const": "JACAMO_TO_USE"
+                  },
+                  "purpose": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "assumptions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "minItems": 1
+                  },
+                  "informationLoss": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "externalInputRequired": {
+                    "const": true
+                  },
+                  "baselineMutation": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "sourceElements",
+                  "structuralBindings",
+                  "targetConcept",
+                  "baseClass",
+                  "dependsOn",
+                  "mode",
+                  "direction",
+                  "purpose",
+                  "assumptions",
+                  "informationLoss",
+                  "externalInputRequired",
+                  "baselineMutation"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "status",
+              "source",
+              "preconditions",
+              "target",
+              "trace",
+              "metamodelContract"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "const": "VP002"
+              },
+              "name": {
+                "const": "ObservablePropertyStateProjection"
+              },
+              "status": {
+                "const": "ENABLED_ONLY_WITH_RESOLVED_NAME_AND_TYPE"
+              },
+              "source": {
+                "const": "Parsed concrete observable property owned by a concrete Artifact instance/type"
+              },
+              "structuralRepresentation": {
+                "type": "string",
+                "minLength": 1
+              },
+              "target": {
+                "const": {
+                  "kind": "USE_ATTRIBUTE",
+                  "owner": "generated concrete Artifact subclass",
+                  "name": "resolved observable property name",
+                  "type": "resolved USE-compatible type"
+                }
+              },
+              "runtime": {
+                "type": "string",
+                "minLength": 1
+              },
+              "fallback": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              },
+              "metamodelContract": {
+                "type": "object",
+                "properties": {
+                  "sourceElements": {
+                    "const": [
+                      "dSML4JaCaMo::Artifact",
+                      "dSML4JaCaMo::ObsProperty",
+                      "dSML4JaCaMo::Artifact#obsproperty"
+                    ]
+                  },
+                  "structuralBindings": {
+                    "const": [
+                      "C016",
+                      "C018",
+                      "R034"
+                    ]
+                  },
+                  "targetConcept": {
+                    "const": "MAttribute"
+                  },
+                  "baseClass": {
+                    "const": "Artifact"
+                  },
+                  "dependsOn": {
+                    "const": [
+                      "VP001"
+                    ]
+                  },
+                  "mode": {
+                    "const": "ATTRIBUTE_TEMPLATE"
+                  },
+                  "direction": {
+                    "const": "JACAMO_TO_USE"
+                  },
+                  "purpose": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "assumptions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "minItems": 1
+                  },
+                  "informationLoss": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "externalInputRequired": {
+                    "const": true
+                  },
+                  "baselineMutation": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "sourceElements",
+                  "structuralBindings",
+                  "targetConcept",
+                  "baseClass",
+                  "dependsOn",
+                  "mode",
+                  "direction",
+                  "purpose",
+                  "assumptions",
+                  "informationLoss",
+                  "externalInputRequired",
+                  "baselineMutation"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "status",
+              "source",
+              "structuralRepresentation",
+              "target",
+              "runtime",
+              "fallback",
+              "reason",
+              "metamodelContract"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "const": "VP003"
+              },
+              "name": {
+                "const": "CArtAgOOperationProjection"
+              },
+              "status": {
+                "const": "ENABLED_ONLY_WITH_RESOLVED_SIGNATURE"
+              },
+              "source": {
+                "const": "Parsed concrete CArtAgO operation owned by a concrete Artifact implementation"
+              },
+              "structuralRepresentation": {
+                "type": "string",
+                "minLength": 1
+              },
+              "target": {
+                "const": {
+                  "kind": "USE_OPERATION",
+                  "internalConcept": "MOperation",
+                  "owner": "generated concrete Artifact subclass",
+                  "name": "resolved operation name",
+                  "parameters": "resolved parameter names/types",
+                  "resultType": "resolved result type when meaningful, otherwise no result"
+                }
+              },
+              "fallback": {
+                "type": "string",
+                "minLength": 1
+              },
+              "oclCapability": {
+                "type": "string",
+                "minLength": 1
+              },
+              "metamodelContract": {
+                "type": "object",
+                "properties": {
+                  "sourceElements": {
+                    "const": [
+                      "dSML4JaCaMo::Artifact",
+                      "dSML4JaCaMo::AbsOperation",
+                      "dSML4JaCaMo::Operation",
+                      "dSML4JaCaMo::LinkedOperation",
+                      "dSML4JaCaMo::InternalOperation",
+                      "dSML4JaCaMo::GuardOperation",
+                      "dSML4JaCaMo::Artifact#operation"
+                    ]
+                  },
+                  "structuralBindings": {
+                    "const": [
+                      "C016",
+                      "C019",
+                      "R035"
+                    ]
+                  },
+                  "targetConcept": {
+                    "const": "MOperation"
+                  },
+                  "baseClass": {
+                    "const": "Artifact"
+                  },
+                  "dependsOn": {
+                    "const": [
+                      "VP001"
+                    ]
+                  },
+                  "mode": {
+                    "const": "OPERATION_TEMPLATE"
+                  },
+                  "direction": {
+                    "const": "JACAMO_TO_USE"
+                  },
+                  "purpose": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "assumptions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "minItems": 1
+                  },
+                  "informationLoss": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "externalInputRequired": {
+                    "const": true
+                  },
+                  "baselineMutation": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "sourceElements",
+                  "structuralBindings",
+                  "targetConcept",
+                  "baseClass",
+                  "dependsOn",
+                  "mode",
+                  "direction",
+                  "purpose",
+                  "assumptions",
+                  "informationLoss",
+                  "externalInputRequired",
+                  "baselineMutation"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "status",
+              "source",
+              "structuralRepresentation",
+              "target",
+              "fallback",
+              "oclCapability",
+              "metamodelContract"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "const": "VP004"
+              },
+              "name": {
+                "const": "ExternalActionOperationConsistency"
+              },
+              "status": {
+                "const": "STRUCTURAL_LINK_PRESERVED"
+              },
+              "source": {
+                "const": "ExternalAction.operation -> AbsOperation"
+              },
+              "target": {
+                "const": "Keep the mapped USE association from ExternalAction to AbsOperation and, when VP003 exists, add transformation trace from the AbsOperation object to its projected USE operation."
+              },
+              "purpose": {
+                "type": "string",
+                "minLength": 1
+              },
+              "metamodelContract": {
+                "type": "object",
+                "properties": {
+                  "sourceElements": {
+                    "const": [
+                      "dSML4JaCaMo::ExternalAction",
+                      "dSML4JaCaMo::AbsOperation",
+                      "dSML4JaCaMo::ExternalAction#operation"
+                    ]
+                  },
+                  "structuralBindings": {
+                    "const": [
+                      "R058"
+                    ]
+                  },
+                  "targetConcept": {
+                    "const": "MAssociation"
+                  },
+                  "baseClass": {
+                    "const": null
+                  },
+                  "dependsOn": {
+                    "const": []
+                  },
+                  "mode": {
+                    "const": "STRUCTURAL_REUSE"
+                  },
+                  "direction": {
+                    "const": "JACAMO_TO_USE"
+                  },
+                  "purpose": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "assumptions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "minItems": 1
+                  },
+                  "informationLoss": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "externalInputRequired": {
+                    "const": false
+                  },
+                  "baselineMutation": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "sourceElements",
+                  "structuralBindings",
+                  "targetConcept",
+                  "baseClass",
+                  "dependsOn",
+                  "mode",
+                  "direction",
+                  "purpose",
+                  "assumptions",
+                  "informationLoss",
+                  "externalInputRequired",
+                  "baselineMutation"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "status",
+              "source",
+              "target",
+              "purpose",
+              "metamodelContract"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "const": "VP005"
+              },
+              "name": {
+                "const": "ObservablePropertyBeliefConsistency"
+              },
+              "status": {
+                "const": "STRUCTURAL_LINK_PRESERVED"
+              },
+              "source": {
+                "const": "ObsProperty.obsproperty -> Belief"
+              },
+              "target": {
+                "const": "Use mapped USE association unchanged. VP002 may additionally expose the concrete state value as an artifact attribute."
+              },
+              "purpose": {
+                "type": "string",
+                "minLength": 1
+              },
+              "metamodelContract": {
+                "type": "object",
+                "properties": {
+                  "sourceElements": {
+                    "const": [
+                      "dSML4JaCaMo::ObsProperty",
+                      "dSML4JaCaMo::Belief",
+                      "dSML4JaCaMo::ObsProperty#obsproperty"
+                    ]
+                  },
+                  "structuralBindings": {
+                    "const": [
+                      "R037"
+                    ]
+                  },
+                  "targetConcept": {
+                    "const": "MAssociation"
+                  },
+                  "baseClass": {
+                    "const": null
+                  },
+                  "dependsOn": {
+                    "const": []
+                  },
+                  "mode": {
+                    "const": "STRUCTURAL_REUSE"
+                  },
+                  "direction": {
+                    "const": "JACAMO_TO_USE"
+                  },
+                  "purpose": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "assumptions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "minItems": 1
+                  },
+                  "informationLoss": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "externalInputRequired": {
+                    "const": false
+                  },
+                  "baselineMutation": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "sourceElements",
+                  "structuralBindings",
+                  "targetConcept",
+                  "baseClass",
+                  "dependsOn",
+                  "mode",
+                  "direction",
+                  "purpose",
+                  "assumptions",
+                  "informationLoss",
+                  "externalInputRequired",
+                  "baselineMutation"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "status",
+              "source",
+              "target",
+              "purpose",
+              "metamodelContract"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "const": "VP006"
+              },
+              "name": {
+                "const": "OrganisationalGoalAgentGoalConsistency"
+              },
+              "status": {
+                "const": "STRUCTURAL_LINK_PRESERVED"
+              },
+              "source": {
+                "const": "OGoal.OGoalToGoal -> Goal"
+              },
+              "target": {
+                "const": "Use mapped USE association unchanged."
+              },
+              "purpose": {
+                "type": "string",
+                "minLength": 1
+              },
+              "metamodelContract": {
+                "type": "object",
+                "properties": {
+                  "sourceElements": {
+                    "const": [
+                      "dSML4JaCaMo::OGoal",
+                      "dSML4JaCaMo::Goal",
+                      "dSML4JaCaMo::OGoal#OGoalToGoal"
+                    ]
+                  },
+                  "structuralBindings": {
+                    "const": [
+                      "R028"
+                    ]
+                  },
+                  "targetConcept": {
+                    "const": "MAssociation"
+                  },
+                  "baseClass": {
+                    "const": null
+                  },
+                  "dependsOn": {
+                    "const": []
+                  },
+                  "mode": {
+                    "const": "STRUCTURAL_REUSE"
+                  },
+                  "direction": {
+                    "const": "JACAMO_TO_USE"
+                  },
+                  "purpose": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "assumptions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "minItems": 1
+                  },
+                  "informationLoss": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "externalInputRequired": {
+                    "const": false
+                  },
+                  "baselineMutation": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "sourceElements",
+                  "structuralBindings",
+                  "targetConcept",
+                  "baseClass",
+                  "dependsOn",
+                  "mode",
+                  "direction",
+                  "purpose",
+                  "assumptions",
+                  "informationLoss",
+                  "externalInputRequired",
+                  "baselineMutation"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "status",
+              "source",
+              "target",
+              "purpose",
+              "metamodelContract"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "const": "VP007"
+              },
+              "name": {
+                "const": "NormPreservation"
+              },
+              "status": {
+                "const": "LOCKED"
+              },
+              "source": {
+                "const": "Norm, Nrole, NMission and their attributes"
+              },
+              "target": {
+                "const": "Represent Norm as USE class/object plus associations only."
+              },
+              "forbiddenTransformation": {
+                "type": "string",
+                "minLength": 1
+              },
+              "purpose": {
+                "type": "string",
+                "minLength": 1
+              },
+              "metamodelContract": {
+                "type": "object",
+                "properties": {
+                  "sourceElements": {
+                    "const": [
+                      "dSML4JaCaMo::Norm",
+                      "dSML4JaCaMo::Norm#type",
+                      "dSML4JaCaMo::Norm#timeConstraint",
+                      "dSML4JaCaMo::Norm#Nrole",
+                      "dSML4JaCaMo::Norm#NMission"
+                    ]
+                  },
+                  "structuralBindings": {
+                    "const": [
+                      "C006",
+                      "A004",
+                      "A005",
+                      "R012",
+                      "R013"
+                    ]
+                  },
+                  "targetConcept": {
+                    "const": "MClass"
+                  },
+                  "baseClass": {
+                    "const": "Norm"
+                  },
+                  "dependsOn": {
+                    "const": []
+                  },
+                  "mode": {
+                    "const": "STRUCTURAL_REUSE"
+                  },
+                  "direction": {
+                    "const": "JACAMO_TO_USE"
+                  },
+                  "purpose": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "assumptions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "minItems": 1
+                  },
+                  "informationLoss": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "externalInputRequired": {
+                    "const": false
+                  },
+                  "baselineMutation": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "sourceElements",
+                  "structuralBindings",
+                  "targetConcept",
+                  "baseClass",
+                  "dependsOn",
+                  "mode",
+                  "direction",
+                  "purpose",
+                  "assumptions",
+                  "informationLoss",
+                  "externalInputRequired",
+                  "baselineMutation"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "status",
+              "source",
+              "target",
+              "forbiddenTransformation",
+              "purpose",
+              "metamodelContract"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "minItems": 7,
+      "maxItems": 7
+    },
+    "runtimeMaterialization": {
+      "type": "object",
+      "properties": {
+        "initialSnapshot": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "semanticElement": {
+                "type": "string",
+                "minLength": 1
+              },
+              "useAction": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "semanticElement",
+              "useAction"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "operationReplay": {
+          "type": "object",
+          "properties": {
+            "when": {
+              "type": "string",
+              "minLength": 1
+            },
+            "enter": {
+              "type": "string",
+              "minLength": 1
+            },
+            "exit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "effectMaterialization": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "when",
+            "enter",
+            "exit",
+            "effectMaterialization"
+          ],
+          "additionalProperties": false
+        },
+        "directApiAlternative": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "initialSnapshot",
+        "operationReplay",
+        "directApiAlternative"
+      ],
+      "additionalProperties": false
+    },
+    "unresolvedSourceFeatures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "visibleAttribute": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "string",
+            "minLength": 1
+          },
+          "decision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "minLength": 1
+          },
+          "mappingStatus": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "source",
+          "owner",
+          "visibleAttribute",
+          "evidence",
+          "decision",
+          "status",
+          "mappingStatus"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "reviewFlags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "severity": {
+            "type": "string",
+            "minLength": 1
+          },
+          "mappingAction": {
+            "type": "string",
+            "minLength": 1
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "source",
+          "severity",
+          "mappingAction",
+          "note"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "statistics": {
+      "type": "object",
+      "properties": {
+        "classMappings": {
+          "type": "integer"
+        },
+        "attributeMappings": {
+          "type": "integer"
+        },
+        "referenceMappings": {
+          "type": "integer"
+        },
+        "inheritanceMappings": {
+          "type": "integer"
+        },
+        "verificationProjectionRules": {
+          "type": "integer"
+        },
+        "unresolvedNamedButUndeclaredAttributes": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "classMappings",
+        "attributeMappings",
+        "referenceMappings",
+        "inheritanceMappings",
+        "verificationProjectionRules",
+        "unresolvedNamedButUndeclaredAttributes"
+      ],
+      "additionalProperties": false
+    },
+    "$schema": {
+      "const": "jacamo-use-mapping.schema.json"
+    },
+    "contract": {
+      "const": {
+        "layer": "METAMODEL_MAPPING",
+        "version": "1.1.0",
+        "sourceIdentity": "dSML4JaCaMo::<EClass>[#<declaredFeature>] or dSML4JaCaMo::<Subclass>->super::<Superclass>",
+        "inScope": [
+          "EClass",
+          "EAttribute",
+          "EReference",
+          "eSuperType",
+          "conditional metamodel projection"
+        ],
+        "outOfScope": [
+          "concrete-model binding",
+          "runtime object identity",
+          "receiver resolution",
+          "live USE MSystemState",
+          "event subscription",
+          "JaCaMo parsing",
+          "OCL/deontic execution"
+        ],
+        "legacySections": {
+          "architecture.verificationInput": "LATER_LAYER_CONTEXT",
+          "architecture.outputs": "LATER_LAYER_CONTEXT",
+          "runtimeMaterialization": "LATER_LAYER_CONTEXT",
+          "referenceMappings.runtimeLinkCommand": "NON_EXECUTABLE_LEGACY_TEMPLATE"
+        },
+        "identityRule": "Feature identity always includes declaring owner; bare feature names are not lookup keys. Inherited features resolve through their declaring owner.",
+        "reverseRoleRule": "Retain unique source_<feature>; for colliding reverse roles use source_<declaringOwner>_<feature>. Legacy ambiguous aliases are not valid identifiers.",
+        "orderingRule": "Copy EReference ordered/unique metadata; ordered=true on many-valued forward USE association ends; inverse order is unspecified.",
+        "containmentRule": "Map source containment to USE composition at firstEnd; per-link inverse 0..1. No runtime global-container guarantee is asserted by a metamodel declaration.",
+        "valueRule": "Preserve EType/default provenance. USE scalar values can be undefined; applying source defaults and distinguishing unset from effective default belong to later materialization.",
+        "projectionRule": "VP001-003 are typed metamodel templates with explicit external-input preconditions, not concrete target declarations. VP004-007 reuse existing structural bindings without duplicating them.",
+        "compatibility": "1.1.0 adds schema/contract/projection anchors and order metadata. Eight previously ambiguous, invalid USE reverse roles are repaired; C/A/R/I IDs, source keys and forward names are unchanged. Consumers of legacy reverse strings must use the documented replacement names. Three source attribute names rejected by the USE lexer (from, Sequence) receive explicit target-only escapes; source keys remain unchanged."
+      }
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "mappingId",
+    "status",
+    "createdDate",
+    "purpose",
+    "architecture",
+    "sourceMetamodel",
+    "targetUSE",
+    "policies",
+    "classMappings",
+    "attributeMappings",
+    "inheritanceMappings",
+    "referenceMappings",
+    "verificationProjections",
+    "runtimeMaterialization",
+    "unresolvedSourceFeatures",
+    "reviewFlags",
+    "statistics",
+    "$schema",
+    "contract"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:jacamo:metamodel-mapping:schema:1.1.0",
+  "title": "DSML4JaCaMo metamodel mapping V1 (schema 1.1.0)"
+}
