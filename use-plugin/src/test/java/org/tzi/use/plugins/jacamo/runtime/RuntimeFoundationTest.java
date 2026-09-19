@@ -61,11 +61,8 @@ class RuntimeFoundationTest {
                 semanticId, Map.of("attribute", "open", "valueType", "BOOLEAN", "value", false), null)).status());
         assertFalse(((BooleanValue) fixture.attribute("open")).value());
 
-        assertEquals(MutationStatus.APPLIED, engine.apply(event(2, RuntimeEventKind.CREATE_OBJECT, "runtime:new",
+        assertEquals(MutationStatus.QUARANTINED, engine.apply(event(2, RuntimeEventKind.CREATE_OBJECT, "runtime:new",
                 semanticId, Map.of("useClass", "AuctionArtifact", "useObject", "runtimeAuction"), null)).status());
-        assertNotNull(fixture.direct().system().state().objectByName("runtimeAuction"));
-        assertEquals(MutationStatus.APPLIED, engine.apply(event(3, RuntimeEventKind.DESTROY_OBJECT, "runtime:new",
-                semanticId, Map.of(), null)).status());
         assertNull(fixture.direct().system().state().objectByName("runtimeAuction"));
 
         LinkPlan link = fixture.instances().links().getFirst();
@@ -96,8 +93,55 @@ class RuntimeFoundationTest {
         MutationResult unresolved = engine.apply(event(10, RuntimeEventKind.SET_ATTRIBUTE, "unknown-runtime",
                 null, Map.of("attribute", "open", "valueType", "BOOLEAN", "value", true), null));
         assertEquals(MutationStatus.QUARANTINED, unresolved.status());
-        assertEquals(1, engine.quarantinedEvents().size());
+        assertEquals(2, engine.quarantinedEvents().size());
         assertFalse(((BooleanValue) fixture.attribute("open")).value(), "unknown trace must not corrupt state");
+    }
+
+    @Test
+    void unrelatedSemanticTraceCannotAuthorizeCreationAndUnknownPropertyCannotDisappear() {
+        Fixture f = fixture();
+        var result = f.engine().apply(event(1, RuntimeEventKind.CREATE_OBJECT, "unknown-object",
+            f.artifactTrace().sourceSemanticId(), Map.of("useClass", "AuctionArtifact", "useObject", "forged"), null));
+        assertEquals(MutationStatus.QUARANTINED, result.status());
+        assertNull(f.direct().system().state().objectByName("forged"));
+        result = f.engine().apply(event(2, RuntimeEventKind.OBS_PROPERTY_CHANGED, f.runtimeKey(),
+            f.artifactTrace().sourceSemanticId(), Map.of("property", "unbound", "values", List.of(1)), null));
+        assertEquals(MutationStatus.QUARANTINED, result.status());
+    }
+
+    @Test
+    void terminalCannotCloseAnotherTargetAndLinkReplayIsIdempotent() {
+        Fixture f = fixture();
+        assertEquals(MutationStatus.APPLIED, f.engine().apply(event(1, RuntimeEventKind.OP_ENTER, f.runtimeKey(),
+            f.artifactTrace().sourceSemanticId(), Map.of("operation", "placeBid", "arguments", List.of("x", 1)), "same")).status());
+        assertEquals(MutationStatus.QUARANTINED, f.engine().apply(event(2, RuntimeEventKind.OP_EXIT, f.runtimeKey(),
+            "wrong-semantic-id", Map.of(), "same")).status());
+        assertEquals(MutationStatus.APPLIED, f.engine().apply(event(3, RuntimeEventKind.OP_EXIT, f.runtimeKey(),
+            f.artifactTrace().sourceSemanticId(), Map.of(), "same")).status());
+        LinkPlan link = f.instances().links().getFirst();
+        var payload = Map.<String,Object>of("association", link.association(), "participants", List.of(link.sourceObject(),link.targetObject()));
+        assertEquals(MutationStatus.APPLIED, f.engine().apply(event(4, RuntimeEventKind.INSERT_LINK, f.runtimeKey(),
+            f.artifactTrace().sourceSemanticId(),payload,null)).status());
+    }
+
+    @Test
+    void tracedLifecycleRestoresExactObjectAndStrictValuesRejectLossyInput() {
+        Fixture f = fixture();
+        String name = f.artifactTrace().targetUseId().substring("object:".length());
+        assertEquals(MutationStatus.APPLIED, f.engine().apply(event(1, RuntimeEventKind.DESTROY_OBJECT,
+            f.runtimeKey(), f.artifactTrace().sourceSemanticId(), Map.of(), null)).status());
+        assertNull(f.direct().system().state().objectByName(name));
+        assertEquals(MutationStatus.APPLIED, f.engine().apply(event(2, RuntimeEventKind.CREATE_OBJECT,
+            f.runtimeKey(), f.artifactTrace().sourceSemanticId(), Map.of("useClass","AuctionArtifact","useObject",name),null)).status());
+        assertNotNull(f.direct().system().state().objectByName(name));
+        assertThrows(IllegalArgumentException.class, () -> RuntimeValues.convert("BOOLEAN", "maybe"));
+        assertThrows(ArithmeticException.class, () -> RuntimeValues.convert("INTEGER", 1.5));
+        assertThrows(ArithmeticException.class, () -> RuntimeValues.convert("INTEGER", Long.MAX_VALUE));
+        assertThrows(IllegalArgumentException.class, () -> RuntimeValues.convert("REAL", "NaN"));
+        assertThrows(IllegalArgumentException.class, () -> RuntimeValues.convert("STRING", 12));
+        assertEquals(MutationStatus.FAILED, f.engine().apply(event(3, RuntimeEventKind.OP_ENTER,
+            f.runtimeKey(), f.artifactTrace().sourceSemanticId(), Map.of("operation","placeBid","arguments",List.of("item",1.5)),"bad")).status());
+        assertTrue(f.engine().operationHistory().isEmpty());
     }
 
     @Test

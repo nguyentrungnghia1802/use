@@ -309,3 +309,9 @@ Phase 18 introduces a strict declarative draft loader, semantic validator and de
 compatibility report. See [runtime-mapping-draft.md](runtime-mapping-draft.md).
 Initial module regression: 135/135 PASS. V1 target bindings are temporary; no runtime
 mapping freeze or OCL expansion is implied.
+
+Phase 19 integrates this draft into mutation dispatch and state-check checkpoints.
+Unknown property mappings are quarantined instead of silently applied; unknown
+CArtAgO operations leave connector quarantine evidence. Object recreation is limited
+to the original exact trace/class, and operation terminals must match the open target.
+See the integrated contract and limitations in runtime-mapping-draft.md.

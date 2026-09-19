@@ -30,6 +30,9 @@ public final class TraceBuilder {
                     ? null : "VP001", source.provenance().getFirst().span(), source.provenance().getFirst().sourceHash(),
                     null, object.className().equals(source.kind().name()) ? TraceRecord.Status.RESOLVED : TraceRecord.Status.PROJECTED));
         });
+        transformation.attributes().stream().filter(attribute -> attribute.ruleId().startsWith("VP"))
+            .forEach(attribute -> records.add(declaration(attribute.sourceIdentity(),
+                "attribute:" + attribute.owner() + "." + attribute.name(), "PROJECTION_SOURCE", "ATTRIBUTE", null, attribute.ruleId())));
         transformation.operations().forEach(operation -> {
             SemanticElement source = elements.get(operation.sourceIdentity());
             records.add(new TraceRecord(id("operation:" + operation.owner() + "." + operation.name()),

@@ -361,3 +361,10 @@ Phase 18 introduces a strict declarative draft loader, semantic validator and de
 compatibility report. See [runtime-mapping-draft.md](runtime-mapping-draft.md).
 Initial module regression: 135/135 PASS. V1 target bindings are temporary; no runtime
 mapping freeze or OCL expansion is implied.
+
+Phase 19: module regression 139/139 PASS; final focused mapping/mirror/Auction
+24/24 PASS. Wrong semantic target/create regressions were RED before the fix.
+Strict scalar conversion and exact-object recreation are covered. Golden trace
+negative control verifies byte-identical prior records after excluding newly
+added projected attribute declarations. Live derived evidence is located at
+`target/phase19-mirror-evidence`; its exclusions are part of the gate scope.

@@ -251,7 +251,13 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
         }
         @Override public void opStarted(long when, OpId operationId, ArtifactId artifact, Op operation) {
             CartagoArtifactBinding binding = resolve(artifact);
-            if (binding == null || !binding.operations().containsKey(operation.getName())) return;
+            if (binding == null) return;
+            if (!binding.operations().containsKey(operation.getName())) {
+                synchronized (CartagoRuntimeConnector.this) {
+                    quarantinedObservations.add("CARTAGO_UNBOUND_OPERATION:" + binding.qualifiedName() + ":" + operation.getName());
+                }
+                return;
+            }
             emit(event(binding, RuntimeEventKind.OP_ENTER,
                     Map.of("operation", binding.operations().get(operation.getName()),
                             "runtimeOperation", operation.getName(), "arguments", operationArguments(operation),
@@ -260,7 +266,13 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
         }
         @Override public void opCompleted(long when, OpId operationId, ArtifactId artifact, Op operation) {
             CartagoArtifactBinding binding = resolve(artifact);
-            if (binding == null || !binding.operations().containsKey(operation.getName())) return;
+            if (binding == null) return;
+            if (!binding.operations().containsKey(operation.getName())) {
+                synchronized (CartagoRuntimeConnector.this) {
+                    quarantinedObservations.add("CARTAGO_UNBOUND_OPERATION:" + binding.qualifiedName() + ":" + operation.getName());
+                }
+                return;
+            }
             emit(event(binding, RuntimeEventKind.OP_EXIT, Map.of(
                             "operation", binding.operations().get(operation.getName()),
                             "runtimeOperation", operation.getName(),
@@ -270,7 +282,13 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
         @Override public void opFailed(long when, OpId operationId, ArtifactId artifact, Op operation,
                                        String message, Tuple description) {
             CartagoArtifactBinding binding = resolve(artifact);
-            if (binding == null || !binding.operations().containsKey(operation.getName())) return;
+            if (binding == null) return;
+            if (!binding.operations().containsKey(operation.getName())) {
+                synchronized (CartagoRuntimeConnector.this) {
+                    quarantinedObservations.add("CARTAGO_UNBOUND_OPERATION:" + binding.qualifiedName() + ":" + operation.getName());
+                }
+                return;
+            }
             emit(event(binding, RuntimeEventKind.OP_FAIL,
                     Map.of("operation", binding.operations().get(operation.getName()),
                             "runtimeOperation", operation.getName(),

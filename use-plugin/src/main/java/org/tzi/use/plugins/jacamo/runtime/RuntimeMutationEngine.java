@@ -7,10 +7,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.tzi.use.plugins.jacamo.trace.TraceIndex;
-import org.tzi.use.uml.ocl.value.BooleanValue;
-import org.tzi.use.uml.ocl.value.IntegerValue;
-import org.tzi.use.uml.ocl.value.RealValue;
-import org.tzi.use.uml.ocl.value.StringValue;
 import org.tzi.use.uml.ocl.value.UndefinedValue;
 import org.tzi.use.uml.ocl.value.Value;
 import org.tzi.use.uml.sys.MObject;
@@ -18,6 +14,9 @@ import org.tzi.use.uml.sys.MSystem;
 
 /** The only runtime component allowed to mutate the USE mirror. */
 public final class RuntimeMutationEngine {
+    private final Map<String, String> authorizedObjectClasses = new LinkedHashMap<>();
+    private final java.util.Set<String> completedCorrelations = new java.util.HashSet<>();
+    private final RuntimeMapping mapping;
     private final MSystem system;
     private final TraceIndex trace;
     private final Object operationLifecycle = new Object();
@@ -30,8 +29,13 @@ public final class RuntimeMutationEngine {
     private final RuntimeTrace runtimeTrace = new RuntimeTrace();
 
     public RuntimeMutationEngine(MSystem system, TraceIndex trace) {
+        this.mapping = new RuntimeMappingLoader().loadDefault();
         this.system = system;
         this.trace = trace;
+        for (var record : trace.byTargetKind("OBJECT")) {
+            var object = system.state().objectByName(record.targetUseId().substring("object:".length()));
+            if (object != null) authorizedObjectClasses.put(object.name(), object.cls().name());
+        }
         runtimeTrace.begin("INITIAL");
     }
 
@@ -50,42 +54,48 @@ public final class RuntimeMutationEngine {
             return MutationResult.failed("RUNTIME_EVENT_OUT_OF_ORDER: " + event.sequence() + " <= " + lastSequence);
         lastSequence = event.sequence();
         try {
-            if (event.kind() == RuntimeEventKind.CREATE_OBJECT) return create(event);
+            var rule = mapping.select(event);
+            if (rule.action() == RuntimeSemanticAction.UNSUPPORTED)
+                return quarantine(event, "RUNTIME_MAPPING_UNSUPPORTED:" + rule.id());
+            for (String field : rule.payload())
+                if (!event.payload().containsKey(field) || event.payload().get(field) == null)
+                    return quarantine(event, "RUNTIME_MAPPING_PAYLOAD_UNBOUND:" + rule.id() + ":" + field);
+            if (rule.action() == RuntimeSemanticAction.OBJECT_AVAILABLE) return create(event);
+            var binding = trace.byRuntimeKey(event.runtimeSourceId()).orElse(null);
+            if (binding != null && (binding.status() != org.tzi.use.plugins.jacamo.trace.TraceRecord.Status.RESOLVED
+                    && binding.status() != org.tzi.use.plugins.jacamo.trace.TraceRecord.Status.PROJECTED
+                    || event.semanticSourceId() != null && !event.semanticSourceId().equals(binding.sourceSemanticId())))
+                return quarantine(event, "RUNTIME_TRACE_TARGET_MISMATCH:" + event.runtimeSourceId());
             String objectName = resolveObject(event.runtimeSourceId());
-            if (objectName == null) {
-                quarantined.add(event);
-                return MutationResult.quarantined("RUNTIME_TRACE_UNRESOLVED: " + event.runtimeSourceId());
-            }
-            return switch (event.kind()) {
-                case DESTROY_OBJECT -> destroy(event.runtimeSourceId(), objectName);
-                case SET_ATTRIBUTE -> set(objectName, event.payload());
-                case INSERT_LINK -> insert(event.payload());
-                case DELETE_LINK -> delete(event.payload());
-                case OP_ENTER -> enter(event, objectName);
-                case OP_EXIT -> exit(event, OperationRuntimeOutcome.EXITED);
-                case OP_FAIL -> exit(event, OperationRuntimeOutcome.FAILED);
-                case CREATE_OBJECT -> throw new IllegalStateException("handled above");
-                case OBS_PROPERTY_ADDED, OBS_PROPERTY_CHANGED ->
-                        event.payload().containsKey("attribute") ? set(objectName, event.payload()) : MutationResult.applied();
-                case OBS_PROPERTY_REMOVED -> event.payload().containsKey("attribute")
-                        ? set(objectName, undefined(event.payload())) : MutationResult.applied();
-                case BELIEF_ADDED, BELIEF_REMOVED,
-                        GOAL_ADOPTED, GOAL_REMOVED, GOAL_ACHIEVED, GOAL_FAILED,
-                        ACTION_STARTED, ACTION_SUCCEEDED, ACTION_FAILED,
-                        MESSAGE_SENT, MESSAGE_RECEIVED,
-                        ARTIFACT_CREATED, ARTIFACT_DISPOSED,
-                        SIGNAL,
-                        ORGANISATION_DISCOVERED, GROUP_CREATED, GROUP_DISPOSED,
-                        SCHEME_CREATED, SCHEME_DISPOSED,
-                        ROLE_ADOPTED, ROLE_REMOVED, MISSION_COMMITTED, MISSION_REMOVED,
-                        SCHEME_STATE_CHANGED, NORM_STATE_CHANGED -> MutationResult.applied();
+            if (objectName == null) return quarantine(event, "RUNTIME_TRACE_UNRESOLVED:" + event.runtimeSourceId());
+            if (event.semanticSourceId() != null && trace.byUseId("object:" + objectName).stream()
+                    .noneMatch(record -> record.sourceSemanticId().equals(event.semanticSourceId())))
+                return quarantine(event, "RUNTIME_TRACE_TARGET_MISMATCH:" + event.runtimeSourceId());
+            return switch (rule.action()) {
+                case OBJECT_AVAILABLE -> throw new IllegalStateException("handled above");
+                case OBJECT_UNAVAILABLE -> destroy(event.runtimeSourceId(), objectName);
+                case ATTRIBUTE_STATE_SET -> set(objectName, event.payload());
+                case ATTRIBUTE_STATE_UNSET -> set(objectName, undefined(event.payload()));
+                case RELATION_INSERT -> insert(event.payload());
+                case RELATION_DELETE -> delete(event.payload());
+                case OPERATION_ENTER -> enter(event, objectName);
+                case OPERATION_EXIT -> exit(event, OperationRuntimeOutcome.EXITED);
+                case OPERATION_FAIL -> exit(event, OperationRuntimeOutcome.FAILED);
+                case TRACE_ONLY, NO_MUTATION -> new MutationResult(MutationStatus.APPLIED, "RUNTIME_MAPPING_TRACE_ONLY:" + rule.id());
+                case UNSUPPORTED -> throw new IllegalStateException("handled above");
             };
         } catch (Exception exception) {
+            String diagnostic = String.valueOf(exception.getMessage());
+            if (diagnostic.contains("TRACE_UNRESOLVED") || diagnostic.startsWith("USE_OBJECT_MISSING")
+                    || diagnostic.startsWith("USE_ATTRIBUTE_MISSING") || diagnostic.startsWith("USE_ASSOCIATION_MISSING")
+                    || diagnostic.startsWith("USE_OPERATION_MISSING") || diagnostic.startsWith("OPERATION_TARGET_MISMATCH"))
+                return quarantine(event, diagnostic);
             return MutationResult.failed("RUNTIME_MUTATION_FAILED[" + event.kind() + "]: " + exception.getMessage());
         }
     }
 
     public synchronized void applySnapshot(RuntimeSnapshot snapshot) {
+        dynamicRuntimeObjects.clear();
         runtimeTrace.begin("AUTHORITATIVE_SNAPSHOT:" + snapshot.snapshotId());
         resetOperationLifecycle();
         lastSequence = -1;
@@ -124,7 +134,8 @@ public final class RuntimeMutationEngine {
     }
 
     /** Operation correlations are scoped to one connector event stream. */
-    public void eventStreamClosed() {
+    public synchronized void eventStreamClosed() {
+        dynamicRuntimeObjects.clear();
         resetOperationLifecycle();
         runtimeTrace.close();
         // Direct engine clients may open their next stream without a transport snapshot.
@@ -152,13 +163,37 @@ public final class RuntimeMutationEngine {
         return List.copyOf(differences);
     }
 
+    private MutationResult quarantine(RuntimeEvent event, String diagnostic) {
+        quarantined.add(event);
+        return MutationResult.quarantined(diagnostic);
+    }
+
+    private List<MObject> tracedParticipants(Map<String, Object> payload, String association) {
+        if (trace.byUseId("association:" + association).stream().noneMatch(record ->
+            record.status() == org.tzi.use.plugins.jacamo.trace.TraceRecord.Status.RESOLVED))
+            throw new IllegalArgumentException("RUNTIME_ASSOCIATION_TRACE_UNRESOLVED:" + association);
+        List<MObject> objects = participants(payload);
+        for (MObject object : objects)
+            if (trace.byUseId("object:" + object.name()).stream().noneMatch(record ->
+                record.status() == org.tzi.use.plugins.jacamo.trace.TraceRecord.Status.RESOLVED
+                || record.status() == org.tzi.use.plugins.jacamo.trace.TraceRecord.Status.PROJECTED))
+                throw new IllegalArgumentException("RUNTIME_PARTICIPANT_TRACE_UNRESOLVED:" + object.name());
+        return objects;
+    }
+
     private MutationResult create(RuntimeEvent event) throws Exception {
-        if (event.semanticSourceId() == null || trace.bySemanticId(event.semanticSourceId()).isEmpty()) {
-            quarantined.add(event);
-            return MutationResult.quarantined("RUNTIME_CREATE_TRACE_UNRESOLVED: " + event.semanticSourceId());
-        }
         String className = text(event.payload(), "useClass");
         String objectName = text(event.payload(), "useObject");
+        var exact = trace.byUseId("object:" + objectName).stream()
+            .filter(record -> record.sourceSemanticId().equals(event.semanticSourceId()))
+            .filter(record -> record.status() == org.tzi.use.plugins.jacamo.trace.TraceRecord.Status.RESOLVED
+                || record.status() == org.tzi.use.plugins.jacamo.trace.TraceRecord.Status.PROJECTED).toList();
+        if (exact.size() != 1) return quarantine(event, "RUNTIME_CREATE_TRACE_UNRESOLVED:" + objectName);
+        if (!className.equals(authorizedObjectClasses.get(objectName)))
+            return quarantine(event, "RUNTIME_DYNAMIC_INSTANCE_POLICY_UNSUPPORTED:" + objectName);
+        String oldTarget = resolveObject(event.runtimeSourceId());
+        if (oldTarget != null && !oldTarget.equals(objectName))
+            return quarantine(event, "RUNTIME_ALIAS_TARGET_CONFLICT:" + event.runtimeSourceId());
         var cls = system.model().getClass(className);
         if (cls == null) throw new IllegalArgumentException("USE_CLASS_MISSING: " + className);
         MObject existing = system.state().objectByName(objectName);
@@ -170,7 +205,8 @@ public final class RuntimeMutationEngine {
     }
 
     private void compare(RuntimeEvent event, List<RuntimeDriftDifference> differences) {
-        if (event.kind() == RuntimeEventKind.CREATE_OBJECT) {
+        var action = mapping.select(event).action();
+        if (action == RuntimeSemanticAction.OBJECT_AVAILABLE) {
             String objectName = text(event.payload(), "useObject");
             String className = text(event.payload(), "useClass");
             MObject object = system.state().objectByName(objectName);
@@ -184,33 +220,30 @@ public final class RuntimeMutationEngine {
             difference(differences, event, "runtime:" + event.runtimeSourceId(), "resolved trace", "<unresolved>");
             return;
         }
-        if (event.kind() == RuntimeEventKind.DESTROY_OBJECT) {
+        if (action == RuntimeSemanticAction.OBJECT_UNAVAILABLE) {
             MObject object = system.state().objectByName(objectName);
             if (object != null) difference(differences, event, "object:" + objectName, "<absent>", object.cls().name());
             return;
         }
-        if (event.kind() == RuntimeEventKind.SET_ATTRIBUTE
-                || event.kind() == RuntimeEventKind.OBS_PROPERTY_ADDED
-                || event.kind() == RuntimeEventKind.OBS_PROPERTY_CHANGED
-                || event.kind() == RuntimeEventKind.OBS_PROPERTY_REMOVED) {
-            if (!event.payload().containsKey("attribute")) return;
+        if (action == RuntimeSemanticAction.ATTRIBUTE_STATE_SET || action == RuntimeSemanticAction.ATTRIBUTE_STATE_UNSET) {
+            if (!event.payload().containsKey("attribute")) throw new IllegalArgumentException("RUNTIME_PROPERTY_UNBOUND");
             MObject object = requireObject(objectName);
             String attributeName = text(event.payload(), "attribute");
             var attribute = object.cls().attribute(attributeName, true);
             if (attribute == null) throw new IllegalArgumentException("USE_ATTRIBUTE_MISSING: " + attributeName);
-            Value expected = event.kind() == RuntimeEventKind.OBS_PROPERTY_REMOVED
+            Value expected = action == RuntimeSemanticAction.ATTRIBUTE_STATE_UNSET
                     ? UndefinedValue.instance : value(event.payload());
             Value actual = object.state(system.state()).attributeValue(attribute);
             if (!expected.equals(actual)) difference(differences, event, "object:" + objectName + "." + attributeName,
                     expected.toString(), actual.toString());
             return;
         }
-        if (event.kind() == RuntimeEventKind.INSERT_LINK || event.kind() == RuntimeEventKind.DELETE_LINK) {
+        if (action == RuntimeSemanticAction.RELATION_INSERT || action == RuntimeSemanticAction.RELATION_DELETE) {
             var association = system.model().getAssociation(text(event.payload(), "association"));
             if (association == null) throw new IllegalArgumentException("USE_ASSOCIATION_MISSING");
             List<MObject> participants = participants(event.payload());
             boolean present = system.state().hasLinkBetweenObjects(association, participants.toArray(MObject[]::new));
-            boolean expected = event.kind() == RuntimeEventKind.INSERT_LINK;
+            boolean expected = action == RuntimeSemanticAction.RELATION_INSERT;
             if (present != expected) difference(differences, event, "association:" + association.name(),
                     Boolean.toString(expected), Boolean.toString(present));
         }
@@ -223,8 +256,10 @@ public final class RuntimeMutationEngine {
     }
 
     private MutationResult destroy(String runtimeSourceId, String objectName) {
-        MObject object = requireObject(objectName);
-        system.state().deleteObject(object);
+        MObject object = system.state().objectByName(objectName);
+        if (object != null) system.state().deleteObject(object);
+        operationCorrelations.entrySet().removeIf(entry -> !entry.getValue().rejected()
+            && entry.getValue().target().startsWith(objectName + "::"));
         dynamicRuntimeObjects.remove(runtimeSourceId);
         return MutationResult.applied();
     }
@@ -234,30 +269,51 @@ public final class RuntimeMutationEngine {
         String attributeName = text(payload, "attribute");
         var attribute = object.cls().attribute(attributeName, true);
         if (attribute == null) throw new IllegalArgumentException("USE_ATTRIBUTE_MISSING: " + attributeName);
-        object.state(system.state()).setAttributeValue(attribute, value(payload));
+        if (trace.byUseId("attribute:" + attribute.owner().name() + "." + attributeName).stream().noneMatch(record ->
+            record.status() == org.tzi.use.plugins.jacamo.trace.TraceRecord.Status.RESOLVED
+            || record.status() == org.tzi.use.plugins.jacamo.trace.TraceRecord.Status.PROJECTED))
+            throw new IllegalArgumentException("RUNTIME_ATTRIBUTE_TRACE_UNRESOLVED:" + attributeName);
+        Value converted = value(payload);
+        if (!converted.isUndefined() && !converted.type().conformsTo(attribute.type()))
+            throw new IllegalArgumentException("RUNTIME_ATTRIBUTE_TYPE_MISMATCH:" + attributeName);
+        object.state(system.state()).setAttributeValue(attribute, converted);
         return MutationResult.applied();
     }
 
     private MutationResult insert(Map<String, Object> payload) throws Exception {
         var association = system.model().getAssociation(text(payload, "association"));
         if (association == null) throw new IllegalArgumentException("USE_ASSOCIATION_MISSING");
-        system.state().createLink(association, participants(payload), null);
+        List<MObject> objects = tracedParticipants(payload, association.name());
+        if (!system.state().hasLinkBetweenObjects(association, objects.toArray(MObject[]::new)))
+            system.state().createLink(association, objects, null);
         return MutationResult.applied();
     }
 
     private MutationResult delete(Map<String, Object> payload) throws Exception {
         var association = system.model().getAssociation(text(payload, "association"));
         if (association == null) throw new IllegalArgumentException("USE_ASSOCIATION_MISSING");
-        system.state().deleteLink(association, participants(payload), null);
+        List<MObject> objects = tracedParticipants(payload, association.name());
+        if (system.state().hasLinkBetweenObjects(association, objects.toArray(MObject[]::new)))
+            system.state().deleteLink(association, objects, null);
         return MutationResult.applied();
     }
 
     private MutationResult enter(RuntimeEvent event, String objectName) {
         String correlation = event.correlationId();
+        if (completedCorrelations.contains(correlation)) throw new IllegalArgumentException("OPERATION_CORRELATION_COMPLETED:" + correlation);
         MObject object = requireObject(objectName);
         String operation = text(event.payload(), "operation");
         if (object.cls().operation(operation, true) == null)
             throw new IllegalArgumentException("USE_OPERATION_MISSING: " + operation);
+        if (trace.byUseId("operation:" + object.cls().operation(operation, true).cls().name() + "." + operation).stream()
+                .noneMatch(record -> record.status() == org.tzi.use.plugins.jacamo.trace.TraceRecord.Status.PROJECTED))
+            throw new IllegalArgumentException("RUNTIME_OPERATION_TRACE_UNRESOLVED:" + operation);
+        var signature = object.cls().operation(operation, true);
+        if (!(event.payload().get("arguments") instanceof List<?> arguments)
+                || arguments.size() != signature.paramList().size())
+            throw new IllegalArgumentException("OPERATION_ARGUMENT_COUNT");
+        for (int index = 0; index < arguments.size(); index++)
+            RuntimeValues.convert(signature.paramList().varDecl(index).type().toString(), arguments.get(index));
         boolean[] duplicate = { false };
         synchronized (operationLifecycle) {
             operationCorrelations.compute(correlation, (ignored, current) -> {
@@ -279,12 +335,20 @@ public final class RuntimeMutationEngine {
         synchronized (operationLifecycle) {
             operationCorrelations.compute(event.correlationId(), (ignored, current) -> {
                 if (current == null || current.sequence() > event.sequence()) return current;
-                if (!current.rejected()) matched[0] = current;
+                if (!current.rejected()) {
+                    String object = resolveObject(event.runtimeSourceId());
+                    String operation = (String) event.payload().get("operation");
+                    if (!current.target().startsWith(object + "::")
+                            || operation != null && !current.target().equals(object + "::" + operation))
+                        throw new IllegalArgumentException("OPERATION_TARGET_MISMATCH:" + event.correlationId());
+                    matched[0] = current;
+                }
                 return null;
             });
         }
         if (matched[0] == null)
             throw new IllegalArgumentException("OPERATION_CORRELATION_MISSING: " + event.correlationId());
+        completedCorrelations.add(event.correlationId());
         operationHistory.put(event.correlationId(), outcome);
         return MutationResult.applied();
     }
@@ -295,6 +359,7 @@ public final class RuntimeMutationEngine {
 
     private void resetOperationLifecycle() {
         synchronized (operationLifecycle) {
+            completedCorrelations.clear();
             operationCorrelations.clear();
             completedThroughSequence = -1;
         }
@@ -321,16 +386,7 @@ public final class RuntimeMutationEngine {
     }
 
     private Value value(Map<String, Object> payload) {
-        String type = text(payload, "valueType");
-        Object raw = payload.get("value");
-        return switch (type) {
-            case "BOOLEAN" -> BooleanValue.get(raw instanceof Boolean value ? value : Boolean.parseBoolean(String.valueOf(raw)));
-            case "INTEGER" -> IntegerValue.valueOf(raw instanceof Number number ? number.intValue() : Integer.parseInt(String.valueOf(raw)));
-            case "REAL" -> new RealValue(raw instanceof Number number ? number.doubleValue() : Double.parseDouble(String.valueOf(raw)));
-            case "STRING" -> new StringValue(String.valueOf(raw));
-            case "UNDEFINED" -> UndefinedValue.instance;
-            default -> throw new IllegalArgumentException("RUNTIME_VALUE_TYPE_UNSUPPORTED: " + type);
-        };
+        return RuntimeValues.convert(text(payload, "valueType"), payload.get("value"));
     }
 
     private Map<String, Object> undefined(Map<String, Object> payload) {

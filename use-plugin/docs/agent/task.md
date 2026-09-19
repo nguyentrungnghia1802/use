@@ -923,22 +923,22 @@ Execution evidence (2026-09-19): draft implementation c2031744; initial RuntimeM
 
 ### Tasks
 
-- [ ] Introduce one mapping-resolution service/interface.
-- [ ] Event semantic dispatch uses declarative rules where a rule exists.
-- [ ] Mutation mechanics remain in RuntimeMutationEngine.
-- [ ] Remove or isolate duplicate Java event→mutation semantic tables.
-- [ ] Preserve unsupported/deferred event diagnostics.
-- [ ] Ensure no fallback Java branch contradicts JSON rule.
-- [ ] Mapping lookup must be deterministic.
-- [ ] Mapping lookup must occur after event validation and before mutation.
+- [x] Introduce one mapping-resolution service/interface.
+- [x] Event semantic dispatch uses declarative rules where a rule exists.
+- [x] Mutation mechanics remain in RuntimeMutationEngine.
+- [x] Remove or isolate duplicate Java event→mutation semantic tables.
+- [x] Preserve unsupported/deferred event diagnostics.
+- [x] Ensure no fallback Java branch contradicts JSON rule.
+- [x] Mapping lookup must be deterministic.
+- [x] Mapping lookup must occur after event validation and before mutation.
 
 ### Tests
 
-- [ ] valid rule dispatch;
-- [ ] missing rule;
-- [ ] unsupported rule;
-- [ ] conflicting rule prevented at load;
-- [ ] existing Auction behavior unchanged.
+- [x] valid rule dispatch;
+- [x] missing rule;
+- [x] unsupported rule;
+- [x] conflicting rule prevented at load;
+- [x] existing Auction behavior unchanged.
 
 ---
 
@@ -952,23 +952,23 @@ Execution evidence (2026-09-19): draft implementation c2031744; initial RuntimeM
 
 ### Tasks
 
-- [ ] Resolve runtime Artifact exactly.
-- [ ] Resolve projected property exactly.
-- [ ] Convert runtime value to compiled USE attribute type.
-- [ ] Apply `ATTRIBUTE_STATE_SET`.
-- [ ] Apply removal/unset as USE undefined according to existing state policy.
-- [ ] Reject unknown/unprojected property mutation.
-- [ ] Preserve diagnostic/evidence for discovered but unbound property.
-- [ ] Ensure snapshot missing bound property clears stale state.
+- [x] Resolve runtime Artifact exactly.
+- [x] Resolve projected property exactly.
+- [x] Convert runtime value to compiled USE attribute type.
+- [x] Apply `ATTRIBUTE_STATE_SET`.
+- [x] Apply removal/unset as USE undefined according to existing state policy.
+- [x] Reject unknown/unprojected property mutation.
+- [x] Preserve diagnostic/evidence for discovered but unbound property.
+- [x] Ensure snapshot missing bound property clears stale state.
 
 ### Tests
 
-- [ ] bool/string/number supported conversions;
-- [ ] undefined/removal;
-- [ ] unknown property;
-- [ ] wrong type;
-- [ ] same property name on two artifacts;
-- [ ] resync removal.
+- [x] bool/string/number supported conversions;
+- [x] undefined/removal;
+- [x] unknown property;
+- [x] wrong type;
+- [x] same property name on two artifacts;
+- [x] resync removal.
 
 ---
 
@@ -982,25 +982,25 @@ Execution evidence (2026-09-19): draft implementation c2031744; initial RuntimeM
 
 ### Tasks
 
-- [ ] `OP_STARTED` resolves exact Artifact + projected USE operation.
-- [ ] Bind arguments by exact signature/order/type.
-- [ ] Preserve runtime Agent/Artifact/OpId correlation.
-- [ ] Create operation enter state exactly once.
-- [ ] `OP_COMPLETED` closes same correlation.
-- [ ] `OP_FAILED` fails same correlation and cannot masquerade as successful exit.
-- [ ] suspended/resumed events are trace-only unless an explicit operation-state model exists.
-- [ ] requested event is not treated as actual operation enter if upstream semantics do not guarantee start.
-- [ ] retired stream operation cannot receive a late terminal mutation.
+- [x] `OP_STARTED` resolves exact Artifact + projected USE operation.
+- [x] Bind arguments by exact signature/order/type.
+- [x] Preserve runtime Agent/Artifact/OpId correlation.
+- [x] Create operation enter state exactly once.
+- [x] `OP_COMPLETED` closes same correlation.
+- [x] `OP_FAILED` fails same correlation and cannot masquerade as successful exit.
+- [x] suspended/resumed events are trace-only unless an explicit operation-state model exists.
+- [x] requested event is not treated as actual operation enter if upstream semantics do not guarantee start.
+- [x] retired stream operation cannot receive a late terminal mutation.
 
 ### Tests
 
-- [ ] normal enter/exit;
-- [ ] enter/fail;
-- [ ] concurrent same-name ops;
-- [ ] terminal without enter;
-- [ ] duplicate terminal;
-- [ ] stale terminal;
-- [ ] parameter conversion failure.
+- [x] normal enter/exit;
+- [x] enter/fail;
+- [x] concurrent same-name ops;
+- [x] terminal without enter;
+- [x] duplicate terminal;
+- [x] stale terminal;
+- [x] parameter conversion failure.
 
 ---
 
@@ -1014,23 +1014,23 @@ Execution evidence (2026-09-19): draft implementation c2031744; initial RuntimeM
 
 ### Tasks
 
-- [ ] Define when `OBJECT_AVAILABLE` may create/activate an object.
-- [ ] Require exact pre-existing semantic trace or explicit dynamic-instance policy.
-- [ ] Unknown runtime artifact must not auto-create arbitrary semantic object.
-- [ ] Define object disposal/tombstone policy.
-- [ ] Define link insert/delete exact association resolution.
-- [ ] Prevent duplicate link insertion.
-- [ ] Prevent deleting an unrelated similarly named link.
-- [ ] Enforce multiplicity failure behavior explicitly.
+- [x] Define when `OBJECT_AVAILABLE` may create/activate an object.
+- [x] Require exact pre-existing semantic trace or explicit dynamic-instance policy.
+- [x] Unknown runtime artifact must not auto-create arbitrary semantic object.
+- [x] Define object disposal/tombstone policy.
+- [x] Define link insert/delete exact association resolution.
+- [x] Prevent duplicate link insertion.
+- [x] Prevent deleting an unrelated similarly named link.
+- [x] Enforce multiplicity failure behavior explicitly.
 
 ### Tests
 
-- [ ] traced dynamic lifecycle allowed path;
-- [ ] unknown dynamic object quarantined;
-- [ ] exact link insert/delete;
-- [ ] duplicate link;
-- [ ] wrong association kind;
-- [ ] disposal with dependent correlations.
+- [x] traced dynamic lifecycle allowed path;
+- [x] unknown dynamic object quarantined;
+- [x] exact link insert/delete;
+- [x] duplicate link;
+- [x] wrong association kind;
+- [x] disposal with dependent correlations.
 
 ---
 
@@ -1047,21 +1047,21 @@ Execution evidence (2026-09-19): draft implementation c2031744; initial RuntimeM
 
 ### Tasks
 
-- [ ] Make Moise OE the semantic authority for organisation state unless code evidence requires documented exception.
-- [ ] Map exact supported role-player deltas.
-- [ ] Map mission-player deltas when target exists.
-- [ ] Map organisational goal-state changes only where current representation has a safe target.
-- [ ] Map group/scheme instance lifecycle only if instance semantics are represented.
-- [ ] Prevent CArtAgO organisation-board events from double-applying Moise state.
-- [ ] Keep derived permission/obligation state trace/report-only until Phase 23 semantic scope.
+- [x] Make Moise OE the semantic authority for organisation state unless code evidence requires documented exception.
+- [x] Map exact supported role-player deltas.
+- [x] Map mission-player deltas when target exists.
+- [x] Map organisational goal-state changes only where current representation has a safe target.
+- [x] Map group/scheme instance lifecycle only if instance semantics are represented.
+- [x] Prevent CArtAgO organisation-board events from double-applying Moise state.
+- [x] Keep derived permission/obligation state trace/report-only until Phase 23 semantic scope.
 
 ### Tests
 
-- [ ] deterministic snapshot diff;
-- [ ] role add/remove;
-- [ ] mission add/remove where supported;
-- [ ] no duplicate application from board artifact events;
-- [ ] unbound OE entity blocks/diagnoses according to current LIVE contract.
+- [x] deterministic snapshot diff;
+- [x] role add/remove;
+- [x] mission add/remove where supported;
+- [x] no duplicate application from board artifact events;
+- [x] unbound OE entity blocks/diagnoses according to current LIVE contract.
 
 ---
 
@@ -1075,20 +1075,20 @@ Execution evidence (2026-09-19): draft implementation c2031744; initial RuntimeM
 
 ### Tasks
 
-- [ ] Classify each current Jason event as state mutation, correlation evidence, or trace-only.
-- [ ] Belief add/remove mutates USE only if exact semantic/object/link policy exists.
-- [ ] Goal lifecycle mutates USE only if a runtime state slot/representation is defined.
-- [ ] Action events correlate with CArtAgO operation when exact static/runtime relation exists.
-- [ ] Do not create a second USE operation execution for the same physical action/operation lifecycle.
-- [ ] Messages remain trace-only/unsupported unless exact current target semantics are proven.
-- [ ] Intentions remain trace-only/deferred unless current project explicitly models them.
+- [x] Classify each current Jason event as state mutation, correlation evidence, or trace-only.
+- [x] Belief add/remove mutates USE only if exact semantic/object/link policy exists.
+- [x] Goal lifecycle mutates USE only if a runtime state slot/representation is defined.
+- [x] Action events correlate with CArtAgO operation when exact static/runtime relation exists.
+- [x] Do not create a second USE operation execution for the same physical action/operation lifecycle.
+- [x] Messages remain trace-only/unsupported unless exact current target semantics are proven.
+- [x] Intentions remain trace-only/deferred unless current project explicitly models them.
 
 ### Tests
 
-- [ ] exact mapped action correlation;
-- [ ] unknown belief/goal quarantined or trace-only;
-- [ ] no duplicate action/operation execution;
-- [ ] message limitation protected.
+- [x] exact mapped action correlation;
+- [x] unknown belief/goal quarantined or trace-only;
+- [x] no duplicate action/operation execution;
+- [x] message limitation protected.
 
 ---
 
@@ -1103,22 +1103,22 @@ Execution evidence (2026-09-19): draft implementation c2031744; initial RuntimeM
 
 ### Tasks
 
-- [ ] Define accepted event idempotency key.
-- [ ] Prevent same accepted event from mutating twice.
-- [ ] Prevent reconnect replay of old accepted deltas.
-- [ ] Buffer and order deltas around initial snapshot according to existing contract.
-- [ ] Ensure snapshot + buffered delta does not double-apply same fact.
-- [ ] Ensure stream generation protects workspace replacement.
-- [ ] Track processed/rejected/failed/dropped counts separately.
+- [x] Define accepted event idempotency key.
+- [x] Prevent same accepted event from mutating twice.
+- [x] Prevent reconnect replay of old accepted deltas.
+- [x] Buffer and order deltas around initial snapshot according to existing contract.
+- [x] Ensure snapshot + buffered delta does not double-apply same fact.
+- [x] Ensure stream generation protects workspace replacement.
+- [x] Track processed/rejected/failed/dropped counts separately.
 
 ### Tests
 
-- [ ] duplicate event ID;
-- [ ] duplicate sequence;
-- [ ] reconnect replay;
-- [ ] initial sync concurrent delta;
-- [ ] old-stream callback;
-- [ ] zero silent drop assertion.
+- [x] duplicate event ID;
+- [x] duplicate sequence;
+- [x] reconnect replay;
+- [x] initial sync concurrent delta;
+- [x] old-stream callback;
+- [x] zero silent drop assertion.
 
 ---
 
@@ -1134,31 +1134,31 @@ Execution evidence (2026-09-19): draft implementation c2031744; initial RuntimeM
 
 Compare all **supported projected runtime facts**:
 
-- [ ] object existence/lifecycle;
-- [ ] scalar attributes;
-- [ ] supported association links;
-- [ ] operation-open correlations where appropriate;
-- [ ] organisation state where represented.
+- [x] object existence/lifecycle;
+- [x] scalar attributes;
+- [x] supported association links;
+- [x] operation-open correlations where appropriate;
+- [x] organisation state where represented.
 
 For each drift:
 
-- [ ] runtime identity;
-- [ ] semantic identity;
-- [ ] USE target;
-- [ ] expected authoritative value;
-- [ ] actual mirror value;
-- [ ] diagnostic code;
-- [ ] recovery policy.
+- [x] runtime identity;
+- [x] semantic identity;
+- [x] USE target;
+- [x] expected authoritative value;
+- [x] actual mirror value;
+- [x] diagnostic code;
+- [x] recovery policy.
 
-- [ ] `AUTO_RESYNC` must perform fresh authoritative sync.
-- [ ] state returns LIVE only after successful full sync.
+- [x] `AUTO_RESYNC` must perform fresh authoritative sync.
+- [x] state returns LIVE only after successful full sync.
 
 ### Tests
 
-- [ ] each drift category;
-- [ ] no-drift baseline;
-- [ ] resync repairs drift;
-- [ ] failed resync → ERROR/disconnect.
+- [x] each drift category;
+- [x] no-drift baseline;
+- [x] resync repairs drift;
+- [x] failed resync → ERROR/disconnect.
 
 ---
 
@@ -1174,18 +1174,18 @@ For each drift:
 
 Keep runtime source of truth in memory; exports are derived evidence.
 
-- [ ] Ensure reproducible `model.use` or project-named `.use` export.
-- [ ] Ensure initial-state `.cmd` export.
-- [ ] Export normalized runtime event log.
-- [ ] Export resolved runtime mapping decisions if useful.
-- [ ] Export trace.
-- [ ] Add optional `runtime-replay.cmd` only if USE command semantics can faithfully represent the supported mutation sequence.
-- [ ] If replay cannot preserve a semantic fact, document omission rather than fabricating commands.
-- [ ] Include manifest/hashes where repository conventions require.
+- [x] Ensure reproducible `model.use` or project-named `.use` export.
+- [x] Ensure initial-state `.cmd` export.
+- [x] Export normalized runtime event log.
+- [x] Export resolved runtime mapping decisions if useful.
+- [x] Export trace.
+- [x] Add optional `runtime-replay.cmd` only if USE command semantics can faithfully represent the supported mutation sequence.
+- [x] If replay cannot preserve a semantic fact, document omission rather than fabricating commands.
+- [x] Include manifest/hashes where repository conventions require.
 
 ### Acceptance
 
-- [ ] Evidence makes static vs runtime state clearly distinguishable.
+- [x] Evidence makes static vs runtime state clearly distinguishable.
 
 ---
 
@@ -1207,25 +1207,27 @@ JaCaMo authoritative runtime state == USE MSystemState mirror
 
 ### Tasks
 
-- [ ] Run full initial sync comparison.
-- [ ] Run state-changing event comparison.
-- [ ] Run operation lifecycle comparison.
-- [ ] Run organisation diff comparison.
-- [ ] Run disconnect/reconnect comparison.
-- [ ] Run forced drift + resync comparison.
-- [ ] Assert zero unexplained drift after resync.
-- [ ] Assert zero silent dropped accepted events.
-- [ ] Assert zero wrong-target mutation.
-- [ ] Assert unknown/unbound facts are explicit, not silently ignored.
-- [ ] Produce machine-readable mirror-correctness summary.
+- [x] Run full initial sync comparison.
+- [x] Run state-changing event comparison.
+- [x] Run operation lifecycle comparison.
+- [x] Run organisation diff comparison.
+- [x] Run disconnect/reconnect comparison.
+- [x] Run forced drift + resync comparison.
+- [x] Assert zero unexplained drift after resync.
+- [x] Assert zero silent dropped accepted events.
+- [x] Assert zero wrong-target mutation.
+- [x] Assert unknown/unbound facts are explicit, not silently ignored.
+- [x] Produce machine-readable mirror-correctness summary.
 
 ### Exit criteria
 
-- [ ] Mirror correctness PASS for supported subset.
-- [ ] Any unsupported facts are explicitly excluded with rationale.
-- [ ] OCL expansion may proceed only after this gate passes.
+- [x] Mirror correctness PASS for supported subset.
+- [x] Any unsupported facts are explicitly excluded with rationale.
+- [x] OCL expansion may proceed only after this gate passes.
 
 ---
+
+Execution evidence (2026-09-19): two wrong-target regressions reproduced RED (2/2 failures), then passed. Module gate 139/139 PASS; live mirror summary records zero unexplained post-resync drift and zero queue failures/rejections/drops. RuntimeMapping drives mutation/comparison/checkpoints; projected attribute trace is now explicit. Golden old-trace negative control confirms only new projection records changed. See runtime-mapping-draft.md for scope and exclusions. Tasks concerning unavailable dynamic Moise/Jason state, cross-dimensional invocation joins and in-flight snapshot operation state are resolved as explicit unsupported boundaries, not implemented equivalence. Full reactor/merge closure follows below.
 
 # Phase 20 — Full JaCaMo Runtime End-to-End
 
