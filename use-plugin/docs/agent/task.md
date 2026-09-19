@@ -2085,6 +2085,12 @@ all non-EXACT rules remain non-emitting. Standalone Phase 20 limits remain uncha
 
 # Phase 25 — Human Inputs / Research Decisions
 
+Status (2026-09-19): **BLOCKED on D25-01, final metamodel research choice**.
+Prepared [decision package](../project/phase25-input-decision-package.md) records
+verified Phase 24 evidence, V1 inventory, runtime needs, migration impact and
+recommended options. No V2 or explicit V1-final decision is present. Phase 26
+has not started; no final metamodel decision is inferred from the baseline.
+
 **Objective:** collect only the information that could not be safely produced by the Agent after completing all independent engineering work.
 
 The Agent must arrive here with a prepared decision package for every requested input.
@@ -2095,12 +2101,17 @@ The Agent must arrive here with a prepared decision package for every requested 
 
 ### Agent prepares before asking
 
-- [ ] Current V1 structural summary.
-- [ ] Runtime concepts actually needed after Phases 16–24.
-- [ ] Classes/attributes/references that appear unused or over-complex.
-- [ ] Proposed minimum verification-oriented vocabulary if useful.
+- [x] Current V1 structural summary.
+- [x] Runtime concepts actually needed after Phases 16–24.
+- [x] Classes/attributes/references that appear unused or over-complex (review candidates only; no unsupported deletion claim).
+- [x] Proposed minimum verification-oriented vocabulary if useful (retain current proven subset; no new EClass justified).
 - [ ] Exact V1→future-V2 impact matrix.
-- [ ] Migration tooling ready.
+- [x] Migration tooling ready (2 Python tests freshly PASS; V1 self-diff empty).
+
+Layer/component impact matrix prepared; exact feature-level V2 diff is blocked
+until a target is supplied/decided. P25.2 has no additional mandatory decision
+under current conservative supported scope. P25.3 requires no user-supplied case:
+Counter Team already satisfies the supported-subset second-case gate.
 
 ### Human input
 
