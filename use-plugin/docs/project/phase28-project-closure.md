@@ -136,3 +136,16 @@ Remaining non-engineering work: select thesis narratives/figures, rehearse an
 interactive installed demo if desired, and provide final user acceptance. Such
 acceptance does not promote standalone/NPL, untested platforms or arbitrary
 semantics to supported. The checklist intentionally keeps user confirmation open.
+
+## Verified integration and final smoke
+
+Phase 28 was fast-forward merged to main as `42b38396874b4f080a1e2aaa1fb5cbdbf931f11a`
+and pushed successfully to origin/main and origin/phase/28-project-closure.
+Both remote refs were queried and matched. Post-merge installed-package smoke:
+`mvn --batch-mode -pl use-plugin failsafe:integration-test failsafe:verify`: **3/3 PASS**,
+zero failures/errors/skips. See evidence/closure/git-closure.json,
+post-merge-smoke.log and post-merge-ReleasePackageIT.xml. The following closure-record
+commit contains documentation/evidence only; executable, package and canonical
+inputs remain identical. Final user confirmation is still the only acceptance gate
+not satisfiable by the agent. Phase 20 unchecked full-project steps intentionally
+remain unproven under its documented alternative exit.

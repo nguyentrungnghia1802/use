@@ -53,7 +53,15 @@
     "userAcceptance": "PENDING_NOT_IMPERSONATED",
     "evidenceIndex": "final-state.json",
     "preservedRelocatedBundle": "relocated-evidence.zip",
-    "finalBundle": "final-evidence.zip"
+    "finalBundle": "final-evidence.zip",
+    "gitClosure": "git-closure.json",
+    "integratedAndPushedRevision": "42b38396874b4f080a1e2aaa1fb5cbdbf931f11a",
+    "postMergeSmoke": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
   },
   "limitations": [
     "Standalone JaCaMo mirror E2E unproven",
