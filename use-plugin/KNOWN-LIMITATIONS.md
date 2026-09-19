@@ -26,3 +26,7 @@
   are outside the automated release gate.
 - The plugin requires its documented host/runtime libraries on the USE classpath;
   the release does not redistribute the JaCaMo component dependencies.
+
+## Runtime research development (Phase 17)
+
+The runtime ledger currently retains all accepted/rejected outcomes in memory; long-duration retention is not bounded. Jason mind and Moise instance observations are not proof of corresponding USE state mutation. CArtAgO unknown/retired observations are explicitly quarantined outside the bound mirror subset. See docs/project/runtime-event-identity.md and the research reconciliation matrix. No new Ecore or OCL support is claimed.

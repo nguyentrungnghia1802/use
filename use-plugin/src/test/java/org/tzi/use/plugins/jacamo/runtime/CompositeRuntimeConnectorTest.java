@@ -16,6 +16,33 @@ import org.tzi.use.plugins.jacamo.semantic.Dimension;
 class CompositeRuntimeConnectorTest {
     @TempDir Path temporary;
 
+    @Test void retiredChildCallbackCannotEnterReplacementSubscription() {
+        List<java.util.function.Consumer<RuntimeEvent>> callbacks = new ArrayList<>();
+        RuntimeConnector child = new RuntimeConnector() {
+            public String connectorId() { return "child"; }
+            public java.util.Set<ConnectorCapability> capabilities() { return java.util.Set.of(); }
+            public ConnectorState state() { return ConnectorState.CONNECTED; }
+            public void connect(URI endpoint) { }
+            public void disconnect() { }
+            public RuntimeSnapshot fullSnapshot() { return new RuntimeSnapshot("empty", Instant.EPOCH, 0, List.of(), "empty"); }
+            public RuntimeSubscription subscribe(java.util.function.Consumer<RuntimeEvent> listener) {
+                callbacks.add(listener); return () -> { };
+            }
+        };
+        CompositeRuntimeConnector composite = new CompositeRuntimeConnector("parent", List.of(child));
+        composite.connect(URI.create("jacamo://local/test"));
+        List<RuntimeEvent> received = new ArrayList<>();
+        RuntimeSubscription old = composite.subscribe(received::add);
+        old.close(); composite.subscribe(received::add);
+        RuntimeEvent event = event("late", 1, Dimension.AGENT, RuntimeEventKind.BELIEF_ADDED,
+                "jason:agent:a", Map.of("belief", "ready"), null);
+        callbacks.getFirst().accept(event);
+        assertTrue(received.isEmpty()); assertEquals(List.of(event), composite.retiredEvents());
+        callbacks.getLast().accept(event);
+        assertEquals(1, received.size());
+        composite.disconnect();
+    }
+
     @Test
     void combinesSnapshotsAndRenumbersChildEventsIntoOneMonotonicStream() {
         RuntimeEvent agentEvent = event("agent-event", 4, Dimension.AGENT, RuntimeEventKind.BELIEF_ADDED,

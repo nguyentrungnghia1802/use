@@ -338,28 +338,28 @@ Execution evidence (2026-09-19): implementation commit 898191a5; focused connect
 
 ### Tasks
 
-- [ ] Inventory existing RuntimeEvent fields.
-- [ ] Inventory existing event kinds.
-- [ ] Inventory payload types/validation.
-- [ ] Inventory sequence semantics.
-- [ ] Inventory correlation semantics.
-- [ ] Inventory source/runtime/semantic identity fields.
-- [ ] Compare against supported capability matrix.
-- [ ] Do not create `RuntimeEvent2`.
-- [ ] Preserve existing compatible names unless a correctness issue requires migration.
-- [ ] Add missing metadata only when a supported runtime need proves it necessary.
-- [ ] Version schema only if contract compatibility actually changes.
+- [x] Inventory existing RuntimeEvent fields.
+- [x] Inventory existing event kinds.
+- [x] Inventory payload types/validation.
+- [x] Inventory sequence semantics.
+- [x] Inventory correlation semantics.
+- [x] Inventory source/runtime/semantic identity fields.
+- [x] Compare against supported capability matrix.
+- [x] Do not create `RuntimeEvent2`.
+- [x] Preserve existing compatible names unless a correctness issue requires migration.
+- [x] Add missing metadata only when a supported runtime need proves it necessary.
+- [x] Version schema only if contract compatibility actually changes.
 
 ### Tests
 
-- [ ] Serialization round-trip.
-- [ ] Invalid structural field rejection.
-- [ ] Kind-specific payload validation.
-- [ ] Sequence/correlation field tests.
+- [x] Serialization round-trip.
+- [x] Invalid structural field rejection.
+- [x] Kind-specific payload validation.
+- [x] Sequence/correlation field tests.
 
 ### Acceptance
 
-- [ ] One RuntimeEvent abstraction remains canonical.
+- [x] One RuntimeEvent abstraction remains canonical.
 
 ---
 
@@ -375,29 +375,29 @@ Execution evidence (2026-09-19): implementation commit 898191a5; focused connect
 
 For every supported event kind:
 
-- [ ] Define source runtime.
-- [ ] Define authoritative/non-authoritative status.
-- [ ] Define required runtime identity.
-- [ ] Define payload schema.
-- [ ] Define correlation policy.
-- [ ] Define whether it changes mirrored state.
-- [ ] Define whether it creates an operation checkpoint.
-- [ ] Define terminal event expectations.
-- [ ] Define unsupported conditions.
+- [x] Define source runtime.
+- [x] Define authoritative/non-authoritative status.
+- [x] Define required runtime identity.
+- [x] Define payload schema.
+- [x] Define correlation policy.
+- [x] Define whether it changes mirrored state.
+- [x] Define whether it creates an operation checkpoint.
+- [x] Define terminal event expectations.
+- [x] Define unsupported conditions.
 
 At minimum review:
 
-- [ ] observable property add/change/remove;
-- [ ] artifact operation requested/started/suspended/resumed/completed/failed;
-- [ ] artifact lifecycle;
-- [ ] workspace membership/focus/links where supported;
-- [ ] Jason belief/goal/action events;
-- [ ] Moise role/mission/group/scheme/goal deltas;
-- [ ] trace-only events.
+- [x] observable property add/change/remove;
+- [x] artifact operation requested/started/suspended/resumed/completed/failed;
+- [x] artifact lifecycle;
+- [x] workspace membership/focus/links where supported;
+- [x] Jason belief/goal/action events;
+- [x] Moise role/mission/group/scheme/goal deltas;
+- [x] trace-only events.
 
 ### Acceptance
 
-- [ ] Event kinds have semantics, not just names.
+- [x] Event kinds have semantics, not just names.
 
 ---
 
@@ -411,33 +411,33 @@ At minimum review:
 
 ### Tasks
 
-- [ ] Reuse existing history abstraction if one already exists.
-- [ ] Otherwise implement a generic `RuntimeTrace` domain abstraction.
-- [ ] Store immutable accepted event entries.
-- [ ] Track stream ID/generation.
-- [ ] Track accepted sequence ordering.
-- [ ] Lookup by event ID.
-- [ ] Lookup by correlation ID.
-- [ ] Support deterministic ordered iteration/range query.
-- [ ] Represent reconnect/resync/workspace-replacement boundaries.
-- [ ] Define whether rejected/quarantined events are stored and in what channel.
-- [ ] Bound retention if necessary without affecting correctness of current verification window.
-- [ ] Do not embed Auction operation names.
+- [x] Reuse existing history abstraction if one already exists.
+- [x] Otherwise implement a generic `RuntimeTrace` domain abstraction.
+- [x] Store immutable accepted event entries.
+- [x] Track stream ID/generation.
+- [x] Track accepted sequence ordering.
+- [x] Lookup by event ID.
+- [x] Lookup by correlation ID.
+- [x] Support deterministic ordered iteration/range query.
+- [x] Represent reconnect/resync/workspace-replacement boundaries.
+- [x] Define whether rejected/quarantined events are stored and in what channel.
+- [x] Bound retention if necessary without affecting correctness of current verification window.
+- [x] Do not embed Auction operation names.
 
 ### Tests
 
-- [ ] in-order append;
-- [ ] duplicate sequence;
-- [ ] decreasing sequence;
-- [ ] correlation query;
-- [ ] stream generation;
-- [ ] reconnect boundary;
-- [ ] late event from retired generation;
-- [ ] deterministic iteration.
+- [x] in-order append;
+- [x] duplicate sequence;
+- [x] decreasing sequence;
+- [x] correlation query;
+- [x] stream generation;
+- [x] reconnect boundary;
+- [x] late event from retired generation;
+- [x] deterministic iteration.
 
 ### Acceptance
 
-- [ ] Runtime history has one source of truth.
+- [x] Runtime history has one source of truth.
 
 ---
 
@@ -451,21 +451,21 @@ At minimum review:
 
 ### Tasks
 
-- [ ] Define exact Jason Agent runtime key format.
-- [ ] Define goal/action/message subordinate identity only where needed.
-- [ ] Preserve agent-name-to-semantic-ID binding semantics.
-- [ ] Support multiple runtime aliases for one semantic Agent where proven.
-- [ ] Prevent bare action/goal text from becoming a unique long-lived identity when concurrency makes it unsafe.
-- [ ] Add reverse lookup for diagnostics/reporting.
-- [ ] Add stale generation ownership.
+- [x] Define exact Jason Agent runtime key format.
+- [x] Define goal/action/message subordinate identity only where needed.
+- [x] Preserve agent-name-to-semantic-ID binding semantics.
+- [x] Support multiple runtime aliases for one semantic Agent where proven.
+- [x] Prevent bare action/goal text from becoming a unique long-lived identity when concurrency makes it unsafe.
+- [x] Add reverse lookup for diagnostics/reporting.
+- [x] Add stale generation ownership.
 
 ### Tests
 
-- [ ] exact success;
-- [ ] missing binding;
-- [ ] duplicate/ambiguous key;
-- [ ] reconnect alias restoration;
-- [ ] stale alias rejection.
+- [x] exact success;
+- [x] missing binding;
+- [x] duplicate/ambiguous key;
+- [x] reconnect alias restoration;
+- [x] stale alias rejection.
 
 ---
 
@@ -479,20 +479,20 @@ At minimum review:
 
 ### Tasks
 
-- [ ] Define workspace identity component.
-- [ ] Define Artifact runtime key using upstream identity, not display name alone.
-- [ ] Define observable-property runtime key.
-- [ ] Define operation invocation correlation using `OpId` fields available in pinned API.
-- [ ] Preserve AgentId/ArtifactId/opName/id evidence.
-- [ ] Ensure `OP_START/EXIT/FAIL` use the same exact operation correlation.
-- [ ] Ensure unknown runtime Artifact/property is discoverable but not mutating without semantic target.
+- [x] Define workspace identity component.
+- [x] Define Artifact runtime key using upstream identity, not display name alone.
+- [x] Define observable-property runtime key.
+- [x] Define operation invocation correlation using `OpId` fields available in pinned API.
+- [x] Preserve AgentId/ArtifactId/opName/id evidence.
+- [x] Ensure `OP_START/EXIT/FAIL` use the same exact operation correlation.
+- [x] Ensure unknown runtime Artifact/property is discoverable but not mutating without semantic target.
 
 ### Tests
 
-- [ ] same property name on two artifacts does not collide;
-- [ ] same operation name on two artifacts does not collide;
-- [ ] concurrent operations do not collide;
-- [ ] late operation terminal callback rejected after stream retirement.
+- [x] same property name on two artifacts does not collide;
+- [x] same operation name on two artifacts does not collide;
+- [x] concurrent operations do not collide;
+- [x] late operation terminal callback rejected after stream retirement.
 
 ---
 
@@ -506,22 +506,22 @@ At minimum review:
 
 ### Tasks
 
-- [ ] Separate specification identity from runtime instance identity.
-- [ ] Define keys for OEAgent.
-- [ ] Define keys for GroupInstance.
-- [ ] Define role-player composite identity.
-- [ ] Define SchemeInstance identity.
-- [ ] Define mission-player identity.
-- [ ] Define organisational goal-instance identity.
-- [ ] Preserve organisation context.
-- [ ] Do not collapse runtime instance into static spec object unless current USE representation explicitly does so.
+- [x] Separate specification identity from runtime instance identity.
+- [x] Define keys for OEAgent.
+- [x] Define keys for GroupInstance.
+- [x] Define role-player composite identity.
+- [x] Define SchemeInstance identity.
+- [x] Define mission-player identity.
+- [x] Define organisational goal-instance identity.
+- [x] Preserve organisation context.
+- [x] Do not collapse runtime instance into static spec object unless current USE representation explicitly does so.
 
 ### Tests
 
-- [ ] multiple groups of same spec;
-- [ ] multiple schemes of same spec;
-- [ ] same agent in different group/role contexts;
-- [ ] deterministic snapshot-diff identity.
+- [x] multiple groups of same spec;
+- [x] multiple schemes of same spec;
+- [x] same agent in different group/role contexts;
+- [x] deterministic snapshot-diff identity.
 
 ---
 
@@ -535,22 +535,22 @@ At minimum review:
 
 ### Tasks
 
-- [ ] Ensure each connection/workspace stream has explicit generation ownership.
-- [ ] Retire old event correlations on replacement/resync according to existing contract.
-- [ ] Reject late callbacks from old consumers.
-- [ ] Preserve only aliases whose semantic/USE identity remains exact.
-- [ ] Ensure reimport of incompatible project cannot silently reuse runtime aliases.
-- [ ] Ensure disconnect marks state stale.
-- [ ] Ensure full authoritative synchronization is required before LIVE.
+- [x] Ensure each connection/workspace stream has explicit generation ownership.
+- [x] Retire old event correlations on replacement/resync according to existing contract.
+- [x] Reject late callbacks from old consumers.
+- [x] Preserve only aliases whose semantic/USE identity remains exact.
+- [x] Ensure reimport of incompatible project cannot silently reuse runtime aliases.
+- [x] Ensure disconnect marks state stale.
+- [x] Ensure full authoritative synchronization is required before LIVE.
 
 ### Tests
 
-- [ ] rebuild while LIVE;
-- [ ] OCL/profile replacement while LIVE;
-- [ ] reimport while LIVE;
-- [ ] failed replacement;
-- [ ] reconnect;
-- [ ] old callback isolation.
+- [x] rebuild while LIVE;
+- [x] OCL/profile replacement while LIVE;
+- [x] reimport while LIVE;
+- [x] failed replacement;
+- [x] reconnect;
+- [x] old callback isolation.
 
 ---
 
@@ -563,23 +563,25 @@ At minimum review:
 
 ### Tasks
 
-- [ ] Run RuntimeEvent/schema tests.
-- [ ] Run RuntimeTrace tests.
-- [ ] Run TraceIndex/binding tests.
-- [ ] Run all runtime connector tests.
-- [ ] Run lifecycle hotfix regression.
-- [ ] Run Auction integration.
-- [ ] Update runtime/trace documentation only where behavior changed.
+- [x] Run RuntimeEvent/schema tests.
+- [x] Run RuntimeTrace tests.
+- [x] Run TraceIndex/binding tests.
+- [x] Run all runtime connector tests.
+- [x] Run lifecycle hotfix regression.
+- [x] Run Auction integration.
+- [x] Update runtime/trace documentation only where behavior changed.
 
 ### Exit criteria
 
-- [ ] RuntimeEvent canonical.
-- [ ] RuntimeTrace deterministic.
-- [ ] Runtime identities exact across 3 dimensions.
-- [ ] Lifecycle generations safe.
-- [ ] No Ecore V2 dependency introduced.
+- [x] RuntimeEvent canonical.
+- [x] RuntimeTrace deterministic.
+- [x] Runtime identities exact across 3 dimensions.
+- [x] Lifecycle generations safe.
+- [x] No Ecore V2 dependency introduced.
 
 ---
+
+Execution evidence (2026-09-19): 4c6b170d; two identity regressions RED then GREEN; focused trace/identity/lifecycle 26/26; final module 131/131; full reactor verify 277/277 (13 core, 130 GUI, 134 plugin including release IT). [Identity contract](../project/runtime-event-identity.md) records supported taxonomy, canonical aliases, generation and retention boundaries. Deferred upstream lifecycle and concurrent goal/message identity remain explicit; no fabricated targets. Phase 16 post-merge smoke passed 2/2.
 
 # Phase 18 — Runtime Mapping Draft
 

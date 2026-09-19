@@ -32,7 +32,10 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
     private final Map<String, CartagoArtifactBinding> bindings = new LinkedHashMap<>();
     private final CopyOnWriteArrayList<Consumer<RuntimeEvent>> listeners = new CopyOnWriteArrayList<>();
     private final AtomicLong sequence = new AtomicLong();
-    private final WorkspaceLogger logger = new WorkspaceLogger();
+    private WorkspaceLogger logger;
+    private long generation;
+    private final Map<String, ArtifactId> incarnations = new LinkedHashMap<>();
+    private final List<String> quarantinedObservations = new CopyOnWriteArrayList<>();
     private final Set<String> registeredWorkspaces = new LinkedHashSet<>();
     private volatile ConnectorState state = ConnectorState.DISCONNECTED;
 
@@ -59,6 +62,8 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
             throw new IllegalArgumentException("CARTAGO_ENDPOINT_INVALID");
         if (state == ConnectorState.CONNECTED) throw new IllegalStateException("CONNECTOR_ALREADY_CONNECTED");
         try {
+            logger = new WorkspaceLogger(++generation);
+            incarnations.clear();
             for (String workspace : bindings.values().stream().map(CartagoArtifactBinding::workspace).distinct().toList()) {
                 access.registerLogger(workspace, logger);
                 registeredWorkspaces.add(workspace);
@@ -89,6 +94,7 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
             for (CartagoArtifactBinding binding : bindings.values()) {
                 ArtifactInfo information = access.controller(binding.workspace()).getArtifactInfo(binding.artifact());
                 if (information == null) throw new IllegalStateException("CARTAGO_ARTIFACT_MISSING: " + binding.qualifiedName());
+                incarnations.put(binding.qualifiedName(), information.getId());
                 Set<String> observed = new LinkedHashSet<>();
                 if (information.getObsProperties() != null) {
                     for (ArtifactObsProperty property : information.getObsProperties()) {
@@ -115,6 +121,7 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
     }
 
     @Override public synchronized void disconnect() {
+        generation++;
         unregisterAll();
         listeners.clear();
         state = ConnectorState.DISCONNECTED;
@@ -133,10 +140,14 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
         return bindings.get(workspace + "/" + artifact.getName());
     }
 
+    public List<String> quarantinedObservations() { return List.copyOf(quarantinedObservations); }
+
     private RuntimeEvent propertyEvent(CartagoArtifactBinding binding, ArtifactObsProperty property,
                                        RuntimeEventKind kind, Instant timestamp) {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("property", property.getName());
+        payload.put("propertyId", String.valueOf(property.getId()));
+        payload.put("propertyKey", binding.runtimeSourceId() + ":property:" + property.getName());
         payload.put("values", safeValues(property.getValues()));
         Object value = property.getValues().length == 1 ? safe(property.getValue()) : property.toString();
         payload.put("value", value);
@@ -165,7 +176,9 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
         if (state != ConnectorState.CONNECTED) throw new IllegalStateException("CONNECTOR_NOT_CONNECTED");
     }
     private String correlation(CartagoArtifactBinding binding, OpId operation) {
-        return binding.runtimeSourceId() + ":op:" + operation.getId();
+        return binding.runtimeSourceId() + ":generation:" + generation + ":artifact:"
+                + operation.getArtifactId().getId() + ":op:" + operation.getId() + ":"
+                + operation.getOpName() + ":agent:" + operation.getAgentBodyId().getGlobalId();
     }
     private List<Object> safeValues(Object[] values) { return Arrays.stream(values).map(this::safe).toList(); }
     private Object safe(Object value) {
@@ -188,14 +201,36 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
     }
 
     private final class WorkspaceLogger extends CartagoLoggerAdapter {
+        private final long owner;
+        private WorkspaceLogger(long owner) { this.owner = owner; }
+        private CartagoArtifactBinding resolve(ArtifactId artifact) {
+            synchronized (CartagoRuntimeConnector.this) {
+                if (owner != generation) {
+                    quarantinedObservations.add("CARTAGO_RETIRED_GENERATION:" + owner + ":" + artifact.getId());
+                    return null;
+                }
+                CartagoArtifactBinding result = binding(artifact);
+                if (result == null) {
+                    quarantinedObservations.add("CARTAGO_UNBOUND_ARTIFACT:" + artifact.getWorkspaceId().getFullName()
+                            + "/" + artifact.getName() + ":" + artifact.getId());
+                    return null;
+                }
+                ArtifactId previous = incarnations.putIfAbsent(result.qualifiedName(), artifact);
+                if (previous != null && !previous.equals(artifact)) {
+                    quarantinedObservations.add("CARTAGO_STALE_ARTIFACT:" + artifact.getId());
+                    return null;
+                }
+                return result;
+            }
+        }
         @Override public void artifactCreated(long when, ArtifactId artifact, AgentId creator) {
-            CartagoArtifactBinding binding = binding(artifact);
+            CartagoArtifactBinding binding = resolve(artifact);
             if (binding != null) emit(event(binding, RuntimeEventKind.ARTIFACT_CREATED,
                     Map.of("artifact", artifact.getName(), "type", artifact.getArtifactType(),
                             "creator", creator == null ? "unknown" : creator.getAgentName()), null, instant(when)));
         }
         @Override public void artifactDisposed(long when, ArtifactId artifact, AgentId disposer) {
-            CartagoArtifactBinding binding = binding(artifact);
+            CartagoArtifactBinding binding = resolve(artifact);
             if (binding != null) emit(event(binding, RuntimeEventKind.ARTIFACT_DISPOSED,
                     Map.of("artifact", artifact.getName(), "disposer",
                             disposer == null ? "unknown" : disposer.getAgentName()), null, instant(when)));
@@ -203,7 +238,7 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
         @Override public void newPercept(long when, ArtifactId artifact, Tuple signal,
                                          ArtifactObsProperty[] added, ArtifactObsProperty[] removed,
                                          ArtifactObsProperty[] changed) {
-            CartagoArtifactBinding binding = binding(artifact);
+            CartagoArtifactBinding binding = resolve(artifact);
             if (binding == null) return;
             if (added != null) for (ArtifactObsProperty property : added)
                 emit(propertyEvent(binding, property, RuntimeEventKind.OBS_PROPERTY_ADDED, instant(when)));
@@ -215,7 +250,7 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
                     Map.of("signal", signal.getLabel(), "values", safeValues(signal.getContents())), null, instant(when)));
         }
         @Override public void opStarted(long when, OpId operationId, ArtifactId artifact, Op operation) {
-            CartagoArtifactBinding binding = binding(artifact);
+            CartagoArtifactBinding binding = resolve(artifact);
             if (binding == null || !binding.operations().containsKey(operation.getName())) return;
             emit(event(binding, RuntimeEventKind.OP_ENTER,
                     Map.of("operation", binding.operations().get(operation.getName()),
@@ -224,7 +259,7 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
                     correlation(binding, operationId), instant(when)));
         }
         @Override public void opCompleted(long when, OpId operationId, ArtifactId artifact, Op operation) {
-            CartagoArtifactBinding binding = binding(artifact);
+            CartagoArtifactBinding binding = resolve(artifact);
             if (binding == null || !binding.operations().containsKey(operation.getName())) return;
             emit(event(binding, RuntimeEventKind.OP_EXIT, Map.of(
                             "operation", binding.operations().get(operation.getName()),
@@ -234,7 +269,7 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
         }
         @Override public void opFailed(long when, OpId operationId, ArtifactId artifact, Op operation,
                                        String message, Tuple description) {
-            CartagoArtifactBinding binding = binding(artifact);
+            CartagoArtifactBinding binding = resolve(artifact);
             if (binding == null || !binding.operations().containsKey(operation.getName())) return;
             emit(event(binding, RuntimeEventKind.OP_FAIL,
                     Map.of("operation", binding.operations().get(operation.getName()),

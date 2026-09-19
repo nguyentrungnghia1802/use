@@ -197,8 +197,19 @@ public final class MoiseRuntimeConnector implements RuntimeConnector {
 
     private RuntimeEvent event(String runtimeId, String semanticId, RuntimeEventKind kind, Map<String, Object> payload) {
         long next = sequence.incrementAndGet();
+        Map<String, Object> evidence = new LinkedHashMap<>(payload);
+        String context = switch (kind) {
+            case ROLE_ADOPTED, ROLE_REMOVED -> RuntimeIdentity.key("role-player", binding.organisation(),
+                    (String)payload.get("group"), (String)payload.get("agent"), (String)payload.get("role"));
+            case MISSION_COMMITTED, MISSION_REMOVED -> RuntimeIdentity.key("mission-player", binding.organisation(),
+                    (String)payload.get("scheme"), (String)payload.get("agent"), (String)payload.get("mission"));
+            case SCHEME_STATE_CHANGED -> RuntimeIdentity.key("goal-instance", binding.organisation(),
+                    (String)payload.get("scheme"), (String)payload.get("goal"));
+            default -> runtimeId;
+        };
+        evidence.put("runtimeFactKey", context);
         return RuntimeEvent.create(id + "-" + next, Instant.now(), next, Dimension.ORGANISATION,
-                kind, runtimeId, semanticId, payload, null);
+                kind, runtimeId, semanticId, evidence, null);
     }
 
     private <T> Set<T> difference(Set<T> left, Set<T> right) {

@@ -60,6 +60,10 @@ class CartagoRuntimeConnectorTest {
 
             RuntimeEvent closeEnter = events.stream().filter(event -> event.kind() == RuntimeEventKind.OP_ENTER
                     && "closeAuction".equals(event.payload().get("operation"))).findFirst().orElseThrow();
+            assertTrue(closeEnter.correlationId().contains(artifact.getId().toString()));
+            assertTrue(closeEnter.correlationId().contains(":generation:"));
+            assertTrue(initial.payload().containsKey("propertyId"));
+            assertTrue(initial.payload().get("propertyKey").toString().contains(artifactName));
             assertTrue(events.stream().anyMatch(event -> event.kind() == RuntimeEventKind.OBS_PROPERTY_CHANGED
                     && event.payload().get("property").equals("open") && Boolean.FALSE.equals(event.payload().get("value"))));
             assertTrue(events.stream().anyMatch(event -> event.kind() == RuntimeEventKind.OP_EXIT
@@ -82,6 +86,12 @@ class CartagoRuntimeConnectorTest {
             environment.getController("/main").removeArtifact(artifactName);
             artifact = null;
             assertTrue(events.stream().anyMatch(event -> event.kind() == RuntimeEventKind.ARTIFACT_DISPOSED));
+            ArtifactId unknown = context.makeArtifact(context.getJoinedWspId("main"), "unbound" + suffix,
+                    TestAuctionArtifact.class.getName());
+            try {
+                assertTrue(connector.quarantinedObservations().stream().anyMatch(value ->
+                        value.contains("CARTAGO_UNBOUND_ARTIFACT") && value.contains(unknown.getId().toString())));
+            } finally { environment.getController("/main").removeArtifact(unknown.getName()); }
         } finally {
             connector.disconnect();
             if (artifact != null) environment.getController("/main").removeArtifact(artifactName);

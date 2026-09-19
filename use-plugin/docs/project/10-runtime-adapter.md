@@ -298,3 +298,7 @@ boundary.
 ## Phase 16 authority audit
 
 The [project capability matrix](../research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md) distinguishes observation from USE mutation. Intrinsic event kinds require their authoritative dimension; conflicts raise RUNTIME_AUTHORITY_CONFLICT. Jason actions are trace-only; CArtAgO owns artifact operation checkpoints. Moise state currently remains trace-only. Upstream API availability is not implemented mirror support.
+
+## Phase 17 event history
+
+See [event and identity contract](runtime-event-identity.md). RuntimeMutationEngine owns a RuntimeTrace ledger with generation/order/duplicate checks and explicit mutation outcomes. CArtAgO unknown/retired observations are quarantined separately; CompositeRuntimeConnector retains retired child events. Existing event wire version remains 1.0.0.

@@ -172,3 +172,7 @@ part of production import rather than a resolver-only test utility. Malformed,
 duplicate, absent-target, wrong-kind, or stale entries block import with
 `BINDING_INVALID` or `BINDING_STALE`. A valid selected identity is retained in the
 semantic reference and subsequent trace.
+
+## Phase 17 identity hardening
+
+[Runtime identity contract](runtime-event-identity.md) records canonical aliases, subordinate identity, immutable event evidence and generation boundaries. Runtime keys reject duplicate registration and stale/unresolved trace records; reverse alias lookup is deterministic.

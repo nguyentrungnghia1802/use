@@ -22,6 +22,8 @@ public final class CompositeRuntimeConnector implements RuntimeConnector {
     private final List<RuntimeSubscription> childSubscriptions = new ArrayList<>();
     private final AtomicLong sequence = new AtomicLong();
     private volatile ConnectorState state = ConnectorState.DISCONNECTED;
+    private long subscriptionGeneration;
+    private final List<RuntimeEvent> retiredEvents = new CopyOnWriteArrayList<>();
 
     public CompositeRuntimeConnector(String id, List<RuntimeConnector> connectors) {
         if (id == null || id.isBlank() || connectors == null || connectors.isEmpty()
@@ -88,9 +90,10 @@ public final class CompositeRuntimeConnector implements RuntimeConnector {
         if (listener == null) throw new IllegalArgumentException("RUNTIME_LISTENER_REQUIRED");
         listeners.add(listener);
         if (childSubscriptions.isEmpty()) {
+            long owner = ++subscriptionGeneration;
             try {
                 for (RuntimeConnector connector : connectors)
-                    childSubscriptions.add(connector.subscribe(event -> forward(connector, event)));
+                    childSubscriptions.add(connector.subscribe(event -> forward(owner, connector, event)));
             } catch (RuntimeException exception) {
                 closeChildSubscriptions();
                 listeners.remove(listener);
@@ -117,7 +120,10 @@ public final class CompositeRuntimeConnector implements RuntimeConnector {
         if (failure != null) throw new IllegalStateException("COMPOSITE_DISCONNECT_FAILED", failure);
     }
 
-    private synchronized void forward(RuntimeConnector connector, RuntimeEvent event) {
+    public List<RuntimeEvent> retiredEvents() { return List.copyOf(retiredEvents); }
+
+    private synchronized void forward(long owner, RuntimeConnector connector, RuntimeEvent event) {
+        if (owner != subscriptionGeneration) { retiredEvents.add(event); return; }
         RuntimeEvent normalized = normalize(connector, event);
         listeners.forEach(listener -> listener.accept(normalized));
     }
@@ -134,6 +140,7 @@ public final class CompositeRuntimeConnector implements RuntimeConnector {
     }
 
     private void closeChildSubscriptions() {
+        subscriptionGeneration++;
         for (RuntimeSubscription subscription : List.copyOf(childSubscriptions)) subscription.close();
         childSubscriptions.clear();
     }
