@@ -184,74 +184,74 @@ Read:
 - relevant JaCaMo/Jason/CArtAgO/Moise docs/source only
 
 ## P3.1 JCM parser
-- [ ] Parse MAS/application identity.
-- [ ] Parse agents.
-- [ ] Parse workspace declarations.
-- [ ] Parse artifact instances/types/parameters.
-- [ ] Parse organisation declarations.
-- [ ] Parse group/scheme runtime declarations.
-- [ ] Parse focus/roles where represented.
-- [ ] Parse source paths/platform parameters needed by model.
-- [ ] Preserve source spans.
-- [ ] Add positive/negative fixtures.
+- [x] Parse MAS/application identity.
+- [x] Parse agents.
+- [x] Parse workspace declarations.
+- [x] Parse artifact instances/types/parameters.
+- [x] Parse organisation declarations.
+- [x] Parse group/scheme runtime declarations.
+- [x] Parse focus/roles where represented.
+- [x] Parse source paths/platform parameters needed by model.
+- [x] Preserve source spans.
+- [x] Add positive/negative fixtures.
 
 ## P3.2 Jason parser adapter
-- [ ] Select parser strategy using current Jason APIs/grammar.
-- [ ] Parse initial beliefs.
-- [ ] Parse rules.
-- [ ] Parse goals.
-- [ ] Parse plans.
-- [ ] Parse triggering events.
-- [ ] Parse contexts.
-- [ ] Parse bodies/body terms.
-- [ ] Classify external/internal actions.
-- [ ] Parse messages/mental notes where supported.
-- [ ] Preserve expressions as typed AST or source expression nodes.
-- [ ] Add syntax error recovery diagnostics.
-- [ ] Add fixtures for supported syntax.
+- [x] Select parser strategy using current Jason APIs/grammar.
+- [x] Parse initial beliefs.
+- [x] Parse rules.
+- [x] Parse goals.
+- [x] Parse plans.
+- [x] Parse triggering events.
+- [x] Parse contexts.
+- [x] Parse bodies/body terms.
+- [x] Classify external/internal actions.
+- [x] Parse messages/mental notes where supported.
+- [x] Preserve expressions as typed AST or source expression nodes.
+- [x] Add syntax error recovery diagnostics.
+- [x] Add fixtures for supported syntax.
 
 ## P3.3 CArtAgO extractor
-- [ ] Resolve Artifact Java type from JCM.
-- [ ] Resolve source/classpath.
-- [ ] Extract Artifact identity.
-- [ ] Extract observable property declarations where statically knowable.
-- [ ] Extract operation signatures.
-- [ ] Extract parameter names/types.
-- [ ] Extract guard operations.
-- [ ] Extract internal operations.
-- [ ] Extract relevant signal/await declarations.
-- [ ] Preserve unresolved dynamic behavior explicitly.
-- [ ] Avoid executing arbitrary project code during static import.
-- [ ] Add fixtures.
+- [x] Resolve Artifact Java type from JCM.
+- [x] Resolve source/classpath.
+- [x] Extract Artifact identity.
+- [x] Extract observable property declarations where statically knowable.
+- [x] Extract operation signatures.
+- [x] Extract parameter names/types.
+- [x] Extract guard operations.
+- [x] Extract internal operations.
+- [x] Extract relevant signal/await declarations.
+- [x] Preserve unresolved dynamic behavior explicitly.
+- [x] Avoid executing arbitrary project code during static import.
+- [x] Add fixtures.
 
 ## P3.4 Moise parser
-- [ ] Parse structural specification.
-- [ ] Parse roles.
-- [ ] Parse groups/subgroups.
-- [ ] Parse links/formation constraints.
-- [ ] Parse functional specification.
-- [ ] Parse schemes.
-- [ ] Parse missions.
-- [ ] Parse OGoals/OPlans.
-- [ ] Parse normative specification.
-- [ ] Parse Norm role/mission/type/time constraint.
-- [ ] Link JCM organisation instances to spec declarations.
-- [ ] Add fixtures.
+- [x] Parse structural specification.
+- [x] Parse roles.
+- [x] Parse groups/subgroups.
+- [x] Parse links/formation constraints.
+- [x] Parse functional specification.
+- [x] Parse schemes.
+- [x] Parse missions.
+- [x] Parse OGoals/OPlans.
+- [x] Parse normative specification.
+- [x] Parse Norm role/mission/type/time constraint.
+- [x] Link JCM organisation instances to spec declarations.
+- [x] Add fixtures.
 
 ## P3.5 Cross-file resolver
-- [ ] Build symbol index.
-- [ ] Resolve explicit references.
-- [ ] Resolve owner-qualified names.
-- [ ] Resolve source paths.
-- [ ] Resolve action-operation structural links when source provides enough semantics.
-- [ ] Resolve percept-belief link when represented.
-- [ ] Resolve OGoal-Goal link when represented.
-- [ ] Record unresolved/ambiguous references.
-- [ ] Never fuzzy auto-resolve.
-- [ ] Add duplicate-name tests.
+- [x] Build symbol index.
+- [x] Resolve explicit references.
+- [x] Resolve owner-qualified names.
+- [x] Resolve source paths.
+- [x] Resolve action-operation structural links when source provides enough semantics.
+- [x] Resolve percept-belief link when represented.
+- [x] Resolve OGoal-Goal link when represented.
+- [x] Record unresolved/ambiguous references.
+- [x] Never fuzzy auto-resolve.
+- [x] Add duplicate-name tests.
 
 Acceptance:
-- [ ] Auction project produces coherent semantic model across all three dimensions.
+- [x] Auction project produces coherent semantic model across all three dimensions.
 
 ---
 

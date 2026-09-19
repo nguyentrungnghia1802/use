@@ -12,12 +12,17 @@ public final class SemanticId {
     private final String projectId;
     private final Dimension dimension;
     private final String metamodelKind;
+    private final List<String> ownerPath;
+    private final String localId;
 
-    private SemanticId(String value, String projectId, Dimension dimension, String metamodelKind) {
+    private SemanticId(String value, String projectId, Dimension dimension, String metamodelKind,
+                       List<String> ownerPath, String localId) {
         this.value = value;
         this.projectId = projectId;
         this.dimension = dimension;
         this.metamodelKind = metamodelKind;
+        this.ownerPath = List.copyOf(ownerPath);
+        this.localId = localId;
     }
 
     public static SemanticId of(String projectId, Dimension dimension, String metamodelKind,
@@ -29,7 +34,7 @@ public final class SemanticId {
         String owner = ownerPath.stream().map(SemanticId::encode).collect(Collectors.joining("/"));
         return new SemanticId("jacamo:" + encode(projectId) + ":" + dimension.key() + ":"
                 + encode(metamodelKind) + ":" + owner + ":" + encode(localId),
-                projectId, dimension, metamodelKind);
+                projectId, dimension, metamodelKind, ownerPath, localId);
     }
 
     private static String encode(String segment) {
@@ -57,6 +62,8 @@ public final class SemanticId {
     public String projectId() { return projectId; }
     public Dimension dimension() { return dimension; }
     public String metamodelKind() { return metamodelKind; }
+    public List<String> ownerPath() { return ownerPath; }
+    public String localId() { return localId; }
 
     @Override public boolean equals(Object other) {
         return other instanceof SemanticId id && value.equals(id.value);
