@@ -485,36 +485,36 @@ Read:
 - `docs/project/12-plugin-ui-workflow.md`
 
 ## P8.1 Constraint registry
-- [ ] Load translated constraints.
-- [ ] Load core OCL.
-- [ ] Load case/user OCL.
-- [ ] Record origin/dependencies.
+- [x] Load translated constraints.
+- [x] Load core OCL.
+- [x] Load case/user OCL.
+- [x] Record origin/dependencies.
 
 ## P8.2 Full check
-- [ ] Check structure/multiplicity.
-- [ ] Check all invariants.
-- [ ] Capture results.
+- [x] Check structure/multiplicity.
+- [x] Check all invariants.
+- [x] Capture results.
 
 ## P8.3 Operation check
-- [ ] Support pre-state.
-- [ ] Evaluate preconditions.
-- [ ] Evaluate postconditions.
-- [ ] Preserve correlation.
+- [x] Support pre-state.
+- [x] Evaluate preconditions.
+- [x] Evaluate postconditions.
+- [x] Preserve correlation.
 
 ## P8.4 Result/diagnostic
-- [ ] PASS/FAIL/ERROR/SKIPPED.
-- [ ] Context object.
-- [ ] OCL source.
-- [ ] trace back to JaCaMo.
-- [ ] export JSON/Markdown.
+- [x] PASS/FAIL/ERROR/SKIPPED.
+- [x] Context object.
+- [x] OCL source.
+- [x] trace back to JaCaMo.
+- [x] export JSON/Markdown.
 
 ## P8.5 Offline Auction E2E
-- [ ] Valid project passes expected checks.
-- [ ] Violation fixture fails expected constraint.
-- [ ] Report points to correct JaCaMo source.
+- [x] Valid project passes expected checks.
+- [x] Violation fixture fails expected constraint.
+- [x] Report points to correct JaCaMo source.
 
 Acceptance:
-- [ ] Complete design-time workflow usable without runtime.
+- [x] Complete design-time workflow usable without runtime.
 
 ---
 
