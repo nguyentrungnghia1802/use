@@ -1,0 +1,11 @@
+mas demo uses shared {
+  // agent phantom : missing.asl must not be discovered
+  agent alice : alice.asl
+  workspace world {
+    artifact counter : demo.Counter(1)
+  }
+  organisation team : team.xml { }
+  asl-path: src/agt
+  org-path: src/org
+  java-path: src/env
+}
