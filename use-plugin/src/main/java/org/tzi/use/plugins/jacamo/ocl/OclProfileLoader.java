@@ -19,8 +19,13 @@ public final class OclProfileLoader {
         try {
             Path root = projectRoot.toAbsolutePath().normalize();
             Path resolved = profile.isAbsolute() ? profile.normalize() : root.resolve(profile).normalize();
-            if (!resolved.startsWith(root)) throw new IllegalArgumentException(diagnosticPrefix + "_PATH_ESCAPE");
-            return loaded(resolved, Files.readString(resolved, StandardCharsets.UTF_8));
+            if (!resolved.startsWith(root))
+                throw pathEscape(diagnosticPrefix, resolved, root);
+            Path realRoot = root.toRealPath();
+            Path realProfile = resolved.toRealPath();
+            if (!realProfile.startsWith(realRoot))
+                throw pathEscape(diagnosticPrefix, realProfile, realRoot);
+            return loaded(resolved, Files.readString(realProfile, StandardCharsets.UTF_8));
         } catch (IOException exception) {
             throw new IllegalArgumentException(diagnosticPrefix + "_IO: " + exception.getMessage(), exception);
         }
@@ -38,6 +43,10 @@ public final class OclProfileLoader {
             byte[] digest = MessageDigest.getInstance("SHA-256").digest(content.getBytes(StandardCharsets.UTF_8));
             return new LoadedProfile(origin, content, java.util.HexFormat.of().formatHex(digest));
         } catch (Exception exception) { throw new IllegalStateException(exception); }
+    }
+    private IllegalArgumentException pathEscape(String diagnosticPrefix, Path attempted, Path allowedRoot) {
+        return new IllegalArgumentException(diagnosticPrefix + "_PATH_ESCAPE: " + attempted
+                + " is outside allowed root " + allowedRoot + "; choose a profile within the allowed root");
     }
     public record LoadedProfile(Path origin, String content, String sha256) { }
 }

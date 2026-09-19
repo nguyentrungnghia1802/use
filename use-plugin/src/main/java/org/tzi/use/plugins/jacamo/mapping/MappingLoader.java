@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.InputFormat;
 import com.networknt.schema.SchemaRegistry;
 import com.networknt.schema.SpecificationVersion;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -21,6 +22,16 @@ import org.w3c.dom.Element;
 /** Loads and rejects any mapping that is not compatible with the frozen Ecore baseline. */
 public final class MappingLoader {
     private static final ObjectMapper JSON = new ObjectMapper();
+    private final ByteReader reader;
+
+    public MappingLoader() { this(Files::readAllBytes); }
+
+    MappingLoader(ByteReader reader) { this.reader = reader; }
+
+    @FunctionalInterface
+    interface ByteReader {
+        byte[] read(Path path) throws IOException;
+    }
 
     public MappingModel loadCanonical(Path checkout) {
         Path module = Files.isDirectory(checkout.resolve("Core")) ? checkout : checkout.resolve("use-plugin");
@@ -32,8 +43,11 @@ public final class MappingLoader {
 
     public MappingModel load(Path mappingPath, Path schemaPath, Path ecorePath, Path freezePath) {
         try {
-            String mappingText = Files.readString(mappingPath, StandardCharsets.UTF_8);
-            String schemaText = Files.readString(schemaPath, StandardCharsets.UTF_8);
+            // Own each snapshot when its validation stage begins; never reopen an input.
+            byte[] mappingBytes = reader.read(mappingPath).clone();
+            byte[] schemaBytes = reader.read(schemaPath).clone();
+            String mappingText = new String(mappingBytes, StandardCharsets.UTF_8);
+            String schemaText = new String(schemaBytes, StandardCharsets.UTF_8);
             var schema = SchemaRegistry.withDefaultDialect(SpecificationVersion.DRAFT_2020_12)
                     .getSchema(schemaText, InputFormat.JSON);
             var errors = schema.validate(mappingText, InputFormat.JSON);
@@ -41,9 +55,13 @@ public final class MappingLoader {
                 throw new MappingException("MAPPING_SCHEMA_INVALID", errors.toString());
             }
             JsonNode root = JSON.readTree(mappingText);
-            validateFingerprint(root, ecorePath, freezePath);
-            EcoreKeys keys = ecoreKeys(ecorePath);
+            byte[] freezeBytes = reader.read(freezePath).clone();
+            JsonNode manifest = JSON.readTree(freezeBytes);
+            byte[] ecoreBytes = reader.read(ecorePath).clone();
+            validateFingerprint(root, ecoreBytes, manifest);
+            EcoreKeys keys = ecoreKeys(ecoreBytes);
             validateSources(root, keys);
+            validateMappingFingerprint(mappingBytes, manifest);
             return parse(root);
         } catch (MappingException exception) {
             throw exception;
@@ -52,10 +70,19 @@ public final class MappingLoader {
         }
     }
 
-    private void validateFingerprint(JsonNode mapping, Path ecore, Path freeze) throws Exception {
-        JsonNode manifest = JSON.readTree(Files.readString(freeze, StandardCharsets.UTF_8));
+    private void validateMappingFingerprint(byte[] mapping, JsonNode manifest) throws Exception {
+        String expected = manifest.path("hashes").path("mapping/jacamo-use-mapping-v1.json").asText();
+        String actual = sha256(mapping);
+        if (expected.isBlank() || !expected.equals(actual)) {
+            throw new MappingException("MAPPING_HASH_MISMATCH",
+                    "Frozen mapping fingerprint " + expected + " does not match " + actual
+                            + ". Restore the frozen mapping or rerun the full mapping audit before reconciling the manifest.");
+        }
+    }
+
+    private void validateFingerprint(JsonNode mapping, byte[] ecore, JsonNode manifest) throws Exception {
         String expected = manifest.path("hashes").path("Core/JaCaMo-Metamodel.ecore").asText();
-        String actual = sha256(Files.readAllBytes(ecore));
+        String actual = sha256(ecore);
         if (expected.isBlank() || !expected.equals(actual)) {
             throw new MappingException("MAPPING_ECORE_MISMATCH",
                     "Frozen Ecore fingerprint " + expected + " does not match " + actual);
@@ -66,12 +93,12 @@ public final class MappingLoader {
         }
     }
 
-    private EcoreKeys ecoreKeys(Path ecore) throws Exception {
+    private EcoreKeys ecoreKeys(byte[] ecore) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
         factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-        var document = factory.newDocumentBuilder().parse(ecore.toFile());
+        var document = factory.newDocumentBuilder().parse(new ByteArrayInputStream(ecore));
         Set<String> classes = new LinkedHashSet<>();
         Set<String> attributes = new LinkedHashSet<>();
         Set<String> references = new LinkedHashSet<>();

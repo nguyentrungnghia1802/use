@@ -7,11 +7,14 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.tzi.use.plugins.jacamo.PathLinkSupport;
 import org.tzi.use.parser.use.USECompiler;
 import org.tzi.use.plugins.jacamo.extraction.StaticProjectImporter;
 import org.tzi.use.plugins.jacamo.mapping.MappingLoader;
@@ -31,6 +34,8 @@ import org.tzi.use.uml.mm.ModelFactory;
 import org.tzi.use.uml.ocl.value.BooleanValue;
 
 class ConstraintOclTest {
+    @TempDir Path temporary;
+
     @Test
     void operationContractIsInsertedOnlyInItsBoundOwner() {
         var operation = new TargetOperationSpec("A", "ping", List.of(), null, "a", "VP003");
@@ -124,5 +129,18 @@ class ConstraintOclTest {
     void caseLoaderRejectsPathEscape() {
         assertThrows(IllegalArgumentException.class, () -> new OclProfileLoader().loadCase(
                 Path.of("src/test/resources/auction"), Path.of("../outside.ocl")));
+    }
+
+    @Test
+    void caseLoaderRejectsSymlinkThatResolvesOutsideProject() throws Exception {
+        Path project = Files.createDirectory(temporary.resolve("project"));
+        Path outside = Files.createDirectory(temporary.resolve("outside"));
+        Files.writeString(outside.resolve("outside.ocl"), "context X inv ok: true");
+        Path link = PathLinkSupport.createDirectoryLink(project.resolve("linked"), outside);
+
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+                () -> new OclProfileLoader().loadCase(project, link.getFileName().resolve("outside.ocl")));
+        assertTrue(error.getMessage().contains("OCL_PROFILE_PATH_ESCAPE"));
+        assertTrue(error.getMessage().contains("choose a profile within the allowed root"));
     }
 }

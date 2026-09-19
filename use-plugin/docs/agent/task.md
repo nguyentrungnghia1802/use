@@ -756,45 +756,72 @@ Read:
 - `docs/project/18-risk-register.md`
 
 ## P13.1 Full test matrix
-- [ ] unit.
-- [ ] parser fixtures.
-- [ ] mapping audit.
-- [ ] golden.
-- [ ] USE integration.
-- [ ] runtime synthetic.
-- [ ] runtime live.
-- [ ] Auction E2E.
+- [x] unit.
+- [x] parser fixtures.
+- [x] mapping audit.
+- [x] golden.
+- [x] USE integration.
+- [x] runtime synthetic.
+- [x] runtime live.
+- [x] Auction E2E.
 
 ## P13.2 Error resilience
-- [ ] malformed project.
-- [ ] partial source.
-- [ ] unsupported syntax.
-- [ ] mapping mismatch.
-- [ ] stale binding.
-- [ ] disconnect.
-- [ ] USE mutation error.
+- [x] malformed project.
+- [x] partial source.
+- [x] unsupported syntax.
+- [x] mapping mismatch.
+- [x] stale binding.
+- [x] disconnect.
+- [x] USE mutation error.
 
 ## P13.3 Security
-- [ ] path traversal tests.
-- [ ] no arbitrary code execution during static import.
-- [ ] safe classpath handling.
-- [ ] safe export paths.
+- [x] path traversal tests.
+- [x] no arbitrary code execution during static import.
+- [x] safe classpath handling.
+- [x] safe export paths.
 
 ## P13.4 Performance
-- [ ] baseline import timing.
-- [ ] baseline full-check timing.
-- [ ] runtime latency metrics.
-- [ ] optimize only measured bottlenecks.
-- [ ] regression benchmark.
+- [x] baseline import timing.
+- [x] baseline full-check timing.
+- [x] runtime latency metrics.
+- [x] optimize only measured bottlenecks.
+- [x] regression benchmark.
 
 ## P13.5 Compatibility
-- [ ] pinned USE version.
-- [ ] pinned JaCaMo version.
-- [ ] compatibility matrix.
-- [ ] clean environment test.
+- [x] pinned USE version.
+- [x] pinned JaCaMo version.
+- [x] compatibility matrix.
+- [x] clean environment test.
 
 Acceptance:
-- [ ] Stable repeated runs without semantic drift.
+- [x] Stable repeated runs without semantic drift.
+
+Evidence (2026-09-16): [Phase 13 coverage, commands, measurements and limits](../project/13-testing-quality.md#8-phase-13-verification-evidence-2026-09-16).
+Module package 108/108; full reactor `verify` 251/251 including 130 Failsafe tests;
+independent mapping audit/mutations/Ecore+EMF/USE compilation passed. Three focused
+runs each passed golden, real Auction and performance/verification tests (4/4).
+A separate clone with an initially empty Maven repository passed 251/251 and
+remained clean. No measured bottleneck warranted optimization; timing thresholds
+were not invented. Compatibility is limited to the recorded Windows/JDK and real
+in-process component versions. Production hardening commits: `34768a6e`, `0f24e5c2`.
+These checkboxes record implementation/validation completion; Phase 13 branch
+merge and push are still pending and are not authorized by this task.
+
+Review fix (2026-09-16): mapping/Ecore/schema/manifest now use one private byte
+snapshot per load. Three deterministic snapshot regressions were RED for the
+expected inconsistent-read behavior, then GREEN (mapping tests 9/9; module
+111/111; full reactor `mvn verify` 254/254). The existing Phase 13 evidence section and task report contain the
+superseding results; earlier 108/251 counts above identify the pre-review revision.
+
+Review fix round 2 (2026-09-16): downstream Ecore/manifest snapshots are now taken
+only after mapping schema and JSON validation, restoring `MAPPING_SCHEMA_INVALID`
+precedence when later inputs are missing without weakening the immutable
+single-snapshot contract. The deterministic regression was RED with
+`MAPPING_LOAD_FAILED`, then GREEN; mapping tests passed 10/10 and the module passed
+112/112. Full reactor `mvn verify` and exact-production-commit clean checkout both
+passed 255/255. Independent review of `f50a6af2..eae54750` found no Critical or
+Important issue; its only Minor evidence-link finding is resolved by the tracked
+Phase 13 quality document.
 
 ---
 

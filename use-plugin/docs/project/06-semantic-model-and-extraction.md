@@ -209,6 +209,17 @@ Parser có thể tiếp tục sau lỗi cục bộ để trả diagnostics, như
 - reference unresolved không được fake;
 - transformation phải có policy block/warn tùy severity.
 
+One JCM file contains one `mas` declaration. Tokens after its closing brace produce
+`JCM_TRAILING_CONTENT` at the first extra token; move shared declarations to an
+included project. A partial import retains elements from available sources and
+reports located missing/invalid-source diagnostics, but does not count as a
+successful import. Missing source contents and ambiguous targets remain unresolved.
+
+Static import reads Java source and inspects classpath entries without initializing
+project classes. Bytecode-only artifacts produce `CARTAGO_BYTECODE_UNSUPPORTED`;
+they are not executed to infer source semantics. Invalid archives and default
+classpath links escaping the project produce actionable diagnostics.
+
 ---
 
 ## 8. Cache/incremental

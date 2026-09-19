@@ -129,6 +129,51 @@ class StaticProjectImporterTest {
     }
 
     @Test
+    void partialProjectRetainsValidAgentSourceWithoutInventingMissingSourceContents() throws Exception {
+        Files.writeString(temporary.resolve("app.jcm"),
+                "mas app { agent present:present.asl agent missing:missing.asl }\n");
+        Files.writeString(temporary.resolve("present.asl"), "ready.\n+!go <- .print(ready).\n");
+        ImportResult result = new StaticProjectImporter().importProject(temporary.resolve("app.jcm"));
+        assertFalse(result.success());
+        assertNotNull(result.model());
+        assertNotNull(only(result, MetamodelKind.Belief, "ready"));
+        assertEquals(2, result.model().elements().stream().filter(e -> e.kind() == MetamodelKind.Agent).count());
+        assertTrue(result.model().sourceIndex().values().stream().noneMatch(s ->
+                s.path().getFileName().toString().equals("missing.asl")));
+        assertTrue(result.diagnostics().stream().anyMatch(d -> d.code().equals("JCM_SOURCE_MISSING")
+                && d.sourceLocation() != null && !d.remediation().isBlank()));
+    }
+
+    @Test
+    void staticImportNeverInitializesProjectSourceOrClasspathClasses() throws Exception {
+        Path sourceRoot = Files.createDirectories(temporary.resolve("src/demo"));
+        Path classes = Files.createDirectories(temporary.resolve("classes"));
+        Path marker = temporary.resolve("executed.txt");
+        String literal = marker.toString().replace("\\", "\\\\");
+        Path source = Files.writeString(sourceRoot.resolve("Unsafe.java"),
+                "package demo; public class Unsafe { static { try { java.nio.file.Files.writeString("
+                + "java.nio.file.Path.of(\"" + literal + "\"), \"executed\"); } catch(Exception e) { throw new RuntimeException(e); } } }");
+        assertEquals(0, javax.tools.ToolProvider.getSystemJavaCompiler().run(null, null, null,
+                "-proc:none", "-d", classes.toString(), source.toString()));
+        Path entry = temporary.resolve("app.jcm");
+        Files.writeString(entry, "mas app { workspace w { artifact unsafe:demo.Unsafe() } java-path:src class-path:classes }\n");
+        ImportResult fromSource = new StaticProjectImporter().importProject(entry);
+        assertTrue(fromSource.success(), () -> fromSource.diagnostics().toString());
+        assertNotNull(only(fromSource, MetamodelKind.Artifact, "unsafe"));
+        assertFalse(Files.exists(marker), "source parsing must not initialize imported classes");
+        Files.writeString(entry, "mas app { workspace w { artifact unsafe:demo.Unsafe() } java-path:absent class-path:classes }\n");
+        ImportResult fromClass = new StaticProjectImporter().importProject(entry);
+        assertTrue(fromClass.success(), () -> fromClass.diagnostics().toString());
+        assertTrue(fromClass.diagnostics().stream().anyMatch(d -> d.code().equals("CARTAGO_BYTECODE_UNSUPPORTED")));
+        assertFalse(Files.exists(marker), "classpath inspection must not initialize imported classes");
+        // Positive control proves the sentinel is executable, rather than inert test data.
+        try (var loader = new java.net.URLClassLoader(new java.net.URL[] { classes.toUri().toURL() }, null)) {
+            Class.forName("demo.Unsafe", true, loader);
+        }
+        assertEquals("executed", Files.readString(marker));
+    }
+
+    @Test
     void malformedSourcesRecoverWithLocatedDiagnostics() throws Exception {
         Files.createDirectories(temporary.resolve("src/agt"));
         Files.createDirectories(temporary.resolve("src/org"));

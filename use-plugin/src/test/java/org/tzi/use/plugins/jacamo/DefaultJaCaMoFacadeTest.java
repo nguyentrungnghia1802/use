@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -121,6 +122,80 @@ class DefaultJaCaMoFacadeTest {
             String json = Files.readString(output);
             assertTrue(json.contains(targetA));
             assertTrue(json.contains(targetB));
+        }
+    }
+
+    @Test
+    void exportRejectsUnsupportedDestinationsInsteadOfGuessingAFormat() {
+        try (DefaultJaCaMoFacade facade = new DefaultJaCaMoFacade(Path.of("."))) {
+            facade.importProject(Path.of("src/test/resources/auction/auction.jcm"));
+            Path unsafe = temporary.resolve("report.txt");
+            IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+                    () -> facade.exportVerificationReport(unsafe));
+            assertTrue(error.getMessage().contains("REPORT_EXPORT_EXTENSION"));
+            assertFalse(Files.exists(unsafe));
+        }
+    }
+
+    @Test
+    void reportExportSupportsMarkdownDestinations() throws Exception {
+        try (DefaultJaCaMoFacade facade = new DefaultJaCaMoFacade(Path.of("."))) {
+            facade.importProject(Path.of("src/test/resources/auction/auction.jcm"));
+            Path report = temporary.resolve("report.md");
+
+            facade.exportVerificationReport(report);
+
+            String markdown = Files.readString(report);
+            assertTrue(markdown.startsWith("# Verification Report"));
+            assertTrue(markdown.contains("| Constraint | Outcome | Context |"));
+        }
+    }
+
+    @Test
+    void reportExportRejectsLinkedDirectoryDestinations() throws Exception {
+        Path selectedRoot = Files.createDirectory(temporary.resolve("selected"));
+        Path outside = Files.createDirectory(temporary.resolve("outside"));
+        Path linked = PathLinkSupport.createDirectoryLink(selectedRoot.resolve("linked"), outside);
+        try (DefaultJaCaMoFacade facade = new DefaultJaCaMoFacade(Path.of("."))) {
+            facade.importProject(Path.of("src/test/resources/auction/auction.jcm"));
+
+            IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+                    () -> facade.exportVerificationReport(linked.resolve("report.json")));
+
+            assertTrue(error.getMessage().contains("REPORT_EXPORT_SYMLINK"));
+            assertTrue(error.getMessage().contains("choose a non-linked destination"));
+            assertFalse(Files.exists(outside.resolve("report.json")));
+        }
+    }
+
+    @Test
+    void reportCleanupFailureIsAttachedToThePrimaryExportFailure() throws Exception {
+        Path nonEmptyTemporary = Files.createDirectory(temporary.resolve("non-empty.tmp"));
+        Files.writeString(nonEmptyTemporary.resolve("child"), "prevents directory deletion");
+        IOException primary = new IOException("primary write failure");
+
+        Exception cleanup = DefaultJaCaMoFacade.cleanupTemporaryReport(nonEmptyTemporary, primary);
+
+        assertEquals(cleanup, primary.getSuppressed()[0]);
+        assertTrue(cleanup.getMessage().contains("non-empty.tmp"));
+    }
+
+    @Test
+    void auctionPerformanceMetricsAreMeasuredWithoutFlakyWallClockThresholds() {
+        try (DefaultJaCaMoFacade facade = new DefaultJaCaMoFacade(Path.of("."))) {
+            facade.importProject(Path.of("src/test/resources/auction/auction.jcm"));
+            facade.runFullVerification();
+
+            JaCaMoFacade.PerformanceMetrics metrics = facade.performanceMetrics();
+            System.out.printf("PHASE13_PERFORMANCE import=%dns generation=%dns fullCheck=%dns memory=%dB maxMemory=%dB%n",
+                    metrics.importNanos(), metrics.generationNanos(), metrics.fullCheckNanos(),
+                    metrics.usedMemoryBytes(), Runtime.getRuntime().maxMemory());
+            assertTrue(metrics.importNanos() > 0);
+            assertTrue(metrics.generationNanos() > 0);
+            assertTrue(metrics.fullCheckNanos() > 0);
+            assertTrue(metrics.usedMemoryBytes() > 0);
+            assertTrue(metrics.usedMemoryBytes() <= Runtime.getRuntime().maxMemory());
+            assertEquals(0, metrics.runtimeLastLatencyNanos());
         }
     }
 }
