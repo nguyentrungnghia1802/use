@@ -1416,20 +1416,20 @@ tasks above remain unproven and must not be presented as complete standalone E2E
 
 Search for:
 
-- [ ] direct `MetamodelKind` checks inside runtime core;
-- [ ] direct V1 EClass names inside connectors;
-- [ ] direct V1 EAttribute names inside generic runtime dispatch;
-- [ ] structural mapping rule IDs hard-coded into connectors;
-- [ ] Auction-specific names;
-- [ ] generated USE classifier names hard-coded outside target adapter.
+- [x] direct `MetamodelKind` checks inside runtime core;
+- [x] direct V1 EClass names inside connectors;
+- [x] direct V1 EAttribute names inside generic runtime dispatch;
+- [x] structural mapping rule IDs hard-coded into connectors;
+- [x] Auction-specific names;
+- [x] generated USE classifier names hard-coded outside target adapter.
 
 Classify each dependency:
 
-- [ ] legitimate adapter boundary;
-- [ ] removable coupling;
-- [ ] required current V1 binding;
-- [ ] test-only;
-- [ ] bug.
+- [x] legitimate adapter boundary;
+- [x] removable coupling;
+- [x] required current V1 binding;
+- [x] test-only;
+- [x] bug.
 
 ---
 
@@ -1443,17 +1443,17 @@ Classify each dependency:
 
 ### Tasks
 
-- [ ] Define generic runtime target request/descriptor if current code lacks one.
-- [ ] Runtime core expresses intent as object/attribute/relation/operation target category, not V1 class names.
-- [ ] Ecore/USE-specific binding is delegated to resolver/adapter.
-- [ ] Preserve exact semantic ID requirement.
-- [ ] Preserve diagnostics/provenance.
-- [ ] Avoid creating another parallel TraceIndex.
+- [x] Define generic runtime target request/descriptor if current code lacks one.
+- [x] Runtime core expresses intent as object/attribute/relation/operation target category, not V1 class names.
+- [x] Ecore/USE-specific binding is delegated to resolver/adapter.
+- [x] Preserve exact semantic ID requirement.
+- [x] Preserve diagnostics/provenance.
+- [x] Avoid creating another parallel TraceIndex.
 
 ### Tests
 
-- [ ] runtime connector tests do not require V1-specific target names except fixture bindings;
-- [ ] adapter tests prove V1 binding still works.
+- [x] runtime connector tests do not require V1-specific target names except fixture bindings;
+- [x] adapter tests prove V1 binding still works.
 
 ---
 
@@ -1467,19 +1467,19 @@ Classify each dependency:
 
 ### Tasks
 
-- [ ] Define one component responsible for current metamodel-specific runtime target binding.
-- [ ] Input: runtime semantic action + exact semantic identity/trace.
-- [ ] Output: exact current USE target or explicit unresolved result.
-- [ ] Keep structural mapping read-only.
-- [ ] Ensure future V2 adapter can replace/reconcile this layer without changing connectors.
+- [x] Define one component responsible for current metamodel-specific runtime target binding.
+- [x] Input: runtime semantic action + exact semantic identity/trace.
+- [x] Output: exact current USE target or explicit unresolved result.
+- [x] Keep structural mapping read-only.
+- [x] Ensure future V2 adapter can replace/reconcile this layer without changing connectors.
 
 ### Tests
 
-- [ ] current V1 target success;
-- [ ] missing target;
-- [ ] incompatible target kind;
-- [ ] stale trace;
-- [ ] deterministic result.
+- [x] current V1 target success;
+- [x] missing target;
+- [x] incompatible target kind;
+- [x] stale trace;
+- [x] deterministic result.
 
 ---
 
@@ -1495,15 +1495,15 @@ Classify each dependency:
 
 Implement tooling capable of later comparing two Ecore baselines:
 
-- [ ] class added/removed/renamed candidate (exact structural diff; no fuzzy auto-rename acceptance);
-- [ ] attribute added/removed/type/bounds change;
-- [ ] reference added/removed/target/bounds/containment change;
-- [ ] inheritance change;
-- [ ] affected structural mapping entries;
-- [ ] affected projection anchors;
-- [ ] affected runtime mapping target bindings;
-- [ ] affected OCL contexts/navigation;
-- [ ] affected golden `.use/.cmd` outputs.
+- [x] class added/removed/renamed candidate (exact structural diff; no fuzzy auto-rename acceptance);
+- [x] attribute added/removed/type/bounds change;
+- [x] reference added/removed/target/bounds/containment change;
+- [x] inheritance change;
+- [x] affected structural mapping entries;
+- [x] affected projection anchors;
+- [x] affected runtime mapping target bindings;
+- [x] affected OCL contexts/navigation;
+- [x] affected golden `.use/.cmd` outputs.
 
 Do not require V2 to exist yet; add synthetic fixture diff tests.
 
@@ -1520,21 +1520,23 @@ Do not require V2 to exist yet; add synthetic fixture diff tests.
 
 Using a synthetic alternate target vocabulary/adapter:
 
-- [ ] prove Jason connector unchanged;
-- [ ] prove CArtAgO connector unchanged;
-- [ ] prove Moise connector unchanged;
-- [ ] prove RuntimeEvent unchanged;
-- [ ] prove RuntimeTrace unchanged;
-- [ ] prove queue/lifecycle unchanged;
-- [ ] prove mapping rule source semantics can stay while target binding changes;
-- [ ] prove RuntimeMutation mechanics remain reusable.
+- [x] prove Jason connector unchanged;
+- [x] prove CArtAgO connector unchanged;
+- [x] prove Moise connector unchanged;
+- [x] prove RuntimeEvent unchanged;
+- [x] prove RuntimeTrace unchanged;
+- [x] prove queue/lifecycle unchanged;
+- [x] prove mapping rule source semantics can stay while target binding changes;
+- [x] prove RuntimeMutation mechanics remain reusable.
 
 ### Exit criteria
 
-- [ ] Waiting for Ecore V2 no longer blocks runtime engineering.
-- [ ] V2 impact is concentrated in semantic/mapping/binding/transformation layers.
+- [x] Waiting for Ecore V2 no longer blocks runtime engineering.
+- [x] V2 impact is concentrated in semantic/mapping/binding/transformation layers.
 
 ---
+
+Evidence: [Phase 21 migration readiness](../project/phase21-migration-readiness.md).
 
 # Phase 22 — Runtime Verification Completion
 
