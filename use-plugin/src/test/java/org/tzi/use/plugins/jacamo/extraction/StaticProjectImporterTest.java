@@ -26,7 +26,7 @@ class StaticProjectImporterTest {
                 MetamodelKind.Artifact, MetamodelKind.Belief, MetamodelKind.Rule, MetamodelKind.Goal,
                 MetamodelKind.Plan, MetamodelKind.TriggeringEvent, MetamodelKind.Context, MetamodelKind.Body,
                 MetamodelKind.ExternalAction, MetamodelKind.Message, MetamodelKind.ObsProperty,
-                MetamodelKind.Operation, MetamodelKind.GuardOperation, MetamodelKind.InternalOperation,
+                MetamodelKind.Operation, MetamodelKind.GuardOperation,
                 MetamodelKind.Organisation, MetamodelKind.Role, MetamodelKind.Group, MetamodelKind.Link,
                 MetamodelKind.FormationConstraints, MetamodelKind.Scheme, MetamodelKind.Mission,
                 MetamodelKind.OGoal, MetamodelKind.OPlan, MetamodelKind.Norm)));
@@ -35,9 +35,12 @@ class StaticProjectImporterTest {
         SemanticElement operation = only(result, MetamodelKind.Operation, "placeBid");
         assertEquals(new AttributeValue.Text("String item,int amount"), operation.attributes().get("parameters"));
         assertEquals(new AttributeValue.Text("signal(\"bid\", item, amount)"), operation.attributes().get("signalExpression"));
-        assertEquals(new AttributeValue.Text("await(\"open\")"), operation.attributes().get("awaitExpression"));
+        assertFalse(operation.attributes().containsKey("awaitExpression"),
+                "the source-backed closed-auction scenario must reach the authored precondition");
         assertTrue(operation.references().stream().anyMatch(ref -> ref.feature().equals("guardedBy")
                 && ref.targetId() != null));
+        assertNotNull(only(result, MetamodelKind.Operation, "closeAuction"));
+        assertNotNull(only(result, MetamodelKind.Operation, "removeOpen"));
         SemanticElement artifact = only(result, MetamodelKind.Artifact, "auction1");
         assertTrue(artifact.references().stream().anyMatch(ref -> ref.feature().equals("obsproperty")
                 && ref.targetId() != null), "reference name must match frozen Artifact.obsproperty exactly");

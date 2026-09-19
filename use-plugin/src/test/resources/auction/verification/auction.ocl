@@ -1,3 +1,13 @@
 -- [OUR-EXT] Auction verification fixture: the positive imported state starts open.
 context AuctionArtifact inv AuctionInitiallyOpen:
   self.open = true
+
+-- [OUR-EXT] Authored case-study policy over observable state; the Artifact body does not enforce it.
+context AuctionArtifact::placeBid(item : String, amount : Integer)
+pre AuctionOpenForBid:
+  self.open = true
+
+-- [OUR-EXT] Authored precondition mirroring the source operation body's explicit failed(...) boundary for zero.
+context AuctionArtifact::placeBid(item : String, amount : Integer)
+pre PositiveBidAmount:
+  amount > 0

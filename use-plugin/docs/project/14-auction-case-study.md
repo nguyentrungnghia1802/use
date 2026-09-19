@@ -110,7 +110,9 @@ Negative:
 - bidder valid;
 - placeBid positive;
 - state update valid;
-- pre/post pass.
+- applicable preconditions pass. This fixture does not model a highest-bid
+  value and has no authored Auction operation postcondition; the generic
+  pre/post verification path is covered by separate operation-contract tests.
 
 ### R2 Bid while closed
 Expected precondition fail.
@@ -138,3 +140,62 @@ Thesis/demo should preserve:
 - runtime event log;
 - verification report;
 - plugin/version manifest.
+
+## 9. Phase 14 reproducible evidence (2026-09-16)
+
+From the repository root on JDK 21, run `mvn -pl use-plugin verify` (or the full
+reactor `mvn verify`). `GoldenPipelineTest` and `LiveJaCaMoAuctionIntegrationTest`
+regenerate exactly 14 files under `use-plugin/target/phase14-auction-evidence`:
+
+- Offline (11): `auction.use`, `auction.cmd`, `auction-ocl.use`, `core.ocl`,
+  `case.ocl`, `trace.json`, `diagnostics.txt`, `translated-ocl-provenance.txt`,
+  `verification-pass.json`, `verification-fail.json`, `manifest.json`.
+- Runtime (3): `event-log.json`, `verification-reports.json`,
+  `scenario-summary.json`.
+
+The manifest lists all 14 relative paths, the starting repository revision,
+LF-normalized UTF-8 SHA-256 fingerprints for the checked-in Auction sources,
+canonical Ecore/Mapping V1/freeze manifest, core/case OCL, verification profile,
+and the ten non-manifest offline outputs. The runtime summary separately hashes
+the event log and report and records real connector versions, bindings, event
+counts, and the authoritative resync fingerprint. A clean checkout can
+regenerate the outputs; runtime timestamps, UUIDs and the resync fingerprint
+are run-specific and should not be compared byte-for-byte across runs.
+Before either evidence generator records the repository commit, it verifies
+that all eleven canonical, profile, and Auction source inputs match that commit
+after LF normalization. A dirty input fails with
+`EVIDENCE_SOURCE_DIFFERS_FROM_COMMIT`; the manifest never silently attributes
+changed fixture bytes to an older commit.
+
+The source fixture is the checked-in `.jcm`, Jason `.asl`, CArtAgO Java
+Artifact, and Moise XML. The live test compiles and instantiates that Artifact
+source, initializes a real Jason agent from its `.asl`, and constructs a real
+Moise `OS`/`OE` subset programmatically through Moise 1.1 APIs. It does not
+launch the entire `.jcm` application, execute the Jason plan end-to-end, or
+load the checked-in XML as the runtime `OS`. The XML is structural import
+provenance; communication link, formation cardinality, sequence-plan, time
+constraint, and norm lifecycle behavior are not demonstrated by the live run.
+
+The translated CArtAgO guard is `amount >= 0` and has `CARTAGO_GUARD|EXACT`
+provenance. `PositiveBidAmount` (`amount > 0`) is a separately authored
+`[OUR-EXT]` case precondition matching the explicit `failed(...)` body
+boundary for zero, not an automatic translation of Java effects. The test
+observes `opStarted` and a same-correlation `opFailed` for zero. The authored
+`AuctionOpenForBid` precondition is a case-study verification policy over
+observable `open`; the actual Artifact body still accepts a positive bid
+while closed, which USE reports as a violation without blocking JaCaMo.
+`AuctionInitiallyOpen` is an authored fixture invariant, not a universal
+auction invariant. No Moise deontic obligation is auto-converted to OCL.
+
+The evidence set and tests cover this fixture on the pinned Windows/JDK/USE/
+Jason/CArtAgO/Moise versions only. Arbitrary Java effects, unbound dynamic
+runtime entities, and norm activation/fulfilment/violation are outside this
+demonstrated scope. A guard that remains false can suspend an operation with
+no terminal callback; the verification lifecycle therefore begins at the
+actual `opStarted`, not at `opRequested`, and the invalid-amount acceptance
+scenario passes the guard before deterministically failing in the body.
+The runtime event log records the live deltas before disconnect. The scenario
+summary records both full synchronization snapshots and the post-reconnect
+authoritative comparison, including zero drift differences. It also records
+zero failed, rejected, and dropped event mutations; `processed` alone does not
+establish successful mirroring.

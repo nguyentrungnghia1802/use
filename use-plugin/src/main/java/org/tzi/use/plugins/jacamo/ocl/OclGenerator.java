@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.nio.file.Path;
 import org.tzi.use.plugins.jacamo.constraint.ConstraintSpec;
 import org.tzi.use.plugins.jacamo.constraint.Expression;
 import org.tzi.use.plugins.jacamo.constraint.TranslationStatus;
@@ -46,9 +47,13 @@ public final class OclGenerator {
                 + c.provenance().sourceHash() + "|" + String.join(",", c.dependencies()))
                 .collect(java.util.stream.Collectors.joining("\n", "", emitted.isEmpty() ? "" : "\n"));
         manifest += profiles.stream().sorted(Comparator.comparing(p -> p.origin().toString()))
-                .map(p -> "PROFILE|" + p.origin() + "|" + p.sha256() + "\n")
+                .map(p -> "PROFILE|" + portable(p.origin()) + "|" + p.sha256() + "\n")
                 .collect(java.util.stream.Collectors.joining());
         return new GeneratedOcl(model, manifest, emitted);
+    }
+
+    private String portable(Path path) {
+        return path.toString().replace('\\', '/');
     }
 
     private String insertInClass(String model, String owner, String signature, String addition) {
