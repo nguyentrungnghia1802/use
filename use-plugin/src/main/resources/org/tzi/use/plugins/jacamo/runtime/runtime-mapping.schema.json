@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "status",
+    "targetBaseline",
+    "rules"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "status": {
+      "const": "DRAFT_WAITING_FOR_METAMODEL_V2"
+    },
+    "targetBaseline": {
+      "const": "STRUCTURAL_MAPPING_V1_TEMPORARY"
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "runtime",
+          "dimension",
+          "eventKind",
+          "authoritative",
+          "identity",
+          "correlationRequired",
+          "payload",
+          "action",
+          "targetKind",
+          "anchor",
+          "traceRequired",
+          "mutation",
+          "checkpoint",
+          "support",
+          "evidence",
+          "assumptions",
+          "unsupportedConditions",
+          "migrationRisk"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "runtime": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "NORMALIZED",
+              "JASON",
+              "CARTAGO",
+              "MOISE"
+            ]
+          },
+          "dimension": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "ANY",
+              "AGENT",
+              "ENVIRONMENT",
+              "ORGANISATION"
+            ]
+          },
+          "eventKind": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "CREATE_OBJECT",
+              "DESTROY_OBJECT",
+              "SET_ATTRIBUTE",
+              "INSERT_LINK",
+              "DELETE_LINK",
+              "OP_ENTER",
+              "OP_EXIT",
+              "OP_FAIL",
+              "BELIEF_ADDED",
+              "BELIEF_REMOVED",
+              "GOAL_ADOPTED",
+              "GOAL_REMOVED",
+              "GOAL_ACHIEVED",
+              "GOAL_FAILED",
+              "ACTION_STARTED",
+              "ACTION_SUCCEEDED",
+              "ACTION_FAILED",
+              "MESSAGE_SENT",
+              "MESSAGE_RECEIVED",
+              "ARTIFACT_CREATED",
+              "ARTIFACT_DISPOSED",
+              "OBS_PROPERTY_ADDED",
+              "OBS_PROPERTY_CHANGED",
+              "OBS_PROPERTY_REMOVED",
+              "SIGNAL",
+              "ORGANISATION_DISCOVERED",
+              "GROUP_CREATED",
+              "GROUP_DISPOSED",
+              "SCHEME_CREATED",
+              "SCHEME_DISPOSED",
+              "ROLE_ADOPTED",
+              "ROLE_REMOVED",
+              "MISSION_COMMITTED",
+              "MISSION_REMOVED",
+              "SCHEME_STATE_CHANGED",
+              "NORM_STATE_CHANGED"
+            ]
+          },
+          "authoritative": {
+            "type": "boolean"
+          },
+          "identity": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "INVOCATION",
+              "EXACT_TARGET",
+              "OBSERVATION"
+            ]
+          },
+          "correlationRequired": {
+            "type": "boolean"
+          },
+          "payload": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "action": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "ATTRIBUTE_STATE_SET",
+              "ATTRIBUTE_STATE_UNSET",
+              "OBJECT_AVAILABLE",
+              "OBJECT_UNAVAILABLE",
+              "RELATION_INSERT",
+              "RELATION_DELETE",
+              "OPERATION_ENTER",
+              "OPERATION_EXIT",
+              "OPERATION_FAIL",
+              "TRACE_ONLY",
+              "NO_MUTATION",
+              "UNSUPPORTED"
+            ]
+          },
+          "targetKind": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "OBJECT",
+              "ATTRIBUTE",
+              "ASSOCIATION",
+              "OPERATION",
+              "TRACE"
+            ]
+          },
+          "anchor": {
+            "type": "string",
+            "minLength": 1
+          },
+          "traceRequired": {
+            "type": "boolean"
+          },
+          "mutation": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "CREATE_OBJECT",
+              "DESTROY_OBJECT",
+              "SET_ATTRIBUTE",
+              "INSERT_LINK",
+              "DELETE_LINK",
+              "OP_ENTER",
+              "OP_EXIT",
+              "OP_FAIL",
+              "NONE"
+            ]
+          },
+          "checkpoint": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "AFTER_MUTATION",
+              "OPERATION_PRE",
+              "OPERATION_POST",
+              "OPERATION_FAIL",
+              "NONE"
+            ]
+          },
+          "support": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "READY_V1_TEMPORARY",
+              "TRACE_ONLY",
+              "DEFERRED_FOR_V2",
+              "UNSUPPORTED"
+            ]
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true,
+            "minItems": 1
+          },
+          "assumptions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "unsupportedConditions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "migrationRisk": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}
