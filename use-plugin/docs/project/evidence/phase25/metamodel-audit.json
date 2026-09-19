@@ -1,0 +1,1380 @@
+{
+  "baseline": "0c55311394df0601cd1af2084560ba47f74472f6",
+  "counts": {
+    "attributes": 67,
+    "classes": 37,
+    "inheritance": 14,
+    "references": 63
+  },
+  "ecoreSha256": "c0aafab786c5ff3fcb468aeaf1b18b62865292e6590ffca2b9b2e962a9067fe7",
+  "finalTargetDiff": {
+    "changes": [],
+    "impacts": [],
+    "policy": "Exact diff only; indirect impacts conservatively require review; no source or mapping writes",
+    "renameCandidates": [],
+    "reviewLayers": []
+  },
+  "inventory": {
+    "dSML4JaCaMo::AbsOperation": {
+      "class": {
+        "abstract": "true",
+        "name": "AbsOperation",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "RefObsproperty": {
+          "containment": "false",
+          "eType": "#//ObsProperty",
+          "lowerBound": "0",
+          "name": "RefObsproperty",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "awaitExpression": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "awaitExpression",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "await_timeExpression": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "await_timeExpression",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "className": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "className",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "signalExpression": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "signalExpression",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        }
+      }
+    },
+    "dSML4JaCaMo::Action": {
+      "class": {
+        "abstract": "true",
+        "eSuperTypes": "#//BodyTerm",
+        "name": "Action",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "Expression": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Expression",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "Name": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Name",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "nextAction": {
+          "containment": "false",
+          "eType": "#//Action",
+          "lowerBound": "0",
+          "name": "nextAction",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::Agent": {
+      "class": {
+        "name": "Agent",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "Name": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Name",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "artifact": {
+          "containment": "false",
+          "eType": "#//Artifact",
+          "lowerBound": "0",
+          "name": "artifact",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "belief": {
+          "containment": "true",
+          "eType": "#//Belief",
+          "lowerBound": "0",
+          "name": "belief",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "hasGoal": {
+          "containment": "true",
+          "eType": "#//Goal",
+          "lowerBound": "0",
+          "name": "hasGoal",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "joinWorkspace": {
+          "containment": "false",
+          "eType": "#//Workspace",
+          "lowerBound": "0",
+          "name": "joinWorkspace",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "plan": {
+          "containment": "true",
+          "eType": "#//Plan",
+          "lowerBound": "0",
+          "name": "plan",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "rule": {
+          "containment": "true",
+          "eType": "#//Rule",
+          "lowerBound": "0",
+          "name": "rule",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::Artifact": {
+      "class": {
+        "name": "Artifact",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "IDVar": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "IDVar",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "Parameter": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Parameter",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "artifactName": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "artifactName",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "className": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "className",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "isInitial": {
+          "containment": "false",
+          "defaultValueLiteral": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean",
+          "lowerBound": "0",
+          "name": "isInitial",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "obsproperty": {
+          "containment": "true",
+          "eType": "#//ObsProperty",
+          "lowerBound": "0",
+          "name": "obsproperty",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "operation": {
+          "containment": "true",
+          "eType": "#//AbsOperation",
+          "lowerBound": "0",
+          "name": "operation",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "port": {
+          "containment": "true",
+          "eType": "#//Port",
+          "lowerBound": "0",
+          "name": "port",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::Belief": {
+      "class": {
+        "name": "Belief",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "Name": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Name",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "isInitial": {
+          "containment": "false",
+          "defaultValueLiteral": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean",
+          "lowerBound": "0",
+          "name": "isInitial",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "triggeredBy": {
+          "containment": "false",
+          "eType": "#//TriggeringEvent",
+          "lowerBound": "1",
+          "name": "triggeredBy",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::Body": {
+      "class": {
+        "name": "Body",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "Name": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Name",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "bodyterm": {
+          "containment": "true",
+          "eType": "#//BodyTerm",
+          "lowerBound": "0",
+          "name": "bodyterm",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "firstAction": {
+          "containment": "false",
+          "eType": "#//Action",
+          "lowerBound": "1",
+          "name": "firstAction",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::BodyTerm": {
+      "class": {
+        "abstract": "true",
+        "name": "BodyTerm",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {}
+    },
+    "dSML4JaCaMo::Context": {
+      "class": {
+        "name": "Context",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "Expression": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Expression",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "contextBelief": {
+          "containment": "false",
+          "eType": "#//Belief",
+          "lowerBound": "0",
+          "name": "contextBelief",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "contextRule": {
+          "containment": "false",
+          "eType": "#//Rule",
+          "lowerBound": "0",
+          "name": "contextRule",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::ExternalAction": {
+      "class": {
+        "eSuperTypes": "#//Action",
+        "name": "ExternalAction",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "operation": {
+          "containment": "false",
+          "eType": "#//AbsOperation",
+          "lowerBound": "0",
+          "name": "operation",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::FormationConstraints": {
+      "class": {
+        "name": "FormationConstraints",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "Name": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Name",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "biDir": {
+          "containment": "false",
+          "defaultValueLiteral": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean",
+          "lowerBound": "0",
+          "name": "biDir",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "from": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "from",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "scope": {
+          "containment": "false",
+          "defaultValueLiteral": "intra-group",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "scope",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "to": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "to",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "type": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "type",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        }
+      }
+    },
+    "dSML4JaCaMo::FunctionalSpecification": {
+      "class": {
+        "name": "FunctionalSpecification",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "scheme": {
+          "containment": "true",
+          "eType": "#//Scheme",
+          "lowerBound": "0",
+          "name": "scheme",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::Goal": {
+      "class": {
+        "name": "Goal",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "Name": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Name",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "triggeredBy": {
+          "containment": "false",
+          "eType": "#//TriggeringEvent",
+          "lowerBound": "1",
+          "name": "triggeredBy",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::Group": {
+      "class": {
+        "eSuperTypes": "#//Organisation",
+        "name": "Group",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "Name": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Name",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "RefRole": {
+          "containment": "false",
+          "eType": "#//Role",
+          "lowerBound": "1",
+          "name": "RefRole",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "formationconstraints": {
+          "containment": "true",
+          "eType": "#//FormationConstraints",
+          "lowerBound": "0",
+          "name": "formationconstraints",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "hasSubGroups": {
+          "containment": "false",
+          "eType": "#//Group",
+          "lowerBound": "0",
+          "name": "hasSubGroups",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "link": {
+          "containment": "true",
+          "eType": "#//Link",
+          "lowerBound": "0",
+          "name": "link",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "max": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt",
+          "lowerBound": "0",
+          "name": "max",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "min": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt",
+          "lowerBound": "0",
+          "name": "min",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        }
+      }
+    },
+    "dSML4JaCaMo::GuardOperation": {
+      "class": {
+        "eSuperTypes": "#//AbsOperation",
+        "name": "GuardOperation",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {}
+    },
+    "dSML4JaCaMo::InternalAction": {
+      "class": {
+        "eSuperTypes": "#//Action",
+        "name": "InternalAction",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {}
+    },
+    "dSML4JaCaMo::InternalOperation": {
+      "class": {
+        "eSuperTypes": "#//AbsOperation",
+        "name": "InternalOperation",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {}
+    },
+    "dSML4JaCaMo::Link": {
+      "class": {
+        "name": "Link",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "biDir": {
+          "containment": "false",
+          "defaultValueLiteral": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean",
+          "lowerBound": "0",
+          "name": "biDir",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "from": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "from",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "scope": {
+          "containment": "false",
+          "defaultValueLiteral": "intra-group",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "scope",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "to": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "to",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "type": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "type",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        }
+      }
+    },
+    "dSML4JaCaMo::LinkedOperation": {
+      "class": {
+        "eSuperTypes": "#//AbsOperation",
+        "name": "LinkedOperation",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {}
+    },
+    "dSML4JaCaMo::MAS": {
+      "class": {
+        "name": "MAS",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "Name": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Name",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "PlatformParamters": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "PlatformParamters",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "agent": {
+          "containment": "true",
+          "eType": "#//Agent",
+          "lowerBound": "1",
+          "name": "agent",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "organisation": {
+          "containment": "true",
+          "eType": "#//Organisation",
+          "lowerBound": "0",
+          "name": "organisation",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "workspace": {
+          "containment": "true",
+          "eType": "#//Workspace",
+          "lowerBound": "0",
+          "name": "workspace",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::MentalNotes": {
+      "class": {
+        "eSuperTypes": "#//BodyTerm",
+        "name": "MentalNotes",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "impliesB": {
+          "containment": "false",
+          "eType": "#//Belief",
+          "lowerBound": "1",
+          "name": "impliesB",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "impliesG": {
+          "containment": "false",
+          "eType": "#//Goal",
+          "lowerBound": "1",
+          "name": "impliesG",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::Message": {
+      "class": {
+        "eSuperTypes": "#//InternalAction",
+        "name": "Message",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "content": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "content",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "isBroadcast": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean",
+          "lowerBound": "0",
+          "name": "isBroadcast",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "messageToagent": {
+          "containment": "false",
+          "eType": "#//Agent",
+          "lowerBound": "0",
+          "name": "messageToagent",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::Mission": {
+      "class": {
+        "name": "Mission",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "Mplan": {
+          "containment": "false",
+          "eType": "#//TriggeringEvent",
+          "lowerBound": "0",
+          "name": "Mplan",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "max": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt",
+          "lowerBound": "0",
+          "name": "max",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "min": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt",
+          "lowerBound": "0",
+          "name": "min",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "ogoal": {
+          "containment": "false",
+          "eType": "#//OGoal",
+          "lowerBound": "1",
+          "name": "ogoal",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::Norm": {
+      "class": {
+        "eSuperTypes": "#//Organisation",
+        "name": "Norm",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "NMission": {
+          "containment": "false",
+          "eType": "#//Mission",
+          "lowerBound": "1",
+          "name": "NMission",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "Nrole": {
+          "containment": "false",
+          "eType": "#//Role",
+          "lowerBound": "1",
+          "name": "Nrole",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "timeConstraint": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "timeConstraint",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "type": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "type",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        }
+      }
+    },
+    "dSML4JaCaMo::NormativeSpecification": {
+      "class": {
+        "name": "NormativeSpecification",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "norm": {
+          "containment": "true",
+          "eType": "#//Norm",
+          "lowerBound": "0",
+          "name": "norm",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::OGoal": {
+      "class": {
+        "name": "OGoal",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "Name": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Name",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "NextOgoal": {
+          "containment": "false",
+          "eType": "#//OGoal",
+          "lowerBound": "0",
+          "name": "NextOgoal",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "OGoalToGoal": {
+          "containment": "false",
+          "eType": "#//Goal",
+          "lowerBound": "0",
+          "name": "OGoalToGoal",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "OGoalToOPlan": {
+          "containment": "false",
+          "eType": "#//OPlan",
+          "lowerBound": "0",
+          "name": "OGoalToOPlan",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "isRootGoal": {
+          "containment": "false",
+          "defaultValueLiteral": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean",
+          "lowerBound": "0",
+          "name": "isRootGoal",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        }
+      }
+    },
+    "dSML4JaCaMo::OPlan": {
+      "class": {
+        "name": "OPlan",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "FirstOgoal": {
+          "containment": "false",
+          "eType": "#//OGoal",
+          "lowerBound": "1",
+          "name": "FirstOgoal",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "Parallel": {
+          "containment": "false",
+          "defaultValueLiteral": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean",
+          "lowerBound": "0",
+          "name": "Parallel",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "Sequence": {
+          "containment": "false",
+          "defaultValueLiteral": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean",
+          "lowerBound": "0",
+          "name": "Sequence",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "Splan": {
+          "containment": "false",
+          "eType": "#//TriggeringEvent",
+          "lowerBound": "0",
+          "name": "Splan",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::ObsProperty": {
+      "class": {
+        "name": "ObsProperty",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "Name": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Name",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "ParamName": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "ParamName",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "obsproperty": {
+          "containment": "false",
+          "eType": "#//Belief",
+          "lowerBound": "0",
+          "name": "obsproperty",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::Operation": {
+      "class": {
+        "eSuperTypes": "#//AbsOperation",
+        "name": "Operation",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "callsInternal": {
+          "containment": "false",
+          "eType": "#//InternalOperation",
+          "lowerBound": "0",
+          "name": "callsInternal",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "guardedBy": {
+          "containment": "false",
+          "eType": "#//GuardOperation",
+          "lowerBound": "0",
+          "name": "guardedBy",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::Organisation": {
+      "class": {
+        "name": "Organisation",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "deploysAgent": {
+          "containment": "false",
+          "eType": "#//Agent",
+          "lowerBound": "1",
+          "name": "deploysAgent",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "functionalspecification": {
+          "containment": "true",
+          "eType": "#//FunctionalSpecification",
+          "lowerBound": "1",
+          "name": "functionalspecification",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "id": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "id",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "normativespecification": {
+          "containment": "true",
+          "eType": "#//NormativeSpecification",
+          "lowerBound": "1",
+          "name": "normativespecification",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "structuralspecification": {
+          "containment": "true",
+          "eType": "#//StructuralSpecification",
+          "lowerBound": "1",
+          "name": "structuralspecification",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::Plan": {
+      "class": {
+        "name": "Plan",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "Name": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Name",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "RefArtifact": {
+          "containment": "false",
+          "eType": "#//Artifact",
+          "lowerBound": "0",
+          "name": "RefArtifact",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "argID": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "argID",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "asBeliefAddition": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "asBeliefAddition",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "asQuery": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "asQuery",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "atomicLabel": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "atomicLabel",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "hasAction": {
+          "containment": "true",
+          "eType": "#//Action",
+          "lowerBound": "0",
+          "name": "hasAction",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "hasBody": {
+          "containment": "true",
+          "eType": "#//Body",
+          "lowerBound": "1",
+          "name": "hasBody",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "hasContext": {
+          "containment": "true",
+          "eType": "#//Context",
+          "lowerBound": "1",
+          "name": "hasContext",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "isAtomic": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "isAtomic",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "isInitial": {
+          "containment": "false",
+          "defaultValueLiteral": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean",
+          "lowerBound": "0",
+          "name": "isInitial",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        }
+      }
+    },
+    "dSML4JaCaMo::Port": {
+      "class": {
+        "name": "Port",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "Name": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Name",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "linkArtifacts": {
+          "containment": "false",
+          "eType": "#//Artifact",
+          "lowerBound": "0",
+          "name": "linkArtifacts",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::Role": {
+      "class": {
+        "eSuperTypes": "#//Organisation",
+        "name": "Role",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "Extendsrole": {
+          "containment": "false",
+          "eType": "#//Role",
+          "lowerBound": "0",
+          "name": "Extendsrole",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "Name": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Name",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "max": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt",
+          "lowerBound": "0",
+          "name": "max",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "min": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt",
+          "lowerBound": "0",
+          "name": "min",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "players": {
+          "containment": "false",
+          "eType": "#//Agent",
+          "lowerBound": "0",
+          "name": "players",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::Rule": {
+      "class": {
+        "name": "Rule",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "Expression": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Expression",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        }
+      }
+    },
+    "dSML4JaCaMo::Scheme": {
+      "class": {
+        "eSuperTypes": "#//Organisation",
+        "name": "Scheme",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "PlanOperator": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "PlanOperator",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "SchemeOPlan": {
+          "containment": "true",
+          "eType": "#//OPlan",
+          "lowerBound": "0",
+          "name": "SchemeOPlan",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "SchemeOgoal": {
+          "containment": "true",
+          "eType": "#//OGoal",
+          "lowerBound": "1",
+          "name": "SchemeOgoal",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "Splan": {
+          "containment": "false",
+          "eType": "#//TriggeringEvent",
+          "lowerBound": "0",
+          "name": "Splan",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "mission": {
+          "containment": "true",
+          "eType": "#//Mission",
+          "lowerBound": "1",
+          "name": "mission",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::StructuralSpecification": {
+      "class": {
+        "name": "StructuralSpecification",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "group": {
+          "containment": "true",
+          "eType": "#//Group",
+          "lowerBound": "0",
+          "name": "group",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "role": {
+          "containment": "true",
+          "eType": "#//Role",
+          "lowerBound": "0",
+          "name": "role",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    },
+    "dSML4JaCaMo::TriggeringEvent": {
+      "class": {
+        "eSuperTypes": "#//Action",
+        "name": "TriggeringEvent",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "deletion": {
+          "containment": "false",
+          "defaultValueLiteral": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean",
+          "lowerBound": "0",
+          "name": "deletion",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "ds": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "ds",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "isInitial": {
+          "containment": "false",
+          "defaultValueLiteral": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean",
+          "lowerBound": "0",
+          "name": "isInitial",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "isSeparateIntention": {
+          "containment": "false",
+          "defaultValueLiteral": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean",
+          "lowerBound": "0",
+          "name": "isSeparateIntention",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "planoperator": {
+          "containment": "false",
+          "eType": "#//OPlan",
+          "lowerBound": "0",
+          "name": "planoperator",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "triggersPlan": {
+          "containment": "false",
+          "eType": "#//Plan",
+          "lowerBound": "1",
+          "name": "triggersPlan",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "ttf": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt",
+          "lowerBound": "0",
+          "name": "ttf",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        }
+      }
+    },
+    "dSML4JaCaMo::Workspace": {
+      "class": {
+        "name": "Workspace",
+        "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EClass"
+      },
+      "features": {
+        "Host": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Host",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "Name": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Name",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "Path": {
+          "containment": "false",
+          "eType": "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString",
+          "lowerBound": "0",
+          "name": "Path",
+          "upperBound": "1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EAttribute"
+        },
+        "artifact": {
+          "containment": "true",
+          "eType": "#//Artifact",
+          "lowerBound": "0",
+          "name": "artifact",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        },
+        "hasSubworkspace": {
+          "containment": "false",
+          "eType": "#//Workspace",
+          "lowerBound": "0",
+          "name": "hasSubworkspace",
+          "upperBound": "-1",
+          "{http://www.w3.org/2001/XMLSchema-instance}type": "ecore:EReference"
+        }
+      }
+    }
+  }
+}

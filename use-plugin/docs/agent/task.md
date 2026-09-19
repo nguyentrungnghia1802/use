@@ -2085,11 +2085,10 @@ all non-EXACT rules remain non-emitting. Standalone Phase 20 limits remain uncha
 
 # Phase 25 — Human Inputs / Research Decisions
 
-Status (2026-09-19): **BLOCKED on D25-01, final metamodel research choice**.
-Prepared [decision package](../project/phase25-input-decision-package.md) records
-verified Phase 24 evidence, V1 inventory, runtime needs, migration impact and
-recommended options. No V2 or explicit V1-final decision is present. Phase 26
-has not started; no final metamodel decision is inferred from the baseline.
+Status: D25-01 selects unchanged canonical V1 under user-delegated authority
+(2026-09-19). See [decision and audit](../project/phase25-input-decision-package.md).
+Conditional V2/research/case requests below are resolved as not required; checked
+items mean dispositioned, not that a V2 or external case was supplied.
 
 **Objective:** collect only the information that could not be safely produced by the Agent after completing all independent engineering work.
 
@@ -2105,22 +2104,21 @@ The Agent must arrive here with a prepared decision package for every requested 
 - [x] Runtime concepts actually needed after Phases 16–24.
 - [x] Classes/attributes/references that appear unused or over-complex (review candidates only; no unsupported deletion claim).
 - [x] Proposed minimum verification-oriented vocabulary if useful (retain current proven subset; no new EClass justified).
-- [ ] Exact V1→future-V2 impact matrix.
+- [x] Exact V1→future-V2 impact matrix.
 - [x] Migration tooling ready (2 Python tests freshly PASS; V1 self-diff empty).
 
-Layer/component impact matrix prepared; exact feature-level V2 diff is blocked
-until a target is supplied/decided. P25.2 has no additional mandatory decision
+Exact final-target diff is empty: V1 remains canonical; no V2 migration is required. P25.2 has no additional mandatory decision
 under current conservative supported scope. P25.3 requires no user-supplied case:
 Counter Team already satisfies the supported-subset second-case gate.
 
 ### Human input
 
-- [ ] User supplies/approves Metamodel V2 if it is externally authored/required.
-- [ ] User states whether V2 replaces V1 canonical baseline or acts as a verification-specific metamodel/profile.
+- [x] User supplies/approves Metamodel V2 if it is externally authored/required.
+- [x] User states whether V2 replaces V1 canonical baseline or acts as a verification-specific metamodel/profile.
 
 If user decides no V2 is required:
 
-- [ ] record V1 as final target and proceed to Phase 26 accordingly.
+- [x] record V1 as final target and proceed to Phase 26 accordingly.
 
 ---
 
@@ -2130,20 +2128,20 @@ Only ask for entries that could not be resolved by source/runtime evidence.
 
 For each open decision provide:
 
-- [ ] question;
-- [ ] current facts;
-- [ ] safe default;
-- [ ] options;
-- [ ] impact;
-- [ ] recommendation;
-- [ ] exact files/tests affected.
+- [x] question;
+- [x] current facts;
+- [x] safe default;
+- [x] options;
+- [x] impact;
+- [x] recommendation;
+- [x] exact files/tests affected.
 
 Potential topics only if still unresolved:
 
-- [ ] intentionally LOSSY translation enablement;
-- [ ] interpretation of a normative/deontic semantic not exposed by runtime;
-- [ ] thesis-specific desired cross-dimensional rule not present in source;
-- [ ] alternative RuntimeTrace/OCL representation if current evidence-backed implementation is unacceptable.
+- [x] intentionally LOSSY translation enablement;
+- [x] interpretation of a normative/deontic semantic not exposed by runtime;
+- [x] thesis-specific desired cross-dimensional rule not present in source;
+- [x] alternative RuntimeTrace/OCL representation if current evidence-backed implementation is unacceptable.
 
 ---
 
@@ -2151,24 +2149,24 @@ Potential topics only if still unresolved:
 
 Only if P24.5 found no suitable autonomous candidate:
 
-- [ ] present required selection criteria;
-- [ ] present any partial candidates already evaluated;
-- [ ] request project/case selection from user.
+- [x] present required selection criteria;
+- [x] present any partial candidates already evaluated;
+- [x] request project/case selection from user.
 
 ---
 
 ## P25.4 — Human input freeze
 
-- [ ] Record all user decisions in a decision log.
-- [ ] Record date/version/source.
-- [ ] Convert decisions into explicit Phase 26 inputs.
-- [ ] No remaining hidden human dependency before Phase 26 starts.
+- [x] Record all user decisions in a decision log.
+- [x] Record date/version/source.
+- [x] Convert decisions into explicit Phase 26 inputs.
+- [x] No remaining hidden human dependency before Phase 26 starts.
 
 ### Exit criteria
 
-- [ ] Metamodel target decided.
-- [ ] Required external case supplied if needed.
-- [ ] Any thesis-specific semantics explicitly approved/rejected.
+- [x] Metamodel target decided.
+- [x] Required external case supplied if needed.
+- [x] Any thesis-specific semantics explicitly approved/rejected.
 
 ---
 

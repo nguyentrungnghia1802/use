@@ -13,7 +13,7 @@
 - Không hard-code Auction vào core.
 - Không dùng fuzzy/guessing cho semantic identity.
 - Runtime core phải tách khỏi Ecore cụ thể để dễ migrate sang Metamodel V2.
-- Ecore/Structural Mapping V1 hiện tại tiếp tục dùng làm baseline tạm thời cho tới khi Metamodel V2 được cung cấp.
+- D25-01 (2026-09-19): Ecore/Structural Mapping V1 là canonical final cho supported scope; xem phase25-input-decision-package.md. V2 không bắt buộc theo audit hiện tại.
 - Runtime Mapping là layer riêng, không nhét runtime semantics vào Structural Mapping.
 - Unknown/unbound runtime entity phải quarantine, không tự tạo semantic target.
 - OCL chỉ mở rộng sau khi runtime mirror đã chứng minh đồng bộ đúng.
