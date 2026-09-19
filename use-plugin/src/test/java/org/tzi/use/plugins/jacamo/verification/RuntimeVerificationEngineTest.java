@@ -55,6 +55,40 @@ import org.tzi.use.uml.ocl.value.BooleanValue;
 class RuntimeVerificationEngineTest {
     @TempDir Path temporary;
 
+    @Test void wrongTerminalCannotConsumeExactPreStateAndExportRetainsAttribution() {
+        Fixture f=fixture(true);
+        var verifier=new RuntimeVerificationEngine(f.direct().system(),f.registry(),f.trace());
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
+        var enter=event(1,RuntimeEventKind.OP_ENTER,f.runtimeKey(),f.artifactSemanticId(),Map.of("operation","placeBid","arguments",List.of("item",1)),"exact");
+        verifier.beforeMutation(enter);
+        var wrong=event(2,RuntimeEventKind.OP_EXIT,f.runtimeKey(),"wrong-semantic",Map.of(),"exact");
+        verifier.afterMutation(wrong,org.tzi.use.plugins.jacamo.runtime.MutationResult.applied());
+        assertEquals(VerificationOutcome.ERROR,verifier.latestReport().verification().results().getFirst().outcome());
+        var exit=event(3,RuntimeEventKind.OP_EXIT,f.runtimeKey(),f.artifactSemanticId(),Map.of(),"exact");
+        verifier.afterMutation(exit,org.tzi.use.plugins.jacamo.runtime.MutationResult.applied());
+        assertEquals(VerificationCheckpoint.OPERATION_POST,verifier.latestReport().checkpoint());
+        assertTrue(verifier.latestReport().verification().results().stream().anyMatch(r->r.constraintId().equals("POST-AUCTION-OPEN")));
+        var json=new RuntimeVerificationReportExporter().toJson(verifier.latestReport());
+        assertTrue(json.contains("correlationId"));
+        assertTrue(json.contains("exact"));
+        assertTrue(json.contains("sourceSpan"));
+        assertTrue(json.contains(f.artifactSemanticId()));
+        verifier.afterMutation(exit,org.tzi.use.plugins.jacamo.runtime.MutationResult.applied());
+        assertEquals(VerificationOutcome.ERROR,verifier.latestReport().verification().results().getFirst().outcome());
+    }
+
+    @Test void staleMirrorCannotEvaluateCurrentInvariantOrCapturePreState() {
+        Fixture f=fixture(true);
+        var verifier=new RuntimeVerificationEngine(f.direct().system(),f.registry(),f.trace());
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.STALE);
+        var update=event(1,RuntimeEventKind.SET_ATTRIBUTE,f.runtimeKey(),f.artifactSemanticId(),Map.of("attribute","open","valueType","BOOLEAN","value",true),null);
+        verifier.afterMutation(update,org.tzi.use.plugins.jacamo.runtime.MutationResult.applied());
+        assertTrue(verifier.latestReport().verification().results().stream().allMatch(r -> r.outcome()==VerificationOutcome.SKIPPED));
+        var enter=event(2,RuntimeEventKind.OP_ENTER,f.runtimeKey(),f.artifactSemanticId(),Map.of("operation","placeBid","arguments",List.of("item",1)),"stale");
+        verifier.beforeMutation(enter);
+        assertTrue(verifier.latestReport().verification().results().stream().allMatch(r -> r.outcome()==VerificationOutcome.SKIPPED));
+    }
+
     @Test
     void eventDrivenChecksCorrelateViolationAndOperationPrePostUsingCapturedPreState() {
         Fixture fixture = fixture(true);
@@ -85,12 +119,20 @@ class RuntimeVerificationEngineTest {
                 events, codec);
         RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
                 fixture.registry(), fixture.trace());
-        RuntimeMirrorService mirror = new RuntimeMirrorService(connector,
-                new RuntimeMutationEngine(fixture.direct().system(), fixture.trace()), 32, verifier);
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
+        var mutations = new RuntimeMutationEngine(fixture.direct().system(), fixture.trace());
+        RuntimeMirrorService mirror = new RuntimeMirrorService(connector, mutations, 32, verifier);
 
         mirror.connect(URI.create("synthetic://runtime-verification"));
         connector.replayAll();
         mirror.awaitIdle(Duration.ofSeconds(5));
+
+        assertEquals(VerificationCheckpoint.SNAPSHOT,verifier.reports().getFirst().checkpoint());
+        var history = new RuntimeHistoryVerifier();
+        assertFalse(history.verify(mutations.runtimeTrace()).stream().anyMatch(r -> r.outcome()==VerificationOutcome.FAIL));
+        long generation=mutations.runtimeTrace().generation();
+        assertEquals(VerificationOutcome.PASS,history.happenedBefore(mutations.runtimeTrace(),generation,"event-6-OP_ENTER","event-8-OP_EXIT").outcome());
+        assertEquals(VerificationOutcome.FAIL,history.happenedBefore(mutations.runtimeTrace(),generation,"event-8-OP_EXIT","event-6-OP_ENTER").outcome());
 
         RuntimeVerificationReport stateChange = verifier.reports().stream().filter(report -> report.event() != null
                 && report.event().eventId().startsWith("event-2-")).findFirst().orElseThrow();
@@ -159,6 +201,7 @@ class RuntimeVerificationEngineTest {
         AtomicLong clock = new AtomicLong(1_000);
         RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
                 fixture.registry(), fixture.trace(), new DefaultVerificationService(), clock::get);
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
         RuntimeEvent event = event(1, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
                 fixture.artifactSemanticId(),
                 Map.of("attribute", "open", "valueType", "BOOLEAN", "value", false), null);
@@ -181,6 +224,7 @@ class RuntimeVerificationEngineTest {
         BlockingVerificationService verification = new BlockingVerificationService();
         RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
                 fixture.registry(), fixture.trace(), verification);
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
         RuntimeEvent checking = event(1, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
                 fixture.artifactSemanticId(),
                 Map.of("attribute", "open", "valueType", "BOOLEAN", "value", false), null);
@@ -221,6 +265,7 @@ class RuntimeVerificationEngineTest {
         AtomicLong clock = new AtomicLong(1_000);
         RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
                 fixture.registry(), fixture.trace(), new DefaultVerificationService(), clock::get);
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
         RuntimeMutationEngine mutations = new RuntimeMutationEngine(fixture.direct().system(), fixture.trace());
         RuntimeEvent enter = event(1, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(), fixture.artifactSemanticId(),
                 Map.of("operation", "placeBid", "arguments", List.of("item1", 10)), "latency-op");
@@ -248,6 +293,7 @@ class RuntimeVerificationEngineTest {
         AtomicLong clock = new AtomicLong(100);
         RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
                 fixture.registry(), fixture.trace(), new DefaultVerificationService(), clock::get);
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
         RuntimeMutationEngine mutations = new RuntimeMutationEngine(fixture.direct().system(), fixture.trace());
         RuntimeEvent rejected = eventWithId("reused-after-rejection", 1, fixture, false);
 
@@ -266,6 +312,7 @@ class RuntimeVerificationEngineTest {
         RuntimeEvent abandoned = eventWithId("reused-after-close", 3, fixture, true);
         verifier.eventReceived(abandoned);
         verifier.eventStreamClosed();
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
         clock.set(3_000);
         RuntimeEvent afterReconnect = eventWithId("reused-after-close", 4, fixture, true);
         verifier.eventReceived(afterReconnect);
@@ -282,6 +329,7 @@ class RuntimeVerificationEngineTest {
         BlockingVerificationService verification = new BlockingVerificationService(true);
         RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
                 fixture.registry(), fixture.trace(), verification);
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
         RuntimeEvent enter = event(1, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(), fixture.artifactSemanticId(),
                 Map.of("operation", "placeBid", "arguments", List.of("item1", 10)), "rejected-terminal");
         RuntimeEvent rejectedExit = event(2, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
@@ -315,6 +363,7 @@ class RuntimeVerificationEngineTest {
         Fixture fixture = fixture(true);
         RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
                 fixture.registry(), fixture.trace(), new DefaultVerificationService());
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
         RuntimeEvent lateExit = event(10, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
                 fixture.artifactSemanticId(), Map.of(), "next-stream");
         RuntimeEvent nextEnter = event(1, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(),
@@ -324,6 +373,7 @@ class RuntimeVerificationEngineTest {
                 fixture.artifactSemanticId(), Map.of(), "next-stream");
 
         verifier.eventStreamClosed();
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
         verifier.eventReceived(lateExit);
         verifier.eventRejected(lateExit, new IllegalStateException("RUNTIME_EVENT_STREAM_CLOSED"));
         verifier.eventReceived(nextEnter);
@@ -345,6 +395,7 @@ class RuntimeVerificationEngineTest {
         Fixture fixture = fixture(false);
         RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
                 fixture.registry(), fixture.trace(), new DefaultVerificationService());
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
         verifier.eventCompleted(eventWithId("accepted-watermark-7", 7, fixture, true));
         for (int index = 0; index < 100; index++) {
             RuntimeEvent rejected = event(100 + index, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
@@ -373,6 +424,7 @@ class RuntimeVerificationEngineTest {
         Fixture fixture = fixture(true);
         RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
                 fixture.registry(), fixture.trace(), new DefaultVerificationService());
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
         RuntimeEvent enter = event(1, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(), fixture.artifactSemanticId(),
                 Map.of("operation", "placeBid", "arguments", List.of("item1", 10)),
                 "completed-before-rejection");
@@ -402,6 +454,7 @@ class RuntimeVerificationEngineTest {
         Fixture fixture = fixture(true);
         RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
                 fixture.registry(), fixture.trace(), new DefaultVerificationService());
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
         RuntimeMutationEngine mutations = new RuntimeMutationEngine(fixture.direct().system(), fixture.trace());
         RuntimeEvent enter = event(1, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(), fixture.artifactSemanticId(),
                 Map.of("operation", "placeBid", "arguments", List.of("item1", 10)), "closed-operation");
@@ -413,6 +466,7 @@ class RuntimeVerificationEngineTest {
         verifier.afterMutation(enter, mutations.apply(enter));
         verifier.eventCompleted(enter);
         verifier.eventStreamClosed();
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
 
         verifier.eventReceived(exit);
         verifier.beforeMutation(exit);
@@ -434,6 +488,7 @@ class RuntimeVerificationEngineTest {
         BufferedTimingConnector connector = new BufferedTimingConnector(buffered, clock);
         RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
                 fixture.registry(), fixture.trace(), new DefaultVerificationService(), clock::get);
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
         RuntimeMirrorService mirror = new RuntimeMirrorService(connector,
                 new RuntimeMutationEngine(fixture.direct().system(), fixture.trace()), 8, verifier);
 

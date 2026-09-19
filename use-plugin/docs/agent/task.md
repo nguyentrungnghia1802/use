@@ -1416,20 +1416,20 @@ tasks above remain unproven and must not be presented as complete standalone E2E
 
 Search for:
 
-- [ ] direct `MetamodelKind` checks inside runtime core;
-- [ ] direct V1 EClass names inside connectors;
-- [ ] direct V1 EAttribute names inside generic runtime dispatch;
-- [ ] structural mapping rule IDs hard-coded into connectors;
-- [ ] Auction-specific names;
-- [ ] generated USE classifier names hard-coded outside target adapter.
+- [x] direct `MetamodelKind` checks inside runtime core;
+- [x] direct V1 EClass names inside connectors;
+- [x] direct V1 EAttribute names inside generic runtime dispatch;
+- [x] structural mapping rule IDs hard-coded into connectors;
+- [x] Auction-specific names;
+- [x] generated USE classifier names hard-coded outside target adapter.
 
 Classify each dependency:
 
-- [ ] legitimate adapter boundary;
-- [ ] removable coupling;
-- [ ] required current V1 binding;
-- [ ] test-only;
-- [ ] bug.
+- [x] legitimate adapter boundary;
+- [x] removable coupling;
+- [x] required current V1 binding;
+- [x] test-only;
+- [x] bug.
 
 ---
 
@@ -1443,17 +1443,17 @@ Classify each dependency:
 
 ### Tasks
 
-- [ ] Define generic runtime target request/descriptor if current code lacks one.
-- [ ] Runtime core expresses intent as object/attribute/relation/operation target category, not V1 class names.
-- [ ] Ecore/USE-specific binding is delegated to resolver/adapter.
-- [ ] Preserve exact semantic ID requirement.
-- [ ] Preserve diagnostics/provenance.
-- [ ] Avoid creating another parallel TraceIndex.
+- [x] Define generic runtime target request/descriptor if current code lacks one.
+- [x] Runtime core expresses intent as object/attribute/relation/operation target category, not V1 class names.
+- [x] Ecore/USE-specific binding is delegated to resolver/adapter.
+- [x] Preserve exact semantic ID requirement.
+- [x] Preserve diagnostics/provenance.
+- [x] Avoid creating another parallel TraceIndex.
 
 ### Tests
 
-- [ ] runtime connector tests do not require V1-specific target names except fixture bindings;
-- [ ] adapter tests prove V1 binding still works.
+- [x] runtime connector tests do not require V1-specific target names except fixture bindings;
+- [x] adapter tests prove V1 binding still works.
 
 ---
 
@@ -1467,19 +1467,19 @@ Classify each dependency:
 
 ### Tasks
 
-- [ ] Define one component responsible for current metamodel-specific runtime target binding.
-- [ ] Input: runtime semantic action + exact semantic identity/trace.
-- [ ] Output: exact current USE target or explicit unresolved result.
-- [ ] Keep structural mapping read-only.
-- [ ] Ensure future V2 adapter can replace/reconcile this layer without changing connectors.
+- [x] Define one component responsible for current metamodel-specific runtime target binding.
+- [x] Input: runtime semantic action + exact semantic identity/trace.
+- [x] Output: exact current USE target or explicit unresolved result.
+- [x] Keep structural mapping read-only.
+- [x] Ensure future V2 adapter can replace/reconcile this layer without changing connectors.
 
 ### Tests
 
-- [ ] current V1 target success;
-- [ ] missing target;
-- [ ] incompatible target kind;
-- [ ] stale trace;
-- [ ] deterministic result.
+- [x] current V1 target success;
+- [x] missing target;
+- [x] incompatible target kind;
+- [x] stale trace;
+- [x] deterministic result.
 
 ---
 
@@ -1495,15 +1495,15 @@ Classify each dependency:
 
 Implement tooling capable of later comparing two Ecore baselines:
 
-- [ ] class added/removed/renamed candidate (exact structural diff; no fuzzy auto-rename acceptance);
-- [ ] attribute added/removed/type/bounds change;
-- [ ] reference added/removed/target/bounds/containment change;
-- [ ] inheritance change;
-- [ ] affected structural mapping entries;
-- [ ] affected projection anchors;
-- [ ] affected runtime mapping target bindings;
-- [ ] affected OCL contexts/navigation;
-- [ ] affected golden `.use/.cmd` outputs.
+- [x] class added/removed/renamed candidate (exact structural diff; no fuzzy auto-rename acceptance);
+- [x] attribute added/removed/type/bounds change;
+- [x] reference added/removed/target/bounds/containment change;
+- [x] inheritance change;
+- [x] affected structural mapping entries;
+- [x] affected projection anchors;
+- [x] affected runtime mapping target bindings;
+- [x] affected OCL contexts/navigation;
+- [x] affected golden `.use/.cmd` outputs.
 
 Do not require V2 to exist yet; add synthetic fixture diff tests.
 
@@ -1520,21 +1520,23 @@ Do not require V2 to exist yet; add synthetic fixture diff tests.
 
 Using a synthetic alternate target vocabulary/adapter:
 
-- [ ] prove Jason connector unchanged;
-- [ ] prove CArtAgO connector unchanged;
-- [ ] prove Moise connector unchanged;
-- [ ] prove RuntimeEvent unchanged;
-- [ ] prove RuntimeTrace unchanged;
-- [ ] prove queue/lifecycle unchanged;
-- [ ] prove mapping rule source semantics can stay while target binding changes;
-- [ ] prove RuntimeMutation mechanics remain reusable.
+- [x] prove Jason connector unchanged;
+- [x] prove CArtAgO connector unchanged;
+- [x] prove Moise connector unchanged;
+- [x] prove RuntimeEvent unchanged;
+- [x] prove RuntimeTrace unchanged;
+- [x] prove queue/lifecycle unchanged;
+- [x] prove mapping rule source semantics can stay while target binding changes;
+- [x] prove RuntimeMutation mechanics remain reusable.
 
 ### Exit criteria
 
-- [ ] Waiting for Ecore V2 no longer blocks runtime engineering.
-- [ ] V2 impact is concentrated in semantic/mapping/binding/transformation layers.
+- [x] Waiting for Ecore V2 no longer blocks runtime engineering.
+- [x] V2 impact is concentrated in semantic/mapping/binding/transformation layers.
 
 ---
+
+Evidence: [Phase 21 migration readiness](../project/phase21-migration-readiness.md).
 
 # Phase 22 — Runtime Verification Completion
 
@@ -1554,24 +1556,24 @@ Using a synthetic alternate target vocabulary/adapter:
 
 Define/validate first-class checkpoints:
 
-- [ ] `SNAPSHOT`.
-- [ ] `AFTER_MUTATION`.
-- [ ] `OPERATION_PRE`.
-- [ ] `OPERATION_POST`.
-- [ ] `STREAM_BOUNDARY`.
+- [x] `SNAPSHOT`.
+- [x] `AFTER_MUTATION`.
+- [x] `OPERATION_PRE`.
+- [x] `OPERATION_POST`.
+- [x] `STREAM_BOUNDARY`.
 
 For each:
 
-- [ ] trigger;
-- [ ] valid mirror state requirement;
-- [ ] verification mode;
-- [ ] event/trace context;
-- [ ] result handling;
-- [ ] behavior when mirror is STALE/ERROR.
+- [x] trigger;
+- [x] valid mirror state requirement;
+- [x] verification mode;
+- [x] event/trace context;
+- [x] result handling;
+- [x] behavior when mirror is STALE/ERROR.
 
 ### Acceptance
 
-- [ ] Verification cannot report current runtime truth while mirror is not LIVE/current.
+- [x] Verification cannot report current runtime truth while mirror is not LIVE/current.
 
 ---
 
@@ -1585,20 +1587,20 @@ For each:
 
 ### Tasks
 
-- [ ] Full invariant check after authoritative snapshot.
-- [ ] Targeted/conservative invariant check after state-changing delta.
-- [ ] Keep full-check fallback.
-- [ ] Preserve event ID/correlation/snapshot version.
-- [ ] OCL undefined remains ERROR where contract says so.
-- [ ] Unknown runtime data does not become false PASS.
+- [x] Full invariant check after authoritative snapshot.
+- [x] Targeted/conservative invariant check after state-changing delta.
+- [x] Keep full-check fallback.
+- [x] Preserve event ID/correlation/snapshot version.
+- [x] OCL undefined remains ERROR where contract says so.
+- [x] Unknown runtime data does not become false PASS.
 
 ### Tests
 
-- [ ] PASS;
-- [ ] FAIL;
-- [ ] ERROR/undefined;
-- [ ] targeted/full equivalence;
-- [ ] STALE state no-current-result behavior.
+- [x] PASS;
+- [x] FAIL;
+- [x] ERROR/undefined;
+- [x] targeted/full equivalence;
+- [x] STALE state no-current-result behavior.
 
 ---
 
@@ -1611,24 +1613,24 @@ For each:
 
 ### Tasks
 
-- [ ] PRE occurs on exact mapped operation enter.
-- [ ] Capture pre-state once.
-- [ ] Bind self/args exactly.
-- [ ] Do not block JaCaMo baseline execution.
-- [ ] POST only after successful matching exit.
-- [ ] Preserve `@pre`.
-- [ ] failure/abort → POST `SKIPPED`.
-- [ ] retired correlation cannot produce a POST result.
-- [ ] mapping/argument resolution error → explicit ERROR diagnostic.
+- [x] PRE occurs on exact mapped operation enter.
+- [x] Capture pre-state once.
+- [x] Bind self/args exactly.
+- [x] Do not block JaCaMo baseline execution.
+- [x] POST only after successful matching exit.
+- [x] Preserve `@pre`.
+- [x] failure/abort → POST `SKIPPED`.
+- [x] retired correlation cannot produce a POST result.
+- [x] mapping/argument resolution error → explicit ERROR diagnostic.
 
 ### Tests
 
-- [ ] pre pass/fail;
-- [ ] post pass/fail;
-- [ ] @pre;
-- [ ] op fail;
-- [ ] duplicate terminal;
-- [ ] stream boundary.
+- [x] pre pass/fail;
+- [x] post pass/fail;
+- [x] @pre;
+- [x] op fail;
+- [x] duplicate terminal;
+- [x] stream boundary.
 
 ---
 
@@ -1652,18 +1654,18 @@ Preferred decision order:
 
 Implement:
 
-- [ ] generic happened-before / start-before-terminal constraints;
-- [ ] stream-generation validity;
-- [ ] correlation ordering;
-- [ ] exact event attribution;
-- [ ] case-specific Auction ordering outside core.
+- [x] generic happened-before / start-before-terminal constraints;
+- [x] stream-generation validity;
+- [x] correlation ordering;
+- [x] exact event attribution;
+- [x] case-specific Auction ordering outside core.
 
 ### Tests
 
-- [ ] generic synthetic ordering;
-- [ ] Auction valid order;
-- [ ] Auction invalid order;
-- [ ] retired-stream event violation/rejection.
+- [x] generic synthetic ordering;
+- [x] Auction valid order;
+- [x] Auction invalid order;
+- [x] retired-stream event violation/rejection.
 
 ---
 
@@ -1679,25 +1681,25 @@ Implement:
 
 Ensure every result carries where available:
 
-- [ ] constraint/rule ID;
-- [ ] checkpoint;
-- [ ] runtime event ID;
-- [ ] sequence;
-- [ ] correlation ID;
-- [ ] runtime key;
-- [ ] SemanticId;
-- [ ] USE context object/operation;
-- [ ] source span/provenance;
-- [ ] mirror version/fingerprint;
-- [ ] PASS/FAIL/ERROR/SKIPPED.
+- [x] constraint/rule ID;
+- [x] checkpoint;
+- [x] runtime event ID;
+- [x] sequence;
+- [x] correlation ID;
+- [x] runtime key;
+- [x] SemanticId;
+- [x] USE context object/operation;
+- [x] source span/provenance;
+- [x] mirror version/fingerprint;
+- [x] PASS/FAIL/ERROR/SKIPPED.
 
 Navigation path:
 
-- [ ] result → USE target;
-- [ ] USE target → trace;
-- [ ] trace → semantic source;
-- [ ] semantic source → runtime identity/event;
-- [ ] no similarly-named fallback.
+- [x] result → USE target;
+- [x] USE target → trace;
+- [x] trace → semantic source;
+- [x] semantic source → runtime identity/event;
+- [x] no similarly-named fallback.
 
 ---
 
@@ -1711,21 +1713,23 @@ Navigation path:
 
 ### Tasks
 
-- [ ] Run valid scenario.
-- [ ] Run invariant violation scenario.
-- [ ] Run PRE violation scenario.
-- [ ] Run operation failure scenario.
-- [ ] Run ordering violation scenario if supported.
-- [ ] Disconnect/reconnect/resync.
-- [ ] Ensure violations are evaluated against current mirror only.
-- [ ] Ensure exact trace attribution.
+- [x] Run valid scenario.
+- [x] Run invariant violation scenario.
+- [x] Run PRE violation scenario.
+- [x] Run operation failure scenario.
+- [x] Run ordering violation scenario if supported.
+- [x] Disconnect/reconnect/resync.
+- [x] Ensure violations are evaluated against current mirror only.
+- [x] Ensure exact trace attribution.
 
 ### Exit criteria
 
-- [ ] Runtime verification complete for supported mirrored state.
-- [ ] Mirror correctness remains independently tested from OCL correctness.
+- [x] Runtime verification complete for supported mirrored state.
+- [x] Mirror correctness remains independently tested from OCL correctness.
 
 ---
+
+Evidence: [Phase 22 verification](../project/phase22-verification-evidence.md).
 
 # Phase 23 — Cross-Dimensional & Supported Normative Verification
 

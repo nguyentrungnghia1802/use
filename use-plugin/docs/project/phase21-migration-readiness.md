@@ -66,3 +66,7 @@ Validation commands:
 Phase 20 standalone limitation remains exactly as documented in
 [phase20-runtime-evidence.md](phase20-runtime-evidence.md). Runtime mapping remains
 DRAFT_WAITING_FOR_METAMODEL_V2. No frozen Ecore/mapping bytes were changed.
+
+Full reactor `mvn --batch-mode verify`: BUILD SUCCESS, 288 tests, zero failures/errors/skips (2026-09-19).
+
+Resume audit: implementation commit 0d93f7d0 is on main. Preserved full-reactor log confirms 288 PASS; post-merge RuntimeMigrationTest + RuntimeMappingTest confirms 8 PASS. Python diff tests rerun: 2 PASS. Docs-only closure follows; no source changes after those Java gates.

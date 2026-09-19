@@ -185,3 +185,11 @@ Report must include versions/hashes để reproducibility.
 Phase 11 evidence (2026-09-15): `mvn -pl use-plugin test` passes 61 tests. The real Auction integration uses live
 Jason 3.3.0, CArtAgO 3.1, and Moise 1.1, closes the Auction, rejects `placeBid(item1, 0)`, and asserts that the
 runtime report contains a failing OCL result correlated to the exact CArtAgO event and imported Artifact trace.
+
+## Phase 22 current checkpoint contract
+
+See [runtime verification evidence](phase22-verification-evidence.md). Checkpoints
+are first-class; non-LIVE requests are SKIPPED without OCL evaluation, and stream
+boundaries retire pre-state. Snapshot verification precedes buffered deltas.
+RuntimeHistoryVerifier checks recorded ordering independently of OCL. Reports
+preserve checkpoint, exact trace/source spans, event and result correlation.

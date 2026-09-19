@@ -360,6 +360,8 @@ với:
 
 # PHASE 21 — Metamodel-Decoupling & V2 Migration Readiness
 
+**Status:** COMPLETED — see [migration readiness evidence](phase21-migration-readiness.md).
+
 **Mode:** AGENT AUTO
 
 Mục tiêu: không để việc chờ Ecore mới chặn runtime.
@@ -382,6 +384,8 @@ Mục tiêu: không để việc chờ Ecore mới chặn runtime.
 ---
 
 # PHASE 22 — Runtime Verification Completion
+
+**Status:** COMPLETED for supported mirror subset — [evidence](phase22-verification-evidence.md).
 
 **Mode:** AGENT AUTO
 

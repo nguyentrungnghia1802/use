@@ -47,8 +47,6 @@ public final class RuntimeMirrorService implements RuntimeService {
             connector.connect(endpoint);
             transition(MirrorState.SYNCING);
             synchronizeSnapshot();
-            transition(MirrorState.LIVE);
-            observer.snapshotApplied(lastSnapshot);
         } catch (RuntimeException exception) {
             transition(MirrorState.ERROR);
             stopEvents();
@@ -73,8 +71,6 @@ public final class RuntimeMirrorService implements RuntimeService {
         transition(MirrorState.SYNCING);
         try {
             synchronizeSnapshot();
-            transition(MirrorState.LIVE);
-            observer.snapshotApplied(lastSnapshot);
         } catch (RuntimeException exception) {
             transition(MirrorState.ERROR);
             stopEvents();
@@ -100,8 +96,6 @@ public final class RuntimeMirrorService implements RuntimeService {
         stopEvents();
         try {
             synchronizeSnapshot();
-            transition(MirrorState.LIVE);
-            observer.snapshotApplied(lastSnapshot);
         } catch (RuntimeException exception) {
             transition(MirrorState.ERROR);
             throw exception;
@@ -224,6 +218,17 @@ public final class RuntimeMirrorService implements RuntimeService {
                 streamObserver.eventCompleted(event);
             }
         });
+        // Publish authoritative snapshot verification before any buffered delta may run.
+        try {
+            transition(MirrorState.LIVE);
+            streamObserver.snapshotApplied(snapshot);
+        } catch (RuntimeException exception) {
+            nextSubscription.close();
+            nextQueue.close();
+            streamMutations.eventStreamClosed();
+            streamObserver.eventStreamClosed();
+            throw exception;
+        }
         nextQueue.start();
         queue = nextQueue;
         subscription = nextSubscription;
