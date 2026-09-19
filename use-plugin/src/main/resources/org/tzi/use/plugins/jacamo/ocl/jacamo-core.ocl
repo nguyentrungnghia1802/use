@@ -1,0 +1,4 @@
+-- [OUR-EXT] Cross-dimensional consistency: a source-resolved external action must retain its operation link.
+-- Evidence: frozen ExternalAction.operation (R058); unlike multiplicity, this checks imported resolution completeness.
+context ExternalAction inv ResolvedExternalActionHasOperation:
+  self.Expression.isUndefined or self.operation->notEmpty

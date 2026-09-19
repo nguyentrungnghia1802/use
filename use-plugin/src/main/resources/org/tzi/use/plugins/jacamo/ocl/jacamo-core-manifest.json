@@ -1,0 +1,12 @@
+{
+  "profileId": "JACAMO_CORE_OCL_V1",
+  "version": "1.0.0",
+  "classification": "OUR-EXT",
+  "constraints": [
+    {
+      "name": "ResolvedExternalActionHasOperation",
+      "rationale": "Detect loss of a source-resolved cross-dimensional ExternalAction to AbsOperation link.",
+      "evidence": ["R058", "VP004"]
+    }
+  ]
+}
