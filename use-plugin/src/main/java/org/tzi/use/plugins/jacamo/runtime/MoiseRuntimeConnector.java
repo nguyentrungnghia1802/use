@@ -90,7 +90,13 @@ public final class MoiseRuntimeConnector implements RuntimeConnector {
         return capture().schemes().keySet().stream().sorted().toList();
     }
 
-    /** Moise OE 1.1 exposes derived permissions, not NPL obligation lifecycle states. */
+    /** Derived sets are evidence only; no automatic state mutation or OCL translation. */
+    public MoiseNormativeSnapshot normativeSnapshot() {
+        requireConnected();
+        return MoiseNormativeSnapshot.capture(organisation, binding.organisation());
+    }
+
+    /** Moise OE 1.1 exposes derived permissions/obligations, not NPL lifecycle states. */
     public List<String> capabilityGaps() {
         return List.of(
                 "MOISE_NO_PUBLIC_EVENT_LISTENER: role, mission and goal changes require controlled polling",

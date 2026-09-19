@@ -54,8 +54,19 @@ class MoiseRuntimeConnectorTest {
 
         List<RuntimeEvent> events = new ArrayList<>();
         connector.subscribe(events::add);
+        assertTrue(connector.normativeSnapshot().facts().isEmpty());
         agent.adoptRole("auctioneer", group);
+        assertTrue(connector.normativeSnapshot().facts().stream().anyMatch(f->f.modality().equals("DERIVED_PERMISSION")));
+        assertTrue(connector.normativeSnapshot().facts().stream().noneMatch(f->f.modality().equals("DERIVED_OBLIGATION")));
+        scheme.getSpec().setMissionCardinality("run_auction",new moise.os.Cardinality(1,2));
+        var normative=connector.normativeSnapshot();
+        assertFalse(normative.facts().isEmpty());
+        assertTrue(normative.facts().stream().anyMatch(f->f.modality().equals("DERIVED_OBLIGATION")
+            && f.agent().equals("auctioneer") && f.group().equals("auction_group") && f.scheme().equals("auction_scheme") && f.mission().equals(builder.getOS().getFS().findMission("run_auction").getId())), normative.toString());
+        assertEquals(normative,connector.normativeSnapshot());
+        assertEquals(7,normative.unsupported().size());
         agent.commitToMission("run_auction", scheme);
+        assertTrue(connector.normativeSnapshot().facts().isEmpty(),"committed mission must not be invented as an outstanding derived obligation");
         connector.pollChanges();
         assertTrue(events.stream().anyMatch(event -> event.kind() == RuntimeEventKind.ROLE_ADOPTED));
         assertTrue(events.stream().anyMatch(event -> event.kind() == RuntimeEventKind.MISSION_COMMITTED));

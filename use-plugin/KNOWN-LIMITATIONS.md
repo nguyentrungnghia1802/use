@@ -34,3 +34,16 @@
 ## Runtime research development (Phase 17)
 
 The runtime ledger currently retains all accepted/rejected outcomes in memory; long-duration retention is not bounded. Jason mind and Moise instance observations are not proof of corresponding USE state mutation. CArtAgO unknown/retired observations are explicitly quarantined outside the bound mirror subset. See docs/project/runtime-event-identity.md and the research reconciliation matrix. No new Ecore or OCL support is claimed.
+
+## Phase 21-23 boundaries
+
+- Migration tooling reports exact structural diffs and conservative affected-artifact
+  review hints; it does not accept renames or constitute a reconciled V2 mapping.
+- RuntimeHistoryVerifier checks finite recorded order outside OCL; missing terminal
+  evidence cannot prove eventual completion or a deadline violation. Non-LIVE OCL
+  checkpoints are SKIPPED.
+- CrossDimensionalVerifier checks declared source links only. Runtime percept-to-belief
+  delivery, Jason-action/CArtAgO invocation joining and instance-specific organisation
+  state projection remain unsupported.
+- Moise derived obligation/permission snapshots describe public OE API output only,
+  separate from structural Norm and OCL truth. No NPL lifecycle is inferred.

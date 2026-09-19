@@ -60,3 +60,5 @@ supported in-process/synthetic mirrored subset; it does not establish autonomous
 full Agent -> Artifact -> Organisation launcher execution.
 
 Full reactor `mvn --batch-mode verify`: 292/292 PASS, zero failures/errors/skips (2026-09-19).
+
+Post-merge smoke: RuntimeVerificationEngineTest + RuntimeHistoryVerifierTest 18/18 PASS; main pushed at 48261ceb.

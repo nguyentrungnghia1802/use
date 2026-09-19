@@ -414,6 +414,8 @@ Chỉ bắt đầu sau khi Phase 19 mirror correctness pass.
 
 # PHASE 23 — Cross-Dimensional & Supported Normative Verification
 
+**Status:** COMPLETED for exact source-binding/OE evidence subset — [evidence](phase23-cross-dimensional-evidence.md).
+
 **Mode:** AGENT AUTO
 
 - Audit các relation Agent ↔ Environment ↔ Organisation.

@@ -329,3 +329,7 @@ The pinned launcher exposes organisation state through `ora4mas.nopl.oe.Group`
 and `ora4mas.nopl.oe.Scheme`; the implemented Moise connector accepts `moise.oe.OE`.
 The successful OSBuilder launcher control does not close this adapter gap and must
 not be represented by constructing an unrelated OE beside the real boards.
+
+Phase 23 adds `MoiseRuntimeConnector.normativeSnapshot()` for deterministic direct
+OE derived obligation/permission evidence. It does not emit normative mutations or
+claim NPL lifecycle. See [the bounded audit](phase23-cross-dimensional-evidence.md).

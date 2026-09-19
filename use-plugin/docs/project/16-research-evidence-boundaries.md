@@ -87,3 +87,10 @@ Mọi experiment phải pin:
 - metamodel/mapping hashes;
 - OCL hashes;
 - runtime scenario inputs.
+
+## Phase 23 pinned normative evidence
+
+[Cross-dimensional/normative audit](phase23-cross-dimensional-evidence.md) records
+OE 1.1 derived obligation/permission snapshots. These are runtime API facts, kept
+separate from structural Norm and OCL truth. Prohibition and full lifecycle remain
+unsupported; no fulfilment/violation/deadline is inferred from set differences.

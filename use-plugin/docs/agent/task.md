@@ -1749,23 +1749,23 @@ Evidence: [Phase 22 verification](../project/phase22-verification-evidence.md).
 
 For each candidate relation classify:
 
-- [ ] structural only;
-- [ ] offline verifiable;
-- [ ] runtime verifiable;
-- [ ] requires exact runtime correlation;
-- [ ] requires additional semantics;
-- [ ] unsupported.
+- [x] structural only;
+- [x] offline verifiable;
+- [x] runtime verifiable;
+- [x] requires exact runtime correlation;
+- [x] requires additional semantics;
+- [x] unsupported.
 
 Review at minimum:
 
-- [ ] `Agent.artifact`;
-- [ ] `Agent.joinWorkspace`;
-- [ ] `ExternalAction.operation`;
-- [ ] `Plan.RefArtifact`;
-- [ ] `ObsProperty.obsproperty`;
-- [ ] `Role.players`;
-- [ ] `Organisation.deploysAgent`;
-- [ ] `OGoal.OGoalToGoal`.
+- [x] `Agent.artifact`;
+- [x] `Agent.joinWorkspace`;
+- [x] `ExternalAction.operation`;
+- [x] `Plan.RefArtifact`;
+- [x] `ObsProperty.obsproperty`;
+- [x] `Role.players`;
+- [x] `Organisation.deploysAgent`;
+- [x] `OGoal.OGoalToGoal`.
 
 Do not turn a structural EReference into a behavioral invariant automatically.
 
@@ -1782,18 +1782,18 @@ Do not turn a structural EReference into a behavioral invariant automatically.
 
 Where evidence is sufficient:
 
-- [ ] Agent ↔ Workspace consistency.
-- [ ] Agent ↔ Artifact accessibility/binding consistency.
-- [ ] ExternalAction ↔ Artifact Operation correlation.
-- [ ] Plan.RefArtifact target exactness.
-- [ ] runtime action ↔ CArtAgO operation cross-evidence.
+- [x] Agent ↔ Workspace consistency.
+- [x] Agent ↔ Artifact accessibility/binding consistency.
+- [x] ExternalAction ↔ Artifact Operation correlation.
+- [x] Plan.RefArtifact target exactness.
+- [x] runtime action ↔ CArtAgO operation cross-evidence.
 
 ### Tests
 
-- [ ] positive exact link;
-- [ ] wrong target;
-- [ ] same-name wrong artifact negative case;
-- [ ] missing evidence becomes unsupported/error, not guessed pass/fail.
+- [x] positive exact link;
+- [x] wrong target;
+- [x] same-name wrong artifact negative case;
+- [x] missing evidence becomes unsupported/error, not guessed pass/fail.
 
 ---
 
@@ -1807,10 +1807,10 @@ Where evidence is sufficient:
 
 ### Tasks
 
-- [ ] Verify percept/property↔belief consistency only when project contains an exact semantic relation and connector semantics support the runtime claim.
-- [ ] Do not assume every observable property change becomes a Jason belief.
-- [ ] Preserve unsupported delivery semantics explicitly.
-- [ ] Add positive/negative fixtures for the supported subset.
+- [x] Verify percept/property↔belief consistency only when project contains an exact semantic relation and connector semantics support the runtime claim.
+- [x] Do not assume every observable property change becomes a Jason belief.
+- [x] Preserve unsupported delivery semantics explicitly.
+- [x] Add positive/negative fixtures for the supported subset.
 
 ---
 
@@ -1825,11 +1825,11 @@ Where evidence is sufficient:
 
 Where supported:
 
-- [ ] Role.players ↔ Agent consistency.
-- [ ] Organisation deployment relation consistency.
-- [ ] OGoal ↔ Jason Goal consistency.
-- [ ] mission/goal runtime alignment if identity/evidence exists.
-- [ ] Do not infer action permission/obligation from role unless normative semantics are explicitly established.
+- [x] Role.players ↔ Agent consistency.
+- [x] Organisation deployment relation consistency.
+- [x] OGoal ↔ Jason Goal consistency.
+- [x] mission/goal runtime alignment if identity/evidence exists.
+- [x] Do not infer action permission/obligation from role unless normative semantics are explicitly established.
 
 ---
 
@@ -1845,25 +1845,25 @@ Where supported:
 
 For each concept record:
 
-- [ ] role adoption;
-- [ ] mission commitment;
-- [ ] group/scheme membership;
-- [ ] organisational goal state;
-- [ ] derived obligation;
-- [ ] derived permission;
-- [ ] prohibition if exposed;
-- [ ] activation;
-- [ ] fulfilment;
-- [ ] violation;
-- [ ] expiration/deadline.
+- [x] role adoption;
+- [x] mission commitment;
+- [x] group/scheme membership;
+- [x] organisational goal state;
+- [x] derived obligation;
+- [x] derived permission;
+- [x] prohibition if exposed;
+- [x] activation;
+- [x] fulfilment;
+- [x] violation;
+- [x] expiration/deadline.
 
 Classify:
 
-- [ ] `SUPPORTED_EXACT`;
-- [ ] `SUPPORTED_PARTIAL`;
-- [ ] `DERIVABLE_WITH_ASSUMPTION`;
-- [ ] `NOT_EXPOSED`;
-- [ ] `UNSAFE_TO_INFER`.
+- [x] `SUPPORTED_EXACT`;
+- [x] `SUPPORTED_PARTIAL`;
+- [x] `DERIVABLE_WITH_ASSUMPTION`;
+- [x] `NOT_EXPOSED`;
+- [x] `UNSAFE_TO_INFER`.
 
 Do not implement unproven lifecycle semantics.
 
@@ -1878,19 +1878,21 @@ Do not implement unproven lifecycle semantics.
 
 ### Tasks
 
-- [ ] Implement only `SUPPORTED_EXACT` by default.
-- [ ] `SUPPORTED_PARTIAL` may be exposed as state/evidence with explicit limitation, not as stronger semantic claim.
-- [ ] Keep structural Norm separate from runtime normative state.
-- [ ] Keep runtime normative state separate from OCL verification result.
-- [ ] Do not auto-compile obligation/permission/prohibition into OCL invariants.
-- [ ] Add unsupported-boundary diagnostics/tests for everything not implemented.
+- [x] Implement only `SUPPORTED_EXACT` by default.
+- [x] `SUPPORTED_PARTIAL` may be exposed as state/evidence with explicit limitation, not as stronger semantic claim.
+- [x] Keep structural Norm separate from runtime normative state.
+- [x] Keep runtime normative state separate from OCL verification result.
+- [x] Do not auto-compile obligation/permission/prohibition into OCL invariants.
+- [x] Add unsupported-boundary diagnostics/tests for everything not implemented.
 
 ### Exit criteria
 
-- [ ] Cross-dimensional supported rules work.
-- [ ] Normative scope is bounded and evidence-backed.
+- [x] Cross-dimensional supported rules work.
+- [x] Normative scope is bounded and evidence-backed.
 
 ---
+
+Evidence: [Phase 23 supported subset and boundaries](../project/phase23-cross-dimensional-evidence.md).
 
 # Phase 24 — Constraint Translation Closure & Multi-Case Validation
 
