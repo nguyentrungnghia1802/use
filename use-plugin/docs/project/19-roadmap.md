@@ -664,3 +664,11 @@ D25-01 selects unchanged canonical V1; no required V2 target was found.
 Phase 18/19 draft wording above is historical. Phase 26 promotes the supported
 runtime contract to mapping V1/schema 2.0.0 with explicit freeze and compatibility
 checks; see phase26-runtime-mapping-audit.md. No standalone/NPL support promotion.
+
+## Current engineering closure
+
+See [Phase 27 hardening](phase27-hardening-audit.md) and the
+[final acceptance matrix](phase28-project-closure.md) for current scope and evidence.
+Earlier phase test totals and draft/temporary-target descriptions are historical.
+The final structural target is unchanged V1; Runtime Mapping V1 is frozen.
+Final user acceptance remains separate from autonomous engineering verification.

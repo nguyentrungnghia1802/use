@@ -398,3 +398,11 @@ Counter Team in-process case, pure guard closure and unsupported-boundary negati
 [Phase 24 evidence](phase24-translation-multicase-evidence.md) records exact scope,
 commands, output/hash locations and the measured ~1.21 s / 33-event Counter scenario.
 Standalone launcher and full normative lifecycle claims remain excluded.
+
+## Current engineering closure
+
+See [Phase 27 hardening](phase27-hardening-audit.md) and the
+[final acceptance matrix](phase28-project-closure.md) for current scope and evidence.
+Earlier phase test totals and draft/temporary-target descriptions are historical.
+The final structural target is unchanged V1; Runtime Mapping V1 is frozen.
+Final user acceptance remains separate from autonomous engineering verification.

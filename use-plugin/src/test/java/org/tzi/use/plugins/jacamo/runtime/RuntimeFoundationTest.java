@@ -492,6 +492,140 @@ class RuntimeFoundationTest {
         assertEquals(1, observer.streamClosed);
     }
 
+    @Test
+    void observerFailureCannotLeaveMirrorLive() {
+      for (String hook : List.of("before", "after", "completed")) {
+        Fixture fixture = fixture();
+        LateEventConnector connector = new LateEventConnector();
+        RuntimeEventObserver observer = new RuntimeEventObserver() {
+            private void check(String current) { if (hook.equals(current)) throw new IllegalStateException("observer unavailable: " + hook); }
+            @Override public void beforeMutation(RuntimeEvent event) { check("before"); }
+            @Override public void afterMutation(RuntimeEvent event, MutationResult result) { check("after"); }
+            @Override public void eventCompleted(RuntimeEvent event) { check("completed"); }
+        };
+        try (var mirror = new RuntimeMirrorService(connector, fixture.engine(), 8, observer)) {
+            mirror.connect(URI.create("synthetic://observer-failure"));
+            var delta = event(1, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                    fixture.artifactTrace().sourceSemanticId(),
+                    Map.of("attribute", "open", "valueType", "BOOLEAN", "value", false), null);
+            connector.emit(delta);
+            mirror.awaitIdle(Duration.ofSeconds(5));
+            assertEquals(MirrorState.ERROR, mirror.state(), "An unverified/unapplied accepted event cannot leave LIVE truth");
+            assertEquals(1, mirror.metrics().failed());
+            assertTrue(mirror.lastFailure().contains(delta.eventId()));
+        }
+      }
+    }
+
+    @Test
+    void receivingObserverFailureRequiresDisconnectAndAuthoritativeRecovery() {
+        Fixture fixture = fixture();
+        LateEventConnector connector = new LateEventConnector();
+        var fail = new java.util.concurrent.atomic.AtomicBoolean(true);
+        RuntimeEventObserver observer = new RuntimeEventObserver() {
+            @Override public void eventReceived(RuntimeEvent event) {
+                if (fail.get()) throw new IllegalStateException("receive unavailable");
+            }
+        };
+        try (var mirror = new RuntimeMirrorService(connector, fixture.engine(), 8, observer)) {
+            mirror.connect(URI.create("synthetic://receive-failure"));
+            var delta = event(1, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                    fixture.artifactTrace().sourceSemanticId(),
+                    Map.of("attribute", "open", "valueType", "BOOLEAN", "value", false), null);
+            assertThrows(IllegalStateException.class, () -> connector.emit(delta));
+            assertEquals(MirrorState.ERROR, mirror.state());
+            assertTrue(mirror.lastFailure().contains(delta.eventId()));
+            mirror.disconnect();
+            fail.set(false);
+            mirror.reconnectAndResync();
+            assertEquals(MirrorState.LIVE, mirror.state());
+        }
+    }
+
+    @Test
+    void lifecycleObserverFailuresCannotRetainLiveTruth() {
+        for (String hook : List.of("state", "snapshot", "drift", "closed")) {
+            Fixture fixture = fixture();
+            LateEventConnector connector = new LateEventConnector();
+            var enabled = new java.util.concurrent.atomic.AtomicBoolean(true);
+            RuntimeEventObserver observer = new RuntimeEventObserver() {
+                private void check(String current) {
+                    if (enabled.get() && hook.equals(current)) throw new IllegalStateException("injected " + hook);
+                }
+                public void stateChanged(MirrorState state) { if (state == MirrorState.LIVE) check("state"); }
+                public void snapshotApplied(RuntimeSnapshot snapshot) { check("snapshot"); }
+                public void driftChecked(RuntimeDriftReport report) { check("drift"); }
+                public void eventStreamClosed() { check("closed"); }
+            };
+            var mirror = new RuntimeMirrorService(connector, fixture.engine(), 8, observer);
+            try {
+                if (hook.equals("state") || hook.equals("snapshot")) {
+                    assertThrows(IllegalStateException.class, () -> mirror.connect(URI.create("synthetic://lifecycle")));
+                } else {
+                    mirror.connect(URI.create("synthetic://lifecycle"));
+                    if (hook.equals("drift")) assertThrows(IllegalStateException.class,
+                            () -> mirror.checkDrift(DriftResyncPolicy.REPORT_ONLY));
+                    else assertThrows(IllegalStateException.class,
+                            () -> mirror.replaceWorkspace(fixture.engine(), observer, () -> { }));
+                }
+                assertEquals(MirrorState.ERROR, mirror.state(), hook);
+                assertNotNull(mirror.lastFailure());
+            } finally { enabled.set(false); mirror.close(); }
+        }
+    }
+
+    @Test
+    void recordsEventToMirrorLatencyAndQueueSampleWithoutAnSla() {
+        Fixture fixture = fixture();
+        LateEventConnector connector = new LateEventConnector();
+        var started = new java.util.concurrent.atomic.AtomicLong();
+        var elapsed = new java.util.concurrent.atomic.AtomicLong();
+        RuntimeEventObserver observer = new RuntimeEventObserver() {
+            public void eventReceived(RuntimeEvent event) { started.set(System.nanoTime()); }
+            public void afterMutation(RuntimeEvent event, MutationResult result) {
+                elapsed.set(System.nanoTime() - started.get());
+                assertEquals(MutationStatus.APPLIED, result.status());
+            }
+        };
+        try (var mirror = new RuntimeMirrorService(connector, fixture.engine(), 8, observer)) {
+            mirror.connect(URI.create("synthetic://performance"));
+            connector.emit(event(1, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                    fixture.artifactTrace().sourceSemanticId(),
+                    Map.of("attribute", "open", "valueType", "BOOLEAN", "value", false), null));
+            mirror.awaitIdle(Duration.ofSeconds(5));
+            assertEquals(BooleanValue.FALSE, fixture.attribute("open"));
+            assertEquals(1, mirror.metrics().processed());
+            System.out.printf("PHASE27_RUNTIME eventToMirror=%dns depth=%d highWatermark=%d%n",
+                    elapsed.get(), mirror.metrics().depth(), mirror.metrics().highWatermark());
+        }
+    }
+
+    @Test
+    void unsubscribeFailureStillDrainsWorkerAndDisconnectsTransport() {
+        Fixture fixture = fixture();
+        var disconnected = new java.util.concurrent.atomic.AtomicBoolean();
+        var closes = new java.util.concurrent.atomic.AtomicInteger();
+        RuntimeConnector connector = new RuntimeConnector() {
+            public String connectorId() { return "cleanup"; }
+            public Set<ConnectorCapability> capabilities() { return Set.of(); }
+            public ConnectorState state() { return ConnectorState.CONNECTED; }
+            public void connect(URI endpoint) { }
+            public void disconnect() { disconnected.set(true); }
+            public RuntimeSnapshot fullSnapshot() { return new RuntimeSnapshot("empty", Instant.EPOCH, 0, List.of(), "empty"); }
+            public RuntimeSubscription subscribe(Consumer<RuntimeEvent> listener) {
+                return () -> { if (closes.incrementAndGet() == 1) throw new IllegalStateException("unsubscribe failed"); };
+            }
+        };
+        var mirror = new RuntimeMirrorService(connector, fixture.engine(), 8);
+        mirror.connect(URI.create("synthetic://cleanup"));
+        assertThrows(IllegalStateException.class, mirror::disconnect);
+        assertTrue(disconnected.get(), "subscription failure must not prevent transport cleanup");
+        assertEquals(MirrorState.ERROR, mirror.state());
+        mirror.close();
+        assertEquals(MirrorState.OFFLINE, mirror.state());
+        assertEquals(2, closes.get(), "failed unsubscribe remains retryable");
+    }
+
     private RuntimeEvent event(long sequence, RuntimeEventKind kind, String runtimeSourceId,
                                String semanticSourceId, Map<String, Object> payload, String correlationId) {
         return RuntimeEvent.create("event-" + sequence + "-" + kind, Instant.ofEpochSecond(sequence), sequence,

@@ -61,6 +61,7 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
         if (endpoint == null || !"jacamo".equalsIgnoreCase(endpoint.getScheme()))
             throw new IllegalArgumentException("CARTAGO_ENDPOINT_INVALID");
         if (state == ConnectorState.CONNECTED) throw new IllegalStateException("CONNECTOR_ALREADY_CONNECTED");
+        if (!registeredWorkspaces.isEmpty()) unregisterAll();
         try {
             logger = new WorkspaceLogger(++generation);
             incarnations.clear();
@@ -71,7 +72,7 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
             state = ConnectorState.CONNECTED;
         } catch (CartagoException exception) {
             state = ConnectorState.ERROR;
-            unregisterAll();
+            try { unregisterAll(); } catch (RuntimeException cleanup) { exception.addSuppressed(cleanup); }
             throw new IllegalStateException("CARTAGO_CONNECT_FAILED", exception);
         }
     }
@@ -122,17 +123,24 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
 
     @Override public synchronized void disconnect() {
         generation++;
-        unregisterAll();
         listeners.clear();
+        unregisterAll();
         state = ConnectorState.DISCONNECTED;
     }
 
     private void unregisterAll() {
+        IllegalStateException failure = null;
         for (String workspace : List.copyOf(registeredWorkspaces)) {
-            try { access.unregisterLogger(workspace, logger); }
-            catch (CartagoException ignored) { state = ConnectorState.ERROR; }
+            try {
+                access.unregisterLogger(workspace, logger);
+                registeredWorkspaces.remove(workspace);
+            } catch (CartagoException cause) {
+                state = ConnectorState.ERROR;
+                var error = new IllegalStateException("CARTAGO_UNREGISTER_FAILED: " + workspace + "; retry disconnect before reconnect", cause);
+                if (failure == null) failure = error; else failure.addSuppressed(error);
+            }
         }
-        registeredWorkspaces.clear();
+        if (failure != null) throw failure;
     }
 
     private CartagoArtifactBinding binding(ArtifactId artifact) {

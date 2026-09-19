@@ -189,6 +189,23 @@ class StaticProjectImporterTest {
         assertTrue(result.diagnostics().stream().anyMatch(d -> d.code().equals("MOISE_XML_INVALID")));
     }
 
+    @Test
+    void invalidMoiseScalarsAreDiagnosedWithoutInventingFalseOrTextNumbers() throws Exception {
+        Files.createDirectories(temporary.resolve("src/org"));
+        Files.writeString(temporary.resolve("app.jcm"), "mas app { organisation o:o.xml org-path:src/org }");
+        String source = Files.readString(Path.of("src/test/resources/auction/src/org/auction.xml"));
+        for (String literal : List.of("nonsense", "1", "0", "true", "false")) {
+            Files.writeString(temporary.resolve("src/org/o.xml"), source.replace("bi-dir=\"true\"", "bi-dir=\"" + literal + "\"")
+                    .replace("min=\"1\"", "min=\"bad\""));
+            var result = new StaticProjectImporter().importProject(temporary.resolve("app.jcm"));
+            assertTrue(result.diagnostics().stream().anyMatch(d -> d.code().equals("MOISE_ATTRIBUTE_INVALID") && d.sourceLocation() != null));
+            var link = result.model().elements().stream().filter(e -> e.kind() == MetamodelKind.Link).findFirst().orElseThrow();
+            if (literal.equals("nonsense")) assertFalse(link.attributes().containsKey("biDir"));
+            else assertEquals(new AttributeValue.Bool(literal.equals("true") || literal.equals("1")), link.attributes().get("biDir"));
+            assertTrue(result.model().elements().stream().noneMatch(e -> e.attributes().get("min") instanceof AttributeValue.Text));
+        }
+    }
+
     private SemanticElement only(ImportResult result, MetamodelKind kind, String name) {
         List<SemanticElement> matches = result.model().elements().stream()
                 .filter(element -> element.kind() == kind && element.name().equals(name)).toList();

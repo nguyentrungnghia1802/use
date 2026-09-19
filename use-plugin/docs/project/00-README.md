@@ -12,14 +12,14 @@ historical observations.
 | Plugin version | `1.0.1` in `use-plugin/pom.xml` and `useplugin.xml` |
 | USE parent/API | `7.5.0` |
 | Runtime pins | Jason `3.3.0`, CArtAgO `3.1`, Moise `1.1` |
-| Git | audit baseline `f1fe6b4c675a36d19001e3bae84a203de5979e72` on `main` |
+| Git | Final engineering revisions are recorded in `evidence/closure/validation.json` |
 | Tags | `v1.0.1` points to `7f77b1f4`; `use-jacamo-plugin-v1.0.1` is only the manifest's planned tag name and is absent |
-| Latest full verification | 271/271 tests: 13 core, 130 GUI, 128 plugin (125 unit/component + 3 release integration) |
+| Latest full verification | See `phase28-project-closure.md` and its machine-readable validation record |
 | Hotfix status | P1 workspace lifecycle FIXED; P2 production binding integration FIXED |
-| Archive evidence | Two 27-entry ZIPs byte-identical under the recorded identical source/dependency/JDK/Maven scope |
+| Archive evidence | Current candidate: 30 entries including frozen runtime mapping; historical hotfix: two identical 27-entry ZIPs |
 
-The annotated `v1.0.1` tag is one documentation-only commit behind the audit
-baseline. Do not describe current `HEAD` as exactly tagged, and do not describe
+The annotated `v1.0.1` tag belongs to the historical hotfix baseline,
+not the final engineering candidate. Do not describe current `HEAD` as exactly tagged, and do not describe
 `use-jacamo-plugin-v1.0.1` as an existing or published tag.
 
 ## 2. Authority and claim discipline
@@ -230,3 +230,11 @@ current synchronization inventory is [DOCUMENTATION-SYNC-v1.0.1.md](DOCUMENTATIO
 ## Runtime development after baseline
 
 [Runtime research pack](../research/jacamo_runtime_research/README.md) and [Phase 16 reconciliation](../research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md) distinguish pinned implementation from upstream proposals. Follow [active tasks](../agent/task.md) and [roadmap](19-roadmap.md). The version/test counts above describe the retained v1.0.1 baseline, not subsequent development revisions.
+
+## Current engineering closure
+
+See [Phase 27 hardening](phase27-hardening-audit.md) and the
+[final acceptance matrix](phase28-project-closure.md) for current scope and evidence.
+Earlier phase test totals and draft/temporary-target descriptions are historical.
+The final structural target is unchanged V1; Runtime Mapping V1 is frozen.
+Final user acceptance remains separate from autonomous engineering verification.

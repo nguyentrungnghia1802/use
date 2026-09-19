@@ -65,8 +65,11 @@ public final class CompositeRuntimeConnector implements RuntimeConnector {
             }
             state = ConnectorState.CONNECTED;
         } catch (RuntimeException exception) {
-            for (int i = connected.size() - 1; i >= 0; i--) connected.get(i).disconnect();
             state = ConnectorState.ERROR;
+            for (int i = connected.size() - 1; i >= 0; i--) {
+                try { connected.get(i).disconnect(); }
+                catch (RuntimeException cleanup) { exception.addSuppressed(cleanup); }
+            }
             throw new IllegalStateException("COMPOSITE_CONNECT_FAILED: " + exception.getMessage(), exception);
         }
     }
@@ -95,8 +98,9 @@ public final class CompositeRuntimeConnector implements RuntimeConnector {
                 for (RuntimeConnector connector : connectors)
                     childSubscriptions.add(connector.subscribe(event -> forward(owner, connector, event)));
             } catch (RuntimeException exception) {
-                closeChildSubscriptions();
                 listeners.remove(listener);
+                try { closeChildSubscriptions(); }
+                catch (RuntimeException cleanup) { exception.addSuppressed(cleanup); }
                 throw exception;
             }
         }
@@ -109,12 +113,14 @@ public final class CompositeRuntimeConnector implements RuntimeConnector {
     }
 
     @Override public synchronized void disconnect() {
-        closeChildSubscriptions();
         listeners.clear();
         RuntimeException failure = null;
+        try { closeChildSubscriptions(); } catch (RuntimeException exception) { failure = exception; }
         for (int i = connectors.size() - 1; i >= 0; i--) {
             try { connectors.get(i).disconnect(); }
-            catch (RuntimeException exception) { if (failure == null) failure = exception; }
+            catch (RuntimeException exception) {
+                if (failure == null) failure = exception; else failure.addSuppressed(exception);
+            }
         }
         state = failure == null ? ConnectorState.DISCONNECTED : ConnectorState.ERROR;
         if (failure != null) throw new IllegalStateException("COMPOSITE_DISCONNECT_FAILED", failure);
@@ -141,8 +147,14 @@ public final class CompositeRuntimeConnector implements RuntimeConnector {
 
     private void closeChildSubscriptions() {
         subscriptionGeneration++;
-        for (RuntimeSubscription subscription : List.copyOf(childSubscriptions)) subscription.close();
-        childSubscriptions.clear();
+        RuntimeException failure = null;
+        for (RuntimeSubscription subscription : List.copyOf(childSubscriptions)) {
+            try { subscription.close(); childSubscriptions.remove(subscription); }
+            catch (RuntimeException exception) {
+                if (failure == null) failure = exception; else failure.addSuppressed(exception);
+            }
+        }
+        if (failure != null) { state = ConnectorState.ERROR; throw failure; }
     }
     private void requireConnected() {
         if (state != ConnectorState.CONNECTED || connectors.stream().anyMatch(

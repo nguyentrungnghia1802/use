@@ -340,3 +340,12 @@ claim NPL lifecycle. See [the bounded audit](phase23-cross-dimensional-evidence.
 D25-01 retains the exact frozen structural V1 as final for the supported scope.
 Runtime Mapping V1 is reconciled separately; see [final contract audit](phase26-runtime-mapping-audit.md).
 No general runtime-instance, standalone launcher or NPL equivalence is implied.
+
+## Phase 27 failure and cleanup contract
+
+Observer receive/mutation/completion failures invalidate LIVE and expose a stable
+RUNTIME_EVENT_*_FAILED code, event ID and authoritative recovery instruction.
+Cleanup attempts every owned resource even after earlier failures and retains
+suppressed causes. CArtAgO unregister failures remain ERROR and retryable; failed
+logger cleanup must finish before new registration. Disconnect then authoritative
+reconnect/resync is the supported ERROR recovery path. See phase27-hardening-audit.md.

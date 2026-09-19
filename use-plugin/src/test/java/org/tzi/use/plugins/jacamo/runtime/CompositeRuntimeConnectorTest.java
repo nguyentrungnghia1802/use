@@ -16,6 +16,42 @@ import org.tzi.use.plugins.jacamo.semantic.Dimension;
 class CompositeRuntimeConnectorTest {
     @TempDir Path temporary;
 
+    @Test void cleanupFailuresDoNotSkipOtherChildrenAndRemainRetryable() {
+        var fail = new java.util.concurrent.atomic.AtomicBoolean(true);
+        var closed = new java.util.concurrent.atomic.AtomicInteger();
+        var disconnected = new java.util.concurrent.atomic.AtomicInteger();
+        List<RuntimeConnector> children = new ArrayList<>();
+        for (String name : List.of("a", "b")) children.add(new RuntimeConnector() {
+            public String connectorId() { return name; }
+            public java.util.Set<ConnectorCapability> capabilities() { return java.util.Set.of(); }
+            public ConnectorState state() { return ConnectorState.CONNECTED; }
+            public void connect(URI endpoint) { }
+            public void disconnect() {
+                disconnected.incrementAndGet();
+                if (fail.get()) throw new IllegalStateException("disconnect-" + name);
+            }
+            public RuntimeSnapshot fullSnapshot() { return new RuntimeSnapshot("empty", Instant.EPOCH, 0, List.of(), "empty"); }
+            public RuntimeSubscription subscribe(java.util.function.Consumer<RuntimeEvent> listener) {
+                return () -> {
+                    closed.incrementAndGet();
+                    if (fail.get()) throw new IllegalStateException("unsubscribe-" + name);
+                };
+            }
+        });
+        var composite = new CompositeRuntimeConnector("cleanup", children);
+        composite.connect(URI.create("jacamo://cleanup"));
+        composite.subscribe(event -> { });
+        var error = org.junit.jupiter.api.Assertions.assertThrows(IllegalStateException.class, composite::disconnect);
+        assertEquals(ConnectorState.ERROR, composite.state());
+        assertEquals(2, closed.get());
+        assertEquals(2, disconnected.get());
+        assertEquals(3, error.getCause().getSuppressed().length);
+        fail.set(false);
+        composite.disconnect();
+        assertEquals(4, closed.get());
+        assertEquals(ConnectorState.DISCONNECTED, composite.state());
+    }
+
     @Test void retiredChildCallbackCannotEnterReplacementSubscription() {
         List<java.util.function.Consumer<RuntimeEvent>> callbacks = new ArrayList<>();
         RuntimeConnector child = new RuntimeConnector() {

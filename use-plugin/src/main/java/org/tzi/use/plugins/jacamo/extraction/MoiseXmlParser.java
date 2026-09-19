@@ -81,7 +81,7 @@ final class MoiseXmlParser {
             ElementDraft role = context.element(MetamodelKind.Role, name,
                     List.of("MAS", organisation, "structural"), path, 1, 1, "moise-xml-parser", name);
             role.attributes.put("Name", new AttributeValue.Text(name));
-            integerAttribute(role, element, "min"); integerAttribute(role, element, "max");
+            integerAttribute(context, role, element, "min"); integerAttribute(context, role, element, "max");
             String parent = attr(element, "extends", null);
             if (parent != null) role.references.add(new SemanticReference("Extendsrole", parent, null));
             structural.references.add(new SemanticReference("role", name, role.id));
@@ -98,7 +98,7 @@ final class MoiseXmlParser {
                     List.of("MAS", organisation, "structural"), path, 1, 1, "moise-xml-parser", name);
             else context.addProvenance(group, path, 1, 1, "moise-xml-parser", name);
             group.attributes.put("Name", new AttributeValue.Text(name));
-            integerAttribute(group, element, "min"); integerAttribute(group, element, "max");
+            integerAttribute(context, group, element, "min"); integerAttribute(context, group, element, "max");
             structural.references.add(new SemanticReference("group", name, group.id));
             for (Element role : descendants(element, "role")) {
                 String roleId = attr(role, "id", null);
@@ -113,7 +113,7 @@ final class MoiseXmlParser {
                 ElementDraft relation = context.element(MetamodelKind.Link, local,
                         List.of("MAS", organisation, name), path, 1, 1, "moise-xml-parser", local);
                 copy(relation, linkElement, "type", "scope", "from", "to");
-                booleanAttribute(relation, linkElement, "bi-dir", "biDir");
+                booleanAttribute(context, relation, linkElement, "bi-dir", "biDir");
                 group.references.add(new SemanticReference("link", local, relation.id));
             }
             for (Element constraint : descendants(element, "cardinality")) {
@@ -121,7 +121,7 @@ final class MoiseXmlParser {
                 ElementDraft rule = context.element(MetamodelKind.FormationConstraints, local,
                         List.of("MAS", organisation, name), path, 1, 1, "moise-xml-parser", local);
                 rule.attributes.put("Name", new AttributeValue.Text(local));
-                copy(rule, constraint, "object"); integerAttribute(rule, constraint, "min"); integerAttribute(rule, constraint, "max");
+                copy(rule, constraint, "object"); integerAttribute(context, rule, constraint, "min"); integerAttribute(context, rule, constraint, "max");
                 group.references.add(new SemanticReference("formationconstraints", local, rule.id));
             }
         }
@@ -150,7 +150,7 @@ final class MoiseXmlParser {
                 String missionName = attr(missionElement, "id", null); if (missionName == null) continue;
                 ElementDraft mission = context.element(MetamodelKind.Mission, missionName,
                         List.of("MAS", organisation, name), path, 1, 1, "moise-xml-parser", missionName);
-                integerAttribute(mission, missionElement, "min"); integerAttribute(mission, missionElement, "max");
+                integerAttribute(context, mission, missionElement, "min"); integerAttribute(context, mission, missionElement, "max");
                 for (Element goal : descendants(missionElement, "goal")) {
                     String goalName = attr(goal, "id", null);
                     if (goalName != null) mission.references.add(new SemanticReference("ogoal", goalName, null));
@@ -210,15 +210,24 @@ final class MoiseXmlParser {
         }
     }
 
-    private void integerAttribute(ElementDraft draft, Element element, String name) {
+    private void integerAttribute(ExtractionContext context, ElementDraft draft, Element element, String name) {
         String value = attr(element, name, null);
         if (value != null) try { draft.attributes.put(name, new AttributeValue.IntegerNumber(Long.parseLong(value))); }
-        catch (NumberFormatException ignored) { draft.attributes.put(name, new AttributeValue.Text(value)); }
+        catch (NumberFormatException invalid) { invalidScalar(context, draft, name, value, "integer"); }
     }
 
-    private void booleanAttribute(ElementDraft draft, Element element, String source, String target) {
+    private void booleanAttribute(ExtractionContext context, ElementDraft draft, Element element, String source, String target) {
         String value = attr(element, source, null);
-        if (value != null) draft.attributes.put(target, new AttributeValue.Bool(Boolean.parseBoolean(value)));
+        if (value == null) return;
+        if (value.equals("true") || value.equals("1")) draft.attributes.put(target, new AttributeValue.Bool(true));
+        else if (value.equals("false") || value.equals("0")) draft.attributes.put(target, new AttributeValue.Bool(false));
+        else invalidScalar(context, draft, source, value, "XML boolean (true, false, 1 or 0)");
+    }
+
+    private void invalidScalar(ExtractionContext context, ElementDraft draft, String field, String value, String type) {
+        context.diagnostic("MOISE_ATTRIBUTE_INVALID", Severity.ERROR, Phase.PARSING,
+                draft.provenance.getFirst().span(), draft.id.value(), "Invalid Moise " + type + " attribute",
+                field + "=" + value, "Supply a valid " + type + "; no value was inferred");
     }
 
     private String attr(Element element, String name, String fallback) {

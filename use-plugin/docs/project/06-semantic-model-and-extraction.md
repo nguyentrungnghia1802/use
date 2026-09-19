@@ -240,3 +240,10 @@ CARTAGO_GUARD_BODY_UNSUPPORTED; the constraint extractor preserves an UNSUPPORTE
 record. Source import never executes project code. The second-case integration
 harness separately compiles and runs its trusted checked-in fixture as test setup.
 See [translation inventory](phase24-translation-multicase-evidence.md).
+
+## Phase 27 scalar validation
+
+Moise XML integer fields reject malformed/overflow values; Boolean fields accept
+only true/false/1/0. Invalid scalars produce MOISE_ATTRIBUTE_INVALID (ERROR,
+PARSING), source/semantic context and remediation, with no invented value.
+StaticProjectImporterTest protects both the valid and invalid boundaries.

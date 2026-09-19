@@ -17,6 +17,8 @@ public final class RuntimeMirrorService implements RuntimeService {
     private RuntimeEventObserver observer;
     private volatile MirrorState state = MirrorState.OFFLINE;
     private URI endpoint;
+    private volatile String lastFailure;
+    public String lastFailure() { return lastFailure; }
     private RuntimeSubscription subscription;
     private OrderedRuntimeEventQueue queue;
     private String lastSnapshotFingerprint;
@@ -42,15 +44,15 @@ public final class RuntimeMirrorService implements RuntimeService {
         if (state == MirrorState.LIVE || state == MirrorState.CONNECTING || state == MirrorState.SYNCING)
             throw new IllegalStateException("RUNTIME_MIRROR_ALREADY_CONNECTED");
         this.endpoint = endpoint;
-        transition(MirrorState.CONNECTING);
         try {
+            transition(MirrorState.CONNECTING);
             connector.connect(endpoint);
             transition(MirrorState.SYNCING);
             synchronizeSnapshot();
         } catch (RuntimeException exception) {
-            transition(MirrorState.ERROR);
-            stopEvents();
-            connector.disconnect();
+            fail("RUNTIME_CONNECT_FAILED", exception);
+            cleanup(exception, this::stopEvents);
+            cleanup(exception, connector::disconnect);
             throw exception;
         }
     }
@@ -59,30 +61,42 @@ public final class RuntimeMirrorService implements RuntimeService {
     public synchronized void replaceWorkspace(RuntimeMutationEngine nextMutations, RuntimeEventObserver nextObserver,
                                                Runnable transferBindings) {
         boolean live = state == MirrorState.LIVE;
-        stopEvents();
-        if (live) transition(MirrorState.SYNCING);
-        transferBindings.run();
-        mutations = nextMutations;
-        observer = nextObserver;
-        lastSnapshot = null;
-        lastSnapshotFingerprint = null;
-        lastDriftReport = null;
-        if (!live) return;
-        transition(MirrorState.SYNCING);
         try {
+            if (live) transition(MirrorState.SYNCING);
+            stopEvents();
+            transferBindings.run();
+            mutations = nextMutations;
+            observer = nextObserver == null ? RuntimeEventObserver.NOOP : nextObserver;
+            lastSnapshot = null;
+            lastSnapshotFingerprint = null;
+            lastDriftReport = null;
+            if (!live) return;
+            transition(MirrorState.SYNCING);
             synchronizeSnapshot();
         } catch (RuntimeException exception) {
-            transition(MirrorState.ERROR);
-            stopEvents();
-            connector.disconnect();
+            fail("RUNTIME_WORKSPACE_SYNC_FAILED", exception);
+            cleanup(exception, this::stopEvents);
+            cleanup(exception, connector::disconnect);
             throw exception;
         }
     }
 
     @Override public synchronized void disconnect() {
-        stopEvents();
-        connector.disconnect();
-        if (state != MirrorState.OFFLINE) transition(MirrorState.STALE);
+        RuntimeException failure = null;
+        try { stopEvents(); } catch (RuntimeException error) { failure = error; }
+        try { connector.disconnect(); } catch (RuntimeException error) {
+            if (failure == null) failure = error; else failure.addSuppressed(error);
+        }
+        if (failure != null) {
+            fail("RUNTIME_DISCONNECT_FAILED", failure);
+            throw failure;
+        }
+        try {
+            if (state != MirrorState.OFFLINE) transition(MirrorState.STALE);
+        } catch (RuntimeException error) {
+            fail("RUNTIME_DISCONNECT_FAILED", error);
+            throw error;
+        }
     }
 
     public synchronized void reconnectAndResync() {
@@ -92,12 +106,14 @@ public final class RuntimeMirrorService implements RuntimeService {
 
     @Override public synchronized void resync() {
         if (state != MirrorState.LIVE) throw new IllegalStateException("RUNTIME_MIRROR_NOT_LIVE");
-        transition(MirrorState.SYNCING);
-        stopEvents();
         try {
+            transition(MirrorState.SYNCING);
+            stopEvents();
             synchronizeSnapshot();
         } catch (RuntimeException exception) {
-            transition(MirrorState.ERROR);
+            fail("RUNTIME_RESYNC_FAILED", exception);
+            cleanup(exception, this::stopEvents);
+            cleanup(exception, connector::disconnect);
             throw exception;
         }
     }
@@ -125,7 +141,8 @@ public final class RuntimeMirrorService implements RuntimeService {
         RuntimeDriftReport report = new RuntimeDriftReport(authoritative.snapshotId(), authoritative.fingerprint(),
                 Instant.now(), differences, policy, resync);
         lastDriftReport = report;
-        observer.driftChecked(report);
+        try { observer.driftChecked(report); }
+        catch (RuntimeException error) { fail("RUNTIME_DRIFT_OBSERVER_FAILED", error); throw error; }
         if (resync) resync();
         return report;
     }
@@ -145,6 +162,7 @@ public final class RuntimeMirrorService implements RuntimeService {
                 if (state == MirrorState.LIVE) checkDrift(policy);
             } catch (RuntimeException exception) {
                 synchronized (RuntimeMirrorService.this) {
+                    lastFailure = "RUNTIME_DRIFT_CHECK_FAILED: " + exception.getMessage() + "; reconnect and authoritative resync required";
                     if (state == MirrorState.LIVE) transition(MirrorState.STALE);
                 }
             }
@@ -180,8 +198,12 @@ public final class RuntimeMirrorService implements RuntimeService {
         OrderedRuntimeEventQueue[] ready = new OrderedRuntimeEventQueue[1];
         boolean[] streamOpen = new boolean[] { true };
         RuntimeSubscription connectorSubscription = connector.subscribe(event -> {
-            streamObserver.eventReceived(event);
             synchronized (gate) {
+                try { streamObserver.eventReceived(event); }
+                catch (RuntimeException error) {
+                    if (streamOpen[0]) fail("RUNTIME_EVENT_RECEIVE_FAILED: " + event.eventId(), error);
+                    throw error;
+                }
                 if (!streamOpen[0]) {
                     var closed = new IllegalStateException("RUNTIME_EVENT_STREAM_CLOSED");
                     streamMutations.eventRejected(event, closed);
@@ -199,23 +221,26 @@ public final class RuntimeMirrorService implements RuntimeService {
             snapshot = connector.fullSnapshot();
             applySnapshot(snapshot);
         } catch (RuntimeException exception) {
-            nextSubscription.close();
-            streamMutations.eventStreamClosed();
-            streamObserver.eventStreamClosed();
+            cleanup(exception, nextSubscription::close);
+            cleanup(exception, streamMutations::eventStreamClosed);
+            cleanup(exception, streamObserver::eventStreamClosed);
             throw exception;
         }
         OrderedRuntimeEventQueue nextQueue = new OrderedRuntimeEventQueue(queueCapacity, event -> {
             try {
-                streamObserver.beforeMutation(event);
-                MutationResult result = streamMutations.apply(event);
-                streamObserver.afterMutation(event, result);
-                if (result.status() != MutationStatus.APPLIED) {
-                    transition(MirrorState.ERROR);
-                    throw new IllegalStateException(result.diagnostic());
+                try {
+                    streamObserver.beforeMutation(event);
+                    MutationResult result = streamMutations.apply(event);
+                    streamObserver.afterMutation(event, result);
+                    if (result.status() != MutationStatus.APPLIED)
+                        throw new IllegalStateException(result.diagnostic());
+                } finally {
+                    streamMutations.eventCompleted(event);
+                    streamObserver.eventCompleted(event);
                 }
-            } finally {
-                streamMutations.eventCompleted(event);
-                streamObserver.eventCompleted(event);
+            } catch (RuntimeException error) {
+                fail("RUNTIME_EVENT_PROCESSING_FAILED: " + event.eventId(), error);
+                throw error;
             }
         });
         // Publish authoritative snapshot verification before any buffered delta may run.
@@ -223,10 +248,10 @@ public final class RuntimeMirrorService implements RuntimeService {
             transition(MirrorState.LIVE);
             streamObserver.snapshotApplied(snapshot);
         } catch (RuntimeException exception) {
-            nextSubscription.close();
-            nextQueue.close();
-            streamMutations.eventStreamClosed();
-            streamObserver.eventStreamClosed();
+            cleanup(exception, nextSubscription::close);
+            cleanup(exception, nextQueue::close);
+            cleanup(exception, streamMutations::eventStreamClosed);
+            cleanup(exception, streamObserver::eventStreamClosed);
             throw exception;
         }
         nextQueue.start();
@@ -247,15 +272,26 @@ public final class RuntimeMirrorService implements RuntimeService {
 
     private void stopEvents() {
         boolean hadStream = subscription != null || queue != null;
-        try {
-            if (subscription != null) { subscription.close(); subscription = null; }
-            if (queue != null) { queue.stopGracefully(Duration.ofSeconds(5)); queue = null; }
-        } finally {
-            if (hadStream) {
-                mutations.eventStreamClosed();
-                observer.eventStreamClosed();
-            }
+        RuntimeException failure = new IllegalStateException("RUNTIME_STREAM_CLEANUP_FAILED");
+        cleanup(failure, () -> { if (subscription != null) { subscription.close(); subscription = null; } });
+        cleanup(failure, () -> { if (queue != null) { queue.stopGracefully(Duration.ofSeconds(5)); queue = null; } });
+        if (hadStream) {
+            cleanup(failure, mutations::eventStreamClosed);
+            cleanup(failure, observer::eventStreamClosed);
         }
+        if (failure.getSuppressed().length > 0) throw failure;
+    }
+
+    private static void cleanup(RuntimeException primary, Runnable action) {
+        try { action.run(); } catch (RuntimeException cleanup) {
+            if (cleanup != primary) primary.addSuppressed(cleanup);
+        }
+    }
+
+    private void fail(String code, RuntimeException error) {
+        lastFailure = code + ": " + error.getMessage() + "; disconnect and authoritative resync required";
+        state = MirrorState.ERROR;
+        cleanup(error, () -> observer.stateChanged(MirrorState.ERROR));
     }
 
     private void submitReceived(OrderedRuntimeEventQueue target, RuntimeEvent event) {
@@ -281,6 +317,7 @@ public final class RuntimeMirrorService implements RuntimeService {
 
     private void transition(MirrorState next) {
         state = next;
-        observer.stateChanged(next);
+        try { observer.stateChanged(next); }
+        catch (RuntimeException error) { fail("RUNTIME_STATE_OBSERVER_FAILED: " + next, error); throw error; }
     }
 }

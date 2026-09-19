@@ -252,7 +252,7 @@ class LiveJaCaMoAuctionIntegrationTest {
             assertBalancedLifecycleForInvalidAmount(scenarioEvents);
             var scenario = new ObjectMapper().readTree(
                     Path.of("target/phase14-auction-evidence/runtime/scenario-summary.json").toFile());
-            assertEquals("1.0.0", scenario.path("pluginVersion").asText(),
+            assertEquals(new ObjectMapper().readTree(Path.of("compatibility.json").toFile()).path("plugin").path("version").asText(), scenario.path("pluginVersion").asText(),
                     "runtime evidence must identify the plugin release, not the USE parent Maven version");
             assertEquals(0, scenario.path("reconnectDriftDifferenceCount").asInt(-1),
                     "R5 evidence must record a full authoritative snapshot comparison after reconnect");
@@ -328,7 +328,7 @@ class LiveJaCaMoAuctionIntegrationTest {
                 .put("artifactKind", "PHASE_14_RUNTIME_SCENARIO_SUMMARY")
                 .put("hashPolicy", "LF_NORMALIZED_UTF8")
                 .put("repositoryBaseCommit", sourceCommit)
-                .put("pluginVersion", "1.0.0")
+                .put("pluginVersion", json.readTree(Path.of("compatibility.json").toFile()).path("plugin").path("version").asText())
                 .put("useVersion", "7.5.0")
                 .put("auctionArtifactRuntimeClass", artifactRuntimeClass)
                 .put("auctionArtifactSource", "<auction>/src/env/auction/AuctionArtifact.java")

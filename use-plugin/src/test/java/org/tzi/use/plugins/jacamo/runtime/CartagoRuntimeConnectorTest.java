@@ -19,6 +19,30 @@ import org.junit.jupiter.api.Test;
 
 class CartagoRuntimeConnectorTest {
     @Test
+    void failedUnregisterRemainsAnExplicitRetryableCleanupFailure() {
+        var fail = new java.util.concurrent.atomic.AtomicBoolean(true);
+        var calls = new java.util.concurrent.atomic.AtomicInteger();
+        CartagoRuntimeAccess access = new CartagoRuntimeAccess() {
+            public cartago.ICartagoController controller(String workspace) { return null; }
+            public void registerLogger(String workspace, cartago.ICartagoLogger logger) { }
+            public void unregisterLogger(String workspace, cartago.ICartagoLogger logger) throws cartago.CartagoException {
+                calls.incrementAndGet();
+                if (fail.get()) throw new cartago.CartagoException("injected cleanup failure");
+            }
+        };
+        var binding = new CartagoArtifactBinding("/main", "x", "semantic", java.util.Map.of(), java.util.Map.of());
+        var connector = new CartagoRuntimeConnector("cleanup", access, java.util.List.of(binding));
+        connector.connect(java.net.URI.create("jacamo://cleanup"));
+        var error = assertThrows(IllegalStateException.class, connector::disconnect);
+        assertTrue(error.getMessage().contains("CARTAGO_UNREGISTER_FAILED"));
+        assertEquals(ConnectorState.ERROR, connector.state());
+        fail.set(false);
+        connector.disconnect();
+        assertEquals(ConnectorState.DISCONNECTED, connector.state());
+        assertEquals(2, calls.get(), "failed registration must remain available for retry");
+    }
+
+    @Test
     void discoversRealArtifactSnapshotsPropertiesAndStreamsOperationLifecycle() throws Exception {
         CartagoEnvironment environment = CartagoEnvironment.getInstance();
         environment.init();

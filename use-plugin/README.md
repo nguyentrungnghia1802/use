@@ -1,8 +1,8 @@
 # USE JaCaMo Plugin 1.0.1
 
 Current repository state: Maven artifact and plugin descriptor version `1.0.1`.
-Annotated tag `v1.0.1` points to `7f77b1f4`; current `main`/`HEAD` is one
-documentation-only commit later. The manifest name `use-jacamo-plugin-v1.0.1`
+The historical annotated tag `v1.0.1` points to `7f77b1f4`; current development
+has advanced through the final runtime mapping and engineering hardening phases. The manifest name `use-jacamo-plugin-v1.0.1`
 is not a Git tag in this checkout, so it must not be reported as published.
 
 This release adds conservative, traceable JaCaMo project import and offline/live

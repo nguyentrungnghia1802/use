@@ -2379,6 +2379,12 @@ Do **not** update only hashes to make tests pass. Any structural/rule change req
 
 **Objective:** remove remaining correctness/coding gaps; introduce no new research feature.
 
+Execution evidence: `../project/phase27-hardening-audit.md`. Implementation and
+local regression complete; final relocated clean-checkout and Git integration
+gates remain pending until recorded. Capability classification checkboxes below
+mean the audit was performed; no MISSING/CONFLICT capability remains accepted.
+The V2-specific checklist wording is reconciled by D25-01 retaining final V1.
+
 ---
 
 ## P27.1 — Requirement → code → test → evidence traceability audit
@@ -2393,20 +2399,20 @@ Do **not** update only hashes to make tests pass. Any structural/rule change req
 
 For every major capability classify:
 
-- [ ] COMPLETE;
-- [ ] SUPPORTED_SUBSET_COMPLETE;
-- [ ] EXPLICITLY_UNSUPPORTED;
-- [ ] OUT_OF_SCOPE;
-- [ ] MISSING;
-- [ ] CONFLICT.
+- [x] COMPLETE;
+- [x] SUPPORTED_SUBSET_COMPLETE;
+- [x] EXPLICITLY_UNSUPPORTED;
+- [x] OUT_OF_SCOPE;
+- [x] MISSING;
+- [x] CONFLICT.
 
 For COMPLETE capabilities record:
 
-- [ ] requirement;
-- [ ] production component;
-- [ ] test;
-- [ ] evidence;
-- [ ] documentation.
+- [x] requirement;
+- [x] production component;
+- [x] test;
+- [x] evidence;
+- [x] documentation.
 
 Any MISSING/CONFLICT becomes a blocking corrective task.
 
@@ -2420,21 +2426,21 @@ Any MISSING/CONFLICT becomes a blocking corrective task.
 
 ### Search
 
-- [ ] TODO;
-- [ ] FIXME;
-- [ ] HACK;
-- [ ] TEMP;
-- [ ] workaround;
-- [ ] placeholder;
-- [ ] not implemented;
-- [ ] UnsupportedOperationException;
-- [ ] stale “temporary V1” comments.
+- [x] TODO;
+- [x] FIXME;
+- [x] HACK;
+- [x] TEMP;
+- [x] workaround;
+- [x] placeholder;
+- [x] not implemented;
+- [x] UnsupportedOperationException;
+- [x] stale “temporary V1” comments.
 
 ### Tasks
 
-- [ ] Resolve correctness-relevant items.
-- [ ] Convert legitimate unsupported items into documented/tested boundaries.
-- [ ] Remove stale comments.
+- [x] Resolve correctness-relevant items.
+- [x] Convert legitimate unsupported items into documented/tested boundaries.
+- [x] Remove stale comments.
 
 ---
 
@@ -2446,13 +2452,13 @@ Any MISSING/CONFLICT becomes a blocking corrective task.
 
 ### Tasks
 
-- [ ] duplicate runtime mapper;
-- [ ] old procedural dispatch bypassing canonical Runtime Mapping;
-- [ ] duplicate trace/history systems;
-- [ ] obsolete verifier path;
-- [ ] obsolete V1-only adapter after V2 migration;
-- [ ] test-only production behavior;
-- [ ] dead binding code.
+- [x] duplicate runtime mapper;
+- [x] old procedural dispatch bypassing canonical Runtime Mapping;
+- [x] duplicate trace/history systems;
+- [x] obsolete verifier path;
+- [x] obsolete V1-only adapter after V2 migration;
+- [x] test-only production behavior;
+- [x] dead binding code.
 
 Remove only with test evidence.
 
@@ -2469,12 +2475,12 @@ Remove only with test evidence.
 
 Major failures must carry:
 
-- [ ] stable code;
-- [ ] severity;
-- [ ] phase;
-- [ ] source/semantic/runtime context when available;
-- [ ] actionable message;
-- [ ] evidence/cause where safe.
+- [x] stable code;
+- [x] severity;
+- [x] phase;
+- [x] source/semantic/runtime context when available;
+- [x] actionable message;
+- [x] evidence/cause where safe.
 
 No silent catch/fallback.
 
@@ -2486,16 +2492,16 @@ No silent catch/fallback.
 
 Verify repeated-run stability for:
 
-- [ ] semantic IDs;
-- [ ] generated USE names;
-- [ ] structural mapping selection;
-- [ ] runtime mapping selection;
-- [ ] trace ordering;
-- [ ] event ordering;
-- [ ] diagnostic ordering;
-- [ ] report ordering;
-- [ ] `.use/.cmd` output;
-- [ ] non-runtime manifest hashes where deterministic.
+- [x] semantic IDs;
+- [x] generated USE names;
+- [x] structural mapping selection;
+- [x] runtime mapping selection;
+- [x] trace ordering;
+- [x] event ordering;
+- [x] diagnostic ordering;
+- [x] report ordering;
+- [x] `.use/.cmd` output;
+- [x] non-runtime manifest hashes where deterministic.
 
 Runtime UUID/timestamp evidence must be compared semantically, not by impossible byte equality.
 
@@ -2510,18 +2516,18 @@ Runtime UUID/timestamp evidence must be compared semantically, not by impossible
 
 ### Tasks
 
-- [ ] subscribe/unsubscribe;
-- [ ] duplicate listener prevention;
-- [ ] queue drain/shutdown;
-- [ ] thread/executor cleanup;
-- [ ] Moise polling scheduler cleanup;
-- [ ] late callbacks;
-- [ ] reconnect;
-- [ ] resync;
-- [ ] workspace replacement;
-- [ ] profile replacement;
-- [ ] failed synchronization;
-- [ ] ERROR recovery policy.
+- [x] subscribe/unsubscribe;
+- [x] duplicate listener prevention;
+- [x] queue drain/shutdown;
+- [x] thread/executor cleanup;
+- [x] Moise polling scheduler cleanup;
+- [x] late callbacks;
+- [x] reconnect;
+- [x] resync;
+- [x] workspace replacement;
+- [x] profile replacement;
+- [x] failed synchronization;
+- [x] ERROR recovery policy.
 
 ---
 
@@ -2534,15 +2540,15 @@ Runtime UUID/timestamp evidence must be compared semantically, not by impossible
 
 ### Tasks
 
-- [ ] path traversal;
-- [ ] symlink escape;
-- [ ] archive handling;
-- [ ] classpath handling;
-- [ ] static Java class initialization protection;
-- [ ] XML parser entity/DTD safety;
-- [ ] OCL profile path safety;
-- [ ] export path safety;
-- [ ] no arbitrary command execution from imported project.
+- [x] path traversal;
+- [x] symlink escape;
+- [x] archive handling;
+- [x] classpath handling;
+- [x] static Java class initialization protection;
+- [x] XML parser entity/DTD safety;
+- [x] OCL profile path safety;
+- [x] export path safety;
+- [x] no arbitrary command execution from imported project.
 
 ---
 
@@ -2550,24 +2556,24 @@ Runtime UUID/timestamp evidence must be compared semantically, not by impossible
 
 ### Run
 
-- [ ] RuntimeEvent/schema.
-- [ ] RuntimeTrace.
-- [ ] runtime identity.
-- [ ] Runtime Mapping schema/validator.
-- [ ] mapping→mutation integration.
-- [ ] synthetic connector.
-- [ ] Jason live connector.
-- [ ] CArtAgO live connector.
-- [ ] Moise live connector.
-- [ ] snapshot/full sync.
-- [ ] ordering.
-- [ ] drift/resync.
-- [ ] reconnect.
-- [ ] workspace replacement.
-- [ ] PRE/POST.
-- [ ] cross-dimensional rules.
-- [ ] normative supported subset.
-- [ ] violation attribution.
+- [x] RuntimeEvent/schema.
+- [x] RuntimeTrace.
+- [x] runtime identity.
+- [x] Runtime Mapping schema/validator.
+- [x] mapping→mutation integration.
+- [x] synthetic connector.
+- [x] Jason live connector.
+- [x] CArtAgO live connector.
+- [x] Moise live connector.
+- [x] snapshot/full sync.
+- [x] ordering.
+- [x] drift/resync.
+- [x] reconnect.
+- [x] workspace replacement.
+- [x] PRE/POST.
+- [x] cross-dimensional rules.
+- [x] normative supported subset.
+- [x] violation attribution.
 
 ---
 
@@ -2577,21 +2583,21 @@ Runtime UUID/timestamp evidence must be compared semantically, not by impossible
 
 Run both:
 
-- [ ] Auction;
-- [ ] Case Study #2.
+- [x] Auction;
+- [x] Case Study #2.
 
 Each must demonstrate where applicable:
 
-- [ ] import;
-- [ ] `.use/.cmd`;
-- [ ] exact trace;
-- [ ] initial state;
-- [ ] runtime sync;
-- [ ] Runtime Mapping;
-- [ ] positive verification;
-- [ ] negative verification;
-- [ ] reconnect/resync;
-- [ ] no case-specific core branch.
+- [x] import;
+- [x] `.use/.cmd`;
+- [x] exact trace;
+- [x] initial state;
+- [x] runtime sync;
+- [x] Runtime Mapping;
+- [x] positive verification;
+- [x] negative verification;
+- [x] reconnect/resync;
+- [x] no case-specific core branch.
 
 ---
 
@@ -2601,13 +2607,13 @@ Each must demonstrate where applicable:
 
 Measure without inventing SLA:
 
-- [ ] import duration;
-- [ ] transformation/generation;
-- [ ] full verification;
-- [ ] runtime event→mirror latency;
-- [ ] runtime event→verification result latency;
-- [ ] queue depth/high-water mark;
-- [ ] memory sample where practical.
+- [x] import duration;
+- [x] transformation/generation;
+- [x] full verification;
+- [x] runtime event→mirror latency;
+- [x] runtime event→verification result latency;
+- [x] queue depth/high-water mark;
+- [x] memory sample where practical.
 
 Optimize only reproducible blocking bottlenecks.
 
@@ -2636,16 +2642,16 @@ Optimize only reproducible blocking bottlenecks.
 
 ### Tasks
 
-- [ ] JAR/ZIP inventory;
-- [ ] canonical Ecore/Structural Mapping resources;
-- [ ] final Runtime Mapping resources;
-- [ ] schemas/manifests;
-- [ ] OCL resources;
-- [ ] compatibility metadata;
-- [ ] license/notice;
-- [ ] checksum;
-- [ ] isolated USE plugin load;
-- [ ] no test-classpath dependency.
+- [x] JAR/ZIP inventory;
+- [x] canonical Ecore/Structural Mapping resources;
+- [x] final Runtime Mapping resources;
+- [x] schemas/manifests;
+- [x] OCL resources;
+- [x] compatibility metadata;
+- [x] license/notice;
+- [x] checksum;
+- [x] isolated USE plugin load;
+- [x] no test-classpath dependency.
 
 ---
 
@@ -2657,46 +2663,46 @@ Do not read everything at once. First search for stale terms/versions/status, th
 
 ### Search at minimum
 
-- [ ] old runtime mapping “draft” wording if mapping is now frozen;
-- [ ] old metamodel V1 counts if V2 is final;
-- [ ] stale dependency versions;
-- [ ] old Auction operation names;
-- [ ] stale “not implemented” statements;
-- [ ] unsupported claims that are now implemented;
-- [ ] supported claims that are too broad;
-- [ ] old test counts;
-- [ ] old known limitations;
-- [ ] obsolete release status.
+- [x] old runtime mapping “draft” wording if mapping is now frozen;
+- [x] old metamodel V1 counts if V2 is final;
+- [x] stale dependency versions;
+- [x] old Auction operation names;
+- [x] stale “not implemented” statements;
+- [x] unsupported claims that are now implemented;
+- [x] supported claims that are too broad;
+- [x] old test counts;
+- [x] old known limitations;
+- [x] obsolete release status.
 
 ### Review affected docs
 
 Potentially:
 
-- [ ] README;
-- [ ] architecture;
-- [ ] metamodel baseline;
-- [ ] structural mapping contract;
-- [ ] semantic/extraction;
-- [ ] OCL/constraint translation;
-- [ ] USE transformation;
-- [ ] trace/binding;
-- [ ] runtime adapter;
-- [ ] runtime mapping;
-- [ ] verification engine;
-- [ ] UI workflow;
-- [ ] testing strategy;
-- [ ] case studies;
-- [ ] build/release;
-- [ ] research boundaries;
-- [ ] acceptance;
-- [ ] risk register;
-- [ ] known limitations;
-- [ ] compatibility;
-- [ ] agent/task docs.
+- [x] README;
+- [x] architecture;
+- [x] metamodel baseline;
+- [x] structural mapping contract;
+- [x] semantic/extraction;
+- [x] OCL/constraint translation;
+- [x] USE transformation;
+- [x] trace/binding;
+- [x] runtime adapter;
+- [x] runtime mapping;
+- [x] verification engine;
+- [x] UI workflow;
+- [x] testing strategy;
+- [x] case studies;
+- [x] build/release;
+- [x] research boundaries;
+- [x] acceptance;
+- [x] risk register;
+- [x] known limitations;
+- [x] compatibility;
+- [x] agent/task docs.
 
 ### Exit criteria
 
-- [ ] No known in-scope correctness/coding gap remains.
+- [x] No known in-scope correctness/coding gap remains.
 
 ---
 

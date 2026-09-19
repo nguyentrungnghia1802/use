@@ -59,3 +59,11 @@ The runtime ledger currently retains all accepted/rejected outcomes in memory; l
   explicit OSBuilder OE. It adds multi-case reuse evidence, not standalone launcher
   or autonomous Agent-to-Artifact-to-Organisation evidence. Performance numbers are
   smoke measurements on the pinned local toolchain, not throughput guarantees.
+
+## Final engineering boundary
+
+Observer infrastructure failures leave ERROR rather than current LIVE truth.
+Cleanup failures remain explicit and retryable; disconnect and authoritative
+resync are required before claiming current state again. No arbitrary observer
+that blocks indefinitely is supported. See docs/project/phase27-hardening-audit.md
+and the final acceptance/boundary matrix in docs/project/phase28-project-closure.md.
