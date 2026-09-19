@@ -2379,9 +2379,8 @@ Do **not** update only hashes to make tests pass. Any structural/rule change req
 
 **Objective:** remove remaining correctness/coding gaps; introduce no new research feature.
 
-Execution evidence: `../project/phase27-hardening-audit.md`. Implementation and
-local regression complete; final relocated clean-checkout and Git integration
-gates remain pending until recorded. Capability classification checkboxes below
+Execution evidence: `../project/phase27-hardening-audit.md`. Implementation, local and relocated clean-checkout
+regressions pass 307/307 each. Git integration is recorded by the closure commit. Capability classification checkboxes below
 mean the audit was performed; no MISSING/CONFLICT capability remains accepted.
 The V2-specific checklist wording is reconciled by D25-01 retaining final V1.
 
@@ -2623,13 +2622,13 @@ Optimize only reproducible blocking bottlenecks.
 
 ### Tasks
 
-- [ ] clean checkout;
-- [ ] no stale build outputs;
-- [ ] same pinned JDK/Maven/dependencies;
-- [ ] relocated filesystem path if supported;
-- [ ] `mvn clean verify` or repository canonical full command;
-- [ ] record exact test counts/results;
-- [ ] verify worktree cleanliness after build where expected.
+- [x] clean checkout;
+- [x] no stale build outputs;
+- [x] same pinned JDK/Maven/dependencies;
+- [x] relocated filesystem path if supported;
+- [x] `mvn clean verify` or repository canonical full command;
+- [x] record exact test counts/results;
+- [x] verify worktree cleanliness after build where expected.
 
 ---
 

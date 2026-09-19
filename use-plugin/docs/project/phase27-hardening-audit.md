@@ -45,7 +45,7 @@ It is distinct from an observer infrastructure failure. Optional objectNameOrNul
 in the verifier omits an unavailable display target on error/skip reporting; exact
 mutation and formal target resolution still reject missing/ambiguous identities.
 
-## Search and architecture audit (P27.1Ã¢â‚¬â€œP27.5)
+## Search and architecture audit (P27.1ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“P27.5)
 
 Production-only search: TODO, FIXME, HACK, TEMP, workaround, placeholder,
 not implemented, UnsupportedOperationException, ignored catches and temporary V1.
@@ -75,7 +75,7 @@ The final acceptance matrix in phase28-project-closure.md supplies the requireme
 to component/test/evidence/document mapping. Missing/conflicting supported behavior
 found above was corrected, rather than relabelled unsupported.
 
-## Lifecycle and security review (P27.6Ã¢â‚¬â€œP27.7)
+## Lifecycle and security review (P27.6ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“P27.7)
 
 HotfixLifecycleTest covers workspace/profile/reimport replacement, authoritative
 resync and failed synchronization. RuntimeFoundationTest covers subscribe, queue
@@ -95,7 +95,7 @@ import contains no ProcessBuilder/command execution. Only test harnesses compile
 and execute their checked-in trusted artifact fixtures. Explicitly configured
 external roots are intentional supported input, not traversal bypasses.
 
-## Regression, cases, performance and release (P27.8Ã¢â‚¬â€œP27.12)
+## Regression, cases, performance and release (P27.8ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“P27.12)
 
 The full reactor includes event codec/schema/trace/identity/mapping/mutation,
 synthetic/Jason/CArtAgO/Moise, full sync/order/drift/reconnect, lifecycle,
@@ -136,3 +136,13 @@ used heap 24,932,352 bytes; event-to-mirror 285,200 ns; queue depth 0/high-water
 event-to-result 478,800 ns; Counter scenario 689,451,300 ns and 33 events.
 Relocated clean-checkout and Git integration remain pending in this implementation
 commit and are recorded in the subsequent evidence closure.
+
+## Relocated clean checkout
+
+Commit `0a745d8d` cloned independently with `git clone --no-hardlinks` to
+`C:/Users/NTNghia/AppData/Local/Temp/use-jacamo-final-0a745d8d`.
+Same pinned toolchain; `mvn --batch-mode clean verify` passed **307/307**,
+zero failures/errors/skips, 2 min 29 s. Git status was empty before and after.
+Auction and Counter generated .use/.cmd match after LF normalization.
+See evidence/closure/relocated-manifest.json and relocated-verify.log.
+This closes P27.11; the source implementation is unchanged after that gate.
