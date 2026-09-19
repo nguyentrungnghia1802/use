@@ -41,6 +41,7 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     private final List<RuntimeVerificationReport> reports = new ArrayList<>();
     private MirrorState connectionState = MirrorState.OFFLINE;
     private long snapshotVersion;
+    private final Set<String> completedCorrelations = new java.util.HashSet<>();
     private long completedThroughSequence = -1;
     private String snapshotFingerprint = "";
 
@@ -95,6 +96,10 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     @Override public synchronized void eventStreamClosed() {
         receivedNanos.clear();
         resetOperationLifecycle();
+        if (connectionState == MirrorState.LIVE) connectionState = MirrorState.STALE;
+        append(null, diagnostic("RUNTIME_STREAM_BOUNDARY", VerificationOutcome.SKIPPED,
+            "Stream closed; operation pre-state retired; authoritative resync required", null), 0,
+            List.of("STREAM_BOUNDARY"));
     }
 
     int pendingOperationRejections() {
@@ -104,6 +109,8 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     }
 
     @Override public synchronized void snapshotApplied(RuntimeSnapshot snapshot) {
+        if (!requireCurrent(null)) return;
+        resetOperationLifecycle();
         snapshotVersion++;
         snapshotFingerprint = snapshot.fingerprint();
         long started = nanoTime.getAsLong();
@@ -113,12 +120,18 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
 
     @Override public synchronized void beforeMutation(RuntimeEvent event) {
         if (event.kind() != RuntimeEventKind.OP_ENTER) return;
+        if (!requireCurrent(event)) return;
         long started = eventStart(event);
         try {
+            if (completedCorrelations.contains(event.correlationId()) || operationCorrelations.containsKey(event.correlationId()))
+                throw new IllegalArgumentException("OPERATION_CORRELATION_ACTIVE_OR_RETIRED:" + event.correlationId());
             String objectName = objectName(event);
             String operationName = text(event.payload(), "operation");
             MOperation operation = system.state().objectByName(objectName).cls().operation(operationName, true);
             if (operation == null) throw new IllegalArgumentException("USE_OPERATION_MISSING: " + operationName);
+            if (trace.byUseId("operation:" + operation.cls().name() + "." + operationName).stream()
+                    .noneMatch(r -> r.status() == org.tzi.use.plugins.jacamo.trace.TraceRecord.Status.PROJECTED))
+                throw new IllegalArgumentException("RUNTIME_OPERATION_TRACE_UNRESOLVED:" + operationName);
             List<Value> arguments = arguments(operation, event.payload().get("arguments"));
             OperationRequest request = new OperationRequest(objectName, operationName, arguments,
                     event.correlationId(), List.of(event.eventId()));
@@ -147,10 +160,13 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     @Override public synchronized void afterMutation(RuntimeEvent event, MutationResult mutation) {
         long started = eventStart(event);
         if (mutation.status() != MutationStatus.APPLIED) {
+            if (event.kind() == RuntimeEventKind.OP_ENTER) operationCorrelations.computeIfPresent(event.correlationId(),
+                (key,current) -> current.sequence() == event.sequence() ? null : current);
             append(event, diagnostic("RUNTIME_MUTATION", VerificationOutcome.ERROR, mutation.diagnostic(), event),
                     nanoTime.getAsLong() - started, List.of("RUNTIME_MUTATION_NOT_APPLIED"));
             return;
         }
+        if (!requireCurrent(event)) return;
         if (event.kind() == RuntimeEventKind.OP_EXIT) {
             complete(event, started);
             return;
@@ -215,7 +231,14 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
         synchronized (operationLifecycle) {
             operationCorrelations.compute(event.correlationId(), (ignored, current) -> {
                 if (current == null || current.sequence() > event.sequence()) return current;
-                if (!current.rejected()) matched[0] = current.check();
+                if (!current.rejected()) {
+                    var request = current.check().request();
+                    if (!request.objectName().equals(objectNameOrNull(event))
+                            || event.payload().containsKey("operation") && !request.operationName().equals(event.payload().get("operation")))
+                        return current;
+                    matched[0] = current.check();
+                    completedCorrelations.add(event.correlationId());
+                }
                 return null;
             });
         }
@@ -229,6 +252,7 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     private void resetOperationLifecycle() {
         synchronized (operationLifecycle) {
             operationCorrelations.clear();
+            completedCorrelations.clear();
             completedThroughSequence = -1;
         }
     }
@@ -264,15 +288,44 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
 
     private void append(RuntimeEvent event, VerificationReport report, long latency, List<String> diagnostics) {
         reports.add(new RuntimeVerificationReport("1.0.0", UUID.randomUUID().toString(), Instant.now(),
-                connectionState, snapshotVersion, snapshotFingerprint, event, report, latency, diagnostics));
+                connectionState, snapshotVersion, snapshotFingerprint, event, report, latency, diagnostics,
+                checkpoint(event, diagnostics), provenance(event, report)));
+    }
+
+    private boolean requireCurrent(RuntimeEvent event) {
+        if (connectionState == MirrorState.LIVE) return true;
+        append(event, diagnostic("RUNTIME_MIRROR_NOT_CURRENT", VerificationOutcome.SKIPPED,
+            "Verification requires LIVE authoritative mirror; state=" + connectionState, event), 0,
+            List.of("RUNTIME_MIRROR_NOT_CURRENT"));
+        return false;
+    }
+
+    private VerificationCheckpoint checkpoint(RuntimeEvent event, List<String> diagnostics) {
+        if (diagnostics.contains("STREAM_BOUNDARY")) return VerificationCheckpoint.STREAM_BOUNDARY;
+        if (diagnostics.contains("RUNTIME_AUTHORITATIVE_SNAPSHOT")) return VerificationCheckpoint.SNAPSHOT;
+        if (event == null) return VerificationCheckpoint.DIAGNOSTIC;
+        return switch (event.kind()) {
+            case OP_ENTER -> VerificationCheckpoint.OPERATION_PRE;
+            case OP_EXIT, OP_FAIL -> VerificationCheckpoint.OPERATION_POST;
+            default -> VerificationCheckpoint.AFTER_MUTATION;
+        };
+    }
+
+    private List<org.tzi.use.plugins.jacamo.trace.TraceRecord> provenance(RuntimeEvent event, VerificationReport report) {
+        var records = new java.util.TreeMap<String,org.tzi.use.plugins.jacamo.trace.TraceRecord>();
+        for (var result : report.results()) {
+            for (var id : result.sourceTrace()) trace.bySemanticId(id).forEach(r -> records.put(r.traceId(),r));
+            if (result.contextObject()!=null) trace.byUseId("object:"+result.contextObject()).forEach(r -> records.put(r.traceId(),r));
+        }
+        if (event!=null) trace.byRuntimeKey(event.runtimeSourceId()).ifPresent(r -> records.put(r.traceId(),r));
+        return List.copyOf(records.values());
     }
 
     private String objectName(RuntimeEvent event) {
-        return trace.byRuntimeKey(event.runtimeSourceId()).map(record -> record.targetUseId())
-                .filter(value -> value.startsWith("object:"))
-                .map(value -> value.substring("object:".length()))
-                .orElseThrow(() -> new IllegalArgumentException("RUNTIME_TRACE_UNRESOLVED: "
-                        + event.runtimeSourceId()));
+        var target = new org.tzi.use.plugins.jacamo.runtime.TraceRuntimeTargetAdapter(trace).resolve(
+            new org.tzi.use.plugins.jacamo.runtime.RuntimeTargetResolver.Request(event.runtimeSourceId(),event.semanticSourceId(),"OBJECT"));
+        if (!target.useId().startsWith("object:")) throw new IllegalArgumentException("RUNTIME_TRACE_TARGET_MISMATCH");
+        return target.useId().substring("object:".length());
     }
 
     private String objectNameOrNull(RuntimeEvent event) {

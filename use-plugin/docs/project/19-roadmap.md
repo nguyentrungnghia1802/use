@@ -385,6 +385,8 @@ Mục tiêu: không để việc chờ Ecore mới chặn runtime.
 
 # PHASE 22 — Runtime Verification Completion
 
+**Status:** COMPLETED for supported mirror subset — [evidence](phase22-verification-evidence.md).
+
 **Mode:** AGENT AUTO
 
 Chỉ bắt đầu sau khi Phase 19 mirror correctness pass.

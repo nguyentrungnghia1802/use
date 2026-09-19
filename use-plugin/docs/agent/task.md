@@ -1556,24 +1556,24 @@ Evidence: [Phase 21 migration readiness](../project/phase21-migration-readiness.
 
 Define/validate first-class checkpoints:
 
-- [ ] `SNAPSHOT`.
-- [ ] `AFTER_MUTATION`.
-- [ ] `OPERATION_PRE`.
-- [ ] `OPERATION_POST`.
-- [ ] `STREAM_BOUNDARY`.
+- [x] `SNAPSHOT`.
+- [x] `AFTER_MUTATION`.
+- [x] `OPERATION_PRE`.
+- [x] `OPERATION_POST`.
+- [x] `STREAM_BOUNDARY`.
 
 For each:
 
-- [ ] trigger;
-- [ ] valid mirror state requirement;
-- [ ] verification mode;
-- [ ] event/trace context;
-- [ ] result handling;
-- [ ] behavior when mirror is STALE/ERROR.
+- [x] trigger;
+- [x] valid mirror state requirement;
+- [x] verification mode;
+- [x] event/trace context;
+- [x] result handling;
+- [x] behavior when mirror is STALE/ERROR.
 
 ### Acceptance
 
-- [ ] Verification cannot report current runtime truth while mirror is not LIVE/current.
+- [x] Verification cannot report current runtime truth while mirror is not LIVE/current.
 
 ---
 
@@ -1587,20 +1587,20 @@ For each:
 
 ### Tasks
 
-- [ ] Full invariant check after authoritative snapshot.
-- [ ] Targeted/conservative invariant check after state-changing delta.
-- [ ] Keep full-check fallback.
-- [ ] Preserve event ID/correlation/snapshot version.
-- [ ] OCL undefined remains ERROR where contract says so.
-- [ ] Unknown runtime data does not become false PASS.
+- [x] Full invariant check after authoritative snapshot.
+- [x] Targeted/conservative invariant check after state-changing delta.
+- [x] Keep full-check fallback.
+- [x] Preserve event ID/correlation/snapshot version.
+- [x] OCL undefined remains ERROR where contract says so.
+- [x] Unknown runtime data does not become false PASS.
 
 ### Tests
 
-- [ ] PASS;
-- [ ] FAIL;
-- [ ] ERROR/undefined;
-- [ ] targeted/full equivalence;
-- [ ] STALE state no-current-result behavior.
+- [x] PASS;
+- [x] FAIL;
+- [x] ERROR/undefined;
+- [x] targeted/full equivalence;
+- [x] STALE state no-current-result behavior.
 
 ---
 
@@ -1613,24 +1613,24 @@ For each:
 
 ### Tasks
 
-- [ ] PRE occurs on exact mapped operation enter.
-- [ ] Capture pre-state once.
-- [ ] Bind self/args exactly.
-- [ ] Do not block JaCaMo baseline execution.
-- [ ] POST only after successful matching exit.
-- [ ] Preserve `@pre`.
-- [ ] failure/abort → POST `SKIPPED`.
-- [ ] retired correlation cannot produce a POST result.
-- [ ] mapping/argument resolution error → explicit ERROR diagnostic.
+- [x] PRE occurs on exact mapped operation enter.
+- [x] Capture pre-state once.
+- [x] Bind self/args exactly.
+- [x] Do not block JaCaMo baseline execution.
+- [x] POST only after successful matching exit.
+- [x] Preserve `@pre`.
+- [x] failure/abort → POST `SKIPPED`.
+- [x] retired correlation cannot produce a POST result.
+- [x] mapping/argument resolution error → explicit ERROR diagnostic.
 
 ### Tests
 
-- [ ] pre pass/fail;
-- [ ] post pass/fail;
-- [ ] @pre;
-- [ ] op fail;
-- [ ] duplicate terminal;
-- [ ] stream boundary.
+- [x] pre pass/fail;
+- [x] post pass/fail;
+- [x] @pre;
+- [x] op fail;
+- [x] duplicate terminal;
+- [x] stream boundary.
 
 ---
 
@@ -1654,18 +1654,18 @@ Preferred decision order:
 
 Implement:
 
-- [ ] generic happened-before / start-before-terminal constraints;
-- [ ] stream-generation validity;
-- [ ] correlation ordering;
-- [ ] exact event attribution;
-- [ ] case-specific Auction ordering outside core.
+- [x] generic happened-before / start-before-terminal constraints;
+- [x] stream-generation validity;
+- [x] correlation ordering;
+- [x] exact event attribution;
+- [x] case-specific Auction ordering outside core.
 
 ### Tests
 
-- [ ] generic synthetic ordering;
-- [ ] Auction valid order;
-- [ ] Auction invalid order;
-- [ ] retired-stream event violation/rejection.
+- [x] generic synthetic ordering;
+- [x] Auction valid order;
+- [x] Auction invalid order;
+- [x] retired-stream event violation/rejection.
 
 ---
 
@@ -1681,25 +1681,25 @@ Implement:
 
 Ensure every result carries where available:
 
-- [ ] constraint/rule ID;
-- [ ] checkpoint;
-- [ ] runtime event ID;
-- [ ] sequence;
-- [ ] correlation ID;
-- [ ] runtime key;
-- [ ] SemanticId;
-- [ ] USE context object/operation;
-- [ ] source span/provenance;
-- [ ] mirror version/fingerprint;
-- [ ] PASS/FAIL/ERROR/SKIPPED.
+- [x] constraint/rule ID;
+- [x] checkpoint;
+- [x] runtime event ID;
+- [x] sequence;
+- [x] correlation ID;
+- [x] runtime key;
+- [x] SemanticId;
+- [x] USE context object/operation;
+- [x] source span/provenance;
+- [x] mirror version/fingerprint;
+- [x] PASS/FAIL/ERROR/SKIPPED.
 
 Navigation path:
 
-- [ ] result → USE target;
-- [ ] USE target → trace;
-- [ ] trace → semantic source;
-- [ ] semantic source → runtime identity/event;
-- [ ] no similarly-named fallback.
+- [x] result → USE target;
+- [x] USE target → trace;
+- [x] trace → semantic source;
+- [x] semantic source → runtime identity/event;
+- [x] no similarly-named fallback.
 
 ---
 
@@ -1713,21 +1713,23 @@ Navigation path:
 
 ### Tasks
 
-- [ ] Run valid scenario.
-- [ ] Run invariant violation scenario.
-- [ ] Run PRE violation scenario.
-- [ ] Run operation failure scenario.
-- [ ] Run ordering violation scenario if supported.
-- [ ] Disconnect/reconnect/resync.
-- [ ] Ensure violations are evaluated against current mirror only.
-- [ ] Ensure exact trace attribution.
+- [x] Run valid scenario.
+- [x] Run invariant violation scenario.
+- [x] Run PRE violation scenario.
+- [x] Run operation failure scenario.
+- [x] Run ordering violation scenario if supported.
+- [x] Disconnect/reconnect/resync.
+- [x] Ensure violations are evaluated against current mirror only.
+- [x] Ensure exact trace attribution.
 
 ### Exit criteria
 
-- [ ] Runtime verification complete for supported mirrored state.
-- [ ] Mirror correctness remains independently tested from OCL correctness.
+- [x] Runtime verification complete for supported mirrored state.
+- [x] Mirror correctness remains independently tested from OCL correctness.
 
 ---
+
+Evidence: [Phase 22 verification](../project/phase22-verification-evidence.md).
 
 # Phase 23 — Cross-Dimensional & Supported Normative Verification
 

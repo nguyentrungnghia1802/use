@@ -13,19 +13,33 @@ public final class RuntimeVerificationReportExporter {
                 .put("connectionState", report.connectionState().name())
                 .put("snapshotVersion", report.snapshotVersion())
                 .put("snapshotFingerprint", report.snapshotFingerprint())
-                .put("latencyNanos", report.latencyNanos());
+                .put("latencyNanos", report.latencyNanos())
+                .put("checkpoint", report.checkpoint().name());
         if (report.event() == null) root.putNull("event");
         else root.putObject("event").put("eventId", report.event().eventId())
                 .put("kind", report.event().kind().name()).put("sequence", report.event().sequence())
-                .put("runtimeSourceId", report.event().runtimeSourceId());
+                .put("runtimeSourceId", report.event().runtimeSourceId())
+                .put("semanticSourceId", report.event().semanticSourceId())
+                .put("correlationId", report.event().correlationId());
+        ArrayNode provenance = root.putArray("provenance");
+        for (var record : report.provenance()) {
+            var item = provenance.addObject().put("traceId",record.traceId()).put("semanticId",record.sourceSemanticId())
+                .put("useId",record.targetUseId()).put("status",record.status().name());
+            if (record.sourceSpan()!=null) item.putObject("sourceSpan").put("path",record.sourceSpan().path().toString())
+                .put("startLine",record.sourceSpan().startLine()).put("startColumn",record.sourceSpan().startColumn())
+                .put("endLine",record.sourceSpan().endLine()).put("endColumn",record.sourceSpan().endColumn());
+        }
         ArrayNode diagnostics = root.putArray("diagnostics");
         report.diagnostics().forEach(diagnostics::add);
         ObjectNode verification = root.putObject("verification")
                 .put("runId", report.verification().runId()).put("mode", report.verification().mode());
+        verification.set("fingerprints",JSON.valueToTree(report.verification().fingerprints()));
+        verification.put("structureValid",report.verification().structureValid());
         ArrayNode results = verification.putArray("results");
         for (VerificationResult result : report.verification().results()) {
             ObjectNode node = results.addObject().put("constraintId", result.constraintId())
-                    .put("outcome", result.outcome().name()).put("explanation", result.explanation());
+                    .put("outcome", result.outcome().name()).put("explanation", result.explanation())
+                    .put("correlationId",result.correlationId());
             if (result.contextObject() == null) node.putNull("contextObject");
             else node.put("contextObject", result.contextObject());
             node.put("oclSource", result.oclSource());
@@ -41,6 +55,7 @@ public final class RuntimeVerificationReportExporter {
     public String toMarkdown(RuntimeVerificationReport report) {
         String event = report.event() == null ? "snapshot" : report.event().eventId() + " / " + report.event().kind();
         StringBuilder out = new StringBuilder("# Runtime Verification Report\n\n")
+                .append("- Checkpoint: ").append(report.checkpoint()).append("\n")
                 .append("- Connection: ").append(report.connectionState()).append("\n")
                 .append("- Snapshot version: ").append(report.snapshotVersion()).append("\n")
                 .append("- Event: `").append(event).append("`\n")

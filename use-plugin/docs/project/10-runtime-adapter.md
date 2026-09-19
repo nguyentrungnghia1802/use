@@ -270,7 +270,8 @@ test.
 - `CompositeRuntimeConnector` combines the three connector snapshots and renumbers child events into one monotonic
   stream while preserving child event identity and correlation provenance.
 - Initial synchronization subscribes before taking the authoritative snapshot, buffers concurrent deltas, applies
-  the snapshot, then replays only post-snapshot events. `LIVE` is set only after this succeeds.
+  the snapshot, establishes `LIVE` and verifies the authoritative snapshot before releasing
+  post-snapshot deltas to the queue. Admission/mutation failures transition to `ERROR`.
 - Connector health can be refreshed explicitly. A disconnected child makes the composite unhealthy and the mirror
   transitions to `STALE`; stale data is not claimed as live.
 - Reconnect always performs a full snapshot before returning to `LIVE`. The live Auction integration test removes
