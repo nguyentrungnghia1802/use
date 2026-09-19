@@ -159,3 +159,29 @@ Report must include versions/hashes để reproducibility.
 - JSON and Markdown exports contain the four outcomes, context, explanation, OCL source, JaCaMo semantic trace,
   correlation, event IDs, and reproducibility fingerprints. The service remains headless and does not require a
   live JaCaMo runtime.
+
+## 12. Phase 11 runtime verification contract
+
+- `RuntimeMirrorService` exposes a headless `RuntimeEventObserver` around its single ordered mutation boundary.
+  Runtime verification observes but never controls or blocks JaCaMo execution.
+- Every authoritative snapshot increments a mirror version and runs a full structure/invariant check. Every
+  projected state-changing delta runs after the USE mutation and retains the runtime event and correlation IDs.
+- `OP_ENTER` resolves the exact traced USE object and projected operation, converts arguments according to the
+  compiled USE signature, snapshots the pre-state, and evaluates preconditions. `OP_EXIT` evaluates explicit
+  postconditions with USE's pre/post evaluator, preserving `@pre`; `OP_FAIL`/abort records `SKIPPED` postconditions
+  rather than pretending that a post-state contract ran.
+- `ConstraintDependencyIndex` indexes declared semantic dependencies. Targeted evaluation also includes enabled
+  invariants without declared dependencies because they may be global; an unknown change with no conservative
+  selection uses a full-check fallback. The targeted evaluator and full evaluator share the same invariant path.
+- Drift checks request an authoritative connector snapshot and compare all projected object existence, scalar
+  value, and association mutations with the current USE mirror. Each difference has diagnostic code
+  `RUNTIME_MIRROR_DRIFT`, event/runtime identity, target, expected value, and actual value. Policies are
+  `REPORT_ONLY` and `AUTO_RESYNC`; periodic checks use a daemon scheduler and any resync returns to `LIVE` only
+  after a fresh full synchronization.
+- `RuntimeVerificationReport` stores connection state, snapshot version/fingerprint, event, verification results,
+  diagnostics, and evaluation latency. Its JSON and Markdown exporters preserve violation context, OCL source,
+  source trace, correlation, and runtime event IDs.
+
+Phase 11 evidence (2026-09-15): `mvn -pl use-plugin test` passes 61 tests. The real Auction integration uses live
+Jason 3.3.0, CArtAgO 3.1, and Moise 1.1, closes the Auction, rejects `placeBid(item1, 0)`, and asserts that the
+runtime report contains a failing OCL result correlated to the exact CArtAgO event and imported Artifact trace.

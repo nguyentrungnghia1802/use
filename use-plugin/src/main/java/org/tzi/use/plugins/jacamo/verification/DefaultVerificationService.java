@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import org.tzi.use.plugins.jacamo.trace.TraceIndex;
 import org.tzi.use.uml.mm.MClassInvariant;
@@ -43,6 +44,29 @@ public final class DefaultVerificationService implements VerificationService {
             }
         }
         return VerificationReport.offline(runId, structure, results, registry.fingerprints());
+    }
+
+    @Override
+    public VerificationReport runTargetedVerification(MSystem system, ConstraintRegistry registry, TraceIndex trace,
+                                                      Set<String> constraintIds, String runId) {
+        if (constraintIds == null || constraintIds.isEmpty())
+            return VerificationReport.runtime(runId, "RUNTIME_TARGETED", true, List.of(), registry.fingerprints());
+        List<VerificationResult> results = new ArrayList<>();
+        for (MClassInvariant invariant : system.model().classInvariants()) {
+            ConstraintDescriptor descriptor = registry.descriptor(invariant);
+            if (descriptor == null || !constraintIds.contains(descriptor.id())) continue;
+            if (!descriptor.enabled() || !invariant.isActive()) {
+                results.add(result(descriptor, VerificationOutcome.SKIPPED, null, "constraint disabled",
+                        List.of(), null, List.of()));
+                continue;
+            }
+            try { results.add(evaluateInvariant(invariant, descriptor, system.state(), trace)); }
+            catch (RuntimeException exception) {
+                results.add(result(descriptor, VerificationOutcome.ERROR, null, exception.getMessage(),
+                        List.of(), null, List.of()));
+            }
+        }
+        return VerificationReport.runtime(runId, "RUNTIME_TARGETED", true, results, registry.fingerprints());
     }
 
     @Override

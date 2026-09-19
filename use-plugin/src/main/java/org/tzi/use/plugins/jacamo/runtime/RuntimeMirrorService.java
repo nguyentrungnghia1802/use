@@ -2,40 +2,55 @@ package org.tzi.use.plugins.jacamo.runtime;
 
 import java.net.URI;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /** Coordinates lifecycle, full synchronization and the ordered delta path. */
 public final class RuntimeMirrorService implements RuntimeService {
     private final RuntimeConnector connector;
     private final RuntimeMutationEngine mutations;
     private final int queueCapacity;
+    private final RuntimeEventObserver observer;
     private volatile MirrorState state = MirrorState.OFFLINE;
     private URI endpoint;
     private RuntimeSubscription subscription;
     private OrderedRuntimeEventQueue queue;
     private String lastSnapshotFingerprint;
+    private RuntimeSnapshot lastSnapshot;
+    private RuntimeDriftReport lastDriftReport;
+    private ScheduledExecutorService driftMonitor;
 
     public RuntimeMirrorService(RuntimeConnector connector, RuntimeMutationEngine mutations, int queueCapacity) {
+        this(connector, mutations, queueCapacity, RuntimeEventObserver.NOOP);
+    }
+
+    public RuntimeMirrorService(RuntimeConnector connector, RuntimeMutationEngine mutations, int queueCapacity,
+                                RuntimeEventObserver observer) {
         if (connector == null || mutations == null || queueCapacity < 1)
             throw new IllegalArgumentException("RUNTIME_MIRROR_INVALID");
         this.connector = connector;
         this.mutations = mutations;
         this.queueCapacity = queueCapacity;
+        this.observer = observer == null ? RuntimeEventObserver.NOOP : observer;
     }
 
     @Override public synchronized void connect(URI endpoint) {
         if (state == MirrorState.LIVE || state == MirrorState.CONNECTING || state == MirrorState.SYNCING)
             throw new IllegalStateException("RUNTIME_MIRROR_ALREADY_CONNECTED");
         this.endpoint = endpoint;
-        state = MirrorState.CONNECTING;
+        transition(MirrorState.CONNECTING);
         try {
             connector.connect(endpoint);
-            state = MirrorState.SYNCING;
+            transition(MirrorState.SYNCING);
             synchronizeSnapshot();
-            state = MirrorState.LIVE;
+            transition(MirrorState.LIVE);
+            observer.snapshotApplied(lastSnapshot);
         } catch (RuntimeException exception) {
-            state = MirrorState.ERROR;
+            transition(MirrorState.ERROR);
             connector.disconnect();
             throw exception;
         }
@@ -44,7 +59,7 @@ public final class RuntimeMirrorService implements RuntimeService {
     @Override public synchronized void disconnect() {
         stopEvents();
         connector.disconnect();
-        if (state != MirrorState.OFFLINE) state = MirrorState.STALE;
+        if (state != MirrorState.OFFLINE) transition(MirrorState.STALE);
     }
 
     public synchronized void reconnectAndResync() {
@@ -54,13 +69,14 @@ public final class RuntimeMirrorService implements RuntimeService {
 
     @Override public synchronized void resync() {
         if (state != MirrorState.LIVE) throw new IllegalStateException("RUNTIME_MIRROR_NOT_LIVE");
-        state = MirrorState.SYNCING;
+        transition(MirrorState.SYNCING);
         stopEvents();
         try {
             synchronizeSnapshot();
-            state = MirrorState.LIVE;
+            transition(MirrorState.LIVE);
+            observer.snapshotApplied(lastSnapshot);
         } catch (RuntimeException exception) {
-            state = MirrorState.ERROR;
+            transition(MirrorState.ERROR);
             throw exception;
         }
     }
@@ -76,23 +92,62 @@ public final class RuntimeMirrorService implements RuntimeService {
         return current == null ? new QueueMetrics(0, 0, 0, 0, 0, 0) : current.metrics();
     }
     public String lastSnapshotFingerprint() { return lastSnapshotFingerprint; }
+    public Instant lastSyncAt() { return lastSnapshot == null ? null : lastSnapshot.capturedAt(); }
+    public RuntimeDriftReport lastDriftReport() { return lastDriftReport; }
+
+    /** Executes one authoritative comparison and optionally performs a correctness-first full resync. */
+    public synchronized RuntimeDriftReport checkDrift(DriftResyncPolicy policy) {
+        if (state != MirrorState.LIVE) throw new IllegalStateException("RUNTIME_MIRROR_NOT_LIVE");
+        RuntimeSnapshot authoritative = connector.fullSnapshot();
+        List<RuntimeDriftDifference> differences = mutations.compareSnapshot(authoritative);
+        boolean resync = !differences.isEmpty() && policy == DriftResyncPolicy.AUTO_RESYNC;
+        RuntimeDriftReport report = new RuntimeDriftReport(authoritative.snapshotId(), authoritative.fingerprint(),
+                Instant.now(), differences, policy, resync);
+        lastDriftReport = report;
+        observer.driftChecked(report);
+        if (resync) resync();
+        return report;
+    }
+
+    /** Starts periodic authoritative drift checks. Repeated calls replace the previous schedule. */
+    public synchronized void enablePeriodicDriftChecks(Duration interval, DriftResyncPolicy policy) {
+        if (interval == null || interval.isZero() || interval.isNegative() || policy == null)
+            throw new IllegalArgumentException("RUNTIME_DRIFT_INTERVAL_INVALID");
+        stopDriftMonitor();
+        driftMonitor = Executors.newSingleThreadScheduledExecutor(runnable -> {
+            Thread thread = new Thread(runnable, "jacamo-runtime-drift");
+            thread.setDaemon(true);
+            return thread;
+        });
+        driftMonitor.scheduleWithFixedDelay(() -> {
+            try {
+                if (state == MirrorState.LIVE) checkDrift(policy);
+            } catch (RuntimeException exception) {
+                synchronized (RuntimeMirrorService.this) {
+                    if (state == MirrorState.LIVE) transition(MirrorState.STALE);
+                }
+            }
+        }, interval.toMillis(), interval.toMillis(), TimeUnit.MILLISECONDS);
+    }
 
     /** Refreshes externally observable connector health without claiming stale data as live. */
     public synchronized void refreshConnectionState() {
         if (state == MirrorState.LIVE && connector.state() != ConnectorState.CONNECTED) {
             stopEvents();
-            state = MirrorState.STALE;
+            transition(MirrorState.STALE);
         }
     }
 
     @Override public synchronized void close() {
+        stopDriftMonitor();
         disconnect();
-        state = MirrorState.OFFLINE;
+        transition(MirrorState.OFFLINE);
     }
 
     private void applySnapshot(RuntimeSnapshot snapshot) {
         mutations.applySnapshot(snapshot);
         lastSnapshotFingerprint = snapshot.fingerprint();
+        lastSnapshot = snapshot;
     }
 
     private void synchronizeSnapshot() {
@@ -114,9 +169,11 @@ public final class RuntimeMirrorService implements RuntimeService {
             throw exception;
         }
         OrderedRuntimeEventQueue nextQueue = new OrderedRuntimeEventQueue(queueCapacity, event -> {
+            observer.beforeMutation(event);
             MutationResult result = mutations.apply(event);
+            observer.afterMutation(event, result);
             if (result.status() != MutationStatus.APPLIED) {
-                state = MirrorState.ERROR;
+                transition(MirrorState.ERROR);
                 throw new IllegalStateException(result.diagnostic());
             }
         });
@@ -132,6 +189,18 @@ public final class RuntimeMirrorService implements RuntimeService {
 
     private void stopEvents() {
         if (subscription != null) { subscription.close(); subscription = null; }
-        if (queue != null) queue.stopGracefully(Duration.ofSeconds(5));
+        if (queue != null) { queue.stopGracefully(Duration.ofSeconds(5)); queue = null; }
+    }
+
+    private void stopDriftMonitor() {
+        if (driftMonitor != null) {
+            driftMonitor.shutdownNow();
+            driftMonitor = null;
+        }
+    }
+
+    private void transition(MirrorState next) {
+        state = next;
+        observer.stateChanged(next);
     }
 }

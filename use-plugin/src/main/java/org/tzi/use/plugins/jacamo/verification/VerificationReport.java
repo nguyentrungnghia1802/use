@@ -26,4 +26,11 @@ public record VerificationReport(String schemaVersion, String runId, Instant tim
                                                Map<String, String> fingerprints) {
         return new VerificationReport("1.0.0", runId, Instant.now(), "OPERATION", true, results, fingerprints);
     }
+    public static VerificationReport runtime(String runId, String mode, boolean structureValid,
+                                             List<VerificationResult> results,
+                                             Map<String, String> fingerprints) {
+        if (mode == null || !mode.startsWith("RUNTIME_"))
+            throw new IllegalArgumentException("RUNTIME_REPORT_MODE_INVALID");
+        return new VerificationReport("1.0.0", runId, Instant.now(), mode, structureValid, results, fingerprints);
+    }
 }
