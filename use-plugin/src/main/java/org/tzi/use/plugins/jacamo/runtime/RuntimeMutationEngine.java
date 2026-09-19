@@ -17,6 +17,7 @@ public final class RuntimeMutationEngine {
     private final Map<String, String> authorizedObjectClasses = new LinkedHashMap<>();
     private final java.util.Set<String> completedCorrelations = new java.util.HashSet<>();
     private final RuntimeMapping mapping;
+    private final RuntimeTargetResolver targets;
     private final MSystem system;
     private final TraceIndex trace;
     private final Object operationLifecycle = new Object();
@@ -29,7 +30,12 @@ public final class RuntimeMutationEngine {
     private final RuntimeTrace runtimeTrace = new RuntimeTrace();
 
     public RuntimeMutationEngine(MSystem system, TraceIndex trace) {
-        this.mapping = new RuntimeMappingLoader().loadDefault();
+        this(system, trace, new RuntimeMappingLoader().loadDefault(), new TraceRuntimeTargetAdapter(trace));
+    }
+
+    public RuntimeMutationEngine(MSystem system, TraceIndex trace, RuntimeMapping mapping, RuntimeTargetResolver targets) {
+        this.mapping = java.util.Objects.requireNonNull(mapping);
+        this.targets = java.util.Objects.requireNonNull(targets);
         this.system = system;
         this.trace = trace;
         for (var record : trace.byTargetKind("OBJECT")) {
@@ -61,11 +67,8 @@ public final class RuntimeMutationEngine {
                 if (!event.payload().containsKey(field) || event.payload().get(field) == null)
                     return quarantine(event, "RUNTIME_MAPPING_PAYLOAD_UNBOUND:" + rule.id() + ":" + field);
             if (rule.action() == RuntimeSemanticAction.OBJECT_AVAILABLE) return create(event);
-            var binding = trace.byRuntimeKey(event.runtimeSourceId()).orElse(null);
-            if (binding != null && (binding.status() != org.tzi.use.plugins.jacamo.trace.TraceRecord.Status.RESOLVED
-                    && binding.status() != org.tzi.use.plugins.jacamo.trace.TraceRecord.Status.PROJECTED
-                    || event.semanticSourceId() != null && !event.semanticSourceId().equals(binding.sourceSemanticId())))
-                return quarantine(event, "RUNTIME_TRACE_TARGET_MISMATCH:" + event.runtimeSourceId());
+            if (!dynamicRuntimeObjects.containsKey(event.runtimeSourceId()))
+                targets.resolve(new RuntimeTargetResolver.Request(event.runtimeSourceId(), event.semanticSourceId(), "OBJECT"));
             String objectName = resolveObject(event.runtimeSourceId());
             if (objectName == null) return quarantine(event, "RUNTIME_TRACE_UNRESOLVED:" + event.runtimeSourceId());
             if (event.semanticSourceId() != null && trace.byUseId("object:" + objectName).stream()
@@ -86,7 +89,7 @@ public final class RuntimeMutationEngine {
             };
         } catch (Exception exception) {
             String diagnostic = String.valueOf(exception.getMessage());
-            if (diagnostic.contains("TRACE_UNRESOLVED") || diagnostic.startsWith("USE_OBJECT_MISSING")
+            if (diagnostic.contains("TRACE_UNRESOLVED") || diagnostic.startsWith("RUNTIME_TRACE_TARGET_MISMATCH") || diagnostic.startsWith("USE_OBJECT_MISSING")
                     || diagnostic.startsWith("USE_ATTRIBUTE_MISSING") || diagnostic.startsWith("USE_ASSOCIATION_MISSING")
                     || diagnostic.startsWith("USE_OPERATION_MISSING") || diagnostic.startsWith("OPERATION_TARGET_MISMATCH"))
                 return quarantine(event, diagnostic);
@@ -368,9 +371,9 @@ public final class RuntimeMutationEngine {
     private String resolveObject(String runtimeSourceId) {
         String dynamic = dynamicRuntimeObjects.get(runtimeSourceId);
         if (dynamic != null) return dynamic;
-        return trace.byRuntimeKey(runtimeSourceId).map(record -> record.targetUseId())
-                .filter(value -> value.startsWith("object:"))
-                .map(value -> value.substring("object:".length())).orElse(null);
+        if (trace.byRuntimeKey(runtimeSourceId).isEmpty()) return null;
+        String target = targets.resolve(new RuntimeTargetResolver.Request(runtimeSourceId, null, "OBJECT")).useId();
+        return target.startsWith("object:") ? target.substring("object:".length()) : null;
     }
 
     private MObject requireObject(String name) {

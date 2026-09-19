@@ -1385,6 +1385,18 @@ deadline is established. Full-project acceptance stays unchecked. Probe assertio
 input/jar/schema hashes and fresh 285/285 reactor results are retained in
 [machine-readable evidence](../project/evidence/phase18-20-2026-09-19.json).
 
+Integration closure (2026-09-19): Phase 18/19/20 branches were fast-forward integrated
+into `main` through `016e74b6` and pushed to origin together with all three phase branches.
+Post-merge `mvn -B -pl use-plugin verify`: **142/142 PASS** (139 unit/component,
+3 package integration; zero failures/errors/skips). The compatibility metadata test
+first caught missing host fields in the newly appended evidence; those were filled
+from `mvn -v`, and both the focused test and final module gate passed unchanged.
+The final probe input hashes and mirror bundle hashes were checked. Frozen Core,
+runtime dependency versions and static Auction source were unchanged.
+Phase 18 is complete as a draft; Phase 19 is `SUPPORTED_SUBSET_COMPLETE`;
+Phase 20 closes only the documented technical-limitation alternative. Its full-project
+tasks above remain unproven and must not be presented as complete standalone E2E.
+
 # Phase 21 — Metamodel-Decoupling & V2 Migration Readiness
 
 **Objective:** ensure the runtime core can continue now and later migrate to a new Ecore without rewriting connectors/queue/trace/mutation mechanics.
