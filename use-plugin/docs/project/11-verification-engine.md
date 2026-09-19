@@ -193,3 +193,7 @@ are first-class; non-LIVE requests are SKIPPED without OCL evaluation, and strea
 boundaries retire pre-state. Snapshot verification precedes buffered deltas.
 RuntimeHistoryVerifier checks recorded ordering independently of OCL. Reports
 preserve checkpoint, exact trace/source spans, event and result correlation.
+
+Phase 23 adds `CrossDimensionalVerifier` for exact source-declared cross-dimensional
+link checks. These are structural binding checks, not inferred behavioral rules;
+see [supported scope and unsupported boundaries](phase23-cross-dimensional-evidence.md).
