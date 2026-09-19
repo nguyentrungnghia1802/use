@@ -1,0 +1,330 @@
+{
+  "decision": "D25-01",
+  "structuralChanges": [],
+  "runtimeRuleChanges": [
+    {
+      "id": "RM-CREATE_OBJECT",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "READY_V1_TEMPORARY",
+      "finalSupport": "SUPPORTED",
+      "action": "OBJECT_AVAILABLE",
+      "anchor": "classMappings"
+    },
+    {
+      "id": "RM-DESTROY_OBJECT",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "READY_V1_TEMPORARY",
+      "finalSupport": "SUPPORTED",
+      "action": "OBJECT_UNAVAILABLE",
+      "anchor": "classMappings"
+    },
+    {
+      "id": "RM-SET_ATTRIBUTE",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "READY_V1_TEMPORARY",
+      "finalSupport": "SUPPORTED",
+      "action": "ATTRIBUTE_STATE_SET",
+      "anchor": "VP002"
+    },
+    {
+      "id": "RM-INSERT_LINK",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "READY_V1_TEMPORARY",
+      "finalSupport": "SUPPORTED",
+      "action": "RELATION_INSERT",
+      "anchor": "referenceMappings"
+    },
+    {
+      "id": "RM-DELETE_LINK",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "READY_V1_TEMPORARY",
+      "finalSupport": "SUPPORTED",
+      "action": "RELATION_DELETE",
+      "anchor": "referenceMappings"
+    },
+    {
+      "id": "RM-OP_ENTER",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "READY_V1_TEMPORARY",
+      "finalSupport": "SUPPORTED",
+      "action": "OPERATION_ENTER",
+      "anchor": "VP003"
+    },
+    {
+      "id": "RM-OP_EXIT",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "READY_V1_TEMPORARY",
+      "finalSupport": "SUPPORTED",
+      "action": "OPERATION_EXIT",
+      "anchor": "VP003"
+    },
+    {
+      "id": "RM-OP_FAIL",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "READY_V1_TEMPORARY",
+      "finalSupport": "SUPPORTED",
+      "action": "OPERATION_FAIL",
+      "anchor": "VP003"
+    },
+    {
+      "id": "RM-BELIEF_ADDED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-BELIEF_REMOVED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-GOAL_ADOPTED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-GOAL_REMOVED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-GOAL_ACHIEVED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-GOAL_FAILED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-ACTION_STARTED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-ACTION_SUCCEEDED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-ACTION_FAILED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-MESSAGE_SENT",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-MESSAGE_RECEIVED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-ARTIFACT_CREATED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-ARTIFACT_DISPOSED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-OBS_PROPERTY_ADDED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "READY_V1_TEMPORARY",
+      "finalSupport": "SUPPORTED",
+      "action": "ATTRIBUTE_STATE_SET",
+      "anchor": "VP002"
+    },
+    {
+      "id": "RM-OBS_PROPERTY_CHANGED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "READY_V1_TEMPORARY",
+      "finalSupport": "SUPPORTED",
+      "action": "ATTRIBUTE_STATE_SET",
+      "anchor": "VP002"
+    },
+    {
+      "id": "RM-OBS_PROPERTY_REMOVED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "READY_V1_TEMPORARY",
+      "finalSupport": "SUPPORTED",
+      "action": "ATTRIBUTE_STATE_UNSET",
+      "anchor": "VP002"
+    },
+    {
+      "id": "RM-SIGNAL",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-ORGANISATION_DISCOVERED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-GROUP_CREATED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-GROUP_DISPOSED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-SCHEME_CREATED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-SCHEME_DISPOSED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-ROLE_ADOPTED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-ROLE_REMOVED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-MISSION_COMMITTED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-MISSION_REMOVED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-SCHEME_STATE_CHANGED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "TRACE_ONLY",
+      "finalSupport": "TRACE_ONLY",
+      "action": "TRACE_ONLY",
+      "anchor": "NONE"
+    },
+    {
+      "id": "RM-NORM_STATE_CHANGED",
+      "sourceSemanticsChanged": false,
+      "targetBindingChanged": false,
+      "oldSupport": "UNSUPPORTED",
+      "finalSupport": "UNSUPPORTED",
+      "action": "UNSUPPORTED",
+      "anchor": "NONE"
+    }
+  ]
+}

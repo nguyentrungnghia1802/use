@@ -9,7 +9,7 @@ class RuntimeMappingTest {
     private final ObjectMapper json = new ObjectMapper();
     private final RuntimeMappingLoader loader = new RuntimeMappingLoader();
     private ObjectNode document() throws Exception {
-        return (ObjectNode) json.readTree(RuntimeMappingLoader.resource("jacamo-use-runtime-mapping-draft.json"));
+        return ((ObjectNode) json.readTree(RuntimeMappingLoader.resource("jacamo-use-runtime-mapping-v1.json"))).put("status", "CUSTOM_VALIDATED");
     }
     private void rejects(ObjectNode doc, String code) throws Exception {
         var error = assertThrows(RuntimeMappingException.class, () -> loader.loadBytes(json.writeValueAsBytes(doc)));
@@ -19,7 +19,7 @@ class RuntimeMappingTest {
         var mapping = loader.loadDefault();
         assertEquals(mapping, loader.loadDefault());
         assertEquals(RuntimeEventKind.values().length, mapping.rules().size());
-        assertEquals("DRAFT_WAITING_FOR_METAMODEL_V2", mapping.status());
+        assertEquals("FROZEN", mapping.status());
         assertTrue(mapping.rules().stream().noneMatch(r -> r.anchor().contains("Auction")));
     }
     @Test void compatibilityReportIsDerivedAndMachineReadable() throws Exception {
@@ -28,7 +28,15 @@ class RuntimeMappingTest {
         var target = java.nio.file.Path.of("target/runtime-mapping-compatibility.json");
         json.writerWithDefaultPrettyPrinter().writeValue(target.toFile(), report);
         assertTrue(report.stream().filter(r -> !r.mutation().equals("NONE"))
-            .allMatch(r -> r.status().equals("READY_V1_TEMPORARY")));
+            .allMatch(r -> r.status().equals("SUPPORTED")));
+    }
+    @Test void frozenBytesAndLegacyDraftFailClosed() throws Exception {
+        var doc = document();
+        doc.put("status", "FROZEN");
+        ((ObjectNode)doc.path("rules").get(0)).put("migrationRisk", "tampered but schema valid");
+        rejects(doc, "RUNTIME_MAPPING_HASH_MISMATCH");
+        doc = document(); doc.put("schemaVersion", "1.0.0").put("status", "DRAFT_WAITING_FOR_METAMODEL_V2");
+        rejects(doc, "RUNTIME_MAPPING_VERSION_UNSUPPORTED");
     }
     @Test void strictSchemaAndMalformedInput() throws Exception {
         for (String field : new String[]{"id","identity","eventKind","action"}) {
@@ -52,7 +60,7 @@ class RuntimeMappingTest {
     }
     @Test void conflictsAndUnsafeMutationsFailClosed() throws Exception {
         String[][] cases = {{"id","RM-DESTROY_OBJECT","DUPLICATE_ID"}, {"eventKind","DESTROY_OBJECT","CONFLICTING_SELECTOR"},
-            {"anchor","missing-anchor","ANCHOR_MISSING"}, {"support","DEFERRED_FOR_V2","UNSAFE_MUTATION"},
+            {"anchor","missing-anchor","ANCHOR_MISSING"}, {"support","TRACE_ONLY","UNSAFE_MUTATION"},
             {"mutation","NONE","ACTION_CONFLICT"}, {"runtime","MOISE","AUTHORITY_CONFLICT"}};
         for (var entry : cases) {
             var doc=document(); ((ObjectNode)doc.path("rules").get(0)).put(entry[0],entry[1]);

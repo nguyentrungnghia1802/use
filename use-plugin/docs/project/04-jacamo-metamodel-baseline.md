@@ -106,3 +106,10 @@ Ecore cung cấp:
 Ecore **không tự cung cấp** mọi semantic OCL rule.
 
 Ví dụ `Role.min` và `Role.max` tồn tại không tự động chứng minh rule `min <= max`. Rule đó cần source semantics hoặc verification profile riêng.
+
+
+## Final target decision (Phase 25–26)
+
+D25-01 retains the exact frozen structural V1 as final for the supported scope.
+Runtime Mapping V1 is reconciled separately; see [final contract audit](phase26-runtime-mapping-audit.md).
+No general runtime-instance, standalone launcher or NPL equivalence is implied.

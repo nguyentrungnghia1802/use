@@ -333,3 +333,10 @@ not be represented by constructing an unrelated OE beside the real boards.
 Phase 23 adds `MoiseRuntimeConnector.normativeSnapshot()` for deterministic direct
 OE derived obligation/permission evidence. It does not emit normative mutations or
 claim NPL lifecycle. See [the bounded audit](phase23-cross-dimensional-evidence.md).
+
+
+## Final target decision (Phase 25–26)
+
+D25-01 retains the exact frozen structural V1 as final for the supported scope.
+Runtime Mapping V1 is reconciled separately; see [final contract audit](phase26-runtime-mapping-audit.md).
+No general runtime-instance, standalone launcher or NPL equivalence is implied.

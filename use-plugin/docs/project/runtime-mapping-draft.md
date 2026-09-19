@@ -1,7 +1,8 @@
 # Runtime Mapping Draft
 
-Status: **DRAFT_WAITING_FOR_METAMODEL_V2**. V1 is a temporary compatibility
-target, not a final runtime contract. No freeze manifest is created.
+Historical Phase 18–19 design record. Superseded by [Phase 26 canonical runtime
+mapping](phase26-runtime-mapping-audit.md). Temporary/draft wording below
+describes that historical stage, not the current loader/default contract.
 
 ## Procedural audit before declarative rules (P18.1)
 

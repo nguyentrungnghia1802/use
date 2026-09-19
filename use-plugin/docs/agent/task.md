@@ -2172,6 +2172,11 @@ Only if P24.5 found no suitable autonomous candidate:
 
 # Phase 26 — Metamodel V2 Reconciliation & Final Runtime Mapping
 
+Evidence: [final mapping audit](../project/phase26-runtime-mapping-audit.md).
+V1 target is unchanged; update/rebind/remove tasks are audited no-ops where the
+exact diff is empty. Supported subset and unsupported cases remain explicit.
+Focused 28/28, clean module 156/156, full reactor 299/299 PASS (2026-09-19).
+
 **Objective:** reconcile the final metamodel decision, regenerate static artifacts, migrate runtime binding, and freeze the final Runtime Mapping contract.
 
 ---
@@ -2186,14 +2191,14 @@ Only if P24.5 found no suitable autonomous candidate:
 
 ### Tasks
 
-- [ ] Parse final Ecore.
-- [ ] Enumerate EClasses/EAttributes/EReferences/inheritance.
-- [ ] Compute fingerprint/hash.
-- [ ] Diff against V1.
-- [ ] Classify added/removed/changed.
-- [ ] Detect invalid/unresolved structural facts.
-- [ ] Record provenance: reconstructed baseline vs thesis verification extension.
-- [ ] Do not silently infer rename by fuzzy match.
+- [x] Parse final Ecore.
+- [x] Enumerate EClasses/EAttributes/EReferences/inheritance.
+- [x] Compute fingerprint/hash.
+- [x] Diff against V1.
+- [x] Classify added/removed/changed.
+- [x] Detect invalid/unresolved structural facts.
+- [x] Record provenance: reconstructed baseline vs thesis verification extension.
+- [x] Do not silently infer rename by fuzzy match.
 
 ---
 
@@ -2207,17 +2212,17 @@ Only if P24.5 found no suitable autonomous candidate:
 
 ### Tasks
 
-- [ ] Create Mapping V2 or reconcile V1 depending on Phase 25 decision.
-- [ ] Map all final classes.
-- [ ] Map attributes.
-- [ ] Map references/containment/multiplicity.
-- [ ] Map inheritance.
-- [ ] Reconcile projection contracts.
-- [ ] Ensure deterministic target names.
-- [ ] Schema validate.
-- [ ] Coverage audit.
-- [ ] Negative mutation tests.
-- [ ] Do not freeze until USE compiler gate passes.
+- [x] Create Mapping V2 or reconcile V1 depending on Phase 25 decision.
+- [x] Map all final classes.
+- [x] Map attributes.
+- [x] Map references/containment/multiplicity.
+- [x] Map inheritance.
+- [x] Reconcile projection contracts.
+- [x] Ensure deterministic target names.
+- [x] Schema validate.
+- [x] Coverage audit.
+- [x] Negative mutation tests.
+- [x] Do not freeze until USE compiler gate passes.
 
 ---
 
@@ -2230,19 +2235,19 @@ Only if P24.5 found no suitable autonomous candidate:
 
 ### Tasks
 
-- [ ] Update semantic kind registry/enum.
-- [ ] Preserve stable IDs where semantics remain the same.
-- [ ] Remove obsolete kinds only after references/tests are migrated.
-- [ ] Update parsers/extractors only for affected vocabulary.
-- [ ] Preserve unsupported source facts as diagnostics rather than dropping silently.
-- [ ] Update resolver target kinds.
-- [ ] Update trace schema only if required.
+- [x] Update semantic kind registry/enum.
+- [x] Preserve stable IDs where semantics remain the same.
+- [x] Remove obsolete kinds only after references/tests are migrated.
+- [x] Update parsers/extractors only for affected vocabulary.
+- [x] Preserve unsupported source facts as diagnostics rather than dropping silently.
+- [x] Update resolver target kinds.
+- [x] Update trace schema only if required.
 
 ### Tests
 
-- [ ] parser fixtures for affected dimensions;
-- [ ] Auction import;
-- [ ] Case Study #2 import.
+- [x] parser fixtures for affected dimensions;
+- [x] Auction import;
+- [x] Case Study #2 import.
 
 ---
 
@@ -2255,15 +2260,15 @@ Only if P24.5 found no suitable autonomous candidate:
 
 ### Tasks
 
-- [ ] Generate final `.use`.
-- [ ] Generate final `.cmd`.
-- [ ] Build direct `MModel`.
-- [ ] Build direct `MSystemState`.
-- [ ] Compare text/direct semantics.
-- [ ] Regenerate trace.
-- [ ] Revalidate multiplicity/structure.
-- [ ] Regenerate golden outputs intentionally.
-- [ ] Review diffs rather than blindly accepting snapshots.
+- [x] Generate final `.use`.
+- [x] Generate final `.cmd`.
+- [x] Build direct `MModel`.
+- [x] Build direct `MSystemState`.
+- [x] Compare text/direct semantics.
+- [x] Regenerate trace.
+- [x] Revalidate multiplicity/structure.
+- [x] Regenerate golden outputs intentionally.
+- [x] Review diffs rather than blindly accepting snapshots.
 
 ---
 
@@ -2281,17 +2286,17 @@ Only if P24.5 found no suitable autonomous candidate:
 
 ### Tasks
 
-- [ ] Keep source RuntimeEvent selectors unchanged where upstream runtime semantics did not change.
-- [ ] Keep Generic Runtime Semantic Actions unchanged where possible.
-- [ ] Rebind each rule to final semantic/USE target kind.
-- [ ] Remove obsolete V1 anchors.
-- [ ] Add required final-metamo del anchors.
-- [ ] Revalidate exact trace requirements.
-- [ ] Revalidate property/operation projections.
-- [ ] Revalidate organisation target semantics.
-- [ ] Reclassify deferred rules that V2 now enables.
-- [ ] Keep still-unproven semantics unsupported.
-- [ ] Produce migration report showing which runtime rules changed only target binding vs source semantics.
+- [x] Keep source RuntimeEvent selectors unchanged where upstream runtime semantics did not change.
+- [x] Keep Generic Runtime Semantic Actions unchanged where possible.
+- [x] Rebind each rule to final semantic/USE target kind.
+- [x] Remove obsolete V1 anchors.
+- [x] Add required final-metamo del anchors.
+- [x] Revalidate exact trace requirements.
+- [x] Revalidate property/operation projections.
+- [x] Revalidate organisation target semantics.
+- [x] Reclassify deferred rules that V2 now enables.
+- [x] Keep still-unproven semantics unsupported.
+- [x] Produce migration report showing which runtime rules changed only target binding vs source semantics.
 
 ---
 
@@ -2305,16 +2310,16 @@ Only if P24.5 found no suitable autonomous candidate:
 
 ### Tasks
 
-- [ ] Rename/version according to repository convention, e.g. `jacamo-use-runtime-mapping-v1.json` if this is the first canonical runtime mapping.
-- [ ] Remove `DRAFT_WAITING_FOR_METAMODEL_V2` status.
-- [ ] Validate schema.
-- [ ] Validate semantic rules.
-- [ ] Validate structural compatibility.
-- [ ] Run negative mutation tests.
-- [ ] Run runtime integration tests.
-- [ ] Create runtime mapping audit document.
-- [ ] Create freeze/version/hash manifest if canonical project conventions require it.
-- [ ] Ensure Java semantic dispatch has no conflicting source of truth.
+- [x] Rename/version according to repository convention, e.g. `jacamo-use-runtime-mapping-v1.json` if this is the first canonical runtime mapping.
+- [x] Remove `DRAFT_WAITING_FOR_METAMODEL_V2` status.
+- [x] Validate schema.
+- [x] Validate semantic rules.
+- [x] Validate structural compatibility.
+- [x] Run negative mutation tests.
+- [x] Run runtime integration tests.
+- [x] Create runtime mapping audit document.
+- [x] Create freeze/version/hash manifest if canonical project conventions require it.
+- [x] Ensure Java semantic dispatch has no conflicting source of truth.
 
 ### Freeze rule
 
@@ -2332,13 +2337,13 @@ Do **not** update only hashes to make tests pass. Any structural/rule change req
 
 ### Tasks
 
-- [ ] Rebind translated OCL.
-- [ ] Rebind core OCL.
-- [ ] Rebind case OCL.
-- [ ] Remove navigation to deleted classes/features.
-- [ ] Preserve authored vs translated provenance.
-- [ ] Compile/type-check all OCL.
-- [ ] Update positive/negative fixtures.
+- [x] Rebind translated OCL.
+- [x] Rebind core OCL.
+- [x] Rebind case OCL.
+- [x] Remove navigation to deleted classes/features.
+- [x] Preserve authored vs translated provenance.
+- [x] Compile/type-check all OCL.
+- [x] Update positive/negative fixtures.
 
 ---
 
@@ -2351,22 +2356,22 @@ Do **not** update only hashes to make tests pass. Any structural/rule change req
 
 ### Tasks
 
-- [ ] Initial full sync.
-- [ ] state deltas;
-- [ ] operation lifecycle;
-- [ ] organisation state;
-- [ ] reconnect/resync;
-- [ ] forced drift repair;
-- [ ] unknown/unbound boundary;
-- [ ] zero unexplained drift after resync.
+- [x] Initial full sync.
+- [x] state deltas;
+- [x] operation lifecycle;
+- [x] organisation state;
+- [x] reconnect/resync;
+- [x] forced drift repair;
+- [x] unknown/unbound boundary;
+- [x] zero unexplained drift after resync.
 
 ### Exit criteria
 
-- [ ] Final metamodel and Structural Mapping coherent.
-- [ ] Final Runtime Mapping frozen/canonical.
-- [ ] `.use/.cmd` regenerated.
-- [ ] Runtime mirror correct.
-- [ ] OCL compiles against final model.
+- [x] Final metamodel and Structural Mapping coherent.
+- [x] Final Runtime Mapping frozen/canonical.
+- [x] `.use/.cmd` regenerated.
+- [x] Runtime mirror correct.
+- [x] OCL compiles against final model.
 
 ---
 

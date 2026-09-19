@@ -131,6 +131,18 @@
     {
       "source": "src/main/resources/org/tzi/use/plugins/jacamo/trace/trace-v1.schema.json",
       "path": "schemas/trace-v1.schema.json"
+    },
+    {
+      "path": "runtime/jacamo-use-runtime-mapping-v1.json",
+      "source": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v1.json"
+    },
+    {
+      "path": "runtime/runtime-mapping.schema.json",
+      "source": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping.schema.json"
+    },
+    {
+      "path": "runtime/runtime-mapping-freeze.json",
+      "source": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-freeze.json"
     }
   ],
   "releaseStatus": "candidate-not-tagged"

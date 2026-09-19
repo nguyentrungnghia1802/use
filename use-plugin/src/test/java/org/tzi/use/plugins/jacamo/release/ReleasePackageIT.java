@@ -106,7 +106,7 @@ class ReleasePackageIT {
             try (InputStream input = zip.getInputStream(zip.getEntry("lib/plugins/use-jacamo-plugin-1.0.1.jar"))) {
                 pluginJar = input.readAllBytes();
             }
-            Map<String, String> jarResources = Map.of(
+            Map<String, String> jarResources = new LinkedHashMap<>(Map.of(
                     "useplugin.xml", "src/main/resources/useplugin.xml",
                     "org/tzi/use/plugins/jacamo/canonical/JaCaMo-Metamodel.ecore",
                     "Core/Metamodel/JaCaMo-Metamodel.ecore",
@@ -125,7 +125,10 @@ class ReleasePackageIT {
                     "org/tzi/use/plugins/jacamo/release/licenses/APACHE-2.0.txt",
                     "licenses/APACHE-2.0.txt",
                     "org/tzi/use/plugins/jacamo/release/licenses/SLF4J-MIT.txt",
-                    "licenses/SLF4J-MIT.txt");
+                    "licenses/SLF4J-MIT.txt"));
+            for (String name : java.util.List.of("jacamo-use-runtime-mapping-v1.json", "runtime-mapping.schema.json", "runtime-mapping-freeze.json"))
+                jarResources.put("org/tzi/use/plugins/jacamo/runtime/" + name,
+                    "src/main/resources/org/tzi/use/plugins/jacamo/runtime/" + name);
             Set<String> jarEntries = new LinkedHashSet<>();
             try (JarInputStream jar = new JarInputStream(new java.io.ByteArrayInputStream(pluginJar))) {
                 for (var entry = jar.getNextJarEntry(); entry != null; entry = jar.getNextJarEntry()) {
@@ -145,6 +148,8 @@ class ReleasePackageIT {
                     }
                 }
             }
+            org.junit.jupiter.api.Assertions.assertFalse(jarEntries.contains("org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-draft.json"),
+                    "Obsolete draft resource must not survive in release output; run clean package");
             Set<String> requiredJarEntries = new LinkedHashSet<>(jarResources.keySet());
             requiredJarEntries.add("org/tzi/use/plugins/jacamo/JaCaMoPlugin.class");
             assertTrue(jarEntries.containsAll(requiredJarEntries),

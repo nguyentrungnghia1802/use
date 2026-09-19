@@ -44,7 +44,7 @@ The included `examples/auction` project is the release acceptance fixture. See
 `docs/user-workflow.md`, `docs/architecture.md`, `KNOWN-LIMITATIONS.md`, and
 `compatibility.json` for the exact supported scope.
 
-The latest verified suite is 271/271 tests: 13 in `use-core`, 130 in `use-gui`,
+The historical v1.0.1 hotfix suite was 271/271 tests: 13 in `use-core`, 130 in `use-gui`,
 and 128 in `use-plugin` (125 unit/component plus 3 release integration tests).
 See `docs/project/00-README.md` for the canonical onboarding path.
 
@@ -52,3 +52,11 @@ See `docs/project/00-README.md` for the canonical onboarding path.
 
 The build produces `use-jacamo-plugin-1.0.1.zip.sha256` beside the archive. Compare
 the first hexadecimal field with a SHA-256 digest of the ZIP before installation.
+
+
+### Phase 26 runtime contract
+
+Final metamodel remains unchanged canonical V1. Runtime Mapping V1 is frozen
+with schema 2.0.0 and exact resource hashes; legacy draft schema 1.0.0 is rejected
+with RUNTIME_MAPPING_VERSION_UNSUPPORTED. See docs/project/phase26-runtime-mapping-audit.md.
+Supported runtime semantics and standalone/NPL limitations are unchanged.

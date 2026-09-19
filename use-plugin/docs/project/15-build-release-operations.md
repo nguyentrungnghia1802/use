@@ -129,7 +129,17 @@ The immutable v1.0.0 tag remains untouched. Current documentation must distingui
 the existing generic `v1.0.1` tag from the absent manifest-named
 `use-jacamo-plugin-v1.0.1` tag and from any remote publication claim.
 
-The verified current total is 271/271: 13 `use-core`, 130 `use-gui`, and 128
+The historical v1.0.1 hotfix total was 271/271: 13 `use-core`, 130 `use-gui`, and 128
 `use-plugin` tests (125 unit/component plus 3 release integration). Two 27-entry
 ZIPs were byte-identical in the recorded identical source/dependency/JDK/Maven
 environment. This does not promise cross-toolchain or cross-platform identity.
+
+
+## Phase 26 package contract
+
+Current candidate package adds runtime mapping V1, schema 2.0.0 and freeze manifest
+as three readable runtime/ entries (30 ZIP entries total), with identical embedded
+JAR resources. Installed smoke loads the final runtime contract. No new release tag
+is created; package name/version remain the existing 1.0.1 candidate coordinates.
+The exact source revision distinguishes this candidate from historical 1.0.1 bytes.
+See phase26-runtime-mapping-audit.md and final closure evidence for current tests.

@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "1.0.0",
-  "status": "DRAFT_WAITING_FOR_METAMODEL_V2",
-  "targetBaseline": "STRUCTURAL_MAPPING_V1_TEMPORARY",
+  "schemaVersion": "2.0.0",
+  "status": "FROZEN",
+  "targetBaseline": "STRUCTURAL_MAPPING_V1",
   "rules": [
     {
       "id": "RM-CREATE_OBJECT",
@@ -21,10 +21,11 @@
       "traceRequired": true,
       "mutation": "CREATE_OBJECT",
       "checkpoint": "AFTER_MUTATION",
-      "support": "READY_V1_TEMPORARY",
+      "support": "SUPPORTED",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -32,7 +33,7 @@
       "unsupportedConditions": [
         "Unknown or stale target; unproven dynamic instance policy."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-DESTROY_OBJECT",
@@ -49,10 +50,11 @@
       "traceRequired": true,
       "mutation": "DESTROY_OBJECT",
       "checkpoint": "AFTER_MUTATION",
-      "support": "READY_V1_TEMPORARY",
+      "support": "SUPPORTED",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -60,7 +62,7 @@
       "unsupportedConditions": [
         "Unknown or stale target; unproven dynamic instance policy."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-SET_ATTRIBUTE",
@@ -81,10 +83,11 @@
       "traceRequired": true,
       "mutation": "SET_ATTRIBUTE",
       "checkpoint": "AFTER_MUTATION",
-      "support": "READY_V1_TEMPORARY",
+      "support": "SUPPORTED",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -92,7 +95,7 @@
       "unsupportedConditions": [
         "Unknown or stale target; unproven dynamic instance policy."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-INSERT_LINK",
@@ -112,10 +115,11 @@
       "traceRequired": true,
       "mutation": "INSERT_LINK",
       "checkpoint": "AFTER_MUTATION",
-      "support": "READY_V1_TEMPORARY",
+      "support": "SUPPORTED",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -123,7 +127,7 @@
       "unsupportedConditions": [
         "Unknown or stale target; unproven dynamic instance policy."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-DELETE_LINK",
@@ -143,10 +147,11 @@
       "traceRequired": true,
       "mutation": "DELETE_LINK",
       "checkpoint": "AFTER_MUTATION",
-      "support": "READY_V1_TEMPORARY",
+      "support": "SUPPORTED",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -154,7 +159,7 @@
       "unsupportedConditions": [
         "Unknown or stale target; unproven dynamic instance policy."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-OP_ENTER",
@@ -174,10 +179,11 @@
       "traceRequired": true,
       "mutation": "OP_ENTER",
       "checkpoint": "OPERATION_PRE",
-      "support": "READY_V1_TEMPORARY",
+      "support": "SUPPORTED",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -185,7 +191,7 @@
       "unsupportedConditions": [
         "Unknown or stale target; unproven dynamic instance policy."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-OP_EXIT",
@@ -202,10 +208,11 @@
       "traceRequired": true,
       "mutation": "OP_EXIT",
       "checkpoint": "OPERATION_POST",
-      "support": "READY_V1_TEMPORARY",
+      "support": "SUPPORTED",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -213,7 +220,7 @@
       "unsupportedConditions": [
         "Unknown or stale target; unproven dynamic instance policy."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-OP_FAIL",
@@ -232,10 +239,11 @@
       "traceRequired": true,
       "mutation": "OP_FAIL",
       "checkpoint": "OPERATION_FAIL",
-      "support": "READY_V1_TEMPORARY",
+      "support": "SUPPORTED",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -243,7 +251,7 @@
       "unsupportedConditions": [
         "Unknown or stale target; unproven dynamic instance policy."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-BELIEF_ADDED",
@@ -263,7 +271,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -271,7 +280,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-BELIEF_REMOVED",
@@ -291,7 +300,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -299,7 +309,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-GOAL_ADOPTED",
@@ -319,7 +329,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -327,7 +338,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-GOAL_REMOVED",
@@ -347,7 +358,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -355,7 +367,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-GOAL_ACHIEVED",
@@ -375,7 +387,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -383,7 +396,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-GOAL_FAILED",
@@ -403,7 +416,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -411,7 +425,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-ACTION_STARTED",
@@ -431,7 +445,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -439,7 +454,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-ACTION_SUCCEEDED",
@@ -459,7 +474,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -467,7 +483,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-ACTION_FAILED",
@@ -487,7 +503,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -495,7 +512,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-MESSAGE_SENT",
@@ -515,7 +532,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -523,7 +541,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-MESSAGE_RECEIVED",
@@ -543,7 +561,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -551,7 +570,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-ARTIFACT_CREATED",
@@ -571,7 +590,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -579,7 +599,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-ARTIFACT_DISPOSED",
@@ -599,7 +619,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -607,7 +628,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-OBS_PROPERTY_ADDED",
@@ -628,10 +649,11 @@
       "traceRequired": true,
       "mutation": "SET_ATTRIBUTE",
       "checkpoint": "AFTER_MUTATION",
-      "support": "READY_V1_TEMPORARY",
+      "support": "SUPPORTED",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -639,7 +661,7 @@
       "unsupportedConditions": [
         "Unknown or stale target; unproven dynamic instance policy."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-OBS_PROPERTY_CHANGED",
@@ -660,10 +682,11 @@
       "traceRequired": true,
       "mutation": "SET_ATTRIBUTE",
       "checkpoint": "AFTER_MUTATION",
-      "support": "READY_V1_TEMPORARY",
+      "support": "SUPPORTED",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -671,7 +694,7 @@
       "unsupportedConditions": [
         "Unknown or stale target; unproven dynamic instance policy."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-OBS_PROPERTY_REMOVED",
@@ -690,10 +713,11 @@
       "traceRequired": true,
       "mutation": "SET_ATTRIBUTE",
       "checkpoint": "AFTER_MUTATION",
-      "support": "READY_V1_TEMPORARY",
+      "support": "SUPPORTED",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -701,7 +725,7 @@
       "unsupportedConditions": [
         "Unknown or stale target; unproven dynamic instance policy."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-SIGNAL",
@@ -721,7 +745,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -729,7 +754,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-ORGANISATION_DISCOVERED",
@@ -749,7 +774,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -757,7 +783,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-GROUP_CREATED",
@@ -777,7 +803,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -785,7 +812,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-GROUP_DISPOSED",
@@ -805,7 +832,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -813,7 +841,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-SCHEME_CREATED",
@@ -833,7 +861,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -841,7 +870,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-SCHEME_DISPOSED",
@@ -861,7 +890,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -869,7 +899,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-ROLE_ADOPTED",
@@ -889,7 +919,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -897,7 +928,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-ROLE_REMOVED",
@@ -917,7 +948,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -925,7 +957,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-MISSION_COMMITTED",
@@ -945,7 +977,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -953,7 +986,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-MISSION_REMOVED",
@@ -973,7 +1006,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -981,7 +1015,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-SCHEME_STATE_CHANGED",
@@ -1001,7 +1035,8 @@
       "support": "TRACE_ONLY",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -1009,7 +1044,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     },
     {
       "id": "RM-NORM_STATE_CHANGED",
@@ -1029,7 +1064,8 @@
       "support": "UNSUPPORTED",
       "evidence": [
         "docs/research/jacamo_runtime_research/04_USE_MAPPING_CANDIDATES.md",
-        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md"
+        "docs/research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md",
+        "docs/project/phase26-runtime-mapping-audit.md"
       ],
       "assumptions": [
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
@@ -1037,7 +1073,7 @@
       "unsupportedConditions": [
         "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
       ],
-      "migrationRisk": "Target bindings require V2 reconciliation; generic action is stable."
+      "migrationRisk": "Final V1 target audited in Phase 26; future target changes require explicit reconciliation. No new runtime semantics enabled."
     }
   ]
 }

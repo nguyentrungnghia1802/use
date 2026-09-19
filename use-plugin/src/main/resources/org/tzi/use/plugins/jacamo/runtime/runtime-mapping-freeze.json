@@ -1,0 +1,13 @@
+{
+  "status": "FROZEN",
+  "mappingVersion": "1.0.0",
+  "schemaVersion": "2.0.0",
+  "targetBaseline": "STRUCTURAL_MAPPING_V1",
+  "decision": "D25-01",
+  "hashes": {
+    "runtime/jacamo-use-runtime-mapping-v1.json": "862405fd2671741544aa59b8911afe410e8c728b8c5a7e8611ed757af9c11a9b",
+    "runtime/runtime-mapping.schema.json": "b9f345538c8d2ccfdddd7151f1745012ce2eca62669d027c1de2002429d9871d",
+    "canonical/JaCaMo-Metamodel.ecore": "c0aafab786c5ff3fcb468aeaf1b18b62865292e6590ffca2b9b2e962a9067fe7",
+    "canonical/jacamo-use-mapping-v1.json": "3279f46cb128a252247c2667cd5ceb9329366162487dbd864950792aa2cd61b8"
+  }
+}

@@ -19,7 +19,7 @@ public final class RuntimeMappingValidator {
             if (!action.mutation().equals(rule.mutation()) || !action.target().equals(rule.targetKind())
                     || !action.checkpoint().equals(rule.checkpoint())) fail(rule, "ACTION_CONFLICT", "action/mutation/target/checkpoint");
             if (action.mutates() && (!rule.traceRequired() || !rule.authoritative()
-                    || !rule.support().equals("READY_V1_TEMPORARY"))) fail(rule, "UNSAFE_MUTATION", "trace/authority/support");
+                    || !rule.support().equals("SUPPORTED"))) fail(rule, "UNSAFE_MUTATION", "trace/authority/support");
             if (action.operation() && (!rule.correlationRequired() || !rule.identity().equals("INVOCATION")))
                 fail(rule, "CORRELATION_REQUIRED", "correlationRequired/identity");
             String runtime = switch (rule.dimension()) {

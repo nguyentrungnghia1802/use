@@ -2,7 +2,7 @@ package org.tzi.use.plugins.jacamo.runtime;
 
 import java.util.List;
 
-/** Derived report: binding families are temporary V1 compatibility contracts, not instance authorization. */
+/** Derived report: binding families are final V1 compatibility contracts, not instance authorization. */
 public final class RuntimeMappingCompatibility {
     public record Entry(String ruleId, String event, String action, String anchor, String useTarget,
                         String traceTargetKind, String mutation, String status, String migrationRisk) { }

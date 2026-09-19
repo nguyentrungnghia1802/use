@@ -10,13 +10,16 @@
   ],
   "properties": {
     "schemaVersion": {
-      "const": "1.0.0"
+      "const": "2.0.0"
     },
     "status": {
-      "const": "DRAFT_WAITING_FOR_METAMODEL_V2"
+      "enum": [
+        "FROZEN",
+        "CUSTOM_VALIDATED"
+      ]
     },
     "targetBaseline": {
-      "const": "STRUCTURAL_MAPPING_V1_TEMPORARY"
+      "const": "STRUCTURAL_MAPPING_V1"
     },
     "rules": {
       "type": "array",
@@ -201,9 +204,8 @@
             "type": "string",
             "minLength": 1,
             "enum": [
-              "READY_V1_TEMPORARY",
+              "SUPPORTED",
               "TRACE_ONLY",
-              "DEFERRED_FOR_V2",
               "UNSUPPORTED"
             ]
           },

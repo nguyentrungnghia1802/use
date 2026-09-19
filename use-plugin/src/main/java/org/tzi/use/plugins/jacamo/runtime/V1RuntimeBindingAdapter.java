@@ -3,7 +3,7 @@ package org.tzi.use.plugins.jacamo.runtime;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-/** Read-only temporary binding to the frozen V1 structural/projection vocabulary. */
+/** Read-only final V1 binding to the frozen V1 structural/projection vocabulary. */
 public final class V1RuntimeBindingAdapter implements RuntimeBindingContract {
     private final JsonNode structural;
     public V1RuntimeBindingAdapter() {

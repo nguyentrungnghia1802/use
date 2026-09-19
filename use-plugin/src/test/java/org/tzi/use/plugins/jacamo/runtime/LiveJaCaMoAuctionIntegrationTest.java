@@ -247,7 +247,7 @@ class LiveJaCaMoAuctionIntegrationTest {
                         hashes.put(path.getFileName().toString(), HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(path))));
             }
             hashes.put("runtimeMapping", HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(
-                RuntimeMappingLoader.resource("jacamo-use-runtime-mapping-draft.json"))));
+                RuntimeMappingLoader.resource("jacamo-use-runtime-mapping-v1.json"))));
             evidenceJson.writerWithDefaultPrettyPrinter().writeValue(mirrorEvidence.resolve("manifest.json").toFile(),hashes);
             assertBalancedLifecycleForInvalidAmount(scenarioEvents);
             var scenario = new ObjectMapper().readTree(

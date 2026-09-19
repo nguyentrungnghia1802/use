@@ -30,3 +30,11 @@
   and plugin discovery from the packaged JAR.
 - Bundled the JSON Schema validator and its runtime dependencies for installed
   mapping import; aligned Maven artifact metadata with plugin release 1.0.0.
+
+
+### Phase 26 runtime contract
+
+Final metamodel remains unchanged canonical V1. Runtime Mapping V1 is frozen
+with schema 2.0.0 and exact resource hashes; legacy draft schema 1.0.0 is rejected
+with RUNTIME_MAPPING_VERSION_UNSUPPORTED. See docs/project/phase26-runtime-mapping-audit.md.
+Supported runtime semantics and standalone/NPL limitations are unchanged.

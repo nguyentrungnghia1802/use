@@ -656,3 +656,11 @@ Continuation verification: Phase 18 draft and Phase 19 supported mirror pass the
 a non-equivalent OSBuilder control starts. Remaining full-project work is fixture
 semantic reconciliation and an adapter from launcher `ora4mas.nopl.oe` board state
 to the observation pipeline. It is not established to require a runtime upgrade.
+
+
+## Phase 25–26 disposition (2026-09-19)
+
+D25-01 selects unchanged canonical V1; no required V2 target was found.
+Phase 18/19 draft wording above is historical. Phase 26 promotes the supported
+runtime contract to mapping V1/schema 2.0.0 with explicit freeze and compatibility
+checks; see phase26-runtime-mapping-audit.md. No standalone/NPL support promotion.

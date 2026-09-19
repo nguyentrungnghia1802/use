@@ -38,6 +38,9 @@ class ReleasePackageContractTest {
             "ocl/jacamo-core.ocl",
             "profiles/jacamo-verification-profile-v1.json",
             "release-manifest.json",
+            "runtime/jacamo-use-runtime-mapping-v1.json",
+            "runtime/runtime-mapping.schema.json",
+            "runtime/runtime-mapping-freeze.json",
             "schemas/binding-v1.schema.json",
             "schemas/runtime-event-v1.schema.json",
             "schemas/trace-v1.schema.json");

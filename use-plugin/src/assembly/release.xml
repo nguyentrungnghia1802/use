@@ -35,5 +35,8 @@
         <file><source>docs/project/02-system-architecture.md</source><outputDirectory>docs</outputDirectory><destName>architecture.md</destName></file>
         <file><source>docs/project/12-plugin-ui-workflow.md</source><outputDirectory>docs</outputDirectory><destName>user-workflow.md</destName></file>
         <file><source>docs/project/15-build-release-operations.md</source><outputDirectory>docs</outputDirectory><destName>build-release.md</destName></file>
+        <file><source>src/main/resources/org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v1.json</source><outputDirectory>runtime</outputDirectory></file>
+        <file><source>src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping.schema.json</source><outputDirectory>runtime</outputDirectory></file>
+        <file><source>src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-freeze.json</source><outputDirectory>runtime</outputDirectory></file>
     </files>
 </assembly>

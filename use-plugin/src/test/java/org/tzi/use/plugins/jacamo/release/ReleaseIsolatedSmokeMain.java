@@ -22,6 +22,9 @@ public final class ReleaseIsolatedSmokeMain {
         }
         Object loader = loaderClass.getDeclaredConstructor().newInstance();
         loaderClass.getMethod("loadCanonical", Path.class).invoke(loader, install);
+        Class<?> runtimeLoader = descriptor.getPluginClassLoader()
+                .loadClass("org.tzi.use.plugins.jacamo.runtime.RuntimeMappingLoader");
+        runtimeLoader.getMethod("loadDefault").invoke(runtimeLoader.getDeclaredConstructor().newInstance());
         System.out.println("ISOLATED_RELEASE_MAPPING_IMPORT_PASS");
     }
 }
