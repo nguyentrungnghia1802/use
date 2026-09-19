@@ -1,0 +1,421 @@
+{
+  "date": "2026-09-20",
+  "testedRevision": "8981723efcad584c6d998b0b4e06dc1661cd8b11",
+  "implementationRevision": "0a745d8dc75a0af22405c5f5856be60b1947ee71",
+  "command": "mvn --batch-mode -pl use-plugin verify",
+  "counts": {
+    "tests": 164,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "suite": "org.tzi.use.plugins.jacamo.release.ReleasePackageIT",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.CompatibilityManifestTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.constraint.ConstraintOclTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.evidence.EvidenceNormalizerTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.evidence.EvidenceSourceCommitTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.extraction.StaticProjectImporterTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.GoldenPipelineTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.HotfixBindingTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.JaCaMoPluginTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.project.JcmProjectLoaderTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.project.ProjectModelTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.AuctionSourceRuntimeTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.CartagoRuntimeConnectorTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.CompositeRuntimeConnectorTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.JasonRuntimeConnectorTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.MoiseRuntimeConnectorTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeAliasTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeAuthorityTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "tests": 23,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeIdentityHardeningTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeMappingTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeMigrationTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeTraceTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.semantic.SemanticIdTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.semantic.SemanticModelTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.trace.TraceBindingTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.ui.JaCaMoWorkbenchPanelTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.CrossDimensionalVerifierTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayerTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeHistoryVerifierTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "sourceEquivalence": {
+    "status": "PASS",
+    "comparedLfNormalizedInputs": 239,
+    "reference": "relocated-manifest.json",
+    "note": "No executable/test/build input changes after clean reactor."
+  },
+  "reactorEvidence": {
+    "status": "RETAINED_VERIFIED_NOT_RERUN",
+    "tests": 307,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "mirror": {
+    "excluded": [
+      "Moise instance state and Jason beliefs/goals are trace-only",
+      "Global causal ordering and cross-dimensional invocation join unproven",
+      "Standalone launcher not covered by this test"
+    ],
+    "fixtureSourceCommit": "8981723efcad584c6d998b0b4e06dc1661cd8b11",
+    "checkpoints": [
+      "INITIAL_SYNC",
+      "AFTER_STATE_CHANGE",
+      "OPERATION_ENTER_EXIT_FAIL",
+      "RECONNECT_RESYNC"
+    ],
+    "unexplainedDrift": 0,
+    "failed": 0,
+    "rejected": 0,
+    "dropped": 0,
+    "status": "SUPPORTED_SUBSET_COMPLETE"
+  },
+  "packageEntries": 30,
+  "packageSha256": "6207fe5124c3e3bca84104eda7e0eaac3c2e3ba910e8ccaab0b7a9e816a94535",
+  "artifactSha256": {
+    "use-plugin/compatibility.json": "0182251e845739c96d92f2002cdfc03c174f41770bcb5e2bb88b57b85fea9a79",
+    "use-plugin/Core/Mapping/freeze-manifest.json": "209ce6478c3caa3a36b1136f565d28e6f1378525254ff12e0316c7aaedae1ac2",
+    "use-plugin/Core/Mapping/jacamo-use-mapping-v1.json": "3279f46cb128a252247c2667cd5ceb9329366162487dbd864950792aa2cd61b8",
+    "use-plugin/Core/Mapping/jacamo-use-mapping.schema.json": "57fb10f99b0f1f1ef349ae1e980834c029b5a0fcd9fea85eed75fe412f81b84d",
+    "use-plugin/Core/Mapping/METAMODEL-MAPPING-AUDIT.md": "dc51c6db588693d109a022738cad7369d22552ca763de1b6f4fa88bf4004e940",
+    "use-plugin/Core/Mapping/README.md": "ecc25e308e348082d9ae0371774d755b1add1ea4a57650943eb325c708de110e",
+    "use-plugin/Core/Mapping/requirements-validation.txt": "44ff0dc2f1e40311b8239e83146749ab9d9cee2a650e699f5464755d552ee20d",
+    "use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore": "c0aafab786c5ff3fcb468aeaf1b18b62865292e6590ffca2b9b2e962a9067fe7",
+    "use-plugin/Core/Metamodel/Metamodel-2024.jpg": "225f82b255ffb743bf4c6f651056b959489039b00e1c288b887cfe1a6712d0d3",
+    "use-plugin/Core/Metamodel/README.md": "d031c03d6ababa079422284306f54957401c8e30dafe1aca196546b215263e8a",
+    "use-plugin/docs/project/evidence/closure/final-module-verify.log": "9c9e1d35d695475d03aac6f44f11b85b0d61b02e37df4d507ec62c2fdb3a8fea",
+    "use-plugin/KNOWN-LIMITATIONS.md": "e36e1aa787fde54092be619d484353a68f8b1f3879dee76b309496203382a3aa",
+    "use-plugin/README.md": "fe70d275f8163aea65421af0dd32e7ca5cfeddc9855f4d4dfc7132e659e88ac7",
+    "use-plugin/release/release-manifest.json": "74182cb9e0ed51d76186602e14fa2261f1f3774cbf8f22e11e2a545b28b18295",
+    "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-manifest.json": "5081481249eee77b2ea663dff7f39ff45ad4f4cf053494cc70c2b1e9ee003898",
+    "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core.ocl": "2ced6377377fa5bd8295c4d8fbaae611b6a5d101b2e6039bde8804d4f7e8eb40",
+    "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v1.json": "862405fd2671741544aa59b8911afe410e8c728b8c5a7e8611ed757af9c11a9b",
+    "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-event-v1.schema.json": "411cbddfff0c0899815277e77521688412a1edb90748e8008a4ff8e4a66d51ac",
+    "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-freeze.json": "e5ad08d2d495e86ad1ad66c3d966c08d36812ff7856598f2279e795610bcb82e",
+    "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping.schema.json": "b9f345538c8d2ccfdddd7151f1745012ce2eca62669d027c1de2002429d9871d",
+    "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v1.json": "99bd093f16e00fd6cc34507483a5b93d8f0822ef6cd810f288cfb7ca2a77abc9",
+    "use-plugin/target/failsafe-reports/TEST-org.tzi.use.plugins.jacamo.release.ReleasePackageIT.xml": "a4c4f37124544268b316946277334bba1117aaecd5ef5704e130974c13d14374",
+    "use-plugin/target/phase14-auction-evidence/offline/auction-ocl.use": "656d5673391c82c61a360b2fa7391ffc592a99023ae1bf3d7e08070d96965125",
+    "use-plugin/target/phase14-auction-evidence/offline/auction.cmd": "cdbd4fd6e76bcafa44fb167402b787653f077ef9961ba65e5f1c55bb3768d158",
+    "use-plugin/target/phase14-auction-evidence/offline/auction.use": "91f8a92df05aabec35e5d5e832e82732df922b3b2d05703636a7209e33e284a0",
+    "use-plugin/target/phase14-auction-evidence/offline/case.ocl": "2b72de1379644aebabce6a18345f0a0afc3af3c061d1dc8e475836999c522b9f",
+    "use-plugin/target/phase14-auction-evidence/offline/core.ocl": "8dfca43030d61307e14ce711ab4fe191ed5cd84301b2b701bc2c72c1587879b7",
+    "use-plugin/target/phase14-auction-evidence/offline/diagnostics.txt": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "use-plugin/target/phase14-auction-evidence/offline/manifest.json": "15a124196079af05763111db9830425d2812b11aeed2eeeade8d269cb19b8f50",
+    "use-plugin/target/phase14-auction-evidence/offline/trace.json": "07f2d82d510f2b7e2ebf77270d18954e125bf4db170239f23948da529913d236",
+    "use-plugin/target/phase14-auction-evidence/offline/translated-ocl-provenance.txt": "ad356b43f6fc18cc16ed6a610465964b6fca30a6f0e50b9669931d26fbedeef6",
+    "use-plugin/target/phase14-auction-evidence/offline/verification-fail.json": "0c45233671e908e57d3cf87734bc12624afd7f604d5904aab4efb7baa20a84b5",
+    "use-plugin/target/phase14-auction-evidence/offline/verification-pass.json": "d6c9b13549850d13da7e2e418a63f00494172629d2892765978663ac7aa3a594",
+    "use-plugin/target/phase14-auction-evidence/runtime/event-log.json": "195c2735941d3ce6b80d0ab5f1c9fc546ffb9ed8b8c4bcb94733b23cb902e1ea",
+    "use-plugin/target/phase14-auction-evidence/runtime/scenario-summary.json": "be104a94711bfabb55cdbdfd45a8bc0c619722ed3097bdaddf702ef7b79c59dd",
+    "use-plugin/target/phase14-auction-evidence/runtime/verification-reports.json": "edbe29030cc62e7a835b878c802c5b26e90d5b479d50fdba0036d30894234740",
+    "use-plugin/target/phase19-mirror-evidence/initial-state.cmd": "cdbd4fd6e76bcafa44fb167402b787653f077ef9961ba65e5f1c55bb3768d158",
+    "use-plugin/target/phase19-mirror-evidence/manifest.json": "fc164c16ddc4f8b97d20db51d2e9e95c959dab7a975f2b4b0eb3e7f9acda88e3",
+    "use-plugin/target/phase19-mirror-evidence/mirror-correctness.json": "80ed13f1eade4c9cc83660267f95d54d72bdfae9293afdb86c39b91fe7470916",
+    "use-plugin/target/phase19-mirror-evidence/model.use": "656d5673391c82c61a360b2fa7391ffc592a99023ae1bf3d7e08070d96965125",
+    "use-plugin/target/phase19-mirror-evidence/runtime-events.json": "195c2735941d3ce6b80d0ab5f1c9fc546ffb9ed8b8c4bcb94733b23cb902e1ea",
+    "use-plugin/target/phase19-mirror-evidence/trace.json": "237a4069ef1ab459c0dff82e2b423b7385e2c7f1a5b5eba5bd18d6d0b1fa40be",
+    "use-plugin/target/phase24-counter-evidence/initial-state.cmd": "2b0a8bf16b5644d7511ad98e44ec8ce9cbae20fc1388e7e7a0c70a61b42117bb",
+    "use-plugin/target/phase24-counter-evidence/model.use": "13a8cee6681765ab4481276bece4eb9b96aaeba9c94e8f7a700d84d886b030dd",
+    "use-plugin/target/phase24-counter-evidence/reports.json": "4e020d83deedc04092e6e6c613555e0e7a1281004df41c092548aff8c8a5848e",
+    "use-plugin/target/phase24-counter-evidence/runtime-events.json": "d8d9682075558b887876a35b53652b00cb178a5d51e08eced7363e54c91367ca",
+    "use-plugin/target/phase24-counter-evidence/summary.json": "72cf406768351f0d9f7b1da8e293fd7accfb609f701e8a9a93ab5f1eb2f26aa1",
+    "use-plugin/target/phase24-counter-evidence/trace.json": "c2c4d8a628e458a83c0ce48446c1ee32aab01787e0eb6a0f7dbdd243e4a7dc38",
+    "use-plugin/target/phase24-counter-evidence/translation-manifest.txt": "de15c8ed65b18f0ca4d2979f621522e0fc07ddd03d7e55ae9618b5cde9913f01",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.CompatibilityManifestTest.xml": "7cde55ca0f7aeba8e99e28d39cc91a0b0b513dd8d9e509d1666b14706d6a0e84",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest.xml": "9acbccb4fb723786da233d77e0ceb96ef1fe9c3b98507804f556672c627fbbfd",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.constraint.ConstraintOclTest.xml": "70591fbd1eca5e260016c09d140a499c3891514ec5fc4cab9ce54a66e9965848",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.xml": "41e5b44425ccdfa0568cb36b78fc28a139ee12e8d20dda132c1b1c7587d48155",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.evidence.EvidenceNormalizerTest.xml": "ab5246b653918ee5d5fdb0e6e26e780cabe7fbfc9046f120ac26f9557e5fb1de",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.evidence.EvidenceSourceCommitTest.xml": "7ecef528eb9de2084cc46b017e4c89e851f93ba4543095cfead3ba67693e5744",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.extraction.StaticProjectImporterTest.xml": "79347faa617c91b0e3566375999276e29c0fc152596ea2a0fe0a0bf94d7a638f",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.GoldenPipelineTest.xml": "c88326c8485024297e71403a6492ed050df4957b7906c07dd8e9d844a0d2213a",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.HotfixBindingTest.xml": "3d523c9cd5f17b0a90e13204aab397d7b0ebe24d803dc09ce35c8c3cb92cfd7b",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.HotfixLifecycleTest.xml": "cedb7fed2245dde33984cd4be61e076a0882a96a0b953cbe1c377bfcc84ba315",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.JaCaMoPluginTest.xml": "0bff7466542d8175d2f754e5e5967f8dcf569bbce98406fee9b77444ed53a7b9",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.xml": "c9566e28a584f32b3034ebe5ec3cea5e227a980d27600b7768ce739144c07ba0",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest.xml": "df52cfadedf05b34c4cb3c2a6ea011c5a597fdba911d2ff13c44b78d17f98bbb",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.project.JcmProjectLoaderTest.xml": "cea5add2cae0908c25899232008d983a9c4de6e81e74ac202e13edb6069c1d31",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.project.ProjectModelTest.xml": "d0d8b802eaff9afb67b72d72e75611bd2df598339d01fc62e258f62d275d6025",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest.xml": "67572af3089cdc7981398095949fd3d03627382bed67fb9f55b1c09547b61cf0",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.AuctionSourceRuntimeTest.xml": "6c427a32cad72763144a7f5f666a75bc747ade49d5ff9a6528eb23d2378cfa97",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.CartagoRuntimeConnectorTest.xml": "a5233a1122a3a9534d011c97af3c4fdbca975b2323c4ee65f4b9f5a71098d286",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.CompositeRuntimeConnectorTest.xml": "e3a8f96a733c93f82f5dcf3162d87c17220b07ea388bba82c3f11d04232ed3bf",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest.xml": "2d1a50f8183fc4eb5e31a8f8c1f741c6e8034a1a1623e0c8b80427dc909663d9",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.JasonRuntimeConnectorTest.xml": "ee686468fd86557ebc033b3137a71e5ea86840cae8215c2a05cb7333afeb80ea",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest.xml": "65e8ae194ad8ecf12edf54193018ce8ecab8ed0e4fc6fe1e76b42ec594dc519b",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.MoiseRuntimeConnectorTest.xml": "bb083979c76e3b67cc2bfa2101e44a128a818db473f16927f334d0eeee861d94",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeAliasTest.xml": "383c9a989c522df1c6c7c670f2dd0b133df4dfa20799264c7b99cff99df3339d",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeAuthorityTest.xml": "42388538ed6f73001b6871d53412c2ec2d9299adcda6206c49545b74f3b9ec89",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.xml": "aa9b15896043ba98fbabedf0c9df117f21e6707248896f70dab8addad676e82c",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeIdentityHardeningTest.xml": "e807db31170d414f5a00638401e017987821592f44aebf967fd94ed864afc22d",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeMappingTest.xml": "39b0ba448b32519f538e77c67cd241b9a299cc2aaef1d038a884ba1c3fe4b2dd",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeMigrationTest.xml": "b4bd64a12c1940854c01c5d3022a1111b013994e9f09c933ccb2ea1daec6db9a",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeTraceTest.xml": "6e563d1c86289fe2431d499d86fddf0cdecc96be64316f3d8c53528d85bc8453",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.semantic.SemanticIdTest.xml": "1a973968cbdda18bef852b4f17685d56d22d62fa225bfe001d59c893bc467092",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.semantic.SemanticModelTest.xml": "7ebd74d09f39ec6b748117a1b3342f225f0d0603a903ef1493546bb62bb96eae",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.trace.TraceBindingTest.xml": "2ebd0bdd591e903d36d605e708d069eadba2d71118cd0b98d069ac0412ab8d62",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.ui.JaCaMoWorkbenchPanelTest.xml": "a190a1ab180edc6e743b1557d0c4a4f7fa9bdfcc9c2b94685063adb3230e9ac9",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.verification.CrossDimensionalVerifierTest.xml": "d3caebd934287c333e49c4bf342e7c9b6553b76005d27a4eca2a3d80ab342759",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest.xml": "8727ec3d53565525003246294e25a955e7e00a165692f869cd5f85da937091ba",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayerTest.xml": "0c1967040cd5f3adf002fd479a14efc124c4f0a30bb18623d3afc47f44c283f6",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.verification.RuntimeHistoryVerifierTest.xml": "c366a0e0546ce009481007d538e7be62eefb3fe38d64536443362e4fba64c75f",
+    "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.xml": "df83d37832e77e3271b77cc250109ba9d4240b695afa5c66f30cb313faba6733",
+    "use-plugin/target/use-jacamo-plugin-1.0.1.zip": "6207fe5124c3e3bca84104eda7e0eaac3c2e3ba910e8ccaab0b7a9e816a94535",
+    "use-plugin/target/use-jacamo-plugin-1.0.1.zip.sha256": "7093e8d51f0051def4e4499d9393632e1a2e2afe7d078087d2358a0590a14b3a"
+  },
+  "userAcceptance": "PENDING_NOT_IMPERSONATED"
+}

@@ -2709,6 +2709,15 @@ Potentially:
 
 **Objective:** produce the final evidence bundle and move engineering status to logic/coding complete only when every in-scope capability has an explicit final status.
 
+2026-09-20: autonomous engineering gates complete; final user acceptance PENDING.
+See [final matrix and boundary report](../project/phase28-project-closure.md),
+[evidence index](../project/evidence/closure/final-state.json), and retained clean-reactor evidence.
+Checked capability/status boxes mean reviewed and assigned an explicit disposition,
+not that unsupported behavior was implemented. P28.6 presentation is the final
+acceptance packet; only the user can close its confirmation gate.
+Global checklist items below inherit these bounded statuses (D25-01 final V1;
+Phase 20 standalone technical limitation). No V2 or standalone E2E PASS is implied.
+
 ---
 
 ## P28.1 — Final acceptance matrix
@@ -2721,38 +2730,38 @@ Potentially:
 
 ### Required capability rows
 
-- [ ] metamodel baseline;
-- [ ] Structural Mapping;
-- [ ] static import;
-- [ ] Semantic IR;
-- [ ] `.use` generation;
-- [ ] `.cmd`/initial state;
-- [ ] trace/binding;
-- [ ] RuntimeEvent;
-- [ ] RuntimeTrace;
-- [ ] runtime identity;
-- [ ] Runtime Mapping;
-- [ ] mirror synchronization;
-- [ ] full runtime E2E;
-- [ ] OCL/runtime verification;
-- [ ] PRE/POST;
-- [ ] ordering/history verification;
-- [ ] cross-dimensional verification;
-- [ ] normative supported subset;
-- [ ] constraint translation subset;
-- [ ] violation reporting/navigation;
-- [ ] UI workflow;
-- [ ] packaging;
-- [ ] reproducibility;
-- [ ] Case Study #1 Auction;
-- [ ] Case Study #2.
+- [x] metamodel baseline;
+- [x] Structural Mapping;
+- [x] static import;
+- [x] Semantic IR;
+- [x] `.use` generation;
+- [x] `.cmd`/initial state;
+- [x] trace/binding;
+- [x] RuntimeEvent;
+- [x] RuntimeTrace;
+- [x] runtime identity;
+- [x] Runtime Mapping;
+- [x] mirror synchronization;
+- [x] full runtime E2E;
+- [x] OCL/runtime verification;
+- [x] PRE/POST;
+- [x] ordering/history verification;
+- [x] cross-dimensional verification;
+- [x] normative supported subset;
+- [x] constraint translation subset;
+- [x] violation reporting/navigation;
+- [x] UI workflow;
+- [x] packaging;
+- [x] reproducibility;
+- [x] Case Study #1 Auction;
+- [x] Case Study #2.
 
 Allowed final statuses only:
 
-- [ ] `COMPLETE`.
-- [ ] `SUPPORTED_SUBSET_COMPLETE`.
-- [ ] `EXPLICITLY_UNSUPPORTED`.
-- [ ] `OUT_OF_SCOPE`.
+- [x] `COMPLETE`.
+- [x] `SUPPORTED_SUBSET_COMPLETE`.
+- [x] `EXPLICITLY_UNSUPPORTED`.
+- [x] `OUT_OF_SCOPE`.
 
 No blank/ambiguous status.
 
@@ -2764,22 +2773,22 @@ No blank/ambiguous status.
 
 Preserve/generate:
 
-- [ ] final source/project revision;
-- [ ] final Ecore + hash;
-- [ ] final Structural Mapping + schema + audit/hash;
-- [ ] final Runtime Mapping + schema + audit/hash;
-- [ ] generated `.use`;
-- [ ] generated `.cmd`;
-- [ ] OCL profiles + provenance;
-- [ ] trace JSON;
-- [ ] runtime event log;
-- [ ] mirror-correctness summary;
-- [ ] verification results/reports;
-- [ ] reconnect/resync evidence;
-- [ ] multi-case scenario summaries;
-- [ ] compatibility manifest;
-- [ ] test results;
-- [ ] release package/checksum.
+- [x] final source/project revision;
+- [x] final Ecore + hash;
+- [x] final Structural Mapping + schema + audit/hash;
+- [x] final Runtime Mapping + schema + audit/hash;
+- [x] generated `.use`;
+- [x] generated `.cmd`;
+- [x] OCL profiles + provenance;
+- [x] trace JSON;
+- [x] runtime event log;
+- [x] mirror-correctness summary;
+- [x] verification results/reports;
+- [x] reconnect/resync evidence;
+- [x] multi-case scenario summaries;
+- [x] compatibility manifest;
+- [x] test results;
+- [x] release package/checksum.
 
 ---
 
@@ -2789,13 +2798,13 @@ Preserve/generate:
 
 For every unsupported/subset capability:
 
-- [ ] what is unsupported;
-- [ ] why;
-- [ ] upstream/API evidence;
-- [ ] user-visible behavior;
-- [ ] diagnostic behavior;
-- [ ] test protecting the boundary;
-- [ ] whether future work could enable it.
+- [x] what is unsupported;
+- [x] why;
+- [x] upstream/API evidence;
+- [x] user-visible behavior;
+- [x] diagnostic behavior;
+- [x] test protecting the boundary;
+- [x] whether future work could enable it.
 
 No vague “future work” without current boundary.
 
@@ -2805,16 +2814,16 @@ No vague “future work” without current boundary.
 
 ### Tasks
 
-- [ ] focused mapping tests;
-- [ ] focused runtime tests;
-- [ ] Auction E2E;
-- [ ] Case Study #2 E2E;
-- [ ] full module verify;
-- [ ] full reactor verify;
-- [ ] clean-checkout verify;
-- [ ] installed plugin smoke;
-- [ ] package inventory/hash verification;
-- [ ] zero unexpected skipped correctness tests.
+- [x] focused mapping tests;
+- [x] focused runtime tests;
+- [x] Auction E2E;
+- [x] Case Study #2 E2E;
+- [x] full module verify;
+- [x] full reactor verify;
+- [x] clean-checkout verify;
+- [x] installed plugin smoke;
+- [x] package inventory/hash verification;
+- [x] zero unexpected skipped correctness tests.
 
 Record exact commands and counts.
 
@@ -2824,14 +2833,14 @@ Record exact commands and counts.
 
 ### Tasks
 
-- [ ] `roadmap.md` reflects completed phases without pretending unsupported features are implemented.
-- [ ] `task.md` checkboxes/evidence synchronized.
-- [ ] README describes final user workflow.
-- [ ] architecture reflects final metamodel/runtime mapping.
-- [ ] known limitations final.
-- [ ] compatibility final.
-- [ ] thesis evidence paths final.
-- [ ] no document uses historical test counts as current evidence without labeling them historical.
+- [x] `roadmap.md` reflects completed phases without pretending unsupported features are implemented.
+- [x] `task.md` checkboxes/evidence synchronized.
+- [x] README describes final user workflow.
+- [x] architecture reflects final metamodel/runtime mapping.
+- [x] known limitations final.
+- [x] compatibility final.
+- [x] thesis evidence paths final.
+- [x] no document uses historical test counts as current evidence without labeling them historical.
 
 ---
 
@@ -2839,15 +2848,15 @@ Record exact commands and counts.
 
 Agent presents only after all autonomous work is complete:
 
-- [ ] final acceptance matrix;
-- [ ] final test results;
-- [ ] final runtime mapping status;
-- [ ] final metamodel/mapping status;
-- [ ] mirror-correctness result;
-- [ ] multi-case result;
-- [ ] unsupported boundaries;
-- [ ] package/evidence locations;
-- [ ] remaining non-engineering thesis/demo work.
+- [x] final acceptance matrix;
+- [x] final test results;
+- [x] final runtime mapping status;
+- [x] final metamodel/mapping status;
+- [x] mirror-correctness result;
+- [x] multi-case result;
+- [x] unsupported boundaries;
+- [x] package/evidence locations;
+- [x] remaining non-engineering thesis/demo work.
 
 The user only needs to confirm final project acceptance.
 
@@ -2859,10 +2868,10 @@ The project may be marked:
 
 only when:
 
-- [ ] every in-scope capability is implemented/tested/traceable **or** explicitly unsupported/out-of-scope;
-- [ ] no hidden “partially working” state remains;
-- [ ] full regression passes;
-- [ ] final documentation/evidence is synchronized;
+- [x] every in-scope capability is implemented/tested/traceable **or** explicitly unsupported/out-of-scope;
+- [x] no hidden “partially working” state remains;
+- [x] full regression passes;
+- [x] final documentation/evidence is synchronized;
 - [ ] user confirms final acceptance.
 
 ---
@@ -2871,86 +2880,86 @@ only when:
 
 ## Runtime foundation
 
-- [ ] JaCaMo runtime research integrated.
-- [ ] Runtime capability matrix reconciled to pinned implementation.
-- [ ] Runtime authority policy defined.
-- [ ] RuntimeEvent canonical.
-- [ ] RuntimeTrace canonical.
-- [ ] Runtime identities exact.
+- [x] JaCaMo runtime research integrated.
+- [x] Runtime capability matrix reconciled to pinned implementation.
+- [x] Runtime authority policy defined.
+- [x] RuntimeEvent canonical.
+- [x] RuntimeTrace canonical.
+- [x] Runtime identities exact.
 
 ## Runtime Mapping
 
-- [ ] Generic semantic-action vocabulary defined.
-- [ ] Runtime Mapping schema implemented.
-- [ ] Runtime Mapping Draft implemented.
-- [ ] Loader/validator implemented.
-- [ ] V1 compatibility audited.
-- [ ] Mapping integrated into RuntimeMutationEngine.
-- [ ] Duplicate Java semantic dispatch removed/isolated.
-- [ ] Final Runtime Mapping reconciled to final metamodel.
-- [ ] Final Runtime Mapping frozen/audited.
+- [x] Generic semantic-action vocabulary defined.
+- [x] Runtime Mapping schema implemented.
+- [x] Runtime Mapping Draft implemented.
+- [x] Loader/validator implemented.
+- [x] V1 compatibility audited.
+- [x] Mapping integrated into RuntimeMutationEngine.
+- [x] Duplicate Java semantic dispatch removed/isolated.
+- [x] Final Runtime Mapping reconciled to final metamodel.
+- [x] Final Runtime Mapping frozen/audited.
 
 ## Mirror correctness
 
-- [ ] Attribute synchronization exact.
-- [ ] Operation lifecycle exact.
-- [ ] Object/relation lifecycle safe.
-- [ ] Organisation synchronization exact for supported subset.
-- [ ] Jason state/correlation boundaries explicit.
-- [ ] No double application.
-- [ ] No silent drop.
-- [ ] Authoritative drift detection works.
-- [ ] Reconnect/resync repairs drift.
-- [ ] Mirror-correctness gate PASS.
+- [x] Attribute synchronization exact.
+- [x] Operation lifecycle exact.
+- [x] Object/relation lifecycle safe.
+- [x] Organisation synchronization exact for supported subset.
+- [x] Jason state/correlation boundaries explicit.
+- [x] No double application.
+- [x] No silent drop.
+- [x] Authoritative drift detection works.
+- [x] Reconnect/resync repairs drift.
+- [x] Mirror-correctness gate PASS.
 
 ## Full runtime
 
-- [ ] Closest feasible real JaCaMo `.jcm` launch path tested.
-- [ ] Actual runtime trace captured.
-- [ ] Capability/mapping assumptions reconciled with actual trace.
-- [ ] Full runtime → USE mirror E2E evidence exists.
+- [x] Closest feasible real JaCaMo `.jcm` launch path tested.
+- [x] Actual runtime trace captured.
+- [x] Capability/mapping assumptions reconciled with actual trace.
+- [x] Full runtime → USE mirror E2E disposition recorded: EXPLICITLY_UNSUPPORTED for standalone; component mirror subset PASS (Phase 20 technical-limitation exit).
 
 ## Metamodel evolution
 
-- [ ] Runtime core decoupled from unnecessary V1 vocabulary.
-- [ ] Metamodel diff/migration tooling exists.
-- [ ] Human Metamodel V2 input handled only in Phase 25.
-- [ ] Final metamodel audited.
-- [ ] Final Structural Mapping built/frozen.
-- [ ] `.use/.cmd` regenerated.
-- [ ] Runtime target bindings migrated.
+- [x] Runtime core decoupled from unnecessary V1 vocabulary.
+- [x] Metamodel diff/migration tooling exists.
+- [x] Human Metamodel V2 input handled only in Phase 25.
+- [x] Final metamodel audited.
+- [x] Final Structural Mapping built/frozen.
+- [x] `.use/.cmd` regenerated.
+- [x] Runtime target bindings migrated.
 
 ## Verification
 
-- [ ] Mirror correctness established before OCL expansion.
-- [ ] Verification checkpoints defined.
-- [ ] Runtime invariants work.
-- [ ] PRE/POST work.
-- [ ] Ordering/history verification bounded and implemented.
-- [ ] Exact violation navigation works.
-- [ ] Cross-dimensional supported subset works.
-- [ ] Normative supported subset bounded correctly.
-- [ ] Constraint translation subset closed.
+- [x] Mirror correctness established before OCL expansion.
+- [x] Verification checkpoints defined.
+- [x] Runtime invariants work.
+- [x] PRE/POST work.
+- [x] Ordering/history verification bounded and implemented.
+- [x] Exact violation navigation works.
+- [x] Cross-dimensional supported subset works.
+- [x] Normative supported subset bounded correctly.
+- [x] Constraint translation subset closed.
 
 ## Genericity
 
-- [ ] No Auction-specific core logic.
-- [ ] Auction passes.
-- [ ] Case Study #2 passes or explicit final scope decision recorded.
-- [ ] Generic reuse audit passes.
+- [x] No Auction-specific core logic.
+- [x] Auction passes.
+- [x] Case Study #2 passes or explicit final scope decision recorded.
+- [x] Generic reuse audit passes.
 
 ## Engineering closure
 
-- [ ] TODO/FIXME/correctness audit clean.
-- [ ] Duplicate/dead logic audit clean.
-- [ ] Diagnostics complete.
-- [ ] Determinism verified.
-- [ ] Runtime resources/lifecycle clean.
-- [ ] Security regression pass.
-- [ ] Performance evidence recorded.
-- [ ] Clean checkout/relocated build pass.
-- [ ] Package/plugin load pass.
-- [ ] Documentation synchronized.
-- [ ] Final acceptance matrix complete.
-- [ ] Final evidence bundle complete.
+- [x] TODO/FIXME/correctness audit clean.
+- [x] Duplicate/dead logic audit clean.
+- [x] Diagnostics complete.
+- [x] Determinism verified.
+- [x] Runtime resources/lifecycle clean.
+- [x] Security regression pass.
+- [x] Performance evidence recorded.
+- [x] Clean checkout/relocated build pass.
+- [x] Package/plugin load pass.
+- [x] Documentation synchronized.
+- [x] Final acceptance matrix complete.
+- [x] Final evidence bundle complete.
 - [ ] Final user acceptance received.

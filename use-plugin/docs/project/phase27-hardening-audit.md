@@ -45,7 +45,7 @@ It is distinct from an observer infrastructure failure. Optional objectNameOrNul
 in the verifier omits an unavailable display target on error/skip reporting; exact
 mutation and formal target resolution still reject missing/ambiguous identities.
 
-## Search and architecture audit (P27.1ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“P27.5)
+## Search and architecture audit (P27.1–P27.5)
 
 Production-only search: TODO, FIXME, HACK, TEMP, workaround, placeholder,
 not implemented, UnsupportedOperationException, ignored catches and temporary V1.
@@ -75,7 +75,7 @@ The final acceptance matrix in phase28-project-closure.md supplies the requireme
 to component/test/evidence/document mapping. Missing/conflicting supported behavior
 found above was corrected, rather than relabelled unsupported.
 
-## Lifecycle and security review (P27.6ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“P27.7)
+## Lifecycle and security review (P27.6–P27.7)
 
 HotfixLifecycleTest covers workspace/profile/reimport replacement, authoritative
 resync and failed synchronization. RuntimeFoundationTest covers subscribe, queue
@@ -95,7 +95,7 @@ import contains no ProcessBuilder/command execution. Only test harnesses compile
 and execute their checked-in trusted artifact fixtures. Explicitly configured
 external roots are intentional supported input, not traversal bypasses.
 
-## Regression, cases, performance and release (P27.8ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“P27.12)
+## Regression, cases, performance and release (P27.8–P27.12)
 
 The full reactor includes event codec/schema/trace/identity/mapping/mutation,
 synthetic/Jason/CArtAgO/Moise, full sync/order/drift/reconnect, lifecycle,
@@ -146,3 +146,15 @@ zero failures/errors/skips, 2 min 29 s. Git status was empty before and after.
 Auction and Counter generated .use/.cmd match after LF normalization.
 See evidence/closure/relocated-manifest.json and relocated-verify.log.
 This closes P27.11; the source implementation is unchanged after that gate.
+
+## Verified Git and post-merge closure (2026-09-20)
+
+Live remote main and local main both resolved to 8981723efcad584c6d998b0b4e06dc1661cd8b11
+at resume, containing implementation 0a745d8d and relocated evidence. The working
+tree was clean. Thus merge/push had completed; the old pending metadata was stale.
+The final module command `mvn --batch-mode -pl use-plugin verify` passed 164/164
+(161 unit/component + 3 release IT), zero failures/errors/skips, on this integrated
+source. All 239 normalized source/test/build inputs match the clean-checkout
+manifest. No frozen contract, package inventory or dependency pin changed.
+The existing Phase 28 traceability matrix is retained and its closure evidence
+completed; see phase28-project-closure.md and evidence/closure/final-state.json.

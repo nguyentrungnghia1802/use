@@ -4,7 +4,7 @@
   "implementationRevision": "0a745d8dc75a0af22405c5f5856be60b1947ee71",
   "phase26Baseline": "d7639c3dcd67813c9c6e1324f9b7d0624b2b61d5",
   "phase27": {
-    "status": "ENGINEERING_GATES_PASSED_PENDING_GIT_INTEGRATION",
+    "status": "COMPLETE_GIT_INTEGRATION_AND_POST_MERGE_VERIFIED",
     "focusedLifecycleTests": 43,
     "fullReactor": {
       "tests": 307,
@@ -37,11 +37,23 @@
     ],
     "generatedModelStateComparison": "Auction .use/.cmd and Counter .use/.cmd MATCH after LF normalization",
     "packageSha256": "b130140b861f662967f7d43a0a38b68b681ef2b2cd9ee9c56ea8574558ea234e",
-    "bundleSha256": "4e8881785528306b808b3acc815f942d567f5c4e1ed71a8ceded3c818e1141e7"
+    "bundleSha256": "4e8881785528306b808b3acc815f942d567f5c4e1ed71a8ceded3c818e1141e7",
+    "integratedRevision": "8981723efcad584c6d998b0b4e06dc1661cd8b11",
+    "postMergeModule": {
+      "date": "2026-09-20",
+      "command": "mvn --batch-mode -pl use-plugin verify",
+      "tests": 164,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
   },
   "phase28": {
-    "status": "EVIDENCE_ASSEMBLED_PENDING_FINAL_GIT_CLOSURE",
-    "userAcceptance": "PENDING_NOT_IMPERSONATED"
+    "status": "AUTONOMOUS_ENGINEERING_COMPLETE_PENDING_USER_ACCEPTANCE",
+    "userAcceptance": "PENDING_NOT_IMPERSONATED",
+    "evidenceIndex": "final-state.json",
+    "preservedRelocatedBundle": "relocated-evidence.zip",
+    "finalBundle": "final-evidence.zip"
   },
   "limitations": [
     "Standalone JaCaMo mirror E2E unproven",

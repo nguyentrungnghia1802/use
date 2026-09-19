@@ -1,6 +1,6 @@
 # Final engineering acceptance and evidence
 
-This is the current Phase 27â€“28 acceptance record, superseding historical test
+This is the current Phase 27–28 acceptance record, superseding historical test
 counts as current evidence. D25-01 retains Ecore/Structural Mapping V1 as the final
 supported target; Runtime Mapping V1/schema 2.0.0 remains FROZEN. Scope is
 observe-only verification, not runtime control or universal JaCaMo equivalence.
@@ -53,7 +53,7 @@ supported verification subset. No V2 was fabricated to close a checklist.
 | Jason mind / Moise runtime instance equivalence | Frozen target has no general mental/group-instance/mission/goal runtime slots | Trace-only observation, not USE mutation equivalence | RuntimeMappingTest, RuntimeMigrationTest, MoiseRuntimeConnectorTest; requires evidence-backed target evolution |
 | Standalone .jcm mirror E2E | Phase20 launcher: fixture XML XSD mismatch and ora4mas.nopl.oe.Group/Scheme versus moise.oe.OE adapter gap | No workbench launch/configuration claim; documented technical limitation | Preserved Phase20 probes; both current cases explicitly in-process; future fixture reconciliation and board adapter |
 | NPL activation/fulfilment/violation/time | OE 1.1 exposes derived obligations/permissions, not full NPL lifecycle | MOISE_NO_NPL_NORM_LIFECYCLE; no inferred normative OCL | MoiseRuntimeConnectorTest and normativeSnapshot unsupported inventory; future upstream lifecycle adapter/formal contract |
-| Autonomous Agentâ†’Artifactâ†’Organisation chain | Current harness issues artifact operations and creates an explicit programmatic OE | Case reports state test-driven component execution and static XML provenance only | Both case integration tests; future true launcher scenario/causal correlation |
+| Autonomous Agent → Artifact → Organisation chain | Current harness issues artifact operations and creates an explicit programmatic OE | Case reports state test-driven component execution and static XML provenance only | Both case integration tests; future true launcher scenario/causal correlation |
 | General temporal/liveness verification | Finite traces cannot prove eventual completion/deadlines | Bounded ordering outcomes; missing terminal evidence cannot imply eventuality | RuntimeHistoryVerifierTest; future time/event semantics |
 | Arbitrary pre/post inference | @pre works for exact explicit authored/translated contracts, not arbitrary effects | OP_FAIL produces SKIPPED; missing pre-state/checkpoint stays explicit | RuntimeVerificationEngineTest, ConstraintClosureTest; future proof-backed translation |
 | Percept/action causal cross-dimensional inference | Source links do not prove delivery or runtime invocation joining | Source-link checks only, no invented causal rule | CrossDimensionalVerifierTest; future authoritative correlation |
@@ -63,34 +63,76 @@ supported verification subset. No V2 was fabricated to close a checklist.
 | Runtime launch/configuration in workbench | Connector configuration is a service API responsibility | Workbench observes configured runtime; no external launcher UI | DefaultJaCaMoFacadeTest, JaCaMoWorkbenchPanelTest; future explicit UI scope |
 | Runtime repair/control | Observe-only architecture | Reports never block/repair JaCaMo actions | Both live tests and architecture contract; a future change requires separate authorization/specification |
 
-## Evidence and reproduction (P28.2 / P28.4)
 
-Canonical command from repository root: `mvn --batch-mode clean verify` using
-Oracle JDK 21.0.5 and Maven 3.9.9 on Windows. Focused commands and exact final
-counts, revisions, timings and package digests are recorded in
-`evidence/closure/validation.json` after execution. The bundle tool refuses failed,
-errored or skipped test reports and inventories source/canonical/generated hashes.
+## Final verification provenance
 
-Generated bundle: `use-plugin/target/closure-evidence.zip`, alongside
-`closure-evidence.json` and its SHA-256. It contains the final Ecore, structural
-mapping/schema/freeze, runtime mapping/schema/freeze, OCL profiles/provenance,
-both cases' model/state/trace/events/reports/summaries, mirror-correctness output,
-compatibility, complete test XML, candidate distribution ZIP and checksum.
-The manifest records exact HEAD and dirty state; a dirty build is not labelled
-a clean-commit result. Runtime timestamps and UUIDs are intentionally variable.
+Date: 2026-09-20. Implementation revision: `0a745d8dc75a0af22405c5f5856be60b1947ee71`.
+Phase 27 evidence/integration baseline: `8981723efcad584c6d998b0b4e06dc1661cd8b11`.
+Classification: TEST/EVIDENCE CHANGE; NO CONTRACT CHANGE.
 
-Phase 20 source/upstream evidence is preserved and linked, not silently rerun or
-promoted by the final regression. The immutable v1.0.0 tag and historical v1.0.1
-evidence are untouched. No new release tag/publication is implied by a Git push.
+All autonomous engineering work is closed for the explicitly bounded capabilities
+above. **Final user acceptance is pending.** The unconditional project label
+`CORE LOGIC / CODING COMPLETE` is not asserted before that confirmation, as required
+by P28.6. Unsupported capabilities are closed by explicit scope decisions, not by
+changing their test outcome to PASS. No new release tag or publication is claimed.
 
-## Final project status (P28.5 / P28.6)
+## P28.2 evidence bundle and provenance
 
-Engineering gates and presentation are recorded after final validation. User
-acceptance is a separate final gate: this document does not impersonate the user
-or mark their confirmation received. Until confirmation, the literal roadmap
-label `CORE LOGIC / CODING COMPLETE` remains pending final acceptance even when
-all autonomous engineering work is complete.
+`evidence/closure/relocated-evidence.zip` preserves the independently built
+`0a745d8d` checkout, its original manifest, XML results for all 307 tests, canonical
+Ecore/mapping/schema/freeze files, OCL/provenance resources, generated model/state,
+traces, runtime events, mirror summary, reports, both cases, compatibility and the
+tested release ZIP/checksum. Its SHA-256 is recorded in validation.json. The
+original log and manifest remain separate and unchanged. The temporary checkout
+is no longer the only copy of this evidence.
 
-Remaining non-engineering work: thesis exposition and research argument,
-selection/preparation of a manual demo environment, and final user acceptance.
-Unproven standalone/NPL/autonomous-chain claims must not appear as thesis results.
+`evidence/closure/final-evidence.zip` preserves the final module run, generated
+case/mirror artifacts, release package, canonical resources and module XML reports.
+`final-state.json` identifies the actual tested revision, command, source-equivalence
+check, all file hashes, exact suite counts and package digest. This is a module
+run, not a relabelled new 307-test reactor. The retained clean reactor proves the
+unchanged executable/test/build inputs; documentation-only closure commits do not
+invalidate that evidence. Git closure is recorded separately to avoid pretending
+a commit can contain its own final hash.
+
+Reproduction: from the repository root run `mvn --batch-mode clean verify` on the
+pinned Windows 11/JDK 21.0.5/Maven 3.9.9 toolchain. The final module command is
+`mvn --batch-mode -pl use-plugin verify`. Tests regenerate the three target evidence
+directories above. Compare archive SHA-256 with its sidecar before using a bundle.
+
+## P28.4 final verification gates
+
+| Gate | Command / evidence | Result |
+|---|---|---|
+| Full reactor | `mvn --batch-mode clean verify`, implementation 0a745d8d | 307/307; 13 core + 130 GUI + 161 plugin + 3 release IT; zero failures/errors/skips; retained 2026-09-19 evidence |
+| Independent relocated checkout | same command, clone --no-hardlinks, 0a745d8d | 307/307, zero failures/errors/skips; clean before/after; relocated-verify.log |
+| Final focused lifecycle | recorded Phase 27 focused command/result | 43/43, zero failures/errors/skips; historical run, not newly rerun |
+| Final full module / Phase 27 post-merge regression | `mvn --batch-mode -pl use-plugin verify` on integrated 8981723e | 164/164 PASS, zero failures/errors/skips (161 unit/component + 3 release IT); final-module-verify.log and final-state.json |
+| Focused mapping/runtime, Auction, Counter | named suites within final module gate, enumerated in final-state.json | no redundant separate invocation; actual per-suite counts retained |
+| Installed plugin, inventory, hashes | ReleasePackageIT in final module gate | isolated child JVM, both canonical loaders, 30 ZIP entries, exact source bytes and SHA-256 |
+
+Mirror summary: INITIAL_SYNC, AFTER_STATE_CHANGE, OPERATION_ENTER_EXIT_FAIL and
+RECONNECT_RESYNC; zero unexplained drift and zero dropped/rejected/failed events
+in the supported scenario. Negative tests deliberately exercise explicit failures;
+these do not turn the supported positive scenario into an unrestricted guarantee.
+
+## P28.5 documentation and final state
+
+Reviewed phase27 audit, README, architecture, final metamodel/mapping audit,
+runtime/verification contracts, acceptance, risk/limitations, compatibility,
+roadmap and task checklist. The final V1 selection and pinned dependencies remain
+unchanged. Historical phase counts remain historical. Existing closure pointers were verified against this document. No executable implementation or frozen byte was changed.
+
+Phase 27 was already fast-forward integrated/pushed at 8981723e when this session
+started; live remote refs confirmed it. This phase preserves its existing traceability
+matrix and supplies the explicit post-merge gate. Phase 28 uses its own phase branch, then
+fast-forward integration, post-merge smoke and push under agent.md section 16.
+
+## P28.6 final user acceptance packet
+
+The matrix, test evidence, frozen mapping status, mirror result, multi-case scope,
+unsupported boundaries and package locations above form the acceptance packet.
+Remaining non-engineering work: select thesis narratives/figures, rehearse an
+interactive installed demo if desired, and provide final user acceptance. Such
+acceptance does not promote standalone/NPL, untested platforms or arbitrary
+semantics to supported. The checklist intentionally keeps user confirmation open.

@@ -672,3 +672,14 @@ See [Phase 27 hardening](phase27-hardening-audit.md) and the
 Earlier phase test totals and draft/temporary-target descriptions are historical.
 The final structural target is unchanged V1; Runtime Mapping V1 is frozen.
 Final user acceptance remains separate from autonomous engineering verification.
+
+## Phase 27–28 final engineering disposition (2026-09-20)
+
+Phase 27 implementation and clean/relocated reactors passed 307/307 and were
+already integrated on main at 8981723e. Final post-merge module verification
+passed 164/164, zero failures/errors/skips, with unchanged executable inputs.
+Phase 28 acceptance matrix, durable evidence bundles, boundary report and
+engineering checklist are complete; see phase28-project-closure.md.
+The final user confirmation remains pending; the unconditional CORE LOGIC /
+CODING COMPLETE label is reserved until that confirmation. Standalone JaCaMo
+mirror E2E and NPL lifecycle remain unsupported/unproven as documented in Phase 20.
