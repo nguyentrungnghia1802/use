@@ -201,3 +201,16 @@ and the consolidated [index](evidence/final-completeness/index.json).
 Both archives were reopened and every retained member hash was verified.
 Later changes are documentation/evidence only; no original fixture/frozen contract
 or executable source changed after this tested implementation commit.
+
+## Integration closure
+
+Fast-forward integrated revision `80a75f8cb4f1371960537717b9c4ac44a2f455f9`
+was pushed to origin/main and origin/phase/20-final-completeness-audit; both refs
+were queried and matched. Post-merge `mvn -B -pl use-plugin verify` passed
+**166/166** (163 unit/component + 3 release IT), zero failures/errors/skips.
+The final package, checksum and all module XML reports are retained in
+`evidence/final-completeness/post-merge-evidence.zip`; source equivalence to the
+clean relocated implementation was checked. `git-closure.json` records the tested
+integrated revision without inventing a self-referential commit hash. The following
+closure-record commit changes documentation/evidence only. Final user acceptance
+is the sole outstanding acceptance decision.

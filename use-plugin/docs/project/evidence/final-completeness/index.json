@@ -40,7 +40,13 @@
       "passed": 2
     },
     "sourceEquivalence": "PASS: exact LF-normalized executable/test/build/tool/canonical hashes",
-    "relocatedWorkingTree": "CLEAN before/after"
+    "relocatedWorkingTree": "CLEAN before/after",
+    "postMergeModule": {
+      "tests": 166,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
   },
   "phase20": {
     "P20.2": "SUPPORTED_SUBSET_COMPLETE",
@@ -68,5 +74,11 @@
       "archive": "relocated/evidence.zip",
       "sha256": "f16bc3c0721d21e2415c7d8be7197eb773b2501df9744c335459444c35d2ae24"
     }
+  },
+  "gitClosure": "git-closure.json",
+  "postMergeEvidence": {
+    "manifest": "post-merge-validation.json",
+    "archive": "post-merge-evidence.zip",
+    "sha256": "0aa2b3d2002d465ba381b9643ee930a672216f5bcc9cf10df53242e69bd1010d"
   }
 }
