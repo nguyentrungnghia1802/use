@@ -65,8 +65,10 @@ Board/workspace/LIVE existence therefore cannot satisfy readiness by itself.
 Durable evidence under `evidence/final-completeness/` retains input/source hashes,
 reactor XML, packages/checksums, generated model/state/trace, runtime/snapshot events,
 raw callbacks, outcomes, checkpoints, control inputs and negative diagnostics.
-`summary.json` lists observed and unobserved event kinds; absent kinds are merely
-unexercised here, not declared impossible. Logs containing the intentional OP_FAIL,
+`summary.json` lists observed and unobserved subscribed event kinds. This inventory
+excludes initial/reconnect snapshot mutations in `snapshot-events.json` (for example,
+group creation/discovery may appear there). Absence from the subscribed stream is
+not proof of absence from snapshots or API impossibility. Logs containing the intentional OP_FAIL,
 ROLE_READY rejection or original-fixture parse/XSD failure are negative evidence,
 not unreported test-suite errors.
 
@@ -90,8 +92,9 @@ Focused command: `mvn -B -pl use-plugin -Dtest=MoiseBoardSnapshotSourceTest,Mois
 
 The original `.jcm` syntax/path and Moise XML schema failures remain recorded by
 `launcher_probe.py` and `MoiseSchemaProbe.java`. Namespace-only adaptation does not
-repair the XSD errors. More importantly, the XML's self-referencing plan and
-natural-language deadline do not specify a safely inferable executable replacement.
+repair the XSD errors. More importantly, the XML's root `sell_item` and sequence plan referring to `sell_item` again, plus
+`time-constraint="before auction closes"`, do not specify a safely inferable
+executable replacement or a formal deadline clock/trigger.
 OSBuilder control plus explicit permission proves a separate supported control,
 not original plan equivalence, normative timing or the full original Auction E2E.
 Closing that boundary requires an explicit valid source semantic contract and new
@@ -124,3 +127,14 @@ user's acceptance; no agent-generated acceptance is substituted.
 The current manifest records the resumed baseline plus dirty source hashes; it does
 not pretend the baseline commit alone contains this implementation. The subsequent
 relocated gate verifies the committed source in an independent clean checkout.
+
+Independent relocated checkout `f4f97baf8512b91710bb5dfed1666592901a5368`
+(`git clone --no-hardlinks`, different drive/path): **309/309 PASS**, zero
+failures/errors/skips. Both positive standalone and negative readiness controls
+passed again after clean build. Checkout was clean before and after. Every
+LF-normalized source/tool/test/build/canonical hash matches the current run.
+See `evidence/final-completeness/relocated-reactor.log`, `relocated/validation.json`
+and the consolidated [index](evidence/final-completeness/index.json).
+Both archives were reopened and every retained member hash was verified.
+Later changes are documentation/evidence only; no original fixture/frozen contract
+or executable source changed after this tested implementation commit.

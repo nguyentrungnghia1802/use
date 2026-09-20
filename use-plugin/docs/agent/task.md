@@ -1395,7 +1395,7 @@ the earlier Phase 18/19 implementation and validator changes were committed and 
 The namespace/version-only XML probe still reports six XSD diagnostics. A separate
 OSBuilder control loads and launches with the pinned jars, so this is not a proven
 runtime-version impossibility. Launcher boards expose `ora4mas.nopl.oe.Group/Scheme`,
-not the connector's `moise.oe.OE`; a proper board-state adapter is still required.
+not the then-current connector's `moise.oe.OE`; the adapter was still required at that historical checkpoint.
 No semantics-preserving repair of the source self-referencing plan/natural-language
 deadline is established. Full-project acceptance stays unchecked. Probe assertions,
 input/jar/schema hashes and fresh 285/285 reactor results are retained in

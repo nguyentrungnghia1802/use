@@ -323,7 +323,8 @@ Runtime Mapping Draft is integrated; the supported mirror subset has executable
 zero-drift evidence. Full-project Phase 20 uses its documented technical-limitation
 exit alternative. The pinned launcher probe exposes .jcm syntax and Moise OS schema
 gaps in the static fixture. See [phase20-runtime-evidence.md](phase20-runtime-evidence.md).
-This does not claim full autonomous Agent -> Artifact -> Organisation E2E.
+That historical in-process scenario does not prove autonomous execution; the
+standalone control below supplies separate actual AgentSpeak execution evidence.
 
 The pinned launcher exposes organisation state through `ora4mas.nopl.oe.Group`
 and `ora4mas.nopl.oe.Scheme`. The final completeness audit implements

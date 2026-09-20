@@ -419,6 +419,6 @@
   },
   "userAcceptance": "PENDING_NOT_IMPERSONATED",
   "historicalRecord": true,
-  "supersededBy": "../final-completeness/current/validation.json",
+  "supersededBy": "../final-completeness/index.json",
   "currentAcceptanceReport": "../../phase20-final-completeness-audit.md"
 }

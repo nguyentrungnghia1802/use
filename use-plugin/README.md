@@ -66,4 +66,5 @@ the first hexadecimal field with a SHA-256 digest of the ZIP before installation
 Final metamodel remains unchanged canonical V1. Runtime Mapping V1 is frozen
 with schema 2.0.0 and exact resource hashes; legacy draft schema 1.0.0 is rejected
 with RUNTIME_MAPPING_VERSION_UNSUPPORTED. See docs/project/phase26-runtime-mapping-audit.md.
-Supported runtime semantics and standalone/NPL limitations are unchanged.
+Frozen mapping semantics and NPL limitations are unchanged. The later Phase 20
+standalone control evidence is described in the final audit linked above.

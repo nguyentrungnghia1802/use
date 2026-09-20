@@ -190,3 +190,14 @@ Auction plan/deadline semantics or accepting an unproven full original E2E claim
 The current manifest records the resumed baseline plus dirty source hashes; it does
 not pretend the baseline commit alone contains this implementation. The subsequent
 relocated gate verifies the committed source in an independent clean checkout.
+
+Independent relocated checkout `f4f97baf8512b91710bb5dfed1666592901a5368`
+(`git clone --no-hardlinks`, different drive/path): **309/309 PASS**, zero
+failures/errors/skips. Both positive standalone and negative readiness controls
+passed again after clean build. Checkout was clean before and after. Every
+LF-normalized source/tool/test/build/canonical hash matches the current run.
+See `evidence/final-completeness/relocated-reactor.log`, `relocated/validation.json`
+and the consolidated [index](evidence/final-completeness/index.json).
+Both archives were reopened and every retained member hash was verified.
+Later changes are documentation/evidence only; no original fixture/frozen contract
+or executable source changed after this tested implementation commit.
