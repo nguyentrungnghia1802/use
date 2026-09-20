@@ -8,5 +8,7 @@
   "postMergeBundleSha256": "0aa2b3d2002d465ba381b9643ee930a672216f5bcc9cf10df53242e69bd1010d",
   "sourceEquivalentTo": "f4f97baf8512b91710bb5dfed1666592901a5368",
   "followingCommitScope": "Documentation/evidence closure record only; final refs verified again after push",
-  "userAcceptance": "PENDING_NOT_IMPERSONATED"
+  "userAcceptance": "PENDING_NOT_IMPERSONATED",
+  "historicalRecord": true,
+  "currentUserAcceptanceRecord": "user-acceptance.json"
 }

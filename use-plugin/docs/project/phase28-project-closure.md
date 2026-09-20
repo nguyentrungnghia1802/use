@@ -80,9 +80,8 @@ Phase 27 evidence/integration baseline: `8981723efcad584c6d998b0b4e06dc1661cd8b1
 Classification: TEST/EVIDENCE CHANGE; NO CONTRACT CHANGE.
 
 All autonomous engineering work is closed for the explicitly bounded capabilities
-above. **Final user acceptance is pending.** The unconditional project label
-`CORE LOGIC / CODING COMPLETE` is not asserted before that confirmation, as required
-by P28.6. Unsupported capabilities are closed by explicit scope decisions, not by
+above. **Final user acceptance was explicitly confirmed on 2026-09-20.**
+Project status: **CORE LOGIC / CODING COMPLETE**. P28.6 is closed. Unsupported capabilities are closed by explicit scope decisions, not by
 changing their test outcome to PASS. No new release tag or publication is claimed.
 
 ## P28.2 evidence bundle and provenance
@@ -142,9 +141,9 @@ fast-forward integration, post-merge smoke and push under agent.md section 16.
 The matrix, test evidence, frozen mapping status, mirror result, multi-case scope,
 unsupported boundaries and package locations above form the acceptance packet.
 Remaining non-engineering work: select thesis narratives/figures, rehearse an
-interactive installed demo if desired, and provide final user acceptance. Such
-acceptance does not promote standalone/NPL, untested platforms or arbitrary
-semantics to supported. The checklist intentionally keeps user confirmation open.
+interactive installed demo if desired. Final user acceptance is received. It does
+not promote original Auction full semantics, NPL, untested platforms or arbitrary
+semantics to supported. Both user-confirmation checkboxes are now closed.
 
 ## Historical integration and final smoke
 
@@ -155,8 +154,8 @@ Both remote refs were queried and matched. Post-merge installed-package smoke:
 zero failures/errors/skips. See evidence/closure/git-closure.json,
 post-merge-smoke.log and post-merge-ReleasePackageIT.xml. The following closure-record
 commit contains documentation/evidence only; executable, package and canonical
-inputs remain identical. Final user confirmation is still the only acceptance gate
-not satisfiable by the agent. Phase 20 unchecked full-project steps intentionally
+inputs remain identical. At that historical checkpoint, final user confirmation
+was the only acceptance gate not satisfiable by the agent. Phase 20 unchecked full-project steps intentionally
 remain unproven under its documented alternative exit.
 
 ## Final completeness acceptance update
@@ -170,13 +169,13 @@ are unchanged except the explicit read-only launcher-board adapter capability.
 
 The exhaustive current checklist inventory is
 [evidence/final-completeness/remaining-checkboxes.json](evidence/final-completeness/remaining-checkboxes.json):
-A=0, B=2, C=29, D=2. C are recurring contract templates; D is the single final
-acceptance decision represented in two places. Engineering qualifies for the
-bounded CORE LOGIC / CODING COMPLETE disposition after all gates pass, but P28.6
-requires user confirmation before the unconditional final project label.
+A=0, B=2, C=29, D=0. C are recurring contract templates; the final user
+acceptance decision formerly represented by two unchecked rows is now confirmed.
+Project status is **CORE LOGIC / CODING COMPLETE**, with all P28.6 exit conditions
+satisfied and all supported/subset/unsupported boundaries preserved.
 
-The only user confirmation is acceptance of the delivered implementation and
-these explicit supported/unsupported boundaries. It does not require inventing
+The user accepted the delivered implementation, final matrix, capabilities,
+explicit supported/unsupported boundaries and all final evidence. This does not require inventing
 Auction plan/deadline semantics or accepting an unproven full original E2E claim.
 
 ## Fresh verification gates
@@ -213,4 +212,23 @@ The final package, checksum and all module XML reports are retained in
 clean relocated implementation was checked. `git-closure.json` records the tested
 integrated revision without inventing a self-referential commit hash. The following
 closure-record commit changes documentation/evidence only. Final user acceptance
-is the sole outstanding acceptance decision.
+was subsequently confirmed explicitly, closing the final acceptance decision.
+
+## Final user acceptance and project closure (2026-09-20)
+
+The user explicitly confirmed FINAL USER ACCEPTANCE of the current implementation,
+final acceptance matrix, supported capabilities, SUPPORTED_SUBSET_COMPLETE and
+EXPLICITLY_UNSUPPORTED boundaries, original Auction technical limitations and
+all final evidence. Project status: **CORE LOGIC / CODING COMPLETE**.
+Roadmap **Phase 16 → 28 is CLOSED** under those exact dispositions.
+No actionable engineering or user-acceptance task remains (A=0, B=2, C=29, D=0).
+B boundaries and C execution templates remain intentionally unchecked.
+
+This closure changes documentation/acceptance metadata only. Existing focused
+33/33, clean reactor 309/309, relocated reactor 309/309, post-merge module 166/166,
+and both positive/negative standalone controls remain the final test evidence;
+all suites had zero failures/errors/skips. No tests were rerun or relabelled fresh.
+Executable/test/build inputs and evidence archives remain unchanged. See
+[evidence/final-completeness/user-acceptance.json](evidence/final-completeness/user-acceptance.json)
+for the user authorization, accepted revision and closure scope. Acceptance does
+not turn original Auction full semantics or any unsupported capability into PASS.

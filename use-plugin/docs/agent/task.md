@@ -2725,12 +2725,14 @@ Potentially:
 
 **Objective:** produce the final evidence bundle and move engineering status to logic/coding complete only when every in-scope capability has an explicit final status.
 
-2026-09-20: autonomous engineering gates complete; final user acceptance PENDING.
+2026-09-20: FINAL USER ACCEPTANCE explicitly confirmed by the user.
+Project status: **CORE LOGIC / CODING COMPLETE**. Roadmap Phases 16–28 are closed
+within the documented supported/subset/unsupported dispositions; no scope expansion.
 See [final matrix and boundary report](../project/phase28-project-closure.md),
-[evidence index](../project/evidence/closure/final-state.json), and retained clean-reactor evidence.
+[evidence index](../project/evidence/final-completeness/index.json), and retained clean-reactor evidence.
 Checked capability/status boxes mean reviewed and assigned an explicit disposition,
 not that unsupported behavior was implemented. P28.6 presentation is the final
-acceptance packet; only the user can close its confirmation gate.
+acceptance packet; its confirmation gate is now closed by the user.
 Global checklist items below inherit these bounded statuses (D25-01 final V1;
 Phase 20 standalone control SUPPORTED_SUBSET_COMPLETE). No V2 or full original
 Auction standalone E2E PASS is implied.
@@ -2875,21 +2877,21 @@ Agent presents only after all autonomous work is complete:
 - [x] package/evidence locations;
 - [x] remaining non-engineering thesis/demo work.
 
-The user only needs to confirm final project acceptance.
+The user explicitly confirmed final project acceptance on 2026-09-20.
 
 ### Final exit condition
 
-The project may be marked:
+The project is marked:
 
 `CORE LOGIC / CODING COMPLETE`
 
-only when:
+All final exit conditions are satisfied:
 
 - [x] every in-scope capability is implemented/tested/traceable **or** explicitly unsupported/out-of-scope;
 - [x] no hidden “partially working” state remains;
 - [x] full regression passes;
 - [x] final documentation/evidence is synchronized;
-- [ ] user confirms final acceptance.
+- [x] user confirms final acceptance.
 
 ---
 
@@ -2979,4 +2981,4 @@ only when:
 - [x] Documentation synchronized.
 - [x] Final acceptance matrix complete.
 - [x] Final evidence bundle complete.
-- [ ] Final user acceptance received.
+- [x] Final user acceptance received.

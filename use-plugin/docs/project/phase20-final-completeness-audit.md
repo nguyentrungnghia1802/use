@@ -102,19 +102,19 @@ executable evidence. No original fixture, frozen metamodel or mapping was edited
 
 ## All remaining unchecked task rows
 
-A means actionable engineering: **none remain** once the verification gates below pass.
+A means actionable engineering: **none remain**; the verification gates below passed.
 B means unsupported/unproven semantic or upstream boundary: **2** rows, original
 Auction full standalone semantics and upstream in-process thread quiescence.
 C means execution-contract templates: **29** rows in sections 0.4–0.6 (11 invariants,
 11 recurring development steps, 7 recurring evidence requirements); these are
 reusable instructions, not unfinished implementation tasks.
-D means final user acceptance: **2** rows in P28.6 and Final Global Checklist,
-both representing the same one user decision. `remaining-checkboxes.json` records
+D means final user acceptance: **0** unchecked rows. The user explicitly accepted
+the project on 2026-09-20; both P28.6 and Final Global Checklist are checked. `remaining-checkboxes.json` records
 every exact unchecked text and current line, classified without hiding any row.
 
-Engineering is eligible for CORE LOGIC / CODING COMPLETE within these explicit
-boundaries. Under P28.6 the unconditional final project label still waits for the
-user's acceptance; no agent-generated acceptance is substituted.
+Project status is **CORE LOGIC / CODING COMPLETE** within these explicit
+boundaries. P28.6 is closed by the user's explicit final acceptance on 2026-09-20;
+no supported/unsupported disposition or test result is promoted by acceptance.
 
 ## Fresh verification gates
 
@@ -150,4 +150,4 @@ The final package, checksum and all module XML reports are retained in
 clean relocated implementation was checked. `git-closure.json` records the tested
 integrated revision without inventing a self-referential commit hash. The following
 closure-record commit changes documentation/evidence only. Final user acceptance
-is the sole outstanding acceptance decision.
+was subsequently confirmed explicitly; see `evidence/final-completeness/user-acceptance.json`.

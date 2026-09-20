@@ -56,12 +56,12 @@
   },
   "originalAuction": "EXPLICITLY_UNSUPPORTED: original self-referencing sell_item plan and before auction closes deadline unproven",
   "engineering": "COMPLETE_WITH_EXPLICIT_BOUNDARIES",
-  "userAcceptance": "PENDING_NOT_IMPERSONATED",
+  "userAcceptance": "ACCEPTED_BY_USER",
   "remainingCheckboxes": {
     "A": 0,
     "B": 2,
     "C": 29,
-    "D": 2
+    "D": 0
   },
   "bundles": {
     "current": {
@@ -80,5 +80,8 @@
     "manifest": "post-merge-validation.json",
     "archive": "post-merge-evidence.zip",
     "sha256": "0aa2b3d2002d465ba381b9643ee930a672216f5bcc9cf10df53242e69bd1010d"
-  }
+  },
+  "userAcceptanceRecord": "user-acceptance.json",
+  "projectStatus": "CORE LOGIC / CODING COMPLETE",
+  "roadmapPhases16Through28": "CLOSED_WITH_DOCUMENTED_DISPOSITIONS"
 }

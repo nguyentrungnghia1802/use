@@ -3,7 +3,7 @@
     "A": 0,
     "B": 2,
     "C": 29,
-    "D": 2
+    "D": 0
   },
   "rows": [
     {
@@ -160,16 +160,6 @@
       "line": 1385,
       "category": "B",
       "text": "- [ ] **B / EXPLICITLY_UNSUPPORTED:** full original Auction standalone semantics (self-referencing plan and natural-language deadline)."
-    },
-    {
-      "line": 2892,
-      "category": "D",
-      "text": "- [ ] user confirms final acceptance."
-    },
-    {
-      "line": 2982,
-      "category": "D",
-      "text": "- [ ] Final user acceptance received."
     }
   ]
 }

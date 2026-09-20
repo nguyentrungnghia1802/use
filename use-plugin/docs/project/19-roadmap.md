@@ -680,8 +680,8 @@ already integrated on main at 8981723e. Final post-merge module verification
 passed 164/164, zero failures/errors/skips, with unchanged executable inputs.
 Phase 28 acceptance matrix, durable evidence bundles, boundary report and
 engineering checklist are complete; see phase28-project-closure.md.
-The final user confirmation remains pending; the unconditional CORE LOGIC /
-CODING COMPLETE label is reserved until that confirmation. Standalone JaCaMo
+At that historical checkpoint final user confirmation was pending; the
+CORE LOGIC / CODING COMPLETE label was reserved until confirmation. Standalone JaCaMo
 mirror E2E and NPL lifecycle remain unsupported/unproven as documented in Phase 20.
 
 ## Final completeness reconciliation (2026-09-20)
@@ -692,4 +692,24 @@ exact shared mirror sync and zero unexplained post-resync drift. Direct board
 observation closes the earlier engineering adapter gap. Older component-only
 and adapter-gap statements above are historical. Original Auction plan/deadline
 semantics and general NPL lifecycle remain EXPLICITLY_UNSUPPORTED.
-See [final audit](phase20-final-completeness-audit.md). Final user acceptance is pending.
+See [final audit](phase20-final-completeness-audit.md). Final user acceptance
+was confirmed on 2026-09-20; Phases 16–28 are closed within documented boundaries.
+
+## Final user acceptance and project closure (2026-09-20)
+
+The user explicitly confirmed FINAL USER ACCEPTANCE of the current implementation,
+final acceptance matrix, supported capabilities, SUPPORTED_SUBSET_COMPLETE and
+EXPLICITLY_UNSUPPORTED boundaries, original Auction technical limitations and
+all final evidence. Project status: **CORE LOGIC / CODING COMPLETE**.
+Roadmap **Phase 16 → 28 is CLOSED** under those exact dispositions.
+No actionable engineering or user-acceptance task remains (A=0, B=2, C=29, D=0).
+B boundaries and C execution templates remain intentionally unchecked.
+
+This closure changes documentation/acceptance metadata only. Existing focused
+33/33, clean reactor 309/309, relocated reactor 309/309, post-merge module 166/166,
+and both positive/negative standalone controls remain the final test evidence;
+all suites had zero failures/errors/skips. No tests were rerun or relabelled fresh.
+Executable/test/build inputs and evidence archives remain unchanged. See
+[evidence/final-completeness/user-acceptance.json](evidence/final-completeness/user-acceptance.json)
+for the user authorization, accepted revision and closure scope. Acceptance does
+not turn original Auction full semantics or any unsupported capability into PASS.

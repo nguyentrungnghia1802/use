@@ -1,0 +1,21 @@
+{
+  "date": "2026-09-20",
+  "status": "ACCEPTED_BY_USER",
+  "authorization": "Explicit user message: Tôi xác nhận FINAL USER ACCEPTANCE cho project USE–JaCaMo.",
+  "acceptedRevision": "1c3bc07d65f14de14ecad84acdb29bab177fc35b",
+  "acceptedScope": [
+    "current implementation",
+    "final acceptance matrix",
+    "supported capabilities",
+    "SUPPORTED_SUBSET_COMPLETE boundaries",
+    "EXPLICITLY_UNSUPPORTED boundaries",
+    "remaining original Auction semantic limitations",
+    "all existing final evidence"
+  ],
+  "projectStatus": "CORE LOGIC / CODING COMPLETE",
+  "roadmapPhases16Through28": "CLOSED_WITH_DOCUMENTED_DISPOSITIONS",
+  "changeScope": "Documentation and acceptance metadata only; implementation and scope unchanged",
+  "testsRerun": false,
+  "testEvidence": "index.json",
+  "boundariesUnchanged": true
+}
