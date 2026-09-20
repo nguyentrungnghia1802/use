@@ -1,6 +1,13 @@
 # Full JaCaMo launcher audit and bounded runtime evidence
 
-Date: 2026-09-19. Status: **SUPPORTED_SUBSET_COMPLETE for component mirror evidence;
+> **2026-09-20 final completeness update:** Direct launcher-board observation and
+> AgentSpeak-driven standalone control now PASS. Original Auction plan/deadline
+> equivalence remains unsupported (B). The new audit supersedes older adapter-gap
+> and component-only claims below; historical results remain historical. See
+> [final audit](phase20-final-completeness-audit.md).
+
+
+Historical record below (2026-09-19, superseded by the final audit). Then-current status: **SUPPORTED_SUBSET_COMPLETE for component mirror evidence;
 TECHNICAL_LIMITATION for full-project Agent -> Artifact -> Organisation E2E**.
 
 ## Pinned launch path

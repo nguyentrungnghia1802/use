@@ -1,5 +1,12 @@
 # USE JaCaMo Plugin 1.0.1
 
+> **2026-09-20 final completeness update:** Direct launcher-board observation and
+> AgentSpeak-driven standalone control now PASS. Original Auction plan/deadline
+> equivalence remains unsupported (B). The new audit supersedes older adapter-gap
+> and component-only claims below; historical results remain historical. See
+> [final audit](docs/project/phase20-final-completeness-audit.md).
+
+
 Current repository state: Maven artifact and plugin descriptor version `1.0.1`.
 The historical annotated tag `v1.0.1` points to `7f77b1f4`; current development
 has advanced through the final runtime mapping and engineering hardening phases. The manifest name `use-jacamo-plugin-v1.0.1`

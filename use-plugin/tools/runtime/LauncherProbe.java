@@ -5,6 +5,10 @@ import cartago.CartagoEnvironment;
 public class LauncherProbe {
     public static void main(String[] args) {
         JaCaMoLauncher launcher = new JaCaMoLauncher() {
+            { // Same bootstrap as pinned JaCaMoLauncher.main, without interactive registries.
+                runner = this;
+                jason.runtime.RuntimeServicesFactory.set(new jacamo.infra.JaCaMoRuntimeServices(this));
+            }
             protected java.io.InputStream getDefaultLogProperties() {
                 return new java.io.ByteArrayInputStream("handlers=java.util.logging.ConsoleHandler\n.level=INFO\n".getBytes());
             }

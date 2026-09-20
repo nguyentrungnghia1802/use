@@ -417,5 +417,8 @@
     "use-plugin/target/use-jacamo-plugin-1.0.1.zip": "6207fe5124c3e3bca84104eda7e0eaac3c2e3ba910e8ccaab0b7a9e816a94535",
     "use-plugin/target/use-jacamo-plugin-1.0.1.zip.sha256": "7093e8d51f0051def4e4499d9393632e1a2e2afe7d078087d2358a0590a14b3a"
   },
-  "userAcceptance": "PENDING_NOT_IMPERSONATED"
+  "userAcceptance": "PENDING_NOT_IMPERSONATED",
+  "historicalRecord": true,
+  "supersededBy": "../final-completeness/current/validation.json",
+  "currentAcceptanceReport": "../../phase20-final-completeness-audit.md"
 }

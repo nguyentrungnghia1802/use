@@ -319,7 +319,7 @@ Create/update a concise implementation reconciliation document, e.g.:
 
 ---
 
-Execution evidence (2026-09-19): implementation commit 898191a5; focused connector/Auction 5/5; authority negative control RED then GREEN; module 126/126; full reactor verify 272/272 (13 core, 130 GUI, 129 plugin including release IT). See [reconciliation](../research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md). No frozen-contract or dependency changes. Integration/push recorded in Git and subsequent closure evidence.
+Historical execution evidence (2026-09-19; superseded for the derived control by the final completeness audit): implementation commit 898191a5; focused connector/Auction 5/5; authority negative control RED then GREEN; module 126/126; full reactor verify 272/272 (13 core, 130 GUI, 129 plugin including release IT). See [reconciliation](../research/jacamo_runtime_research/IMPLEMENTATION_RECONCILIATION.md). No frozen-contract or dependency changes. Integration/push recorded in Git and subsequent closure evidence.
 
 # Phase 17 — Runtime Event, Trace & Identity Hardening
 
@@ -1256,6 +1256,19 @@ Execution evidence (2026-09-19): two wrong-target regressions reproduced RED (2/
 
 ---
 
+Final completeness audit (2026-09-20): [current evidence and checkbox disposition](../project/phase20-final-completeness-audit.md).
+P20.2–P20.5 are **SUPPORTED_SUBSET_COMPLETE** for the explicitly derived standalone
+control. Checked rows below refer to that scope: original static import/artifact,
+control AgentSpeak and OSBuilder organisation, actual JaCaMo launcher boards,
+shared exact trace/mapping/mirror pipeline. They do not assert equivalence to the
+original Auction AgentSpeak, self-referencing plan or natural-language deadline.
+Original Auction full semantics remain **B / EXPLICITLY_UNSUPPORTED**.
+A = actionable engineering; B = unsupported/unproven semantic or upstream boundary;
+C = reusable execution-contract template (0.4–0.6); D = final user acceptance.
+Process containment and plugin cleanup pass; in-process upstream thread quiescence
+is a B boundary. Raw CArtAgO callbacks are retained; Jason hooks and Moise polling
+are recorded as normalized observations, not invented raw board callbacks.
+
 ## P20.2 — Build a standalone/full-project runtime test harness
 
 ### Read first
@@ -1266,19 +1279,20 @@ Execution evidence (2026-09-19): two wrong-target regressions reproduced RED (2/
 
 ### Tasks
 
-- [ ] Reuse checked-in Auction project source.
-- [ ] Launch through the most authentic supported JaCaMo path.
-- [ ] Ensure deterministic startup wait/ready condition.
-- [ ] Attach plugin/runtime observation connectors without duplicate listeners.
-- [ ] Ensure controlled shutdown.
-- [ ] Capture stdout/log only when needed for diagnostics.
-- [ ] Avoid arbitrary user-project command execution beyond explicit test fixture.
+- [x] Reuse checked-in Auction static import/artifact source; explicitly derived AgentSpeak/OS control.
+- [x] Launch through the most authentic supported JaCaMo path.
+- [x] Ensure deterministic startup wait/ready condition.
+- [x] Attach plugin/runtime observation connectors without duplicate listeners.
+- [x] Ensure controlled shutdown.
+- [x] Capture stdout/log only when needed for diagnostics.
+- [x] Avoid arbitrary user-project command execution beyond explicit test fixture.
 
 ### Tests
 
-- [ ] launch succeeds;
-- [ ] launch failure has actionable diagnostic;
-- [ ] teardown leaves no runtime thread/listener leak.
+- [x] launch succeeds;
+- [x] launch failure has actionable diagnostic;
+- [x] Plugin listeners disconnect; isolated launcher process exits and is reaped.
+- [ ] **B / EXPLICITLY_UNSUPPORTED:** prove upstream in-process thread-level quiescence without process exit.
 
 ---
 
@@ -1292,32 +1306,32 @@ Execution evidence (2026-09-19): two wrong-target regressions reproduced RED (2/
 
 ### Capture at minimum
 
-- [ ] sequence;
-- [ ] timestamp;
-- [ ] runtime source;
-- [ ] raw callback category;
-- [ ] agent runtime ID;
-- [ ] workspace ID;
-- [ ] artifact ID;
-- [ ] operation ID/name;
-- [ ] arguments;
-- [ ] property name/value;
-- [ ] Moise snapshot delta;
-- [ ] normalized event;
-- [ ] resolved SemanticId;
-- [ ] resolved USE target;
-- [ ] mapping rule ID;
-- [ ] mutation result.
+- [x] sequence;
+- [x] timestamp;
+- [x] runtime source;
+- [x] raw CArtAgO callback category; Jason hooks / Moise net snapshot deltas remain explicitly distinguished;
+- [x] agent runtime ID;
+- [x] workspace ID;
+- [x] artifact ID;
+- [x] operation ID/name;
+- [x] arguments;
+- [x] property name/value;
+- [x] Moise snapshot delta;
+- [x] normalized event;
+- [x] resolved SemanticId;
+- [x] resolved USE target;
+- [x] mapping rule ID;
+- [x] mutation result.
 
 ### Scenarios
 
-- [ ] platform boot / initial focus-role setup;
-- [ ] operation start;
-- [ ] improving/state-changing operation;
-- [ ] operation with no state change where applicable;
-- [ ] operation failure;
-- [ ] stop/close;
-- [ ] disconnect/reconnect/resync.
+- [x] platform boot / initial focus-role setup;
+- [x] operation start;
+- [x] improving/state-changing operation;
+- [x] operation with no state change where applicable;
+- [x] operation failure;
+- [x] stop/close;
+- [x] disconnect/reconnect/resync.
 
 ---
 
@@ -1331,14 +1345,14 @@ Execution evidence (2026-09-19): two wrong-target regressions reproduced RED (2/
 
 ### Tasks
 
-- [ ] Confirm every observed event is known or explicitly unknown.
-- [ ] Confirm payload assumptions match actual callbacks.
-- [ ] Confirm operation correlation matches actual lifecycle.
-- [ ] Confirm property delta timing assumptions.
-- [ ] Confirm organisation polling/diff assumptions.
-- [ ] Identify events present in code but absent in scenario without claiming they never occur.
-- [ ] Update mapping/capability docs only when evidence justifies it.
-- [ ] Add regression tests for any discovered mismatch.
+- [x] Confirm every observed event is known or explicitly unknown.
+- [x] Confirm payload assumptions match actual callbacks.
+- [x] Confirm operation correlation matches actual lifecycle.
+- [x] Confirm property delta timing assumptions.
+- [x] Confirm organisation polling/diff assumptions.
+- [x] Identify events present in code but absent in scenario without claiming they never occur.
+- [x] Update mapping/capability docs only when evidence justifies it.
+- [x] Add regression tests for any discovered mismatch.
 
 ---
 
@@ -1351,23 +1365,25 @@ Execution evidence (2026-09-19): two wrong-target regressions reproduced RED (2/
 
 ### Tasks
 
-- [ ] Import project statically.
-- [ ] Generate/load USE model/state.
-- [ ] Start actual JaCaMo project.
-- [ ] Bind runtime identities exactly.
-- [ ] Full authoritative sync.
-- [ ] Reach LIVE.
-- [ ] Execute deterministic scenario.
-- [ ] Apply Runtime Mapping Draft.
-- [ ] Compare mirror to runtime at checkpoints.
-- [ ] Disconnect.
-- [ ] Mutate/advance runtime if scenario supports it.
-- [ ] Reconnect/full resync.
-- [ ] Assert zero post-resync drift.
+- [x] Import project statically.
+- [x] Generate/load USE model/state.
+- [x] Start actual JaCaMo project.
+- [x] Bind runtime identities exactly.
+- [x] Full authoritative sync.
+- [x] Reach LIVE.
+- [x] Execute deterministic scenario.
+- [x] Apply final frozen Runtime Mapping V1 (supersedes Draft).
+- [x] Compare mirror to runtime at checkpoints.
+- [x] Disconnect.
+- [x] Mutate/advance runtime if scenario supports it.
+- [x] Reconnect/full resync.
+- [x] Assert zero post-resync drift.
 
 ### Exit criteria
 
-- [ ] Full-project path works, OR
+- [x] Derived standalone control path works with exact supported-subset evidence.
+- [ ] **B / EXPLICITLY_UNSUPPORTED:** full original Auction standalone semantics (self-referencing plan and natural-language deadline).
+Original acceptance alternative retained:
 - [x] exact technical limitation is documented and the closest supported in-process path remains bounded/evidence-backed.
 
 ---
@@ -2716,7 +2732,8 @@ Checked capability/status boxes mean reviewed and assigned an explicit dispositi
 not that unsupported behavior was implemented. P28.6 presentation is the final
 acceptance packet; only the user can close its confirmation gate.
 Global checklist items below inherit these bounded statuses (D25-01 final V1;
-Phase 20 standalone technical limitation). No V2 or standalone E2E PASS is implied.
+Phase 20 standalone control SUPPORTED_SUBSET_COMPLETE). No V2 or full original
+Auction standalone E2E PASS is implied.
 
 ---
 
@@ -2917,7 +2934,7 @@ only when:
 - [x] Closest feasible real JaCaMo `.jcm` launch path tested.
 - [x] Actual runtime trace captured.
 - [x] Capability/mapping assumptions reconciled with actual trace.
-- [x] Full runtime → USE mirror E2E disposition recorded: EXPLICITLY_UNSUPPORTED for standalone; component mirror subset PASS (Phase 20 technical-limitation exit).
+- [x] Full runtime → USE mirror E2E: standalone control SUPPORTED_SUBSET_COMPLETE; original Auction full semantics EXPLICITLY_UNSUPPORTED (B).
 
 ## Metamodel evolution
 

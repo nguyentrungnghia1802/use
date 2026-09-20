@@ -52,7 +52,7 @@ for name, project in [('original', fixture/'auction.jcm'), ('syntax-path-adapted
 summary=dict(jacamo='1.3.0',jason='3.3.0',cartago='3.1',moise='1.1',jaca='3.1',npl='0.6',
     sourceCommit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),
     originalFixtureModified=False,fullRuntimeE2E=False,results=results,
-    limitation='Static Auction OS violates pinned XSD beyond its namespace. Builder control is not semantically equivalent. Launcher organisation boards expose ora4mas.nopl.oe state, whereas the current connector consumes moise.oe.OE. Closest supported mirror evidence is LiveJaCaMoAuctionIntegrationTest.',
+    limitation='Static Auction OS violates pinned XSD beyond its namespace. Builder control is not semantically equivalent. Direct launcher board observation is implemented by MoiseBoardSnapshotSource; run launcher_mirror_probe.py for the separate non-equivalent AgentSpeak-driven control. Original self-referencing plan/deadline equivalence remains unproven.',
     moiseSchemaAudit=json.loads((output/'moise-schema-audit.json').read_text()),
     jarSha256={jar.name:hashlib.sha256(jar.read_bytes()).hexdigest() for jar in jars + component_jars},
     inputSha256={str(path.relative_to(module)):hashlib.sha256(path.read_bytes()).hexdigest() for path in

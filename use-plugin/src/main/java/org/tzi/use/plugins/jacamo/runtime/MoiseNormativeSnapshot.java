@@ -20,7 +20,7 @@ public record MoiseNormativeSnapshot(List<Fact> facts, List<String> unsupported)
             .thenComparing(Fact::role).thenComparing(Fact::scheme).thenComparing(Fact::mission).thenComparing(Fact::modality));
         return new MoiseNormativeSnapshot(facts,List.of("UNSUPPORTED_PROHIBITION","UNSUPPORTED_ACTIVATION",
             "UNSUPPORTED_FULFILMENT","UNSUPPORTED_VIOLATION","UNSUPPORTED_EXPIRATION_DEADLINE",
-            "UNSUPPORTED_NORM_TO_OCL","UNSUPPORTED_LAUNCHER_BOARD_ADAPTER"));
+            "UNSUPPORTED_NORM_TO_OCL","UNSUPPORTED_LAUNCHER_BOARD_NORMATIVE_EQUIVALENCE"));
     }
     private static Fact fact(String modality,String organisation,Permission permission) {
         var role=permission.getRolePlayer();

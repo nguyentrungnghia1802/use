@@ -60,7 +60,7 @@ public class MoiseSchemaProbe {
         report.put("results", results);
         report.put("groupBoardStateType", ora4mas.nopl.GroupBoard.class.getMethod("getGrpState").getReturnType().getName());
         report.put("schemeBoardStateType", ora4mas.nopl.SchemeBoard.class.getMethod("getSchState").getReturnType().getName());
-        report.put("connectorStateType", "moise.oe.OE");
+        report.put("connectorStateType", "moise.oe.OE or explicit MoiseBoardSnapshotSource");
         report.put("controlEquivalentToAuction", false);
         new ObjectMapper().writerWithDefaultPrettyPrinter().writeValue(output.resolve("moise-schema-audit.json").toFile(), report);
     }

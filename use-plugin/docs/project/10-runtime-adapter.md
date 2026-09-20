@@ -326,9 +326,15 @@ gaps in the static fixture. See [phase20-runtime-evidence.md](phase20-runtime-ev
 This does not claim full autonomous Agent -> Artifact -> Organisation E2E.
 
 The pinned launcher exposes organisation state through `ora4mas.nopl.oe.Group`
-and `ora4mas.nopl.oe.Scheme`; the implemented Moise connector accepts `moise.oe.OE`.
-The successful OSBuilder launcher control does not close this adapter gap and must
-not be represented by constructing an unrelated OE beside the real boards.
+and `ora4mas.nopl.oe.Scheme`. The final completeness audit implements
+`MoiseRuntimeConnector.forBoards` with `MoiseBoardSnapshotSource`: exact owner/board
+identities, cloned state at caller-controlled quiescent checkpoints, role/mission
+net deltas and goal satisfaction. Invalid/duplicate identity moves the connector
+to ERROR and requires disconnect before reconnect. No unrelated OE is constructed.
+The real AgentSpeak launcher control now passes role adoption, mission commitment,
+goal satisfaction, artifact operations and reconnect/resync. Organisation facts
+remain trace-only under frozen V1; satisfaction-only state does not imply NPL
+enabled/waiting/deadline equivalence. See phase20-final-completeness-audit.md.
 
 Phase 23 adds `MoiseRuntimeConnector.normativeSnapshot()` for deterministic direct
 OE derived obligation/permission evidence. It does not emit normative mutations or

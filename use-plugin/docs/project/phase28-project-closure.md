@@ -1,5 +1,12 @@
 # Final engineering acceptance and evidence
 
+> **2026-09-20 final completeness update:** Direct launcher-board observation and
+> AgentSpeak-driven standalone control now PASS. Original Auction plan/deadline
+> equivalence remains unsupported (B). The new audit supersedes older adapter-gap
+> and component-only claims below; historical results remain historical. See
+> [final audit](phase20-final-completeness-audit.md).
+
+
 This is the current Phase 27–28 acceptance record, superseding historical test
 counts as current evidence. D25-01 retains Ecore/Structural Mapping V1 as the final
 supported target; Runtime Mapping V1/schema 2.0.0 remains FROZEN. Scope is
@@ -9,7 +16,8 @@ observe-only verification, not runtime control or universal JaCaMo equivalence.
 
 All test names below are executable classes under src/test/java/org/tzi/use/plugins/jacamo.
 Fresh Surefire/Failsafe XML and generated case artifacts are collected by
-`tools/build_closure_evidence.py`. COMPLETE always refers to the stated requirement.
+`tools/build_closure_evidence.py`; the new standalone/reactor bundles use
+`tools/runtime/collect_final_audit.py`. COMPLETE always refers to the stated requirement.
 
 | Requirement | Final status | Production component | Test / evidence | Contract document |
 |---|---|---|---|---|
@@ -25,7 +33,8 @@ Fresh Surefire/Failsafe XML and generated case artifacts are collected by
 | Exact runtime identities | SUPPORTED_SUBSET_COMPLETE | RuntimeIdentity, TraceRuntimeTargetAdapter, connectors | RuntimeIdentityHardeningTest, RuntimeAliasTest, RuntimeMigrationTest | runtime-event-identity |
 | Canonical runtime mapping | COMPLETE | RuntimeMappingLoader, RuntimeMappingValidator | RuntimeMappingTest freeze/draft/negative tests; ReleasePackageIT | phase26-runtime-mapping-audit |
 | Mirror synchronization | SUPPORTED_SUBSET_COMPLETE | RuntimeMutationEngine, RuntimeMirrorService | RuntimeFoundationTest, HotfixLifecycleTest, both case drift summaries | 10-runtime-adapter |
-| Full standalone JaCaMo runtime E2E | EXPLICITLY_UNSUPPORTED | Current MoiseRuntimeConnector requires OE | Phase 20 pinned launcher probes and recorded technical limitation | phase20-runtime-evidence |
+| Standalone launcher control | SUPPORTED_SUBSET_COMPLETE | MoiseBoardSnapshotSource, forBoards, shared mirror pipeline | LauncherMirrorProbe positive and negative readiness; actual AgentSpeak role/mission/goal and resync | phase20-final-completeness-audit |
+| Original Auction standalone equivalence | EXPLICITLY_UNSUPPORTED | Invalid/incomplete static fixture semantics (B) | Original/schema probes; self-referencing plan and informal deadline have no proven executable meaning | phase20-final-completeness-audit |
 | OCL/runtime verification | SUPPORTED_SUBSET_COMPLETE | RuntimeVerificationEngine, OfflineVerificationService | RuntimeVerificationEngineTest, OfflineVerificationServiceTest | 11-verification-engine |
 | PRE/POST and @pre | SUPPORTED_SUBSET_COMPLETE | RuntimeVerificationEngine | RuntimeVerificationEngineTest; Auction/Counter reports | phase22-verification-evidence |
 | Finite ordering/history | SUPPORTED_SUBSET_COMPLETE | RuntimeHistoryVerifier | RuntimeHistoryVerifierTest | phase22-verification-evidence |
@@ -51,9 +60,9 @@ supported verification subset. No V2 was fabricated to close a checklist.
 | General Java/Jason syntax and arbitrary Java effects | Static syntax extraction cannot establish executable behavior; phase24 translation inventory | Located unsupported/unresolved diagnostics; no guessed scalar, target or partial OCL | StaticProjectImporterTest, ConstraintClosureTest; requires separately proven source semantics |
 | Unbound/dynamic runtime entities | Exact semantic/USE target absent; pinned connector authority/identity contract | Quarantine or explicit trace/mapping failure, no invented object | RuntimeIdentityHardeningTest, RuntimeFoundationTest, CartagoRuntimeConnectorTest; needs authoritative identity/binding contract |
 | Jason mind / Moise runtime instance equivalence | Frozen target has no general mental/group-instance/mission/goal runtime slots | Trace-only observation, not USE mutation equivalence | RuntimeMappingTest, RuntimeMigrationTest, MoiseRuntimeConnectorTest; requires evidence-backed target evolution |
-| Standalone .jcm mirror E2E | Phase20 launcher: fixture XML XSD mismatch and ora4mas.nopl.oe.Group/Scheme versus moise.oe.OE adapter gap | No workbench launch/configuration claim; documented technical limitation | Preserved Phase20 probes; both current cases explicitly in-process; future fixture reconciliation and board adapter |
+| Original Auction standalone equivalence | Fixture XML XSD mismatch, self-referencing plan and informal deadline (B); board adapter gap resolved | Derived standalone control PASS; original equivalence not claimed | Positive/negative launcher harness; future explicit valid source plan/deadline contract |
 | NPL activation/fulfilment/violation/time | OE 1.1 exposes derived obligations/permissions, not full NPL lifecycle | MOISE_NO_NPL_NORM_LIFECYCLE; no inferred normative OCL | MoiseRuntimeConnectorTest and normativeSnapshot unsupported inventory; future upstream lifecycle adapter/formal contract |
-| Autonomous Agent → Artifact → Organisation chain | Current harness issues artifact operations and creates an explicit programmatic OE | Case reports state test-driven component execution and static XML provenance only | Both case integration tests; future true launcher scenario/causal correlation |
+| General autonomous/cross-dimensional causal equivalence | Launcher control proves actual AgentSpeak artifact and organisation operations, not a general causal mapping or original Auction semantics | Control has explicit permission and no guessed source deadline | LauncherMirrorProbe; original fixture boundary retained |
 | General temporal/liveness verification | Finite traces cannot prove eventual completion/deadlines | Bounded ordering outcomes; missing terminal evidence cannot imply eventuality | RuntimeHistoryVerifierTest; future time/event semantics |
 | Arbitrary pre/post inference | @pre works for exact explicit authored/translated contracts, not arbitrary effects | OP_FAIL produces SKIPPED; missing pre-state/checkpoint stays explicit | RuntimeVerificationEngineTest, ConstraintClosureTest; future proof-backed translation |
 | Percept/action causal cross-dimensional inference | Source links do not prove delivery or runtime invocation joining | Source-link checks only, no invented causal rule | CrossDimensionalVerifierTest; future authoritative correlation |
@@ -100,7 +109,7 @@ pinned Windows 11/JDK 21.0.5/Maven 3.9.9 toolchain. The final module command is
 `mvn --batch-mode -pl use-plugin verify`. Tests regenerate the three target evidence
 directories above. Compare archive SHA-256 with its sidecar before using a bundle.
 
-## P28.4 final verification gates
+## Historical P28.4 verification gates (superseded by final completeness gates below)
 
 | Gate | Command / evidence | Result |
 |---|---|---|
@@ -137,7 +146,7 @@ interactive installed demo if desired, and provide final user acceptance. Such
 acceptance does not promote standalone/NPL, untested platforms or arbitrary
 semantics to supported. The checklist intentionally keeps user confirmation open.
 
-## Verified integration and final smoke
+## Historical integration and final smoke
 
 Phase 28 was fast-forward merged to main as `42b38396874b4f080a1e2aaa1fb5cbdbf931f11a`
 and pushed successfully to origin/main and origin/phase/28-project-closure.
@@ -149,3 +158,35 @@ commit contains documentation/evidence only; executable, package and canonical
 inputs remain identical. Final user confirmation is still the only acceptance gate
 not satisfiable by the agent. Phase 20 unchecked full-project steps intentionally
 remain unproven under its documented alternative exit.
+
+## Final completeness acceptance update
+
+The new [Phase 20 audit](phase20-final-completeness-audit.md) supersedes the older
+component-only and board-adapter-gap claims. P20.2–P20.5 are each
+SUPPORTED_SUBSET_COMPLETE. Original Auction full standalone semantics and upstream
+in-process thread quiescence remain B / EXPLICITLY_UNSUPPORTED; neither blocks
+closure of supported engineering. Source, dependency and frozen-contract boundaries
+are unchanged except the explicit read-only launcher-board adapter capability.
+
+The exhaustive current checklist inventory is
+[evidence/final-completeness/remaining-checkboxes.json](evidence/final-completeness/remaining-checkboxes.json):
+A=0, B=2, C=29, D=2. C are recurring contract templates; D is the single final
+acceptance decision represented in two places. Engineering qualifies for the
+bounded CORE LOGIC / CODING COMPLETE disposition after all gates pass, but P28.6
+requires user confirmation before the unconditional final project label.
+
+The only user confirmation is acceptance of the delivered implementation and
+these explicit supported/unsupported boundaries. It does not require inventing
+Auction plan/deadline semantics or accepting an unproven full original E2E claim.
+
+## Fresh verification gates
+
+- Focused runtime/integration selection: **33/33 PASS**, zero failures/errors/skips (`evidence/final-completeness/focused.log`). Includes both Auction and Counter integration tests and 2 board adapter regressions.
+- Current full clean reactor: **309/309 PASS**: 13 core + 130 GUI + 163 plugin unit/component + 3 release integration; zero failures/errors/skips (`reactor.log`, `current/validation.json`).
+- Original-fixture/schema probe preserves intentional original parse/XSD rejection and successful non-equivalent builder control.
+- Standalone mirror positive: **1/1 PASS**; missing-role negative readiness: **1/1 PASS** after clean reactor and regenerated classpath.
+- Installed plugin/package gate: **3/3 PASS** as part of the reactor, with 30-entry ZIP and checksum validation.
+
+The current manifest records the resumed baseline plus dirty source hashes; it does
+not pretend the baseline commit alone contains this implementation. The subsequent
+relocated gate verifies the committed source in an independent clean checkout.

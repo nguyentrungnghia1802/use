@@ -1,0 +1,175 @@
+{
+  "counts": {
+    "A": 0,
+    "B": 2,
+    "C": 29,
+    "D": 2
+  },
+  "rows": [
+    {
+      "line": 94,
+      "category": "C",
+      "text": "- [ ] Never hard-code Auction behavior into generic core logic."
+    },
+    {
+      "line": 95,
+      "category": "C",
+      "text": "- [ ] Never use fuzzy/name-similarity as formal runtime identity resolution."
+    },
+    {
+      "line": 96,
+      "category": "C",
+      "text": "- [ ] Never auto-materialize an unknown runtime entity without exact semantic policy/trace evidence."
+    },
+    {
+      "line": 97,
+      "category": "C",
+      "text": "- [ ] Never mutate frozen Structural Mapping V1 merely to carry runtime semantics."
+    },
+    {
+      "line": 98,
+      "category": "C",
+      "text": "- [ ] Keep structural mapping and runtime mapping separate."
+    },
+    {
+      "line": 99,
+      "category": "C",
+      "text": "- [ ] Keep JaCaMo as the execution engine; USE is the verification mirror."
+    },
+    {
+      "line": 100,
+      "category": "C",
+      "text": "- [ ] Runtime connectors observe/acquire; they do not implement OCL business rules."
+    },
+    {
+      "line": 101,
+      "category": "C",
+      "text": "- [ ] OCL is evaluated only over a state/operation/trace representation whose synchronization semantics are defined."
+    },
+    {
+      "line": 102,
+      "category": "C",
+      "text": "- [ ] No silent runtime event drop in correctness mode."
+    },
+    {
+      "line": 103,
+      "category": "C",
+      "text": "- [ ] No silent fallback on invalid mapping/identity/payload."
+    },
+    {
+      "line": 104,
+      "category": "C",
+      "text": "- [ ] Unsupported semantics remain explicit and traceable."
+    },
+    {
+      "line": 110,
+      "category": "C",
+      "text": "- [ ] Inspect current production implementation."
+    },
+    {
+      "line": 111,
+      "category": "C",
+      "text": "- [ ] Inspect current focused tests."
+    },
+    {
+      "line": 112,
+      "category": "C",
+      "text": "- [ ] Determine whether work is new implementation, formalization, correction, or refactor."
+    },
+    {
+      "line": 113,
+      "category": "C",
+      "text": "- [ ] Write/update a RED regression test when the behavior is correctness-sensitive and reproducible."
+    },
+    {
+      "line": 114,
+      "category": "C",
+      "text": "- [ ] Implement the smallest correct change."
+    },
+    {
+      "line": 115,
+      "category": "C",
+      "text": "- [ ] Run focused GREEN tests."
+    },
+    {
+      "line": 116,
+      "category": "C",
+      "text": "- [ ] Run affected subsystem regression."
+    },
+    {
+      "line": 117,
+      "category": "C",
+      "text": "- [ ] Inspect `git diff` / changed files."
+    },
+    {
+      "line": 118,
+      "category": "C",
+      "text": "- [ ] Update affected documentation."
+    },
+    {
+      "line": 119,
+      "category": "C",
+      "text": "- [ ] Update this checklist with evidence when working inside the repository."
+    },
+    {
+      "line": 120,
+      "category": "C",
+      "text": "- [ ] Do not claim complete without executable evidence."
+    },
+    {
+      "line": 126,
+      "category": "C",
+      "text": "- [ ] implementation or explicit unsupported boundary;"
+    },
+    {
+      "line": 127,
+      "category": "C",
+      "text": "- [ ] focused tests;"
+    },
+    {
+      "line": 128,
+      "category": "C",
+      "text": "- [ ] regression result;"
+    },
+    {
+      "line": 129,
+      "category": "C",
+      "text": "- [ ] generated/audit artifact when required;"
+    },
+    {
+      "line": 130,
+      "category": "C",
+      "text": "- [ ] documentation synchronization;"
+    },
+    {
+      "line": 131,
+      "category": "C",
+      "text": "- [ ] explicit remaining limitations;"
+    },
+    {
+      "line": 132,
+      "category": "C",
+      "text": "- [ ] clean classification of any deferred human input."
+    },
+    {
+      "line": 1295,
+      "category": "B",
+      "text": "- [ ] **B / EXPLICITLY_UNSUPPORTED:** prove upstream in-process thread-level quiescence without process exit."
+    },
+    {
+      "line": 1385,
+      "category": "B",
+      "text": "- [ ] **B / EXPLICITLY_UNSUPPORTED:** full original Auction standalone semantics (self-referencing plan and natural-language deadline)."
+    },
+    {
+      "line": 2892,
+      "category": "D",
+      "text": "- [ ] user confirms final acceptance."
+    },
+    {
+      "line": 2982,
+      "category": "D",
+      "text": "- [ ] Final user acceptance received."
+    }
+  ]
+}

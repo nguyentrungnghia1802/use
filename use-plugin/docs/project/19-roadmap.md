@@ -683,3 +683,13 @@ engineering checklist are complete; see phase28-project-closure.md.
 The final user confirmation remains pending; the unconditional CORE LOGIC /
 CODING COMPLETE label is reserved until that confirmation. Standalone JaCaMo
 mirror E2E and NPL lifecycle remain unsupported/unproven as documented in Phase 20.
+
+## Final completeness reconciliation (2026-09-20)
+
+Phase 20 P20.2–P20.5 now have standalone control SUPPORTED_SUBSET_COMPLETE
+status, including real AgentSpeak role/mission/goal, artifact operation lifecycle,
+exact shared mirror sync and zero unexplained post-resync drift. Direct board
+observation closes the earlier engineering adapter gap. Older component-only
+and adapter-gap statements above are historical. Original Auction plan/deadline
+semantics and general NPL lifecycle remain EXPLICITLY_UNSUPPORTED.
+See [final audit](phase20-final-completeness-audit.md). Final user acceptance is pending.

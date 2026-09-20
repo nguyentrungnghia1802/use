@@ -16,10 +16,11 @@ import java.util.function.Consumer;
 import moise.oe.OE;
 import org.tzi.use.plugins.jacamo.semantic.Dimension;
 
-/** Moise 1.1 connector using authoritative OE snapshots and explicit controlled polling. */
+/** Moise 1.1 connector using authoritative OE or launcher-board snapshots and controlled polling. */
 public final class MoiseRuntimeConnector implements RuntimeConnector {
     private final String id;
     private final OE organisation;
+    private final MoiseBoardSnapshotSource boards;
     private final MoiseRuntimeBinding binding;
     private final CopyOnWriteArrayList<Consumer<RuntimeEvent>> listeners = new CopyOnWriteArrayList<>();
     private final AtomicLong sequence = new AtomicLong();
@@ -31,7 +32,21 @@ public final class MoiseRuntimeConnector implements RuntimeConnector {
             throw new IllegalArgumentException("MOISE_CONNECTOR_INVALID");
         this.id = id;
         this.organisation = organisation;
+        this.boards = null;
         this.binding = binding;
+    }
+
+    private MoiseRuntimeConnector(String id, MoiseRuntimeBinding binding, MoiseBoardSnapshotSource boards) {
+        if (id == null || id.isBlank() || binding == null || boards == null
+                || !binding.organisation().equals(boards.organisation()))
+            throw new IllegalArgumentException("MOISE_BOARD_CONNECTOR_INVALID");
+        this.id = id; this.binding = binding; this.boards = boards; this.organisation = null;
+    }
+
+    /** Explicit board authority; never constructs an unrelated OE to impersonate launcher state. */
+    public static MoiseRuntimeConnector forBoards(String id, MoiseRuntimeBinding binding,
+                                                  MoiseBoardSnapshotSource boards) {
+        return new MoiseRuntimeConnector(id, binding, boards);
     }
 
     @Override public String connectorId() { return id; }
@@ -45,6 +60,8 @@ public final class MoiseRuntimeConnector implements RuntimeConnector {
         if (endpoint == null || !"jacamo".equalsIgnoreCase(endpoint.getScheme()))
             throw new IllegalArgumentException("MOISE_ENDPOINT_INVALID");
         if (state == ConnectorState.CONNECTED) throw new IllegalStateException("CONNECTOR_ALREADY_CONNECTED");
+        if (boards != null && state != ConnectorState.DISCONNECTED)
+            throw new IllegalStateException("MOISE_BOARD_DISCONNECT_REQUIRED");
         observed = null;
         state = ConnectorState.CONNECTED;
     }
@@ -66,7 +83,7 @@ public final class MoiseRuntimeConnector implements RuntimeConnector {
         return () -> listeners.remove(listener);
     }
 
-    /** Polls the public Moise OE state once and publishes exact state deltas. */
+    /** Polls the selected public Moise authority once and publishes net state deltas. */
     public synchronized List<RuntimeEvent> pollChanges() {
         requireConnected();
         OrganisationState current = capture();
@@ -93,11 +110,17 @@ public final class MoiseRuntimeConnector implements RuntimeConnector {
     /** Derived sets are evidence only; no automatic state mutation or OCL translation. */
     public MoiseNormativeSnapshot normativeSnapshot() {
         requireConnected();
+        if (boards != null) throw new UnsupportedOperationException("MOISE_BOARD_NORMATIVE_TRANSLATION_UNSUPPORTED");
         return MoiseNormativeSnapshot.capture(organisation, binding.organisation());
     }
 
     /** Moise OE 1.1 exposes derived permissions/obligations, not NPL lifecycle states. */
     public List<String> capabilityGaps() {
+        if (boards != null) return List.of(
+                "MOISE_BOARD_CONTROLLED_POLL: caller must supply current boards at quiescent checkpoints",
+                "MOISE_BOARD_SATISFACTION_ONLY: not_satisfied does not imply waiting or enabled",
+                "MOISE_BOARD_FORMATION_SNAPSHOT_ONLY: formation changes are not a distinct delta event",
+                "MOISE_BOARD_NORMATIVE_TRANSLATION_UNSUPPORTED: no NPL lifecycle or OE normative equivalence");
         return List.of(
                 "MOISE_NO_PUBLIC_EVENT_LISTENER: role, mission and goal changes require controlled polling",
                 "MOISE_NO_NPL_NORM_LIFECYCLE: activation, fulfilment, violation and expiration are not exposed by OE");
@@ -110,6 +133,10 @@ public final class MoiseRuntimeConnector implements RuntimeConnector {
     }
 
     private OrganisationState capture() {
+        if (boards != null) {
+            try { return boards.capture(); }
+            catch (RuntimeException failure) { state = ConnectorState.ERROR; throw failure; }
+        }
         synchronized (organisation) {
             Map<String, GroupState> groups = new LinkedHashMap<>();
             organisation.getGroups().stream().sorted().forEach(group -> groups.put(group.getId(),
@@ -242,23 +269,23 @@ public final class MoiseRuntimeConnector implements RuntimeConnector {
         } catch (Exception exception) { throw new IllegalStateException("SHA256_UNAVAILABLE", exception); }
     }
 
-    private record OrganisationState(Map<String, GroupState> groups, Map<String, SchemeState> schemes,
+    record OrganisationState(Map<String, GroupState> groups, Map<String, SchemeState> schemes,
                                      Set<RoleKey> roles, Set<MissionKey> missions, Map<GoalKey, String> goals) { }
-    private record GroupState(String id, String specification, boolean wellFormed)
+    record GroupState(String id, String specification, boolean wellFormed)
             implements Comparable<GroupState> {
         @Override public int compareTo(GroupState other) { return id.compareTo(other.id); }
     }
-    private record SchemeState(String id, String specification, boolean wellFormed)
+    record SchemeState(String id, String specification, boolean wellFormed)
             implements Comparable<SchemeState> {
         @Override public int compareTo(SchemeState other) { return id.compareTo(other.id); }
     }
-    private record RoleKey(String agent, String role, String group) implements Comparable<RoleKey> {
+    record RoleKey(String agent, String role, String group) implements Comparable<RoleKey> {
         @Override public int compareTo(RoleKey other) { return toString().compareTo(other.toString()); }
     }
-    private record MissionKey(String agent, String mission, String scheme) implements Comparable<MissionKey> {
+    record MissionKey(String agent, String mission, String scheme) implements Comparable<MissionKey> {
         @Override public int compareTo(MissionKey other) { return toString().compareTo(other.toString()); }
     }
-    private record GoalKey(String scheme, String goal) implements Comparable<GoalKey> {
+    record GoalKey(String scheme, String goal) implements Comparable<GoalKey> {
         @Override public int compareTo(GoalKey other) { return toString().compareTo(other.toString()); }
     }
 }
