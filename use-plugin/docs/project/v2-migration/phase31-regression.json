@@ -1,0 +1,820 @@
+{
+  "command": "mvn -B verify",
+  "exitCode": 1,
+  "recordedDate": "2026-09-23",
+  "totals": {
+    "tests": 317,
+    "failures": 3,
+    "errors": 73,
+    "skipped": 0
+  },
+  "suiteResults": [
+    {
+      "path": "use-core/target/surefire-reports/TEST-org.tzi.use.architecture.MavenCyclicDependenciesCoreTest.xml",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-core/target/surefire-reports/TEST-org.tzi.use.uml.mm.ModelAPITest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-core/target/failsafe-reports/TEST-org.tzi.use.OCLExpressionIT.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-gui/target/surefire-reports/TEST-org.tzi.use.architecture.MavenLayeredArchitectureTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-gui/target/failsafe-reports/TEST-org.tzi.use.main.shell.ShellIT.xml",
+      "tests": 129,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.CompatibilityManifestTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 3,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.constraint.ConstraintOclTest.xml",
+      "tests": 7,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.xml",
+      "tests": 11,
+      "failures": 0,
+      "errors": 9,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.evidence.EvidenceNormalizerTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.evidence.EvidenceSourceCommitTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.extraction.StaticProjectImporterTest.xml",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.GoldenPipelineTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.HotfixBindingTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.HotfixLifecycleTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 4,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.JaCaMoPluginTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.xml",
+      "tests": 10,
+      "failures": 2,
+      "errors": 7,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.mapping.V2EcoreAuditTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.mapping.V2MappingAuditTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.mapping.V2OppositeOrderingAuditTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 2,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.PreMigrationBaselineTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.project.JcmProjectLoaderTest.xml",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.project.ProjectModelTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest.xml",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.AuctionSourceRuntimeTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.CartagoRuntimeConnectorTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.CompositeRuntimeConnectorTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.JasonRuntimeConnectorTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.MoiseBoardSnapshotSourceTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.MoiseRuntimeConnectorTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeAliasTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeAuthorityTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.xml",
+      "tests": 23,
+      "failures": 0,
+      "errors": 21,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeIdentityHardeningTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeMappingTest.xml",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeMigrationTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeTraceTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.semantic.SemanticIdTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.semantic.SemanticModelTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.trace.TraceBindingTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.ui.JaCaMoWorkbenchPanelTest.xml",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.verification.CrossDimensionalVerifierTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 3,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayerTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.verification.RuntimeHistoryVerifierTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.xml",
+      "tests": 16,
+      "failures": 0,
+      "errors": 15,
+      "skipped": 0
+    }
+  ],
+  "failures": [
+    {
+      "suite": "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest",
+      "test": "unapprovedLossyAndSoundSubsetNeverEmitButRemainInManifest",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest",
+      "test": "impureGuardArithmeticAndSignatureMismatchPreserveUnsupportedSource",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest",
+      "test": "guardParameterNamesAreNotSilentlyReboundAndSharedGuardIdsAreDistinct",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.constraint.ConstraintOclTest",
+      "test": "auctionGuardCoreCaseAndExplicitPostconditionCompileAndEvaluatePositiveNegative",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest",
+      "test": "exportRejectsUnsupportedDestinationsInsteadOfGuessingAFormat",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest",
+      "test": "repeatedExplicitBindingsPreserveEarlierExactSelections",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest",
+      "test": "runtimeDashboardStatusComesFromTheRealMirrorService",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest",
+      "test": "reportExportSupportsMarkdownDestinations",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest",
+      "test": "realAuctionImportExposesPipelineSummaryTraceDiagnosticsAndVerification",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest",
+      "test": "auctionPerformanceMetricsAreMeasuredWithoutFlakyWallClockThresholds",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest",
+      "test": "reportExportRejectsLinkedDirectoryDestinations",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest",
+      "test": "bindingPersistenceRejectsAnyTargetOutsideTheExactCandidateSet",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest",
+      "test": "reportExportUsesTheRealLatestVerification",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.GoldenPipelineTest",
+      "test": "auctionArtifactsMatchReviewedGoldenDigests",
+      "type": "java.lang.IllegalStateException",
+      "message": "EVIDENCE_SOURCE_NOT_IN_COMMIT: use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore fatal: path 'use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore' does not exist in '4de2b18ca6ad52ff367a970b7bcdc62ef77fe2a6'"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.HotfixBindingTest",
+      "test": "productionImportUsesValidBindingAndRejectsInvalidOrStaleBindings",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest",
+      "test": "failedRebuildLeavesTheLiveWorkspaceIntact",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest",
+      "test": "liveWorkspaceReplacementKeepsRuntimeAndFullVerificationTogether(String)[1]",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest",
+      "test": "liveWorkspaceReplacementKeepsRuntimeAndFullVerificationTogether(String)[2]",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest",
+      "test": "liveWorkspaceReplacementKeepsRuntimeAndFullVerificationTogether(String)[3]",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest",
+      "test": "alteredMappingTargetsAreBlockedByTheFrozenMappingFingerprint",
+      "type": "java.nio.file.NoSuchFileException",
+      "message": "Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest",
+      "test": "auctionPlanIsDeterministicAndGeneratedUseCompiles",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest",
+      "test": "canonicalMappingPassesSchemaFingerprintAndEcoreIdentityValidation",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest",
+      "test": "mappingDigestMustCoverTheSnapshotUsedForReturnedSemantics",
+      "type": "java.nio.file.NoSuchFileException",
+      "message": "Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest",
+      "test": "invalidSchemaAndFingerprintBlockLoading",
+      "type": "org.opentest4j.AssertionFailedError",
+      "message": "expected: <MAPPING_SCHEMA_INVALID> but was: <MAPPING_LOAD_FAILED>"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest",
+      "test": "ecoreIdentityValidationUsesTheSameSnapshotAsItsDigest",
+      "type": "java.nio.file.NoSuchFileException",
+      "message": "Core\\Metamodel\\JaCaMo-Metamodel.ecore"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest",
+      "test": "invalidMappingSchemaTakesPrecedenceOverMissingDownstreamInputs",
+      "type": "org.opentest4j.AssertionFailedError",
+      "message": "schema validation must fail before Ecore or manifest inputs are required ==> expected: <MAPPING_SCHEMA_INVALID> but was: <MAPPING_LOAD_FAILED>"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest",
+      "test": "oneManifestSnapshotAuthorizesBothMappingAndEcore",
+      "type": "java.nio.file.NoSuchFileException",
+      "message": "Core\\Mapping\\freeze-manifest.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest",
+      "test": "artifactTypeCollisionsAreStableAndUnsupportedPropertyStaysStructural",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest",
+      "test": "auctionPlanMaterializesEveryElementValueAndResolvedLinkDeterministically",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest",
+      "test": "textAndDirectBackendsShareOneVerificationPlanAndPassInitialValidation",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest",
+      "test": "releaseManifestPinsVersionAndCompletePackageInventory",
+      "type": "org.opentest4j.AssertionFailedError",
+      "message": "missing release source: Core/Mapping/freeze-manifest.json ==> expected: <true> but was: <false>"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest",
+      "test": "secondCaseUsesUnchangedPipelineWithLiveStateFailuresAndResync",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest",
+      "test": "mirrorsRealJasonCartagoAndMoiseAuctionThenReconnectsWithFullResync",
+      "type": "java.lang.IllegalStateException",
+      "message": "EVIDENCE_SOURCE_NOT_IN_COMMIT: use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore fatal: path 'use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore' does not exist in '4de2b18ca6ad52ff367a970b7bcdc62ef77fe2a6'"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "backpressureRejectionCannotResurrectAnInFlightOperationCorrelation",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "backpressureTombstonesRetireAfterTheAcceptedWatermarkCompletes",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "syntheticConnectorMirrorsJsonReplayThenReconnectResyncRepairsDrift",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "lateCallbackAfterWorkspaceReplacementBelongsToTheOldObserver",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "completionBeforeRejectedTerminalStillInvalidatesTheOlderMutationCorrelation",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "observerFailureCannotLeaveMirrorLive",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "recordsEventToMirrorLatencyAndQueueSampleWithoutAnSla",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "outOfOrderTerminalCannotPoisonANewerAcceptedTerminal",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "mirrorReportsOrderingAndShutdownRejectionsAndClosesTimingLifecycle",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "unrelatedSemanticTraceCannotAuthorizeCreationAndUnknownPropertyCannotDisappear",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "unsubscribeFailureStillDrainsWorkerAndDisconnectsTransport",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "staleRejectedTerminalDoesNotInvalidateANewerActiveOperation",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "mutationEngineAppliesAllMutationKindsAndQuarantinesUnknownTrace",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "lifecycleObserverFailuresCannotRetainLiveTruth",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "receivingObserverFailureRequiresDisconnectAndAuthoritativeRecovery",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "terminalCannotCloseAnotherTargetAndLinkReplayIsIdempotent",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "initialSynchronizationBuffersConcurrentDeltaAndDetectsLostConnection",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "lateClosedStreamTerminalCannotPoisonMutationCorrelation",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "tracedLifecycleRestoresExactObjectAndStrictValuesRejectLossyInput",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "mirrorRejectsCallbackDeliveredAfterFailedInitialSynchronization",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "test": "useMutationFailureMovesMirrorToErrorAndDoesNotCorruptExistingState",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.semantic.SemanticModelTest",
+      "test": "metamodelKindsMatchCanonicalEcoreAndHaveDimensions",
+      "type": "java.nio.file.NoSuchFileException",
+      "message": "Core\\Metamodel\\JaCaMo-Metamodel.ecore"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.trace.TraceBindingTest",
+      "test": "auctionTracePersistsDeclarationsObjectsOperationsAndRuntimeIndexes",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.CrossDimensionalVerifierTest",
+      "test": "sourceRelationsRequireExactTargetsAndMissingEvidenceIsExplicit",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest",
+      "test": "operationCheckKeepsCorrelationAndUsesPreStateForPreAndPostconditions",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest",
+      "test": "registryPreservesTranslatedCoreCaseAndUserOriginsWithDependencies",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest",
+      "test": "fullCheckReportsStructureAndTracedAuctionViolationWithoutCollapsingErrors",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayerTest",
+      "test": "profileIsExplicitAndDoesNotMutateFrozenBaselinePlan",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+      "test": "backpressureTombstonesRetireAfterTheAcceptedWatermarkCompletes",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+      "test": "completionBeforeRejectedTerminalStillInvalidatesTheOlderVerificationCorrelation",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+      "test": "eventDrivenChecksCorrelateViolationAndOperationPrePostUsingCapturedPreState",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+      "test": "rejectedOperationTerminalCannotBeResurrectedByBlockedPreStateCapture",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+      "test": "connectorReceiptIsNotBlockedByAnOngoingVerification",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+      "test": "staleMirrorCannotEvaluateCurrentInvariantOrCapturePreState",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+      "test": "lateClosedStreamTerminalCannotPoisonNextStreamPreState",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+      "test": "stateChangeLatencyCoversMutationThroughVerificationResult",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+      "test": "rejectedAndClosedEventsCannotLeaveReusableReceiptTimestamps",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+      "test": "operationReportsUseTheSameReceiptToResultLatencyContract",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+      "test": "wrongTerminalCannotConsumeExactPreStateAndExportRetainsAttribution",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+      "test": "authoritativeDriftIsDiagnosedAndPeriodicAutoResyncRepairsMirror",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+      "test": "bufferedEventLatencyStartsAtOriginalConnectorReceipt",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+      "test": "targetedInvariantResultIsEquivalentToTheSameConstraintInAFullCheck",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+      "test": "streamCloseDiscardsOperationCorrelationBeforeTheNextStream",
+      "type": "org.tzi.use.plugins.jacamo.mapping.MappingException",
+      "message": "Cannot load mapping: .\\Core\\Mapping\\jacamo-use-mapping-v1.json"
+    }
+  ],
+  "failingTestIdentityComparison": "EXACTLY_EQUALS_PRE_MIGRATION_BASELINE",
+  "newFailingTests": [],
+  "resolvedFailingTests": [],
+  "logSha256": "a1c1db7eb88bafa178068eb114cdf553d278a1af3566f3697608454ab6e8e4ac",
+  "pluginPackagingAndFailsafe": "NOT_REACHED",
+  "semanticBlocker": "V2-ORDER-001; independent of existing V1 regression failures"
+}

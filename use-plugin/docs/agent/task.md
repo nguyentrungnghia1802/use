@@ -325,34 +325,47 @@ Native structural audit and generated inventory PASS; full consumer regression/p
 
 **Objective:** kiểm chứng Mapping V2 đã có, không regenerate hoặc rewrite mù quáng.
 
+**2026-09-23 — PARTIAL / semantic decision required:**
+[Mapping audit](../project/v2-migration/mapping-v2-audit.md),
+[ordered-opposite decision](../project/v2-migration/phase31-ordered-opposite-decision.md).
+Independent schema/source/compiler gates PASS (11 focused tests). Full regression:
+317 executed, 3 failures, 73 errors; same 76 failing identities as baseline.
+V2-ORDER-001 proves current USE link insertion cannot preserve every valid pair
+of independently ordered opposite lists. Phase and fidelity gates remain OPEN.
+Checked items below refer to audit fixtures/contracts, not production migration.
+Unused disposition categories are not asserted. Source inheritance is N/A (zero
+edges); the explicit subtype projection compiler control passes. Multiplicity
+bounds are structurally checked; complete source-semantic preservation, generated
+navigation/trace and executable projection/runtime/OCL gates remain OPEN.
+
 ## P31.1 — Load Mapping V2 + schema
 
-- [ ] Validate JSON syntax.
-- [ ] Validate JSON schema.
-- [ ] Validate mapping version.
-- [ ] Validate declared source metamodel fingerprint/version.
-- [ ] Reject mapping trỏ sang V1 fingerprint.
-- [ ] Detect unknown fields nếu schema yêu cầu closed shape.
-- [ ] Detect duplicate rule IDs.
+- [x] Validate JSON syntax.
+- [x] Validate JSON schema.
+- [x] Validate mapping version.
+- [x] Validate declared source metamodel fingerprint/version.
+- [x] Reject mapping trỏ sang V1 fingerprint.
+- [x] Detect unknown fields nếu schema yêu cầu closed shape.
+- [x] Detect duplicate rule IDs.
 
 ---
 
 ## P31.2 — Source coverage audit dựa trên Ecore V2
 
-- [ ] Mỗi EClass V2 có disposition.
-- [ ] Mỗi declared EAttribute V2 có disposition.
-- [ ] Mỗi EReference V2 có disposition.
-- [ ] Mỗi inheritance edge V2 có disposition.
-- [ ] Không orphan mapping entry.
-- [ ] Không stale source key.
-- [ ] Không bare-name ambiguity.
-- [ ] Owner-qualified identity được dùng.
-- [ ] Removed V1 elements không còn active mapping entry.
-- [ ] New V2 elements không silently ignored.
+- [x] Mỗi EClass V2 có disposition.
+- [x] Mỗi declared EAttribute V2 có disposition.
+- [x] Mỗi EReference V2 có disposition.
+- [x] Mỗi inheritance edge V2 có disposition.
+- [x] Không orphan mapping entry.
+- [x] Không stale source key.
+- [x] Không bare-name ambiguity.
+- [x] Owner-qualified identity được dùng.
+- [x] Removed V1 elements không còn active mapping entry.
+- [x] New V2 elements không silently ignored.
 
 Allowed disposition:
 
-- [ ] `MAPPED`.
+- [x] `MAPPED`.
 - [ ] `INTENTIONALLY_NOT_MAPPED` với reason.
 - [ ] `REVIEW_REQUIRED`.
 - [ ] `UNSUPPORTED` với evidence.
@@ -363,15 +376,15 @@ Allowed disposition:
 
 Với từng mapping:
 
-- [ ] USE target construct hợp lệ.
-- [ ] datatype conversion hợp lệ.
-- [ ] inheritance hợp lệ.
-- [ ] association/composition direction hợp lệ.
+- [x] USE target construct hợp lệ.
+- [x] datatype conversion hợp lệ.
+- [x] inheritance hợp lệ.
+- [x] association/composition direction hợp lệ.
 - [ ] multiplicity preserve intended source semantics.
-- [ ] role names deterministic và không collision.
+- [x] role names deterministic và không collision.
 - [ ] reserved USE identifiers được escape có trace.
 - [ ] generated reverse navigation không bị hiểu nhầm source-authored.
-- [ ] no duplicate classifier/association/role names.
+- [x] no duplicate classifier/association/role names.
 
 ---
 
@@ -379,16 +392,16 @@ Với từng mapping:
 
 Nếu Mapping V2 có projection/profile extension:
 
-- [ ] inventory tất cả projections.
-- [ ] xác định source anchors.
-- [ ] xác định target concepts.
-- [ ] prerequisites.
-- [ ] assumptions.
-- [ ] information loss.
+- [x] inventory tất cả projections.
+- [x] xác định source anchors.
+- [x] xác định target concepts.
+- [x] prerequisites.
+- [x] assumptions.
+- [x] information loss.
 - [ ] runtime relevance.
 - [ ] OCL relevance.
-- [ ] case-study independence.
-- [ ] unsupported conditions.
+- [x] case-study independence.
+- [x] unsupported conditions.
 
 Đặc biệt audit:
 
@@ -406,28 +419,28 @@ Nếu Mapping V2 có projection/profile extension:
 
 Generate structural fixture từ Mapping V2:
 
-- [ ] classes compile.
-- [ ] attributes compile.
-- [ ] associations/compositions compile.
-- [ ] inheritance compile.
-- [ ] projection fixture compile.
-- [ ] negative mutations fail như expected.
+- [x] classes compile.
+- [x] attributes compile.
+- [x] associations/compositions compile.
+- [x] inheritance compile.
+- [x] projection fixture compile.
+- [x] negative mutations fail như expected.
 
 ### Output
 
-- [ ] `mapping-v2-audit.md`.
-- [ ] `mapping-v2-validation.json`.
-- [ ] `mapping-v2-use-compile.log`.
+- [x] `mapping-v2-audit.md`.
+- [x] `mapping-v2-validation.json`.
+- [x] `mapping-v2-use-compile.log`.
 
 ---
 
 ## P31.6 — Mapping V2 working status
 
-- [ ] Mapping V2 = `WORKING_BASELINE`.
-- [ ] Không freeze final.
-- [ ] Có hash/version record.
-- [ ] Có compatibility pointer tới exact Metamodel V2 hash.
-- [ ] Mọi future Ecore change phải invalidate/reconcile mapping status.
+- [x] Mapping V2 = `WORKING_BASELINE`.
+- [x] Không freeze final.
+- [x] Có hash/version record.
+- [x] Có compatibility pointer tới exact Metamodel V2 hash.
+- [x] Mọi future Ecore change phải invalidate/reconcile mapping status.
 
 ---
 

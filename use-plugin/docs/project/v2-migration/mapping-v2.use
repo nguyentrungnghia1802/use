@@ -1,0 +1,310 @@
+model V2ContractAudit
+
+enum NormType { OBLIGATION, PERMISSION }
+enum GoalType { ACHIEVEMENT, MAINTENANCE }
+enum OPlanOperator { SEQUENCE, PARALLEL, CHOICE }
+enum LinkType { AUTHORITY, COMMUNICATION, ACQUAINTANCE }
+enum LinkScope { INTRA_GROUP, INTER_GROUP }
+enum ActionKind { INTERNAL, EXTERNAL }
+enum AgentGoalType { ACHIEVEMENT, TEST }
+class Organization
+attributes
+  id : String
+end
+
+class Group
+attributes
+  id : String
+  minCardinality : String
+  maxCardinality : String
+end
+
+class Role
+attributes
+  id : String
+  isAbstract : Boolean
+  minCardinality : String
+  maxCardinality : String
+end
+
+class Link
+attributes
+  type : LinkType
+  scope : LinkScope
+  extendsSubgroups : Boolean
+  bidirectional : Boolean
+end
+
+class Norm
+attributes
+  id : String
+  type : NormType
+  condition : String
+  timeConstraint : String
+end
+
+class Scheme
+attributes
+  id : String
+end
+
+class Mission
+attributes
+  id : String
+  minCardinality : String
+  maxCardinality : String
+end
+
+class OGoal
+attributes
+  id : String
+  description : String
+  type : GoalType
+  minAgentsToSatisfy : String
+  timeToFulfill : String
+end
+
+class OPlan
+attributes
+  operator : OPlanOperator
+end
+
+class Agent
+attributes
+  name : String
+  source : String
+end
+
+class Plan
+attributes
+  label : String
+  ecore_Plan_context : String
+end
+
+class Event
+attributes
+  operator : String
+  type : String
+  literal : String
+end
+
+class Action
+attributes
+  name : String
+  arity : Integer
+  kind : ActionKind
+end
+
+class Belief
+attributes
+  literal : String
+end
+
+class AGoal
+attributes
+  literal : String
+  type : AgentGoalType
+end
+
+class Environment
+attributes
+end
+
+class Workspace
+attributes
+  name : String
+end
+
+class Artifact
+attributes
+  name : String
+  type : String
+end
+
+class Operation
+attributes
+  name : String
+  arity : Integer
+end
+
+class Property
+attributes
+  name : String
+  arity : Integer
+end
+
+class Signal
+attributes
+  name : String
+  arity : Integer
+end
+
+composition Organization_groups_Group between
+  Organization[0..1] role source_groups
+  Group[*] role groups ordered
+end
+
+composition Organization_schemes_Scheme between
+  Organization[0..1] role source_schemes
+  Scheme[*] role schemes ordered
+end
+
+composition Organization_norms_Norm between
+  Organization[0..1] role source_norms
+  Norm[*] role norms ordered
+end
+
+composition Group_roles_Role between
+  Group[0..1] role source_roles
+  Role[*] role roles ordered
+end
+
+composition Group_subGroups_Group between
+  Group[0..1] role source_subGroups
+  Group[*] role subGroups ordered
+end
+
+composition Group_links_Link between
+  Group[0..1] role source_links
+  Link[*] role links ordered
+end
+
+association Role_superRoles_Role between
+  Role[*] role source_superRoles
+  Role[*] role superRoles ordered
+end
+
+association Link_sourceRole_Role between
+  Link[*] role source_sourceRole
+  Role[1] role sourceRole
+end
+
+association Link_targetRole_Role between
+  Link[*] role source_targetRole
+  Role[1] role targetRole
+end
+
+association Norm_role_Role between
+  Norm[*] role source_role
+  Role[1] role ecore_Norm_role
+end
+
+association Norm_mission_Mission between
+  Norm[*] role source_mission
+  Mission[1] role mission
+end
+
+composition Scheme_rootGoal_OGoal between
+  Scheme[0..1] role source_rootGoal
+  OGoal[1] role rootGoal
+end
+
+composition Scheme_missions_Mission between
+  Scheme[0..1] role source_missions
+  Mission[1..*] role missions ordered
+end
+
+association Mission_goals_OGoal between
+  Mission[*] role source_goals
+  OGoal[1..*] role goals ordered
+end
+
+composition OGoal_plan_OPlan between
+  OGoal[0..1] role source_plan
+  OPlan[0..1] role plan
+end
+
+composition OPlan_subGoals_OGoal between
+  OPlan[0..1] role source_subGoals
+  OGoal[1..*] role subGoals ordered
+end
+
+composition Agent_plans_Plan between
+  Agent[0..1] role source_plans
+  Plan[*] role plans ordered
+end
+
+composition Agent_beliefs_Belief between
+  Agent[0..1] role source_beliefs
+  Belief[*] role beliefs ordered
+end
+
+composition Agent_goals_AGoal between
+  Agent[0..1] role source_goals
+  AGoal[*] role goals ordered
+end
+
+association Agent_roles_Role between
+  Agent[*] role agents ordered
+  Role[*] role roles ordered
+end
+
+association Agent_workspaces_Workspace between
+  Agent[*] role agents ordered
+  Workspace[*] role workspaces ordered
+end
+
+association Agent_artifacts_Artifact between
+  Agent[*] role agents ordered
+  Artifact[*] role artifacts ordered
+end
+
+composition Plan_triggeringEvent_Event between
+  Plan[0..1] role source_triggeringEvent
+  Event[1] role triggeringEvent
+end
+
+composition Plan_actions_Action between
+  Plan[0..1] role source_actions
+  Action[*] role actions ordered
+end
+
+association Event_signal_Signal between
+  Event[*] role source_signal
+  Signal[0..1] role signal
+end
+
+association Action_operation_Operation between
+  Action[*] role source_operation
+  Operation[0..1] role operation
+end
+
+association Belief_property_Property between
+  Belief[*] role source_property
+  Property[0..1] role property
+end
+
+association AGoal_organizationalGoal_OGoal between
+  AGoal[*] role source_organizationalGoal
+  OGoal[0..1] role organizationalGoal
+end
+
+composition Environment_workspaces_Workspace between
+  Environment[0..1] role source_workspaces
+  Workspace[1..*] role workspaces ordered
+end
+
+composition Workspace_artifacts_Artifact between
+  Workspace[0..1] role source_artifacts
+  Artifact[*] role artifacts ordered
+end
+
+composition Artifact_operations_Operation between
+  Artifact[0..1] role source_operations
+  Operation[*] role ecore_Artifact_operations ordered
+end
+
+composition Artifact_properties_Property between
+  Artifact[0..1] role source_Artifact_properties
+  Property[*] role properties ordered
+end
+
+association Operation_signals_Signal between
+  Operation[*] role source_signals
+  Signal[*] role signals ordered
+end
+
+association Operation_properties_Property between
+  Operation[*] role source_Operation_properties
+  Property[*] role properties ordered
+end

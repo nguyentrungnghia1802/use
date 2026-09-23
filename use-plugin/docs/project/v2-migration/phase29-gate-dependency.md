@@ -35,3 +35,10 @@ order; do not pull production migration into Phase 29. Mark independently comple
 tasks only. Keep consumer-dependent acceptance/regression OPEN and rerun it after
 downstream migration. Baseline failures do not authorize rollback of V2. This
 dependency is resolved as a scheduling decision, not a semantic blocker.
+
+Phase 31 update: this scheduling authorization remains in force. A separate
+executable semantic counterexample is recorded in
+[V2-ORDER-001](phase31-ordered-opposite-decision.md). It requires an ordering
+representation/domain decision, not a scheduling change or V2 rollback.
+Latest regression retains the same 76 failing identities (317 executed including
+new audits); see phase31-regression.json.

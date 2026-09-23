@@ -1,0 +1,288 @@
+{
+  "status": "STRUCTURAL_ANCHORS_VALIDATED_BY_NATIVE_ECORE_AUDIT",
+  "projections": [
+    {
+      "id": "VP001",
+      "name": "ConcreteArtifactTypeProjection",
+      "status": "ENABLED_WHEN_RESOLVED",
+      "source": "Parsed JaCaMo project: Artifact.type plus externally confirmed concrete CArtAgO implementation type",
+      "preconditions": [
+        "Artifact.type resolves to a concrete implementation identity",
+        "parser/source resolver confirms CArtAgO Artifact ancestry or equivalent project declaration"
+      ],
+      "target": {
+        "kind": "USE_CLASS",
+        "rule": "Generate one concrete USE subclass of Artifact per distinct resolved implementation type."
+      },
+      "trace": "Preserve fully-qualified implementation type as trace metadata. Artifact.type is the V2 structural anchor; never infer the class from Agent/action names.",
+      "metamodelContract": {
+        "sourceElements": [
+          "agentmetamodel::Artifact",
+          "agentmetamodel::Artifact#type"
+        ],
+        "structuralBindings": [
+          "C018",
+          "A042"
+        ],
+        "targetConcept": "MClass",
+        "baseClass": "Artifact",
+        "dependsOn": [],
+        "mode": "TYPE_TEMPLATE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Expose a resolved concrete Artifact implementation as a USE subtype.",
+        "assumptions": [
+          "Concrete Java/CArtAgO type resolution is external to the structural Ecore."
+        ],
+        "informationLoss": "No baseline structural data is removed; Java behavior is not represented by the subtype.",
+        "externalInputRequired": true,
+        "baselineMutation": false
+      }
+    },
+    {
+      "id": "VP002",
+      "name": "ObservablePropertyStateProjection",
+      "status": "ENABLED_ONLY_WITH_RESOLVED_NAME_AND_TYPE",
+      "source": "Parsed concrete Property owned by an Artifact implementation/instance",
+      "structuralRepresentation": "Preserve Property object and R034 composition.",
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "owner": "generated concrete Artifact subclass",
+        "name": "Property.name",
+        "type": "externally resolved USE-compatible state type"
+      },
+      "runtime": "Current property value may materialize as !set on the concrete artifact object.",
+      "fallback": "If value type cannot be resolved reliably, keep structural Property(name,arity) only; never infer a state type from arity or literal text.",
+      "reason": "Enables natural OCL state invariants/pre/postconditions while preserving the V2 structural Property concept.",
+      "metamodelContract": {
+        "sourceElements": [
+          "agentmetamodel::Artifact",
+          "agentmetamodel::Property",
+          "agentmetamodel::Artifact#properties"
+        ],
+        "structuralBindings": [
+          "C018",
+          "C020",
+          "R034"
+        ],
+        "targetConcept": "MAttribute",
+        "baseClass": "Artifact",
+        "dependsOn": [
+          "VP001"
+        ],
+        "mode": "ATTRIBUTE_TEMPLATE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Project a resolved observable-property value to a typed attribute on a concrete Artifact subtype.",
+        "assumptions": [
+          "Property.name is structural; value type/value require project/runtime evidence.",
+          "Generated member must not collide with mapped attributes or navigations."
+        ],
+        "informationLoss": "Structural Property remains. Concrete Java/runtime value semantics are outside this projection.",
+        "externalInputRequired": true,
+        "baselineMutation": false
+      }
+    },
+    {
+      "id": "VP003",
+      "name": "CArtAgOOperationProjection",
+      "status": "ENABLED_ONLY_WITH_RESOLVED_SIGNATURE",
+      "source": "Parsed concrete Operation owned by an Artifact implementation",
+      "structuralRepresentation": "Preserve Operation object and R033 composition.",
+      "target": {
+        "kind": "USE_OPERATION",
+        "internalConcept": "MOperation",
+        "owner": "generated concrete Artifact subclass",
+        "name": "Operation.name",
+        "parameters": "externally resolved ordered parameter names/types; count must agree with Operation.arity",
+        "resultType": "externally resolved result type when meaningful, otherwise no result"
+      },
+      "fallback": "If a full signature cannot be resolved, keep structural Operation(name,arity) only. Arity alone is insufficient to invent parameter types or names.",
+      "oclCapability": "Resolved projected operations anchor USE OCL pre/postconditions.",
+      "metamodelContract": {
+        "sourceElements": [
+          "agentmetamodel::Artifact",
+          "agentmetamodel::Operation",
+          "agentmetamodel::Artifact#operations"
+        ],
+        "structuralBindings": [
+          "C018",
+          "C019",
+          "R033"
+        ],
+        "targetConcept": "MOperation",
+        "baseClass": "Artifact",
+        "dependsOn": [
+          "VP001"
+        ],
+        "mode": "OPERATION_TEMPLATE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Expose a resolved CArtAgO operation signature as a USE operation.",
+        "assumptions": [
+          "Full ordered signature comes from CArtAgO/Java resolution; V2 Ecore provides only name/arity."
+        ],
+        "informationLoss": "Structural Operation remains; guards/internal Java behavior/effects are not inferred.",
+        "externalInputRequired": true,
+        "baselineMutation": false
+      }
+    },
+    {
+      "id": "VP004",
+      "name": "ExternalActionOperationConsistency",
+      "status": "STRUCTURAL_LINK_PRESERVED",
+      "source": "Action.operation -> Operation, constrained semantically by Action.kind=EXTERNAL",
+      "target": "Reuse mapped association R027; when VP003 exists, trace structural Operation to its projected MOperation.",
+      "purpose": "Supports Jason external-action \u2194 CArtAgO operation consistency without inventing receiver/execution semantics.",
+      "metamodelContract": {
+        "sourceElements": [
+          "agentmetamodel::Action",
+          "agentmetamodel::Action#kind",
+          "agentmetamodel::Operation",
+          "agentmetamodel::Action#operation"
+        ],
+        "structuralBindings": [
+          "C013",
+          "A036",
+          "C019",
+          "R027"
+        ],
+        "targetConcept": "MAssociation",
+        "baseClass": null,
+        "dependsOn": [],
+        "mode": "STRUCTURAL_REUSE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Reuse the V2 action-operation structural relation.",
+        "assumptions": [
+          "Action.kind must be EXTERNAL for an environment-operation interpretation; INTERNAL actions must not be forced to an Operation."
+        ],
+        "informationLoss": "No structural loss; receiver resolution and execution are not inferred.",
+        "externalInputRequired": false,
+        "baselineMutation": false
+      }
+    },
+    {
+      "id": "VP005",
+      "name": "ObservablePropertyBeliefConsistency",
+      "status": "STRUCTURAL_LINK_PRESERVED",
+      "source": "Belief.property -> Property",
+      "target": "Reuse mapped association R028; VP002 may additionally project the concrete property value.",
+      "purpose": "Supports environment observable-property \u2194 Jason belief consistency checks while preserving V2 direction.",
+      "metamodelContract": {
+        "sourceElements": [
+          "agentmetamodel::Belief",
+          "agentmetamodel::Property",
+          "agentmetamodel::Belief#property"
+        ],
+        "structuralBindings": [
+          "C014",
+          "C020",
+          "R028"
+        ],
+        "targetConcept": "MAssociation",
+        "baseClass": null,
+        "dependsOn": [],
+        "mode": "STRUCTURAL_REUSE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Anchor V2 belief-to-property correspondence for later verification.",
+        "assumptions": [
+          "The relation does not itself prove percept delivery timing or belief synchronization."
+        ],
+        "informationLoss": "No structural loss; runtime synchronization semantics remain outside this layer.",
+        "externalInputRequired": false,
+        "baselineMutation": false
+      }
+    },
+    {
+      "id": "VP006",
+      "name": "OrganisationalGoalAgentGoalConsistency",
+      "status": "STRUCTURAL_LINK_PRESERVED",
+      "source": "AGoal.organizationalGoal -> OGoal",
+      "target": "Reuse mapped association R029.",
+      "purpose": "Supports agent-goal \u2194 MOISE organisational-goal correspondence in the direction declared by V2.",
+      "metamodelContract": {
+        "sourceElements": [
+          "agentmetamodel::AGoal",
+          "agentmetamodel::OGoal",
+          "agentmetamodel::AGoal#organizationalGoal"
+        ],
+        "structuralBindings": [
+          "C015",
+          "C008",
+          "R029"
+        ],
+        "targetConcept": "MAssociation",
+        "baseClass": null,
+        "dependsOn": [],
+        "mode": "STRUCTURAL_REUSE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Anchor V2 cross-dimensional goal correspondence.",
+        "assumptions": [
+          "No achievement/satisfaction lifecycle is inferred from the static link."
+        ],
+        "informationLoss": "No structural loss; runtime satisfaction semantics are outside scope.",
+        "externalInputRequired": false,
+        "baselineMutation": false
+      }
+    },
+    {
+      "id": "VP007",
+      "name": "NormPreservation",
+      "status": "LOCKED",
+      "source": "Norm including enum type, condition/timeConstraint, role and mission relations",
+      "target": "Represent Norm as USE class/object with native NormType attribute plus mapped associations only.",
+      "forbiddenTransformation": "Do not compile obligation/permission into OCL automatically without a separately proved deontic translation contract.",
+      "purpose": "Keep MOISE normative structure distinct from ordinary OCL state/operation constraints.",
+      "metamodelContract": {
+        "sourceElements": [
+          "agentmetamodel::Norm",
+          "agentmetamodel::Norm#type",
+          "agentmetamodel::Norm#condition",
+          "agentmetamodel::Norm#timeConstraint",
+          "agentmetamodel::Norm#role",
+          "agentmetamodel::Norm#mission"
+        ],
+        "structuralBindings": [
+          "C005",
+          "A014",
+          "A015",
+          "A016",
+          "R011",
+          "R012"
+        ],
+        "targetConcept": "MClass",
+        "baseClass": "Norm",
+        "dependsOn": [],
+        "mode": "STRUCTURAL_REUSE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Preserve V2 normative data and links without deontic-to-OCL invention.",
+        "assumptions": [
+          "NormType is a native USE enum; condition/timeConstraint stay strings unless a later formal parser is proven."
+        ],
+        "informationLoss": "No structural loss; deontic interpretation/execution remains intentionally outside this mapping.",
+        "externalInputRequired": false,
+        "baselineMutation": false
+      }
+    }
+  ],
+  "externalProjectionRequirements": [
+    {
+      "id": "XPR001",
+      "projection": "VP002",
+      "owner": "Property",
+      "requirement": "runtimeValueType",
+      "declaredInEcore": false,
+      "evidence": "Property declares only name and arity; a typed projected USE state attribute requires independently resolved value type evidence.",
+      "decision": "Do not synthesize an EAttribute or infer a type from arity/name/literal text.",
+      "mappingStatus": "EXTERNAL_PROJECTION_PRECONDITION"
+    },
+    {
+      "id": "XPR002",
+      "projection": "VP003",
+      "owner": "Operation",
+      "requirement": "orderedParameterNamesTypesAndResultType",
+      "declaredInEcore": false,
+      "evidence": "Operation declares only name and arity; a projected MOperation requires an independently resolved full ordered signature.",
+      "decision": "Do not synthesize parameter names/types or result type from arity.",
+      "mappingStatus": "EXTERNAL_PROJECTION_PRECONDITION"
+    }
+  ],
+  "limit": "Template compile uses explicit test-owned Java signature/state types; does not infer facts from arity or implement runtime semantics"
+}
