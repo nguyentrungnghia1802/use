@@ -191,4 +191,3 @@ class OrderProjectionTest {
         } finally { java.nio.file.Files.deleteIfExists(replay); }
     }
 }
-

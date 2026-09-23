@@ -21,6 +21,7 @@ final class V2MappingValidator {
         require(pkg.equals(mapping.path("sourceMetamodel").path("packageName").asText()) &&
                 root.getAttribute("nsURI").equals(mapping.path("sourceMetamodel").path("nsURI").asText()), "MAPPING_NAMESPACE_MISMATCH");
         Map<String, Element> elements = new TreeMap<>();
+        Set<String> inheritance = new TreeSet<>();
         var classifiers = root.getElementsByTagName("eClassifiers");
         for (int i = 0; i < classifiers.getLength(); i++) {
             var cls = (Element) classifiers.item(i); String id = pkg + "::" + cls.getAttribute("name");
@@ -30,7 +31,8 @@ final class V2MappingValidator {
                 var feature = (Element) features.item(j);
                 require(elements.put(id + "#" + feature.getAttribute("name"), feature) == null, "ECORE_DUPLICATE_SOURCE");
             }
-            require(cls.getAttribute("eSuperTypes").isBlank(), "V2_INHERITANCE_RECONCILE_REQUIRED");
+            for (String parent : cls.getAttribute("eSuperTypes").trim().split("\\s+")) if (!parent.isBlank())
+                inheritance.add(id + "->super::" + parent.substring(parent.lastIndexOf('/') + 1));
         }
         Map<String, JsonNode> rules = new TreeMap<>(); Set<String> ids = new HashSet<>();
         for (String section : List.of("classMappings", "enumMappings", "attributeMappings", "referenceMappings"))
@@ -79,7 +81,13 @@ final class V2MappingValidator {
                 }
             }
         require(elements.keySet().equals(rules.keySet()), "MAPPING_SOURCE_COVERAGE_MISMATCH");
-        require(mapping.path("inheritanceMappings").isEmpty(), "MAPPING_INVENTED_INHERITANCE");
+        Set<String> mappedInheritance = new TreeSet<>();
+        for (var edge : mapping.path("inheritanceMappings")) {
+            String source = edge.path("source").asText();
+            require(ids.add(edge.path("id").asText()) && mappedInheritance.add(source), "MAPPING_DUPLICATE_INHERITANCE");
+            require(source.equals(pkg + "::" + edge.path("target").path("subclass").asText() + "->super::" + edge.path("target").path("superclass").asText()), "MAPPING_INHERITANCE_TARGET_MISMATCH");
+        }
+        require(inheritance.equals(mappedInheritance), "MAPPING_INHERITANCE_COVERAGE_MISMATCH");
         for (var projection : mapping.path("verificationProjections")) require(ids.add(projection.path("id").asText()), "MAPPING_DUPLICATE_ID");
         for (var rule : mapping.path("referenceMappings")) {
             var target = rule.path("target");

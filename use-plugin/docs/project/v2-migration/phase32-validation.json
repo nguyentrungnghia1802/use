@@ -1,0 +1,23 @@
+{
+  "status": "COMPONENT_GATES_PASS_PHASE_CLOSURE_OPEN",
+  "javaFocused": {
+    "tests": 20,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "command": "mvn -B -pl use-plugin -Dtest=ActiveBaselineTest,OrderProjectionTest,*ConnectorTest,MoiseBoardSnapshotSourceTest test",
+    "logSha256": "a34f6a35bb47e93afd02f8b5d612ec7a364a606aa7d19b82986428efa8d476e2"
+  },
+  "python": {
+    "tests": 11,
+    "command": "python -m unittest discover -s use-plugin/tools -p 'test_*.py'"
+  },
+  "syntheticChange": "ADDED_SUBCLASS_AND_INHERITANCE: stale coverage rejected even with reconciled hash; reconciled mapping compiles through generic planner",
+  "sourceInputs": "NO_CANONICAL_CHANGE",
+  "open": [
+    "V2 Semantic IR/parser migration",
+    "default facade consumers",
+    "full regression",
+    "merge/post-merge/push"
+  ]
+}

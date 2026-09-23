@@ -34,11 +34,7 @@ public final class MappingLoader {
     }
 
     public MappingModel loadCanonical(Path checkout) {
-        Path module = Files.isDirectory(checkout.resolve("Core")) ? checkout : checkout.resolve("use-plugin");
-        return load(module.resolve("Core/Mapping/jacamo-use-mapping-v1.json"),
-                module.resolve("Core/Mapping/jacamo-use-mapping.schema.json"),
-                module.resolve("Core/Metamodel/JaCaMo-Metamodel.ecore"),
-                module.resolve("Core/Mapping/freeze-manifest.json"));
+        return new ActiveBaseline().fromCheckout(checkout).mapping();
     }
 
     /** Working contracts validate exact embedded Ecore compatibility, without a frozen V1 manifest. */

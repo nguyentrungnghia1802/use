@@ -49,7 +49,7 @@ public final class RuntimeMappingLoader {
                 "canonical/jacamo-use-mapping-v1.json")) {
             byte[] bytes;
             if (name.endsWith("jacamo-use-runtime-mapping-v1.json")) bytes = mappingBytes;
-            else try (var input = getClass().getResourceAsStream("/org/tzi/use/plugins/jacamo/" + name)) {
+            else try (var input = getClass().getResourceAsStream("/org/tzi/use/plugins/jacamo/" + name.replace("canonical/", "historical/version-1/"))) {
                 if (input == null) throw new RuntimeMappingException("RUNTIME_MAPPING_RESOURCE_FAILED", "document", name);
                 bytes = input.readAllBytes();
             }

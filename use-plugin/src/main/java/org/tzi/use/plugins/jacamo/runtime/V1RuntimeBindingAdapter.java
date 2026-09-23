@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public final class V1RuntimeBindingAdapter implements RuntimeBindingContract {
     private final JsonNode structural;
     public V1RuntimeBindingAdapter() {
-        try (var input = getClass().getResourceAsStream("/org/tzi/use/plugins/jacamo/canonical/jacamo-use-mapping-v1.json")) {
+        try (var input = getClass().getResourceAsStream("/org/tzi/use/plugins/jacamo/historical/version-1/jacamo-use-mapping-v1.json")) {
             this.structural = new ObjectMapper().readTree(input);
         } catch (Exception error) { throw new RuntimeMappingException("RUNTIME_MAPPING_ANCHOR_RESOURCE", "document", error.getMessage()); }
     }

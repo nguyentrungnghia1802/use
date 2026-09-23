@@ -471,13 +471,19 @@ Phase closure remains OPEN; this is not an end-to-end V2 release acceptance.
 
 **Objective:** làm cho các thay đổi nhỏ V2.1/V2.2 sau này rẻ và có kiểm soát.
 
+**Component tasks PASS; overall phase closure OPEN.** See
+[selection/evolution evidence](../project/v2-migration/active-baseline-policy.md).
+20 focused Java tests and 11 Python tests PASS. Mapping defaults now select V2;
+IR/parser/facade integration and full regression still depend on P33–35.
+No phase merge/release acceptance is implied by the checked component tasks.
+
 ## P32.1 — Remove hard-coded metamodel inventory from production logic
 
-- [ ] Không hard-code class count.
-- [ ] Không hard-code attribute/reference count.
-- [ ] Không hard-code inheritance count.
-- [ ] Không hard-code V1 projection count.
-- [ ] Registry/descriptor được load từ V2 mapping/metamodel contract.
+- [x] Không hard-code class count.
+- [x] Không hard-code attribute/reference count.
+- [x] Không hard-code inheritance count.
+- [x] Không hard-code V1 projection count.
+- [x] Registry/descriptor được load từ V2 mapping/metamodel contract.
 
 ---
 
@@ -485,13 +491,13 @@ Phase closure remains OPEN; this is not an end-to-end V2 release acceptance.
 
 Create one component/service responsible for:
 
-- [ ] active metamodel path.
-- [ ] active mapping path.
-- [ ] version.
-- [ ] hash.
-- [ ] compatibility status.
-- [ ] resource packaging path.
-- [ ] diagnostics.
+- [x] active metamodel path.
+- [x] active mapping path.
+- [x] version.
+- [x] hash.
+- [x] compatibility status.
+- [x] resource packaging path.
+- [x] diagnostics.
 
 Không để nhiều class tự nối path `Core/...`.
 
@@ -501,33 +507,33 @@ Không để nhiều class tự nối path `Core/...`.
 
 Input:
 
-- [ ] old Ecore.
-- [ ] new Ecore.
+- [x] old Ecore.
+- [x] new Ecore.
 
 Output:
 
-- [ ] structural diff.
-- [ ] mapping impact.
-- [ ] semantic IR impact.
-- [ ] parser impact.
-- [ ] projection impact.
-- [ ] trace impact.
-- [ ] runtime target-binding impact.
-- [ ] OCL context/navigation impact.
-- [ ] golden output impact.
+- [x] structural diff.
+- [x] mapping impact.
+- [x] semantic IR impact.
+- [x] parser impact.
+- [x] projection impact.
+- [x] trace impact.
+- [x] runtime target-binding impact.
+- [x] OCL context/navigation impact.
+- [x] golden output impact.
 
 ### Tests
 
-- [ ] add class.
-- [ ] remove class.
-- [ ] add attribute.
-- [ ] datatype change.
-- [ ] multiplicity change.
-- [ ] containment change.
-- [ ] target reference change.
-- [ ] inheritance change.
-- [ ] rename candidate without auto acceptance.
-- [ ] no-op/self diff.
+- [x] add class.
+- [x] remove class.
+- [x] add attribute.
+- [x] datatype change.
+- [x] multiplicity change.
+- [x] containment change.
+- [x] target reference change.
+- [x] inheritance change.
+- [x] rename candidate without auto acceptance.
+- [x] no-op/self diff.
 
 ---
 
@@ -548,18 +554,18 @@ replace/update V2 input
 
 Checklist:
 
-- [ ] Không manual checklist-only process; có automation nơi hợp lý.
-- [ ] Không silently accept fingerprint mismatch.
-- [ ] Không update only hash to silence test.
-- [ ] Unaffected runtime connectors must remain green.
+- [x] Không manual checklist-only process; có automation nơi hợp lý.
+- [x] Không silently accept fingerprint mismatch.
+- [x] Không update only hash to silence test.
+- [x] Unaffected runtime connectors must remain green.
 
 ---
 
 ## P32.5 — Phase 32 gate
 
-- [ ] Synthetic V2.1 change chứng minh pipeline phát hiện đúng impacted layers.
-- [ ] Unaffected subsystems không cần sửa.
-- [ ] V2 future minor changes có documented migration loop.
+- [x] Synthetic V2.1 change chứng minh pipeline phát hiện đúng impacted layers.
+- [x] Unaffected subsystems không cần sửa.
+- [x] V2 future minor changes có documented migration loop.
 
 ---
 

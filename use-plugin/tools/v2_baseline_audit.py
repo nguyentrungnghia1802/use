@@ -88,8 +88,8 @@ def structural_diff(old, new):
 
 def impact_report(diff):
     """Conservative obligation classification, never proof of source-language equivalence."""
-    layers = ['semantic IR', 'parser/extractor', 'structural mapping', 'projection',
-              'trace identity', 'runtime target binding', 'OCL context/navigation', 'case studies']
+    layers = ['semantic IR', 'parser/extractor', 'structural mapping', 'projection', 'USE transformation',
+              'trace identity', 'runtime target binding', 'OCL context/navigation', 'golden .use/.cmd', 'case studies']
     result = []
     extractors = {p.relative_to(MODULE).as_posix(): p.read_text(encoding='utf-8')
                   for p in sorted((MODULE / 'src/main/java/org/tzi/use/plugins/jacamo/extraction').glob('*.java'))}
