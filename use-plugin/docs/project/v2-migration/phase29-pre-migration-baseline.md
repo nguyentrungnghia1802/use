@@ -1,7 +1,7 @@
 # Phase 29 pre-migration baseline — 2026-09-23
 
 Status: capture complete; migration and phase acceptance remain open.
-Classification: TEST/EVIDENCE CHANGE. No canonical input or production behavior changed.
+Classification: TEST/EVIDENCE CHANGE and reproducibility configuration fix. No canonical input or production behavior changed.
 
 Repository started clean on `main`, HEAD `eeb98c41`. Implementation branch:
 `phase/29-v2-migration-baseline`. The latest input change is `70e8498b`, which
@@ -38,6 +38,12 @@ remain historical limits, not fresh V2 evidence.
 Related docs inspected: agent/task, metamodel/mapping contracts, Phase 24
 two-case evidence, compatibility/POM/release assembly, both V2 audits.
 Next gates: active policy implementation, coupling migration, full regression.
+
+Input relocation also left versioned Ecore/JSON outside the original `.gitattributes`
+byte-preservation patterns. Recursive patterns now cover the versioned folders.
+`git check-attr` confirms `text: unset`; every versioned canonical Ecore/JSON byte
+matches its committed pre-change blob. This prevents host line-ending conversion
+from invalidating fingerprints without changing the semantic baseline.
 
 Intake tooling validation: `python -m unittest discover -s use-plugin/tools -p "test_*.py" -v`: **9/9 PASS**, including the existing diff regressions and new missing/orphan/duplicate source, changed bounds, no inferred rename, XXE and unresolved-target controls. `git diff --check`: PASS. Production and V1 canonical bytes are unchanged, so the captured failing Maven baseline remains the applicable full-regression status; it has not been relabelled PASS.
 
