@@ -17,7 +17,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -36,7 +37,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -59,7 +63,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -78,7 +83,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -99,7 +105,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -118,7 +129,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -139,7 +151,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -160,7 +177,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -179,7 +200,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -198,7 +222,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -217,7 +242,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -236,7 +264,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -255,7 +284,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -274,7 +304,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -293,7 +326,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -312,7 +348,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -331,7 +370,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -350,7 +393,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -372,7 +416,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -391,7 +440,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -410,7 +463,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -429,7 +485,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -450,7 +510,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -469,7 +532,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -488,7 +552,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -507,7 +572,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -526,7 +595,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/StaticProjectImporter.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -545,7 +618,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -564,7 +640,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -585,7 +664,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -607,7 +690,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -626,7 +712,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -645,7 +732,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -666,7 +756,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -687,7 +781,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -706,7 +803,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -725,7 +823,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -747,7 +848,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -766,7 +871,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -785,7 +894,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -806,7 +916,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -825,7 +938,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -844,7 +960,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -866,7 +983,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -885,7 +1006,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -907,7 +1031,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -926,7 +1054,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -945,7 +1074,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -964,7 +1096,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -985,7 +1120,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "classifiers",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -1004,7 +1143,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1023,7 +1163,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1042,7 +1183,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1061,7 +1203,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1080,7 +1225,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1099,7 +1247,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1118,7 +1269,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1137,7 +1291,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1156,7 +1313,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1175,7 +1333,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1194,7 +1353,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1213,7 +1373,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1232,7 +1393,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1251,7 +1413,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1270,7 +1433,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1289,7 +1453,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1308,7 +1477,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1327,7 +1501,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1346,7 +1525,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1365,7 +1549,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1384,7 +1573,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1403,7 +1597,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1422,7 +1621,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1441,7 +1645,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1460,7 +1669,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1479,7 +1693,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1498,7 +1717,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1517,7 +1741,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1536,7 +1765,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1555,7 +1789,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1574,7 +1813,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1593,7 +1837,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1612,7 +1861,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1631,7 +1885,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1650,7 +1909,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1669,7 +1933,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1688,7 +1957,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1707,7 +1981,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1726,7 +2005,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1745,7 +2029,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1764,7 +2053,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1783,7 +2077,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1802,7 +2101,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1821,7 +2125,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1840,7 +2148,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1859,7 +2171,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1878,7 +2194,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -1897,7 +2217,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1916,7 +2240,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1935,7 +2262,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1954,7 +2284,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1973,7 +2306,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -1992,7 +2328,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2011,7 +2350,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2030,7 +2372,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -2049,7 +2392,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -2068,7 +2412,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -2087,7 +2432,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -2106,7 +2452,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -2125,7 +2472,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2144,7 +2494,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2163,7 +2516,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2182,7 +2538,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2201,7 +2560,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2220,7 +2582,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2239,7 +2604,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2258,7 +2626,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2277,7 +2648,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2296,7 +2671,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2315,7 +2694,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2334,7 +2718,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2353,7 +2742,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2372,7 +2766,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2391,7 +2790,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -2410,7 +2814,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2429,7 +2838,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -2448,7 +2862,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2467,7 +2886,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -2486,7 +2910,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2505,7 +2934,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -2524,7 +2958,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -2543,7 +2982,12 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -2562,7 +3006,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2581,7 +3028,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -2600,7 +3050,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -2619,7 +3072,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2643,7 +3099,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -2662,7 +3121,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -2681,7 +3143,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -2700,7 +3165,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2725,7 +3193,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -2744,7 +3215,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/StaticProjectImporter.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2763,7 +3238,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/StaticProjectImporter.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2782,7 +3261,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/StaticProjectImporter.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2801,7 +3284,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/StaticProjectImporter.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2820,7 +3307,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/StaticProjectImporter.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2839,7 +3330,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2858,7 +3352,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2877,7 +3374,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2896,7 +3396,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2915,7 +3418,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2934,7 +3440,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -2953,7 +3463,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -2972,7 +3486,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -2991,7 +3509,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3010,7 +3532,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3029,7 +3555,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3048,7 +3578,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3067,7 +3601,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3086,7 +3624,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3105,7 +3646,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3124,7 +3668,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3143,7 +3690,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3162,7 +3712,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3181,7 +3734,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3202,7 +3758,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -3227,7 +3786,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -3246,7 +3808,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3265,7 +3830,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3284,7 +3853,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3303,7 +3876,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3322,7 +3899,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3341,7 +3922,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3360,7 +3945,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3379,7 +3968,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3398,7 +3991,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3417,7 +4014,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3436,7 +4037,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3455,7 +4060,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3474,7 +4083,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3493,7 +4105,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3512,7 +4127,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3531,7 +4149,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3550,7 +4171,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3569,7 +4193,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3588,7 +4215,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3607,7 +4237,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3626,7 +4259,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3645,7 +4281,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3664,7 +4304,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3683,7 +4327,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3702,7 +4350,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3721,7 +4373,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3740,7 +4396,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3759,7 +4419,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3778,7 +4442,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3797,7 +4465,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3816,7 +4488,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3835,7 +4511,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3854,7 +4534,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3873,7 +4554,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3892,7 +4574,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3911,7 +4594,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3930,7 +4614,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3949,7 +4636,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -3968,7 +4658,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -3987,7 +4680,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4006,7 +4702,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4025,7 +4724,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4044,7 +4746,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4063,7 +4768,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -4082,7 +4790,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4101,7 +4812,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4120,7 +4834,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4139,7 +4856,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4158,7 +4878,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4177,7 +4900,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -4196,7 +4922,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -4215,7 +4944,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4234,7 +4966,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4253,7 +4988,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -4272,7 +5008,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -4291,7 +5028,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4310,7 +5051,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4329,7 +5074,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -4348,7 +5097,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -4367,7 +5120,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -4386,7 +5143,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4405,7 +5166,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -4424,7 +5189,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4443,7 +5212,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -4462,7 +5235,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4481,7 +5258,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -4500,7 +5281,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4519,7 +5303,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4538,7 +5326,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4557,7 +5349,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4576,7 +5372,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4595,7 +5395,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -4614,7 +5418,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4633,7 +5441,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -4652,7 +5464,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -4671,7 +5487,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -4690,7 +5507,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -4709,7 +5527,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4728,7 +5549,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4747,7 +5571,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4766,7 +5593,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4785,7 +5615,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4804,7 +5637,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4823,7 +5659,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4842,7 +5681,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4861,7 +5703,10 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4880,7 +5725,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4899,7 +5748,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4918,7 +5771,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4937,7 +5794,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -4956,7 +5817,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -4975,7 +5840,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -4994,7 +5863,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "REMOVED_CAPABILITY"
     },
     {
@@ -5013,7 +5886,11 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "features",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+        "src/main/java/org/tzi/use/plugins/jacamo/extraction/SemanticResolver.java"
+      ],
+      "sourceLanguageDisposition": "CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation",
       "status": "ADDED_CAPABILITY"
     },
     {
@@ -5036,7 +5913,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "package",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "SEMANTIC_BREAKING_CHANGE"
     },
     {
@@ -5055,7 +5933,8 @@
       "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
       "representationOnly": false,
       "section": "inheritance",
-      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "sourceEvidence": [],
+      "sourceLanguageDisposition": "NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal",
       "status": "SEMANTIC_BREAKING_CHANGE"
     }
   ],

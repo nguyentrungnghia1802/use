@@ -31,3 +31,9 @@ only their exact target-binding compatibility is invalidated by this structural 
 No canonical input is modified. Current code still consumes V1 vocabulary and
 default paths. Phase 32–35 must implement the affected adapters before closing the
 Phase 29/30 consumer gates; runtime/OCL migration is not claimed by this audit.
+
+Each impact entry also records exact current extractor kind references (file paths),
+or explicitly records their absence. This distinguishes current source-extraction
+use from metamodel-only abstractions without claiming an inferred language rename.
+All entries have conservative layer dispositions; semantic-preserving adapters
+still require Phase 33–35 implementation/tests before any equivalence claim.

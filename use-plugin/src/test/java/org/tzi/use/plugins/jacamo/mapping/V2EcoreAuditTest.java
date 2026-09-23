@@ -55,6 +55,7 @@ public class V2EcoreAuditTest {
         var manifest = new LinkedHashMap<String, Object>();
         manifest.put("status", "WORKING_BASELINE");
         manifest.put("version", "2-working-2026-09-23");
+        manifest.put("recordedDate", "2026-09-23");
         manifest.put("path", SOURCE.toString().replace('\\', '/'));
         manifest.put("sha256", HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(SOURCE))));
         manifest.put("package", pkg.getName()); manifest.put("nsURI", pkg.getNsURI());

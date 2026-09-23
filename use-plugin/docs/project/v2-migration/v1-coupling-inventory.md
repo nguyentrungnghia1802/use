@@ -1,7 +1,8 @@
 # V1 coupling inventory — intake
 
 Machine-readable lexical occurrences: [v1-coupling-occurrences.json](v1-coupling-occurrences.json).
-The captured tracked-file scan contains 1,400 conservative exact-token occurrences.
+The reproducible baseline-revision scan contains 8,817 conservative exact-token occurrences
+across 305 text files, plus the checked-in old plugin JAR.
 It is an intake index, not proof all semantic dependencies are resolved.
 
 | Area | Disposition | Migration impact |
@@ -25,4 +26,6 @@ class-oriented output needs complementary enum/package/default coverage.
 
 Cross-layer status: Ecore/source-mapping preliminary audit agrees; IR, transformation,
 trace, runtime target bindings and OCL still use V1. Therefore the consistency gate
-does not pass yet. Full occurrence-by-occurrence disposition is pending.
+does not pass yet. Every occurrence now has an explicit file/line disposition; semantic migration remains pending. No dead-code REMOVE claim is made without evidence.
+
+Reproduce with `python use-plugin/tools/v1_coupling_audit.py --revision eeb98c41c2d398b15b74101773ea440bcaa1af18 --output <file>`. Two independent runs were byte-identical; unique paths, line counts and complete classification were checked. Scope includes whole-repository strong identities and plugin removed class/feature names, IDs, projections and count assertions. The old binary `use-gui/lib/plugins/use-jacamo-plugin-1.0.1.jar` is MIGRATE through packaging, never edited in place. Grouped line numbers avoid duplicating historical source text.

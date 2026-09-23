@@ -6,6 +6,7 @@ Outputs are derived evidence, not a production mapping or a freeze approval.
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
@@ -90,14 +91,21 @@ def impact_report(diff):
     layers = ['semantic IR', 'parser/extractor', 'structural mapping', 'projection',
               'trace identity', 'runtime target binding', 'OCL context/navigation', 'case studies']
     result = []
+    extractors = {p.relative_to(MODULE).as_posix(): p.read_text(encoding='utf-8')
+                  for p in sorted((MODULE / 'src/main/java/org/tzi/use/plugins/jacamo/extraction').glob('*.java'))}
     for change in diff['changes']:
         status = {'ADDED': 'ADDED_CAPABILITY', 'REMOVED': 'REMOVED_CAPABILITY',
                   'CHANGED': 'SEMANTIC_BREAKING_CHANGE'}[change['change']]
         before, after = change.get('before'), change.get('after')
         fields = sorted(k for k in before.keys() | after.keys() if before.get(k) != after.get(k)) if isinstance(before, dict) and isinstance(after, dict) else []
-        result.append({'identity': change.get('identity', change['section']), 'section': change['section'],
+        identity = change.get('identity', change['section'])
+        owner = identity.split('#')[0]
+        source_evidence = [path for path, text in extractors.items() if re.search(r'\bMetamodelKind\.' + re.escape(owner) + r'\b', text)]
+        result.append({'identity': identity, 'section': change['section'],
             'status': status, 'changedFields': fields, 'impactedLayers': layers,
-            'sourceLanguageDisposition': 'NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction',
+            'sourceLanguageDisposition': 'CURRENT_EXTRACTOR_REFERENCES_KIND; retain source facts while migrating structural representation' if source_evidence else
+                'NO_EXACT_EXTRACTOR_KIND_REFERENCE; metamodel addition/removal alone is not source-language addition/removal',
+            'sourceEvidence': source_evidence,
             'migrationRule': 'No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported',
             'representationOnly': False})
     return {'policy': 'Conservative semantic breakage until equivalence is proven; added/removed refer to metamodel capabilities, not source-language removal',

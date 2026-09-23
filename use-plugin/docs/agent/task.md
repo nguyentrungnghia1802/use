@@ -141,42 +141,44 @@ Executable selection gates below remain OPEN on P32.2/P35.1–P35.7; policy is r
 
 Search production code/docs/tests/resources cho:
 
-- [ ] V1 Ecore path.
-- [ ] V1 Mapping path.
-- [ ] old namespace URI/prefix/package name.
-- [ ] hard-coded class names chỉ tồn tại ở V1.
-- [ ] hard-coded attribute/reference names chỉ tồn tại ở V1.
-- [ ] `MetamodelKind`/enum phụ thuộc V1.
-- [ ] frozen C/A/R/I/VP IDs.
-- [ ] V1 projection IDs.
-- [ ] V1 hash/fingerprint.
-- [ ] hard-coded counts.
-- [ ] golden output assumptions.
-- [ ] OCL contexts/navigation phụ thuộc V1.
-- [ ] runtime target-binding phụ thuộc V1.
-- [ ] release package paths phụ thuộc V1.
+- [x] V1 Ecore path.
+- [x] V1 Mapping path.
+- [x] old namespace URI/prefix/package name.
+- [x] hard-coded class names chỉ tồn tại ở V1.
+- [x] hard-coded attribute/reference names chỉ tồn tại ở V1.
+- [x] `MetamodelKind`/enum phụ thuộc V1.
+- [x] frozen C/A/R/I/VP IDs.
+- [x] V1 projection IDs.
+- [x] V1 hash/fingerprint.
+- [x] hard-coded counts.
+- [x] golden output assumptions.
+- [x] OCL contexts/navigation phụ thuộc V1.
+- [x] runtime target-binding phụ thuộc V1.
+- [x] release package paths phụ thuộc V1.
 
 Classify mỗi occurrence:
 
-- [ ] `MIGRATE`.
-- [ ] `KEEP_HISTORICAL`.
-- [ ] `VERSION_ABSTRACTION`.
-- [ ] `REMOVE`.
-- [ ] `REVIEW_REQUIRED`.
+- [x] `MIGRATE`.
+- [x] `KEEP_HISTORICAL`.
+- [x] `VERSION_ABSTRACTION`.
+- [x] `REMOVE`.
+- [x] `REVIEW_REQUIRED`.
 
 ### Output
 
-- [ ] `v1-coupling-inventory.md`.
+- [x] `v1-coupling-inventory.md`.
 
 ---
 
 ## P29.5 — Phase 29 gate
 
-- [ ] Không sửa parser/transformation sâu trước khi inventory hoàn thành.
-- [ ] Không xóa V1.
-- [ ] V2 active-baseline policy được document.
-- [ ] V1-coupling inventory hoàn chỉnh.
-- [ ] Test baseline trước migration được lưu.
+Independent inventory/preflight items below PASS. Overall Phase 29 stays OPEN on executable selection (P32/P35), full regression and integration closure. REMOVE is an audited empty classification, not authorization to delete.
+
+- [x] Không sửa parser/transformation sâu trước khi inventory hoàn thành.
+- [x] Không xóa V1.
+- [x] V2 active-baseline policy được document.
+- [x] V1-coupling inventory hoàn chỉnh.
+- [x] Test baseline trước migration được lưu.
 
 ---
 
@@ -264,25 +266,25 @@ Generate:
 
 Với mỗi breaking diff:
 
-- [ ] source-language concept còn tồn tại không?
-- [ ] chỉ đổi representation hay đổi semantics?
-- [ ] parser có bị ảnh hưởng?
-- [ ] Semantic IR có bị ảnh hưởng?
-- [ ] structural mapping có bị ảnh hưởng?
-- [ ] projection có bị ảnh hưởng?
-- [ ] trace identity có bị ảnh hưởng?
-- [ ] runtime target-binding có bị ảnh hưởng?
-- [ ] OCL navigation/context có bị ảnh hưởng?
-- [ ] case studies có bị ảnh hưởng?
+- [x] source-language concept còn tồn tại không?
+- [x] chỉ đổi representation hay đổi semantics?
+- [x] parser có bị ảnh hưởng?
+- [x] Semantic IR có bị ảnh hưởng?
+- [x] structural mapping có bị ảnh hưởng?
+- [x] projection có bị ảnh hưởng?
+- [x] trace identity có bị ảnh hưởng?
+- [x] runtime target-binding có bị ảnh hưởng?
+- [x] OCL navigation/context có bị ảnh hưởng?
+- [x] case studies có bị ảnh hưởng?
 
-Status:
+Classification vocabulary audited: actual rows use conservative breaking/added/removed dispositions; representation-only or compatible statuses are not asserted without proof.
 
-- [ ] `REPRESENTATION_ONLY`.
-- [ ] `SEMANTIC_COMPATIBLE_CHANGE`.
-- [ ] `SEMANTIC_BREAKING_CHANGE`.
-- [ ] `ADDED_CAPABILITY`.
-- [ ] `REMOVED_CAPABILITY`.
-- [ ] `UNCERTAIN_REQUIRES_DECISION`.
+- [x] `REPRESENTATION_ONLY`.
+- [x] `SEMANTIC_COMPATIBLE_CHANGE`.
+- [x] `SEMANTIC_BREAKING_CHANGE`.
+- [x] `ADDED_CAPABILITY`.
+- [x] `REMOVED_CAPABILITY`.
+- [x] `UNCERTAIN_REQUIRES_DECISION`.
 
 ---
 
@@ -314,7 +316,7 @@ Native structural audit and generated inventory PASS; full consumer regression/p
 - [x] V2 Ecore structurally valid.
 - [x] Exact inventory tồn tại.
 - [x] V1→V2 diff tồn tại.
-- [ ] Breaking changes đã classify.
+- [x] Breaking changes đã classify.
 - [ ] Không còn production decision dựa trên V1 counts.
 
 ---

@@ -1,6 +1,7 @@
 {
   "status" : "WORKING_BASELINE",
   "version" : "2-working-2026-09-23",
+  "recordedDate" : "2026-09-23",
   "path" : "Core/Metamodel/version-2/jacamo_v2_complete.ecore",
   "sha256" : "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c",
   "package" : "agentmetamodel",
@@ -15,9 +16,9 @@
   },
   "audit" : "EMF Diagnostician OK; no unresolved proxies",
   "toolchain" : {
-    "emfEcore" : "2.39.0",
+    "emfCommon" : "2.42.0",
     "emfXmi" : "2.39.0",
-    "emfCommon" : "2.42.0"
+    "emfEcore" : "2.39.0"
   },
   "provenance" : "User-supplied canonical Ecore; native validation is structural, not source-language equivalence",
   "unresolved" : [ "V2 production migration and downstream regression remain OPEN", "No automatic equivalence inferred for removed V1 concepts" ],
