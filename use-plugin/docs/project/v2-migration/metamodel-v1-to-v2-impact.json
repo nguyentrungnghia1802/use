@@ -1,0 +1,5063 @@
+{
+  "acceptedRenames": [],
+  "changes": [
+    {
+      "changedFields": [],
+      "identity": "AGoal",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "AbsOperation",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [
+        "abstract",
+        "annotations",
+        "attributes"
+      ],
+      "identity": "Action",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [],
+      "identity": "ActionKind",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [
+        "annotations"
+      ],
+      "identity": "Agent",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [],
+      "identity": "AgentGoalType",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [
+        "annotations"
+      ],
+      "identity": "Artifact",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [
+        "annotations"
+      ],
+      "identity": "Belief",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [],
+      "identity": "Body",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "BodyTerm",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Context",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Environment",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Event",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "ExternalAction",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "FormationConstraints",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "FunctionalSpecification",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Goal",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "GoalType",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [
+        "annotations",
+        "attributes"
+      ],
+      "identity": "Group",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [],
+      "identity": "GuardOperation",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "InternalAction",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "InternalOperation",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [
+        "annotations"
+      ],
+      "identity": "Link",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [],
+      "identity": "LinkScope",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "LinkType",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "LinkedOperation",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "MAS",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "MentalNotes",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Message",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [
+        "annotations"
+      ],
+      "identity": "Mission",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [
+        "annotations",
+        "attributes"
+      ],
+      "identity": "Norm",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [],
+      "identity": "NormType",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "NormativeSpecification",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [
+        "annotations"
+      ],
+      "identity": "OGoal",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [
+        "annotations"
+      ],
+      "identity": "OPlan",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [],
+      "identity": "OPlanOperator",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "ObsProperty",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [
+        "annotations",
+        "attributes"
+      ],
+      "identity": "Operation",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [],
+      "identity": "Organisation",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Organization",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [
+        "annotations"
+      ],
+      "identity": "Plan",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [],
+      "identity": "Port",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Property",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [
+        "annotations",
+        "attributes"
+      ],
+      "identity": "Role",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [],
+      "identity": "Rule",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [
+        "annotations",
+        "attributes"
+      ],
+      "identity": "Scheme",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [],
+      "identity": "Signal",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "StructuralSpecification",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "TriggeringEvent",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [
+        "annotations"
+      ],
+      "identity": "Workspace",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "classifiers",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [],
+      "identity": "AGoal#literal",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "AGoal#organizationalGoal",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "AGoal#type",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "AbsOperation#RefObsproperty",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "AbsOperation#awaitExpression",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "AbsOperation#await_timeExpression",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "AbsOperation#className",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "AbsOperation#signalExpression",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Action#Expression",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Action#Name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Action#arity",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Action#kind",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Action#name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Action#nextAction",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Action#operation",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Agent#Name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Agent#artifact",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Agent#artifacts",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Agent#belief",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Agent#beliefs",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Agent#goals",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Agent#hasGoal",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Agent#joinWorkspace",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Agent#name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Agent#plan",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Agent#plans",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Agent#roles",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Agent#rule",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Agent#source",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Agent#workspaces",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Artifact#IDVar",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Artifact#Parameter",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Artifact#agents",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Artifact#artifactName",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Artifact#className",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Artifact#isInitial",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Artifact#name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Artifact#obsproperty",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Artifact#operation",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Artifact#operations",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Artifact#port",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Artifact#properties",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Artifact#type",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Belief#Name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Belief#isInitial",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Belief#literal",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Belief#property",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Belief#triggeredBy",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Body#Name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Body#bodyterm",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Body#firstAction",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Context#Expression",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Context#contextBelief",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Context#contextRule",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Environment#workspaces",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Event#literal",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Event#operator",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Event#signal",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Event#type",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "ExternalAction#operation",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "FormationConstraints#Name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "FormationConstraints#biDir",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "FormationConstraints#from",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "FormationConstraints#scope",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "FormationConstraints#to",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "FormationConstraints#type",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "FunctionalSpecification#scheme",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Goal#Name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Goal#triggeredBy",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Group#Name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Group#RefRole",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Group#formationconstraints",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Group#hasSubGroups",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Group#id",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Group#link",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Group#links",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Group#max",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Group#maxCardinality",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Group#min",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Group#minCardinality",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Group#roles",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Group#subGroups",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Link#biDir",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Link#bidirectional",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Link#extendsSubgroups",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Link#from",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [
+        "annotations",
+        "attributes",
+        "lower",
+        "type"
+      ],
+      "identity": "Link#scope",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [],
+      "identity": "Link#sourceRole",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Link#targetRole",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Link#to",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [
+        "annotations",
+        "attributes",
+        "explicitDefault",
+        "lower",
+        "type"
+      ],
+      "identity": "Link#type",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [],
+      "identity": "MAS#Name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "MAS#PlatformParamters",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "MAS#agent",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "MAS#organisation",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "MAS#workspace",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "MentalNotes#impliesB",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "MentalNotes#impliesG",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Message#content",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Message#isBroadcast",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Message#messageToagent",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Mission#Mplan",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Mission#goals",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Mission#id",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Mission#max",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Mission#maxCardinality",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Mission#min",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Mission#minCardinality",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Mission#ogoal",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Norm#NMission",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Norm#Nrole",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Norm#condition",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Norm#id",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Norm#mission",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Norm#role",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [
+        "annotations"
+      ],
+      "identity": "Norm#timeConstraint",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [
+        "annotations",
+        "attributes",
+        "explicitDefault",
+        "lower",
+        "type"
+      ],
+      "identity": "Norm#type",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [],
+      "identity": "NormativeSpecification#norm",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "OGoal#Name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "OGoal#NextOgoal",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "OGoal#OGoalToGoal",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "OGoal#OGoalToOPlan",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "OGoal#description",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "OGoal#id",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "OGoal#isRootGoal",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "OGoal#minAgentsToSatisfy",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "OGoal#plan",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "OGoal#timeToFulfill",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "OGoal#type",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "OPlan#FirstOgoal",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "OPlan#Parallel",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "OPlan#Sequence",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "OPlan#Splan",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "OPlan#operator",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "OPlan#subGoals",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "ObsProperty#Name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "ObsProperty#ParamName",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "ObsProperty#obsproperty",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Operation#arity",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Operation#callsInternal",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Operation#guardedBy",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Operation#name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Operation#properties",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Operation#signals",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Organisation#deploysAgent",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Organisation#functionalspecification",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Organisation#id",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Organisation#normativespecification",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Organisation#structuralspecification",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Organization#groups",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Organization#id",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Organization#norms",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Organization#schemes",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Plan#Name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Plan#RefArtifact",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Plan#actions",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Plan#argID",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Plan#asBeliefAddition",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Plan#asQuery",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Plan#atomicLabel",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Plan#context",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Plan#hasAction",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Plan#hasBody",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Plan#hasContext",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Plan#isAtomic",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Plan#isInitial",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Plan#label",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Plan#triggeringEvent",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Port#Name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Port#linkArtifacts",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Property#arity",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Property#name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Role#Extendsrole",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Role#Name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Role#agents",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Role#id",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Role#isAbstract",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Role#max",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Role#maxCardinality",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Role#min",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Role#minCardinality",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Role#players",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Role#superRoles",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Rule#Expression",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Scheme#PlanOperator",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Scheme#SchemeOPlan",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Scheme#SchemeOgoal",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Scheme#Splan",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Scheme#id",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Scheme#mission",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Scheme#missions",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Scheme#rootGoal",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Signal#arity",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Signal#name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "StructuralSpecification#group",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "StructuralSpecification#role",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "TriggeringEvent#deletion",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "TriggeringEvent#ds",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "TriggeringEvent#isInitial",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "TriggeringEvent#isSeparateIntention",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "TriggeringEvent#planoperator",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "TriggeringEvent#triggersPlan",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "TriggeringEvent#ttf",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Workspace#Host",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Workspace#Name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Workspace#Path",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Workspace#agents",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Workspace#artifact",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Workspace#artifacts",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Workspace#hasSubworkspace",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "REMOVED_CAPABILITY"
+    },
+    {
+      "changedFields": [],
+      "identity": "Workspace#name",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "features",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "ADDED_CAPABILITY"
+    },
+    {
+      "changedFields": [
+        "name",
+        "nsPrefix",
+        "nsURI"
+      ],
+      "identity": "package",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "package",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    },
+    {
+      "changedFields": [],
+      "identity": "inheritance",
+      "impactedLayers": [
+        "semantic IR",
+        "parser/extractor",
+        "structural mapping",
+        "projection",
+        "trace identity",
+        "runtime target binding",
+        "OCL context/navigation",
+        "case studies"
+      ],
+      "migrationRule": "No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported",
+      "representationOnly": false,
+      "section": "inheritance",
+      "sourceLanguageDisposition": "NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction",
+      "status": "SEMANTIC_BREAKING_CHANGE"
+    }
+  ],
+  "policy": "Conservative semantic breakage until equivalence is proven; added/removed refer to metamodel capabilities, not source-language removal"
+}

@@ -67,7 +67,7 @@ Một task chỉ được `[x]` khi:
 
 **Objective:** chuyển source-of-truth active từ V1 sang V2 một cách có kiểm soát trước khi sửa sâu production code.
 
-> Execution update 2026-09-23: P29.1/P29.2 intake captured; Phase 29 remains OPEN. Fresh baseline: 306 tests, 3 failures, 73 errors, zero skips. See [baseline](../project/v2-migration/phase29-pre-migration-baseline.md), [inventory](../project/v2-migration/v2-input-inventory.md), and [gate dependency decision](../project/v2-migration/phase29-gate-dependency.md). No P30+ acceptance is claimed.
+> Execution update 2026-09-23: P29.1/P29.2 intake captured; Phase 29 remains OPEN. Fresh baseline: 306 tests, 3 failures, 73 errors, zero skips. See [baseline](../project/v2-migration/phase29-pre-migration-baseline.md), [inventory](../project/v2-migration/v2-input-inventory.md), and [gate dependency decision](../project/v2-migration/phase29-gate-dependency.md). User authorized staged Phase 29–35 migration: downstream-dependent gates remain OPEN until their actual regressions pass. No rollback to V1; no production tasks moved into Phase 29.
 
 ## P29.1 — Capture repository baseline trước migration
 
@@ -117,16 +117,18 @@ Một task chỉ được `[x]` khi:
 
 ## P29.3 — Define V1/V2 active-baseline policy
 
+Executable selection gates below remain OPEN on P32.2/P35.1–P35.7; policy is recorded in `v2-migration/active-baseline-policy.md`.
+
 ### Tasks
 
-- [ ] V2 = `WORKING_BASELINE`.
-- [ ] V1 = `HISTORICAL_BASELINE`.
+- [x] V2 = `WORKING_BASELINE`.
+- [x] V1 = `HISTORICAL_BASELINE`.
 - [ ] Production import/transformation mặc định dùng V2.
 - [ ] V1 chỉ được load qua explicit compatibility/test path nếu còn cần.
 - [ ] Không có silent fallback từ V2 sang V1.
 - [ ] Nếu V2 load fail → explicit error; không chạy V1 thay thế.
-- [ ] Định nghĩa resource lookup path mới.
-- [ ] Định nghĩa version selector/fingerprint contract.
+- [x] Định nghĩa resource lookup path mới.
+- [x] Định nghĩa version selector/fingerprint contract.
 
 ### Acceptance
 
@@ -186,22 +188,22 @@ Classify mỗi occurrence:
 
 ### Tasks
 
-- [ ] Load Ecore V2 bằng parser/EMF gate hiện có hoặc tooling tương đương.
-- [ ] Validate XML/Ecore syntax.
-- [ ] Resolve all classifiers.
-- [ ] Resolve all EReference targets.
-- [ ] Resolve eSuperTypes.
-- [ ] Detect unresolved proxies.
-- [ ] Detect invalid containment.
-- [ ] Detect duplicate names trong cùng namespace.
-- [ ] Detect invalid datatype references.
-- [ ] Compute SHA-256.
-- [ ] Record nsURI/nsPrefix/package/version.
+- [x] Load Ecore V2 bằng parser/EMF gate hiện có hoặc tooling tương đương.
+- [x] Validate XML/Ecore syntax.
+- [x] Resolve all classifiers.
+- [x] Resolve all EReference targets.
+- [x] Resolve eSuperTypes.
+- [x] Detect unresolved proxies.
+- [x] Detect invalid containment.
+- [x] Detect duplicate names trong cùng namespace.
+- [x] Detect invalid datatype references.
+- [x] Compute SHA-256.
+- [x] Record nsURI/nsPrefix/package/version.
 
 ### Acceptance
 
-- [ ] Ecore V2 load sạch hoặc mọi unresolved fact có diagnostic explicit.
-- [ ] Không tiếp tục mapping nếu Ecore structurally invalid.
+- [x] Ecore V2 load sạch hoặc mọi unresolved fact có diagnostic explicit.
+- [x] Không tiếp tục mapping nếu Ecore structurally invalid.
 
 ---
 
@@ -211,24 +213,24 @@ Không hard-code count.
 
 Generate:
 
-- [ ] all EClasses.
-- [ ] abstract/concrete status.
-- [ ] all EAttributes.
-- [ ] datatype/default/bounds.
-- [ ] all EReferences.
-- [ ] source/target.
-- [ ] containment.
-- [ ] lower/upper bounds.
-- [ ] ordered/unique.
-- [ ] all inheritance edges.
-- [ ] eOpposite nếu có.
-- [ ] annotations/provenance quan trọng.
-- [ ] unresolved fields nếu có.
+- [x] all EClasses.
+- [x] abstract/concrete status.
+- [x] all EAttributes.
+- [x] datatype/default/bounds.
+- [x] all EReferences.
+- [x] source/target.
+- [x] containment.
+- [x] lower/upper bounds.
+- [x] ordered/unique.
+- [x] all inheritance edges.
+- [x] eOpposite nếu có.
+- [x] annotations/provenance quan trọng.
+- [x] unresolved fields nếu có.
 
 ### Output
 
-- [ ] `metamodel-v2-inventory.json`.
-- [ ] `metamodel-v2-audit.md`.
+- [x] `metamodel-v2-inventory.json`.
+- [x] `metamodel-v2-audit.md`.
 
 ---
 
@@ -236,25 +238,25 @@ Generate:
 
 ### Tasks
 
-- [ ] added classes.
-- [ ] removed classes.
-- [ ] same-name but changed classes.
-- [ ] added/removed attributes.
-- [ ] type/default/bounds changes.
-- [ ] added/removed references.
-- [ ] target changes.
-- [ ] containment changes.
-- [ ] multiplicity changes.
-- [ ] ordering/uniqueness changes.
-- [ ] inheritance changes.
-- [ ] namespace changes.
-- [ ] annotation/provenance differences.
-- [ ] rename candidates chỉ ghi `CANDIDATE`; không auto-accept fuzzy rename.
+- [x] added classes.
+- [x] removed classes.
+- [x] same-name but changed classes.
+- [x] added/removed attributes.
+- [x] type/default/bounds changes.
+- [x] added/removed references.
+- [x] target changes.
+- [x] containment changes.
+- [x] multiplicity changes.
+- [x] ordering/uniqueness changes.
+- [x] inheritance changes.
+- [x] namespace changes.
+- [x] annotation/provenance differences.
+- [x] rename candidates chỉ ghi `CANDIDATE`; không auto-accept fuzzy rename.
 
 ### Output
 
-- [ ] `metamodel-v1-to-v2-diff.json`.
-- [ ] `metamodel-v1-to-v2-impact.md`.
+- [x] `metamodel-v1-to-v2-diff.json`.
+- [x] `metamodel-v1-to-v2-impact.md`.
 
 ---
 
@@ -288,28 +290,30 @@ Status:
 
 Create/update manifest containing:
 
-- [ ] V2 Ecore path.
-- [ ] hash.
-- [ ] package/nsURI.
-- [ ] structural counts generated dynamically.
-- [ ] status = `WORKING_BASELINE`.
-- [ ] created/updated date.
-- [ ] provenance.
-- [ ] known unresolved items.
-- [ ] allowed evolution policy.
+- [x] V2 Ecore path.
+- [x] hash.
+- [x] package/nsURI.
+- [x] structural counts generated dynamically.
+- [x] status = `WORKING_BASELINE`.
+- [x] created/updated date.
+- [x] provenance.
+- [x] known unresolved items.
+- [x] allowed evolution policy.
 
 ### Important
 
-- [ ] Không dùng từ `FROZEN`.
-- [ ] Không khóa mapping hash như final release nếu đang active development; hash vẫn phải được record để reproducibility.
+- [x] Không dùng từ `FROZEN`.
+- [x] Không khóa mapping hash như final release nếu đang active development; hash vẫn phải được record để reproducibility.
 
 ---
 
 ## P30.6 — Phase 30 gate
 
-- [ ] V2 Ecore structurally valid.
-- [ ] Exact inventory tồn tại.
-- [ ] V1→V2 diff tồn tại.
+Native structural audit and generated inventory PASS; full consumer regression/phase closure remains OPEN on Phase 32–35. See `v2-migration/metamodel-v2-audit.md` and exact impact report.
+
+- [x] V2 Ecore structurally valid.
+- [x] Exact inventory tồn tại.
+- [x] V1→V2 diff tồn tại.
 - [ ] Breaking changes đã classify.
 - [ ] Không còn production decision dựa trên V1 counts.
 

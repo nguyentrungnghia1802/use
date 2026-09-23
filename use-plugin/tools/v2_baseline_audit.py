@@ -85,6 +85,25 @@ def structural_diff(old, new):
             'identityPolicy': 'EXACT_LOCAL_IDENTITY; namespace change recorded separately; no inferred rename', 'changes': changes}
 
 
+def impact_report(diff):
+    """Conservative obligation classification, never proof of source-language equivalence."""
+    layers = ['semantic IR', 'parser/extractor', 'structural mapping', 'projection',
+              'trace identity', 'runtime target binding', 'OCL context/navigation', 'case studies']
+    result = []
+    for change in diff['changes']:
+        status = {'ADDED': 'ADDED_CAPABILITY', 'REMOVED': 'REMOVED_CAPABILITY',
+                  'CHANGED': 'SEMANTIC_BREAKING_CHANGE'}[change['change']]
+        before, after = change.get('before'), change.get('after')
+        fields = sorted(k for k in before.keys() | after.keys() if before.get(k) != after.get(k)) if isinstance(before, dict) and isinstance(after, dict) else []
+        result.append({'identity': change.get('identity', change['section']), 'section': change['section'],
+            'status': status, 'changedFields': fields, 'impactedLayers': layers,
+            'sourceLanguageDisposition': 'NOT_INFERRED_FROM_ECORE; inspect source parser/provenance before changing extraction',
+            'migrationRule': 'No automatic rename or source-language equivalence; retain removed source facts as provenance or report unsupported',
+            'representationOnly': False})
+    return {'policy': 'Conservative semantic breakage until equivalence is proven; added/removed refer to metamodel capabilities, not source-language removal',
+            'changes': result, 'acceptedRenames': []}
+
+
 def mapping_audit(model, mapping):
     errors = []
     prefix = model['package']['name'] + '::'
@@ -135,6 +154,7 @@ def main():
                          MODULE / 'Core/Metamodel/version-2/jacamo_v2_complete.ecore')
     exact_diff['structuralDetails'] = structural_diff(old, new)
     outputs = {'metamodel-v2-inventory.json': new, 'metamodel-v1-to-v2-diff.json': exact_diff,
+        'metamodel-v1-to-v2-impact.json': impact_report(exact_diff['structuralDetails']),
         'mapping-v2-source-audit.json': mapping_audit(new, mapping),
         'v2-input-files.json': [{'path': p.relative_to(MODULE).as_posix(), 'sha256': digest(p), 'bytes': p.stat().st_size}
                               for folder in ('Metamodel', 'Mapping') for p in sorted((MODULE / 'Core' / folder / 'version-2').rglob('*')) if p.is_file()]}
