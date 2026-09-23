@@ -119,10 +119,10 @@ jobs:
         run: |
           echo "::warning title=Architecture Violations::Found ${{ steps.metrics.outputs.all_modules_no_tests }} cycles in core! Please check your architecture compliance."
 
-      - name: Switch to metrics branch  
+      - name: Switch to main
         run: |
-          git fetch origin architecture-metrics:architecture-metrics 2>/dev/null || git checkout -B architecture-metrics
-          git checkout architecture-metrics
+          git fetch origin main
+          git checkout -B main origin/main
     
       - name: Update CSV files
         run: |
@@ -161,4 +161,4 @@ jobs:
 
           git add docs/archunit-results/
           git commit -m "Update metrics data [skip ci]" || echo "No changes to commit"
-          git push origin architecture-metrics
+          git push origin main
