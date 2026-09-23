@@ -1,0 +1,4002 @@
+{
+  "schemaVersion": "2.1.0",
+  "mappingId": "JaCaMo-agentmetamodel-v2__to__USE-v2.1",
+  "status": "REVIEWED_CANDIDATE_V2",
+  "createdDate": "2026-09-23",
+  "purpose": "Metamodel correspondence from the user-supplied jacamo_v2_complete.ecore source of truth to USE 7.5.0 metamodel concepts. This V2 supersedes the old reconstructed DSML4JaCaMo structural vocabulary for V2 migration; concrete project parsing, runtime state synchronization, receiver resolution and OCL/deontic execution remain later layers.",
+  "architecture": {
+    "verificationInput": {
+      "kind": "JACAMO_PROJECT",
+      "entryPoint": "*.jcm",
+      "resolvedDependentSources": [
+        "*.asl",
+        "CArtAgO Java artifact sources/classes",
+        "Moise organisation XML and referenced organisational sources"
+      ],
+      "directEcoreAsProjectInput": false
+    },
+    "semanticBoundary": {
+      "inputToMapper": "JaCaMo semantic model parsed/resolved from the project",
+      "conformsTo": "agentmetamodel / jacamo_v2_complete.ecore",
+      "rule": "The V2 structural mapping is keyed only by declared V2 Ecore identity. Project parsers may resolve JaCaMo/Jason/CArtAgO/MOISE sources, but filename/class-name heuristics never replace declared metamodel identity."
+    },
+    "outputs": [
+      {
+        "kind": "USE_MODEL",
+        "defaultFileName": "generated-jacamo-v2.use",
+        "contains": [
+          "enumerations",
+          "classes",
+          "attributes",
+          "associations/compositions",
+          "verification-projected operations"
+        ],
+        "internalRoot": "MModel"
+      },
+      {
+        "kind": "USE_STATE_SCRIPT",
+        "defaultFileName": "generated-jacamo-v2.cmd",
+        "contains": [
+          "!create",
+          "!set",
+          "!insert",
+          "optional !openter/!opexit for operation-event replay"
+        ],
+        "internalRoot": "MSystemState"
+      }
+    ],
+    "oclStage": {
+      "mappingFileContainsOclConstraints": false,
+      "policy": "OCL profiles/constraints are applied after structural/verification projection; Norm is never translated into OCL merely because it is normative."
+    }
+  },
+  "sourceMetamodel": {
+    "artifact": "jacamo_v2_complete.ecore",
+    "packageName": "agentmetamodel",
+    "nsURI": "http://www.example.org/agentmetamodel",
+    "nsPrefix": "agentmetamodel",
+    "sha256": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c",
+    "artifactStatus": "USER_SUPPLIED_V2_SOURCE_OF_TRUTH_FOR_THIS_MAPPING",
+    "expectedStatistics": {
+      "EEnums": 7,
+      "EClasses": 21,
+      "EAttributes": 48,
+      "EReferences": 37,
+      "EGeneralizations": 0,
+      "EOppositePairs": 3,
+      "RequiredEAttributes": 42,
+      "ExplicitDefaultEAttributes": 21,
+      "ContainmentEReferences": 19,
+      "ManyValuedEReferences": 26
+    }
+  },
+  "targetUSE": {
+    "repository": "https://github.com/nguyentrungnghia1802/use",
+    "upstream": "https://github.com/useocl/use/",
+    "manual": "https://github.com/nguyentrungnghia1802/use/blob/main/manual/main.md",
+    "textualModelExtension": ".use",
+    "stateScriptExtension": ".cmd",
+    "constructs": {
+      "model": "MModel / model",
+      "enum": "EnumType / enum",
+      "class": "MClass / class",
+      "attribute": "MAttribute / attributes",
+      "association": "MAssociation / association",
+      "composition": "MAssociation / composition",
+      "operation": "MOperation / operations",
+      "systemState": "MSystemState / shell state",
+      "constraints": "OCL invariant / precondition / postcondition"
+    },
+    "inspectedRevision": "59dd582fad63d1a5a19fa8306e3dbed4afe881bc",
+    "version": "7.5.0",
+    "sourceEvidence": [
+      "USEBase.gpart: native enum/class/attribute/association/composition grammar",
+      "UseModelApi: native EnumType, MClass, MAttribute, MAssociation construction",
+      "MModel: enum/class/association registration and navigable-role conflict checks",
+      "use-plugin MappingLoader/MappingModel/TransformationPlanner: V1 consumer assumptions requiring migration for V2 enums/eOpposites"
+    ],
+    "validationScope": "V2.1 mapping contract is exhaustively cross-checked against jacamo_v2_complete.ecore and the inspected USE 7.5.0 grammar/API surface, including keyword escapes, eOpposite deduplication, navigation namespaces, defaults and requiredness metadata. It is not marked FROZEN because the repository V1-pinned consumer has not yet been migrated and this V2.1 model has not been executed through the actual USECompiler end-to-end in the repository."
+  },
+  "policies": {
+    "datatypeMappings": [
+      {
+        "source": "EString",
+        "target": "String"
+      },
+      {
+        "source": "EInt",
+        "target": "Integer"
+      },
+      {
+        "source": "EBoolean",
+        "target": "Boolean"
+      },
+      {
+        "source": "EEnum",
+        "target": "native USE EnumType with the same enum name and EEnum literal name"
+      }
+    ],
+    "enumMapping": "Each EEnum becomes one native USE enum. Target literal identifiers use EEnum literal.name (not literal text) so hyphenated serialized literals such as intra-group remain valid and reversible.",
+    "classMapping": "Each V2 EClass becomes a USE class with the same name. V2 declares no abstract EClass and no eSuperType.",
+    "attributeMapping": "Each declared V2 EAttribute becomes a scalar USE attribute. Primitive ETypes map directly; EEnum-typed attributes use the mapped native USE enum type. Explicit Ecore defaults are recorded but effective-default application remains a materialization concern.",
+    "inheritanceMapping": "Each eSuperType would map to USE inheritance; V2 currently declares none.",
+    "containmentReferenceMapping": {
+      "target": "composition",
+      "firstEnd": "container/source class (diamond end)",
+      "firstEndMultiplicity": "0..1",
+      "secondEndMultiplicity": "copy forward EReference lower/upper",
+      "forwardRole": "exact EReference name unless a USE keyword requires a reversible target-only escape",
+      "reverseRole": "source_<EReferenceName>; on target-class collision source_<SourceOwner>_<EReferenceName>",
+      "reverseNavigationAuthoritative": false,
+      "globalContainmentGuard": "Per-link inverse 0..1 is necessary but not by itself a proof of Ecore global single-container identity across different containment references. Instance materialization must preserve the source eContainer and reject conflicting containment links."
+    },
+    "nonContainmentReferenceMapping": {
+      "withoutEOpposite": "association; unknown inverse multiplicity *; generated reverse helper is non-authoritative",
+      "withEOpposite": "emit exactly one USE association for the EReference/eOpposite pair; copy both declared end multiplicities and use both declared role names; both navigations authoritative",
+      "forwardMultiplicity": "copy the EReference lower/upper at the target end"
+    },
+    "identifierPolicy": {
+      "metamodelElements": "Preserve owner-qualified V2 source identity exactly. Apply target-only escapes only when USE grammar reserves the exact lowercase member/role identifier.",
+      "projectObjectIdentifiers": "deterministically sanitize to USE identifiers; preserve original JaCaMo identifier in transformation trace",
+      "generatedConcreteArtifactClass": "use resolved Java simple class name; on collision append a stable short hash of the fully-qualified name",
+      "targetAttributeEscapes": {
+        "Plan.context": "ecore_Plan_context"
+      },
+      "targetAssociationRoleEscapes": {
+        "Norm.role": "ecore_Norm_role",
+        "Artifact.operations": "ecore_Artifact_operations"
+      }
+    },
+    "sourceExpressionPolicy": "Jason Event/Plan/Belief/AGoal textual expressions and MOISE condition/time strings remain String unless a separately verified semantic parser introduces a typed representation. They are never silently parsed as OCL.",
+    "enumValuePolicy": "Serialized EEnum literal text is resolved through the EEnum declaration and materialized as <EnumName>::<EEnumLiteralName> in USE.",
+    "constraintPolicy": "Mapping establishes the USE semantic substrate. OCL constraints remain separate; Norm is never translated into OCL solely because it is normative.",
+    "oppositePolicy": "Every declared EReference is covered exactly once. For an eOpposite pair one entry emits the canonical association and the partner entry is an alias binding to the same target association, preventing duplicate links.",
+    "evolutionPolicy": {
+      "fingerprintMismatch": "RECONCILE_REQUIRED",
+      "stableSourceKey": "agentmetamodel::<EClassifier>[#<feature>]",
+      "unchangedElement": "reuse mapping only when owner/type/bounds/containment/opposite semantics are unchanged",
+      "addedEClassEnumOrFeature": "generate mapping suggestion but require review",
+      "changedTypeBoundsContainmentOppositeOrSupertype": "BLOCK until mapping is reconciled",
+      "removedOrRenamedElement": "mark stale and BLOCK; never silently retarget by similarity",
+      "versioning": "V1 reconstructed vocabulary -> V2 source is a semantic/breaking major mapping revision"
+    },
+    "attributeRequirednessPolicy": "USE class attributes do not encode Ecore lowerBound multiplicity. Every EAttribute lowerBound is therefore preserved as source metadata and enforced by the later instance-materialization gate: lowerBound=1 requires a resolved source value, except that an explicit Ecore default may be materialized as the effective target value. A required source attribute must never become undefined in a snapshot claimed to faithfully represent the source model.",
+    "explicitDefaultPolicy": "An explicit Ecore defaultValueLiteral is provenance, not a value to discard. When the source value is unset, later materialization must use the mapped targetDefaultExpression as the effective target value. Whether the source was explicitly set versus defaulted may be retained in trace metadata; structural USE attributes alone do not encode eIsSet.",
+    "navigationPolicy": "Navigation records distinguish source Ecore navigation names from target USE navigation names. sourceForward/sourceReverse refer only to declared Ecore features; targetForward/targetReverse refer to actual USE role names after generated reverse roles and target-only keyword escapes. No field may mix the two namespaces.",
+    "orderingPolicy": "Preserve source ordered/unique metadata. A target association end is marked ordered only when the corresponding declared source EReference is many-valued (upper != 1) and ordered=true. Generated inverse ends without eOpposite have no authoritative source ordering and are not marked ordered."
+  },
+  "enumMappings": [
+    {
+      "source": "agentmetamodel::NormType",
+      "sourceKind": "EEnum",
+      "dimension": "organisation",
+      "sourceLiterals": [
+        {
+          "name": "OBLIGATION",
+          "literal": "obligation",
+          "value": 0
+        },
+        {
+          "name": "PERMISSION",
+          "literal": "permission",
+          "value": 1
+        }
+      ],
+      "target": {
+        "kind": "USE_ENUM",
+        "internalConcept": "EnumType",
+        "name": "NormType",
+        "literals": [
+          "OBLIGATION",
+          "PERMISSION"
+        ]
+      },
+      "valuePolicy": "MATCH_SOURCE_LITERAL_OR_NAME_TO_DECLARED_EENUM_LITERAL_THEN_EMIT_ENUMNAME_DOUBLECOLON_LITERALNAME",
+      "id": "E001"
+    },
+    {
+      "source": "agentmetamodel::GoalType",
+      "sourceKind": "EEnum",
+      "dimension": "organisation",
+      "sourceLiterals": [
+        {
+          "name": "ACHIEVEMENT",
+          "literal": "achievement",
+          "value": 0
+        },
+        {
+          "name": "MAINTENANCE",
+          "literal": "maintenance",
+          "value": 1
+        }
+      ],
+      "target": {
+        "kind": "USE_ENUM",
+        "internalConcept": "EnumType",
+        "name": "GoalType",
+        "literals": [
+          "ACHIEVEMENT",
+          "MAINTENANCE"
+        ]
+      },
+      "valuePolicy": "MATCH_SOURCE_LITERAL_OR_NAME_TO_DECLARED_EENUM_LITERAL_THEN_EMIT_ENUMNAME_DOUBLECOLON_LITERALNAME",
+      "id": "E002"
+    },
+    {
+      "source": "agentmetamodel::OPlanOperator",
+      "sourceKind": "EEnum",
+      "dimension": "organisation",
+      "sourceLiterals": [
+        {
+          "name": "SEQUENCE",
+          "literal": "sequence",
+          "value": 0
+        },
+        {
+          "name": "PARALLEL",
+          "literal": "parallel",
+          "value": 1
+        },
+        {
+          "name": "CHOICE",
+          "literal": "choice",
+          "value": 2
+        }
+      ],
+      "target": {
+        "kind": "USE_ENUM",
+        "internalConcept": "EnumType",
+        "name": "OPlanOperator",
+        "literals": [
+          "SEQUENCE",
+          "PARALLEL",
+          "CHOICE"
+        ]
+      },
+      "valuePolicy": "MATCH_SOURCE_LITERAL_OR_NAME_TO_DECLARED_EENUM_LITERAL_THEN_EMIT_ENUMNAME_DOUBLECOLON_LITERALNAME",
+      "id": "E003"
+    },
+    {
+      "source": "agentmetamodel::LinkType",
+      "sourceKind": "EEnum",
+      "dimension": "organisation",
+      "sourceLiterals": [
+        {
+          "name": "AUTHORITY",
+          "literal": "authority",
+          "value": 0
+        },
+        {
+          "name": "COMMUNICATION",
+          "literal": "communication",
+          "value": 1
+        },
+        {
+          "name": "ACQUAINTANCE",
+          "literal": "acquaintance",
+          "value": 2
+        }
+      ],
+      "target": {
+        "kind": "USE_ENUM",
+        "internalConcept": "EnumType",
+        "name": "LinkType",
+        "literals": [
+          "AUTHORITY",
+          "COMMUNICATION",
+          "ACQUAINTANCE"
+        ]
+      },
+      "valuePolicy": "MATCH_SOURCE_LITERAL_OR_NAME_TO_DECLARED_EENUM_LITERAL_THEN_EMIT_ENUMNAME_DOUBLECOLON_LITERALNAME",
+      "id": "E004"
+    },
+    {
+      "source": "agentmetamodel::LinkScope",
+      "sourceKind": "EEnum",
+      "dimension": "organisation",
+      "sourceLiterals": [
+        {
+          "name": "INTRA_GROUP",
+          "literal": "intra-group",
+          "value": 0
+        },
+        {
+          "name": "INTER_GROUP",
+          "literal": "inter-group",
+          "value": 1
+        }
+      ],
+      "target": {
+        "kind": "USE_ENUM",
+        "internalConcept": "EnumType",
+        "name": "LinkScope",
+        "literals": [
+          "INTRA_GROUP",
+          "INTER_GROUP"
+        ]
+      },
+      "valuePolicy": "MATCH_SOURCE_LITERAL_OR_NAME_TO_DECLARED_EENUM_LITERAL_THEN_EMIT_ENUMNAME_DOUBLECOLON_LITERALNAME",
+      "id": "E005"
+    },
+    {
+      "source": "agentmetamodel::ActionKind",
+      "sourceKind": "EEnum",
+      "dimension": "agent",
+      "sourceLiterals": [
+        {
+          "name": "INTERNAL",
+          "literal": "internal",
+          "value": 0
+        },
+        {
+          "name": "EXTERNAL",
+          "literal": "external",
+          "value": 1
+        }
+      ],
+      "target": {
+        "kind": "USE_ENUM",
+        "internalConcept": "EnumType",
+        "name": "ActionKind",
+        "literals": [
+          "INTERNAL",
+          "EXTERNAL"
+        ]
+      },
+      "valuePolicy": "MATCH_SOURCE_LITERAL_OR_NAME_TO_DECLARED_EENUM_LITERAL_THEN_EMIT_ENUMNAME_DOUBLECOLON_LITERALNAME",
+      "id": "E006"
+    },
+    {
+      "source": "agentmetamodel::AgentGoalType",
+      "sourceKind": "EEnum",
+      "dimension": "agent",
+      "sourceLiterals": [
+        {
+          "name": "ACHIEVEMENT",
+          "literal": "achievement",
+          "value": 0
+        },
+        {
+          "name": "TEST",
+          "literal": "test",
+          "value": 1
+        }
+      ],
+      "target": {
+        "kind": "USE_ENUM",
+        "internalConcept": "EnumType",
+        "name": "AgentGoalType",
+        "literals": [
+          "ACHIEVEMENT",
+          "TEST"
+        ]
+      },
+      "valuePolicy": "MATCH_SOURCE_LITERAL_OR_NAME_TO_DECLARED_EENUM_LITERAL_THEN_EMIT_ENUMNAME_DOUBLECOLON_LITERALNAME",
+      "id": "E007"
+    }
+  ],
+  "classMappings": [
+    {
+      "source": "agentmetamodel::Organization",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Organization",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C001"
+    },
+    {
+      "source": "agentmetamodel::Group",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Group",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C002"
+    },
+    {
+      "source": "agentmetamodel::Role",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Role",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C003"
+    },
+    {
+      "source": "agentmetamodel::Link",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Link",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C004"
+    },
+    {
+      "source": "agentmetamodel::Norm",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Norm",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C005"
+    },
+    {
+      "source": "agentmetamodel::Scheme",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Scheme",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C006"
+    },
+    {
+      "source": "agentmetamodel::Mission",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Mission",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C007"
+    },
+    {
+      "source": "agentmetamodel::OGoal",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "OGoal",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C008"
+    },
+    {
+      "source": "agentmetamodel::OPlan",
+      "sourceKind": "EClass",
+      "dimension": "organisation",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "OPlan",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C009"
+    },
+    {
+      "source": "agentmetamodel::Agent",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Agent",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C010"
+    },
+    {
+      "source": "agentmetamodel::Plan",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Plan",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C011"
+    },
+    {
+      "source": "agentmetamodel::Event",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Event",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C012"
+    },
+    {
+      "source": "agentmetamodel::Action",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Action",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C013"
+    },
+    {
+      "source": "agentmetamodel::Belief",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Belief",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C014"
+    },
+    {
+      "source": "agentmetamodel::AGoal",
+      "sourceKind": "EClass",
+      "dimension": "agent",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "AGoal",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C015"
+    },
+    {
+      "source": "agentmetamodel::Environment",
+      "sourceKind": "EClass",
+      "dimension": "environment",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Environment",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C016"
+    },
+    {
+      "source": "agentmetamodel::Workspace",
+      "sourceKind": "EClass",
+      "dimension": "environment",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Workspace",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C017"
+    },
+    {
+      "source": "agentmetamodel::Artifact",
+      "sourceKind": "EClass",
+      "dimension": "environment",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Artifact",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C018"
+    },
+    {
+      "source": "agentmetamodel::Operation",
+      "sourceKind": "EClass",
+      "dimension": "environment",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Operation",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C019"
+    },
+    {
+      "source": "agentmetamodel::Property",
+      "sourceKind": "EClass",
+      "dimension": "environment",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Property",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C020"
+    },
+    {
+      "source": "agentmetamodel::Signal",
+      "sourceKind": "EClass",
+      "dimension": "environment",
+      "sourceAbstract": false,
+      "target": {
+        "kind": "USE_CLASS",
+        "internalConcept": "MClass",
+        "name": "Signal",
+        "abstract": false
+      },
+      "policy": "FAITHFUL_STRUCTURAL",
+      "id": "C021"
+    }
+  ],
+  "attributeMappings": [
+    {
+      "source": "agentmetamodel::Organization#id",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Organization",
+      "sourceName": "id",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Organization",
+        "name": "id",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A001",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Group#id",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Group",
+      "sourceName": "id",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Group",
+        "name": "id",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A002",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Group#minCardinality",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Group",
+      "sourceName": "minCardinality",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Group",
+        "name": "minCardinality",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A003",
+      "sourceExplicitDefaultLiteral": "0",
+      "targetDefaultExpression": "'0'",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Group#maxCardinality",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Group",
+      "sourceName": "maxCardinality",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Group",
+        "name": "maxCardinality",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A004",
+      "sourceExplicitDefaultLiteral": "unlimited",
+      "targetDefaultExpression": "'unlimited'",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Role#id",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Role",
+      "sourceName": "id",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Role",
+        "name": "id",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A005",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Role#isAbstract",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Role",
+      "sourceName": "isAbstract",
+      "sourceType": "EBoolean",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Role",
+        "name": "isAbstract",
+        "type": "Boolean"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A006",
+      "sourceExplicitDefaultLiteral": "false",
+      "targetDefaultExpression": "false",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Role#minCardinality",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Role",
+      "sourceName": "minCardinality",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Role",
+        "name": "minCardinality",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A007",
+      "sourceExplicitDefaultLiteral": "0",
+      "targetDefaultExpression": "'0'",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Role#maxCardinality",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Role",
+      "sourceName": "maxCardinality",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Role",
+        "name": "maxCardinality",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A008",
+      "sourceExplicitDefaultLiteral": "unlimited",
+      "targetDefaultExpression": "'unlimited'",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Link#type",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Link",
+      "sourceName": "type",
+      "sourceType": "EEnum:LinkType",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Link",
+        "name": "type",
+        "type": "LinkType"
+      },
+      "valuePolicy": "MAP_DECLARED_EENUM_LITERAL_TO_NATIVE_USE_ENUM_LITERAL",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A009",
+      "sourceEnum": "LinkType",
+      "sourceExplicitDefaultLiteral": "acquaintance",
+      "targetDefaultExpression": "LinkType::ACQUAINTANCE",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Link#scope",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Link",
+      "sourceName": "scope",
+      "sourceType": "EEnum:LinkScope",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Link",
+        "name": "scope",
+        "type": "LinkScope"
+      },
+      "valuePolicy": "MAP_DECLARED_EENUM_LITERAL_TO_NATIVE_USE_ENUM_LITERAL",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A010",
+      "sourceEnum": "LinkScope",
+      "sourceExplicitDefaultLiteral": "intra-group",
+      "targetDefaultExpression": "LinkScope::INTRA_GROUP",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Link#extendsSubgroups",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Link",
+      "sourceName": "extendsSubgroups",
+      "sourceType": "EBoolean",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Link",
+        "name": "extendsSubgroups",
+        "type": "Boolean"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A011",
+      "sourceExplicitDefaultLiteral": "false",
+      "targetDefaultExpression": "false",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Link#bidirectional",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Link",
+      "sourceName": "bidirectional",
+      "sourceType": "EBoolean",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Link",
+        "name": "bidirectional",
+        "type": "Boolean"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A012",
+      "sourceExplicitDefaultLiteral": "false",
+      "targetDefaultExpression": "false",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Norm#id",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Norm",
+      "sourceName": "id",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Norm",
+        "name": "id",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A013",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Norm#type",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Norm",
+      "sourceName": "type",
+      "sourceType": "EEnum:NormType",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Norm",
+        "name": "type",
+        "type": "NormType"
+      },
+      "valuePolicy": "MAP_DECLARED_EENUM_LITERAL_TO_NATIVE_USE_ENUM_LITERAL",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A014",
+      "sourceEnum": "NormType",
+      "sourceExplicitDefaultLiteral": "obligation",
+      "targetDefaultExpression": "NormType::OBLIGATION",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Norm#condition",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Norm",
+      "sourceName": "condition",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Norm",
+        "name": "condition",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_UNSET",
+      "id": "A015",
+      "sourceRequired": false,
+      "targetFidelity": "TYPE_EXACT_OPTIONAL_VALUE"
+    },
+    {
+      "source": "agentmetamodel::Norm#timeConstraint",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Norm",
+      "sourceName": "timeConstraint",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Norm",
+        "name": "timeConstraint",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_UNSET",
+      "id": "A016",
+      "sourceRequired": false,
+      "targetFidelity": "TYPE_EXACT_OPTIONAL_VALUE"
+    },
+    {
+      "source": "agentmetamodel::Scheme#id",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Scheme",
+      "sourceName": "id",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Scheme",
+        "name": "id",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A017",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Mission#id",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Mission",
+      "sourceName": "id",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Mission",
+        "name": "id",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A018",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Mission#minCardinality",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Mission",
+      "sourceName": "minCardinality",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Mission",
+        "name": "minCardinality",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A019",
+      "sourceExplicitDefaultLiteral": "0",
+      "targetDefaultExpression": "'0'",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Mission#maxCardinality",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "Mission",
+      "sourceName": "maxCardinality",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Mission",
+        "name": "maxCardinality",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A020",
+      "sourceExplicitDefaultLiteral": "unlimited",
+      "targetDefaultExpression": "'unlimited'",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::OGoal#id",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "OGoal",
+      "sourceName": "id",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "OGoal",
+        "name": "id",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A021",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::OGoal#description",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "OGoal",
+      "sourceName": "description",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "OGoal",
+        "name": "description",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_UNSET",
+      "id": "A022",
+      "sourceRequired": false,
+      "targetFidelity": "TYPE_EXACT_OPTIONAL_VALUE"
+    },
+    {
+      "source": "agentmetamodel::OGoal#type",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "OGoal",
+      "sourceName": "type",
+      "sourceType": "EEnum:GoalType",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "OGoal",
+        "name": "type",
+        "type": "GoalType"
+      },
+      "valuePolicy": "MAP_DECLARED_EENUM_LITERAL_TO_NATIVE_USE_ENUM_LITERAL",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A023",
+      "sourceEnum": "GoalType",
+      "sourceExplicitDefaultLiteral": "achievement",
+      "targetDefaultExpression": "GoalType::ACHIEVEMENT",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::OGoal#minAgentsToSatisfy",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "OGoal",
+      "sourceName": "minAgentsToSatisfy",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "OGoal",
+        "name": "minAgentsToSatisfy",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A024",
+      "sourceExplicitDefaultLiteral": "all",
+      "targetDefaultExpression": "'all'",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::OGoal#timeToFulfill",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "OGoal",
+      "sourceName": "timeToFulfill",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "OGoal",
+        "name": "timeToFulfill",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_UNSET",
+      "id": "A025",
+      "sourceRequired": false,
+      "targetFidelity": "TYPE_EXACT_OPTIONAL_VALUE"
+    },
+    {
+      "source": "agentmetamodel::OPlan#operator",
+      "sourceKind": "EAttribute",
+      "dimension": "organisation",
+      "sourceOwner": "OPlan",
+      "sourceName": "operator",
+      "sourceType": "EEnum:OPlanOperator",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "OPlan",
+        "name": "operator",
+        "type": "OPlanOperator"
+      },
+      "valuePolicy": "MAP_DECLARED_EENUM_LITERAL_TO_NATIVE_USE_ENUM_LITERAL",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A026",
+      "sourceEnum": "OPlanOperator",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Agent#name",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Agent",
+      "sourceName": "name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Agent",
+        "name": "name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A027",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Agent#source",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Agent",
+      "sourceName": "source",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Agent",
+        "name": "source",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_UNSET",
+      "id": "A028",
+      "sourceRequired": false,
+      "targetFidelity": "TYPE_EXACT_OPTIONAL_VALUE"
+    },
+    {
+      "source": "agentmetamodel::Plan#label",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Plan",
+      "sourceName": "label",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Plan",
+        "name": "label",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "LEAVE_UNDEFINED_IF_SOURCE_UNSET",
+      "id": "A029",
+      "sourceRequired": false,
+      "targetFidelity": "TYPE_EXACT_OPTIONAL_VALUE"
+    },
+    {
+      "source": "agentmetamodel::Plan#context",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Plan",
+      "sourceName": "context",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Plan",
+        "name": "ecore_Plan_context",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A030",
+      "sourceExplicitDefaultLiteral": "true",
+      "targetDefaultExpression": "'true'",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Event#operator",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Event",
+      "sourceName": "operator",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Event",
+        "name": "operator",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A031",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Event#type",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Event",
+      "sourceName": "type",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Event",
+        "name": "type",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A032",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Event#literal",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Event",
+      "sourceName": "literal",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Event",
+        "name": "literal",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A033",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Action#name",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Action",
+      "sourceName": "name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Action",
+        "name": "name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A034",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Action#arity",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Action",
+      "sourceName": "arity",
+      "sourceType": "EInt",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Action",
+        "name": "arity",
+        "type": "Integer"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A035",
+      "sourceExplicitDefaultLiteral": "0",
+      "targetDefaultExpression": "0",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Action#kind",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Action",
+      "sourceName": "kind",
+      "sourceType": "EEnum:ActionKind",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Action",
+        "name": "kind",
+        "type": "ActionKind"
+      },
+      "valuePolicy": "MAP_DECLARED_EENUM_LITERAL_TO_NATIVE_USE_ENUM_LITERAL",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A036",
+      "sourceEnum": "ActionKind",
+      "sourceExplicitDefaultLiteral": "external",
+      "targetDefaultExpression": "ActionKind::EXTERNAL",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Belief#literal",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "Belief",
+      "sourceName": "literal",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Belief",
+        "name": "literal",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A037",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::AGoal#literal",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "AGoal",
+      "sourceName": "literal",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "AGoal",
+        "name": "literal",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A038",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::AGoal#type",
+      "sourceKind": "EAttribute",
+      "dimension": "agent",
+      "sourceOwner": "AGoal",
+      "sourceName": "type",
+      "sourceType": "EEnum:AgentGoalType",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "AGoal",
+        "name": "type",
+        "type": "AgentGoalType"
+      },
+      "valuePolicy": "MAP_DECLARED_EENUM_LITERAL_TO_NATIVE_USE_ENUM_LITERAL",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A039",
+      "sourceEnum": "AgentGoalType",
+      "sourceExplicitDefaultLiteral": "achievement",
+      "targetDefaultExpression": "AgentGoalType::ACHIEVEMENT",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Workspace#name",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "Workspace",
+      "sourceName": "name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Workspace",
+        "name": "name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A040",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Artifact#name",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "Artifact",
+      "sourceName": "name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Artifact",
+        "name": "name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A041",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Artifact#type",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "Artifact",
+      "sourceName": "type",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Artifact",
+        "name": "type",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A042",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Operation#name",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "Operation",
+      "sourceName": "name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Operation",
+        "name": "name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A043",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Operation#arity",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "Operation",
+      "sourceName": "arity",
+      "sourceType": "EInt",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Operation",
+        "name": "arity",
+        "type": "Integer"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A044",
+      "sourceExplicitDefaultLiteral": "0",
+      "targetDefaultExpression": "0",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Property#name",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "Property",
+      "sourceName": "name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Property",
+        "name": "name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A045",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Property#arity",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "Property",
+      "sourceName": "arity",
+      "sourceType": "EInt",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Property",
+        "name": "arity",
+        "type": "Integer"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A046",
+      "sourceExplicitDefaultLiteral": "0",
+      "targetDefaultExpression": "0",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Signal#name",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "Signal",
+      "sourceName": "name",
+      "sourceType": "EString",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Signal",
+        "name": "name",
+        "type": "String"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "REQUIRE_RESOLVED_SOURCE_VALUE",
+      "id": "A047",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    },
+    {
+      "source": "agentmetamodel::Signal#arity",
+      "sourceKind": "EAttribute",
+      "dimension": "environment",
+      "sourceOwner": "Signal",
+      "sourceName": "arity",
+      "sourceType": "EInt",
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "internalConcept": "MAttribute",
+        "owner": "Signal",
+        "name": "arity",
+        "type": "Integer"
+      },
+      "valuePolicy": "COPY_RESOLVED_SEMANTIC_VALUE",
+      "absencePolicy": "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+      "id": "A048",
+      "sourceExplicitDefaultLiteral": "0",
+      "targetDefaultExpression": "0",
+      "sourceRequired": true,
+      "targetFidelity": "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION"
+    }
+  ],
+  "inheritanceMappings": [],
+  "referenceMappings": [
+    {
+      "source": "agentmetamodel::Organization#groups",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Organization",
+      "sourceName": "groups",
+      "sourceTarget": "Group",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R001",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Organization_groups_Group",
+        "firstEnd": {
+          "class": "Organization",
+          "multiplicity": "0..1",
+          "role": "source_groups",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Group",
+          "multiplicity": "*",
+          "role": "groups",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "Organization.groups",
+        "targetForward": "Organization.groups",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Group.source_groups",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Organization_object>, <Group_object>) into Organization_groups_Group",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::Organization#schemes",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Organization",
+      "sourceName": "schemes",
+      "sourceTarget": "Scheme",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R002",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Organization_schemes_Scheme",
+        "firstEnd": {
+          "class": "Organization",
+          "multiplicity": "0..1",
+          "role": "source_schemes",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Scheme",
+          "multiplicity": "*",
+          "role": "schemes",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "Organization.schemes",
+        "targetForward": "Organization.schemes",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Scheme.source_schemes",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Organization_object>, <Scheme_object>) into Organization_schemes_Scheme",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::Organization#norms",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Organization",
+      "sourceName": "norms",
+      "sourceTarget": "Norm",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R003",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Organization_norms_Norm",
+        "firstEnd": {
+          "class": "Organization",
+          "multiplicity": "0..1",
+          "role": "source_norms",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Norm",
+          "multiplicity": "*",
+          "role": "norms",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "Organization.norms",
+        "targetForward": "Organization.norms",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Norm.source_norms",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Organization_object>, <Norm_object>) into Organization_norms_Norm",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::Group#roles",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Group",
+      "sourceName": "roles",
+      "sourceTarget": "Role",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R004",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Group_roles_Role",
+        "firstEnd": {
+          "class": "Group",
+          "multiplicity": "0..1",
+          "role": "source_roles",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Role",
+          "multiplicity": "*",
+          "role": "roles",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "Group.roles",
+        "targetForward": "Group.roles",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Role.source_roles",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Group_object>, <Role_object>) into Group_roles_Role",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::Group#subGroups",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Group",
+      "sourceName": "subGroups",
+      "sourceTarget": "Group",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R005",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Group_subGroups_Group",
+        "firstEnd": {
+          "class": "Group",
+          "multiplicity": "0..1",
+          "role": "source_subGroups",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Group",
+          "multiplicity": "*",
+          "role": "subGroups",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "Group.subGroups",
+        "targetForward": "Group.subGroups",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Group.source_subGroups",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Group_object>, <Group_object>) into Group_subGroups_Group",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::Group#links",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Group",
+      "sourceName": "links",
+      "sourceTarget": "Link",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R006",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Group_links_Link",
+        "firstEnd": {
+          "class": "Group",
+          "multiplicity": "0..1",
+          "role": "source_links",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Link",
+          "multiplicity": "*",
+          "role": "links",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "Group.links",
+        "targetForward": "Group.links",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Link.source_links",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Group_object>, <Link_object>) into Group_links_Link",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::Role#superRoles",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Role",
+      "sourceName": "superRoles",
+      "sourceTarget": "Role",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R007",
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Role_superRoles_Role",
+        "firstEnd": {
+          "class": "Role",
+          "multiplicity": "*",
+          "role": "source_superRoles",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Role",
+          "multiplicity": "*",
+          "role": "superRoles",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "sourceForward": "Role.superRoles",
+        "targetForward": "Role.superRoles",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Role.source_superRoles",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Role_object>, <Role_object>) into Role_superRoles_Role",
+      "policy": "REFERENCE_TO_ASSOCIATION"
+    },
+    {
+      "source": "agentmetamodel::Role#agents",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Role",
+      "sourceName": "agents",
+      "sourceTarget": "Agent",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R008",
+      "sourceEOpposite": "agentmetamodel::Agent#roles",
+      "target": {
+        "kind": "USE_ASSOCIATION_ALIAS",
+        "internalConcept": "MAssociation",
+        "emit": false,
+        "aliasOf": "R021",
+        "associationName": "Agent_roles_Role",
+        "representedEnd": "firstEnd",
+        "representedRole": "agents"
+      },
+      "navigation": {
+        "sourceForward": "Role.agents",
+        "targetForward": "Role.agents",
+        "sourceForwardAuthoritative": true,
+        "representedByAssociationId": "R021",
+        "representedByRole": "agents"
+      },
+      "runtimeLinkCommand": "DO_NOT_EMIT_DUPLICATE_LINK; use canonical association R021",
+      "policy": "EOPPOSITE_ALIAS_TO_CANONICAL_ASSOCIATION"
+    },
+    {
+      "source": "agentmetamodel::Link#sourceRole",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Link",
+      "sourceName": "sourceRole",
+      "sourceTarget": "Role",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R009",
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Link_sourceRole_Role",
+        "firstEnd": {
+          "class": "Link",
+          "multiplicity": "*",
+          "role": "source_sourceRole",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Role",
+          "multiplicity": "1",
+          "role": "sourceRole",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "sourceForward": "Link.sourceRole",
+        "targetForward": "Link.sourceRole",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Role.source_sourceRole",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Link_object>, <Role_object>) into Link_sourceRole_Role",
+      "policy": "REFERENCE_TO_ASSOCIATION"
+    },
+    {
+      "source": "agentmetamodel::Link#targetRole",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Link",
+      "sourceName": "targetRole",
+      "sourceTarget": "Role",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R010",
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Link_targetRole_Role",
+        "firstEnd": {
+          "class": "Link",
+          "multiplicity": "*",
+          "role": "source_targetRole",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Role",
+          "multiplicity": "1",
+          "role": "targetRole",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "sourceForward": "Link.targetRole",
+        "targetForward": "Link.targetRole",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Role.source_targetRole",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Link_object>, <Role_object>) into Link_targetRole_Role",
+      "policy": "REFERENCE_TO_ASSOCIATION"
+    },
+    {
+      "source": "agentmetamodel::Norm#role",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Norm",
+      "sourceName": "role",
+      "sourceTarget": "Role",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R011",
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Norm_role_Role",
+        "firstEnd": {
+          "class": "Norm",
+          "multiplicity": "*",
+          "role": "source_role",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Role",
+          "multiplicity": "1",
+          "role": "ecore_Norm_role",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "sourceForward": "Norm.role",
+        "targetForward": "Norm.ecore_Norm_role",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Role.source_role",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Norm_object>, <Role_object>) into Norm_role_Role",
+      "policy": "REFERENCE_TO_ASSOCIATION"
+    },
+    {
+      "source": "agentmetamodel::Norm#mission",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Norm",
+      "sourceName": "mission",
+      "sourceTarget": "Mission",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R012",
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Norm_mission_Mission",
+        "firstEnd": {
+          "class": "Norm",
+          "multiplicity": "*",
+          "role": "source_mission",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Mission",
+          "multiplicity": "1",
+          "role": "mission",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "sourceForward": "Norm.mission",
+        "targetForward": "Norm.mission",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Mission.source_mission",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Norm_object>, <Mission_object>) into Norm_mission_Mission",
+      "policy": "REFERENCE_TO_ASSOCIATION"
+    },
+    {
+      "source": "agentmetamodel::Scheme#rootGoal",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Scheme",
+      "sourceName": "rootGoal",
+      "sourceTarget": "OGoal",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R013",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Scheme_rootGoal_OGoal",
+        "firstEnd": {
+          "class": "Scheme",
+          "multiplicity": "0..1",
+          "role": "source_rootGoal",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "OGoal",
+          "multiplicity": "1",
+          "role": "rootGoal",
+          "ordered": false
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "Scheme.rootGoal",
+        "targetForward": "Scheme.rootGoal",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "OGoal.source_rootGoal",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Scheme_object>, <OGoal_object>) into Scheme_rootGoal_OGoal",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::Scheme#missions",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Scheme",
+      "sourceName": "missions",
+      "sourceTarget": "Mission",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": -1,
+        "text": "1..*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R014",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Scheme_missions_Mission",
+        "firstEnd": {
+          "class": "Scheme",
+          "multiplicity": "0..1",
+          "role": "source_missions",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Mission",
+          "multiplicity": "1..*",
+          "role": "missions",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "Scheme.missions",
+        "targetForward": "Scheme.missions",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Mission.source_missions",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Scheme_object>, <Mission_object>) into Scheme_missions_Mission",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::Mission#goals",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "Mission",
+      "sourceName": "goals",
+      "sourceTarget": "OGoal",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": -1,
+        "text": "1..*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R015",
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Mission_goals_OGoal",
+        "firstEnd": {
+          "class": "Mission",
+          "multiplicity": "*",
+          "role": "source_goals",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "OGoal",
+          "multiplicity": "1..*",
+          "role": "goals",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "sourceForward": "Mission.goals",
+        "targetForward": "Mission.goals",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "OGoal.source_goals",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Mission_object>, <OGoal_object>) into Mission_goals_OGoal",
+      "policy": "REFERENCE_TO_ASSOCIATION"
+    },
+    {
+      "source": "agentmetamodel::OGoal#plan",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "OGoal",
+      "sourceName": "plan",
+      "sourceTarget": "OPlan",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R016",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "OGoal_plan_OPlan",
+        "firstEnd": {
+          "class": "OGoal",
+          "multiplicity": "0..1",
+          "role": "source_plan",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "OPlan",
+          "multiplicity": "0..1",
+          "role": "plan",
+          "ordered": false
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "OGoal.plan",
+        "targetForward": "OGoal.plan",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "OPlan.source_plan",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<OGoal_object>, <OPlan_object>) into OGoal_plan_OPlan",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::OPlan#subGoals",
+      "sourceKind": "EReference",
+      "dimension": "organisation",
+      "sourceOwner": "OPlan",
+      "sourceName": "subGoals",
+      "sourceTarget": "OGoal",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": -1,
+        "text": "1..*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R017",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "OPlan_subGoals_OGoal",
+        "firstEnd": {
+          "class": "OPlan",
+          "multiplicity": "0..1",
+          "role": "source_subGoals",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "OGoal",
+          "multiplicity": "1..*",
+          "role": "subGoals",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "OPlan.subGoals",
+        "targetForward": "OPlan.subGoals",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "OGoal.source_subGoals",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<OPlan_object>, <OGoal_object>) into OPlan_subGoals_OGoal",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::Agent#plans",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Agent",
+      "sourceName": "plans",
+      "sourceTarget": "Plan",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R018",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Agent_plans_Plan",
+        "firstEnd": {
+          "class": "Agent",
+          "multiplicity": "0..1",
+          "role": "source_plans",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Plan",
+          "multiplicity": "*",
+          "role": "plans",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "Agent.plans",
+        "targetForward": "Agent.plans",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Plan.source_plans",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Agent_object>, <Plan_object>) into Agent_plans_Plan",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::Agent#beliefs",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Agent",
+      "sourceName": "beliefs",
+      "sourceTarget": "Belief",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R019",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Agent_beliefs_Belief",
+        "firstEnd": {
+          "class": "Agent",
+          "multiplicity": "0..1",
+          "role": "source_beliefs",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Belief",
+          "multiplicity": "*",
+          "role": "beliefs",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "Agent.beliefs",
+        "targetForward": "Agent.beliefs",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Belief.source_beliefs",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Agent_object>, <Belief_object>) into Agent_beliefs_Belief",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::Agent#goals",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Agent",
+      "sourceName": "goals",
+      "sourceTarget": "AGoal",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R020",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Agent_goals_AGoal",
+        "firstEnd": {
+          "class": "Agent",
+          "multiplicity": "0..1",
+          "role": "source_goals",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "AGoal",
+          "multiplicity": "*",
+          "role": "goals",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "Agent.goals",
+        "targetForward": "Agent.goals",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "AGoal.source_goals",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Agent_object>, <AGoal_object>) into Agent_goals_AGoal",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::Agent#roles",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Agent",
+      "sourceName": "roles",
+      "sourceTarget": "Role",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R021",
+      "sourceEOpposite": "agentmetamodel::Role#agents",
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Agent_roles_Role",
+        "firstEnd": {
+          "class": "Agent",
+          "multiplicity": "*",
+          "role": "agents",
+          "ordered": true
+        },
+        "secondEnd": {
+          "class": "Role",
+          "multiplicity": "*",
+          "role": "roles",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "sourceForward": "Agent.roles",
+        "targetForward": "Agent.roles",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": "Role.agents",
+        "targetReverse": "Role.agents",
+        "sourceReverseAuthoritative": true,
+        "targetReverseGenerated": false
+      },
+      "runtimeLinkCommand": "!insert (<Agent_object>, <Role_object>) into Agent_roles_Role",
+      "policy": "EOPPOSITE_PAIR_TO_SINGLE_ASSOCIATION"
+    },
+    {
+      "source": "agentmetamodel::Agent#workspaces",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Agent",
+      "sourceName": "workspaces",
+      "sourceTarget": "Workspace",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R022",
+      "sourceEOpposite": "agentmetamodel::Workspace#agents",
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Agent_workspaces_Workspace",
+        "firstEnd": {
+          "class": "Agent",
+          "multiplicity": "*",
+          "role": "agents",
+          "ordered": true
+        },
+        "secondEnd": {
+          "class": "Workspace",
+          "multiplicity": "*",
+          "role": "workspaces",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "sourceForward": "Agent.workspaces",
+        "targetForward": "Agent.workspaces",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": "Workspace.agents",
+        "targetReverse": "Workspace.agents",
+        "sourceReverseAuthoritative": true,
+        "targetReverseGenerated": false
+      },
+      "runtimeLinkCommand": "!insert (<Agent_object>, <Workspace_object>) into Agent_workspaces_Workspace",
+      "policy": "EOPPOSITE_PAIR_TO_SINGLE_ASSOCIATION"
+    },
+    {
+      "source": "agentmetamodel::Agent#artifacts",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Agent",
+      "sourceName": "artifacts",
+      "sourceTarget": "Artifact",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R023",
+      "sourceEOpposite": "agentmetamodel::Artifact#agents",
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Agent_artifacts_Artifact",
+        "firstEnd": {
+          "class": "Agent",
+          "multiplicity": "*",
+          "role": "agents",
+          "ordered": true
+        },
+        "secondEnd": {
+          "class": "Artifact",
+          "multiplicity": "*",
+          "role": "artifacts",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "sourceForward": "Agent.artifacts",
+        "targetForward": "Agent.artifacts",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": "Artifact.agents",
+        "targetReverse": "Artifact.agents",
+        "sourceReverseAuthoritative": true,
+        "targetReverseGenerated": false
+      },
+      "runtimeLinkCommand": "!insert (<Agent_object>, <Artifact_object>) into Agent_artifacts_Artifact",
+      "policy": "EOPPOSITE_PAIR_TO_SINGLE_ASSOCIATION"
+    },
+    {
+      "source": "agentmetamodel::Plan#triggeringEvent",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Plan",
+      "sourceName": "triggeringEvent",
+      "sourceTarget": "Event",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": 1,
+        "text": "1"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R024",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Plan_triggeringEvent_Event",
+        "firstEnd": {
+          "class": "Plan",
+          "multiplicity": "0..1",
+          "role": "source_triggeringEvent",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Event",
+          "multiplicity": "1",
+          "role": "triggeringEvent",
+          "ordered": false
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "Plan.triggeringEvent",
+        "targetForward": "Plan.triggeringEvent",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Event.source_triggeringEvent",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Plan_object>, <Event_object>) into Plan_triggeringEvent_Event",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::Plan#actions",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Plan",
+      "sourceName": "actions",
+      "sourceTarget": "Action",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R025",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Plan_actions_Action",
+        "firstEnd": {
+          "class": "Plan",
+          "multiplicity": "0..1",
+          "role": "source_actions",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Action",
+          "multiplicity": "*",
+          "role": "actions",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "Plan.actions",
+        "targetForward": "Plan.actions",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Action.source_actions",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Plan_object>, <Action_object>) into Plan_actions_Action",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::Event#signal",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Event",
+      "sourceName": "signal",
+      "sourceTarget": "Signal",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R026",
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Event_signal_Signal",
+        "firstEnd": {
+          "class": "Event",
+          "multiplicity": "*",
+          "role": "source_signal",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Signal",
+          "multiplicity": "0..1",
+          "role": "signal",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "sourceForward": "Event.signal",
+        "targetForward": "Event.signal",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Signal.source_signal",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Event_object>, <Signal_object>) into Event_signal_Signal",
+      "policy": "REFERENCE_TO_ASSOCIATION"
+    },
+    {
+      "source": "agentmetamodel::Action#operation",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Action",
+      "sourceName": "operation",
+      "sourceTarget": "Operation",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R027",
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Action_operation_Operation",
+        "firstEnd": {
+          "class": "Action",
+          "multiplicity": "*",
+          "role": "source_operation",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Operation",
+          "multiplicity": "0..1",
+          "role": "operation",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "sourceForward": "Action.operation",
+        "targetForward": "Action.operation",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Operation.source_operation",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Action_object>, <Operation_object>) into Action_operation_Operation",
+      "policy": "REFERENCE_TO_ASSOCIATION"
+    },
+    {
+      "source": "agentmetamodel::Belief#property",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "Belief",
+      "sourceName": "property",
+      "sourceTarget": "Property",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R028",
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Belief_property_Property",
+        "firstEnd": {
+          "class": "Belief",
+          "multiplicity": "*",
+          "role": "source_property",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Property",
+          "multiplicity": "0..1",
+          "role": "property",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "sourceForward": "Belief.property",
+        "targetForward": "Belief.property",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Property.source_property",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Belief_object>, <Property_object>) into Belief_property_Property",
+      "policy": "REFERENCE_TO_ASSOCIATION"
+    },
+    {
+      "source": "agentmetamodel::AGoal#organizationalGoal",
+      "sourceKind": "EReference",
+      "dimension": "agent",
+      "sourceOwner": "AGoal",
+      "sourceName": "organizationalGoal",
+      "sourceTarget": "OGoal",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": 1,
+        "text": "0..1"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R029",
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "AGoal_organizationalGoal_OGoal",
+        "firstEnd": {
+          "class": "AGoal",
+          "multiplicity": "*",
+          "role": "source_organizationalGoal",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "OGoal",
+          "multiplicity": "0..1",
+          "role": "organizationalGoal",
+          "ordered": false
+        }
+      },
+      "navigation": {
+        "sourceForward": "AGoal.organizationalGoal",
+        "targetForward": "AGoal.organizationalGoal",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "OGoal.source_organizationalGoal",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<AGoal_object>, <OGoal_object>) into AGoal_organizationalGoal_OGoal",
+      "policy": "REFERENCE_TO_ASSOCIATION"
+    },
+    {
+      "source": "agentmetamodel::Environment#workspaces",
+      "sourceKind": "EReference",
+      "dimension": "environment",
+      "sourceOwner": "Environment",
+      "sourceName": "workspaces",
+      "sourceTarget": "Workspace",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 1,
+        "upper": -1,
+        "text": "1..*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R030",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Environment_workspaces_Workspace",
+        "firstEnd": {
+          "class": "Environment",
+          "multiplicity": "0..1",
+          "role": "source_workspaces",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Workspace",
+          "multiplicity": "1..*",
+          "role": "workspaces",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "Environment.workspaces",
+        "targetForward": "Environment.workspaces",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Workspace.source_workspaces",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Environment_object>, <Workspace_object>) into Environment_workspaces_Workspace",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::Workspace#artifacts",
+      "sourceKind": "EReference",
+      "dimension": "environment",
+      "sourceOwner": "Workspace",
+      "sourceName": "artifacts",
+      "sourceTarget": "Artifact",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R031",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Workspace_artifacts_Artifact",
+        "firstEnd": {
+          "class": "Workspace",
+          "multiplicity": "0..1",
+          "role": "source_artifacts",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Artifact",
+          "multiplicity": "*",
+          "role": "artifacts",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "Workspace.artifacts",
+        "targetForward": "Workspace.artifacts",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Artifact.source_artifacts",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Workspace_object>, <Artifact_object>) into Workspace_artifacts_Artifact",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::Workspace#agents",
+      "sourceKind": "EReference",
+      "dimension": "environment",
+      "sourceOwner": "Workspace",
+      "sourceName": "agents",
+      "sourceTarget": "Agent",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R032",
+      "sourceEOpposite": "agentmetamodel::Agent#workspaces",
+      "target": {
+        "kind": "USE_ASSOCIATION_ALIAS",
+        "internalConcept": "MAssociation",
+        "emit": false,
+        "aliasOf": "R022",
+        "associationName": "Agent_workspaces_Workspace",
+        "representedEnd": "firstEnd",
+        "representedRole": "agents"
+      },
+      "navigation": {
+        "sourceForward": "Workspace.agents",
+        "targetForward": "Workspace.agents",
+        "sourceForwardAuthoritative": true,
+        "representedByAssociationId": "R022",
+        "representedByRole": "agents"
+      },
+      "runtimeLinkCommand": "DO_NOT_EMIT_DUPLICATE_LINK; use canonical association R022",
+      "policy": "EOPPOSITE_ALIAS_TO_CANONICAL_ASSOCIATION"
+    },
+    {
+      "source": "agentmetamodel::Artifact#operations",
+      "sourceKind": "EReference",
+      "dimension": "environment",
+      "sourceOwner": "Artifact",
+      "sourceName": "operations",
+      "sourceTarget": "Operation",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R033",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Artifact_operations_Operation",
+        "firstEnd": {
+          "class": "Artifact",
+          "multiplicity": "0..1",
+          "role": "source_operations",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Operation",
+          "multiplicity": "*",
+          "role": "ecore_Artifact_operations",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "Artifact.operations",
+        "targetForward": "Artifact.ecore_Artifact_operations",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Operation.source_operations",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Artifact_object>, <Operation_object>) into Artifact_operations_Operation",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::Artifact#properties",
+      "sourceKind": "EReference",
+      "dimension": "environment",
+      "sourceOwner": "Artifact",
+      "sourceName": "properties",
+      "sourceTarget": "Property",
+      "sourceContainment": true,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R034",
+      "target": {
+        "kind": "USE_COMPOSITION",
+        "internalConcept": "MAssociation",
+        "name": "Artifact_properties_Property",
+        "firstEnd": {
+          "class": "Artifact",
+          "multiplicity": "0..1",
+          "role": "source_Artifact_properties",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Property",
+          "multiplicity": "*",
+          "role": "properties",
+          "ordered": true
+        },
+        "diamondEnd": "firstEnd"
+      },
+      "navigation": {
+        "sourceForward": "Artifact.properties",
+        "targetForward": "Artifact.properties",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Property.source_Artifact_properties",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Artifact_object>, <Property_object>) into Artifact_properties_Property",
+      "policy": "CONTAINMENT_TO_COMPOSITION"
+    },
+    {
+      "source": "agentmetamodel::Artifact#agents",
+      "sourceKind": "EReference",
+      "dimension": "environment",
+      "sourceOwner": "Artifact",
+      "sourceName": "agents",
+      "sourceTarget": "Agent",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R035",
+      "sourceEOpposite": "agentmetamodel::Agent#artifacts",
+      "target": {
+        "kind": "USE_ASSOCIATION_ALIAS",
+        "internalConcept": "MAssociation",
+        "emit": false,
+        "aliasOf": "R023",
+        "associationName": "Agent_artifacts_Artifact",
+        "representedEnd": "firstEnd",
+        "representedRole": "agents"
+      },
+      "navigation": {
+        "sourceForward": "Artifact.agents",
+        "targetForward": "Artifact.agents",
+        "sourceForwardAuthoritative": true,
+        "representedByAssociationId": "R023",
+        "representedByRole": "agents"
+      },
+      "runtimeLinkCommand": "DO_NOT_EMIT_DUPLICATE_LINK; use canonical association R023",
+      "policy": "EOPPOSITE_ALIAS_TO_CANONICAL_ASSOCIATION"
+    },
+    {
+      "source": "agentmetamodel::Operation#signals",
+      "sourceKind": "EReference",
+      "dimension": "environment",
+      "sourceOwner": "Operation",
+      "sourceName": "signals",
+      "sourceTarget": "Signal",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R036",
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Operation_signals_Signal",
+        "firstEnd": {
+          "class": "Operation",
+          "multiplicity": "*",
+          "role": "source_signals",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Signal",
+          "multiplicity": "*",
+          "role": "signals",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "sourceForward": "Operation.signals",
+        "targetForward": "Operation.signals",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Signal.source_signals",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Operation_object>, <Signal_object>) into Operation_signals_Signal",
+      "policy": "REFERENCE_TO_ASSOCIATION"
+    },
+    {
+      "source": "agentmetamodel::Operation#properties",
+      "sourceKind": "EReference",
+      "dimension": "environment",
+      "sourceOwner": "Operation",
+      "sourceName": "properties",
+      "sourceTarget": "Property",
+      "sourceContainment": false,
+      "sourceMultiplicity": {
+        "lower": 0,
+        "upper": -1,
+        "text": "*"
+      },
+      "sourceOrdered": true,
+      "sourceUnique": true,
+      "id": "R037",
+      "target": {
+        "kind": "USE_ASSOCIATION",
+        "internalConcept": "MAssociation",
+        "name": "Operation_properties_Property",
+        "firstEnd": {
+          "class": "Operation",
+          "multiplicity": "*",
+          "role": "source_Operation_properties",
+          "ordered": false
+        },
+        "secondEnd": {
+          "class": "Property",
+          "multiplicity": "*",
+          "role": "properties",
+          "ordered": true
+        }
+      },
+      "navigation": {
+        "sourceForward": "Operation.properties",
+        "targetForward": "Operation.properties",
+        "sourceForwardAuthoritative": true,
+        "sourceReverse": null,
+        "targetReverse": "Property.source_Operation_properties",
+        "sourceReverseAuthoritative": false,
+        "targetReverseGenerated": true
+      },
+      "runtimeLinkCommand": "!insert (<Operation_object>, <Property_object>) into Operation_properties_Property",
+      "policy": "REFERENCE_TO_ASSOCIATION"
+    }
+  ],
+  "verificationProjections": [
+    {
+      "id": "VP001",
+      "name": "ConcreteArtifactTypeProjection",
+      "status": "ENABLED_WHEN_RESOLVED",
+      "source": "Parsed JaCaMo project: Artifact.type plus externally confirmed concrete CArtAgO implementation type",
+      "preconditions": [
+        "Artifact.type resolves to a concrete implementation identity",
+        "parser/source resolver confirms CArtAgO Artifact ancestry or equivalent project declaration"
+      ],
+      "target": {
+        "kind": "USE_CLASS",
+        "rule": "Generate one concrete USE subclass of Artifact per distinct resolved implementation type."
+      },
+      "trace": "Preserve fully-qualified implementation type as trace metadata. Artifact.type is the V2 structural anchor; never infer the class from Agent/action names.",
+      "metamodelContract": {
+        "sourceElements": [
+          "agentmetamodel::Artifact",
+          "agentmetamodel::Artifact#type"
+        ],
+        "structuralBindings": [
+          "C018",
+          "A042"
+        ],
+        "targetConcept": "MClass",
+        "baseClass": "Artifact",
+        "dependsOn": [],
+        "mode": "TYPE_TEMPLATE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Expose a resolved concrete Artifact implementation as a USE subtype.",
+        "assumptions": [
+          "Concrete Java/CArtAgO type resolution is external to the structural Ecore."
+        ],
+        "informationLoss": "No baseline structural data is removed; Java behavior is not represented by the subtype.",
+        "externalInputRequired": true,
+        "baselineMutation": false
+      }
+    },
+    {
+      "id": "VP002",
+      "name": "ObservablePropertyStateProjection",
+      "status": "ENABLED_ONLY_WITH_RESOLVED_NAME_AND_TYPE",
+      "source": "Parsed concrete Property owned by an Artifact implementation/instance",
+      "structuralRepresentation": "Preserve Property object and R034 composition.",
+      "target": {
+        "kind": "USE_ATTRIBUTE",
+        "owner": "generated concrete Artifact subclass",
+        "name": "Property.name",
+        "type": "externally resolved USE-compatible state type"
+      },
+      "runtime": "Current property value may materialize as !set on the concrete artifact object.",
+      "fallback": "If value type cannot be resolved reliably, keep structural Property(name,arity) only; never infer a state type from arity or literal text.",
+      "reason": "Enables natural OCL state invariants/pre/postconditions while preserving the V2 structural Property concept.",
+      "metamodelContract": {
+        "sourceElements": [
+          "agentmetamodel::Artifact",
+          "agentmetamodel::Property",
+          "agentmetamodel::Artifact#properties"
+        ],
+        "structuralBindings": [
+          "C018",
+          "C020",
+          "R034"
+        ],
+        "targetConcept": "MAttribute",
+        "baseClass": "Artifact",
+        "dependsOn": [
+          "VP001"
+        ],
+        "mode": "ATTRIBUTE_TEMPLATE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Project a resolved observable-property value to a typed attribute on a concrete Artifact subtype.",
+        "assumptions": [
+          "Property.name is structural; value type/value require project/runtime evidence.",
+          "Generated member must not collide with mapped attributes or navigations."
+        ],
+        "informationLoss": "Structural Property remains. Concrete Java/runtime value semantics are outside this projection.",
+        "externalInputRequired": true,
+        "baselineMutation": false
+      }
+    },
+    {
+      "id": "VP003",
+      "name": "CArtAgOOperationProjection",
+      "status": "ENABLED_ONLY_WITH_RESOLVED_SIGNATURE",
+      "source": "Parsed concrete Operation owned by an Artifact implementation",
+      "structuralRepresentation": "Preserve Operation object and R033 composition.",
+      "target": {
+        "kind": "USE_OPERATION",
+        "internalConcept": "MOperation",
+        "owner": "generated concrete Artifact subclass",
+        "name": "Operation.name",
+        "parameters": "externally resolved ordered parameter names/types; count must agree with Operation.arity",
+        "resultType": "externally resolved result type when meaningful, otherwise no result"
+      },
+      "fallback": "If a full signature cannot be resolved, keep structural Operation(name,arity) only. Arity alone is insufficient to invent parameter types or names.",
+      "oclCapability": "Resolved projected operations anchor USE OCL pre/postconditions.",
+      "metamodelContract": {
+        "sourceElements": [
+          "agentmetamodel::Artifact",
+          "agentmetamodel::Operation",
+          "agentmetamodel::Artifact#operations"
+        ],
+        "structuralBindings": [
+          "C018",
+          "C019",
+          "R033"
+        ],
+        "targetConcept": "MOperation",
+        "baseClass": "Artifact",
+        "dependsOn": [
+          "VP001"
+        ],
+        "mode": "OPERATION_TEMPLATE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Expose a resolved CArtAgO operation signature as a USE operation.",
+        "assumptions": [
+          "Full ordered signature comes from CArtAgO/Java resolution; V2 Ecore provides only name/arity."
+        ],
+        "informationLoss": "Structural Operation remains; guards/internal Java behavior/effects are not inferred.",
+        "externalInputRequired": true,
+        "baselineMutation": false
+      }
+    },
+    {
+      "id": "VP004",
+      "name": "ExternalActionOperationConsistency",
+      "status": "STRUCTURAL_LINK_PRESERVED",
+      "source": "Action.operation -> Operation, constrained semantically by Action.kind=EXTERNAL",
+      "target": "Reuse mapped association R027; when VP003 exists, trace structural Operation to its projected MOperation.",
+      "purpose": "Supports Jason external-action ↔ CArtAgO operation consistency without inventing receiver/execution semantics.",
+      "metamodelContract": {
+        "sourceElements": [
+          "agentmetamodel::Action",
+          "agentmetamodel::Action#kind",
+          "agentmetamodel::Operation",
+          "agentmetamodel::Action#operation"
+        ],
+        "structuralBindings": [
+          "C013",
+          "A036",
+          "C019",
+          "R027"
+        ],
+        "targetConcept": "MAssociation",
+        "baseClass": null,
+        "dependsOn": [],
+        "mode": "STRUCTURAL_REUSE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Reuse the V2 action-operation structural relation.",
+        "assumptions": [
+          "Action.kind must be EXTERNAL for an environment-operation interpretation; INTERNAL actions must not be forced to an Operation."
+        ],
+        "informationLoss": "No structural loss; receiver resolution and execution are not inferred.",
+        "externalInputRequired": false,
+        "baselineMutation": false
+      }
+    },
+    {
+      "id": "VP005",
+      "name": "ObservablePropertyBeliefConsistency",
+      "status": "STRUCTURAL_LINK_PRESERVED",
+      "source": "Belief.property -> Property",
+      "target": "Reuse mapped association R028; VP002 may additionally project the concrete property value.",
+      "purpose": "Supports environment observable-property ↔ Jason belief consistency checks while preserving V2 direction.",
+      "metamodelContract": {
+        "sourceElements": [
+          "agentmetamodel::Belief",
+          "agentmetamodel::Property",
+          "agentmetamodel::Belief#property"
+        ],
+        "structuralBindings": [
+          "C014",
+          "C020",
+          "R028"
+        ],
+        "targetConcept": "MAssociation",
+        "baseClass": null,
+        "dependsOn": [],
+        "mode": "STRUCTURAL_REUSE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Anchor V2 belief-to-property correspondence for later verification.",
+        "assumptions": [
+          "The relation does not itself prove percept delivery timing or belief synchronization."
+        ],
+        "informationLoss": "No structural loss; runtime synchronization semantics remain outside this layer.",
+        "externalInputRequired": false,
+        "baselineMutation": false
+      }
+    },
+    {
+      "id": "VP006",
+      "name": "OrganisationalGoalAgentGoalConsistency",
+      "status": "STRUCTURAL_LINK_PRESERVED",
+      "source": "AGoal.organizationalGoal -> OGoal",
+      "target": "Reuse mapped association R029.",
+      "purpose": "Supports agent-goal ↔ MOISE organisational-goal correspondence in the direction declared by V2.",
+      "metamodelContract": {
+        "sourceElements": [
+          "agentmetamodel::AGoal",
+          "agentmetamodel::OGoal",
+          "agentmetamodel::AGoal#organizationalGoal"
+        ],
+        "structuralBindings": [
+          "C015",
+          "C008",
+          "R029"
+        ],
+        "targetConcept": "MAssociation",
+        "baseClass": null,
+        "dependsOn": [],
+        "mode": "STRUCTURAL_REUSE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Anchor V2 cross-dimensional goal correspondence.",
+        "assumptions": [
+          "No achievement/satisfaction lifecycle is inferred from the static link."
+        ],
+        "informationLoss": "No structural loss; runtime satisfaction semantics are outside scope.",
+        "externalInputRequired": false,
+        "baselineMutation": false
+      }
+    },
+    {
+      "id": "VP007",
+      "name": "NormPreservation",
+      "status": "LOCKED",
+      "source": "Norm including enum type, condition/timeConstraint, role and mission relations",
+      "target": "Represent Norm as USE class/object with native NormType attribute plus mapped associations only.",
+      "forbiddenTransformation": "Do not compile obligation/permission into OCL automatically without a separately proved deontic translation contract.",
+      "purpose": "Keep MOISE normative structure distinct from ordinary OCL state/operation constraints.",
+      "metamodelContract": {
+        "sourceElements": [
+          "agentmetamodel::Norm",
+          "agentmetamodel::Norm#type",
+          "agentmetamodel::Norm#condition",
+          "agentmetamodel::Norm#timeConstraint",
+          "agentmetamodel::Norm#role",
+          "agentmetamodel::Norm#mission"
+        ],
+        "structuralBindings": [
+          "C005",
+          "A014",
+          "A015",
+          "A016",
+          "R011",
+          "R012"
+        ],
+        "targetConcept": "MClass",
+        "baseClass": "Norm",
+        "dependsOn": [],
+        "mode": "STRUCTURAL_REUSE",
+        "direction": "JACAMO_TO_USE",
+        "purpose": "Preserve V2 normative data and links without deontic-to-OCL invention.",
+        "assumptions": [
+          "NormType is a native USE enum; condition/timeConstraint stay strings unless a later formal parser is proven."
+        ],
+        "informationLoss": "No structural loss; deontic interpretation/execution remains intentionally outside this mapping.",
+        "externalInputRequired": false,
+        "baselineMutation": false
+      }
+    }
+  ],
+  "runtimeMaterialization": {
+    "initialSnapshot": [
+      {
+        "semanticElement": "mapped model instance",
+        "useAction": "!create <object> : <MappedClass>"
+      },
+      {
+        "semanticElement": "resolved scalar primitive EAttribute value",
+        "useAction": "!set <object>.<attribute> := <OCL literal>"
+      },
+      {
+        "semanticElement": "resolved EEnum EAttribute value",
+        "useAction": "!set <object>.<attribute> := <EnumType>::<LiteralName>"
+      },
+      {
+        "semanticElement": "resolved EReference link",
+        "useAction": "!insert (<firstEndObject>, <secondEndObject>) into <MappedAssociation>; eOpposite alias entries must not emit a duplicate insert"
+      }
+    ],
+    "operationReplay": {
+      "when": "runtime/event adapter provides a concrete projected operation invocation",
+      "enter": "!openter <artifactObject> <operation>(<args>)",
+      "exit": "!opexit",
+      "effectMaterialization": "Apply observed !set/!insert/!delete changes between enter and exit before postcondition evaluation."
+    },
+    "directApiAlternative": "A plugin may construct/update MModel and MSystemState directly. For V2 it must create EnumType declarations before enum-typed attributes and must deduplicate eOpposite pairs to the one canonical mapped MAssociation."
+  },
+  "reviewFlags": [
+    {
+      "source": "V2 EEnums",
+      "severity": "MIGRATION_REQUIRED",
+      "mappingAction": "ADD_NATIVE_ENUM_SUPPORT_TO_MAPPING_MODEL_LOADER_AND_GENERATOR",
+      "note": "USE 7.5.0 supports native EnumType, but current plugin MappingModel/MappingLoader V1 do not parse enumMappings."
+    },
+    {
+      "source": "V2 eOpposite pairs",
+      "severity": "MIGRATION_REQUIRED",
+      "mappingAction": "DEDUPLICATE_TO_ONE_MASSOCIATION_PER_PAIR",
+      "note": "Role.agents/Agent.roles, Agent.workspaces/Workspace.agents and Agent.artifacts/Artifact.agents are authoritative bidirectional pairs; emitting both as independent associations would be wrong."
+    },
+    {
+      "source": "agentmetamodel::Plan#context",
+      "severity": "VERIFIED_TARGET_ESCAPE",
+      "mappingAction": "TARGET_ONLY_RENAME",
+      "note": "USE grammar reserves lowercase context; map to ecore_Plan_context while preserving source identity."
+    },
+    {
+      "source": "agentmetamodel::Norm#role",
+      "severity": "VERIFIED_TARGET_ESCAPE",
+      "mappingAction": "TARGET_ONLY_ROLE_RENAME",
+      "note": "USE grammar reserves lowercase role in association-end syntax; target navigation role is ecore_Norm_role while source identity remains Norm.role."
+    },
+    {
+      "source": "agentmetamodel::Artifact#operations",
+      "severity": "VERIFIED_TARGET_ESCAPE",
+      "mappingAction": "TARGET_ONLY_ROLE_RENAME",
+      "note": "USE grammar reserves lowercase operations. V2.0 already emitted ecore_Artifact_operations but failed to list the escape in identifierPolicy and used an ambiguous navigation.forward string. V2.1 makes the escape explicit and separates sourceForward from targetForward."
+    },
+    {
+      "source": "V2 required EAttributes",
+      "severity": "SEMANTIC_GUARD_REQUIRED",
+      "mappingAction": "PRESERVE_LOWERBOUND_AND_ENFORCE_DURING_INSTANCE_MATERIALIZATION",
+      "note": "42 EAttributes have lowerBound=1. USE scalar attributes do not structurally encode Ecore attribute multiplicity; V2.1 records sourceRequired and a deterministic absence/default materialization policy instead of implying structural equivalence."
+    },
+    {
+      "source": "VP001-VP003",
+      "severity": "EXTERNAL_EVIDENCE_REQUIRED",
+      "mappingAction": "KEEP_CONDITIONAL",
+      "note": "V2 structural Ecore intentionally lacks full concrete property value types and operation signatures; projections remain evidence-gated."
+    },
+    {
+      "source": "Current repository V1 loader/freeze",
+      "severity": "BLOCKING_FOR_INTEGRATION_NOT_FOR_MAPPING_ARTIFACT",
+      "mappingAction": "MIGRATE_V1_PINNED_CONSUMERS_BEFORE_FREEZE",
+      "note": "MappingLoader hard-codes V1 filenames, V1 hash manifest and only EClass/EAttribute/EReference/eSuperType keys. V2 cannot be declared FROZEN until those consumers/tests are updated and USE compilation gates pass."
+    }
+  ],
+  "statistics": {
+    "enumMappings": 7,
+    "classMappings": 21,
+    "attributeMappings": 48,
+    "referenceSourceFeatures": 37,
+    "emittedAssociationOrCompositionMappings": 34,
+    "oppositeAliasMappings": 3,
+    "inheritanceMappings": 0,
+    "verificationProjectionRules": 7,
+    "externalProjectionRequirements": 2,
+    "requiredAttributeMappings": 42,
+    "explicitDefaultAttributeMappings": 21,
+    "containmentReferenceMappings": 19,
+    "oppositeSourceReferences": 6,
+    "manyValuedReferenceMappings": 26
+  },
+  "$schema": "jacamo-use-mapping-v2.1.schema.json",
+  "contract": {
+    "layer": "METAMODEL_MAPPING",
+    "version": "2.1.0",
+    "sourceIdentity": "agentmetamodel::<EEnum|EClass>[#<declaredFeature>]",
+    "inScope": [
+      "EEnum",
+      "EClass",
+      "EAttribute",
+      "EReference",
+      "eOpposite",
+      "eSuperType",
+      "conditional metamodel projection"
+    ],
+    "outOfScope": [
+      "concrete-model binding",
+      "runtime object identity",
+      "receiver resolution",
+      "live USE MSystemState",
+      "event subscription",
+      "JaCaMo parsing implementation",
+      "OCL/deontic execution"
+    ],
+    "identityRule": "Feature identity always includes its declaring owner. eOpposite partner identity is explicit; bare feature names are never lookup keys.",
+    "reverseRoleRule": "Use declared eOpposite role when present. Otherwise generate source_<feature>; owner-qualify every colliding generated reverse role. Target-only USE keyword escapes are reversible and never change source identity.",
+    "orderingRule": "Copy EReference ordered/unique metadata. A many-valued mapped end is ordered when its corresponding source EReference is ordered; a generated inverse without eOpposite has no authoritative source order.",
+    "containmentRule": "Map containment to USE composition with source/container at the first/aggregation end and per-link inverse 0..1. Materialization must additionally preserve the source eContainer globally across all containment references.",
+    "oppositeRule": "One canonical USE association represents each bidirectional EReference/eOpposite pair; both source references remain separately traceable through one emitted canonical entry plus one alias entry.",
+    "enumRule": "Map EEnum to native USE EnumType. Use EEnum literal.name as the USE identifier and retain EEnum literal text/value for reversible serialization.",
+    "valueRule": "Preserve EType and explicit-default provenance. Instance default materialization is a later stage. Enum source literals are mapped through enumMappings, never treated as arbitrary strings.",
+    "projectionRule": "VP001-003 remain conditional typed templates that require external concrete project facts. VP004-007 reuse V2 structural bindings and do not duplicate them.",
+    "compatibility": "Schema 2.1.0 is intentionally not load-compatible with the repository V1 MappingLoader/MappingModel. Compared with V2.0 it clarifies target keyword escape Artifact.operations, separates source/target navigation namespaces, makes required-attribute/default materialization explicit, renames pseudo unresolved features to externalProjectionRequirements, and closes the JSON schema shapes.",
+    "navigationRule": "sourceForward/sourceReverse are Ecore identities; targetForward/targetReverse are actual USE navigations after escaping/generated roles. For absent eOpposite, sourceReverse is null and targetReverse is explicitly generated/non-authoritative.",
+    "attributeRequirednessRule": "EAttribute lowerBound is preserved as sourceRequired/sourceMultiplicity. Because USE attributes have no Ecore multiplicity syntax, requiredness is a mandatory instance-materialization validity gate; required no-default values must resolve, and explicit defaults must materialize as the effective target value when the source is unset.",
+    "explicitDefaultRule": "Explicit Ecore defaults are mapped to targetDefaultExpression and applied at materialization when the source is unset. The static V2 mapping does not pretend that USE MAttribute declarations alone encode Ecore default/eIsSet semantics.",
+    "compilerGateRule": "REVIEWED_CANDIDATE means exact source coverage and source-level target checks have passed. FROZEN requires the migrated repository consumer, actual USECompiler compilation, negative mutation gates and refreshed fingerprints/manifests; hashes must never be edited merely to silence a gate."
+  },
+  "externalProjectionRequirements": [
+    {
+      "id": "XPR001",
+      "projection": "VP002",
+      "owner": "Property",
+      "requirement": "runtimeValueType",
+      "declaredInEcore": false,
+      "evidence": "Property declares only name and arity; a typed projected USE state attribute requires independently resolved value type evidence.",
+      "decision": "Do not synthesize an EAttribute or infer a type from arity/name/literal text.",
+      "mappingStatus": "EXTERNAL_PROJECTION_PRECONDITION"
+    },
+    {
+      "id": "XPR002",
+      "projection": "VP003",
+      "owner": "Operation",
+      "requirement": "orderedParameterNamesTypesAndResultType",
+      "declaredInEcore": false,
+      "evidence": "Operation declares only name and arity; a projected MOperation requires an independently resolved full ordered signature.",
+      "decision": "Do not synthesize parameter names/types or result type from arity.",
+      "mappingStatus": "EXTERNAL_PROJECTION_PRECONDITION"
+    }
+  ]
+}

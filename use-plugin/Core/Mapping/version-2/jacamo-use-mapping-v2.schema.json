@@ -1,0 +1,1854 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:jacamo:metamodel-mapping:v2:schema:2.1.0",
+  "title": "JaCaMo V2 -> USE metamodel mapping (strict schema 2.1.0)",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "mappingId",
+    "status",
+    "createdDate",
+    "purpose",
+    "architecture",
+    "sourceMetamodel",
+    "targetUSE",
+    "policies",
+    "enumMappings",
+    "classMappings",
+    "attributeMappings",
+    "inheritanceMappings",
+    "referenceMappings",
+    "verificationProjections",
+    "runtimeMaterialization",
+    "externalProjectionRequirements",
+    "reviewFlags",
+    "statistics",
+    "$schema",
+    "contract"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "2.1.0"
+    },
+    "mappingId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "REVIEWED_CANDIDATE_V2",
+        "FROZEN"
+      ]
+    },
+    "createdDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "architecture": {
+      "$ref": "#/$defs/architecture"
+    },
+    "sourceMetamodel": {
+      "$ref": "#/$defs/sourceMetamodel"
+    },
+    "targetUSE": {
+      "$ref": "#/$defs/targetUSE"
+    },
+    "policies": {
+      "$ref": "#/$defs/policies"
+    },
+    "enumMappings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/enumMapping"
+      }
+    },
+    "classMappings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/classMapping"
+      }
+    },
+    "attributeMappings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/attributeMapping"
+      }
+    },
+    "inheritanceMappings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/inheritanceMapping"
+      }
+    },
+    "referenceMappings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/referenceMapping"
+      }
+    },
+    "verificationProjections": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {
+        "$ref": "#/$defs/projection"
+      }
+    },
+    "runtimeMaterialization": {
+      "$ref": "#/$defs/runtimeMaterialization"
+    },
+    "externalProjectionRequirements": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/externalProjectionRequirement"
+      }
+    },
+    "reviewFlags": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/reviewFlag"
+      }
+    },
+    "statistics": {
+      "$ref": "#/$defs/statistics"
+    },
+    "$schema": {
+      "const": "jacamo-use-mapping-v2.1.schema.json"
+    },
+    "contract": {
+      "$ref": "#/$defs/contract"
+    }
+  },
+  "$defs": {
+    "dimension": {
+      "enum": [
+        "organisation",
+        "agent",
+        "environment"
+      ]
+    },
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*$"
+    },
+    "multiplicity": {
+      "type": "object",
+      "required": [
+        "lower",
+        "upper",
+        "text"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "lower": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "upper": {
+          "type": "integer",
+          "minimum": -1
+        },
+        "text": {
+          "type": "string",
+          "pattern": "^(\\*|[0-9]+|[0-9]+\\.\\.(\\*|[0-9]+))$"
+        }
+      }
+    },
+    "associationEnd": {
+      "type": "object",
+      "required": [
+        "class",
+        "multiplicity",
+        "role",
+        "ordered"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "class": {
+          "$ref": "#/$defs/identifier"
+        },
+        "multiplicity": {
+          "type": "string",
+          "pattern": "^(\\*|[0-9]+|[0-9]+\\.\\.(\\*|[0-9]+))$"
+        },
+        "role": {
+          "$ref": "#/$defs/identifier"
+        },
+        "ordered": {
+          "type": "boolean"
+        }
+      }
+    },
+    "architecture": {
+      "type": "object",
+      "required": [
+        "verificationInput",
+        "semanticBoundary",
+        "outputs",
+        "oclStage"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "verificationInput": {
+          "type": "object",
+          "required": [
+            "kind",
+            "entryPoint",
+            "resolvedDependentSources",
+            "directEcoreAsProjectInput"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "type": "string",
+              "minLength": 1
+            },
+            "entryPoint": {
+              "type": "string",
+              "minLength": 1
+            },
+            "resolvedDependentSources": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "directEcoreAsProjectInput": {
+              "type": "boolean"
+            }
+          }
+        },
+        "semanticBoundary": {
+          "type": "object",
+          "required": [
+            "inputToMapper",
+            "conformsTo",
+            "rule"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "inputToMapper": {
+              "type": "string",
+              "minLength": 1
+            },
+            "conformsTo": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rule": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "required": [
+              "kind",
+              "defaultFileName",
+              "contains",
+              "internalRoot"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "type": "string",
+                "minLength": 1
+              },
+              "defaultFileName": {
+                "type": "string",
+                "minLength": 1
+              },
+              "contains": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "internalRoot": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "oclStage": {
+          "type": "object",
+          "required": [
+            "mappingFileContainsOclConstraints",
+            "policy"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "mappingFileContainsOclConstraints": {
+              "type": "boolean"
+            },
+            "policy": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "sourceMetamodel": {
+      "type": "object",
+      "required": [
+        "artifact",
+        "packageName",
+        "nsURI",
+        "nsPrefix",
+        "sha256",
+        "artifactStatus",
+        "expectedStatistics"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "artifact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "packageName": {
+          "const": "agentmetamodel"
+        },
+        "nsURI": {
+          "type": "string",
+          "minLength": 1
+        },
+        "nsPrefix": {
+          "const": "agentmetamodel"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "artifactStatus": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expectedStatistics": {
+          "type": "object",
+          "required": [
+            "EEnums",
+            "EClasses",
+            "EAttributes",
+            "EReferences",
+            "EGeneralizations",
+            "EOppositePairs",
+            "RequiredEAttributes",
+            "ExplicitDefaultEAttributes",
+            "ContainmentEReferences",
+            "ManyValuedEReferences"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "EEnums": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "EClasses": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "EAttributes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "EReferences": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "EGeneralizations": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "EOppositePairs": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "RequiredEAttributes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "ExplicitDefaultEAttributes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "ContainmentEReferences": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "ManyValuedEReferences": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "targetUSE": {
+      "type": "object",
+      "required": [
+        "repository",
+        "upstream",
+        "manual",
+        "textualModelExtension",
+        "stateScriptExtension",
+        "constructs",
+        "inspectedRevision",
+        "version",
+        "sourceEvidence",
+        "validationScope"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "repository": {
+          "type": "string",
+          "minLength": 1
+        },
+        "upstream": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manual": {
+          "type": "string",
+          "minLength": 1
+        },
+        "textualModelExtension": {
+          "const": ".use"
+        },
+        "stateScriptExtension": {
+          "const": ".cmd"
+        },
+        "constructs": {
+          "type": "object",
+          "required": [
+            "model",
+            "enum",
+            "class",
+            "attribute",
+            "association",
+            "composition",
+            "operation",
+            "systemState",
+            "constraints"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "model": {
+              "type": "string",
+              "minLength": 1
+            },
+            "enum": {
+              "type": "string",
+              "minLength": 1
+            },
+            "class": {
+              "type": "string",
+              "minLength": 1
+            },
+            "attribute": {
+              "type": "string",
+              "minLength": 1
+            },
+            "association": {
+              "type": "string",
+              "minLength": 1
+            },
+            "composition": {
+              "type": "string",
+              "minLength": 1
+            },
+            "operation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "systemState": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "inspectedRevision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceEvidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "validationScope": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "policies": {
+      "type": "object",
+      "required": [
+        "datatypeMappings",
+        "enumMapping",
+        "classMapping",
+        "attributeMapping",
+        "attributeRequirednessPolicy",
+        "explicitDefaultPolicy",
+        "inheritanceMapping",
+        "containmentReferenceMapping",
+        "nonContainmentReferenceMapping",
+        "identifierPolicy",
+        "sourceExpressionPolicy",
+        "enumValuePolicy",
+        "constraintPolicy",
+        "oppositePolicy",
+        "navigationPolicy",
+        "orderingPolicy",
+        "evolutionPolicy"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "datatypeMappings": {
+          "type": "array",
+          "minItems": 4,
+          "items": {
+            "type": "object",
+            "required": [
+              "source",
+              "target"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "source": {
+                "type": "string",
+                "minLength": 1
+              },
+              "target": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "enumMapping": {
+          "type": "string",
+          "minLength": 1
+        },
+        "classMapping": {
+          "type": "string",
+          "minLength": 1
+        },
+        "attributeMapping": {
+          "type": "string",
+          "minLength": 1
+        },
+        "attributeRequirednessPolicy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "explicitDefaultPolicy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "inheritanceMapping": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceExpressionPolicy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "enumValuePolicy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "constraintPolicy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "oppositePolicy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "navigationPolicy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "orderingPolicy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "containmentReferenceMapping": {
+          "type": "object",
+          "required": [
+            "target",
+            "firstEnd",
+            "firstEndMultiplicity",
+            "secondEndMultiplicity",
+            "forwardRole",
+            "reverseRole",
+            "reverseNavigationAuthoritative",
+            "globalContainmentGuard"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "target": {
+              "const": "composition"
+            },
+            "firstEnd": {
+              "type": "string"
+            },
+            "firstEndMultiplicity": {
+              "type": "string"
+            },
+            "secondEndMultiplicity": {
+              "type": "string"
+            },
+            "forwardRole": {
+              "type": "string"
+            },
+            "reverseRole": {
+              "type": "string"
+            },
+            "reverseNavigationAuthoritative": {
+              "type": "boolean"
+            },
+            "globalContainmentGuard": {
+              "type": "string"
+            }
+          }
+        },
+        "nonContainmentReferenceMapping": {
+          "type": "object",
+          "required": [
+            "withoutEOpposite",
+            "withEOpposite",
+            "forwardMultiplicity"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "withoutEOpposite": {
+              "type": "string"
+            },
+            "withEOpposite": {
+              "type": "string"
+            },
+            "forwardMultiplicity": {
+              "type": "string"
+            }
+          }
+        },
+        "identifierPolicy": {
+          "type": "object",
+          "required": [
+            "metamodelElements",
+            "projectObjectIdentifiers",
+            "generatedConcreteArtifactClass",
+            "targetAttributeEscapes",
+            "targetAssociationRoleEscapes"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "metamodelElements": {
+              "type": "string"
+            },
+            "projectObjectIdentifiers": {
+              "type": "string"
+            },
+            "generatedConcreteArtifactClass": {
+              "type": "string"
+            },
+            "targetAttributeEscapes": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*$"
+              }
+            },
+            "targetAssociationRoleEscapes": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*$"
+              }
+            }
+          }
+        },
+        "evolutionPolicy": {
+          "type": "object",
+          "required": [
+            "fingerprintMismatch",
+            "stableSourceKey",
+            "unchangedElement",
+            "addedEClassEnumOrFeature",
+            "changedTypeBoundsContainmentOppositeOrSupertype",
+            "removedOrRenamedElement",
+            "versioning"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "fingerprintMismatch": {
+              "type": "string",
+              "minLength": 1
+            },
+            "stableSourceKey": {
+              "type": "string",
+              "minLength": 1
+            },
+            "unchangedElement": {
+              "type": "string",
+              "minLength": 1
+            },
+            "addedEClassEnumOrFeature": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changedTypeBoundsContainmentOppositeOrSupertype": {
+              "type": "string",
+              "minLength": 1
+            },
+            "removedOrRenamedElement": {
+              "type": "string",
+              "minLength": 1
+            },
+            "versioning": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "enumLiteral": {
+      "type": "object",
+      "required": [
+        "name",
+        "literal",
+        "value"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/identifier"
+        },
+        "literal": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "integer"
+        }
+      }
+    },
+    "enumMapping": {
+      "type": "object",
+      "required": [
+        "source",
+        "sourceKind",
+        "dimension",
+        "sourceLiterals",
+        "target",
+        "valuePolicy",
+        "id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string",
+          "pattern": "^agentmetamodel::[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "sourceKind": {
+          "const": "EEnum"
+        },
+        "dimension": {
+          "$ref": "#/$defs/dimension"
+        },
+        "sourceLiterals": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/enumLiteral"
+          }
+        },
+        "target": {
+          "type": "object",
+          "required": [
+            "kind",
+            "internalConcept",
+            "name",
+            "literals"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "USE_ENUM"
+            },
+            "internalConcept": {
+              "const": "EnumType"
+            },
+            "name": {
+              "$ref": "#/$defs/identifier"
+            },
+            "literals": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/identifier"
+              }
+            }
+          }
+        },
+        "valuePolicy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^E[0-9]{3}$"
+        }
+      }
+    },
+    "classMapping": {
+      "type": "object",
+      "required": [
+        "source",
+        "sourceKind",
+        "dimension",
+        "sourceAbstract",
+        "target",
+        "policy",
+        "id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string",
+          "pattern": "^agentmetamodel::[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "sourceKind": {
+          "const": "EClass"
+        },
+        "dimension": {
+          "$ref": "#/$defs/dimension"
+        },
+        "sourceAbstract": {
+          "type": "boolean"
+        },
+        "target": {
+          "type": "object",
+          "required": [
+            "kind",
+            "internalConcept",
+            "name",
+            "abstract"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "USE_CLASS"
+            },
+            "internalConcept": {
+              "const": "MClass"
+            },
+            "name": {
+              "$ref": "#/$defs/identifier"
+            },
+            "abstract": {
+              "type": "boolean"
+            }
+          }
+        },
+        "policy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^C[0-9]{3}$"
+        }
+      }
+    },
+    "attributeMapping": {
+      "type": "object",
+      "required": [
+        "source",
+        "sourceKind",
+        "dimension",
+        "sourceOwner",
+        "sourceName",
+        "sourceType",
+        "sourceMultiplicity",
+        "sourceRequired",
+        "target",
+        "valuePolicy",
+        "absencePolicy",
+        "targetFidelity",
+        "id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string",
+          "pattern": "^agentmetamodel::[A-Za-z_][A-Za-z0-9_]*#[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "sourceKind": {
+          "const": "EAttribute"
+        },
+        "dimension": {
+          "$ref": "#/$defs/dimension"
+        },
+        "sourceOwner": {
+          "$ref": "#/$defs/identifier"
+        },
+        "sourceName": {
+          "$ref": "#/$defs/identifier"
+        },
+        "sourceType": {
+          "type": "string",
+          "pattern": "^(EString|EInt|EBoolean|EEnum:[A-Za-z_][A-Za-z0-9_]*)$"
+        },
+        "sourceMultiplicity": {
+          "$ref": "#/$defs/multiplicity"
+        },
+        "sourceRequired": {
+          "type": "boolean"
+        },
+        "target": {
+          "type": "object",
+          "required": [
+            "kind",
+            "internalConcept",
+            "owner",
+            "name",
+            "type"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "USE_ATTRIBUTE"
+            },
+            "internalConcept": {
+              "const": "MAttribute"
+            },
+            "owner": {
+              "$ref": "#/$defs/identifier"
+            },
+            "name": {
+              "$ref": "#/$defs/identifier"
+            },
+            "type": {
+              "$ref": "#/$defs/identifier"
+            }
+          }
+        },
+        "valuePolicy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "absencePolicy": {
+          "enum": [
+            "MATERIALIZE_EXPLICIT_ECORE_DEFAULT_WHEN_SOURCE_UNSET",
+            "REQUIRE_RESOLVED_SOURCE_VALUE",
+            "LEAVE_UNDEFINED_IF_SOURCE_UNSET"
+          ]
+        },
+        "targetFidelity": {
+          "enum": [
+            "TYPE_EXACT_REQUIREDNESS_GUARDED_AT_MATERIALIZATION",
+            "TYPE_EXACT_OPTIONAL_VALUE"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^A[0-9]{3}$"
+        },
+        "sourceEnum": {
+          "$ref": "#/$defs/identifier"
+        },
+        "sourceExplicitDefaultLiteral": {
+          "type": "string"
+        },
+        "targetDefaultExpression": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "inheritanceMapping": {
+      "type": "object",
+      "required": [
+        "source",
+        "sourceKind",
+        "dimension",
+        "target",
+        "policy",
+        "id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string",
+          "pattern": "^agentmetamodel::[A-Za-z_][A-Za-z0-9_]*->super::[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "sourceKind": {
+          "const": "eSuperType"
+        },
+        "dimension": {
+          "$ref": "#/$defs/dimension"
+        },
+        "target": {
+          "type": "object",
+          "required": [
+            "kind",
+            "subclass",
+            "superclass"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "USE_GENERALIZATION"
+            },
+            "subclass": {
+              "$ref": "#/$defs/identifier"
+            },
+            "superclass": {
+              "$ref": "#/$defs/identifier"
+            }
+          }
+        },
+        "policy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^I[0-9]{3}$"
+        }
+      }
+    },
+    "emittedAssociationTarget": {
+      "type": "object",
+      "required": [
+        "kind",
+        "internalConcept",
+        "name",
+        "firstEnd",
+        "secondEnd"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "USE_ASSOCIATION",
+            "USE_COMPOSITION"
+          ]
+        },
+        "internalConcept": {
+          "const": "MAssociation"
+        },
+        "name": {
+          "$ref": "#/$defs/identifier"
+        },
+        "firstEnd": {
+          "$ref": "#/$defs/associationEnd"
+        },
+        "secondEnd": {
+          "$ref": "#/$defs/associationEnd"
+        },
+        "diamondEnd": {
+          "const": "firstEnd"
+        }
+      }
+    },
+    "aliasTarget": {
+      "type": "object",
+      "required": [
+        "kind",
+        "internalConcept",
+        "emit",
+        "aliasOf",
+        "associationName",
+        "representedEnd",
+        "representedRole"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "USE_ASSOCIATION_ALIAS"
+        },
+        "internalConcept": {
+          "const": "MAssociation"
+        },
+        "emit": {
+          "const": false
+        },
+        "aliasOf": {
+          "type": "string",
+          "pattern": "^R[0-9]{3}$"
+        },
+        "associationName": {
+          "$ref": "#/$defs/identifier"
+        },
+        "representedEnd": {
+          "enum": [
+            "firstEnd",
+            "secondEnd"
+          ]
+        },
+        "representedRole": {
+          "$ref": "#/$defs/identifier"
+        }
+      }
+    },
+    "emittedNavigation": {
+      "type": "object",
+      "required": [
+        "sourceForward",
+        "targetForward",
+        "sourceForwardAuthoritative",
+        "sourceReverse",
+        "targetReverse",
+        "sourceReverseAuthoritative",
+        "targetReverseGenerated"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "sourceForward": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*\\.[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "targetForward": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*\\.[A-Za-z_$][A-Za-z0-9_$]*$"
+        },
+        "sourceForwardAuthoritative": {
+          "const": true
+        },
+        "sourceReverse": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "targetReverse": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*\\.[A-Za-z_$][A-Za-z0-9_$]*$"
+        },
+        "sourceReverseAuthoritative": {
+          "type": "boolean"
+        },
+        "targetReverseGenerated": {
+          "type": "boolean"
+        }
+      }
+    },
+    "aliasNavigation": {
+      "type": "object",
+      "required": [
+        "sourceForward",
+        "targetForward",
+        "sourceForwardAuthoritative",
+        "representedByAssociationId",
+        "representedByRole"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "sourceForward": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*\\.[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "targetForward": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*\\.[A-Za-z_$][A-Za-z0-9_$]*$"
+        },
+        "sourceForwardAuthoritative": {
+          "const": true
+        },
+        "representedByAssociationId": {
+          "type": "string",
+          "pattern": "^R[0-9]{3}$"
+        },
+        "representedByRole": {
+          "$ref": "#/$defs/identifier"
+        }
+      }
+    },
+    "referenceMapping": {
+      "type": "object",
+      "required": [
+        "source",
+        "sourceKind",
+        "dimension",
+        "sourceOwner",
+        "sourceName",
+        "sourceTarget",
+        "sourceContainment",
+        "sourceMultiplicity",
+        "sourceOrdered",
+        "sourceUnique",
+        "target",
+        "navigation",
+        "runtimeLinkCommand",
+        "policy",
+        "id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string",
+          "pattern": "^agentmetamodel::[A-Za-z_][A-Za-z0-9_]*#[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "sourceKind": {
+          "const": "EReference"
+        },
+        "dimension": {
+          "$ref": "#/$defs/dimension"
+        },
+        "sourceOwner": {
+          "$ref": "#/$defs/identifier"
+        },
+        "sourceName": {
+          "$ref": "#/$defs/identifier"
+        },
+        "sourceTarget": {
+          "$ref": "#/$defs/identifier"
+        },
+        "sourceContainment": {
+          "type": "boolean"
+        },
+        "sourceMultiplicity": {
+          "$ref": "#/$defs/multiplicity"
+        },
+        "sourceOrdered": {
+          "type": "boolean"
+        },
+        "sourceUnique": {
+          "type": "boolean"
+        },
+        "sourceEOpposite": {
+          "type": "string",
+          "pattern": "^agentmetamodel::[A-Za-z_][A-Za-z0-9_]*#[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "target": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/emittedAssociationTarget"
+            },
+            {
+              "$ref": "#/$defs/aliasTarget"
+            }
+          ]
+        },
+        "navigation": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/emittedNavigation"
+            },
+            {
+              "$ref": "#/$defs/aliasNavigation"
+            }
+          ]
+        },
+        "runtimeLinkCommand": {
+          "type": "string",
+          "minLength": 1
+        },
+        "policy": {
+          "enum": [
+            "CONTAINMENT_TO_COMPOSITION",
+            "REFERENCE_TO_ASSOCIATION",
+            "EOPPOSITE_PAIR_TO_SINGLE_ASSOCIATION",
+            "EOPPOSITE_ALIAS_TO_CANONICAL_ASSOCIATION"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^R[0-9]{3}$"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "sourceContainment": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "properties": {
+                  "kind": {
+                    "const": "USE_COMPOSITION"
+                  }
+                },
+                "required": [
+                  "kind"
+                ]
+              },
+              "policy": {
+                "const": "CONTAINMENT_TO_COMPOSITION"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "policy": {
+                "const": "EOPPOSITE_ALIAS_TO_CANONICAL_ASSOCIATION"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "sourceEOpposite"
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/aliasTarget"
+              },
+              "navigation": {
+                "$ref": "#/$defs/aliasNavigation"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "policy": {
+                "const": "EOPPOSITE_PAIR_TO_SINGLE_ASSOCIATION"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "sourceEOpposite"
+            ],
+            "properties": {
+              "target": {
+                "properties": {
+                  "kind": {
+                    "const": "USE_ASSOCIATION"
+                  }
+                },
+                "required": [
+                  "kind"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "projectionContract": {
+      "type": "object",
+      "required": [
+        "sourceElements",
+        "structuralBindings",
+        "targetConcept",
+        "baseClass",
+        "dependsOn",
+        "mode",
+        "direction",
+        "purpose",
+        "assumptions",
+        "informationLoss",
+        "externalInputRequired",
+        "baselineMutation"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "sourceElements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "structuralBindings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^(E|C|A|R|I)[0-9]{3}$"
+          }
+        },
+        "targetConcept": {
+          "type": "string",
+          "minLength": 1
+        },
+        "baseClass": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dependsOn": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^VP[0-9]{3}$"
+          }
+        },
+        "mode": {
+          "type": "string",
+          "minLength": 1
+        },
+        "direction": {
+          "const": "JACAMO_TO_USE"
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "assumptions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "informationLoss": {
+          "type": "string",
+          "minLength": 1
+        },
+        "externalInputRequired": {
+          "type": "boolean"
+        },
+        "baselineMutation": {
+          "const": false
+        }
+      }
+    },
+    "projection": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "status",
+        "source",
+        "target",
+        "metamodelContract"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^VP00[1-7]$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "object",
+              "minProperties": 1
+            }
+          ]
+        },
+        "preconditions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "trace": {
+          "type": "string",
+          "minLength": 1
+        },
+        "structuralRepresentation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "runtime": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fallback": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "oclCapability": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "forbiddenTransformation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "metamodelContract": {
+          "$ref": "#/$defs/projectionContract"
+        }
+      }
+    },
+    "runtimeMaterialization": {
+      "type": "object",
+      "required": [
+        "initialSnapshot",
+        "operationReplay",
+        "directApiAlternative"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "initialSnapshot": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "semanticElement",
+              "useAction"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "semanticElement": {
+                "type": "string",
+                "minLength": 1
+              },
+              "useAction": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "operationReplay": {
+          "type": "object",
+          "required": [
+            "when",
+            "enter",
+            "exit",
+            "effectMaterialization"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "when": {
+              "type": "string",
+              "minLength": 1
+            },
+            "enter": {
+              "type": "string",
+              "minLength": 1
+            },
+            "exit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "effectMaterialization": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "directApiAlternative": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "externalProjectionRequirement": {
+      "type": "object",
+      "required": [
+        "id",
+        "projection",
+        "owner",
+        "requirement",
+        "declaredInEcore",
+        "evidence",
+        "decision",
+        "mappingStatus"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^XPR[0-9]{3}$"
+        },
+        "projection": {
+          "type": "string",
+          "pattern": "^VP[0-9]{3}$"
+        },
+        "owner": {
+          "$ref": "#/$defs/identifier"
+        },
+        "requirement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "declaredInEcore": {
+          "const": false
+        },
+        "evidence": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mappingStatus": {
+          "const": "EXTERNAL_PROJECTION_PRECONDITION"
+        }
+      }
+    },
+    "reviewFlag": {
+      "type": "object",
+      "required": [
+        "source",
+        "severity",
+        "mappingAction",
+        "note"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mappingAction": {
+          "type": "string",
+          "minLength": 1
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "statistics": {
+      "type": "object",
+      "required": [
+        "enumMappings",
+        "classMappings",
+        "attributeMappings",
+        "referenceSourceFeatures",
+        "emittedAssociationOrCompositionMappings",
+        "oppositeAliasMappings",
+        "inheritanceMappings",
+        "verificationProjectionRules",
+        "externalProjectionRequirements",
+        "requiredAttributeMappings",
+        "explicitDefaultAttributeMappings",
+        "containmentReferenceMappings",
+        "oppositeSourceReferences",
+        "manyValuedReferenceMappings"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "enumMappings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "classMappings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "attributeMappings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "referenceSourceFeatures": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "emittedAssociationOrCompositionMappings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "oppositeAliasMappings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "inheritanceMappings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verificationProjectionRules": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "externalProjectionRequirements": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "requiredAttributeMappings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "explicitDefaultAttributeMappings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "containmentReferenceMappings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "oppositeSourceReferences": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "manyValuedReferenceMappings": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "contract": {
+      "type": "object",
+      "required": [
+        "layer",
+        "version",
+        "sourceIdentity",
+        "inScope",
+        "outOfScope",
+        "identityRule",
+        "reverseRoleRule",
+        "orderingRule",
+        "containmentRule",
+        "oppositeRule",
+        "enumRule",
+        "valueRule",
+        "projectionRule",
+        "compatibility",
+        "navigationRule",
+        "attributeRequirednessRule",
+        "explicitDefaultRule",
+        "compilerGateRule"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "layer": {
+          "const": "METAMODEL_MAPPING"
+        },
+        "version": {
+          "const": "2.1.0"
+        },
+        "sourceIdentity": {
+          "type": "string",
+          "minLength": 1
+        },
+        "inScope": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "outOfScope": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "identityRule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reverseRoleRule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "orderingRule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "containmentRule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "oppositeRule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "enumRule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "valueRule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "projectionRule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "compatibility": {
+          "type": "string",
+          "minLength": 1
+        },
+        "navigationRule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "attributeRequirednessRule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "explicitDefaultRule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "compilerGateRule": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
