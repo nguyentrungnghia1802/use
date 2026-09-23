@@ -1,5 +1,7 @@
 # Known Limitations
 
+- V2 migration is open: current V1 consumers still use relocated resource paths; fresh baseline regression is failing (306 executed, 3 failures, 73 errors). V2 source coverage passes preliminary intake only. See [migration evidence](docs/project/v2-migration/phase29-pre-migration-baseline.md). Historical supported-scope evidence below does not establish V2 compatibility.
+
 - Compatibility evidence is limited to Windows 11 amd64, Oracle JDK 21.0.5, Maven
   3.9.9, USE 7.5.0, Jason 3.3.0, CArtAgO 3.1 and Moise 1.1.
 - Phase 20 now passes a real JaCaMo 1.3.0 `.jcm` launcher control through

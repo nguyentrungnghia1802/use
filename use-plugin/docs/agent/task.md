@@ -67,23 +67,25 @@ Một task chỉ được `[x]` khi:
 
 **Objective:** chuyển source-of-truth active từ V1 sang V2 một cách có kiểm soát trước khi sửa sâu production code.
 
+> Execution update 2026-09-23: P29.1/P29.2 intake captured; Phase 29 remains OPEN. Fresh baseline: 306 tests, 3 failures, 73 errors, zero skips. See [baseline](../project/v2-migration/phase29-pre-migration-baseline.md), [inventory](../project/v2-migration/v2-input-inventory.md), and [gate dependency decision](../project/v2-migration/phase29-gate-dependency.md). No P30+ acceptance is claimed.
+
 ## P29.1 — Capture repository baseline trước migration
 
 ### Tasks
 
-- [ ] Ghi `git status`.
-- [ ] Ghi current branch.
-- [ ] Ghi current HEAD.
-- [ ] Ghi full test count hiện tại.
-- [ ] Ghi current plugin/version/compatibility pins.
-- [ ] Ghi hash của V1 Ecore/Mapping đang dùng.
-- [ ] Lưu danh sách canonical resources đang được package trong plugin.
-- [ ] Lưu baseline Auction + Case Study #2 expected outputs.
-- [ ] Không chỉnh V1 historical artifacts trong task này.
+- [x] Ghi `git status`.
+- [x] Ghi current branch.
+- [x] Ghi current HEAD.
+- [x] Ghi full test count hiện tại.
+- [x] Ghi current plugin/version/compatibility pins.
+- [x] Ghi hash của V1 Ecore/Mapping đang dùng.
+- [x] Lưu danh sách canonical resources đang được package trong plugin.
+- [x] Lưu baseline Auction + Case Study #2 expected outputs.
+- [x] Không chỉnh V1 historical artifacts trong task này.
 
 ### Evidence
 
-- [ ] `docs/project/v2-migration/phase29-pre-migration-baseline.md`.
+- [x] `docs/project/v2-migration/phase29-pre-migration-baseline.md`.
 
 ---
 
@@ -97,19 +99,19 @@ Một task chỉ được `[x]` khi:
 
 ### Tasks
 
-- [ ] Liệt kê tất cả file V2.
-- [ ] Xác định file Ecore canonical chính.
-- [ ] Xác định mapping JSON canonical chính.
-- [ ] Xác định schema Mapping V2.
-- [ ] Xác định audit/manifest/hash/provenance file nếu đã có.
-- [ ] Xác định namespace/package/version metadata.
-- [ ] Xác định file nào là source-of-truth, file nào là generated/reference.
-- [ ] Phát hiện duplicate/obsolete V2 files.
-- [ ] Không suy file canonical chỉ từ filename nếu trong folder có nhiều candidate.
+- [x] Liệt kê tất cả file V2.
+- [x] Xác định file Ecore canonical chính.
+- [x] Xác định mapping JSON canonical chính.
+- [x] Xác định schema Mapping V2.
+- [x] Xác định audit/manifest/hash/provenance file nếu đã có.
+- [x] Xác định namespace/package/version metadata.
+- [x] Xác định file nào là source-of-truth, file nào là generated/reference.
+- [x] Phát hiện duplicate/obsolete V2 files.
+- [x] Không suy file canonical chỉ từ filename nếu trong folder có nhiều candidate.
 
 ### Output
 
-- [ ] `docs/project/v2-migration/v2-input-inventory.md`.
+- [x] `docs/project/v2-migration/v2-input-inventory.md`.
 
 ---
 

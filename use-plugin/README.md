@@ -1,5 +1,8 @@
 # USE JaCaMo Plugin 1.0.1
 
+> **V2 migration status — 2026-09-23:** Active semantic specification is Metamodel V2 + Mapping 2.1 (`WORKING_BASELINE`), under `Core/*/version-2/`. Production consumers are not yet migrated; the fresh pre-migration build fails after V1 resource relocation. V1 release/closure claims below are historical, not current V2 acceptance. See [migration baseline](docs/project/v2-migration/phase29-pre-migration-baseline.md) and [active selection contract](docs/project/v2-migration/active-baseline-policy.md).
+
+
 > **2026-09-20 final completeness update:** Direct launcher-board observation and
 > AgentSpeak-driven standalone control now PASS. Original Auction plan/deadline
 > equivalence remains unsupported (B). The new audit supersedes older adapter-gap
