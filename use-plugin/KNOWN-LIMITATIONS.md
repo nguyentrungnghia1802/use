@@ -1,5 +1,7 @@
 # Known Limitations
 
+> **Ordering update:** The user approved target-only independent ranks. Mapping 2.2.0 component gates pass, including native counterexamples, text/direct parity and queued runtime reconnect. Default V2 consumer migration remains OPEN. Latest regression: 325 executed, same 3 failures / 73 errors. See [current implementation](docs/project/v2-migration/phase31-order-projection.md). Older decision-required statements below describe the pre-projection audit.
+
 - V2 migration is open: current V1 consumers still use relocated resource paths; fresh baseline regression is failing (306 executed, 3 failures, 73 errors). Native Ecore, Mapping schema/exact source coverage and USE structural compilation now pass. Latest regression executes 317 tests with the same 76 failing identities. Independently ordered opposite lists expose semantic blocker V2-ORDER-001; see [decision evidence](docs/project/v2-migration/phase31-ordered-opposite-decision.md). Full instance fidelity and downstream migration remain OPEN. See [migration evidence](docs/project/v2-migration/phase29-pre-migration-baseline.md). Historical supported-scope evidence below does not establish V2 compatibility.
 
 - Compatibility evidence is limited to Windows 11 amd64, Oracle JDK 21.0.5, Maven

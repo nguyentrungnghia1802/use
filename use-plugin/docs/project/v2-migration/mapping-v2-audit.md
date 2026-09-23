@@ -1,6 +1,10 @@
 # Phase 31 — Mapping V2 audit
 
-Status: **PARTIAL; V2-ORDER-001 requires a semantic decision**. V2 remains the
+Current status: **PARTIAL; V2-ORDER-001 decision approved and target-only projection implemented at component boundaries**.
+See [2.2 implementation evidence](phase31-order-projection.md). The following
+sections preserve the pre-projection 2.1 audit scope and regression run.
+
+Historical 2.1 status: **PARTIAL; semantic decision was required**. V2 remains the
 active WORKING_BASELINE, not frozen. No production consumer has been migrated by
 these test-only audit fixtures. No canonical Ecore, Mapping or schema bytes changed.
 

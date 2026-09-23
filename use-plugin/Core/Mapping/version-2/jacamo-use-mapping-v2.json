@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "2.1.0",
-  "mappingId": "JaCaMo-agentmetamodel-v2__to__USE-v2.1",
-  "status": "REVIEWED_CANDIDATE_V2",
+  "schemaVersion": "2.2.0",
+  "mappingId": "JaCaMo-agentmetamodel-v2__to__USE-v2.2",
+  "status": "WORKING_BASELINE",
   "createdDate": "2026-09-23",
   "purpose": "Metamodel correspondence from the user-supplied jacamo_v2_complete.ecore source of truth to USE 7.5.0 metamodel concepts. This V2 supersedes the old reconstructed DSML4JaCaMo structural vocabulary for V2 migration; concrete project parsing, runtime state synchronization, receiver resolution and OCL/deontic execution remain later layers.",
   "architecture": {
@@ -163,7 +163,7 @@
     "attributeRequirednessPolicy": "USE class attributes do not encode Ecore lowerBound multiplicity. Every EAttribute lowerBound is therefore preserved as source metadata and enforced by the later instance-materialization gate: lowerBound=1 requires a resolved source value, except that an explicit Ecore default may be materialized as the effective target value. A required source attribute must never become undefined in a snapshot claimed to faithfully represent the source model.",
     "explicitDefaultPolicy": "An explicit Ecore defaultValueLiteral is provenance, not a value to discard. When the source value is unset, later materialization must use the mapped targetDefaultExpression as the effective target value. Whether the source was explicitly set versus defaulted may be retained in trace metadata; structural USE attributes alone do not encode eIsSet.",
     "navigationPolicy": "Navigation records distinguish source Ecore navigation names from target USE navigation names. sourceForward/sourceReverse refer only to declared Ecore features; targetForward/targetReverse refer to actual USE role names after generated reverse roles and target-only keyword escapes. No field may mix the two namespaces.",
-    "orderingPolicy": "Preserve source ordered/unique metadata. A target association end is marked ordered only when the corresponding declared source EReference is many-valued (upper != 1) and ordered=true. Generated inverse ends without eOpposite have no authoritative source ordering and are not marked ordered."
+    "orderingPolicy": "Association/composition preserves membership. Every many-valued ordered source EReference has a target-only rank projection; source navigation reconstructs a Sequence by rank. Each authoritative eOpposite direction has independent ranks. USE link insertion order is never source order."
   },
   "enumMappings": [
     {
@@ -3940,10 +3940,10 @@
     "oppositeSourceReferences": 6,
     "manyValuedReferenceMappings": 26
   },
-  "$schema": "jacamo-use-mapping-v2.1.schema.json",
+  "$schema": "jacamo-use-mapping-v2.schema.json",
   "contract": {
     "layer": "METAMODEL_MAPPING",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "sourceIdentity": "agentmetamodel::<EEnum|EClass>[#<declaredFeature>]",
     "inScope": [
       "EEnum",
@@ -3965,13 +3965,13 @@
     ],
     "identityRule": "Feature identity always includes its declaring owner. eOpposite partner identity is explicit; bare feature names are never lookup keys.",
     "reverseRoleRule": "Use declared eOpposite role when present. Otherwise generate source_<feature>; owner-qualify every colliding generated reverse role. Target-only USE keyword escapes are reversible and never change source identity.",
-    "orderingRule": "Copy EReference ordered/unique metadata. A many-valued mapped end is ordered when its corresponding source EReference is ordered; a generated inverse without eOpposite has no authoritative source order.",
+    "orderingRule": "Association/composition preserves membership. Every many-valued ordered source EReference has a target-only rank projection; source navigation reconstructs a Sequence by rank. Each authoritative eOpposite direction has independent ranks. USE link insertion order is never source order.",
     "containmentRule": "Map containment to USE composition with source/container at the first/aggregation end and per-link inverse 0..1. Materialization must additionally preserve the source eContainer globally across all containment references.",
     "oppositeRule": "One canonical USE association represents each bidirectional EReference/eOpposite pair; both source references remain separately traceable through one emitted canonical entry plus one alias entry.",
     "enumRule": "Map EEnum to native USE EnumType. Use EEnum literal.name as the USE identifier and retain EEnum literal text/value for reversible serialization.",
     "valueRule": "Preserve EType and explicit-default provenance. Instance default materialization is a later stage. Enum source literals are mapped through enumMappings, never treated as arbitrary strings.",
     "projectionRule": "VP001-003 remain conditional typed templates that require external concrete project facts. VP004-007 reuse V2 structural bindings and do not duplicate them.",
-    "compatibility": "Schema 2.1.0 is intentionally not load-compatible with the repository V1 MappingLoader/MappingModel. Compared with V2.0 it clarifies target keyword escape Artifact.operations, separates source/target navigation namespaces, makes required-attribute/default materialization explicit, renames pseudo unresolved features to externalProjectionRequirements, and closes the JSON schema shapes.",
+    "compatibility": "2.2.0 adds target-only independent order ranks (V2-ORDER-001, user-approved). Ecore bytes and supported source domain unchanged. Consumers of 2.1 must migrate navigation, trace and runtime order updates.",
     "navigationRule": "sourceForward/sourceReverse are Ecore identities; targetForward/targetReverse are actual USE navigations after escaping/generated roles. For absent eOpposite, sourceReverse is null and targetReverse is explicitly generated/non-authoritative.",
     "attributeRequirednessRule": "EAttribute lowerBound is preserved as sourceRequired/sourceMultiplicity. Because USE attributes have no Ecore multiplicity syntax, requiredness is a mandatory instance-materialization validity gate; required no-default values must resolve, and explicit defaults must materialize as the effective target value when the source is unset.",
     "explicitDefaultRule": "Explicit Ecore defaults are mapped to targetDefaultExpression and applied at materialization when the source is unset. The static V2 mapping does not pretend that USE MAttribute declarations alone encode Ecore default/eIsSet semantics.",
@@ -3998,5 +3998,24 @@
       "decision": "Do not synthesize parameter names/types or result type from arity.",
       "mappingStatus": "EXTERNAL_PROJECTION_PRECONDITION"
     }
-  ]
+  ],
+  "orderProjection": {
+    "kind": "TARGET_ONLY_INDEPENDENT_RANKS",
+    "version": "1.0.0",
+    "scope": "ALL_ORDERED_MANY_SOURCE_REFERENCES",
+    "membership": "CANONICAL_ASSOCIATION_ONCE",
+    "rankBase": 0,
+    "entryIdentity": "SOURCE_FEATURE_OWNER_TARGET",
+    "navigation": "SORT_RANK_COLLECT_TARGET_SEQUENCE",
+    "opposite": "INDEPENDENT_AUTHORITATIVE_DIRECTIONS",
+    "unknownOrder": "REJECT_UNRESOLVED_NO_INFERENCE",
+    "runtime": "ORDER_ONLY_UPDATES_RANKS_AUTHORITATIVE_RESYNC",
+    "constraints": [
+      "EXACT_MEMBERSHIP_BIJECTION",
+      "UNIQUE_TARGET_PER_OWNER_FEATURE",
+      "CONTIGUOUS_UNIQUE_RANKS",
+      "TYPED_ENDPOINTS"
+    ],
+    "sourceMetamodelUnchanged": true
+  }
 }

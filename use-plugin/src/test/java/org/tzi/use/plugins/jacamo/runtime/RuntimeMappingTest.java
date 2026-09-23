@@ -18,13 +18,17 @@ class RuntimeMappingTest {
     @Test void canonicalMappingCoversTaxonomyDeterministically() {
         var mapping = loader.loadDefault();
         assertEquals(mapping, loader.loadDefault());
-        assertEquals(RuntimeEventKind.values().length, mapping.rules().size());
+        var covered = java.util.EnumSet.noneOf(RuntimeEventKind.class);
+        mapping.rules().forEach(r -> assertTrue(covered.add(r.eventKind()), "duplicate historical selector"));
+        // REPLACE_ORDER requires the V2 order projection contract; it cannot be authorized by frozen V1.
+        assertTrue(covered.add(RuntimeEventKind.REPLACE_ORDER));
+        assertEquals(java.util.EnumSet.allOf(RuntimeEventKind.class), covered);
         assertEquals("FROZEN", mapping.status());
         assertTrue(mapping.rules().stream().noneMatch(r -> r.anchor().contains("Auction")));
     }
     @Test void compatibilityReportIsDerivedAndMachineReadable() throws Exception {
         var report = new RuntimeMappingCompatibility().report(loader.loadDefault());
-        assertEquals(RuntimeEventKind.values().length, report.size());
+        assertEquals(loader.loadDefault().rules().size(), report.size());
         var target = java.nio.file.Path.of("target/runtime-mapping-compatibility.json");
         json.writerWithDefaultPrettyPrinter().writeValue(target.toFile(), report);
         assertTrue(report.stream().filter(r -> !r.mutation().equals("NONE"))

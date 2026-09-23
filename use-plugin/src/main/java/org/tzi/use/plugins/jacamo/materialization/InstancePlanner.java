@@ -72,15 +72,31 @@ public final class InstancePlanner {
                             "Rebuild the semantic model and resolver indexes"));
                     continue;
                 }
-                String key = mappingEntry.get().name() + "|" + source.id().value() + "|" + targetId;
-                if (uniqueLinks.add(key)) links.add(new LinkPlan(mappingEntry.get().name(), objectNames.get(source.id().value()),
-                        objectNames.get(targetId), mappingEntry.get().containment(), source.id().value(), targetId,
-                        mappingEntry.get().id()));
+                var entry = mappingEntry.get();
+                String from = entry.reverse() ? targetId : source.id().value();
+                String to = entry.reverse() ? source.id().value() : targetId;
+                String key = entry.name() + "|" + from + "|" + to;
+                String canonicalRule = entry.reverse() ? mapping.associations().stream().filter(r -> !r.reverse() && r.name().equals(entry.name()))
+                        .findFirst().orElseThrow().id() : entry.id();
+                if (uniqueLinks.add(key)) links.add(new LinkPlan(entry.name(), objectNames.get(from),
+                        objectNames.get(to), entry.containment(), from, to, canonicalRule));
             }
         }
         validateRequiredLinks(semantic, transformation, links, diagnostics);
         validateCompositionOwnership(elements, links, diagnostics);
-        return new InstancePlan(objects, links, diagnostics);
+        InstancePlan membership = new InstancePlan(objects, links, diagnostics);
+        if (transformation.orderProjections().isEmpty()) return membership;
+        List<org.tzi.use.plugins.jacamo.mapping.OrderProjectionPlanner.SourceOrder> orders = new ArrayList<>();
+        for (var spec : transformation.orderProjections()) for (var source : semantic.elements()) {
+            if (!ownersFor(source, transformation).contains(spec.owner())) continue;
+            String feature = spec.sourceIdentity().substring(spec.sourceIdentity().indexOf('#') + 1);
+            var references = source.references().stream().filter(r -> r.feature().equals(feature)).toList();
+            if (references.stream().anyMatch(r -> r.targetId() == null || !objectNames.containsKey(r.targetId().value())))
+                throw new MaterializationException("ORDER_SOURCE_UNRESOLVED", spec.sourceIdentity() + ":" + source.id().value());
+            orders.add(new org.tzi.use.plugins.jacamo.mapping.OrderProjectionPlanner.SourceOrder(spec.sourceIdentity(),
+                    objectNames.get(source.id().value()), references.stream().map(r -> objectNames.get(r.targetId().value())).toList()));
+        }
+        return new org.tzi.use.plugins.jacamo.mapping.OrderProjectionPlanner().project(transformation, membership, orders);
     }
 
     private String targetClass(SemanticElement element, TransformationPlan transformation) {

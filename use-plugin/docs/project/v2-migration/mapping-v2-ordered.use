@@ -1,0 +1,791 @@
+model V2Ordered
+
+enum ActionKind { INTERNAL, EXTERNAL }
+enum AgentGoalType { ACHIEVEMENT, TEST }
+enum GoalType { ACHIEVEMENT, MAINTENANCE }
+enum LinkScope { INTRA_GROUP, INTER_GROUP }
+enum LinkType { AUTHORITY, COMMUNICATION, ACQUAINTANCE }
+enum NormType { OBLIGATION, PERMISSION }
+enum OPlanOperator { SEQUENCE, PARALLEL, CHOICE }
+class AGoal
+attributes
+  literal : String
+  type : AgentGoalType
+end
+
+class Action
+attributes
+  arity : Integer
+  kind : ActionKind
+  name : String
+end
+
+class Agent
+attributes
+  name : String
+  source : String
+operations
+  ordered_R023() : Sequence(Artifact) = self.orderEntries_R023->sortedBy(rank)->collect(value)->asSequence()
+  ordered_R019() : Sequence(Belief) = self.orderEntries_R019->sortedBy(rank)->collect(value)->asSequence()
+  ordered_R020() : Sequence(AGoal) = self.orderEntries_R020->sortedBy(rank)->collect(value)->asSequence()
+  ordered_R018() : Sequence(Plan) = self.orderEntries_R018->sortedBy(rank)->collect(value)->asSequence()
+  ordered_R021() : Sequence(Role) = self.orderEntries_R021->sortedBy(rank)->collect(value)->asSequence()
+  ordered_R022() : Sequence(Workspace) = self.orderEntries_R022->sortedBy(rank)->collect(value)->asSequence()
+end
+
+class Artifact
+attributes
+  name : String
+  type : String
+operations
+  ordered_R035() : Sequence(Agent) = self.orderEntries_R035->sortedBy(rank)->collect(value)->asSequence()
+  ordered_R033() : Sequence(Operation) = self.orderEntries_R033->sortedBy(rank)->collect(value)->asSequence()
+  ordered_R034() : Sequence(Property) = self.orderEntries_R034->sortedBy(rank)->collect(value)->asSequence()
+end
+
+class Belief
+attributes
+  literal : String
+end
+
+class Environment
+operations
+  ordered_R030() : Sequence(Workspace) = self.orderEntries_R030->sortedBy(rank)->collect(value)->asSequence()
+end
+
+class Event
+attributes
+  literal : String
+  operator : String
+  type : String
+end
+
+class Group
+attributes
+  id : String
+  maxCardinality : String
+  minCardinality : String
+operations
+  ordered_R006() : Sequence(Link) = self.orderEntries_R006->sortedBy(rank)->collect(value)->asSequence()
+  ordered_R004() : Sequence(Role) = self.orderEntries_R004->sortedBy(rank)->collect(value)->asSequence()
+  ordered_R005() : Sequence(Group) = self.orderEntries_R005->sortedBy(rank)->collect(value)->asSequence()
+end
+
+class Link
+attributes
+  bidirectional : Boolean
+  extendsSubgroups : Boolean
+  scope : LinkScope
+  type : LinkType
+end
+
+class Mission
+attributes
+  id : String
+  maxCardinality : String
+  minCardinality : String
+operations
+  ordered_R015() : Sequence(OGoal) = self.orderEntries_R015->sortedBy(rank)->collect(value)->asSequence()
+end
+
+class Norm
+attributes
+  condition : String
+  id : String
+  timeConstraint : String
+  type : NormType
+end
+
+class OGoal
+attributes
+  description : String
+  id : String
+  minAgentsToSatisfy : String
+  timeToFulfill : String
+  type : GoalType
+end
+
+class OPlan
+attributes
+  operator : OPlanOperator
+operations
+  ordered_R017() : Sequence(OGoal) = self.orderEntries_R017->sortedBy(rank)->collect(value)->asSequence()
+end
+
+class Operation
+attributes
+  arity : Integer
+  name : String
+operations
+  ordered_R037() : Sequence(Property) = self.orderEntries_R037->sortedBy(rank)->collect(value)->asSequence()
+  ordered_R036() : Sequence(Signal) = self.orderEntries_R036->sortedBy(rank)->collect(value)->asSequence()
+end
+
+class Organization
+attributes
+  id : String
+operations
+  ordered_R001() : Sequence(Group) = self.orderEntries_R001->sortedBy(rank)->collect(value)->asSequence()
+  ordered_R003() : Sequence(Norm) = self.orderEntries_R003->sortedBy(rank)->collect(value)->asSequence()
+  ordered_R002() : Sequence(Scheme) = self.orderEntries_R002->sortedBy(rank)->collect(value)->asSequence()
+end
+
+class Plan
+attributes
+  ecore_Plan_context : String
+  label : String
+operations
+  ordered_R025() : Sequence(Action) = self.orderEntries_R025->sortedBy(rank)->collect(value)->asSequence()
+end
+
+class Property
+attributes
+  arity : Integer
+  name : String
+end
+
+class Role
+attributes
+  id : String
+  isAbstract : Boolean
+  maxCardinality : String
+  minCardinality : String
+operations
+  ordered_R008() : Sequence(Agent) = self.orderEntries_R008->sortedBy(rank)->collect(value)->asSequence()
+  ordered_R007() : Sequence(Role) = self.orderEntries_R007->sortedBy(rank)->collect(value)->asSequence()
+end
+
+class Scheme
+attributes
+  id : String
+operations
+  ordered_R014() : Sequence(Mission) = self.orderEntries_R014->sortedBy(rank)->collect(value)->asSequence()
+end
+
+class Signal
+attributes
+  arity : Integer
+  name : String
+end
+
+class Workspace
+attributes
+  name : String
+operations
+  ordered_R032() : Sequence(Agent) = self.orderEntries_R032->sortedBy(rank)->collect(value)->asSequence()
+  ordered_R031() : Sequence(Artifact) = self.orderEntries_R031->sortedBy(rank)->collect(value)->asSequence()
+end
+
+association AGoal_organizationalGoal_OGoal between
+  AGoal[*] role source_organizationalGoal
+  OGoal[0..1] role organizationalGoal
+end
+
+association Action_operation_Operation between
+  Action[*] role source_operation
+  Operation[0..1] role operation
+end
+
+association Agent_artifacts_Artifact between
+  Agent[*] role agents ordered
+  Artifact[*] role artifacts ordered
+end
+
+composition Agent_beliefs_Belief between
+  Agent[0..1] role source_beliefs
+  Belief[*] role beliefs ordered
+end
+
+composition Agent_goals_AGoal between
+  Agent[0..1] role source_goals
+  AGoal[*] role goals ordered
+end
+
+composition Agent_plans_Plan between
+  Agent[0..1] role source_plans
+  Plan[*] role plans ordered
+end
+
+association Agent_roles_Role between
+  Agent[*] role agents ordered
+  Role[*] role roles ordered
+end
+
+association Agent_workspaces_Workspace between
+  Agent[*] role agents ordered
+  Workspace[*] role workspaces ordered
+end
+
+composition Artifact_operations_Operation between
+  Artifact[0..1] role source_operations
+  Operation[*] role ecore_Artifact_operations ordered
+end
+
+composition Artifact_properties_Property between
+  Artifact[0..1] role source_Artifact_properties
+  Property[*] role properties ordered
+end
+
+association Belief_property_Property between
+  Belief[*] role source_property
+  Property[0..1] role property
+end
+
+composition Environment_workspaces_Workspace between
+  Environment[0..1] role source_workspaces
+  Workspace[1..*] role workspaces ordered
+end
+
+association Event_signal_Signal between
+  Event[*] role source_signal
+  Signal[0..1] role signal
+end
+
+composition Group_links_Link between
+  Group[0..1] role source_links
+  Link[*] role links ordered
+end
+
+composition Group_roles_Role between
+  Group[0..1] role source_roles
+  Role[*] role roles ordered
+end
+
+composition Group_subGroups_Group between
+  Group[0..1] role source_subGroups
+  Group[*] role subGroups ordered
+end
+
+association Link_sourceRole_Role between
+  Link[*] role source_sourceRole
+  Role[1] role sourceRole
+end
+
+association Link_targetRole_Role between
+  Link[*] role source_targetRole
+  Role[1] role targetRole
+end
+
+association Mission_goals_OGoal between
+  Mission[*] role source_goals
+  OGoal[1..*] role goals ordered
+end
+
+association Norm_mission_Mission between
+  Norm[*] role source_mission
+  Mission[1] role mission
+end
+
+association Norm_role_Role between
+  Norm[*] role source_role
+  Role[1] role ecore_Norm_role
+end
+
+composition OGoal_plan_OPlan between
+  OGoal[0..1] role source_plan
+  OPlan[0..1] role plan
+end
+
+composition OPlan_subGoals_OGoal between
+  OPlan[0..1] role source_subGoals
+  OGoal[1..*] role subGoals ordered
+end
+
+association Operation_properties_Property between
+  Operation[*] role source_Operation_properties
+  Property[*] role properties ordered
+end
+
+association Operation_signals_Signal between
+  Operation[*] role source_signals
+  Signal[*] role signals ordered
+end
+
+composition Organization_groups_Group between
+  Organization[0..1] role source_groups
+  Group[*] role groups ordered
+end
+
+composition Organization_norms_Norm between
+  Organization[0..1] role source_norms
+  Norm[*] role norms ordered
+end
+
+composition Organization_schemes_Scheme between
+  Organization[0..1] role source_schemes
+  Scheme[*] role schemes ordered
+end
+
+composition Plan_actions_Action between
+  Plan[0..1] role source_actions
+  Action[*] role actions ordered
+end
+
+composition Plan_triggeringEvent_Event between
+  Plan[0..1] role source_triggeringEvent
+  Event[1] role triggeringEvent
+end
+
+association Role_superRoles_Role between
+  Role[*] role source_superRoles
+  Role[*] role superRoles ordered
+end
+
+composition Scheme_missions_Mission between
+  Scheme[0..1] role source_missions
+  Mission[1..*] role missions ordered
+end
+
+composition Scheme_rootGoal_OGoal between
+  Scheme[0..1] role source_rootGoal
+  OGoal[1] role rootGoal
+end
+
+composition Workspace_artifacts_Artifact between
+  Workspace[0..1] role source_artifacts
+  Artifact[*] role artifacts ordered
+end
+
+class OrderEntry_R023
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R023 between
+  Agent[1] role owner
+  OrderEntry_R023[*] role orderEntries_R023
+end
+
+association OrderTarget_R023 between
+  OrderEntry_R023[*] role incoming_R023
+  Artifact[1] role value
+end
+
+class OrderEntry_R019
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R019 between
+  Agent[1] role owner
+  OrderEntry_R019[*] role orderEntries_R019
+end
+
+association OrderTarget_R019 between
+  OrderEntry_R019[*] role incoming_R019
+  Belief[1] role value
+end
+
+class OrderEntry_R020
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R020 between
+  Agent[1] role owner
+  OrderEntry_R020[*] role orderEntries_R020
+end
+
+association OrderTarget_R020 between
+  OrderEntry_R020[*] role incoming_R020
+  AGoal[1] role value
+end
+
+class OrderEntry_R018
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R018 between
+  Agent[1] role owner
+  OrderEntry_R018[*] role orderEntries_R018
+end
+
+association OrderTarget_R018 between
+  OrderEntry_R018[*] role incoming_R018
+  Plan[1] role value
+end
+
+class OrderEntry_R021
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R021 between
+  Agent[1] role owner
+  OrderEntry_R021[*] role orderEntries_R021
+end
+
+association OrderTarget_R021 between
+  OrderEntry_R021[*] role incoming_R021
+  Role[1] role value
+end
+
+class OrderEntry_R022
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R022 between
+  Agent[1] role owner
+  OrderEntry_R022[*] role orderEntries_R022
+end
+
+association OrderTarget_R022 between
+  OrderEntry_R022[*] role incoming_R022
+  Workspace[1] role value
+end
+
+class OrderEntry_R035
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R035 between
+  Artifact[1] role owner
+  OrderEntry_R035[*] role orderEntries_R035
+end
+
+association OrderTarget_R035 between
+  OrderEntry_R035[*] role incoming_R035
+  Agent[1] role value
+end
+
+class OrderEntry_R033
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R033 between
+  Artifact[1] role owner
+  OrderEntry_R033[*] role orderEntries_R033
+end
+
+association OrderTarget_R033 between
+  OrderEntry_R033[*] role incoming_R033
+  Operation[1] role value
+end
+
+class OrderEntry_R034
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R034 between
+  Artifact[1] role owner
+  OrderEntry_R034[*] role orderEntries_R034
+end
+
+association OrderTarget_R034 between
+  OrderEntry_R034[*] role incoming_R034
+  Property[1] role value
+end
+
+class OrderEntry_R030
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R030 between
+  Environment[1] role owner
+  OrderEntry_R030[*] role orderEntries_R030
+end
+
+association OrderTarget_R030 between
+  OrderEntry_R030[*] role incoming_R030
+  Workspace[1] role value
+end
+
+class OrderEntry_R006
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R006 between
+  Group[1] role owner
+  OrderEntry_R006[*] role orderEntries_R006
+end
+
+association OrderTarget_R006 between
+  OrderEntry_R006[*] role incoming_R006
+  Link[1] role value
+end
+
+class OrderEntry_R004
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R004 between
+  Group[1] role owner
+  OrderEntry_R004[*] role orderEntries_R004
+end
+
+association OrderTarget_R004 between
+  OrderEntry_R004[*] role incoming_R004
+  Role[1] role value
+end
+
+class OrderEntry_R005
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R005 between
+  Group[1] role owner
+  OrderEntry_R005[*] role orderEntries_R005
+end
+
+association OrderTarget_R005 between
+  OrderEntry_R005[*] role incoming_R005
+  Group[1] role value
+end
+
+class OrderEntry_R015
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R015 between
+  Mission[1] role owner
+  OrderEntry_R015[*] role orderEntries_R015
+end
+
+association OrderTarget_R015 between
+  OrderEntry_R015[*] role incoming_R015
+  OGoal[1] role value
+end
+
+class OrderEntry_R017
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R017 between
+  OPlan[1] role owner
+  OrderEntry_R017[*] role orderEntries_R017
+end
+
+association OrderTarget_R017 between
+  OrderEntry_R017[*] role incoming_R017
+  OGoal[1] role value
+end
+
+class OrderEntry_R037
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R037 between
+  Operation[1] role owner
+  OrderEntry_R037[*] role orderEntries_R037
+end
+
+association OrderTarget_R037 between
+  OrderEntry_R037[*] role incoming_R037
+  Property[1] role value
+end
+
+class OrderEntry_R036
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R036 between
+  Operation[1] role owner
+  OrderEntry_R036[*] role orderEntries_R036
+end
+
+association OrderTarget_R036 between
+  OrderEntry_R036[*] role incoming_R036
+  Signal[1] role value
+end
+
+class OrderEntry_R001
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R001 between
+  Organization[1] role owner
+  OrderEntry_R001[*] role orderEntries_R001
+end
+
+association OrderTarget_R001 between
+  OrderEntry_R001[*] role incoming_R001
+  Group[1] role value
+end
+
+class OrderEntry_R003
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R003 between
+  Organization[1] role owner
+  OrderEntry_R003[*] role orderEntries_R003
+end
+
+association OrderTarget_R003 between
+  OrderEntry_R003[*] role incoming_R003
+  Norm[1] role value
+end
+
+class OrderEntry_R002
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R002 between
+  Organization[1] role owner
+  OrderEntry_R002[*] role orderEntries_R002
+end
+
+association OrderTarget_R002 between
+  OrderEntry_R002[*] role incoming_R002
+  Scheme[1] role value
+end
+
+class OrderEntry_R025
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R025 between
+  Plan[1] role owner
+  OrderEntry_R025[*] role orderEntries_R025
+end
+
+association OrderTarget_R025 between
+  OrderEntry_R025[*] role incoming_R025
+  Action[1] role value
+end
+
+class OrderEntry_R008
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R008 between
+  Role[1] role owner
+  OrderEntry_R008[*] role orderEntries_R008
+end
+
+association OrderTarget_R008 between
+  OrderEntry_R008[*] role incoming_R008
+  Agent[1] role value
+end
+
+class OrderEntry_R007
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R007 between
+  Role[1] role owner
+  OrderEntry_R007[*] role orderEntries_R007
+end
+
+association OrderTarget_R007 between
+  OrderEntry_R007[*] role incoming_R007
+  Role[1] role value
+end
+
+class OrderEntry_R014
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R014 between
+  Scheme[1] role owner
+  OrderEntry_R014[*] role orderEntries_R014
+end
+
+association OrderTarget_R014 between
+  OrderEntry_R014[*] role incoming_R014
+  Mission[1] role value
+end
+
+class OrderEntry_R032
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R032 between
+  Workspace[1] role owner
+  OrderEntry_R032[*] role orderEntries_R032
+end
+
+association OrderTarget_R032 between
+  OrderEntry_R032[*] role incoming_R032
+  Agent[1] role value
+end
+
+class OrderEntry_R031
+attributes
+  rank : Integer
+end
+
+association OrderOwner_R031 between
+  Workspace[1] role owner
+  OrderEntry_R031[*] role orderEntries_R031
+end
+
+association OrderTarget_R031 between
+  OrderEntry_R031[*] role incoming_R031
+  Artifact[1] role value
+end
+
+constraints
+context Agent inv order_R023:
+  self.orderEntries_R023->isUnique(rank) and self.orderEntries_R023->isUnique(value) and self.orderEntries_R023->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R023->size()) and self.orderEntries_R023->collect(value)->asSet() = self.artifacts->asSet()
+context Agent inv order_R019:
+  self.orderEntries_R019->isUnique(rank) and self.orderEntries_R019->isUnique(value) and self.orderEntries_R019->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R019->size()) and self.orderEntries_R019->collect(value)->asSet() = self.beliefs->asSet()
+context Agent inv order_R020:
+  self.orderEntries_R020->isUnique(rank) and self.orderEntries_R020->isUnique(value) and self.orderEntries_R020->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R020->size()) and self.orderEntries_R020->collect(value)->asSet() = self.goals->asSet()
+context Agent inv order_R018:
+  self.orderEntries_R018->isUnique(rank) and self.orderEntries_R018->isUnique(value) and self.orderEntries_R018->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R018->size()) and self.orderEntries_R018->collect(value)->asSet() = self.plans->asSet()
+context Agent inv order_R021:
+  self.orderEntries_R021->isUnique(rank) and self.orderEntries_R021->isUnique(value) and self.orderEntries_R021->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R021->size()) and self.orderEntries_R021->collect(value)->asSet() = self.roles->asSet()
+context Agent inv order_R022:
+  self.orderEntries_R022->isUnique(rank) and self.orderEntries_R022->isUnique(value) and self.orderEntries_R022->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R022->size()) and self.orderEntries_R022->collect(value)->asSet() = self.workspaces->asSet()
+context Artifact inv order_R035:
+  self.orderEntries_R035->isUnique(rank) and self.orderEntries_R035->isUnique(value) and self.orderEntries_R035->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R035->size()) and self.orderEntries_R035->collect(value)->asSet() = self.agents->asSet()
+context Artifact inv order_R033:
+  self.orderEntries_R033->isUnique(rank) and self.orderEntries_R033->isUnique(value) and self.orderEntries_R033->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R033->size()) and self.orderEntries_R033->collect(value)->asSet() = self.ecore_Artifact_operations->asSet()
+context Artifact inv order_R034:
+  self.orderEntries_R034->isUnique(rank) and self.orderEntries_R034->isUnique(value) and self.orderEntries_R034->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R034->size()) and self.orderEntries_R034->collect(value)->asSet() = self.properties->asSet()
+context Environment inv order_R030:
+  self.orderEntries_R030->isUnique(rank) and self.orderEntries_R030->isUnique(value) and self.orderEntries_R030->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R030->size()) and self.orderEntries_R030->collect(value)->asSet() = self.workspaces->asSet()
+context Group inv order_R006:
+  self.orderEntries_R006->isUnique(rank) and self.orderEntries_R006->isUnique(value) and self.orderEntries_R006->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R006->size()) and self.orderEntries_R006->collect(value)->asSet() = self.links->asSet()
+context Group inv order_R004:
+  self.orderEntries_R004->isUnique(rank) and self.orderEntries_R004->isUnique(value) and self.orderEntries_R004->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R004->size()) and self.orderEntries_R004->collect(value)->asSet() = self.roles->asSet()
+context Group inv order_R005:
+  self.orderEntries_R005->isUnique(rank) and self.orderEntries_R005->isUnique(value) and self.orderEntries_R005->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R005->size()) and self.orderEntries_R005->collect(value)->asSet() = self.subGroups->asSet()
+context Mission inv order_R015:
+  self.orderEntries_R015->isUnique(rank) and self.orderEntries_R015->isUnique(value) and self.orderEntries_R015->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R015->size()) and self.orderEntries_R015->collect(value)->asSet() = self.goals->asSet()
+context OPlan inv order_R017:
+  self.orderEntries_R017->isUnique(rank) and self.orderEntries_R017->isUnique(value) and self.orderEntries_R017->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R017->size()) and self.orderEntries_R017->collect(value)->asSet() = self.subGoals->asSet()
+context Operation inv order_R037:
+  self.orderEntries_R037->isUnique(rank) and self.orderEntries_R037->isUnique(value) and self.orderEntries_R037->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R037->size()) and self.orderEntries_R037->collect(value)->asSet() = self.properties->asSet()
+context Operation inv order_R036:
+  self.orderEntries_R036->isUnique(rank) and self.orderEntries_R036->isUnique(value) and self.orderEntries_R036->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R036->size()) and self.orderEntries_R036->collect(value)->asSet() = self.signals->asSet()
+context Organization inv order_R001:
+  self.orderEntries_R001->isUnique(rank) and self.orderEntries_R001->isUnique(value) and self.orderEntries_R001->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R001->size()) and self.orderEntries_R001->collect(value)->asSet() = self.groups->asSet()
+context Organization inv order_R003:
+  self.orderEntries_R003->isUnique(rank) and self.orderEntries_R003->isUnique(value) and self.orderEntries_R003->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R003->size()) and self.orderEntries_R003->collect(value)->asSet() = self.norms->asSet()
+context Organization inv order_R002:
+  self.orderEntries_R002->isUnique(rank) and self.orderEntries_R002->isUnique(value) and self.orderEntries_R002->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R002->size()) and self.orderEntries_R002->collect(value)->asSet() = self.schemes->asSet()
+context Plan inv order_R025:
+  self.orderEntries_R025->isUnique(rank) and self.orderEntries_R025->isUnique(value) and self.orderEntries_R025->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R025->size()) and self.orderEntries_R025->collect(value)->asSet() = self.actions->asSet()
+context Role inv order_R008:
+  self.orderEntries_R008->isUnique(rank) and self.orderEntries_R008->isUnique(value) and self.orderEntries_R008->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R008->size()) and self.orderEntries_R008->collect(value)->asSet() = self.agents->asSet()
+context Role inv order_R007:
+  self.orderEntries_R007->isUnique(rank) and self.orderEntries_R007->isUnique(value) and self.orderEntries_R007->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R007->size()) and self.orderEntries_R007->collect(value)->asSet() = self.superRoles->asSet()
+context Scheme inv order_R014:
+  self.orderEntries_R014->isUnique(rank) and self.orderEntries_R014->isUnique(value) and self.orderEntries_R014->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R014->size()) and self.orderEntries_R014->collect(value)->asSet() = self.missions->asSet()
+context Workspace inv order_R032:
+  self.orderEntries_R032->isUnique(rank) and self.orderEntries_R032->isUnique(value) and self.orderEntries_R032->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R032->size()) and self.orderEntries_R032->collect(value)->asSet() = self.agents->asSet()
+context Workspace inv order_R031:
+  self.orderEntries_R031->isUnique(rank) and self.orderEntries_R031->isUnique(value) and self.orderEntries_R031->forAll(e | e.rank >= 0 and e.rank < self.orderEntries_R031->size()) and self.orderEntries_R031->collect(value)->asSet() = self.artifacts->asSet()

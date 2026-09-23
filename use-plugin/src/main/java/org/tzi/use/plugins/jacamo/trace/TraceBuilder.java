@@ -25,6 +25,7 @@ public final class TraceBuilder {
                 java.util.stream.Collectors.toMap(e -> e.id().value(), e -> e));
         instances.objects().forEach(object -> {
             SemanticElement source = elements.get(object.semanticId());
+            if (source == null && transformation.orderProjections().stream().anyMatch(p -> p.entryClass().equals(object.className()))) return;
             records.add(new TraceRecord(id("object:" + object.name()), object.semanticId(), "object:" + object.name(),
                     source.kind().name(), "OBJECT", classRule(source, mapping), object.className().equals(source.kind().name())
                     ? null : "VP001", source.provenance().getFirst().span(), source.provenance().getFirst().sourceHash(),
@@ -41,6 +42,7 @@ public final class TraceBuilder {
                     source == null ? null : source.provenance().getFirst().span(),
                     source == null ? null : source.provenance().getFirst().sourceHash(), null, TraceRecord.Status.PROJECTED));
         });
+        records.addAll(new OrderProjectionTrace().build(transformation, instances));
         return new TraceIndex(records);
     }
     private TraceRecord declaration(String source, String target, String sourceKind, String targetKind,

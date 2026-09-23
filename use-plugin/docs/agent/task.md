@@ -325,7 +325,14 @@ Native structural audit and generated inventory PASS; full consumer regression/p
 
 **Objective:** kiểm chứng Mapping V2 đã có, không regenerate hoặc rewrite mù quáng.
 
-**2026-09-23 — PARTIAL / semantic decision required:**
+**2026-09-23 — PARTIAL / ordering decision approved:**
+Target-only generic independent rank projection is authorized.
+[Implementation and current gates](../project/v2-migration/phase31-order-projection.md).
+The following counts and blocker description are the pre-projection 2.1 audit;
+the membership-only limitation remains a negative regression, not a request for
+a new decision. Production default selection/IR consumers still require migration.
+
+**Historical pre-projection audit:**
 [Mapping audit](../project/v2-migration/mapping-v2-audit.md),
 [ordered-opposite decision](../project/v2-migration/phase31-ordered-opposite-decision.md).
 Independent schema/source/compiler gates PASS (11 focused tests). Full regression:
@@ -441,6 +448,22 @@ Generate structural fixture từ Mapping V2:
 - [x] Có hash/version record.
 - [x] Có compatibility pointer tới exact Metamodel V2 hash.
 - [x] Mọi future Ecore change phải invalidate/reconcile mapping status.
+
+### V2-ORDER-001 — approved target-only projection component gates
+
+- [x] Mapping/schema 2.2.0 and exact working loader validation.
+- [x] Generic plan, typed order entries, independent authoritative directions.
+- [x] Native EMF counterexample retained and projected source navigation PASS.
+- [x] Determinism, actual text/direct parity, rank validity and membership bijection.
+- [x] Trace and exact source-feature OCL query binding.
+- [x] Rank-only runtime action, queue, drift and authoritative reconnect/resync.
+- [x] Composition, unordered and non-opposite controls; no Ecore/USE core edits.
+- [ ] Default V2 facade/IR/parser integration and full consumer regression (P32–35).
+
+Evidence: `phase31-order-projection.md`, `order-projection-working-manifest.json`.
+27 focused tests and 9 Python regressions PASS. Full reactor: 325 executed,
+3 failures, 73 errors, same failing identities as pre-migration baseline.
+Phase closure remains OPEN; this is not an end-to-end V2 release acceptance.
 
 ---
 

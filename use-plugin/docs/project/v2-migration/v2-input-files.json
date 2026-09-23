@@ -10,14 +10,14 @@
     "sha256": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c"
   },
   {
-    "bytes": 133306,
+    "bytes": 133888,
     "path": "Core/Mapping/version-2/jacamo-use-mapping-v2.json",
-    "sha256": "78ff207b20122c18b60a28ed03d1fabb57d9badd96518cf13f45c62eb73151f4"
+    "sha256": "15d330c70400d16958559b83daf27c3755dc0cb28a7dffb8a08d94879d1ddf67"
   },
   {
-    "bytes": 44432,
+    "bytes": 46012,
     "path": "Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json",
-    "sha256": "ed74aa442928580217e5bd71e8662b1707f22764cbc73c8bb1f2bd032e963a98"
+    "sha256": "e9f555ad2e19cbf8382ff4c17d44179d3b47a13d03ee9a58c2b491f99b72c919"
   },
   {
     "bytes": 10212,

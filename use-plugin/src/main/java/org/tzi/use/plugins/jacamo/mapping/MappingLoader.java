@@ -41,6 +41,24 @@ public final class MappingLoader {
                 module.resolve("Core/Mapping/freeze-manifest.json"));
     }
 
+    /** Working contracts validate exact embedded Ecore compatibility, without a frozen V1 manifest. */
+    public MappingModel loadWorking(Path mappingPath, Path schemaPath, Path ecorePath) {
+        try {
+            byte[] mappingBytes = reader.read(mappingPath).clone();
+            byte[] schemaBytes = reader.read(schemaPath).clone();
+            byte[] ecoreBytes = reader.read(ecorePath).clone();
+            var schema = SchemaRegistry.withDefaultDialect(SpecificationVersion.DRAFT_2020_12)
+                    .getSchema(new String(schemaBytes, StandardCharsets.UTF_8), InputFormat.JSON);
+            String text = new String(mappingBytes, StandardCharsets.UTF_8);
+            var errors = schema.validate(text, InputFormat.JSON);
+            if (!errors.isEmpty()) throw new MappingException("MAPPING_SCHEMA_INVALID", errors.toString());
+            JsonNode root = JSON.readTree(text);
+            new V2MappingValidator().validate(root, ecoreBytes);
+            return parse(root);
+        } catch (MappingException e) { throw e; }
+        catch (Exception e) { throw new MappingException("MAPPING_LOAD_FAILED", mappingPath.toString(), e); }
+    }
+
     public MappingModel load(Path mappingPath, Path schemaPath, Path ecorePath, Path freezePath) {
         try {
             // Own each snapshot when its validation stage begins; never reopen an input.
@@ -166,12 +184,16 @@ public final class MappingLoader {
                 text(node, "id"), text(node, "source"), text(node, "sourceOwner"), text(node, "sourceName"),
                 text(node.path("target"), "owner"), text(node.path("target"), "name"), text(node.path("target"), "type")));
         List<MappingModel.ReferenceMapping> references = new ArrayList<>();
+        var byId = new java.util.HashMap<String, JsonNode>();
+        root.withArray("referenceMappings").forEach(r -> byId.put(text(r, "id"), r));
         for (JsonNode node : root.withArray("referenceMappings")) {
             JsonNode target = node.path("target");
+            boolean reverse = target.has("aliasOf");
+            if (reverse) target = byId.get(text(target, "aliasOf")).path("target");
             references.add(new MappingModel.ReferenceMapping(text(node, "id"), text(node, "source"),
                     text(node, "sourceOwner"), text(node, "sourceName"), text(node, "sourceTarget"),
                     node.path("sourceContainment").asBoolean(), text(target, "kind"), text(target, "name"),
-                    end(target.path("firstEnd")), end(target.path("secondEnd"))));
+                    end(target.path("firstEnd")), end(target.path("secondEnd")), reverse));
         }
         List<MappingModel.InheritanceMapping> inheritance = new ArrayList<>();
         for (JsonNode node : root.withArray("inheritanceMappings")) inheritance.add(new MappingModel.InheritanceMapping(
@@ -180,8 +202,14 @@ public final class MappingLoader {
         List<MappingModel.ProjectionMapping> projections = new ArrayList<>();
         for (JsonNode node : root.withArray("verificationProjections")) projections.add(new MappingModel.ProjectionMapping(
                 text(node, "id"), text(node, "name"), text(node, "status")));
+        List<MappingModel.EnumMapping> enums = new ArrayList<>();
+        for (var node : root.path("enumMappings")) {
+            List<String> literals = new ArrayList<>(); node.path("target").path("literals").forEach(l -> literals.add(l.asText()));
+            enums.add(new MappingModel.EnumMapping(text(node.path("target"), "name"), literals));
+        }
         return new MappingModel(text(root, "schemaVersion"), text(root, "mappingId"), text(root, "status"),
-                classes, attributes, references, inheritance, projections);
+                classes, attributes, references, inheritance, projections, enums,
+                root.has("orderProjection") ? new OrderProjectionPlanner().specifications(root) : List.of());
     }
 
     private MappingModel.AssociationEnd end(JsonNode node) {

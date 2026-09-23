@@ -1,7 +1,10 @@
 # V2-ORDER-001 — ordered eOpposite representation decision
 
-Status: SEMANTIC_FIDELITY_BLOCKER. This is independent of the resolved Phase 29
-scheduling decision and independent of old V1 consumer/path failures.
+Status: DECISION APPROVED; implementation in progress. The user selected option 1,
+specifically a generic target-only independent rank projection in the plugin.
+Ecore V2, supported instance domain and USE core must remain unchanged.
+See [implementation and gates](phase31-order-projection.md). The original
+membership-only counterexample below remains a mandatory regression.
 
 ## Verified conflict
 
@@ -43,7 +46,7 @@ Fresh executable evidence: each of R021/R022/R023 tests 24 insertion orders;
 control through the same APIs. In total 72 negative permutations are checked.
 Full observations are in `ordered-opposite-counterexample.json`.
 
-## Decision required before consumer representation is fixed
+## Historical alternatives reviewed before approval
 
 The source Ecore remains unchanged. Do not silently make the references unordered,
 choose one authoritative direction, or sort by name. Do not claim compile PASS
@@ -68,10 +71,9 @@ means exact instance fidelity. Two viable contracts need different implementatio
    the supported domain. A schema compile PASS must remain distinct from this
    instance-level gate.
 
-Neither narrowing the supported domain nor adding a new ordering projection/API
-is silently selected. This choice affects IR order representation, target bindings
-and OCL navigation, so the dependent Phase 32–35 design is held here. Independent
-Phase 31 schema/source/compiler/projection audits remain reviewable evidence.
+User authorization selects target-only projection. Option 2 and USE core/API
+changes are not authorized. Dependent Phase 32–35 work may proceed under the
+approved projection contract; acceptance still requires executable evidence.
 
 ## Required follow-up gates for either approved choice
 

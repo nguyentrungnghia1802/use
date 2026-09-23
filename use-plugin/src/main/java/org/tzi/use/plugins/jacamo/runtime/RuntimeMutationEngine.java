@@ -20,6 +20,8 @@ public final class RuntimeMutationEngine {
     private final RuntimeTargetResolver targets;
     private final MSystem system;
     private final TraceIndex trace;
+    private org.tzi.use.plugins.jacamo.mapping.TransformationPlan orderStructure;
+    private org.tzi.use.plugins.jacamo.materialization.InstancePlan orderMembership;
     private final Object operationLifecycle = new Object();
     private final Map<String, String> dynamicRuntimeObjects = new LinkedHashMap<>();
     private final ConcurrentMap<String, RuntimeOperationState> operationCorrelations = new ConcurrentHashMap<>();
@@ -45,6 +47,14 @@ public final class RuntimeMutationEngine {
         runtimeTrace.begin("INITIAL");
     }
 
+    public RuntimeMutationEngine(MSystem system, TraceIndex trace, RuntimeMapping mapping, RuntimeTargetResolver targets,
+            org.tzi.use.plugins.jacamo.mapping.TransformationPlan structure,
+            org.tzi.use.plugins.jacamo.materialization.InstancePlan membership) {
+        this(system, trace, mapping, targets);
+        this.orderStructure = java.util.Objects.requireNonNull(structure);
+        this.orderMembership = java.util.Objects.requireNonNull(membership);
+    }
+
     public synchronized MutationResult apply(RuntimeEvent event) {
         try { runtimeTrace.accept(runtimeTrace.generation(), event); }
         catch (IllegalArgumentException exception) { return MutationResult.failed(exception.getMessage()); }
@@ -54,6 +64,30 @@ public final class RuntimeMutationEngine {
     }
 
     public RuntimeTrace runtimeTrace() { return runtimeTrace; }
+
+    private List<org.tzi.use.plugins.jacamo.mapping.OrderProjectionPlanner.SourceOrder> sourceOrders(RuntimeEvent event) {
+        if (orderStructure == null || orderMembership == null) throw new IllegalArgumentException("RUNTIME_ORDER_BINDING_MISSING");
+        List<org.tzi.use.plugins.jacamo.mapping.OrderProjectionPlanner.SourceOrder> result = new ArrayList<>();
+        for (Object item : (List<?>) event.payload().get("orders")) {
+            if (!(item instanceof Map<?, ?> order) || !(order.get("sourceIdentity") instanceof String feature) ||
+                    !(order.get("ownerSemanticId") instanceof String owner) || !(order.get("targetSemanticIds") instanceof List<?> ids))
+                throw new IllegalArgumentException("RUNTIME_ORDER_PAYLOAD_INVALID");
+            List<String> names = new ArrayList<>();
+            for (Object id : ids) {
+                if (!(id instanceof String text)) throw new IllegalArgumentException("RUNTIME_ORDER_TARGET_INVALID");
+                names.add(orderObject(text));
+            }
+            result.add(new org.tzi.use.plugins.jacamo.mapping.OrderProjectionPlanner.SourceOrder(feature, orderObject(owner), names));
+        }
+        return List.copyOf(result);
+    }
+
+    private String orderObject(String semanticId) {
+        var matches = trace.bySemanticId(semanticId).stream().filter(r -> r.targetKind().equals("OBJECT") &&
+                (r.status() == org.tzi.use.plugins.jacamo.trace.TraceRecord.Status.RESOLVED || r.status() == org.tzi.use.plugins.jacamo.trace.TraceRecord.Status.PROJECTED)).toList();
+        if (matches.size() != 1) throw new IllegalArgumentException("RUNTIME_TRACE_UNRESOLVED:" + semanticId);
+        return matches.getFirst().targetUseId().substring("object:".length());
+    }
 
     private MutationResult applyOrdered(RuntimeEvent event) {
         if (event.sequence() <= lastSequence)
@@ -81,6 +115,10 @@ public final class RuntimeMutationEngine {
                 case ATTRIBUTE_STATE_UNSET -> set(objectName, undefined(event.payload()));
                 case RELATION_INSERT -> insert(event.payload());
                 case RELATION_DELETE -> delete(event.payload());
+                case RELATION_REORDER -> {
+                    new OrderProjectionRuntimeBinding().reorder(system, orderStructure, orderMembership, sourceOrders(event), trace);
+                    yield MutationResult.applied();
+                }
                 case OPERATION_ENTER -> enter(event, objectName);
                 case OPERATION_EXIT -> exit(event, OperationRuntimeOutcome.EXITED);
                 case OPERATION_FAIL -> exit(event, OperationRuntimeOutcome.FAILED);
@@ -209,6 +247,16 @@ public final class RuntimeMutationEngine {
 
     private void compare(RuntimeEvent event, List<RuntimeDriftDifference> differences) {
         var action = mapping.select(event).action();
+        if (action == RuntimeSemanticAction.RELATION_REORDER) {
+            var desired = new org.tzi.use.plugins.jacamo.mapping.OrderProjectionPlanner().project(orderStructure, orderMembership, sourceOrders(event));
+            for (var row : desired.objects()) if (orderStructure.orderProjections().stream().anyMatch(p -> p.entryClass().equals(row.className()))) {
+                var object = system.state().objectByName(row.name());
+                String expected = Long.toString(((org.tzi.use.plugins.jacamo.semantic.AttributeValue.IntegerNumber) row.values().get("rank")).value());
+                String actual = object == null ? "missing" : object.state(system.state()).attributeValue("rank").toString();
+                if (!expected.equals(actual)) difference(differences, event, "object:" + row.name() + ".rank", expected, actual);
+            }
+            return;
+        }
         if (action == RuntimeSemanticAction.OBJECT_AVAILABLE) {
             String objectName = text(event.payload(), "useObject");
             String className = text(event.payload(), "useClass");

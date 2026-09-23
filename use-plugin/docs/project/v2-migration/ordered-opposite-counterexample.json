@@ -1,269 +1,270 @@
 {
-  "scope" : "Supplied canonical association plus public USE link insertion/navigation; source is native-EMF-valid",
+  "projectionAcceptance" : "PASS_BOTH_AUTHORITATIVE_ORDERS",
+  "scope" : "Native EMF source: membership-only insertion cannot preserve both orders; production target-only projection preserves both",
   "cases" : [ {
-    "sourceEMFValidation" : "PASS",
-    "cyclicSourceMatchingOrders" : 0,
-    "positiveControlMatchingOrders" : 2,
-    "precedenceCycle" : "e00 < e01 < e11 < e10 < e00",
-    "sourceOrders" : {
-      "b0.reverse" : [ "a1", "a0" ],
-      "b1.reverse" : [ "a0", "a1" ],
-      "a0.forward" : [ "b0", "b1" ],
-      "a1.forward" : [ "b1", "b0" ]
-    },
-    "targetStructureValidation" : "PASS_FOR_ALL_PERMUTATIONS",
+    "rule" : "R021",
+    "observations" : [ {
+      "insertionOrder" : [ 0, 1, 2, 3 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 0, 1, 3, 2 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 0, 2, 1, 3 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 0, 2, 3, 1 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 0, 3, 1, 2 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 0, 3, 2, 1 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 1, 0, 2, 3 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 1, 0, 3, 2 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 1, 2, 0, 3 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 1, 2, 3, 0 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 1, 3, 0, 2 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 1, 3, 2, 0 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 2, 0, 1, 3 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 2, 0, 3, 1 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 2, 1, 0, 3 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 2, 1, 3, 0 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 2, 3, 0, 1 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 2, 3, 1, 0 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 3, 0, 1, 2 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 3, 0, 2, 1 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 3, 1, 0, 2 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 3, 1, 2, 0 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 3, 2, 0, 1 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 3, 2, 1, 0 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a1", "a0" ] ]
+    } ],
+    "testedInsertionOrders" : 24,
     "association" : "Agent_roles_Role",
-    "testedInsertionOrders" : 24,
-    "observations" : [ {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 0, 1, 2, 3 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 0, 1, 3, 2 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 0, 2, 1, 3 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 0, 2, 3, 1 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 0, 3, 1, 2 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 0, 3, 2, 1 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 1, 0, 2, 3 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 1, 0, 3, 2 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 1, 2, 0, 3 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 1, 2, 3, 0 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 1, 3, 0, 2 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 1, 3, 2, 0 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 2, 0, 1, 3 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 2, 0, 3, 1 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 2, 1, 0, 3 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 2, 1, 3, 0 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 2, 3, 0, 1 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 2, 3, 1, 0 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 3, 0, 1, 2 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 3, 0, 2, 1 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 3, 1, 0, 2 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 3, 1, 2, 0 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 3, 2, 0, 1 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 3, 2, 1, 0 ]
-    } ],
-    "rule" : "R021"
-  }, {
-    "sourceEMFValidation" : "PASS",
-    "cyclicSourceMatchingOrders" : 0,
-    "positiveControlMatchingOrders" : 2,
-    "precedenceCycle" : "e00 < e01 < e11 < e10 < e00",
-    "sourceOrders" : {
-      "b0.reverse" : [ "a1", "a0" ],
-      "b1.reverse" : [ "a0", "a1" ],
-      "a0.forward" : [ "b0", "b1" ],
-      "a1.forward" : [ "b1", "b0" ]
-    },
     "targetStructureValidation" : "PASS_FOR_ALL_PERMUTATIONS",
+    "sourceOrders" : {
+      "a1.forward" : [ "b1", "b0" ],
+      "a0.forward" : [ "b0", "b1" ],
+      "b1.reverse" : [ "a0", "a1" ],
+      "b0.reverse" : [ "a1", "a0" ]
+    },
+    "precedenceCycle" : "e00 < e01 < e11 < e10 < e00",
+    "positiveControlMatchingOrders" : 2,
+    "cyclicSourceMatchingOrders" : 0,
+    "sourceEMFValidation" : "PASS"
+  }, {
+    "rule" : "R022",
+    "observations" : [ {
+      "insertionOrder" : [ 0, 1, 2, 3 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 0, 1, 3, 2 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 0, 2, 1, 3 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 0, 2, 3, 1 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 0, 3, 1, 2 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 0, 3, 2, 1 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 1, 0, 2, 3 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 1, 0, 3, 2 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 1, 2, 0, 3 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 1, 2, 3, 0 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 1, 3, 0, 2 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 1, 3, 2, 0 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 2, 0, 1, 3 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 2, 0, 3, 1 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 2, 1, 0, 3 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 2, 1, 3, 0 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ]
+    }, {
+      "insertionOrder" : [ 2, 3, 0, 1 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 2, 3, 1, 0 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 3, 0, 1, 2 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 3, 0, 2, 1 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 3, 1, 0, 2 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 3, 1, 2, 0 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 3, 2, 0, 1 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a1", "a0" ] ]
+    }, {
+      "insertionOrder" : [ 3, 2, 1, 0 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a1", "a0" ] ]
+    } ],
+    "testedInsertionOrders" : 24,
     "association" : "Agent_workspaces_Workspace",
-    "testedInsertionOrders" : 24,
-    "observations" : [ {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 0, 1, 2, 3 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 0, 1, 3, 2 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 0, 2, 1, 3 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 0, 2, 3, 1 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 0, 3, 1, 2 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 0, 3, 2, 1 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 1, 0, 2, 3 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 1, 0, 3, 2 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 1, 2, 0, 3 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 1, 2, 3, 0 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 1, 3, 0, 2 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 1, 3, 2, 0 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 2, 0, 1, 3 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 2, 0, 3, 1 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 2, 1, 0, 3 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 2, 1, 3, 0 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 2, 3, 0, 1 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 2, 3, 1, 0 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 3, 0, 1, 2 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 3, 0, 2, 1 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 3, 1, 0, 2 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 3, 1, 2, 0 ]
-    }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 3, 2, 0, 1 ]
-    }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 3, 2, 1, 0 ]
-    } ],
-    "rule" : "R022"
-  }, {
-    "sourceEMFValidation" : "PASS",
-    "cyclicSourceMatchingOrders" : 0,
-    "positiveControlMatchingOrders" : 2,
-    "precedenceCycle" : "e00 < e01 < e11 < e10 < e00",
-    "sourceOrders" : {
-      "b0.reverse" : [ "a1", "a0" ],
-      "b1.reverse" : [ "a0", "a1" ],
-      "a0.forward" : [ "b0", "b1" ],
-      "a1.forward" : [ "b1", "b0" ]
-    },
     "targetStructureValidation" : "PASS_FOR_ALL_PERMUTATIONS",
-    "association" : "Agent_artifacts_Artifact",
-    "testedInsertionOrders" : 24,
+    "sourceOrders" : {
+      "a1.forward" : [ "b1", "b0" ],
+      "a0.forward" : [ "b0", "b1" ],
+      "b1.reverse" : [ "a0", "a1" ],
+      "b0.reverse" : [ "a1", "a0" ]
+    },
+    "precedenceCycle" : "e00 < e01 < e11 < e10 < e00",
+    "positiveControlMatchingOrders" : 2,
+    "cyclicSourceMatchingOrders" : 0,
+    "sourceEMFValidation" : "PASS"
+  }, {
+    "rule" : "R023",
     "observations" : [ {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 0, 1, 2, 3 ]
+      "insertionOrder" : [ 0, 1, 2, 3 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a0", "a1" ] ]
     }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 0, 1, 3, 2 ]
+      "insertionOrder" : [ 0, 1, 3, 2 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a0", "a1" ] ]
     }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 0, 2, 1, 3 ]
+      "insertionOrder" : [ 0, 2, 1, 3 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a0", "a1" ] ]
     }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 0, 2, 3, 1 ]
+      "insertionOrder" : [ 0, 2, 3, 1 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a1", "a0" ] ]
     }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 0, 3, 1, 2 ]
+      "insertionOrder" : [ 0, 3, 1, 2 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ]
     }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 0, 3, 2, 1 ]
+      "insertionOrder" : [ 0, 3, 2, 1 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ]
     }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 1, 0, 2, 3 ]
+      "insertionOrder" : [ 1, 0, 2, 3 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a0", "a1" ], [ "a0", "a1" ] ]
     }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 1, 0, 3, 2 ]
+      "insertionOrder" : [ 1, 0, 3, 2 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a0", "a1" ] ]
     }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 1, 2, 0, 3 ]
+      "insertionOrder" : [ 1, 2, 0, 3 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ]
     }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 1, 2, 3, 0 ]
+      "insertionOrder" : [ 1, 2, 3, 0 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ]
     }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 1, 3, 0, 2 ]
+      "insertionOrder" : [ 1, 3, 0, 2 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a0", "a1" ] ]
     }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 1, 3, 2, 0 ]
+      "insertionOrder" : [ 1, 3, 2, 0 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a0", "a1" ] ]
     }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 2, 0, 1, 3 ]
+      "insertionOrder" : [ 2, 0, 1, 3 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ]
     }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 2, 0, 3, 1 ]
+      "insertionOrder" : [ 2, 0, 3, 1 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a1", "a0" ] ]
     }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 2, 1, 0, 3 ]
+      "insertionOrder" : [ 2, 1, 0, 3 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ]
     }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ],
-      "insertionOrder" : [ 2, 1, 3, 0 ]
+      "insertionOrder" : [ 2, 1, 3, 0 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a0", "a1" ] ]
     }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 2, 3, 0, 1 ]
+      "insertionOrder" : [ 2, 3, 0, 1 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a1", "a0" ] ]
     }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 2, 3, 1, 0 ]
+      "insertionOrder" : [ 2, 3, 1, 0 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b0", "b1" ], [ "a1", "a0" ], [ "a1", "a0" ] ]
     }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 3, 0, 1, 2 ]
+      "insertionOrder" : [ 3, 0, 1, 2 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ]
     }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 3, 0, 2, 1 ]
+      "insertionOrder" : [ 3, 0, 2, 1 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ]
     }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 3, 1, 0, 2 ]
+      "insertionOrder" : [ 3, 1, 0, 2 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a0", "a1" ], [ "a1", "a0" ] ]
     }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 3, 1, 2, 0 ]
+      "insertionOrder" : [ 3, 1, 2, 0 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a1", "a0" ] ]
     }, {
-      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 3, 2, 0, 1 ]
+      "insertionOrder" : [ 3, 2, 0, 1 ],
+      "navigationOrders" : [ [ "b0", "b1" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a1", "a0" ] ]
     }, {
-      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a1", "a0" ] ],
-      "insertionOrder" : [ 3, 2, 1, 0 ]
+      "insertionOrder" : [ 3, 2, 1, 0 ],
+      "navigationOrders" : [ [ "b1", "b0" ], [ "b1", "b0" ], [ "a1", "a0" ], [ "a1", "a0" ] ]
     } ],
-    "rule" : "R023"
+    "testedInsertionOrders" : 24,
+    "association" : "Agent_artifacts_Artifact",
+    "targetStructureValidation" : "PASS_FOR_ALL_PERMUTATIONS",
+    "sourceOrders" : {
+      "a1.forward" : [ "b1", "b0" ],
+      "a0.forward" : [ "b0", "b1" ],
+      "b1.reverse" : [ "a0", "a1" ],
+      "b0.reverse" : [ "a1", "a0" ]
+    },
+    "precedenceCycle" : "e00 < e01 < e11 < e10 < e00",
+    "positiveControlMatchingOrders" : 2,
+    "cyclicSourceMatchingOrders" : 0,
+    "sourceEMFValidation" : "PASS"
   } ],
-  "status" : "SEMANTIC_FIDELITY_BLOCKER"
+  "status" : "MEMBERSHIP_ONLY_COUNTEREXAMPLE_RETAINED"
 }

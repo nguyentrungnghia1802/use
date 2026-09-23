@@ -12,7 +12,7 @@ import org.tzi.use.plugins.jacamo.semantic.SemanticElement;
 
 /** Builds structural declarations and evidence-gated VP001-003 projections. */
 public final class TransformationPlanner {
-    public TransformationPlan plan(JaCaMoSemanticModel semantic, MappingModel mapping) {
+    public TransformationPlan structuralPlan(MappingModel mapping) {
         List<TargetClassSpec> classes = new ArrayList<>();
         Map<String, List<String>> supers = new HashMap<>();
         mapping.inheritance().forEach(edge -> supers.computeIfAbsent(edge.subclass(), ignored -> new ArrayList<>())
@@ -21,8 +21,16 @@ public final class TransformationPlanner {
                 entry.abstractClass(), supers.getOrDefault(entry.name(), List.of()), entry.source(), entry.id()));
         List<TargetAttributeSpec> attributes = mapping.attributes().stream().map(entry -> new TargetAttributeSpec(
                 entry.owner(), entry.name(), entry.type(), entry.source(), entry.id())).collect(java.util.stream.Collectors.toCollection(ArrayList::new));
-        List<TargetAssociationSpec> associations = mapping.associations().stream().map(entry -> new TargetAssociationSpec(
+        List<TargetAssociationSpec> associations = mapping.associations().stream().filter(entry -> !entry.reverse()).map(entry -> new TargetAssociationSpec(
                 entry.name(), entry.kind(), entry.firstEnd(), entry.secondEnd(), entry.source(), entry.id())).toList();
+        return new TransformationPlan(classes, attributes, associations, List.of(), List.of(), mapping.orderProjections(), mapping.enums());
+    }
+
+    public TransformationPlan plan(JaCaMoSemanticModel semantic, MappingModel mapping) {
+        var structural = structuralPlan(mapping);
+        List<TargetClassSpec> classes = new ArrayList<>(structural.classes());
+        List<TargetAttributeSpec> attributes = new ArrayList<>(structural.attributes());
+        List<TargetAssociationSpec> associations = structural.associations();
         List<TargetOperationSpec> operations = new ArrayList<>();
         List<ProjectionDiagnostic> diagnostics = new ArrayList<>();
         UseNameAllocator classNames = new UseNameAllocator();
@@ -41,7 +49,7 @@ public final class TransformationPlanner {
                 classes.add(new TargetClassSpec(concrete, false, List.of("Artifact"), type, "VP001"));
             projectMembers(semantic, artifact, type, concrete, attributes, operations, diagnostics);
         }
-        return new TransformationPlan(classes, attributes, associations, operations, diagnostics);
+        return new TransformationPlan(classes, attributes, associations, operations, diagnostics, mapping.orderProjections(), mapping.enums());
     }
 
     private void projectMembers(JaCaMoSemanticModel semantic, SemanticElement artifact, String type, String concrete,

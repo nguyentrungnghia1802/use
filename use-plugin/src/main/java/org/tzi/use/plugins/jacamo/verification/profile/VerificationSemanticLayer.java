@@ -19,7 +19,7 @@ public final class VerificationSemanticLayer {
             }
         }
         TransformationPlan effective = new TransformationPlan(classes, baseline.attributes(), associations,
-                baseline.operations(), baseline.diagnostics());
+                baseline.operations(), baseline.diagnostics(), baseline.orderProjections(), baseline.enums());
         return new EffectivePlan(profile, baseline, effective);
     }
 

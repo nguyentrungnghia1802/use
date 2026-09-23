@@ -1,5 +1,7 @@
 # USE JaCaMo Plugin 1.0.1
 
+> **Ordering update:** The user approved target-only independent ranks. Mapping 2.2.0 component gates pass, including native counterexamples, text/direct parity and queued runtime reconnect. Default V2 consumer migration remains OPEN. Latest regression: 325 executed, same 3 failures / 73 errors. See [current implementation](docs/project/v2-migration/phase31-order-projection.md). Older decision-required statements below describe the pre-projection audit.
+
 > **V2 migration status — 2026-09-23:** Active semantic specification is Metamodel V2 + Mapping 2.1 (`WORKING_BASELINE`), under `Core/*/version-2/`. Production consumers are not yet migrated; the fresh pre-migration build fails after V1 resource relocation. V1 release/closure claims below are historical, not current V2 acceptance. See [migration baseline](docs/project/v2-migration/phase29-pre-migration-baseline.md) and [active selection contract](docs/project/v2-migration/active-baseline-policy.md).
 
 

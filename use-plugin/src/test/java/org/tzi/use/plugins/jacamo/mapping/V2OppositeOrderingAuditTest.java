@@ -100,6 +100,7 @@ class V2OppositeOrderingAuditTest {
             }
             assertEquals(0, cycleMatches, "Revisit boundary if USE gains independent end-order support");
             assertTrue(controlMatches > 0, "Positive control must be representable through the same API");
+            verifyProjection(List.of(a0, a1, b0, b1), rule.path("id").asText());
             evidence.add(Map.of("rule", rule.path("id").asText(), "association", association.name(),
                     "sourceEMFValidation", "PASS", "testedInsertionOrders", permutations.size(),
                     "cyclicSourceMatchingOrders", cycleMatches, "positiveControlMatchingOrders", controlMatches,
@@ -111,7 +112,46 @@ class V2OppositeOrderingAuditTest {
         assertFalse(evidence.isEmpty(), "Audit must exercise supplied ordered opposite mappings");
         Path output = Files.createDirectories(Path.of("target/phase31-mapping-audit"));
         Files.writeString(output.resolve("ordered-opposite-counterexample.json"), V2MappingAuditTest.JSON.writerWithDefaultPrettyPrinter()
-                .writeValueAsString(Map.of("status", "SEMANTIC_FIDELITY_BLOCKER", "scope", "Supplied canonical association plus public USE link insertion/navigation; source is native-EMF-valid", "cases", evidence)) + "\n");
+                .writeValueAsString(Map.of("status", "MEMBERSHIP_ONLY_COUNTEREXAMPLE_RETAINED", "projectionAcceptance", "PASS_BOTH_AUTHORITATIVE_ORDERS",
+                        "scope", "Native EMF source: membership-only insertion cannot preserve both orders; production target-only projection preserves both", "cases", evidence)) + "\n");
+    }
+
+    /** Same native-EMF counterexample through production 2.2 loader/planner/backends and ordered OCL. */
+    private void verifyProjection(List<EObject> sources, String membershipRule) throws Exception {
+        var mapping = new MappingLoader().loadWorking(V2MappingAuditTest.MAPPING, V2MappingAuditTest.SCHEMA, V2EcoreAuditTest.SOURCE);
+        var structure = new TransformationPlanner().structuralPlan(mapping);
+        var names = new IdentityHashMap<EObject, String>();
+        for (int i = 0; i < sources.size(); i++) names.put(sources.get(i), List.of("a0", "a1", "b0", "b1").get(i));
+        var objects = new ArrayList<org.tzi.use.plugins.jacamo.materialization.ObjectPlan>();
+        for (var source : sources) {
+            var attributes = new TreeMap<String, org.tzi.use.plugins.jacamo.semantic.AttributeValue>();
+            for (var attr : source.eClass().getEAllAttributes()) {
+                Object value = source.eGet(attr); if (value == null) continue;
+                attributes.put(attr.getName(), value instanceof Boolean b ? new org.tzi.use.plugins.jacamo.semantic.AttributeValue.Bool(b)
+                        : new org.tzi.use.plugins.jacamo.semantic.AttributeValue.Text(value.toString()));
+            }
+            objects.add(new org.tzi.use.plugins.jacamo.materialization.ObjectPlan(names.get(source), source.eClass().getName(), "source:" + names.get(source), attributes));
+        }
+        var canonical = mapping.associations().stream().filter(r -> r.id().equals(membershipRule)).findFirst().orElseThrow();
+        var links = new ArrayList<org.tzi.use.plugins.jacamo.materialization.LinkPlan>();
+        for (String a : List.of("a0", "a1")) for (String b : List.of("b0", "b1"))
+            links.add(new org.tzi.use.plugins.jacamo.materialization.LinkPlan(canonical.name(), a, b, false, "source:" + a, "source:" + b, canonical.id()));
+        var orders = new ArrayList<OrderProjectionPlanner.SourceOrder>();
+        for (var spec : structure.orderProjections()) for (var source : sources) if (source.eClass().getName().equals(spec.owner())) {
+            var ref = (EReference) source.eClass().getEStructuralFeature(spec.sourceIdentity().substring(spec.sourceIdentity().indexOf('#') + 1));
+            orders.add(new OrderProjectionPlanner.SourceOrder(spec.sourceIdentity(), names.get(source), values(source, ref).stream().map(names::get).toList()));
+        }
+        var membership = new org.tzi.use.plugins.jacamo.materialization.InstancePlan(objects, links, List.of());
+        var projected = new OrderProjectionPlanner().project(structure, membership, orders);
+        var text = new org.tzi.use.plugins.jacamo.materialization.TextBackend().generate("NativeOrders", structure, projected);
+        var direct = new org.tzi.use.plugins.jacamo.materialization.DirectUseBackend().materialize(text, projected);
+        assertTrue(direct.structureValid(), direct.validationOutput()); assertTrue(direct.invariantsValid(), direct.validationOutput());
+        var api = org.tzi.use.api.UseSystemApi.create(direct.system(), false);
+        for (var order : orders) {
+            String query = new OrderNavigationBinding().bind(structure, order.sourceIdentity(), order.ownerObject());
+            assertEquals(api.evaluate("Sequence{" + String.join(",", order.targets()) + "}"), api.evaluate(query), order.toString());
+        }
+        assertEquals(4, direct.system().state().linksOfAssociation(direct.system().model().getAssociation(canonical.name())).size());
     }
 
     private static List<String> names(List<MObject> values) { return values.stream().map(MObject::name).toList(); }
