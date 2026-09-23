@@ -1,4 +1,4 @@
-# Phase 29 gate dependency requiring a plan decision
+# Phase 29 gate dependency — staged migration authorized
 
 No phase is declared complete. No production semantics or canonical input changed.
 
@@ -30,7 +30,8 @@ Two concrete schedules preserve all correctness gates:
   Phase 29, achieve production V2 and full regression there, then resume the
   remaining audit/hardening tasks in their original order.
 
-The decision changes the user's explicit phase/gate ordering, so it is requested
-instead of silently marking a failing phase complete. While pending, independent
-P29 capture/inventory and audit-tool tests are completed. P30+ generated inventory
-files are preliminary intake evidence only, not acceptance of those later phases.
+User decision (2026-09-23): choose staged migration. Execute Phase 29 through 35 in
+order; do not pull production migration into Phase 29. Mark independently completed
+tasks only. Keep consumer-dependent acceptance/regression OPEN and rerun it after
+downstream migration. Baseline failures do not authorize rollback of V2. This
+dependency is resolved as a scheduling decision, not a semantic blocker.
