@@ -89,6 +89,31 @@
         "status": "not-run",
         "scope": "Existing pinned local Maven repository; full reactor verify, not a fresh dependency-cache validation"
       }
+    },
+    {
+      "date": "2026-09-24",
+      "testedProductionCommit": "ecb3d7ab75b8f34785810dadaa2d764a0fe8f017",
+      "runtimeScope": "Phase 42 canonical V2 workbench, exact compatibility hashes, single-active-baseline JAR/ZIP inventory and installed plugin smoke",
+      "fullReactor": {
+        "command": "mvn -B verify",
+        "tests": 362,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "evidence": "docs/project/v2-migration/phase42-regression.json"
+      },
+      "host": {
+        "osName": "Windows 11",
+        "osVersion": "10.0",
+        "architecture": "amd64",
+        "mavenVersion": "3.9.9",
+        "mavenJavaVersion": "21.0.5",
+        "mavenJavaVendor": "Oracle Corporation"
+      },
+      "cleanEnvironment": {
+        "status": "not-run",
+        "scope": "Existing checkout and pinned local Maven repository; clean historical-namespace focused gate plus full non-clean reactor gate"
+      }
     }
   ],
   "runtimeMapping": {

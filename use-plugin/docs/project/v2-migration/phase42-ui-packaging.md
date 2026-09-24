@@ -1,6 +1,7 @@
 # Phase 42 UI, packaging and compatibility audit
 
-Status: component and module gates pass; full-reactor and post-merge gates pending.
+Status: DONE. Component, module and full-reactor gates pass; post-merge evidence is
+recorded separately after integration to main.
 V2 remains WORKING_BASELINE and is not frozen or released.
 
 ## Workbench workflow
@@ -70,5 +71,9 @@ there is no V1 fallback.
 - Historical namespace clean focused gate: 11/11 PASS, 0 skipped.
 - Manifest/resource focused gate: 14/14 PASS, 0 skipped.
 - Package/install focused gate: 23/23 unit + 3/3 integration PASS, 0 skipped.
+- Final manifest/UI/package/install gate after evidence synchronization: 15/15 PASS,
+  0 skipped (`phase42-focused.json`).
 - Full plugin module verify: 219/219 PASS, 0 failures, 0 errors, 0 skipped
   (`phase42-module.json`).
+- Full reactor phase gate: 362/362 PASS across USE core, GUI, assembly and plugin
+  unit/integration suites, 0 failures, 0 errors, 0 skipped (`phase42-regression.json`).
