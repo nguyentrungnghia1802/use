@@ -1405,19 +1405,19 @@ Every runtime violation should include:
 
 ## P41.1 — Auction migration
 
-- [ ] source project imports.
-- [ ] V2 semantic model.
-- [ ] V2 mapping.
-- [ ] V2 `.use`.
-- [ ] V2 initial state.
-- [ ] V2 trace.
-- [ ] V2 OCL.
-- [ ] runtime sync.
-- [ ] positive scenario.
-- [ ] negative scenario.
-- [ ] PRE/POST where source/profile supports.
-- [ ] reconnect/resync.
-- [ ] exact violation navigation.
+- [x] source project imports.
+- [x] V2 semantic model.
+- [x] V2 mapping.
+- [x] V2 `.use`.
+- [x] V2 initial state.
+- [x] V2 trace.
+- [x] V2 OCL.
+- [x] runtime sync.
+- [x] positive scenario.
+- [x] negative scenario.
+- [x] PRE/POST where source/profile supports.
+- [x] reconnect/resync.
+- [x] exact violation navigation.
 
 Do not invent `highestBid/currentBid` or operation names not present in the actual fixture.
 
@@ -1425,15 +1425,15 @@ Do not invent `highestBid/currentBid` or operation names not present in the actu
 
 ## P41.2 — Case Study #2 migration
 
-- [ ] import.
-- [ ] transform.
-- [ ] OCL where evidence exists.
-- [ ] runtime supported subset.
-- [ ] positive.
-- [ ] negative.
-- [ ] trace.
-- [ ] reconnect.
-- [ ] no core special case.
+- [x] import.
+- [x] transform.
+- [x] OCL where evidence exists.
+- [x] runtime supported subset.
+- [x] positive.
+- [x] negative.
+- [x] trace.
+- [x] reconnect.
+- [x] no core special case.
 
 ---
 
@@ -1441,32 +1441,32 @@ Do not invent `highestBid/currentBid` or operation names not present in the actu
 
 Search core production code for:
 
-- [ ] Auction names.
-- [ ] Case Study #2 names.
-- [ ] object IDs.
-- [ ] operation names.
-- [ ] hard-coded runtime bindings.
-- [ ] special-case branch by project name.
-- [ ] V1 class names.
-- [ ] V1 hashes.
+- [x] Auction names.
+- [x] Case Study #2 names.
+- [x] object IDs.
+- [x] operation names.
+- [x] hard-coded runtime bindings.
+- [x] special-case branch by project name.
+- [x] V1 class names.
+- [x] V1 hashes.
 
 All example-specific logic must remain in:
 
-- [ ] example.
-- [ ] fixture.
-- [ ] case OCL/profile.
-- [ ] explicit binding.
-- [ ] test.
+- [x] example.
+- [x] fixture.
+- [x] case OCL/profile.
+- [x] explicit binding.
+- [x] test.
 
 ---
 
 ## P41.4 — Multi-case acceptance
 
-- [ ] same production pipeline.
-- [ ] same Mapping V2 engine.
-- [ ] same Runtime Mapping V2 engine.
-- [ ] no example-specific source dispatch.
-- [ ] supported/unsupported boundaries explicit.
+- [x] same production pipeline.
+- [x] same Mapping V2 engine.
+- [x] same Runtime Mapping V2 engine.
+- [x] no example-specific source dispatch.
+- [x] supported/unsupported boundaries explicit.
 
 ---
 
