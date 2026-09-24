@@ -9,6 +9,12 @@ import org.tzi.use.plugins.jacamo.mapping.TransformationPlan;
 
 /** Applies explicit verification semantics while preserving the frozen baseline plan as an immutable input. */
 public final class VerificationSemanticLayer {
+    public EffectivePlan apply(TransformationPlan baseline, MappingModel mapping, VerificationProfile profile) {
+        if (!mapping.mappingId().equals(profile.baselineMappingId()))
+            throw new VerificationProfileException("VERIFICATION_PROFILE_BASELINE_MISMATCH",
+                    profile.profileId() + " does not target " + mapping.mappingId());
+        return apply(baseline, profile);
+    }
     public EffectivePlan apply(TransformationPlan baseline, VerificationProfile profile) {
         List<TargetClassSpec> classes = new ArrayList<>(baseline.classes());
         List<TargetAssociationSpec> associations = new ArrayList<>(baseline.associations());
@@ -19,7 +25,7 @@ public final class VerificationSemanticLayer {
             }
         }
         TransformationPlan effective = new TransformationPlan(classes, baseline.attributes(), associations,
-                baseline.operations(), baseline.diagnostics());
+                baseline.operations(), baseline.diagnostics(), baseline.orderProjections(), baseline.enums());
         return new EffectivePlan(profile, baseline, effective);
     }
 

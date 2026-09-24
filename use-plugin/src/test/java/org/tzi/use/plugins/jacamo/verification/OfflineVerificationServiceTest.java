@@ -181,7 +181,7 @@ class OfflineVerificationServiceTest {
         var mapping = new MappingLoader().loadCanonical(Path.of("."));
         var baseline = new TransformationPlanner().plan(semantic, mapping);
         var structure = new VerificationSemanticLayer().apply(baseline,
-                new VerificationProfileLoader().loadV1()).transformation();
+                new VerificationProfileLoader().loadActive(mapping)).transformation();
         var constraints = new ConstraintExtractor().extract(semantic, structure, Map.of());
         var instances = new InstancePlanner().plan(semantic, mapping, structure);
         return new Fixture(project, semantic, mapping, structure, constraints, instances);

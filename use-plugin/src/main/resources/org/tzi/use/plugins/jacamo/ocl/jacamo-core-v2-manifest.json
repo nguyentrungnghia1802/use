@@ -1,0 +1,21 @@
+{
+  "profileId": "JACAMO_CORE_OCL_V2",
+  "version": "2.0.0",
+  "mappingId": "JaCaMo-agentmetamodel-v2__to__USE-v2.2",
+  "classification": "OUR-EXT",
+  "constraints": [
+    {
+      "name": "OperationAnchorRequiresExternalKind",
+      "rationale": "VP004 constrains an operation anchor to EXTERNAL Action kind. Optional R027 does not require every external action to resolve.",
+      "evidence": [
+        "A036",
+        "R027",
+        "VP004"
+      ]
+    }
+  ],
+  "supersedes": {
+    "profileId": "JACAMO_CORE_OCL_V1",
+    "reason": "ExternalAction.Expression and the V1 resolution completeness proxy are absent from V2; no surrogate source-resolution attribute is invented."
+  }
+}

@@ -125,14 +125,21 @@ class RuntimeFoundationTest {
     }
 
     @Test
-    void tracedLifecycleRestoresExactObjectAndStrictValuesRejectLossyInput() {
+    void tracedLifecycleRestoresExactObjectAndStrictValuesRejectLossyInput() throws Exception {
         Fixture f = fixture();
-        String name = f.artifactTrace().targetUseId().substring("object:".length());
-        assertEquals(MutationStatus.APPLIED, f.engine().apply(event(1, RuntimeEventKind.DESTROY_OBJECT,
-            f.runtimeKey(), f.artifactTrace().sourceSemanticId(), Map.of(), null)).status());
+        // A standalone traced object exercises generic lifecycle. An object participating
+        // in V2 ordered relations requires full projected resync (V2RuntimeOrderTest).
+        String name = "detachedArtifact";
+        f.direct().system().state().createObject(f.direct().system().model().getClass("AuctionArtifact"), name);
+        var record = new org.tzi.use.plugins.jacamo.trace.TraceRecord("detached", "detached-semantic", "object:" + name,
+                "Artifact", "OBJECT", "C018", "VP001", null, null, "detached-runtime",
+                org.tzi.use.plugins.jacamo.trace.TraceRecord.Status.PROJECTED);
+        var engine = new RuntimeMutationEngine(f.direct().system(), new org.tzi.use.plugins.jacamo.trace.TraceIndex(List.of(record)));
+        assertEquals(MutationStatus.APPLIED, engine.apply(event(1, RuntimeEventKind.DESTROY_OBJECT,
+            "detached-runtime", "detached-semantic", Map.of(), null)).status());
         assertNull(f.direct().system().state().objectByName(name));
-        assertEquals(MutationStatus.APPLIED, f.engine().apply(event(2, RuntimeEventKind.CREATE_OBJECT,
-            f.runtimeKey(), f.artifactTrace().sourceSemanticId(), Map.of("useClass","AuctionArtifact","useObject",name),null)).status());
+        assertEquals(MutationStatus.APPLIED, engine.apply(event(2, RuntimeEventKind.CREATE_OBJECT,
+            "detached-runtime", "detached-semantic", Map.of("useClass","AuctionArtifact","useObject",name),null)).status());
         assertNotNull(f.direct().system().state().objectByName(name));
         assertThrows(IllegalArgumentException.class, () -> RuntimeValues.convert("BOOLEAN", "maybe"));
         assertThrows(ArithmeticException.class, () -> RuntimeValues.convert("INTEGER", 1.5));
@@ -638,7 +645,7 @@ class RuntimeFoundationTest {
         var mapping = new MappingLoader().loadCanonical(Path.of("."));
         var baseline = new TransformationPlanner().plan(semantic, mapping);
         var structure = new VerificationSemanticLayer().apply(baseline,
-                new VerificationProfileLoader().loadV1()).transformation();
+                new VerificationProfileLoader().loadActive(mapping)).transformation();
         var instances = new InstancePlanner().plan(semantic, mapping, structure);
         var generated = new TextBackend().generate("auction", structure, instances);
         DirectUseBackend.Result direct = new DirectUseBackend().materialize(generated, instances);

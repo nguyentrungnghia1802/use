@@ -15,10 +15,9 @@ import org.junit.jupiter.api.Test;
 class ReleasePackageContractTest {
     private static final Set<String> REQUIRED_ENTRIES = Set.of(
             "CHANGELOG.md",
-            "Core/Mapping/freeze-manifest.json",
-            "Core/Mapping/jacamo-use-mapping-v1.json",
-            "Core/Mapping/jacamo-use-mapping.schema.json",
-            "Core/Metamodel/JaCaMo-Metamodel.ecore",
+            "Core/Mapping/version-2/jacamo-use-mapping-v2.json",
+            "Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json",
+            "Core/Metamodel/version-2/jacamo_v2_complete.ecore",
             "KNOWN-LIMITATIONS.md",
             "LICENSE",
             "licenses/APACHE-2.0.txt",
@@ -35,12 +34,11 @@ class ReleasePackageContractTest {
             "examples/auction/src/org/auction.xml",
             "examples/auction/verification/auction.ocl",
             "lib/plugins/use-jacamo-plugin-1.0.1.jar",
-            "ocl/jacamo-core.ocl",
-            "profiles/jacamo-verification-profile-v1.json",
+            "ocl/jacamo-core-v2.ocl",
+            "profiles/jacamo-verification-profile-v2.json",
             "release-manifest.json",
-            "runtime/jacamo-use-runtime-mapping-v1.json",
-            "runtime/runtime-mapping.schema.json",
-            "runtime/runtime-mapping-freeze.json",
+            "runtime/jacamo-use-runtime-mapping-v2.json",
+            "runtime/runtime-mapping-v2.schema.json",
             "schemas/binding-v1.schema.json",
             "schemas/runtime-event-v1.schema.json",
             "schemas/trace-v1.schema.json");
@@ -53,7 +51,8 @@ class ReleasePackageContractTest {
 
         JsonNode manifest = new ObjectMapper().readTree(manifestPath.toFile());
         assertEquals("1.0.1", manifest.path("releaseVersion").asText());
-        assertEquals("use-jacamo-plugin-v1.0.1", manifest.path("gitTag").asText());
+        assertTrue(manifest.path("gitTag").isNull());
+        assertEquals("WORKING_V2_NOT_RELEASED", manifest.path("status").asText());
         assertEquals("7.5.0", manifest.path("compatibility").path("use").asText());
         assertEquals("1.0.1", manifest.path("compatibility").path("pluginDescriptor").asText());
         assertEquals("SHA-256", manifest.path("integrity").path("packageAlgorithm").asText());

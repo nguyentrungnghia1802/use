@@ -1,5 +1,12 @@
 # Constraint Translation and OCL Architecture
 
+> Active V2: Plan.context and Artifact guard sourceFacts preserve constraint
+> provenance. `jacamo-core-v2.ocl` checks that a present Action.operation anchor
+> has EXTERNAL kind; the optional V2 relation is not made mandatory by an old
+> ExternalAction rule. Ordered source navigation uses rank-derived query bindings.
+> Norm strings and unsupported Java/Jason semantics remain untranslated. See
+> [Phase 35 contract](v2-migration/phase35-transformation.md).
+
 ## 1. Nguyên tắc
 
 OCL không chỉ là "file nhập tay".

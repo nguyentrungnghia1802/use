@@ -543,7 +543,7 @@ class RuntimeVerificationEngineTest {
         var mapping = new MappingLoader().loadCanonical(Path.of("."));
         var baseline = new TransformationPlanner().plan(semantic, mapping);
         var structure = new VerificationSemanticLayer().apply(baseline,
-                new VerificationProfileLoader().loadV1()).transformation();
+                new VerificationProfileLoader().loadActive(mapping)).transformation();
         var constraints = new ArrayList<>(new ConstraintExtractor().extract(semantic, structure, Map.of()));
         if (postcondition) {
             var operation = semantic.elements().stream().filter(element -> element.kind() == MetamodelKind.Operation)

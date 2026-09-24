@@ -1,0 +1,25 @@
+{
+  "acceptance": "NOT_A_FREEZE_OR_FULL_ACCEPTANCE; run schema/native EMF, target compiler and affected consumer regressions",
+  "afterSha256": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c",
+  "beforeSha256": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c",
+  "ecoreDiagnostics": [],
+  "impact": {
+    "acceptedRenames": [],
+    "changes": [],
+    "policy": "Conservative semantic breakage until equivalence is proven; added/removed refer to metamodel capabilities, not source-language removal"
+  },
+  "mappingSha256": "15d330c70400d16958559b83daf27c3755dc0cb28a7dffb8a08d94879d1ddf67",
+  "sourceCoverage": {
+    "diagnostics": [],
+    "scope": "Exact source coverage, feature metadata and fingerprint; not schema/USE/compiler validation",
+    "status": "PASS"
+  },
+  "status": "SOURCE_COMPATIBLE",
+  "structuralDiff": {
+    "changes": [],
+    "identityPolicy": "EXACT_LOCAL_IDENTITY; namespace change recorded separately; no inferred rename",
+    "newSha256": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c",
+    "oldSha256": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c"
+  },
+  "writesCanonicalInputs": false
+}

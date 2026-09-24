@@ -21,6 +21,10 @@ final class RuntimeEventValidator {
             case CREATE_OBJECT -> required(payload, "useClass", "useObject");
             case DESTROY_OBJECT -> { }
             case SET_ATTRIBUTE -> required(payload, "attribute", "valueType", "value");
+            case REPLACE_ORDER -> {
+                required(payload, "orders");
+                if (!(payload.get("orders") instanceof List<?>)) throw new IllegalArgumentException("RUNTIME_ORDER_PAYLOAD_INVALID");
+            }
             case INSERT_LINK, DELETE_LINK -> {
                 required(payload, "association", "participants");
                 if (!(payload.get("participants") instanceof List<?> participants) || participants.size() < 2)

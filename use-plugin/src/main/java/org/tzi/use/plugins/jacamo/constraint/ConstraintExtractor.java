@@ -25,8 +25,8 @@ public final class ConstraintExtractor {
 
     private void extractJason(JaCaMoSemanticModel semantic,
                               Map<String, TypeEnvironment.PropertyBinding> bindings, List<ConstraintSpec> result) {
-        for (SemanticElement context : semantic.elements().stream().filter(e -> e.kind() == MetamodelKind.Context).toList()) {
-            String source = text(context, "Expression");
+        for (SemanticElement context : semantic.elements().stream().filter(e -> e.kind() == MetamodelKind.Plan).toList()) {
+            String source = text(context, "context");
             if (source == null) continue;
             result.add(new ConstraintSpec("JASON-" + stable(context.id().value()), ConstraintSpec.SourceKind.JASON_CONTEXT,
                     ConstraintSpec.Kind.INVARIANT, "Plan", null, "JasonContext_" + stable(context.id().value()),
@@ -37,24 +37,31 @@ public final class ConstraintExtractor {
     }
 
     private void extractGuards(JaCaMoSemanticModel semantic, TransformationPlan plan, List<ConstraintSpec> result) {
-        Map<String, SemanticElement> byId = semantic.elements().stream().collect(
-                java.util.stream.Collectors.toMap(e -> e.id().value(), e -> e));
         for (SemanticElement operation : semantic.elements().stream().filter(e -> e.kind() == MetamodelKind.Operation).toList()) {
-            var guardReference = operation.references().stream().filter(r -> r.feature().equals("guardedBy")
-                    && r.targetId() != null).findFirst();
-            if (guardReference.isEmpty()) continue;
-            SemanticElement guard = byId.get(guardReference.get().targetId().value());
-            String source = guard == null ? null : text(guard, "guardExpression");
+            String guardName = fact(operation, "guardedBy");
+            if (guardName == null) continue;
+            var owners = semantic.elements().stream().filter(e -> e.kind() == MetamodelKind.Artifact
+                    && e.references().stream().anyMatch(r -> r.feature().equals("operations") && operation.id().equals(r.targetId()))).toList();
+            if (owners.size() != 1) continue;
+            SemanticElement artifact = owners.getFirst();
+            String prefix = "guard:" + guardName + ":";
+            String guardSource = fact(artifact, prefix + "source");
+            if (guardSource == null) continue;
+            var provenance = artifact.provenance().stream().filter(p -> p.originalSpelling().equals(guardSource)).findFirst();
+            if (provenance.isEmpty()) continue;
+            String guardId = artifact.id().value() + "#sourceFact:" + prefix;
+            String parameters = fact(artifact, prefix + "parameters");
+            String source = fact(artifact, prefix + "expression");
             TargetOperationSpec target = plan.operations().stream().filter(candidate ->
                     candidate.sourceIdentity().equals(operation.id().value())).findFirst().orElse(null);
-            if (guard == null || target == null) continue;
-            if (source==null) source="UNSUPPORTED_GUARD_BODY: no pure return expression";
-            if (!java.util.Objects.equals(text(guard,"parameters"),text(operation,"parameters"))
-                    || !"boolean".equals(text(guard,"returnType")))
-                source="UNSUPPORTED_GUARD_SIGNATURE: exact primitive parameter order/names and boolean return required";
+            if (target == null) continue;
+            if (source == null) source = "UNSUPPORTED_GUARD_BODY: no pure return expression";
+            if (!java.util.Objects.equals(parameters, fact(operation,"parameters"))
+                    || !"boolean".equals(fact(artifact, prefix + "returnType")))
+                source = "UNSUPPORTED_GUARD_SIGNATURE: exact primitive parameter order/names and boolean return required";
             Map<String, Expression.ValueType> variables = new LinkedHashMap<>();
             for (TargetOperationSpec.Parameter parameter : target.parameters())
-                variables.put(parameter.name(), primitiveParameter(text(guard,"parameters"), parameter.name())
+                variables.put(parameter.name(), primitiveParameter(parameters, parameter.name())
                         ? type(parameter.type()) : Expression.ValueType.UNKNOWN);
             var parsed = parser.parse(source, new TypeEnvironment(variables, Map.of()));
             // Java integer overflow, truncating division, floating-point and reference/string equality
@@ -62,10 +69,10 @@ public final class ConstraintExtractor {
             if (parsed.status()==TranslationStatus.EXACT && (ConstraintExpressionParser.validate(parsed.expression()) != Expression.ValueType.BOOLEAN || !safeJavaCondition(parsed.expression())))
                 parsed=new ConstraintExpressionParser.Result(new Expression.Unknown(source,"UNSUPPORTED_JAVA_VALUE_SEMANTICS"),
                     TranslationStatus.UNSUPPORTED,List.of("UNSUPPORTED_JAVA_VALUE_SEMANTICS: arithmetic/reference equality requires an explicit contract"));
-            result.add(new ConstraintSpec("GUARD-" + stable(operation.id().value()) + "-" + stable(guard.id().value()), ConstraintSpec.SourceKind.CARTAGO_GUARD,
-                    ConstraintSpec.Kind.PRE, target.owner(), target.name(), "Guard_" + guard.name(), parsed.expression(),
-                    Expression.ValueType.BOOLEAN, parsed.status(), guard.provenance().getFirst(),
-                    parsed.unsupportedReasons(), List.of(operation.id().value(), guard.id().value())));
+            result.add(new ConstraintSpec("GUARD-" + stable(operation.id().value()) + "-" + stable(guardId), ConstraintSpec.SourceKind.CARTAGO_GUARD,
+                    ConstraintSpec.Kind.PRE, target.owner(), target.name(), "Guard_" + guardName, parsed.expression(),
+                    Expression.ValueType.BOOLEAN, parsed.status(), provenance.get(),
+                    parsed.unsupportedReasons(), List.of(operation.id().value(), guardId)));
         }
     }
 
@@ -100,6 +107,9 @@ public final class ConstraintExtractor {
             case "String" -> Expression.ValueType.STRING;
             default -> Expression.ValueType.UNKNOWN;
         };
+    }
+    private String fact(SemanticElement element, String key) {
+        return element.sourceFacts().get(key) instanceof AttributeValue.Text value ? value.value() : null;
     }
     private String text(SemanticElement element, String key) {
         return element.attributes().get(key) instanceof AttributeValue.Text value ? value.value() : null;

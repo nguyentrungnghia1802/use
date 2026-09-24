@@ -1,6 +1,8 @@
 # Frozen fingerprints identify exact bytes; never apply host line-ending conversion.
 Core/Metamodel/*.ecore -text
 Core/Mapping/*.json -text
+Core/Metamodel/**/*.ecore -text
+Core/Mapping/**/*.json -text
 
 # Canonical runtime contract hashes identify exact bytes.
 src/main/resources/org/tzi/use/plugins/jacamo/runtime/*.json -text

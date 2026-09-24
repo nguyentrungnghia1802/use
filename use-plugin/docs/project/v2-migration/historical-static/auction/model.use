@@ -1,0 +1,532 @@
+model auction
+
+abstract class AbsOperation
+attributes
+  awaitExpression : String
+  await_timeExpression : String
+  className : String
+  signalExpression : String
+end
+
+abstract class Action < BodyTerm
+attributes
+  Expression : String
+  Name : String
+end
+
+class Agent
+attributes
+  Name : String
+end
+
+class Artifact
+attributes
+  IDVar : String
+  Parameter : String
+  artifactName : String
+  className : String
+  isInitial : Boolean
+end
+
+class AuctionArtifact < Artifact
+attributes
+  open : Boolean
+operations
+  canBid(item : String, amount : Integer) : Boolean
+  closeAuction()
+  placeBid(item : String, amount : Integer)
+  removeOpen()
+end
+
+class Belief
+attributes
+  Name : String
+  isInitial : Boolean
+end
+
+class Body
+attributes
+  Name : String
+end
+
+abstract class BodyTerm
+end
+
+class Context
+attributes
+  Expression : String
+end
+
+class ExternalAction < Action
+end
+
+class FormationConstraints
+attributes
+  Name : String
+  biDir : Boolean
+  ecore_FormationConstraints_from : String
+  scope : String
+  to : String
+  type : String
+end
+
+class FunctionalSpecification
+end
+
+class Goal
+attributes
+  Name : String
+end
+
+class Group
+attributes
+  Name : String
+  max : Integer
+  min : Integer
+end
+
+class GuardOperation < AbsOperation
+end
+
+class InternalAction < Action
+end
+
+class InternalOperation < AbsOperation
+end
+
+class Link
+attributes
+  biDir : Boolean
+  ecore_Link_from : String
+  scope : String
+  to : String
+  type : String
+end
+
+class LinkedOperation < AbsOperation
+end
+
+class MAS
+attributes
+  Name : String
+  PlatformParamters : String
+end
+
+class MentalNotes < BodyTerm
+end
+
+class Message < InternalAction
+attributes
+  content : String
+  isBroadcast : Boolean
+end
+
+class Mission
+attributes
+  max : Integer
+  min : Integer
+end
+
+class Norm
+attributes
+  timeConstraint : String
+  type : String
+end
+
+class NormativeSpecification
+end
+
+class OGoal
+attributes
+  Name : String
+  isRootGoal : Boolean
+end
+
+class OPlan
+attributes
+  Parallel : Boolean
+  ecore_OPlan_Sequence : Boolean
+end
+
+class ObsProperty
+attributes
+  Name : String
+  ParamName : String
+end
+
+class Operation < AbsOperation
+end
+
+class Organisation
+attributes
+  id : String
+end
+
+class Plan
+attributes
+  Name : String
+  argID : String
+  asBeliefAddition : String
+  asQuery : String
+  atomicLabel : String
+  isAtomic : String
+  isInitial : Boolean
+end
+
+class Port
+attributes
+  Name : String
+end
+
+class Role
+attributes
+  Name : String
+  max : Integer
+  min : Integer
+end
+
+class Rule
+attributes
+  Expression : String
+end
+
+class Scheme
+attributes
+  PlanOperator : String
+end
+
+class StructuralSpecification
+end
+
+class TriggeringEvent < Action
+attributes
+  deletion : Boolean
+  ds : String
+  isInitial : Boolean
+  isSeparateIntention : Boolean
+  ttf : Integer
+end
+
+class Workspace
+attributes
+  Host : String
+  Name : String
+  Path : String
+end
+
+association AbsOperation_RefObsproperty_ObsProperty between
+  AbsOperation[*] role source_RefObsproperty
+  ObsProperty[*] role RefObsproperty ordered
+end
+
+association Action_nextAction_Action between
+  Action[*] role source_nextAction
+  Action[0..1] role nextAction
+end
+
+association Agent_artifact_Artifact between
+  Agent[*] role source_Agent_artifact
+  Artifact[*] role artifact ordered
+end
+
+composition Agent_belief_Belief between
+  Agent[0..1] role source_belief
+  Belief[*] role belief ordered
+end
+
+composition Agent_hasGoal_Goal between
+  Agent[0..1] role source_hasGoal
+  Goal[*] role hasGoal ordered
+end
+
+association Agent_joinWorkspace_Workspace between
+  Agent[*] role source_joinWorkspace
+  Workspace[*] role joinWorkspace ordered
+end
+
+composition Agent_plan_Plan between
+  Agent[0..1] role source_plan
+  Plan[*] role plan ordered
+end
+
+composition Agent_rule_Rule between
+  Agent[0..1] role source_rule
+  Rule[*] role rule ordered
+end
+
+composition Artifact_obsproperty_ObsProperty between
+  Artifact[0..1] role source_obsproperty
+  ObsProperty[*] role obsproperty ordered
+end
+
+composition Artifact_operation_AbsOperation between
+  Artifact[0..1] role source_Artifact_operation
+  AbsOperation[*] role operation ordered
+end
+
+composition Artifact_port_Port between
+  Artifact[0..1] role source_port
+  Port[*] role port ordered
+end
+
+association Belief_triggeredBy_TriggeringEvent between
+  Belief[*] role source_Belief_triggeredBy
+  TriggeringEvent[0..1] role triggeredBy
+end
+
+composition Body_bodyterm_BodyTerm between
+  Body[0..1] role source_bodyterm
+  BodyTerm[*] role bodyterm ordered
+end
+
+association Body_firstAction_Action between
+  Body[*] role source_firstAction
+  Action[1] role firstAction
+end
+
+association Context_contextBelief_Belief between
+  Context[*] role source_contextBelief
+  Belief[*] role contextBelief ordered
+end
+
+association Context_contextRule_Rule between
+  Context[*] role source_contextRule
+  Rule[*] role contextRule ordered
+end
+
+association ExternalAction_operation_AbsOperation between
+  ExternalAction[*] role source_ExternalAction_operation
+  AbsOperation[0..1] role operation
+end
+
+composition FunctionalSpecification_scheme_Scheme between
+  FunctionalSpecification[0..1] role source_scheme
+  Scheme[*] role scheme ordered
+end
+
+association Goal_triggeredBy_TriggeringEvent between
+  Goal[*] role source_Goal_triggeredBy
+  TriggeringEvent[1..*] role triggeredBy ordered
+end
+
+association Group_RefRole_Role between
+  Group[*] role source_RefRole
+  Role[1..*] role RefRole ordered
+end
+
+composition Group_formationconstraints_FormationConstraints between
+  Group[0..1] role source_formationconstraints
+  FormationConstraints[*] role formationconstraints ordered
+end
+
+association Group_hasSubGroups_Group between
+  Group[*] role source_hasSubGroups
+  Group[*] role hasSubGroups ordered
+end
+
+composition Group_link_Link between
+  Group[0..1] role source_link
+  Link[*] role link ordered
+end
+
+composition MAS_agent_Agent between
+  MAS[0..1] role source_agent
+  Agent[1..*] role agent ordered
+end
+
+composition MAS_organisation_Organisation between
+  MAS[0..1] role source_organisation
+  Organisation[*] role organisation ordered
+end
+
+composition MAS_workspace_Workspace between
+  MAS[0..1] role source_workspace
+  Workspace[*] role workspace ordered
+end
+
+association MentalNotes_impliesB_Belief between
+  MentalNotes[*] role source_impliesB
+  Belief[1] role impliesB
+end
+
+association MentalNotes_impliesG_Goal between
+  MentalNotes[*] role source_impliesG
+  Goal[1] role impliesG
+end
+
+association Message_messageToagent_Agent between
+  Message[*] role source_messageToagent
+  Agent[*] role messageToagent ordered
+end
+
+association Mission_Mplan_TriggeringEvent between
+  Mission[*] role source_Mplan
+  TriggeringEvent[*] role Mplan ordered
+end
+
+association Mission_ogoal_OGoal between
+  Mission[*] role source_ogoal
+  OGoal[1..*] role ogoal ordered
+end
+
+association Norm_NMission_Mission between
+  Norm[*] role source_NMission
+  Mission[1] role NMission
+end
+
+association Norm_Nrole_Role between
+  Norm[*] role source_Nrole
+  Role[1] role Nrole
+end
+
+composition NormativeSpecification_norm_Norm between
+  NormativeSpecification[0..1] role source_norm
+  Norm[*] role norm ordered
+end
+
+association OGoal_NextOgoal_OGoal between
+  OGoal[*] role source_NextOgoal
+  OGoal[0..1] role NextOgoal
+end
+
+association OGoal_OGoalToGoal_Goal between
+  OGoal[*] role source_OGoalToGoal
+  Goal[0..1] role OGoalToGoal
+end
+
+association OGoal_OGoalToOPlan_OPlan between
+  OGoal[*] role source_OGoalToOPlan
+  OPlan[0..1] role OGoalToOPlan
+end
+
+association OPlan_FirstOgoal_OGoal between
+  OPlan[*] role source_FirstOgoal
+  OGoal[1] role FirstOgoal
+end
+
+association OPlan_Splan_TriggeringEvent between
+  OPlan[*] role source_OPlan_Splan
+  TriggeringEvent[*] role Splan ordered
+end
+
+association ObsProperty_obsproperty_Belief between
+  ObsProperty[*] role source_obsproperty
+  Belief[*] role obsproperty ordered
+end
+
+association Operation_callsInternal_InternalOperation between
+  Operation[*] role source_callsInternal
+  InternalOperation[0..1] role callsInternal
+end
+
+association Operation_guardedBy_GuardOperation between
+  Operation[*] role source_guardedBy
+  GuardOperation[0..1] role guardedBy
+end
+
+association Organisation_deploysAgent_Agent between
+  Organisation[*] role source_deploysAgent
+  Agent[1..*] role deploysAgent ordered
+end
+
+composition Organisation_functionalspecification_FunctionalSpecification between
+  Organisation[0..1] role source_functionalspecification
+  FunctionalSpecification[1] role functionalspecification
+end
+
+composition Organisation_normativespecification_NormativeSpecification between
+  Organisation[0..1] role source_normativespecification
+  NormativeSpecification[1] role normativespecification
+end
+
+composition Organisation_structuralspecification_StructuralSpecification between
+  Organisation[0..1] role source_structuralspecification
+  StructuralSpecification[1] role structuralspecification
+end
+
+association Plan_RefArtifact_Artifact between
+  Plan[*] role source_RefArtifact
+  Artifact[*] role RefArtifact ordered
+end
+
+composition Plan_hasAction_Action between
+  Plan[0..1] role source_hasAction
+  Action[*] role hasAction ordered
+end
+
+composition Plan_hasBody_Body between
+  Plan[0..1] role source_hasBody
+  Body[1] role hasBody
+end
+
+composition Plan_hasContext_Context between
+  Plan[0..1] role source_hasContext
+  Context[1] role hasContext
+end
+
+association Port_linkArtifacts_Artifact between
+  Port[*] role source_linkArtifacts
+  Artifact[*] role linkArtifacts ordered
+end
+
+association Role_Extendsrole_Role between
+  Role[*] role source_Extendsrole
+  Role[0..1] role Extendsrole
+end
+
+association Role_players_Agent between
+  Role[*] role source_players
+  Agent[*] role players ordered
+end
+
+composition Scheme_SchemeOPlan_OPlan between
+  Scheme[0..1] role source_SchemeOPlan
+  OPlan[*] role SchemeOPlan ordered
+end
+
+composition Scheme_SchemeOgoal_OGoal between
+  Scheme[0..1] role source_SchemeOgoal
+  OGoal[1..*] role SchemeOgoal ordered
+end
+
+association Scheme_Splan_TriggeringEvent between
+  Scheme[*] role source_Scheme_Splan
+  TriggeringEvent[*] role Splan ordered
+end
+
+composition Scheme_mission_Mission between
+  Scheme[0..1] role source_mission
+  Mission[1..*] role mission ordered
+end
+
+composition StructuralSpecification_group_Group between
+  StructuralSpecification[0..1] role source_group
+  Group[*] role group ordered
+end
+
+composition StructuralSpecification_role_Role between
+  StructuralSpecification[0..1] role source_role
+  Role[*] role role ordered
+end
+
+association TriggeringEvent_planoperator_OPlan between
+  TriggeringEvent[*] role source_planoperator
+  OPlan[0..1] role planoperator
+end
+
+association TriggeringEvent_triggersPlan_Plan between
+  TriggeringEvent[*] role source_triggersPlan
+  Plan[1] role triggersPlan
+end
+
+composition Workspace_artifact_Artifact between
+  Workspace[0..1] role source_Workspace_artifact
+  Artifact[*] role artifact ordered
+end
+
+association Workspace_hasSubworkspace_Workspace between
+  Workspace[*] role source_hasSubworkspace
+  Workspace[*] role hasSubworkspace ordered
+end
+
+constraints

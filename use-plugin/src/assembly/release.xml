@@ -9,12 +9,11 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <files>
         <file><source>${project.build.directory}/${project.build.finalName}.jar</source><outputDirectory>lib/plugins</outputDirectory><destName>use-jacamo-plugin-1.0.1.jar</destName></file>
-        <file><source>Core/Metamodel/JaCaMo-Metamodel.ecore</source><outputDirectory>Core/Metamodel</outputDirectory></file>
-        <file><source>Core/Mapping/jacamo-use-mapping-v1.json</source><outputDirectory>Core/Mapping</outputDirectory></file>
-        <file><source>Core/Mapping/jacamo-use-mapping.schema.json</source><outputDirectory>Core/Mapping</outputDirectory></file>
-        <file><source>Core/Mapping/freeze-manifest.json</source><outputDirectory>Core/Mapping</outputDirectory></file>
-        <file><source>src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v1.json</source><outputDirectory>profiles</outputDirectory></file>
-        <file><source>src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core.ocl</source><outputDirectory>ocl</outputDirectory></file>
+        <file><source>Core/Metamodel/version-2/jacamo_v2_complete.ecore</source><outputDirectory>Core/Metamodel/version-2</outputDirectory></file>
+        <file><source>Core/Mapping/version-2/jacamo-use-mapping-v2.json</source><outputDirectory>Core/Mapping/version-2</outputDirectory></file>
+        <file><source>Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json</source><outputDirectory>Core/Mapping/version-2</outputDirectory></file>
+        <file><source>src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json</source><outputDirectory>profiles</outputDirectory></file>
+        <file><source>src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2.ocl</source><outputDirectory>ocl</outputDirectory></file>
         <file><source>src/main/resources/org/tzi/use/plugins/jacamo/binding/binding-v1.schema.json</source><outputDirectory>schemas</outputDirectory></file>
         <file><source>src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-event-v1.schema.json</source><outputDirectory>schemas</outputDirectory></file>
         <file><source>src/main/resources/org/tzi/use/plugins/jacamo/trace/trace-v1.schema.json</source><outputDirectory>schemas</outputDirectory></file>
@@ -35,8 +34,7 @@
         <file><source>docs/project/02-system-architecture.md</source><outputDirectory>docs</outputDirectory><destName>architecture.md</destName></file>
         <file><source>docs/project/12-plugin-ui-workflow.md</source><outputDirectory>docs</outputDirectory><destName>user-workflow.md</destName></file>
         <file><source>docs/project/15-build-release-operations.md</source><outputDirectory>docs</outputDirectory><destName>build-release.md</destName></file>
-        <file><source>src/main/resources/org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v1.json</source><outputDirectory>runtime</outputDirectory></file>
-        <file><source>src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping.schema.json</source><outputDirectory>runtime</outputDirectory></file>
-        <file><source>src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-freeze.json</source><outputDirectory>runtime</outputDirectory></file>
+        <file><source>src/main/resources/org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v2.json</source><outputDirectory>runtime</outputDirectory></file>
+        <file><source>src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-v2.schema.json</source><outputDirectory>runtime</outputDirectory></file>
     </files>
 </assembly>

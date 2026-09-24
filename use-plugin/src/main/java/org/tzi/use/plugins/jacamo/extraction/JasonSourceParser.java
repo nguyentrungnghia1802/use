@@ -31,7 +31,7 @@ final class JasonSourceParser {
 
     private void parseAgent(ExtractionContext context, ElementDraft agent, Path path) {
         try {
-            List<String> lines = Files.readAllLines(path);
+            List<String> lines = context.read(path).lines().toList();
             for (int lineIndex = 0; lineIndex < lines.size(); lineIndex++) {
                 String raw = stripComment(lines.get(lineIndex)).trim();
                 if (raw.isEmpty() || raw.startsWith("{")) continue;
@@ -59,12 +59,11 @@ final class JasonSourceParser {
 
     private void addBelief(ExtractionContext context, ElementDraft agent, Path path, int line, String expression) {
         String name = functor(expression);
-        ElementDraft belief = context.element(MetamodelKind.Belief, name,
+        ElementDraft belief = context.elementWithLocalId(MetamodelKind.Belief, name, expression,
                 List.of("MAS", agent.name), path, line, 1, "jason-parser", expression);
-        belief.attributes.put("Name", new AttributeValue.Text(name));
-        belief.attributes.put("Expression", new AttributeValue.Text(expression));
-        belief.attributes.put("isInitial", new AttributeValue.Bool(true));
-        agent.references.add(new SemanticReference("belief", name, belief.id));
+        belief.attributes.put("literal", new AttributeValue.Text(expression));
+        belief.sourceFacts.put("isInitial", new AttributeValue.Bool(true));
+        agent.references.add(new SemanticReference("beliefs", name, belief.id));
     }
 
     private void addRule(ExtractionContext context, ElementDraft agent, Path path, int line, String statement) {
@@ -73,22 +72,21 @@ final class JasonSourceParser {
             diagnostic(context, path, line, "JASON_RULE_INVALID", Severity.ERROR, "Invalid rule",
                     statement, "Provide both rule head and expression"); return;
         }
-        String name = functor(parts[0].trim());
-        ElementDraft rule = context.element(MetamodelKind.Rule, name,
-                List.of("MAS", agent.name), path, line, 1, "jason-parser", statement);
-        rule.attributes.put("Expression", new AttributeValue.Text(parts[1].trim()));
-        agent.references.add(new SemanticReference("rule", name, rule.id));
+        agent.sourceFacts.put("rule@" + path + ":" + line, new AttributeValue.Text(statement));
+        context.addProvenance(agent, path, line, 1, "jason-parser", statement);
+        diagnostic(context, path, line, "JASON_RULE_SOURCE_ONLY", Severity.WARNING,
+                "V2 has no Rule EClass; rule retained as source fact", statement, "Do not translate rule semantics without an explicit supported contract");
     }
 
     private void addGoal(ExtractionContext context, ElementDraft agent, Path path, int line,
                          String expression, boolean initial) {
         String name = functor(expression);
-        ElementDraft goal = context.element(MetamodelKind.Goal, name,
+        ElementDraft goal = context.elementWithLocalId(MetamodelKind.AGoal, name, expression,
                 List.of("MAS", agent.name, "goal"), path, line, 1, "jason-parser", expression);
-        goal.attributes.put("Name", new AttributeValue.Text(name));
-        goal.attributes.put("Expression", new AttributeValue.Text(expression));
-        goal.attributes.put("isInitial", new AttributeValue.Bool(initial));
-        agent.references.add(new SemanticReference("hasGoal", name, goal.id));
+        goal.attributes.put("literal", new AttributeValue.Text(expression));
+        goal.sourceFacts.put("isInitial", new AttributeValue.Bool(initial));
+        goal.attributes.put("type", new AttributeValue.EnumLiteral("AgentGoalType", "ACHIEVEMENT"));
+        agent.references.add(new SemanticReference("goals", name, goal.id));
     }
 
     private void parsePlan(ExtractionContext context, ElementDraft agent, Path path, int line, String statement) {
@@ -118,61 +116,45 @@ final class JasonSourceParser {
         String planName = "plan@" + line;
         ElementDraft plan = context.element(MetamodelKind.Plan, planName,
                 List.of("MAS", agent.name), path, line, 1, "jason-parser", statement);
-        plan.attributes.put("Name", new AttributeValue.Text(planName));
-        agent.references.add(new SemanticReference("plan", planName, plan.id));
+        plan.sourceFacts.put("body", new AttributeValue.Text(bodyText));
+        agent.references.add(new SemanticReference("plans", planName, plan.id));
         String triggerName = functor(triggerExpression);
-        ElementDraft trigger = context.element(MetamodelKind.TriggeringEvent, triggerName,
+        ElementDraft trigger = context.element(MetamodelKind.Event, triggerName,
                 List.of("MAS", agent.name, planName), path, line, 1, "jason-parser", triggerExpression);
-        trigger.attributes.put("Expression", new AttributeValue.Text(triggerExpression));
-        trigger.references.add(new SemanticReference("triggersPlan", planName, plan.id));
-        List<ElementDraft> triggeredGoals = context.elements.stream().filter(candidate ->
-                candidate.kind == MetamodelKind.Goal && candidate.name.equals(triggerName)
-                        && candidate.id.ownerPath().contains(agent.name)).toList();
-        if (triggeredGoals.size() == 1) {
-            triggeredGoals.getFirst().references.add(new SemanticReference("triggeredBy", triggerName, trigger.id));
-        } else if (triggeredGoals.size() > 1) {
-            context.diagnostic("JASON_TRIGGER_GOAL_AMBIGUOUS", Severity.WARNING, Phase.RESOLUTION,
-                    trigger.provenance.getFirst().span(), trigger.id.value(),
-                    "Triggering event matches multiple exact goals in the same agent scope",
-                    triggeredGoals.stream().map(candidate -> candidate.id.value()).toList().toString(),
-                    "Provide an owner-qualified goal binding");
-        }
-        if (contextExpression != null) {
-            ElementDraft condition = context.element(MetamodelKind.Context, "context@" + line,
-                    List.of("MAS", agent.name, planName), path, line, colon + 1, "jason-parser", contextExpression);
-            condition.attributes.put("Expression", new AttributeValue.Text(contextExpression));
-            plan.references.add(new SemanticReference("hasContext", condition.name, condition.id));
-        }
-        ElementDraft body = context.element(MetamodelKind.Body, "body@" + line,
-                List.of("MAS", agent.name, planName), path, line, arrow + 3, "jason-parser", bodyText);
-        body.attributes.put("Name", new AttributeValue.Text(body.name));
-        plan.references.add(new SemanticReference("hasBody", body.name, body.id));
+        trigger.attributes.put("literal", new AttributeValue.Text(triggerExpression));
+        trigger.attributes.put("operator", new AttributeValue.Text("+"));
+        trigger.attributes.put("type", new AttributeValue.Text("!"));
+        plan.references.add(new SemanticReference("triggeringEvent", triggerExpression, trigger.id));
+        if (contextExpression != null) plan.attributes.put("context", new AttributeValue.Text(contextExpression));
         List<String> terms = splitTopLevel(bodyText, ';');
-        ElementDraft previous = null;
+        int termOffset = 0;
+        int bodyColumn;
+        try { bodyColumn = context.read(path).lines().skip(line - 1L).findFirst().orElse("").indexOf(bodyText) + 1; }
+        catch (IOException error) { throw new IllegalArgumentException(error); }
         for (int index = 0; index < terms.size(); index++) {
             String term = terms.get(index).trim();
             if (term.isEmpty()) continue;
-            MetamodelKind kind = term.startsWith(".send") ? MetamodelKind.Message
-                    : term.startsWith(".") ? MetamodelKind.InternalAction
-                    : term.startsWith("+") || term.startsWith("-") ? MetamodelKind.MentalNotes
-                    : MetamodelKind.ExternalAction;
-            String name = functor(term.replaceFirst("^[+-.]", ""));
-            ElementDraft action = context.element(kind, name,
-                    List.of("MAS", agent.name, planName, "action" + index), path, line, 1,
-                    "jason-parser", term);
-            action.attributes.put("Name", new AttributeValue.Text(name));
-            action.attributes.put("Expression", new AttributeValue.Text(term));
-            if (kind == MetamodelKind.Message) {
-                action.attributes.put("content", new AttributeValue.Text(term));
-                action.attributes.put("isBroadcast", new AttributeValue.Bool(term.startsWith(".broadcast")));
+            int position = bodyText.indexOf(term, termOffset);
+            termOffset = position + term.length();
+            if (term.startsWith("+") || term.startsWith("-") || term.startsWith("!") || term.startsWith("?")) {
+                plan.sourceFacts.put("bodyTerm@" + index, new AttributeValue.Text(term));
+                diagnostic(context, path, line, "JASON_BODY_TERM_SOURCE_ONLY", Severity.WARNING,
+                        "V2 Action does not represent this body term", term, "Retain body position and source; do not invent an Action");
+                continue;
             }
-            if (kind == MetamodelKind.ExternalAction) {
-                action.references.add(new SemanticReference("operation", name, null));
-            }
-            plan.references.add(new SemanticReference("hasAction", name, action.id));
-            if (previous != null) previous.references.add(new SemanticReference("nextAction", name, action.id));
-            else body.references.add(new SemanticReference("firstAction", name, action.id));
-            previous = action;
+            boolean internal = term.startsWith(".");
+            String name = functor(internal ? term.substring(1) : term);
+            ElementDraft action = context.element(MetamodelKind.Action, name,
+                    List.of("MAS", agent.name, planName, "action" + index), path, line, bodyColumn + position, "jason-parser", term);
+            action.attributes.put("name", new AttributeValue.Text(name));
+            action.attributes.put("kind", new AttributeValue.EnumLiteral("ActionKind", internal ? "INTERNAL" : "EXTERNAL"));
+            int open = term.indexOf('('), close = term.lastIndexOf(')');
+            String arguments = open >= 0 && close > open ? term.substring(open + 1, close).trim() : "";
+            action.attributes.put("arity", new AttributeValue.IntegerNumber(arguments.isEmpty() ? 0 : splitTopLevel(arguments, ',').size()));
+            action.sourceFacts.put("Expression", new AttributeValue.Text(term));
+            action.sourceFacts.put("bodyPosition", new AttributeValue.IntegerNumber(index));
+            if (!internal) action.references.add(new SemanticReference("operation", name, null));
+            plan.references.add(new SemanticReference("actions", name, action.id));
         }
     }
 

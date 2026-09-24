@@ -1,5 +1,8 @@
 # JaCaMo → USE Metamodel Mapping Contract
 
+> Active contract: Metamodel V2 + Mapping 2.2.0 WORKING_BASELINE. Production selection, source identity, projection and runtime contracts are described in [active baseline policy](v2-migration/active-baseline-policy.md), [transformation](v2-migration/phase35-transformation.md) and [runtime targets](v2-migration/phase35-runtime-targets.md). The V1 counts, freeze rules and IDs in the historical contract below do not govern active V2.
+
+
 ## 1. Mục tiêu
 
 `jacamo-use-mapping-v1.json` là canonical contract biến **JaCaMo metamodel concepts** sang **USE concepts**.

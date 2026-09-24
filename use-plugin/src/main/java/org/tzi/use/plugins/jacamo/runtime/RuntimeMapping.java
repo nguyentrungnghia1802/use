@@ -2,8 +2,12 @@ package org.tzi.use.plugins.jacamo.runtime;
 
 import java.util.List;
 
-public record RuntimeMapping(String schemaVersion, String status, String targetBaseline, List<Rule> rules) {
-    public RuntimeMapping { rules = List.copyOf(rules); }
+public record RuntimeMapping(String schemaVersion, String status, String targetBaseline, List<Rule> rules,
+                             java.util.Map<String, String> targetContract) {
+    public RuntimeMapping(String schemaVersion, String status, String targetBaseline, List<Rule> rules) {
+        this(schemaVersion, status, targetBaseline, rules, java.util.Map.of());
+    }
+    public RuntimeMapping { rules = List.copyOf(rules); targetContract = java.util.Map.copyOf(targetContract); }
     public record Rule(String id, String runtime, String dimension, RuntimeEventKind eventKind,
             boolean authoritative, String identity, boolean correlationRequired, List<String> payload,
             RuntimeSemanticAction action, String targetKind, String anchor, boolean traceRequired,

@@ -66,7 +66,7 @@ class LiveJaCaMoAuctionIntegrationTest {
 
     @Test
     void mirrorsRealJasonCartagoAndMoiseAuctionThenReconnectsWithFullResync() throws Exception {
-        String sourceCommit = EvidenceSourceCommit.verify(Path.of(".."), EvidenceSourceCommit.PHASE14_INPUTS);
+        String sourceCommit = EvidenceSourceCommit.verify(Path.of(".."), EvidenceSourceCommit.ACTIVE_V2_INPUTS);
         Path project = Path.of("src/test/resources/auction").toAbsolutePath().normalize();
         var imported = new StaticProjectImporter().importProject(
                 project.resolve("auction.jcm"));
@@ -74,7 +74,7 @@ class LiveJaCaMoAuctionIntegrationTest {
         var mapping = new MappingLoader().loadCanonical(Path.of("."));
         var baseline = new TransformationPlanner().plan(semantic, mapping);
         var structure = new VerificationSemanticLayer().apply(baseline,
-                new VerificationProfileLoader().loadV1()).transformation();
+                new VerificationProfileLoader().loadActive(mapping)).transformation();
         var instances = new InstancePlanner().plan(semantic, mapping, structure);
         OclProfileLoader ocl = new OclProfileLoader();
         var caseProfile = ocl.loadCase(project, Path.of("verification/auction.ocl"));
@@ -90,7 +90,7 @@ class LiveJaCaMoAuctionIntegrationTest {
 
         String agentSemantic = semanticId(semantic, MetamodelKind.Agent, "auctioneer");
         String artifactSemantic = semanticId(semantic, MetamodelKind.Artifact, "auction1");
-        String organisationSemantic = semanticId(semantic, MetamodelKind.Organisation, "auction_org");
+        String organisationSemantic = semanticId(semantic, MetamodelKind.Organization, "auction_org");
         String groupSemantic = semanticId(semantic, MetamodelKind.Group, "auction_group");
         String schemeSemantic = semanticId(semantic, MetamodelKind.Scheme, "auction_scheme");
 
@@ -210,7 +210,7 @@ class LiveJaCaMoAuctionIntegrationTest {
             assertFalse(reconnectComparison.drifted(),
                     "the full USE mirror must equal the authoritative runtime snapshot after reconnect");
             assertEquals(mirror.lastSnapshotFingerprint(), reconnectComparison.fingerprint());
-            writeRuntimeEvidence(Path.of("target/phase14-auction-evidence/runtime"), verifier.reports(), scenarioEvents,
+            writeRuntimeEvidence(Path.of("target/phase35-auction-evidence/runtime"), verifier.reports(), scenarioEvents,
                     registry,
                     scenarioMetrics, reconnectComparison, evidenceEvents.snapshots(), validBid, invalidAmount, closedBid,
                     project, artifact.getArtifactType(), sourceCommit);
@@ -247,11 +247,11 @@ class LiveJaCaMoAuctionIntegrationTest {
                         hashes.put(path.getFileName().toString(), HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(path))));
             }
             hashes.put("runtimeMapping", HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(
-                RuntimeMappingLoader.resource("jacamo-use-runtime-mapping-v1.json"))));
+                RuntimeMappingLoader.resource("jacamo-use-runtime-mapping-v2.json"))));
             evidenceJson.writerWithDefaultPrettyPrinter().writeValue(mirrorEvidence.resolve("manifest.json").toFile(),hashes);
             assertBalancedLifecycleForInvalidAmount(scenarioEvents);
             var scenario = new ObjectMapper().readTree(
-                    Path.of("target/phase14-auction-evidence/runtime/scenario-summary.json").toFile());
+                    Path.of("target/phase35-auction-evidence/runtime/scenario-summary.json").toFile());
             assertEquals(new ObjectMapper().readTree(Path.of("compatibility.json").toFile()).path("plugin").path("version").asText(), scenario.path("pluginVersion").asText(),
                     "runtime evidence must identify the plugin release, not the USE parent Maven version");
             assertEquals(0, scenario.path("reconnectDriftDifferenceCount").asInt(-1),
@@ -325,7 +325,7 @@ class LiveJaCaMoAuctionIntegrationTest {
                         project, "<auction>"));
 
         var summary = json.createObjectNode().put("schemaVersion", "1.0.0")
-                .put("artifactKind", "PHASE_14_RUNTIME_SCENARIO_SUMMARY")
+                .put("artifactKind", "V2_WORKING_RUNTIME_SCENARIO_SUMMARY")
                 .put("hashPolicy", "LF_NORMALIZED_UTF8")
                 .put("repositoryBaseCommit", sourceCommit)
                 .put("pluginVersion", json.readTree(Path.of("compatibility.json").toFile()).path("plugin").path("version").asText())
@@ -365,10 +365,10 @@ class LiveJaCaMoAuctionIntegrationTest {
                     .put("mutationCount", snapshot.mutations().size());
         }
         Path verificationProfile = Path.of("src/main/resources/org/tzi/use/plugins/jacamo/verification/"
-                + "jacamo-verification-profile-v1.json");
+                + "jacamo-verification-profile-v2.json");
         summary.putObject("verificationProfile")
                 .put("path", "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/verification/"
-                        + "jacamo-verification-profile-v1.json")
+                        + "jacamo-verification-profile-v2.json")
                 .put("sha256", sha256(verificationProfile));
         summary.putObject("runtimeBindings")
                 .put("auctioneer", "jason:agent:auctioneer")

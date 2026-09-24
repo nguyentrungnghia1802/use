@@ -1,5 +1,13 @@
 # Changelog
 
+## V2 working migration — unreleased
+
+- Default to Metamodel V2 / Mapping 2.2.0 with exact fingerprints and descriptor-backed IR.
+- Preserve independent opposite orders through target-only ranks, shared text/direct plans and exact trace.
+- Migrate extraction, verification projections, OCL and runtime target contracts; preserve historical V1 evidence.
+- Produce a distinctly named V2 working ZIP, without a release tag or freeze claim.
+- Full clean-build acceptance PASS: 350/350; see Phase 35 evidence.
+
 ## 1.0.1 - 2026-09-18
 
 - Rebind LIVE runtime mutation and verification on workspace replacement, preserving exact trace aliases.

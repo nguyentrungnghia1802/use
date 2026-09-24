@@ -1,0 +1,8 @@
+{
+  "profileId": "JACAMO_VERIFICATION_PROFILE_V2",
+  "version": "2.0.0",
+  "status": "ACTIVE",
+  "baselineMappingId": "JaCaMo-agentmetamodel-v2__to__USE-v2.2",
+  "decisions": [],
+  "rationale": "V2 has no organizational inheritance and no Belief-to-TriggeringEvent association. Historical VSP001-VSP005 do not apply. Preserve all V2 structure, multiplicities, enums and independent order projections unchanged. No new verification-only weakening is authorized."
+}

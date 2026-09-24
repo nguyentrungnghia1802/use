@@ -1,0 +1,33 @@
+{
+  "classification": "TARGET_REPRESENTATION_CHANGE_SOURCE_DOMAIN_UNCHANGED",
+  "beforeVersion": "2.1.0",
+  "afterVersion": "2.2.0",
+  "changedRootFields": [
+    "$schema",
+    "contract",
+    "mappingId",
+    "orderProjection",
+    "policies",
+    "schemaVersion",
+    "status"
+  ],
+  "sourceRulesUnchanged": true,
+  "impactedLayers": [
+    "mapping/schema",
+    "loader/validator",
+    "TransformationPlan",
+    "structural generator",
+    "instance planner",
+    "text/direct",
+    "trace",
+    "source navigation binding",
+    "runtime rank mutation/resync",
+    "tests/docs"
+  ],
+  "unaffected": [
+    "Ecore bytes",
+    "USE core",
+    "connector transport mechanics"
+  ],
+  "approval": "user target-only projection decision"
+}

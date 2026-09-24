@@ -1,0 +1,27 @@
+[
+  {
+    "bytes": 11850,
+    "path": "Core/Metamodel/version-2/jacamo_v2_AZ_audit.md",
+    "sha256": "07a13f90f488fd33cd1718d6099816d14d3a78fadbcee0a38a18f2992a543006"
+  },
+  {
+    "bytes": 15514,
+    "path": "Core/Metamodel/version-2/jacamo_v2_complete.ecore",
+    "sha256": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c"
+  },
+  {
+    "bytes": 133888,
+    "path": "Core/Mapping/version-2/jacamo-use-mapping-v2.json",
+    "sha256": "15d330c70400d16958559b83daf27c3755dc0cb28a7dffb8a08d94879d1ddf67"
+  },
+  {
+    "bytes": 46012,
+    "path": "Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json",
+    "sha256": "e9f555ad2e19cbf8382ff4c17d44179d3b47a13d03ee9a58c2b491f99b72c919"
+  },
+  {
+    "bytes": 10212,
+    "path": "Core/Mapping/version-2/METAMODEL-MAPPING-V2-AUDIT.md",
+    "sha256": "a6e38ade6dde08de3ac3526b3f49db220e302d6fca68844cec1691ddaf13619e"
+  }
+]

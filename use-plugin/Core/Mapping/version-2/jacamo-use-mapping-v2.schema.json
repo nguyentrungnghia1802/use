@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:jacamo:metamodel-mapping:v2:schema:2.1.0",
-  "title": "JaCaMo V2 -> USE metamodel mapping (strict schema 2.1.0)",
+  "$id": "urn:jacamo:metamodel-mapping:v2:schema:2.2.0",
+  "title": "JaCaMo V2 -> USE metamodel mapping (strict schema 2.2.0)",
   "type": "object",
   "required": [
     "schemaVersion",
@@ -24,12 +24,13 @@
     "reviewFlags",
     "statistics",
     "$schema",
-    "contract"
+    "contract",
+    "orderProjection"
   ],
   "additionalProperties": false,
   "properties": {
     "schemaVersion": {
-      "const": "2.1.0"
+      "const": "2.2.0"
     },
     "mappingId": {
       "type": "string",
@@ -38,7 +39,8 @@
     "status": {
       "enum": [
         "REVIEWED_CANDIDATE_V2",
-        "FROZEN"
+        "FROZEN",
+        "WORKING_BASELINE"
       ]
     },
     "createdDate": {
@@ -118,10 +120,71 @@
       "$ref": "#/$defs/statistics"
     },
     "$schema": {
-      "const": "jacamo-use-mapping-v2.1.schema.json"
+      "const": "jacamo-use-mapping-v2.schema.json"
     },
     "contract": {
       "$ref": "#/$defs/contract"
+    },
+    "orderProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "version",
+        "scope",
+        "membership",
+        "rankBase",
+        "entryIdentity",
+        "navigation",
+        "opposite",
+        "unknownOrder",
+        "runtime",
+        "constraints",
+        "sourceMetamodelUnchanged"
+      ],
+      "properties": {
+        "kind": {
+          "const": "TARGET_ONLY_INDEPENDENT_RANKS"
+        },
+        "version": {
+          "const": "1.0.0"
+        },
+        "scope": {
+          "const": "ALL_ORDERED_MANY_SOURCE_REFERENCES"
+        },
+        "membership": {
+          "const": "CANONICAL_ASSOCIATION_ONCE"
+        },
+        "rankBase": {
+          "const": 0
+        },
+        "entryIdentity": {
+          "const": "SOURCE_FEATURE_OWNER_TARGET"
+        },
+        "navigation": {
+          "const": "SORT_RANK_COLLECT_TARGET_SEQUENCE"
+        },
+        "opposite": {
+          "const": "INDEPENDENT_AUTHORITATIVE_DIRECTIONS"
+        },
+        "unknownOrder": {
+          "const": "REJECT_UNRESOLVED_NO_INFERENCE"
+        },
+        "runtime": {
+          "const": "ORDER_ONLY_UPDATES_RANKS_AUTHORITATIVE_RESYNC"
+        },
+        "constraints": {
+          "const": [
+            "EXACT_MEMBERSHIP_BIJECTION",
+            "UNIQUE_TARGET_PER_OWNER_FEATURE",
+            "CONTIGUOUS_UNIQUE_RANKS",
+            "TYPED_ENDPOINTS"
+          ]
+        },
+        "sourceMetamodelUnchanged": {
+          "const": true
+        }
+      }
     }
   },
   "$defs": {
@@ -1774,7 +1837,7 @@
           "const": "METAMODEL_MAPPING"
         },
         "version": {
-          "const": "2.1.0"
+          "const": "2.2.0"
         },
         "sourceIdentity": {
           "type": "string",

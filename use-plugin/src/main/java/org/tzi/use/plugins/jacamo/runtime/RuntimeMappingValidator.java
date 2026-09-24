@@ -6,7 +6,7 @@ import java.util.Set;
 /** Semantic validation against the embedded structural contract. */
 public final class RuntimeMappingValidator {
     private final RuntimeBindingContract binding;
-    public RuntimeMappingValidator() { this(new V1RuntimeBindingAdapter()); }
+    public RuntimeMappingValidator() { this(new V2RuntimeBindingAdapter()); }
     public RuntimeMappingValidator(RuntimeBindingContract binding) { this.binding = java.util.Objects.requireNonNull(binding); }
     public void validate(RuntimeMapping mapping) {
         Set<String> ids = new HashSet<>(), selectors = new HashSet<>();
@@ -39,6 +39,7 @@ public final class RuntimeMappingValidator {
                     case ATTRIBUTE_STATE_UNSET -> Set.of("attribute");
                     case OBJECT_AVAILABLE -> Set.of("useClass", "useObject");
                     case RELATION_INSERT, RELATION_DELETE -> Set.of("association", "participants");
+                    case RELATION_REORDER -> Set.of("orders");
                     case OPERATION_ENTER -> Set.of("operation", "arguments");
                     case OPERATION_FAIL -> Set.of("error");
                     default -> Set.of();

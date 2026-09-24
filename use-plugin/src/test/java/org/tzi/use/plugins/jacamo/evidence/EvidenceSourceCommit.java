@@ -8,18 +8,19 @@ import java.util.List;
 
 /** Pins generated evidence to a repository commit that contains its source inputs. */
 public final class EvidenceSourceCommit {
-    public static final List<String> PHASE14_INPUTS = List.of(
+    public static final List<String> ACTIVE_V2_INPUTS = List.of(
             "use-plugin/src/test/resources/auction/auction.jcm",
             "use-plugin/src/test/resources/auction/src/agt/auctioneer.asl",
             "use-plugin/src/test/resources/auction/src/env/auction/AuctionArtifact.java",
             "use-plugin/src/test/resources/auction/src/org/auction.xml",
             "use-plugin/src/test/resources/auction/verification/auction.ocl",
-            "use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore",
-            "use-plugin/Core/Mapping/jacamo-use-mapping.schema.json",
-            "use-plugin/Core/Mapping/jacamo-use-mapping-v1.json",
-            "use-plugin/Core/Mapping/freeze-manifest.json",
-            "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core.ocl",
-            "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v1.json");
+            "use-plugin/Core/Metamodel/version-2/jacamo_v2_complete.ecore",
+            "use-plugin/Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json",
+            "use-plugin/Core/Mapping/version-2/jacamo-use-mapping-v2.json",
+            "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2.ocl",
+            "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json",
+            "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v2.json",
+            "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-v2.schema.json");
 
     private EvidenceSourceCommit() { }
 

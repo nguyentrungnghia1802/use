@@ -1,0 +1,28 @@
+{
+  "stage": "After V2 projection, defaults and OCL consumer migration; before final trace/cross-dimensional repairs",
+  "command": "mvn -B -pl use-plugin test",
+  "tests": 201,
+  "failures": 8,
+  "errors": 3,
+  "skipped": 0,
+  "previous": {
+    "stage": "Phase34",
+    "tests": 197,
+    "failures": 8,
+    "errors": 59
+  },
+  "failuresAtThisStage": [
+    "DefaultJaCaMoFacadeTest.realAuctionImportExposesPipelineSummaryTraceDiagnosticsAndVerification:30 expected: <FROZEN> but was: <WORKING_BASELINE>",
+    "ConstraintOclTest.auctionGuardCoreCaseAndExplicitPostconditionCompileAndEvaluatePositiveNegative:180 expected: <true> but was: <false>",
+    "InstanceMaterializationTest.auctionPlanMaterializesEveryElementValueAndResolvedLinkDeterministically:29 expected: <24> but was: <48>",
+    "InstanceMaterializationTest.textAndDirectBackendsShareOneVerificationPlanAndPassInitialValidation:49 expected: <91f8a92df05aabec35e5d5e832e82732df922b3b2d05703636a7209e33e284a0> but was: <dd8fdf8d3a822be770d20e5bae5253142db9897932f7975c5c2effd1184e300c>",
+    "ReleasePackageContractTest.releaseManifestPinsVersionAndCompletePackageInventory:72 missing release source: Core/Mapping/freeze-manifest.json ==> expected: <true> but was: <false>",
+    "CounterTeamIntegrationTest.secondCaseUsesUnchangedPipelineWithLiveStateFailuresAndResync:44 expected: <true> but was: <false>",
+    "TraceBindingTest.auctionTracePersistsDeclarationsObjectsOperationsAndRuntimeIndexes:43 expected: <48> but was: <24>",
+    "CrossDimensionalVerifierTest.sourceRelationsRequireExactTargetsAndMissingEvidenceIsExplicit:21 expected: <false> but was: <true>",
+    "GoldenPipelineTest.auctionArtifactsMatchReviewedGoldenDigests:45 \ufffd IllegalState EVIDENCE_SOURCE_NOT_IN_COMMIT: use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore fatal: path 'use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore' does not exist in '4992e5d2c081263ecd2b8a3166b6b40eaf0cf8c9'",
+    "HotfixBindingTest.productionImportUsesValidBindingAndRejectsInvalidOrStaleBindings:23 \ufffd NoSuchElement No value present",
+    "LiveJaCaMoAuctionIntegrationTest.mirrorsRealJasonCartagoAndMoiseAuctionThenReconnectsWithFullResync:69 \ufffd IllegalState EVIDENCE_SOURCE_NOT_IN_COMMIT: use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore fatal: path 'use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore' does not exist in '4992e5d2c081263ecd2b8a3166b6b40eaf0cf8c9'"
+  ],
+  "phaseClosure": "OPEN"
+}

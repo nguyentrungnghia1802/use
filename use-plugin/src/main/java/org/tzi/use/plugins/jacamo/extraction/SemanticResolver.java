@@ -1,125 +1,91 @@
 package org.tzi.use.plugins.jacamo.extraction;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.tzi.use.plugins.jacamo.diagnostics.Phase;
-import org.tzi.use.plugins.jacamo.diagnostics.Severity;
-import org.tzi.use.plugins.jacamo.semantic.MetamodelKind;
-import org.tzi.use.plugins.jacamo.semantic.SemanticReference;
+import java.util.*;
+import org.tzi.use.plugins.jacamo.binding.BindingFile;
+import org.tzi.use.plugins.jacamo.diagnostics.*;
+import org.tzi.use.plugins.jacamo.resolution.*;
+import org.tzi.use.plugins.jacamo.semantic.*;
 
-/** Exact and typed resolution only. No similarity or case-folded matching is used. */
+/** Exact source features and target kinds come from the active descriptor. */
 final class SemanticResolver {
-    private static final Map<String, Set<MetamodelKind>> TARGETS = Map.ofEntries(
-            Map.entry("operation", EnumSet.of(MetamodelKind.AbsOperation, MetamodelKind.Operation,
-                    MetamodelKind.GuardOperation, MetamodelKind.InternalOperation, MetamodelKind.LinkedOperation)),
-            Map.entry("guardedBy", EnumSet.of(MetamodelKind.GuardOperation)),
-            Map.entry("artifact", EnumSet.of(MetamodelKind.Artifact)),
-            Map.entry("joinWorkspace", EnumSet.of(MetamodelKind.Workspace)),
-            Map.entry("role", EnumSet.of(MetamodelKind.Role)),
-            Map.entry("players", EnumSet.of(MetamodelKind.Agent)),
-            Map.entry("deploysAgent", EnumSet.of(MetamodelKind.Agent)),
-            Map.entry("RefRole", EnumSet.of(MetamodelKind.Role)),
-            Map.entry("hasSubGroups", EnumSet.of(MetamodelKind.Group)),
-            Map.entry("ogoal", EnumSet.of(MetamodelKind.OGoal)),
-            Map.entry("FirstOgoal", EnumSet.of(MetamodelKind.OGoal)),
-            Map.entry("NextOgoal", EnumSet.of(MetamodelKind.OGoal)),
-            Map.entry("Nrole", EnumSet.of(MetamodelKind.Role)),
-            Map.entry("NMission", EnumSet.of(MetamodelKind.Mission)),
-            Map.entry("OGoalToGoal", EnumSet.of(MetamodelKind.Goal)),
-            Map.entry("obsproperty", EnumSet.of(MetamodelKind.Belief)));
-
     void resolve(ExtractionContext context) { resolve(context, null); }
-
-    void resolve(ExtractionContext context, org.tzi.use.plugins.jacamo.binding.BindingFile bindings) {
-        var exact = bindings == null ? null : new org.tzi.use.plugins.jacamo.resolution.ExactSemanticResolver(
-                context.elements.stream().map(ElementDraft::freeze).toList(), bindings);
-        if (bindings != null) {
-            for (var binding : bindings.entries()) {
-                ElementDraft source = context.elements.stream().filter(e -> e.id.value().equals(binding.source())).findFirst().orElse(null);
-                boolean valid = source != null && source.references.stream().anyMatch(ref -> TARGETS.containsKey(ref.feature())
-                        && candidates(context, ref.originalSpelling(), TARGETS.get(ref.feature())).stream()
-                        .anyMatch(target -> target.id.value().equals(binding.target())));
-                boolean stale = binding.status() != org.tzi.use.plugins.jacamo.binding.BindingEntry.Status.ACTIVE;
-                boolean duplicate = bindings.entries().stream().filter(b -> b.source().equals(binding.source())).count() != 1;
-                if (stale || !valid || duplicate) context.diagnostic(stale ? "BINDING_STALE" : "BINDING_INVALID",
-                        Severity.ERROR, Phase.RESOLUTION, source == null ? null : source.provenance.getFirst().span(),
-                        binding.source(), "Explicit binding cannot be used", binding.target(),
-                        "Regenerate the binding against current source hashes and exact typed candidates");
-            }
-        }
+    void resolve(ExtractionContext context, BindingFile supplied) {
+        var registry = MetamodelKind.registry();
+        BindingFile bindings = supplied == null ? BindingFile.empty() : supplied;
+        var frozen = context.elements.stream().map(ElementDraft::freeze).toList();
+        var resolver = new ExactSemanticResolver(frozen, bindings);
         for (ElementDraft source : context.elements) {
             List<SemanticReference> resolved = new ArrayList<>();
-            for (SemanticReference reference : source.references) {
-                if (source.kind == MetamodelKind.Agent && reference.feature().equals("role")) {
-                    promoteRoleAssignment(context, source, reference);
-                    continue;
-                }
-                if (reference.targetId() != null || !TARGETS.containsKey(reference.feature())) {
+            for (var reference : source.references) {
+                var descriptor = registry.reference(source.kind, reference.feature());
+                if (descriptor.isEmpty()) {
+                    context.diagnostic("RESOLUTION_FEATURE_UNKNOWN", Severity.ERROR, Phase.RESOLUTION,
+                            source.provenance.getFirst().span(), source.id.value(), "Source reference is absent from active V2",
+                            reference.feature(), "Correct extractor source feature; do not use fuzzy mapping");
                     resolved.add(reference); continue;
                 }
-                List<ElementDraft> candidates = candidates(context, reference.originalSpelling(), TARGETS.get(reference.feature()));
-                if (exact != null) {
-                    var result = exact.resolve(new org.tzi.use.plugins.jacamo.resolution.ResolutionRequest(
-                            source.id.value(), reference.originalSpelling(), TARGETS.get(reference.feature()), null, List.of()));
-                    if (result.status() == org.tzi.use.plugins.jacamo.resolution.ResolutionResult.Status.RESOLVED) {
-                        resolved.add(new SemanticReference(reference.feature(), reference.originalSpelling(), result.target().id()));
-                        continue;
-                    }
-                }
-                if (candidates.size() == 1) {
-                    resolved.add(new SemanticReference(reference.feature(), reference.originalSpelling(), candidates.getFirst().id));
-                } else {
+                if (reference.targetId() != null) { resolved.add(reference); continue; }
+                Set<MetamodelKind> targets = new HashSet<>();
+                for (var kind : registry.kinds()) if (registry.owners(kind.name()).contains(descriptor.get().sourceTarget())) targets.add(kind);
+                var result = resolver.resolve(new ResolutionRequest(source.id.value(), reference.originalSpelling(), targets, null, List.of()));
+                if (result.status() == ResolutionResult.Status.RESOLVED)
+                    resolved.add(new SemanticReference(reference.feature(), reference.originalSpelling(), result.target().id()));
+                else {
                     resolved.add(reference);
-                    boolean formal = reference.feature().equals("operation");
-                    String code = candidates.isEmpty() ? "RESOLUTION_UNRESOLVED" : "RESOLUTION_AMBIGUOUS";
-                    context.diagnostic(code, formal ? Severity.ERROR : Severity.WARNING, Phase.RESOLUTION,
-                            source.provenance.getFirst().span(), source.id.value(),
-                            candidates.isEmpty() ? "Reference has no exact typed target" : "Reference has multiple exact typed targets",
-                            reference.feature() + "=" + reference.originalSpelling() + "; candidates="
-                                    + candidates.stream().map(candidate -> candidate.id.value()).toList(),
-                            formal ? "Add an owner-qualified reference or explicit binding"
-                                    : "Keep unresolved or provide an explicit source relation");
+                    String code = switch (result.status()) {
+                        case AMBIGUOUS -> "RESOLUTION_AMBIGUOUS";
+                        case INVALID_BINDING -> "BINDING_INVALID";
+                        default -> "RESOLUTION_UNRESOLVED";
+                    };
+                    context.diagnostic(code, reference.feature().equals("operation") ? Severity.ERROR : Severity.WARNING,
+                            Phase.RESOLUTION, source.provenance.getFirst().span(), source.id.value(),
+                            "Reference has no unique exact typed target", reference.feature() + "=" + reference.originalSpelling()
+                                    + "; " + result.diagnostic(), "Provide exact owner qualification or a binding within existing candidates");
                 }
             }
-            source.references.clear();
-            source.references.addAll(resolved);
+            source.references.clear(); source.references.addAll(resolved);
         }
+        for (var binding : bindings.entries()) {
+            var source = context.elements.stream().filter(e -> e.id.value().equals(binding.source())).findFirst().orElse(null);
+            boolean used = source != null && source.references.stream().anyMatch(r -> r.targetId() != null && r.targetId().value().equals(binding.target()));
+            if (binding.status() != org.tzi.use.plugins.jacamo.binding.BindingEntry.Status.ACTIVE || !used)
+                context.diagnostic(binding.status() == org.tzi.use.plugins.jacamo.binding.BindingEntry.Status.ACTIVE ? "BINDING_INVALID" : "BINDING_STALE",
+                        Severity.ERROR, Phase.RESOLUTION, source == null ? null : source.provenance.getFirst().span(), binding.source(),
+                        "Binding is stale or outside an exact source relation", binding.target(), "Regenerate binding against current source identities and hashes");
+        }
+        completeOppositeMembership(context, registry);
     }
 
-    /** JCM declares Agent -> Role, while the frozen Ecore stores the evidenced relation as Role.players -> Agent. */
-    private void promoteRoleAssignment(ExtractionContext context, ElementDraft agent, SemanticReference reference) {
-        List<ElementDraft> roles = candidates(context, reference.originalSpelling(), EnumSet.of(MetamodelKind.Role));
-        if (roles.size() == 1) {
-            ElementDraft role = roles.getFirst();
-            boolean exists = role.references.stream().anyMatch(candidate -> candidate.feature().equals("players")
-                    && agent.id.equals(candidate.targetId()));
-            if (!exists) role.references.add(new SemanticReference("players", agent.name, agent.id));
-            return;
+    /** Opposites entail membership, not independent order. Multi-member inferred order stays unresolved. */
+    private void completeOppositeMembership(ExtractionContext context, SemanticKindRegistry registry) {
+        Map<SemanticId, ElementDraft> elements = new HashMap<>(); context.elements.forEach(e -> elements.put(e.id, e));
+        Map<ElementDraft, Set<String>> inferred = new LinkedHashMap<>();
+        for (var alias : registry.mapping().associations().stream().filter(r -> r.reverse()).toList()) {
+            var canonical = registry.mapping().associations().stream().filter(r -> !r.reverse() && r.name().equals(alias.name())).findFirst().orElseThrow();
+            for (var direction : List.of(List.of(canonical, alias), List.of(alias, canonical))) {
+                var from = direction.get(0); var to = direction.get(1);
+                for (var source : context.elements) {
+                    if (!registry.owners(source.kind.name()).contains(from.sourceOwner())) continue;
+                    for (var ref : List.copyOf(source.references)) {
+                        if (!ref.feature().equals(from.sourceName()) || ref.targetId() == null) continue;
+                        var target = elements.get(ref.targetId()); if (target == null) continue;
+                        if (target.references.stream().noneMatch(r -> r.feature().equals(to.sourceName()) && source.id.equals(r.targetId()))) {
+                            target.references.add(new SemanticReference(to.sourceName(), source.id.value(), source.id));
+                            inferred.computeIfAbsent(target, ignored -> new HashSet<>()).add(to.sourceName());
+                        }
+                    }
+                }
+            }
         }
-        context.diagnostic(roles.isEmpty() ? "RESOLUTION_UNRESOLVED" : "RESOLUTION_AMBIGUOUS", Severity.WARNING,
-                Phase.RESOLUTION, agent.provenance.getFirst().span(), agent.id.value(),
-                roles.isEmpty() ? "JCM role assignment has no exact Role declaration"
-                        : "JCM role assignment has multiple exact Role declarations",
-                "role=" + reference.originalSpelling() + "; candidates="
-                        + roles.stream().map(candidate -> candidate.id.value()).toList(),
-                "Provide an owner-qualified role assignment when the source is ambiguous");
-    }
-
-    private List<ElementDraft> candidates(ExtractionContext context, String spelling, Set<MetamodelKind> kinds) {
-        List<ElementDraft> exactId = context.elements.stream().filter(candidate ->
-                kinds.contains(candidate.kind) && candidate.id.value().equals(spelling)).toList();
-        if (!exactId.isEmpty()) return exactId;
-        String local = spelling;
-        String owner = null;
-        int separator = Math.max(spelling.lastIndexOf('.'), spelling.lastIndexOf('/'));
-        if (separator >= 0) { owner = spelling.substring(0, separator); local = spelling.substring(separator + 1); }
-        final String wanted = local;
-        final String ownerName = owner;
-        return context.elements.stream().filter(candidate -> kinds.contains(candidate.kind)
-                && candidate.name.equals(wanted)
-                && (ownerName == null || candidate.id.ownerPath().contains(ownerName))).toList();
+        inferred.forEach((owner, features) -> features.forEach(feature -> {
+            boolean ordered = registry.mapping().orderProjections().stream().anyMatch(p ->
+                    registry.owners(owner.kind.name()).contains(p.owner()) && p.sourceIdentity().endsWith("#" + feature));
+            if (ordered && owner.references.stream().filter(r -> r.feature().equals(feature)).count() > 1) {
+                owner.sourceFacts.put("orderUnresolved:" + feature, new AttributeValue.Text("Opposite membership does not establish independent source order"));
+                context.diagnostic("ORDER_SOURCE_UNRESOLVED", Severity.WARNING, Phase.RESOLUTION, owner.provenance.getFirst().span(),
+                        owner.id.value(), "Independent opposite order is not supplied by source", feature,
+                        "Provide authoritative order evidence; membership insertion order is not source order");
+            }
+        }));
     }
 }

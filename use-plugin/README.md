@@ -1,5 +1,14 @@
 # USE JaCaMo Plugin 1.0.1
 
+> **V2 working migration:** Active Metamodel V2 and Mapping 2.2.0 now drive IR,
+> extraction, transformation, trace, OCL and runtime target binding. Independent
+> directional order is represented by generic target-only ranks. Focused tests
+> pass; clean full-reactor/package acceptance is PASS (350/350). See
+> [transformation](docs/project/v2-migration/phase35-transformation.md) and
+> [runtime contract](docs/project/v2-migration/phase35-runtime-targets.md).
+> The archive is `use-jacamo-plugin-1.0.1-v2-working.zip`, status
+> `WORKING_V2_NOT_RELEASED`; this is not a final freeze or published V2 release.
+
 > **2026-09-20 final completeness update:** Direct launcher-board observation and
 > AgentSpeak-driven standalone control now PASS. Original Auction plan/deadline
 > equivalence remains unsupported (B). The new audit supersedes older adapter-gap
@@ -20,8 +29,8 @@ Jason 3.3.0, CArtAgO 3.1 and Moise 1.1 integration scope.
 
 1. Use JDK 21 and USE 7.5.0.
 2. Extract this archive into the USE installation root. This places the plugin JAR
-   in `lib/plugins` and the frozen metamodel/mapping under `Core`.
-   The JAR also embeds byte-identical canonical Ecore, mapping, freeze manifest,
+   in `lib/plugins` and the active metamodel/mapping under `Core/*/version-2/`.
+   The JAR also embeds byte-identical canonical V2 Ecore, mapping/schema,
    compatibility metadata, and release manifest resources.
 3. Make Jason 3.3.0, CArtAgO 3.1, Moise 1.1 and their required runtime dependencies
    available on the USE JVM classpath. They are intentionally not redistributed in

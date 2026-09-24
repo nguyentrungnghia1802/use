@@ -42,7 +42,7 @@ class GoldenPipelineTest {
 
     @Test
     void auctionArtifactsMatchReviewedGoldenDigests() throws Exception {
-        String sourceCommit = EvidenceSourceCommit.verify(Path.of(".."), EvidenceSourceCommit.PHASE14_INPUTS);
+        String sourceCommit = EvidenceSourceCommit.verify(Path.of(".."), EvidenceSourceCommit.ACTIVE_V2_INPUTS);
         Path fixture = Path.of("src/test/resources/auction");
         Path project = Files.createDirectory(temporary.resolve("auction")).toRealPath();
         // Fixed LF fixture bytes keep provenance hashes independent of Git autocrlf.
@@ -58,19 +58,19 @@ class GoldenPipelineTest {
         var semantic = imported.model();
         var mapping = new MappingLoader().loadCanonical(Path.of("."));
         var structure = new VerificationSemanticLayer().apply(new TransformationPlanner().plan(semantic, mapping),
-                new VerificationProfileLoader().loadV1()).transformation();
+                new VerificationProfileLoader().loadActive(mapping)).transformation();
         var instances = new InstancePlanner().plan(semantic, mapping, structure);
         var artifacts = new TextBackend().generate("auction", structure, instances);
         var constraints = new ConstraintExtractor().extract(semantic, structure, Map.of());
         var profiles = new OclProfileLoader();
         var ocl = new OclGenerator().generate("auction", structure, constraints,
                 List.of(profiles.loadCore(), profiles.loadCase(project, Path.of("verification/auction.ocl"))));
-        Path output = Files.createDirectories(Path.of("target/phase14-auction-evidence/offline"));
+        Path output = Files.createDirectories(Path.of("target/phase35-auction-evidence/offline"));
         Files.deleteIfExists(output.resolve("semantic-summary.json"));
         var trace = new TraceBuilder().build(semantic, mapping, structure, instances);
         new TraceStore().write(output.resolve("trace.json"), trace);
         var golden = new Properties();
-        try (var input = Files.newInputStream(Path.of("src/test/resources/golden/auction-sha256.properties"))) {
+        try (var input = Files.newInputStream(Path.of("src/test/resources/golden/v2/auction-sha256.properties"))) {
             golden.load(input);
         }
         Map<String, String> actual = Map.of(
@@ -115,14 +115,14 @@ class GoldenPipelineTest {
                 EvidenceNormalizer.normalizeJson(exporter.toJson(negative), project, "<auction>"));
 
         Path verificationProfile = Path.of("src/main/resources/org/tzi/use/plugins/jacamo/verification/"
-                + "jacamo-verification-profile-v1.json");
-        Path ecore = Path.of("Core/Metamodel/JaCaMo-Metamodel.ecore");
-        Path mappingFile = Path.of("Core/Mapping/jacamo-use-mapping-v1.json");
-        Path mappingFreezeManifest = Path.of("Core/Mapping/freeze-manifest.json");
-        Path coreOcl = Path.of("src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core.ocl");
+                + "jacamo-verification-profile-v2.json");
+        Path ecore = Path.of("Core/Metamodel/version-2/jacamo_v2_complete.ecore");
+        Path mappingFile = Path.of("Core/Mapping/version-2/jacamo-use-mapping-v2.json");
+        Path mappingSchema = Path.of("Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json");
+        Path coreOcl = Path.of("src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2.ocl");
         var summary = new ObjectMapper().createObjectNode()
                 .put("schemaVersion", "1.0.0")
-                .put("artifactKind", "PHASE_14_EVIDENCE_MANIFEST")
+                .put("artifactKind", "V2_WORKING_STATIC_EVIDENCE_MANIFEST")
                 .put("hashPolicy", "LF_NORMALIZED_UTF8")
                 .put("projectId", semantic.projectId())
                 .put("projectEntry", "<auction>/auction.jcm")
@@ -143,16 +143,18 @@ class GoldenPipelineTest {
                 .put("generatedClasses", structure.classes().size())
                 .put("generatedObjects", instances.objects().size())
                 .put("diagnostics", imported.diagnostics().size())
+                .put("mappingStatus", mapping.status())
+                .put("mappingId", mapping.mappingId())
                 .put("positiveOutcome", "PASS")
                 .put("negativeOutcome", "EXPECTED_FAIL");
         summary.put("ecoreSha256", sha256(ecore));
         summary.put("mappingSha256", sha256(mappingFile));
-        summary.put("mappingFreezeManifestSha256", sha256(mappingFreezeManifest));
+        summary.put("mappingSchemaSha256", sha256(mappingSchema));
         summary.put("coreOclSha256", sha256(coreOcl));
         summary.put("caseOclSha256", sha256(project.resolve("verification/auction.ocl")));
         summary.putObject("verificationProfile")
                 .put("path", "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/verification/"
-                        + "jacamo-verification-profile-v1.json")
+                        + "jacamo-verification-profile-v2.json")
                 .put("sha256", sha256(verificationProfile));
         summary.putObject("bindings")
                 .put("required", false)
@@ -227,18 +229,9 @@ class GoldenPipelineTest {
         assertTrue(manifest.path("semanticSummary").path("dimensionCounts").path("ENVIRONMENT").asInt() > 0);
         assertTrue(manifest.path("semanticSummary").path("dimensionCounts").path("ORGANISATION").asInt() > 0);
         assertTrue(manifest.path("semanticSummary").path("referenceCount").asInt() > 0);
-        // Phase 19 adds projected attribute trace; all pre-existing records must remain byte-stable.
-        var traceJson = (com.fasterxml.jackson.databind.node.ObjectNode) new ObjectMapper().readTree(Files.readString(output.resolve("trace.json")));
-        var previousRecords = new ObjectMapper().createArrayNode();
-        traceJson.path("records").forEach(record -> {
-            if (!(record.path("targetKind").asText().equals("ATTRIBUTE") && record.path("status").asText().equals("PROJECTED")))
-                previousRecords.add(record);
-        });
-        assertTrue(previousRecords.size() < traceJson.path("records").size());
-        traceJson.set("records", previousRecords);
-        String oldTrace = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(traceJson) + "\n";
-        assertEquals("f11fd21733bc77ecd0e7138c74394ac82135c34905edb09db94a5a6bb7a14872",
-            HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(oldTrace.replace("\r\n", "\n").getBytes(StandardCharsets.UTF_8))));
+        // V1 byte-stability is replayed by PreMigrationBaselineTest. Active V2 traces
+        // include different source kinds, membership, explicit defaults and order entries.
+        assertEquals(trace.records().size(), new ObjectMapper().readTree(Files.readString(output.resolve("trace.json"))).path("records").size());
         assertAll(actual.keySet().stream().sorted().map(name -> () -> {
             String digest = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
                     .digest(Files.readString(output.resolve(name)).getBytes(StandardCharsets.UTF_8)));

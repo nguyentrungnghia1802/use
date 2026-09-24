@@ -13,6 +13,8 @@
 
 ---
 
+> **2026-09-24 final consumer gate:** clean reactor **350/350 PASS**, Python **11/11 PASS**. All component and downstream integration gates in Phase 29–35 now pass. Earlier counts/OPEN paragraphs below are historical migration snapshots, superseded by [final acceptance](../project/v2-migration/phase35-acceptance.md) and its per-test evidence. Phase-level merge/post-merge/push closure is still pending; no final V2 freeze/release is claimed.
+
 # Global Rules cho Phase 29+
 
 ## Source of Truth mới
@@ -33,20 +35,20 @@ Nếu Mapping V2 mâu thuẫn Metamodel V2, **dừng transformation**, tạo dia
 
 ## Invariants bắt buộc
 
-- [ ] JaCaMo vẫn là execution engine; USE là verification mirror.
-- [ ] Structural Mapping và Runtime Mapping vẫn là hai tầng riêng.
-- [ ] Parser không tạo USE construct trực tiếp.
-- [ ] Runtime connector không phụ thuộc tên EClass cụ thể của V2 nếu không bắt buộc.
-- [ ] RuntimeEvent/RuntimeTrace không hard-code case study.
-- [ ] Mọi runtime mutation phải qua exact identity/trace.
-- [ ] Không dùng fuzzy/name similarity làm formal mapping.
-- [ ] Không auto-create semantic object chỉ vì runtime xuất hiện tên gần giống.
-- [ ] Không auto-convert Moise Norm thành OCL nếu chưa có translation contract.
-- [ ] Không duplicate structural constraints bằng OCL nếu USE structure đã kiểm được.
-- [ ] Không giữ hard-coded V1 counts (`37/67/63/14`) trong production logic.
-- [ ] Không sửa generated output thủ công.
-- [ ] Mọi V2.x change phải có impact report trước khi regenerate/freeze.
-- [ ] Không đánh dấu V2 `FROZEN` cho tới Phase 44.
+- [x] JaCaMo vẫn là execution engine; USE là verification mirror.
+- [x] Structural Mapping và Runtime Mapping vẫn là hai tầng riêng.
+- [x] Parser không tạo USE construct trực tiếp.
+- [x] Runtime connector không phụ thuộc tên EClass cụ thể của V2 nếu không bắt buộc.
+- [x] RuntimeEvent/RuntimeTrace không hard-code case study.
+- [x] Mọi runtime mutation phải qua exact identity/trace.
+- [x] Không dùng fuzzy/name similarity làm formal mapping.
+- [x] Không auto-create semantic object chỉ vì runtime xuất hiện tên gần giống.
+- [x] Không auto-convert Moise Norm thành OCL nếu chưa có translation contract.
+- [x] Không duplicate structural constraints bằng OCL nếu USE structure đã kiểm được.
+- [x] Không giữ hard-coded V1 counts (`37/67/63/14`) trong production logic.
+- [x] Không sửa generated output thủ công.
+- [x] Mọi V2.x change phải có impact report trước khi regenerate/freeze.
+- [x] Không đánh dấu V2 `FROZEN` cho tới Phase 44.
 
 ## Definition of Done chung cho một task
 
@@ -67,23 +69,25 @@ Một task chỉ được `[x]` khi:
 
 **Objective:** chuyển source-of-truth active từ V1 sang V2 một cách có kiểm soát trước khi sửa sâu production code.
 
+> Execution update 2026-09-23: P29.1/P29.2 intake captured; Phase 29 remains OPEN. Fresh baseline: 306 tests, 3 failures, 73 errors, zero skips. See [baseline](../project/v2-migration/phase29-pre-migration-baseline.md), [inventory](../project/v2-migration/v2-input-inventory.md), and [gate dependency decision](../project/v2-migration/phase29-gate-dependency.md). User authorized staged Phase 29–35 migration: downstream-dependent gates remain OPEN until their actual regressions pass. No rollback to V1; no production tasks moved into Phase 29.
+
 ## P29.1 — Capture repository baseline trước migration
 
 ### Tasks
 
-- [ ] Ghi `git status`.
-- [ ] Ghi current branch.
-- [ ] Ghi current HEAD.
-- [ ] Ghi full test count hiện tại.
-- [ ] Ghi current plugin/version/compatibility pins.
-- [ ] Ghi hash của V1 Ecore/Mapping đang dùng.
-- [ ] Lưu danh sách canonical resources đang được package trong plugin.
-- [ ] Lưu baseline Auction + Case Study #2 expected outputs.
-- [ ] Không chỉnh V1 historical artifacts trong task này.
+- [x] Ghi `git status`.
+- [x] Ghi current branch.
+- [x] Ghi current HEAD.
+- [x] Ghi full test count hiện tại.
+- [x] Ghi current plugin/version/compatibility pins.
+- [x] Ghi hash của V1 Ecore/Mapping đang dùng.
+- [x] Lưu danh sách canonical resources đang được package trong plugin.
+- [x] Lưu baseline Auction + Case Study #2 expected outputs.
+- [x] Không chỉnh V1 historical artifacts trong task này.
 
 ### Evidence
 
-- [ ] `docs/project/v2-migration/phase29-pre-migration-baseline.md`.
+- [x] `docs/project/v2-migration/phase29-pre-migration-baseline.md`.
 
 ---
 
@@ -97,39 +101,41 @@ Một task chỉ được `[x]` khi:
 
 ### Tasks
 
-- [ ] Liệt kê tất cả file V2.
-- [ ] Xác định file Ecore canonical chính.
-- [ ] Xác định mapping JSON canonical chính.
-- [ ] Xác định schema Mapping V2.
-- [ ] Xác định audit/manifest/hash/provenance file nếu đã có.
-- [ ] Xác định namespace/package/version metadata.
-- [ ] Xác định file nào là source-of-truth, file nào là generated/reference.
-- [ ] Phát hiện duplicate/obsolete V2 files.
-- [ ] Không suy file canonical chỉ từ filename nếu trong folder có nhiều candidate.
+- [x] Liệt kê tất cả file V2.
+- [x] Xác định file Ecore canonical chính.
+- [x] Xác định mapping JSON canonical chính.
+- [x] Xác định schema Mapping V2.
+- [x] Xác định audit/manifest/hash/provenance file nếu đã có.
+- [x] Xác định namespace/package/version metadata.
+- [x] Xác định file nào là source-of-truth, file nào là generated/reference.
+- [x] Phát hiện duplicate/obsolete V2 files.
+- [x] Không suy file canonical chỉ từ filename nếu trong folder có nhiều candidate.
 
 ### Output
 
-- [ ] `docs/project/v2-migration/v2-input-inventory.md`.
+- [x] `docs/project/v2-migration/v2-input-inventory.md`.
 
 ---
 
 ## P29.3 — Define V1/V2 active-baseline policy
 
+Executable selection gates below now PASS after P32.2/P35.1–P35.7; policy is recorded in `v2-migration/active-baseline-policy.md`.
+
 ### Tasks
 
-- [ ] V2 = `WORKING_BASELINE`.
-- [ ] V1 = `HISTORICAL_BASELINE`.
-- [ ] Production import/transformation mặc định dùng V2.
-- [ ] V1 chỉ được load qua explicit compatibility/test path nếu còn cần.
-- [ ] Không có silent fallback từ V2 sang V1.
-- [ ] Nếu V2 load fail → explicit error; không chạy V1 thay thế.
-- [ ] Định nghĩa resource lookup path mới.
-- [ ] Định nghĩa version selector/fingerprint contract.
+- [x] V2 = `WORKING_BASELINE`.
+- [x] V1 = `HISTORICAL_BASELINE`.
+- [x] Production import/transformation mặc định dùng V2.
+- [x] V1 chỉ được load qua explicit compatibility/test path nếu còn cần.
+- [x] Không có silent fallback từ V2 sang V1.
+- [x] Nếu V2 load fail → explicit error; không chạy V1 thay thế.
+- [x] Định nghĩa resource lookup path mới.
+- [x] Định nghĩa version selector/fingerprint contract.
 
 ### Acceptance
 
-- [ ] Có đúng một active default metamodel.
-- [ ] Có đúng một active default structural mapping.
+- [x] Có đúng một active default metamodel.
+- [x] Có đúng một active default structural mapping.
 
 ---
 
@@ -137,42 +143,44 @@ Một task chỉ được `[x]` khi:
 
 Search production code/docs/tests/resources cho:
 
-- [ ] V1 Ecore path.
-- [ ] V1 Mapping path.
-- [ ] old namespace URI/prefix/package name.
-- [ ] hard-coded class names chỉ tồn tại ở V1.
-- [ ] hard-coded attribute/reference names chỉ tồn tại ở V1.
-- [ ] `MetamodelKind`/enum phụ thuộc V1.
-- [ ] frozen C/A/R/I/VP IDs.
-- [ ] V1 projection IDs.
-- [ ] V1 hash/fingerprint.
-- [ ] hard-coded counts.
-- [ ] golden output assumptions.
-- [ ] OCL contexts/navigation phụ thuộc V1.
-- [ ] runtime target-binding phụ thuộc V1.
-- [ ] release package paths phụ thuộc V1.
+- [x] V1 Ecore path.
+- [x] V1 Mapping path.
+- [x] old namespace URI/prefix/package name.
+- [x] hard-coded class names chỉ tồn tại ở V1.
+- [x] hard-coded attribute/reference names chỉ tồn tại ở V1.
+- [x] `MetamodelKind`/enum phụ thuộc V1.
+- [x] frozen C/A/R/I/VP IDs.
+- [x] V1 projection IDs.
+- [x] V1 hash/fingerprint.
+- [x] hard-coded counts.
+- [x] golden output assumptions.
+- [x] OCL contexts/navigation phụ thuộc V1.
+- [x] runtime target-binding phụ thuộc V1.
+- [x] release package paths phụ thuộc V1.
 
 Classify mỗi occurrence:
 
-- [ ] `MIGRATE`.
-- [ ] `KEEP_HISTORICAL`.
-- [ ] `VERSION_ABSTRACTION`.
-- [ ] `REMOVE`.
-- [ ] `REVIEW_REQUIRED`.
+- [x] `MIGRATE`.
+- [x] `KEEP_HISTORICAL`.
+- [x] `VERSION_ABSTRACTION`.
+- [x] `REMOVE`.
+- [x] `REVIEW_REQUIRED`.
 
 ### Output
 
-- [ ] `v1-coupling-inventory.md`.
+- [x] `v1-coupling-inventory.md`.
 
 ---
 
 ## P29.5 — Phase 29 gate
 
-- [ ] Không sửa parser/transformation sâu trước khi inventory hoàn thành.
-- [ ] Không xóa V1.
-- [ ] V2 active-baseline policy được document.
-- [ ] V1-coupling inventory hoàn chỉnh.
-- [ ] Test baseline trước migration được lưu.
+Independent inventory, executable selection and integration regression PASS. Phase merge/post-merge/push is pending. REMOVE is an audited empty classification, not authorization to delete.
+
+- [x] Không sửa parser/transformation sâu trước khi inventory hoàn thành.
+- [x] Không xóa V1.
+- [x] V2 active-baseline policy được document.
+- [x] V1-coupling inventory hoàn chỉnh.
+- [x] Test baseline trước migration được lưu.
 
 ---
 
@@ -184,22 +192,22 @@ Classify mỗi occurrence:
 
 ### Tasks
 
-- [ ] Load Ecore V2 bằng parser/EMF gate hiện có hoặc tooling tương đương.
-- [ ] Validate XML/Ecore syntax.
-- [ ] Resolve all classifiers.
-- [ ] Resolve all EReference targets.
-- [ ] Resolve eSuperTypes.
-- [ ] Detect unresolved proxies.
-- [ ] Detect invalid containment.
-- [ ] Detect duplicate names trong cùng namespace.
-- [ ] Detect invalid datatype references.
-- [ ] Compute SHA-256.
-- [ ] Record nsURI/nsPrefix/package/version.
+- [x] Load Ecore V2 bằng parser/EMF gate hiện có hoặc tooling tương đương.
+- [x] Validate XML/Ecore syntax.
+- [x] Resolve all classifiers.
+- [x] Resolve all EReference targets.
+- [x] Resolve eSuperTypes.
+- [x] Detect unresolved proxies.
+- [x] Detect invalid containment.
+- [x] Detect duplicate names trong cùng namespace.
+- [x] Detect invalid datatype references.
+- [x] Compute SHA-256.
+- [x] Record nsURI/nsPrefix/package/version.
 
 ### Acceptance
 
-- [ ] Ecore V2 load sạch hoặc mọi unresolved fact có diagnostic explicit.
-- [ ] Không tiếp tục mapping nếu Ecore structurally invalid.
+- [x] Ecore V2 load sạch hoặc mọi unresolved fact có diagnostic explicit.
+- [x] Không tiếp tục mapping nếu Ecore structurally invalid.
 
 ---
 
@@ -209,24 +217,24 @@ Không hard-code count.
 
 Generate:
 
-- [ ] all EClasses.
-- [ ] abstract/concrete status.
-- [ ] all EAttributes.
-- [ ] datatype/default/bounds.
-- [ ] all EReferences.
-- [ ] source/target.
-- [ ] containment.
-- [ ] lower/upper bounds.
-- [ ] ordered/unique.
-- [ ] all inheritance edges.
-- [ ] eOpposite nếu có.
-- [ ] annotations/provenance quan trọng.
-- [ ] unresolved fields nếu có.
+- [x] all EClasses.
+- [x] abstract/concrete status.
+- [x] all EAttributes.
+- [x] datatype/default/bounds.
+- [x] all EReferences.
+- [x] source/target.
+- [x] containment.
+- [x] lower/upper bounds.
+- [x] ordered/unique.
+- [x] all inheritance edges.
+- [x] eOpposite nếu có.
+- [x] annotations/provenance quan trọng.
+- [x] unresolved fields nếu có.
 
 ### Output
 
-- [ ] `metamodel-v2-inventory.json`.
-- [ ] `metamodel-v2-audit.md`.
+- [x] `metamodel-v2-inventory.json`.
+- [x] `metamodel-v2-audit.md`.
 
 ---
 
@@ -234,25 +242,25 @@ Generate:
 
 ### Tasks
 
-- [ ] added classes.
-- [ ] removed classes.
-- [ ] same-name but changed classes.
-- [ ] added/removed attributes.
-- [ ] type/default/bounds changes.
-- [ ] added/removed references.
-- [ ] target changes.
-- [ ] containment changes.
-- [ ] multiplicity changes.
-- [ ] ordering/uniqueness changes.
-- [ ] inheritance changes.
-- [ ] namespace changes.
-- [ ] annotation/provenance differences.
-- [ ] rename candidates chỉ ghi `CANDIDATE`; không auto-accept fuzzy rename.
+- [x] added classes.
+- [x] removed classes.
+- [x] same-name but changed classes.
+- [x] added/removed attributes.
+- [x] type/default/bounds changes.
+- [x] added/removed references.
+- [x] target changes.
+- [x] containment changes.
+- [x] multiplicity changes.
+- [x] ordering/uniqueness changes.
+- [x] inheritance changes.
+- [x] namespace changes.
+- [x] annotation/provenance differences.
+- [x] rename candidates chỉ ghi `CANDIDATE`; không auto-accept fuzzy rename.
 
 ### Output
 
-- [ ] `metamodel-v1-to-v2-diff.json`.
-- [ ] `metamodel-v1-to-v2-impact.md`.
+- [x] `metamodel-v1-to-v2-diff.json`.
+- [x] `metamodel-v1-to-v2-impact.md`.
 
 ---
 
@@ -260,25 +268,25 @@ Generate:
 
 Với mỗi breaking diff:
 
-- [ ] source-language concept còn tồn tại không?
-- [ ] chỉ đổi representation hay đổi semantics?
-- [ ] parser có bị ảnh hưởng?
-- [ ] Semantic IR có bị ảnh hưởng?
-- [ ] structural mapping có bị ảnh hưởng?
-- [ ] projection có bị ảnh hưởng?
-- [ ] trace identity có bị ảnh hưởng?
-- [ ] runtime target-binding có bị ảnh hưởng?
-- [ ] OCL navigation/context có bị ảnh hưởng?
-- [ ] case studies có bị ảnh hưởng?
+- [x] source-language concept còn tồn tại không?
+- [x] chỉ đổi representation hay đổi semantics?
+- [x] parser có bị ảnh hưởng?
+- [x] Semantic IR có bị ảnh hưởng?
+- [x] structural mapping có bị ảnh hưởng?
+- [x] projection có bị ảnh hưởng?
+- [x] trace identity có bị ảnh hưởng?
+- [x] runtime target-binding có bị ảnh hưởng?
+- [x] OCL navigation/context có bị ảnh hưởng?
+- [x] case studies có bị ảnh hưởng?
 
-Status:
+Classification vocabulary audited: actual rows use conservative breaking/added/removed dispositions; representation-only or compatible statuses are not asserted without proof.
 
-- [ ] `REPRESENTATION_ONLY`.
-- [ ] `SEMANTIC_COMPATIBLE_CHANGE`.
-- [ ] `SEMANTIC_BREAKING_CHANGE`.
-- [ ] `ADDED_CAPABILITY`.
-- [ ] `REMOVED_CAPABILITY`.
-- [ ] `UNCERTAIN_REQUIRES_DECISION`.
+- [x] `REPRESENTATION_ONLY`.
+- [x] `SEMANTIC_COMPATIBLE_CHANGE`.
+- [x] `SEMANTIC_BREAKING_CHANGE`.
+- [x] `ADDED_CAPABILITY`.
+- [x] `REMOVED_CAPABILITY`.
+- [x] `UNCERTAIN_REQUIRES_DECISION`.
 
 ---
 
@@ -286,30 +294,32 @@ Status:
 
 Create/update manifest containing:
 
-- [ ] V2 Ecore path.
-- [ ] hash.
-- [ ] package/nsURI.
-- [ ] structural counts generated dynamically.
-- [ ] status = `WORKING_BASELINE`.
-- [ ] created/updated date.
-- [ ] provenance.
-- [ ] known unresolved items.
-- [ ] allowed evolution policy.
+- [x] V2 Ecore path.
+- [x] hash.
+- [x] package/nsURI.
+- [x] structural counts generated dynamically.
+- [x] status = `WORKING_BASELINE`.
+- [x] created/updated date.
+- [x] provenance.
+- [x] known unresolved items.
+- [x] allowed evolution policy.
 
 ### Important
 
-- [ ] Không dùng từ `FROZEN`.
-- [ ] Không khóa mapping hash như final release nếu đang active development; hash vẫn phải được record để reproducibility.
+- [x] Không dùng từ `FROZEN`.
+- [x] Không khóa mapping hash như final release nếu đang active development; hash vẫn phải được record để reproducibility.
 
 ---
 
 ## P30.6 — Phase 30 gate
 
-- [ ] V2 Ecore structurally valid.
-- [ ] Exact inventory tồn tại.
-- [ ] V1→V2 diff tồn tại.
-- [ ] Breaking changes đã classify.
-- [ ] Không còn production decision dựa trên V1 counts.
+Native structural audit, generated inventory and downstream consumer regression PASS; phase merge/post-merge/push is pending. See `v2-migration/metamodel-v2-audit.md` and exact impact report.
+
+- [x] V2 Ecore structurally valid.
+- [x] Exact inventory tồn tại.
+- [x] V1→V2 diff tồn tại.
+- [x] Breaking changes đã classify.
+- [x] Không còn production decision dựa trên V1 counts.
 
 ---
 
@@ -317,37 +327,57 @@ Create/update manifest containing:
 
 **Objective:** kiểm chứng Mapping V2 đã có, không regenerate hoặc rewrite mù quáng.
 
+**2026-09-23 — PARTIAL / ordering decision approved:**
+Target-only generic independent rank projection is authorized.
+[Implementation and current gates](../project/v2-migration/phase31-order-projection.md).
+The following counts and blocker description are the pre-projection 2.1 audit;
+the membership-only limitation remains a negative regression, not a request for
+a new decision. Production default selection/IR consumers still require migration.
+
+**Historical pre-projection audit:**
+[Mapping audit](../project/v2-migration/mapping-v2-audit.md),
+[ordered-opposite decision](../project/v2-migration/phase31-ordered-opposite-decision.md).
+Independent schema/source/compiler gates PASS (11 focused tests). Full regression:
+317 executed, 3 failures, 73 errors; same 76 failing identities as baseline.
+V2-ORDER-001 proves current USE link insertion cannot preserve every valid pair
+of independently ordered opposite lists. Phase and fidelity gates remain OPEN.
+Checked items below refer to audit fixtures/contracts, not production migration.
+Unused disposition categories are not asserted. Source inheritance is N/A (zero
+edges); the explicit subtype projection compiler control passes. Multiplicity
+bounds are structurally checked; complete source-semantic preservation, generated
+navigation/trace and executable projection/runtime/OCL gates remain OPEN.
+
 ## P31.1 — Load Mapping V2 + schema
 
-- [ ] Validate JSON syntax.
-- [ ] Validate JSON schema.
-- [ ] Validate mapping version.
-- [ ] Validate declared source metamodel fingerprint/version.
-- [ ] Reject mapping trỏ sang V1 fingerprint.
-- [ ] Detect unknown fields nếu schema yêu cầu closed shape.
-- [ ] Detect duplicate rule IDs.
+- [x] Validate JSON syntax.
+- [x] Validate JSON schema.
+- [x] Validate mapping version.
+- [x] Validate declared source metamodel fingerprint/version.
+- [x] Reject mapping trỏ sang V1 fingerprint.
+- [x] Detect unknown fields nếu schema yêu cầu closed shape.
+- [x] Detect duplicate rule IDs.
 
 ---
 
 ## P31.2 — Source coverage audit dựa trên Ecore V2
 
-- [ ] Mỗi EClass V2 có disposition.
-- [ ] Mỗi declared EAttribute V2 có disposition.
-- [ ] Mỗi EReference V2 có disposition.
-- [ ] Mỗi inheritance edge V2 có disposition.
-- [ ] Không orphan mapping entry.
-- [ ] Không stale source key.
-- [ ] Không bare-name ambiguity.
-- [ ] Owner-qualified identity được dùng.
-- [ ] Removed V1 elements không còn active mapping entry.
-- [ ] New V2 elements không silently ignored.
+- [x] Mỗi EClass V2 có disposition.
+- [x] Mỗi declared EAttribute V2 có disposition.
+- [x] Mỗi EReference V2 có disposition.
+- [x] Mỗi inheritance edge V2 có disposition.
+- [x] Không orphan mapping entry.
+- [x] Không stale source key.
+- [x] Không bare-name ambiguity.
+- [x] Owner-qualified identity được dùng.
+- [x] Removed V1 elements không còn active mapping entry.
+- [x] New V2 elements không silently ignored.
 
-Allowed disposition:
+Allowed disposition (alternative categories below are audited N/A: all current structural sources are MAPPED):
 
-- [ ] `MAPPED`.
-- [ ] `INTENTIONALLY_NOT_MAPPED` với reason.
-- [ ] `REVIEW_REQUIRED`.
-- [ ] `UNSUPPORTED` với evidence.
+- [x] `MAPPED`.
+- [x] `INTENTIONALLY_NOT_MAPPED` với reason.
+- [x] `REVIEW_REQUIRED`.
+- [x] `UNSUPPORTED` với evidence.
 
 ---
 
@@ -355,15 +385,15 @@ Allowed disposition:
 
 Với từng mapping:
 
-- [ ] USE target construct hợp lệ.
-- [ ] datatype conversion hợp lệ.
-- [ ] inheritance hợp lệ.
-- [ ] association/composition direction hợp lệ.
-- [ ] multiplicity preserve intended source semantics.
-- [ ] role names deterministic và không collision.
-- [ ] reserved USE identifiers được escape có trace.
-- [ ] generated reverse navigation không bị hiểu nhầm source-authored.
-- [ ] no duplicate classifier/association/role names.
+- [x] USE target construct hợp lệ.
+- [x] datatype conversion hợp lệ.
+- [x] inheritance hợp lệ.
+- [x] association/composition direction hợp lệ.
+- [x] multiplicity preserve intended source semantics.
+- [x] role names deterministic và không collision.
+- [x] reserved USE identifiers được escape có trace.
+- [x] generated reverse navigation không bị hiểu nhầm source-authored.
+- [x] no duplicate classifier/association/role names.
 
 ---
 
@@ -371,26 +401,26 @@ Với từng mapping:
 
 Nếu Mapping V2 có projection/profile extension:
 
-- [ ] inventory tất cả projections.
-- [ ] xác định source anchors.
-- [ ] xác định target concepts.
-- [ ] prerequisites.
-- [ ] assumptions.
-- [ ] information loss.
-- [ ] runtime relevance.
-- [ ] OCL relevance.
-- [ ] case-study independence.
-- [ ] unsupported conditions.
+- [x] inventory tất cả projections.
+- [x] xác định source anchors.
+- [x] xác định target concepts.
+- [x] prerequisites.
+- [x] assumptions.
+- [x] information loss.
+- [x] runtime relevance.
+- [x] OCL relevance.
+- [x] case-study independence.
+- [x] unsupported conditions.
 
 Đặc biệt audit:
 
-- [ ] concrete Artifact projection.
-- [ ] observable property projection.
-- [ ] operation signature projection.
-- [ ] Agent ↔ Environment cross-dimensional anchors.
-- [ ] Organisation anchors.
-- [ ] Norm preservation.
-- [ ] mọi V2 projection mới.
+- [x] concrete Artifact projection.
+- [x] observable property projection.
+- [x] operation signature projection.
+- [x] Agent ↔ Environment cross-dimensional anchors.
+- [x] Organisation anchors.
+- [x] Norm preservation.
+- [x] mọi V2 projection mới.
 
 ---
 
@@ -398,28 +428,44 @@ Nếu Mapping V2 có projection/profile extension:
 
 Generate structural fixture từ Mapping V2:
 
-- [ ] classes compile.
-- [ ] attributes compile.
-- [ ] associations/compositions compile.
-- [ ] inheritance compile.
-- [ ] projection fixture compile.
-- [ ] negative mutations fail như expected.
+- [x] classes compile.
+- [x] attributes compile.
+- [x] associations/compositions compile.
+- [x] inheritance compile.
+- [x] projection fixture compile.
+- [x] negative mutations fail như expected.
 
 ### Output
 
-- [ ] `mapping-v2-audit.md`.
-- [ ] `mapping-v2-validation.json`.
-- [ ] `mapping-v2-use-compile.log`.
+- [x] `mapping-v2-audit.md`.
+- [x] `mapping-v2-validation.json`.
+- [x] `mapping-v2-use-compile.log`.
 
 ---
 
 ## P31.6 — Mapping V2 working status
 
-- [ ] Mapping V2 = `WORKING_BASELINE`.
-- [ ] Không freeze final.
-- [ ] Có hash/version record.
-- [ ] Có compatibility pointer tới exact Metamodel V2 hash.
-- [ ] Mọi future Ecore change phải invalidate/reconcile mapping status.
+- [x] Mapping V2 = `WORKING_BASELINE`.
+- [x] Không freeze final.
+- [x] Có hash/version record.
+- [x] Có compatibility pointer tới exact Metamodel V2 hash.
+- [x] Mọi future Ecore change phải invalidate/reconcile mapping status.
+
+### V2-ORDER-001 — approved target-only projection component gates
+
+- [x] Mapping/schema 2.2.0 and exact working loader validation.
+- [x] Generic plan, typed order entries, independent authoritative directions.
+- [x] Native EMF counterexample retained and projected source navigation PASS.
+- [x] Determinism, actual text/direct parity, rank validity and membership bijection.
+- [x] Trace and exact source-feature OCL query binding.
+- [x] Rank-only runtime action, queue, drift and authoritative reconnect/resync.
+- [x] Composition, unordered and non-opposite controls; no Ecore/USE core edits.
+- [x] Default V2 facade/IR/parser integration and full consumer regression (P32–35).
+
+Evidence: `phase31-order-projection.md`, `order-projection-working-manifest.json`.
+27 focused tests and 9 Python regressions PASS. Full reactor: 325 executed,
+3 failures, 73 errors, same failing identities as pre-migration baseline.
+Phase closure remains OPEN; this is not an end-to-end V2 release acceptance.
 
 ---
 
@@ -427,13 +473,19 @@ Generate structural fixture từ Mapping V2:
 
 **Objective:** làm cho các thay đổi nhỏ V2.1/V2.2 sau này rẻ và có kiểm soát.
 
+**Component tasks PASS; overall phase closure OPEN.** See
+[selection/evolution evidence](../project/v2-migration/active-baseline-policy.md).
+20 focused Java tests and 11 Python tests PASS. Mapping defaults now select V2;
+IR/parser/facade integration and full regression still depend on P33–35.
+No phase merge/release acceptance is implied by the checked component tasks.
+
 ## P32.1 — Remove hard-coded metamodel inventory from production logic
 
-- [ ] Không hard-code class count.
-- [ ] Không hard-code attribute/reference count.
-- [ ] Không hard-code inheritance count.
-- [ ] Không hard-code V1 projection count.
-- [ ] Registry/descriptor được load từ V2 mapping/metamodel contract.
+- [x] Không hard-code class count.
+- [x] Không hard-code attribute/reference count.
+- [x] Không hard-code inheritance count.
+- [x] Không hard-code V1 projection count.
+- [x] Registry/descriptor được load từ V2 mapping/metamodel contract.
 
 ---
 
@@ -441,13 +493,13 @@ Generate structural fixture từ Mapping V2:
 
 Create one component/service responsible for:
 
-- [ ] active metamodel path.
-- [ ] active mapping path.
-- [ ] version.
-- [ ] hash.
-- [ ] compatibility status.
-- [ ] resource packaging path.
-- [ ] diagnostics.
+- [x] active metamodel path.
+- [x] active mapping path.
+- [x] version.
+- [x] hash.
+- [x] compatibility status.
+- [x] resource packaging path.
+- [x] diagnostics.
 
 Không để nhiều class tự nối path `Core/...`.
 
@@ -457,33 +509,33 @@ Không để nhiều class tự nối path `Core/...`.
 
 Input:
 
-- [ ] old Ecore.
-- [ ] new Ecore.
+- [x] old Ecore.
+- [x] new Ecore.
 
 Output:
 
-- [ ] structural diff.
-- [ ] mapping impact.
-- [ ] semantic IR impact.
-- [ ] parser impact.
-- [ ] projection impact.
-- [ ] trace impact.
-- [ ] runtime target-binding impact.
-- [ ] OCL context/navigation impact.
-- [ ] golden output impact.
+- [x] structural diff.
+- [x] mapping impact.
+- [x] semantic IR impact.
+- [x] parser impact.
+- [x] projection impact.
+- [x] trace impact.
+- [x] runtime target-binding impact.
+- [x] OCL context/navigation impact.
+- [x] golden output impact.
 
 ### Tests
 
-- [ ] add class.
-- [ ] remove class.
-- [ ] add attribute.
-- [ ] datatype change.
-- [ ] multiplicity change.
-- [ ] containment change.
-- [ ] target reference change.
-- [ ] inheritance change.
-- [ ] rename candidate without auto acceptance.
-- [ ] no-op/self diff.
+- [x] add class.
+- [x] remove class.
+- [x] add attribute.
+- [x] datatype change.
+- [x] multiplicity change.
+- [x] containment change.
+- [x] target reference change.
+- [x] inheritance change.
+- [x] rename candidate without auto acceptance.
+- [x] no-op/self diff.
 
 ---
 
@@ -504,18 +556,18 @@ replace/update V2 input
 
 Checklist:
 
-- [ ] Không manual checklist-only process; có automation nơi hợp lý.
-- [ ] Không silently accept fingerprint mismatch.
-- [ ] Không update only hash to silence test.
-- [ ] Unaffected runtime connectors must remain green.
+- [x] Không manual checklist-only process; có automation nơi hợp lý.
+- [x] Không silently accept fingerprint mismatch.
+- [x] Không update only hash to silence test.
+- [x] Unaffected runtime connectors must remain green.
 
 ---
 
 ## P32.5 — Phase 32 gate
 
-- [ ] Synthetic V2.1 change chứng minh pipeline phát hiện đúng impacted layers.
-- [ ] Unaffected subsystems không cần sửa.
-- [ ] V2 future minor changes có documented migration loop.
+- [x] Synthetic V2.1 change chứng minh pipeline phát hiện đúng impacted layers.
+- [x] Unaffected subsystems không cần sửa.
+- [x] V2 future minor changes có documented migration loop.
 
 ---
 
@@ -523,24 +575,34 @@ Checklist:
 
 **Objective:** thay vocabulary/IR V1 bằng representation phù hợp V2 nhưng vẫn source-preserving và traceable.
 
+**Component gates PASS; phase closure OPEN.** [IR evidence](../project/v2-migration/phase33-semantic-ir.md).
+29 focused tests PASS; full reactor 333 executed, 7 failures/65 errors in pending
+V1 consumers (historical snapshot). Parser declaration/instance migration and
+production no-V1-leakage now PASS: 28 focused tests; full closure remains OPEN.
+
+V2 profile/path/trace follow-up: [consumer evidence](../project/v2-migration/phase33-verification-profile.md),
+30 focused tests PASS. Post-profile plugin regression: 192 executed, 9F/62E
+(71 failing identities versus previous 72); later V1 parser/OCL assumptions exposed.
+Alias trace collision identified and fixed with regression. No phase closure claimed.
+
 ## P33.1 — Audit current IR against V2
 
-- [ ] `SemanticElement`.
-- [ ] semantic kind registry/enum.
-- [ ] attributes storage.
-- [ ] references storage.
-- [ ] source provenance.
-- [ ] symbol index.
-- [ ] typed subclasses/records nếu có.
-- [ ] cross-dimensional references.
-- [ ] runtime identity separation.
+- [x] `SemanticElement`.
+- [x] semantic kind registry/enum.
+- [x] attributes storage.
+- [x] references storage.
+- [x] source provenance.
+- [x] symbol index.
+- [x] typed subclasses/records nếu có.
+- [x] cross-dimensional references.
+- [x] runtime identity separation.
 
 Classify:
 
-- [ ] reusable unchanged.
-- [ ] adapt.
-- [ ] replace.
-- [ ] remove historical.
+- [x] reusable unchanged.
+- [x] adapt.
+- [x] replace.
+- [x] remove historical.
 
 ---
 
@@ -548,22 +610,22 @@ Classify:
 
 Requirements:
 
-- [ ] stable project ID.
-- [ ] dimension.
-- [ ] kind.
-- [ ] owner path.
-- [ ] local ID.
-- [ ] source spelling.
-- [ ] no name-only global identity.
-- [ ] deterministic.
-- [ ] reversible/provenance-preserving where possible.
+- [x] stable project ID.
+- [x] dimension.
+- [x] kind.
+- [x] owner path.
+- [x] local ID.
+- [x] source spelling.
+- [x] no name-only global identity.
+- [x] deterministic.
+- [x] reversible/provenance-preserving where possible.
 
 ### Important
 
 Nếu V2 thay kind names:
 
-- [ ] semantic IDs chỉ đổi khi semantics thực sự đổi.
-- [ ] không giữ V1 kind name chỉ để tránh migration nếu V2 semantics khác.
+- [x] semantic IDs chỉ đổi khi semantics thực sự đổi.
+- [x] không giữ V1 kind name chỉ để tránh migration nếu V2 semantics khác.
 
 ---
 
@@ -571,48 +633,48 @@ Nếu V2 thay kind names:
 
 Prefer data/descriptor-driven design nếu V2 còn có thể đổi nhẹ.
 
-- [ ] Registry được derive/validate against V2 Ecore.
-- [ ] Không cần sửa hàng chục switch chỉ vì thêm một EClass nếu logic generic có thể xử lý.
-- [ ] Những kind cần custom behavior vẫn explicit.
-- [ ] Unknown/unsupported kind → diagnostic, không crash/silent ignore.
+- [x] Registry được derive/validate against V2 Ecore.
+- [x] Không cần sửa hàng chục switch chỉ vì thêm một EClass nếu logic generic có thể xử lý.
+- [x] Những kind cần custom behavior vẫn explicit.
+- [x] Unknown/unsupported kind → diagnostic, không crash/silent ignore.
 
 ---
 
 ## P33.4 — V2 references/resolution model
 
-- [ ] declaration vs instance vs symbolic reference vs runtime identity tách riêng.
-- [ ] exact canonical ID first.
-- [ ] explicit source reference.
-- [ ] owner-qualified exact symbol.
-- [ ] unique typed scope.
-- [ ] optional explicit binding.
-- [ ] otherwise unresolved.
-- [ ] no fuzzy acceptance.
+- [x] declaration vs instance vs symbolic reference vs runtime identity tách riêng.
+- [x] exact canonical ID first.
+- [x] explicit source reference.
+- [x] owner-qualified exact symbol.
+- [x] unique typed scope.
+- [x] optional explicit binding.
+- [x] otherwise unresolved.
+- [x] no fuzzy acceptance.
 
 ---
 
 ## P33.5 — IR serialization/debug output
 
-- [ ] deterministic.
-- [ ] versioned.
-- [ ] includes V2 metamodel fingerprint.
-- [ ] includes source provenance.
-- [ ] includes unresolved references.
-- [ ] useful cho audit/tests.
+- [x] deterministic.
+- [x] versioned.
+- [x] includes V2 metamodel fingerprint.
+- [x] includes source provenance.
+- [x] includes unresolved references.
+- [x] useful cho audit/tests.
 
 ---
 
 ## P33.6 — Phase 33 tests
 
-- [ ] minimal valid V2 IR.
-- [ ] each dimension.
-- [ ] duplicate names.
-- [ ] ambiguous reference.
-- [ ] missing reference.
-- [ ] inheritance-derived feature.
-- [ ] cross-dimensional reference.
-- [ ] deterministic serialization.
-- [ ] no V1 kind leakage ngoài migration fixtures.
+- [x] minimal valid V2 IR.
+- [x] each dimension.
+- [x] duplicate names.
+- [x] ambiguous reference.
+- [x] missing reference.
+- [x] inheritance-derived feature.
+- [x] cross-dimensional reference.
+- [x] deterministic serialization.
+- [x] no V1 kind leakage ngoài migration fixtures.
 
 ---
 
@@ -620,32 +682,37 @@ Prefer data/descriptor-driven design nếu V2 còn có thể đổi nhẹ.
 
 **Objective:** giữ parser machinery reusable, đổi semantic output theo V2.
 
+**Parser component gates PASS; phase closure OPEN.** [Evidence](../project/v2-migration/phase34-extraction.md).
+34 focused tests PASS. Post-parser plugin regression: 197 executed, 8F/59E;
+remaining projection/constraint/runtime consumers require P35 migration.
+No merged/full-regression acceptance is claimed.
+
 ## P34.1 — JCM extraction
 
-- [ ] MAS/project root semantics theo V2.
-- [ ] Agent declarations.
-- [ ] workspace/artifact declarations.
-- [ ] organisation instances.
-- [ ] source/include paths.
-- [ ] roles/focus/project parameters.
-- [ ] exact source spans.
-- [ ] V2 references.
+- [x] MAS/project root semantics theo V2.
+- [x] Agent declarations.
+- [x] workspace/artifact declarations.
+- [x] organisation instances.
+- [x] source/include paths.
+- [x] roles/focus/project parameters.
+- [x] exact source spans.
+- [x] V2 references.
 
 ---
 
 ## P34.2 — Jason parser/extractor
 
-- [ ] beliefs.
-- [ ] rules.
-- [ ] goals.
-- [ ] plans.
-- [ ] triggering events.
-- [ ] contexts.
-- [ ] bodies/body terms.
-- [ ] internal/external actions.
-- [ ] messages nếu V2 vẫn model.
-- [ ] V2 ownership/reference direction.
-- [ ] unsupported syntax preserved with diagnostics.
+- [x] beliefs.
+- [x] rules.
+- [x] goals.
+- [x] plans.
+- [x] triggering events.
+- [x] contexts.
+- [x] bodies/body terms.
+- [x] internal/external actions.
+- [x] messages nếu V2 vẫn model.
+- [x] V2 ownership/reference direction.
+- [x] unsupported syntax preserved with diagnostics.
 
 Không implement Jason interpreter.
 
@@ -653,15 +720,15 @@ Không implement Jason interpreter.
 
 ## P34.3 — CArtAgO Java extraction
 
-- [ ] artifact type.
-- [ ] observable properties.
-- [ ] operations.
-- [ ] guards.
-- [ ] signals/await/internal operations nếu V2 cần.
-- [ ] signatures/parameter metadata.
-- [ ] source positions.
-- [ ] V2 links.
-- [ ] parse-only/static safety vẫn giữ.
+- [x] artifact type.
+- [x] observable properties.
+- [x] operations.
+- [x] guards.
+- [x] signals/await/internal operations nếu V2 cần.
+- [x] signatures/parameter metadata.
+- [x] source positions.
+- [x] V2 links.
+- [x] parse-only/static safety vẫn giữ.
 
 Không execute arbitrary project Java để infer semantics.
 
@@ -669,40 +736,40 @@ Không execute arbitrary project Java để infer semantics.
 
 ## P34.4 — Moise extraction
 
-- [ ] organisation structure.
-- [ ] groups.
-- [ ] roles.
-- [ ] links/formation constraints.
-- [ ] schemes.
-- [ ] missions.
-- [ ] organisational goals/plans.
-- [ ] norms.
-- [ ] V2 relationship directions.
-- [ ] instance config từ JCM.
-- [ ] DTD/entity disabled.
+- [x] organisation structure.
+- [x] groups.
+- [x] roles.
+- [x] links/formation constraints.
+- [x] schemes.
+- [x] missions.
+- [x] organisational goals/plans.
+- [x] norms.
+- [x] V2 relationship directions.
+- [x] instance config từ JCM.
+- [x] DTD/entity disabled.
 
 ---
 
 ## P34.5 — Cross-file resolver V2
 
-- [ ] resolve all V2 exact relations.
-- [ ] binding only after exact typed ambiguity.
-- [ ] no binding creates nonexistent relation.
-- [ ] stale source hash rejected.
-- [ ] diagnostics list candidates/owners/scopes.
+- [x] resolve all V2 exact relations.
+- [x] binding only after exact typed ambiguity.
+- [x] no binding creates nonexistent relation.
+- [x] stale source hash rejected.
+- [x] diagnostics list candidates/owners/scopes.
 
 ---
 
 ## P34.6 — Parser regression
 
-- [ ] existing source fixtures still parse where source language unchanged.
-- [ ] expected semantic outputs updated intentionally.
-- [ ] malformed input recovery.
-- [ ] partial project.
-- [ ] source path safety.
-- [ ] deterministic results.
-- [ ] Auction import reaches V2 IR.
-- [ ] Case Study #2 import reaches V2 IR.
+- [x] existing source fixtures still parse where source language unchanged.
+- [x] expected semantic outputs updated intentionally.
+- [x] malformed input recovery.
+- [x] partial project.
+- [x] source path safety.
+- [x] deterministic results.
+- [x] Auction import reaches V2 IR.
+- [x] Case Study #2 import reaches V2 IR.
 
 ---
 
@@ -710,29 +777,34 @@ Không execute arbitrary project Java để infer semantics.
 
 **Objective:** `JaCaMoSemanticModel V2 + Mapping V2 → USE MModel + initial MSystemState` chính xác và deterministic.
 
+**IN PROGRESS; closure OPEN.** [Implementation/evidence](../project/v2-migration/phase35-transformation.md).
+Latest broad plugin snapshot: 201 tests, 8F/3E (11 failing identities; down from 67).
+Focused V2 SOIL/direct parity and guard tests pass; final consumer/evidence/resource
+regressions and full reactor remain pending. No dependent P29-P34 gate is closed.
+
 ## P35.1 — Mapping loader/planner migration
 
-- [ ] active loader reads Mapping V2.
-- [ ] validates exact V2 Ecore hash/version.
-- [ ] builds V2 TransformationPlan.
-- [ ] removed V1 rules cannot resolve accidentally.
-- [ ] diagnostics include mapping rule IDs/provenance.
+- [x] active loader reads Mapping V2.
+- [x] validates exact V2 Ecore hash/version.
+- [x] builds V2 TransformationPlan.
+- [x] removed V1 rules cannot resolve accidentally.
+- [x] diagnostics include mapping rule IDs/provenance.
 
 ---
 
 ## P35.2 — Structural generation
 
-- [ ] classes.
-- [ ] abstract/concrete.
-- [ ] attributes.
-- [ ] inheritance.
-- [ ] associations.
-- [ ] compositions.
-- [ ] multiplicities.
-- [ ] ordered/unique.
-- [ ] deterministic names.
-- [ ] USE keyword escapes.
-- [ ] V2 projections.
+- [x] classes.
+- [x] abstract/concrete.
+- [x] attributes.
+- [x] inheritance.
+- [x] associations.
+- [x] compositions.
+- [x] multiplicities.
+- [x] ordered/unique.
+- [x] deterministic names.
+- [x] USE keyword escapes.
+- [x] V2 projections.
 
 ---
 
@@ -740,13 +812,13 @@ Không execute arbitrary project Java để infer semantics.
 
 Audit/implement only when V2 supports them:
 
-- [ ] concrete Artifact subtype.
-- [ ] observable property → typed state slot.
-- [ ] CArtAgO operation → MOperation.
-- [ ] action-operation anchor.
-- [ ] percept/belief or equivalent V2 relation.
-- [ ] organisational goal/agent goal or equivalent.
-- [ ] normative preservation.
+- [x] concrete Artifact subtype.
+- [x] observable property → typed state slot.
+- [x] CArtAgO operation → MOperation.
+- [x] action-operation anchor.
+- [x] percept/belief or equivalent V2 relation.
+- [x] organisational goal/agent goal or equivalent.
+- [x] normative preservation.
 
 No projection by intuition; every projection requires V2/source evidence.
 
@@ -756,51 +828,51 @@ No projection by intuition; every projection requires V2/source evidence.
 
 Order must be explicit:
 
-- [ ] create objects.
-- [ ] scalar attributes.
-- [ ] containment/composition links.
-- [ ] associations.
-- [ ] projected state.
-- [ ] multiplicity/structure validation.
-- [ ] initial invariants.
+- [x] create objects.
+- [x] scalar attributes.
+- [x] containment/composition links.
+- [x] associations.
+- [x] projected state.
+- [x] multiplicity/structure validation.
+- [x] initial invariants.
 
 Rules:
 
-- [ ] no fabricated default.
-- [ ] unresolved source value remains undefined/unset.
-- [ ] no missing required link fabricated.
-- [ ] object/link trace created.
+- [x] no fabricated default.
+- [x] unresolved source value remains undefined/unset.
+- [x] no missing required link fabricated.
+- [x] object/link trace created.
 
 ---
 
 ## P35.5 — Text vs Direct backend parity
 
-- [ ] `.use`.
-- [ ] `.cmd`.
-- [ ] direct `MModel`.
-- [ ] direct `MSystemState`.
-- [ ] same effective semantics.
-- [ ] same deterministic source trace.
+- [x] `.use`.
+- [x] `.cmd`.
+- [x] direct `MModel`.
+- [x] direct `MSystemState`.
+- [x] same effective semantics.
+- [x] same deterministic source trace.
 
 ---
 
 ## P35.6 — Golden regeneration policy
 
-- [ ] Old V1 golden kept under historical path nếu cần.
-- [ ] New V2 golden outputs generated intentionally.
-- [ ] Review structural diff.
-- [ ] Không snapshot-update tự động khi compile fail.
-- [ ] Hashes recorded.
+- [x] Old V1 golden kept under historical path nếu cần.
+- [x] New V2 golden outputs generated intentionally.
+- [x] Review structural diff.
+- [x] Không snapshot-update tự động khi compile fail.
+- [x] Hashes recorded.
 
 ---
 
 ## P35.7 — Phase 35 gate
 
-- [ ] generated V2 `.use` compiles.
-- [ ] initial state valid.
-- [ ] text/direct parity PASS.
-- [ ] no V1 active mapping dependency.
-- [ ] Auction static V2 transformation PASS.
+- [x] generated V2 `.use` compiles.
+- [x] initial state valid.
+- [x] text/direct parity PASS.
+- [x] no V1 active mapping dependency.
+- [x] Auction static V2 transformation PASS.
 
 ---
 

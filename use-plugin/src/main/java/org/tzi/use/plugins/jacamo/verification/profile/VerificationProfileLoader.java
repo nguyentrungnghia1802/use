@@ -9,11 +9,26 @@ import java.util.List;
 
 public final class VerificationProfileLoader {
     private static final String V1 = "/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v1.json";
+    private static final String V2 = "/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json";
     private static final ObjectMapper JSON = new ObjectMapper();
 
     public VerificationProfile loadV1() {
-        try (InputStream input = VerificationProfileLoader.class.getResourceAsStream(V1)) {
-            if (input == null) throw new VerificationProfileException("VERIFICATION_PROFILE_MISSING", V1);
+        return load(V1, "JACAMO_VERIFICATION_PROFILE_V1");
+    }
+
+    public VerificationProfile loadActive(org.tzi.use.plugins.jacamo.mapping.MappingModel mapping) {
+        var profile = load(V2, "JACAMO_VERIFICATION_PROFILE_V2");
+        if (!profile.baselineMappingId().equals(mapping.mappingId()))
+            throw new VerificationProfileException("VERIFICATION_PROFILE_BASELINE_MISMATCH",
+                    profile.profileId() + " expects " + profile.baselineMappingId() + "; got " + mapping.mappingId());
+        if (!profile.decisions().isEmpty())
+            throw new VerificationProfileException("VERIFICATION_PROFILE_INVALID", "V2 contract authorizes no structural overrides");
+        return profile;
+    }
+
+    private VerificationProfile load(String resource, String expectedId) {
+        try (InputStream input = VerificationProfileLoader.class.getResourceAsStream(resource)) {
+            if (input == null) throw new VerificationProfileException("VERIFICATION_PROFILE_MISSING", resource);
             JsonNode root = JSON.readTree(input);
             List<VerificationProfile.Decision> decisions = new ArrayList<>();
             HashSet<String> ids = new HashSet<>();
@@ -29,8 +44,8 @@ public final class VerificationProfileLoader {
             }
             VerificationProfile profile = new VerificationProfile(required(root, "profileId"), required(root, "version"),
                     required(root, "status"), required(root, "baselineMappingId"), decisions);
-            if (!profile.profileId().equals("JACAMO_VERIFICATION_PROFILE_V1") || !profile.status().equals("ACTIVE")
-                    || decisions.size() != 5) throw new VerificationProfileException("VERIFICATION_PROFILE_INVALID", profile.toString());
+            if (!profile.profileId().equals(expectedId) || !profile.status().equals("ACTIVE"))
+                throw new VerificationProfileException("VERIFICATION_PROFILE_INVALID", profile.toString());
             return profile;
         } catch (VerificationProfileException exception) {
             throw exception;

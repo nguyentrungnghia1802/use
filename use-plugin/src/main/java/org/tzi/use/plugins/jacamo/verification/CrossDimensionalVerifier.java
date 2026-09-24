@@ -7,15 +7,12 @@ import org.tzi.use.uml.sys.MSystem;
 
 /** Verifies source-declared cross-dimensional bindings, not invented behavioral obligations. */
 public final class CrossDimensionalVerifier {
-    private static final Set<String> REFERENCES=Set.of("Agent.artifact","Agent.joinWorkspace",
-        "ExternalAction.operation","Plan.RefArtifact","ObsProperty.obsproperty","Role.players",
-        "Organisation.deploysAgent","OGoal.OGoalToGoal");
-
     public List<VerificationResult> verify(JaCaMoSemanticModel semantic, MSystem system, TraceIndex trace) {
         List<VerificationResult> results=new ArrayList<>();
         for(var source:semantic.elements()) for(var reference:source.references()) {
-            if(!REFERENCES.contains(source.kind()+"."+reference.feature())) continue;
-            results.add(verifyBinding(system,trace,"dSML4JaCaMo::"+source.kind()+"#"+reference.feature(),
+            var descriptor = semantic.registry().reference(source.kind(), reference.feature()).orElseThrow();
+            if (source.kind().dimension() == semantic.registry().require(descriptor.sourceTarget()).dimension()) continue;
+            results.add(verifyBinding(system,trace,descriptor.source(),
                 source.id().value(),reference.targetId()==null ? null : reference.targetId().value()));
         }
         return List.copyOf(results);
@@ -35,7 +32,11 @@ public final class CrossDimensionalVerifier {
             var association=system.model().getAssociation(associations.getFirst().targetUseId().substring("association:".length()));
             var a=system.state().objectByName(source);var b=system.state().objectByName(target);
             if(association==null || a==null || b==null) throw new IllegalArgumentException("CROSS_RELATION_TARGET_MISSING");
-            boolean linked=system.state().hasLinkBetweenObjects(association,a,b);
+            var descriptor = MetamodelKind.registry().mapping().associations().stream()
+                    .filter(r -> r.source().equals(referenceIdentity)).findFirst().orElseThrow(() ->
+                            new IllegalArgumentException("CROSS_RELATION_NOT_ACTIVE"));
+            boolean linked = descriptor.reverse() ? system.state().hasLinkBetweenObjects(association,b,a)
+                    : system.state().hasLinkBetweenObjects(association,a,b);
             return result(rule,linked ? VerificationOutcome.PASS : VerificationOutcome.FAIL,source,
                 linked ? "Exact source relation is materialized" : "Exact source relation is absent; similar names cannot substitute",ids);
         } catch(RuntimeException error) {

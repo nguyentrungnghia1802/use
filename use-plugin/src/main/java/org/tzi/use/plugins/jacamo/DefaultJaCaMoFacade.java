@@ -175,7 +175,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         if (runtime != null) runtime.close();
         runtimeVerification = new RuntimeVerificationEngine(workspace.direct.system(), workspace.registry, workspace.trace);
         runtime = new RuntimeMirrorService(configuredConnector,
-                new RuntimeMutationEngine(workspace.direct.system(), workspace.trace), configuredQueueCapacity,
+                workspace.mutationEngine(), configuredQueueCapacity,
                 runtimeVerification);
         runtime.connect(configuredEndpoint);
     }
@@ -244,7 +244,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             next.latest = null;
         };
         if (runtime == null) install.run();
-        else runtime.replaceWorkspace(new RuntimeMutationEngine(next.direct.system(), next.trace), verification, install);
+        else runtime.replaceWorkspace(next.mutationEngine(), verification, install);
         // Static verification predates the authoritative runtime snapshot.
         runFullVerification();
     }
@@ -258,8 +258,8 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         long generationStarted = System.nanoTime();
         MappingModel mapping = new MappingLoader().loadCanonical(checkout);
         var baseline = new TransformationPlanner().plan(imported.model(), mapping);
-        var structure = new VerificationSemanticLayer().apply(baseline,
-                new VerificationProfileLoader().loadV1()).transformation();
+        var structure = new VerificationSemanticLayer().apply(baseline, mapping,
+                new VerificationProfileLoader().loadActive(mapping)).transformation();
         InstancePlan instances = new InstancePlanner().plan(imported.model(), mapping, structure);
         var constraints = new ConstraintExtractor().extract(imported.model(), structure, Map.of());
         OclProfileLoader profiles = new OclProfileLoader();
@@ -312,7 +312,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         Map<String, String> sourceHashes = imported.model().elements().stream().collect(java.util.stream.Collectors.toMap(
                 element -> element.id().value(), element -> element.provenance().getFirst().sourceHash()));
         return new Workspace(summary, sources, List.copyOf(diagnostics), traces, direct, trace, registry, latest,
-                sourceHashes, importNanos, generationNanos);
+                sourceHashes, importNanos, generationNanos, structure, instances);
     }
 
     private String dimension(String semanticId) {
@@ -358,11 +358,19 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         private final long importNanos;
         private final long generationNanos;
         private VerificationReport latest;
+        private final org.tzi.use.plugins.jacamo.mapping.TransformationPlan structure;
+        private final org.tzi.use.plugins.jacamo.materialization.InstancePlan instances;
+        private RuntimeMutationEngine mutationEngine() {
+            return new RuntimeMutationEngine(direct.system(), trace, new org.tzi.use.plugins.jacamo.runtime.RuntimeMappingLoader().loadDefault(),
+                    new org.tzi.use.plugins.jacamo.runtime.TraceRuntimeTargetAdapter(trace), structure, instances);
+        }
 
         private Workspace(ProjectSummary summary, List<SourceRow> sources, List<Diagnostic> diagnostics,
                           List<TraceRow> traces, DirectUseBackend.Result direct, TraceIndex trace,
                           ConstraintRegistry registry, VerificationReport latest, Map<String, String> sourceHashes,
-                          long importNanos, long generationNanos) {
+                          long importNanos, long generationNanos, org.tzi.use.plugins.jacamo.mapping.TransformationPlan structure,
+                          org.tzi.use.plugins.jacamo.materialization.InstancePlan instances) {
+            this.structure = structure; this.instances = instances;
             this.summary = summary;
             this.sources = sources;
             this.diagnostics = diagnostics;

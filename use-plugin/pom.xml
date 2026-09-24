@@ -24,6 +24,13 @@
     </repositories>
 
     <dependencies>
+        <!-- Native Ecore audit only; not a production or packaged runtime dependency. -->
+        <dependency>
+            <groupId>org.eclipse.emf</groupId>
+            <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+            <version>2.39.0</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>json-schema-validator</artifactId>
@@ -66,18 +73,28 @@
                 <directory>src/main/resources</directory>
             </resource>
             <resource>
-                <directory>Core/Metamodel</directory>
-                <targetPath>org/tzi/use/plugins/jacamo/canonical</targetPath>
+                <directory>Core/Metamodel/version-1</directory>
+                <targetPath>org/tzi/use/plugins/jacamo/historical/version-1</targetPath>
                 <includes><include>JaCaMo-Metamodel.ecore</include></includes>
             </resource>
             <resource>
-                <directory>Core/Mapping</directory>
-                <targetPath>org/tzi/use/plugins/jacamo/canonical</targetPath>
+                <directory>Core/Mapping/version-1</directory>
+                <targetPath>org/tzi/use/plugins/jacamo/historical/version-1</targetPath>
                 <includes>
                     <include>jacamo-use-mapping-v1.json</include>
                     <include>jacamo-use-mapping.schema.json</include>
                     <include>freeze-manifest.json</include>
                 </includes>
+            </resource>
+            <resource>
+                <directory>Core/Metamodel/version-2</directory>
+                <targetPath>org/tzi/use/plugins/jacamo/canonical/version-2</targetPath>
+                <includes><include>jacamo_v2_complete.ecore</include></includes>
+            </resource>
+            <resource>
+                <directory>Core/Mapping/version-2</directory>
+                <targetPath>org/tzi/use/plugins/jacamo/canonical/version-2</targetPath>
+                <includes><include>jacamo-use-mapping-v2.json</include><include>jacamo-use-mapping-v2.schema.json</include></includes>
             </resource>
             <resource>
                 <directory>release</directory>
@@ -158,7 +175,7 @@
                         <goals><goal>single</goal></goals>
                         <configuration>
                             <descriptors><descriptor>src/assembly/release.xml</descriptor></descriptors>
-                            <finalName>use-jacamo-plugin-${project.version}</finalName>
+                            <finalName>use-jacamo-plugin-${project.version}-v2-working</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
@@ -175,7 +192,7 @@
                         <goals><goal>run</goal></goals>
                         <configuration>
                             <target>
-                                <checksum file="${project.build.directory}/use-jacamo-plugin-${project.version}.zip"
+                                <checksum file="${project.build.directory}/use-jacamo-plugin-${project.version}-v2-working.zip"
                                           algorithm="SHA-256" fileext=".sha256" format="MD5SUM"/>
                             </target>
                         </configuration>

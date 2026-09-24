@@ -34,11 +34,25 @@ public final class MappingLoader {
     }
 
     public MappingModel loadCanonical(Path checkout) {
-        Path module = Files.isDirectory(checkout.resolve("Core")) ? checkout : checkout.resolve("use-plugin");
-        return load(module.resolve("Core/Mapping/jacamo-use-mapping-v1.json"),
-                module.resolve("Core/Mapping/jacamo-use-mapping.schema.json"),
-                module.resolve("Core/Metamodel/JaCaMo-Metamodel.ecore"),
-                module.resolve("Core/Mapping/freeze-manifest.json"));
+        return new ActiveBaseline().fromCheckout(checkout).mapping();
+    }
+
+    /** Working contracts validate exact embedded Ecore compatibility, without a frozen V1 manifest. */
+    public MappingModel loadWorking(Path mappingPath, Path schemaPath, Path ecorePath) {
+        try {
+            byte[] mappingBytes = reader.read(mappingPath).clone();
+            byte[] schemaBytes = reader.read(schemaPath).clone();
+            byte[] ecoreBytes = reader.read(ecorePath).clone();
+            var schema = SchemaRegistry.withDefaultDialect(SpecificationVersion.DRAFT_2020_12)
+                    .getSchema(new String(schemaBytes, StandardCharsets.UTF_8), InputFormat.JSON);
+            String text = new String(mappingBytes, StandardCharsets.UTF_8);
+            var errors = schema.validate(text, InputFormat.JSON);
+            if (!errors.isEmpty()) throw new MappingException("MAPPING_SCHEMA_INVALID", errors.toString());
+            JsonNode root = JSON.readTree(text);
+            new V2MappingValidator().validate(root, ecoreBytes);
+            return parse(root);
+        } catch (MappingException e) { throw e; }
+        catch (Exception e) { throw new MappingException("MAPPING_LOAD_FAILED", mappingPath.toString(), e); }
     }
 
     public MappingModel load(Path mappingPath, Path schemaPath, Path ecorePath, Path freezePath) {
@@ -160,18 +174,24 @@ public final class MappingLoader {
         List<MappingModel.ClassMapping> classes = new ArrayList<>();
         for (JsonNode node : root.withArray("classMappings")) classes.add(new MappingModel.ClassMapping(
                 text(node, "id"), text(node, "source"), text(node.path("target"), "name"),
-                node.path("target").path("abstract").asBoolean()));
+                node.path("target").path("abstract").asBoolean(), text(node, "dimension")));
         List<MappingModel.AttributeMapping> attributes = new ArrayList<>();
         for (JsonNode node : root.withArray("attributeMappings")) attributes.add(new MappingModel.AttributeMapping(
                 text(node, "id"), text(node, "source"), text(node, "sourceOwner"), text(node, "sourceName"),
-                text(node.path("target"), "owner"), text(node.path("target"), "name"), text(node.path("target"), "type")));
+                text(node.path("target"), "owner"), text(node.path("target"), "name"), text(node.path("target"), "type"),
+                node.path("sourceRequired").asBoolean(false), node.has("sourceExplicitDefaultLiteral")
+                    ? node.get("sourceExplicitDefaultLiteral").asText() : null));
         List<MappingModel.ReferenceMapping> references = new ArrayList<>();
+        var byId = new java.util.HashMap<String, JsonNode>();
+        root.withArray("referenceMappings").forEach(r -> byId.put(text(r, "id"), r));
         for (JsonNode node : root.withArray("referenceMappings")) {
             JsonNode target = node.path("target");
+            boolean reverse = target.has("aliasOf");
+            if (reverse) target = byId.get(text(target, "aliasOf")).path("target");
             references.add(new MappingModel.ReferenceMapping(text(node, "id"), text(node, "source"),
                     text(node, "sourceOwner"), text(node, "sourceName"), text(node, "sourceTarget"),
                     node.path("sourceContainment").asBoolean(), text(target, "kind"), text(target, "name"),
-                    end(target.path("firstEnd")), end(target.path("secondEnd"))));
+                    end(target.path("firstEnd")), end(target.path("secondEnd")), reverse));
         }
         List<MappingModel.InheritanceMapping> inheritance = new ArrayList<>();
         for (JsonNode node : root.withArray("inheritanceMappings")) inheritance.add(new MappingModel.InheritanceMapping(
@@ -180,8 +200,22 @@ public final class MappingLoader {
         List<MappingModel.ProjectionMapping> projections = new ArrayList<>();
         for (JsonNode node : root.withArray("verificationProjections")) projections.add(new MappingModel.ProjectionMapping(
                 text(node, "id"), text(node, "name"), text(node, "status")));
+        List<MappingModel.EnumMapping> enums = new ArrayList<>();
+        for (var node : root.path("enumMappings")) {
+            List<String> literals = new ArrayList<>(); node.path("target").path("literals").forEach(l -> literals.add(l.asText()));
+            var spellings = new java.util.TreeMap<String, String>();
+            for (var literal : node.path("sourceLiterals")) {
+                for (String spelling : List.of(text(literal, "name"), text(literal, "literal"))) {
+                    var previous = spellings.putIfAbsent(spelling, text(literal, "name"));
+                    if (previous != null && !previous.equals(text(literal, "name")))
+                        throw new MappingException("MAPPING_ENUM_AMBIGUOUS", spelling);
+                }
+            }
+            enums.add(new MappingModel.EnumMapping(text(node.path("target"), "name"), literals, spellings));
+        }
         return new MappingModel(text(root, "schemaVersion"), text(root, "mappingId"), text(root, "status"),
-                classes, attributes, references, inheritance, projections);
+                classes, attributes, references, inheritance, projections, enums,
+                root.has("orderProjection") ? new OrderProjectionPlanner().specifications(root) : List.of());
     }
 
     private MappingModel.AssociationEnd end(JsonNode node) {

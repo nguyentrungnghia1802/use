@@ -1,0 +1,54 @@
+{
+  "status": "WORKING_BASELINE",
+  "mappingVersion": "2.2.0",
+  "decision": "USER_APPROVED_TARGET_ONLY_ORDER_PROJECTION",
+  "ecoreDiff": "UNCHANGED",
+  "useCoreDiff": "UNCHANGED",
+  "hashes": {
+    "use-plugin/Core/Metamodel/version-2/jacamo_v2_complete.ecore": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c",
+    "use-plugin/Core/Mapping/version-2/jacamo-use-mapping-v2.json": "15d330c70400d16958559b83daf27c3755dc0cb28a7dffb8a08d94879d1ddf67",
+    "use-plugin/Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json": "e9f555ad2e19cbf8382ff4c17d44179d3b47a13d03ee9a58c2b491f99b72c919"
+  },
+  "focused": {
+    "tests": 27,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "fullRegression": {
+    "command": "mvn -B verify",
+    "exitCode": 1,
+    "totals": {
+      "tests": 325,
+      "failures": 3,
+      "errors": 73,
+      "skipped": 0
+    },
+    "failingTestIdentities": "EXACTLY_EQUALS_PRE_MIGRATION_BASELINE",
+    "logSha256": "27bd1f89b3b02f51d92b751f7ba7b39775301bc3e7d866d2ecc9631df5436f07"
+  },
+  "componentGates": [
+    "native EMF counterexamples preserved",
+    "both independent orders via OCL",
+    "determinism",
+    "text shell commands/direct parity",
+    "rank validity",
+    "no duplicate membership",
+    "rank-only delta",
+    "queue and disconnect/reconnect",
+    "authoritative resync",
+    "unordered and non-opposite controls",
+    "composition control"
+  ],
+  "openGates": [
+    "default V2 selector and IR/parser migration",
+    "default facade full V2 workflow",
+    "real connector source-order authority",
+    "full regression and package acceptance"
+  ],
+  "currentAcceptance": {
+    "status": "CONSUMER_GATES_PASS_PHASE_MERGE_PENDING",
+    "evidence": "phase35-final-regression.json",
+    "note": "Existing run/open fields above are historical stage records; no final freeze."
+  }
+}

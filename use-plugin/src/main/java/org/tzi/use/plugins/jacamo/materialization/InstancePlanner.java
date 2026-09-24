@@ -28,6 +28,7 @@ public final class InstancePlanner {
             elements.put(element.id().value(), element);
             objectNames.put(element.id().value(), names.allocate(element.name(), element.id().value()));
         }
+        List<Diagnostic> diagnostics = new ArrayList<>();
         List<ObjectPlan> objects = new ArrayList<>();
         Map<String, Map<String, AttributeValue>> valuesById = new LinkedHashMap<>();
         for (SemanticElement element : semantic.elements()) {
@@ -36,7 +37,11 @@ public final class InstancePlanner {
             mapping.attributes().stream().filter(entry -> owners.contains(entry.sourceOwner()))
                     .forEach(entry -> {
                         AttributeValue value = element.attributes().get(entry.sourceName());
+                        if (value == null && entry.explicitDefault() != null) value = defaultValue(entry, mapping);
                         if (value != null) values.put(entry.name(), value);
+                        else if (entry.required()) diagnostics.add(diagnostic("MATERIALIZATION_REQUIRED_ATTRIBUTE_MISSING",
+                                Severity.ERROR, element, entry.id(), "Required V2 attribute has no source value or explicit Ecore default",
+                                entry.source(), "Provide source evidence; no value was invented"));
                     });
             valuesById.put(element.id().value(), values);
             objects.add(new ObjectPlan(objectNames.get(element.id().value()), targetClass(element, transformation),
@@ -45,7 +50,6 @@ public final class InstancePlanner {
         applyProjectedState(semantic, transformation, valuesById, objects);
 
         List<LinkPlan> links = new ArrayList<>();
-        List<Diagnostic> diagnostics = new ArrayList<>();
         Set<String> uniqueLinks = new HashSet<>();
         for (SemanticElement source : semantic.elements()) {
             Set<String> owners = ownersFor(source, transformation);
@@ -72,21 +76,59 @@ public final class InstancePlanner {
                             "Rebuild the semantic model and resolver indexes"));
                     continue;
                 }
-                String key = mappingEntry.get().name() + "|" + source.id().value() + "|" + targetId;
-                if (uniqueLinks.add(key)) links.add(new LinkPlan(mappingEntry.get().name(), objectNames.get(source.id().value()),
-                        objectNames.get(targetId), mappingEntry.get().containment(), source.id().value(), targetId,
-                        mappingEntry.get().id()));
+                var entry = mappingEntry.get();
+                String from = entry.reverse() ? targetId : source.id().value();
+                String to = entry.reverse() ? source.id().value() : targetId;
+                String key = entry.name() + "|" + from + "|" + to;
+                String canonicalRule = entry.reverse() ? mapping.associations().stream().filter(r -> !r.reverse() && r.name().equals(entry.name()))
+                        .findFirst().orElseThrow().id() : entry.id();
+                if (uniqueLinks.add(key)) links.add(new LinkPlan(entry.name(), objectNames.get(from),
+                        objectNames.get(to), entry.containment(), from, to, canonicalRule));
             }
         }
         validateRequiredLinks(semantic, transformation, links, diagnostics);
         validateCompositionOwnership(elements, links, diagnostics);
-        return new InstancePlan(objects, links, diagnostics);
+        InstancePlan membership = new InstancePlan(objects, links, diagnostics);
+        if (transformation.orderProjections().isEmpty()) return membership;
+        List<org.tzi.use.plugins.jacamo.mapping.OrderProjectionPlanner.SourceOrder> orders = new ArrayList<>();
+        for (var spec : transformation.orderProjections()) for (var source : semantic.elements()) {
+            if (!ownersFor(source, transformation).contains(spec.owner())) continue;
+            String feature = spec.sourceIdentity().substring(spec.sourceIdentity().indexOf('#') + 1);
+            if (source.sourceFacts().containsKey("orderUnresolved:" + feature))
+                throw new MaterializationException("ORDER_SOURCE_UNRESOLVED", spec.sourceIdentity() + ":" + source.id().value());
+            var references = source.references().stream().filter(r -> r.feature().equals(feature)).toList();
+            if (references.stream().anyMatch(r -> r.targetId() == null || !objectNames.containsKey(r.targetId().value())))
+                throw new MaterializationException("ORDER_SOURCE_UNRESOLVED", spec.sourceIdentity() + ":" + source.id().value());
+            orders.add(new org.tzi.use.plugins.jacamo.mapping.OrderProjectionPlanner.SourceOrder(spec.sourceIdentity(),
+                    objectNames.get(source.id().value()), references.stream().map(r -> objectNames.get(r.targetId().value())).toList()));
+        }
+        return new org.tzi.use.plugins.jacamo.mapping.OrderProjectionPlanner().project(transformation, membership, orders);
+    }
+
+    private AttributeValue defaultValue(MappingModel.AttributeMapping entry, MappingModel mapping) {
+        String literal = entry.explicitDefault();
+        return switch (entry.type()) {
+            case "String" -> new AttributeValue.Text(literal);
+            case "Integer" -> new AttributeValue.IntegerNumber(Long.parseLong(literal));
+            case "Boolean" -> {
+                if (!literal.equals("true") && !literal.equals("false"))
+                    throw new MaterializationException("MAPPING_DEFAULT_INVALID", entry.source());
+                yield new AttributeValue.Bool(Boolean.parseBoolean(literal));
+            }
+            default -> {
+                var enumeration = mapping.enums().stream().filter(e -> e.name().equals(entry.type())).findFirst()
+                        .orElseThrow(() -> new MaterializationException("MAPPING_DEFAULT_INVALID", entry.source()));
+                String name = enumeration.sourceSpellings().get(literal);
+                if (name == null) throw new MaterializationException("MAPPING_DEFAULT_INVALID", entry.source());
+                yield new AttributeValue.EnumLiteral(enumeration.name(), name);
+            }
+        };
     }
 
     private String targetClass(SemanticElement element, TransformationPlan transformation) {
         if (element.kind() == MetamodelKind.Artifact
-                && element.attributes().get("className") instanceof AttributeValue.Text type
-                && element.attributes().get("artifactTypeConfirmed") instanceof AttributeValue.Bool confirmed && confirmed.value()) {
+                && element.attributes().get("type") instanceof AttributeValue.Text type
+                && element.sourceFacts().get("artifactTypeConfirmed") instanceof AttributeValue.Bool confirmed && confirmed.value()) {
             return transformation.classes().stream().filter(spec -> spec.ruleId().equals("VP001")
                     && spec.sourceIdentity().equals(type.value())).map(spec -> spec.name()).findFirst().orElse("Artifact");
         }
@@ -115,8 +157,8 @@ public final class InstancePlanner {
     }
 
     private AttributeValue literal(SemanticElement property) {
-        if (!(property.attributes().get("initialExpression") instanceof AttributeValue.Text expression)
-                || !(property.attributes().get("resolvedType") instanceof AttributeValue.Text type)) return null;
+        if (!(property.sourceFacts().get("initialExpression") instanceof AttributeValue.Text expression)
+                || !(property.sourceFacts().get("resolvedType") instanceof AttributeValue.Text type)) return null;
         String text = expression.value();
         try {
             return switch (type.value()) {

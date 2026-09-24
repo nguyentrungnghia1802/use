@@ -39,7 +39,7 @@ final class CartagoSourceExtractor {
     void parse(ExtractionContext context) {
         List<ElementDraft> artifacts = context.elements.stream().filter(element -> element.kind == MetamodelKind.Artifact).toList();
         for (ElementDraft artifact : artifacts) {
-            AttributeValue value = artifact.attributes.get("className");
+            AttributeValue value = artifact.attributes.get("type");
             if (!(value instanceof AttributeValue.Text type)) continue;
             String suffix = type.value().replace('.', '/') + ".java";
             List<Path> matches = context.graph.sources().stream().filter(source -> source.kind() == SourceKind.JAVA
@@ -66,7 +66,7 @@ final class CartagoSourceExtractor {
                     System.getProperty("java.home"), "Run the plugin with a full JDK"); return;
         }
         try {
-            String source = Files.readString(path, StandardCharsets.UTF_8);
+            String source = context.read(path);
             var file = new StringSource(path.toUri(), source);
             DiagnosticCollector<JavaFileObject> compilerDiagnostics = new DiagnosticCollector<>();
             JavacTask task = (JavacTask) compiler.getTask(null, null, compilerDiagnostics,
@@ -83,10 +83,10 @@ final class CartagoSourceExtractor {
             new TreeScanner<Void, Void>() {
                 @Override public Void visitClass(ClassTree type, Void unused) {
                     if (type.getSimpleName().toString().equals(simpleName((AttributeValue.Text)
-                            artifact.attributes.get("className")))) {
+                            artifact.attributes.get("type")))) {
                         boolean confirmed = type.getExtendsClause() != null
                                 && type.getExtendsClause().toString().endsWith("Artifact");
-                        artifact.attributes.put("artifactTypeConfirmed", new AttributeValue.Bool(confirmed));
+                        artifact.sourceFacts.put("artifactTypeConfirmed", new AttributeValue.Bool(confirmed));
                         if (!confirmed) context.diagnostic("CARTAGO_TYPE_UNCONFIRMED", Severity.WARNING,
                                 Phase.PARSING, artifact.provenance.getFirst().span(), artifact.id.value(),
                                 "Java type is not statically confirmed as a CArtAgO Artifact subtype",
@@ -108,33 +108,41 @@ final class CartagoSourceExtractor {
 
     private void extractMethod(ExtractionContext context, ElementDraft artifact, Path path,
                                CompilationUnitTree unit, SourcePositions positions, MethodTree method) {
-        MetamodelKind operationKind = annotationKind(method.getModifiers().getAnnotations());
+        String operationKind = annotationKind(method.getModifiers().getAnnotations());
         int line = line(unit, positions, method);
         ElementDraft operation = null;
-        if (operationKind != null) {
+        if (operationKind != null && !operationKind.equals("GUARD")) {
             String name = method.getName().toString();
             List<String> owner = new ArrayList<>(artifact.id.ownerPath());
             owner.add(artifact.name);
-            operation = context.element(operationKind, name, owner, path, line, 1,
-                    "jdk-java-parser", method.toString());
-            operation.attributes.put("className", artifact.attributes.get("className"));
-            operation.attributes.put("parameters", new AttributeValue.Text(parameters(method.getParameters())));
-            operation.attributes.put("returnType", new AttributeValue.Text(
+            operation = context.element(MetamodelKind.Operation, name, owner, path, line, column(unit, positions, method),
+                    "jdk-java-parser", snippet(context, path, unit, positions, method));
+            operation.sourceFacts.put("className", artifact.attributes.get("type"));
+            operation.attributes.put("name", new AttributeValue.Text(name));
+            operation.attributes.put("arity", new AttributeValue.IntegerNumber(method.getParameters().size()));
+            operation.sourceFacts.put("operationCategory", new AttributeValue.Text(operationKind));
+            operation.sourceFacts.put("parameters", new AttributeValue.Text(parameters(method.getParameters())));
+            operation.sourceFacts.put("returnType", new AttributeValue.Text(
                     method.getReturnType() == null ? "void" : method.getReturnType().toString()));
-            artifact.references.add(new SemanticReference("operation", name, operation.id));
+            artifact.references.add(new SemanticReference("operations", name, operation.id));
             String guard = annotationValue(method.getModifiers().getAnnotations(), "OPERATION", "guard");
-            if (guard != null) operation.references.add(new SemanticReference("guardedBy", guard, null));
+            if (guard != null) operation.sourceFacts.put("guardedBy", new AttributeValue.Text(guard));
         }
-        if (operation != null && operation.kind == MetamodelKind.GuardOperation) {
-            if (method.getBody()!=null && method.getBody().getStatements().size()==1
+        if ("GUARD".equals(operationKind)) {
+            String prefix = "guard:" + method.getName() + ":";
+            artifact.sourceFacts.put(prefix + "parameters", new AttributeValue.Text(parameters(method.getParameters())));
+            artifact.sourceFacts.put(prefix + "returnType", new AttributeValue.Text(method.getReturnType().toString()));
+            artifact.sourceFacts.put(prefix + "source", new AttributeValue.Text(snippet(context, path, unit, positions, method)));
+            context.addProvenance(artifact, path, line, column(unit, positions, method), "jdk-java-parser", snippet(context, path, unit, positions, method));
+            if (method.getBody() != null && method.getBody().getStatements().size() == 1
                     && method.getBody().getStatements().getFirst() instanceof ReturnTree statement
                     && pureGuardExpression(statement.getExpression())) {
-                operation.attributes.put("guardExpression",new AttributeValue.Text(statement.getExpression().toString()));
+                artifact.sourceFacts.put(prefix + "expression", new AttributeValue.Text(statement.getExpression().toString()));
             } else {
-                operation.attributes.put("guardUnsupported",new AttributeValue.Text("UNSUPPORTED_GUARD_BODY: requires one pure return expression"));
-                context.diagnostic("CARTAGO_GUARD_BODY_UNSUPPORTED",Severity.WARNING,Phase.PARSING,
-                    operation.provenance.getFirst().span(),operation.id.value(),
-                    "Guard body cannot be reduced to one expression",method.toString(),"Retain source; provide an explicit contract if needed");
+                artifact.sourceFacts.put(prefix + "unsupported", new AttributeValue.Text("UNSUPPORTED_GUARD_BODY: requires one pure return expression"));
+                context.diagnostic("CARTAGO_GUARD_BODY_UNSUPPORTED", Severity.WARNING, Phase.PARSING,
+                        artifact.provenance.getFirst().span(), artifact.id.value(), "Guard body cannot be reduced to one expression",
+                        method.toString(), "Retain source; provide an explicit contract if needed");
             }
         }
         ElementDraft owningOperation = operation;
@@ -147,9 +155,10 @@ final class CartagoSourceExtractor {
                 } else if (name.equals("definePort")) {
                     extractPort(context, artifact, path, unit, positions, invocation);
                 } else if (owningOperation != null && name.equals("signal")) {
-                    owningOperation.attributes.put("signalExpression", new AttributeValue.Text(invocation.toString()));
+                    owningOperation.sourceFacts.put("signalExpression", new AttributeValue.Text(invocation.toString()));
+                    extractSignal(context, artifact, owningOperation, path, unit, positions, invocation);
                 } else if (owningOperation != null && (name.equals("await") || name.equals("await_time"))) {
-                    owningOperation.attributes.put(name.equals("await") ? "awaitExpression" : "await_timeExpression",
+                    owningOperation.sourceFacts.put(name.equals("await") ? "awaitExpression" : "await_timeExpression",
                             new AttributeValue.Text(invocation.toString()));
                 }
                 return super.visitMethodInvocation(invocation, unused);
@@ -168,36 +177,61 @@ final class CartagoSourceExtractor {
                     "Provide a literal property name or resolve it from runtime evidence"); return;
         }
         List<String> owner = new ArrayList<>(artifact.id.ownerPath()); owner.add(artifact.name);
-        ElementDraft property = context.element(MetamodelKind.ObsProperty, name, owner, path,
-                line(unit, positions, invocation), 1, "jdk-java-parser", invocation.toString());
-        property.attributes.put("Name", new AttributeValue.Text(name));
+        ElementDraft property = context.element(MetamodelKind.Property, name, owner, path,
+                line(unit, positions, invocation), column(unit, positions, invocation), "jdk-java-parser", snippet(context, path, unit, positions, invocation));
+        property.attributes.put("name", new AttributeValue.Text(name));
+        property.attributes.put("arity", new AttributeValue.IntegerNumber(invocation.getArguments().size() - 1));
         if (invocation.getArguments().size() > 1) {
             ExpressionTree initial = invocation.getArguments().get(1);
-            property.attributes.put("initialExpression", new AttributeValue.Text(initial.toString()));
-            property.attributes.put("resolvedType", new AttributeValue.Text(literalType(initial)));
+            property.sourceFacts.put("initialExpression", new AttributeValue.Text(initial.toString()));
+            property.sourceFacts.put("resolvedType", new AttributeValue.Text(literalType(initial)));
         }
-        artifact.references.add(new SemanticReference("obsproperty", name, property.id));
+        artifact.references.add(new SemanticReference("properties", name, property.id));
     }
 
     private void extractPort(ExtractionContext context, ElementDraft artifact, Path path,
                              CompilationUnitTree unit, SourcePositions positions, MethodInvocationTree invocation) {
         if (invocation.getArguments().isEmpty() || !(invocation.getArguments().getFirst() instanceof LiteralTree literal)
                 || !(literal.getValue() instanceof String name)) return;
-        List<String> owner = new ArrayList<>(artifact.id.ownerPath()); owner.add(artifact.name);
-        ElementDraft port = context.element(MetamodelKind.Port, name, owner, path,
-                line(unit, positions, invocation), 1, "jdk-java-parser", invocation.toString());
-        port.attributes.put("Name", new AttributeValue.Text(name));
-        artifact.references.add(new SemanticReference("port", name, port.id));
+        artifact.sourceFacts.put("port@" + line(unit, positions, invocation), new AttributeValue.Text(invocation.toString()));
+        context.addProvenance(artifact, path, line(unit, positions, invocation), column(unit, positions, invocation), "jdk-java-parser", snippet(context, path, unit, positions, invocation));
     }
 
-    private MetamodelKind annotationKind(List<? extends AnnotationTree> annotations) {
+    private void extractSignal(ExtractionContext context, ElementDraft artifact, ElementDraft operation, Path path,
+                               CompilationUnitTree unit, SourcePositions positions, MethodInvocationTree invocation) {
+        if (invocation.getArguments().isEmpty() || !(invocation.getArguments().getFirst() instanceof LiteralTree literal)
+                || !(literal.getValue() instanceof String name)) {
+            context.diagnostic("CARTAGO_DYNAMIC_SIGNAL", Severity.WARNING, Phase.PARSING, operation.provenance.getFirst().span(),
+                    operation.id.value(), "Dynamic signal name remains source-only", invocation.toString(), "Provide literal source evidence");
+            return;
+        }
+        List<String> owner = new ArrayList<>(artifact.id.ownerPath()); owner.add(artifact.name);
+        int arity = invocation.getArguments().size() - 1;
+        ElementDraft signal = context.elements.stream().filter(e -> e.kind == MetamodelKind.Signal && e.name.equals(name)
+                && e.id.ownerPath().equals(owner)).findFirst().orElse(null);
+        if (signal != null && !new AttributeValue.IntegerNumber(arity).equals(signal.attributes.get("arity"))) {
+            context.diagnostic("CARTAGO_SIGNAL_ARITY_CONFLICT", Severity.ERROR, Phase.PARSING, operation.provenance.getFirst().span(),
+                    operation.id.value(), "Signal name has conflicting source arities", invocation.toString(), "Resolve signal identity explicitly");
+            return;
+        }
+        if (signal == null) {
+            signal = context.element(MetamodelKind.Signal, name, owner, path, line(unit, positions, invocation), column(unit, positions, invocation), "jdk-java-parser", snippet(context, path, unit, positions, invocation));
+            signal.attributes.put("name", new AttributeValue.Text(name));
+            signal.attributes.put("arity", new AttributeValue.IntegerNumber(arity));
+        }
+        final var target = signal;
+        if (operation.references.stream().noneMatch(r -> target.id.equals(r.targetId())))
+            operation.references.add(new SemanticReference("signals", name, signal.id));
+    }
+
+    private String annotationKind(List<? extends AnnotationTree> annotations) {
         for (AnnotationTree annotation : annotations) {
             String name = annotation.getAnnotationType().toString();
-            name = name.substring(name.lastIndexOf('.') + 1).toUpperCase(Locale.ROOT);
-            if (name.equals("OPERATION")) return MetamodelKind.Operation;
-            if (name.equals("GUARD")) return MetamodelKind.GuardOperation;
-            if (name.equals("INTERNAL_OPERATION")) return MetamodelKind.InternalOperation;
-            if (name.equals("LINKED_OPERATION")) return MetamodelKind.LinkedOperation;
+            name = name.substring(name.lastIndexOf('.') + 1);
+            if (name.equals("OPERATION")) return "OPERATION";
+            if (name.equals("GUARD")) return "GUARD";
+            if (name.equals("INTERNAL_OPERATION")) return "INTERNAL_OPERATION";
+            if (name.equals("LINKED_OPERATION")) return "LINKED_OPERATION";
         }
         return null;
     }
@@ -247,6 +281,16 @@ final class CartagoSourceExtractor {
     private String simpleName(AttributeValue.Text type) {
         String name = type.value();
         return name.substring(name.lastIndexOf('.') + 1);
+    }
+
+    private int column(CompilationUnitTree unit, SourcePositions positions, com.sun.source.tree.Tree tree) {
+        long start = positions.getStartPosition(unit, tree);
+        return start < 0 ? 1 : Math.toIntExact(unit.getLineMap().getColumnNumber(start));
+    }
+    private String snippet(ExtractionContext context, Path path, CompilationUnitTree unit, SourcePositions positions, com.sun.source.tree.Tree tree) {
+        try {
+            return context.read(path).substring(Math.toIntExact(positions.getStartPosition(unit, tree)), Math.toIntExact(positions.getEndPosition(unit, tree)));
+        } catch (IOException e) { throw new IllegalArgumentException("Cannot preserve Java source span", e); }
     }
 
     private int line(CompilationUnitTree unit, SourcePositions positions, com.sun.source.tree.Tree tree) {

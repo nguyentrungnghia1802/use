@@ -34,13 +34,14 @@ class TraceBindingTest {
         var semantic = new StaticProjectImporter().importProject(Path.of("src/test/resources/auction/auction.jcm")).model();
         var mapping = new MappingLoader().loadCanonical(Path.of("."));
         var baseline = new TransformationPlanner().plan(semantic, mapping);
-        var structure = new VerificationSemanticLayer().apply(baseline, new VerificationProfileLoader().loadV1()).transformation();
+        var structure = new VerificationSemanticLayer().apply(baseline, new VerificationProfileLoader().loadActive(mapping)).transformation();
         var instances = new InstancePlanner().plan(semantic, mapping, structure);
         TraceIndex trace = new TraceBuilder().build(semantic, mapping, structure, instances);
         assertFalse(trace.byTargetKind("CLASS").isEmpty());
         assertFalse(trace.byTargetKind("ATTRIBUTE").isEmpty());
         assertFalse(trace.byTargetKind("ASSOCIATION").isEmpty());
-        assertEquals(instances.objects().size(), trace.byTargetKind("OBJECT").size());
+        assertEquals(semantic.elements().size(), trace.byTargetKind("OBJECT").size());
+        assertEquals(instances.objects().size(), trace.byTargetKind("OBJECT").size() + trace.byTargetKind("ORDER_ENTRY").size());
         assertFalse(trace.byTargetKind("OPERATION").isEmpty());
         String artifactId = instances.objects().stream().filter(o -> o.className().equals("AuctionArtifact"))
                 .findFirst().orElseThrow().semanticId();
@@ -60,7 +61,7 @@ class TraceBindingTest {
 
     @Test
     void resolverUsesOnlyExactOrderedStrategiesAndBindingForRealAmbiguity() {
-        SemanticElement source = element(MetamodelKind.ExternalAction, List.of("MAS", "agent"), "placeBid", "1");
+        SemanticElement source = element(MetamodelKind.Action, List.of("MAS", "agent"), "placeBid", "1");
         SemanticElement first = element(MetamodelKind.Operation, List.of("MAS", "ws", "artifact1"), "placeBid", "2");
         SemanticElement second = element(MetamodelKind.Operation, List.of("MAS", "ws", "artifact2"), "placeBid", "3");
         ExactSemanticResolver resolver = new ExactSemanticResolver(List.of(source, first, second), BindingFile.empty());
@@ -94,24 +95,24 @@ class TraceBindingTest {
     @Test
     void duplicateLocalSymbolsAndOrganisationInstancesRemainAmbiguousWithoutScope() {
         SemanticElement source = element(MetamodelKind.Agent, List.of("MAS"), "caller", "1");
-        var goal1 = element(MetamodelKind.Goal, List.of("MAS", "a1"), "start", "2");
-        var goal2 = element(MetamodelKind.Goal, List.of("MAS", "a2"), "start", "3");
-        var org1 = element(MetamodelKind.Organisation, List.of("MAS", "deployment1"), "org", "4");
-        var org2 = element(MetamodelKind.Organisation, List.of("MAS", "deployment2"), "org", "5");
+        var goal1 = element(MetamodelKind.AGoal, List.of("MAS", "a1"), "start", "2");
+        var goal2 = element(MetamodelKind.AGoal, List.of("MAS", "a2"), "start", "3");
+        var org1 = element(MetamodelKind.Organization, List.of("MAS", "deployment1"), "org", "4");
+        var org2 = element(MetamodelKind.Organization, List.of("MAS", "deployment2"), "org", "5");
         var resolver = new ExactSemanticResolver(List.of(source, goal1, goal2, org1, org2), BindingFile.empty());
         assertEquals(ResolutionResult.Status.AMBIGUOUS, resolver.resolve(new ResolutionRequest(source.id().value(),
-                "start", Set.of(MetamodelKind.Goal), null, List.of())).status());
+                "start", Set.of(MetamodelKind.AGoal), null, List.of())).status());
         assertEquals(goal1.id().value(), resolver.resolve(new ResolutionRequest(source.id().value(), "start",
-                Set.of(MetamodelKind.Goal), null, List.of("a1"))).target().id().value());
+                Set.of(MetamodelKind.AGoal), null, List.of("a1"))).target().id().value());
         assertEquals(ResolutionResult.Status.AMBIGUOUS, resolver.resolve(new ResolutionRequest(source.id().value(),
-                "org", Set.of(MetamodelKind.Organisation), null, List.of())).status());
+                "org", Set.of(MetamodelKind.Organization), null, List.of())).status());
         assertEquals(ResolutionResult.Status.UNRESOLVED, resolver.resolve(new ResolutionRequest(source.id().value(),
-                "starts", Set.of(MetamodelKind.Goal), null, List.of())).status(), "no fuzzy matching");
+                "starts", Set.of(MetamodelKind.AGoal), null, List.of())).status(), "no fuzzy matching");
     }
 
     @Test
     void bindingSchemaPersistsChoiceAndMarksChangedSourceStale() {
-        SemanticElement source = element(MetamodelKind.ExternalAction, List.of("MAS", "a"), "act", "1");
+        SemanticElement source = element(MetamodelKind.Action, List.of("MAS", "a"), "act", "1");
         SemanticElement target = element(MetamodelKind.Operation, List.of("MAS", "w", "x"), "act", "2");
         BindingEntry entry = BindingEntry.active(source.id().value(), target.id().value(), "OPERATION_BINDING",
                 "ambiguous exact candidates", source.provenance().getFirst().sourceHash(), "user selection");

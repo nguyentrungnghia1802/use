@@ -20,7 +20,7 @@ class HotfixBindingTest {
         var importer = new StaticProjectImporter();
         var unresolved = importer.importProject(entry);
         assertFalse(unresolved.success());
-        var source = unresolved.model().elements().stream().filter(e -> e.kind() == MetamodelKind.ExternalAction).findFirst().orElseThrow();
+        var source = unresolved.model().elements().stream().filter(e -> e.kind() == MetamodelKind.Action).findFirst().orElseThrow();
         var target = unresolved.model().elements().stream().filter(e -> e.kind() == MetamodelKind.Operation).findFirst().orElseThrow();
         try (var facade = new DefaultJaCaMoFacade(Path.of("."))) {
             assertThrows(IllegalArgumentException.class, () -> facade.importProject(entry));

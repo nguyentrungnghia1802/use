@@ -1,0 +1,11 @@
+{
+  "sha256" : {
+    "initial-state.cmd" : "2b0a8bf16b5644d7511ad98e44ec8ce9cbae20fc1388e7e7a0c70a61b42117bb",
+    "model.use" : "b1ebcbfd57c5b2c5cff1aa6847ae89cde79e074ca7fbfff351a4df63fb47c352",
+    "trace.json" : "c3ca45ef13698348115357d4cde5d524ad200b86a6aebacb92a3c1b1be77deec"
+  },
+  "fixture" : "counter-team",
+  "mappingId" : "DSML4JaCaMo-2024-reconstructed__to__USE-v1",
+  "status" : "HISTORICAL_V1_EXPLICIT_PATH_STATIC_ONLY",
+  "scope" : "USE compilation, initial structure/invariants, deterministic text, source trace; no V2 or runtime claim"
+}

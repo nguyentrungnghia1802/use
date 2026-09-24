@@ -1,0 +1,11 @@
+{
+  "sha256" : {
+    "initial-state.cmd" : "cdbd4fd6e76bcafa44fb167402b787653f077ef9961ba65e5f1c55bb3768d158",
+    "model.use" : "91f8a92df05aabec35e5d5e832e82732df922b3b2d05703636a7209e33e284a0",
+    "trace.json" : "86829722dab5b566030ddf67ac6eaf2c3f387f8e00bb11af833366dc247d5217"
+  },
+  "fixture" : "auction",
+  "mappingId" : "DSML4JaCaMo-2024-reconstructed__to__USE-v1",
+  "status" : "HISTORICAL_V1_EXPLICIT_PATH_STATIC_ONLY",
+  "scope" : "USE compilation, initial structure/invariants, deterministic text, source trace; no V2 or runtime claim"
+}

@@ -1,0 +1,5 @@
+# Evidence hashes describe exact UTF-8/LF output, including Windows checkouts.
+*.json text eol=lf
+*.use text eol=lf
+*.cmd text eol=lf
+*.log text eol=lf

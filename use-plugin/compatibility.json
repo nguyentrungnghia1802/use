@@ -1,8 +1,9 @@
 {
   "plugin": {
     "version": "1.0.1",
-    "tag": "use-jacamo-plugin-v1.0.1",
-    "status": "candidate-not-tagged"
+    "status": "working-v2-not-released",
+    "historicalTag": "use-jacamo-plugin-v1.0.1",
+    "tag": null
   },
   "requirements": {
     "use": {
@@ -88,11 +89,17 @@
     }
   ],
   "runtimeMapping": {
-    "mappingVersion": "1.0.0",
-    "schemaVersion": "2.0.0",
-    "targetBaseline": "STRUCTURAL_MAPPING_V1",
-    "status": "FROZEN",
+    "mappingVersion": "2.0.0",
+    "schemaVersion": "3.0.0",
+    "targetBaseline": "STRUCTURAL_MAPPING_V2",
+    "status": "WORKING",
     "legacyDraft": "Rejected with RUNTIME_MAPPING_VERSION_UNSUPPORTED; explicit reconciliation required",
-    "scope": "Existing supported component mirror; no standalone or NPL promotion"
+    "scope": "Exact V2 target binding and independent source-order projection; pinned source connector semantics unchanged. No standalone or NPL promotion."
+  },
+  "activeBaseline": {
+    "metamodel": "Core/Metamodel/version-2/jacamo_v2_complete.ecore",
+    "mapping": "Core/Mapping/version-2/jacamo-use-mapping-v2.json",
+    "mappingSchemaVersion": "2.2.0",
+    "status": "WORKING_BASELINE"
   }
 }

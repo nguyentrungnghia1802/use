@@ -1,5 +1,13 @@
 # Known Limitations
 
+- V2 consumers now use Mapping 2.2.0 and runtime target schema 3.0.0. Full
+  clean-build passes 350/350; phase merge/post-merge/push remains OPEN. See [current runtime boundaries](docs/project/v2-migration/phase35-runtime-targets.md).
+- Ordered membership changes require complete authoritative directional orders
+  during resynchronization; bare link/endpoint mutations are rejected before
+  corrupting rank projection. Rank-only updates and reconnect are tested.
+- V2 working package is not frozen or published. Historical V1 evidence below
+  does not establish unrestricted V2 runtime or original Auction equivalence.
+
 - Compatibility evidence is limited to Windows 11 amd64, Oracle JDK 21.0.5, Maven
   3.9.9, USE 7.5.0, Jason 3.3.0, CArtAgO 3.1 and Moise 1.1.
 - Phase 20 now passes a real JaCaMo 1.3.0 `.jcm` launcher control through

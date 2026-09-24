@@ -20,6 +20,7 @@ public final class TextBackend {
     }
 
     private String format(AttributeValue value) {
+        if (value instanceof AttributeValue.EnumLiteral literal) return literal.enumeration() + "::" + literal.literal();
         if (value instanceof AttributeValue.Text text) return "'" + text.value().replace("\\", "\\\\").replace("'", "\\'") + "'";
         if (value instanceof AttributeValue.IntegerNumber integer) return Long.toString(integer.value());
         return Boolean.toString(((AttributeValue.Bool) value).value());
