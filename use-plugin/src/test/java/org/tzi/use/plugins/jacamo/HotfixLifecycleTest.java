@@ -19,8 +19,10 @@ class HotfixLifecycleTest {
     @ValueSource(strings = {"rebuild", "profile", "reimport"})
     void liveWorkspaceReplacementKeepsRuntimeAndFullVerificationTogether(String action) throws Exception {
             try (var facade = new DefaultJaCaMoFacade(Path.of("."))) {
+                assertEquals(MirrorState.OFFLINE, facade.runtimeStatus().state());
                 Path entry = Path.of("src/test/resources/auction/auction.jcm");
                 facade.importProject(entry);
+                assertEquals(MirrorState.MODEL_READY, facade.runtimeStatus().state());
                 String semantic = facade.traces().stream().filter(t -> t.sourceKind().equals("Artifact"))
                         .findFirst().orElseThrow().semanticId();
                 var field = DefaultJaCaMoFacade.class.getDeclaredField("workspace"); field.setAccessible(true);

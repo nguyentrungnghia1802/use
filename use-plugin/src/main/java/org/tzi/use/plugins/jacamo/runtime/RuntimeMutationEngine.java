@@ -251,8 +251,30 @@ public final class RuntimeMutationEngine {
         var action = mapping.select(event).action();
         if (action == RuntimeSemanticAction.RELATION_REORDER) {
             var desired = new org.tzi.use.plugins.jacamo.mapping.OrderProjectionPlanner().project(orderStructure, orderMembership, sourceOrders(event));
+            for (var link : desired.links()) {
+                var association = system.model().getAssociation(link.association());
+                var source = system.state().objectByName(link.sourceObject());
+                var target = system.state().objectByName(link.targetObject());
+                if (association == null || source == null || target == null ||
+                        !system.state().hasLinkBetweenObjects(association, List.of(source, target), null))
+                    difference(differences, event, "association:" + link.association() + ":" + link.sourceObject() + ":" + link.targetObject(), "present", "missing");
+            }
+            for (var association : orderStructure.associations()) {
+                long expected = desired.links().stream().filter(l -> l.association().equals(association.name())).count();
+                long actual = system.state().linksOfAssociation(system.model().getAssociation(association.name())).size();
+                if (expected != actual) difference(differences, event, "association:" + association.name(), Long.toString(expected), Long.toString(actual));
+            }
+            for (var spec : orderStructure.orderProjections()) {
+                var expected = desired.objects().stream().filter(o -> o.className().equals(spec.entryClass())).map(o -> o.name()).collect(java.util.stream.Collectors.toSet());
+                for (var object : system.state().allObjects()) if (object.cls().name().equals(spec.entryClass()) && !expected.contains(object.name()))
+                    difference(differences, event, "object:" + object.name(), "absent", spec.entryClass());
+            }
             for (var row : desired.objects()) if (orderStructure.orderProjections().stream().anyMatch(p -> p.entryClass().equals(row.className()))) {
                 var object = system.state().objectByName(row.name());
+                if (object != null && !object.cls().name().equals(row.className())) {
+                    difference(differences, event, "object:" + row.name(), row.className(), object.cls().name());
+                    continue;
+                }
                 String expected = Long.toString(((org.tzi.use.plugins.jacamo.semantic.AttributeValue.IntegerNumber) row.values().get("rank")).value());
                 String actual = object == null ? "missing" : object.state(system.state()).attributeValue("rank").toString();
                 if (!expected.equals(actual)) difference(differences, event, "object:" + row.name() + ".rank", expected, actual);

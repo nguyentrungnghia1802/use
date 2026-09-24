@@ -669,15 +669,40 @@ class RuntimeFoundationTest {
         }
     }
 
+    @Test void snapshotBufferOverflowFailsClosedEvenWhenProducerCatchesCallbackFailure() {
+        var fixture = fixture();
+        var semantic = fixture.artifactTrace().sourceSemanticId();
+        var snapshot = event(1, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(), semantic,
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", true), null);
+        var first = event(2, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(), semantic,
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", false), null);
+        var second = event(3, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(), semantic,
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", true), null);
+        var connector = new SnapshotRaceConnector(snapshot, first, second);
+        connector.swallowFailures = true;
+        var observer = new TrackingObserver();
+        var mirror = new RuntimeMirrorService(connector, fixture.engine(), 1, observer);
+        assertThrows(RuntimeException.class, () -> mirror.connect(URI.create("synthetic://overflow")));
+        assertEquals(MirrorState.ERROR, mirror.state());
+        assertEquals(ConnectorState.DISCONNECTED, connector.state());
+        assertNull(connector.listener);
+        assertEquals(1, connector.caughtFailures, "backpressure must be signaled during snapshot acquisition");
+        assertTrue(mirror.lastFailure().contains("BACKPRESSURE"));
+        assertTrue(observer.rejected.containsAll(List.of(first.eventId(), second.eventId())),
+                "every received buffered event needs explicit disposition on failed synchronization");
+    }
+
     private static final class SnapshotRaceConnector implements RuntimeConnector {
         private final RuntimeEvent snapshot;
-        private final RuntimeEvent concurrent;
+        private final List<RuntimeEvent> concurrent;
+        private boolean swallowFailures;
+        private int caughtFailures;
         private Consumer<RuntimeEvent> listener;
         private ConnectorState state = ConnectorState.DISCONNECTED;
 
-        private SnapshotRaceConnector(RuntimeEvent snapshot, RuntimeEvent concurrent) {
+        private SnapshotRaceConnector(RuntimeEvent snapshot, RuntimeEvent... concurrent) {
             this.snapshot = snapshot;
-            this.concurrent = concurrent;
+            this.concurrent = List.of(concurrent);
         }
         @Override public String connectorId() { return "snapshot-race"; }
         @Override public Set<ConnectorCapability> capabilities() {
@@ -687,7 +712,10 @@ class RuntimeFoundationTest {
         @Override public ConnectorState state() { return state; }
         @Override public void connect(URI endpoint) { state = ConnectorState.CONNECTED; }
         @Override public RuntimeSnapshot fullSnapshot() {
-            listener.accept(concurrent);
+            for (var event : concurrent) {
+                try { listener.accept(event); }
+                catch (RuntimeException failure) { caughtFailures++; if (!swallowFailures) throw failure; }
+            }
             return new RuntimeSnapshot("snapshot-race", Instant.now(), snapshot.sequence(),
                     List.of(snapshot), "snapshot-race-hash");
         }

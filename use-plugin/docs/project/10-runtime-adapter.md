@@ -2,6 +2,9 @@
 
 > Current V2 target contract: [Phase 35 reconciliation](v2-migration/phase35-runtime-targets.md). Default runtime loading uses Mapping V2 fingerprints and schema 3.0.0; older frozen V1 results below are historical. Full clean reactor PASS 350/350; see Phase 35 acceptance for workflow closure.
 
+> Current source/action reconciliation: [Phase 38](v2-migration/phase38-runtime-mapping.md).
+> V2 mirror correctness and bounded synchronization: [Phase 39](v2-migration/phase39-mirror-correctness.md).
+
 ## 1. Mục tiêu
 
 Mirror trạng thái chạy thật của JaCaMo vào USE `MSystemState` để OCL kiểm chứng runtime.
