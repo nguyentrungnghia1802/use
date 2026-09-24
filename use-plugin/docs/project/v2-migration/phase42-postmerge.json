@@ -1,0 +1,51 @@
+{
+  "status": "PASS",
+  "command": "mvn -B -pl use-plugin verify -Dtest=CompatibilityManifestTest,ReleasePackageContractTest,PackagedResourceNamespaceTest,JaCaMoWorkbenchPanelTest",
+  "head": "e86c0dfd4e531c14c29eb9dc085fea549fe11d82",
+  "sourcePatchSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "log": "use-plugin/target/phase42-postmerge.log",
+  "logSha256": "4dcbedf01422b2c0db0f5d2ce8ab765726f72c7283eccfe1ce946e47181f5d4e",
+  "counts": {
+    "tests": 15,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.CompatibilityManifestTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.release.PackagedResourceNamespaceTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest"
+    },
+    {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.ui.JaCaMoWorkbenchPanelTest"
+    },
+    {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.release.ReleasePackageIT"
+    }
+  ]
+}
