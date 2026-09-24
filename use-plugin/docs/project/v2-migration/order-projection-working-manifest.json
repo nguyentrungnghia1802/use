@@ -45,5 +45,10 @@
     "default facade full V2 workflow",
     "real connector source-order authority",
     "full regression and package acceptance"
-  ]
+  ],
+  "currentAcceptance": {
+    "status": "CONSUMER_GATES_PASS_PHASE_MERGE_PENDING",
+    "evidence": "phase35-final-regression.json",
+    "note": "Existing run/open fields above are historical stage records; no final freeze."
+  }
 }

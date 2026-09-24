@@ -1,7 +1,7 @@
 # Known Limitations
 
 - V2 consumers now use Mapping 2.2.0 and runtime target schema 3.0.0. Full
-  clean-build/phase closure remains OPEN. See [current runtime boundaries](docs/project/v2-migration/phase35-runtime-targets.md).
+  clean-build passes 350/350; phase merge/post-merge/push remains OPEN. See [current runtime boundaries](docs/project/v2-migration/phase35-runtime-targets.md).
 - Ordered membership changes require complete authoritative directional orders
   during resynchronization; bare link/endpoint mutations are rejected before
   corrupting rank projection. Rank-only updates and reconnect are tested.

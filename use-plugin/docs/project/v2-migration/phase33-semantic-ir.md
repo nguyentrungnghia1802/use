@@ -1,5 +1,10 @@
 # Phase 33 — V2 IR component migration
 
+> Current acceptance: downstream consumer gates PASS after **350/350 clean reactor**
+> and **11/11 Python tests**. Earlier run counts/OPEN descriptions below retain
+> their historical stage. See [final acceptance](phase35-acceptance.md); phase
+> merge/post-merge/push closure remains pending. V2 remains WORKING_BASELINE.
+
 Status: component and parser integration validation PASS; full phase closure OPEN.
 Active inputs remain the unchanged Mapping 2.2.0 and V2 Ecore selected by ActiveBaseline.
 

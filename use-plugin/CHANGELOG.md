@@ -6,7 +6,7 @@
 - Preserve independent opposite orders through target-only ranks, shared text/direct plans and exact trace.
 - Migrate extraction, verification projections, OCL and runtime target contracts; preserve historical V1 evidence.
 - Produce a distinctly named V2 working ZIP, without a release tag or freeze claim.
-- Full clean-build acceptance remains pending; see Phase 35 evidence.
+- Full clean-build acceptance PASS: 350/350; see Phase 35 evidence.
 
 ## 1.0.1 - 2026-09-18
 

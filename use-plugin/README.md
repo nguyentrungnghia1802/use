@@ -1,9 +1,9 @@
 # USE JaCaMo Plugin 1.0.1
 
- > **V2 working migration:** Active Metamodel V2 and Mapping 2.2.0 now drive IR,
+> **V2 working migration:** Active Metamodel V2 and Mapping 2.2.0 now drive IR,
 > extraction, transformation, trace, OCL and runtime target binding. Independent
 > directional order is represented by generic target-only ranks. Focused tests
-> pass; clean full-reactor/package acceptance is pending. See
+> pass; clean full-reactor/package acceptance is PASS (350/350). See
 > [transformation](docs/project/v2-migration/phase35-transformation.md) and
 > [runtime contract](docs/project/v2-migration/phase35-runtime-targets.md).
 > The archive is `use-jacamo-plugin-1.0.1-v2-working.zip`, status

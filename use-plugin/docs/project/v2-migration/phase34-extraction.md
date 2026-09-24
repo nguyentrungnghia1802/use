@@ -1,5 +1,10 @@
 # Phase 34 — source extraction into V2 IR
 
+> Current acceptance: downstream consumer gates PASS after **350/350 clean reactor**
+> and **11/11 Python tests**. Earlier run counts/OPEN descriptions below retain
+> their historical stage. See [final acceptance](phase35-acceptance.md); phase
+> merge/post-merge/push closure remains pending. V2 remains WORKING_BASELINE.
+
 Status: focused component regression PASS; downstream transformation/OCL/runtime
 consumer migration and full phase closure OPEN. Ecore and Mapping JSON/schema
 remain unchanged at working contract 2.2.0.

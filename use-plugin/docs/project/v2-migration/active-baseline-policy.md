@@ -1,5 +1,10 @@
 # Active baseline selection contract
 
+> Current acceptance: downstream consumer gates PASS after **350/350 clean reactor**
+> and **11/11 Python tests**. Earlier run counts/OPEN descriptions below retain
+> their historical stage. See [final acceptance](phase35-acceptance.md); phase
+> merge/post-merge/push closure remains pending. V2 remains WORKING_BASELINE.
+
 Status: WORKING_BASELINE. Phase 32 selection/evolution component gates PASS;
 IR/parser/facade consumers now use V2. Full phase closure awaits clean regression.
 

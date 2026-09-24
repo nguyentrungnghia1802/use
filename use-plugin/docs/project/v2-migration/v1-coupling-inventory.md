@@ -29,3 +29,14 @@ trace, runtime target bindings and OCL still use V1. Therefore the consistency g
 does not pass yet. Every occurrence now has an explicit file/line disposition; semantic migration remains pending. No dead-code REMOVE claim is made without evidence.
 
 Reproduce with `python use-plugin/tools/v1_coupling_audit.py --revision eeb98c41c2d398b15b74101773ea440bcaa1af18 --output <file>`. Two independent runs were byte-identical; unique paths, line counts and complete classification were checked. Scope includes whole-repository strong identities and plugin removed class/feature names, IDs, projections and count assertions. The old binary `use-gui/lib/plugins/use-jacamo-plugin-1.0.1.jar` is MIGRATE through packaging, never edited in place. Grouped line numbers avoid duplicating historical source text.
+
+## Consumer reconciliation follow-up
+
+The table and occurrence index above describe intake revision eeb98c41. Active
+production migration now removes the V1 kind bridges, MAS constructor and
+V1RuntimeBindingAdapter; the default loader, IR/parser, transformation, trace,
+OCL and runtime targets use V2. The explicit historical loader/tests and preserved
+V1 artifacts remain KEEP_HISTORICAL. Current working ZIP replaces the plugin and
+canonical resources during installation; the historical binary is not hand-patched.
+A production Java search finds no version-1 resource access or V1 count decisions.
+The final executable gate is recorded separately in Phase 35 acceptance evidence.
