@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.0.0",
+  "status": "PASS",
+  "date": "2026-09-24",
+  "command": "mvn -q -pl use-plugin -Dtest=V2DeterminismTest test",
+  "independentJvmRuns": 2,
+  "inputFingerprint": "8c60d1fe017b9036849aca2bef357db6e21a45946f05e9c9a97905005e98c888",
+  "outputFingerprint": "cb6d0818493f40d0372a333b608a1ab6a85dbd44f28f71b6585c43765a334e24",
+  "semanticIdCount": 24,
+  "diagnosticCount": 2,
+  "mappingDecisionCount": 151,
+  "comparedOutputs": [
+    "SemanticIds",
+    "generated USE structure",
+    "initial SOIL command stream",
+    "trace records",
+    "generated OCL",
+    "OCL provenance",
+    "diagnostic ordering",
+    "mapping decisions"
+  ],
+  "result": "Both fresh Maven/JVM invocations emitted the same input and output fingerprints."
+}

@@ -349,9 +349,9 @@ claim NPL lifecycle. See [the bounded audit](phase23-cross-dimensional-evidence.
 
 ## Final target decision (Phase 25–26)
 
-D25-01 retains the exact frozen structural V1 as final for the supported scope.
-Runtime Mapping V1 is reconciled separately; see [final contract audit](phase26-runtime-mapping-audit.md).
-No general runtime-instance, standalone launcher or NPL equivalence is implied.
+The D25-01/Phase 26 V1 conclusion is historical. Active Runtime Mapping V2 binds
+exactly to Structural Mapping V2 and remains working until Phase 44. No general
+standalone launcher or NPL equivalence is implied.
 
 ## Phase 27 failure and cleanup contract
 

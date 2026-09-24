@@ -172,9 +172,9 @@ Chứa:
 
 ## 13. Historical JaCaMo Verification Metamodel/Profile V1
 
-Concrete verification uses an explicit semantic layer over the immutable Mapping V1 transformation plan. The
-profile is packaged as `jacamo-verification-profile-v1.json`; its decisions are applied only to a copied effective
-plan and never rewrite the frozen Ecore or Mapping V1.
+The historical V1 pipeline used an explicit semantic layer over the immutable Mapping V1 transformation plan. Its
+profile was packaged as `jacamo-verification-profile-v1.json`; those decisions now apply only to explicit historical
+fixtures and never rewrite the historical Ecore or Mapping V1.
 
 - `[OUR-EXT]` VSP001-VSP004 remove `Norm`, `Group`, `Role`, and `Scheme` inheritance from `Organisation` only in
   the effective verification model. Concrete declarations therefore do not inherit the aggregate obligations

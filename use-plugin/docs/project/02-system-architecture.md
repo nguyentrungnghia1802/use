@@ -1,5 +1,9 @@
 # System Architecture
 
+> Active production baseline: Metamodel V2 + Structural Mapping 2.2.0 + Runtime
+> Mapping V2/schema 3.0.0, all still `WORKING_BASELINE` until Phase 44. V1 material
+> below is historical evidence only.
+
 ## 1. Kiến trúc logic
 
 ```text
@@ -259,6 +263,8 @@ thì phải sinh cùng:
 
 ## Final target decision (Phase 25–26)
 
-D25-01 retains the exact frozen structural V1 as final for the supported scope.
-Runtime Mapping V1 is reconciled separately; see [final contract audit](phase26-runtime-mapping-audit.md).
-No general runtime-instance, standalone launcher or NPL equivalence is implied.
+D25-01 and the Phase 26 V1 contract are historical decisions superseded by the
+active V2 migration. Current runtime target reconciliation is recorded in
+[Phase 38](v2-migration/phase38-runtime-mapping.md) and mirror correctness in
+[Phase 39](v2-migration/phase39-mirror-correctness.md). No general standalone
+launcher or NPL equivalence is implied.

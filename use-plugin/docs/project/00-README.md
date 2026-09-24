@@ -5,7 +5,8 @@ The V2 IR, parser, transformation, trace, OCL and runtime target consumers are
 migrated. Generic target-only rank projection preserves independent opposite
 orders; V2-ORDER-001 remains a mandatory negative/positive regression control.
 
-Clean full reactor: **350/350 PASS**; Python evolution/diff: **11/11 PASS**.
+Last clean Phase 35 reactor: **350/350 PASS**; latest Phase 42 full reactor:
+**362/362 PASS**; Python evolution/diff: **11/11 PASS**.
 See [Phase 29–35 acceptance](v2-migration/phase35-acceptance.md) and its complete
 per-suite and original-failure disposition evidence. Phase 29–35 are DONE: post-merge 350/350 PASS, merged and pushed. The V2 working ZIP is explicitly unreleased and unfrozen. V1 evidence
 below remains historical; original Auction standalone equivalence is not claimed.
@@ -33,13 +34,14 @@ For runtime and feature claims, use this order:
 
 1. production code under `src/main`;
 2. executable tests and retained validation evidence;
-3. frozen Ecore/mapping contracts for their structural scope;
+3. versioned canonical Ecore/mapping contracts for their structural scope;
 4. active architecture and workflow documentation;
 5. historical plans, checklists, and audit reports.
 
-Code is the source of truth for implemented behavior. Frozen Ecore and Mapping V1
-remain authoritative for their own identities and structural contract, but they do
-not prove that every mapped concept is supported by the production runtime.
+Code is the source of truth for implemented behavior. Canonical Metamodel V2 and
+Structural Mapping V2 are the active `WORKING_BASELINE` contracts. They define
+identity and structure, but do not prove that every mapped concept has live runtime
+support. Historical V1 contracts remain reproducibility inputs only.
 
 Use these labels when making claims:
 
@@ -65,7 +67,7 @@ use/
     ├── src/main/resources/         # plugin descriptor, schemas, OCL and manifests
     ├── src/test/                   # unit/component/integration and Auction fixtures
     ├── Core/Metamodel/             # reconstructed Ecore baseline
-    ├── Core/Mapping/               # frozen Mapping V1, schema and audit evidence
+    ├── Core/Mapping/               # canonical V2 plus historical V1 evidence
     ├── docs/project/               # active architecture/onboarding documents
     ├── docs/agent/                 # agent guidance and archived task checklist
     ├── release/                    # manifest, hotfix record and retained evidence
@@ -87,7 +89,7 @@ fixture. It is not a claim of generic support for every JaCaMo application.
                   |
           semantic intermediate model
              /                 \
-    frozen Mapping V1       constraint extraction
+   Structural Mapping V2    constraint extraction
              \                 /
        USE structure/state + OCL + trace
                   |
@@ -109,7 +111,7 @@ verification reports violations; it does not block actions or act as a control a
 1. Import a `.jcm` entry.
 2. Discover and statically parse the supported Jason/CArtAgO/Moise sources.
 3. Load project-root `binding.json` when present and resolve exact typed references.
-4. Load Mapping V1, build the verification semantic layer, and plan instances.
+4. Load canonical Structural Mapping V2, build the verification semantic layer, and plan instances.
 5. Load core OCL, optional project case OCL, and optional user OCL.
 6. Materialize a USE `MSystem`, build trace/constraint registries, and run a full check.
 7. Optionally configure in-process runtime connectors through the service API and connect.
@@ -119,13 +121,15 @@ The workbench exposes Import, Rebuild, Load OCL, Run Full Verification, report e
 runtime state controls, and six inspection tabs. It does not contain connector endpoint
 configuration and does not launch a standalone external `.jcm` application.
 
-## 6. Ecore and Mapping V1
+## 6. Metamodel V2 and Structural Mapping V2
 
-The reconstructed baseline contains 37 EClasses, 67 declared EAttributes, 63
-EReferences, and 14 inheritance edges. Three visible source fields remain annotations
-rather than invented EAttributes because their datatypes are not evidenced.
+The active sources are `Core/Metamodel/version-2/jacamo_v2_complete.ecore` and
+`Core/Mapping/version-2/jacamo-use-mapping-v2.json`. Mapping schema `2.2.0`
+validates exact owner-qualified source identities, descriptor-derived inventory,
+defaults, multiplicities, opposites, projections and target-only order rows. V2
+remains a working baseline until the Phase 44 freeze gates pass.
 
-Mapping V1 schema `1.1.0` covers all structural identities and seven projections:
+The seven verification projections remain explicit contracts:
 
 | Projection | Current contract |
 | --- | --- |
@@ -238,8 +242,7 @@ current synchronization inventory is [DOCUMENTATION-SYNC-v1.0.1.md](DOCUMENTATIO
 
 ## Current engineering closure
 
-See [Phase 27 hardening](phase27-hardening-audit.md) and the
-[final acceptance matrix](phase28-project-closure.md) for current scope and evidence.
-Earlier phase test totals and draft/temporary-target descriptions are historical.
-The final structural target is unchanged V1; Runtime Mapping V1 is frozen.
-Final user acceptance remains separate from autonomous engineering verification.
+Phase 28 is the historical V1 closure. Current V2 implementation and evidence are
+recorded under [v2-migration](v2-migration/), with Phase 42 packaging complete and
+Phase 43 hardening in progress. Metamodel V2, Structural Mapping V2 and Runtime
+Mapping V2 remain working baselines; only Phase 44 may freeze them.

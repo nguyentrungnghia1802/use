@@ -5,6 +5,10 @@
 - Default to Metamodel V2 / Mapping 2.2.0 with exact fingerprints and descriptor-backed IR.
 - Preserve independent opposite orders through target-only ranks, shared text/direct plans and exact trace.
 - Migrate extraction, verification projections, OCL and runtime target contracts; preserve historical V1 evidence.
+- Add exact V2 trace/binding identity, collision-safe OCL IDs, Runtime Mapping V2 validation and mirror correctness gates.
+- Verify Auction and CounterTeam through the same production pipeline without case-specific core dispatch.
+- Package one canonical V2 namespace and bound runtime correlation/report/trace diagnostic retention.
+- Add determinism, stale-reference, security and stage-by-stage performance evidence gates.
 - Produce a distinctly named V2 working ZIP, without a release tag or freeze claim.
 - Full clean-build acceptance PASS: 350/350; see Phase 35 evidence.
 
@@ -40,7 +44,7 @@
   mapping import; aligned Maven artifact metadata with plugin release 1.0.0.
 
 
-### Phase 26 runtime contract
+### Historical Phase 26 runtime contract
 
 Final metamodel remains unchanged canonical V1. Runtime Mapping V1 is frozen
 with schema 2.0.0 and exact resource hashes; legacy draft schema 1.0.0 is rejected

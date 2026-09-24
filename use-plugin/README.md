@@ -2,8 +2,8 @@
 
 > **V2 working migration:** Active Metamodel V2 and Mapping 2.2.0 now drive IR,
 > extraction, transformation, trace, OCL and runtime target binding. Independent
-> directional order is represented by generic target-only ranks. Focused tests
-> pass; clean full-reactor/package acceptance is PASS (350/350). See
+> directional order is represented by generic target-only ranks. Phase 35 clean
+> acceptance is 350/350 PASS; the latest Phase 42 full reactor is 362/362 PASS. See
 > [transformation](docs/project/v2-migration/phase35-transformation.md) and
 > [runtime contract](docs/project/v2-migration/phase35-runtime-targets.md).
 > The archive is `use-jacamo-plugin-1.0.1-v2-working.zip`, status
@@ -18,7 +18,7 @@
 
 Current repository state: Maven artifact and plugin descriptor version `1.0.1`.
 The historical annotated tag `v1.0.1` points to `7f77b1f4`; current development
-has advanced through the final runtime mapping and engineering hardening phases. The manifest name `use-jacamo-plugin-v1.0.1`
+has advanced through V2 UI/packaging and Phase 43 hardening. The manifest name `use-jacamo-plugin-v1.0.1`
 is not a Git tag in this checkout, so it must not be reported as published.
 
 This release adds conservative, traceable JaCaMo project import and offline/live
@@ -70,10 +70,10 @@ The build produces `use-jacamo-plugin-1.0.1.zip.sha256` beside the archive. Comp
 the first hexadecimal field with a SHA-256 digest of the ZIP before installation.
 
 
-### Phase 26 runtime contract
+### Historical Phase 26 runtime contract
 
-Final metamodel remains unchanged canonical V1. Runtime Mapping V1 is frozen
-with schema 2.0.0 and exact resource hashes; legacy draft schema 1.0.0 is rejected
-with RUNTIME_MAPPING_VERSION_UNSUPPORTED. See docs/project/phase26-runtime-mapping-audit.md.
-Frozen mapping semantics and NPL limitations are unchanged. The later Phase 20
-standalone control evidence is described in the final audit linked above.
+Phase 26 froze the historical V1 contract. Active production now selects Metamodel
+V2, Structural Mapping 2.2.0 and Runtime Mapping V2/schema 3.0.0 with exact hashes;
+all remain working baselines until Phase 44. The historical audit remains at
+docs/project/phase26-runtime-mapping-audit.md. Standalone/NPL limitations are
+unchanged unless a later evidence document explicitly promotes them.
