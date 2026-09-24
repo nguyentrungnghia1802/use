@@ -2,7 +2,7 @@ package org.tzi.use.plugins.jacamo.verification.profile;
 
 import java.util.List;
 
-/** Declarative verification-only semantic decisions layered over, never written into, Mapping V1. */
+/** Declarative verification-only semantic decisions layered over, never written into, Structural Mapping V2. */
 public record VerificationProfile(String profileId, String version, String status, String baselineMappingId,
                                   List<Decision> decisions) {
     public VerificationProfile { decisions = List.copyOf(decisions); }

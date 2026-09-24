@@ -37,7 +37,7 @@ public final class MappingLoader {
         return new ActiveBaseline().fromCheckout(checkout).mapping();
     }
 
-    /** Working contracts validate exact embedded Ecore compatibility, without a frozen V1 manifest. */
+    /** Working V2 contracts validate exact embedded Ecore compatibility before the final freeze manifest exists. */
     public MappingModel loadWorking(Path mappingPath, Path schemaPath, Path ecorePath) {
         try {
             byte[] mappingBytes = reader.read(mappingPath).clone();

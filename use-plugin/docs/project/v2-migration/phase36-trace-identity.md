@@ -10,8 +10,9 @@ SemanticId retains its six-part, escaped, owner-qualified identity. V2 kinds com
 from the active registry; removed kinds are not migrated by name similarity.
 USE target identifiers retain their kind prefix and deterministic allocated name.
 Mapping rule IDs are scoped to the complete active MappingModel, not globally
-interchangeable across versions. Projection rule IDs retain VP001–007 and ORDER_V1;
-ORDER_V1 identifies the rank projection algorithm, not Metamodel V1.
+interchangeable across versions. At this phase, projection rule IDs retained VP001–007 and
+ORDER_V1. Phase 43 later renamed that stale projection label to ORDER_V2 without changing the
+rank projection algorithm; see `phase43-trace-projection-diff.json`.
 
 Persisted trace records lack a complete contract/incarnation proof. TraceStore.read
 therefore returns an archival index: records remain readable for reproducibility

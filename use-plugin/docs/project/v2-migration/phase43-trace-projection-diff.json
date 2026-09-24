@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0.0",
+  "status": "PASS",
+  "change": "Exact projection provenance rename ORDER_V1 to ORDER_V2",
+  "oldSha256": "4f98bc1beba69abc9310649074adb294b5406d731a6928a0e13be6117756922d",
+  "newSha256": "4db0faea1c2379f03459ca82307e4b31f3b4edbfc6d3be89ef9da46075c95edd",
+  "recordCountBefore": 370,
+  "recordCountAfter": 370,
+  "changedFieldCount": 202,
+  "changedRecordCount": 202,
+  "onlyProjectionRuleIdChanged": true,
+  "oldProjectionRule": "ORDER_V1",
+  "newProjectionRule": "ORDER_V2",
+  "otherChanges": 0
+}
