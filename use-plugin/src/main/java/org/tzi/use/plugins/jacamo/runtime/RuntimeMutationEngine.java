@@ -2,6 +2,7 @@ package org.tzi.use.plugins.jacamo.runtime;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,8 +15,13 @@ import org.tzi.use.uml.sys.MSystem;
 
 /** The only runtime component allowed to mutate the USE mirror. */
 public final class RuntimeMutationEngine {
+    public record RetentionMetrics(int activeOperationCorrelations, int completedOperationCorrelations,
+                                   int operationHistory, int quarantinedEvents,
+                                   long retiredCompletedCorrelations, long retiredOperationHistory,
+                                   long retiredQuarantinedEvents, boolean correlationOverflow,
+                                   RuntimeTrace.RetentionMetrics trace) { }
     private final Map<String, String> authorizedObjectClasses = new LinkedHashMap<>();
-    private final java.util.Set<String> completedCorrelations = new java.util.HashSet<>();
+    private final LinkedHashSet<String> completedCorrelations = new LinkedHashSet<>();
     private final RuntimeMapping mapping;
     private final RuntimeTargetResolver targets;
     private final MSystem system;
@@ -25,22 +31,39 @@ public final class RuntimeMutationEngine {
     private final Object operationLifecycle = new Object();
     private final Map<String, String> dynamicRuntimeObjects = new LinkedHashMap<>();
     private final ConcurrentMap<String, RuntimeOperationState> operationCorrelations = new ConcurrentHashMap<>();
-    private final Map<String, OperationRuntimeOutcome> operationHistory = new LinkedHashMap<>();
+    private final LinkedHashMap<String, OperationRuntimeOutcome> operationHistory = new LinkedHashMap<>();
     private final List<RuntimeEvent> quarantined = new ArrayList<>();
+    private final int operationCorrelationLimit;
+    private final int operationHistoryLimit;
+    private final int quarantineLimit;
+    private long retiredCompletedCorrelations;
+    private long retiredOperationHistory;
+    private long retiredQuarantinedEvents;
+    private boolean correlationOverflow;
     private long lastSequence = -1;
     private long completedThroughSequence = -1;
-    private final RuntimeTrace runtimeTrace = new RuntimeTrace();
+    private final RuntimeTrace runtimeTrace;
 
     public RuntimeMutationEngine(MSystem system, TraceIndex trace) {
         this(system, trace, new RuntimeMappingLoader().loadDefault(), new TraceRuntimeTargetAdapter(trace));
     }
 
     public RuntimeMutationEngine(MSystem system, TraceIndex trace, RuntimeMapping mapping, RuntimeTargetResolver targets) {
+        this(system, trace, mapping, targets, RuntimeRetention.OPERATION_CORRELATIONS,
+                RuntimeRetention.OPERATION_HISTORY, RuntimeRetention.QUARANTINED_EVENTS);
+    }
+
+    RuntimeMutationEngine(MSystem system, TraceIndex trace, RuntimeMapping mapping, RuntimeTargetResolver targets,
+                          int operationCorrelationLimit, int operationHistoryLimit, int quarantineLimit) {
         if (!trace.runtimeEligible()) throw new IllegalArgumentException("RUNTIME_ARCHIVED_TRACE: rebuild from active source before mutation");
         this.mapping = java.util.Objects.requireNonNull(mapping);
         this.targets = java.util.Objects.requireNonNull(targets);
         this.system = system;
         this.trace = trace;
+        this.operationCorrelationLimit = RuntimeRetention.requirePositive(operationCorrelationLimit, "operationCorrelations");
+        this.operationHistoryLimit = RuntimeRetention.requirePositive(operationHistoryLimit, "operationHistory");
+        this.quarantineLimit = RuntimeRetention.requirePositive(quarantineLimit, "quarantinedEvents");
+        this.runtimeTrace = new RuntimeTrace();
         for (var record : trace.byTargetKind("OBJECT")) {
             var object = system.state().objectByName(record.targetUseId().substring("object:".length()));
             if (object != null) authorizedObjectClasses.put(object.name(), object.cls().name());
@@ -153,6 +176,14 @@ public final class RuntimeMutationEngine {
     public synchronized List<RuntimeEvent> quarantinedEvents() { return List.copyOf(quarantined); }
     public synchronized Map<String, OperationRuntimeOutcome> operationHistory() { return Map.copyOf(operationHistory); }
     public synchronized long lastSequence() { return lastSequence; }
+    public synchronized RetentionMetrics retentionMetrics() {
+        synchronized (operationLifecycle) {
+            return new RetentionMetrics(operationCorrelations.size(), completedCorrelations.size(),
+                    operationHistory.size(), quarantined.size(), retiredCompletedCorrelations,
+                    retiredOperationHistory, retiredQuarantinedEvents, correlationOverflow,
+                    runtimeTrace.retentionMetrics());
+        }
+    }
 
     /** A rejected event cannot participate in a later operation lifecycle. */
     public void eventRejected(RuntimeEvent event, RuntimeException reason) {
@@ -160,10 +191,18 @@ public final class RuntimeMutationEngine {
         if (!isOperationTerminal(event) || event.correlationId() == null
                 || !(reason instanceof RuntimeQueueBackpressureException backpressure)) return;
         synchronized (operationLifecycle) {
-            operationCorrelations.compute(event.correlationId(), (correlation, current) ->
-                    current != null && current.sequence() > event.sequence() ? current
-                            : backpressure.acceptedThroughSequence() <= completedThroughSequence ? null
-                            : RuntimeOperationState.rejected(event.sequence(), backpressure.acceptedThroughSequence()));
+            RuntimeOperationState current = operationCorrelations.get(event.correlationId());
+            if (current != null && current.sequence() > event.sequence()) return;
+            if (backpressure.acceptedThroughSequence() <= completedThroughSequence) {
+                operationCorrelations.remove(event.correlationId());
+                return;
+            }
+            if (current == null && operationCorrelations.size() >= operationCorrelationLimit) {
+                correlationOverflow = true;
+                return;
+            }
+            operationCorrelations.put(event.correlationId(),
+                    RuntimeOperationState.rejected(event.sequence(), backpressure.acceptedThroughSequence()));
         }
     }
 
@@ -207,7 +246,7 @@ public final class RuntimeMutationEngine {
     }
 
     private MutationResult quarantine(RuntimeEvent event, String diagnostic) {
-        quarantined.add(event);
+        if (RuntimeRetention.append(quarantined, event, quarantineLimit)) retiredQuarantinedEvents++;
         return MutationResult.quarantined(diagnostic);
     }
 
@@ -389,7 +428,6 @@ public final class RuntimeMutationEngine {
 
     private MutationResult enter(RuntimeEvent event, String objectName) {
         String correlation = event.correlationId();
-        if (completedCorrelations.contains(correlation)) throw new IllegalArgumentException("OPERATION_CORRELATION_COMPLETED:" + correlation);
         MObject object = requireObject(objectName);
         String operation = text(event.payload(), "operation");
         if (object.cls().operation(operation, true) == null)
@@ -403,19 +441,23 @@ public final class RuntimeMutationEngine {
             throw new IllegalArgumentException("OPERATION_ARGUMENT_COUNT");
         for (int index = 0; index < arguments.size(); index++)
             RuntimeValues.convert(signature.paramList().varDecl(index).type().toString(), arguments.get(index));
-        boolean[] duplicate = { false };
         synchronized (operationLifecycle) {
-            operationCorrelations.compute(correlation, (ignored, current) -> {
-                if (current == null || current.rejected() && current.sequence() < event.sequence()) {
-                    return RuntimeOperationState.active(event.sequence(), objectName + "::" + operation);
-                }
-                if (!current.rejected()) duplicate[0] = true;
-                return current;
-            });
+            if (correlationOverflow)
+                throw new IllegalArgumentException("OPERATION_CORRELATION_CAPACITY_REQUIRES_RESYNC");
+            if (completedCorrelations.contains(correlation))
+                throw new IllegalArgumentException("OPERATION_CORRELATION_COMPLETED:" + correlation);
+            RuntimeOperationState current = operationCorrelations.get(correlation);
+            if (current != null && !current.rejected())
+                throw new IllegalArgumentException("OPERATION_CORRELATION_ACTIVE: " + correlation);
+            if (current == null && operationCorrelations.size() >= operationCorrelationLimit)
+                throw new IllegalArgumentException("OPERATION_CORRELATION_CAPACITY:" + operationCorrelationLimit);
+            // A newer rejected terminal tombstone deliberately suppresses this older enter.
+            // The event itself remains applied because OP_ENTER has no direct USE state mutation.
+            if (current == null || current.sequence() < event.sequence())
+                operationCorrelations.put(correlation,
+                        RuntimeOperationState.active(event.sequence(), objectName + "::" + operation));
         }
-        if (duplicate[0])
-            throw new IllegalArgumentException("OPERATION_CORRELATION_ACTIVE: " + correlation);
-        operationHistory.put(correlation, OperationRuntimeOutcome.ENTERED);
+        rememberHistory(correlation, OperationRuntimeOutcome.ENTERED);
         return MutationResult.applied();
     }
 
@@ -437,8 +479,11 @@ public final class RuntimeMutationEngine {
         }
         if (matched[0] == null)
             throw new IllegalArgumentException("OPERATION_CORRELATION_MISSING: " + event.correlationId());
-        completedCorrelations.add(event.correlationId());
-        operationHistory.put(event.correlationId(), outcome);
+        synchronized (operationLifecycle) {
+            if (RuntimeRetention.remember(completedCorrelations, event.correlationId(), operationCorrelationLimit))
+                retiredCompletedCorrelations++;
+        }
+        rememberHistory(event.correlationId(), outcome);
         return MutationResult.applied();
     }
 
@@ -451,7 +496,13 @@ public final class RuntimeMutationEngine {
             completedCorrelations.clear();
             operationCorrelations.clear();
             completedThroughSequence = -1;
+            correlationOverflow = false;
         }
+    }
+
+    private void rememberHistory(String correlation, OperationRuntimeOutcome outcome) {
+        if (RuntimeRetention.putLatest(operationHistory, correlation, outcome, operationHistoryLimit))
+            retiredOperationHistory++;
     }
 
     private String resolveObject(String runtimeSourceId) {

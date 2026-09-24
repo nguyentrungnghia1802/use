@@ -99,6 +99,45 @@ class RuntimeVerificationEngineTest {
         assertTrue(verifier.latestReport().verification().results().stream().allMatch(r -> r.outcome()==VerificationOutcome.SKIPPED));
     }
 
+    @Test void operationCompletionAndReportRetentionAreBounded() {
+        Fixture fixture = fixture(true);
+        AtomicLong clock = new AtomicLong(1);
+        RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
+                fixture.registry(), fixture.trace(), new DefaultVerificationService(),
+                clock::getAndIncrement, 2, 2);
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
+        long sequence = 1;
+        for (String correlation : List.of("completed-1", "completed-2", "completed-3")) {
+            RuntimeEvent enter = event(sequence++, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(),
+                    fixture.artifactSemanticId(),
+                    Map.of("operation", "placeBid", "arguments", List.of("item", 1)), correlation);
+            verifier.eventReceived(enter);
+            verifier.beforeMutation(enter);
+            verifier.afterMutation(enter, org.tzi.use.plugins.jacamo.runtime.MutationResult.applied());
+            verifier.eventCompleted(enter);
+            RuntimeEvent exit = event(sequence++, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                    fixture.artifactSemanticId(), Map.of(), correlation);
+            verifier.eventReceived(exit);
+            verifier.beforeMutation(exit);
+            verifier.afterMutation(exit, org.tzi.use.plugins.jacamo.runtime.MutationResult.applied());
+            verifier.eventCompleted(exit);
+        }
+
+        RuntimeVerificationEngine.RetentionMetrics metrics = verifier.retentionMetrics();
+        assertEquals(2, metrics.completedOperationCorrelations());
+        assertEquals(1, metrics.retiredCompletedCorrelations());
+        assertEquals(2, metrics.reports());
+        assertEquals(6, metrics.totalReports());
+        assertEquals(4, metrics.retiredReports());
+
+        RuntimeEvent reused = event(sequence, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(),
+                fixture.artifactSemanticId(),
+                Map.of("operation", "placeBid", "arguments", List.of("item", 1)), "completed-1");
+        verifier.beforeMutation(reused);
+        assertEquals(VerificationCheckpoint.OPERATION_PRE, verifier.latestReport().checkpoint());
+        assertEquals(1, verifier.retentionMetrics().activeOperationCorrelations());
+    }
+
     @Test
     void eventDrivenChecksCorrelateViolationAndOperationPrePostUsingCapturedPreState() {
         Fixture fixture = fixture(true);
@@ -431,6 +470,35 @@ class RuntimeVerificationEngineTest {
 
         assertEquals(0, verifier.pendingOperationRejections(),
                 "unique rejected correlations must not accumulate for the life of the stream");
+    }
+
+    @Test
+    void backpressureTombstoneCapacityBlocksNewPreStateUntilStreamBoundary() {
+        Fixture fixture = fixture(true);
+        RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
+                fixture.registry(), fixture.trace(), new DefaultVerificationService(),
+                System::nanoTime, 2, 10);
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
+        for (int index = 0; index < 3; index++) {
+            RuntimeEvent rejected = event(10 + index, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                    fixture.artifactSemanticId(), Map.of(), "overflow-" + index);
+            verifier.eventReceived(rejected);
+            verifier.eventRejected(rejected, new RuntimeQueueBackpressureException(99));
+        }
+        assertEquals(2, verifier.pendingOperationRejections());
+        assertTrue(verifier.retentionMetrics().correlationOverflow());
+        RuntimeEvent enter = event(1, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(),
+                fixture.artifactSemanticId(),
+                Map.of("operation", "placeBid", "arguments", List.of("item1", 10)), "new-operation");
+        verifier.beforeMutation(enter);
+        assertEquals("RUNTIME_OPERATION_ENTER_ERROR",
+                verifier.latestReport().verification().results().getFirst().constraintId());
+        assertTrue(verifier.latestReport().verification().results().getFirst().explanation()
+                .contains("OPERATION_CORRELATION_CAPACITY_REQUIRES_RESYNC"));
+
+        verifier.eventStreamClosed();
+        assertFalse(verifier.retentionMetrics().correlationOverflow());
+        assertEquals(0, verifier.retentionMetrics().activeOperationCorrelations());
     }
 
     @Test

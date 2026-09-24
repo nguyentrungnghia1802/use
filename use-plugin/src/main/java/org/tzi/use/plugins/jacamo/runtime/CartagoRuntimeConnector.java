@@ -36,14 +36,21 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
     private long generation;
     private final Map<String, ArtifactId> incarnations = new LinkedHashMap<>();
     private final List<String> quarantinedObservations = new CopyOnWriteArrayList<>();
+    private final int diagnosticLimit;
     private final Set<String> registeredWorkspaces = new LinkedHashSet<>();
     private volatile ConnectorState state = ConnectorState.DISCONNECTED;
 
     public CartagoRuntimeConnector(String id, CartagoRuntimeAccess access, List<CartagoArtifactBinding> bindings) {
+        this(id, access, bindings, RuntimeRetention.CONNECTOR_DIAGNOSTICS);
+    }
+
+    CartagoRuntimeConnector(String id, CartagoRuntimeAccess access, List<CartagoArtifactBinding> bindings,
+                            int diagnosticLimit) {
         if (id == null || id.isBlank() || access == null || bindings == null || bindings.isEmpty())
             throw new IllegalArgumentException("CARTAGO_CONNECTOR_INVALID");
         this.id = id;
         this.access = access;
+        this.diagnosticLimit = RuntimeRetention.requirePositive(diagnosticLimit, "connectorDiagnostics");
         for (CartagoArtifactBinding binding : bindings) {
             if (this.bindings.putIfAbsent(binding.qualifiedName(), binding) != null)
                 throw new IllegalArgumentException("CARTAGO_BINDING_DUPLICATE: " + binding.qualifiedName());
@@ -150,6 +157,10 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
 
     public List<String> quarantinedObservations() { return List.copyOf(quarantinedObservations); }
 
+    private synchronized void quarantineObservation(String diagnostic) {
+        RuntimeRetention.append(quarantinedObservations, diagnostic, diagnosticLimit);
+    }
+
     private RuntimeEvent propertyEvent(CartagoArtifactBinding binding, ArtifactObsProperty property,
                                        RuntimeEventKind kind, Instant timestamp) {
         Map<String, Object> payload = new LinkedHashMap<>();
@@ -214,18 +225,18 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
         private CartagoArtifactBinding resolve(ArtifactId artifact) {
             synchronized (CartagoRuntimeConnector.this) {
                 if (owner != generation) {
-                    quarantinedObservations.add("CARTAGO_RETIRED_GENERATION:" + owner + ":" + artifact.getId());
+                    quarantineObservation("CARTAGO_RETIRED_GENERATION:" + owner + ":" + artifact.getId());
                     return null;
                 }
                 CartagoArtifactBinding result = binding(artifact);
                 if (result == null) {
-                    quarantinedObservations.add("CARTAGO_UNBOUND_ARTIFACT:" + artifact.getWorkspaceId().getFullName()
+                    quarantineObservation("CARTAGO_UNBOUND_ARTIFACT:" + artifact.getWorkspaceId().getFullName()
                             + "/" + artifact.getName() + ":" + artifact.getId());
                     return null;
                 }
                 ArtifactId previous = incarnations.putIfAbsent(result.qualifiedName(), artifact);
                 if (previous != null && !previous.equals(artifact)) {
-                    quarantinedObservations.add("CARTAGO_STALE_ARTIFACT:" + artifact.getId());
+                    quarantineObservation("CARTAGO_STALE_ARTIFACT:" + artifact.getId());
                     return null;
                 }
                 return result;
@@ -262,7 +273,7 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
             if (binding == null) return;
             if (!binding.operations().containsKey(operation.getName())) {
                 synchronized (CartagoRuntimeConnector.this) {
-                    quarantinedObservations.add("CARTAGO_UNBOUND_OPERATION:" + binding.qualifiedName() + ":" + operation.getName());
+                    quarantineObservation("CARTAGO_UNBOUND_OPERATION:" + binding.qualifiedName() + ":" + operation.getName());
                 }
                 return;
             }
@@ -277,7 +288,7 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
             if (binding == null) return;
             if (!binding.operations().containsKey(operation.getName())) {
                 synchronized (CartagoRuntimeConnector.this) {
-                    quarantinedObservations.add("CARTAGO_UNBOUND_OPERATION:" + binding.qualifiedName() + ":" + operation.getName());
+                    quarantineObservation("CARTAGO_UNBOUND_OPERATION:" + binding.qualifiedName() + ":" + operation.getName());
                 }
                 return;
             }
@@ -293,7 +304,7 @@ public final class CartagoRuntimeConnector implements RuntimeConnector {
             if (binding == null) return;
             if (!binding.operations().containsKey(operation.getName())) {
                 synchronized (CartagoRuntimeConnector.this) {
-                    quarantinedObservations.add("CARTAGO_UNBOUND_OPERATION:" + binding.qualifiedName() + ":" + operation.getName());
+                    quarantineObservation("CARTAGO_UNBOUND_OPERATION:" + binding.qualifiedName() + ":" + operation.getName());
                 }
                 return;
             }

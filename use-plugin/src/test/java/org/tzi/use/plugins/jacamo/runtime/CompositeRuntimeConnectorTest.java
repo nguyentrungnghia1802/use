@@ -65,16 +65,23 @@ class CompositeRuntimeConnectorTest {
                 callbacks.add(listener); return () -> { };
             }
         };
-        CompositeRuntimeConnector composite = new CompositeRuntimeConnector("parent", List.of(child));
+        CompositeRuntimeConnector composite = new CompositeRuntimeConnector("parent", List.of(child), 2);
         composite.connect(URI.create("jacamo://local/test"));
         List<RuntimeEvent> received = new ArrayList<>();
         RuntimeSubscription old = composite.subscribe(received::add);
         old.close(); composite.subscribe(received::add);
-        RuntimeEvent event = event("late", 1, Dimension.AGENT, RuntimeEventKind.BELIEF_ADDED,
+        RuntimeEvent first = event("late-1", 1, Dimension.AGENT, RuntimeEventKind.BELIEF_ADDED,
                 "jason:agent:a", Map.of("belief", "ready"), null);
-        callbacks.getFirst().accept(event);
-        assertTrue(received.isEmpty()); assertEquals(List.of(event), composite.retiredEvents());
-        callbacks.getLast().accept(event);
+        RuntimeEvent second = event("late-2", 2, Dimension.AGENT, RuntimeEventKind.BELIEF_ADDED,
+                "jason:agent:a", Map.of("belief", "ready"), null);
+        RuntimeEvent third = event("late-3", 3, Dimension.AGENT, RuntimeEventKind.BELIEF_ADDED,
+                "jason:agent:a", Map.of("belief", "ready"), null);
+        callbacks.getFirst().accept(first);
+        callbacks.getFirst().accept(second);
+        callbacks.getFirst().accept(third);
+        assertTrue(received.isEmpty());
+        assertEquals(List.of(second, third), composite.retiredEvents());
+        callbacks.getLast().accept(third);
         assertEquals(1, received.size());
         composite.disconnect();
     }
