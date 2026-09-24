@@ -1,0 +1,86 @@
+{
+  "status": "PASS",
+  "command": "mvn -B -pl use-plugin test -Dtest=RuntimeFoundationTest,V2RuntimeOrderTest,LiveJaCaMoAuctionIntegrationTest,CounterTeamIntegrationTest,HotfixLifecycleTest,RuntimeIdentityHardeningTest,RuntimeAuthorityTest,RuntimeVerificationEngineTest,RuntimeTraceTest,JaCaMoWorkbenchPanelTest",
+  "head": "01f0f9114453d55d305f4f50fd528e09fb3814d0",
+  "sourcePatchSha256": "3d9e307803d61feef25d6ce8a0d4ca858a35d1e26b34129ad24c69101c4dee6f",
+  "log": "use-plugin/target/phase39-final-focused.log",
+  "logSha256": "f2a25c082331dee6201c325c25a71fe5b32be74c17a7d1e1aded08da48d5a9c0",
+  "counts": {
+    "tests": 58,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeAuthorityTest"
+    },
+    {
+      "tests": 24,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest"
+    },
+    {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeIdentityHardeningTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeTraceTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.V2RuntimeOrderTest"
+    },
+    {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.ui.JaCaMoWorkbenchPanelTest"
+    },
+    {
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest"
+    }
+  ]
+}

@@ -1053,7 +1053,7 @@ For every OCL:
 
 # Phase 38 — Runtime Mapping V2 Reconciliation
 
-**Component gates PASS — 2026-09-24.** 19 focused and 355 full-reactor tests PASS, zero skips. [Audit](../project/v2-migration/phase38-runtime-mapping.md). Workflow closure pending.
+**DONE — 2026-09-24.** 19 focused, 355 full-reactor and 10 post-merge tests PASS, zero skips. Commit 9cefe347 merged and pushed; metrics-only remote update preserved. [Audit](../project/v2-migration/phase38-runtime-mapping.md).
 
 **Objective:** dùng runtime semantics thật của JaCaMo, map chúng vào V2 targets; không thiết kế runtime từ Ecore bằng suy đoán.
 

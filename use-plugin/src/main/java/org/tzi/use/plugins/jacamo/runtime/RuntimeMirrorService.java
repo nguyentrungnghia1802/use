@@ -185,6 +185,8 @@ public final class RuntimeMirrorService implements RuntimeService {
 
     private void applySnapshot(RuntimeSnapshot snapshot) {
         mutations.applySnapshot(snapshot);
+        var residual = mutations.compareSnapshot(snapshot);
+        if (!residual.isEmpty()) throw new IllegalStateException("RUNTIME_SNAPSHOT_DRIFT: " + residual);
         lastSnapshotFingerprint = snapshot.fingerprint();
         lastSnapshot = snapshot;
     }
@@ -197,10 +199,12 @@ public final class RuntimeMirrorService implements RuntimeService {
         List<RuntimeEvent> buffered = new ArrayList<>();
         OrderedRuntimeEventQueue[] ready = new OrderedRuntimeEventQueue[1];
         boolean[] streamOpen = new boolean[] { true };
+        RuntimeException[] bootstrapFailure = new RuntimeException[1];
         RuntimeSubscription connectorSubscription = connector.subscribe(event -> {
             synchronized (gate) {
                 try { streamObserver.eventReceived(event); }
                 catch (RuntimeException error) {
+                    if (ready[0] == null) bootstrapFailure[0] = error;
                     if (streamOpen[0]) fail("RUNTIME_EVENT_RECEIVE_FAILED: " + event.eventId(), error);
                     throw error;
                 }
@@ -208,17 +212,38 @@ public final class RuntimeMirrorService implements RuntimeService {
                     var closed = new IllegalStateException("RUNTIME_EVENT_STREAM_CLOSED");
                     streamMutations.eventRejected(event, closed);
                     streamObserver.eventRejected(event, closed);
-                } else if (ready[0] == null) buffered.add(event);
+                } else if (ready[0] == null) {
+                    if (bootstrapFailure[0] == null && buffered.size() >= queueCapacity)
+                        bootstrapFailure[0] = new RuntimeQueueBackpressureException(-1);
+                    if (bootstrapFailure[0] != null) {
+                        streamMutations.eventRejected(event, bootstrapFailure[0]);
+                        streamObserver.eventRejected(event, bootstrapFailure[0]);
+                        throw bootstrapFailure[0];
+                    }
+                    buffered.add(event);
+                }
                 else submitReceived(ready[0], event);
             }
         });
         RuntimeSubscription nextSubscription = () -> {
-            synchronized (gate) { streamOpen[0] = false; }
-            connectorSubscription.close();
+            var closed = new IllegalStateException("RUNTIME_EVENT_STREAM_CLOSED");
+            synchronized (gate) {
+                streamOpen[0] = false;
+                while (!buffered.isEmpty()) {
+                    var event = buffered.removeFirst();
+                    cleanup(closed, () -> streamMutations.eventRejected(event, closed));
+                    cleanup(closed, () -> streamObserver.eventRejected(event, closed));
+                }
+            }
+            cleanup(closed, connectorSubscription::close);
+            if (closed.getSuppressed().length > 0) throw closed;
         };
         RuntimeSnapshot snapshot;
         try {
             snapshot = connector.fullSnapshot();
+            synchronized (gate) {
+                if (bootstrapFailure[0] != null) throw bootstrapFailure[0];
+            }
             applySnapshot(snapshot);
         } catch (RuntimeException exception) {
             cleanup(exception, nextSubscription::close);
@@ -245,28 +270,31 @@ public final class RuntimeMirrorService implements RuntimeService {
         });
         // Publish authoritative snapshot verification before any buffered delta may run.
         try {
+            synchronized (gate) {
+                if (bootstrapFailure[0] != null) throw bootstrapFailure[0];
+            }
             transition(MirrorState.LIVE);
             streamObserver.snapshotApplied(snapshot);
+            synchronized (gate) {
+                if (bootstrapFailure[0] != null) throw bootstrapFailure[0];
+                nextQueue.start();
+                queue = nextQueue;
+                subscription = nextSubscription;
+                ready[0] = nextQueue;
+                while (!buffered.isEmpty()) {
+                    RuntimeEvent event = buffered.removeFirst();
+                    if (event.sequence() > snapshot.sequence()) submitReceived(nextQueue, event);
+                    else rejectReceived(event, new IllegalArgumentException("RUNTIME_EVENT_COVERED_BY_SNAPSHOT"));
+                }
+            }
         } catch (RuntimeException exception) {
             cleanup(exception, nextSubscription::close);
             cleanup(exception, nextQueue::close);
+            if (subscription == nextSubscription) subscription = null;
+            if (queue == nextQueue) queue = null;
             cleanup(exception, streamMutations::eventStreamClosed);
             cleanup(exception, streamObserver::eventStreamClosed);
             throw exception;
-        }
-        nextQueue.start();
-        queue = nextQueue;
-        subscription = nextSubscription;
-        synchronized (gate) {
-            ready[0] = nextQueue;
-            for (RuntimeEvent event : buffered) {
-                if (event.sequence() > snapshot.sequence()) {
-                    submitReceived(nextQueue, event);
-                } else {
-                    rejectReceived(event, new IllegalArgumentException("RUNTIME_EVENT_COVERED_BY_SNAPSHOT"));
-                }
-            }
-            buffered.clear();
         }
     }
 

@@ -69,5 +69,28 @@ class V2RuntimeOrderTest {
                 RuntimeEventKind.DESTROY_OBJECT, "runtime:source", owner.id().value(), Map.of(), null);
         assertTrue(engine.apply(destroy).diagnostic().contains("RUNTIME_ORDER_MEMBERSHIP_REQUIRES_RESYNC"));
         assertEquals(instances.objects().size(), system.state().numObjects());
+        var support = instances.links().stream().filter(l -> structure.orderProjections().stream()
+                .anyMatch(p -> p.ownerAssociation().equals(l.association()))).findFirst().orElseThrow();
+        var association = system.model().getAssociation(support.association());
+        var participants = List.of(system.state().objectByName(support.sourceObject()), system.state().objectByName(support.targetObject()));
+        system.state().deleteLink(association, participants, null);
+        assertTrue(engine.compareSnapshot(snapshot).stream().anyMatch(d -> d.target().contains(support.association())),
+                "authoritative order comparison must detect a missing support link even when all ranks match");
+        system.state().createLink(association, participants, null);
+        assertTrue(engine.compareSnapshot(snapshot).isEmpty());
+        var extraClass = system.model().getClass(structure.orderProjections().getFirst().entryClass());
+        var extra = system.state().createObject(extraClass, "unexpectedOrderRow");
+        assertTrue(engine.compareSnapshot(snapshot).stream().anyMatch(d -> d.target().equals("object:" + extra.name())));
+        var failedMirror = new RuntimeMirrorService(connector, engine, 8);
+        assertThrows(IllegalStateException.class, () -> failedMirror.connect(java.net.URI.create("synthetic://v2-orders")));
+        assertEquals(MirrorState.ERROR, failedMirror.state());
+        assertTrue(failedMirror.lastFailure().contains("RUNTIME_SNAPSHOT_DRIFT"));
+        assertEquals(ConnectorState.DISCONNECTED, connector.state());
+        system.state().deleteObject(extra);
+        try (var repaired = new RuntimeMirrorService(connector, engine, 8)) {
+            repaired.connect(java.net.URI.create("synthetic://v2-orders"));
+            assertEquals(MirrorState.LIVE, repaired.state());
+            assertTrue(engine.compareSnapshot(snapshot).isEmpty());
+        }
     }
 }

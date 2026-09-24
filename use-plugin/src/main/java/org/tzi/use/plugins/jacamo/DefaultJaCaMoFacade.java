@@ -30,6 +30,7 @@ import org.tzi.use.plugins.jacamo.materialization.TextBackend;
 import org.tzi.use.plugins.jacamo.ocl.OclGenerator;
 import org.tzi.use.plugins.jacamo.ocl.OclProfileLoader;
 import org.tzi.use.plugins.jacamo.runtime.QueueMetrics;
+import org.tzi.use.plugins.jacamo.runtime.MirrorState;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeConnector;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeMirrorService;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeMutationEngine;
@@ -190,7 +191,8 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public synchronized RuntimeStatus runtimeStatus() {
-        if (runtime == null) return RuntimeStatus.offline();
+        if (runtime == null) return workspace == null ? RuntimeStatus.offline()
+                : new RuntimeStatus(MirrorState.MODEL_READY, 0, 0, 0, 0, 0, 0, null, "", 0, 0, 0);
         QueueMetrics metrics = runtime.metrics();
         var latest = runtimeVerification == null ? null : runtimeVerification.latestReport();
         String event = latest == null || latest.event() == null ? "" : latest.event().eventId();
