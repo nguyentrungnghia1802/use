@@ -20,7 +20,7 @@ import org.tzi.use.plugins.jacamo.constraint.ConstraintExtractor;
 import org.tzi.use.plugins.jacamo.diagnostics.Diagnostic;
 import org.tzi.use.plugins.jacamo.extraction.ImportResult;
 import org.tzi.use.plugins.jacamo.extraction.StaticProjectImporter;
-import org.tzi.use.plugins.jacamo.mapping.MappingLoader;
+import org.tzi.use.plugins.jacamo.mapping.ActiveBaseline;
 import org.tzi.use.plugins.jacamo.mapping.MappingModel;
 import org.tzi.use.plugins.jacamo.mapping.TransformationPlanner;
 import org.tzi.use.plugins.jacamo.materialization.DirectUseBackend;
@@ -105,7 +105,9 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public synchronized VerificationReport latestVerification() {
-        return workspace == null ? null : workspace.latest;
+        if (workspace == null) return null;
+        var runtimeLatest = runtimeVerification == null ? null : runtimeVerification.latestReport();
+        return runtimeLatest == null ? workspace.latest : runtimeLatest.verification();
     }
 
     @Override public synchronized void loadVerificationProfile(Path profile) {
@@ -258,7 +260,8 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         lastDiagnostics = imported.diagnostics();
         if (!imported.success()) throw new IllegalArgumentException("IMPORT_FAILED: " + imported.diagnostics());
         long generationStarted = System.nanoTime();
-        MappingModel mapping = new MappingLoader().loadCanonical(checkout);
+        ActiveBaseline.Selection activeBaseline = new ActiveBaseline().fromCheckout(checkout);
+        MappingModel mapping = activeBaseline.mapping();
         var baseline = new TransformationPlanner().plan(imported.model(), mapping);
         var structure = new VerificationSemanticLayer().apply(baseline, mapping,
                 new VerificationProfileLoader().loadActive(mapping)).transformation();
@@ -300,7 +303,10 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         long warnings = diagnostics.stream().filter(value -> value.severity().name().equals("WARNING")).count();
         long errors = diagnostics.stream().filter(value -> value.severity().name().matches("ERROR|FATAL")).count();
         ProjectSummary summary = new ProjectSummary(jcmFile, project, imported.model().projectId(),
-                imported.model().sourceIndex().size(), dimensionCounts, mapping.mappingId(), mapping.status(),
+                imported.model().sourceIndex().size(), dimensionCounts,
+                ActiveBaseline.VERSION, activeBaseline.hashes().get(ActiveBaseline.ECORE),
+                mapping.mappingId(), mapping.schemaVersion(), activeBaseline.hashes().get(ActiveBaseline.MAPPING),
+                mapping.status(),
                 structure.classes().size(), instances.objects().size(), direct.structureValid(),
                 Math.toIntExact(warnings), Math.toIntExact(errors));
         List<SourceRow> sources = imported.model().sourceIndex().values().stream().map(source ->

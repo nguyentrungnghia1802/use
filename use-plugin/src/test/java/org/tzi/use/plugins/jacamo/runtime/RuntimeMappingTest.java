@@ -41,7 +41,8 @@ class RuntimeMappingTest {
         rejects(doc, "RUNTIME_MAPPING_BASELINE_MISMATCH");
         doc = document(); doc.put("schemaVersion", "1.0.0").put("status", "DRAFT_WAITING_FOR_METAMODEL_V2");
         rejects(doc, "RUNTIME_MAPPING_VERSION_UNSUPPORTED");
-        var historical = (ObjectNode) json.readTree(RuntimeMappingLoader.resource("jacamo-use-runtime-mapping-v1.json"));
+        var historical = (ObjectNode) json.readTree(
+                RuntimeMappingLoader.historicalResource("runtime/jacamo-use-runtime-mapping-v1.json"));
         rejects(historical, "RUNTIME_MAPPING_VERSION_UNSUPPORTED");
     }
     @Test void strictSchemaAndMalformedInput() throws Exception {

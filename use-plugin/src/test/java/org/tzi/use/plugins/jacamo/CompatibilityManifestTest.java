@@ -8,7 +8,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
 import java.time.LocalDate;
+import java.util.HexFormat;
 import java.util.Set;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.jupiter.api.Test;
@@ -40,6 +42,7 @@ class CompatibilityManifestTest {
                 "the pinned USE baseline must remain a full commit SHA");
         assertEquals(directChild((Element) rootPom.getElementsByTagName("properties").item(0),
                 "maven.compiler.target"), requirements.path("java").path("minimum").asText());
+        assertEquals("3.9.9", requirements.path("maven").path("version").asText());
         assertEquals(dependencyVersion(pluginPom, "io.github.jason-lang", "jason-interpreter"),
                 requirements.path("jacamo").path("components").path("jason").asText());
         assertEquals(dependencyVersion(pluginPom, "org.jacamo", "cartago"),
@@ -62,6 +65,77 @@ class CompatibilityManifestTest {
             assertFalse(record.path("runtimeScope").asText().isBlank());
             assertTrue(Set.of("not-run", "passed", "failed")
                     .contains(record.path("cleanEnvironment").path("status").asText()));
+        }
+    }
+
+    @Test
+    void manifestPinsEveryActiveV2ResourceAndWorkingStatusByExactHash() throws Exception {
+        ObjectMapper json = new ObjectMapper();
+        JsonNode manifest = json.readTree(Path.of("compatibility.json").toFile());
+        JsonNode baseline = manifest.path("activeBaseline");
+        JsonNode metamodel = baseline.path("metamodel");
+        JsonNode mapping = baseline.path("mapping");
+        JsonNode runtime = manifest.path("runtimeMapping");
+
+        assertEquals("WORKING_BASELINE", baseline.path("status").asText());
+        assertEquals("V2", metamodel.path("version").asText());
+        assertEquals("WORKING_BASELINE", metamodel.path("status").asText());
+        assertPinned(metamodel.path("path").asText(), metamodel.path("sha256").asText());
+
+        JsonNode mappingSource = json.readTree(Path.of(mapping.path("path").asText()).toFile());
+        assertEquals(mappingSource.path("mappingId").asText(), mapping.path("mappingId").asText());
+        assertEquals(mappingSource.path("schemaVersion").asText(), mapping.path("schemaVersion").asText());
+        assertEquals(mappingSource.path("status").asText(), mapping.path("status").asText());
+        assertPinned(mapping.path("path").asText(), mapping.path("sha256").asText());
+        assertPinned(mapping.path("schemaPath").asText(), mapping.path("schemaSha256").asText());
+
+        JsonNode runtimeSource = json.readTree(Path.of(runtime.path("path").asText()).toFile());
+        assertEquals("2.0.0", runtime.path("mappingVersion").asText());
+        assertEquals(runtimeSource.path("schemaVersion").asText(), runtime.path("schemaVersion").asText());
+        assertEquals(runtimeSource.path("status").asText(), runtime.path("status").asText());
+        assertEquals(runtimeSource.path("targetBaseline").asText(), runtime.path("targetBaseline").asText());
+        assertTrue(runtime.path("provisional").asBoolean());
+        assertPinned(runtime.path("path").asText(), runtime.path("sha256").asText());
+        assertPinned(runtime.path("schemaPath").asText(), runtime.path("schemaSha256").asText());
+
+        JsonNode profiles = manifest.path("oclProfiles");
+        JsonNode coreManifest = json.readTree(Path.of(profiles.path("coreManifest").path("path").asText()).toFile());
+        assertEquals(coreManifest.path("profileId").asText(), profiles.path("core").path("profileId").asText());
+        assertEquals(coreManifest.path("version").asText(), profiles.path("core").path("version").asText());
+        assertPinned(profiles.path("core").path("path").asText(), profiles.path("core").path("sha256").asText());
+        assertPinned(profiles.path("coreManifest").path("path").asText(),
+                profiles.path("coreManifest").path("sha256").asText());
+        JsonNode verificationSource = json.readTree(
+                Path.of(profiles.path("verificationProfile").path("path").asText()).toFile());
+        assertEquals(verificationSource.path("profileId").asText(),
+                profiles.path("verificationProfile").path("profileId").asText());
+        assertEquals(verificationSource.path("version").asText(),
+                profiles.path("verificationProfile").path("version").asText());
+        assertPinned(profiles.path("verificationProfile").path("path").asText(),
+                profiles.path("verificationProfile").path("sha256").asText());
+
+        JsonNode working = json.readTree(Path.of("release/v2-working-baseline-manifest.json").toFile());
+        assertEquals("V2", working.path("baseline").asText());
+        assertEquals("WORKING_BASELINE", working.path("status").asText());
+        assertFalse(working.path("freeze").asBoolean());
+        working.path("resources").forEach(resource -> {
+            if (resource.has("path") && resource.has("sha256"))
+                assertPinned(resource.path("path").asText(), resource.path("sha256").asText());
+            if (resource.has("schemaPath"))
+                assertPinned(resource.path("schemaPath").asText(), resource.path("schemaSha256").asText());
+            if (resource.has("manifestPath"))
+                assertPinned(resource.path("manifestPath").asText(), resource.path("manifestSha256").asText());
+        });
+    }
+
+    private void assertPinned(String path, String expected) {
+        try {
+            assertTrue(expected.matches("[0-9a-f]{64}"), path + " needs a lowercase SHA-256");
+            String actual = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+                    .digest(Files.readAllBytes(Path.of(path))));
+            assertEquals(expected, actual, path);
+        } catch (java.io.IOException | java.security.NoSuchAlgorithmException exception) {
+            throw new AssertionError(path, exception);
         }
     }
 

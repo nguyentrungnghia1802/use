@@ -28,8 +28,10 @@ Workbench toolbar:
 
 The Runtime tab contains Connect, Disconnect, Reconnect, Resync, and Refresh.
 The six tabs are Project, Trace, Diagnostics, Verification, Runtime, and Binding.
-Mapping compatibility is shown in Project; exact binding candidates are handled
-in Binding. The source path and line can be copied from the Trace tab.
+The Project tab shows the active Metamodel V2 version and full SHA-256 plus the
+Mapping V2 ID, schema version, working/frozen status and full SHA-256. Exact binding
+candidates are handled in Binding. The source path and line can be copied from the
+Trace tab.
 
 The production workbench does not expose connector construction or endpoint fields.
 `Connect` therefore works only after a host/integration has called the facade's

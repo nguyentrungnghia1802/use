@@ -13,6 +13,9 @@
     "java": {
       "minimum": "21"
     },
+    "maven": {
+      "version": "3.9.9"
+    },
     "jacamo": {
       "targetVersion": "1.3.0",
       "source": "https://github.com/jacamo-lang/jacamo/releases",
@@ -86,20 +89,80 @@
         "status": "not-run",
         "scope": "Existing pinned local Maven repository; full reactor verify, not a fresh dependency-cache validation"
       }
+    },
+    {
+      "date": "2026-09-24",
+      "testedProductionCommit": "ecb3d7ab75b8f34785810dadaa2d764a0fe8f017",
+      "runtimeScope": "Phase 42 canonical V2 workbench, exact compatibility hashes, single-active-baseline JAR/ZIP inventory and installed plugin smoke",
+      "fullReactor": {
+        "command": "mvn -B verify",
+        "tests": 362,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "evidence": "docs/project/v2-migration/phase42-regression.json"
+      },
+      "host": {
+        "osName": "Windows 11",
+        "osVersion": "10.0",
+        "architecture": "amd64",
+        "mavenVersion": "3.9.9",
+        "mavenJavaVersion": "21.0.5",
+        "mavenJavaVendor": "Oracle Corporation"
+      },
+      "cleanEnvironment": {
+        "status": "not-run",
+        "scope": "Existing checkout and pinned local Maven repository; clean historical-namespace focused gate plus full non-clean reactor gate"
+      }
     }
   ],
   "runtimeMapping": {
     "mappingVersion": "2.0.0",
     "schemaVersion": "3.0.0",
+    "path": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v2.json",
+    "sha256": "8daab614184d8fc9fb20e9fc13ab0e8731b76de1d42008890643738161801dec",
+    "schemaPath": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-v2.schema.json",
+    "schemaSha256": "be843872c909a8d44ca7c038f5896a8d829f07b068b4861f8169faf552f6a3bb",
     "targetBaseline": "STRUCTURAL_MAPPING_V2",
     "status": "WORKING",
+    "provisional": true,
     "legacyDraft": "Rejected with RUNTIME_MAPPING_VERSION_UNSUPPORTED; explicit reconciliation required",
     "scope": "Exact V2 target binding and independent source-order projection; pinned source connector semantics unchanged. No standalone or NPL promotion."
   },
   "activeBaseline": {
-    "metamodel": "Core/Metamodel/version-2/jacamo_v2_complete.ecore",
-    "mapping": "Core/Mapping/version-2/jacamo-use-mapping-v2.json",
-    "mappingSchemaVersion": "2.2.0",
+    "metamodel": {
+      "version": "V2",
+      "path": "Core/Metamodel/version-2/jacamo_v2_complete.ecore",
+      "sha256": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c",
+      "status": "WORKING_BASELINE"
+    },
+    "mapping": {
+      "mappingId": "JaCaMo-agentmetamodel-v2__to__USE-v2.2",
+      "schemaVersion": "2.2.0",
+      "path": "Core/Mapping/version-2/jacamo-use-mapping-v2.json",
+      "sha256": "15d330c70400d16958559b83daf27c3755dc0cb28a7dffb8a08d94879d1ddf67",
+      "schemaPath": "Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json",
+      "schemaSha256": "e9f555ad2e19cbf8382ff4c17d44179d3b47a13d03ee9a58c2b491f99b72c919",
+      "status": "WORKING_BASELINE"
+    },
     "status": "WORKING_BASELINE"
+  },
+  "oclProfiles": {
+    "core": {
+      "profileId": "JACAMO_CORE_OCL_V2",
+      "version": "2.0.0",
+      "path": "src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2.ocl",
+      "sha256": "a725c1fe0524f2b477327b58c54d317df693a0fbe37d3773bbe44372beeefab5"
+    },
+    "coreManifest": {
+      "path": "src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2-manifest.json",
+      "sha256": "14b098508167dc5198fa60589d098d5251d808e3ed2e828376324c751a009917"
+    },
+    "verificationProfile": {
+      "profileId": "JACAMO_VERIFICATION_PROFILE_V2",
+      "version": "2.0.0",
+      "path": "src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json",
+      "sha256": "91c85d42080b56754e8c2f5e9d37127e80c1483fdb4d71f2d61df7eab58fcab2"
+    }
   }
 }

@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public final class VerificationProfileLoader {
-    private static final String V1 = "/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v1.json";
+    private static final String V1 = "/org/tzi/use/plugins/jacamo/historical/version-1/verification/jacamo-verification-profile-v1.json";
     private static final String V2 = "/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json";
     private static final ObjectMapper JSON = new ObjectMapper();
 

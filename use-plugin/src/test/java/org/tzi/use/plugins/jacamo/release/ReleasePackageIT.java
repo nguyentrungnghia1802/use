@@ -124,9 +124,24 @@ class ReleasePackageIT {
                     "licenses/APACHE-2.0.txt",
                     "org/tzi/use/plugins/jacamo/release/licenses/SLF4J-MIT.txt",
                     "licenses/SLF4J-MIT.txt"));
+            jarResources.put("org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2-manifest.json",
+                    "src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2-manifest.json");
+            jarResources.put("org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json",
+                    "src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json");
+            jarResources.put("org/tzi/use/plugins/jacamo/release/v2-working-baseline-manifest.json",
+                    "release/v2-working-baseline-manifest.json");
             for (String name : java.util.List.of("jacamo-use-runtime-mapping-v2.json", "runtime-mapping-v2.schema.json"))
                 jarResources.put("org/tzi/use/plugins/jacamo/runtime/" + name,
                     "src/main/resources/org/tzi/use/plugins/jacamo/runtime/" + name);
+            Map<String, String> historical = Map.of(
+                    "ocl/jacamo-core.ocl", "src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core.ocl",
+                    "ocl/jacamo-core-manifest.json", "src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-manifest.json",
+                    "runtime/jacamo-use-runtime-mapping-v1.json", "src/main/resources/org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v1.json",
+                    "runtime/runtime-mapping.schema.json", "src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping.schema.json",
+                    "runtime/runtime-mapping-freeze.json", "src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-freeze.json",
+                    "verification/jacamo-verification-profile-v1.json", "src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v1.json");
+            historical.forEach((name, source) -> jarResources.put(
+                    "org/tzi/use/plugins/jacamo/historical/version-1/" + name, source));
             Set<String> jarEntries = new LinkedHashSet<>();
             try (JarInputStream jar = new JarInputStream(new java.io.ByteArrayInputStream(pluginJar))) {
                 for (var entry = jar.getNextJarEntry(); entry != null; entry = jar.getNextJarEntry()) {
@@ -148,6 +163,10 @@ class ReleasePackageIT {
             }
             org.junit.jupiter.api.Assertions.assertFalse(jarEntries.contains("org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-draft.json"),
                     "Obsolete draft resource must not survive in release output; run clean package");
+            for (String historicalName : historical.keySet())
+                org.junit.jupiter.api.Assertions.assertFalse(
+                        jarEntries.contains("org/tzi/use/plugins/jacamo/" + historicalName),
+                        "V1 target resource must not survive in the active namespace: " + historicalName);
             Set<String> requiredJarEntries = new LinkedHashSet<>(jarResources.keySet());
             requiredJarEntries.add("org/tzi/use/plugins/jacamo/JaCaMoPlugin.class");
             assertTrue(jarEntries.containsAll(requiredJarEntries),

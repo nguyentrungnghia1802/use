@@ -1476,17 +1476,17 @@ All example-specific logic must remain in:
 
 ## P42.1 — Workbench workflow
 
-- [ ] Import JaCaMo Project.
-- [ ] show active Metamodel V2 version/hash.
-- [ ] show Mapping V2 compatibility.
-- [ ] diagnostics.
-- [ ] trace V2.
-- [ ] load OCL.
-- [ ] offline verification.
-- [ ] runtime connect.
-- [ ] runtime sync state.
-- [ ] live violations.
-- [ ] source navigation.
+- [x] Import JaCaMo Project.
+- [x] show active Metamodel V2 version/hash.
+- [x] show Mapping V2 compatibility.
+- [x] diagnostics.
+- [x] trace V2.
+- [x] load OCL.
+- [x] offline verification.
+- [x] runtime connect.
+- [x] runtime sync state.
+- [x] live violations.
+- [x] source navigation.
 
 ---
 
@@ -1494,18 +1494,18 @@ All example-specific logic must remain in:
 
 Record exact:
 
-- [ ] plugin version.
-- [ ] Java.
-- [ ] Maven.
-- [ ] USE version/commit.
-- [ ] JaCaMo baseline if directly used.
-- [ ] Jason.
-- [ ] CArtAgO.
-- [ ] Moise.
-- [ ] Metamodel V2 version/hash.
-- [ ] Mapping V2 version/hash.
-- [ ] Runtime Mapping version/hash/provisional status.
-- [ ] OCL profile hashes.
+- [x] plugin version.
+- [x] Java.
+- [x] Maven.
+- [x] USE version/commit.
+- [x] JaCaMo baseline if directly used.
+- [x] Jason.
+- [x] CArtAgO.
+- [x] Moise.
+- [x] Metamodel V2 version/hash.
+- [x] Mapping V2 version/hash.
+- [x] Runtime Mapping version/hash/provisional status.
+- [x] OCL profile hashes.
 
 If project currently pins Jason 3.3.0 while upstream JaCaMo main uses another version, keep pin explicit until a deliberate compatibility update is tested.
 
@@ -1515,20 +1515,20 @@ If project currently pins Jason 3.3.0 while upstream JaCaMo main uses another ve
 
 Plugin JAR/ZIP must include the active canonical resources:
 
-- [ ] V2 Ecore.
-- [ ] Mapping V2.
-- [ ] schemas.
-- [ ] working/final manifests as applicable.
-- [ ] Runtime Mapping.
-- [ ] core OCL.
-- [ ] compatibility metadata.
-- [ ] release manifest.
-- [ ] licenses.
+- [x] V2 Ecore.
+- [x] Mapping V2.
+- [x] schemas.
+- [x] working/final manifests as applicable.
+- [x] Runtime Mapping.
+- [x] core OCL.
+- [x] compatibility metadata.
+- [x] release manifest.
+- [x] licenses.
 
 V1 historical resources:
 
-- [ ] either excluded from active package;
-- [ ] or clearly placed under historical/compatibility namespace.
+- [x] either excluded from active package;
+- [x] or clearly placed under historical/compatibility namespace.
 
 Không có hai file cùng “canonical” status.
 
@@ -1536,15 +1536,15 @@ Không có hai file cùng “canonical” status.
 
 ## P42.4 — UI regression
 
-- [ ] plugin load.
-- [ ] import.
-- [ ] rebuild.
-- [ ] OCL load.
-- [ ] full verify.
-- [ ] runtime tab.
-- [ ] disconnect/reconnect/resync.
-- [ ] report export.
-- [ ] no transformation logic inside UI.
+- [x] plugin load.
+- [x] import.
+- [x] rebuild.
+- [x] OCL load.
+- [x] full verify.
+- [x] runtime tab.
+- [x] disconnect/reconnect/resync.
+- [x] report export.
+- [x] no transformation logic inside UI.
 
 ---
 
