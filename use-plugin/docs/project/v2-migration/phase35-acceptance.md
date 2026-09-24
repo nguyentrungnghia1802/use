@@ -82,3 +82,14 @@ Package tests compare every declared ZIP entry with its source, verify the sidec
 load the extracted JAR in USE and load canonical V2/runtime contracts from an
 isolated child without the Maven dependency classpath. This is a clean build with
 the existing dependency cache, not a new fresh-cache/toolchain portability claim.
+
+## Post-merge checkout portability repair
+
+The first post-merge run exposed two historical trace hash failures. The original
+Jackson output has CRLF in its JSON body and a final LF. A broad text/eol=lf Git
+rule had normalized those files in the index; the original worktree passed until
+branch checkout recreated normalized bytes. Both original byte streams were
+recovered and verified against the unchanged recorded SHA-256. Specific -text
+attributes now preserve them. No manifest hash, golden expectation, JSON value or
+V2 behavior was changed. PreMigrationBaselineTest remains the exact-byte regression.
+Post-merge rerun remains required after this portability repair.

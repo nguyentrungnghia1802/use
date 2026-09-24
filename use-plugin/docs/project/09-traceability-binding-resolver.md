@@ -5,7 +5,7 @@
 > set. Candidate ordering is deterministic. See [Phase 33 evidence](v2-migration/phase33-semantic-ir.md).
 > V2 parser/trace integration is implemented: membership links, source defaults,
 > independent order entries/navigation and per-source projection traces. Existing
-> trace/binding serialization versions are reused; full closure awaits regression.
+> trace/binding serialization versions are reused; clean full regression PASS 350/350.
 
 ## 1. Mục tiêu
 

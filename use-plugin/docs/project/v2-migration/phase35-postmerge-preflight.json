@@ -1,0 +1,14 @@
+{
+  "command": "mvn -B verify",
+  "sourceCommit": "f05a5c6e209f22e551983f6640a8aac82a00886c",
+  "totals": {
+    "tests": 347,
+    "failures": 2,
+    "errors": 0,
+    "skipped": 0
+  },
+  "stage": "First post-merge run; package not reached",
+  "cause": "Git normalized historical Jackson trace CRLF body plus final LF to LF. Initial worktree retained original bytes until branch checkout.",
+  "repair": "Specific -text attributes and byte recovery verified against unchanged original manifest hashes.",
+  "logSha256": "c6f82986f1ec06a7bbb158cd4f2f8af5ce8b16fd67d7153235e44f65d7474fc2"
+}
