@@ -1,0 +1,37 @@
+{
+  "status": "PASS",
+  "command": "mvn -B -pl use-plugin test -Dtest=RuntimeMappingTest,CartagoRuntimeConnectorTest,V2RuntimeOrderTest",
+  "head": "9cefe347aa032af58d8198c284bd43d1c513f77f",
+  "sourcePatchSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "log": "use-plugin/target/phase38-postmerge.log",
+  "logSha256": "39a673b6b5721fc5c3e8dc5d3d1e15fb127020397b680b23070cab81707987e5",
+  "counts": {
+    "tests": 10,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.CartagoRuntimeConnectorTest"
+    },
+    {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeMappingTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.V2RuntimeOrderTest"
+    }
+  ]
+}

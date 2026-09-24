@@ -1,6 +1,6 @@
 # Phase 38 Runtime Mapping V2 reconciliation
 
-Status: component audit, focused 19/19 and full reactor 355/355 PASS; workflow closure pending.
+Status: DONE; focused 19/19, full reactor 355/355 and post-merge 10/10 PASS. Commit 9cefe347 merged and pushed; metrics-only remote update preserved.
 Canonical V2 resources remain WORKING_BASELINE; runtime mapping remains WORKING.
 
 ## Pinned source capabilities
