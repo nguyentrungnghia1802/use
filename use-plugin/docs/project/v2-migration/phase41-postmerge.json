@@ -1,0 +1,37 @@
+{
+  "status": "PASS",
+  "command": "mvn -B -pl use-plugin test -Dtest=MultiCaseV2PipelineTest,LiveJaCaMoAuctionIntegrationTest,CounterTeamIntegrationTest",
+  "head": "cead1a303fccf06bc5991f9f651cd6e0097e42fe",
+  "sourcePatchSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "log": "use-plugin/target/phase41-postmerge.log",
+  "logSha256": "ed9d8652d5b70f6b4a4963066f99ccabf1fa9c83d56fdaa60b9c7ca42ed6a39c",
+  "counts": {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.MultiCaseV2PipelineTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest"
+    }
+  ]
+}
