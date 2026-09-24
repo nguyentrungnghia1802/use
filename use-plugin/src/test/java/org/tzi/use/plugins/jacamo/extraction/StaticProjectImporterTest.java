@@ -22,63 +22,51 @@ class StaticProjectImporterTest {
                 Path.of("src/test/resources/auction/auction.jcm"));
         assertTrue(result.success(), () -> result.diagnostics().toString());
         Set<MetamodelKind> kinds = result.model().elements().stream().map(SemanticElement::kind).collect(Collectors.toSet());
-        assertTrue(kinds.containsAll(Set.of(MetamodelKind.MAS, MetamodelKind.Agent, MetamodelKind.Workspace,
-                MetamodelKind.Artifact, MetamodelKind.Belief, MetamodelKind.Rule, MetamodelKind.Goal,
-                MetamodelKind.Plan, MetamodelKind.TriggeringEvent, MetamodelKind.Context, MetamodelKind.Body,
-                MetamodelKind.ExternalAction, MetamodelKind.Message, MetamodelKind.ObsProperty,
-                MetamodelKind.Operation, MetamodelKind.GuardOperation,
-                MetamodelKind.Organisation, MetamodelKind.Role, MetamodelKind.Group, MetamodelKind.Link,
-                MetamodelKind.FormationConstraints, MetamodelKind.Scheme, MetamodelKind.Mission,
-                MetamodelKind.OGoal, MetamodelKind.OPlan, MetamodelKind.Norm)));
-        assertTrue(result.model().mas().references().stream().map(ref -> ref.feature()).collect(Collectors.toSet())
-                .containsAll(Set.of("agent", "workspace", "organisation")));
+        assertTrue(kinds.containsAll(Set.of(MetamodelKind.Agent, MetamodelKind.Environment, MetamodelKind.Workspace,
+                MetamodelKind.Artifact, MetamodelKind.Belief, MetamodelKind.AGoal, MetamodelKind.Plan, MetamodelKind.Event,
+                MetamodelKind.Action, MetamodelKind.Property, MetamodelKind.Operation, MetamodelKind.Signal,
+                MetamodelKind.Organization, MetamodelKind.Role, MetamodelKind.Group, MetamodelKind.Link,
+                MetamodelKind.Scheme, MetamodelKind.Mission, MetamodelKind.OGoal, MetamodelKind.Norm)));
+        assertTrue(kinds.stream().allMatch(k -> MetamodelKind.registry().resolve(k.name()).kind() != null));
+        assertEquals("auction", result.model().declaration().name());
+        assertNull(result.model().mas(), "Project declaration must not masquerade as an EClass");
         SemanticElement operation = only(result, MetamodelKind.Operation, "placeBid");
-        assertEquals(new AttributeValue.Text("String item,int amount"), operation.attributes().get("parameters"));
-        assertEquals(new AttributeValue.Text("signal(\"bid\", item, amount)"), operation.attributes().get("signalExpression"));
-        assertFalse(operation.attributes().containsKey("awaitExpression"),
-                "the source-backed closed-auction scenario must reach the authored precondition");
-        assertTrue(operation.references().stream().anyMatch(ref -> ref.feature().equals("guardedBy")
-                && ref.targetId() != null));
+        assertEquals(new AttributeValue.Text("String item,int amount"), operation.sourceFacts().get("parameters"));
+        assertEquals(new AttributeValue.Text("signal(\"bid\", item, amount)"), operation.sourceFacts().get("signalExpression"));
+        assertEquals(new AttributeValue.IntegerNumber(2), operation.attributes().get("arity"));
+        assertNotNull(operation.sourceFacts().get("guardedBy"));
         assertNotNull(only(result, MetamodelKind.Operation, "closeAuction"));
         assertNotNull(only(result, MetamodelKind.Operation, "removeOpen"));
         SemanticElement artifact = only(result, MetamodelKind.Artifact, "auction1");
-        assertTrue(artifact.references().stream().anyMatch(ref -> ref.feature().equals("obsproperty")
-                && ref.targetId() != null), "reference name must match frozen Artifact.obsproperty exactly");
-        SemanticElement action = only(result, MetamodelKind.ExternalAction, "placeBid");
-        assertTrue(action.references().stream().anyMatch(ref -> ref.feature().equals("operation")
-                && ref.targetId() != null && ref.targetId().equals(operation.id())));
+        assertTrue(artifact.references().stream().anyMatch(ref -> ref.feature().equals("properties") && ref.targetId() != null));
+        assertTrue(artifact.sourceFacts().keySet().stream().anyMatch(k -> k.startsWith("guard:")));
+        SemanticElement action = only(result, MetamodelKind.Action, "placeBid");
+        assertEquals(new AttributeValue.EnumLiteral("ActionKind", "EXTERNAL"), action.attributes().get("kind"));
+        assertTrue(action.references().stream().anyMatch(ref -> ref.feature().equals("operation") && operation.id().equals(ref.targetId())));
         SemanticElement agent = only(result, MetamodelKind.Agent, "auctioneer");
-        assertTrue(agent.references().stream().anyMatch(ref -> ref.feature().equals("artifact")
-                && ref.targetId() != null));
+        assertTrue(agent.references().stream().anyMatch(ref -> ref.feature().equals("artifacts") && ref.targetId() != null));
+        assertTrue(agent.sourceFacts().keySet().stream().anyMatch(k -> k.startsWith("rule@")));
         SemanticElement norm = only(result, MetamodelKind.Norm, "n1");
-        assertEquals(new AttributeValue.Text("obligation"), norm.attributes().get("type"));
+        assertEquals(new AttributeValue.EnumLiteral("NormType", "OBLIGATION"), norm.attributes().get("type"));
         assertTrue(norm.references().stream().allMatch(ref -> ref.targetId() != null));
+        assertEquals(new AttributeValue.Text("before auction closes"), norm.attributes().get("timeConstraint"));
         SemanticElement group = only(result, MetamodelKind.Group, "auction_group");
-        assertTrue(group.references().stream().anyMatch(ref -> ref.feature().equals("RefRole")
-                && ref.targetId() != null));
+        assertTrue(group.references().stream().anyMatch(ref -> ref.feature().equals("roles") && ref.targetId() != null));
         SemanticElement role = only(result, MetamodelKind.Role, "auctioneer");
-        assertTrue(role.references().stream().anyMatch(ref -> ref.feature().equals("players")
-                && ref.targetId() != null));
+        assertTrue(role.references().stream().anyMatch(ref -> ref.feature().equals("agents") && agent.id().equals(ref.targetId())));
         SemanticElement scheme = only(result, MetamodelKind.Scheme, "auction_scheme");
-        assertTrue(scheme.references().stream().anyMatch(ref -> ref.feature().equals("mission")
-                && ref.targetId() != null));
-        assertTrue(scheme.references().stream().anyMatch(ref -> ref.feature().equals("SchemeOgoal")
-                && ref.targetId() != null));
-        SemanticElement goal = only(result, MetamodelKind.Goal, "start");
-        assertTrue(goal.references().stream().anyMatch(ref -> ref.feature().equals("triggeredBy")
-                && ref.targetId() != null));
+        assertTrue(scheme.references().stream().anyMatch(ref -> ref.feature().equals("missions") && ref.targetId() != null));
+        assertTrue(scheme.references().stream().anyMatch(ref -> ref.feature().equals("rootGoal") && ref.targetId() != null));
+        assertTrue(scheme.sourceFacts().containsKey("unownedPlan@1"));
+        assertTrue(result.diagnostics().stream().anyMatch(d -> d.code().equals("MOISE_PLAN_OWNER_UNRESOLVED")));
+        assertFalse(kinds.contains(MetamodelKind.OPlan), "Do not invent ownership for a sibling source plan");
+        assertNotNull(only(result, MetamodelKind.AGoal, "start"));
         SemanticElement plan = only(result, MetamodelKind.Plan, "plan@5");
-        SemanticElement body = only(result, MetamodelKind.Body, "body@5");
-        assertTrue(plan.references().stream().anyMatch(ref -> ref.feature().equals("hasAction")));
-        assertTrue(body.references().stream().noneMatch(ref -> ref.feature().equals("bodyterm")),
-                "Plan actions have one composition owner through R053; R055 remains available for other BodyTerms");
-        assertTrue(only(result, MetamodelKind.Organisation, "auction_org").references().stream()
-                .anyMatch(ref -> ref.feature().equals("deploysAgent") && ref.targetId() != null));
-        assertTrue(agent.references().stream().noneMatch(ref -> ref.feature().equals("role")));
-        SemanticElement organisation = only(result, MetamodelKind.Organisation, "auction_org");
-        assertTrue(organisation.references().stream()
-                .noneMatch(ref -> ref.feature().equals("group") || ref.feature().equals("scheme")),
-                "JCM convenience references are promoted to their frozen Ecore directions");
+        assertTrue(plan.references().stream().anyMatch(ref -> ref.feature().equals("actions")));
+        assertTrue(plan.references().stream().anyMatch(ref -> ref.feature().equals("triggeringEvent")));
+        assertEquals(new AttributeValue.Text("auction_open"), plan.attributes().get("context"));
+        assertTrue(only(result, MetamodelKind.Organization, "auction_org").references().stream()
+                .anyMatch(ref -> ref.feature().equals("groups") && group.id().equals(ref.targetId())));
         assertEquals(3, result.model().sourceIndex().values().stream().filter(source ->
                 source.kind().name().matches("ASL|JAVA|MOISE_XML")).count());
     }
@@ -113,7 +101,7 @@ class StaticProjectImporterTest {
         Files.writeString(temporary.resolve("src/env/demo/X.java"), "package demo; class X { @OPERATION void bid(int n){} }\n");
         Files.writeString(temporary.resolve("src/env/demo/Y.java"), "package demo; class Y { @OPERATION void bid(int n){} }\n");
         ImportResult result = new StaticProjectImporter().importProject(temporary.resolve("app.jcm"));
-        SemanticElement action = only(result, MetamodelKind.ExternalAction, "bid");
+        SemanticElement action = only(result, MetamodelKind.Action, "bid");
         assertNull(action.references().stream().filter(ref -> ref.feature().equals("operation")).findFirst().orElseThrow().targetId());
         assertTrue(result.diagnostics().stream().anyMatch(d -> d.code().equals("RESOLUTION_AMBIGUOUS")));
     }
@@ -126,7 +114,7 @@ class StaticProjectImporterTest {
         Files.writeString(temporary.resolve("src/agt/a.asl"), "+!g <- placeBidd(1).\n");
         Files.writeString(temporary.resolve("src/env/demo/X.java"), "package demo; class X { @OPERATION void placeBid(int n){} }\n");
         ImportResult result = new StaticProjectImporter().importProject(temporary.resolve("app.jcm"));
-        SemanticElement action = only(result, MetamodelKind.ExternalAction, "placeBidd");
+        SemanticElement action = only(result, MetamodelKind.Action, "placeBidd");
         assertNull(action.references().getFirst().targetId());
         assertTrue(result.diagnostics().stream().anyMatch(d -> d.code().equals("RESOLUTION_UNRESOLVED")));
     }
@@ -190,7 +178,7 @@ class StaticProjectImporterTest {
     }
 
     @Test
-    void invalidMoiseScalarsAreDiagnosedWithoutInventingFalseOrTextNumbers() throws Exception {
+    void xmlBooleansAreValidatedWhileV2CardinalitiesRetainTheirStringDatatype() throws Exception {
         Files.createDirectories(temporary.resolve("src/org"));
         Files.writeString(temporary.resolve("app.jcm"), "mas app { organisation o:o.xml org-path:src/org }");
         String source = Files.readString(Path.of("src/test/resources/auction/src/org/auction.xml"));
@@ -198,11 +186,11 @@ class StaticProjectImporterTest {
             Files.writeString(temporary.resolve("src/org/o.xml"), source.replace("bi-dir=\"true\"", "bi-dir=\"" + literal + "\"")
                     .replace("min=\"1\"", "min=\"bad\""));
             var result = new StaticProjectImporter().importProject(temporary.resolve("app.jcm"));
-            assertTrue(result.diagnostics().stream().anyMatch(d -> d.code().equals("MOISE_ATTRIBUTE_INVALID") && d.sourceLocation() != null));
+            assertEquals(literal.equals("nonsense"), result.diagnostics().stream().anyMatch(d -> d.code().equals("MOISE_ATTRIBUTE_INVALID") && d.sourceLocation() != null));
             var link = result.model().elements().stream().filter(e -> e.kind() == MetamodelKind.Link).findFirst().orElseThrow();
-            if (literal.equals("nonsense")) assertFalse(link.attributes().containsKey("biDir"));
-            else assertEquals(new AttributeValue.Bool(literal.equals("true") || literal.equals("1")), link.attributes().get("biDir"));
-            assertTrue(result.model().elements().stream().noneMatch(e -> e.attributes().get("min") instanceof AttributeValue.Text));
+            if (literal.equals("nonsense")) assertFalse(link.attributes().containsKey("bidirectional"));
+            else assertEquals(new AttributeValue.Bool(literal.equals("true") || literal.equals("1")), link.attributes().get("bidirectional"));
+            assertTrue(result.model().elements().stream().anyMatch(e -> new AttributeValue.Text("bad").equals(e.attributes().get("minCardinality"))));
         }
     }
 

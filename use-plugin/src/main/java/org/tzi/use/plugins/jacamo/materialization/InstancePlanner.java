@@ -90,6 +90,8 @@ public final class InstancePlanner {
         for (var spec : transformation.orderProjections()) for (var source : semantic.elements()) {
             if (!ownersFor(source, transformation).contains(spec.owner())) continue;
             String feature = spec.sourceIdentity().substring(spec.sourceIdentity().indexOf('#') + 1);
+            if (source.sourceFacts().containsKey("orderUnresolved:" + feature))
+                throw new MaterializationException("ORDER_SOURCE_UNRESOLVED", spec.sourceIdentity() + ":" + source.id().value());
             var references = source.references().stream().filter(r -> r.feature().equals(feature)).toList();
             if (references.stream().anyMatch(r -> r.targetId() == null || !objectNames.containsKey(r.targetId().value())))
                 throw new MaterializationException("ORDER_SOURCE_UNRESOLVED", spec.sourceIdentity() + ":" + source.id().value());

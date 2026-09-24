@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
-/** Immutable typed node across all frozen Ecore classes. */
+/** Immutable typed source node; parser-only facts remain separate from metamodel attributes. */
 public record SemanticElement(SemanticId id, MetamodelKind kind, String name,
                               List<SourceProvenance> provenance, Map<String, AttributeValue> attributes,
                               List<SemanticReference> references, Map<String, AttributeValue> sourceFacts) {

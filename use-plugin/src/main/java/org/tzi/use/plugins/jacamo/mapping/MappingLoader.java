@@ -201,7 +201,15 @@ public final class MappingLoader {
         List<MappingModel.EnumMapping> enums = new ArrayList<>();
         for (var node : root.path("enumMappings")) {
             List<String> literals = new ArrayList<>(); node.path("target").path("literals").forEach(l -> literals.add(l.asText()));
-            enums.add(new MappingModel.EnumMapping(text(node.path("target"), "name"), literals));
+            var spellings = new java.util.TreeMap<String, String>();
+            for (var literal : node.path("sourceLiterals")) {
+                for (String spelling : List.of(text(literal, "name"), text(literal, "literal"))) {
+                    var previous = spellings.putIfAbsent(spelling, text(literal, "name"));
+                    if (previous != null && !previous.equals(text(literal, "name")))
+                        throw new MappingException("MAPPING_ENUM_AMBIGUOUS", spelling);
+                }
+            }
+            enums.add(new MappingModel.EnumMapping(text(node.path("target"), "name"), literals, spellings));
         }
         return new MappingModel(text(root, "schemaVersion"), text(root, "mappingId"), text(root, "status"),
                 classes, attributes, references, inheritance, projections, enums,

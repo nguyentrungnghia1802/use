@@ -36,6 +36,11 @@ public final class SemanticKindRegistry {
     public Collection<MetamodelKind> kinds() { return List.copyOf(kinds.values()); }
     public MappingModel mapping() { return mapping; }
     public String ecoreHash() { return ecoreHash; }
+    public Optional<AttributeValue.EnumLiteral> enumValue(String enumeration, String spelling) {
+        return mapping.enums().stream().filter(e -> e.name().equals(enumeration))
+                .map(e -> e.sourceSpellings().get(spelling)).filter(Objects::nonNull)
+                .map(literal -> new AttributeValue.EnumLiteral(enumeration, literal)).findFirst();
+    }
     public Set<String> owners(String kind) {
         Set<String> result = new TreeSet<>(); collectOwners(kind, result); return Set.copyOf(result);
     }

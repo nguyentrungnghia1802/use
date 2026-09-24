@@ -11,9 +11,8 @@ import org.tzi.use.plugins.jacamo.mapping.TransformationPlanner;
 class VerificationSemanticLayerTest {
     @Test
     void historicalProfileIsExplicitAndDoesNotMutateFrozenBaselinePlan() {
-        var semantic = new StaticProjectImporter().importProject(Path.of("src/test/resources/auction/auction.jcm")).model();
         var mapping = historical();
-        var baseline = new TransformationPlanner().plan(semantic, mapping);
+        var baseline = new TransformationPlanner().structuralPlan(mapping);
         var profile = new VerificationProfileLoader().loadV1();
         assertEquals(mapping.mappingId(), profile.baselineMappingId());
         assertTrue(profile.decisions().stream().allMatch(decision ->

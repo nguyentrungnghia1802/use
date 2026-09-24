@@ -1,59 +1,41 @@
 package org.tzi.use.plugins.jacamo;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Map;
+import java.nio.file.*;
+import java.util.*;
+import java.io.*;
 import java.security.MessageDigest;
-import java.util.HexFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.tzi.use.plugins.jacamo.extraction.StaticProjectImporter;
-import org.tzi.use.plugins.jacamo.mapping.MappingLoader;
-import org.tzi.use.plugins.jacamo.mapping.TransformationPlanner;
-import org.tzi.use.plugins.jacamo.materialization.DirectUseBackend;
-import org.tzi.use.plugins.jacamo.materialization.InstancePlanner;
-import org.tzi.use.plugins.jacamo.materialization.TextBackend;
-import org.tzi.use.plugins.jacamo.trace.TraceBuilder;
+import org.tzi.use.parser.use.USECompiler;
+import org.tzi.use.parser.shell.ShellCommandCompiler;
+import org.tzi.use.uml.mm.ModelFactory;
+import org.tzi.use.uml.sys.MSystem;
 import org.tzi.use.plugins.jacamo.trace.TraceStore;
-import org.tzi.use.plugins.jacamo.verification.profile.VerificationProfileLoader;
-import org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayer;
 
-/** Explicit historical capture only; never changes production's default selection. */
+/** Immutable historical artifact replay; no retained V1 production parser. */
 class PreMigrationBaselineTest {
-    @Test void auctionHistoricalStaticBaseline() throws Exception { capture("auction", "auction.jcm"); }
-    @Test void counterHistoricalStaticBaseline() throws Exception { capture("counter-team", "counter-team.jcm"); }
-
-    private void capture(String fixture, String entry) throws Exception {
-        Path core = Path.of("Core");
-        var mapping = new MappingLoader().load(
-                core.resolve("Mapping/version-1/jacamo-use-mapping-v1.json"),
-                core.resolve("Mapping/version-1/jacamo-use-mapping.schema.json"),
-                core.resolve("Metamodel/version-1/JaCaMo-Metamodel.ecore"),
-                core.resolve("Mapping/version-1/freeze-manifest.json"));
-        var imported = new StaticProjectImporter().importProject(Path.of("src/test/resources", fixture, entry));
-        assertTrue(imported.success(), () -> imported.diagnostics().toString());
-        var model = imported.model();
-        var plan = new VerificationSemanticLayer().apply(new TransformationPlanner().plan(model, mapping),
-                new VerificationProfileLoader().loadV1()).transformation();
-        var instances = new InstancePlanner().plan(model, mapping, plan);
-        var artifacts = new TextBackend().generate(fixture, plan, instances);
-        var direct = new DirectUseBackend().materialize(artifacts, instances);
-        assertTrue(direct.structureValid(), direct.validationOutput());
-        assertTrue(direct.invariantsValid(), direct.validationOutput());
-        var repeated = new TextBackend().generate(fixture, plan, instances);
-        assertEquals(artifacts, repeated);
-        Path output = Files.createDirectories(Path.of("target/phase29-historical-baseline", fixture));
-        Files.writeString(output.resolve("model.use"), artifacts.useModel());
-        Files.writeString(output.resolve("initial-state.cmd"), artifacts.initialCommands());
-        new TraceStore().write(output.resolve("trace.json"), new TraceBuilder().build(model, mapping, plan, instances));
-        var hashes = new java.util.TreeMap<String, String>();
-        for (String name : java.util.List.of("model.use", "initial-state.cmd", "trace.json"))
-            hashes.put(name, HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(output.resolve(name)))));
-        Files.writeString(output.resolve("manifest.json"), new ObjectMapper().writerWithDefaultPrettyPrinter()
-                .writeValueAsString(Map.of("status", "HISTORICAL_V1_EXPLICIT_PATH_STATIC_ONLY",
-                        "fixture", fixture, "mappingId", mapping.mappingId(), "sha256", hashes,
-                        "scope", "USE compilation, initial structure/invariants, deterministic text, source trace; no V2 or runtime claim")) + "\n");
+    @Test void auctionHistoricalStaticBaseline() throws Exception { replay("auction"); }
+    @Test void counterHistoricalStaticBaseline() throws Exception { replay("counter-team"); }
+    private void replay(String fixture) throws Exception {
+        Path input = Path.of("docs/project/v2-migration/historical-static", fixture);
+        var manifest = new ObjectMapper().readTree(Files.readString(input.resolve("manifest.json")));
+        for (String name : List.of("model.use", "initial-state.cmd", "trace.json"))
+            assertEquals(manifest.path("sha256").path(name).asText(), HexFormat.of().formatHex(
+                    MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(input.resolve(name)))), name);
+        var errors = new StringWriter();
+        var model = USECompiler.compileSpecification(new ByteArrayInputStream(Files.readAllBytes(input.resolve("model.use"))),
+                "historical.use", input.resolve("model.use").toUri(), new PrintWriter(errors), new ModelFactory());
+        assertNotNull(model, errors.toString());
+        var system = new MSystem(model);
+        for (String line : Files.readAllLines(input.resolve("initial-state.cmd"))) {
+            if (line.isBlank()) continue;
+            var statement = ShellCommandCompiler.compileShellCommand(model, system.state(), system.getVariableEnvironment(),
+                    line.substring(1), "historical.cmd", new PrintWriter(errors), false);
+            assertNotNull(statement, errors.toString()); system.execute(statement);
+        }
+        assertTrue(system.state().checkStructure(new PrintWriter(errors)), errors.toString());
+        assertTrue(system.state().check(new PrintWriter(errors), false, true, true, List.of()), errors.toString());
+        assertFalse(new TraceStore().read(input.resolve("trace.json")).records().isEmpty());
     }
 }

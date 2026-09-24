@@ -680,32 +680,37 @@ Prefer data/descriptor-driven design nếu V2 còn có thể đổi nhẹ.
 
 **Objective:** giữ parser machinery reusable, đổi semantic output theo V2.
 
+**Parser component gates PASS; phase closure OPEN.** [Evidence](../project/v2-migration/phase34-extraction.md).
+34 focused tests PASS. Post-parser plugin regression: 197 executed, 8F/59E;
+remaining projection/constraint/runtime consumers require P35 migration.
+No merged/full-regression acceptance is claimed.
+
 ## P34.1 — JCM extraction
 
-- [ ] MAS/project root semantics theo V2.
-- [ ] Agent declarations.
-- [ ] workspace/artifact declarations.
-- [ ] organisation instances.
-- [ ] source/include paths.
-- [ ] roles/focus/project parameters.
-- [ ] exact source spans.
-- [ ] V2 references.
+- [x] MAS/project root semantics theo V2.
+- [x] Agent declarations.
+- [x] workspace/artifact declarations.
+- [x] organisation instances.
+- [x] source/include paths.
+- [x] roles/focus/project parameters.
+- [x] exact source spans.
+- [x] V2 references.
 
 ---
 
 ## P34.2 — Jason parser/extractor
 
-- [ ] beliefs.
-- [ ] rules.
-- [ ] goals.
-- [ ] plans.
-- [ ] triggering events.
-- [ ] contexts.
-- [ ] bodies/body terms.
-- [ ] internal/external actions.
-- [ ] messages nếu V2 vẫn model.
-- [ ] V2 ownership/reference direction.
-- [ ] unsupported syntax preserved with diagnostics.
+- [x] beliefs.
+- [x] rules.
+- [x] goals.
+- [x] plans.
+- [x] triggering events.
+- [x] contexts.
+- [x] bodies/body terms.
+- [x] internal/external actions.
+- [x] messages nếu V2 vẫn model.
+- [x] V2 ownership/reference direction.
+- [x] unsupported syntax preserved with diagnostics.
 
 Không implement Jason interpreter.
 
@@ -713,15 +718,15 @@ Không implement Jason interpreter.
 
 ## P34.3 — CArtAgO Java extraction
 
-- [ ] artifact type.
-- [ ] observable properties.
-- [ ] operations.
-- [ ] guards.
-- [ ] signals/await/internal operations nếu V2 cần.
-- [ ] signatures/parameter metadata.
-- [ ] source positions.
-- [ ] V2 links.
-- [ ] parse-only/static safety vẫn giữ.
+- [x] artifact type.
+- [x] observable properties.
+- [x] operations.
+- [x] guards.
+- [x] signals/await/internal operations nếu V2 cần.
+- [x] signatures/parameter metadata.
+- [x] source positions.
+- [x] V2 links.
+- [x] parse-only/static safety vẫn giữ.
 
 Không execute arbitrary project Java để infer semantics.
 
@@ -729,40 +734,40 @@ Không execute arbitrary project Java để infer semantics.
 
 ## P34.4 — Moise extraction
 
-- [ ] organisation structure.
-- [ ] groups.
-- [ ] roles.
-- [ ] links/formation constraints.
-- [ ] schemes.
-- [ ] missions.
-- [ ] organisational goals/plans.
-- [ ] norms.
-- [ ] V2 relationship directions.
-- [ ] instance config từ JCM.
-- [ ] DTD/entity disabled.
+- [x] organisation structure.
+- [x] groups.
+- [x] roles.
+- [x] links/formation constraints.
+- [x] schemes.
+- [x] missions.
+- [x] organisational goals/plans.
+- [x] norms.
+- [x] V2 relationship directions.
+- [x] instance config từ JCM.
+- [x] DTD/entity disabled.
 
 ---
 
 ## P34.5 — Cross-file resolver V2
 
-- [ ] resolve all V2 exact relations.
-- [ ] binding only after exact typed ambiguity.
-- [ ] no binding creates nonexistent relation.
-- [ ] stale source hash rejected.
-- [ ] diagnostics list candidates/owners/scopes.
+- [x] resolve all V2 exact relations.
+- [x] binding only after exact typed ambiguity.
+- [x] no binding creates nonexistent relation.
+- [x] stale source hash rejected.
+- [x] diagnostics list candidates/owners/scopes.
 
 ---
 
 ## P34.6 — Parser regression
 
-- [ ] existing source fixtures still parse where source language unchanged.
-- [ ] expected semantic outputs updated intentionally.
-- [ ] malformed input recovery.
-- [ ] partial project.
-- [ ] source path safety.
-- [ ] deterministic results.
-- [ ] Auction import reaches V2 IR.
-- [ ] Case Study #2 import reaches V2 IR.
+- [x] existing source fixtures still parse where source language unchanged.
+- [x] expected semantic outputs updated intentionally.
+- [x] malformed input recovery.
+- [x] partial project.
+- [x] source path safety.
+- [x] deterministic results.
+- [x] Auction import reaches V2 IR.
+- [x] Case Study #2 import reaches V2 IR.
 
 ---
 

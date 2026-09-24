@@ -39,16 +39,16 @@ public final class StaticProjectImporter {
         }
         new SemanticResolver().resolve(context, bindings);
         List<SemanticElement> frozen = context.elements.stream().map(ElementDraft::freeze).toList();
-        SemanticElement mas = frozen.stream().filter(element -> element.kind() == MetamodelKind.MAS).findFirst().orElse(null);
-        if (mas == null) {
-            diagnostics.add(new Diagnostic("SEMANTIC_MAS_MISSING", Severity.FATAL, Phase.SEMANTIC_MODEL,
-                    null, null, null, "Semantic MAS root was not produced", discovery.graph().entry().toString(),
+        if (context.projectName == null) {
+            diagnostics.add(new Diagnostic("SEMANTIC_PROJECT_MISSING", Severity.FATAL, Phase.SEMANTIC_MODEL,
+                    null, null, null, "Project declaration metadata was not produced", discovery.graph().entry().toString(),
                     "Correct the entry JCM mas declaration"));
             return new ImportResult(null, sorted(diagnostics));
         }
         try {
-            JaCaMoSemanticModel model = new JaCaMoSemanticModel(discovery.graph().root(), mas,
-                    frozen.stream().filter(element -> element != mas).toList(), discovery.graph().sources(), sorted(diagnostics));
+            JaCaMoSemanticModel model = new JaCaMoSemanticModel(discovery.graph().root(),
+                    new org.tzi.use.plugins.jacamo.semantic.ProjectDeclaration(context.projectName, context.projectProvenance, context.projectFacts),
+                    MetamodelKind.registry(), frozen, discovery.graph().sources(), sorted(diagnostics));
             return new ImportResult(model, model.diagnostics());
         } catch (IllegalArgumentException exception) {
             diagnostics.add(new Diagnostic("SEMANTIC_MODEL_INVALID", Severity.FATAL, Phase.SEMANTIC_MODEL,

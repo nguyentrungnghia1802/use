@@ -17,6 +17,7 @@ final class ElementDraft {
     final String name;
     final List<SourceProvenance> provenance;
     final Map<String, AttributeValue> attributes = new LinkedHashMap<>();
+    final Map<String, AttributeValue> sourceFacts = new LinkedHashMap<>();
     final List<SemanticReference> references = new ArrayList<>();
 
     ElementDraft(SemanticId id, MetamodelKind kind, String name, SourceProvenance provenance) {
@@ -24,6 +25,6 @@ final class ElementDraft {
     }
 
     SemanticElement freeze() {
-        return new SemanticElement(id, kind, name, provenance, attributes, references);
+        return new SemanticElement(id, kind, name, provenance, attributes, references, sourceFacts);
     }
 }

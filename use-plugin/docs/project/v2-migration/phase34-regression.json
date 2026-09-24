@@ -1,0 +1,353 @@
+{
+  "command": "mvn -B -pl use-plugin test",
+  "scope": "Phase34 V2 parser, pre-consumer migration",
+  "totals": {
+    "tests": 197,
+    "failures": 8,
+    "errors": 59,
+    "skipped": 0
+  },
+  "failedTests": [
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.auctionPerformanceMetricsAreMeasuredWithoutFlakyWallClockThresholds",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.bindingPersistenceRejectsAnyTargetOutsideTheExactCandidateSet",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.exportRejectsUnsupportedDestinationsInsteadOfGuessingAFormat",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.realAuctionImportExposesPipelineSummaryTraceDiagnosticsAndVerification",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.repeatedExplicitBindingsPreserveEarlierExactSelections",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.reportExportRejectsLinkedDirectoryDestinations",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.reportExportSupportsMarkdownDestinations",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.reportExportUsesTheRealLatestVerification",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.runtimeDashboardStatusComesFromTheRealMirrorService",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.GoldenPipelineTest.auctionArtifactsMatchReviewedGoldenDigests",
+      "category": "error",
+      "message": "EVIDENCE_SOURCE_NOT_IN_COMMIT: use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore fatal: path 'use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore' does not exist in 'd51cfb5b346d406a4df1c9043cd47c9c795e493e'"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.HotfixBindingTest.productionImportUsesValidBindingAndRejectsInvalidOrStaleBindings",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest.failedRebuildLeavesTheLiveWorkspaceIntact",
+      "category": "error",
+      "message": "generated.use:794:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest.liveWorkspaceReplacementKeepsRuntimeAndFullVerificationTogether(String)[1]",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest.liveWorkspaceReplacementKeepsRuntimeAndFullVerificationTogether(String)[2]",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest.liveWorkspaceReplacementKeepsRuntimeAndFullVerificationTogether(String)[3]",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest.guardParameterNamesAreNotSilentlyReboundAndSharedGuardIdsAreDistinct",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest.impureGuardArithmeticAndSignatureMismatchPreserveUnsupportedSource",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest.unapprovedLossyAndSoundSubsetNeverEmitButRemainInManifest",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.constraint.ConstraintOclTest.auctionGuardCoreCaseAndExplicitPostconditionCompileAndEvaluatePositiveNegative",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.artifactTypeCollisionsAreStableAndUnsupportedPropertyStaysStructural",
+      "category": "failure",
+      "message": "expected: <2> but was: <0>"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.auctionPlanIsDeterministicAndGeneratedUseCompiles",
+      "category": "failure",
+      "message": "37 baseline classes plus concrete Artifact type ==> expected: <38> but was: <21>"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest.auctionPlanMaterializesEveryElementValueAndResolvedLinkDeterministically",
+      "category": "failure",
+      "message": "expected: <24> but was: <48>"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest.textAndDirectBackendsShareOneVerificationPlanAndPassInitialValidation",
+      "category": "failure",
+      "message": "expected: <91f8a92df05aabec35e5d5e832e82732df922b3b2d05703636a7209e33e284a0> but was: <483268d41a5be9de094fd0f07c86220f9a384abad65f85c5cf4d11e16dc30b8f>"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest.releaseManifestPinsVersionAndCompletePackageInventory",
+      "category": "failure",
+      "message": "missing release source: Core/Mapping/freeze-manifest.json ==> expected: <true> but was: <false>"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest.secondCaseUsesUnchangedPipelineWithLiveStateFailuresAndResync",
+      "category": "failure",
+      "message": "expected: <true> but was: <false>"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest.mirrorsRealJasonCartagoAndMoiseAuctionThenReconnectsWithFullResync",
+      "category": "error",
+      "message": "EVIDENCE_SOURCE_NOT_IN_COMMIT: use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore fatal: path 'use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore' does not exist in 'd51cfb5b346d406a4df1c9043cd47c9c795e493e'"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.backpressureRejectionCannotResurrectAnInFlightOperationCorrelation",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.backpressureTombstonesRetireAfterTheAcceptedWatermarkCompletes",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.completionBeforeRejectedTerminalStillInvalidatesTheOlderMutationCorrelation",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.initialSynchronizationBuffersConcurrentDeltaAndDetectsLostConnection",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.lateCallbackAfterWorkspaceReplacementBelongsToTheOldObserver",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.lateClosedStreamTerminalCannotPoisonMutationCorrelation",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.lifecycleObserverFailuresCannotRetainLiveTruth",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.mirrorRejectsCallbackDeliveredAfterFailedInitialSynchronization",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.mirrorReportsOrderingAndShutdownRejectionsAndClosesTimingLifecycle",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.mutationEngineAppliesAllMutationKindsAndQuarantinesUnknownTrace",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.observerFailureCannotLeaveMirrorLive",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.outOfOrderTerminalCannotPoisonANewerAcceptedTerminal",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.receivingObserverFailureRequiresDisconnectAndAuthoritativeRecovery",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.recordsEventToMirrorLatencyAndQueueSampleWithoutAnSla",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.staleRejectedTerminalDoesNotInvalidateANewerActiveOperation",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.syntheticConnectorMirrorsJsonReplayThenReconnectResyncRepairsDrift",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.terminalCannotCloseAnotherTargetAndLinkReplayIsIdempotent",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.tracedLifecycleRestoresExactObjectAndStrictValuesRejectLossyInput",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.unrelatedSemanticTraceCannotAuthorizeCreationAndUnknownPropertyCannotDisappear",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.unsubscribeFailureStillDrainsWorkerAndDisconnectsTransport",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.useMutationFailureMovesMirrorToErrorAndDoesNotCorruptExistingState",
+      "category": "error",
+      "message": "No value present"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.trace.TraceBindingTest.auctionTracePersistsDeclarationsObjectsOperationsAndRuntimeIndexes",
+      "category": "failure",
+      "message": "expected: <48> but was: <24>"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.CrossDimensionalVerifierTest.sourceRelationsRequireExactTargetsAndMissingEvidenceIsExplicit",
+      "category": "failure",
+      "message": "expected: <false> but was: <true>"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest.fullCheckReportsStructureAndTracedAuctionViolationWithoutCollapsingErrors",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest.operationCheckKeepsCorrelationAndUsesPreStateForPreAndPostconditions",
+      "category": "error",
+      "message": "operation not found for POST-AUCTION-OPEN"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest.registryPreservesTranslatedCoreCaseAndUserOriginsWithDependencies",
+      "category": "error",
+      "message": "generated.use:792:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:796:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:811:8: Expected type name, found `ExternalAction'.\ngenerated.use:800:8: Undefined class `AuctionArtifact'.\ngenerated.use:805:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.authoritativeDriftIsDiagnosedAndPeriodicAutoResyncRepairsMirror",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.backpressureTombstonesRetireAfterTheAcceptedWatermarkCompletes",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.bufferedEventLatencyStartsAtOriginalConnectorReceipt",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.completionBeforeRejectedTerminalStillInvalidatesTheOlderVerificationCorrelation",
+      "category": "error",
+      "message": "operation not found for POST-AUCTION-OPEN"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.connectorReceiptIsNotBlockedByAnOngoingVerification",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.eventDrivenChecksCorrelateViolationAndOperationPrePostUsingCapturedPreState",
+      "category": "error",
+      "message": "operation not found for POST-AUCTION-OPEN"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.lateClosedStreamTerminalCannotPoisonNextStreamPreState",
+      "category": "error",
+      "message": "operation not found for POST-AUCTION-OPEN"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.operationReportsUseTheSameReceiptToResultLatencyContract",
+      "category": "error",
+      "message": "operation not found for POST-AUCTION-OPEN"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.rejectedAndClosedEventsCannotLeaveReusableReceiptTimestamps",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.rejectedOperationTerminalCannotBeResurrectedByBlockedPreStateCapture",
+      "category": "error",
+      "message": "operation not found for POST-AUCTION-OPEN"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.staleMirrorCannotEvaluateCurrentInvariantOrCapturePreState",
+      "category": "error",
+      "message": "operation not found for POST-AUCTION-OPEN"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.stateChangeLatencyCoversMutationThroughVerificationResult",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.streamCloseDiscardsOperationCorrelationBeforeTheNextStream",
+      "category": "error",
+      "message": "operation not found for POST-AUCTION-OPEN"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.targetedInvariantResultIsEquivalentToTheSameConstraintInAFullCheck",
+      "category": "error",
+      "message": "generated.use:793:8: Expected type name, found `AuctionArtifact'.\ngenerated.use:808:8: Expected type name, found `ExternalAction'.\ngenerated.use:797:8: Undefined class `AuctionArtifact'.\ngenerated.use:802:8: Undefined class `AuctionArtifact'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.wrongTerminalCannotConsumeExactPreStateAndExportRetainsAttribution",
+      "category": "error",
+      "message": "operation not found for POST-AUCTION-OPEN"
+    }
+  ],
+  "newFailingIdentities": [
+    "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest.guardParameterNamesAreNotSilentlyReboundAndSharedGuardIdsAreDistinct",
+    "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest.impureGuardArithmeticAndSignatureMismatchPreserveUnsupportedSource",
+    "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest.unapprovedLossyAndSoundSubsetNeverEmitButRemainInManifest"
+  ],
+  "logSha256": "b881a89f4e7ce0c6e304ded38e14d721d424955a5db56ccba4c1c1e72b1a9bd1"
+}

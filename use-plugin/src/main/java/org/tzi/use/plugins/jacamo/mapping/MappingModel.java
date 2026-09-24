@@ -3,7 +3,7 @@ package org.tzi.use.plugins.jacamo.mapping;
 import java.util.Comparator;
 import java.util.List;
 
-/** Typed, immutable subset of the frozen mapping contract used by transformation. */
+/** Typed, immutable mapping contract used by transformation and source validation. */
 public record MappingModel(String schemaVersion, String mappingId, String status,
                            List<ClassMapping> classes, List<AttributeMapping> attributes,
                            List<ReferenceMapping> associations, List<InheritanceMapping> inheritance,
@@ -24,8 +24,10 @@ public record MappingModel(String schemaVersion, String mappingId, String status
     }
 
     public record ClassMapping(String id, String source, String name, boolean abstractClass, String dimension) { }
-    public record EnumMapping(String name, List<String> literals) {
-        public EnumMapping { literals = List.copyOf(literals); }
+    public record EnumMapping(String name, List<String> literals, java.util.Map<String, String> sourceSpellings) {
+        public EnumMapping(String name, List<String> literals) { this(name, literals,
+                literals.stream().collect(java.util.stream.Collectors.toMap(s -> s, s -> s))); }
+        public EnumMapping { literals = List.copyOf(literals); sourceSpellings = java.util.Map.copyOf(sourceSpellings); }
     }
     public record AttributeMapping(String id, String source, String sourceOwner, String sourceName,
                                    String owner, String name, String type) { }
