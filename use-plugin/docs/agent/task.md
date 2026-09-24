@@ -1299,51 +1299,53 @@ USE V2 mirror
 
 # Phase 40 — Runtime Verification V2
 
+**Component gates PASS — 2026-09-24.** 69 focused and 356 full-reactor tests PASS, zero skips. [Audit](../project/v2-migration/phase40-runtime-verification.md). Workflow closure pending.
+
 **Objective:** chạy OCL/checking trên một mirror đã được chứng minh current/correct.
 
 ## P40.1 — Verification checkpoints
 
 Implement/confirm:
 
-- [ ] `SNAPSHOT`.
-- [ ] `AFTER_MUTATION`.
-- [ ] `OPERATION_PRE`.
-- [ ] `OPERATION_POST`.
-- [ ] `STREAM_BOUNDARY`.
+- [x] `SNAPSHOT`.
+- [x] `AFTER_MUTATION`.
+- [x] `OPERATION_PRE`.
+- [x] `OPERATION_POST`.
+- [x] `STREAM_BOUNDARY`.
 
 For each:
 
-- [ ] trigger.
-- [ ] required mirror state.
-- [ ] selected constraints.
-- [ ] event/correlation context.
-- [ ] result behavior.
-- [ ] STALE/ERROR behavior.
+- [x] trigger.
+- [x] required mirror state.
+- [x] selected constraints.
+- [x] event/correlation context.
+- [x] result behavior.
+- [x] STALE/ERROR behavior.
 
 ---
 
 ## P40.2 — Runtime invariants
 
-- [ ] full after authoritative snapshot.
-- [ ] targeted/conservative after mutation.
-- [ ] full fallback when dependency unknown.
-- [ ] global invariants not accidentally skipped.
-- [ ] undefined/error distinguished from FAIL.
+- [x] full after authoritative snapshot.
+- [x] targeted/conservative after mutation.
+- [x] full fallback when dependency unknown.
+- [x] global invariants not accidentally skipped.
+- [x] undefined/error distinguished from FAIL.
 
 ---
 
 ## P40.3 — Operation PRE/POST
 
-- [ ] exact MObject.
-- [ ] exact MOperation.
-- [ ] exact args/type conversion.
-- [ ] capture pre-state once.
-- [ ] PRE at operation enter.
-- [ ] observe-only; no blocking JaCaMo.
-- [ ] POST only on matching successful exit.
-- [ ] preserve `@pre`.
-- [ ] OP_FAIL/abort → POST `SKIPPED`.
-- [ ] duplicate/stale terminal rejected.
+- [x] exact MObject.
+- [x] exact MOperation.
+- [x] exact args/type conversion.
+- [x] capture pre-state once.
+- [x] PRE at operation enter.
+- [x] observe-only; no blocking JaCaMo.
+- [x] POST only on matching successful exit.
+- [x] preserve `@pre`.
+- [x] OP_FAIL/abort → POST `SKIPPED`.
+- [x] duplicate/stale terminal rejected.
 
 ---
 
@@ -1351,16 +1353,16 @@ For each:
 
 Choose least invasive V2-compatible representation:
 
-- [ ] reuse RuntimeTrace/verification projection where justified.
-- [ ] otherwise dedicated trace evaluator, clearly distinguished from OCL.
-- [ ] no speculative large runtime metamodel chỉ để lưu history.
+- [x] reuse RuntimeTrace/verification projection where justified.
+- [x] otherwise dedicated trace evaluator, clearly distinguished from OCL.
+- [x] no speculative large runtime metamodel chỉ để lưu history.
 
 Verify:
 
-- [ ] start-before-terminal.
-- [ ] same correlation.
-- [ ] stream generation.
-- [ ] case-specific ordering outside core.
+- [x] start-before-terminal.
+- [x] same correlation.
+- [x] stream generation.
+- [x] case-specific ordering outside core.
 
 ---
 
@@ -1368,11 +1370,11 @@ Verify:
 
 Only approved/evidence-backed relations:
 
-- [ ] Agent action ↔ environment operation.
-- [ ] Agent ↔ Artifact accessibility/focus if represented.
-- [ ] observable state ↔ belief relation if V2/source proves it.
-- [ ] organisational goal ↔ agent goal if V2/source proves it.
-- [ ] role/mission ↔ performed behavior only when rule is explicit.
+- [x] Agent action ↔ environment operation.
+- [x] Agent ↔ Artifact accessibility/focus if represented.
+- [x] observable state ↔ belief relation if V2/source proves it.
+- [x] organisational goal ↔ agent goal if V2/source proves it.
+- [x] role/mission ↔ performed behavior only when rule is explicit.
 
 No behavioral invariant inferred from structural EReference alone.
 
@@ -1382,18 +1384,18 @@ No behavioral invariant inferred from structural EReference alone.
 
 Every runtime violation should include:
 
-- [ ] constraint ID/name.
-- [ ] origin.
-- [ ] checkpoint.
-- [ ] outcome.
-- [ ] USE context.
-- [ ] RuntimeEvent ID.
-- [ ] sequence.
-- [ ] correlation.
-- [ ] V2 SemanticId.
-- [ ] source span/provenance.
-- [ ] mapping/runtime rule ID.
-- [ ] actionable explanation.
+- [x] constraint ID/name.
+- [x] origin.
+- [x] checkpoint.
+- [x] outcome.
+- [x] USE context.
+- [x] RuntimeEvent ID.
+- [x] sequence.
+- [x] correlation.
+- [x] V2 SemanticId.
+- [x] source span/provenance.
+- [x] mapping/runtime rule ID.
+- [x] actionable explanation.
 
 ---
 

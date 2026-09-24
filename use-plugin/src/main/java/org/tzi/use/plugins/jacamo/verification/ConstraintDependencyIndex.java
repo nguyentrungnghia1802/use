@@ -27,18 +27,16 @@ public final class ConstraintDependencyIndex {
         if (changedDependencies == null || changedDependencies.isEmpty())
             return new Selection(Set.of(), true, "RUNTIME_DEPENDENCY_UNKNOWN");
         LinkedHashSet<String> selected = new LinkedHashSet<>(alwaysEvaluate);
-        boolean known = false;
+        boolean unknown = false;
         for (String dependency : changedDependencies) {
             Set<String> matches = byDependency.get(dependency);
             if (matches != null) {
-                known = true;
                 selected.addAll(matches);
-            }
+            } else unknown = true;
         }
-        if (!known && alwaysEvaluate.isEmpty())
+        if (unknown)
             return new Selection(Set.of(), true, "RUNTIME_DEPENDENCY_UNINDEXED");
-        return new Selection(selected, false, known ? "RUNTIME_DEPENDENCY_TARGETED"
-                : "RUNTIME_DEPENDENCY_GLOBAL_ONLY");
+        return new Selection(selected, false, "RUNTIME_DEPENDENCY_TARGETED");
     }
 
     public List<String> dependencies() { return new ArrayList<>(byDependency.keySet()); }

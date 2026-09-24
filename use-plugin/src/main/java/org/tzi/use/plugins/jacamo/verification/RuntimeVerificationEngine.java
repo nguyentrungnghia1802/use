@@ -287,9 +287,34 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     }
 
     private void append(RuntimeEvent event, VerificationReport report, long latency, List<String> diagnostics) {
+        var provenance = provenance(event, report);
         reports.add(new RuntimeVerificationReport("1.0.0", UUID.randomUUID().toString(), Instant.now(),
                 connectionState, snapshotVersion, snapshotFingerprint, event, report, latency, diagnostics,
-                checkpoint(event, diagnostics), provenance(event, report)));
+                checkpoint(event, diagnostics), provenance, attribution(event, report)));
+    }
+
+    private List<RuntimeVerificationAttribution> attribution(RuntimeEvent event, VerificationReport report) {
+        String runtimeRule = event == null ? "" : RUNTIME_MAPPING.select(event).id();
+        return report.results().stream().map(result -> {
+            var descriptor = registry.byId(result.constraintId());
+            var exact = new java.util.TreeMap<String,org.tzi.use.plugins.jacamo.trace.TraceRecord>();
+            for (String id : result.sourceTrace()) trace.bySemanticId(id).forEach(record -> exact.put(record.traceId(), record));
+            if (result.contextObject() != null)
+                trace.byUseId("object:" + result.contextObject()).forEach(record -> exact.put(record.traceId(), record));
+            if (event != null) trace.byRuntimeKey(event.runtimeSourceId()).ifPresent(record -> exact.put(record.traceId(), record));
+            var mappingRules = exact.values().stream().map(org.tzi.use.plugins.jacamo.trace.TraceRecord::mappingRuleId)
+                    .filter(java.util.Objects::nonNull).filter(value -> !value.isBlank()).distinct().sorted().toList();
+            var projectionRules = exact.values().stream().map(org.tzi.use.plugins.jacamo.trace.TraceRecord::projectionRuleId)
+                    .filter(java.util.Objects::nonNull).filter(value -> !value.isBlank()).distinct().sorted().toList();
+            return new RuntimeVerificationAttribution(result.constraintId(),
+                    descriptor == null ? result.constraintId() : descriptor.name(),
+                    descriptor == null ? "SYSTEM" : descriptor.origin().name(),
+                    descriptor == null ? result.contextObject() : descriptor.context(),
+                    descriptor == null ? "" : descriptor.operation(),
+                    descriptor == null || descriptor.sourcePath() == null ? ""
+                            : descriptor.sourcePath().toString().replace('\\', '/'),
+                    descriptor == null ? null : descriptor.sourceSpan(), runtimeRule, mappingRules, projectionRules);
+        }).toList();
     }
 
     private boolean requireCurrent(RuntimeEvent event) {

@@ -171,16 +171,18 @@ Report must include versions/hashes để reproducibility.
   postconditions with USE's pre/post evaluator, preserving `@pre`; `OP_FAIL`/abort records `SKIPPED` postconditions
   rather than pretending that a post-state contract ran.
 - `ConstraintDependencyIndex` indexes declared semantic dependencies. Targeted evaluation also includes enabled
-  invariants without declared dependencies because they may be global; an unknown change with no conservative
-  selection uses a full-check fallback. The targeted evaluator and full evaluator share the same invariant path.
+  invariants without declared dependencies because they may be global. Any unknown dependency, including a mixed
+  known/unknown change, uses a full-check fallback; global invariants cannot make an unknown change look targeted.
+  The targeted evaluator and full evaluator share the same invariant path.
 - Drift checks request an authoritative connector snapshot and compare all projected object existence, scalar
   value, and association mutations with the current USE mirror. Each difference has diagnostic code
   `RUNTIME_MIRROR_DRIFT`, event/runtime identity, target, expected value, and actual value. Policies are
   `REPORT_ONLY` and `AUTO_RESYNC`; periodic checks use a daemon scheduler and any resync returns to `LIVE` only
   after a fresh full synchronization.
 - `RuntimeVerificationReport` stores connection state, snapshot version/fingerprint, event, verification results,
-  diagnostics, and evaluation latency. Its JSON and Markdown exporters preserve violation context, OCL source,
-  source trace, correlation, and runtime event IDs.
+  diagnostics, evaluation latency and per-result attribution. Its JSON and Markdown exporters preserve constraint
+  name/origin, checkpoint, USE context, OCL/source span, RuntimeEvent ID/sequence/correlation, V2 SemanticId,
+  structural/projection mapping rules, runtime mapping rule and exact trace provenance.
 
 Phase 11 evidence (2026-09-15): `mvn -pl use-plugin test` passes 61 tests. The real Auction integration uses live
 Jason 3.3.0, CArtAgO 3.1, and Moise 1.1, closes the Auction, rejects `placeBid(item1, 0)`, and asserts that the
@@ -193,6 +195,11 @@ are first-class; non-LIVE requests are SKIPPED without OCL evaluation, and strea
 boundaries retire pre-state. Snapshot verification precedes buffered deltas.
 RuntimeHistoryVerifier checks recorded ordering independently of OCL. Reports
 preserve checkpoint, exact trace/source spans, event and result correlation.
+
+Phase 40 closes the V2 runtime verification contract in
+[the Phase 40 audit](v2-migration/phase40-runtime-verification.md). Runtime OCL verdicts
+are accepted only after the Phase 39 mirror-correctness gate; unknown dependency
+selection is always conservative.
 
 Phase 23 adds `CrossDimensionalVerifier` for exact source-declared cross-dimensional
 link checks. These are structural binding checks, not inferred behavioral rules;

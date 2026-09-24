@@ -10,7 +10,8 @@ public record RuntimeVerificationReport(String schemaVersion, String reportId, I
                                         String snapshotFingerprint, RuntimeEvent event,
                                         VerificationReport verification, long latencyNanos,
                                         List<String> diagnostics, VerificationCheckpoint checkpoint,
-                                        List<org.tzi.use.plugins.jacamo.trace.TraceRecord> provenance) {
+                                        List<org.tzi.use.plugins.jacamo.trace.TraceRecord> provenance,
+                                        List<RuntimeVerificationAttribution> attribution) {
     public RuntimeVerificationReport {
         if (!"1.0.0".equals(schemaVersion) || reportId == null || reportId.isBlank() || timestamp == null
                 || connectionState == null || snapshotVersion < 0 || verification == null || latencyNanos < 0)
@@ -18,6 +19,7 @@ public record RuntimeVerificationReport(String schemaVersion, String reportId, I
         snapshotFingerprint = snapshotFingerprint == null ? "" : snapshotFingerprint;
         diagnostics = List.copyOf(diagnostics);
         provenance = List.copyOf(provenance);
+        attribution = List.copyOf(attribution);
         java.util.Objects.requireNonNull(checkpoint);
     }
 
@@ -25,7 +27,7 @@ public record RuntimeVerificationReport(String schemaVersion, String reportId, I
             MirrorState connectionState, long snapshotVersion, String snapshotFingerprint, RuntimeEvent event,
             VerificationReport verification, long latencyNanos, List<String> diagnostics) {
         this(schemaVersion, reportId, timestamp, connectionState, snapshotVersion, snapshotFingerprint,
-            event, verification, latencyNanos, diagnostics, VerificationCheckpoint.DIAGNOSTIC, List.of());
+            event, verification, latencyNanos, diagnostics, VerificationCheckpoint.DIAGNOSTIC, List.of(), List.of());
     }
 
     public boolean hasViolation() {

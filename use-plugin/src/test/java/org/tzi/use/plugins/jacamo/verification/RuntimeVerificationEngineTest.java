@@ -73,6 +73,16 @@ class RuntimeVerificationEngineTest {
         assertTrue(json.contains("exact"));
         assertTrue(json.contains("sourceSpan"));
         assertTrue(json.contains(f.artifactSemanticId()));
+        var attribution=verifier.latestReport().attribution().stream()
+                .filter(value->value.constraintId().equals("POST-AUCTION-OPEN")).findFirst().orElseThrow();
+        assertEquals("TRANSLATED",attribution.origin());
+        assertEquals("placeBid",attribution.operation());
+        assertEquals("RM-OP_EXIT",attribution.runtimeRuleId());
+        assertNotNull(attribution.sourceSpan());
+        assertFalse(attribution.mappingRuleIds().isEmpty());
+        assertTrue(json.contains("\"runtimeRuleId\" : \"RM-OP_EXIT\""));
+        assertTrue(json.contains("\"origin\" : \"TRANSLATED\""));
+        assertTrue(json.contains("\"v2SemanticId\""));
         verifier.afterMutation(exit,org.tzi.use.plugins.jacamo.runtime.MutationResult.applied());
         assertEquals(VerificationOutcome.ERROR,verifier.latestReport().verification().results().getFirst().outcome());
     }
@@ -170,7 +180,11 @@ class RuntimeVerificationEngineTest {
         var selection = index.select(List.of("semantic:artifact"));
         assertFalse(selection.fullCheckFallback());
         assertEquals(java.util.Set.of("targeted", "global"), selection.constraintIds());
-        assertEquals(java.util.Set.of("global"), index.select(List.of("semantic:other")).constraintIds());
+        var unknown = index.select(List.of("semantic:other"));
+        assertTrue(unknown.fullCheckFallback(), "globals cannot turn an unknown dependency into a targeted check");
+        assertEquals("RUNTIME_DEPENDENCY_UNINDEXED", unknown.reason());
+        assertTrue(index.select(List.of("semantic:artifact", "semantic:other")).fullCheckFallback(),
+                "a mixed known/unknown change requires the conservative full check");
         assertTrue(new ConstraintDependencyIndex(List.of(targeted)).select(List.of("semantic:other"))
                 .fullCheckFallback());
     }
@@ -620,6 +634,7 @@ class RuntimeVerificationEngineTest {
 
         @Override public VerificationReport runFullVerification(org.tzi.use.uml.sys.MSystem system,
                                                                  ConstraintRegistry registry, TraceIndex trace) {
+            if (!blockBeginOperation) block();
             return delegate.runFullVerification(system, registry, trace);
         }
 
