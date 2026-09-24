@@ -892,7 +892,7 @@ Rules:
 
 # Phase 36 — Trace, Binding & Runtime Identity V2
 
-**Component gate PASS — 2026-09-24.** 52 focused and 352 full-reactor tests PASS; zero skips. [Audit](../project/v2-migration/phase36-trace-identity.md). Merge/post-merge/push pending.
+**DONE — 2026-09-24.** 52 focused, 352 full-reactor and 14 post-merge tests PASS; zero skips. Commit df369365 merged and pushed; concurrent metrics-only commits preserved at 946b6596. [Audit](../project/v2-migration/phase36-trace-identity.md).
 
 **Objective:** mọi source/semantic/USE/runtime identity tiếp tục truy vết chính xác sau V2 migration.
 

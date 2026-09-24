@@ -1,6 +1,6 @@
 # Phase 36 trace and runtime identity audit
 
-Status: COMPONENT GATES PASS; merge/post-merge/push pending. V2 remains WORKING_BASELINE. Phase 29â€“35 acceptance is preserved.
+Status: DONE. Commit df369365 merged; 14 post-merge tests PASS. Phase branch and main pushed. Concurrent upstream metrics-only commits were merged at 946b6596 without changing plugin sources. V2 remains WORKING_BASELINE. Phase 29–35 acceptance is preserved.
 
 ## P36.1 schema impact
 
@@ -10,7 +10,7 @@ SemanticId retains its six-part, escaped, owner-qualified identity. V2 kinds com
 from the active registry; removed kinds are not migrated by name similarity.
 USE target identifiers retain their kind prefix and deterministic allocated name.
 Mapping rule IDs are scoped to the complete active MappingModel, not globally
-interchangeable across versions. Projection rule IDs retain VP001â€“007 and ORDER_V1;
+interchangeable across versions. Projection rule IDs retain VP001–007 and ORDER_V1;
 ORDER_V1 identifies the rank projection algorithm, not Metamodel V1.
 
 Persisted trace records lack a complete contract/incarnation proof. TraceStore.read
@@ -38,7 +38,7 @@ OrderProjectionTrace now covers generated rank class, rank attribute and both
 support associations, in addition to existing order entries, links and navigation.
 No mapping, Ecore, order semantics, source IDs or target model bytes change.
 
-## P36.3â€“P36.6 audit scope
+## P36.3–P36.6 audit scope
 
 BindingStore recomputes status from current source hashes supplied by import;
 absent/changed canonical source or absent canonical target is STALE. SemanticResolver validates exact current
