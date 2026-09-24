@@ -20,7 +20,8 @@ public final class TraceBuilder {
         mapping.attributes().forEach(entry -> records.add(declaration(entry.source(),
                 "attribute:" + entry.owner() + "." + entry.name(), "EATTRIBUTE", "ATTRIBUTE", entry.id(), null)));
         mapping.associations().forEach(entry -> records.add(declaration(entry.source(),
-                "association:" + entry.name(), "EREFERENCE", "ASSOCIATION", entry.id(), null)));
+                "association:" + entry.name(), "EREFERENCE", "ASSOCIATION", entry.id(), null,
+                entry.reverse() ? entry.source() : null)));
         Map<String, SemanticElement> elements = semantic.elements().stream().collect(
                 java.util.stream.Collectors.toMap(e -> e.id().value(), e -> e));
         instances.objects().forEach(object -> {
@@ -47,7 +48,11 @@ public final class TraceBuilder {
     }
     private TraceRecord declaration(String source, String target, String sourceKind, String targetKind,
                                     String mappingRule, String projectionRule) {
-        return new TraceRecord(id(target), source, target, sourceKind, targetKind, mappingRule, projectionRule,
+        return declaration(source, target, sourceKind, targetKind, mappingRule, projectionRule, null);
+    }
+    private TraceRecord declaration(String source, String target, String sourceKind, String targetKind,
+                                    String mappingRule, String projectionRule, String aliasSource) {
+        return new TraceRecord(id(aliasSource == null ? target : target + "|source:" + aliasSource), source, target, sourceKind, targetKind, mappingRule, projectionRule,
                 null, null, null, projectionRule == null ? TraceRecord.Status.RESOLVED : TraceRecord.Status.PROJECTED);
     }
     private String classRule(SemanticElement element, MappingModel mapping) {

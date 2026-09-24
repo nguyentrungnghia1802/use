@@ -1,5 +1,10 @@
 # USE Transformation
 
+> Active V2 migration: [profile contract](v2-migration/phase33-verification-profile.md)
+> supersedes VSP001-VSP005 below. The V2 profile preserves the full baseline plan;
+> V1 overrides apply only to explicit historical fixtures. Parser/materialization
+> migration and whole-pipeline acceptance remain OPEN.
+
 ## 1. Mục tiêu
 
 Biến `JaCaMoSemanticModel + Mapping V1` thành:

@@ -74,7 +74,7 @@ class LiveJaCaMoAuctionIntegrationTest {
         var mapping = new MappingLoader().loadCanonical(Path.of("."));
         var baseline = new TransformationPlanner().plan(semantic, mapping);
         var structure = new VerificationSemanticLayer().apply(baseline,
-                new VerificationProfileLoader().loadV1()).transformation();
+                new VerificationProfileLoader().loadActive(mapping)).transformation();
         var instances = new InstancePlanner().plan(semantic, mapping, structure);
         OclProfileLoader ocl = new OclProfileLoader();
         var caseProfile = ocl.loadCase(project, Path.of("verification/auction.ocl"));

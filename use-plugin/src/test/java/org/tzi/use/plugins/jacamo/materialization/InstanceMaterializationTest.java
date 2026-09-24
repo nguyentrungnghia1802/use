@@ -22,7 +22,7 @@ class InstanceMaterializationTest {
         var mapping = new MappingLoader().loadCanonical(Path.of("."));
         var baseline = new TransformationPlanner().plan(semantic, mapping);
         var structure = new VerificationSemanticLayer().apply(baseline,
-                new VerificationProfileLoader().loadV1()).transformation();
+                new VerificationProfileLoader().loadActive(mapping)).transformation();
         InstancePlan first = new InstancePlanner().plan(semantic, mapping, structure);
         InstancePlan second = new InstancePlanner().plan(semantic, mapping, structure);
         assertEquals(first, second);
@@ -43,7 +43,7 @@ class InstanceMaterializationTest {
         var mapping = new MappingLoader().loadCanonical(Path.of("."));
         var baseline = new TransformationPlanner().plan(semantic, mapping);
         var structure = new VerificationSemanticLayer().apply(baseline,
-                new VerificationProfileLoader().loadV1()).transformation();
+                new VerificationProfileLoader().loadActive(mapping)).transformation();
         var instances = new InstancePlanner().plan(semantic, mapping, structure);
         TextBackend.GeneratedArtifacts artifacts = new TextBackend().generate("auction", structure, instances);
         assertEquals("91f8a92df05aabec35e5d5e832e82732df922b3b2d05703636a7209e33e284a0", sha256(artifacts.useModel()));

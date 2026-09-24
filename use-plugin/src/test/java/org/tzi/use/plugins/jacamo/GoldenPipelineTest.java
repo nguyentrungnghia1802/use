@@ -58,7 +58,7 @@ class GoldenPipelineTest {
         var semantic = imported.model();
         var mapping = new MappingLoader().loadCanonical(Path.of("."));
         var structure = new VerificationSemanticLayer().apply(new TransformationPlanner().plan(semantic, mapping),
-                new VerificationProfileLoader().loadV1()).transformation();
+                new VerificationProfileLoader().loadActive(mapping)).transformation();
         var instances = new InstancePlanner().plan(semantic, mapping, structure);
         var artifacts = new TextBackend().generate("auction", structure, instances);
         var constraints = new ConstraintExtractor().extract(semantic, structure, Map.of());

@@ -144,7 +144,7 @@ class ConstraintOclTest {
         var mapping = new MappingLoader().loadCanonical(Path.of("."));
         var baseline = new TransformationPlanner().plan(semantic, mapping);
         var structure = new VerificationSemanticLayer().apply(baseline,
-                new VerificationProfileLoader().loadV1()).transformation();
+                new VerificationProfileLoader().loadActive(mapping)).transformation();
         List<ConstraintSpec> extracted = new ConstraintExtractor().extract(semantic, structure, Map.of());
         ConstraintSpec guard = extracted.stream().filter(c -> c.sourceKind() == ConstraintSpec.SourceKind.CARTAGO_GUARD)
                 .findFirst().orElseThrow();

@@ -1,0 +1,372 @@
+{
+  "command": "mvn -B -pl use-plugin test",
+  "scope": "after V2 profile switch; before historical loader test split",
+  "totals": {
+    "tests": 192,
+    "failures": 9,
+    "errors": 62,
+    "skipped": 0
+  },
+  "failedTests": [
+    {
+      "test": "org.tzi.use.plugins.jacamo.constraint.ConstraintOclTest.auctionGuardCoreCaseAndExplicitPostconditionCompileAndEvaluatePositiveNegative",
+      "category": "failure",
+      "message": "phase6.use:820:8: Expected type name, found `ExternalAction'.\n ==> expected: not <null>"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.exportRejectsUnsupportedDestinationsInsteadOfGuessingAFormat",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.repeatedExplicitBindingsPreserveEarlierExactSelections",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.runtimeDashboardStatusComesFromTheRealMirrorService",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.reportExportSupportsMarkdownDestinations",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.realAuctionImportExposesPipelineSummaryTraceDiagnosticsAndVerification",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.auctionPerformanceMetricsAreMeasuredWithoutFlakyWallClockThresholds",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.reportExportRejectsLinkedDirectoryDestinations",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.bindingPersistenceRejectsAnyTargetOutsideTheExactCandidateSet",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.reportExportUsesTheRealLatestVerification",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.GoldenPipelineTest.auctionArtifactsMatchReviewedGoldenDigests",
+      "category": "error",
+      "message": "EVIDENCE_SOURCE_NOT_IN_COMMIT: use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore fatal: path 'use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore' does not exist in '62e500e2dbde4e5d44d7236cd407e05cf46673d1'"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.HotfixBindingTest.productionImportUsesValidBindingAndRejectsInvalidOrStaleBindings",
+      "category": "error",
+      "message": "generated.use:794:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest.failedRebuildLeavesTheLiveWorkspaceIntact",
+      "category": "error",
+      "message": "generated.use:794:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest.liveWorkspaceReplacementKeepsRuntimeAndFullVerificationTogether(String)[1]",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest.liveWorkspaceReplacementKeepsRuntimeAndFullVerificationTogether(String)[2]",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest.liveWorkspaceReplacementKeepsRuntimeAndFullVerificationTogether(String)[3]",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.alteredMappingTargetsAreBlockedByTheFrozenMappingFingerprint",
+      "category": "error",
+      "message": "Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.auctionPlanIsDeterministicAndGeneratedUseCompiles",
+      "category": "failure",
+      "message": "37 baseline classes plus concrete Artifact type ==> expected: <38> but was: <22>"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.canonicalMappingPassesSchemaFingerprintAndEcoreIdentityValidation",
+      "category": "failure",
+      "message": "expected: <1.1.0> but was: <2.2.0>"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.mappingDigestMustCoverTheSnapshotUsedForReturnedSemantics",
+      "category": "error",
+      "message": "Core\\Mapping\\jacamo-use-mapping-v1.json"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.invalidSchemaAndFingerprintBlockLoading",
+      "category": "failure",
+      "message": "expected: <MAPPING_SCHEMA_INVALID> but was: <MAPPING_LOAD_FAILED>"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.ecoreIdentityValidationUsesTheSameSnapshotAsItsDigest",
+      "category": "error",
+      "message": "Core\\Metamodel\\JaCaMo-Metamodel.ecore"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.invalidMappingSchemaTakesPrecedenceOverMissingDownstreamInputs",
+      "category": "failure",
+      "message": "schema validation must fail before Ecore or manifest inputs are required ==> expected: <MAPPING_SCHEMA_INVALID> but was: <MAPPING_LOAD_FAILED>"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.oneManifestSnapshotAuthorizesBothMappingAndEcore",
+      "category": "error",
+      "message": "Core\\Mapping\\freeze-manifest.json"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.artifactTypeCollisionsAreStableAndUnsupportedPropertyStaysStructural",
+      "category": "failure",
+      "message": "VP002 fallback must retain the structural mapping ==> expected: <true> but was: <false>"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest.auctionPlanMaterializesEveryElementValueAndResolvedLinkDeterministically",
+      "category": "failure",
+      "message": "expected: <true> but was: <false>"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest.textAndDirectBackendsShareOneVerificationPlanAndPassInitialValidation",
+      "category": "failure",
+      "message": "expected: <91f8a92df05aabec35e5d5e832e82732df922b3b2d05703636a7209e33e284a0> but was: <8b8d9c257e971afa6d069426676e14e395e30a9eeb1dd8c8eeae5ae7cb201d17>"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest.releaseManifestPinsVersionAndCompletePackageInventory",
+      "category": "failure",
+      "message": "missing release source: Core/Mapping/freeze-manifest.json ==> expected: <true> but was: <false>"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest.secondCaseUsesUnchangedPipelineWithLiveStateFailuresAndResync",
+      "category": "error",
+      "message": "generated.use:810:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest.mirrorsRealJasonCartagoAndMoiseAuctionThenReconnectsWithFullResync",
+      "category": "error",
+      "message": "EVIDENCE_SOURCE_NOT_IN_COMMIT: use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore fatal: path 'use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore' does not exist in '62e500e2dbde4e5d44d7236cd407e05cf46673d1'"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.backpressureRejectionCannotResurrectAnInFlightOperationCorrelation",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.backpressureTombstonesRetireAfterTheAcceptedWatermarkCompletes",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.syntheticConnectorMirrorsJsonReplayThenReconnectResyncRepairsDrift",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.lateCallbackAfterWorkspaceReplacementBelongsToTheOldObserver",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.completionBeforeRejectedTerminalStillInvalidatesTheOlderMutationCorrelation",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.observerFailureCannotLeaveMirrorLive",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.recordsEventToMirrorLatencyAndQueueSampleWithoutAnSla",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.outOfOrderTerminalCannotPoisonANewerAcceptedTerminal",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.mirrorReportsOrderingAndShutdownRejectionsAndClosesTimingLifecycle",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.unrelatedSemanticTraceCannotAuthorizeCreationAndUnknownPropertyCannotDisappear",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.unsubscribeFailureStillDrainsWorkerAndDisconnectsTransport",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.staleRejectedTerminalDoesNotInvalidateANewerActiveOperation",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.mutationEngineAppliesAllMutationKindsAndQuarantinesUnknownTrace",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.lifecycleObserverFailuresCannotRetainLiveTruth",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.receivingObserverFailureRequiresDisconnectAndAuthoritativeRecovery",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.terminalCannotCloseAnotherTargetAndLinkReplayIsIdempotent",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.initialSynchronizationBuffersConcurrentDeltaAndDetectsLostConnection",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.lateClosedStreamTerminalCannotPoisonMutationCorrelation",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.tracedLifecycleRestoresExactObjectAndStrictValuesRejectLossyInput",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.mirrorRejectsCallbackDeliveredAfterFailedInitialSynchronization",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.useMutationFailureMovesMirrorToErrorAndDoesNotCorruptExistingState",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.trace.TraceBindingTest.auctionTracePersistsDeclarationsObjectsOperationsAndRuntimeIndexes",
+      "category": "error",
+      "message": "duplicate traceId"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.CrossDimensionalVerifierTest.sourceRelationsRequireExactTargetsAndMissingEvidenceIsExplicit",
+      "category": "error",
+      "message": "Body"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest.operationCheckKeepsCorrelationAndUsesPreStateForPreAndPostconditions",
+      "category": "error",
+      "message": "generated.use:806:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest.registryPreservesTranslatedCoreCaseAndUserOriginsWithDependencies",
+      "category": "error",
+      "message": "generated.use:822:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest.fullCheckReportsStructureAndTracedAuctionViolationWithoutCollapsingErrors",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.backpressureTombstonesRetireAfterTheAcceptedWatermarkCompletes",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.completionBeforeRejectedTerminalStillInvalidatesTheOlderVerificationCorrelation",
+      "category": "error",
+      "message": "generated.use:820:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.eventDrivenChecksCorrelateViolationAndOperationPrePostUsingCapturedPreState",
+      "category": "error",
+      "message": "generated.use:820:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.rejectedOperationTerminalCannotBeResurrectedByBlockedPreStateCapture",
+      "category": "error",
+      "message": "generated.use:820:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.connectorReceiptIsNotBlockedByAnOngoingVerification",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.staleMirrorCannotEvaluateCurrentInvariantOrCapturePreState",
+      "category": "error",
+      "message": "generated.use:820:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.lateClosedStreamTerminalCannotPoisonNextStreamPreState",
+      "category": "error",
+      "message": "generated.use:820:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.stateChangeLatencyCoversMutationThroughVerificationResult",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.rejectedAndClosedEventsCannotLeaveReusableReceiptTimestamps",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.operationReportsUseTheSameReceiptToResultLatencyContract",
+      "category": "error",
+      "message": "generated.use:820:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.wrongTerminalCannotConsumeExactPreStateAndExportRetainsAttribution",
+      "category": "error",
+      "message": "generated.use:820:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.authoritativeDriftIsDiagnosedAndPeriodicAutoResyncRepairsMirror",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.bufferedEventLatencyStartsAtOriginalConnectorReceipt",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.targetedInvariantResultIsEquivalentToTheSameConstraintInAFullCheck",
+      "category": "error",
+      "message": "generated.use:819:8: Expected type name, found `ExternalAction'.\n"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.streamCloseDiscardsOperationCorrelationBeforeTheNextStream",
+      "category": "error",
+      "message": "generated.use:820:8: Expected type name, found `ExternalAction'.\n"
+    }
+  ],
+  "newFailingIdentities": [],
+  "resolvedFailingIdentities": [
+    "org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayerTest.profileIsExplicitAndDoesNotMutateFrozenBaselinePlan"
+  ],
+  "logSha256": "b5d0f2063565b0aa21e86b33552bd11ba4c2560fa92ab367b14f88f600c19e21"
+}

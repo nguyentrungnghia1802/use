@@ -93,6 +93,17 @@ class V2SemanticModelTest {
         assertEquals(org.tzi.use.api.UseSystemApi.create(direct.system(), false).evaluate("action1.kind"),
                 org.tzi.use.api.UseSystemApi.create(text, false).evaluate("action1.kind"));
     }
+    @Test void oppositeAliasesHaveIndependentSourceTracesToTheSameMembershipAssociation() {
+        var structure = new TransformationPlanner().structuralPlan(registry.mapping());
+        var empty = new org.tzi.use.plugins.jacamo.materialization.InstancePlan(List.of(), List.of(), List.of());
+        var trace = new org.tzi.use.plugins.jacamo.trace.TraceBuilder().build(model(List.of()), registry.mapping(), structure, empty);
+        for (var alias : registry.mapping().associations().stream().filter(MappingModel.ReferenceMapping::reverse).toList()) {
+            var records = trace.records().stream().filter(r -> r.targetUseId().equals("association:" + alias.name())).toList();
+            assertEquals(2, records.size());
+            assertEquals(2, records.stream().map(r -> r.traceId()).distinct().count());
+            assertTrue(records.stream().anyMatch(r -> r.sourceSemanticId().equals(alias.source()) && r.mappingRuleId().equals(alias.id())));
+        }
+    }
     @Test void exactResolverNeverBindsOutsideCandidatesOrMatchesAnArbitraryAncestor() {
         var first = element(MetamodelKind.Operation, "left", "run", Map.of(), List.of());
         var second = element(MetamodelKind.Operation, "right", "run", Map.of(), List.of());

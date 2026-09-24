@@ -258,8 +258,8 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         long generationStarted = System.nanoTime();
         MappingModel mapping = new MappingLoader().loadCanonical(checkout);
         var baseline = new TransformationPlanner().plan(imported.model(), mapping);
-        var structure = new VerificationSemanticLayer().apply(baseline,
-                new VerificationProfileLoader().loadV1()).transformation();
+        var structure = new VerificationSemanticLayer().apply(baseline, mapping,
+                new VerificationProfileLoader().loadActive(mapping)).transformation();
         InstancePlan instances = new InstancePlanner().plan(imported.model(), mapping, structure);
         var constraints = new ConstraintExtractor().extract(imported.model(), structure, Map.of());
         OclProfileLoader profiles = new OclProfileLoader();

@@ -34,7 +34,7 @@ class TraceBindingTest {
         var semantic = new StaticProjectImporter().importProject(Path.of("src/test/resources/auction/auction.jcm")).model();
         var mapping = new MappingLoader().loadCanonical(Path.of("."));
         var baseline = new TransformationPlanner().plan(semantic, mapping);
-        var structure = new VerificationSemanticLayer().apply(baseline, new VerificationProfileLoader().loadV1()).transformation();
+        var structure = new VerificationSemanticLayer().apply(baseline, new VerificationProfileLoader().loadActive(mapping)).transformation();
         var instances = new InstancePlanner().plan(semantic, mapping, structure);
         TraceIndex trace = new TraceBuilder().build(semantic, mapping, structure, instances);
         assertFalse(trace.byTargetKind("CLASS").isEmpty());

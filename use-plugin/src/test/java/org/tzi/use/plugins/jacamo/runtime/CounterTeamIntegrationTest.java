@@ -26,7 +26,7 @@ class CounterTeamIntegrationTest {
         Path project=Path.of("src/test/resources/counter-team").toAbsolutePath();
         var semantic=new StaticProjectImporter().importProject(project.resolve("counter-team.jcm")).model();
         var mapping=new MappingLoader().loadCanonical(Path.of("."));
-        var structure=new VerificationSemanticLayer().apply(new TransformationPlanner().plan(semantic,mapping),new VerificationProfileLoader().loadV1()).transformation();
+        var structure=new VerificationSemanticLayer().apply(new TransformationPlanner().plan(semantic,mapping),new VerificationProfileLoader().loadActive(mapping)).transformation();
         var instances=new InstancePlanner().plan(semantic,mapping,structure);
         var loader=new OclProfileLoader();var core=loader.loadCore();var policy=loader.loadCase(project,Path.of("verification/counter.ocl"));
         var constraints=new ConstraintExtractor().extract(semantic,structure,Map.of());

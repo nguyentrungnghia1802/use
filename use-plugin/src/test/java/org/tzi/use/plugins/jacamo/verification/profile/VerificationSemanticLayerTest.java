@@ -10,9 +10,9 @@ import org.tzi.use.plugins.jacamo.mapping.TransformationPlanner;
 
 class VerificationSemanticLayerTest {
     @Test
-    void profileIsExplicitAndDoesNotMutateFrozenBaselinePlan() {
+    void historicalProfileIsExplicitAndDoesNotMutateFrozenBaselinePlan() {
         var semantic = new StaticProjectImporter().importProject(Path.of("src/test/resources/auction/auction.jcm")).model();
-        var mapping = new MappingLoader().loadCanonical(Path.of("."));
+        var mapping = historical();
         var baseline = new TransformationPlanner().plan(semantic, mapping);
         var profile = new VerificationProfileLoader().loadV1();
         assertEquals(mapping.mappingId(), profile.baselineMappingId());
@@ -29,6 +29,30 @@ class VerificationSemanticLayerTest {
         assertEquals("0..1", association(effective.transformation(), "R047").secondEnd().multiplicity());
         assertEquals(baseline.classes().size(), effective.transformation().classes().size());
         assertEquals(baseline.associations().size(), effective.transformation().associations().size());
+    }
+
+    @Test void activeV2ProfilePreservesTheWholePlanAndRejectsCrossBaselineUse() {
+        var mapping = new MappingLoader().loadCanonical(Path.of("."));
+        var baseline = new TransformationPlanner().structuralPlan(mapping);
+        var loader = new VerificationProfileLoader();
+        var profile = loader.loadActive(mapping);
+        assertEquals("JACAMO_VERIFICATION_PROFILE_V2", profile.profileId());
+        assertTrue(profile.decisions().isEmpty());
+        var layer = new VerificationSemanticLayer();
+        assertEquals(baseline, layer.apply(baseline, mapping, profile).transformation());
+        assertFalse(baseline.orderProjections().isEmpty());
+        assertFalse(baseline.enums().isEmpty());
+        assertFalse(baseline.classes().stream().anyMatch(c -> c.name().equals("Organisation")));
+        assertTrue(baseline.classes().stream().filter(c -> java.util.List.of("Norm", "Group", "Role", "Scheme").contains(c.name()))
+                .allMatch(c -> c.superclasses().isEmpty()));
+        assertThrows(VerificationProfileException.class, () -> layer.apply(baseline, mapping, loader.loadV1()));
+        assertThrows(VerificationProfileException.class, () -> loader.loadActive(historical()));
+    }
+
+    private org.tzi.use.plugins.jacamo.mapping.MappingModel historical() {
+        return new MappingLoader().load(Path.of("Core/Mapping/version-1/jacamo-use-mapping-v1.json"),
+                Path.of("Core/Mapping/version-1/jacamo-use-mapping.schema.json"),
+                Path.of("Core/Metamodel/version-1/JaCaMo-Metamodel.ecore"), Path.of("Core/Mapping/version-1/freeze-manifest.json"));
     }
 
     private org.tzi.use.plugins.jacamo.mapping.TargetClassSpec classSpec(

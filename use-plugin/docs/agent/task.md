@@ -578,6 +578,11 @@ Checklist:
 V1 consumers. Parser declaration/instance migration and production no-V1-leakage
 remain OPEN for P34; no full acceptance or merge/push claim.
 
+V2 profile/path/trace follow-up: [consumer evidence](../project/v2-migration/phase33-verification-profile.md),
+30 focused tests PASS. Post-profile plugin regression: 192 executed, 9F/62E
+(71 failing identities versus previous 72); later V1 parser/OCL assumptions exposed.
+Alias trace collision identified and fixed with regression. No phase closure claimed.
+
 ## P33.1 — Audit current IR against V2
 
 - [x] `SemanticElement`.

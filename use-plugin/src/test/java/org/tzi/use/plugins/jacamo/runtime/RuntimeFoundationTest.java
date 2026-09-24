@@ -638,7 +638,7 @@ class RuntimeFoundationTest {
         var mapping = new MappingLoader().loadCanonical(Path.of("."));
         var baseline = new TransformationPlanner().plan(semantic, mapping);
         var structure = new VerificationSemanticLayer().apply(baseline,
-                new VerificationProfileLoader().loadV1()).transformation();
+                new VerificationProfileLoader().loadActive(mapping)).transformation();
         var instances = new InstancePlanner().plan(semantic, mapping, structure);
         var generated = new TextBackend().generate("auction", structure, instances);
         DirectUseBackend.Result direct = new DirectUseBackend().materialize(generated, instances);

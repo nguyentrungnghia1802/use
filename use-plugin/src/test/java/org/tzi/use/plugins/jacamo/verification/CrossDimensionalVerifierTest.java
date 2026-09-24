@@ -12,7 +12,7 @@ class CrossDimensionalVerifierTest {
     @Test void sourceRelationsRequireExactTargetsAndMissingEvidenceIsExplicit() throws Exception {
         var semantic=new StaticProjectImporter().importProject(Path.of("src/test/resources/auction/auction.jcm")).model();
         var mapping=new MappingLoader().loadCanonical(Path.of("."));
-        var plan=new VerificationSemanticLayer().apply(new TransformationPlanner().plan(semantic,mapping),new VerificationProfileLoader().loadV1()).transformation();
+        var plan=new VerificationSemanticLayer().apply(new TransformationPlanner().plan(semantic,mapping),new VerificationProfileLoader().loadActive(mapping)).transformation();
         var instances=new InstancePlanner().plan(semantic,mapping,plan);
         var system=new DirectUseBackend().materialize(new TextBackend().generate("test",plan,instances),instances).system();
         var trace=new TraceBuilder().build(semantic,mapping,plan,instances);
