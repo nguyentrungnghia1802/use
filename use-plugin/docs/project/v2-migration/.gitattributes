@@ -3,3 +3,7 @@
 *.use text eol=lf
 *.cmd text eol=lf
 *.log text eol=lf
+
+# Historical trace hashes include original Jackson CRLF body plus final LF.
+# Preserve those exact recorded bytes, without Git text normalization.
+historical-static/*/trace.json -text !eol

@@ -1,21 +1,15 @@
 # USE JaCaMo Plugin — Canonical Project Orientation
 
-> **Ordering update:** The user approved target-only independent ranks. Mapping 2.2.0 component gates pass, including native counterexamples, text/direct parity and queued runtime reconnect. Default V2 consumer migration remains OPEN. Latest regression: 325 executed, same 3 failures / 73 errors. See [current implementation](v2-migration/phase31-order-projection.md). Older decision-required statements below describe the pre-projection audit.
+Active production baseline is Metamodel V2 + Mapping 2.2.0 WORKING_BASELINE.
+The V2 IR, parser, transformation, trace, OCL and runtime target consumers are
+migrated. Generic target-only rank projection preserves independent opposite
+orders; V2-ORDER-001 remains a mandatory negative/positive regression control.
 
-> **V2 migration status — 2026-09-23:** Active semantic specification is Metamodel V2 + Mapping 2.1 (`WORKING_BASELINE`), under `Core/*/version-2/`. Production consumers are not yet migrated; the fresh pre-migration build fails after V1 resource relocation. V1 release/closure claims below are historical, not current V2 acceptance. See [migration baseline](v2-migration/phase29-pre-migration-baseline.md) and [active selection contract](v2-migration/active-baseline-policy.md).
-
-
-This is the canonical onboarding document for the current repository. It replaces
-the deleted legacy orientation transcript under `docs/report/`; that transcript is
-not restored because it mixed machine-specific commands, temporary checkouts, and
-historical observations.
-
-Latest V2 audit: [Phase 31 mapping evidence](v2-migration/mapping-v2-audit.md).
-Native Ecore, schema/source coverage and structural USE compilation pass;
-[V2-ORDER-001](v2-migration/phase31-ordered-opposite-decision.md) blocks full ordered
-instance fidelity. Latest regression is 317 executed / 3 failures / 73 errors,
-with exactly the same failing test identities as the pre-migration baseline.
-Phase 29–35 completion and dependent production gates remain OPEN.
+Clean full reactor: **350/350 PASS**; Python evolution/diff: **11/11 PASS**.
+See [Phase 29–35 acceptance](v2-migration/phase35-acceptance.md) and its complete
+per-suite and original-failure disposition evidence. Post-merge/push closure is
+pending. The V2 working ZIP is explicitly unreleased and unfrozen. V1 evidence
+below remains historical; original Auction standalone equivalence is not claimed.
 
 ## 1. Historical V1 snapshot
 

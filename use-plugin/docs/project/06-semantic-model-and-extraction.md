@@ -5,7 +5,7 @@
 > Active kinds are descriptor-derived; project metadata and source facts are separate.
 > The default importer now emits V2 IR; see [Phase 34 evidence](v2-migration/phase34-extraction.md).
 > Transitional V1 handles/constructor have been removed. Projection/OCL/runtime
-> consumers now use V2; full phase closure remains OPEN pending clean regression.
+> consumers now use V2; clean regression PASS 350/350; phase workflow closure is recorded in Phase 35 acceptance.
 
 ## 1. Input contract
 

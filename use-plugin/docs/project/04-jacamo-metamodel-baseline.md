@@ -1,11 +1,11 @@
 # JaCaMo Metamodel Baseline
 
-> **V2 migration status — 2026-09-23:** Active semantic specification is Metamodel V2 + Mapping 2.1 (`WORKING_BASELINE`), under `Core/*/version-2/`. Production consumers are not yet migrated; the fresh pre-migration build fails after V1 resource relocation. V1 release/closure claims below are historical, not current V2 acceptance. See [migration baseline](v2-migration/phase29-pre-migration-baseline.md) and [active selection contract](v2-migration/active-baseline-policy.md).
+> Active baseline is `Core/Metamodel/version-2/jacamo_v2_complete.ecore` with Mapping 2.2.0. Production migration and clean reactor PASS; see [final acceptance](v2-migration/phase35-acceptance.md). The V1 class inventory and equivalence discussion below remain historical, not the current descriptor inventory.
 
 
 ## 1. Vai trò
 
-`JaCaMo-Metamodel.ecore` là semantic vocabulary baseline dùng cho mapping và verification.
+`jacamo_v2_complete.ecore` là active semantic vocabulary baseline dùng cho mapping và verification.
 
 Nó không phải:
 - runtime state model;

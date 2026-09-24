@@ -3,7 +3,7 @@
 > Active V2 migration: [profile contract](v2-migration/phase33-verification-profile.md)
 > supersedes VSP001-VSP005 below. The V2 profile preserves the full baseline plan;
 > V1 overrides apply only to explicit historical fixtures. Parser/materialization
-> now use V2; whole-pipeline acceptance awaits clean regression.
+> now use V2; whole-pipeline clean regression PASS 350/350.
 > [Phase 35 implementation/evidence](v2-migration/phase35-transformation.md) now
 > defines active V2 projections, defaults, membership/order trace and consumer migration.
 
