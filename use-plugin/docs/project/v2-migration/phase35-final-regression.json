@@ -1,5 +1,5 @@
 {
-  "status": "CLEAN_REACTOR_PASS_PHASE_MERGE_PENDING",
+  "status": "CLEAN_REACTOR_PASS",
   "sourceCommit": "c77db92af1a554ff747ca93b164530717a7bc5c4",
   "command": "mvn -B clean verify",
   "totals": {
@@ -920,5 +920,6 @@
       "category": "V1_PROFILE_INCOMPATIBILITY",
       "current": "PASS"
     }
-  ]
+  ],
+  "workflowClosure": "phase35-closure.json"
 }

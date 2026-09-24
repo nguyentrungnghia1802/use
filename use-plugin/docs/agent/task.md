@@ -13,7 +13,7 @@
 
 ---
 
-> **2026-09-24 final consumer gate:** clean reactor **350/350 PASS**, Python **11/11 PASS**. All component and downstream integration gates in Phase 29–35 now pass. Earlier counts/OPEN paragraphs below are historical migration snapshots, superseded by [final acceptance](../project/v2-migration/phase35-acceptance.md) and its per-test evidence. Phase-level merge/post-merge/push closure is still pending; no final V2 freeze/release is claimed.
+> **2026-09-24 final consumer gate:** clean reactor **350/350 PASS**, Python **11/11 PASS**. All component and downstream integration gates in Phase 29–35 now pass. Earlier counts/OPEN paragraphs below are historical migration snapshots, superseded by [final acceptance](../project/v2-migration/phase35-acceptance.md) and its per-test evidence. Phase branches are merged and pushed; post-merge full regression also PASS 350/350. Phase 29–35 are DONE; no final V2 freeze/release is claimed.
 
 # Global Rules cho Phase 29+
 
@@ -66,6 +66,8 @@ Một task chỉ được `[x]` khi:
 ---
 
 # Phase 29 — V2 Takeover & Migration Baseline
+
+**DONE — 2026-09-24.** Component, downstream integration, clean full regression, merge, post-merge regression and push gates PASS. [Acceptance](../project/v2-migration/phase35-acceptance.md). Older progress snapshots below are historical.
 
 **Objective:** chuyển source-of-truth active từ V1 sang V2 một cách có kiểm soát trước khi sửa sâu production code.
 
@@ -174,7 +176,7 @@ Classify mỗi occurrence:
 
 ## P29.5 — Phase 29 gate
 
-Independent inventory, executable selection and integration regression PASS. Phase merge/post-merge/push is pending. REMOVE is an audited empty classification, not authorization to delete.
+Independent inventory, executable selection and integration regression PASS. Phase workflow closure PASS; see final acceptance. REMOVE is an audited empty classification, not authorization to delete.
 
 - [x] Không sửa parser/transformation sâu trước khi inventory hoàn thành.
 - [x] Không xóa V1.
@@ -185,6 +187,8 @@ Independent inventory, executable selection and integration regression PASS. Pha
 ---
 
 # Phase 30 — Metamodel V2 Structural Audit
+
+**DONE — 2026-09-24.** Component, downstream integration, clean full regression, merge, post-merge regression and push gates PASS. [Acceptance](../project/v2-migration/phase35-acceptance.md). Older progress snapshots below are historical.
 
 **Objective:** hiểu chính xác Metamodel V2 như một contract máy đọc được, không dựa vào V1 assumptions.
 
@@ -313,7 +317,7 @@ Create/update manifest containing:
 
 ## P30.6 — Phase 30 gate
 
-Native structural audit, generated inventory and downstream consumer regression PASS; phase merge/post-merge/push is pending. See `v2-migration/metamodel-v2-audit.md` and exact impact report.
+Native structural audit, generated inventory and downstream consumer regression PASS; phase workflow closure PASS; see final acceptance. See `v2-migration/metamodel-v2-audit.md` and exact impact report.
 
 - [x] V2 Ecore structurally valid.
 - [x] Exact inventory tồn tại.
@@ -324,6 +328,8 @@ Native structural audit, generated inventory and downstream consumer regression 
 ---
 
 # Phase 31 — Mapping V2 Audit & USE Target Contract
+
+**DONE — 2026-09-24.** Component, downstream integration, clean full regression, merge, post-merge regression and push gates PASS. [Acceptance](../project/v2-migration/phase35-acceptance.md). Older progress snapshots below are historical.
 
 **Objective:** kiểm chứng Mapping V2 đã có, không regenerate hoặc rewrite mù quáng.
 
@@ -471,6 +477,8 @@ Phase closure remains OPEN; this is not an end-to-end V2 release acceptance.
 
 # Phase 32 — V2 Evolution Architecture & Change-Resilience
 
+**DONE — 2026-09-24.** Component, downstream integration, clean full regression, merge, post-merge regression and push gates PASS. [Acceptance](../project/v2-migration/phase35-acceptance.md). Older progress snapshots below are historical.
+
 **Objective:** làm cho các thay đổi nhỏ V2.1/V2.2 sau này rẻ và có kiểm soát.
 
 **Component tasks PASS; overall phase closure OPEN.** See
@@ -572,6 +580,8 @@ Checklist:
 ---
 
 # Phase 33 — Semantic IR V2 Migration
+
+**DONE — 2026-09-24.** Component, downstream integration, clean full regression, merge, post-merge regression and push gates PASS. [Acceptance](../project/v2-migration/phase35-acceptance.md). Older progress snapshots below are historical.
 
 **Objective:** thay vocabulary/IR V1 bằng representation phù hợp V2 nhưng vẫn source-preserving và traceable.
 
@@ -680,6 +690,8 @@ Prefer data/descriptor-driven design nếu V2 còn có thể đổi nhẹ.
 
 # Phase 34 — Parser & Extraction Migration to V2
 
+**DONE — 2026-09-24.** Component, downstream integration, clean full regression, merge, post-merge regression and push gates PASS. [Acceptance](../project/v2-migration/phase35-acceptance.md). Older progress snapshots below are historical.
+
 **Objective:** giữ parser machinery reusable, đổi semantic output theo V2.
 
 **Parser component gates PASS; phase closure OPEN.** [Evidence](../project/v2-migration/phase34-extraction.md).
@@ -774,6 +786,8 @@ Không execute arbitrary project Java để infer semantics.
 ---
 
 # Phase 35 — USE Transformation V2 & Initial State
+
+**DONE — 2026-09-24.** Component, downstream integration, clean full regression, merge, post-merge regression and push gates PASS. [Acceptance](../project/v2-migration/phase35-acceptance.md). Older progress snapshots below are historical.
 
 **Objective:** `JaCaMoSemanticModel V2 + Mapping V2 → USE MModel + initial MSystemState` chính xác và deterministic.
 

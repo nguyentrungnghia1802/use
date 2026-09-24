@@ -27,8 +27,8 @@
   ],
   "evolutionPolicy": "Exact diff, impact, reconcile, test and update revision hashes; final freeze only at Phase 44",
   "currentAcceptance": {
-    "status": "CONSUMER_GATES_PASS_PHASE_MERGE_PENDING",
-    "evidence": "phase35-final-regression.json",
-    "note": "Existing run/open fields above are historical stage records; no final freeze."
+    "status": "PHASE_29_35_DONE_WORKING_BASELINE",
+    "evidence": "phase35-closure.json",
+    "note": "Earlier run/open fields are preserved historical stage records. Runtime source-authority boundaries are explicit in phase35-acceptance.md; no final freeze."
   }
 }

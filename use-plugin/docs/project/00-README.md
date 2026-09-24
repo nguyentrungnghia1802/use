@@ -7,8 +7,7 @@ orders; V2-ORDER-001 remains a mandatory negative/positive regression control.
 
 Clean full reactor: **350/350 PASS**; Python evolution/diff: **11/11 PASS**.
 See [Phase 29–35 acceptance](v2-migration/phase35-acceptance.md) and its complete
-per-suite and original-failure disposition evidence. Post-merge/push closure is
-pending. The V2 working ZIP is explicitly unreleased and unfrozen. V1 evidence
+per-suite and original-failure disposition evidence. Phase 29–35 are DONE: post-merge 350/350 PASS, merged and pushed. The V2 working ZIP is explicitly unreleased and unfrozen. V1 evidence
 below remains historical; original Auction standalone equivalence is not claimed.
 
 ## 1. Historical V1 snapshot

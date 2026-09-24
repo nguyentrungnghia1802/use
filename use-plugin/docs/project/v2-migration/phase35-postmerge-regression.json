@@ -1,0 +1,540 @@
+{
+  "status": "PASS",
+  "command": "mvn -B verify",
+  "sourceCommit": "cd185d3becf3d8424e2fe53f9da5f6d04d5f0a54",
+  "documentationWorktreeDelta": "KNOWN-LIMITATIONS removes obsolete pending workflow statement; no executable/input change",
+  "totals": {
+    "tests": 350,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "module": "use-core",
+      "phase": "surefire",
+      "suite": "org.tzi.use.architecture.MavenCyclicDependenciesCoreTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-core",
+      "phase": "surefire",
+      "suite": "org.tzi.use.uml.mm.ModelAPITest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-core",
+      "phase": "failsafe",
+      "suite": "org.tzi.use.OCLExpressionIT",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-gui",
+      "phase": "surefire",
+      "suite": "org.tzi.use.architecture.MavenLayeredArchitectureTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-gui",
+      "phase": "failsafe",
+      "suite": "org.tzi.use.main.shell.ShellIT",
+      "tests": 129,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.CompatibilityManifestTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.constraint.ConstraintOclTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.evidence.EvidenceNormalizerTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.evidence.EvidenceSourceCommitTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.extraction.StaticProjectImporterTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.extraction.V2ExtractionTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.GoldenPipelineTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.HotfixBindingTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.JaCaMoPluginTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.mapping.ActiveBaselineTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.mapping.HistoricalMappingLoaderTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.mapping.OrderProjectionTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.mapping.V2EcoreAuditTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.mapping.V2MappingAuditTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.mapping.V2OppositeOrderingAuditTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.materialization.V2MaterializationTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.PreMigrationBaselineTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.project.JcmProjectLoaderTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.project.ProjectModelTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.runtime.AuctionSourceRuntimeTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.runtime.CartagoRuntimeConnectorTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.runtime.CompositeRuntimeConnectorTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.runtime.HistoricalRuntimeMappingTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.runtime.JasonRuntimeConnectorTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.runtime.MoiseBoardSnapshotSourceTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.runtime.MoiseRuntimeConnectorTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeAliasTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeAuthorityTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+      "tests": 23,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeIdentityHardeningTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeMappingTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeMigrationTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeTraceTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.runtime.V2RuntimeOrderTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.semantic.SemanticIdTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.semantic.SemanticModelTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.semantic.V2SemanticModelTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.trace.TraceBindingTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.ui.JaCaMoWorkbenchPanelTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.verification.CrossDimensionalVerifierTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayerTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeHistoryVerifierTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "surefire",
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "phase": "failsafe",
+      "suite": "org.tzi.use.plugins.jacamo.release.ReleasePackageIT",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "logSha256": "bf3b1ee0c533113667cc5f09800be31bf43ce2ecc91e2c9065c5ee687819c9f7",
+  "packageSha256": "a8292d48de6c1e1d93078070ed4e5538f8add178c28eadb2874809fa7ee3169e",
+  "historicalHashes": "Both exact original trace SHA-256 values pass after branch checkout and merge; no expectation change",
+  "productionDiffFromCleanPass": "NONE (src, POM, compatibility, release manifests, USE core/gui)"
+}

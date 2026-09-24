@@ -3,7 +3,7 @@
 > Current acceptance: downstream consumer gates PASS after **350/350 clean reactor**
 > and **11/11 Python tests**. Earlier run counts/OPEN descriptions below retain
 > their historical stage. See [final acceptance](phase35-acceptance.md); phase
-> merge/post-merge/push closure remains pending. V2 remains WORKING_BASELINE.
+> merge/post-merge/push closure PASS. V2 remains WORKING_BASELINE.
 
 Current status: **PARTIAL; V2-ORDER-001 decision approved and target-only projection implemented at component boundaries**.
 See [2.2 implementation evidence](phase31-order-projection.md). The following

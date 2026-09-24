@@ -1,6 +1,7 @@
 # Phase 29–35 V2 working acceptance
 
-Status: clean full reactor PASS 350/350; merge/post-merge/push pending.
+Status: **DONE for Phase 29–35 and their downstream-dependent gates**.
+Clean and post-merge full reactors PASS 350/350; phase branches merged and pushed.
 This is working-baseline acceptance, not a final V2 freeze/release.
 
 ## Cross-layer consistency review
@@ -93,3 +94,15 @@ recovered and verified against the unchanged recorded SHA-256. Specific -text
 attributes now preserve them. No manifest hash, golden expectation, JSON value or
 V2 behavior was changed. PreMigrationBaselineTest remains the exact-byte regression.
 Post-merge rerun remains required after this portability repair.
+
+## Workflow closure
+
+Migration merged into main at f05a5c6e; exact historical-byte portability repair
+merged at cd185d3b. Post-merge `mvn -B verify`: **350/350 PASS**, including historical
+hash controls and all three package integration tests. See
+[post-merge evidence](phase35-postmerge-regression.json). Main cd185d3b and every
+Phase 29–35 branch were pushed successfully to origin. All phase component and
+integration checklists now satisfy their dependencies in the approved order.
+Subsequent closure commits synchronize documentation only; production sources,
+canonical inputs, golden expectations and build configuration match the passing run.
+No semantic decision blocker remains for this Phase 29–35 scope.

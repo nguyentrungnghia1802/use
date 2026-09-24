@@ -3,7 +3,7 @@
 > Current acceptance: downstream consumer gates PASS after **350/350 clean reactor**
 > and **11/11 Python tests**. Earlier run counts/OPEN descriptions below retain
 > their historical stage. See [final acceptance](phase35-acceptance.md); phase
-> merge/post-merge/push closure remains pending. V2 remains WORKING_BASELINE.
+> merge/post-merge/push closure PASS. V2 remains WORKING_BASELINE.
 
 Status: DECISION APPROVED; implementation in progress. The user selected option 1,
 specifically a generic target-only independent rank projection in the plugin.
