@@ -105,7 +105,9 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public synchronized VerificationReport latestVerification() {
-        return workspace == null ? null : workspace.latest;
+        if (workspace == null) return null;
+        var runtimeLatest = runtimeVerification == null ? null : runtimeVerification.latestReport();
+        return runtimeLatest == null ? workspace.latest : runtimeLatest.verification();
     }
 
     @Override public synchronized void loadVerificationProfile(Path profile) {

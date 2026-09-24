@@ -9,6 +9,7 @@ import java.nio.file.*;
 /** Owns a single byte snapshot per input and never falls back after invalid input. */
 public final class RuntimeMappingLoader {
     static final String ROOT = "/org/tzi/use/plugins/jacamo/runtime/";
+    static final String HISTORICAL_ROOT = "/org/tzi/use/plugins/jacamo/historical/version-1/";
     private static final ObjectMapper JSON = new ObjectMapper().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION);
     public RuntimeMapping loadDefault() {
         RuntimeMapping mapping = loadBytes(resource("jacamo-use-runtime-mapping-v2.json"));
@@ -46,7 +47,13 @@ public final class RuntimeMappingLoader {
         catch (Exception exception) { throw new RuntimeMappingException("RUNTIME_MAPPING_LOAD_FAILED", "document", exception.getMessage()); }
     }
     static byte[] resource(String name) {
-        try (var input = RuntimeMappingLoader.class.getResourceAsStream(ROOT + name)) {
+        return resource(ROOT, name);
+    }
+    static byte[] historicalResource(String name) {
+        return resource(HISTORICAL_ROOT, name);
+    }
+    private static byte[] resource(String root, String name) {
+        try (var input = RuntimeMappingLoader.class.getResourceAsStream(root + name)) {
             if (input == null) throw new IllegalArgumentException("resource missing: " + name);
             return input.readAllBytes();
         } catch (Exception exception) { throw new RuntimeMappingException("RUNTIME_MAPPING_RESOURCE_FAILED", "document", name); }

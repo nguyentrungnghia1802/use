@@ -77,6 +77,9 @@ class JaCaMoWorkbenchPanelTest {
         panel.importProject(Path.of("auction.jcm"));
         facade.runtime = new JaCaMoFacade.RuntimeStatus(MirrorState.LIVE, 3, 5, 8, 1, 2, 0,
                 Instant.parse("2026-09-15T09:00:00Z"), "event-8", 42, 11, 2);
+        facade.latest = VerificationReport.offline("runtime-event-8", true,
+                List.of(new VerificationResult("C-LIVE", VerificationOutcome.FAIL, "object",
+                        "live violation", "context C inv: false", List.of("source"), null, List.of())));
 
         panel.refreshRuntime();
         button(panel, "runtime-disconnect").doClick();
@@ -85,6 +88,7 @@ class JaCaMoWorkbenchPanelTest {
         assertEquals("LIVE", label(panel, "runtime-state").getText());
         assertEquals("3", label(panel, "runtime-queue-depth").getText());
         assertEquals("event-8", label(panel, "runtime-last-event").getText());
+        assertEquals(VerificationOutcome.FAIL, table(panel, "verification-table").getValueAt(0, 2));
         assertEquals(1, facade.disconnects);
         assertEquals(1, facade.resyncs);
     }
@@ -215,6 +219,9 @@ class JaCaMoWorkbenchPanelTest {
         private List<TraceRow> traces = List.of(new TraceRow("source", "Goal", "object:g", "OBJECT", "M001",
                 "VP006", "PROJECTED", Path.of("agent.asl"), 7, "AGENT"));
         private RuntimeStatus runtime = RuntimeStatus.offline();
+        private VerificationReport latest = VerificationReport.offline("run", true,
+                List.of(new VerificationResult("C1", VerificationOutcome.PASS, "object", "holds",
+                        "context C inv: true", List.of("source"), null, List.of())));
 
         @Override public String status() { return "ready"; }
         @Override public ProjectSummary importProject(Path jcmFile) {
@@ -239,9 +246,7 @@ class JaCaMoWorkbenchPanelTest {
         @Override public List<TraceRow> traces() { return traces; }
         @Override public List<ConstraintDescriptor> constraints() { return List.of(); }
         @Override public VerificationReport latestVerification() {
-            return VerificationReport.offline("run", true, List.of(new VerificationResult("C1",
-                    VerificationOutcome.PASS, "object", "holds", "context C inv: true", List.of("source"),
-                    null, List.of())));
+            return latest;
         }
         @Override public RuntimeStatus runtimeStatus() { return runtime; }
         @Override public ProjectSummary rebuild() { rebuilds++; return projectSummary(); }

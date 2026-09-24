@@ -71,6 +71,36 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>org/tzi/use/plugins/jacamo/ocl/jacamo-core.ocl</exclude>
+                    <exclude>org/tzi/use/plugins/jacamo/ocl/jacamo-core-manifest.json</exclude>
+                    <exclude>org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v1.json</exclude>
+                    <exclude>org/tzi/use/plugins/jacamo/runtime/runtime-mapping.schema.json</exclude>
+                    <exclude>org/tzi/use/plugins/jacamo/runtime/runtime-mapping-freeze.json</exclude>
+                    <exclude>org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v1.json</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources/org/tzi/use/plugins/jacamo/ocl</directory>
+                <targetPath>org/tzi/use/plugins/jacamo/historical/version-1/ocl</targetPath>
+                <includes>
+                    <include>jacamo-core.ocl</include>
+                    <include>jacamo-core-manifest.json</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources/org/tzi/use/plugins/jacamo/runtime</directory>
+                <targetPath>org/tzi/use/plugins/jacamo/historical/version-1/runtime</targetPath>
+                <includes>
+                    <include>jacamo-use-runtime-mapping-v1.json</include>
+                    <include>runtime-mapping.schema.json</include>
+                    <include>runtime-mapping-freeze.json</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources/org/tzi/use/plugins/jacamo/verification</directory>
+                <targetPath>org/tzi/use/plugins/jacamo/historical/version-1/verification</targetPath>
+                <includes><include>jacamo-verification-profile-v1.json</include></includes>
             </resource>
             <resource>
                 <directory>Core/Metamodel/version-1</directory>
@@ -99,7 +129,10 @@
             <resource>
                 <directory>release</directory>
                 <targetPath>org/tzi/use/plugins/jacamo/release</targetPath>
-                <includes><include>release-manifest.json</include></includes>
+                <includes>
+                    <include>release-manifest.json</include>
+                    <include>v2-working-baseline-manifest.json</include>
+                </includes>
             </resource>
             <resource>
                 <directory>.</directory>

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0.0",
+  "baseline": "V2",
+  "status": "WORKING_BASELINE",
+  "date": "2026-09-24",
+  "freeze": false,
+  "resources": {
+    "metamodel": {
+      "version": "V2",
+      "path": "Core/Metamodel/version-2/jacamo_v2_complete.ecore",
+      "sha256": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c"
+    },
+    "structuralMapping": {
+      "mappingId": "JaCaMo-agentmetamodel-v2__to__USE-v2.2",
+      "schemaVersion": "2.2.0",
+      "path": "Core/Mapping/version-2/jacamo-use-mapping-v2.json",
+      "sha256": "15d330c70400d16958559b83daf27c3755dc0cb28a7dffb8a08d94879d1ddf67",
+      "schemaPath": "Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json",
+      "schemaSha256": "e9f555ad2e19cbf8382ff4c17d44179d3b47a13d03ee9a58c2b491f99b72c919"
+    },
+    "runtimeMapping": {
+      "mappingVersion": "2.0.0",
+      "schemaVersion": "3.0.0",
+      "status": "WORKING",
+      "path": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v2.json",
+      "sha256": "8daab614184d8fc9fb20e9fc13ab0e8731b76de1d42008890643738161801dec",
+      "schemaPath": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-v2.schema.json",
+      "schemaSha256": "be843872c909a8d44ca7c038f5896a8d829f07b068b4861f8169faf552f6a3bb"
+    },
+    "coreOcl": {
+      "profileId": "JACAMO_CORE_OCL_V2",
+      "version": "2.0.0",
+      "path": "src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2.ocl",
+      "sha256": "a725c1fe0524f2b477327b58c54d317df693a0fbe37d3773bbe44372beeefab5",
+      "manifestPath": "src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2-manifest.json",
+      "manifestSha256": "14b098508167dc5198fa60589d098d5251d808e3ed2e828376324c751a009917"
+    },
+    "verificationProfile": {
+      "profileId": "JACAMO_VERIFICATION_PROFILE_V2",
+      "version": "2.0.0",
+      "path": "src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json",
+      "sha256": "91c85d42080b56754e8c2f5e9d37127e80c1483fdb4d71f2d61df7eab58fcab2"
+    }
+  },
+  "changeSummary": "Phase 42 packaging manifest for the unchanged Phase 29-41 V2 working baseline.",
+  "impactedLayers": [
+    "UI baseline identity",
+    "compatibility metadata",
+    "resource packaging"
+  ],
+  "evidence": "docs/project/v2-migration/phase42-ui-packaging.md"
+}

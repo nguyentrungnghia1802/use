@@ -130,6 +130,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         runtimeLastSync.setText(current.lastSync() == null ? "-" : current.lastSync().toString());
         runtimeLastEvent.setText(current.lastEvent());
         runtimeLatency.setText(current.lastLatencyNanos() + " ns | snapshot=" + current.snapshotVersion());
+        refreshVerification();
     }
 
     public void showBindingRequest(Path destination, JaCaMoFacade.BindingRequest request) {

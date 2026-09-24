@@ -2,7 +2,8 @@
 
 > Current working package: `use-jacamo-plugin-1.0.1-v2-working.zip` plus SHA-256
 > sidecar. It includes canonical V2 versioned Ecore/Mapping/schema, V2 profile/OCL
-> and runtime Mapping V2/schema 3.0.0. Manifest status is WORKING_V2_NOT_RELEASED,
+> plus its manifest, runtime Mapping V2/schema 3.0.0, compatibility metadata and the
+> V2 working-baseline manifest. Manifest status is WORKING_V2_NOT_RELEASED,
 > gitTag is null. Binary descriptor remains 1.0.1; no V2 release/freeze is implied.
 > The old manifest is preserved under release/historical. Historical release
 > commands and evidence below apply to their recorded V1 revision.
@@ -28,15 +29,24 @@ Plugin JAR phải contain/version:
 - plugin metadata;
 - version manifest.
 
-For release 1.0.1, the canonical Ecore and mapping JSON/schema/freeze manifest
-are under `org/tzi/use/plugins/jacamo/canonical/` inside the built JAR. The
-descriptor is `useplugin.xml`; core OCL and its manifest are under `ocl/`;
-`release/release-manifest.json` and `release/compatibility.json` are embedded
-under the plugin namespace. `ReleasePackageIT` checks the real ZIP inventory,
-compares each ZIP entry with its source, compares these JAR resource bytes with
-their canonical sources, validates the ZIP SHA-256 sidecar, and asks USE to load
-the JAR extracted from that ZIP. The ZIP includes the same canonical files as
-readable copies for inspection.
+For the V2 working package, the only active structural baseline is under
+`org/tzi/use/plugins/jacamo/canonical/version-2/` inside the built JAR. Core OCL,
+the V2 verification profile and Runtime Mapping V2 remain in their active component
+namespaces. `release/release-manifest.json`, `release/compatibility.json` and
+`release/v2-working-baseline-manifest.json` are embedded under the plugin namespace.
+
+V1 structural, OCL, verification-profile and runtime-target resources are retained
+only for explicit reproducibility under `org/tzi/use/plugins/jacamo/historical/version-1/`.
+The binding, trace and runtime-event schemas whose filenames contain `v1` remain
+active wire-format compatibility schemas; they are not a structural target baseline.
+The ZIP exposes only canonical V2 target resources, while the JAR retains the V1
+bytes solely in that historical namespace.
+
+`ReleasePackageIT` checks the exact ZIP inventory, compares every ZIP entry with its
+source, compares active and historical JAR resource bytes with their declared sources,
+rejects V1 target resources in active namespaces, validates the ZIP SHA-256 sidecar,
+and asks USE to load the JAR extracted from that ZIP. The ZIP includes canonical V2
+files as readable copies for inspection.
 
 Không bundle case-specific Auction OCL như global default.
 

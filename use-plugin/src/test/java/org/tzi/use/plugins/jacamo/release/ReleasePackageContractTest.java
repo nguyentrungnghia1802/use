@@ -34,6 +34,8 @@ class ReleasePackageContractTest {
             "examples/auction/src/org/auction.xml",
             "examples/auction/verification/auction.ocl",
             "lib/plugins/use-jacamo-plugin-1.0.1.jar",
+            "manifests/v2-working-baseline-manifest.json",
+            "ocl/jacamo-core-v2-manifest.json",
             "ocl/jacamo-core-v2.ocl",
             "profiles/jacamo-verification-profile-v2.json",
             "release-manifest.json",
@@ -54,9 +56,18 @@ class ReleasePackageContractTest {
         assertTrue(manifest.path("gitTag").isNull());
         assertEquals("WORKING_V2_NOT_RELEASED", manifest.path("status").asText());
         assertEquals("7.5.0", manifest.path("compatibility").path("use").asText());
+        assertTrue(manifest.path("compatibility").path("useCommit").asText().matches("[0-9a-f]{40}"));
         assertEquals("1.0.1", manifest.path("compatibility").path("pluginDescriptor").asText());
+        assertEquals("3.9.9", manifest.path("compatibility").path("maven").asText());
         assertEquals("SHA-256", manifest.path("integrity").path("packageAlgorithm").asText());
         assertFalse(manifest.path("limitations").isEmpty());
+        assertFalse(manifest.path("activeBaseline").path("freeze").asBoolean());
+        assertEquals("manifests/v2-working-baseline-manifest.json",
+                manifest.path("activeBaseline").path("workingManifest").asText());
+        JsonNode working = new ObjectMapper().readTree(root.resolve(
+                "release/v2-working-baseline-manifest.json").toFile());
+        assertEquals("WORKING_BASELINE", working.path("status").asText());
+        assertFalse(working.path("freeze").asBoolean());
 
         Set<String> declared = new LinkedHashSet<>();
         for (JsonNode entry : manifest.path("packageEntries")) {

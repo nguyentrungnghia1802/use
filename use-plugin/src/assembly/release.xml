@@ -14,6 +14,7 @@
         <file><source>Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json</source><outputDirectory>Core/Mapping/version-2</outputDirectory></file>
         <file><source>src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json</source><outputDirectory>profiles</outputDirectory></file>
         <file><source>src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2.ocl</source><outputDirectory>ocl</outputDirectory></file>
+        <file><source>src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2-manifest.json</source><outputDirectory>ocl</outputDirectory></file>
         <file><source>src/main/resources/org/tzi/use/plugins/jacamo/binding/binding-v1.schema.json</source><outputDirectory>schemas</outputDirectory></file>
         <file><source>src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-event-v1.schema.json</source><outputDirectory>schemas</outputDirectory></file>
         <file><source>src/main/resources/org/tzi/use/plugins/jacamo/trace/trace-v1.schema.json</source><outputDirectory>schemas</outputDirectory></file>
@@ -31,6 +32,7 @@
         <file><source>licenses/SLF4J-MIT.txt</source><outputDirectory>licenses</outputDirectory></file>
         <file><source>compatibility.json</source><outputDirectory>/</outputDirectory></file>
         <file><source>release/release-manifest.json</source><outputDirectory>/</outputDirectory><destName>release-manifest.json</destName></file>
+        <file><source>release/v2-working-baseline-manifest.json</source><outputDirectory>manifests</outputDirectory></file>
         <file><source>docs/project/02-system-architecture.md</source><outputDirectory>docs</outputDirectory><destName>architecture.md</destName></file>
         <file><source>docs/project/12-plugin-ui-workflow.md</source><outputDirectory>docs</outputDirectory><destName>user-workflow.md</destName></file>
         <file><source>docs/project/15-build-release-operations.md</source><outputDirectory>docs</outputDirectory><destName>build-release.md</destName></file>

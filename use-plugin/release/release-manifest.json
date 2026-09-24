@@ -7,6 +7,8 @@
     "use": "7.5.0",
     "pluginDescriptor": "1.0.1",
     "javaMinimum": "21",
+    "maven": "3.9.9",
+    "useCommit": "da3762efc7006b0c3096a2dd36566962e47fb74d",
     "jacamoTarget": "1.3.0",
     "jason": "3.3.0",
     "cartago": "3.1",
@@ -110,12 +112,20 @@
       "path": "ocl/jacamo-core-v2.ocl"
     },
     {
+      "source": "src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2-manifest.json",
+      "path": "ocl/jacamo-core-v2-manifest.json"
+    },
+    {
       "source": "src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json",
       "path": "profiles/jacamo-verification-profile-v2.json"
     },
     {
       "source": "release/release-manifest.json",
       "path": "release-manifest.json"
+    },
+    {
+      "source": "release/v2-working-baseline-manifest.json",
+      "path": "manifests/v2-working-baseline-manifest.json"
     },
     {
       "source": "src/main/resources/org/tzi/use/plugins/jacamo/binding/binding-v1.schema.json",
@@ -144,6 +154,7 @@
     "metamodel": "version-2",
     "mapping": "2.2.0",
     "runtimeSchema": "3.0.0",
+    "workingManifest": "manifests/v2-working-baseline-manifest.json",
     "freeze": false
   }
 }
