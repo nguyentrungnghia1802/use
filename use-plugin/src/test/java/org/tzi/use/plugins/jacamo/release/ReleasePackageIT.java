@@ -31,7 +31,7 @@ class ReleasePackageIT {
         Path root = Path.of(".").toRealPath();
         Path hostJar = root.resolve("../use-gui/target/use-gui.jar").toRealPath();
         Path install = Files.createTempDirectory(root.resolve("target"), "release-install-");
-        try (ZipFile zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1.zip").toFile())) {
+        try (ZipFile zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1-v2-working.zip").toFile())) {
             for (var entry : java.util.Collections.list(zip.entries())) {
                 if (entry.isDirectory()) continue;
                 if (!entry.getName().startsWith("Core/") && !entry.getName().startsWith("lib/plugins/")) continue;
@@ -61,7 +61,7 @@ class ReleasePackageIT {
         Path root = Path.of(".").toRealPath();
         Path pluginDirectory = root.resolve("target/release-plugin-smoke");
         Files.createDirectories(pluginDirectory);
-        try (ZipFile zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1.zip").toFile());
+        try (ZipFile zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1-v2-working.zip").toFile());
              InputStream input = zip.getInputStream(zip.getEntry("lib/plugins/use-jacamo-plugin-1.0.1.jar"))) {
             Files.copy(input, pluginDirectory.resolve("use-jacamo-plugin-1.0.1.jar"),
                     java.nio.file.StandardCopyOption.REPLACE_EXISTING);
@@ -75,8 +75,8 @@ class ReleasePackageIT {
     @Test
     void builtReleaseMatchesManifestAndPublishedChecksum() throws Exception {
         Path root = Path.of(".").toRealPath();
-        Path archive = root.resolve("target/use-jacamo-plugin-1.0.1.zip");
-        Path checksum = root.resolve("target/use-jacamo-plugin-1.0.1.zip.sha256");
+        Path archive = root.resolve("target/use-jacamo-plugin-1.0.1-v2-working.zip");
+        Path checksum = root.resolve("target/use-jacamo-plugin-1.0.1-v2-working.zip.sha256");
         assertTrue(Files.isRegularFile(archive), "release ZIP must be built in package phase");
         assertTrue(Files.isRegularFile(checksum), "release ZIP must have a SHA-256 sidecar");
 
@@ -108,16 +108,14 @@ class ReleasePackageIT {
             }
             Map<String, String> jarResources = new LinkedHashMap<>(Map.of(
                     "useplugin.xml", "src/main/resources/useplugin.xml",
-                    "org/tzi/use/plugins/jacamo/canonical/JaCaMo-Metamodel.ecore",
-                    "Core/Metamodel/JaCaMo-Metamodel.ecore",
-                    "org/tzi/use/plugins/jacamo/canonical/jacamo-use-mapping-v1.json",
-                    "Core/Mapping/jacamo-use-mapping-v1.json",
-                    "org/tzi/use/plugins/jacamo/canonical/jacamo-use-mapping.schema.json",
-                    "Core/Mapping/jacamo-use-mapping.schema.json",
-                    "org/tzi/use/plugins/jacamo/canonical/freeze-manifest.json",
-                    "Core/Mapping/freeze-manifest.json",
-                    "org/tzi/use/plugins/jacamo/ocl/jacamo-core.ocl",
-                    "src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core.ocl",
+                    "org/tzi/use/plugins/jacamo/canonical/version-2/jacamo_v2_complete.ecore",
+                    "Core/Metamodel/version-2/jacamo_v2_complete.ecore",
+                    "org/tzi/use/plugins/jacamo/canonical/version-2/jacamo-use-mapping-v2.json",
+                    "Core/Mapping/version-2/jacamo-use-mapping-v2.json",
+                    "org/tzi/use/plugins/jacamo/canonical/version-2/jacamo-use-mapping-v2.schema.json",
+                    "Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json",
+                    "org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2.ocl",
+                    "src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2.ocl",
                     "org/tzi/use/plugins/jacamo/release/release-manifest.json",
                     "release/release-manifest.json",
                     "org/tzi/use/plugins/jacamo/release/compatibility.json",
@@ -126,7 +124,7 @@ class ReleasePackageIT {
                     "licenses/APACHE-2.0.txt",
                     "org/tzi/use/plugins/jacamo/release/licenses/SLF4J-MIT.txt",
                     "licenses/SLF4J-MIT.txt"));
-            for (String name : java.util.List.of("jacamo-use-runtime-mapping-v1.json", "runtime-mapping.schema.json", "runtime-mapping-freeze.json"))
+            for (String name : java.util.List.of("jacamo-use-runtime-mapping-v2.json", "runtime-mapping-v2.schema.json"))
                 jarResources.put("org/tzi/use/plugins/jacamo/runtime/" + name,
                     "src/main/resources/org/tzi/use/plugins/jacamo/runtime/" + name);
             Set<String> jarEntries = new LinkedHashSet<>();

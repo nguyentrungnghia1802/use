@@ -175,7 +175,7 @@
                         <goals><goal>single</goal></goals>
                         <configuration>
                             <descriptors><descriptor>src/assembly/release.xml</descriptor></descriptors>
-                            <finalName>use-jacamo-plugin-${project.version}</finalName>
+                            <finalName>use-jacamo-plugin-${project.version}-v2-working</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
@@ -192,7 +192,7 @@
                         <goals><goal>run</goal></goals>
                         <configuration>
                             <target>
-                                <checksum file="${project.build.directory}/use-jacamo-plugin-${project.version}.zip"
+                                <checksum file="${project.build.directory}/use-jacamo-plugin-${project.version}-v2-working.zip"
                                           algorithm="SHA-256" fileext=".sha256" format="MD5SUM"/>
                             </target>
                         </configuration>

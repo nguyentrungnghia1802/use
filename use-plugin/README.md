@@ -1,11 +1,13 @@
 # USE JaCaMo Plugin 1.0.1
 
-> **Ordering update:** The user approved target-only independent ranks. Mapping 2.2.0 component gates pass, including native counterexamples, text/direct parity and queued runtime reconnect. Default V2 consumer migration remains OPEN. Latest regression: 325 executed, same 3 failures / 73 errors. See [current implementation](docs/project/v2-migration/phase31-order-projection.md). Older decision-required statements below describe the pre-projection audit.
-
-> **V2 migration status — 2026-09-23:** Active semantic specification is Metamodel V2 + Mapping 2.1 (`WORKING_BASELINE`), under `Core/*/version-2/`. Production consumers are not yet migrated; the fresh pre-migration build fails after V1 resource relocation. V1 release/closure claims below are historical, not current V2 acceptance. See [migration baseline](docs/project/v2-migration/phase29-pre-migration-baseline.md) and [active selection contract](docs/project/v2-migration/active-baseline-policy.md).
-
-
-> **Phase 31 audit — 2026-09-23:** Native Ecore, Mapping schema/source coverage and USE structural compilation pass. Exact instance fidelity is blocked by independently ordered opposite lists (V2-ORDER-001); see [decision evidence](docs/project/v2-migration/phase31-ordered-opposite-decision.md). Latest full regression: 317 executed, the same 3 failures and 73 errors as baseline. Phases 29–35 are not closed.
+ > **V2 working migration:** Active Metamodel V2 and Mapping 2.2.0 now drive IR,
+> extraction, transformation, trace, OCL and runtime target binding. Independent
+> directional order is represented by generic target-only ranks. Focused tests
+> pass; clean full-reactor/package acceptance is pending. See
+> [transformation](docs/project/v2-migration/phase35-transformation.md) and
+> [runtime contract](docs/project/v2-migration/phase35-runtime-targets.md).
+> The archive is `use-jacamo-plugin-1.0.1-v2-working.zip`, status
+> `WORKING_V2_NOT_RELEASED`; this is not a final freeze or published V2 release.
 
 > **2026-09-20 final completeness update:** Direct launcher-board observation and
 > AgentSpeak-driven standalone control now PASS. Original Auction plan/deadline
@@ -27,8 +29,8 @@ Jason 3.3.0, CArtAgO 3.1 and Moise 1.1 integration scope.
 
 1. Use JDK 21 and USE 7.5.0.
 2. Extract this archive into the USE installation root. This places the plugin JAR
-   in `lib/plugins` and the frozen metamodel/mapping under `Core`.
-   The JAR also embeds byte-identical canonical Ecore, mapping, freeze manifest,
+   in `lib/plugins` and the active metamodel/mapping under `Core/*/version-2/`.
+   The JAR also embeds byte-identical canonical V2 Ecore, mapping/schema,
    compatibility metadata, and release manifest resources.
 3. Make Jason 3.3.0, CArtAgO 3.1, Moise 1.1 and their required runtime dependencies
    available on the USE JVM classpath. They are intentionally not redistributed in

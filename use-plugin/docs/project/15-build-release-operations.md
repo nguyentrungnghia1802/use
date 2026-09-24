@@ -1,5 +1,12 @@
 # Build, Release and Operations
 
+> Current working package: `use-jacamo-plugin-1.0.1-v2-working.zip` plus SHA-256
+> sidecar. It includes canonical V2 versioned Ecore/Mapping/schema, V2 profile/OCL
+> and runtime Mapping V2/schema 3.0.0. Manifest status is WORKING_V2_NOT_RELEASED,
+> gitTag is null. Binary descriptor remains 1.0.1; no V2 release/freeze is implied.
+> The old manifest is preserved under release/historical. Historical release
+> commands and evidence below apply to their recorded V1 revision.
+
 ## 1. Build
 
 Use Maven structure compatible với USE repository/version được pin.

@@ -1,8 +1,8 @@
 {
   "schemaVersion": "1.0.0",
   "releaseVersion": "1.0.1",
-  "gitTag": null,
-  "artifact": "use-jacamo-plugin-1.0.1-v2-working.zip",
+  "gitTag": "use-jacamo-plugin-v1.0.1",
+  "artifact": "use-jacamo-plugin-1.0.1.zip",
   "compatibility": {
     "use": "7.5.0",
     "pluginDescriptor": "1.0.1",
@@ -14,11 +14,10 @@
   },
   "integrity": {
     "packageAlgorithm": "SHA-256",
-    "sidecar": "use-jacamo-plugin-1.0.1-v2-working.zip.sha256",
+    "sidecar": "use-jacamo-plugin-1.0.1.zip.sha256",
     "contentPolicy": "ReleasePackageIT compares every ZIP entry byte-for-byte with its declared source"
   },
   "limitations": [
-    "V2 working development package; no final release/tag/freeze or full original Auction standalone E2E claim.",
     "Real in-process component APIs are covered; a standalone JaCaMo launcher is not",
     "Moise runtime evidence uses a programmatic OS/OE subset rather than loading the checked-in XML",
     "Unsupported semantics remain diagnostic and are not guessed"
@@ -29,16 +28,20 @@
       "path": "CHANGELOG.md"
     },
     {
-      "source": "Core/Mapping/version-2/jacamo-use-mapping-v2.json",
-      "path": "Core/Mapping/version-2/jacamo-use-mapping-v2.json"
+      "source": "Core/Mapping/freeze-manifest.json",
+      "path": "Core/Mapping/freeze-manifest.json"
     },
     {
-      "source": "Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json",
-      "path": "Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json"
+      "source": "Core/Mapping/jacamo-use-mapping-v1.json",
+      "path": "Core/Mapping/jacamo-use-mapping-v1.json"
     },
     {
-      "source": "Core/Metamodel/version-2/jacamo_v2_complete.ecore",
-      "path": "Core/Metamodel/version-2/jacamo_v2_complete.ecore"
+      "source": "Core/Mapping/jacamo-use-mapping.schema.json",
+      "path": "Core/Mapping/jacamo-use-mapping.schema.json"
+    },
+    {
+      "source": "Core/Metamodel/JaCaMo-Metamodel.ecore",
+      "path": "Core/Metamodel/JaCaMo-Metamodel.ecore"
     },
     {
       "source": "KNOWN-LIMITATIONS.md",
@@ -106,12 +109,12 @@
       "generated": true
     },
     {
-      "source": "src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2.ocl",
-      "path": "ocl/jacamo-core-v2.ocl"
+      "source": "src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core.ocl",
+      "path": "ocl/jacamo-core.ocl"
     },
     {
-      "source": "src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json",
-      "path": "profiles/jacamo-verification-profile-v2.json"
+      "source": "src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v1.json",
+      "path": "profiles/jacamo-verification-profile-v1.json"
     },
     {
       "source": "release/release-manifest.json",
@@ -130,20 +133,17 @@
       "path": "schemas/trace-v1.schema.json"
     },
     {
-      "path": "runtime/jacamo-use-runtime-mapping-v2.json",
-      "source": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v2.json"
+      "path": "runtime/jacamo-use-runtime-mapping-v1.json",
+      "source": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v1.json"
     },
     {
-      "path": "runtime/runtime-mapping-v2.schema.json",
-      "source": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-v2.schema.json"
+      "path": "runtime/runtime-mapping.schema.json",
+      "source": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping.schema.json"
+    },
+    {
+      "path": "runtime/runtime-mapping-freeze.json",
+      "source": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-freeze.json"
     }
   ],
-  "releaseStatus": "candidate-not-tagged",
-  "status": "WORKING_V2_NOT_RELEASED",
-  "activeBaseline": {
-    "metamodel": "version-2",
-    "mapping": "2.2.0",
-    "runtimeSchema": "3.0.0",
-    "freeze": false
-  }
+  "releaseStatus": "candidate-not-tagged"
 }
