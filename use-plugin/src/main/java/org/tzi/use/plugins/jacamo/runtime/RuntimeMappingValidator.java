@@ -13,6 +13,8 @@ public final class RuntimeMappingValidator {
         for (var rule : mapping.rules()) {
             if (!ids.add(rule.id())) fail(rule, "DUPLICATE_ID", "id");
             if (!selectors.add(rule.eventKind().name())) fail(rule, "CONFLICTING_SELECTOR", "eventKind");
+        }
+        for (var rule : mapping.rules()) {
             var authority = RuntimeEventValidator.authority(rule.eventKind());
             if (authority != null && !authority.name().equals(rule.dimension())) fail(rule, "AUTHORITY_CONFLICT", "eventKind/dimension");
             var action = rule.action();
@@ -32,6 +34,16 @@ public final class RuntimeMappingValidator {
             if (!runtime.equals(rule.runtime())) fail(rule, "AUTHORITY_CONFLICT", "runtime/dimension");
             if (!rule.runtime().equals("NORMALIZED") && action.mutates() && !rule.runtime().equals("CARTAGO"))
                 fail(rule, "UNPROVEN_AUTHORITY", "action");
+            if (action.mutates()) {
+                boolean sourceCompatible = switch (rule.eventKind()) {
+                    case CREATE_OBJECT, DESTROY_OBJECT, INSERT_LINK, DELETE_LINK,
+                         REPLACE_ORDER, OP_ENTER, OP_EXIT, OP_FAIL -> rule.eventKind().name().equals(action.mutation());
+                    case SET_ATTRIBUTE, OBS_PROPERTY_ADDED, OBS_PROPERTY_CHANGED -> action == RuntimeSemanticAction.ATTRIBUTE_STATE_SET;
+                    case OBS_PROPERTY_REMOVED -> action == RuntimeSemanticAction.ATTRIBUTE_STATE_UNSET;
+                    default -> false;
+                };
+                if (!sourceCompatible) fail(rule, "SOURCE_SEMANTICS_CONFLICT", "eventKind/action");
+            }
             binding.validate(rule);
             if (action.mutates()) {
                 Set<String> required = switch (action) {

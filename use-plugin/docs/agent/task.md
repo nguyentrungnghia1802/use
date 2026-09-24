@@ -1053,21 +1053,23 @@ For every OCL:
 
 # Phase 38 — Runtime Mapping V2 Reconciliation
 
+**Component gates PASS — 2026-09-24.** 19 focused and 355 full-reactor tests PASS, zero skips. [Audit](../project/v2-migration/phase38-runtime-mapping.md). Workflow closure pending.
+
 **Objective:** dùng runtime semantics thật của JaCaMo, map chúng vào V2 targets; không thiết kế runtime từ Ecore bằng suy đoán.
 
 ## P38.1 — Reconfirm upstream runtime capability baseline
 
 Read research evidence for:
 
-- [ ] Jason.
-- [ ] CArtAgO.
-- [ ] Moise.
-- [ ] JaCaMo integration.
+- [x] Jason.
+- [x] CArtAgO.
+- [x] Moise.
+- [x] JaCaMo integration.
 
 Record exact pinned versions used by plugin.
 
-- [ ] Do not silently mix current JaCaMo main dependencies with plugin's pinned runtime.
-- [ ] If version pin changes, run dedicated compatibility audit first.
+- [x] Do not silently mix current JaCaMo main dependencies with plugin's pinned runtime.
+- [x] If version pin changes, run dedicated compatibility audit first.
 
 ---
 
@@ -1075,17 +1077,17 @@ Record exact pinned versions used by plugin.
 
 Audit whether these source events remain valid independent of V2:
 
-- [ ] observable property delta.
-- [ ] artifact operation enter/exit/fail.
-- [ ] artifact lifecycle.
-- [ ] workspace membership/focus where supported.
-- [ ] Jason goal lifecycle.
-- [ ] Jason action lifecycle.
-- [ ] Jason belief deltas where exact.
-- [ ] Moise role players.
-- [ ] mission commitments.
-- [ ] organisational goal state.
-- [ ] normative lifecycle only if API proves it.
+- [x] observable property delta.
+- [x] artifact operation enter/exit/fail.
+- [x] artifact lifecycle.
+- [x] workspace membership/focus where supported.
+- [x] Jason goal lifecycle.
+- [x] Jason action lifecycle.
+- [x] Jason belief deltas where exact.
+- [x] Moise role players.
+- [x] mission commitments.
+- [x] organisational goal state.
+- [x] normative lifecycle only if API proves it.
 
 Do not rename upstream meaning just to match V2 class names.
 
@@ -1095,15 +1097,15 @@ Do not rename upstream meaning just to match V2 class names.
 
 Keep generic actions:
 
-- [ ] `CREATE_OBJECT`.
-- [ ] `DESTROY_OBJECT`.
-- [ ] `SET_ATTRIBUTE`.
-- [ ] `INSERT_LINK`.
-- [ ] `DELETE_LINK`.
-- [ ] `OPERATION_ENTER`.
-- [ ] `OPERATION_EXIT`.
-- [ ] `OPERATION_FAIL`.
-- [ ] `TRACE_ONLY` where no state mutation is justified.
+- [x] `CREATE_OBJECT`.
+- [x] `DESTROY_OBJECT`.
+- [x] `SET_ATTRIBUTE`.
+- [x] `INSERT_LINK`.
+- [x] `DELETE_LINK`.
+- [x] `OPERATION_ENTER`.
+- [x] `OPERATION_EXIT`.
+- [x] `OPERATION_FAIL`.
+- [x] `TRACE_ONLY` where no state mutation is justified.
 
 Audit if V2 requires a genuinely new generic action; do not add one just because a class name changed.
 
@@ -1113,18 +1115,18 @@ Audit if V2 requires a genuinely new generic action; do not add one just because
 
 For each supported runtime rule:
 
-- [ ] source runtime/dimension.
-- [ ] raw upstream callback/API.
-- [ ] normalized RuntimeEvent kind.
-- [ ] required RuntimeKey.
-- [ ] required SemanticId V2.
-- [ ] exact USE target kind.
-- [ ] mapping/projection rule anchor.
-- [ ] mutation action.
-- [ ] payload conversion.
-- [ ] checkpoint.
-- [ ] unsupported/error behavior.
-- [ ] provenance.
+- [x] source runtime/dimension.
+- [x] raw upstream callback/API.
+- [x] normalized RuntimeEvent kind.
+- [x] required RuntimeKey.
+- [x] required SemanticId V2.
+- [x] exact USE target kind.
+- [x] mapping/projection rule anchor.
+- [x] mutation action.
+- [x] payload conversion.
+- [x] checkpoint.
+- [x] unsupported/error behavior.
+- [x] provenance.
 
 ---
 
@@ -1132,50 +1134,50 @@ For each supported runtime rule:
 
 At minimum audit:
 
-- [ ] obs property add.
-- [ ] obs property change.
-- [ ] obs property remove.
-- [ ] operation started.
-- [ ] operation completed.
-- [ ] operation failed.
-- [ ] artifact created/disposed.
-- [ ] agent joined/quit workspace.
-- [ ] focus/unfocus.
-- [ ] artifact links.
-- [ ] signal/percept trace-only unless V2 projection exists.
+- [x] obs property add.
+- [x] obs property change.
+- [x] obs property remove.
+- [x] operation started.
+- [x] operation completed.
+- [x] operation failed.
+- [x] artifact created/disposed.
+- [x] agent joined/quit workspace.
+- [x] focus/unfocus.
+- [x] artifact links.
+- [x] signal/percept trace-only unless V2 projection exists.
 
 ---
 
 ## P38.6 — Jason mapping
 
-- [ ] belief add/remove only with exact semantic representation.
-- [ ] goal lifecycle target semantics.
-- [ ] action start/result.
-- [ ] message lifecycle boundary.
-- [ ] intention lifecycle remains deferred unless V2 explicitly models it.
-- [ ] no duplicate CArtAgO operation execution from Jason action.
+- [x] belief add/remove only with exact semantic representation.
+- [x] goal lifecycle target semantics.
+- [x] action start/result.
+- [x] message lifecycle boundary.
+- [x] intention lifecycle remains deferred unless V2 explicitly models it.
+- [x] no duplicate CArtAgO operation execution from Jason action.
 
 Authority recommendation:
 
-- [ ] Jason action = agent-side evidence.
-- [ ] CArtAgO `OpId` = environment operation lifecycle authority.
+- [x] Jason action = agent-side evidence.
+- [x] CArtAgO `OpId` = environment operation lifecycle authority.
 
 ---
 
 ## P38.7 — Moise mapping
 
-- [ ] role player add/remove.
-- [ ] mission commitment add/remove.
-- [ ] scheme/group runtime instance policy.
-- [ ] organisational goal state.
-- [ ] responsible group relation.
-- [ ] permission/obligation state only within supported semantics.
-- [ ] no full norm activation/violation claim without API evidence.
+- [x] role player add/remove.
+- [x] mission commitment add/remove.
+- [x] scheme/group runtime instance policy.
+- [x] organisational goal state.
+- [x] responsible group relation.
+- [x] permission/obligation state only within supported semantics.
+- [x] no full norm activation/violation claim without API evidence.
 
 Authority:
 
-- [ ] Moise OE = organisation semantic authority.
-- [ ] CArtAgO organisation-board events are not double-applied.
+- [x] Moise OE = organisation semantic authority.
+- [x] CArtAgO organisation-board events are not double-applied.
 
 ---
 
@@ -1183,16 +1185,16 @@ Authority:
 
 Create/update:
 
-- [ ] runtime mapping schema.
-- [ ] runtime mapping JSON.
-- [ ] loader.
-- [ ] validator.
-- [ ] exact structural compatibility validation.
-- [ ] negative mutation tests.
-- [ ] no Auction names.
-- [ ] no object-specific runtime IDs.
-- [ ] no OCL expressions inside runtime mapping.
-- [ ] status remains `WORKING` until runtime E2E gates pass.
+- [x] runtime mapping schema.
+- [x] runtime mapping JSON.
+- [x] loader.
+- [x] validator.
+- [x] exact structural compatibility validation.
+- [x] negative mutation tests.
+- [x] no Auction names.
+- [x] no object-specific runtime IDs.
+- [x] no OCL expressions inside runtime mapping.
+- [x] status remains `WORKING` until runtime E2E gates pass.
 
 ---
 

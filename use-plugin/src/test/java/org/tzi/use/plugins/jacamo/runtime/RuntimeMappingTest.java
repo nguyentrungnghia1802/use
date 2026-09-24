@@ -32,6 +32,8 @@ class RuntimeMappingTest {
         json.writerWithDefaultPrettyPrinter().writeValue(target.toFile(), report);
         assertTrue(report.stream().filter(r -> !r.mutation().equals("NONE"))
             .allMatch(r -> r.status().equals("SUPPORTED")));
+        assertTrue(report.stream().filter(r -> r.event().equals("REPLACE_ORDER"))
+            .allMatch(r -> r.useTarget().contains("authoritative ranks")));
     }
     @Test void workingFingerprintAndLegacyDraftFailClosed() throws Exception {
         var doc = document();
@@ -74,5 +76,29 @@ class RuntimeMappingTest {
         rejects(doc,"RUNTIME_MAPPING_UNSAFE_MUTATION");
         doc=document(); ((ObjectNode)doc.path("rules").get(5)).put("correlationRequired",false);
         rejects(doc,"RUNTIME_MAPPING_CORRELATION_REQUIRED");
+    }
+    @Test void structurallyCompatibleActionsCannotInvertSourceEventMeaning() throws Exception {
+        for (String kind : new String[]{"INSERT_LINK", "DELETE_LINK"}) {
+            var doc = document();
+            for (var node : doc.path("rules")) {
+                if (node.path("eventKind").asText().equals(kind)) {
+                    ((ObjectNode) node).put("action", kind.equals("INSERT_LINK") ? "RELATION_DELETE" : "RELATION_INSERT")
+                        .put("mutation", kind.equals("INSERT_LINK") ? "DELETE_LINK" : "INSERT_LINK");
+                }
+            }
+            rejects(doc, "RUNTIME_MAPPING_SOURCE_SEMANTICS_CONFLICT");
+        }
+        for (String kind : new String[]{"SET_ATTRIBUTE", "OBS_PROPERTY_ADDED", "OBS_PROPERTY_CHANGED", "OBS_PROPERTY_REMOVED"}) {
+            var doc = document();
+            for (var node : doc.path("rules")) {
+                if (node.path("eventKind").asText().equals(kind)) {
+                    boolean removal = kind.equals("OBS_PROPERTY_REMOVED");
+                    ((ObjectNode) node).put("action", removal ? "ATTRIBUTE_STATE_SET" : "ATTRIBUTE_STATE_UNSET");
+                    var payload = ((ObjectNode) node).putArray("payload").add("attribute");
+                    if (removal) payload.add("valueType").add("value");
+                }
+            }
+            rejects(doc, "RUNTIME_MAPPING_SOURCE_SEMANTICS_CONFLICT");
+        }
     }
 }

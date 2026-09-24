@@ -2,7 +2,7 @@ package org.tzi.use.plugins.jacamo.runtime;
 
 import java.util.List;
 
-/** Derived report: binding families are final V1 compatibility contracts, not instance authorization. */
+/** Derived report of active V2 binding families; not instance authorization. */
 public final class RuntimeMappingCompatibility {
     public record Entry(String ruleId, String event, String action, String anchor, String useTarget,
                         String traceTargetKind, String mutation, String status, String migrationRisk) { }
@@ -14,6 +14,7 @@ public final class RuntimeMappingCompatibility {
                 case "ATTRIBUTE" -> "VP002 projected MAttribute";
                 case "ASSOCIATION" -> "Structural MAssociation and traced participants";
                 case "OPERATION" -> "VP003 projected MOperation";
+                case "ORDER_NAVIGATION" -> "Mapping V2 target-only order rows with independent authoritative ranks";
                 default -> "RuntimeTrace only";
             }, rule.targetKind(), rule.mutation(), rule.support(), rule.migrationRisk())).toList();
     }

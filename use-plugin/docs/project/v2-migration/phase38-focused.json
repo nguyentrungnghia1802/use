@@ -1,0 +1,72 @@
+{
+  "status": "PASS",
+  "command": "mvn -B -pl use-plugin test -Dtest=RuntimeMappingTest,RuntimeAliasTest,V2RuntimeOrderTest,CartagoRuntimeConnectorTest,JasonRuntimeConnectorTest,MoiseRuntimeConnectorTest,MoiseBoardSnapshotSourceTest,CompositeRuntimeConnectorTest",
+  "head": "d6765417226e1c8bb7d4f368614f1b96f9e0ceab",
+  "sourcePatchSha256": "c4c704d1d3cbfb6f0d14a3bb04343670505e686ae1de67ead8f533d57d4cc4c6",
+  "log": "use-plugin/target/phase38-final-focused.log",
+  "logSha256": "08b4bc895c140116d891230361ad3b408223f4377d7a61ce708af43234980f85",
+  "counts": {
+    "tests": 19,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.CartagoRuntimeConnectorTest"
+    },
+    {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.CompositeRuntimeConnectorTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.JasonRuntimeConnectorTest"
+    },
+    {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.MoiseBoardSnapshotSourceTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.MoiseRuntimeConnectorTest"
+    },
+    {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeAliasTest"
+    },
+    {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeMappingTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.V2RuntimeOrderTest"
+    }
+  ]
+}
