@@ -35,27 +35,4 @@ public final class MetamodelKind {
     public static final MetamodelKind Operation = ACTIVE.require("Operation");
     public static final MetamodelKind Property = ACTIVE.require("Property");
     public static final MetamodelKind Signal = ACTIVE.require("Signal");
-    // Transitional parser handles only; excluded from ACTIVE and rejected by V2 IR validation.
-    @Deprecated(forRemoval = true) public static final MetamodelKind MAS = new MetamodelKind("MAS", Dimension.PROJECT);
-    @Deprecated(forRemoval = true) public static final MetamodelKind Rule = new MetamodelKind("Rule", Dimension.AGENT);
-    @Deprecated(forRemoval = true) public static final MetamodelKind Goal = new MetamodelKind("Goal", Dimension.AGENT);
-    @Deprecated(forRemoval = true) public static final MetamodelKind Context = new MetamodelKind("Context", Dimension.AGENT);
-    @Deprecated(forRemoval = true) public static final MetamodelKind Body = new MetamodelKind("Body", Dimension.AGENT);
-    @Deprecated(forRemoval = true) public static final MetamodelKind BodyTerm = new MetamodelKind("BodyTerm", Dimension.AGENT);
-    @Deprecated(forRemoval = true) public static final MetamodelKind ExternalAction = new MetamodelKind("ExternalAction", Dimension.AGENT);
-    @Deprecated(forRemoval = true) public static final MetamodelKind InternalAction = new MetamodelKind("InternalAction", Dimension.AGENT);
-    @Deprecated(forRemoval = true) public static final MetamodelKind MentalNotes = new MetamodelKind("MentalNotes", Dimension.AGENT);
-    @Deprecated(forRemoval = true) public static final MetamodelKind Message = new MetamodelKind("Message", Dimension.AGENT);
-    @Deprecated(forRemoval = true) public static final MetamodelKind TriggeringEvent = new MetamodelKind("TriggeringEvent", Dimension.AGENT);
-    @Deprecated(forRemoval = true) public static final MetamodelKind Port = new MetamodelKind("Port", Dimension.ENVIRONMENT);
-    @Deprecated(forRemoval = true) public static final MetamodelKind ObsProperty = new MetamodelKind("ObsProperty", Dimension.ENVIRONMENT);
-    @Deprecated(forRemoval = true) public static final MetamodelKind AbsOperation = new MetamodelKind("AbsOperation", Dimension.ENVIRONMENT);
-    @Deprecated(forRemoval = true) public static final MetamodelKind LinkedOperation = new MetamodelKind("LinkedOperation", Dimension.ENVIRONMENT);
-    @Deprecated(forRemoval = true) public static final MetamodelKind InternalOperation = new MetamodelKind("InternalOperation", Dimension.ENVIRONMENT);
-    @Deprecated(forRemoval = true) public static final MetamodelKind GuardOperation = new MetamodelKind("GuardOperation", Dimension.ENVIRONMENT);
-    @Deprecated(forRemoval = true) public static final MetamodelKind Organisation = new MetamodelKind("Organisation", Dimension.ORGANISATION);
-    @Deprecated(forRemoval = true) public static final MetamodelKind NormativeSpecification = new MetamodelKind("NormativeSpecification", Dimension.ORGANISATION);
-    @Deprecated(forRemoval = true) public static final MetamodelKind StructuralSpecification = new MetamodelKind("StructuralSpecification", Dimension.ORGANISATION);
-    @Deprecated(forRemoval = true) public static final MetamodelKind FunctionalSpecification = new MetamodelKind("FunctionalSpecification", Dimension.ORGANISATION);
-    @Deprecated(forRemoval = true) public static final MetamodelKind FormationConstraints = new MetamodelKind("FormationConstraints", Dimension.ORGANISATION);
 }

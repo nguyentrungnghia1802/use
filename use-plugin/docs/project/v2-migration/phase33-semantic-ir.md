@@ -1,6 +1,6 @@
 # Phase 33 — V2 IR component migration
 
-Status: component validation PASS; parser/facade integration and phase closure OPEN.
+Status: component and parser integration validation PASS; full phase closure OPEN.
 Active inputs remain the unchanged Mapping 2.2.0 and V2 Ecore selected by ActiveBaseline.
 
 ## Audit and implementation
@@ -36,12 +36,16 @@ somewhere among ancestors is not sufficient. Ambiguous candidates are stable-ID
 sorted. A binding cannot choose a different spelling or an object outside the
 actual typed/scope candidate set. Duplicate canonical IDs are rejected.
 
-Existing IDs are not rewritten for unchanged semantics. Changed V2 kinds must use
-their new source names; deprecated V1 handles exist only as temporary compile-time
-bridges for the pending parser migration. They are excluded from the active registry
-and rejected by the V2 model constructor. The old importer still uses its old
-constructor: **no-V1-leakage at the production import boundary is not yet PASS**.
-These bridges are not a supported long-term dual production contract.
+Existing IDs remain stable for unchanged semantics. V2 kinds use their exact source
+names. Transitional V1 handles and the MAS constructor have been removed from
+production; every model construction validates against the V2 registry. Project
+metadata remains a ProjectDeclaration, not a metamodel object. Parser declarations,
+instances and source-only facts are separated; runtime identities remain external.
+
+Follow-up focused regression: 28/28 PASS (`target/phase33-no-v1-ir.log`), covering
+SemanticModelTest, V2SemanticModelTest, StaticProjectImporterTest,
+V2ExtractionTest and TraceBindingTest. The earlier results below are historical
+migration snapshots, not the current failure count.
 
 ## Evidence
 
@@ -63,9 +67,8 @@ historical paths, version/count/projection/profile and release assertions. See
 
 ## Remaining dependencies
 
-- P34: switch importer/parser output to V2, preserve unsupported source constructs
-  explicitly, remove transitional V1 handles from production consumers.
-- P35: consume V2 facts/defaults/requiredness/projections in transformation and trace.
+- P34 parser migration is implemented in 4992e5d2; transitional handles are now removed.
+- P35 transformation/defaults/projections are implemented in cf3cdfc8.
 - Subsequent OCL/runtime binding migration: adapt consumers of parser-only metadata
   and obtain authoritative source order evidence before exposing ordered navigation.
 - Rerun full suite and close staged P29–32 gates only after these dependencies PASS.

@@ -575,8 +575,8 @@ Checklist:
 
 **Component gates PASS; phase closure OPEN.** [IR evidence](../project/v2-migration/phase33-semantic-ir.md).
 29 focused tests PASS; full reactor 333 executed, 7 failures/65 errors in pending
-V1 consumers. Parser declaration/instance migration and production no-V1-leakage
-remain OPEN for P34; no full acceptance or merge/push claim.
+V1 consumers (historical snapshot). Parser declaration/instance migration and
+production no-V1-leakage now PASS: 28 focused tests; full closure remains OPEN.
 
 V2 profile/path/trace follow-up: [consumer evidence](../project/v2-migration/phase33-verification-profile.md),
 30 focused tests PASS. Post-profile plugin regression: 192 executed, 9F/62E
@@ -640,7 +640,7 @@ Prefer data/descriptor-driven design nếu V2 còn có thể đổi nhẹ.
 
 ## P33.4 — V2 references/resolution model
 
-- [ ] declaration vs instance vs symbolic reference vs runtime identity tách riêng.
+- [x] declaration vs instance vs symbolic reference vs runtime identity tách riêng.
 - [x] exact canonical ID first.
 - [x] explicit source reference.
 - [x] owner-qualified exact symbol.
@@ -672,7 +672,7 @@ Prefer data/descriptor-driven design nếu V2 còn có thể đổi nhẹ.
 - [x] inheritance-derived feature.
 - [x] cross-dimensional reference.
 - [x] deterministic serialization.
-- [ ] no V1 kind leakage ngoài migration fixtures.
+- [x] no V1 kind leakage ngoài migration fixtures.
 
 ---
 

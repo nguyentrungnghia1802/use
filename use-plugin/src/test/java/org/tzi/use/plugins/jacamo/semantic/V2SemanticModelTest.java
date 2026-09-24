@@ -32,7 +32,7 @@ class V2SemanticModelTest {
         assertEquals(registry.mapping().classes().size(), registry.kinds().size());
         assertEquals("SEMANTIC_KIND_UNKNOWN:Organisation", registry.resolve("Organisation").diagnostic());
         assertNull(registry.resolve("agent").kind());
-        assertThrows(IllegalArgumentException.class, () -> model(List.of(element(MetamodelKind.MAS, "root", "sample", Map.of(), List.of()))));
+        assertThrows(IllegalArgumentException.class, () -> model(List.of(element(new MetamodelKind("MAS", Dimension.PROJECT), "root", "sample", Map.of(), List.of()))));
     }
     @Test void eachDimensionAndCrossDimensionalOrdersSurviveDeterministicExport() throws Exception {
         var role = element(MetamodelKind.Role, "g", "r", Map.of("id", new AttributeValue.Text("r")), List.of());

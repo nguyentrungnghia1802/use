@@ -156,7 +156,7 @@ final class MoiseXmlParser {
             for (Element plan : children(element, "plan")) {
                 scheme.sourceFacts.put("unownedPlan@" + (++unsupported), new AttributeValue.Text(xml(plan)));
                 context.diagnostic("MOISE_PLAN_OWNER_UNRESOLVED", Severity.WARNING, Phase.PARSING,
-                        scheme.provenance.getFirst().span(), scheme.id.value(), "V2 OPlan requires an explicit owning OGoal",
+                        context.provenance(path, sourceLine(plan), sourceColumn(plan), "moise-xml-parser", xml(plan)).span(), scheme.id.value(), "V2 OPlan requires an explicit owning OGoal",
                         xml(plan), "Retain source plan; do not infer ownership from matching goal names");
             }
             }

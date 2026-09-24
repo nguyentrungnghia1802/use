@@ -26,7 +26,7 @@ class SemanticModelTest {
         var matcher = Pattern.compile("<eClassifiers[^>]*xsi:type=\"ecore:EClass\"[^>]*name=\"([^\"]+)\"").matcher(ecore);
         Set<String> names = matcher.results().map(match -> match.group(1)).collect(Collectors.toSet());
         assertEquals(names, Arrays.stream(MetamodelKind.values()).map(MetamodelKind::name).collect(Collectors.toSet()));
-        assertEquals(Dimension.PROJECT, MetamodelKind.MAS.dimension());
+        assertTrue(Arrays.stream(MetamodelKind.values()).noneMatch(k -> k.dimension() == Dimension.PROJECT));
         assertEquals(Dimension.AGENT, MetamodelKind.Belief.dimension());
         assertEquals(Dimension.ENVIRONMENT, MetamodelKind.Artifact.dimension());
         assertEquals(Dimension.ORGANISATION, MetamodelKind.Norm.dimension());
@@ -39,11 +39,11 @@ class SemanticModelTest {
         SourceFile source = SourceFile.read(jcm, SourceKind.JCM);
         SourceSpan span = new SourceSpan(jcm, 1, 1, 1, 11);
         SourceProvenance provenance = new SourceProvenance(span, "jcm-loader", source.sha256(), "demo");
-        SemanticId id = SemanticId.of("demo", Dimension.PROJECT, "MAS", List.of("project"), "demo");
-        SemanticElement mas = new SemanticElement(id, MetamodelKind.MAS, "demo", List.of(provenance),
-                Map.of("Name", new AttributeValue.Text("demo"), "enabled", new AttributeValue.Bool(true)),
-                List.of(new SemanticReference("agent", "alice", null)));
-        assertEquals(MetamodelKind.MAS, mas.kind());
+        SemanticId id = SemanticId.of("demo", Dimension.ORGANISATION, "Role", List.of("project"), "demo");
+        SemanticElement mas = new SemanticElement(id, MetamodelKind.Role, "demo", List.of(provenance),
+                Map.of("id", new AttributeValue.Text("demo"), "isAbstract", new AttributeValue.Bool(true)),
+                List.of(new SemanticReference("agents", "alice", null)));
+        assertEquals(MetamodelKind.Role, mas.kind());
         assertEquals("jcm-loader", mas.provenance().getFirst().parser());
         assertNull(mas.references().getFirst().targetId());
         assertThrows(UnsupportedOperationException.class,
@@ -59,16 +59,16 @@ class SemanticModelTest {
         SourceFile source = SourceFile.read(jcm, SourceKind.JCM);
         SourceProvenance provenance = new SourceProvenance(new SourceSpan(jcm, 1, 1, 1, 11),
                 "jcm-loader", source.sha256(), "demo");
-        SemanticElement mas = element("demo", MetamodelKind.MAS, "demo", List.of("project"), provenance);
+        ProjectDeclaration project = new ProjectDeclaration("demo", List.of(provenance), Map.of());
         SemanticElement alice = element("demo", MetamodelKind.Agent, "same", List.of("MAS", "a"), provenance);
         SemanticElement bob = element("demo", MetamodelKind.Agent, "same", List.of("MAS", "b"), provenance);
-        JaCaMoSemanticModel model = new JaCaMoSemanticModel(new ProjectRoot(temporary, "demo"), mas,
+        JaCaMoSemanticModel model = new JaCaMoSemanticModel(new ProjectRoot(temporary, "demo"), project, MetamodelKind.registry(),
                 List.of(bob, alice), List.of(source), List.of());
         assertEquals(List.of(alice.id(), bob.id()), model.symbolIndex().get("same"));
         assertEquals(source, model.sourceIndex().get(jcm.toAbsolutePath().normalize()));
-        assertEquals(List.of(mas.id(), alice.id(), bob.id()), model.elements().stream().map(SemanticElement::id).toList());
+        assertEquals(List.of(alice.id(), bob.id()), model.elements().stream().map(SemanticElement::id).toList());
         assertThrows(IllegalArgumentException.class, () -> new JaCaMoSemanticModel(
-                new ProjectRoot(temporary, "demo"), mas, List.of(alice, alice), List.of(source), List.of()));
+                new ProjectRoot(temporary, "demo"), project, MetamodelKind.registry(), List.of(alice, alice), List.of(source), List.of()));
     }
 
     private SemanticElement element(String projectId, MetamodelKind kind, String name,

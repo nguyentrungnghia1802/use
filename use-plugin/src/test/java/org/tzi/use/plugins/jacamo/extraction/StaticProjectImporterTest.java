@@ -29,7 +29,7 @@ class StaticProjectImporterTest {
                 MetamodelKind.Scheme, MetamodelKind.Mission, MetamodelKind.OGoal, MetamodelKind.Norm)));
         assertTrue(kinds.stream().allMatch(k -> MetamodelKind.registry().resolve(k.name()).kind() != null));
         assertEquals("auction", result.model().declaration().name());
-        assertNull(result.model().mas(), "Project declaration must not masquerade as an EClass");
+        assertTrue(result.model().elements().stream().noneMatch(e -> e.kind().name().equals("MAS")), "Project declaration must not masquerade as an EClass");
         SemanticElement operation = only(result, MetamodelKind.Operation, "placeBid");
         assertEquals(new AttributeValue.Text("String item,int amount"), operation.sourceFacts().get("parameters"));
         assertEquals(new AttributeValue.Text("signal(\"bid\", item, amount)"), operation.sourceFacts().get("signalExpression"));
@@ -58,7 +58,8 @@ class StaticProjectImporterTest {
         assertTrue(scheme.references().stream().anyMatch(ref -> ref.feature().equals("missions") && ref.targetId() != null));
         assertTrue(scheme.references().stream().anyMatch(ref -> ref.feature().equals("rootGoal") && ref.targetId() != null));
         assertTrue(scheme.sourceFacts().containsKey("unownedPlan@1"));
-        assertTrue(result.diagnostics().stream().anyMatch(d -> d.code().equals("MOISE_PLAN_OWNER_UNRESOLVED")));
+        assertTrue(result.diagnostics().stream().anyMatch(d -> d.code().equals("MOISE_PLAN_OWNER_UNRESOLVED")
+                && d.sourceLocation().path().getFileName().toString().equals("auction.xml")));
         assertFalse(kinds.contains(MetamodelKind.OPlan), "Do not invent ownership for a sibling source plan");
         assertNotNull(only(result, MetamodelKind.AGoal, "start"));
         SemanticElement plan = only(result, MetamodelKind.Plan, "plan@5");
