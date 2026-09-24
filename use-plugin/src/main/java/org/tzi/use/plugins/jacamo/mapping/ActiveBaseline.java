@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /** The only active filesystem/classpath selection boundary. Never falls back to historical V1. */
 public final class ActiveBaseline {
+    public static final String VERSION = "V2";
     public static final String ECORE = "jacamo_v2_complete.ecore";
     public static final String MAPPING = "jacamo-use-mapping-v2.json";
     public static final String SCHEMA = "jacamo-use-mapping-v2.schema.json";

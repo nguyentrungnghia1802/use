@@ -9,6 +9,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.net.URI;
 import java.nio.file.Path;
+import java.nio.file.Files;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,9 @@ class JaCaMoWorkbenchPanelTest {
         panel.importProject(Path.of("auction.jcm"));
 
         assertEquals("auction", label(panel, "project-id").getText());
-        assertEquals("LOCKED_BASELINE_V1", label(panel, "mapping-status").getText());
+        assertEquals("V2 | sha256=" + "a".repeat(64), label(panel, "metamodel-baseline").getText());
+        assertEquals("JaCaMo-agentmetamodel-v2__to__USE-v2.2 | schema=2.2.0 | WORKING_BASELINE"
+                + " | sha256=" + "b".repeat(64), label(panel, "mapping-status").getText());
         assertTrue(label(panel, "dimension-counts").getText().contains("AGENT=4"));
         assertEquals(1, table(panel, "sources-table").getRowCount());
         assertEquals(1, table(panel, "trace-table").getRowCount());
@@ -139,6 +142,36 @@ class JaCaMoWorkbenchPanelTest {
         assertTrue(label(panel, "workbench-status").getText().contains("IMPORT_FAILED"));
     }
 
+    @Test
+    void completeWorkflowDelegatesToFacadeAndKeepsSemanticPipelineOutOfSwing() throws Exception {
+        RecordingFacade facade = new RecordingFacade();
+        JaCaMoWorkbenchPanel panel = new JaCaMoWorkbenchPanel(facade);
+        panel.importProject(Path.of("auction.jcm"));
+
+        panel.rebuildProject();
+        panel.loadVerificationProfile(Path.of("case.ocl"));
+        panel.runFullVerification();
+        panel.exportVerificationReport(Path.of("report.json"));
+        button(panel, "runtime-connect").doClick();
+        button(panel, "runtime-disconnect").doClick();
+        button(panel, "runtime-reconnect").doClick();
+        button(panel, "runtime-resync").doClick();
+
+        assertEquals(1, facade.rebuilds);
+        assertEquals(Path.of("case.ocl"), facade.loadedProfile);
+        assertEquals(1, facade.fullChecks);
+        assertEquals(Path.of("report.json"), facade.exportedReport);
+        assertEquals(2, facade.connects);
+        assertEquals(1, facade.disconnects);
+        assertEquals(1, facade.resyncs);
+
+        String source = Files.readString(Path.of("src/main/java/org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel.java"));
+        for (String semanticType : List.of("MappingLoader", "TransformationPlanner", "InstancePlanner",
+                "OclGenerator", "RuntimeMutationEngine", "DirectUseBackend")) {
+            assertFalse(source.contains(semanticType), semanticType + " must stay behind JaCaMoFacade");
+        }
+    }
+
     private static JTable table(Container root, String name) { return component(root, name, JTable.class); }
     private static JLabel label(Container root, String name) { return component(root, name, JLabel.class); }
     private static JButton button(Container root, String name) { return component(root, name, JButton.class); }
@@ -171,6 +204,11 @@ class JaCaMoWorkbenchPanelTest {
         private Path imported;
         private int disconnects;
         private int resyncs;
+        private int rebuilds;
+        private int fullChecks;
+        private int connects;
+        private Path loadedProfile;
+        private Path exportedReport;
         private String persistedTarget;
         private String persistedReason;
         private RuntimeException importFailure;
@@ -186,7 +224,9 @@ class JaCaMoWorkbenchPanelTest {
         }
         @Override public ProjectSummary projectSummary() {
             return new ProjectSummary(Path.of("auction.jcm"), Path.of("."), "auction", 1,
-                    Map.of("AGENT", 4L), "mapping-v1", "LOCKED_BASELINE_V1", 60, 20, true, 1, 0);
+                    Map.of("AGENT", 4L), "V2", "a".repeat(64),
+                    "JaCaMo-agentmetamodel-v2__to__USE-v2.2", "2.2.0", "b".repeat(64),
+                    "WORKING_BASELINE", 60, 20, true, 1, 0);
         }
         @Override public List<SourceRow> sources() {
             return List.of(new SourceRow(Path.of("auction.jcm"), "JCM", 100, "abc"));
@@ -204,6 +244,11 @@ class JaCaMoWorkbenchPanelTest {
                     null, List.of())));
         }
         @Override public RuntimeStatus runtimeStatus() { return runtime; }
+        @Override public ProjectSummary rebuild() { rebuilds++; return projectSummary(); }
+        @Override public void loadVerificationProfile(Path profile) { loadedProfile = profile; }
+        @Override public VerificationReport runFullVerification() { fullChecks++; return latestVerification(); }
+        @Override public void exportVerificationReport(Path destination) { exportedReport = destination; }
+        @Override public void connectRuntime() { connects++; }
         @Override public void disconnectRuntime() { disconnects++; }
         @Override public void resyncRuntime() { resyncs++; }
         @Override public void configureRuntime(org.tzi.use.plugins.jacamo.runtime.RuntimeConnector connector,

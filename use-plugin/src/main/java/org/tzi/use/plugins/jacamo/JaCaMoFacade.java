@@ -41,7 +41,9 @@ public interface JaCaMoFacade {
     }
 
     record ProjectSummary(Path entry, Path projectRoot, String projectId, int sourceCount,
-                          Map<String, Long> dimensionCounts, String mappingId, String mappingStatus,
+                          Map<String, Long> dimensionCounts,
+                          String metamodelVersion, String metamodelSha256,
+                          String mappingId, String mappingVersion, String mappingSha256, String mappingStatus,
                           int generatedClasses, int generatedObjects, boolean structureValid,
                           int warningCount, int errorCount) {
         public ProjectSummary { dimensionCounts = Map.copyOf(dimensionCounts); }

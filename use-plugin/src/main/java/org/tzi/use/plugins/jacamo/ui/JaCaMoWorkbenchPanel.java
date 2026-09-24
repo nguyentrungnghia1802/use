@@ -41,6 +41,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private final JLabel status = named(new JLabel("Select a .jcm project"), "workbench-status");
     private final JLabel projectId = named(new JLabel("-"), "project-id");
     private final JLabel projectRoot = named(new JLabel("-"), "project-root");
+    private final JLabel metamodelBaseline = named(new JLabel("-"), "metamodel-baseline");
     private final JLabel mappingStatus = named(new JLabel("-"), "mapping-status");
     private final JLabel generationStatus = named(new JLabel("-"), "generation-status");
     private final JLabel dimensionCounts = named(new JLabel("-"), "dimension-counts");
@@ -149,6 +150,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         JPanel summary = new JPanel(new GridLayout(0, 2, 8, 4));
         addField(summary, "Project", projectId);
         addField(summary, "Root", projectRoot);
+        addField(summary, "Active metamodel", metamodelBaseline);
         addField(summary, "Mapping compatibility", mappingStatus);
         addField(summary, "Generation", generationStatus);
         addField(summary, "Dimensions", dimensionCounts);
@@ -248,7 +250,9 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         if (summary == null) return;
         projectId.setText(summary.projectId());
         projectRoot.setText(summary.projectRoot().toString());
-        mappingStatus.setText(summary.mappingStatus());
+        metamodelBaseline.setText(summary.metamodelVersion() + " | sha256=" + summary.metamodelSha256());
+        mappingStatus.setText(summary.mappingId() + " | schema=" + summary.mappingVersion()
+                + " | " + summary.mappingStatus() + " | sha256=" + summary.mappingSha256());
         generationStatus.setText("classes=" + summary.generatedClasses() + " objects=" + summary.generatedObjects()
                 + " structure=" + (summary.structureValid() ? "PASS" : "FAIL") + " warnings=" + summary.warningCount()
                 + " errors=" + summary.errorCount());
