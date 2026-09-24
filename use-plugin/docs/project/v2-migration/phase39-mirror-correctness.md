@@ -1,6 +1,7 @@
 # Phase 39 V2 mirror correctness
 
-Status: focused/regression/workflow gates pending. V2 remains WORKING_BASELINE.
+Status: DONE. Focused 58/58, full reactor 356/356 and post-merge 31/31 PASS,
+zero skips. Commit 58cd40bd is merged and pushed. V2 remains WORKING_BASELINE.
 
 ## State and authority contract
 

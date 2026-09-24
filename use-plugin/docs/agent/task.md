@@ -1200,29 +1200,31 @@ Create/update:
 
 # Phase 39 — Runtime Mirror Correctness on V2
 
+**DONE — 2026-09-24.** 58 focused, 356 full-reactor and 31 post-merge tests PASS, zero skips. Commit 58cd40bd merged and pushed; [audit](../project/v2-migration/phase39-mirror-correctness.md).
+
 **Objective:** chứng minh USE mirror phản ánh đúng authoritative JaCaMo runtime trước khi dựa vào OCL verdict.
 
 ## P39.1 — Authoritative snapshot V2
 
-- [ ] Jason supported state.
-- [ ] CArtAgO artifacts/properties.
-- [ ] Moise supported organisation state.
-- [ ] exact runtime aliases.
-- [ ] exact V2 semantic bindings.
-- [ ] snapshot fingerprint/version.
+- [x] Jason supported state.
+- [x] CArtAgO artifacts/properties.
+- [x] Moise supported organisation state.
+- [x] exact runtime aliases.
+- [x] exact V2 semantic bindings.
+- [x] snapshot fingerprint/version.
 
 ---
 
 ## P39.2 — Ordered event pipeline
 
-- [ ] callback enqueue fast/non-blocking.
-- [ ] bounded queue.
-- [ ] single consumer or documented ordering model.
-- [ ] monotonic sequence.
-- [ ] correlation IDs.
-- [ ] no silent drop.
-- [ ] explicit backpressure failure.
-- [ ] late old-stream callback isolation.
+- [x] callback enqueue fast/non-blocking.
+- [x] bounded queue.
+- [x] single consumer or documented ordering model.
+- [x] monotonic sequence.
+- [x] correlation IDs.
+- [x] no silent drop.
+- [x] explicit backpressure failure.
+- [x] late old-stream callback isolation.
 
 ---
 
@@ -1230,13 +1232,13 @@ Create/update:
 
 Verify each mutation against authoritative runtime:
 
-- [ ] object existence.
-- [ ] attribute values.
-- [ ] links.
-- [ ] operation correlation.
-- [ ] undefined/removal semantics.
-- [ ] tombstone/destroy policy.
-- [ ] no duplicate application.
+- [x] object existence.
+- [x] attribute values.
+- [x] links.
+- [x] operation correlation.
+- [x] undefined/removal semantics.
+- [x] tombstone/destroy policy.
+- [x] no duplicate application.
 
 ---
 
@@ -1244,22 +1246,22 @@ Verify each mutation against authoritative runtime:
 
 States:
 
-- [ ] OFFLINE.
-- [ ] MODEL_READY.
-- [ ] CONNECTING.
-- [ ] SYNCING.
-- [ ] LIVE.
-- [ ] STALE.
-- [ ] ERROR.
+- [x] OFFLINE.
+- [x] MODEL_READY.
+- [x] CONNECTING.
+- [x] SYNCING.
+- [x] LIVE.
+- [x] STALE.
+- [x] ERROR.
 
 Rules:
 
-- [ ] only LIVE is current.
-- [ ] disconnect → STALE.
-- [ ] reconnect → authoritative full resync.
-- [ ] failed snapshot → ERROR/disconnect.
-- [ ] rebuild/reimport/profile load installs one coherent workspace.
-- [ ] no duplicate listener.
+- [x] only LIVE is current.
+- [x] disconnect → STALE.
+- [x] reconnect → authoritative full resync.
+- [x] failed snapshot → ERROR/disconnect.
+- [x] rebuild/reimport/profile load installs one coherent workspace.
+- [x] no duplicate listener.
 
 ---
 
@@ -1273,25 +1275,25 @@ vs
 USE V2 mirror
 ```
 
-- [ ] object drift.
-- [ ] scalar drift.
-- [ ] link drift.
-- [ ] operation/correlation drift where applicable.
-- [ ] detailed diagnostics.
-- [ ] report-only mode.
-- [ ] auto-resync mode.
-- [ ] zero-drift required after successful resync.
+- [x] object drift.
+- [x] scalar drift.
+- [x] link drift.
+- [x] operation/correlation drift where applicable.
+- [x] detailed diagnostics.
+- [x] report-only mode.
+- [x] auto-resync mode.
+- [x] zero-drift required after successful resync.
 
 ---
 
 ## P39.6 — Mirror Correctness Gate
 
-- [ ] Auction runtime mirror PASS.
-- [ ] Case Study #2 runtime mirror PASS for supported subset.
-- [ ] unknown/unbound runtime entity does not mutate.
-- [ ] no double-source organisation mutation.
-- [ ] no silent event drops.
-- [ ] reconnect converges.
+- [x] Auction runtime mirror PASS.
+- [x] Case Study #2 runtime mirror PASS for supported subset.
+- [x] unknown/unbound runtime entity does not mutate.
+- [x] no double-source organisation mutation.
+- [x] no silent event drops.
+- [x] reconnect converges.
 
 ---
 
