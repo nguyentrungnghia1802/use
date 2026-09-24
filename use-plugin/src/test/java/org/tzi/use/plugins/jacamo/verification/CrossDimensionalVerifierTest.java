@@ -23,6 +23,12 @@ class CrossDimensionalVerifierTest {
         assertFalse(all.stream().anyMatch(r->r.outcome()==VerificationOutcome.FAIL || r.outcome()==VerificationOutcome.ERROR),all.toString());
         var link=instances.links().stream().filter(l->l.association().equals("Agent_artifacts_Artifact")).findFirst().orElseThrow();
         String identity="agentmetamodel::Agent#artifacts";
+        assertTrue(trace.bySemanticId(identity).stream().filter(r -> r.targetKind().equals("ASSOCIATION")).count() > 1,
+                "source membership and target-only order support are separately traced");
+        var withoutMembership = new TraceIndex(trace.records().stream().filter(r -> !(r.sourceSemanticId().equals(identity)
+                && r.targetKind().equals("ASSOCIATION") && r.projectionRuleId() == null)).toList());
+        assertEquals(VerificationOutcome.ERROR, verifier.verifyBinding(system, withoutMembership, identity,
+                link.sourceSemanticId(), link.targetSemanticId()).outcome(), "support association cannot replace source membership");
         assertEquals(VerificationOutcome.PASS,verifier.verifyBinding(system,trace,identity,link.sourceSemanticId(),link.targetSemanticId()).outcome());
         assertEquals(VerificationOutcome.SKIPPED,verifier.verifyBinding(system,trace,identity,link.sourceSemanticId(),null).outcome());
         assertEquals(VerificationOutcome.ERROR,verifier.verifyBinding(system,trace,identity,link.sourceSemanticId(),"same-name-wrong-owner").outcome());

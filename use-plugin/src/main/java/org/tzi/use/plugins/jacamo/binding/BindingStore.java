@@ -41,7 +41,8 @@ public final class BindingStore {
                         value(node,"reason"), value(node,"sourceHash"), value(node,"provenance"),
                         BindingEntry.Status.valueOf(value(node,"status")));
                 String current = currentSourceHashes.get(entry.source());
-                if (current == null || !current.equals(entry.sourceHash())) entry = entry.stale();
+                if (current == null || !current.equals(entry.sourceHash()) || !currentSourceHashes.containsKey(entry.target()))
+                    entry = entry.stale();
                 entries.add(entry);
             }
             return new BindingFile(value(root,"schemaVersion"), entries);

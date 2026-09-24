@@ -36,6 +36,7 @@ public final class RuntimeMutationEngine {
     }
 
     public RuntimeMutationEngine(MSystem system, TraceIndex trace, RuntimeMapping mapping, RuntimeTargetResolver targets) {
+        if (!trace.runtimeEligible()) throw new IllegalArgumentException("RUNTIME_ARCHIVED_TRACE: rebuild from active source before mutation");
         this.mapping = java.util.Objects.requireNonNull(mapping);
         this.targets = java.util.Objects.requireNonNull(targets);
         this.system = system;

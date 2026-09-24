@@ -46,6 +46,12 @@ and Moise observations are trace-only until mapping explicitly authorizes a targ
   carries only resolved/projected records with identical semantic ID, kind and USE
   target. Composite subscriptions isolate retired child callbacks explicitly.
 
+Phase 36 strengthens this transfer to require equal complete MappingModel
+contracts, source kind/hash and mapping/projection rules as well. Persisted trace
+indexes are archival: record inspection is supported, but runtime lookup/alias
+registration/transfer and mutation-engine construction are rejected. Rebuild from
+active sources, explicitly bind current runtime and resynchronize before LIVE.
+
 Existing v1.0.1 replacement/reconnect gates remain applicable; full synchronization
 is still required for LIVE. Global causal ordering, complete goal invocation IDs,
 automatic incoming-message interception and full NPL lifecycle are not claimed.

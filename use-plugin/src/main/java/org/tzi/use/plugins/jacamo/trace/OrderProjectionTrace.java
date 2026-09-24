@@ -9,6 +9,10 @@ public final class OrderProjectionTrace {
     public List<TraceRecord> build(TransformationPlan structure, InstancePlan instances) {
         List<TraceRecord> records = new ArrayList<>();
         for (var spec : structure.orderProjections()) {
+            records.add(record(spec.sourceIdentity(), "class:" + spec.entryClass(), "CLASS", spec.ruleId()));
+            records.add(record(spec.sourceIdentity(), "attribute:" + spec.entryClass() + ".rank", "ATTRIBUTE", spec.ruleId()));
+            records.add(record(spec.sourceIdentity(), "association:" + spec.ownerAssociation(), "ASSOCIATION", spec.ruleId()));
+            records.add(record(spec.sourceIdentity(), "association:" + spec.targetAssociation(), "ASSOCIATION", spec.ruleId()));
             records.add(record(spec.sourceIdentity(), "operation:" + spec.owner() + "." + spec.query(), "ORDER_NAVIGATION", spec.ruleId()));
             for (var object : instances.objects()) if (object.className().equals(spec.entryClass()))
                 records.add(record(object.semanticId(), "object:" + object.name(), "ORDER_ENTRY", spec.ruleId()));

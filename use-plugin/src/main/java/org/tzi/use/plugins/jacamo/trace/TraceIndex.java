@@ -8,11 +8,24 @@ import java.util.Map;
 import java.util.Optional;
 
 public final class TraceIndex {
+    private final boolean runtimeEligible;
+    private final org.tzi.use.plugins.jacamo.mapping.MappingModel contract;
     private final Map<String, TraceRecord> records = new LinkedHashMap<>();
     private final Map<String, TraceRecord> runtimeAliases = new LinkedHashMap<>();
-    public TraceIndex(List<TraceRecord> records) { records.forEach(this::put); }
+    public TraceIndex(List<TraceRecord> records) { this(records, null, true); }
+    public TraceIndex(List<TraceRecord> records, org.tzi.use.plugins.jacamo.mapping.MappingModel contract) {
+        this(records, contract, true);
+    }
+    private TraceIndex(List<TraceRecord> records, org.tzi.use.plugins.jacamo.mapping.MappingModel contract, boolean runtimeEligible) {
+        this.contract = contract;
+        this.runtimeEligible = runtimeEligible;
+        records.forEach(this::put);
+    }
+    /** Persisted V1 wire records carry no complete active contract or live incarnation proof. */
+    static TraceIndex archived(List<TraceRecord> records) { return new TraceIndex(records, null, false); }
+    public boolean runtimeEligible() { return runtimeEligible; }
     private void put(TraceRecord record) {
-        if (record.runtimeKey() != null && byRuntimeKey(record.runtimeKey()).isPresent())
+        if (record.runtimeKey() != null && records.values().stream().anyMatch(r -> record.runtimeKey().equals(r.runtimeKey())))
             throw new IllegalArgumentException("runtimeKey already registered");
         if (records.putIfAbsent(record.traceId(), record) != null) throw new IllegalArgumentException("duplicate traceId");
     }
@@ -21,11 +34,13 @@ public final class TraceIndex {
     public List<TraceRecord> byUseId(String useId) { return select(record -> useId.equals(record.targetUseId())); }
     public List<TraceRecord> byTargetKind(String kind) { return select(record -> kind.equals(record.targetKind())); }
     public Optional<TraceRecord> byRuntimeKey(String key) {
+        if (!runtimeEligible) return Optional.empty();
         TraceRecord alias = runtimeAliases.get(key);
         if (alias != null) return Optional.of(alias);
         return records.values().stream().filter(record -> key.equals(record.runtimeKey())).findFirst();
     }
     public void registerRuntimeKey(String traceId, String runtimeKey) {
+        if (!runtimeEligible) throw new IllegalArgumentException("RUNTIME_ALIAS_ARCHIVED_TRACE: rebuild from active source and bind current runtime");
         if (runtimeKey == null || runtimeKey.isBlank()) throw new IllegalArgumentException("runtimeKey required");
         if (byRuntimeKey(runtimeKey).isPresent()) throw new IllegalArgumentException("runtimeKey already registered");
         TraceRecord record = records.get(traceId); if (record == null) throw new IllegalArgumentException("traceId missing");
@@ -43,6 +58,7 @@ public final class TraceIndex {
     }
     /** Carry exact runtime identities forward only when the same semantic object still exists. */
     public void copyRuntimeKeysFrom(TraceIndex previous) {
+        if (!runtimeEligible || !previous.runtimeEligible || !java.util.Objects.equals(contract, previous.contract)) return;
         Map<String, TraceRecord> keys = new LinkedHashMap<>(previous.runtimeAliases);
         previous.records.values().stream().filter(record -> record.runtimeKey() != null)
                 .forEach(record -> keys.put(record.runtimeKey(), record));
@@ -51,6 +67,10 @@ public final class TraceIndex {
                 .filter(next -> old.status() == TraceRecord.Status.RESOLVED || old.status() == TraceRecord.Status.PROJECTED)
                 .filter(next -> next.targetKind().equals(old.targetKind()))
                 .filter(next -> next.targetUseId().equals(old.targetUseId()))
+                .filter(next -> next.sourceKind().equals(old.sourceKind()))
+                .filter(next -> java.util.Objects.equals(next.sourceHash(), old.sourceHash()))
+                .filter(next -> java.util.Objects.equals(next.mappingRuleId(), old.mappingRuleId()))
+                .filter(next -> java.util.Objects.equals(next.projectionRuleId(), old.projectionRuleId()))
                 .findFirst().ifPresent(next -> registerRuntimeKey(next.traceId(), key)));
     }
 

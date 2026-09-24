@@ -33,7 +33,7 @@ class HotfixBindingTest {
             assertTrue(facade.traces().stream().anyMatch(t -> t.semanticId().equals(source.id().value())));
             write(source, target.id().value() + "-missing", source.provenance().getFirst().sourceHash());
             assertThrows(IllegalArgumentException.class, () -> facade.importProject(entry));
-            assertTrue(facade.diagnostics().stream().anyMatch(d -> d.code().equals("BINDING_INVALID")));
+            assertTrue(facade.diagnostics().stream().anyMatch(d -> d.code().equals("BINDING_STALE")));
             write(source, source.id().value(), source.provenance().getFirst().sourceHash());
             assertThrows(IllegalArgumentException.class, () -> facade.importProject(entry));
             assertTrue(facade.diagnostics().stream().anyMatch(d -> d.code().equals("BINDING_INVALID")));

@@ -24,6 +24,12 @@ public final class TraceBuilder {
                 entry.reverse() ? entry.source() : null)));
         Map<String, SemanticElement> elements = semantic.elements().stream().collect(
                 java.util.stream.Collectors.toMap(e -> e.id().value(), e -> e));
+        transformation.classes().stream().filter(c -> c.ruleId().startsWith("VP")).forEach(c -> {
+            // A concrete type may be shared by multiple source instances. Preserve every exact anchor.
+            instances.objects().stream().filter(o -> o.className().equals(c.name()))
+                    .map(o -> elements.get(o.semanticId())).filter(java.util.Objects::nonNull)
+                    .forEach(e -> records.add(projected(e, "class:" + c.name(), "CLASS", c.ruleId())));
+        });
         instances.objects().forEach(object -> {
             SemanticElement source = elements.get(object.semanticId());
             if (source == null && transformation.orderProjections().stream().anyMatch(p -> p.entryClass().equals(object.className()))) return;
@@ -50,8 +56,11 @@ public final class TraceBuilder {
                             null, TraceRecord.Status.RESOLVED));
                 });
         transformation.attributes().stream().filter(attribute -> attribute.ruleId().startsWith("VP"))
-            .forEach(attribute -> records.add(declaration(attribute.sourceIdentity(),
-                "attribute:" + attribute.owner() + "." + attribute.name(), "PROJECTION_SOURCE", "ATTRIBUTE", null, attribute.ruleId(), attribute.sourceIdentity())));
+            .forEach(attribute -> {
+                SemanticElement source = elements.get(attribute.sourceIdentity());
+                if (source == null) throw new IllegalArgumentException("TRACE_PROJECTION_SOURCE_MISSING:" + attribute.sourceIdentity());
+                records.add(projected(source, "attribute:" + attribute.owner() + "." + attribute.name(), "ATTRIBUTE", attribute.ruleId()));
+            });
         transformation.operations().forEach(operation -> {
             SemanticElement source = elements.get(operation.sourceIdentity());
             records.add(new TraceRecord(id("operation:" + operation.owner() + "." + operation.name() + "|source:" + operation.sourceIdentity()),
@@ -61,7 +70,12 @@ public final class TraceBuilder {
                     source == null ? null : source.provenance().getFirst().sourceHash(), null, TraceRecord.Status.PROJECTED));
         });
         records.addAll(new OrderProjectionTrace().build(transformation, instances));
-        return new TraceIndex(records);
+        return new TraceIndex(records, mapping);
+    }
+    private TraceRecord projected(SemanticElement source, String target, String kind, String rule) {
+        return new TraceRecord(id(target + "|source:" + source.id().value()), source.id().value(), target,
+                source.kind().name(), kind, null, rule, source.provenance().getFirst().span(),
+                source.provenance().getFirst().sourceHash(), null, TraceRecord.Status.PROJECTED);
     }
     private TraceRecord declaration(String source, String target, String sourceKind, String targetKind,
                                     String mappingRule, String projectionRule) {

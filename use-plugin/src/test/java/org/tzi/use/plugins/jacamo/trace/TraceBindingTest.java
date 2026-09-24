@@ -37,6 +37,15 @@ class TraceBindingTest {
         var structure = new VerificationSemanticLayer().apply(baseline, new VerificationProfileLoader().loadActive(mapping)).transformation();
         var instances = new InstancePlanner().plan(semantic, mapping, structure);
         TraceIndex trace = new TraceBuilder().build(semantic, mapping, structure, instances);
+        structure.classes().forEach(c -> assertFalse(trace.byUseId("class:" + c.name()).isEmpty(), c.name()));
+        structure.attributes().forEach(a -> assertFalse(trace.byUseId("attribute:" + a.owner() + "." + a.name()).isEmpty(), a.toString()));
+        structure.associations().forEach(a -> assertFalse(trace.byUseId("association:" + a.name()).isEmpty(), a.name()));
+        structure.orderProjections().forEach(p -> {
+            for (String target : List.of("class:" + p.entryClass(), "attribute:" + p.entryClass() + ".rank",
+                    "association:" + p.ownerAssociation(), "association:" + p.targetAssociation(),
+                    "operation:" + p.owner() + "." + p.query()))
+                assertFalse(trace.byUseId(target).isEmpty(), target);
+        });
         assertFalse(trace.byTargetKind("CLASS").isEmpty());
         assertFalse(trace.byTargetKind("ATTRIBUTE").isEmpty());
         assertFalse(trace.byTargetKind("ASSOCIATION").isEmpty());
@@ -57,6 +66,14 @@ class TraceBindingTest {
         new TraceStore().write(file, trace);
         TraceIndex loaded = new TraceStore().read(file);
         assertEquals(trace.records(), loaded.records());
+        assertTrue(loaded.byRuntimeKey("cartago:artifact:market/auction1").isEmpty(), "persisted aliases are historical evidence");
+        assertThrows(IllegalArgumentException.class, () -> loaded.registerRuntimeKey(artifact.traceId(), "new-runtime"));
+        var direct = new org.tzi.use.plugins.jacamo.materialization.DirectUseBackend().materialize(
+                new org.tzi.use.plugins.jacamo.materialization.TextBackend().generate("traceGate", structure, instances), instances);
+        assertThrows(IllegalArgumentException.class, () -> new org.tzi.use.plugins.jacamo.runtime.RuntimeMutationEngine(direct.system(), loaded));
+        TraceIndex rebuilt = new TraceBuilder().build(semantic, mapping, structure, instances);
+        rebuilt.copyRuntimeKeysFrom(loaded);
+        assertTrue(rebuilt.runtimeKeysFor(artifactId).isEmpty());
     }
 
     @Test
@@ -93,6 +110,24 @@ class TraceBindingTest {
     }
 
     @Test
+    void historicalV1TraceCannotAuthorizeRuntimeAndChangedContractRetiresAliases() {
+        var archived = new TraceStore().read(Path.of("docs/project/v2-migration/historical-static/auction/trace.json"));
+        var historicalObject = archived.byTargetKind("OBJECT").getFirst();
+        assertThrows(IllegalArgumentException.class, () -> archived.registerRuntimeKey(historicalObject.traceId(), "historical"));
+        var mapping = new MappingLoader().loadCanonical(Path.of("."));
+        var changed = new org.tzi.use.plugins.jacamo.mapping.MappingModel(mapping.schemaVersion(), "different-mapping-contract",
+                mapping.status(), mapping.classes(), mapping.attributes(), mapping.associations(), mapping.inheritance(),
+                mapping.projections(), mapping.enums(), mapping.orderProjections());
+        var record = new TraceRecord("trace:" + "0".repeat(24), "semantic:a", "object:a", "Agent", "OBJECT",
+                "C001", null, null, null, null, TraceRecord.Status.RESOLVED);
+        var old = new TraceIndex(List.of(record), mapping);
+        old.registerRuntimeKey(record.traceId(), "jason:agent:a");
+        var current = new TraceIndex(List.of(record), changed);
+        current.copyRuntimeKeysFrom(old);
+        assertTrue(current.runtimeKeysFor(record.sourceSemanticId()).isEmpty());
+    }
+
+    @Test
     void duplicateLocalSymbolsAndOrganisationInstancesRemainAmbiguousWithoutScope() {
         SemanticElement source = element(MetamodelKind.Agent, List.of("MAS"), "caller", "1");
         var goal1 = element(MetamodelKind.AGoal, List.of("MAS", "a1"), "start", "2");
@@ -119,8 +154,10 @@ class TraceBindingTest {
         Path file = temporary.resolve("binding.json");
         BindingStore store = new BindingStore();
         store.write(file, new BindingFile("1.0.0", List.of(entry)));
-        assertEquals(BindingEntry.Status.ACTIVE, store.read(file, Map.of(source.id().value(), "1".repeat(64)))
+        assertEquals(BindingEntry.Status.ACTIVE, store.read(file, Map.of(source.id().value(), "1".repeat(64), target.id().value(), "2".repeat(64)))
                 .entries().getFirst().status());
+        assertEquals(BindingEntry.Status.STALE, store.read(file, Map.of(source.id().value(), "1".repeat(64)))
+                .entries().getFirst().status(), "removed V1 target cannot remain ACTIVE with an unchanged source hash");
         assertEquals(BindingEntry.Status.STALE, store.read(file, Map.of(source.id().value(), "9".repeat(64)))
                 .entries().getFirst().status());
         SemanticElement other = element(MetamodelKind.Operation, List.of("MAS", "w", "y"), "act", "3");

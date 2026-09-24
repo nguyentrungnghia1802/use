@@ -1,0 +1,93 @@
+{
+  "status": "PASS",
+  "command": "mvn -B -pl use-plugin test -Dtest=TraceBindingTest,RuntimeAliasTest,HotfixBindingTest,HotfixLifecycleTest,RuntimeFoundationTest,RuntimeIdentityHardeningTest,V2MaterializationTest,OrderProjectionTest,GoldenPipelineTest,CrossDimensionalVerifierTest,CounterTeamIntegrationTest",
+  "head": "c0fb52a50187900555b4876627d5246f831beae3",
+  "sourcePatchSha256": "4349f804cb0395ea8b750268b5ba3e8ad366fdd4c5a4cfe12f5636cc6fadb79d",
+  "log": "use-plugin/target/phase36-complete-focused.log",
+  "logSha256": "2af511beb3c5ea8f64b6bb629f09ae811fe13f4a626574bff73d28a26e8a0634",
+  "counts": {
+    "tests": 52,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.GoldenPipelineTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.HotfixBindingTest"
+    },
+    {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest"
+    },
+    {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.mapping.OrderProjectionTest"
+    },
+    {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.materialization.V2MaterializationTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest"
+    },
+    {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeAliasTest"
+    },
+    {
+      "tests": 23,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest"
+    },
+    {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeIdentityHardeningTest"
+    },
+    {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.trace.TraceBindingTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.verification.CrossDimensionalVerifierTest"
+    }
+  ]
+}

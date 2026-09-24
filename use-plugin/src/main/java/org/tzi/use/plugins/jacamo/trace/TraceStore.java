@@ -49,7 +49,7 @@ public final class TraceStore {
                         nullable(node,"projectionRuleId"),sourceSpan,nullable(node,"sourceHash"),nullable(node,"runtimeKey"),
                         TraceRecord.Status.valueOf(value(node,"status"))));
             }
-            return new TraceIndex(result);
+            return TraceIndex.archived(result);
         } catch (Exception exception) { throw new IllegalArgumentException("TRACE_READ_FAILED: " + exception.getMessage(), exception); }
     }
     private void validate(String text) throws Exception {

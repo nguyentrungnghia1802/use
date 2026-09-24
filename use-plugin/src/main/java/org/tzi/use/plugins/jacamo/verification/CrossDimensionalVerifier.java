@@ -26,15 +26,17 @@ public final class CrossDimensionalVerifier {
         if(targetId==null) return result(rule,VerificationOutcome.SKIPPED,null,"UNSUPPORTED_EXACT_RELATION_UNBOUND",ids);
         try {
             var source=object(trace,sourceId);var target=object(trace,targetId);
+            var descriptor = MetamodelKind.registry().mapping().associations().stream()
+                    .filter(r -> r.source().equals(referenceIdentity)).findFirst().orElseThrow(() ->
+                            new IllegalArgumentException("CROSS_RELATION_NOT_ACTIVE"));
             var associations=trace.bySemanticId(referenceIdentity).stream()
-                .filter(r->r.targetKind().equals("ASSOCIATION") && resolved(r)).toList();
+                .filter(r->r.targetKind().equals("ASSOCIATION") && resolved(r))
+                .filter(r -> r.projectionRuleId() == null && descriptor.id().equals(r.mappingRuleId())
+                        && r.targetUseId().equals("association:" + descriptor.name())).toList();
             if(associations.size()!=1) throw new IllegalArgumentException("CROSS_RELATION_TRACE_MISSING_OR_AMBIGUOUS");
             var association=system.model().getAssociation(associations.getFirst().targetUseId().substring("association:".length()));
             var a=system.state().objectByName(source);var b=system.state().objectByName(target);
             if(association==null || a==null || b==null) throw new IllegalArgumentException("CROSS_RELATION_TARGET_MISSING");
-            var descriptor = MetamodelKind.registry().mapping().associations().stream()
-                    .filter(r -> r.source().equals(referenceIdentity)).findFirst().orElseThrow(() ->
-                            new IllegalArgumentException("CROSS_RELATION_NOT_ACTIVE"));
             boolean linked = descriptor.reverse() ? system.state().hasLinkBetweenObjects(association,b,a)
                     : system.state().hasLinkBetweenObjects(association,a,b);
             return result(rule,linked ? VerificationOutcome.PASS : VerificationOutcome.FAIL,source,

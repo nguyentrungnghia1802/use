@@ -892,18 +892,20 @@ Rules:
 
 # Phase 36 — Trace, Binding & Runtime Identity V2
 
+**Component gate PASS — 2026-09-24.** 52 focused and 352 full-reactor tests PASS; zero skips. [Audit](../project/v2-migration/phase36-trace-identity.md). Merge/post-merge/push pending.
+
 **Objective:** mọi source/semantic/USE/runtime identity tiếp tục truy vết chính xác sau V2 migration.
 
 ## P36.1 — Trace schema impact audit
 
-- [ ] Can existing TraceRecord schema remain?
-- [ ] sourceSemanticId format impact.
-- [ ] targetUseId impact.
-- [ ] mappingRuleId versioning.
-- [ ] projectionRuleId versioning.
-- [ ] target kind changes.
-- [ ] runtime alias compatibility.
-- [ ] stale V1 trace behavior.
+- [x] Can existing TraceRecord schema remain?
+- [x] sourceSemanticId format impact.
+- [x] targetUseId impact.
+- [x] mappingRuleId versioning.
+- [x] projectionRuleId versioning.
+- [x] target kind changes.
+- [x] runtime alias compatibility.
+- [x] stale V1 trace behavior.
 
 ---
 
@@ -911,13 +913,13 @@ Rules:
 
 Mỗi generated:
 
-- [ ] MClass.
-- [ ] MAttribute.
-- [ ] MAssociation/composition.
-- [ ] MOperation.
-- [ ] MObject.
-- [ ] MLink.
-- [ ] projected state slot.
+- [x] MClass.
+- [x] MAttribute.
+- [x] MAssociation/composition.
+- [x] MOperation.
+- [x] MObject.
+- [x] MLink.
+- [x] projected state slot.
 
 phải có trace tới V2 semantic source/provenance.
 
@@ -925,13 +927,13 @@ phải có trace tới V2 semantic source/provenance.
 
 ## P36.3 — Binding migration
 
-- [ ] V1 binding files không auto-apply nếu semantic IDs changed.
-- [ ] Mark incompatible bindings `STALE`.
-- [ ] Migrate only with exact proof.
-- [ ] Recompute source hashes.
-- [ ] Validate target kinds V2.
-- [ ] Keep binding optional.
-- [ ] No fuzzy migration.
+- [x] V1 binding files không auto-apply nếu semantic IDs changed.
+- [x] Mark incompatible bindings `STALE`.
+- [x] Migrate only with exact proof.
+- [x] Recompute source hashes.
+- [x] Validate target kinds V2.
+- [x] Keep binding optional.
+- [x] No fuzzy migration.
 
 ---
 
@@ -945,36 +947,36 @@ RuntimeKey
 → UseId / MObject / MOperation / MAssociation target
 ```
 
-- [ ] Jason alias.
-- [ ] CArtAgO workspace/artifact/property/OpId alias.
-- [ ] Moise agent/group/scheme/role/mission/goal aliases.
-- [ ] one semantic Agent may have multiple runtime aliases.
-- [ ] no collapse by approximate names.
+- [x] Jason alias.
+- [x] CArtAgO workspace/artifact/property/OpId alias.
+- [x] Moise agent/group/scheme/role/mission/goal aliases.
+- [x] one semantic Agent may have multiple runtime aliases.
+- [x] no collapse by approximate names.
 
 ---
 
 ## P36.5 — Unknown runtime entity policy
 
-- [ ] discoverable.
-- [ ] quarantine/unbound.
-- [ ] no USE mutation.
-- [ ] actionable diagnostic.
-- [ ] possible later explicit binding only if semantics exist.
+- [x] discoverable.
+- [x] quarantine/unbound.
+- [x] no USE mutation.
+- [x] actionable diagnostic.
+- [x] possible later explicit binding only if semantics exist.
 
 ---
 
 ## P36.6 — Tests
 
-- [ ] exact one-to-one.
-- [ ] projection one-to-many.
-- [ ] ambiguity.
-- [ ] stale V1 trace.
-- [ ] stale binding.
-- [ ] duplicate operation names across artifact types.
-- [ ] multi-agent same source.
-- [ ] multiple org instances.
-- [ ] runtime alias reconnect/rebuild.
-- [ ] reverse violation navigation.
+- [x] exact one-to-one.
+- [x] projection one-to-many.
+- [x] ambiguity.
+- [x] stale V1 trace.
+- [x] stale binding.
+- [x] duplicate operation names across artifact types.
+- [x] multi-agent same source.
+- [x] multiple org instances.
+- [x] runtime alias reconnect/rebuild.
+- [x] reverse violation navigation.
 
 ---
 
