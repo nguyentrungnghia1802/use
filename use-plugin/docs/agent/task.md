@@ -982,7 +982,7 @@ RuntimeKey
 
 # Phase 37 — OCL & Constraint Architecture Migration to V2
 
-**Component gates PASS — 2026-09-24.** 43 focused and 354 full-reactor tests PASS, zero skips. [Audit](../project/v2-migration/phase37-ocl-audit.md). Workflow closure pending.
+**DONE — 2026-09-24.** 43 focused, 354 full-reactor and 11 post-merge tests PASS, zero skips. Commit 738f6bdd merged and pushed; concurrent metrics-only update preserved at 2be340d0. [Audit](../project/v2-migration/phase37-ocl-audit.md).
 
 **Objective:** tất cả constraint compile/evaluate trên V2 mà không dùng V1 navigation giả.
 

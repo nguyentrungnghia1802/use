@@ -1,0 +1,37 @@
+{
+  "status": "PASS",
+  "command": "mvn -B -pl use-plugin test -Dtest=ConstraintClosureTest,OfflineVerificationServiceTest,GoldenPipelineTest",
+  "head": "738f6bddd48d2f0cf38d712e07032136e4e74fcf",
+  "sourcePatchSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "log": "use-plugin/target/phase37-postmerge.log",
+  "logSha256": "53899a74b385f1373df3bbd6718da6fe5b1d807e22755b8b0d9c413820010d31",
+  "counts": {
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.GoldenPipelineTest"
+    },
+    {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest"
+    }
+  ]
+}

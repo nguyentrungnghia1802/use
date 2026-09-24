@@ -1,6 +1,6 @@
 # Phase 37 OCL migration audit
 
-Status: COMPONENT GATES PASS; workflow closure pending. Active V2 semantic inputs remain unchanged and WORKING_BASELINE.
+Status: DONE; implementation 738f6bdd merged and pushed, metrics-only remote update preserved at 2be340d0. Active V2 semantic inputs remain unchanged and WORKING_BASELINE.
 
 ## Origin and binding inventory
 
@@ -48,7 +48,7 @@ Undefined evaluation remains ERROR where defined by the verification contract.
 
 RED: ConstraintClosureTest reproduced the owner-hash collision. Separately,
 OfflineVerificationServiceTest reproduced CORE order provenance mislabeled USER.
-Focused gate 43/43 and full reactor 354/354 PASS, zero skips. Post-merge gate pending. Existing positive/negative, PRE/POST/@pre,
+Focused gate 43/43 and full reactor 354/354 PASS, zero skips. Post-merge gate 11/11 PASS; see phase37-postmerge.json. Existing positive/negative, PRE/POST/@pre,
 undefined/error, case/user loader, source-order and CounterTeam tests are reused.
 New negative control rejects the historical ExternalAction OCL context against V2
 with USE_MODEL_INVALID and the offending context in the compiler diagnostic.
