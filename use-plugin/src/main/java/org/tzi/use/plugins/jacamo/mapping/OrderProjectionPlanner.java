@@ -33,6 +33,16 @@ public final class OrderProjectionPlanner {
         public SourceOrder { targets = List.copyOf(targets); }
     }
 
+    /** Recover membership from an already materialized plan without retaining rank rows twice. */
+    public InstancePlan membership(TransformationPlan structure, InstancePlan instances) {
+        Set<String> classes = new HashSet<>(), associations = new HashSet<>();
+        for (var spec : structure.orderProjections()) {
+            classes.add(spec.entryClass()); associations.add(spec.ownerAssociation()); associations.add(spec.targetAssociation());
+        }
+        return new InstancePlan(instances.objects().stream().filter(o -> !classes.contains(o.className())).toList(),
+                instances.links().stream().filter(l -> !associations.contains(l.association())).toList(), instances.diagnostics());
+    }
+
     public InstancePlan project(TransformationPlan structure, InstancePlan membership, List<SourceOrder> sourceOrders) {
         Map<String, ObjectPlan> objects = new TreeMap<>();
         membership.objects().forEach(o -> objects.put(o.name(), o));

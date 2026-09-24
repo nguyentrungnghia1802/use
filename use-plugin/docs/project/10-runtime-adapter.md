@@ -1,5 +1,7 @@
 # Runtime Adapter
 
+> Current V2 target contract: [Phase 35 reconciliation](v2-migration/phase35-runtime-targets.md). Default runtime loading uses Mapping V2 fingerprints and schema 3.0.0; older frozen V1 results below are historical. Full reactor acceptance remains OPEN.
+
 ## 1. Mục tiêu
 
 Mirror trạng thái chạy thật của JaCaMo vào USE `MSystemState` để OCL kiểm chứng runtime.

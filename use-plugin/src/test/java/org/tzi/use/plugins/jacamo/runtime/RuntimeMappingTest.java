@@ -9,7 +9,7 @@ class RuntimeMappingTest {
     private final ObjectMapper json = new ObjectMapper();
     private final RuntimeMappingLoader loader = new RuntimeMappingLoader();
     private ObjectNode document() throws Exception {
-        return ((ObjectNode) json.readTree(RuntimeMappingLoader.resource("jacamo-use-runtime-mapping-v1.json"))).put("status", "CUSTOM_VALIDATED");
+        return ((ObjectNode) json.readTree(RuntimeMappingLoader.resource("jacamo-use-runtime-mapping-v2.json"))).put("status", "CUSTOM_VALIDATED");
     }
     private void rejects(ObjectNode doc, String code) throws Exception {
         var error = assertThrows(RuntimeMappingException.class, () -> loader.loadBytes(json.writeValueAsBytes(doc)));
@@ -20,10 +20,9 @@ class RuntimeMappingTest {
         assertEquals(mapping, loader.loadDefault());
         var covered = java.util.EnumSet.noneOf(RuntimeEventKind.class);
         mapping.rules().forEach(r -> assertTrue(covered.add(r.eventKind()), "duplicate historical selector"));
-        // REPLACE_ORDER requires the V2 order projection contract; it cannot be authorized by frozen V1.
-        assertTrue(covered.add(RuntimeEventKind.REPLACE_ORDER));
+        assertTrue(covered.contains(RuntimeEventKind.REPLACE_ORDER));
         assertEquals(java.util.EnumSet.allOf(RuntimeEventKind.class), covered);
-        assertEquals("FROZEN", mapping.status());
+        assertEquals("WORKING", mapping.status());
         assertTrue(mapping.rules().stream().noneMatch(r -> r.anchor().contains("Auction")));
     }
     @Test void compatibilityReportIsDerivedAndMachineReadable() throws Exception {
@@ -34,13 +33,14 @@ class RuntimeMappingTest {
         assertTrue(report.stream().filter(r -> !r.mutation().equals("NONE"))
             .allMatch(r -> r.status().equals("SUPPORTED")));
     }
-    @Test void frozenBytesAndLegacyDraftFailClosed() throws Exception {
+    @Test void workingFingerprintAndLegacyDraftFailClosed() throws Exception {
         var doc = document();
-        doc.put("status", "FROZEN");
-        ((ObjectNode)doc.path("rules").get(0)).put("migrationRisk", "tampered but schema valid");
-        rejects(doc, "RUNTIME_MAPPING_HASH_MISMATCH");
+        ((ObjectNode)doc.path("targetContract")).put("ecoreSha256", "0".repeat(64));
+        rejects(doc, "RUNTIME_MAPPING_BASELINE_MISMATCH");
         doc = document(); doc.put("schemaVersion", "1.0.0").put("status", "DRAFT_WAITING_FOR_METAMODEL_V2");
         rejects(doc, "RUNTIME_MAPPING_VERSION_UNSUPPORTED");
+        var historical = (ObjectNode) json.readTree(RuntimeMappingLoader.resource("jacamo-use-runtime-mapping-v1.json"));
+        rejects(historical, "RUNTIME_MAPPING_VERSION_UNSUPPORTED");
     }
     @Test void strictSchemaAndMalformedInput() throws Exception {
         for (String field : new String[]{"id","identity","eventKind","action"}) {

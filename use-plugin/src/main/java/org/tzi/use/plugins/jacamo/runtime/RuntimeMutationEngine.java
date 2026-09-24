@@ -52,7 +52,8 @@ public final class RuntimeMutationEngine {
             org.tzi.use.plugins.jacamo.materialization.InstancePlan membership) {
         this(system, trace, mapping, targets);
         this.orderStructure = java.util.Objects.requireNonNull(structure);
-        this.orderMembership = java.util.Objects.requireNonNull(membership);
+        this.orderMembership = new org.tzi.use.plugins.jacamo.mapping.OrderProjectionPlanner()
+                .membership(structure, java.util.Objects.requireNonNull(membership));
     }
 
     public synchronized MutationResult apply(RuntimeEvent event) {
@@ -308,6 +309,10 @@ public final class RuntimeMutationEngine {
 
     private MutationResult destroy(String runtimeSourceId, String objectName) {
         MObject object = system.state().objectByName(objectName);
+        if (object != null && trace.byTargetKind("ORDER_LINK").stream().anyMatch(record -> {
+            String[] parts = record.targetUseId().split(":", 4);
+            return parts.length == 4 && (parts[2].equals(objectName) || parts[3].equals(objectName));
+        })) throw new IllegalArgumentException("RUNTIME_ORDER_MEMBERSHIP_REQUIRES_RESYNC:" + objectName);
         if (object != null) system.state().deleteObject(object);
         operationCorrelations.entrySet().removeIf(entry -> !entry.getValue().rejected()
             && entry.getValue().target().startsWith(objectName + "::"));
@@ -335,8 +340,10 @@ public final class RuntimeMutationEngine {
         var association = system.model().getAssociation(text(payload, "association"));
         if (association == null) throw new IllegalArgumentException("USE_ASSOCIATION_MISSING");
         List<MObject> objects = tracedParticipants(payload, association.name());
-        if (!system.state().hasLinkBetweenObjects(association, objects.toArray(MObject[]::new)))
+        if (!system.state().hasLinkBetweenObjects(association, objects.toArray(MObject[]::new))) {
+            requireUnorderedMembershipChange(association.name());
             system.state().createLink(association, objects, null);
+        }
         return MutationResult.applied();
     }
 
@@ -344,9 +351,17 @@ public final class RuntimeMutationEngine {
         var association = system.model().getAssociation(text(payload, "association"));
         if (association == null) throw new IllegalArgumentException("USE_ASSOCIATION_MISSING");
         List<MObject> objects = tracedParticipants(payload, association.name());
-        if (system.state().hasLinkBetweenObjects(association, objects.toArray(MObject[]::new)))
+        if (system.state().hasLinkBetweenObjects(association, objects.toArray(MObject[]::new))) {
+            requireUnorderedMembershipChange(association.name());
             system.state().deleteLink(association, objects, null);
+        }
         return MutationResult.applied();
+    }
+
+    private void requireUnorderedMembershipChange(String association) {
+        boolean ordered = trace.byUseId("association:" + association).stream().anyMatch(reference ->
+                trace.bySemanticId(reference.sourceSemanticId()).stream().anyMatch(t -> t.targetKind().equals("ORDER_NAVIGATION")));
+        if (ordered) throw new IllegalArgumentException("RUNTIME_ORDER_MEMBERSHIP_REQUIRES_RESYNC:" + association);
     }
 
     private MutationResult enter(RuntimeEvent event, String objectName) {

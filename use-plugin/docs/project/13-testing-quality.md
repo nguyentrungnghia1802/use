@@ -1,5 +1,7 @@
 # Testing and Quality Strategy
 
+> Current V2 target contract: [Phase 35 reconciliation](v2-migration/phase35-runtime-targets.md). Default runtime loading uses Mapping V2 fingerprints and schema 3.0.0; older frozen V1 results below are historical. Full reactor acceptance remains OPEN.
+
 ## 1. Principle
 
 Mỗi phase phải có test trước khi merge.

@@ -11,9 +11,9 @@ public final class RuntimeMappingLoader {
     static final String ROOT = "/org/tzi/use/plugins/jacamo/runtime/";
     private static final ObjectMapper JSON = new ObjectMapper().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION);
     public RuntimeMapping loadDefault() {
-        RuntimeMapping mapping = loadBytes(resource("jacamo-use-runtime-mapping-v1.json"));
-        if (!"FROZEN".equals(mapping.status()))
-            throw new RuntimeMappingException("RUNTIME_MAPPING_FREEZE_INVALID", "document", "Default must be FROZEN");
+        RuntimeMapping mapping = loadBytes(resource("jacamo-use-runtime-mapping-v2.json"));
+        if (!"WORKING".equals(mapping.status()))
+            throw new RuntimeMappingException("RUNTIME_MAPPING_STATUS_INVALID", "document", "Default must be WORKING");
         return mapping;
     }
     public RuntimeMapping load(Path path) {
@@ -26,37 +26,24 @@ public final class RuntimeMappingLoader {
         try {
             String text = new String(bytes, StandardCharsets.UTF_8);
             var document = JSON.readTree(bytes); // Reject duplicate JSON keys before schema validation.
-            if (!"2.0.0".equals(document.path("schemaVersion").asText()))
+            if (!"3.0.0".equals(document.path("schemaVersion").asText()))
                 throw new RuntimeMappingException("RUNTIME_MAPPING_VERSION_UNSUPPORTED", "document",
-                    "Use runtime schema 2.0.0 and explicitly reconcile legacy draft metadata; no automatic semantic migration");
+                    "Use runtime schema 3.0.0 and explicitly reconcile legacy draft metadata; no automatic semantic migration");
             var schema = SchemaRegistry.withDefaultDialect(SpecificationVersion.DRAFT_2020_12)
-                .getSchema(new String(resource("runtime-mapping.schema.json"), StandardCharsets.UTF_8), InputFormat.JSON);
+                .getSchema(new String(resource("runtime-mapping-v2.schema.json"), StandardCharsets.UTF_8), InputFormat.JSON);
             var errors = schema.validate(text, InputFormat.JSON);
             if (!errors.isEmpty()) throw new RuntimeMappingException("RUNTIME_MAPPING_SCHEMA_INVALID", "document", errors.toString());
             RuntimeMapping result = JSON.readValue(bytes, RuntimeMapping.class);
-            new RuntimeMappingValidator().validate(result);
-            if ("FROZEN".equals(result.status())) verifyFrozen(bytes);
+            var baseline = new org.tzi.use.plugins.jacamo.mapping.ActiveBaseline().packaged();
+            var expected = java.util.Map.of("mappingId", baseline.mapping().mappingId(),
+                    "ecoreSha256", baseline.hashes().get(org.tzi.use.plugins.jacamo.mapping.ActiveBaseline.ECORE),
+                    "mappingSha256", baseline.hashes().get(org.tzi.use.plugins.jacamo.mapping.ActiveBaseline.MAPPING));
+            if (!expected.equals(result.targetContract()))
+                throw new RuntimeMappingException("RUNTIME_MAPPING_BASELINE_MISMATCH", "document", "targetContract");
+            new RuntimeMappingValidator(new V2RuntimeBindingAdapter(baseline.mapping())).validate(result);
             return result;
         } catch (RuntimeMappingException exception) { throw exception; }
         catch (Exception exception) { throw new RuntimeMappingException("RUNTIME_MAPPING_LOAD_FAILED", "document", exception.getMessage()); }
-    }
-    private void verifyFrozen(byte[] mappingBytes) throws Exception {
-        var manifest = JSON.readTree(resource("runtime-mapping-freeze.json"));
-        if (!"FROZEN".equals(manifest.path("status").asText()))
-            throw new RuntimeMappingException("RUNTIME_MAPPING_FREEZE_INVALID", "document", "status");
-        for (String name : java.util.List.of("runtime/jacamo-use-runtime-mapping-v1.json",
-                "runtime/runtime-mapping.schema.json", "canonical/JaCaMo-Metamodel.ecore",
-                "canonical/jacamo-use-mapping-v1.json")) {
-            byte[] bytes;
-            if (name.endsWith("jacamo-use-runtime-mapping-v1.json")) bytes = mappingBytes;
-            else try (var input = getClass().getResourceAsStream("/org/tzi/use/plugins/jacamo/" + name.replace("canonical/", "historical/version-1/"))) {
-                if (input == null) throw new RuntimeMappingException("RUNTIME_MAPPING_RESOURCE_FAILED", "document", name);
-                bytes = input.readAllBytes();
-            }
-            String hash = java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(bytes));
-            if (!hash.equals(manifest.path("hashes").path(name).asText()))
-                throw new RuntimeMappingException("RUNTIME_MAPPING_HASH_MISMATCH", "document", name);
-        }
     }
     static byte[] resource(String name) {
         try (var input = RuntimeMappingLoader.class.getResourceAsStream(ROOT + name)) {
