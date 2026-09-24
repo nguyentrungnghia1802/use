@@ -114,5 +114,9 @@ public final class ConstraintExtractor {
     private String text(SemanticElement element, String key) {
         return element.attributes().get(key) instanceof AttributeValue.Text value ? value.value() : null;
     }
-    private String stable(String value) { return Integer.toUnsignedString(value.hashCode(), 36); }
+    private String stable(String value) {
+        try { return java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256")
+                .digest(value.getBytes(java.nio.charset.StandardCharsets.UTF_8))); }
+        catch (java.security.NoSuchAlgorithmException exception) { throw new IllegalStateException(exception); }
+    }
 }

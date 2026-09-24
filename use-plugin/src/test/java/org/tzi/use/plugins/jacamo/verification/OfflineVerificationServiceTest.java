@@ -56,6 +56,18 @@ class OfflineVerificationServiceTest {
                 && d.name().equals("AuctionInitiallyOpen")));
         assertTrue(registry.descriptors().stream().anyMatch(d -> d.origin() == ConstraintOrigin.USER
                 && d.name().equals("UserOpen") && d.sourceSpan().startLine() == 1));
+        fixture.structure().orderProjections().forEach(order -> {
+            var descriptor = registry.descriptors().stream().filter(d -> d.context().equals(order.owner())
+                    && d.name().equals("order_" + order.ruleId())).findFirst().orElseThrow();
+            assertEquals(ConstraintOrigin.CORE, descriptor.origin());
+            assertEquals("CORE:ORDER:" + order.sourceIdentity(), descriptor.id());
+            assertTrue(descriptor.dependencies().isEmpty(), "mapping provenance is not proof of complete runtime dependencies");
+            assertTrue(descriptor.sourcePath().toString().endsWith("jacamo-use-mapping-v2.json"));
+        });
+        var withoutProof = ConstraintRegistry.load(direct.system().model(),
+                new OclGenerator.GeneratedOcl(generated.useModel(), generated.provenanceManifest(), generated.emitted()), List.of());
+        assertTrue(withoutProof.descriptors().stream().filter(d -> d.name().startsWith("order_"))
+                .allMatch(d -> d.origin() == ConstraintOrigin.USER), "a matching name alone cannot claim generated CORE provenance");
     }
 
     @Test

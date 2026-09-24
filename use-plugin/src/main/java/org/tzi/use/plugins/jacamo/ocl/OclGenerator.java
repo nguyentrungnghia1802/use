@@ -51,7 +51,7 @@ public final class OclGenerator {
         manifest += profiles.stream().sorted(Comparator.comparing(p -> p.origin().toString()))
                 .map(p -> "PROFILE|" + portable(p.origin()) + "|" + p.sha256() + "\n")
                 .collect(java.util.stream.Collectors.joining());
-        return new GeneratedOcl(model, manifest, emitted);
+        return new GeneratedOcl(model, manifest, emitted, plan.orderProjections());
     }
 
     private String portable(Path path) {
@@ -89,7 +89,11 @@ public final class OclGenerator {
         String safe = value.replaceAll("[^A-Za-z0-9_]", "_");
         return safe.matches("[A-Za-z_].*") ? safe : "_" + safe;
     }
-    public record GeneratedOcl(String useModel, String provenanceManifest, List<ConstraintSpec> emitted) {
-        public GeneratedOcl { emitted = List.copyOf(emitted); }
+    public record GeneratedOcl(String useModel, String provenanceManifest, List<ConstraintSpec> emitted,
+                               List<org.tzi.use.plugins.jacamo.mapping.OrderProjectionSpec> orderProjections) {
+        public GeneratedOcl(String useModel, String provenanceManifest, List<ConstraintSpec> emitted) {
+            this(useModel, provenanceManifest, emitted, List.of());
+        }
+        public GeneratedOcl { emitted = List.copyOf(emitted); orderProjections = List.copyOf(orderProjections); }
     }
 }

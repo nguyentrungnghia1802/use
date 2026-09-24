@@ -1,0 +1,65 @@
+{
+  "status": "PASS",
+  "command": "mvn -B -pl use-plugin test -Dtest=ConstraintClosureTest,ConstraintOclTest,OfflineVerificationServiceTest,RuntimeVerificationEngineTest,OrderProjectionTest,GoldenPipelineTest,CounterTeamIntegrationTest",
+  "head": "7c92d1b55a4fbb41fdf94ce50900c5c3ebf75b1e",
+  "sourcePatchSha256": "39d596ddf9c38bb72e423705f6b10c13128b7dd24fc82d814cddb294e2775abc",
+  "log": "use-plugin/target/phase37-final-focused.log",
+  "logSha256": "242120797d11c7855b3db5a7ebd327fcd04119fd8f2086bb5e029d7917fd6c4f",
+  "counts": {
+    "tests": 43,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest"
+    },
+    {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.constraint.ConstraintOclTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.GoldenPipelineTest"
+    },
+    {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.mapping.OrderProjectionTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest"
+    },
+    {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest"
+    },
+    {
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest"
+    }
+  ]
+}

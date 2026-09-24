@@ -106,6 +106,18 @@ public final class ConstraintRegistry {
         for (MClassInvariant invariant : model.classInvariants()) {
             String key = invariantKey(invariant);
             ConstraintDescriptor descriptor = sourceDescriptors.get(key);
+            if (descriptor == null) {
+                var order = generated.orderProjections().stream().filter(p -> p.owner().equals(invariant.cls().name())
+                        && ("order_" + p.ruleId()).equals(invariant.name())).findFirst();
+                if (order.isPresent()) {
+                    var proof = order.get();
+                    Path mapping = Path.of(org.tzi.use.plugins.jacamo.mapping.ActiveBaseline.RESOURCE_ROOT,
+                            org.tzi.use.plugins.jacamo.mapping.ActiveBaseline.MAPPING);
+                    descriptor = new ConstraintDescriptor("CORE:ORDER:" + proof.sourceIdentity(), invariant.name(),
+                            invariant.cls().name(), null, ConstraintKind.INV, ConstraintOrigin.CORE, mapping,
+                            null, List.of(), invariant.isActive(), invariant.bodyExpression().toString());
+                }
+            }
             if (descriptor == null) descriptor = fallback(invariant);
             all.add(descriptor);
             compiled.put(key, descriptor);

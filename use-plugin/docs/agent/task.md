@@ -982,70 +982,72 @@ RuntimeKey
 
 # Phase 37 — OCL & Constraint Architecture Migration to V2
 
+**Component gates PASS — 2026-09-24.** 43 focused and 354 full-reactor tests PASS, zero skips. [Audit](../project/v2-migration/phase37-ocl-audit.md). Workflow closure pending.
+
 **Objective:** tất cả constraint compile/evaluate trên V2 mà không dùng V1 navigation giả.
 
 ## P37.1 — Inventory OCL origins
 
 Classify each constraint:
 
-- [ ] `TRANSLATED`.
-- [ ] `CORE`.
-- [ ] `CASE`.
-- [ ] `USER`.
+- [x] `TRANSLATED`.
+- [x] `CORE`.
+- [x] `CASE`.
+- [x] `USER`.
 
 For every OCL:
 
-- [ ] context class.
-- [ ] navigation path.
-- [ ] referenced operation.
-- [ ] referenced attribute.
-- [ ] V2 compatibility.
-- [ ] source/provenance.
+- [x] context class.
+- [x] navigation path.
+- [x] referenced operation.
+- [x] referenced attribute.
+- [x] V2 compatibility.
+- [x] source/provenance.
 
 ---
 
 ## P37.2 — Rebind translated constraints
 
-- [ ] CArtAgO guards only for supported exact subset.
-- [ ] Jason contexts only when V2 state binding proven.
-- [ ] no arbitrary Java body → postcondition.
-- [ ] unsupported stays `UNSUPPORTED`.
-- [ ] assumptions/dependencies updated to V2 IDs.
-- [ ] generated OCL deterministic.
+- [x] CArtAgO guards only for supported exact subset.
+- [x] Jason contexts only when V2 state binding proven.
+- [x] no arbitrary Java body → postcondition.
+- [x] unsupported stays `UNSUPPORTED`.
+- [x] assumptions/dependencies updated to V2 IDs.
+- [x] generated OCL deterministic.
 
 ---
 
 ## P37.3 — Rebuild core OCL for V2
 
-- [ ] remove V1-only navigation.
-- [ ] preserve only evidence-backed generic rules.
-- [ ] structural checks not duplicated unnecessarily.
-- [ ] cross-dimensional rules use V2 relations.
-- [ ] rationale + evidence for every core constraint.
+- [x] remove V1-only navigation.
+- [x] preserve only evidence-backed generic rules.
+- [x] structural checks not duplicated unnecessarily.
+- [x] cross-dimensional rules use V2 relations.
+- [x] rationale + evidence for every core constraint.
 
 ---
 
 ## P37.4 — Migrate case/user OCL
 
-- [ ] Auction OCL V2.
-- [ ] Case Study #2 OCL V2.
-- [ ] examples do not leak into core.
-- [ ] user-authored OCL loader remains independent.
-- [ ] invalid V1 OCL fails with actionable context/navigation diagnostic.
+- [x] Auction OCL V2.
+- [x] Case Study #2 OCL V2.
+- [x] examples do not leak into core.
+- [x] user-authored OCL loader remains independent.
+- [x] invalid V1 OCL fails with actionable context/navigation diagnostic.
 
 ---
 
 ## P37.5 — Compile/evaluation gate
 
-- [ ] parse.
-- [ ] type-check.
-- [ ] exact context binding.
-- [ ] PRE.
-- [ ] POST.
-- [ ] `@pre`.
-- [ ] invariant PASS/FAIL.
-- [ ] undefined → ERROR where contract says.
-- [ ] positive/negative fixtures.
+- [x] parse.
+- [x] type-check.
+- [x] exact context binding.
+- [x] PRE.
+- [x] POST.
+- [x] `@pre`.
+- [x] invariant PASS/FAIL.
+- [x] undefined → ERROR where contract says.
+- [x] positive/negative fixtures.
 
 ---
 

@@ -11,6 +11,23 @@ class ConstraintClosureTest {
         assertEquals(TranslationStatus.EXACT,parser.parse("x > 0 & x <= 10",env).status());
     }
     @org.junit.jupiter.api.io.TempDir java.nio.file.Path temporary;
+    @Test void distinctV2OwnersWithJavaHashCollisionsKeepDistinctConstraintIdentities() throws Exception {
+        var agents=java.nio.file.Files.createDirectories(temporary.resolve("src/agt"));
+        java.nio.file.Files.writeString(temporary.resolve("ids.jcm"),
+                "mas ids { agent Aa:a.asl agent BB:a.asl asl-path:src/agt }");
+        java.nio.file.Files.writeString(agents.resolve("a.asl"), "+!g : true <- .print(\"x\").");
+        var imported=new org.tzi.use.plugins.jacamo.extraction.StaticProjectImporter().importProject(temporary.resolve("ids.jcm"));
+        assertTrue(imported.success(), imported.diagnostics().toString());
+        var mapping=new org.tzi.use.plugins.jacamo.mapping.MappingLoader().loadCanonical(java.nio.file.Path.of("."));
+        var plan=new org.tzi.use.plugins.jacamo.mapping.TransformationPlanner().plan(imported.model(),mapping);
+        var extractor=new ConstraintExtractor();
+        var constraints=extractor.extract(imported.model(),plan,Map.of());
+        assertEquals(2,constraints.size());
+        assertEquals(constraints.get(0).dependencies().getFirst().hashCode(),constraints.get(1).dependencies().getFirst().hashCode());
+        assertEquals(2,constraints.stream().map(ConstraintSpec::id).distinct().count(),"Java hash collisions must not collapse V2 source constraints");
+        assertEquals(constraints,extractor.extract(imported.model(),plan,Map.of()));
+        assertTrue(constraints.stream().allMatch(c -> c.status()==TranslationStatus.UNSUPPORTED));
+    }
     @Test void impureGuardArithmeticAndSignatureMismatchPreserveUnsupportedSource() throws Exception {
         var original=java.nio.file.Path.of("src/test/resources/counter-team");
         for(String body:List.of("if (value > 10) return false; return true;", "return value + 1 > 0;", "return value / 2 > 0;", "return missing(value) > 0;", "return (value = 1) > 0;")) {
@@ -57,6 +74,17 @@ class ConstraintClosureTest {
             assertTrue(generated.emitted().isEmpty());assertTrue(generated.provenanceManifest().contains(status.name()));
             assertTrue(generated.provenanceManifest().contains(exact.provenance().sourceHash()));
         }
+    }
+    @Test void obsoleteV1OclContextFailsAgainstActiveV2WithContextDiagnostic() {
+        var data=extract(java.nio.file.Path.of("src/test/resources/counter-team"));
+        var model=new org.tzi.use.plugins.jacamo.ocl.OclGenerator().generate("legacy",data.plan(),data.constraints(),List.of()).useModel();
+        var error=assertThrows(org.tzi.use.plugins.jacamo.materialization.MaterializationException.class, () ->
+                new org.tzi.use.plugins.jacamo.materialization.DirectUseBackend().materialize(
+                        new org.tzi.use.plugins.jacamo.materialization.TextBackend.GeneratedArtifacts(
+                                model+"\ncontext ExternalAction inv obsolete: true\n", ""),
+                        new org.tzi.use.plugins.jacamo.materialization.InstancePlan(List.of(),List.of(),List.of())));
+        assertEquals("USE_MODEL_INVALID",error.code());
+        assertTrue(error.getMessage().contains("ExternalAction"),error.getMessage());
     }
     private Data extract(java.nio.file.Path directory) {
         var semantic=new org.tzi.use.plugins.jacamo.extraction.StaticProjectImporter().importProject(directory.resolve("counter-team.jcm")).model();

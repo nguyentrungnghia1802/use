@@ -6,6 +6,9 @@
 > ExternalAction rule. Ordered source navigation uses rank-derived query bindings.
 > Norm strings and unsupported Java/Jason semantics remain untranslated. See
 > [Phase 35 contract](v2-migration/phase35-transformation.md).
+> Phase 37 uses full-identity SHA-256 constraint IDs and explicit generation proof
+> for CORE order-projection provenance. Order invariants remain global for runtime
+> dependency selection. [Origin inventory and gates](v2-migration/phase37-ocl-audit.md).
 
 ## 1. Nguyên tắc
 
