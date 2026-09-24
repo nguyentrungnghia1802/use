@@ -1,0 +1,58 @@
+{
+  "status": "PASS",
+  "command": "mvn -B -pl use-plugin test -Dtest=TraceBindingTest,RuntimeAliasTest,HotfixBindingTest,HotfixLifecycleTest,CrossDimensionalVerifierTest,GoldenPipelineTest",
+  "head": "df3693659ba9ce77f671e4d005f42bb42d49a636",
+  "sourcePatchSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "log": "use-plugin/target/phase36-postmerge.log",
+  "logSha256": "d9d5c52e85a69eb2bfff018a9473f4441100471ef8805b19fa88e8b6a80106fc",
+  "counts": {
+    "tests": 14,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.GoldenPipelineTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.HotfixBindingTest"
+    },
+    {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest"
+    },
+    {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeAliasTest"
+    },
+    {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.trace.TraceBindingTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.verification.CrossDimensionalVerifierTest"
+    }
+  ]
+}
