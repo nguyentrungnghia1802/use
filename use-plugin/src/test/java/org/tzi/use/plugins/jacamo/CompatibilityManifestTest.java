@@ -28,7 +28,9 @@ class CompatibilityManifestTest {
         JsonNode requirements = manifest.path("requirements");
 
         assertEquals(release.path("releaseVersion").asText(), manifest.path("plugin").path("version").asText());
-        assertEquals(release.path("gitTag").asText(), manifest.path("plugin").path("tag").asText());
+        assertTrue(release.path("gitTag").isNull(), "working V2 package has no release tag");
+        assertEquals(release.path("gitTag"), manifest.path("plugin").path("tag"));
+        assertEquals("working-v2-not-released", manifest.path("plugin").path("status").asText());
         assertEquals(pluginDescriptor.getDocumentElement().getAttribute("version"),
                 manifest.path("plugin").path("version").asText());
 

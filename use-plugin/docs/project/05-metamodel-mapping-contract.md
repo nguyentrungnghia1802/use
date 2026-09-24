@@ -1,6 +1,6 @@
 # JaCaMo → USE Metamodel Mapping Contract
 
-> **V2 migration status — 2026-09-23:** Active semantic specification is Metamodel V2 + Mapping 2.1 (`WORKING_BASELINE`), under `Core/*/version-2/`. Production consumers are not yet migrated; the fresh pre-migration build fails after V1 resource relocation. V1 release/closure claims below are historical, not current V2 acceptance. See [migration baseline](v2-migration/phase29-pre-migration-baseline.md) and [active selection contract](v2-migration/active-baseline-policy.md).
+> Active contract: Metamodel V2 + Mapping 2.2.0 WORKING_BASELINE. Production selection, source identity, projection and runtime contracts are described in [active baseline policy](v2-migration/active-baseline-policy.md), [transformation](v2-migration/phase35-transformation.md) and [runtime targets](v2-migration/phase35-runtime-targets.md). The V1 counts, freeze rules and IDs in the historical contract below do not govern active V2.
 
 
 ## 1. Mục tiêu

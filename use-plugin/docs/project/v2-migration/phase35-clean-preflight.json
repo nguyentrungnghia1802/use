@@ -1,0 +1,23 @@
+{
+  "stage": "First clean V2 reactor after package migration; compatibility tag field mismatch",
+  "command": "mvn -B clean verify",
+  "sourceCommit": "31f6ab6b48f624ccb7305557fbc5a6527e4d4729",
+  "totals": {
+    "tests": 347,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0
+  },
+  "failureClassification": {
+    "CompatibilityManifestTest": "New metadata consistency regression: null release tag versus missing compatibility tag; fix explicit null and assert JSON value equality, no semantic behavior change."
+  },
+  "logSha256": "1445ab3d3ec7b50155ab580b6b9429878ba4dc8dce9efb894e0fd84b3f86dbf1",
+  "countsSource": "Original clean build log module summaries; subsequent focused rerun replaces individual Surefire reports.",
+  "focusedRepair": {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "command": "mvn -B -pl use-plugin -Dtest=CompatibilityManifestTest,ReleasePackageContractTest test"
+  }
+}

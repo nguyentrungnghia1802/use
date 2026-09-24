@@ -1,7 +1,7 @@
 # Active baseline selection contract
 
 Status: WORKING_BASELINE. Phase 32 selection/evolution component gates PASS;
-full IR/parser/facade migration remains OPEN on Phase 33–35.
+IR/parser/facade consumers now use V2. Full phase closure awaits clean regression.
 
 ActiveBaseline owns filesystem and classpath selection. MappingLoader.loadCanonical
 now delegates to it and selects only Metamodel V2 + Mapping 2.2.0. It reads each
@@ -13,14 +13,14 @@ selection is explicit and has exact fingerprint parity with filesystem selection
 Active classpath namespace is org/tzi/use/plugins/jacamo/canonical/version-2/.
 POM resources now populate it from versioned canonical inputs. Explicit historical
 V1 readers use historical/version-1/; their immutable historical manifest hash
-keys are preserved while lookup resolves to that historical namespace. This is
-temporary historical runtime compatibility evidence, not a second active structural
-selector. V1 runtime consumers still require migration in their dependent tasks.
+keys are preserved while lookup resolves to that historical namespace. These resources are
+historical regression evidence, not a second active structural selector. Runtime
+Mapping V2/schema 3.0.0 now binds the exact active fingerprints.
 
 MappingModel is a data-derived structural descriptor; planners have no fixed
 class/feature/inheritance/projection counts. Inheritance validation derives exact
-edges from Ecore and schema-defined owner-qualified source keys. The remaining
-V1 semantic enum/parser vocabulary is a separate Phase 33/34 migration obligation.
+edges from Ecore and schema-defined owner-qualified source keys. The
+V1 semantic handles and legacy model constructor have been removed after parser migration.
 
 ## Repeatable evolution loop
 

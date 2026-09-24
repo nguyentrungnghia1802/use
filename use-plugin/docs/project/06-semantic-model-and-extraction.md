@@ -4,7 +4,8 @@
 > supersedes the V1 inventory/root assumptions below for the new V2 IR constructor.
 > Active kinds are descriptor-derived; project metadata and source facts are separate.
 > The default importer now emits V2 IR; see [Phase 34 evidence](v2-migration/phase34-extraction.md).
-> Projection/OCL/runtime consumer migration and complete phase closure remain OPEN.
+> Transitional V1 handles/constructor have been removed. Projection/OCL/runtime
+> consumers now use V2; full phase closure remains OPEN pending clean regression.
 
 ## 1. Input contract
 

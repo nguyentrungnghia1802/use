@@ -3,13 +3,13 @@
 > Active V2 migration: [profile contract](v2-migration/phase33-verification-profile.md)
 > supersedes VSP001-VSP005 below. The V2 profile preserves the full baseline plan;
 > V1 overrides apply only to explicit historical fixtures. Parser/materialization
-> migration and whole-pipeline acceptance remain OPEN.
+> now use V2; whole-pipeline acceptance awaits clean regression.
 > [Phase 35 implementation/evidence](v2-migration/phase35-transformation.md) now
 > defines active V2 projections, defaults, membership/order trace and consumer migration.
 
 ## 1. Mục tiêu
 
-Biến `JaCaMoSemanticModel + Mapping V1` thành:
+Biến `JaCaMoSemanticModel V2 + Mapping V2` thành:
 - USE structural model;
 - initial state;
 - operation definitions;
@@ -64,7 +64,7 @@ Name collision:
 ## 4. Attributes
 
 Declared EAttribute:
-- type theo Mapping V1;
+- type theo active Mapping V2;
 - source value unset → USE undefined/omitted theo backend;
 - không fabricate default nếu source không khai báo.
 
@@ -170,7 +170,7 @@ Chứa:
 
 ---
 
-## 13. JaCaMo Verification Metamodel/Profile V1
+## 13. Historical JaCaMo Verification Metamodel/Profile V1
 
 Concrete verification uses an explicit semantic layer over the immutable Mapping V1 transformation plan. The
 profile is packaged as `jacamo-verification-profile-v1.json`; its decisions are applied only to a copied effective

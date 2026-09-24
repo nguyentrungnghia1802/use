@@ -3,7 +3,9 @@
 > V2 exact-resolution update: owner qualification matches a contiguous owner-path
 > suffix; explicit bindings must belong to the actual exact typed/scope candidate
 > set. Candidate ordering is deterministic. See [Phase 33 evidence](v2-migration/phase33-semantic-ir.md).
-> V2 parser/trace integration remains OPEN.
+> V2 parser/trace integration is implemented: membership links, source defaults,
+> independent order entries/navigation and per-source projection traces. Existing
+> trace/binding serialization versions are reused; full closure awaits regression.
 
 ## 1. Mục tiêu
 

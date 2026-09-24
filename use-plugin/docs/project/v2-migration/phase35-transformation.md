@@ -83,3 +83,11 @@ This includes trace schema persistence, V2 core positive/negative and optional-l
 controls, facade import, CounterTeam real component callbacks/reconnect and order
 projection regression. CounterTeam's scalar runtime control still uses the legacy
 runtime mapping adapter, so this does not close the V2 default runtime binding gate.
+
+## Downstream completion follow-up
+
+Default runtime V2 reconciliation and reviewed OCL/trace/diagnostic golden evidence
+are now implemented; see [runtime contract](phase35-runtime-targets.md). The earlier
+OPEN descriptions above identify the state of the cf3cdfc8 component commit.
+Current package uses V2 canonical resources and WORKING_V2_NOT_RELEASED status.
+Clean full reactor and merged acceptance remain pending.

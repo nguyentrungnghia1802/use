@@ -2,7 +2,8 @@
   "plugin": {
     "version": "1.0.1",
     "status": "working-v2-not-released",
-    "historicalTag": "use-jacamo-plugin-v1.0.1"
+    "historicalTag": "use-jacamo-plugin-v1.0.1",
+    "tag": null
   },
   "requirements": {
     "use": {
