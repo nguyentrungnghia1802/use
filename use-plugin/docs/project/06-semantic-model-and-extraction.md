@@ -1,5 +1,10 @@
 # JaCaMo Semantic Model and Extraction
 
+> V2 migration status: [Phase 33 component contract](v2-migration/phase33-semantic-ir.md)
+> supersedes the V1 inventory/root assumptions below for the new V2 IR constructor.
+> Active kinds are descriptor-derived; project metadata and source facts are separate.
+> Production parser migration and no-V1-leakage acceptance remain OPEN (P34).
+
 ## 1. Input contract
 
 Input chính:

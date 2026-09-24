@@ -23,7 +23,7 @@ public record MappingModel(String schemaVersion, String mappingId, String status
         return values.stream().sorted(Comparator.comparing(id)).toList();
     }
 
-    public record ClassMapping(String id, String source, String name, boolean abstractClass) { }
+    public record ClassMapping(String id, String source, String name, boolean abstractClass, String dimension) { }
     public record EnumMapping(String name, List<String> literals) {
         public EnumMapping { literals = List.copyOf(literals); }
     }

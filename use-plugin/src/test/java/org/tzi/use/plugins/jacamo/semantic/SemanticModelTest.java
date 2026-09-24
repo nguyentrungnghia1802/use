@@ -22,10 +22,10 @@ class SemanticModelTest {
 
     @Test
     void metamodelKindsMatchCanonicalEcoreAndHaveDimensions() throws Exception {
-        String ecore = Files.readString(Path.of("Core/Metamodel/JaCaMo-Metamodel.ecore"));
+        String ecore = Files.readString(Path.of("Core/Metamodel/version-2/jacamo_v2_complete.ecore"));
         var matcher = Pattern.compile("<eClassifiers[^>]*xsi:type=\"ecore:EClass\"[^>]*name=\"([^\"]+)\"").matcher(ecore);
         Set<String> names = matcher.results().map(match -> match.group(1)).collect(Collectors.toSet());
-        assertEquals(names, Arrays.stream(MetamodelKind.values()).map(Enum::name).collect(Collectors.toSet()));
+        assertEquals(names, Arrays.stream(MetamodelKind.values()).map(MetamodelKind::name).collect(Collectors.toSet()));
         assertEquals(Dimension.PROJECT, MetamodelKind.MAS.dimension());
         assertEquals(Dimension.AGENT, MetamodelKind.Belief.dimension());
         assertEquals(Dimension.ENVIRONMENT, MetamodelKind.Artifact.dimension());

@@ -39,7 +39,7 @@ public final class DirectUseBackend {
                     var attribute = cls.attribute(entry.getKey(), true);
                     if (attribute == null) throw new MaterializationException("USE_ATTRIBUTE_MISSING",
                             object.className() + "." + entry.getKey());
-                    created.state(system.state()).setAttributeValue(attribute, value(entry.getValue()));
+                    created.state(system.state()).setAttributeValue(attribute, value(entry.getValue(), model));
                 }
             }
             for (LinkPlan link : plan.links()) {
@@ -65,7 +65,12 @@ public final class DirectUseBackend {
         return new Result(system, structure, allChecks, validation.toString(), diagnostics);
     }
 
-    private Value value(AttributeValue value) {
+    private Value value(AttributeValue value, org.tzi.use.uml.mm.MModel model) {
+        if (value instanceof AttributeValue.EnumLiteral literal) {
+            var type = model.enumType(literal.enumeration());
+            if (type == null) throw new MaterializationException("USE_ENUM_MISSING", literal.enumeration());
+            return new org.tzi.use.uml.ocl.value.EnumValue(type, literal.literal());
+        }
         if (value instanceof AttributeValue.Text text) return new StringValue(text.value());
         if (value instanceof AttributeValue.IntegerNumber integer) {
             try { return new IntegerValue(Math.toIntExact(integer.value())); }

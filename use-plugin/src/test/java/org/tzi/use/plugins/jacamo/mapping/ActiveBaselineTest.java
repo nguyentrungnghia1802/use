@@ -54,5 +54,12 @@ class ActiveBaselineTest {
         var errors = new java.io.StringWriter();
         assertNotNull(V2MappingAuditTest.compile(new StructuralUseGenerator().generate("SyntheticMinor", plan), errors), errors.toString());
         assertTrue(plan.classes().stream().anyMatch(c -> c.name().equals("SyntheticGroup") && c.superclasses().equals(java.util.List.of("Group"))));
+        var registry = new org.tzi.use.plugins.jacamo.semantic.SemanticKindRegistry(new ActiveBaseline.Selection(
+                mapping, "agentmetamodel", "http://www.example.org/agentmetamodel",
+                java.util.Map.of(ActiveBaseline.ECORE, document.path("sourceMetamodel").path("sha256").asText()),
+                "synthetic", "SOURCE_CONTRACT_VALIDATED_WORKING", ActiveBaseline.RESOURCE_ROOT));
+        assertEquals("Group", registry.reference(registry.require("SyntheticGroup"), "roles").orElseThrow().sourceOwner());
+        assertTrue(registry.owners("SyntheticGroup").contains("Group"));
+        assertNull(registry.resolve("syntheticgroup").kind());
     }
 }

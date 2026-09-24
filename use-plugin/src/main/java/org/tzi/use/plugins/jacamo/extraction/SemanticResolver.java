@@ -1,7 +1,6 @@
 package org.tzi.use.plugins.jacamo.extraction;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,23 +12,23 @@ import org.tzi.use.plugins.jacamo.semantic.SemanticReference;
 /** Exact and typed resolution only. No similarity or case-folded matching is used. */
 final class SemanticResolver {
     private static final Map<String, Set<MetamodelKind>> TARGETS = Map.ofEntries(
-            Map.entry("operation", EnumSet.of(MetamodelKind.AbsOperation, MetamodelKind.Operation,
+            Map.entry("operation", Set.of(MetamodelKind.AbsOperation, MetamodelKind.Operation,
                     MetamodelKind.GuardOperation, MetamodelKind.InternalOperation, MetamodelKind.LinkedOperation)),
-            Map.entry("guardedBy", EnumSet.of(MetamodelKind.GuardOperation)),
-            Map.entry("artifact", EnumSet.of(MetamodelKind.Artifact)),
-            Map.entry("joinWorkspace", EnumSet.of(MetamodelKind.Workspace)),
-            Map.entry("role", EnumSet.of(MetamodelKind.Role)),
-            Map.entry("players", EnumSet.of(MetamodelKind.Agent)),
-            Map.entry("deploysAgent", EnumSet.of(MetamodelKind.Agent)),
-            Map.entry("RefRole", EnumSet.of(MetamodelKind.Role)),
-            Map.entry("hasSubGroups", EnumSet.of(MetamodelKind.Group)),
-            Map.entry("ogoal", EnumSet.of(MetamodelKind.OGoal)),
-            Map.entry("FirstOgoal", EnumSet.of(MetamodelKind.OGoal)),
-            Map.entry("NextOgoal", EnumSet.of(MetamodelKind.OGoal)),
-            Map.entry("Nrole", EnumSet.of(MetamodelKind.Role)),
-            Map.entry("NMission", EnumSet.of(MetamodelKind.Mission)),
-            Map.entry("OGoalToGoal", EnumSet.of(MetamodelKind.Goal)),
-            Map.entry("obsproperty", EnumSet.of(MetamodelKind.Belief)));
+            Map.entry("guardedBy", Set.of(MetamodelKind.GuardOperation)),
+            Map.entry("artifact", Set.of(MetamodelKind.Artifact)),
+            Map.entry("joinWorkspace", Set.of(MetamodelKind.Workspace)),
+            Map.entry("role", Set.of(MetamodelKind.Role)),
+            Map.entry("players", Set.of(MetamodelKind.Agent)),
+            Map.entry("deploysAgent", Set.of(MetamodelKind.Agent)),
+            Map.entry("RefRole", Set.of(MetamodelKind.Role)),
+            Map.entry("hasSubGroups", Set.of(MetamodelKind.Group)),
+            Map.entry("ogoal", Set.of(MetamodelKind.OGoal)),
+            Map.entry("FirstOgoal", Set.of(MetamodelKind.OGoal)),
+            Map.entry("NextOgoal", Set.of(MetamodelKind.OGoal)),
+            Map.entry("Nrole", Set.of(MetamodelKind.Role)),
+            Map.entry("NMission", Set.of(MetamodelKind.Mission)),
+            Map.entry("OGoalToGoal", Set.of(MetamodelKind.Goal)),
+            Map.entry("obsproperty", Set.of(MetamodelKind.Belief)));
 
     void resolve(ExtractionContext context) { resolve(context, null); }
 
@@ -91,7 +90,7 @@ final class SemanticResolver {
 
     /** JCM declares Agent -> Role, while the frozen Ecore stores the evidenced relation as Role.players -> Agent. */
     private void promoteRoleAssignment(ExtractionContext context, ElementDraft agent, SemanticReference reference) {
-        List<ElementDraft> roles = candidates(context, reference.originalSpelling(), EnumSet.of(MetamodelKind.Role));
+        List<ElementDraft> roles = candidates(context, reference.originalSpelling(), Set.of(MetamodelKind.Role));
         if (roles.size() == 1) {
             ElementDraft role = roles.getFirst();
             boolean exists = role.references.stream().anyMatch(candidate -> candidate.feature().equals("players")

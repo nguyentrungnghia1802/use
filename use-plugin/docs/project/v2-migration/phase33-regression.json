@@ -1,0 +1,834 @@
+{
+  "command": "mvn -B verify",
+  "exitCode": 1,
+  "baseRevision": "460c3f63f6c55c6c1bbf053a69c755a37d7d5bc6",
+  "scope": "Phase 33 working tree; before Phase 34 parser migration",
+  "totals": {
+    "tests": 333,
+    "failures": 7,
+    "errors": 65,
+    "skipped": 0
+  },
+  "logSha256": "27cb736eac59848774ab6e32389186823a587c6dc38c9d7df81e88377be0fba1",
+  "suiteResults": [
+    {
+      "path": "use-core/target/surefire-reports/TEST-org.tzi.use.architecture.MavenCyclicDependenciesCoreTest.xml",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-core/target/surefire-reports/TEST-org.tzi.use.uml.mm.ModelAPITest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-core/target/failsafe-reports/TEST-org.tzi.use.OCLExpressionIT.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-gui/target/surefire-reports/TEST-org.tzi.use.architecture.MavenLayeredArchitectureTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-gui/target/failsafe-reports/TEST-org.tzi.use.main.shell.ShellIT.xml",
+      "tests": 129,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.CompatibilityManifestTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.constraint.ConstraintOclTest.xml",
+      "tests": 7,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.xml",
+      "tests": 11,
+      "failures": 0,
+      "errors": 9,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.evidence.EvidenceNormalizerTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.evidence.EvidenceSourceCommitTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.extraction.StaticProjectImporterTest.xml",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.GoldenPipelineTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.HotfixBindingTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.HotfixLifecycleTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 4,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.JaCaMoPluginTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.mapping.ActiveBaselineTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.xml",
+      "tests": 10,
+      "failures": 5,
+      "errors": 4,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.mapping.OrderProjectionTest.xml",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.mapping.V2EcoreAuditTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.mapping.V2MappingAuditTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.mapping.V2OppositeOrderingAuditTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 2,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.PreMigrationBaselineTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.project.JcmProjectLoaderTest.xml",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.project.ProjectModelTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest.xml",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.AuctionSourceRuntimeTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.CartagoRuntimeConnectorTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.CompositeRuntimeConnectorTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.JasonRuntimeConnectorTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.MoiseBoardSnapshotSourceTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.MoiseRuntimeConnectorTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeAliasTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeAuthorityTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.xml",
+      "tests": 23,
+      "failures": 0,
+      "errors": 21,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeIdentityHardeningTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeMappingTest.xml",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeMigrationTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeTraceTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.semantic.SemanticIdTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.semantic.SemanticModelTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.semantic.V2SemanticModelTest.xml",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.trace.TraceBindingTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.ui.JaCaMoWorkbenchPanelTest.xml",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.verification.CrossDimensionalVerifierTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 3,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayerTest.xml",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.verification.RuntimeHistoryVerifierTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "path": "use-plugin/target/surefire-reports/TEST-org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.xml",
+      "tests": 16,
+      "failures": 0,
+      "errors": 15,
+      "skipped": 0
+    }
+  ],
+  "failedTests": [
+    {
+      "test": "org.tzi.use.plugins.jacamo.constraint.ConstraintOclTest.auctionGuardCoreCaseAndExplicitPostconditionCompileAndEvaluatePositiveNegative",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.exportRejectsUnsupportedDestinationsInsteadOfGuessingAFormat",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.repeatedExplicitBindingsPreserveEarlierExactSelections",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.runtimeDashboardStatusComesFromTheRealMirrorService",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.reportExportSupportsMarkdownDestinations",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.realAuctionImportExposesPipelineSummaryTraceDiagnosticsAndVerification",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.auctionPerformanceMetricsAreMeasuredWithoutFlakyWallClockThresholds",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.reportExportRejectsLinkedDirectoryDestinations",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.bindingPersistenceRejectsAnyTargetOutsideTheExactCandidateSet",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.reportExportUsesTheRealLatestVerification",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.GoldenPipelineTest.auctionArtifactsMatchReviewedGoldenDigests",
+      "category": "error",
+      "message": "EVIDENCE_SOURCE_NOT_IN_COMMIT: use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore fatal: path 'use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore' does not exist in '460c3f63f6c55c6c1bbf053a69c755a37d7d5bc6'",
+      "migrationCategory": "STALE_EVIDENCE_GOLDEN_EXPECTATION"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.HotfixBindingTest.productionImportUsesValidBindingAndRejectsInvalidOrStaleBindings",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest.failedRebuildLeavesTheLiveWorkspaceIntact",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest.liveWorkspaceReplacementKeepsRuntimeAndFullVerificationTogether(String)[1]",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest.liveWorkspaceReplacementKeepsRuntimeAndFullVerificationTogether(String)[2]",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest.liveWorkspaceReplacementKeepsRuntimeAndFullVerificationTogether(String)[3]",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.alteredMappingTargetsAreBlockedByTheFrozenMappingFingerprint",
+      "category": "error",
+      "message": "Core\\Mapping\\jacamo-use-mapping-v1.json",
+      "migrationCategory": "V1_PATH_RESOURCE_ASSUMPTION"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.auctionPlanIsDeterministicAndGeneratedUseCompiles",
+      "category": "failure",
+      "message": "37 baseline classes plus concrete Artifact type ==> expected: <38> but was: <22>",
+      "migrationCategory": "V1_MAPPING_PROJECTION_ASSUMPTION"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.canonicalMappingPassesSchemaFingerprintAndEcoreIdentityValidation",
+      "category": "failure",
+      "message": "expected: <1.1.0> but was: <2.2.0>",
+      "migrationCategory": "V1_MAPPING_PROJECTION_ASSUMPTION"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.mappingDigestMustCoverTheSnapshotUsedForReturnedSemantics",
+      "category": "error",
+      "message": "Core\\Mapping\\jacamo-use-mapping-v1.json",
+      "migrationCategory": "V1_PATH_RESOURCE_ASSUMPTION"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.invalidSchemaAndFingerprintBlockLoading",
+      "category": "failure",
+      "message": "expected: <MAPPING_SCHEMA_INVALID> but was: <MAPPING_LOAD_FAILED>",
+      "migrationCategory": "V1_PATH_RESOURCE_ASSUMPTION"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.ecoreIdentityValidationUsesTheSameSnapshotAsItsDigest",
+      "category": "error",
+      "message": "Core\\Metamodel\\JaCaMo-Metamodel.ecore",
+      "migrationCategory": "V1_PATH_RESOURCE_ASSUMPTION"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.invalidMappingSchemaTakesPrecedenceOverMissingDownstreamInputs",
+      "category": "failure",
+      "message": "schema validation must fail before Ecore or manifest inputs are required ==> expected: <MAPPING_SCHEMA_INVALID> but was: <MAPPING_LOAD_FAILED>",
+      "migrationCategory": "V1_PATH_RESOURCE_ASSUMPTION"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.oneManifestSnapshotAuthorizesBothMappingAndEcore",
+      "category": "error",
+      "message": "Core\\Mapping\\freeze-manifest.json",
+      "migrationCategory": "V1_PATH_RESOURCE_ASSUMPTION"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.artifactTypeCollisionsAreStableAndUnsupportedPropertyStaysStructural",
+      "category": "failure",
+      "message": "VP002 fallback must retain the structural mapping ==> expected: <true> but was: <false>",
+      "migrationCategory": "V1_MAPPING_PROJECTION_ASSUMPTION"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest.auctionPlanMaterializesEveryElementValueAndResolvedLinkDeterministically",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest.textAndDirectBackendsShareOneVerificationPlanAndPassInitialValidation",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest.releaseManifestPinsVersionAndCompletePackageInventory",
+      "category": "failure",
+      "message": "missing release source: Core/Mapping/freeze-manifest.json ==> expected: <true> but was: <false>",
+      "migrationCategory": "STALE_EVIDENCE_GOLDEN_EXPECTATION"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest.secondCaseUsesUnchangedPipelineWithLiveStateFailuresAndResync",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest.mirrorsRealJasonCartagoAndMoiseAuctionThenReconnectsWithFullResync",
+      "category": "error",
+      "message": "EVIDENCE_SOURCE_NOT_IN_COMMIT: use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore fatal: path 'use-plugin/Core/Metamodel/JaCaMo-Metamodel.ecore' does not exist in '460c3f63f6c55c6c1bbf053a69c755a37d7d5bc6'",
+      "migrationCategory": "STALE_EVIDENCE_GOLDEN_EXPECTATION"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.backpressureRejectionCannotResurrectAnInFlightOperationCorrelation",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.backpressureTombstonesRetireAfterTheAcceptedWatermarkCompletes",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.syntheticConnectorMirrorsJsonReplayThenReconnectResyncRepairsDrift",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.lateCallbackAfterWorkspaceReplacementBelongsToTheOldObserver",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.completionBeforeRejectedTerminalStillInvalidatesTheOlderMutationCorrelation",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.observerFailureCannotLeaveMirrorLive",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.recordsEventToMirrorLatencyAndQueueSampleWithoutAnSla",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.outOfOrderTerminalCannotPoisonANewerAcceptedTerminal",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.mirrorReportsOrderingAndShutdownRejectionsAndClosesTimingLifecycle",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.unrelatedSemanticTraceCannotAuthorizeCreationAndUnknownPropertyCannotDisappear",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.unsubscribeFailureStillDrainsWorkerAndDisconnectsTransport",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.staleRejectedTerminalDoesNotInvalidateANewerActiveOperation",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.mutationEngineAppliesAllMutationKindsAndQuarantinesUnknownTrace",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.lifecycleObserverFailuresCannotRetainLiveTruth",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.receivingObserverFailureRequiresDisconnectAndAuthoritativeRecovery",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.terminalCannotCloseAnotherTargetAndLinkReplayIsIdempotent",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.initialSynchronizationBuffersConcurrentDeltaAndDetectsLostConnection",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.lateClosedStreamTerminalCannotPoisonMutationCorrelation",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.tracedLifecycleRestoresExactObjectAndStrictValuesRejectLossyInput",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.mirrorRejectsCallbackDeliveredAfterFailedInitialSynchronization",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.useMutationFailureMovesMirrorToErrorAndDoesNotCorruptExistingState",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.trace.TraceBindingTest.auctionTracePersistsDeclarationsObjectsOperationsAndRuntimeIndexes",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.CrossDimensionalVerifierTest.sourceRelationsRequireExactTargetsAndMissingEvidenceIsExplicit",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest.operationCheckKeepsCorrelationAndUsesPreStateForPreAndPostconditions",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest.registryPreservesTranslatedCoreCaseAndUserOriginsWithDependencies",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest.fullCheckReportsStructureAndTracedAuctionViolationWithoutCollapsingErrors",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayerTest.profileIsExplicitAndDoesNotMutateFrozenBaselinePlan",
+      "category": "failure",
+      "message": "expected: <JaCaMo-agentmetamodel-v2__to__USE-v2.2> but was: <DSML4JaCaMo-2024-reconstructed__to__USE-v1>",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.backpressureTombstonesRetireAfterTheAcceptedWatermarkCompletes",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.completionBeforeRejectedTerminalStillInvalidatesTheOlderVerificationCorrelation",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.eventDrivenChecksCorrelateViolationAndOperationPrePostUsingCapturedPreState",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.rejectedOperationTerminalCannotBeResurrectedByBlockedPreStateCapture",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.connectorReceiptIsNotBlockedByAnOngoingVerification",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.staleMirrorCannotEvaluateCurrentInvariantOrCapturePreState",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.lateClosedStreamTerminalCannotPoisonNextStreamPreState",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.stateChangeLatencyCoversMutationThroughVerificationResult",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.rejectedAndClosedEventsCannotLeaveReusableReceiptTimestamps",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.operationReportsUseTheSameReceiptToResultLatencyContract",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.wrongTerminalCannotConsumeExactPreStateAndExportRetainsAttribution",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.authoritativeDriftIsDiagnosedAndPeriodicAutoResyncRepairsMirror",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.bufferedEventLatencyStartsAtOriginalConnectorReceipt",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.targetedInvariantResultIsEquivalentToTheSameConstraintInAFullCheck",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    },
+    {
+      "test": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.streamCloseDiscardsOperationCorrelationBeforeTheNextStream",
+      "category": "error",
+      "message": "VSP001 expected Organisation",
+      "migrationCategory": "V1_PROFILE_INCOMPATIBILITY"
+    }
+  ],
+  "classification": {
+    "V1_verification_profile": 59,
+    "remaining": "Historical path/version/count/projection/release assertions; parser/transformation/profile consumer migration pending. No V2 ordering component failure."
+  },
+  "failureIdentityComparison": {
+    "against": "pre-migration-baseline.json",
+    "newFailingIdentities": [],
+    "previouslyFailingNowPass": [
+      "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest.guardParameterNamesAreNotSilentlyReboundAndSharedGuardIdsAreDistinct",
+      "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest.impureGuardArithmeticAndSignatureMismatchPreserveUnsupportedSource",
+      "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest.unapprovedLossyAndSoundSubsetNeverEmitButRemainInManifest",
+      "org.tzi.use.plugins.jacamo.semantic.SemanticModelTest.metamodelKindsMatchCanonicalEcoreAndHaveDimensions"
+    ]
+  },
+  "classificationCounts": {
+    "REAL_V2_REGRESSION": 0,
+    "STALE_EVIDENCE_GOLDEN_EXPECTATION": 3,
+    "V1_MAPPING_PROJECTION_ASSUMPTION": 3,
+    "V1_PATH_RESOURCE_ASSUMPTION": 6,
+    "V1_PROFILE_INCOMPATIBILITY": 60
+  }
+}

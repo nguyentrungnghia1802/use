@@ -573,24 +573,29 @@ Checklist:
 
 **Objective:** thay vocabulary/IR V1 bằng representation phù hợp V2 nhưng vẫn source-preserving và traceable.
 
+**Component gates PASS; phase closure OPEN.** [IR evidence](../project/v2-migration/phase33-semantic-ir.md).
+29 focused tests PASS; full reactor 333 executed, 7 failures/65 errors in pending
+V1 consumers. Parser declaration/instance migration and production no-V1-leakage
+remain OPEN for P34; no full acceptance or merge/push claim.
+
 ## P33.1 — Audit current IR against V2
 
-- [ ] `SemanticElement`.
-- [ ] semantic kind registry/enum.
-- [ ] attributes storage.
-- [ ] references storage.
-- [ ] source provenance.
-- [ ] symbol index.
-- [ ] typed subclasses/records nếu có.
-- [ ] cross-dimensional references.
-- [ ] runtime identity separation.
+- [x] `SemanticElement`.
+- [x] semantic kind registry/enum.
+- [x] attributes storage.
+- [x] references storage.
+- [x] source provenance.
+- [x] symbol index.
+- [x] typed subclasses/records nếu có.
+- [x] cross-dimensional references.
+- [x] runtime identity separation.
 
 Classify:
 
-- [ ] reusable unchanged.
-- [ ] adapt.
-- [ ] replace.
-- [ ] remove historical.
+- [x] reusable unchanged.
+- [x] adapt.
+- [x] replace.
+- [x] remove historical.
 
 ---
 
@@ -598,22 +603,22 @@ Classify:
 
 Requirements:
 
-- [ ] stable project ID.
-- [ ] dimension.
-- [ ] kind.
-- [ ] owner path.
-- [ ] local ID.
-- [ ] source spelling.
-- [ ] no name-only global identity.
-- [ ] deterministic.
-- [ ] reversible/provenance-preserving where possible.
+- [x] stable project ID.
+- [x] dimension.
+- [x] kind.
+- [x] owner path.
+- [x] local ID.
+- [x] source spelling.
+- [x] no name-only global identity.
+- [x] deterministic.
+- [x] reversible/provenance-preserving where possible.
 
 ### Important
 
 Nếu V2 thay kind names:
 
-- [ ] semantic IDs chỉ đổi khi semantics thực sự đổi.
-- [ ] không giữ V1 kind name chỉ để tránh migration nếu V2 semantics khác.
+- [x] semantic IDs chỉ đổi khi semantics thực sự đổi.
+- [x] không giữ V1 kind name chỉ để tránh migration nếu V2 semantics khác.
 
 ---
 
@@ -621,47 +626,47 @@ Nếu V2 thay kind names:
 
 Prefer data/descriptor-driven design nếu V2 còn có thể đổi nhẹ.
 
-- [ ] Registry được derive/validate against V2 Ecore.
-- [ ] Không cần sửa hàng chục switch chỉ vì thêm một EClass nếu logic generic có thể xử lý.
-- [ ] Những kind cần custom behavior vẫn explicit.
-- [ ] Unknown/unsupported kind → diagnostic, không crash/silent ignore.
+- [x] Registry được derive/validate against V2 Ecore.
+- [x] Không cần sửa hàng chục switch chỉ vì thêm một EClass nếu logic generic có thể xử lý.
+- [x] Những kind cần custom behavior vẫn explicit.
+- [x] Unknown/unsupported kind → diagnostic, không crash/silent ignore.
 
 ---
 
 ## P33.4 — V2 references/resolution model
 
 - [ ] declaration vs instance vs symbolic reference vs runtime identity tách riêng.
-- [ ] exact canonical ID first.
-- [ ] explicit source reference.
-- [ ] owner-qualified exact symbol.
-- [ ] unique typed scope.
-- [ ] optional explicit binding.
-- [ ] otherwise unresolved.
-- [ ] no fuzzy acceptance.
+- [x] exact canonical ID first.
+- [x] explicit source reference.
+- [x] owner-qualified exact symbol.
+- [x] unique typed scope.
+- [x] optional explicit binding.
+- [x] otherwise unresolved.
+- [x] no fuzzy acceptance.
 
 ---
 
 ## P33.5 — IR serialization/debug output
 
-- [ ] deterministic.
-- [ ] versioned.
-- [ ] includes V2 metamodel fingerprint.
-- [ ] includes source provenance.
-- [ ] includes unresolved references.
-- [ ] useful cho audit/tests.
+- [x] deterministic.
+- [x] versioned.
+- [x] includes V2 metamodel fingerprint.
+- [x] includes source provenance.
+- [x] includes unresolved references.
+- [x] useful cho audit/tests.
 
 ---
 
 ## P33.6 — Phase 33 tests
 
-- [ ] minimal valid V2 IR.
-- [ ] each dimension.
-- [ ] duplicate names.
-- [ ] ambiguous reference.
-- [ ] missing reference.
-- [ ] inheritance-derived feature.
-- [ ] cross-dimensional reference.
-- [ ] deterministic serialization.
+- [x] minimal valid V2 IR.
+- [x] each dimension.
+- [x] duplicate names.
+- [x] ambiguous reference.
+- [x] missing reference.
+- [x] inheritance-derived feature.
+- [x] cross-dimensional reference.
+- [x] deterministic serialization.
 - [ ] no V1 kind leakage ngoài migration fixtures.
 
 ---

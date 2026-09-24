@@ -14,8 +14,12 @@ public final class ExactSemanticResolver {
     private final Map<String, SemanticElement> byId = new LinkedHashMap<>();
     private final BindingFile bindings;
     public ExactSemanticResolver(List<SemanticElement> elements, BindingFile bindings) {
-        this.elements = List.copyOf(elements); this.bindings = bindings;
-        elements.forEach(element -> byId.put(element.id().value(), element));
+        this.elements = elements.stream().sorted(java.util.Comparator.comparing(e -> e.id().value())).toList();
+        this.bindings = bindings == null ? BindingFile.empty() : bindings;
+        this.elements.forEach(element -> {
+            if (byId.putIfAbsent(element.id().value(), element) != null)
+                throw new IllegalArgumentException("duplicate semantic identity: " + element.id());
+        });
     }
     public ResolutionResult resolve(ResolutionRequest request) {
         SemanticElement exact = byId.get(request.spelling());
@@ -24,17 +28,17 @@ public final class ExactSemanticResolver {
         if (request.explicitTargetId() != null)
             return valid(explicit, request) ? resolved(explicit, ResolutionResult.Strategy.EXPLICIT_REFERENCE)
                     : invalid("explicit target is absent or has an invalid target kind", explicit);
+        List<SemanticElement> scoped;
         int separator = Math.max(request.spelling().lastIndexOf('.'), request.spelling().lastIndexOf('/'));
         if (separator >= 0) {
             String owner = request.spelling().substring(0, separator);
             String local = request.spelling().substring(separator + 1);
-            List<SemanticElement> matches = named(local, request).stream()
-                    .filter(candidate -> candidate.id().ownerPath().contains(owner)).toList();
-            if (matches.size() == 1) return resolved(matches.getFirst(), ResolutionResult.Strategy.OWNER_QUALIFIED);
-            if (matches.size() > 1) return ambiguous(matches);
-        }
-        List<SemanticElement> scoped = named(request.spelling(), request).stream().filter(candidate ->
-                request.typedScopeOwners().stream().allMatch(candidate.id().ownerPath()::contains)).toList();
+            scoped = named(local, request).stream()
+                    .filter(candidate -> ownerMatches(candidate.id().ownerPath(), List.of(owner.split("[./]"))))
+                    .filter(candidate -> ownerMatches(candidate.id().ownerPath(), request.typedScopeOwners())).toList();
+            if (scoped.size() == 1) return resolved(scoped.getFirst(), ResolutionResult.Strategy.OWNER_QUALIFIED);
+        } else scoped = named(request.spelling(), request).stream().filter(candidate ->
+                ownerMatches(candidate.id().ownerPath(), request.typedScopeOwners())).toList();
         if (scoped.size() == 1) return resolved(scoped.getFirst(), ResolutionResult.Strategy.UNIQUE_TYPED_SCOPE);
         if (scoped.isEmpty()) return new ResolutionResult(ResolutionResult.Status.UNRESOLVED,
                 ResolutionResult.Strategy.FAILURE, null, List.of(),
@@ -44,10 +48,15 @@ public final class ExactSemanticResolver {
         if (!sourceBindings.isEmpty()) {
             if (sourceBindings.size() != 1) return invalid("multiple active bindings for one source", null);
             SemanticElement target = byId.get(sourceBindings.getFirst().target());
-            if (!valid(target, request)) return invalid("binding target is absent or has an invalid target kind", target);
+            if (!valid(target, request) || !scoped.contains(target))
+                return invalid("binding target is outside the exact typed candidate set", target);
             return resolved(target, ResolutionResult.Strategy.EXPLICIT_BINDING);
         }
         return ambiguous(scoped);
+    }
+    private boolean ownerMatches(List<String> actual, List<String> requested) {
+        return requested.size() <= actual.size()
+                && actual.subList(actual.size() - requested.size(), actual.size()).equals(requested);
     }
     private List<SemanticElement> named(String name, ResolutionRequest request) {
         return elements.stream().filter(candidate -> candidate.name().equals(name)

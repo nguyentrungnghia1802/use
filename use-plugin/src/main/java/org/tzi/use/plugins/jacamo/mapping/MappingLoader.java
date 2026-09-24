@@ -174,7 +174,7 @@ public final class MappingLoader {
         List<MappingModel.ClassMapping> classes = new ArrayList<>();
         for (JsonNode node : root.withArray("classMappings")) classes.add(new MappingModel.ClassMapping(
                 text(node, "id"), text(node, "source"), text(node.path("target"), "name"),
-                node.path("target").path("abstract").asBoolean()));
+                node.path("target").path("abstract").asBoolean(), text(node, "dimension")));
         List<MappingModel.AttributeMapping> attributes = new ArrayList<>();
         for (JsonNode node : root.withArray("attributeMappings")) attributes.add(new MappingModel.AttributeMapping(
                 text(node, "id"), text(node, "source"), text(node, "sourceOwner"), text(node, "sourceName"),
