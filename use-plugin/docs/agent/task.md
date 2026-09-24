@@ -1299,7 +1299,7 @@ USE V2 mirror
 
 # Phase 40 — Runtime Verification V2
 
-**Component gates PASS — 2026-09-24.** 69 focused and 356 full-reactor tests PASS, zero skips. [Audit](../project/v2-migration/phase40-runtime-verification.md). Workflow closure pending.
+**DONE — 2026-09-24.** 69 focused, 356 full-reactor and 21 post-merge tests PASS, zero skips. Commit d781afd9 merged and pushed. [Audit](../project/v2-migration/phase40-runtime-verification.md).
 
 **Objective:** chạy OCL/checking trên một mirror đã được chứng minh current/correct.
 

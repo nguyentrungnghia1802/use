@@ -1,7 +1,7 @@
 # Phase 40 Runtime Verification V2
 
-Status: focused 69/69 and full reactor 356/356 PASS, zero skips; workflow
-closure pending. V2 remains WORKING_BASELINE.
+Status: DONE. Focused 69/69, full reactor 356/356 and post-merge 21/21 PASS,
+zero skips. Commit d781afd9 is merged and pushed. V2 remains WORKING_BASELINE.
 
 ## Checkpoint contract
 
