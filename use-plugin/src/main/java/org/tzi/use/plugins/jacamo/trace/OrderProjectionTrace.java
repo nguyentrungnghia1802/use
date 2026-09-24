@@ -17,8 +17,13 @@ public final class OrderProjectionTrace {
         }
         return List.copyOf(records);
     }
+    private String traceId(String target) {
+        try { return "trace:" + java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256")
+                .digest(target.getBytes(java.nio.charset.StandardCharsets.UTF_8))).substring(0, 24); }
+        catch (java.security.NoSuchAlgorithmException e) { throw new IllegalStateException(e); }
+    }
     private TraceRecord record(String source, String target, String kind, String rule) {
-        return new TraceRecord("trace:" + OrderProjectionPlanner.rowName(target), source, target, "EREFERENCE_ORDER",
+        return new TraceRecord(traceId(target), source, target, "EREFERENCE_ORDER",
                 kind, rule, "ORDER_V1", null, null, null, TraceRecord.Status.PROJECTED);
     }
 }

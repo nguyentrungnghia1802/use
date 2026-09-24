@@ -775,6 +775,11 @@ Không execute arbitrary project Java để infer semantics.
 
 **Objective:** `JaCaMoSemanticModel V2 + Mapping V2 → USE MModel + initial MSystemState` chính xác và deterministic.
 
+**IN PROGRESS; closure OPEN.** [Implementation/evidence](../project/v2-migration/phase35-transformation.md).
+Latest broad plugin snapshot: 201 tests, 8F/3E (11 failing identities; down from 67).
+Focused V2 SOIL/direct parity and guard tests pass; final consumer/evidence/resource
+regressions and full reactor remain pending. No dependent P29-P34 gate is closed.
+
 ## P35.1 — Mapping loader/planner migration
 
 - [ ] active loader reads Mapping V2.

@@ -35,10 +35,13 @@ public final class TransformationPlanner {
         List<ProjectionDiagnostic> diagnostics = new ArrayList<>();
         UseNameAllocator classNames = new UseNameAllocator();
         Map<String, String> concreteByType = new TreeMap<>();
+        classes.forEach(c -> classNames.allocate(c.name(), c.sourceIdentity()));
+        structural.orderProjections().forEach(p -> classNames.allocate(p.entryClass(), p.sourceIdentity()));
+        Map<String, UseNameAllocator> membersByType = new TreeMap<>();
 
         for (SemanticElement artifact : semantic.elements().stream().filter(e -> e.kind() == MetamodelKind.Artifact).toList()) {
-            String type = text(artifact, "className");
-            boolean confirmed = artifact.attributes().get("artifactTypeConfirmed") instanceof AttributeValue.Bool value && value.value();
+            String type = text(artifact, "type");
+            boolean confirmed = artifact.sourceFacts().get("artifactTypeConfirmed") instanceof AttributeValue.Bool value && value.value();
             if (type == null || !confirmed) {
                 diagnostics.add(new ProjectionDiagnostic("VP001_UNRESOLVED", "VP001", artifact.id().value(),
                         "Concrete Artifact subtype is not confirmed; structural Artifact is retained"));
@@ -47,31 +50,43 @@ public final class TransformationPlanner {
             String concrete = concreteByType.computeIfAbsent(type, value -> classNames.allocate(simpleName(value), value));
             if (classes.stream().noneMatch(spec -> spec.name().equals(concrete)))
                 classes.add(new TargetClassSpec(concrete, false, List.of("Artifact"), type, "VP001"));
-            projectMembers(semantic, artifact, type, concrete, attributes, operations, diagnostics);
+            UseNameAllocator members = membersByType.computeIfAbsent(type, ignored -> {
+                var allocator = new UseNameAllocator();
+                structural.attributes().stream().filter(a -> a.owner().equals("Artifact"))
+                        .forEach(a -> allocator.allocate(a.name(), a.sourceIdentity()));
+                structural.associations().forEach(a -> {
+                    if (a.firstEnd().className().equals("Artifact")) allocator.allocate(a.secondEnd().role(), a.sourceIdentity());
+                    if (a.secondEnd().className().equals("Artifact")) allocator.allocate(a.firstEnd().role(), a.sourceIdentity());
+                });
+                structural.orderProjections().stream().filter(p -> p.owner().equals("Artifact"))
+                        .forEach(p -> { allocator.allocate(p.query(), p.sourceIdentity()); allocator.allocate(p.entriesRole(), p.sourceIdentity()); });
+                return allocator;
+            });
+            projectMembers(semantic, artifact, type, concrete, members, attributes, operations, diagnostics);
         }
         return new TransformationPlan(classes, attributes, associations, operations, diagnostics, mapping.orderProjections(), mapping.enums());
     }
 
-    private void projectMembers(JaCaMoSemanticModel semantic, SemanticElement artifact, String type, String concrete,
+    private void projectMembers(JaCaMoSemanticModel semantic, SemanticElement artifact, String type, String concrete, UseNameAllocator memberNames,
                                 List<TargetAttributeSpec> attributes, List<TargetOperationSpec> operations,
                                 List<ProjectionDiagnostic> diagnostics) {
-        UseNameAllocator memberNames = new UseNameAllocator();
         for (var reference : artifact.references()) {
             if (reference.targetId() == null) continue;
             SemanticElement target = semantic.elements().stream().filter(e -> e.id().equals(reference.targetId())).findFirst().orElse(null);
             if (target == null) continue;
-            if (target.kind() == MetamodelKind.ObsProperty) {
-                String name = text(target, "Name"); String sourceType = text(target, "resolvedType");
+            if (target.kind() == MetamodelKind.Property && reference.feature().equals("properties")) {
+                String name = text(target, "name"); String sourceType = fact(target, "resolvedType");
                 String useType = useType(sourceType);
-                if (name != null && useType != null) attributes.add(new TargetAttributeSpec(concrete,
-                        memberNames.allocate(name, target.id().value()), useType, target.id().value(), "VP002"));
+                if (name != null && useType != null && arity(target) == 1) attributes.add(new TargetAttributeSpec(concrete,
+                        memberNames.allocate(name, type + "#property:" + name), useType, target.id().value(), "VP002"));
                 else diagnostics.add(new ProjectionDiagnostic("VP002_UNSUPPORTED", "VP002", target.id().value(),
                         "Observable property name/type is unresolved; structural representation retained"));
-            } else if (isOperation(target.kind())) {
-                String rawParameters = text(target, "parameters");
+            } else if (target.kind() == MetamodelKind.Operation && reference.feature().equals("operations")) {
+                String rawParameters = fact(target, "parameters");
                 List<TargetOperationSpec.Parameter> parameters = parseParameters(rawParameters);
-                if (rawParameters != null && parameters != null) operations.add(new TargetOperationSpec(concrete,
-                        memberNames.allocate(target.name(), target.id().value()), parameters, useType(text(target, "returnType")),
+                if (rawParameters != null && parameters != null && parameters.size() == arity(target)
+                        && ("void".equals(fact(target, "returnType")) || useType(fact(target, "returnType")) != null)) operations.add(new TargetOperationSpec(concrete,
+                        memberNames.allocate(target.name(), type + "#operation:" + target.name() + "(" + rawParameters + ")"), parameters, useType(fact(target, "returnType")),
                         target.id().value(), "VP003"));
                 else diagnostics.add(new ProjectionDiagnostic("VP003_UNSUPPORTED", "VP003", target.id().value(),
                         "Operation signature is unresolved; structural representation retained"));
@@ -91,9 +106,12 @@ public final class TransformationPlanner {
         return result;
     }
 
-    private boolean isOperation(MetamodelKind kind) {
-        return kind == MetamodelKind.Operation || kind == MetamodelKind.GuardOperation
-                || kind == MetamodelKind.InternalOperation || kind == MetamodelKind.LinkedOperation;
+    private long arity(SemanticElement element) {
+        return element.attributes().get("arity") instanceof AttributeValue.IntegerNumber number ? number.value() : -1;
+    }
+
+    private String fact(SemanticElement element, String name) {
+        return element.sourceFacts().get(name) instanceof AttributeValue.Text value ? value.value() : null;
     }
 
     private String text(SemanticElement element, String name) {

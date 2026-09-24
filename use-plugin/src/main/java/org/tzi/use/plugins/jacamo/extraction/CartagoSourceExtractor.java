@@ -132,7 +132,7 @@ final class CartagoSourceExtractor {
             String prefix = "guard:" + method.getName() + ":";
             artifact.sourceFacts.put(prefix + "parameters", new AttributeValue.Text(parameters(method.getParameters())));
             artifact.sourceFacts.put(prefix + "returnType", new AttributeValue.Text(method.getReturnType().toString()));
-            artifact.sourceFacts.put(prefix + "source", new AttributeValue.Text(method.toString()));
+            artifact.sourceFacts.put(prefix + "source", new AttributeValue.Text(snippet(context, path, unit, positions, method)));
             context.addProvenance(artifact, path, line, column(unit, positions, method), "jdk-java-parser", snippet(context, path, unit, positions, method));
             if (method.getBody() != null && method.getBody().getStatements().size() == 1
                     && method.getBody().getStatements().getFirst() instanceof ReturnTree statement

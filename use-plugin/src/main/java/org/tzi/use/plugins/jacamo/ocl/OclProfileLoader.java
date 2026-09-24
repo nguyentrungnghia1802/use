@@ -31,7 +31,7 @@ public final class OclProfileLoader {
         }
     }
     public LoadedProfile loadCore() {
-        String resource = "/org/tzi/use/plugins/jacamo/ocl/jacamo-core.ocl";
+        String resource = "/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2.ocl";
         try (InputStream input = OclProfileLoader.class.getResourceAsStream(resource)) {
             if (input == null) throw new IllegalArgumentException("OCL_CORE_PROFILE_MISSING");
             return loaded(Path.of(resource), new String(input.readAllBytes(), StandardCharsets.UTF_8));

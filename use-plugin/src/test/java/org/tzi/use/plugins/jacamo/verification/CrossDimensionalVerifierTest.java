@@ -21,8 +21,8 @@ class CrossDimensionalVerifierTest {
         assertFalse(all.isEmpty());
         assertTrue(all.stream().anyMatch(r->r.outcome()==VerificationOutcome.PASS));
         assertFalse(all.stream().anyMatch(r->r.outcome()==VerificationOutcome.FAIL || r.outcome()==VerificationOutcome.ERROR),all.toString());
-        var link=instances.links().stream().filter(l->l.association().equals("Agent_artifact_Artifact")).findFirst().orElseThrow();
-        String identity="dSML4JaCaMo::Agent#artifact";
+        var link=instances.links().stream().filter(l->l.association().equals("Agent_artifacts_Artifact")).findFirst().orElseThrow();
+        String identity="agentmetamodel::Agent#artifacts";
         assertEquals(VerificationOutcome.PASS,verifier.verifyBinding(system,trace,identity,link.sourceSemanticId(),link.targetSemanticId()).outcome());
         assertEquals(VerificationOutcome.SKIPPED,verifier.verifyBinding(system,trace,identity,link.sourceSemanticId(),null).outcome());
         assertEquals(VerificationOutcome.ERROR,verifier.verifyBinding(system,trace,identity,link.sourceSemanticId(),"same-name-wrong-owner").outcome());

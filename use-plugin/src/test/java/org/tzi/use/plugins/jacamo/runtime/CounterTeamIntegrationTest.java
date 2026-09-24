@@ -61,7 +61,7 @@ class CounterTeamIntegrationTest {
             var norm=new moise.os.ns.Norm(os.getOS().getSS().getRoleDef("worker"),os.getOS().getFS().findMission("count"),os.getOS().getNS(),moise.os.ns.NS.OpTypes.permission);norm.setId("can_count");os.getOS().getNS().addNorm(norm);
             var oe=new moise.oe.OE(null,os.getOS());var group=oe.addGroup("team_group","team_group");var scheme=oe.startScheme("counting","counting");scheme.addResponsibleGroup(group);
             var worker=oe.addAgent("worker");worker.adoptRole("worker",group);worker.commitToMission("count",scheme);
-            var mb=new MoiseRuntimeBinding("team",id(semantic,MetamodelKind.Organisation,"team"),Map.of("worker",agentId),Map.of("team_group",id(semantic,MetamodelKind.Group,"team_group")),Map.of("counting",id(semantic,MetamodelKind.Scheme,"counting")));
+            var mb=new MoiseRuntimeBinding("team",id(semantic,MetamodelKind.Organization,"team"),Map.of("worker",agentId),Map.of("team_group",id(semantic,MetamodelKind.Group,"team_group")),Map.of("counting",id(semantic,MetamodelKind.Scheme,"counting")));
             var moise=new MoiseRuntimeConnector("counter-moise",oe,mb);
             register(trace,artifactId,binding.runtimeSourceId());register(trace,agentId,"jason:agent:worker");register(trace,agentId,mb.agentRuntimeId("worker"));
             register(trace,mb.organisationSemanticId(),mb.organisationRuntimeId());register(trace,mb.groups().get("team_group"),mb.groupRuntimeId("team_group"));register(trace,mb.schemes().get("counting"),mb.schemeRuntimeId("counting"));

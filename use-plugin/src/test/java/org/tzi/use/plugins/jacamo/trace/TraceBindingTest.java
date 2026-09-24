@@ -40,7 +40,8 @@ class TraceBindingTest {
         assertFalse(trace.byTargetKind("CLASS").isEmpty());
         assertFalse(trace.byTargetKind("ATTRIBUTE").isEmpty());
         assertFalse(trace.byTargetKind("ASSOCIATION").isEmpty());
-        assertEquals(instances.objects().size(), trace.byTargetKind("OBJECT").size());
+        assertEquals(semantic.elements().size(), trace.byTargetKind("OBJECT").size());
+        assertEquals(instances.objects().size(), trace.byTargetKind("OBJECT").size() + trace.byTargetKind("ORDER_ENTRY").size());
         assertFalse(trace.byTargetKind("OPERATION").isEmpty());
         String artifactId = instances.objects().stream().filter(o -> o.className().equals("AuctionArtifact"))
                 .findFirst().orElseThrow().semanticId();

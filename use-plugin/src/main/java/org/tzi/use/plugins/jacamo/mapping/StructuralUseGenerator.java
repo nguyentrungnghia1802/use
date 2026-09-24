@@ -9,9 +9,9 @@ public final class StructuralUseGenerator {
         StringBuilder out = new StringBuilder("model ").append(new UseNameAllocator().allocate(requestedModelName, requestedModelName)).append("\n\n");
         for (var enumeration : plan.enums()) out.append("enum ").append(enumeration.name()).append(" { ")
                 .append(String.join(", ", enumeration.literals())).append(" }\n");
-        Map<String, java.util.List<TargetAttributeSpec>> attributes = plan.attributes().stream()
+        Map<String, java.util.List<TargetAttributeSpec>> attributes = uniqueAttributes(plan).stream()
                 .collect(Collectors.groupingBy(TargetAttributeSpec::owner));
-        Map<String, java.util.List<TargetOperationSpec>> operations = plan.operations().stream()
+        Map<String, java.util.List<TargetOperationSpec>> operations = uniqueOperations(plan).stream()
                 .collect(Collectors.groupingBy(TargetOperationSpec::owner));
         for (TargetClassSpec spec : plan.classes()) {
             if (spec.abstractClass()) out.append("abstract ");
@@ -62,6 +62,26 @@ public final class StructuralUseGenerator {
                 .append(rows).append("->collect(value)->asSet() = self.").append(order.membershipRole()).append("->asSet()\n");
         }
         return out.toString();
+    }
+
+    private java.util.Collection<TargetAttributeSpec> uniqueAttributes(TransformationPlan plan) {
+        Map<String, TargetAttributeSpec> declarations = new java.util.LinkedHashMap<>();
+        for (var attribute : plan.attributes()) {
+            var previous = declarations.putIfAbsent(attribute.owner() + "." + attribute.name(), attribute);
+            if (previous != null && !previous.type().equals(attribute.type()))
+                throw new IllegalArgumentException("PROJECTION_ATTRIBUTE_CONFLICT: " + attribute.owner() + "." + attribute.name());
+        }
+        return declarations.values();
+    }
+    private java.util.Collection<TargetOperationSpec> uniqueOperations(TransformationPlan plan) {
+        Map<String, TargetOperationSpec> declarations = new java.util.LinkedHashMap<>();
+        for (var operation : plan.operations()) {
+            var previous = declarations.putIfAbsent(operation.owner() + "." + operation.name(), operation);
+            if (previous != null && (!previous.parameters().equals(operation.parameters())
+                    || !java.util.Objects.equals(previous.returnType(), operation.returnType())))
+                throw new IllegalArgumentException("PROJECTION_OPERATION_CONFLICT: " + operation.owner() + "." + operation.name());
+        }
+        return declarations.values();
     }
 
     private void appendEnd(StringBuilder out, MappingModel.AssociationEnd end) {

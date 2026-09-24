@@ -30,7 +30,7 @@ public record MappingModel(String schemaVersion, String mappingId, String status
         public EnumMapping { literals = List.copyOf(literals); sourceSpellings = java.util.Map.copyOf(sourceSpellings); }
     }
     public record AttributeMapping(String id, String source, String sourceOwner, String sourceName,
-                                   String owner, String name, String type) { }
+                                   String owner, String name, String type, boolean required, String explicitDefault) { }
     public record AssociationEnd(String className, String multiplicity, String role, boolean ordered) { }
     public record ReferenceMapping(String id, String source, String sourceOwner, String sourceName,
                                    String sourceTarget, boolean containment, String kind, String name,

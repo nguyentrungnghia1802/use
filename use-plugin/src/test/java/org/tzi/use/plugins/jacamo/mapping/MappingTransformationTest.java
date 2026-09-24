@@ -24,17 +24,17 @@ class MappingTransformationTest {
         TransformationPlan first = new TransformationPlanner().plan(semantic, mapping);
         TransformationPlan second = new TransformationPlanner().plan(semantic, mapping);
         assertEquals(first, second);
-        assertEquals(38, first.classes().size(), "37 baseline classes plus concrete Artifact type");
+        assertEquals(mapping.classes().size() + 1, first.classes().size(), "V2 structural classes plus concrete Artifact type");
         TargetClassSpec concrete = first.classes().stream().filter(spec -> spec.name().startsWith("AuctionArtifact")).findFirst().orElseThrow();
         assertEquals("Artifact", concrete.superclasses().getFirst());
         assertTrue(first.attributes().stream().anyMatch(attribute -> attribute.owner().equals(concrete.name())
                 && attribute.name().equals("open") && attribute.type().equals("Boolean") && attribute.ruleId().equals("VP002")));
         assertTrue(first.operations().stream().anyMatch(operation -> operation.owner().equals(concrete.name())
                 && operation.name().equals("placeBid") && operation.ruleId().equals("VP003")));
-        assertEquals(63, first.associations().size());
-        assertTrue(first.associations().stream().anyMatch(association -> association.name().equals("ExternalAction_operation_AbsOperation")));
-        assertTrue(first.associations().stream().anyMatch(association -> association.name().equals("ObsProperty_obsproperty_Belief")));
-        assertTrue(first.associations().stream().anyMatch(association -> association.name().equals("OGoal_OGoalToGoal_Goal")));
+        assertEquals(mapping.associations().stream().filter(a -> !a.reverse()).count(), first.associations().size());
+        assertTrue(first.associations().stream().anyMatch(association -> association.name().equals("Action_operation_Operation")));
+        assertTrue(first.associations().stream().anyMatch(association -> association.name().equals("Belief_property_Property")));
+        assertTrue(first.associations().stream().anyMatch(association -> association.name().equals("AGoal_organizationalGoal_OGoal")));
         assertTrue(first.classes().stream().anyMatch(spec -> spec.name().equals("Norm")), "VP007 remains structural");
         assertTrue(first.classes().stream().allMatch(spec -> !spec.sourceIdentity().isBlank() && !spec.ruleId().isBlank()));
 
@@ -43,7 +43,7 @@ class MappingTransformationTest {
         var model = USECompiler.compileSpecification(new ByteArrayInputStream(generated.getBytes(StandardCharsets.UTF_8)),
                 "auction.use", temporary.resolve("auction.use").toUri(), new PrintWriter(errors), new ModelFactory());
         assertNotNull(model, () -> errors + "\n" + generated);
-        assertEquals(38, model.classes().size());
+        assertEquals(first.classes().size() + first.orderProjections().size(), model.classes().size());
     }
 
     @Test
@@ -73,7 +73,7 @@ class MappingTransformationTest {
         assertTrue(generated.stream().anyMatch(spec -> spec.name().equals("Same")));
         assertTrue(generated.stream().anyMatch(spec -> spec.name().matches("Same_[0-9a-f]{8}")));
         assertTrue(plan.diagnostics().stream().anyMatch(diagnostic -> diagnostic.code().equals("VP002_UNSUPPORTED")));
-        assertTrue(plan.classes().stream().anyMatch(spec -> spec.name().equals("ObsProperty")),
+        assertTrue(plan.classes().stream().anyMatch(spec -> spec.name().equals("Property")),
                 "VP002 fallback must retain the structural mapping");
     }
 }

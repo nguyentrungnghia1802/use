@@ -31,13 +31,30 @@ public final class TraceBuilder {
                     source.kind().name(), "OBJECT", classRule(source, mapping), object.className().equals(source.kind().name())
                     ? null : "VP001", source.provenance().getFirst().span(), source.provenance().getFirst().sourceHash(),
                     null, object.className().equals(source.kind().name()) ? TraceRecord.Status.RESOLVED : TraceRecord.Status.PROJECTED));
+            mapping.attributes().stream().filter(a -> object.values().containsKey(a.name())
+                    && a.sourceOwner().equals(source.kind().name())
+                    && !source.attributes().containsKey(a.sourceName()) && a.explicitDefault() != null).forEach(a -> {
+                String target = "value:" + object.name() + "." + a.name();
+                records.add(new TraceRecord(id(target), object.semanticId(), target, "ECORE_EXPLICIT_DEFAULT", "ATTRIBUTE_VALUE",
+                        a.id(), null, source.provenance().getFirst().span(), source.provenance().getFirst().sourceHash(),
+                        null, TraceRecord.Status.RESOLVED));
+            });
         });
+        instances.links().stream().filter(link -> mapping.associations().stream()
+                .anyMatch(a -> !a.reverse() && a.id().equals(link.mappingRuleId()) && a.name().equals(link.association())))
+                .forEach(link -> {
+                    SemanticElement source = elements.get(link.sourceSemanticId());
+                    String target = "link:" + link.association() + ":" + link.sourceObject() + ":" + link.targetObject();
+                    records.add(new TraceRecord(id(target), link.sourceSemanticId(), target, "EREFERENCE", "LINK",
+                            link.mappingRuleId(), null, source.provenance().getFirst().span(), source.provenance().getFirst().sourceHash(),
+                            null, TraceRecord.Status.RESOLVED));
+                });
         transformation.attributes().stream().filter(attribute -> attribute.ruleId().startsWith("VP"))
             .forEach(attribute -> records.add(declaration(attribute.sourceIdentity(),
-                "attribute:" + attribute.owner() + "." + attribute.name(), "PROJECTION_SOURCE", "ATTRIBUTE", null, attribute.ruleId())));
+                "attribute:" + attribute.owner() + "." + attribute.name(), "PROJECTION_SOURCE", "ATTRIBUTE", null, attribute.ruleId(), attribute.sourceIdentity())));
         transformation.operations().forEach(operation -> {
             SemanticElement source = elements.get(operation.sourceIdentity());
-            records.add(new TraceRecord(id("operation:" + operation.owner() + "." + operation.name()),
+            records.add(new TraceRecord(id("operation:" + operation.owner() + "." + operation.name() + "|source:" + operation.sourceIdentity()),
                     operation.sourceIdentity(), "operation:" + operation.owner() + "." + operation.name(),
                     source == null ? "PROJECTION_SOURCE" : source.kind().name(), "OPERATION", null, operation.ruleId(),
                     source == null ? null : source.provenance().getFirst().span(),

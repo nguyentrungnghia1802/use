@@ -1,0 +1,5 @@
+-- [OUR-EXT] V2 VP004: an environment-operation interpretation requires EXTERNAL kind.
+-- R027 is optional (0..1); unresolved/external calls are not assigned an invented operation.
+-- This checks membership/kind only. No ordered source navigation is used.
+context Action inv OperationAnchorRequiresExternalKind:
+  not self.operation.isUndefined implies self.kind = ActionKind::EXTERNAL

@@ -4,6 +4,8 @@
 > supersedes VSP001-VSP005 below. The V2 profile preserves the full baseline plan;
 > V1 overrides apply only to explicit historical fixtures. Parser/materialization
 > migration and whole-pipeline acceptance remain OPEN.
+> [Phase 35 implementation/evidence](v2-migration/phase35-transformation.md) now
+> defines active V2 projections, defaults, membership/order trace and consumer migration.
 
 ## 1. Mục tiêu
 

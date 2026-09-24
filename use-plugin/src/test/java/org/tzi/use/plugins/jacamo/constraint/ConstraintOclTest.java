@@ -178,9 +178,9 @@ class ConstraintOclTest {
         assertFalse(generated.provenanceManifest().contains("\\"),
                 "generated provenance paths must be portable across operating systems");
         assertTrue(generated.provenanceManifest().contains(
-                "PROFILE|/org/tzi/use/plugins/jacamo/ocl/jacamo-core.ocl|"));
+                "PROFILE|/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2.ocl|"));
         assertEquals(64, loader.loadCase(project, Path.of("verification/auction.ocl")).sha256().length());
-        assertEquals("8dfca43030d61307e14ce711ab4fe191ed5cd84301b2b701bc2c72c1587879b7",
+        assertEquals("1393b98d7e4df6afe615792bca7be904317820099b5f288281dd0d991532ba86",
                 loader.loadCore().sha256(), "core profile fingerprint must use canonical LF content");
 
         StringWriter errors = new StringWriter();

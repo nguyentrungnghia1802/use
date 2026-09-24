@@ -178,7 +178,9 @@ public final class MappingLoader {
         List<MappingModel.AttributeMapping> attributes = new ArrayList<>();
         for (JsonNode node : root.withArray("attributeMappings")) attributes.add(new MappingModel.AttributeMapping(
                 text(node, "id"), text(node, "source"), text(node, "sourceOwner"), text(node, "sourceName"),
-                text(node.path("target"), "owner"), text(node.path("target"), "name"), text(node.path("target"), "type")));
+                text(node.path("target"), "owner"), text(node.path("target"), "name"), text(node.path("target"), "type"),
+                node.path("sourceRequired").asBoolean(false), node.has("sourceExplicitDefaultLiteral")
+                    ? node.get("sourceExplicitDefaultLiteral").asText() : null));
         List<MappingModel.ReferenceMapping> references = new ArrayList<>();
         var byId = new java.util.HashMap<String, JsonNode>();
         root.withArray("referenceMappings").forEach(r -> byId.put(text(r, "id"), r));
