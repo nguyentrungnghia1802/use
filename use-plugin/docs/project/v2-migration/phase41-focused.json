@@ -1,0 +1,72 @@
+{
+  "status": "PASS",
+  "command": "mvn -B -pl use-plugin test -Dtest=MultiCaseV2PipelineTest,GoldenPipelineTest,LiveJaCaMoAuctionIntegrationTest,CounterTeamIntegrationTest,V2MaterializationTest,ConstraintClosureTest,RuntimeMappingTest,CrossDimensionalVerifierTest",
+  "head": "3b39d7c8532d9d586b08568cc06ae0057f4d1481",
+  "sourcePatchSha256": "63bb81cac475dc995321fbcf38af55c6ae1a09a9cd1e9535466f691ed8debaa8",
+  "log": "use-plugin/target/phase41-final-focused.log",
+  "logSha256": "e3b22d410a70f55fa25515a85892799bc02b41fc46376b6ed3d3ad9d74a761f0",
+  "counts": {
+    "tests": 24,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.GoldenPipelineTest"
+    },
+    {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.materialization.V2MaterializationTest"
+    },
+    {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.MultiCaseV2PipelineTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest"
+    },
+    {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeMappingTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.verification.CrossDimensionalVerifierTest"
+    }
+  ]
+}
