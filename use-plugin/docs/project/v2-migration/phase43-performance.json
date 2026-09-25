@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0.0",
+  "status": "PASS",
+  "date": "2026-09-24",
+  "command": "mvn -B -pl use-plugin -Dtest=Phase43PerformanceEvidenceTest test",
+  "benchmarkPolicy": "OBSERVED_NO_SLA",
+  "semantics": "Full production pipeline; no checks disabled and no benchmark-specific optimization",
+  "durationsNanos": {
+    "authoritativeResync": 6521100,
+    "ecoreAndMappingValidation": 22594700,
+    "fullVerification": 7206500,
+    "import": 641723000,
+    "oclGenerationAndCompile": 241518900,
+    "runtimeEventToResult": 3567500,
+    "transformation": 75482100
+  },
+  "queue": {
+    "dropped": 0,
+    "failed": 0,
+    "capacity": 8,
+    "rejected": 0,
+    "processed": 1,
+    "depth": 0,
+    "highWatermark": 1
+  },
+  "usedHeapBytes": 22045728,
+  "counts": {
+    "constraints": 31,
+    "targetClasses": 22,
+    "traceRecords": 370,
+    "semanticElements": 24,
+    "targetObjects": 48
+  },
+  "activeInputHashes": {
+    "jacamo-use-mapping-v2.schema.json": "e9f555ad2e19cbf8382ff4c17d44179d3b47a13d03ee9a58c2b491f99b72c919",
+    "jacamo-use-mapping-v2.json": "15d330c70400d16958559b83daf27c3755dc0cb28a7dffb8a08d94879d1ddf67",
+    "jacamo_v2_complete.ecore": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c"
+  },
+  "runtimeMappingSha256": "3af8141b68c27ae7ef2f9e414558c0932ac2c93a63e17580a9d1ede8a9f31a46"
+}

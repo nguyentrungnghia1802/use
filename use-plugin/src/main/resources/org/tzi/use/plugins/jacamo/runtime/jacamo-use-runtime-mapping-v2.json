@@ -287,7 +287,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -317,7 +317,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -347,7 +347,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -377,7 +377,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -407,7 +407,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -437,7 +437,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -467,7 +467,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -497,7 +497,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -527,7 +527,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -557,7 +557,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -587,7 +587,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -617,7 +617,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -647,7 +647,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -777,7 +777,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -807,7 +807,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -837,7 +837,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -867,7 +867,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -897,7 +897,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -927,7 +927,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -957,7 +957,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -987,7 +987,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -1017,7 +1017,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -1047,7 +1047,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -1077,7 +1077,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },
@@ -1107,7 +1107,7 @@
         "Exact current semantic binding is required; normalized generic events are adapter contracts."
       ],
       "unsupportedConditions": [
-        "No proven dynamic V1 state slot; observation does not establish mirrored state equality."
+        "No proven dynamic V2 state slot; observation does not establish mirrored state equality."
       ],
       "migrationRisk": "V2 target reconciliation; source event semantics unchanged. Only exact current traced targets are authorized."
     },

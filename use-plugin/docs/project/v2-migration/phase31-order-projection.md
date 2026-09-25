@@ -49,7 +49,9 @@ Generated OCL invariants enforce rank uniqueness, bounds `0 <= rank < size`,
 target uniqueness and exact set equality with membership. Together these enforce
 contiguous ranks and a membership bijection, including empty lists. Trace records
 identify each ordered query, projected row and endpoint link with source identity,
-mapping rule and `ORDER_V1` projection provenance.
+mapping rule and the then-current `ORDER_V1` projection provenance. Phase 43 renamed that
+stale identifier to `ORDER_V2`; the exact field-only diff is recorded in
+`phase43-trace-projection-diff.json`.
 
 ## Runtime integration
 

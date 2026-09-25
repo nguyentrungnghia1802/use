@@ -150,7 +150,7 @@ Dùng cho:
 ## 6. Success criteria
 
 Dự án hoàn thành khi:
-1. Metamodel và Mapping V1 được audit/freeze.
+1. Metamodel V2, Structural Mapping V2 và Runtime Mapping V2 được audit và chỉ freeze sau khi đạt Phase 44.
 2. Plugin import được JaCaMo project qua `.jcm`.
 3. Semantic model bao phủ Agent, Environment, Organisation.
 4. Transformation tạo USE model hợp lệ.

@@ -406,5 +406,6 @@ Standalone launcher and full normative lifecycle claims remain excluded.
 See [Phase 27 hardening](phase27-hardening-audit.md) and the
 [final acceptance matrix](phase28-project-closure.md) for current scope and evidence.
 Earlier phase test totals and draft/temporary-target descriptions are historical.
-The final structural target is unchanged V1; Runtime Mapping V1 is frozen.
-Final user acceptance remains separate from autonomous engineering verification.
+That final-target statement belongs to the historical Phase 28 V1 closure. Current
+V2 gates and counts are recorded under `v2-migration/`; V2 remains unfrozen until
+Phase 44. Final user acceptance remains separate from autonomous engineering verification.

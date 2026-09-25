@@ -166,5 +166,7 @@ See phase26-runtime-mapping-audit.md and final closure evidence for current test
 See [Phase 27 hardening](phase27-hardening-audit.md) and the
 [final acceptance matrix](phase28-project-closure.md) for current scope and evidence.
 Earlier phase test totals and draft/temporary-target descriptions are historical.
-The final structural target is unchanged V1; Runtime Mapping V1 is frozen.
-Final user acceptance remains separate from autonomous engineering verification.
+That final-target statement belongs to the historical Phase 28 V1 package. The
+current package contains one active canonical V2 baseline with working manifests;
+only Phase 44 may freeze and release it. Final user acceptance remains separate
+from autonomous engineering verification.

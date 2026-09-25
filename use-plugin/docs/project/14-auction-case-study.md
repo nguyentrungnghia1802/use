@@ -155,7 +155,7 @@ regenerate exactly 14 files under `use-plugin/target/phase14-auction-evidence`:
 
 The manifest lists all 14 relative paths, the starting repository revision,
 LF-normalized UTF-8 SHA-256 fingerprints for the checked-in Auction sources,
-canonical Ecore/Mapping V1/freeze manifest, core/case OCL, verification profile,
+canonical Metamodel V2/Structural Mapping V2 working manifest, core/case OCL, verification profile,
 and the ten non-manifest offline outputs. The runtime summary separately hashes
 the event log and report and records real connector versions, bindings, event
 counts, and the authoritative resync fingerprint. A clean checkout can

@@ -98,6 +98,50 @@ class RuntimeFoundationTest {
     }
 
     @Test
+    void operationAndDiagnosticRetentionIsBoundedWithoutEvictingActiveOperations() {
+        Fixture fixture = fixture();
+        RuntimeMutationEngine engine = new RuntimeMutationEngine(fixture.direct().system(), fixture.trace(),
+                new RuntimeMappingLoader().loadDefault(), new TraceRuntimeTargetAdapter(fixture.trace()),
+                2, 2, 2);
+        Map<String, Object> operation = Map.of("operation", "placeBid", "arguments", List.of("item1", 10));
+        long sequence = 1;
+        for (String correlation : List.of("completed-1", "completed-2", "completed-3")) {
+            assertEquals(MutationStatus.APPLIED, engine.apply(event(sequence++, RuntimeEventKind.OP_ENTER,
+                    fixture.runtimeKey(), fixture.artifactTrace().sourceSemanticId(), operation, correlation)).status());
+            assertEquals(MutationStatus.APPLIED, engine.apply(event(sequence++, RuntimeEventKind.OP_EXIT,
+                    fixture.runtimeKey(), fixture.artifactTrace().sourceSemanticId(), Map.of(), correlation)).status());
+        }
+        assertEquals(Set.of("completed-2", "completed-3"), engine.operationHistory().keySet());
+        assertEquals(1, engine.retentionMetrics().retiredCompletedCorrelations());
+        assertEquals(1, engine.retentionMetrics().retiredOperationHistory());
+
+        assertEquals(MutationStatus.APPLIED, engine.apply(event(sequence++, RuntimeEventKind.OP_ENTER,
+                fixture.runtimeKey(), fixture.artifactTrace().sourceSemanticId(), operation, "completed-1")).status(),
+                "a correlation retired from the bounded completion window may identify a later operation");
+        assertEquals(MutationStatus.APPLIED, engine.apply(event(sequence++, RuntimeEventKind.OP_EXIT,
+                fixture.runtimeKey(), fixture.artifactTrace().sourceSemanticId(), Map.of(), "completed-1")).status());
+        assertEquals(MutationStatus.APPLIED, engine.apply(event(sequence++, RuntimeEventKind.OP_ENTER,
+                fixture.runtimeKey(), fixture.artifactTrace().sourceSemanticId(), operation, "active-1")).status());
+        assertEquals(MutationStatus.APPLIED, engine.apply(event(sequence++, RuntimeEventKind.OP_ENTER,
+                fixture.runtimeKey(), fixture.artifactTrace().sourceSemanticId(), operation, "active-2")).status());
+        MutationResult capacity = engine.apply(event(sequence++, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(), operation, "active-3"));
+        assertEquals(MutationStatus.FAILED, capacity.status());
+        assertTrue(capacity.diagnostic().contains("OPERATION_CORRELATION_CAPACITY:2"));
+        assertEquals(2, engine.retentionMetrics().activeOperationCorrelations(),
+                "active operation state must never be evicted to admit another correlation");
+
+        for (int index = 0; index < 3; index++) {
+            MutationResult result = engine.apply(event(sequence++, RuntimeEventKind.SET_ATTRIBUTE,
+                    "unknown-runtime-" + index, null,
+                    Map.of("attribute", "open", "valueType", "BOOLEAN", "value", true), null));
+            assertEquals(MutationStatus.QUARANTINED, result.status());
+        }
+        assertEquals(2, engine.quarantinedEvents().size());
+        assertEquals(1, engine.retentionMetrics().retiredQuarantinedEvents());
+    }
+
+    @Test
     void unrelatedSemanticTraceCannotAuthorizeCreationAndUnknownPropertyCannotDisappear() {
         Fixture f = fixture();
         var result = f.engine().apply(event(1, RuntimeEventKind.CREATE_OBJECT, "unknown-object",
@@ -656,11 +700,36 @@ class RuntimeFoundationTest {
                 .filter(record -> record.targetKind().equals("OBJECT")).findFirst().orElseThrow();
         String runtimeKey = "cartago:artifact:market/auction1";
         trace.registerRuntimeKey(artifactTrace.traceId(), runtimeKey);
-        return new Fixture(direct, instances, artifactTrace, runtimeKey,
+        return new Fixture(direct, instances, trace, artifactTrace, runtimeKey,
                 new RuntimeMutationEngine(direct.system(), trace));
     }
 
-    private record Fixture(DirectUseBackend.Result direct, InstancePlan instances, TraceRecord artifactTrace,
+    @Test
+    void backpressureTombstoneCapacityFailsClosedUntilStreamBoundary() {
+        Fixture fixture = fixture();
+        RuntimeMutationEngine engine = new RuntimeMutationEngine(fixture.direct().system(), fixture.trace(),
+                new RuntimeMappingLoader().loadDefault(), new TraceRuntimeTargetAdapter(fixture.trace()),
+                2, 2, 2);
+        for (int index = 0; index < 3; index++) {
+            RuntimeEvent rejected = event(10 + index, RuntimeEventKind.OP_EXIT, fixture.runtimeKey(),
+                    fixture.artifactTrace().sourceSemanticId(), Map.of(), "overflow-" + index);
+            engine.eventRejected(rejected, new RuntimeQueueBackpressureException(99));
+        }
+        assertEquals(2, engine.pendingOperationRejections());
+        assertTrue(engine.retentionMetrics().correlationOverflow());
+        MutationResult blocked = engine.apply(event(1, RuntimeEventKind.OP_ENTER, fixture.runtimeKey(),
+                fixture.artifactTrace().sourceSemanticId(),
+                Map.of("operation", "placeBid", "arguments", List.of("item1", 10)), "new-operation"));
+        assertEquals(MutationStatus.FAILED, blocked.status());
+        assertTrue(blocked.diagnostic().contains("OPERATION_CORRELATION_CAPACITY_REQUIRES_RESYNC"));
+
+        engine.eventStreamClosed();
+        assertFalse(engine.retentionMetrics().correlationOverflow());
+        assertEquals(0, engine.retentionMetrics().activeOperationCorrelations());
+    }
+
+    private record Fixture(DirectUseBackend.Result direct, InstancePlan instances, TraceIndex trace,
+                           TraceRecord artifactTrace,
                            String runtimeKey, RuntimeMutationEngine engine) {
         Object attribute(String name) {
             var object = direct.system().state().objectByName(

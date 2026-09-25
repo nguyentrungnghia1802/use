@@ -120,5 +120,5 @@ embedded JAR resources and SHA-256 sidecar were rechecked before tagging.
 See [Phase 27 hardening](phase27-hardening-audit.md) and the
 [final acceptance matrix](phase28-project-closure.md) for current scope and evidence.
 Earlier phase test totals and draft/temporary-target descriptions are historical.
-The final structural target is unchanged V1; Runtime Mapping V1 is frozen.
+For this historical acceptance snapshot, the final structural target was V1 and Runtime Mapping V1 was frozen.
 Final user acceptance remains separate from autonomous engineering verification.

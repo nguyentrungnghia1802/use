@@ -1552,37 +1552,40 @@ Không có hai file cùng “canonical” status.
 
 **Objective:** đóng các correctness gaps phát sinh từ V2 migration trước final freeze.
 
+**Status:** DONE — focused 111/111, module 229/229 and reactor 372/372 PASS;
+zero failures/errors/skips. See `docs/project/v2-migration/phase43-hardening.md`.
+
 ## P43.1 — Requirement → code → test traceability
 
 For every V2 capability:
 
-- [ ] requirement.
-- [ ] implementation.
-- [ ] tests.
-- [ ] evidence.
-- [ ] status.
+- [x] requirement.
+- [x] implementation.
+- [x] tests.
+- [x] evidence.
+- [x] status.
 
 Allowed:
 
-- [ ] COMPLETE.
-- [ ] SUPPORTED_SUBSET_COMPLETE.
-- [ ] EXPLICITLY_UNSUPPORTED.
-- [ ] OUT_OF_SCOPE.
+- [x] COMPLETE.
+- [x] SUPPORTED_SUBSET_COMPLETE.
+- [x] EXPLICITLY_UNSUPPORTED.
+- [x] OUT_OF_SCOPE.
 
 ---
 
 ## P43.2 — TODO/FIXME/stale V1 audit
 
-- [ ] TODO.
-- [ ] FIXME.
-- [ ] `V1`.
-- [ ] old namespace.
-- [ ] old mapping IDs.
-- [ ] obsolete projection IDs.
-- [ ] old golden paths.
-- [ ] dead migration code.
-- [ ] duplicate V1/V2 dispatch.
-- [ ] commented-out fallback.
+- [x] TODO.
+- [x] FIXME.
+- [x] `V1`.
+- [x] old namespace.
+- [x] old mapping IDs.
+- [x] obsolete projection IDs.
+- [x] old golden paths.
+- [x] dead migration code.
+- [x] duplicate V1/V2 dispatch.
+- [x] commented-out fallback.
 
 No unresolved correctness TODO in active V2 path.
 
@@ -1592,21 +1595,21 @@ No unresolved correctness TODO in active V2 path.
 
 Same:
 
-- [ ] project bytes.
-- [ ] V2 Ecore.
-- [ ] Mapping V2.
-- [ ] plugin version.
-- [ ] OCL profiles.
+- [x] project bytes.
+- [x] V2 Ecore.
+- [x] Mapping V2.
+- [x] plugin version.
+- [x] OCL profiles.
 
 must yield same:
 
-- [ ] SemanticIds.
-- [ ] `.use`.
-- [ ] `.cmd`.
-- [ ] trace.
-- [ ] generated OCL.
-- [ ] diagnostics ordering.
-- [ ] mapping decisions.
+- [x] SemanticIds.
+- [x] `.use`.
+- [x] `.cmd`.
+- [x] trace.
+- [x] generated OCL.
+- [x] diagnostics ordering.
+- [x] mapping decisions.
 
 Runtime UUID/timestamps may be run-specific but semantics/correlation must remain deterministic where expected.
 
@@ -1614,28 +1617,28 @@ Runtime UUID/timestamps may be run-specific but semantics/correlation must remai
 
 ## P43.4 — Security
 
-- [ ] path traversal.
-- [ ] symlink escape.
-- [ ] XML external entity/DTD.
-- [ ] Java static analysis does not initialize project code.
-- [ ] classpath/archive safety.
-- [ ] case OCL path restricted.
-- [ ] report export path handling.
-- [ ] no arbitrary shell execution.
-- [ ] logging avoids unnecessary sensitive data.
+- [x] path traversal.
+- [x] symlink escape.
+- [x] XML external entity/DTD.
+- [x] Java static analysis does not initialize project code.
+- [x] classpath/archive safety.
+- [x] case OCL path restricted.
+- [x] report export path handling.
+- [x] no arbitrary shell execution.
+- [x] logging avoids unnecessary sensitive data.
 
 ---
 
 ## P43.5 — Runtime resource/lifecycle
 
-- [ ] listener cleanup.
-- [ ] queue shutdown.
-- [ ] scheduler cleanup.
-- [ ] reconnect no duplicate subscription.
-- [ ] workspace replacement isolation.
-- [ ] operation correlation bounded cleanup.
-- [ ] stale aliases retired.
-- [ ] no old V1 target surviving V2 rebuild.
+- [x] listener cleanup.
+- [x] queue shutdown.
+- [x] scheduler cleanup.
+- [x] reconnect no duplicate subscription.
+- [x] workspace replacement isolation.
+- [x] operation correlation bounded cleanup.
+- [x] stale aliases retired.
+- [x] no old V1 target surviving V2 rebuild.
 
 ---
 
@@ -1643,15 +1646,15 @@ Runtime UUID/timestamps may be run-specific but semantics/correlation must remai
 
 Measure:
 
-- [ ] import time.
-- [ ] Ecore/Mapping validation.
-- [ ] transformation.
-- [ ] OCL compile.
-- [ ] full verification.
-- [ ] runtime event→result latency.
-- [ ] queue depth/high-watermark.
-- [ ] memory.
-- [ ] resync latency.
+- [x] import time.
+- [x] Ecore/Mapping validation.
+- [x] transformation.
+- [x] OCL compile.
+- [x] full verification.
+- [x] runtime event→result latency.
+- [x] queue depth/high-watermark.
+- [x] memory.
+- [x] resync latency.
 
 Do not optimize semantics for benchmark.
 

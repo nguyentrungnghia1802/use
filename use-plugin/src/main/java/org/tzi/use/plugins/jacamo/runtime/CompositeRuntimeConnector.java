@@ -24,14 +24,20 @@ public final class CompositeRuntimeConnector implements RuntimeConnector {
     private volatile ConnectorState state = ConnectorState.DISCONNECTED;
     private long subscriptionGeneration;
     private final List<RuntimeEvent> retiredEvents = new CopyOnWriteArrayList<>();
+    private final int diagnosticLimit;
 
     public CompositeRuntimeConnector(String id, List<RuntimeConnector> connectors) {
+        this(id, connectors, RuntimeRetention.CONNECTOR_DIAGNOSTICS);
+    }
+
+    CompositeRuntimeConnector(String id, List<RuntimeConnector> connectors, int diagnosticLimit) {
         if (id == null || id.isBlank() || connectors == null || connectors.isEmpty()
                 || connectors.stream().anyMatch(value -> value == null)
                 || connectors.stream().map(RuntimeConnector::connectorId).distinct().count() != connectors.size())
             throw new IllegalArgumentException("COMPOSITE_CONNECTOR_INVALID");
         this.id = id;
         this.connectors = List.copyOf(connectors);
+        this.diagnosticLimit = RuntimeRetention.requirePositive(diagnosticLimit, "connectorDiagnostics");
     }
 
     @Override public String connectorId() { return id; }
@@ -129,7 +135,10 @@ public final class CompositeRuntimeConnector implements RuntimeConnector {
     public List<RuntimeEvent> retiredEvents() { return List.copyOf(retiredEvents); }
 
     private synchronized void forward(long owner, RuntimeConnector connector, RuntimeEvent event) {
-        if (owner != subscriptionGeneration) { retiredEvents.add(event); return; }
+        if (owner != subscriptionGeneration) {
+            RuntimeRetention.append(retiredEvents, event, diagnosticLimit);
+            return;
+        }
         RuntimeEvent normalized = normalize(connector, event);
         listeners.forEach(listener -> listener.accept(normalized));
     }

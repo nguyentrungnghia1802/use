@@ -28,6 +28,6 @@ public final class OrderProjectionTrace {
     }
     private TraceRecord record(String source, String target, String kind, String rule) {
         return new TraceRecord(traceId(target), source, target, "EREFERENCE_ORDER",
-                kind, rule, "ORDER_V1", null, null, null, TraceRecord.Status.PROJECTED);
+                kind, rule, "ORDER_V2", null, null, null, TraceRecord.Status.PROJECTED);
     }
 }

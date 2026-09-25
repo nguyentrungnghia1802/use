@@ -264,6 +264,6 @@ Instance transformation sẽ áp dụng plan lên project semantic model.
 
 ## Final target decision (Phase 25–26)
 
-D25-01 retains the exact frozen structural V1 as final for the supported scope.
-Runtime Mapping V1 is reconciled separately; see [final contract audit](phase26-runtime-mapping-audit.md).
-No general runtime-instance, standalone launcher or NPL equivalence is implied.
+The D25-01 V1 decision and Phase 26 Runtime Mapping V1 audit are retained as
+historical evidence. Active production uses the V2 contracts identified at the top
+of this document. No general standalone launcher or NPL equivalence is implied.

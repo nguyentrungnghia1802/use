@@ -159,10 +159,10 @@ class OrderProjectionTest {
                 o.className(), "OBJECT", "TEST_SOURCE", null, null, null, "runtime:" + o.name(), TraceRecord.Status.RESOLVED));
         var trace = new TraceIndex(records);
         var system = new OrderProjectionRuntimeBinding().resync("RuntimeOrder", structure, membership, orders()).system();
-        var rule = new RuntimeMapping.Rule("ORDER_V1", "NORMALIZED", "ANY", RuntimeEventKind.REPLACE_ORDER, true,
+        var rule = new RuntimeMapping.Rule("ORDER_V2", "NORMALIZED", "ANY", RuntimeEventKind.REPLACE_ORDER, true,
                 "EXACT_TRACE", false, List.of("orders"), RuntimeSemanticAction.RELATION_REORDER, "ORDER_NAVIGATION",
                 "orderProjection", true, "REPLACE_ORDER", "AFTER_MUTATION", "SUPPORTED", List.of("generic test"), List.of(), List.of(), "WORKING");
-        var mapping = new RuntimeMapping("1.0.0", "WORKING", "V2_ORDER_V1", List.of(rule));
+        var mapping = new RuntimeMapping("1.0.0", "WORKING", "V2_ORDER_V2", List.of(rule));
         new RuntimeMappingValidator(new OrderRuntimeBindingContract(structure)).validate(mapping);
         var engine = new RuntimeMutationEngine(system, trace, mapping, new TraceRuntimeTargetAdapter(trace), structure, membership);
         var payload = orders().stream().map(o -> Map.<String, Object>of("sourceIdentity", o.sourceIdentity(),

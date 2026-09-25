@@ -120,7 +120,7 @@
     "mappingVersion": "2.0.0",
     "schemaVersion": "3.0.0",
     "path": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v2.json",
-    "sha256": "8daab614184d8fc9fb20e9fc13ab0e8731b76de1d42008890643738161801dec",
+    "sha256": "3af8141b68c27ae7ef2f9e414558c0932ac2c93a63e17580a9d1ede8a9f31a46",
     "schemaPath": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-v2.schema.json",
     "schemaSha256": "be843872c909a8d44ca7c038f5896a8d829f07b068b4861f8169faf552f6a3bb",
     "targetBaseline": "STRUCTURAL_MAPPING_V2",

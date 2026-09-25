@@ -13,7 +13,7 @@
 - Không hard-code Auction vào core.
 - Không dùng fuzzy/guessing cho semantic identity.
 - Runtime core phải tách khỏi Ecore cụ thể để dễ migrate sang Metamodel V2.
-- D25-01 (2026-09-19): Ecore/Structural Mapping V1 là canonical final cho supported scope; xem phase25-input-decision-package.md. V2 không bắt buộc theo audit hiện tại.
+- D25-01 (2026-09-19, historical): Ecore/Structural Mapping V1 từng là canonical final cho supported scope; quyết định này đã được supersede bởi migration V2 Phase 29–35.
 - Runtime Mapping là layer riêng, không nhét runtime semantics vào Structural Mapping.
 - Unknown/unbound runtime entity phải quarantine, không tự tạo semantic target.
 - OCL chỉ mở rộng sau khi runtime mirror đã chứng minh đồng bộ đúng.
@@ -670,8 +670,10 @@ checks; see phase26-runtime-mapping-audit.md. No standalone/NPL support promotio
 See [Phase 27 hardening](phase27-hardening-audit.md) and the
 [final acceptance matrix](phase28-project-closure.md) for current scope and evidence.
 Earlier phase test totals and draft/temporary-target descriptions are historical.
-The final structural target is unchanged V1; Runtime Mapping V1 is frozen.
-Final user acceptance remains separate from autonomous engineering verification.
+That statement describes the historical Phase 28 V1 closure. Current execution is
+tracked in `docs/agent/task.md`; V2 is the active working baseline and remains
+unfrozen until Phase 44. Final user acceptance remains separate from autonomous
+engineering verification.
 
 ## Phase 27–28 final engineering disposition (2026-09-20)
 

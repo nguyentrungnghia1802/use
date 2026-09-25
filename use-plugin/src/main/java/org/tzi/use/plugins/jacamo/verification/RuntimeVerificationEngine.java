@@ -18,6 +18,7 @@ import org.tzi.use.plugins.jacamo.runtime.RuntimeEvent;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeEventKind;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeEventObserver;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeQueueBackpressureException;
+import org.tzi.use.plugins.jacamo.runtime.RuntimeRetention;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeSnapshot;
 import org.tzi.use.plugins.jacamo.trace.TraceIndex;
 import org.tzi.use.uml.mm.MOperation;
@@ -26,6 +27,9 @@ import org.tzi.use.uml.sys.MSystem;
 
 /** Event-driven OCL coordinator. It observes JaCaMo and never blocks or controls its execution. */
 public final class RuntimeVerificationEngine implements RuntimeEventObserver {
+    public record RetentionMetrics(int activeOperationCorrelations, int completedOperationCorrelations,
+                                   int reports, long totalReports, long retiredReports,
+                                   long retiredCompletedCorrelations, boolean correlationOverflow) { }
     private static final org.tzi.use.plugins.jacamo.runtime.RuntimeMapping RUNTIME_MAPPING =
         new org.tzi.use.plugins.jacamo.runtime.RuntimeMappingLoader().loadDefault();
 
@@ -39,9 +43,15 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     private final ConcurrentMap<String, VerificationOperationState> operationCorrelations = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, Long> receivedNanos = new ConcurrentHashMap<>();
     private final List<RuntimeVerificationReport> reports = new ArrayList<>();
+    private final int operationCorrelationLimit;
+    private final int reportLimit;
+    private long totalReports;
+    private long retiredReports;
+    private long retiredCompletedCorrelations;
+    private boolean correlationOverflow;
     private MirrorState connectionState = MirrorState.OFFLINE;
     private long snapshotVersion;
-    private final Set<String> completedCorrelations = new java.util.HashSet<>();
+    private final LinkedHashSet<String> completedCorrelations = new LinkedHashSet<>();
     private long completedThroughSequence = -1;
     private String snapshotFingerprint = "";
 
@@ -56,6 +66,13 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
 
     RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
                               VerificationService verification, LongSupplier nanoTime) {
+        this(system, registry, trace, verification, nanoTime, RuntimeRetention.OPERATION_CORRELATIONS,
+                RuntimeRetention.VERIFICATION_REPORTS);
+    }
+
+    RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
+                              VerificationService verification, LongSupplier nanoTime,
+                              int operationCorrelationLimit, int reportLimit) {
         if (system == null || registry == null || trace == null || verification == null || nanoTime == null)
             throw new IllegalArgumentException("RUNTIME_VERIFICATION_INVALID");
         this.system = system;
@@ -63,6 +80,9 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
         this.trace = trace;
         this.verification = verification;
         this.nanoTime = nanoTime;
+        this.operationCorrelationLimit = RuntimeRetention.requirePositive(operationCorrelationLimit,
+                "operationCorrelations");
+        this.reportLimit = RuntimeRetention.requirePositive(reportLimit, "verificationReports");
         this.dependencies = new ConstraintDependencyIndex(registry.descriptors());
     }
 
@@ -77,10 +97,18 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
         if (!isOperationTerminal(event) || event.correlationId() == null
                 || !(reason instanceof RuntimeQueueBackpressureException backpressure)) return;
         synchronized (operationLifecycle) {
-            operationCorrelations.compute(event.correlationId(), (correlation, current) ->
-                    current != null && current.sequence() > event.sequence() ? current
-                            : backpressure.acceptedThroughSequence() <= completedThroughSequence ? null
-                            : VerificationOperationState.rejected(event.sequence(), backpressure.acceptedThroughSequence()));
+            VerificationOperationState current = operationCorrelations.get(event.correlationId());
+            if (current != null && current.sequence() > event.sequence()) return;
+            if (backpressure.acceptedThroughSequence() <= completedThroughSequence) {
+                operationCorrelations.remove(event.correlationId());
+                return;
+            }
+            if (current == null && operationCorrelations.size() >= operationCorrelationLimit) {
+                correlationOverflow = true;
+                return;
+            }
+            operationCorrelations.put(event.correlationId(),
+                    VerificationOperationState.rejected(event.sequence(), backpressure.acceptedThroughSequence()));
         }
     }
 
@@ -123,8 +151,15 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
         if (!requireCurrent(event)) return;
         long started = eventStart(event);
         try {
-            if (completedCorrelations.contains(event.correlationId()) || operationCorrelations.containsKey(event.correlationId()))
-                throw new IllegalArgumentException("OPERATION_CORRELATION_ACTIVE_OR_RETIRED:" + event.correlationId());
+            synchronized (operationLifecycle) {
+                if (correlationOverflow)
+                    throw new IllegalArgumentException("OPERATION_CORRELATION_CAPACITY_REQUIRES_RESYNC");
+                if (completedCorrelations.contains(event.correlationId())
+                        || operationCorrelations.containsKey(event.correlationId()))
+                    throw new IllegalArgumentException("OPERATION_CORRELATION_ACTIVE_OR_RETIRED:" + event.correlationId());
+                if (operationCorrelations.size() >= operationCorrelationLimit)
+                    throw new IllegalArgumentException("OPERATION_CORRELATION_CAPACITY:" + operationCorrelationLimit);
+            }
             String objectName = objectName(event);
             String operationName = text(event.payload(), "operation");
             MOperation operation = system.state().objectByName(objectName).cls().operation(operationName, true);
@@ -138,6 +173,9 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
             OperationCheck check = verification.beginOperation(system, registry, trace, request);
             boolean[] duplicate = { false };
             synchronized (operationLifecycle) {
+                if (!operationCorrelations.containsKey(event.correlationId())
+                        && operationCorrelations.size() >= operationCorrelationLimit)
+                    throw new IllegalArgumentException("OPERATION_CORRELATION_CAPACITY:" + operationCorrelationLimit);
                 operationCorrelations.compute(event.correlationId(), (ignored, current) -> {
                     if (current == null || current.rejected() && current.sequence() < event.sequence()) {
                         return VerificationOperationState.active(event.sequence(), check);
@@ -198,6 +236,13 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
         return reports.isEmpty() ? null : reports.getLast();
     }
     public synchronized long snapshotVersion() { return snapshotVersion; }
+    public synchronized RetentionMetrics retentionMetrics() {
+        synchronized (operationLifecycle) {
+            return new RetentionMetrics(operationCorrelations.size(), completedCorrelations.size(),
+                    reports.size(), totalReports, retiredReports, retiredCompletedCorrelations,
+                    correlationOverflow);
+        }
+    }
 
     private VerificationReport runtimeFull(String runId) {
         VerificationReport full = verification.runFullVerification(system, registry, trace);
@@ -237,7 +282,8 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
                             || event.payload().containsKey("operation") && !request.operationName().equals(event.payload().get("operation")))
                         return current;
                     matched[0] = current.check();
-                    completedCorrelations.add(event.correlationId());
+                    if (RuntimeRetention.remember(completedCorrelations, event.correlationId(),
+                            operationCorrelationLimit)) retiredCompletedCorrelations++;
                 }
                 return null;
             });
@@ -254,6 +300,7 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
             operationCorrelations.clear();
             completedCorrelations.clear();
             completedThroughSequence = -1;
+            correlationOverflow = false;
         }
     }
 
@@ -288,9 +335,11 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
 
     private void append(RuntimeEvent event, VerificationReport report, long latency, List<String> diagnostics) {
         var provenance = provenance(event, report);
-        reports.add(new RuntimeVerificationReport("1.0.0", UUID.randomUUID().toString(), Instant.now(),
-                connectionState, snapshotVersion, snapshotFingerprint, event, report, latency, diagnostics,
-                checkpoint(event, diagnostics), provenance, attribution(event, report)));
+        totalReports++;
+        if (RuntimeRetention.append(reports, new RuntimeVerificationReport("1.0.0",
+                UUID.randomUUID().toString(), Instant.now(), connectionState, snapshotVersion,
+                snapshotFingerprint, event, report, latency, diagnostics, checkpoint(event, diagnostics),
+                provenance, attribution(event, report)), reportLimit)) retiredReports++;
     }
 
     private List<RuntimeVerificationAttribution> attribution(RuntimeEvent event, VerificationReport report) {
