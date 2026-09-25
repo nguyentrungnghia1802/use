@@ -1915,3 +1915,68 @@ Dự án chỉ được coi là **V2 LOGIC / CODING COMPLETE** khi:
 - [x] documentation/evidence/release artifacts đồng bộ.
 
 **Status: V2 LOGIC / CODING COMPLETE — FROZEN RELEASE CANDIDATE (not tagged).**
+
+---
+
+# Phase 45 — Canonical JaCaMo Case Studies
+
+**Objective:** import and verify the original Hello World, Auction and
+House-Building sources through the frozen V2 production pipeline without case logic
+in production core or semantic guessing.
+
+The pre-implementation audit is
+[`docs/project/case-studies/phase45-canonical-case-study-audit.md`](../project/case-studies/phase45-canonical-case-study-audit.md).
+Phase 44 frozen Ecore, Structural Mapping, Runtime Mapping and core OCL remain the
+baseline; this phase is an implementation/case-evidence extension, not V2.1.
+
+## P45.0 — Mandatory audit before code
+
+- [x] read all supplied canonical JCM, ASL, local Java Artifact, Moise XML and relevant config sources.
+- [x] read and visually inspect the supplied Auction/House analysis PDF; source conflicts resolved in favor of JaCaMo source.
+- [x] audit extraction, IR, exact resolution/binding, transformation, materialization, trace, OCL, runtime, verification and tests.
+- [x] record SOURCE -> EXPECTED IR -> ACTUAL output for all three cases.
+- [x] classify supported, partial, unsupported, ambiguous, bug and missing-generic-capability gaps.
+- [x] record generic changes, Case OCL and test plan before production implementation.
+
+## P45.1 — Hello World canonical baseline
+
+- [ ] preserve a byte-identical canonical source fixture and source manifest.
+- [ ] implement generic JCM initial belief/goal extraction needed by the source.
+- [ ] implement robust parse-only multiline Jason extraction.
+- [ ] use exact focus evidence for Action-to-Operation resolution.
+- [ ] assert exact Hello semantic inventory and explicit unsupported/ambiguous facts.
+- [ ] compile/materialize USE, trace provenance and verify Hello Case OCL.
+- [ ] add positive, negative and deterministic smoke gates.
+
+## P45.2 — Auction original source
+
+- [ ] discover exact literal dynamic Java source without loading/executing project code.
+- [ ] import complete Jason, CArtAgO and Moise source inventories.
+- [ ] preserve exact JCM player-to-role bindings.
+- [ ] preserve design-time ambiguity where the concrete `a1`/`a2` receiver needs runtime identity.
+- [ ] verify scheme, missions, goals, plan ordering and Norm structure.
+- [ ] compile/materialize USE, trace provenance and verify Auction Case OCL.
+- [ ] add supported positive/negative runtime scenarios with exact runtime aliases.
+- [ ] retain the explicit original standalone plan/deadline boundary.
+
+## P45.3 — House-Building hero case
+
+- [ ] expand exact JCM agent instances and local ASL includes.
+- [ ] discover exact local `AuctionArt`, `House` and `house-os.xml` references.
+- [ ] import eight contracting auctions and supported dynamic workspace/artifact evidence.
+- [ ] import modern Moise role definitions, hierarchy, cardinalities, links, missions, goals, OPlans and Norms.
+- [ ] retain formation compatibility and external ORA4MAS members as explicit unsupported source evidence.
+- [ ] preserve nondeterministic winner-to-role bindings for runtime evidence only.
+- [ ] compile/materialize USE, trace provenance and verify House Case OCL.
+- [ ] add supported dynamic positive/negative runtime scenarios and deterministic gates.
+
+## P45.4 — Three-case closure
+
+- [ ] prove one parameterized production pipeline for all three original cases.
+- [ ] prove production core has no case/project/agent/task/business-operation dispatch.
+- [ ] run focused parser, inventory, transformation, USE, trace, OCL and runtime tests.
+- [ ] run full plugin module regression.
+- [ ] run full reactor regression.
+- [ ] verify frozen V2 resource hashes and package inventory are unchanged.
+- [ ] record zero unexpected skipped correctness tests.
+- [ ] synchronize docs, checklist and reproducible evidence; commit by coherent unit.
