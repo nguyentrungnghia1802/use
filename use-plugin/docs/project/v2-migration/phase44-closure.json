@@ -5,7 +5,7 @@
   "date": "2026-09-25",
   "baselineStatus": "V2_FROZEN_RELEASE_CANDIDATE",
   "frozenSourceRevision": "7c435addcc91d7bbe7928953a11778f1b8e32d73",
-  "finalRepositoryRevision": "e8c53a2af650454d770a017ff5008e586cb37c99",
+  "postMergeProductionRevision": "e8c53a2af650454d770a017ff5008e586cb37c99",
   "semanticBlockers": [],
   "minorChangeFastPathInvoked": false,
   "gates": {

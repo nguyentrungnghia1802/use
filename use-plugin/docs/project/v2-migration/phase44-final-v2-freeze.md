@@ -57,8 +57,8 @@ unchanged.
 
 ## Final gates and evidence
 
-Frozen source revision: `7c435addcc91d7bbe7928953a11778f1b8e32d73`. The final
-merged repository revision is `e8c53a2af650454d770a017ff5008e586cb37c99`; its
+Frozen source revision: `7c435addcc91d7bbe7928953a11778f1b8e32d73`. The post-merge
+production revision used for final verification is `e8c53a2af650454d770a017ff5008e586cb37c99`; its
 post-merge focused gate is 154/154 PASS and its installed-package gate is 8/8 PASS,
 both with zero failures, errors and skips. The production source diff since the
 freeze revision is empty.
