@@ -3,7 +3,7 @@
 > **V2 working migration:** Active Metamodel V2 and Mapping 2.2.0 now drive IR,
 > extraction, transformation, trace, OCL and runtime target binding. Independent
 > directional order is represented by generic target-only ranks. Phase 35 clean
-> acceptance is 350/350 PASS; the latest Phase 42 full reactor is 362/362 PASS. See
+> acceptance is 350/350 PASS; the latest Phase 43 full reactor is 372/372 PASS. See
 > [transformation](docs/project/v2-migration/phase35-transformation.md) and
 > [runtime contract](docs/project/v2-migration/phase35-runtime-targets.md).
 > The archive is `use-jacamo-plugin-1.0.1-v2-working.zip`, status

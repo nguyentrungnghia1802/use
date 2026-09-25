@@ -5,8 +5,8 @@ The V2 IR, parser, transformation, trace, OCL and runtime target consumers are
 migrated. Generic target-only rank projection preserves independent opposite
 orders; V2-ORDER-001 remains a mandatory negative/positive regression control.
 
-Last clean Phase 35 reactor: **350/350 PASS**; latest Phase 42 full reactor:
-**362/362 PASS**; Python evolution/diff: **11/11 PASS**.
+Last clean Phase 35 reactor: **350/350 PASS**; latest Phase 43 full reactor:
+**372/372 PASS**; Python evolution/diff: **11/11 PASS**.
 See [Phase 29–35 acceptance](v2-migration/phase35-acceptance.md) and its complete
 per-suite and original-failure disposition evidence. Phase 29–35 are DONE: post-merge 350/350 PASS, merged and pushed. The V2 working ZIP is explicitly unreleased and unfrozen. V1 evidence
 below remains historical; original Auction standalone equivalence is not claimed.
@@ -243,6 +243,6 @@ current synchronization inventory is [DOCUMENTATION-SYNC-v1.0.1.md](DOCUMENTATIO
 ## Current engineering closure
 
 Phase 28 is the historical V1 closure. Current V2 implementation and evidence are
-recorded under [v2-migration](v2-migration/), with Phase 42 packaging complete and
-Phase 43 hardening in progress. Metamodel V2, Structural Mapping V2 and Runtime
+recorded under [v2-migration](v2-migration/), with Phase 42 packaging and
+Phase 43 hardening complete. Metamodel V2, Structural Mapping V2 and Runtime
 Mapping V2 remain working baselines; only Phase 44 may freeze them.
