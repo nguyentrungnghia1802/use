@@ -1,9 +1,9 @@
 # Phase 44 final V2 freeze and release evidence
 
-Status: **FREEZE CANDIDATE IMPLEMENTED; FINAL VALIDATION OPEN**. Metamodel V2,
-Structural Mapping V2 and Runtime Mapping V2 are marked `FROZEN` only after the
-Phase 36-43 semantic, mirror, genericity, packaging and hardening gates passed.
-Phase 44 is not DONE until every final gate and reproducibility check below passes.
+Status: **DONE — V2 FROZEN RELEASE CANDIDATE**. Metamodel V2, Structural
+Mapping V2 and Runtime Mapping V2 are `FROZEN`. All final semantic, module,
+reactor, relocated-checkout, installed-package and reproducibility gates pass with
+zero failures, errors or skipped correctness tests. No Git release tag is published.
 
 ## Freeze decision
 
@@ -57,14 +57,47 @@ unchanged.
 
 ## Final gates and evidence
 
-The final record will include focused metamodel/mapping/parser/transformation/OCL/
-trace/runtime gates, full module and reactor verification, a clean relocated clone,
-installed-package smoke, exact package inventory, zero skipped correctness tests,
-and `target/v2-final-evidence.zip` with its manifest and SHA-256 sidecar.
+Frozen source revision: `7c435addcc91d7bbe7928953a11778f1b8e32d73`.
 
-These gates are still open in this candidate revision. Their commands, tested
-revision, counts, release ZIP/JAR hashes and durable bundle location will replace
-this paragraph only after all checks pass.
+| Gate | Result |
+| --- | ---: |
+| Pre-freeze candidate audit | 37/37 PASS |
+| Focused final semantic/runtime gate | 154/154 PASS |
+| Full plugin module verify | 231/231 PASS |
+| Full clean reactor | 374/374 PASS |
+| Relocated no-hardlink clean reactor | 374/374 PASS |
+| Final compatibility/package/installed smoke | 8/8 PASS |
+
+Every count has zero failures, errors and skips. The focused gate covers native
+Ecore, Mapping/schema/projection, parser fixtures, transformation/golden outputs,
+OCL, trace/binding, Runtime Mapping, synthetic and real pinned connectors, Auction,
+CounterTeam, genericity, hardening, determinism and package contracts. The clean
+reactor covers `use-core` (13), `use-gui` (130) and `use-plugin` (231).
+
+The relocated checkout builds the same frozen source at a different absolute path.
+Its normalized `auction.use`, `auction.cmd`, generated OCL, OCL provenance, trace
+and diagnostics are byte-identical to the primary checkout. Runtime UUIDs,
+timestamps and performance durations remain deliberately run-specific.
+
+The final release archive contains exactly 30 declared entries. Every entry is
+compared byte-for-byte with its source; the installed smoke loads the JAR and both
+frozen mapping contracts without Maven's test classpath.
+
+| Artifact | SHA-256 |
+| --- | --- |
+| `use-jacamo-plugin-1.0.1-v2-frozen.zip` | `a3d9d1e9ec42275b04cbad8872214916d1a121c0755ca370f4efc09c5be7aaa0` |
+| `use-plugin-1.0.1.jar` | `5cf0c3cc3c58da98d8eec223b9db67da82c26ebaf36318a5c7fb4f13b0ebac16` |
+| `v2-final-evidence.zip` | `31ae1c76b23df754400473ebebc61d342cc4c84fa16014e80205d240185763f5` |
+| `v2-final-evidence.json` | `e8e485534efdcc3058871f084b675fba48798dd9b0462796dff46e0236ef4b2a` |
+
+The durable bundle is
+`docs/project/evidence/v2-final/v2-final-evidence.zip` with its SHA-256 sidecar.
+It contains 112 source/test/evidence artifacts: exact frozen resources, generated
+`.use`/`.cmd`, OCL/provenance, trace, event logs, verification reports,
+reconnect/resync evidence, both case summaries, compatibility/release manifests,
+JUnit XML, all Phase 44 logs, release ZIP and JAR. Machine-readable gate records
+are `phase44-*-gate.json` / `phase44-*-verify.json`, with the freeze and relocation
+diff records alongside this document.
 
 ## Explicit boundaries
 

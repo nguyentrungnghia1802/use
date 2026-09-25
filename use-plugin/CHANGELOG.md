@@ -11,7 +11,8 @@
 - Add determinism, stale-reference, security and stage-by-stage performance evidence gates.
 - Freeze Metamodel V2, Structural Mapping V2 and Runtime Mapping V2 with one exact
   compatibility/freeze manifest and a distinctly named V2 frozen ZIP.
-- Full clean-build acceptance PASS: 350/350; see Phase 35 evidence.
+- Final Phase 44 focused 154/154, module 231/231, full clean reactor 374/374,
+  relocated clean reactor 374/374 and installed-package gates PASS with zero skips.
 
 ## 1.0.1 - 2026-09-18
 

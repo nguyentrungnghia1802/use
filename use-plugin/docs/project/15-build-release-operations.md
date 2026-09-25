@@ -170,3 +170,14 @@ That final-target statement belongs to the historical Phase 28 V1 package. The
 current package contains one active canonical V2 baseline with one final freeze
 manifest. Phase 44 records the frozen release candidate; publishing a Git release
 remains separate from autonomous engineering verification.
+
+## Phase 44 frozen candidate verification
+
+The frozen source revision `7c435addcc91d7bbe7928953a11778f1b8e32d73`
+passes the 154-test focused semantic gate, the 231-test plugin module gate, the
+374-test clean full reactor and a separate relocated-clone 374-test clean reactor.
+Every gate has zero failures, errors and skips. The installed archive gate loads the
+plugin JAR and both frozen mapping contracts without Maven's test classpath, and
+checks all 30 declared ZIP entries byte-for-byte against their sources. Durable
+machine-readable records and the final bundle are under
+`docs/project/evidence/v2-final/`; publishing a tag remains a separate action.

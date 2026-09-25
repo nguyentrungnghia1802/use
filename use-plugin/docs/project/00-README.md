@@ -5,10 +5,12 @@ The V2 IR, parser, transformation, trace, OCL and runtime target consumers are
 migrated. Generic target-only rank projection preserves independent opposite
 orders; V2-ORDER-001 remains a mandatory negative/positive regression control.
 
-Last clean Phase 35 reactor: **350/350 PASS**; latest Phase 43 full reactor:
-**372/372 PASS**; Python evolution/diff: **11/11 PASS**.
+Last clean Phase 35 reactor: **350/350 PASS**; final Phase 44 full reactor and
+relocated clean checkout: **374/374 PASS each**; Python evolution/diff: **11/11 PASS**.
 See [Phase 29–35 acceptance](v2-migration/phase35-acceptance.md) and its complete
-per-suite and original-failure disposition evidence. Phase 29–35 are DONE: post-merge 350/350 PASS, merged and pushed. Phase 44 freezes the V2 contracts as a release candidate without publishing a Git tag. V1 evidence
+per-suite and original-failure disposition evidence. Phase 29–35 are DONE: post-merge
+350/350 PASS, merged and pushed. Phase 44 freezes the V2 contracts and preserves its
+final reproducibility bundle without publishing a Git tag. V1 evidence
 below remains historical; original Auction standalone equivalence is not claimed.
 
 ## 1. Historical V1 snapshot

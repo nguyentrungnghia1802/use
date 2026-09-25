@@ -114,6 +114,53 @@
         "status": "not-run",
         "scope": "Existing checkout and pinned local Maven repository; clean historical-namespace focused gate plus full non-clean reactor gate"
       }
+    },
+    {
+      "date": "2026-09-25",
+      "testedProductionCommit": "7c435addcc91d7bbe7928953a11778f1b8e32d73",
+      "runtimeScope": "Final frozen V2 static/runtime pipeline, Auction and CounterTeam, exact package inventory, installed plugin smoke and relocated clean checkout",
+      "focusedGate": {
+        "tests": 154,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "moduleGate": {
+        "tests": 231,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "fullReactor": {
+        "command": "mvn -B clean verify",
+        "tests": 374,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "evidence": "docs/project/v2-migration/phase44-reactor-verify.json"
+      },
+      "relocatedCheckout": {
+        "command": "mvn -B clean verify",
+        "tests": 374,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "normalizedStaticArtifactsEqual": 6,
+        "evidence": "docs/project/v2-migration/phase44-relocated-verify.json"
+      },
+      "host": {
+        "osName": "Windows 11",
+        "osVersion": "10.0",
+        "architecture": "amd64",
+        "mavenVersion": "3.9.9",
+        "mavenJavaVersion": "21.0.5",
+        "mavenJavaVendor": "Oracle Corporation"
+      },
+      "cleanEnvironment": {
+        "status": "passed",
+        "scope": "Separate no-hardlink relocated clone at the frozen source revision; clean full reactor build with the pinned local dependency cache"
+      },
+      "evidence": "docs/project/v2-migration/phase44-final-v2-freeze.md"
     }
   ],
   "runtimeMapping": {

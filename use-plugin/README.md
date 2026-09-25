@@ -3,9 +3,10 @@
 > **V2 frozen release candidate:** Metamodel V2 and Mapping 2.2.0 drive IR,
 > extraction, transformation, trace, OCL and runtime target binding. Independent
 > directional order is represented by generic target-only ranks. Phase 35 clean
-> acceptance is 350/350 PASS; the latest Phase 43 full reactor is 372/372 PASS. See
+> acceptance is 350/350 PASS; the final Phase 44 reactor and relocated checkout are
+> each 374/374 PASS with zero skips. See
 > [transformation](docs/project/v2-migration/phase35-transformation.md) and
-> [runtime contract](docs/project/v2-migration/phase35-runtime-targets.md).
+> [final freeze evidence](docs/project/v2-migration/phase44-final-v2-freeze.md).
 > The archive is `use-jacamo-plugin-1.0.1-v2-frozen.zip`, status
 > `FROZEN_V2_RELEASE_CANDIDATE`. The contracts are frozen; no Git release tag is
 > published by this engineering freeze.
@@ -32,7 +33,7 @@ Jason 3.3.0, CArtAgO 3.1 and Moise 1.1 integration scope.
 2. Extract this archive into the USE installation root. This places the plugin JAR
    in `lib/plugins` and the active metamodel/mapping under `Core/*/version-2/`.
    The JAR also embeds byte-identical canonical V2 Ecore, mapping/schema,
-   compatibility metadata, and release manifest resources.
+   compatibility metadata, release manifest and unified freeze manifest resources.
 3. Make Jason 3.3.0, CArtAgO 3.1, Moise 1.1 and their required runtime dependencies
    available on the USE JVM classpath. They are intentionally not redistributed in
    this archive. The plugin's JSON Schema validator and its dependencies are

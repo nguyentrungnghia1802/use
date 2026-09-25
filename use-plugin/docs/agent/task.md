@@ -1668,21 +1668,21 @@ Do not optimize semantics for benchmark.
 
 Before freeze:
 
-- [ ] no pending known metamodel change expected immediately.
-- [ ] V2 Ecore audit PASS.
-- [ ] Mapping V2 audit PASS.
-- [ ] V2 transformation PASS.
-- [ ] Trace/binding PASS.
-- [ ] Runtime Mapping PASS.
-- [ ] OCL compile/check PASS.
-- [ ] both case studies disposed.
-- [ ] hardening PASS.
+- [x] no pending known metamodel change expected immediately.
+- [x] V2 Ecore audit PASS.
+- [x] Mapping V2 audit PASS.
+- [x] V2 transformation PASS.
+- [x] Trace/binding PASS.
+- [x] Runtime Mapping PASS.
+- [x] OCL compile/check PASS.
+- [x] both case studies disposed.
+- [x] hardening PASS.
 
 If metamodel changes here:
 
-- [ ] return through Phase 32 change loop.
-- [ ] regenerate affected evidence.
-- [ ] do not patch hash only.
+- [x] N/A — Ecore bytes did not change; `phase44-freeze-diff.json` proves the Phase 32 loop was not required.
+- [x] N/A — no metamodel-dependent evidence needed regeneration; final evidence was regenerated for freeze metadata.
+- [x] exact diff/impact gate PASS; no hash-only patch.
 
 ---
 
@@ -1690,40 +1690,40 @@ If metamodel changes here:
 
 Only now:
 
-- [ ] status `FROZEN`.
-- [ ] final hash.
-- [ ] final inventory.
-- [ ] audit.
-- [ ] provenance.
-- [ ] version.
-- [ ] unresolved boundaries documented.
-- [ ] mutation controls/negative tests PASS.
+- [x] status `FROZEN`.
+- [x] final hash.
+- [x] final inventory.
+- [x] audit.
+- [x] provenance.
+- [x] version.
+- [x] unresolved boundaries documented.
+- [x] mutation controls/negative tests PASS.
 
 ---
 
 ## P44.3 — Freeze Structural Mapping V2
 
-- [ ] schema validation.
-- [ ] full V2 source coverage/disposition.
-- [ ] target USE compile.
-- [ ] projection audit.
-- [ ] negative mutation tests.
-- [ ] mapping hash.
-- [ ] freeze manifest.
-- [ ] exact Metamodel V2 hash compatibility.
+- [x] schema validation.
+- [x] full V2 source coverage/disposition.
+- [x] target USE compile.
+- [x] projection audit.
+- [x] negative mutation tests.
+- [x] mapping hash.
+- [x] freeze manifest.
+- [x] exact Metamodel V2 hash compatibility.
 
 ---
 
 ## P44.4 — Freeze Runtime Mapping
 
-- [ ] source runtime capabilities reconciled to pinned APIs.
-- [ ] target bindings reconciled to frozen V2.
-- [ ] no Auction-specific rule.
-- [ ] schema/semantic validator PASS.
-- [ ] negative tests.
-- [ ] runtime integration tests.
-- [ ] audit.
-- [ ] version/hash manifest.
+- [x] source runtime capabilities reconciled to pinned APIs.
+- [x] target bindings reconciled to frozen V2.
+- [x] no Auction-specific rule.
+- [x] schema/semantic validator PASS.
+- [x] negative tests.
+- [x] runtime integration tests.
+- [x] audit.
+- [x] version/hash manifest.
 
 ---
 
@@ -1731,48 +1731,52 @@ Only now:
 
 Preserve:
 
-- [ ] repository revision.
-- [ ] V2 Ecore/hash.
-- [ ] Mapping V2/schema/hash.
-- [ ] Runtime Mapping/schema/hash.
-- [ ] generated `.use`.
-- [ ] generated `.cmd`.
-- [ ] OCL profiles/provenance.
-- [ ] trace.
-- [ ] runtime event logs.
-- [ ] verification reports.
-- [ ] reconnect/resync evidence.
-- [ ] case-study summaries.
-- [ ] compatibility manifest.
-- [ ] test logs/counts.
-- [ ] release ZIP/JAR checksums.
+- [x] repository revision.
+- [x] V2 Ecore/hash.
+- [x] Mapping V2/schema/hash.
+- [x] Runtime Mapping/schema/hash.
+- [x] generated `.use`.
+- [x] generated `.cmd`.
+- [x] OCL profiles/provenance.
+- [x] trace.
+- [x] runtime event logs.
+- [x] verification reports.
+- [x] reconnect/resync evidence.
+- [x] case-study summaries.
+- [x] compatibility manifest.
+- [x] test logs/counts.
+- [x] release ZIP/JAR checksums.
 
 ---
 
 ## P44.6 — Final validation
 
-- [ ] focused metamodel tests.
-- [ ] focused mapping tests.
-- [ ] parser fixtures.
-- [ ] transformation/golden.
-- [ ] OCL.
-- [ ] trace/binding.
-- [ ] synthetic runtime.
-- [ ] real pinned Jason/CArtAgO/Moise connector tests.
-- [ ] Auction E2E.
-- [ ] Case Study #2 E2E.
-- [ ] full module verify.
-- [ ] full reactor verify.
-- [ ] clean checkout/relocated build.
-- [ ] installed plugin smoke.
-- [ ] package inventory/hash.
-- [ ] zero unexpected skipped correctness tests.
+- [x] focused metamodel tests.
+- [x] focused mapping tests.
+- [x] parser fixtures.
+- [x] transformation/golden.
+- [x] OCL.
+- [x] trace/binding.
+- [x] synthetic runtime.
+- [x] real pinned Jason/CArtAgO/Moise connector tests.
+- [x] Auction E2E.
+- [x] Case Study #2 E2E.
+- [x] full module verify.
+- [x] full reactor verify.
+- [x] clean checkout/relocated build.
+- [x] installed plugin smoke.
+- [x] package inventory/hash.
+- [x] zero unexpected skipped correctness tests.
 
 ---
 
 # V2 Minor-Change Fast Path
 
 Dùng quy trình này nếu Metamodel V2 thay đổi nhỏ trong khi Phase 29–43 đang triển khai.
+
+**Phase 44 disposition:** NOT INVOKED — canonical Ecore bytes are unchanged. The
+unchecked items below remain a reusable procedure for a future version, not pending
+work in this frozen V2 candidate.
 
 ## Step A — Intake
 
@@ -1830,71 +1834,71 @@ Dùng quy trình này nếu Metamodel V2 thay đổi nhỏ trong khi Phase 29–
 
 ## Metamodel/Mapping
 
-- [ ] V2 active baseline selected.
-- [ ] V1 historical only.
-- [ ] Ecore V2 audited.
-- [ ] Mapping V2 audited.
-- [ ] no hidden V1 structural dependency.
+- [x] V2 active baseline selected.
+- [x] V1 historical only.
+- [x] Ecore V2 audited.
+- [x] Mapping V2 audited.
+- [x] no hidden V1 structural dependency.
 
 ## Static Pipeline
 
-- [ ] V2 Semantic IR.
-- [ ] JCM extraction.
-- [ ] Jason extraction.
-- [ ] CArtAgO extraction.
-- [ ] Moise extraction.
-- [ ] exact resolver.
-- [ ] V2 `.use`.
-- [ ] V2 `.cmd`.
-- [ ] text/direct parity.
+- [x] V2 Semantic IR.
+- [x] JCM extraction.
+- [x] Jason extraction.
+- [x] CArtAgO extraction.
+- [x] Moise extraction.
+- [x] exact resolver.
+- [x] V2 `.use`.
+- [x] V2 `.cmd`.
+- [x] text/direct parity.
 
 ## Trace & OCL
 
-- [ ] V2 trace.
-- [ ] binding/staleness.
-- [ ] core OCL.
-- [ ] translated OCL subset.
-- [ ] case/user OCL.
-- [ ] PRE/POST.
+- [x] V2 trace.
+- [x] binding/staleness.
+- [x] core OCL.
+- [x] translated OCL subset.
+- [x] case/user OCL.
+- [x] PRE/POST.
 
 ## Runtime
 
-- [ ] runtime capabilities pinned.
-- [ ] RuntimeEvent preserved/reconciled.
-- [ ] Runtime Mapping V2.
-- [ ] authoritative snapshot.
-- [ ] ordered mutation.
-- [ ] no silent drop.
-- [ ] drift detection.
-- [ ] reconnect/resync.
-- [ ] exact runtime identity.
+- [x] runtime capabilities pinned.
+- [x] RuntimeEvent preserved/reconciled.
+- [x] Runtime Mapping V2.
+- [x] authoritative snapshot.
+- [x] ordered mutation.
+- [x] no silent drop.
+- [x] drift detection.
+- [x] reconnect/resync.
+- [x] exact runtime identity.
 
 ## Verification
 
-- [ ] snapshot invariants.
-- [ ] after-mutation verification.
-- [ ] operation PRE/POST.
-- [ ] ordering/history bounded.
-- [ ] cross-dimensional supported subset.
-- [ ] normative supported subset.
-- [ ] exact violation trace.
+- [x] snapshot invariants.
+- [x] after-mutation verification.
+- [x] operation PRE/POST.
+- [x] ordering/history bounded.
+- [x] cross-dimensional supported subset.
+- [x] normative supported subset.
+- [x] exact violation trace.
 
 ## Genericity
 
-- [ ] Auction V2.
-- [ ] Case Study #2 V2.
-- [ ] no case-specific core logic.
-- [ ] future V2 minor-change loop tested.
+- [x] Auction V2.
+- [x] Case Study #2 V2.
+- [x] no case-specific core logic.
+- [x] future V2 minor-change loop tested.
 
 ## Engineering
 
-- [ ] security.
-- [ ] determinism.
-- [ ] performance evidence.
-- [ ] clean build.
-- [ ] plugin smoke.
-- [ ] docs synchronized.
-- [ ] release/evidence bundle.
+- [x] security.
+- [x] determinism.
+- [x] performance evidence.
+- [x] clean build.
+- [x] plugin smoke.
+- [x] docs synchronized.
+- [x] release/evidence bundle.
 
 ---
 
@@ -1902,10 +1906,12 @@ Dùng quy trình này nếu Metamodel V2 thay đổi nhỏ trong khi Phase 29–
 
 Dự án chỉ được coi là **V2 LOGIC / CODING COMPLETE** khi:
 
-- [ ] V2 active pipeline không còn dependency ngầm vào V1;
-- [ ] mọi capability in-scope là `COMPLETE` hoặc `SUPPORTED_SUBSET_COMPLETE`;
-- [ ] mọi capability còn lại là `EXPLICITLY_UNSUPPORTED` hoặc `OUT_OF_SCOPE` có evidence;
-- [ ] mirror correctness được chứng minh trước khi dùng runtime OCL verdict;
-- [ ] full regression PASS;
-- [ ] V2 Metamodel + Structural Mapping + Runtime Mapping được freeze ở Phase 44;
-- [ ] documentation/evidence/release artifacts đồng bộ.
+- [x] V2 active pipeline không còn dependency ngầm vào V1;
+- [x] mọi capability in-scope là `COMPLETE` hoặc `SUPPORTED_SUBSET_COMPLETE`;
+- [x] mọi capability còn lại là `EXPLICITLY_UNSUPPORTED` hoặc `OUT_OF_SCOPE` có evidence;
+- [x] mirror correctness được chứng minh trước khi dùng runtime OCL verdict;
+- [x] full regression PASS;
+- [x] V2 Metamodel + Structural Mapping + Runtime Mapping được freeze ở Phase 44;
+- [x] documentation/evidence/release artifacts đồng bộ.
+
+**Status: V2 LOGIC / CODING COMPLETE — FROZEN RELEASE CANDIDATE (not tagged).**

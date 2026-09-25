@@ -410,3 +410,13 @@ That final-target statement belongs to the historical Phase 28 V1 closure. Curre
 V2 gates and counts are recorded under `v2-migration/`; Phase 44 freezes the three
 V2 contracts only after focused, module, reactor, relocated and installed-package
 checks. A published Git release remains separate from autonomous engineering verification.
+
+## Phase 44 final V2 gate
+
+The frozen source revision `7c435addcc91d7bbe7928953a11778f1b8e32d73`
+passes focused 154/154, module 231/231, clean reactor 374/374 and relocated clean
+reactor 374/374. All have zero failures, errors and skipped correctness tests.
+Installed-package smoke and exact 30-entry inventory validation pass. Six normalized
+static production artifacts are byte-identical across the primary and relocated
+checkouts. See `v2-migration/phase44-final-v2-freeze.md` and the durable bundle in
+`evidence/v2-final/`.

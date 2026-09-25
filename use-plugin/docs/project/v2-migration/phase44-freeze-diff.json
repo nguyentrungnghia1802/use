@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0.0",
+  "phase": 44,
+  "status": "PASS",
+  "classification": "FREEZE_METADATA_ONLY",
+  "baseRevision": "c175834fffde0429427af155412b549c5f080f1a",
+  "candidateRevision": "7c435addcc91d7bbe7928953a11778f1b8e32d73",
+  "candidateWorkingTreeDirty": false,
+  "metamodel": {
+    "path": "use-plugin/Core/Metamodel/version-2/jacamo_v2_complete.ecore",
+    "beforeSha256": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c",
+    "afterSha256": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c",
+    "changed": false,
+    "minorChangeFastPathInvoked": false
+  },
+  "contracts": {
+    "use-plugin/Core/Mapping/version-2/jacamo-use-mapping-v2.json": {
+      "beforeSha256": "15d330c70400d16958559b83daf27c3755dc0cb28a7dffb8a08d94879d1ddf67",
+      "afterSha256": "fc03b90cf0729260747bfeffa6a6cd463eefd2259c0c3cd60ed22bd140ec48b1",
+      "changedPointers": [
+        {
+          "pointer": "/contract/compilerGateRule",
+          "before": "REVIEWED_CANDIDATE means exact source coverage and source-level target checks have passed. FROZEN requires the migrated repository consumer, actual USECompiler compilation, negative mutation gates and refreshed fingerprints/manifests; hashes must never be edited merely to silence a gate.",
+          "after": "FROZEN records completed exact source coverage, active V2 consumer migration, actual USECompiler compilation, negative mutation gates and refreshed fingerprints/manifests. Any future semantic change requires a new version, structural diff, impact analysis and full affected regression; hashes must never be edited merely to silence a gate."
+        },
+        {
+          "pointer": "/reviewFlags/7/mappingAction",
+          "before": "MIGRATE_V1_PINNED_CONSUMERS_BEFORE_FREEZE",
+          "after": "ACTIVE_V2_CONSUMERS_AND_GATES_COMPLETE"
+        },
+        {
+          "pointer": "/reviewFlags/7/note",
+          "before": "MappingLoader hard-codes V1 filenames, V1 hash manifest and only EClass/EAttribute/EReference/eSuperType keys. V2 cannot be declared FROZEN until those consumers/tests are updated and USE compilation gates pass.",
+          "after": "Active consumers select exact V2 resources without fallback. USE compilation, negative mutation, transformation, trace, OCL, runtime mapping, mirror correctness, verification and two-case regression gates pass; historical V1 loaders remain explicit reproducibility paths only."
+        },
+        {
+          "pointer": "/reviewFlags/7/severity",
+          "before": "BLOCKING_FOR_INTEGRATION_NOT_FOR_MAPPING_ARTIFACT",
+          "after": "RESOLVED_FOR_FINAL_FREEZE"
+        },
+        {
+          "pointer": "/reviewFlags/7/source",
+          "before": "Current repository V1 loader/freeze",
+          "after": "Repository V2 migration and freeze gates"
+        },
+        {
+          "pointer": "/status",
+          "before": "WORKING_BASELINE",
+          "after": "FROZEN"
+        },
+        {
+          "pointer": "/targetUSE/sourceEvidence/3",
+          "before": "use-plugin MappingLoader/MappingModel/TransformationPlanner: V1 consumer assumptions requiring migration for V2 enums/eOpposites",
+          "after": "use-plugin ActiveBaseline/MappingLoader/MappingModel/TransformationPlanner: active V2 enum, opposite, order and projection consumers"
+        },
+        {
+          "pointer": "/targetUSE/validationScope",
+          "before": "V2.1 mapping contract is exhaustively cross-checked against jacamo_v2_complete.ecore and the inspected USE 7.5.0 grammar/API surface, including keyword escapes, eOpposite deduplication, navigation namespaces, defaults and requiredness metadata. It is not marked FROZEN because the repository V1-pinned consumer has not yet been migrated and this V2.1 model has not been executed through the actual USECompiler end-to-end in the repository.",
+          "after": "The V2 mapping contract is exhaustively cross-checked against jacamo_v2_complete.ecore and the USE 7.5.0 grammar/API surface, including keyword escapes, eOpposite deduplication, independent order projection, navigation namespaces, defaults and requiredness metadata. Active consumers are migrated and text/direct USE compilation, negative mutation, trace, OCL, runtime mapping, mirror, verification and multi-case gates passed before the Phase 44 freeze."
+        }
+      ],
+      "semanticRulesChanged": false
+    },
+    "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v2.json": {
+      "beforeSha256": "3af8141b68c27ae7ef2f9e414558c0932ac2c93a63e17580a9d1ede8a9f31a46",
+      "afterSha256": "5b2c00f052010fb35a71eb7f50ae4650f8a09c7647332b47a7199c12cbf8a5f0",
+      "changedPointers": [
+        {
+          "pointer": "/status",
+          "before": "WORKING",
+          "after": "FROZEN"
+        },
+        {
+          "pointer": "/targetContract/mappingSha256",
+          "before": "15d330c70400d16958559b83daf27c3755dc0cb28a7dffb8a08d94879d1ddf67",
+          "after": "fc03b90cf0729260747bfeffa6a6cd463eefd2259c0c3cd60ed22bd140ec48b1"
+        }
+      ],
+      "semanticRulesChanged": false
+    },
+    "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-v2.schema.json": {
+      "beforeSha256": "be843872c909a8d44ca7c038f5896a8d829f07b068b4861f8169faf552f6a3bb",
+      "afterSha256": "6ffd20d1acf03e9112997ae3c95d8b3f4c44aab96f412e49ec8763fbb6e3203a",
+      "changedPointers": [
+        {
+          "pointer": "/properties/status/enum/0",
+          "before": "WORKING",
+          "after": "FROZEN"
+        }
+      ],
+      "semanticRulesChanged": false
+    }
+  },
+  "conclusion": "Ecore, structural rules, runtime match/action rules and target-only order projection are unchanged; only reviewed freeze status, provenance and exact compatibility fingerprints changed."
+}

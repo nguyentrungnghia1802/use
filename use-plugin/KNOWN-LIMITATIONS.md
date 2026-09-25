@@ -1,7 +1,9 @@
 # Known Limitations
 
-- V2 consumers use frozen Mapping 2.2.0 and Runtime Mapping schema 3.0.0. Phase
-  workflow status and current full-build counts are recorded in the Phase 44 evidence. See [current runtime boundaries](docs/project/v2-migration/phase35-runtime-targets.md).
+- V2 consumers use frozen Mapping 2.2.0 and Runtime Mapping schema 3.0.0. The final
+  reactor and relocated checkout each pass 374/374 tests with zero skips; exact
+  gate and bundle records are in the Phase 44 evidence. See
+  [current runtime boundaries](docs/project/v2-migration/phase35-runtime-targets.md).
 - Ordered membership changes require complete authoritative directional orders
   during resynchronization; bare link/endpoint mutations are rejected before
   corrupting rank projection. Rank-only updates and reconnect are tested.
