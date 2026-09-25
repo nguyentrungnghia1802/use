@@ -125,7 +125,7 @@
     },
     {
       "source": "release/v2-freeze-manifest.json",
-      "path": "manifests/v2-freeze-manifest.json"
+      "path": "release/v2-freeze-manifest.json"
     },
     {
       "source": "src/main/resources/org/tzi/use/plugins/jacamo/binding/binding-v1.schema.json",
@@ -154,7 +154,7 @@
     "metamodel": "version-2",
     "mapping": "2.2.0",
     "runtimeSchema": "3.0.0",
-    "freezeManifest": "manifests/v2-freeze-manifest.json",
+    "freezeManifest": "release/v2-freeze-manifest.json",
     "freeze": true
   }
 }

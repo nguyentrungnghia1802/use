@@ -34,7 +34,7 @@ class ReleasePackageContractTest {
             "examples/auction/src/org/auction.xml",
             "examples/auction/verification/auction.ocl",
             "lib/plugins/use-jacamo-plugin-1.0.1.jar",
-            "manifests/v2-freeze-manifest.json",
+            "release/v2-freeze-manifest.json",
             "ocl/jacamo-core-v2-manifest.json",
             "ocl/jacamo-core-v2.ocl",
             "profiles/jacamo-verification-profile-v2.json",
@@ -62,7 +62,7 @@ class ReleasePackageContractTest {
         assertEquals("SHA-256", manifest.path("integrity").path("packageAlgorithm").asText());
         assertFalse(manifest.path("limitations").isEmpty());
         assertTrue(manifest.path("activeBaseline").path("freeze").asBoolean());
-        assertEquals("manifests/v2-freeze-manifest.json",
+        assertEquals("release/v2-freeze-manifest.json",
                 manifest.path("activeBaseline").path("freezeManifest").asText());
         JsonNode frozen = new ObjectMapper().readTree(root.resolve(
                 "release/v2-freeze-manifest.json").toFile());

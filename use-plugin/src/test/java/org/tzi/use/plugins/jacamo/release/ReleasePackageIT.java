@@ -34,7 +34,9 @@ class ReleasePackageIT {
         try (ZipFile zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1-v2-frozen.zip").toFile())) {
             for (var entry : java.util.Collections.list(zip.entries())) {
                 if (entry.isDirectory()) continue;
-                if (!entry.getName().startsWith("Core/") && !entry.getName().startsWith("lib/plugins/")) continue;
+                if (!entry.getName().startsWith("Core/")
+                        && !entry.getName().startsWith("lib/plugins/")
+                        && !entry.getName().startsWith("release/")) continue;
                 Path destination = install.resolve(entry.getName()).normalize();
                 assertTrue(destination.startsWith(install), "ZIP entry must remain inside install root");
                 Files.createDirectories(destination.getParent());

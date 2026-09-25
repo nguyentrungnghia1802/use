@@ -36,7 +36,7 @@ class V2FinalFreezeTest {
         assertEquals("FROZEN", compatibility.path("runtimeMapping").path("status").asText());
         assertFalse(compatibility.path("runtimeMapping").path("provisional").asBoolean());
         assertTrue(release.path("activeBaseline").path("freeze").asBoolean());
-        assertEquals("manifests/v2-freeze-manifest.json",
+        assertEquals("release/v2-freeze-manifest.json",
                 release.path("activeBaseline").path("freezeManifest").asText());
 
         freeze.path("resources").forEach(resource -> {
