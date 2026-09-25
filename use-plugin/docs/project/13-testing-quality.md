@@ -407,5 +407,6 @@ See [Phase 27 hardening](phase27-hardening-audit.md) and the
 [final acceptance matrix](phase28-project-closure.md) for current scope and evidence.
 Earlier phase test totals and draft/temporary-target descriptions are historical.
 That final-target statement belongs to the historical Phase 28 V1 closure. Current
-V2 gates and counts are recorded under `v2-migration/`; V2 remains unfrozen until
-Phase 44. Final user acceptance remains separate from autonomous engineering verification.
+V2 gates and counts are recorded under `v2-migration/`; Phase 44 freezes the three
+V2 contracts only after focused, module, reactor, relocated and installed-package
+checks. A published Git release remains separate from autonomous engineering verification.

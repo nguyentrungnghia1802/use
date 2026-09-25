@@ -30,9 +30,9 @@ class CompatibilityManifestTest {
         JsonNode requirements = manifest.path("requirements");
 
         assertEquals(release.path("releaseVersion").asText(), manifest.path("plugin").path("version").asText());
-        assertTrue(release.path("gitTag").isNull(), "working V2 package has no release tag");
+        assertTrue(release.path("gitTag").isNull(), "frozen candidate is not a published release tag");
         assertEquals(release.path("gitTag"), manifest.path("plugin").path("tag"));
-        assertEquals("working-v2-not-released", manifest.path("plugin").path("status").asText());
+        assertEquals("frozen-v2-release-candidate", manifest.path("plugin").path("status").asText());
         assertEquals(pluginDescriptor.getDocumentElement().getAttribute("version"),
                 manifest.path("plugin").path("version").asText());
 
@@ -69,7 +69,7 @@ class CompatibilityManifestTest {
     }
 
     @Test
-    void manifestPinsEveryActiveV2ResourceAndWorkingStatusByExactHash() throws Exception {
+    void manifestPinsEveryFrozenV2ResourceByExactHash() throws Exception {
         ObjectMapper json = new ObjectMapper();
         JsonNode manifest = json.readTree(Path.of("compatibility.json").toFile());
         JsonNode baseline = manifest.path("activeBaseline");
@@ -77,9 +77,9 @@ class CompatibilityManifestTest {
         JsonNode mapping = baseline.path("mapping");
         JsonNode runtime = manifest.path("runtimeMapping");
 
-        assertEquals("WORKING_BASELINE", baseline.path("status").asText());
+        assertEquals("FROZEN", baseline.path("status").asText());
         assertEquals("V2", metamodel.path("version").asText());
-        assertEquals("WORKING_BASELINE", metamodel.path("status").asText());
+        assertEquals("FROZEN", metamodel.path("status").asText());
         assertPinned(metamodel.path("path").asText(), metamodel.path("sha256").asText());
 
         JsonNode mappingSource = json.readTree(Path.of(mapping.path("path").asText()).toFile());
@@ -94,7 +94,7 @@ class CompatibilityManifestTest {
         assertEquals(runtimeSource.path("schemaVersion").asText(), runtime.path("schemaVersion").asText());
         assertEquals(runtimeSource.path("status").asText(), runtime.path("status").asText());
         assertEquals(runtimeSource.path("targetBaseline").asText(), runtime.path("targetBaseline").asText());
-        assertTrue(runtime.path("provisional").asBoolean());
+        assertFalse(runtime.path("provisional").asBoolean());
         assertPinned(runtime.path("path").asText(), runtime.path("sha256").asText());
         assertPinned(runtime.path("schemaPath").asText(), runtime.path("schemaSha256").asText());
 
@@ -114,11 +114,13 @@ class CompatibilityManifestTest {
         assertPinned(profiles.path("verificationProfile").path("path").asText(),
                 profiles.path("verificationProfile").path("sha256").asText());
 
-        JsonNode working = json.readTree(Path.of("release/v2-working-baseline-manifest.json").toFile());
-        assertEquals("V2", working.path("baseline").asText());
-        assertEquals("WORKING_BASELINE", working.path("status").asText());
-        assertFalse(working.path("freeze").asBoolean());
-        working.path("resources").forEach(resource -> {
+        JsonNode frozen = json.readTree(Path.of("release/v2-freeze-manifest.json").toFile());
+        assertEquals("V2", frozen.path("baseline").asText());
+        assertEquals("FROZEN", frozen.path("status").asText());
+        assertTrue(frozen.path("freeze").asBoolean());
+        assertPinned(manifest.path("freezeManifest").path("path").asText(),
+                manifest.path("freezeManifest").path("sha256").asText());
+        frozen.path("resources").forEach(resource -> {
             if (resource.has("path") && resource.has("sha256"))
                 assertPinned(resource.path("path").asText(), resource.path("sha256").asText());
             if (resource.has("schemaPath"))

@@ -325,7 +325,7 @@ class LiveJaCaMoAuctionIntegrationTest {
                         project, "<auction>"));
 
         var summary = json.createObjectNode().put("schemaVersion", "1.0.0")
-                .put("artifactKind", "V2_WORKING_RUNTIME_SCENARIO_SUMMARY")
+                .put("artifactKind", "V2_FROZEN_RUNTIME_SCENARIO_SUMMARY")
                 .put("hashPolicy", "LF_NORMALIZED_UTF8")
                 .put("repositoryBaseCommit", sourceCommit)
                 .put("pluginVersion", json.readTree(Path.of("compatibility.json").toFile()).path("plugin").path("version").asText())

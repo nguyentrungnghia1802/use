@@ -22,7 +22,7 @@ class RuntimeMappingTest {
         mapping.rules().forEach(r -> assertTrue(covered.add(r.eventKind()), "duplicate historical selector"));
         assertTrue(covered.contains(RuntimeEventKind.REPLACE_ORDER));
         assertEquals(java.util.EnumSet.allOf(RuntimeEventKind.class), covered);
-        assertEquals("WORKING", mapping.status());
+        assertEquals("FROZEN", mapping.status());
         assertTrue(mapping.rules().stream().noneMatch(r -> r.anchor().contains("Auction")));
     }
     @Test void compatibilityReportIsDerivedAndMachineReadable() throws Exception {
@@ -35,7 +35,7 @@ class RuntimeMappingTest {
         assertTrue(report.stream().filter(r -> r.event().equals("REPLACE_ORDER"))
             .allMatch(r -> r.useTarget().contains("authoritative ranks")));
     }
-    @Test void workingFingerprintAndLegacyDraftFailClosed() throws Exception {
+    @Test void frozenFingerprintAndLegacyDraftFailClosed() throws Exception {
         var doc = document();
         ((ObjectNode)doc.path("targetContract")).put("ecoreSha256", "0".repeat(64));
         rejects(doc, "RUNTIME_MAPPING_BASELINE_MISMATCH");

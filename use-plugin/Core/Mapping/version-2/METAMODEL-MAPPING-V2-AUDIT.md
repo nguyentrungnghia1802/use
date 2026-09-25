@@ -1,23 +1,23 @@
-# METAMODEL MAPPING V2.1 - SECOND-PASS AUDIT
+# METAMODEL MAPPING V2.2 - FINAL FREEZE AUDIT
 
 ## Verdict
 
-`jacamo-use-mapping-v2.1.json` is the corrected **REVIEWED_CANDIDATE_V2** structural mapping for the exact supplied `jacamo_v2_complete.ecore`. This second pass found real issues in V2.0 and fixes them. The mapping now has exact declared-source coverage, explicit source-vs-target navigation, complete USE keyword escaping for the current V2 vocabulary, strict JSON Schema shapes, and explicit handling of EAttribute requiredness/default provenance.
+`jacamo-use-mapping-v2.json` is the **FROZEN** structural mapping for the exact supplied `jacamo_v2_complete.ecore`. The earlier V2.1 candidate audit found and corrected real V2.0 issues. V2.2 additionally preserves every independent authoritative many-valued source order through target-only ranks. The final mapping has exact declared-source coverage, explicit source-vs-target navigation, complete USE keyword escaping, strict JSON Schema shapes, and explicit EAttribute requiredness/default provenance.
 
-It is deliberately **not labelled FROZEN**. That status would require migration of the repository's V1-pinned consumer plus an actual end-to-end `USECompiler` gate, mutation tests and refreshed freeze fingerprints. Calling it FROZEN before that would be a false claim, not an improvement.
+Phase 29-43 migrated all active consumers and passed actual `USECompiler`, negative mutation, transformation, trace, OCL, runtime mapping, mirror-correctness, verification, package and two-case gates. Phase 44 therefore freezes the unchanged V2 Ecore semantics and the V2.2 mapping contract. Historical V1 loaders remain explicit reproducibility paths only; no production fallback exists.
 
 ## Canonical source and fingerprints
 
 - Source of truth: `jacamo_v2_complete.ecore`
 - Ecore SHA-256: `4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c`
-- Mapping V2.1 SHA-256: `78ff207b20122c18b60a28ed03d1fabb57d9badd96518cf13f45c62eb73151f4`
-- Schema V2.1 SHA-256: `ed74aa442928580217e5bd71e8662b1707f22764cbc73c8bb1f2bd032e963a98`
+- Mapping V2.2 frozen SHA-256: `fc03b90cf0729260747bfeffa6a6cd463eefd2259c0c3cd60ed22bd140ec48b1`
+- Schema V2.2 SHA-256: `e9f555ad2e19cbf8382ff4c17d44179d3b47a13d03ee9a58c2b491f99b72c919`
 - EPackage: `agentmetamodel`, nsURI `http://www.example.org/agentmetamodel`
 - USE code inspected at repository revision `59dd582fad63d1a5a19fa8306e3dbed4afe881bc`, parent USE version `7.5.0`.
 
 ## Exact source coverage
 
-| Source construct | Source count | V2.1 mapping | Result |
+| Source construct | Source count | V2.2 mapping | Result |
 |---|---:|---:|---|
 | EEnum | 7 | 7 | PASS |
 | EClass | 21 | 21 | PASS |
@@ -83,7 +83,7 @@ At the inspected USE revision:
 - USE examples include an association with **both ends ordered**, so the three ordered `* <-> *` eOpposite associations are representable.
 - `UseModelApi`/`MModel` support native enum/class/attribute/association concepts.
 - The repository `UseNameAllocator` and USE grammar/editor keywords confirm that lowercase `context`, `role`, and `operations` cannot be emitted unchanged in the relevant identifier positions.
-- The current plugin `MappingLoader`, `MappingModel`, `TransformationPlanner`, and `StructuralUseGenerator` are still V1-shaped and must be migrated before this mapping can be consumed as repository-canonical V2.
+- The active plugin `ActiveBaseline`, `MappingLoader`, `MappingModel`, `TransformationPlanner`, `StructuralUseGenerator`, materialization, trace, OCL and runtime binding layers consume repository-canonical V2. Historical V1 loaders are separate explicit entry points.
 
 ## eOpposite mapping recheck
 
@@ -124,21 +124,15 @@ All structural bindings referenced by VP001-VP007 resolve to existing E/C/A/R/I 
 - Projection structural-binding resolution: PASS.
 - Strict JSON Schema Draft 2020-12 validation: PASS.
 - 11 malformed-schema mutation controls rejected: PASS.
-- Grammar-oriented generated structural fixture inventory (7 enums / 21 classes / 34 relations): PASS as a static source-level gate.
+- Grammar-oriented generated structural fixture inventory (7 enums / 21 classes / 34 relations): PASS.
+- Actual USE 7.5.0 `USECompiler` compilation and text/direct materialization parity: PASS.
+- Independent opposite-order projection and runtime reorder controls: PASS.
+- Full source coverage, negative mutation, two-case and package/freeze-manifest gates: PASS.
 
-### Important limitation
+### Freeze boundary
 
-The last fixture check is **not** an actual invocation of `USECompiler`; the repository cannot be built/executed in this environment from the GitHub connector alone. Therefore the audit does not manufacture a compiler PASS. Actual compiler execution remains a freeze blocker.
+The freeze does not infer concrete runtime property types or operation signatures from names/arity, does not auto-convert Moise deontic semantics to OCL, and does not promote original Auction plan/deadline equivalence. Those boundaries remain explicit. Any semantic mapping change requires a new version and the documented diff/impact/regression loop.
 
 ## Final status
 
-No remaining known **mapping-artifact structural inconsistency** was found after the V2.1 corrections above. The remaining blockers are integration/evidence blockers, not unfilled mapping entries:
-
-1. migrate V1 `MappingLoader`/`MappingModel`/generator to schema 2.1;
-2. implement native enum handling and eOpposite alias consumption;
-3. enforce required/default attribute materialization policy;
-4. migrate semantic kinds/extractors/trace/runtime bindings;
-5. compile generated V2 `.use` with actual USE 7.5.0 `USECompiler`;
-6. run negative mutation, two-case regression and freeze-manifest gates.
-
-Only after those pass should `status` change from `REVIEWED_CANDIDATE_V2` to `FROZEN`.
+No remaining known mapping-artifact structural inconsistency or pending metamodel change exists. Every earlier integration/evidence blocker listed by the candidate audit is closed by executable Phase 29-44 evidence. Status is `FROZEN`; the authoritative hashes and unresolved semantic boundaries are recorded in `release/v2-freeze-manifest.json` and the Phase 44 closure record.

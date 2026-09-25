@@ -1,6 +1,6 @@
 {
   "schemaVersion": "3.0.0",
-  "status": "WORKING",
+  "status": "FROZEN",
   "targetBaseline": "STRUCTURAL_MAPPING_V2",
   "rules": [
     {
@@ -1145,6 +1145,6 @@
   "targetContract": {
     "mappingId": "JaCaMo-agentmetamodel-v2__to__USE-v2.2",
     "ecoreSha256": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c",
-    "mappingSha256": "15d330c70400d16958559b83daf27c3755dc0cb28a7dffb8a08d94879d1ddf67"
+    "mappingSha256": "fc03b90cf0729260747bfeffa6a6cd463eefd2259c0c3cd60ed22bd140ec48b1"
   }
 }

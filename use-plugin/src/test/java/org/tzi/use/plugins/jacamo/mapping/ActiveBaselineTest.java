@@ -11,7 +11,8 @@ class ActiveBaselineTest {
         var file = new ActiveBaseline().fromCheckout(Path.of("."));
         var packaged = new ActiveBaseline().packaged();
         assertEquals(file.mapping(), packaged.mapping()); assertEquals(file.hashes(), packaged.hashes());
-        assertEquals("WORKING_BASELINE", file.mapping().status());
+        assertEquals("FROZEN", file.mapping().status());
+        assertEquals("SOURCE_CONTRACT_VALIDATED_FROZEN", file.compatibility());
         assertFalse(file.mapping().orderProjections().isEmpty());
         assertEquals(file.mapping(), new MappingLoader().loadCanonical(Path.of(".")));
         assertThrows(UnsupportedOperationException.class, () -> file.hashes().put("tampered", "value"));
@@ -24,6 +25,8 @@ class ActiveBaselineTest {
         Files.copy(V2EcoreAuditTest.SOURCE, meta.resolve(ActiveBaseline.ECORE));
         Files.copy(V2MappingAuditTest.MAPPING, mapping.resolve(ActiveBaseline.MAPPING));
         Files.copy(V2MappingAuditTest.SCHEMA, mapping.resolve(ActiveBaseline.SCHEMA));
+        Path release = Files.createDirectories(temporary.resolve("release"));
+        Files.copy(Path.of("release", ActiveBaseline.FREEZE), release.resolve(ActiveBaseline.FREEZE));
         var before = new ActiveBaseline().fromCheckout(temporary);
         String source = Files.readString(meta.resolve(ActiveBaseline.ECORE));
         Files.writeString(meta.resolve(ActiveBaseline.ECORE), source.replace("name=\"Agent\"", "name=\"ChangedAgent\""));
@@ -42,14 +45,14 @@ class ActiveBaselineTest {
         var parser = new MappingLoader(path -> path.equals(V2EcoreAuditTest.SOURCE) ? changed :
                 path.equals(V2MappingAuditTest.MAPPING) ? V2MappingAuditTest.JSON.writeValueAsBytes(document) : Files.readAllBytes(path));
         assertEquals("MAPPING_SOURCE_COVERAGE_MISMATCH", assertThrows(MappingException.class,
-                () -> parser.loadWorking(V2MappingAuditTest.MAPPING, V2MappingAuditTest.SCHEMA, V2EcoreAuditTest.SOURCE)).code());
+                () -> parser.loadV2(V2MappingAuditTest.MAPPING, V2MappingAuditTest.SCHEMA, V2EcoreAuditTest.SOURCE)).code());
         var classifier = document.path("classMappings").get(0).deepCopy();
         ((com.fasterxml.jackson.databind.node.ObjectNode) classifier).put("id", "C999").put("source", "agentmetamodel::SyntheticGroup");
         ((com.fasterxml.jackson.databind.node.ObjectNode) classifier.path("target")).put("name", "SyntheticGroup");
         ((com.fasterxml.jackson.databind.node.ArrayNode) document.path("classMappings")).add(classifier);
         ((com.fasterxml.jackson.databind.node.ArrayNode) document.path("inheritanceMappings")).add(V2MappingAuditTest.JSON.readTree(
                 "{\"id\":\"I999\",\"source\":\"agentmetamodel::SyntheticGroup->super::Group\",\"sourceKind\":\"eSuperType\",\"dimension\":\"organisation\",\"target\":{\"kind\":\"USE_GENERALIZATION\",\"subclass\":\"SyntheticGroup\",\"superclass\":\"Group\"},\"policy\":\"EXACT_SYNTHETIC_TEST\"}"));
-        var mapping = parser.loadWorking(V2MappingAuditTest.MAPPING, V2MappingAuditTest.SCHEMA, V2EcoreAuditTest.SOURCE);
+        var mapping = parser.loadV2(V2MappingAuditTest.MAPPING, V2MappingAuditTest.SCHEMA, V2EcoreAuditTest.SOURCE);
         var plan = new TransformationPlanner().structuralPlan(mapping);
         var errors = new java.io.StringWriter();
         assertNotNull(V2MappingAuditTest.compile(new StructuralUseGenerator().generate("SyntheticMinor", plan), errors), errors.toString());

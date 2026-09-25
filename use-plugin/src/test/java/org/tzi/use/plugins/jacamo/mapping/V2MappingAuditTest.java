@@ -173,7 +173,7 @@ public class V2MappingAuditTest {
         Files.writeString(output.resolve("mapping-v2-validation.json"), JSON.writerWithDefaultPrettyPrinter().writeValueAsString(Map.of(
                 "schemaAndSourceCoverage", "PASS", "structuralCompile", "PASS", "mappingSha256", hash(MAPPING),
                 "schemaSha256", hash(SCHEMA), "ecoreSha256", hash(V2EcoreAuditTest.SOURCE),
-                "status", "WORKING_BASELINE", "instanceFidelity", "SEPARATE_GATE_NOT_PROVEN_BY_COMPILATION")) + "\n");
+                "status", "FROZEN", "instanceFidelity", "PROVEN_BY_PHASE35_MATERIALIZATION_AND_PHASE44_FREEZE_GATES")) + "\n");
     }
 
     @Test void malformedSchemaFingerprintSourceAndTypeMutationsAreRejected() throws Exception {

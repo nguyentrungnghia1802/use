@@ -5,17 +5,43 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.security.MessageDigest;
+import java.util.HexFormat;
 
 /** Owns a single byte snapshot per input and never falls back after invalid input. */
 public final class RuntimeMappingLoader {
     static final String ROOT = "/org/tzi/use/plugins/jacamo/runtime/";
     static final String HISTORICAL_ROOT = "/org/tzi/use/plugins/jacamo/historical/version-1/";
+    static final String RELEASE_ROOT = "/org/tzi/use/plugins/jacamo/release/";
     private static final ObjectMapper JSON = new ObjectMapper().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION);
     public RuntimeMapping loadDefault() {
-        RuntimeMapping mapping = loadBytes(resource("jacamo-use-runtime-mapping-v2.json"));
-        if (!"WORKING".equals(mapping.status()))
-            throw new RuntimeMappingException("RUNTIME_MAPPING_STATUS_INVALID", "document", "Default must be WORKING");
+        byte[] mappingBytes = resource("jacamo-use-runtime-mapping-v2.json");
+        byte[] schemaBytes = resource("runtime-mapping-v2.schema.json");
+        RuntimeMapping mapping = loadBytes(mappingBytes);
+        if (!"FROZEN".equals(mapping.status()))
+            throw new RuntimeMappingException("RUNTIME_MAPPING_STATUS_INVALID", "document", "Default must be FROZEN");
+        validateFreeze(mappingBytes, schemaBytes, mapping);
         return mapping;
+    }
+    private void validateFreeze(byte[] mappingBytes, byte[] schemaBytes, RuntimeMapping mapping) {
+        try {
+            var freeze = JSON.readTree(resource(RELEASE_ROOT, "v2-freeze-manifest.json"));
+            var runtime = freeze.path("resources").path("runtimeMapping");
+            if (!freeze.path("freeze").asBoolean() || !"FROZEN".equals(freeze.path("status").asText())
+                    || !mapping.status().equals(runtime.path("status").asText())
+                    || !sha256(mappingBytes).equals(runtime.path("sha256").asText())
+                    || !sha256(schemaBytes).equals(runtime.path("schemaSha256").asText())
+                    || !mapping.targetContract().get("mappingSha256")
+                            .equals(runtime.path("targetMappingSha256").asText()))
+                throw new RuntimeMappingException("RUNTIME_MAPPING_FREEZE_MISMATCH", "document",
+                        "Frozen Runtime Mapping fingerprints do not match active bytes");
+        } catch (RuntimeMappingException exception) { throw exception; }
+        catch (Exception exception) {
+            throw new RuntimeMappingException("RUNTIME_MAPPING_FREEZE_MISMATCH", "document", exception.getMessage());
+        }
+    }
+    private String sha256(byte[] bytes) throws Exception {
+        return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
     }
     public RuntimeMapping load(Path path) {
         try { return loadBytes(Files.readAllBytes(path)); }

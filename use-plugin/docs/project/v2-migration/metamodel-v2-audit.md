@@ -1,5 +1,9 @@
 # Phase 30 native structural audit
 
+> Phase 44 supersession: the exact audited Ecore bytes and inventory are unchanged
+> and are now `FROZEN` by `release/v2-freeze-manifest.json`. The status and counts
+> below describe the Phase 30 point-in-time gate.
+>
 > Current acceptance: downstream consumer gates PASS after **350/350 clean reactor**
 > and **11/11 Python tests**. Earlier run counts/OPEN descriptions below retain
 > their historical stage. See [final acceptance](phase35-acceptance.md); phase

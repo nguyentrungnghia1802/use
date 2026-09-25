@@ -1,7 +1,7 @@
 {
   "schemaVersion": "2.2.0",
   "mappingId": "JaCaMo-agentmetamodel-v2__to__USE-v2.2",
-  "status": "WORKING_BASELINE",
+  "status": "FROZEN",
   "createdDate": "2026-09-23",
   "purpose": "Metamodel correspondence from the user-supplied jacamo_v2_complete.ecore source of truth to USE 7.5.0 metamodel concepts. This V2 supersedes the old reconstructed DSML4JaCaMo structural vocabulary for V2 migration; concrete project parsing, runtime state synchronization, receiver resolution and OCL/deontic execution remain later layers.",
   "architecture": {
@@ -93,9 +93,9 @@
       "USEBase.gpart: native enum/class/attribute/association/composition grammar",
       "UseModelApi: native EnumType, MClass, MAttribute, MAssociation construction",
       "MModel: enum/class/association registration and navigable-role conflict checks",
-      "use-plugin MappingLoader/MappingModel/TransformationPlanner: V1 consumer assumptions requiring migration for V2 enums/eOpposites"
+      "use-plugin ActiveBaseline/MappingLoader/MappingModel/TransformationPlanner: active V2 enum, opposite, order and projection consumers"
     ],
-    "validationScope": "V2.1 mapping contract is exhaustively cross-checked against jacamo_v2_complete.ecore and the inspected USE 7.5.0 grammar/API surface, including keyword escapes, eOpposite deduplication, navigation namespaces, defaults and requiredness metadata. It is not marked FROZEN because the repository V1-pinned consumer has not yet been migrated and this V2.1 model has not been executed through the actual USECompiler end-to-end in the repository."
+    "validationScope": "The V2 mapping contract is exhaustively cross-checked against jacamo_v2_complete.ecore and the USE 7.5.0 grammar/API surface, including keyword escapes, eOpposite deduplication, independent order projection, navigation namespaces, defaults and requiredness metadata. Active consumers are migrated and text/direct USE compilation, negative mutation, trace, OCL, runtime mapping, mirror, verification and multi-case gates passed before the Phase 44 freeze."
   },
   "policies": {
     "datatypeMappings": [
@@ -3918,10 +3918,10 @@
       "note": "V2 structural Ecore intentionally lacks full concrete property value types and operation signatures; projections remain evidence-gated."
     },
     {
-      "source": "Current repository V1 loader/freeze",
-      "severity": "BLOCKING_FOR_INTEGRATION_NOT_FOR_MAPPING_ARTIFACT",
-      "mappingAction": "MIGRATE_V1_PINNED_CONSUMERS_BEFORE_FREEZE",
-      "note": "MappingLoader hard-codes V1 filenames, V1 hash manifest and only EClass/EAttribute/EReference/eSuperType keys. V2 cannot be declared FROZEN until those consumers/tests are updated and USE compilation gates pass."
+      "source": "Repository V2 migration and freeze gates",
+      "severity": "RESOLVED_FOR_FINAL_FREEZE",
+      "mappingAction": "ACTIVE_V2_CONSUMERS_AND_GATES_COMPLETE",
+      "note": "Active consumers select exact V2 resources without fallback. USE compilation, negative mutation, transformation, trace, OCL, runtime mapping, mirror correctness, verification and two-case regression gates pass; historical V1 loaders remain explicit reproducibility paths only."
     }
   ],
   "statistics": {
@@ -3975,7 +3975,7 @@
     "navigationRule": "sourceForward/sourceReverse are Ecore identities; targetForward/targetReverse are actual USE navigations after escaping/generated roles. For absent eOpposite, sourceReverse is null and targetReverse is explicitly generated/non-authoritative.",
     "attributeRequirednessRule": "EAttribute lowerBound is preserved as sourceRequired/sourceMultiplicity. Because USE attributes have no Ecore multiplicity syntax, requiredness is a mandatory instance-materialization validity gate; required no-default values must resolve, and explicit defaults must materialize as the effective target value when the source is unset.",
     "explicitDefaultRule": "Explicit Ecore defaults are mapped to targetDefaultExpression and applied at materialization when the source is unset. The static V2 mapping does not pretend that USE MAttribute declarations alone encode Ecore default/eIsSet semantics.",
-    "compilerGateRule": "REVIEWED_CANDIDATE means exact source coverage and source-level target checks have passed. FROZEN requires the migrated repository consumer, actual USECompiler compilation, negative mutation gates and refreshed fingerprints/manifests; hashes must never be edited merely to silence a gate."
+    "compilerGateRule": "FROZEN records completed exact source coverage, active V2 consumer migration, actual USECompiler compilation, negative mutation gates and refreshed fingerprints/manifests. Any future semantic change requires a new version, structural diff, impact analysis and full affected regression; hashes must never be edited merely to silence a gate."
   },
   "externalProjectionRequirements": [
     {

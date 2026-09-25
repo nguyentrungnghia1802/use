@@ -1,12 +1,12 @@
 # Active baseline selection contract
 
-> Current acceptance: downstream consumer gates PASS after **350/350 clean reactor**
-> and **11/11 Python tests**. Earlier run counts/OPEN descriptions below retain
-> their historical stage. See [final acceptance](phase35-acceptance.md); phase
-> merge/post-merge/push closure PASS. V2 remains WORKING_BASELINE.
-
-Status: WORKING_BASELINE. Phase 32 selection/evolution component gates PASS;
-IR/parser/facade consumers now use V2. Full phase closure awaits clean regression.
+Status: **FROZEN** at Phase 44. The authoritative fingerprint set is
+[`release/v2-freeze-manifest.json`](../../../release/v2-freeze-manifest.json); the
+Phase 29-43 working manifests and gate records remain point-in-time evidence only.
+The freeze followed the Phase 35 clean acceptance gate and the Phase 36-43 trace,
+OCL, runtime mapping, mirror, verification, genericity, packaging and hardening
+gates. Final Phase 44 commands and counts are recorded in
+[`phase44-final-v2-freeze.md`](phase44-final-v2-freeze.md).
 
 ActiveBaseline owns filesystem and classpath selection. MappingLoader.loadCanonical
 now delegates to it and selects only Metamodel V2 + Mapping 2.2.0. It reads each
@@ -38,8 +38,9 @@ or updates mapping/hash/golden files automatically.
 
 Then reconcile affected mapping declarations and source identities; run native
 EMF/schema/USE compiler checks, affected IR/parser/trace/OCL/runtime bindings and
-regression; regenerate reviewed output and update the working manifest. Passing
-source coverage alone is not final acceptance or freeze authorization.
+regression; regenerate reviewed output under a new version and produce a new
+candidate manifest. Passing source coverage alone cannot mutate or replace the
+frozen contract.
 
 ## Evidence
 
@@ -52,6 +53,6 @@ source coverage alone is not final acceptance or freeze authorization.
   candidates. phase32-self-diff.json records unchanged canonical Ecore.
 - Focused Maven regression: **20/20 PASS** including ordering and unmodified
   CArtAgO/Jason/Moise/composite connector tests. Python: **11/11 PASS**.
-- The earlier full regression belongs to pre-default-selection revision f50f1435.
-  Do not claim its exact failure count as a fresh result after default selection.
-  Full consumer regression and phase merge/push closure remain OPEN through P35.
+- Phase 32 evidence remains the proof that selection and evolution fail closed.
+  Phase 35 and later records supersede its then-open integration status; the
+  historical counts are not restated as Phase 44 results.

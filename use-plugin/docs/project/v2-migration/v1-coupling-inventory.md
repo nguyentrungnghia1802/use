@@ -36,7 +36,7 @@ The table and occurrence index above describe intake revision eeb98c41. Active
 production migration now removes the V1 kind bridges, MAS constructor and
 V1RuntimeBindingAdapter; the default loader, IR/parser, transformation, trace,
 OCL and runtime targets use V2. The explicit historical loader/tests and preserved
-V1 artifacts remain KEEP_HISTORICAL. Current working ZIP replaces the plugin and
+V1 artifacts remain KEEP_HISTORICAL. The frozen V2 candidate ZIP replaces the plugin and
 canonical resources during installation; the historical binary is not hand-patched.
 A production Java search finds no version-1 resource access or V1 count decisions.
 The final executable gate is recorded separately in Phase 35 acceptance evidence.

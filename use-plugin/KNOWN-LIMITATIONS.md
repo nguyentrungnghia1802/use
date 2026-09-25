@@ -1,12 +1,13 @@
 # Known Limitations
 
-- V2 consumers now use Mapping 2.2.0 and runtime target schema 3.0.0. Full
-  clean-build passes 350/350. Phase workflow status is recorded in the acceptance evidence. See [current runtime boundaries](docs/project/v2-migration/phase35-runtime-targets.md).
+- V2 consumers use frozen Mapping 2.2.0 and Runtime Mapping schema 3.0.0. Phase
+  workflow status and current full-build counts are recorded in the Phase 44 evidence. See [current runtime boundaries](docs/project/v2-migration/phase35-runtime-targets.md).
 - Ordered membership changes require complete authoritative directional orders
   during resynchronization; bare link/endpoint mutations are rejected before
   corrupting rank projection. Rank-only updates and reconnect are tested.
-- V2 working package is not frozen or published. Historical V1 evidence below
-  does not establish unrestricted V2 runtime or original Auction equivalence.
+- The V2 contracts are frozen as a release candidate but no Git release tag is
+  published. Historical V1 evidence does not establish unrestricted V2 runtime or
+  original Auction equivalence.
 
 - Compatibility evidence is limited to Windows 11 amd64, Oracle JDK 21.0.5, Maven
   3.9.9, USE 7.5.0, Jason 3.3.0, CArtAgO 3.1 and Moise 1.1.
@@ -42,7 +43,13 @@
 
 ## Runtime research development (Phase 17)
 
-The runtime ledger currently retains all accepted/rejected outcomes in memory; long-duration retention is not bounded. Jason mind and Moise instance observations are not proof of corresponding USE state mutation. CArtAgO unknown/retired observations are explicitly quarantined outside the bound mirror subset. See docs/project/runtime-event-identity.md and the research reconciliation matrix. No new Ecore or OCL support is claimed.
+Runtime evidence, completion, quarantine, correlation and connector diagnostic
+windows have deterministic bounds and expose retired-entry counters. Active
+operations are never evicted; correlation-capacity overflow fails closed until a
+stream boundary or authoritative resync. Jason mind and Moise instance observations
+are not proof of corresponding USE state mutation. CArtAgO unknown/retired
+observations remain quarantined outside the bound mirror subset. See
+docs/project/v2-migration/phase43-hardening.md. No new Ecore or OCL support is claimed.
 
 ## Phase 21-23 boundaries
 

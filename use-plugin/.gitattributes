@@ -6,3 +6,6 @@ Core/Mapping/**/*.json -text
 
 # Canonical runtime contract hashes identify exact bytes.
 src/main/resources/org/tzi/use/plugins/jacamo/runtime/*.json -text
+
+# Final V2 freeze manifest is itself pinned by compatibility metadata.
+release/v2-freeze-manifest.json -text

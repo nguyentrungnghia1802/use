@@ -1,6 +1,6 @@
 # JaCaMo → USE Metamodel Mapping Contract
 
-> Active contract: Metamodel V2 + Mapping 2.2.0 WORKING_BASELINE. Production selection, source identity, projection and runtime contracts are described in [active baseline policy](v2-migration/active-baseline-policy.md), [transformation](v2-migration/phase35-transformation.md) and [runtime targets](v2-migration/phase35-runtime-targets.md). The V1 counts, freeze rules and IDs in the historical contract below do not govern active V2.
+> Active contract: frozen Metamodel V2 + Structural Mapping 2.2.0. Production selection, source identity, projection and runtime contracts are described in [active baseline policy](v2-migration/active-baseline-policy.md), [transformation](v2-migration/phase35-transformation.md), [runtime targets](v2-migration/phase35-runtime-targets.md) and the Phase 44 freeze record. The V1 counts, freeze rules and IDs in the historical contract below do not govern active V2.
 
 
 ## 1. Mục tiêu

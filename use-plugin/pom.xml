@@ -131,7 +131,7 @@
                 <targetPath>org/tzi/use/plugins/jacamo/release</targetPath>
                 <includes>
                     <include>release-manifest.json</include>
-                    <include>v2-working-baseline-manifest.json</include>
+                    <include>v2-freeze-manifest.json</include>
                 </includes>
             </resource>
             <resource>
@@ -208,7 +208,7 @@
                         <goals><goal>single</goal></goals>
                         <configuration>
                             <descriptors><descriptor>src/assembly/release.xml</descriptor></descriptors>
-                            <finalName>use-jacamo-plugin-${project.version}-v2-working</finalName>
+                            <finalName>use-jacamo-plugin-${project.version}-v2-frozen</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
@@ -225,7 +225,7 @@
                         <goals><goal>run</goal></goals>
                         <configuration>
                             <target>
-                                <checksum file="${project.build.directory}/use-jacamo-plugin-${project.version}-v2-working.zip"
+                                <checksum file="${project.build.directory}/use-jacamo-plugin-${project.version}-v2-frozen.zip"
                                           algorithm="SHA-256" fileext=".sha256" format="MD5SUM"/>
                             </target>
                         </configuration>

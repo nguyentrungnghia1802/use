@@ -32,7 +32,7 @@
         <file><source>licenses/SLF4J-MIT.txt</source><outputDirectory>licenses</outputDirectory></file>
         <file><source>compatibility.json</source><outputDirectory>/</outputDirectory></file>
         <file><source>release/release-manifest.json</source><outputDirectory>/</outputDirectory><destName>release-manifest.json</destName></file>
-        <file><source>release/v2-working-baseline-manifest.json</source><outputDirectory>manifests</outputDirectory></file>
+        <file><source>release/v2-freeze-manifest.json</source><outputDirectory>manifests</outputDirectory></file>
         <file><source>docs/project/02-system-architecture.md</source><outputDirectory>docs</outputDirectory><destName>architecture.md</destName></file>
         <file><source>docs/project/12-plugin-ui-workflow.md</source><outputDirectory>docs</outputDirectory><destName>user-workflow.md</destName></file>
         <file><source>docs/project/15-build-release-operations.md</source><outputDirectory>docs</outputDirectory><destName>build-release.md</destName></file>

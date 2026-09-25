@@ -1,10 +1,10 @@
 # Build, Release and Operations
 
-> Current working package: `use-jacamo-plugin-1.0.1-v2-working.zip` plus SHA-256
+> Current frozen candidate: `use-jacamo-plugin-1.0.1-v2-frozen.zip` plus SHA-256
 > sidecar. It includes canonical V2 versioned Ecore/Mapping/schema, V2 profile/OCL
 > plus its manifest, runtime Mapping V2/schema 3.0.0, compatibility metadata and the
-> V2 working-baseline manifest. Manifest status is WORKING_V2_NOT_RELEASED,
-> gitTag is null. Binary descriptor remains 1.0.1; no V2 release/freeze is implied.
+> unified V2 freeze manifest. Manifest status is FROZEN_V2_RELEASE_CANDIDATE and
+> gitTag is null. Binary descriptor remains 1.0.1; no published Git release is implied.
 > The old manifest is preserved under release/historical. Historical release
 > commands and evidence below apply to their recorded V1 revision.
 
@@ -29,11 +29,11 @@ Plugin JAR phải contain/version:
 - plugin metadata;
 - version manifest.
 
-For the V2 working package, the only active structural baseline is under
+For the V2 frozen package, the only active structural baseline is under
 `org/tzi/use/plugins/jacamo/canonical/version-2/` inside the built JAR. Core OCL,
 the V2 verification profile and Runtime Mapping V2 remain in their active component
 namespaces. `release/release-manifest.json`, `release/compatibility.json` and
-`release/v2-working-baseline-manifest.json` are embedded under the plugin namespace.
+`release/v2-freeze-manifest.json` are embedded under the plugin namespace.
 
 V1 structural, OCL, verification-profile and runtime-target resources are retained
 only for explicit reproducibility under `org/tzi/use/plugins/jacamo/historical/version-1/`.
@@ -154,12 +154,12 @@ environment. This does not promise cross-toolchain or cross-platform identity.
 
 ## Phase 26 package contract
 
-Current candidate package adds runtime mapping V1, schema 2.0.0 and freeze manifest
-as three readable runtime/ entries (30 ZIP entries total), with identical embedded
-JAR resources. Installed smoke loads the final runtime contract. No new release tag
-is created; package name/version remain the existing 1.0.1 candidate coordinates.
-The exact source revision distinguishes this candidate from historical 1.0.1 bytes.
-See phase26-runtime-mapping-audit.md and final closure evidence for current tests.
+The candidate package exposes Runtime Mapping V2 and schema 3.0.0 as readable
+`runtime/` entries and embeds byte-identical resources plus the final freeze manifest
+in the JAR. Installed smoke loads the frozen contracts. No release tag is created;
+package coordinates remain the existing 1.0.1 candidate coordinates. The exact
+source revision and V2 suffix distinguish this candidate from historical 1.0.1 bytes.
+See the Phase 44 closure and evidence bundle for current tests.
 
 ## Current engineering closure
 
@@ -167,6 +167,6 @@ See [Phase 27 hardening](phase27-hardening-audit.md) and the
 [final acceptance matrix](phase28-project-closure.md) for current scope and evidence.
 Earlier phase test totals and draft/temporary-target descriptions are historical.
 That final-target statement belongs to the historical Phase 28 V1 package. The
-current package contains one active canonical V2 baseline with working manifests;
-only Phase 44 may freeze and release it. Final user acceptance remains separate
-from autonomous engineering verification.
+current package contains one active canonical V2 baseline with one final freeze
+manifest. Phase 44 records the frozen release candidate; publishing a Git release
+remains separate from autonomous engineering verification.

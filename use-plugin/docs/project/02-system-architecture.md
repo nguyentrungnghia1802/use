@@ -1,7 +1,7 @@
 # System Architecture
 
-> Active production baseline: Metamodel V2 + Structural Mapping 2.2.0 + Runtime
-> Mapping V2/schema 3.0.0, all still `WORKING_BASELINE` until Phase 44. V1 material
+> Active production baseline: frozen Metamodel V2 + Structural Mapping 2.2.0 + Runtime
+> Mapping V2/schema 3.0.0. V1 material
 > below is historical evidence only.
 
 ## 1. Kiến trúc logic

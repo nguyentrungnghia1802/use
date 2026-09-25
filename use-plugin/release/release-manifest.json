@@ -2,7 +2,7 @@
   "schemaVersion": "1.0.0",
   "releaseVersion": "1.0.1",
   "gitTag": null,
-  "artifact": "use-jacamo-plugin-1.0.1-v2-working.zip",
+  "artifact": "use-jacamo-plugin-1.0.1-v2-frozen.zip",
   "compatibility": {
     "use": "7.5.0",
     "pluginDescriptor": "1.0.1",
@@ -16,12 +16,12 @@
   },
   "integrity": {
     "packageAlgorithm": "SHA-256",
-    "sidecar": "use-jacamo-plugin-1.0.1-v2-working.zip.sha256",
+    "sidecar": "use-jacamo-plugin-1.0.1-v2-frozen.zip.sha256",
     "contentPolicy": "ReleasePackageIT compares every ZIP entry byte-for-byte with its declared source"
   },
   "limitations": [
-    "V2 working development package; no final release/tag/freeze or full original Auction standalone E2E claim.",
-    "Real in-process component APIs are covered; a standalone JaCaMo launcher is not",
+    "V2 frozen release candidate; no published Git tag or full original Auction standalone equivalence claim.",
+    "The derived standalone JaCaMo launcher control is covered; full original Auction plan/deadline equivalence is explicitly unsupported",
     "Moise runtime evidence uses a programmatic OS/OE subset rather than loading the checked-in XML",
     "Unsupported semantics remain diagnostic and are not guessed"
   ],
@@ -124,8 +124,8 @@
       "path": "release-manifest.json"
     },
     {
-      "source": "release/v2-working-baseline-manifest.json",
-      "path": "manifests/v2-working-baseline-manifest.json"
+      "source": "release/v2-freeze-manifest.json",
+      "path": "manifests/v2-freeze-manifest.json"
     },
     {
       "source": "src/main/resources/org/tzi/use/plugins/jacamo/binding/binding-v1.schema.json",
@@ -148,13 +148,13 @@
       "source": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-v2.schema.json"
     }
   ],
-  "releaseStatus": "candidate-not-tagged",
-  "status": "WORKING_V2_NOT_RELEASED",
+  "releaseStatus": "frozen-candidate-not-tagged",
+  "status": "FROZEN_V2_RELEASE_CANDIDATE",
   "activeBaseline": {
     "metamodel": "version-2",
     "mapping": "2.2.0",
     "runtimeSchema": "3.0.0",
-    "workingManifest": "manifests/v2-working-baseline-manifest.json",
-    "freeze": false
+    "freezeManifest": "manifests/v2-freeze-manifest.json",
+    "freeze": true
   }
 }
