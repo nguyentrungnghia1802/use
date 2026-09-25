@@ -31,10 +31,12 @@ class ReleasePackageIT {
         Path root = Path.of(".").toRealPath();
         Path hostJar = root.resolve("../use-gui/target/use-gui.jar").toRealPath();
         Path install = Files.createTempDirectory(root.resolve("target"), "release-install-");
-        try (ZipFile zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1-v2-working.zip").toFile())) {
+        try (ZipFile zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1-v2-frozen.zip").toFile())) {
             for (var entry : java.util.Collections.list(zip.entries())) {
                 if (entry.isDirectory()) continue;
-                if (!entry.getName().startsWith("Core/") && !entry.getName().startsWith("lib/plugins/")) continue;
+                if (!entry.getName().startsWith("Core/")
+                        && !entry.getName().startsWith("lib/plugins/")
+                        && !entry.getName().startsWith("release/")) continue;
                 Path destination = install.resolve(entry.getName()).normalize();
                 assertTrue(destination.startsWith(install), "ZIP entry must remain inside install root");
                 Files.createDirectories(destination.getParent());
@@ -61,7 +63,7 @@ class ReleasePackageIT {
         Path root = Path.of(".").toRealPath();
         Path pluginDirectory = root.resolve("target/release-plugin-smoke");
         Files.createDirectories(pluginDirectory);
-        try (ZipFile zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1-v2-working.zip").toFile());
+        try (ZipFile zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1-v2-frozen.zip").toFile());
              InputStream input = zip.getInputStream(zip.getEntry("lib/plugins/use-jacamo-plugin-1.0.1.jar"))) {
             Files.copy(input, pluginDirectory.resolve("use-jacamo-plugin-1.0.1.jar"),
                     java.nio.file.StandardCopyOption.REPLACE_EXISTING);
@@ -75,8 +77,8 @@ class ReleasePackageIT {
     @Test
     void builtReleaseMatchesManifestAndPublishedChecksum() throws Exception {
         Path root = Path.of(".").toRealPath();
-        Path archive = root.resolve("target/use-jacamo-plugin-1.0.1-v2-working.zip");
-        Path checksum = root.resolve("target/use-jacamo-plugin-1.0.1-v2-working.zip.sha256");
+        Path archive = root.resolve("target/use-jacamo-plugin-1.0.1-v2-frozen.zip");
+        Path checksum = root.resolve("target/use-jacamo-plugin-1.0.1-v2-frozen.zip.sha256");
         assertTrue(Files.isRegularFile(archive), "release ZIP must be built in package phase");
         assertTrue(Files.isRegularFile(checksum), "release ZIP must have a SHA-256 sidecar");
 
@@ -128,8 +130,8 @@ class ReleasePackageIT {
                     "src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2-manifest.json");
             jarResources.put("org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json",
                     "src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json");
-            jarResources.put("org/tzi/use/plugins/jacamo/release/v2-working-baseline-manifest.json",
-                    "release/v2-working-baseline-manifest.json");
+            jarResources.put("org/tzi/use/plugins/jacamo/release/v2-freeze-manifest.json",
+                    "release/v2-freeze-manifest.json");
             for (String name : java.util.List.of("jacamo-use-runtime-mapping-v2.json", "runtime-mapping-v2.schema.json"))
                 jarResources.put("org/tzi/use/plugins/jacamo/runtime/" + name,
                     "src/main/resources/org/tzi/use/plugins/jacamo/runtime/" + name);

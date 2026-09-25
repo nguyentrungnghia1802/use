@@ -1,7 +1,7 @@
 {
   "plugin": {
     "version": "1.0.1",
-    "status": "working-v2-not-released",
+    "status": "frozen-v2-release-candidate",
     "historicalTag": "use-jacamo-plugin-v1.0.1",
     "tag": null
   },
@@ -114,18 +114,65 @@
         "status": "not-run",
         "scope": "Existing checkout and pinned local Maven repository; clean historical-namespace focused gate plus full non-clean reactor gate"
       }
+    },
+    {
+      "date": "2026-09-25",
+      "testedProductionCommit": "7c435addcc91d7bbe7928953a11778f1b8e32d73",
+      "runtimeScope": "Final frozen V2 static/runtime pipeline, Auction and CounterTeam, exact package inventory, installed plugin smoke and relocated clean checkout",
+      "focusedGate": {
+        "tests": 154,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "moduleGate": {
+        "tests": 231,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "fullReactor": {
+        "command": "mvn -B clean verify",
+        "tests": 374,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "evidence": "docs/project/v2-migration/phase44-reactor-verify.json"
+      },
+      "relocatedCheckout": {
+        "command": "mvn -B clean verify",
+        "tests": 374,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "normalizedStaticArtifactsEqual": 6,
+        "evidence": "docs/project/v2-migration/phase44-relocated-verify.json"
+      },
+      "host": {
+        "osName": "Windows 11",
+        "osVersion": "10.0",
+        "architecture": "amd64",
+        "mavenVersion": "3.9.9",
+        "mavenJavaVersion": "21.0.5",
+        "mavenJavaVendor": "Oracle Corporation"
+      },
+      "cleanEnvironment": {
+        "status": "passed",
+        "scope": "Separate no-hardlink relocated clone at the frozen source revision; clean full reactor build with the pinned local dependency cache"
+      },
+      "evidence": "docs/project/v2-migration/phase44-final-v2-freeze.md"
     }
   ],
   "runtimeMapping": {
     "mappingVersion": "2.0.0",
     "schemaVersion": "3.0.0",
     "path": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v2.json",
-    "sha256": "3af8141b68c27ae7ef2f9e414558c0932ac2c93a63e17580a9d1ede8a9f31a46",
+    "sha256": "5b2c00f052010fb35a71eb7f50ae4650f8a09c7647332b47a7199c12cbf8a5f0",
     "schemaPath": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-v2.schema.json",
-    "schemaSha256": "be843872c909a8d44ca7c038f5896a8d829f07b068b4861f8169faf552f6a3bb",
+    "schemaSha256": "6ffd20d1acf03e9112997ae3c95d8b3f4c44aab96f412e49ec8763fbb6e3203a",
     "targetBaseline": "STRUCTURAL_MAPPING_V2",
-    "status": "WORKING",
-    "provisional": true,
+    "status": "FROZEN",
+    "provisional": false,
     "legacyDraft": "Rejected with RUNTIME_MAPPING_VERSION_UNSUPPORTED; explicit reconciliation required",
     "scope": "Exact V2 target binding and independent source-order projection; pinned source connector semantics unchanged. No standalone or NPL promotion."
   },
@@ -134,18 +181,24 @@
       "version": "V2",
       "path": "Core/Metamodel/version-2/jacamo_v2_complete.ecore",
       "sha256": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c",
-      "status": "WORKING_BASELINE"
+      "status": "FROZEN"
     },
     "mapping": {
       "mappingId": "JaCaMo-agentmetamodel-v2__to__USE-v2.2",
       "schemaVersion": "2.2.0",
       "path": "Core/Mapping/version-2/jacamo-use-mapping-v2.json",
-      "sha256": "15d330c70400d16958559b83daf27c3755dc0cb28a7dffb8a08d94879d1ddf67",
+      "sha256": "fc03b90cf0729260747bfeffa6a6cd463eefd2259c0c3cd60ed22bd140ec48b1",
       "schemaPath": "Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json",
       "schemaSha256": "e9f555ad2e19cbf8382ff4c17d44179d3b47a13d03ee9a58c2b491f99b72c919",
-      "status": "WORKING_BASELINE"
+      "status": "FROZEN"
     },
-    "status": "WORKING_BASELINE"
+    "status": "FROZEN"
+  },
+  "freezeManifest": {
+    "path": "release/v2-freeze-manifest.json",
+    "sha256": "7965aef8eae099e398de50cb30a65f1b6c5b9207a6500db678825340bca73c77",
+    "status": "FROZEN",
+    "freeze": true
   },
   "oclProfiles": {
     "core": {

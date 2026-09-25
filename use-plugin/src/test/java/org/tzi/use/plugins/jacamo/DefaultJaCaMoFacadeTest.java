@@ -27,7 +27,7 @@ class DefaultJaCaMoFacadeTest {
             JaCaMoFacade.ProjectSummary summary = facade.importProject(Path.of("src/test/resources/auction/auction.jcm"));
 
             assertEquals("auction", summary.projectId());
-            assertEquals("WORKING_BASELINE", summary.mappingStatus());
+            assertEquals("FROZEN", summary.mappingStatus());
             assertTrue(summary.structureValid());
             assertEquals(new org.tzi.use.plugins.jacamo.mapping.MappingLoader().loadCanonical(Path.of(".")).classes().size() + 1, summary.generatedClasses());
             assertTrue(summary.generatedObjects() > 10);

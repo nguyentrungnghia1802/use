@@ -118,7 +118,7 @@ class V2OppositeOrderingAuditTest {
 
     /** Same native-EMF counterexample through production 2.2 loader/planner/backends and ordered OCL. */
     private void verifyProjection(List<EObject> sources, String membershipRule) throws Exception {
-        var mapping = new MappingLoader().loadWorking(V2MappingAuditTest.MAPPING, V2MappingAuditTest.SCHEMA, V2EcoreAuditTest.SOURCE);
+        var mapping = new MappingLoader().loadV2(V2MappingAuditTest.MAPPING, V2MappingAuditTest.SCHEMA, V2EcoreAuditTest.SOURCE);
         var structure = new TransformationPlanner().structuralPlan(mapping);
         var names = new IdentityHashMap<EObject, String>();
         for (int i = 0; i < sources.size(); i++) names.put(sources.get(i), List.of("a0", "a1", "b0", "b1").get(i));

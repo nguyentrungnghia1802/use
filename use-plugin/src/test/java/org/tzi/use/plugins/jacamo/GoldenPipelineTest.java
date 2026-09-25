@@ -122,7 +122,7 @@ class GoldenPipelineTest {
         Path coreOcl = Path.of("src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2.ocl");
         var summary = new ObjectMapper().createObjectNode()
                 .put("schemaVersion", "1.0.0")
-                .put("artifactKind", "V2_WORKING_STATIC_EVIDENCE_MANIFEST")
+                .put("artifactKind", "V2_FROZEN_STATIC_EVIDENCE_MANIFEST")
                 .put("hashPolicy", "LF_NORMALIZED_UTF8")
                 .put("projectId", semantic.projectId())
                 .put("projectEntry", "<auction>/auction.jcm")

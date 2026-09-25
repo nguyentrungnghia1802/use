@@ -1,13 +1,15 @@
 # USE JaCaMo Plugin 1.0.1
 
-> **V2 working migration:** Active Metamodel V2 and Mapping 2.2.0 now drive IR,
+> **V2 frozen release candidate:** Metamodel V2 and Mapping 2.2.0 drive IR,
 > extraction, transformation, trace, OCL and runtime target binding. Independent
 > directional order is represented by generic target-only ranks. Phase 35 clean
-> acceptance is 350/350 PASS; the latest Phase 43 full reactor is 372/372 PASS. See
+> acceptance is 350/350 PASS; the final Phase 44 reactor and relocated checkout are
+> each 374/374 PASS with zero skips. See
 > [transformation](docs/project/v2-migration/phase35-transformation.md) and
-> [runtime contract](docs/project/v2-migration/phase35-runtime-targets.md).
-> The archive is `use-jacamo-plugin-1.0.1-v2-working.zip`, status
-> `WORKING_V2_NOT_RELEASED`; this is not a final freeze or published V2 release.
+> [final freeze evidence](docs/project/v2-migration/phase44-final-v2-freeze.md).
+> The archive is `use-jacamo-plugin-1.0.1-v2-frozen.zip`, status
+> `FROZEN_V2_RELEASE_CANDIDATE`. The contracts are frozen; no Git release tag is
+> published by this engineering freeze.
 
 > **2026-09-20 final completeness update:** Direct launcher-board observation and
 > AgentSpeak-driven standalone control now PASS. Original Auction plan/deadline
@@ -18,7 +20,7 @@
 
 Current repository state: Maven artifact and plugin descriptor version `1.0.1`.
 The historical annotated tag `v1.0.1` points to `7f77b1f4`; current development
-has advanced through V2 UI/packaging and Phase 43 hardening. The manifest name `use-jacamo-plugin-v1.0.1`
+has advanced through the Phase 44 V2 freeze. The manifest name `use-jacamo-plugin-v1.0.1`
 is not a Git tag in this checkout, so it must not be reported as published.
 
 This release adds conservative, traceable JaCaMo project import and offline/live
@@ -31,7 +33,7 @@ Jason 3.3.0, CArtAgO 3.1 and Moise 1.1 integration scope.
 2. Extract this archive into the USE installation root. This places the plugin JAR
    in `lib/plugins` and the active metamodel/mapping under `Core/*/version-2/`.
    The JAR also embeds byte-identical canonical V2 Ecore, mapping/schema,
-   compatibility metadata, and release manifest resources.
+   compatibility metadata, release manifest and unified freeze manifest resources.
 3. Make Jason 3.3.0, CArtAgO 3.1, Moise 1.1 and their required runtime dependencies
    available on the USE JVM classpath. They are intentionally not redistributed in
    this archive. The plugin's JSON Schema validator and its dependencies are
@@ -66,14 +68,14 @@ See `docs/project/00-README.md` for the canonical onboarding path.
 
 ## Verify the download
 
-The build produces `use-jacamo-plugin-1.0.1.zip.sha256` beside the archive. Compare
+The build produces `use-jacamo-plugin-1.0.1-v2-frozen.zip.sha256` beside the archive. Compare
 the first hexadecimal field with a SHA-256 digest of the ZIP before installation.
 
 
 ### Historical Phase 26 runtime contract
 
 Phase 26 froze the historical V1 contract. Active production now selects Metamodel
-V2, Structural Mapping 2.2.0 and Runtime Mapping V2/schema 3.0.0 with exact hashes;
-all remain working baselines until Phase 44. The historical audit remains at
+V2, Structural Mapping 2.2.0 and Runtime Mapping V2/schema 3.0.0 with exact frozen hashes.
+The historical audit remains at
 docs/project/phase26-runtime-mapping-audit.md. Standalone/NPL limitations are
 unchanged unless a later evidence document explicitly promotes them.

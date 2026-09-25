@@ -1,0 +1,44 @@
+{
+  "status": "PASS",
+  "command": "mvn -B -pl use-plugin -Dtest=V2FinalFreezeTest,CompatibilityManifestTest,ReleasePackageContractTest -Dit.test=ReleasePackageIT verify",
+  "head": "7c435addcc91d7bbe7928953a11778f1b8e32d73",
+  "sourcePatchSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "log": "use-plugin/target/phase44-installed-smoke.log",
+  "logSha256": "6fe5cb0e2ff1cb2df15f6af53af9a44841ac438cc3166acdcf07d7ed0e32c1bd",
+  "counts": {
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.CompatibilityManifestTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest"
+    },
+    {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.V2FinalFreezeTest"
+    },
+    {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.release.ReleasePackageIT"
+    }
+  ]
+}

@@ -18,9 +18,11 @@ public final class EvidenceSourceCommit {
             "use-plugin/Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json",
             "use-plugin/Core/Mapping/version-2/jacamo-use-mapping-v2.json",
             "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2.ocl",
+            "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2-manifest.json",
             "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json",
             "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v2.json",
-            "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-v2.schema.json");
+            "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-v2.schema.json",
+            "use-plugin/release/v2-freeze-manifest.json");
 
     private EvidenceSourceCommit() { }
 

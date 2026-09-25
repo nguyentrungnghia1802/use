@@ -26,7 +26,7 @@ class OrderProjectionTest {
             }
             byte[] changed = V2MappingAuditTest.JSON.writeValueAsBytes(root);
             var loader = new MappingLoader(path -> path.equals(V2MappingAuditTest.MAPPING) ? changed : java.nio.file.Files.readAllBytes(path));
-            assertThrows(MappingException.class, () -> loader.loadWorking(V2MappingAuditTest.MAPPING, V2MappingAuditTest.SCHEMA, V2EcoreAuditTest.SOURCE), mutation);
+            assertThrows(MappingException.class, () -> loader.loadV2(V2MappingAuditTest.MAPPING, V2MappingAuditTest.SCHEMA, V2EcoreAuditTest.SOURCE), mutation);
         }
     }
 
@@ -43,8 +43,8 @@ class OrderProjectionTest {
         var result = new DirectUseBackend().materialize(new TextBackend().generate("Composition", structure, plan), plan);
         assertTrue(result.structureValid(), result.validationOutput()); assertTrue(result.invariantsValid(), result.validationOutput());
     }
-    @Test void workingLoaderDerivesAllOrdersAndFullV2TargetCompiles() throws Exception {
-        var mapping = new MappingLoader().loadWorking(V2MappingAuditTest.MAPPING, V2MappingAuditTest.SCHEMA, V2EcoreAuditTest.SOURCE);
+    @Test void v2LoaderDerivesAllOrdersAndFullFrozenTargetCompiles() throws Exception {
+        var mapping = new MappingLoader().loadV2(V2MappingAuditTest.MAPPING, V2MappingAuditTest.SCHEMA, V2EcoreAuditTest.SOURCE);
         var plan = new TransformationPlanner().structuralPlan(mapping);
         var root = V2MappingAuditTest.mapping();
         long expected = java.util.stream.StreamSupport.stream(root.path("referenceMappings").spliterator(), false)

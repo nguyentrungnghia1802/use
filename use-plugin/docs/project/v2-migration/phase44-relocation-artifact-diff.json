@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1.0.0",
+  "phase": 44,
+  "status": "PASS",
+  "sourceRevision": "7c435addcc91d7bbe7928953a11778f1b8e32d73",
+  "relocatedRevision": "7c435addcc91d7bbe7928953a11778f1b8e32d73",
+  "relocatedWorkingTreeStatus": "",
+  "scope": "Normalized deterministic static outputs from the production Auction V2 pipeline",
+  "artifacts": [
+    {
+      "path": "use-plugin/target/phase35-auction-evidence/offline/auction.use",
+      "primarySha256": "dd8fdf8d3a822be770d20e5bae5253142db9897932f7975c5c2effd1184e300c",
+      "relocatedSha256": "dd8fdf8d3a822be770d20e5bae5253142db9897932f7975c5c2effd1184e300c",
+      "equal": true
+    },
+    {
+      "path": "use-plugin/target/phase35-auction-evidence/offline/auction.cmd",
+      "primarySha256": "a630838c653adfaf86f59e7b8d66e37ff04c0c19464589c962921d07a25cdff1",
+      "relocatedSha256": "a630838c653adfaf86f59e7b8d66e37ff04c0c19464589c962921d07a25cdff1",
+      "equal": true
+    },
+    {
+      "path": "use-plugin/target/phase35-auction-evidence/offline/auction-ocl.use",
+      "primarySha256": "96a2aa14099f74153c1d2a8600d4b9cf9d4fe14423f52dee78906abe5b4bc89a",
+      "relocatedSha256": "96a2aa14099f74153c1d2a8600d4b9cf9d4fe14423f52dee78906abe5b4bc89a",
+      "equal": true
+    },
+    {
+      "path": "use-plugin/target/phase35-auction-evidence/offline/translated-ocl-provenance.txt",
+      "primarySha256": "c039740f3f4f2c7e8393189762bbaa1e3eb70869dfdd7952404d16b48ebe8dfb",
+      "relocatedSha256": "c039740f3f4f2c7e8393189762bbaa1e3eb70869dfdd7952404d16b48ebe8dfb",
+      "equal": true
+    },
+    {
+      "path": "use-plugin/target/phase35-auction-evidence/offline/trace.json",
+      "primarySha256": "4db0faea1c2379f03459ca82307e4b31f3b4edbfc6d3be89ef9da46075c95edd",
+      "relocatedSha256": "4db0faea1c2379f03459ca82307e4b31f3b4edbfc6d3be89ef9da46075c95edd",
+      "equal": true
+    },
+    {
+      "path": "use-plugin/target/phase35-auction-evidence/offline/diagnostics.txt",
+      "primarySha256": "477b0b9336f65e73cc39faebe5e324d203dc935211e0cddb4da69bc93521800c",
+      "relocatedSha256": "477b0b9336f65e73cc39faebe5e324d203dc935211e0cddb4da69bc93521800c",
+      "equal": true
+    }
+  ],
+  "allEqual": true,
+  "note": "Runtime UUIDs, timestamps and package ZIP timestamps are intentionally run-specific and are not part of this byte-identity claim."
+}

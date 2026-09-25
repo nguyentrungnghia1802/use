@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0.0",
+  "baseline": "V2",
+  "status": "FROZEN",
+  "date": "2026-09-25",
+  "freeze": true,
+  "releaseDisposition": "FROZEN_RELEASE_CANDIDATE_NOT_TAGGED",
+  "resources": {
+    "metamodel": {
+      "version": "V2",
+      "status": "FROZEN",
+      "path": "Core/Metamodel/version-2/jacamo_v2_complete.ecore",
+      "sha256": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c",
+      "packageName": "agentmetamodel",
+      "nsURI": "http://www.example.org/agentmetamodel",
+      "inventory": {
+        "enums": 7,
+        "classes": 21,
+        "attributes": 48,
+        "references": 37,
+        "oppositePairs": 3
+      }
+    },
+    "structuralMapping": {
+      "mappingId": "JaCaMo-agentmetamodel-v2__to__USE-v2.2",
+      "version": "2.2.0",
+      "schemaVersion": "2.2.0",
+      "status": "FROZEN",
+      "path": "Core/Mapping/version-2/jacamo-use-mapping-v2.json",
+      "sha256": "fc03b90cf0729260747bfeffa6a6cd463eefd2259c0c3cd60ed22bd140ec48b1",
+      "schemaPath": "Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json",
+      "schemaSha256": "e9f555ad2e19cbf8382ff4c17d44179d3b47a13d03ee9a58c2b491f99b72c919",
+      "sourceMetamodelSha256": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c"
+    },
+    "runtimeMapping": {
+      "mappingVersion": "2.0.0",
+      "schemaVersion": "3.0.0",
+      "status": "FROZEN",
+      "path": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v2.json",
+      "sha256": "5b2c00f052010fb35a71eb7f50ae4650f8a09c7647332b47a7199c12cbf8a5f0",
+      "schemaPath": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-v2.schema.json",
+      "schemaSha256": "6ffd20d1acf03e9112997ae3c95d8b3f4c44aab96f412e49ec8763fbb6e3203a",
+      "targetBaseline": "STRUCTURAL_MAPPING_V2",
+      "targetMappingSha256": "fc03b90cf0729260747bfeffa6a6cd463eefd2259c0c3cd60ed22bd140ec48b1"
+    },
+    "coreOcl": {
+      "profileId": "JACAMO_CORE_OCL_V2",
+      "version": "2.0.0",
+      "path": "src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2.ocl",
+      "sha256": "a725c1fe0524f2b477327b58c54d317df693a0fbe37d3773bbe44372beeefab5",
+      "manifestPath": "src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2-manifest.json",
+      "manifestSha256": "14b098508167dc5198fa60589d098d5251d808e3ed2e828376324c751a009917"
+    },
+    "verificationProfile": {
+      "profileId": "JACAMO_VERIFICATION_PROFILE_V2",
+      "version": "2.0.0",
+      "path": "src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json",
+      "sha256": "91c85d42080b56754e8c2f5e9d37127e80c1483fdb4d71f2d61df7eab58fcab2"
+    }
+  },
+  "pinnedRuntimeApis": {
+    "jacamo": "1.3.0",
+    "jason": "3.3.0",
+    "cartago": "3.1",
+    "moise": "1.1"
+  },
+  "mutationControls": [
+    "V2EcoreAuditTest",
+    "V2MappingAuditTest",
+    "OrderProjectionTest",
+    "ActiveBaselineTest",
+    "RuntimeMappingTest",
+    "CompatibilityManifestTest",
+    "V2FinalFreezeTest"
+  ],
+  "evidence": [
+    "docs/project/v2-migration/phase35-acceptance.md",
+    "docs/project/v2-migration/phase36-trace-identity.md",
+    "docs/project/v2-migration/phase37-ocl-audit.md",
+    "docs/project/v2-migration/phase38-runtime-mapping.md",
+    "docs/project/v2-migration/phase39-mirror-correctness.md",
+    "docs/project/v2-migration/phase40-runtime-verification.md",
+    "docs/project/v2-migration/phase41-multicase-genericity.md",
+    "docs/project/v2-migration/phase42-ui-packaging.md",
+    "docs/project/v2-migration/phase43-hardening.md",
+    "docs/project/v2-migration/phase44-final-v2-freeze.md"
+  ],
+  "unresolvedBoundaries": [
+    "Original Auction plan/deadline equivalence is explicitly unsupported.",
+    "General Moise deontic lifecycle is not automatically converted to OCL.",
+    "Unsupported or unbound runtime entities remain diagnostic/quarantined and cannot mutate USE.",
+    "Runtime verification observes JaCaMo; it does not control JaCaMo execution.",
+    "A frozen release candidate is not a published Git tag."
+  ],
+  "evolutionPolicy": "Any semantic change requires a new version, exact diff, impact analysis, selective migration and full affected regression. Frozen hashes are never edited merely to make a gate pass."
+}

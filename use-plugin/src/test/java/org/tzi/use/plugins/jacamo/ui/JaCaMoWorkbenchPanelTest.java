@@ -38,7 +38,7 @@ class JaCaMoWorkbenchPanelTest {
 
         assertEquals("auction", label(panel, "project-id").getText());
         assertEquals("V2 | sha256=" + "a".repeat(64), label(panel, "metamodel-baseline").getText());
-        assertEquals("JaCaMo-agentmetamodel-v2__to__USE-v2.2 | schema=2.2.0 | WORKING_BASELINE"
+        assertEquals("JaCaMo-agentmetamodel-v2__to__USE-v2.2 | schema=2.2.0 | FROZEN"
                 + " | sha256=" + "b".repeat(64), label(panel, "mapping-status").getText());
         assertTrue(label(panel, "dimension-counts").getText().contains("AGENT=4"));
         assertEquals(1, table(panel, "sources-table").getRowCount());
@@ -233,7 +233,7 @@ class JaCaMoWorkbenchPanelTest {
             return new ProjectSummary(Path.of("auction.jcm"), Path.of("."), "auction", 1,
                     Map.of("AGENT", 4L), "V2", "a".repeat(64),
                     "JaCaMo-agentmetamodel-v2__to__USE-v2.2", "2.2.0", "b".repeat(64),
-                    "WORKING_BASELINE", 60, 20, true, 1, 0);
+                    "FROZEN", 60, 20, true, 1, 0);
         }
         @Override public List<SourceRow> sources() {
             return List.of(new SourceRow(Path.of("auction.jcm"), "JCM", 100, "abc"));

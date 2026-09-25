@@ -302,7 +302,10 @@ Generic actions nên bao phủ tối thiểu:
 - no-mutation;
 - unsupported.
 
-**Quan trọng:** mapping ở phase này là `DRAFT_WAITING_FOR_METAMODEL_V2`, target Ecore V1 chỉ là compatibility target tạm thời.
+**Trạng thái lịch sử tại Phase 18:** mapping khi đó là
+`DRAFT_WAITING_FOR_METAMODEL_V2`, target Ecore V1 chỉ là compatibility target tạm
+thời. Phase 38 và Phase 44 đã lần lượt thay thế draft này bằng Runtime Mapping V2
+đã tích hợp và contract `FROZEN`.
 
 **Exit:** runtime event→mutation semantics được formalize mà không hard-code case study.
 
@@ -671,9 +674,9 @@ See [Phase 27 hardening](phase27-hardening-audit.md) and the
 [final acceptance matrix](phase28-project-closure.md) for current scope and evidence.
 Earlier phase test totals and draft/temporary-target descriptions are historical.
 That statement describes the historical Phase 28 V1 closure. Current execution is
-tracked in `docs/agent/task.md`; V2 is the active working baseline and remains
-unfrozen until Phase 44. Final user acceptance remains separate from autonomous
-engineering verification.
+tracked in `docs/agent/task.md`; Phase 44 freezes the active V2 baseline after the
+required correctness and reproducibility gates. Publishing a Git release remains
+separate from autonomous engineering verification.
 
 ## Phase 27–28 final engineering disposition (2026-09-20)
 

@@ -53,9 +53,9 @@ public class V2EcoreAuditTest {
         var inventory = json.readTree(Path.of("docs/project/v2-migration/metamodel-v2-inventory.json").toFile());
         assertEquals(json.valueToTree(counts), inventory.path("counts"));
         var manifest = new LinkedHashMap<String, Object>();
-        manifest.put("status", "WORKING_BASELINE");
-        manifest.put("version", "2-working-2026-09-23");
-        manifest.put("recordedDate", "2026-09-23");
+        manifest.put("status", "FROZEN");
+        manifest.put("version", "V2");
+        manifest.put("recordedDate", "2026-09-25");
         manifest.put("path", SOURCE.toString().replace('\\', '/'));
         manifest.put("sha256", HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(SOURCE))));
         manifest.put("package", pkg.getName()); manifest.put("nsURI", pkg.getNsURI());
@@ -63,10 +63,10 @@ public class V2EcoreAuditTest {
         manifest.put("audit", "EMF Diagnostician OK; no unresolved proxies");
         manifest.put("toolchain", Map.of("emfEcore", "2.39.0", "emfXmi", "2.39.0", "emfCommon", "2.42.0"));
         manifest.put("provenance", "User-supplied canonical Ecore; native validation is structural, not source-language equivalence");
-        manifest.put("unresolved", List.of("V2 production migration and downstream regression remain OPEN", "No automatic equivalence inferred for removed V1 concepts"));
-        manifest.put("evolutionPolicy", "Exact diff, impact, reconcile, test and update revision hashes; final freeze only at Phase 44");
+        manifest.put("unresolved", List.of("No automatic equivalence inferred for removed V1 concepts", "Original Auction plan/deadline semantics remain explicitly unsupported"));
+        manifest.put("evolutionPolicy", "Frozen: any semantic change requires a new version, exact diff, impact analysis, selective migration and affected regression");
         Path output = Files.createDirectories(Path.of("target/phase30-ecore-audit"));
-        Files.writeString(output.resolve("metamodel-v2-working-manifest.json"), json.writerWithDefaultPrettyPrinter().writeValueAsString(manifest) + "\n");
+        Files.writeString(output.resolve("metamodel-v2-freeze-manifest.json"), json.writerWithDefaultPrettyPrinter().writeValueAsString(manifest) + "\n");
     }
 
     @Test void malformedUnknownClassifierAndDatatypeAreRejected() throws Exception {

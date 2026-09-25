@@ -1,6 +1,6 @@
 # Changelog
 
-## V2 working migration — unreleased
+## V2 frozen release candidate — not tagged
 
 - Default to Metamodel V2 / Mapping 2.2.0 with exact fingerprints and descriptor-backed IR.
 - Preserve independent opposite orders through target-only ranks, shared text/direct plans and exact trace.
@@ -9,8 +9,10 @@
 - Verify Auction and CounterTeam through the same production pipeline without case-specific core dispatch.
 - Package one canonical V2 namespace and bound runtime correlation/report/trace diagnostic retention.
 - Add determinism, stale-reference, security and stage-by-stage performance evidence gates.
-- Produce a distinctly named V2 working ZIP, without a release tag or freeze claim.
-- Full clean-build acceptance PASS: 350/350; see Phase 35 evidence.
+- Freeze Metamodel V2, Structural Mapping V2 and Runtime Mapping V2 with one exact
+  compatibility/freeze manifest and a distinctly named V2 frozen ZIP.
+- Final Phase 44 focused 154/154, module 231/231, full clean reactor 374/374,
+  relocated clean reactor 374/374 and installed-package gates PASS with zero skips.
 
 ## 1.0.1 - 2026-09-18
 

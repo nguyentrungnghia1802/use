@@ -6,3 +6,12 @@ Core/Mapping/**/*.json -text
 
 # Canonical runtime contract hashes identify exact bytes.
 src/main/resources/org/tzi/use/plugins/jacamo/runtime/*.json -text
+
+# Final V2 freeze manifest is itself pinned by compatibility metadata.
+release/v2-freeze-manifest.json -text
+
+# Final reproducibility bundle and exact-byte manifest. Both are immutable byte
+# records; treating the JSON as binary avoids line-ending conversion and CRLF
+# whitespace rewriting that would invalidate the bundle hash.
+docs/project/evidence/v2-final/v2-final-evidence.json binary
+docs/project/evidence/v2-final/v2-final-evidence.zip binary

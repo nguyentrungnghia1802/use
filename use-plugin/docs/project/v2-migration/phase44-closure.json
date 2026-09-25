@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "1.0.0",
+  "phase": 44,
+  "status": "DONE",
+  "date": "2026-09-25",
+  "baselineStatus": "V2_FROZEN_RELEASE_CANDIDATE",
+  "frozenSourceRevision": "7c435addcc91d7bbe7928953a11778f1b8e32d73",
+  "semanticBlockers": [],
+  "minorChangeFastPathInvoked": false,
+  "gates": {
+    "candidate": { "tests": 37, "failures": 0, "errors": 0, "skipped": 0 },
+    "focused": { "tests": 154, "failures": 0, "errors": 0, "skipped": 0 },
+    "module": { "tests": 231, "failures": 0, "errors": 0, "skipped": 0 },
+    "reactorClean": { "tests": 374, "failures": 0, "errors": 0, "skipped": 0 },
+    "relocatedClean": { "tests": 374, "failures": 0, "errors": 0, "skipped": 0 },
+    "installedPackageFinal": { "tests": 8, "failures": 0, "errors": 0, "skipped": 0 }
+  },
+  "contracts": {
+    "metamodelV2Sha256": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c",
+    "structuralMappingV2Sha256": "fc03b90cf0729260747bfeffa6a6cd463eefd2259c0c3cd60ed22bd140ec48b1",
+    "structuralMappingSchemaSha256": "e9f555ad2e19cbf8382ff4c17d44179d3b47a13d03ee9a58c2b491f99b72c919",
+    "runtimeMappingV2Sha256": "5b2c00f052010fb35a71eb7f50ae4650f8a09c7647332b47a7199c12cbf8a5f0",
+    "runtimeMappingSchemaSha256": "6ffd20d1acf03e9112997ae3c95d8b3f4c44aab96f412e49ec8763fbb6e3203a",
+    "freezeManifestSha256": "7965aef8eae099e398de50cb30a65f1b6c5b9207a6500db678825340bca73c77"
+  },
+  "releaseArtifacts": {
+    "package": {
+      "path": "target/use-jacamo-plugin-1.0.1-v2-frozen.zip",
+      "sha256": "a3d9d1e9ec42275b04cbad8872214916d1a121c0755ca370f4efc09c5be7aaa0",
+      "entries": 30
+    },
+    "jar": {
+      "path": "target/use-plugin-1.0.1.jar",
+      "sha256": "5cf0c3cc3c58da98d8eec223b9db67da82c26ebaf36318a5c7fb4f13b0ebac16"
+    },
+    "evidenceBundle": {
+      "path": "docs/project/evidence/v2-final/v2-final-evidence.zip",
+      "sha256": "31ae1c76b23df754400473ebebc61d342cc4c84fa16014e80205d240185763f5",
+      "artifactCount": 112
+    },
+    "evidenceManifest": {
+      "path": "docs/project/evidence/v2-final/v2-final-evidence.json",
+      "sha256": "e8e485534efdcc3058871f084b675fba48798dd9b0462796dff46e0236ef4b2a"
+    }
+  },
+  "consistencyChain": [
+    "Metamodel V2",
+    "Structural Mapping V2",
+    "Semantic IR",
+    "Transformation",
+    "Trace/Binding",
+    "OCL",
+    "Runtime Mapping V2",
+    "MSystemState",
+    "Verification",
+    "Tests/Evidence"
+  ],
+  "relocation": {
+    "normalizedArtifactsCompared": 6,
+    "allEqual": true,
+    "evidence": "phase44-relocation-artifact-diff.json"
+  },
+  "boundaries": [
+    "Original Auction plan/deadline equivalence remains explicitly unsupported.",
+    "General Moise deontic semantics are not automatically converted to OCL.",
+    "Runtime UUIDs, timestamps and observed performance durations are run-specific.",
+    "Unsupported or unbound runtime entities cannot mutate USE.",
+    "The frozen release candidate is not a published Git tag."
+  ],
+  "evidence": [
+    "phase44-candidate-gate.json",
+    "phase44-focused-gate.json",
+    "phase44-module-verify.json",
+    "phase44-reactor-verify.json",
+    "phase44-relocated-verify.json",
+    "phase44-installed-smoke.json",
+    "phase44-freeze-diff.json",
+    "phase44-relocation-artifact-diff.json"
+  ]
+}

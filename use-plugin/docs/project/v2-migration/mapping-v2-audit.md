@@ -1,5 +1,9 @@
 # Phase 31 — Mapping V2 audit
 
+> Phase 44 supersession: Mapping V2 is now `FROZEN`; its final exact hash and
+> compatibility pointer are in `release/v2-freeze-manifest.json`. The open and
+> partial descriptions below intentionally preserve the Phase 31 point in time.
+>
 > Current acceptance: downstream consumer gates PASS after **350/350 clean reactor**
 > and **11/11 Python tests**. Earlier run counts/OPEN descriptions below retain
 > their historical stage. See [final acceptance](phase35-acceptance.md); phase

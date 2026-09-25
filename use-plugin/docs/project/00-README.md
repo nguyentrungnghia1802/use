@@ -1,14 +1,16 @@
 # USE JaCaMo Plugin — Canonical Project Orientation
 
-Active production baseline is Metamodel V2 + Mapping 2.2.0 WORKING_BASELINE.
+Active production baseline is frozen Metamodel V2 + Structural Mapping 2.2.0.
 The V2 IR, parser, transformation, trace, OCL and runtime target consumers are
 migrated. Generic target-only rank projection preserves independent opposite
 orders; V2-ORDER-001 remains a mandatory negative/positive regression control.
 
-Last clean Phase 35 reactor: **350/350 PASS**; latest Phase 43 full reactor:
-**372/372 PASS**; Python evolution/diff: **11/11 PASS**.
+Last clean Phase 35 reactor: **350/350 PASS**; final Phase 44 full reactor and
+relocated clean checkout: **374/374 PASS each**; Python evolution/diff: **11/11 PASS**.
 See [Phase 29–35 acceptance](v2-migration/phase35-acceptance.md) and its complete
-per-suite and original-failure disposition evidence. Phase 29–35 are DONE: post-merge 350/350 PASS, merged and pushed. The V2 working ZIP is explicitly unreleased and unfrozen. V1 evidence
+per-suite and original-failure disposition evidence. Phase 29–35 are DONE: post-merge
+350/350 PASS, merged and pushed. Phase 44 freezes the V2 contracts and preserves its
+final reproducibility bundle without publishing a Git tag. V1 evidence
 below remains historical; original Auction standalone equivalence is not claimed.
 
 ## 1. Historical V1 snapshot
@@ -39,7 +41,7 @@ For runtime and feature claims, use this order:
 5. historical plans, checklists, and audit reports.
 
 Code is the source of truth for implemented behavior. Canonical Metamodel V2 and
-Structural Mapping V2 are the active `WORKING_BASELINE` contracts. They define
+Structural Mapping V2 are the active `FROZEN` contracts. They define
 identity and structure, but do not prove that every mapped concept has live runtime
 support. Historical V1 contracts remain reproducibility inputs only.
 
@@ -127,7 +129,7 @@ The active sources are `Core/Metamodel/version-2/jacamo_v2_complete.ecore` and
 `Core/Mapping/version-2/jacamo-use-mapping-v2.json`. Mapping schema `2.2.0`
 validates exact owner-qualified source identities, descriptor-derived inventory,
 defaults, multiplicities, opposites, projections and target-only order rows. V2
-remains a working baseline until the Phase 44 freeze gates pass.
+is frozen by the Phase 44 manifest after all migration and correctness gates pass.
 
 The seven verification projections remain explicit contracts:
 
@@ -244,5 +246,5 @@ current synchronization inventory is [DOCUMENTATION-SYNC-v1.0.1.md](DOCUMENTATIO
 
 Phase 28 is the historical V1 closure. Current V2 implementation and evidence are
 recorded under [v2-migration](v2-migration/), with Phase 42 packaging and
-Phase 43 hardening complete. Metamodel V2, Structural Mapping V2 and Runtime
-Mapping V2 remain working baselines; only Phase 44 may freeze them.
+Phase 43 hardening is complete. Phase 44 freezes Metamodel V2, Structural Mapping
+V2 and Runtime Mapping V2 and records final validation/reproducibility evidence.
