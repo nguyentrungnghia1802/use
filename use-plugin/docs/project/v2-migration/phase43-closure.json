@@ -5,11 +5,13 @@
   "date": "2026-09-24",
   "baselineStatus": "WORKING_BASELINE_NOT_FROZEN",
   "implementationHead": "1c00a8fa76c7180543131a1a680096928b7a5a5b",
+  "mergeHead": "6444fc0d",
   "semanticBlockers": [],
   "gates": {
     "focused": { "tests": 111, "failures": 0, "errors": 0, "skipped": 0 },
     "module": { "tests": 229, "failures": 0, "errors": 0, "skipped": 0 },
-    "reactor": { "tests": 372, "failures": 0, "errors": 0, "skipped": 0 }
+    "reactor": { "tests": 372, "failures": 0, "errors": 0, "skipped": 0 },
+    "postMerge": { "tests": 98, "failures": 0, "errors": 0, "skipped": 0 }
   },
   "contracts": {
     "metamodelV2Sha256": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c",
@@ -27,6 +29,7 @@
     "phase43-focused-gate.json",
     "phase43-module-verify.json",
     "phase43-reactor-verify.json",
+    "phase43-postmerge.json",
     "phase43-determinism.json",
     "phase43-performance.json",
     "phase43-trace-projection-diff.json"

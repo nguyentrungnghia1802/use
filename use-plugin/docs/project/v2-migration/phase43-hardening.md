@@ -4,6 +4,9 @@ Status: DONE. Focused, full-module and full-reactor gates pass with zero failure
 errors or skipped tests. V2 remains `WORKING_BASELINE`; Phase 43 does not freeze or
 release any contract.
 
+Integration commit `6444fc0d` preserves the concurrent metrics-only main update.
+The post-merge consistency gate passes 98/98 with zero failures, errors or skips.
+
 ## Requirement-to-evidence traceability
 
 | Capability | Requirement and implementation | Tests/evidence | Status |
@@ -126,10 +129,12 @@ transformation -> trace/binding -> OCL -> Runtime Mapping V2 -> `MSystemState` m
 - Focused hardening/security/determinism/performance gate: 111/111 PASS.
 - Full plugin module verify: 229/229 PASS.
 - Full reactor verify: 372/372 PASS.
+- Post-merge consistency gate: 98/98 PASS.
 - Every gate has zero failures, zero errors and zero skipped tests.
 
 Machine-readable gate records are `phase43-focused-gate.json`,
-`phase43-module-verify.json` and `phase43-reactor-verify.json`. Detailed measurements
+`phase43-module-verify.json`, `phase43-reactor-verify.json` and
+`phase43-postmerge.json`. Detailed measurements
 and semantic diff evidence are in `phase43-performance.json`,
 `phase43-determinism.json` and `phase43-trace-projection-diff.json`.
 
