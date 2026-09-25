@@ -57,7 +57,11 @@ unchanged.
 
 ## Final gates and evidence
 
-Frozen source revision: `7c435addcc91d7bbe7928953a11778f1b8e32d73`.
+Frozen source revision: `7c435addcc91d7bbe7928953a11778f1b8e32d73`. The final
+merged repository revision is `e8c53a2af650454d770a017ff5008e586cb37c99`; its
+post-merge focused gate is 154/154 PASS and its installed-package gate is 8/8 PASS,
+both with zero failures, errors and skips. The production source diff since the
+freeze revision is empty.
 
 | Gate | Result |
 | --- | ---: |
@@ -85,14 +89,14 @@ frozen mapping contracts without Maven's test classpath.
 
 | Artifact | SHA-256 |
 | --- | --- |
-| `use-jacamo-plugin-1.0.1-v2-frozen.zip` | `a3d9d1e9ec42275b04cbad8872214916d1a121c0755ca370f4efc09c5be7aaa0` |
-| `use-plugin-1.0.1.jar` | `5cf0c3cc3c58da98d8eec223b9db67da82c26ebaf36318a5c7fb4f13b0ebac16` |
-| `v2-final-evidence.zip` | `31ae1c76b23df754400473ebebc61d342cc4c84fa16014e80205d240185763f5` |
-| `v2-final-evidence.json` | `e8e485534efdcc3058871f084b675fba48798dd9b0462796dff46e0236ef4b2a` |
+| `use-jacamo-plugin-1.0.1-v2-frozen.zip` | `d58c102dcf181c08e00692072b7cab2ad36b13da260618b26788cd260b81e1d6` |
+| `use-plugin-1.0.1.jar` | `d48f62f6c820126473b6ff0c2a4dcfafc56ff66f1267f0a8a6224805720e0b0c` |
+| `v2-final-evidence.zip` | `d9b4dd9b6f5f910ce586dd51ceec4a43f5e398e647a9488a306b5c98640b551d` |
+| `v2-final-evidence.json` | `1b033b8e3f0d20d201d92392a895f1296f33f97a2a97bfdb990aee037d3001ea` |
 
 The durable bundle is
 `docs/project/evidence/v2-final/v2-final-evidence.zip` with its SHA-256 sidecar.
-It contains 112 source/test/evidence artifacts: exact frozen resources, generated
+It contains 114 source/test/evidence artifacts: exact frozen resources, generated
 `.use`/`.cmd`, OCL/provenance, trace, event logs, verification reports,
 reconnect/resync evidence, both case summaries, compatibility/release manifests,
 JUnit XML, all Phase 44 logs, release ZIP and JAR. Machine-readable gate records
