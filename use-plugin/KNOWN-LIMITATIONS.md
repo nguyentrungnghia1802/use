@@ -12,7 +12,7 @@
   original Auction equivalence.
 
 - Compatibility evidence is limited to Windows 11 amd64, Oracle JDK 21.0.5, Maven
-  3.9.9, USE 7.5.0, Jason 3.3.0, CArtAgO 3.1 and Moise 1.1.
+  3.9.9, USE 7.5.0, JaCaMo 1.3.1, Jason 3.3.2, CArtAgO 3.1 and Moise 1.1.
 - Phase 20 now passes a real JaCaMo 1.3.0 `.jcm` launcher control through
   AgentSpeak role/mission/goal execution, the checked-in artifact, board connectors,
   frozen Runtime Mapping and USE mirror/resync. This is a supported subset, not
@@ -30,18 +30,18 @@
   operation correlation begins at `opStarted`.
 - Runtime verification observes and reports; it does not block JaCaMo actions.
 - LIVE workspace replacement is supported for rebuild, user OCL profile load, and
-  reimport. It drains the old event stream, rebinds mutation/verification consumers,
-  transfers only exact matching runtime aliases, and applies an authoritative snapshot.
-  In-flight operation correlations and historical runtime reports do not cross the
-  workspace boundary. A snapshot failure leaves consumers aligned and disconnects in
-  `ERROR`; it does not silently retain a stale `LIVE` state.
+  reimport by opening a candidate Bridge session, validating a complete cut, and
+  atomically replacing the USE workspace before closing the previous client. A
+  candidate failure preserves the prior workspace but reports the Bridge error; it
+  never invokes the historical parser path.
 - Project-root `binding.json` is production input only for exact typed ambiguity.
   Invalid, duplicate, wrong-kind, malformed, or source-hash-stale entries block import;
   bindings do not create candidates or provide fuzzy resolution.
 - Interactive installed-distribution GUI testing and other OS/JDK/component versions
   are outside the automated release gate.
-- The plugin requires its documented host/runtime libraries on the USE classpath;
-  the release does not redistribute the JaCaMo component dependencies.
+- The JaCaMo-side Bridge JAR requires the host application's JaCaMo component
+  libraries. USE requires only its plugin JAR; live JaCaMo objects never cross the
+  process or classpath boundary.
 
 ## Runtime research development (Phase 17)
 

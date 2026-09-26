@@ -116,6 +116,8 @@ fabric.properties
 /use-gui/target
 /use-assembly/target
 /use-plugin/target
+/jacamo-bridge-contract/target
+/jacamo-bridge-jacamo/target
 /docs/archunit-results/*-current-failure-report.txt
 
 **/.DS_Store

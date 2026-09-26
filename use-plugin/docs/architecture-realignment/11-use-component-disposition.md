@@ -1,5 +1,45 @@
 # USE component disposition
 
+## Phase 10 final production disposition (2026-09-26)
+
+The migration gate is now closed. `DefaultJaCaMoFacade` has one production
+semantic authority: the validated Bridge contract. The legacy compatibility
+flag was exercised as the Phase 9 rollback rehearsal and then retired; requesting
+it now fails with `SEMANTIC_AUTHORITY_REMOVED:legacy-compatibility`. There is no
+fallback from Bridge configuration, transport, distribution, project identity,
+schema, capability, snapshot, or materialization failure.
+
+Historical source remains in this repository so the audited parser and connector
+tests, fixtures, goldens, and three known failures remain reproducible. It is not
+in the release artifact. `maven-jar-plugin` exclusions plus
+`LegacyAuthorityPackagingIT` prove that the following authority classes and their
+support call path are absent from the shipped JAR:
+
+- custom JCM/Jason/CArtAgO/Moise extraction: `StaticProjectImporter`,
+  `JcmSemanticParser`, `JasonSourceParser`, `CartagoSourceExtractor`,
+  `MoiseXmlParser`, `SemanticResolver`, `JcmLexer`, `JcmProjectLoader` and their
+  discovery/intermediate helpers;
+- in-process runtime authority: Jason/CArtAgO/Moise concrete connectors,
+  registry/monitor bindings, `CompositeRuntimeConnector`,
+  `SyntheticRuntimeConnector`, `RuntimeConnector`, `RuntimeMirrorService`,
+  `RuntimeService`, and `RuntimeSubscription`.
+
+One-to-one replacements are the official `JaCaMoProject`/Jason AST/Moise OS
+adapters and `SnapshotCoordinator` in `jacamo-bridge-jacamo`, the neutral
+contract in `jacamo-bridge-contract`, and the validated Bridge client/mirror/
+runtime projector in `use-plugin`. `OfficialAdapterTest`, `ContractTest`,
+`CanonicalCasesBridgePipelineTest`, `SeparateJvmBridgeTest`,
+`LocalTcpBridgeTransportTest`, `DefaultBridgeAuthorityTest`, and the packaging
+IT are the replacement proof. Production call-path scans find no caller of the
+excluded implementations.
+
+The following foundations remain shipped because they are target-side formal
+verification machinery, not duplicate source authority: semantic IR,
+`OrderEvidenceLoader`, frozen mapping/runtime-mapping loaders, transformation
+and instance planners, direct/text materialization, trace, runtime mutation,
+OCL, verification, diagnostics, and UI integration. Frozen resources and
+historical evidence were not modified.
+
 ## Decision vocabulary
 
 No component is immediately deleted. `DEPRECATE_AFTER_MIGRATION` and `REMOVE_AFTER_PROVEN_REPLACEMENT` require shadow parity, case-study gates and explicit approval. The current foundation is separated from the misaligned frontend boundary.

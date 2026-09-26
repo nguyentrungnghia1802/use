@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "orders"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "orders": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["evidenceId", "owner", "feature", "targets", "ownerSourceHash", "provenance"],
+        "properties": {
+          "evidenceId": { "type": "string", "minLength": 1 },
+          "owner": { "$ref": "#/$defs/semanticId" },
+          "feature": { "type": "string", "minLength": 1 },
+          "targets": {
+            "type": "array",
+            "minItems": 2,
+            "uniqueItems": true,
+            "items": { "$ref": "#/$defs/semanticId" }
+          },
+          "ownerSourceHash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "provenance": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "semanticId": { "type": "string", "pattern": "^jacamo:[^:]+:[^:]+:[^:]+:[^:]+:[^:]+$" }
+  }
+}

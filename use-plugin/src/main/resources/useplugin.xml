@@ -5,16 +5,16 @@
         <command id="org.tzi.use.plugins.jacamo.status" label="JaCaMo status"
                  shellcmd="jacamo status" alias="jacamo-status"
                  class="org.tzi.use.plugins.jacamo.JaCaMoStatusCommand"
-                 help="Show JaCaMo plugin skeleton status"/>
+                 help="Show Bridge authority, readiness, negotiated capabilities and revision status"/>
     </commands>
     <actions>
         <action id="org.tzi.use.plugins.jacamo.workbench.action" label="JaCaMo workbench"
                 class="org.tzi.use.plugins.jacamo.JaCaMoWorkbenchAction"
-                icon="icons/status.gif" tooltip="Import and verify a JaCaMo project"
+                icon="icons/status.gif" tooltip="Import official JaCaMo Bridge snapshots and verify them in USE"
                 menu="JaCaMo" menuitem="Open Workbench..." toolbaritem="false"/>
         <action id="org.tzi.use.plugins.jacamo.status.action" label="JaCaMo status"
                 class="org.tzi.use.plugins.jacamo.JaCaMoStatusAction"
-                icon="icons/status.gif" tooltip="Show JaCaMo plugin status"
+                icon="icons/status.gif" tooltip="Show JaCaMo Bridge authority and readiness status"
                 menu="JaCaMo" menuitem="Status" toolbaritem="false"/>
     </actions>
 </plugin>

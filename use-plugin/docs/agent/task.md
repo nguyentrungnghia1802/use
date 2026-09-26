@@ -1,1992 +1,1307 @@
-# USE-JaCaMo Plugin — Task Plan từ Phase 29
+# TASK — USE–JaCaMo Architecture Realignment Implementation
 
-> **Mục tiêu:** chuyển dự án hiện tại sang **Metamodel V2 + Mapping V2** làm baseline phát triển chính, đồng thời giữ lại tối đa hạ tầng đã được kiểm chứng: import framework, USE adapter, trace/binding infrastructure, runtime connectors, RuntimeEvent/RuntimeTrace, synchronization, verification engine, UI/reporting, build/test infrastructure.
+> **Execution mode:** ONE CHAT · ONE AI · END-TO-END OWNERSHIP  
+> **Workspace assumption:** the workspace contains both `use` and `jacamo`.  
+> **Primary implementation target:** `use/use-plugin` plus a JaCaMo-side Bridge module/component as justified by the dependency spike.  
+> **Audit authority:** the 21 files `00-README.md` … `20-final-feasibility-verdict.md` under `use/use-plugin/docs/architecture-realignment/`.  
+> **Overall audited verdict:** `FEASIBLE_WITH_ADAPTER`.  
+> **Important:** this task authorizes staged implementation of the approved architecture, **not** arbitrary redesign of frozen V2 resources.
+
+> **Execution record — 2026-09-26:** Phase 0 PASS; Phase 1 PASS; Phase 2 PASS for the declared official-API capability set; Phase 3 PASS including the mandatory separate-JVM proof; Phase 4 PASS; Phase 5 `SUPPORTED_SCOPE_PASS`; Phase 6 `SUPPORTED_SCOPE_PASS`; Phase 7 review complete with no frozen-resource change and no V2.x/V3 STOP; Phase 8 PASS with authenticated loopback TCP. STOP before Phase 9 as requested. Reproducible evidence is under `docs/project/architecture-realignment/phase00-08-evidence.json` and the adjacent phase records. Original Auction plan/deadline equivalence and unobserved original House dynamic lifecycle remain explicit limitations, not hidden PASS claims.
 >
-> **Trạng thái V2:** `FROZEN_RELEASE_CANDIDATE` từ Phase 44. Mọi thay đổi
-> sau freeze phải tạo version mới, diff/impact analysis, migration và regression;
-> không sửa hash/fixture chỉ để làm test pass.
->
-> **Active source locations do người dùng chỉ định**
->
-> - Metamodel V2: `D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\Core\Metamodel\version-2`
-> - Mapping V2: `D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\Core\Mapping\version-2`
->
-> **Assumption cho kế hoạch này:** V2 thay thế V1 trong active development. V1 chỉ giữ làm historical/reproducibility baseline, không duy trì hai pipeline production song song trừ khi có yêu cầu riêng.
+> **Checklist interpretation:** checked phase gates and items are executable claims backed by the adjacent evidence records. Conditional original-runtime observations that were not available remain deliberately unchecked and are classified `UNAVAILABLE`; remote-auth/TLS items are not applicable because Phase 8 selects loopback-only transport. They are not silently treated as completed.
 
 ---
 
-> **2026-09-25 Phase 44 freeze:** focused 154/154, module 231/231, clean
-> reactor 374/374, and relocated clean reactor 374/374 all pass with zero
-> failures, errors, or skipped correctness tests. Earlier 350/350 and OPEN
-> paragraphs below are historical migration snapshots. The frozen contracts and
-> final evidence are recorded in [Phase 44](../project/v2-migration/phase44-final-v2-freeze.md);
-> the candidate is not a published Git tag.
+## 0. How the AI must execute this task
 
-# Global Rules cho Phase 29+
+This task is designed for **one AI in one continuous chat**. Do not split the work across independent agents/chats. Keep one coherent implementation state, one decision log, and one checklist.
 
-## Source of Truth mới
+The ordering below is **hard-first where dependencies allow**. Dependency correctness always wins over cosmetic ordering: a later hard phase must not be pulled earlier if its prerequisites are not proven.
 
-Trong active V2 development, ưu tiên:
+### Mandatory operating rules
 
-1. `Core/Metamodel/version-2/**`
-2. `Core/Mapping/version-2/**`
-3. specification/audit đi kèm V2;
-4. `docs/project/**` đã cập nhật cho V2;
-5. runtime capability evidence của Jason/CArtAgO/Moise;
-6. production code;
-7. historical V1 artifacts chỉ dùng để diff/migration/reproducibility.
+- [x] Read this entire `task.md` before touching code.
+- [x] Re-read all `00`–`20` architecture-realignment documents before implementation.
+- [x] Treat production source and executable evidence as authority; never invent JaCaMo/Jason/CArtAgO/Moise APIs.
+- [x] Inspect the live workspace before relying on paths/classes named in the audit; the audit revisions are evidence anchors, **not reset targets**.
+- [x] Preserve all pre-existing user changes. Never use `git reset --hard`, destructive `git clean`, blanket checkout/revert, or overwrite unrelated dirty files.
+- [x] Do not commit/push unless explicitly requested by the user.
+- [x] Do not pause for confirmation between normal phases. Continue automatically when the phase gate passes.
+- [x] Stop only if a true blocker or a forbidden architectural change is required.
+- [x] Update the checklist in this file as work completes.
+- [x] At every phase boundary record: files changed, commands run, test counts, hashes checked, evidence generated, remaining risks.
+- [ ] If execution is interrupted by usage/time limits, persist the exact state/checklist/evidence and resume **in this same chat**. Do not ask the user to restate context.
+- [x] Prefer small, reviewable implementation slices; no big-bang rewrite.
 
-Nếu code hiện tại mâu thuẫn V2, **sửa code**, không sửa V2 để chiều code cũ.
+### Absolute prohibitions
 
-Nếu Mapping V2 mâu thuẫn Metamodel V2, **dừng transformation**, tạo diagnostic/audit issue; không tự đoán semantics.
+Do **not** do any of the following unless a new evidence-backed proposal is produced and the user explicitly approves it:
 
-## Invariants bắt buộc
-
-- [x] JaCaMo vẫn là execution engine; USE là verification mirror.
-- [x] Structural Mapping và Runtime Mapping vẫn là hai tầng riêng.
-- [x] Parser không tạo USE construct trực tiếp.
-- [x] Runtime connector không phụ thuộc tên EClass cụ thể của V2 nếu không bắt buộc.
-- [x] RuntimeEvent/RuntimeTrace không hard-code case study.
-- [x] Mọi runtime mutation phải qua exact identity/trace.
-- [x] Không dùng fuzzy/name similarity làm formal mapping.
-- [x] Không auto-create semantic object chỉ vì runtime xuất hiện tên gần giống.
-- [x] Không auto-convert Moise Norm thành OCL nếu chưa có translation contract.
-- [x] Không duplicate structural constraints bằng OCL nếu USE structure đã kiểm được.
-- [x] Không giữ hard-coded V1 counts (`37/67/63/14`) trong production logic.
-- [x] Không sửa generated output thủ công.
-- [x] Mọi V2.x change phải có impact report trước khi regenerate/freeze.
-- [x] Không đánh dấu V2 `FROZEN` cho tới Phase 44.
-
-## Definition of Done chung cho một task
-
-Một task chỉ được `[x]` khi:
-
-- implementation hoặc audit output đã hoàn thành;
-- test mục tiêu PASS;
-- regression liên quan PASS;
-- không còn silent fallback;
-- diagnostics/provenance được cập nhật nếu contract đổi;
-- docs liên quan được sync;
-- diff đã review;
-- không còn dependency V1 ngoài danh sách historical/compatibility được phép.
+- [ ] modify frozen Ecore V2;
+- [ ] modify Mapping V2.2 semantic rules or hashes;
+- [ ] modify frozen Runtime Mapping V2 semantic targets/hashes;
+- [ ] change frozen OCL/profile hashes to make tests pass;
+- [ ] update goldens merely because Bridge output differs;
+- [ ] patch/fork JaCaMo core;
+- [ ] introduce fuzzy/name/arity/literal-similarity semantic resolution;
+- [ ] auto-translate Moise/NPL norms into OCL;
+- [ ] hard-code Hello/Auction/House names or behavior into production logic;
+- [ ] silently fall back from the Bridge path to legacy parsing;
+- [ ] silently drop observable runtime facts that lack a USE target;
+- [ ] treat wall-clock timestamps as a global causal order;
+- [ ] choose a production transport before the Phase-H-equivalent transport phase.
 
 ---
 
-# Phase 29 — V2 Takeover & Migration Baseline
+# 1. Immutable architectural invariants
 
-**DONE — 2026-09-24.** Component, downstream integration, clean full regression, merge, post-merge regression and push gates PASS. [Acceptance](../project/v2-migration/phase35-acceptance.md). Older progress snapshots below are historical.
+These rules apply to **every phase**.
 
-**Objective:** chuyển source-of-truth active từ V1 sang V2 một cách có kiểm soát trước khi sửa sâu production code.
-
-> Historical execution update, 2026-09-23: this is the initial failing intake
-> snapshot before the completed Phase 29–35 migration. See [baseline](../project/v2-migration/phase29-pre-migration-baseline.md),
-> [acceptance](../project/v2-migration/phase35-acceptance.md), and the Phase 44
-> freeze record for the authoritative final status.
-
-## P29.1 — Capture repository baseline trước migration
-
-### Tasks
-
-- [x] Ghi `git status`.
-- [x] Ghi current branch.
-- [x] Ghi current HEAD.
-- [x] Ghi full test count hiện tại.
-- [x] Ghi current plugin/version/compatibility pins.
-- [x] Ghi hash của V1 Ecore/Mapping đang dùng.
-- [x] Lưu danh sách canonical resources đang được package trong plugin.
-- [x] Lưu baseline Auction + Case Study #2 expected outputs.
-- [x] Không chỉnh V1 historical artifacts trong task này.
-
-### Evidence
-
-- [x] `docs/project/v2-migration/phase29-pre-migration-baseline.md`.
-
----
-
-## P29.2 — Inventory toàn bộ V2 input
-
-### Read first
-
-- Chỉ đọc:
-  - `Core/Metamodel/version-2/**`
-  - `Core/Mapping/version-2/**`
-
-### Tasks
-
-- [x] Liệt kê tất cả file V2.
-- [x] Xác định file Ecore canonical chính.
-- [x] Xác định mapping JSON canonical chính.
-- [x] Xác định schema Mapping V2.
-- [x] Xác định audit/manifest/hash/provenance file nếu đã có.
-- [x] Xác định namespace/package/version metadata.
-- [x] Xác định file nào là source-of-truth, file nào là generated/reference.
-- [x] Phát hiện duplicate/obsolete V2 files.
-- [x] Không suy file canonical chỉ từ filename nếu trong folder có nhiều candidate.
-
-### Output
-
-- [x] `docs/project/v2-migration/v2-input-inventory.md`.
-
----
-
-## P29.3 — Define V1/V2 active-baseline policy
-
-Executable selection gates below now PASS after P32.2/P35.1–P35.7; policy is recorded in `v2-migration/active-baseline-policy.md`.
-
-### Tasks
-
-- [x] V2 = `WORKING_BASELINE` at the historical Phase 29 checkpoint; `FROZEN` at Phase 44.
-- [x] V1 = `HISTORICAL_BASELINE`.
-- [x] Production import/transformation mặc định dùng V2.
-- [x] V1 chỉ được load qua explicit compatibility/test path nếu còn cần.
-- [x] Không có silent fallback từ V2 sang V1.
-- [x] Nếu V2 load fail → explicit error; không chạy V1 thay thế.
-- [x] Định nghĩa resource lookup path mới.
-- [x] Định nghĩa version selector/fingerprint contract.
-
-### Acceptance
-
-- [x] Có đúng một active default metamodel.
-- [x] Có đúng một active default structural mapping.
-
----
-
-## P29.4 — Audit toàn repository cho V1 coupling
-
-Search production code/docs/tests/resources cho:
-
-- [x] V1 Ecore path.
-- [x] V1 Mapping path.
-- [x] old namespace URI/prefix/package name.
-- [x] hard-coded class names chỉ tồn tại ở V1.
-- [x] hard-coded attribute/reference names chỉ tồn tại ở V1.
-- [x] `MetamodelKind`/enum phụ thuộc V1.
-- [x] frozen C/A/R/I/VP IDs.
-- [x] V1 projection IDs.
-- [x] V1 hash/fingerprint.
-- [x] hard-coded counts.
-- [x] golden output assumptions.
-- [x] OCL contexts/navigation phụ thuộc V1.
-- [x] runtime target-binding phụ thuộc V1.
-- [x] release package paths phụ thuộc V1.
-
-Classify mỗi occurrence:
-
-- [x] `MIGRATE`.
-- [x] `KEEP_HISTORICAL`.
-- [x] `VERSION_ABSTRACTION`.
-- [x] `REMOVE`.
-- [x] `REVIEW_REQUIRED`.
-
-### Output
-
-- [x] `v1-coupling-inventory.md`.
-
----
-
-## P29.5 — Phase 29 gate
-
-Independent inventory, executable selection and integration regression PASS. Phase workflow closure PASS; see final acceptance. REMOVE is an audited empty classification, not authorization to delete.
-
-- [x] Không sửa parser/transformation sâu trước khi inventory hoàn thành.
-- [x] Không xóa V1.
-- [x] V2 active-baseline policy được document.
-- [x] V1-coupling inventory hoàn chỉnh.
-- [x] Test baseline trước migration được lưu.
-
----
-
-# Phase 30 — Metamodel V2 Structural Audit
-
-**DONE — 2026-09-24.** Component, downstream integration, clean full regression, merge, post-merge regression and push gates PASS. [Acceptance](../project/v2-migration/phase35-acceptance.md). Older progress snapshots below are historical.
-
-**Objective:** hiểu chính xác Metamodel V2 như một contract máy đọc được, không dựa vào V1 assumptions.
-
-## P30.1 — Parse và validate Ecore V2
-
-### Tasks
-
-- [x] Load Ecore V2 bằng parser/EMF gate hiện có hoặc tooling tương đương.
-- [x] Validate XML/Ecore syntax.
-- [x] Resolve all classifiers.
-- [x] Resolve all EReference targets.
-- [x] Resolve eSuperTypes.
-- [x] Detect unresolved proxies.
-- [x] Detect invalid containment.
-- [x] Detect duplicate names trong cùng namespace.
-- [x] Detect invalid datatype references.
-- [x] Compute SHA-256.
-- [x] Record nsURI/nsPrefix/package/version.
-
-### Acceptance
-
-- [x] Ecore V2 load sạch hoặc mọi unresolved fact có diagnostic explicit.
-- [x] Không tiếp tục mapping nếu Ecore structurally invalid.
-
----
-
-## P30.2 — Generate V2 structural inventory tự động
-
-Không hard-code count.
-
-Generate:
-
-- [x] all EClasses.
-- [x] abstract/concrete status.
-- [x] all EAttributes.
-- [x] datatype/default/bounds.
-- [x] all EReferences.
-- [x] source/target.
-- [x] containment.
-- [x] lower/upper bounds.
-- [x] ordered/unique.
-- [x] all inheritance edges.
-- [x] eOpposite nếu có.
-- [x] annotations/provenance quan trọng.
-- [x] unresolved fields nếu có.
-
-### Output
-
-- [x] `metamodel-v2-inventory.json`.
-- [x] `metamodel-v2-audit.md`.
-
----
-
-## P30.3 — Exact V1 → V2 structural diff
-
-### Tasks
-
-- [x] added classes.
-- [x] removed classes.
-- [x] same-name but changed classes.
-- [x] added/removed attributes.
-- [x] type/default/bounds changes.
-- [x] added/removed references.
-- [x] target changes.
-- [x] containment changes.
-- [x] multiplicity changes.
-- [x] ordering/uniqueness changes.
-- [x] inheritance changes.
-- [x] namespace changes.
-- [x] annotation/provenance differences.
-- [x] rename candidates chỉ ghi `CANDIDATE`; không auto-accept fuzzy rename.
-
-### Output
-
-- [x] `metamodel-v1-to-v2-diff.json`.
-- [x] `metamodel-v1-to-v2-impact.md`.
-
----
-
-## P30.4 — Classify semantic breakage
-
-Với mỗi breaking diff:
-
-- [x] source-language concept còn tồn tại không?
-- [x] chỉ đổi representation hay đổi semantics?
-- [x] parser có bị ảnh hưởng?
-- [x] Semantic IR có bị ảnh hưởng?
-- [x] structural mapping có bị ảnh hưởng?
-- [x] projection có bị ảnh hưởng?
-- [x] trace identity có bị ảnh hưởng?
-- [x] runtime target-binding có bị ảnh hưởng?
-- [x] OCL navigation/context có bị ảnh hưởng?
-- [x] case studies có bị ảnh hưởng?
-
-Classification vocabulary audited: actual rows use conservative breaking/added/removed dispositions; representation-only or compatible statuses are not asserted without proof.
-
-- [x] `REPRESENTATION_ONLY`.
-- [x] `SEMANTIC_COMPATIBLE_CHANGE`.
-- [x] `SEMANTIC_BREAKING_CHANGE`.
-- [x] `ADDED_CAPABILITY`.
-- [x] `REMOVED_CAPABILITY`.
-- [x] `UNCERTAIN_REQUIRES_DECISION`.
-
----
-
-## P30.5 — Establish V2 working manifest
-
-Create/update manifest containing:
-
-- [x] V2 Ecore path.
-- [x] hash.
-- [x] package/nsURI.
-- [x] structural counts generated dynamically.
-- [x] status = `WORKING_BASELINE` in the historical working manifest; `FROZEN` in the final manifest.
-- [x] created/updated date.
-- [x] provenance.
-- [x] known unresolved items.
-- [x] allowed evolution policy.
-
-### Important
-
-- [x] Không dùng từ `FROZEN`.
-- [x] Không khóa mapping hash như final release nếu đang active development; hash vẫn phải được record để reproducibility.
-
----
-
-## P30.6 — Phase 30 gate
-
-Native structural audit, generated inventory and downstream consumer regression PASS; phase workflow closure PASS; see final acceptance. See `v2-migration/metamodel-v2-audit.md` and exact impact report.
-
-- [x] V2 Ecore structurally valid.
-- [x] Exact inventory tồn tại.
-- [x] V1→V2 diff tồn tại.
-- [x] Breaking changes đã classify.
-- [x] Không còn production decision dựa trên V1 counts.
-
----
-
-# Phase 31 — Mapping V2 Audit & USE Target Contract
-
-**DONE — 2026-09-24.** Component, downstream integration, clean full regression, merge, post-merge regression and push gates PASS. [Acceptance](../project/v2-migration/phase35-acceptance.md). Older progress snapshots below are historical.
-
-**Objective:** kiểm chứng Mapping V2 đã có, không regenerate hoặc rewrite mù quáng.
-
-**2026-09-23 — PARTIAL / ordering decision approved:**
-Target-only generic independent rank projection is authorized.
-[Implementation and current gates](../project/v2-migration/phase31-order-projection.md).
-The following counts and blocker description are the pre-projection 2.1 audit;
-the membership-only limitation remains a negative regression, not a request for
-a new decision. Production default selection/IR consumers still require migration.
-
-**Historical pre-projection audit:**
-[Mapping audit](../project/v2-migration/mapping-v2-audit.md),
-[ordered-opposite decision](../project/v2-migration/phase31-ordered-opposite-decision.md).
-Independent schema/source/compiler gates PASS (11 focused tests). Full regression:
-317 executed, 3 failures, 73 errors; same 76 failing identities as baseline.
-V2-ORDER-001 proves current USE link insertion cannot preserve every valid pair
-of independently ordered opposite lists. Phase and fidelity gates remain OPEN.
-Checked items below refer to audit fixtures/contracts, not production migration.
-Unused disposition categories are not asserted. Source inheritance is N/A (zero
-edges); the explicit subtype projection compiler control passes. Multiplicity
-bounds are structurally checked; complete source-semantic preservation, generated
-navigation/trace and executable projection/runtime/OCL gates remain OPEN.
-
-## P31.1 — Load Mapping V2 + schema
-
-- [x] Validate JSON syntax.
-- [x] Validate JSON schema.
-- [x] Validate mapping version.
-- [x] Validate declared source metamodel fingerprint/version.
-- [x] Reject mapping trỏ sang V1 fingerprint.
-- [x] Detect unknown fields nếu schema yêu cầu closed shape.
-- [x] Detect duplicate rule IDs.
-
----
-
-## P31.2 — Source coverage audit dựa trên Ecore V2
-
-- [x] Mỗi EClass V2 có disposition.
-- [x] Mỗi declared EAttribute V2 có disposition.
-- [x] Mỗi EReference V2 có disposition.
-- [x] Mỗi inheritance edge V2 có disposition.
-- [x] Không orphan mapping entry.
-- [x] Không stale source key.
-- [x] Không bare-name ambiguity.
-- [x] Owner-qualified identity được dùng.
-- [x] Removed V1 elements không còn active mapping entry.
-- [x] New V2 elements không silently ignored.
-
-Allowed disposition (alternative categories below are audited N/A: all current structural sources are MAPPED):
-
-- [x] `MAPPED`.
-- [x] `INTENTIONALLY_NOT_MAPPED` với reason.
-- [x] `REVIEW_REQUIRED`.
-- [x] `UNSUPPORTED` với evidence.
-
----
-
-## P31.3 — Target USE validity audit
-
-Với từng mapping:
-
-- [x] USE target construct hợp lệ.
-- [x] datatype conversion hợp lệ.
-- [x] inheritance hợp lệ.
-- [x] association/composition direction hợp lệ.
-- [x] multiplicity preserve intended source semantics.
-- [x] role names deterministic và không collision.
-- [x] reserved USE identifiers được escape có trace.
-- [x] generated reverse navigation không bị hiểu nhầm source-authored.
-- [x] no duplicate classifier/association/role names.
-
----
-
-## P31.4 — Projection V2 audit
-
-Nếu Mapping V2 có projection/profile extension:
-
-- [x] inventory tất cả projections.
-- [x] xác định source anchors.
-- [x] xác định target concepts.
-- [x] prerequisites.
-- [x] assumptions.
-- [x] information loss.
-- [x] runtime relevance.
-- [x] OCL relevance.
-- [x] case-study independence.
-- [x] unsupported conditions.
-
-Đặc biệt audit:
-
-- [x] concrete Artifact projection.
-- [x] observable property projection.
-- [x] operation signature projection.
-- [x] Agent ↔ Environment cross-dimensional anchors.
-- [x] Organisation anchors.
-- [x] Norm preservation.
-- [x] mọi V2 projection mới.
-
----
-
-## P31.5 — USE compiler gate
-
-Generate structural fixture từ Mapping V2:
-
-- [x] classes compile.
-- [x] attributes compile.
-- [x] associations/compositions compile.
-- [x] inheritance compile.
-- [x] projection fixture compile.
-- [x] negative mutations fail như expected.
-
-### Output
-
-- [x] `mapping-v2-audit.md`.
-- [x] `mapping-v2-validation.json`.
-- [x] `mapping-v2-use-compile.log`.
-
----
-
-## P31.6 — Mapping V2 working status
-
-- [x] Mapping V2 = `WORKING_BASELINE` at Phase 31; `FROZEN` at Phase 44.
-- [x] Không freeze final before Phase 44.
-- [x] Có hash/version record.
-- [x] Có compatibility pointer tới exact Metamodel V2 hash.
-- [x] Mọi future Ecore change phải invalidate/reconcile mapping status.
-
-### V2-ORDER-001 — approved target-only projection component gates
-
-- [x] Mapping/schema 2.2.0 and exact working loader validation.
-- [x] Generic plan, typed order entries, independent authoritative directions.
-- [x] Native EMF counterexample retained and projected source navigation PASS.
-- [x] Determinism, actual text/direct parity, rank validity and membership bijection.
-- [x] Trace and exact source-feature OCL query binding.
-- [x] Rank-only runtime action, queue, drift and authoritative reconnect/resync.
-- [x] Composition, unordered and non-opposite controls; no Ecore/USE core edits.
-- [x] Default V2 facade/IR/parser integration and full consumer regression (P32–35).
-
-Evidence: `phase31-order-projection.md`, `order-projection-working-manifest.json`.
-27 focused tests and 9 Python regressions PASS. Full reactor: 325 executed,
-3 failures, 73 errors, same failing identities as pre-migration baseline.
-Phase closure remains OPEN; this is not an end-to-end V2 release acceptance.
-
----
-
-# Phase 32 — V2 Evolution Architecture & Change-Resilience
-
-**DONE — 2026-09-24.** Component, downstream integration, clean full regression, merge, post-merge regression and push gates PASS. [Acceptance](../project/v2-migration/phase35-acceptance.md). Older progress snapshots below are historical.
-
-**Objective:** làm cho các thay đổi nhỏ V2.1/V2.2 sau này rẻ và có kiểm soát.
-
-**Component tasks PASS; overall phase closure OPEN.** See
-[selection/evolution evidence](../project/v2-migration/active-baseline-policy.md).
-20 focused Java tests and 11 Python tests PASS. Mapping defaults now select V2;
-IR/parser/facade integration and full regression still depend on P33–35.
-No phase merge/release acceptance is implied by the checked component tasks.
-
-## P32.1 — Remove hard-coded metamodel inventory from production logic
-
-- [x] Không hard-code class count.
-- [x] Không hard-code attribute/reference count.
-- [x] Không hard-code inheritance count.
-- [x] Không hard-code V1 projection count.
-- [x] Registry/descriptor được load từ V2 mapping/metamodel contract.
-
----
-
-## P32.2 — Centralize active metamodel/mapping selection
-
-Create one component/service responsible for:
-
-- [x] active metamodel path.
-- [x] active mapping path.
-- [x] version.
-- [x] hash.
-- [x] compatibility status.
-- [x] resource packaging path.
-- [x] diagnostics.
-
-Không để nhiều class tự nối path `Core/...`.
-
----
-
-## P32.3 — Implement/reuse exact metamodel diff tool
-
-Input:
-
-- [x] old Ecore.
-- [x] new Ecore.
-
-Output:
-
-- [x] structural diff.
-- [x] mapping impact.
-- [x] semantic IR impact.
-- [x] parser impact.
-- [x] projection impact.
-- [x] trace impact.
-- [x] runtime target-binding impact.
-- [x] OCL context/navigation impact.
-- [x] golden output impact.
-
-### Tests
-
-- [x] add class.
-- [x] remove class.
-- [x] add attribute.
-- [x] datatype change.
-- [x] multiplicity change.
-- [x] containment change.
-- [x] target reference change.
-- [x] inheritance change.
-- [x] rename candidate without auto acceptance.
-- [x] no-op/self diff.
-
----
-
-## P32.4 — Working-baseline update command/process
-
-Define a repeatable process for V2 minor change:
+### Authority
 
 ```text
-replace/update V2 input
-→ compute diff
-→ fail affected compatibility gates
-→ generate impact report
-→ update only affected layers
-→ regenerate outputs
-→ regression
-→ update working manifest/hash
+JaCaMo/Jason/CArtAgO/Moise
+        = semantic + execution authority
+
+Bridge
+        = observation/adaptation/serialization authority
+
+Frozen Ecore V2
+        = bounded target vocabulary, not source parser
+
+Mapping V2.2
+        = structural Ecore/V2 -> USE transformation
+
+Runtime Mapping V2
+        = normalized faithful runtime mutation mapping
+
+USE
+        = formal mirror + OCL verification authority
+```
+
+- [x] USE must not reconstruct JaCaMo meaning when official objects already own that meaning.
+- [x] Bridge-side code may depend on the exact JaCaMo distribution.
+- [x] USE production-side semantic code must depend only on the neutral contract, not live JaCaMo/Jason/CArtAgO/Moise objects.
+- [x] No shared-classpath assumption is allowed across the JaCaMo/USE process boundary.
+
+### Identity
+
+Every live fact must be anchored by canonical identity, not display name.
+
+```text
+official/source identity
+ -> BridgeEntityId / BridgeRelationId
+ -> SemanticId
+ -> TraceIndex
+ -> USE classifier/object/link
+```
+
+- [x] Runtime identity carries `sessionId` and `generation` directly or through an incarnation.
+- [x] Recreate-after-dispose/stop always creates a new live identity even if the local name is reused.
+- [x] Unknown/stale/dangling identity fails closed.
+- [x] Cross-dimensional links require exact official/config/runtime/binding evidence.
+
+### Snapshot/event semantics
+
+- [x] Never claim a globally atomic Jason+CArtAgO+Moise snapshot.
+- [x] Use buffered validated cuts with per-source watermarks.
+- [x] Use per-source monotonic sequence plus explicit causation/correlation; no fabricated global total order.
+- [x] Gap/overflow/drift/unknown incarnation => quarantine + resync.
+- [x] At-least-once delivery is acceptable only with idempotent event IDs.
+- [x] Exactly-once delivery must not be claimed.
+
+### Frozen-V2 fidelity boundaries
+
+Relation-scoped Moise cardinality is exact in Bridge/provenance:
+
+```text
+GroupRoleCardinality(groupId, roleId, min, max)
+ParentSubGroupCardinality(parentGroupId, subGroupId, min, max)
+```
+
+- [x] Never arbitrarily choose/merge contextual cardinalities into `Role.min/max` or `Group.min/max`.
+- [x] Context-collapsing V2 projection is `SUPPORTED_SUBSET` or `REPRESENTATION_LOSS`, never `EXACT`.
+
+Runtime facts such as:
+
+- mission commitment,
+- organizational-goal runtime state,
+- norm instance/lifecycle,
+- group/scheme runtime-instance context,
+
+must always be captured when observable.
+
+- [x] If faithfully materialized into `MSystemState`: mark `MATERIALIZED_FAITHFULLY`.
+- [x] If captured but no faithful USE target exists: retain as `EVIDENCE_ONLY`.
+- [x] If unavailable from the authority: mark `UNAVAILABLE`.
+- [x] OCL may depend only on faithfully materialized runtime dependencies.
+- [x] Evidence-only/unavailable OCL dependency => `INCONCLUSIVE`, `NOT_EVALUATED`, or capability-blocked; never guessed/defaulted.
+
+---
+
+# 2. Baseline anchors that must be preserved and revalidated
+
+These are **audit-time anchors**, not instructions to reset current HEAD.
+
+### Audited revisions / versions
+
+- USE audit revision: `215784b648a906e4db6086352946aba5bda10f98`
+- JaCaMo audit revision: `3866858a7ebf6be85d9199c13a09cf4bfb8191be`
+- USE: `7.5.0`
+- JaCaMo audited workspace: `1.3.1`
+- Jason audited runtime: `3.3.2`
+- CArtAgO: `3.1`
+- Moise: `1.1`
+- NPL: `0.6.1`
+- Frozen release compatibility evidence also references JaCaMo `1.3.0` / Jason `3.3.0`.
+
+### Frozen artifact hashes
+
+- Ecore V2: `4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c`
+- Mapping V2.2: `fc03b90cf0729260747bfeffa6a6cd463eefd2259c0c3cd60ed22bd140ec48b1`
+- Runtime Mapping V2: `5b2c00f052010fb35a71eb7f50ae4650f8a09c7647332b47a7199c12cbf8a5f0`
+- Freeze manifest audit hash: `7965aef8eae099e398de50cb30a65f1b6c5b9207a6500db678825340bca73c77`
+
+### Audited test baseline
+
+- `use-core`: 12 passed
+- `use-gui`: 1 passed
+- `use-plugin`: 228 run, **3 pre-existing failures**, 0 errors, 0 skipped
+  - `GoldenPipelineTest` digest mismatch
+  - `ConstraintClosureTest` expected 2 but got 0
+  - `InstanceMaterializationTest` golden digest mismatch
+- JaCaMo audited Gradle tests: 6/6 passed
+
+The three USE failures are not acceptable forever, but they are **baseline evidence**. Do not hide them or change goldens/assertions merely to get green.
+
+### Canonical case roots / audit hashes
+
+- Hello World JCM: `c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101`
+- Auction JCM: `c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb`
+- House-Building JCM: `c14ae6299b0d2e0034d7daaa233b9bf1b94a7b337aa39477ec865c52ca5fef08`
+
+Canonical case copies used as acceptance evidence must remain byte-identical to the recorded upstream inputs or receive a new explicit source manifest.
+
+---
+
+# PHASE 0 — Mandatory preflight and reproducibility guard
+**Difficulty: LOW, but prerequisite — keep this phase short and do it first.**  
+**Corresponds primarily to original Phase A.**
+
+## Goal
+
+Establish a safe implementation baseline without destroying dirty work or confusing old failures with new regressions.
+
+## Checklist
+
+### Workspace state
+- [x] Locate the `use` and `jacamo` repositories.
+- [x] Record branch, HEAD, remote relationship, and dirty status for both.
+- [x] Record all modified/untracked paths before changing anything.
+- [x] Compare current revisions with the audit anchors; do not reset solely because they differ.
+- [x] Record JDK, Maven, Gradle and OS/runtime environment.
+- [x] Resolve the actual JaCaMo dependency graph.
+
+### Frozen resources
+- [x] Recompute Ecore V2 hash.
+- [x] Recompute Mapping V2.2 hash.
+- [x] Recompute Runtime Mapping V2 hash.
+- [x] Recompute/read freeze-manifest hash.
+- [x] Fail the phase if any frozen artifact changed without prior explicit approval.
+
+### Baseline tests
+- [x] Run the USE reactor baseline: `mvn -B -pl use-plugin -am test`.
+- [x] Record exact counts and failure signatures.
+- [x] Classify any difference from the 3 known failures before proceeding.
+- [x] Run JaCaMo tests in an **isolated copy/worktree/distribution**, because its Gradle configuration may run `fixcrlf` and touch the checkout.
+- [x] Verify no JaCaMo authoritative source content changed as a side effect.
+
+### Evidence output
+- [x] Create/update a machine-readable baseline manifest with revisions, dirty-state fingerprint, dependency versions, frozen hashes, commands and test results.
+- [x] Create a short human-readable baseline summary.
+- [x] Record canonical-case source manifests.
+
+## Phase gate
+
+Proceed only when:
+- [x] pre-existing changes are preserved;
+- [x] all frozen artifacts match expected state or an approved newer state is documented;
+- [x] baseline failures are reproducible/classified;
+- [x] the JaCaMo test process cannot mutate the authoritative checkout unnoticed.
+
+---
+
+# PHASE 1 — Neutral contract, canonical identity, capability semantics
+**Difficulty: CRITICAL — do early while reasoning quality is highest.**  
+**Corresponds primarily to original Phase B plus identity/contract portions of D.**
+
+## Goal
+
+Create the transport-neutral semantic contract and canonical identity layer before any large Bridge or USE refactor.
+
+## 1.1 Physical module/dependency spike
+
+- [ ] Inspect current Maven/Gradle layout and select the smallest clean module boundary.
+- [ ] Ensure the neutral contract can compile without USE, EMF, JaCaMo, Jason, CArtAgO, Moise, NPL or a production transport library.
+- [ ] Ensure Bridge-side adapters can compile against the launched JaCaMo distribution.
+- [ ] Ensure USE-side production semantic code can compile without JaCaMo runtime libraries.
+- [ ] Record the decision in an ADR/evidence note.
+- [ ] Do not select the production network transport yet.
+
+## 1.2 Contract envelope
+
+Implement and validate immutable/versioned contract structures containing at least:
+
+- [ ] `schemaVersion`
+- [ ] `messageType`
+- [ ] `bridgeBuild`
+- [ ] exact `distribution` fingerprint
+- [ ] `projectKey`
+- [ ] `modelRevision`
+- [ ] `sessionId`
+- [ ] `generation`
+- [ ] `messageId`
+- [ ] diagnostic `producedAt`
+- [ ] `capabilities`
+- [ ] `completeness`
+- [ ] per-source `watermarks`
+- [ ] `evidence`
+- [ ] canonical `payloadDigest`
+
+Unknown required fields, unsupported major schema versions, invalid digest, contradictory capability state => reject before materialization.
+
+## 1.3 ModelSnapshot
+
+Implement a deterministic neutral model containing at least:
+
+- [ ] merged official project/configuration facts;
+- [ ] canonical source URI/digest/kind and import/include provenance;
+- [ ] agent declarations + instance policy + official Jason AST representation;
+- [ ] workspace declarations and configured artifacts;
+- [ ] official Moise organization graph/configured instances;
+- [ ] `groupRoleCardinalities[]`;
+- [ ] `parentSubGroupCardinalities[]`;
+- [ ] descriptor/reflection facts only when officially evidenced;
+- [ ] exact cross-dimensional relations;
+- [ ] typed unresolved/unsupported facts;
+- [ ] projection provenance.
+
+## 1.4 RuntimeSnapshot
+
+Implement a deterministic neutral runtime baseline containing at least:
+
+- [ ] `snapshotId`;
+- [ ] `modelRevision`;
+- [ ] capture start/end metadata;
+- [ ] start/end per-source watermarks;
+- [ ] validation attempt count;
+- [ ] agents / beliefs / goals / plans;
+- [ ] workspaces / artifacts / operations / properties;
+- [ ] group boards / scheme boards / role players;
+- [ ] mission commitments;
+- [ ] organizational-goal states;
+- [ ] norm states/lifecycle;
+- [ ] relation state;
+- [ ] source completeness;
+- [ ] projection status per runtime fact;
+- [ ] deterministic state fingerprint.
+
+## 1.5 RuntimeEvent
+
+Implement a versioned event envelope containing at least:
+
+- [ ] `eventId`
+- [ ] `sessionId`
+- [ ] `generation`
+- [ ] `modelRevision`
+- [ ] subsystem / source ID / monotonic `sourceSequence`
+- [ ] diagnostic observed time
+- [ ] closed/versioned event kind
+- [ ] entity/relation ID
+- [ ] `correlationId` / `causationId`
+- [ ] `before` / `after` / payload
+- [ ] watermark
+- [ ] completeness
+- [ ] evidence
+
+## 1.6 Canonical identity
+
+Implement/refactor:
+
+- [ ] `BridgeEntityId`
+- [ ] `BridgeRelationId`
+- [ ] bridge-aware `SemanticId`
+- [ ] reversible TraceIndex identity chain
+- [ ] canonical encoding with Unicode/reserved-character normalization
+- [ ] collision-safe USE display-name mapping
+- [ ] model-revision-scoped immutable identity maps
+
+Required identity cases:
+
+- [ ] agent declaration vs live agent incarnation;
+- [ ] workspace declaration vs runtime `WorkspaceId`;
+- [ ] artifact declaration vs runtime `ArtifactId`;
+- [ ] operation descriptor vs operation execution;
+- [ ] property descriptor/instance;
+- [ ] signal occurrence;
+- [ ] OS definitions;
+- [ ] group/scheme board incarnation;
+- [ ] role-play relation;
+- [ ] mission commitment;
+- [ ] organizational-goal state;
+- [ ] NPL norm instance;
+- [ ] relation-scoped cardinality facts.
+
+## 1.7 Capability and projection status
+
+- [ ] Define `COMPLETE`, `PARTIAL`, `UNAVAILABLE` semantics.
+- [ ] Define runtime projection status including `MATERIALIZED_FAITHFULLY`, `EVIDENCE_ONLY`, `UNAVAILABLE`.
+- [ ] Preserve exact evidence for unsupported or evidence-only facts.
+- [ ] Never encode “unknown” as a normal empty/default value.
+
+## 1.8 Tests — must pass before Phase 2
+
+- [ ] canonical serialization round-trip;
+- [ ] stable digest under canonical ordering;
+- [ ] malformed/oversized/deep payload rejection;
+- [ ] schema major/minor compatibility rules;
+- [ ] same ID + different payload rejection;
+- [ ] duplicate event idempotency/conflict behavior;
+- [ ] Unicode/reserved-char/sanitized-name collision tests;
+- [ ] relation-cardinality multi-context test;
+- [ ] contract classpath isolation test;
+- [ ] serialize in one process/classpath and deserialize in an isolated consumer;
+- [ ] source scan proving no live platform object exists in neutral DTOs.
+
+## Phase gate
+
+- [x] Neutral contract is independent of USE/EMF/platform libraries.
+- [x] No live object/shared-classpath assumption exists.
+- [x] Exact identity and relation-cardinality facts are preserved.
+- [x] Frozen artifacts remain byte-identical.
+
+---
+
+# PHASE 2 — JaCaMo-side Bridge, official API adapters, consistent snapshot protocol
+**Difficulty: CRITICAL — highest semantic/runtime risk.**  
+**Corresponds primarily to original Phase C and Bridge-side portions of B/D.**
+
+## Goal
+
+Move source/runtime semantic authority beside JaCaMo and obtain all model/runtime facts through official APIs and official extension points.
+
+## 2.1 JaCaMo insertion and lifecycle
+
+Implement `JaCaMoBridgePlatform` through official `jacamo.platform.Platform`.
+
+- [ ] `setJcmProject(JaCaMoProject)` receives the exact parsed project.
+- [ ] `init` validates Bridge configuration/capabilities.
+- [ ] `start` starts only the Bridge service/observers appropriate to readiness.
+- [ ] `stop` detaches listeners and terminates bounded executors.
+- [ ] Do not assume `Platform.start()` means all CArtAgO/Moise authorities are ready.
+- [ ] Implement explicit adapter readiness/capability state.
+
+Implement `BridgeAgArch`.
+
+- [ ] attach before agent creation without breaking existing architecture order;
+- [ ] support dynamically created agents;
+- [ ] assign new incarnation on every `init`;
+- [ ] observe/delegate `act(ActionExec)`;
+- [ ] observe `actionExecuted(ActionExec)`;
+- [ ] detach/close cleanly on stop;
+- [ ] prove normal action behavior is unchanged.
+
+## 2.2 Official project/JCM adapter
+
+Use official:
+- `JaCaMoProjectParser`
+- `JaCaMoProject`
+- launcher-equivalent default/source-path/directive/package setup.
+
+Checklist:
+- [ ] consume merged official `uses` result, not text-splice imports;
+- [ ] preserve imported-source provenance;
+- [ ] distinguish declaration/template, instance policy, and runtime incarnation;
+- [ ] reproduce Jason source-path/directive environment;
+- [ ] do not call unsafe launcher behavior blindly just to imitate `loadOnly`;
+- [ ] parity-test Bridge load-only against launcher-configured official parsing.
+
+## 2.3 Jason adapter
+
+Use official Jason AST/runtime APIs.
+
+- [ ] parse via official `Agent.parseAS` environment;
+- [ ] preserve plan label, trigger, context, ordered body AST;
+- [ ] distinguish external action vs internal action exactly;
+- [ ] preserve source file/line provenance;
+- [ ] keep full AST/provenance outside compact V2 fields where necessary;
+- [ ] GoalListener support;
+- [ ] Circumstance listener support;
+- [ ] PlanLibrary listener support;
+- [ ] snapshot belief base/goals/plan library for reconciliation;
+- [ ] do not pretend every belief mutation has a complete event hook;
+- [ ] mark event-coverage capability explicitly.
+
+## 2.4 CArtAgO adapter
+
+Use official environment/controller/descriptors/logger.
+
+- [ ] enumerate root/local child workspaces;
+- [ ] get controller per workspace;
+- [ ] enumerate current agents/artifacts;
+- [ ] obtain `ArtifactInfo`;
+- [ ] revalidate `ArtifactInfo.getId()` against enumerated `ArtifactId` to close name-race;
+- [ ] preserve runtime UUID identity;
+- [ ] export operation name/arity exactly;
+- [ ] use reflection only when a method-backed descriptor actually exists;
+- [ ] represent unknown parameter names/types explicitly;
+- [ ] snapshot observable property values after creation;
+- [ ] capture create/dispose/join/quit/focus/unfocus/op lifecycle/percept-property events;
+- [ ] never make Java source the runtime semantic authority;
+- [ ] keep Java source extraction only as labelled optional provenance/enrichment if still useful.
+
+## 2.5 Moise / ORA4MAS / NPL adapter
+
+Static authority:
+- [ ] load official `OS` object graph via `OS.loadOSFromURI`;
+- [ ] traverse SS/FS/NS objects;
+- [ ] preserve role hierarchy, groups, links, schemes, missions, goals, plans, norms;
+- [ ] export exact relation-scoped role/subgroup cardinality tuples.
+
+Runtime authority:
+- [ ] discover real `OrgBoard`, `GroupBoard`, `SchemeBoard`;
+- [ ] use board/artifact UUID + instance context;
+- [ ] capture role players;
+- [ ] capture mission commitments;
+- [ ] capture organizational-goal states;
+- [ ] capture responsible groups/group formation state when available;
+- [ ] attach NPL listeners after interpreter creation;
+- [ ] reconcile NPL active/fulfilled/unfulfilled/inactive collections;
+- [ ] capture lifecycle events without translating them to OCL.
+
+## 2.6 SnapshotCoordinator — critical correctness task
+
+Implement buffer-first validated cuts:
+
+1. [ ] attach all available listeners;
+2. [ ] start bounded per-source buffers;
+3. [ ] record start watermarks;
+4. [ ] copy subsystem state into immutable DTOs;
+5. [ ] record end watermarks;
+6. [ ] re-enumerate identity/topology sets;
+7. [ ] reject/retry on inconsistent topology, missed source, overflow, or model revision change;
+8. [ ] publish capture interval + completeness + accepted per-source watermarks;
+9. [ ] replay only events after accepted source watermarks.
+
+Also:
+- [ ] no global timestamp ordering;
+- [ ] no silent drop on buffer overflow;
+- [ ] bounded callback work;
+- [ ] thread/listener leak test;
+- [ ] model revision changes when a semantic descriptor required by MModel changes.
+
+## 2.7 Hello World Bridge-side vertical proof
+
+Before USE integration, prove the JaCaMo side on canonical Hello:
+
+- [ ] canonical source hash verified;
+- [ ] official JCM project loaded;
+- [ ] official Jason programs/directives loaded;
+- [ ] official Moise OS loaded;
+- [ ] initialized artifact descriptors observed;
+- [ ] focus/player/configuration relations preserved;
+- [ ] authoritative RuntimeSnapshot captured;
+- [ ] representative events captured;
+- [ ] restart gives a new session;
+- [ ] same-name recreation gives a new incarnation;
+- [ ] Bridge stops cleanly.
+
+## Phase gate
+
+- [x] No JaCaMo core patch.
+- [x] No custom parser is the accepted Bridge semantic authority.
+- [x] Snapshot cut correctness is proven under concurrent mutation.
+- [x] Exact source/runtime identity survives recreation.
+- [x] Unavailable facts remain explicit.
+- [x] Hello Bridge trace is reproducible.
+
+---
+
+# PHASE 3 — USE Bridge client, semantic adapter, mirror state machine, OCL capability gating, separate-JVM proof
+**Difficulty: CRITICAL — central integration phase.**  
+**Corresponds primarily to original Phase D.**
+
+## Goal
+
+Feed the existing V2/USE backend from Bridge contracts while preserving frozen mappings and proving real process independence.
+
+## 3.1 BridgeClient and ContractValidator
+
+- [ ] handshake schema/distribution/capabilities;
+- [ ] reject unsupported distribution/schema before model materialization;
+- [ ] fetch/validate ModelSnapshot;
+- [ ] fetch/validate RuntimeSnapshot;
+- [ ] subscribe to bounded RuntimeEvent stream;
+- [ ] support acknowledgements/resume tokens at SPI level;
+- [ ] reject stale session/generation/model revision before decoding a mutation;
+- [ ] quarantine unknown entity/reference/event kind;
+- [ ] expose readiness and stale/resync state.
+
+## 3.2 NativeSemanticAdapter
+
+- [ ] map `ModelSnapshot` into `JaCaMoSemanticModel`;
+- [ ] preserve canonical evidence/provenance/completeness;
+- [ ] preserve relation-scoped cardinality facts even when V2 projection is lossy;
+- [ ] resolve only exact Bridge IDs or exact `binding.json` selectors;
+- [ ] leave unresolved relations unresolved;
+- [ ] never use name/arity/literal similarity.
+
+## 3.3 Existing backend reuse
+
+Keep/adapt:
+- [ ] `TransformationPlanner`
+- [ ] `VerificationSemanticLayer`
+- [ ] `InstancePlanner`
+- [ ] text backend
+- [ ] `DirectUseBackend`
+- [ ] structural mapping loader/validator
+- [ ] projections/order evidence
+- [ ] `TraceBuilder` / `TraceIndex`
+- [ ] OCL/profile infrastructure
+- [ ] verification engine
+
+Requirements:
+- [ ] `MModel` is built from the accepted model revision.
+- [ ] Dynamic descriptor enrichment causes a new model revision, not ad-hoc mutation under the old one.
+- [ ] Direct/text backend parity remains tested.
+- [ ] frozen mapping rules do not change.
+
+## 3.4 Runtime mirror state machine
+
+Implement/refactor state machine:
+
+```text
+DISCONNECTED
+ -> NEGOTIATING
+ -> MODEL_SYNC
+ -> SNAPSHOT_SYNC
+ -> LIVE
+ -> RESYNC_REQUIRED / STALE
+ -> ...
 ```
 
 Checklist:
-
-- [x] Không manual checklist-only process; có automation nơi hợp lý.
-- [x] Không silently accept fingerprint mismatch.
-- [x] Không update only hash to silence test.
-- [x] Unaffected runtime connectors must remain green.
-
----
-
-## P32.5 — Phase 32 gate
-
-- [x] Synthetic V2.1 change chứng minh pipeline phát hiện đúng impacted layers.
-- [x] Unaffected subsystems không cần sửa.
-- [x] V2 future minor changes có documented migration loop.
-
----
-
-# Phase 33 — Semantic IR V2 Migration
-
-**DONE — 2026-09-24.** Component, downstream integration, clean full regression, merge, post-merge regression and push gates PASS. [Acceptance](../project/v2-migration/phase35-acceptance.md). Older progress snapshots below are historical.
-
-**Objective:** thay vocabulary/IR V1 bằng representation phù hợp V2 nhưng vẫn source-preserving và traceable.
-
-**Component gates PASS; phase closure OPEN.** [IR evidence](../project/v2-migration/phase33-semantic-ir.md).
-29 focused tests PASS; full reactor 333 executed, 7 failures/65 errors in pending
-V1 consumers (historical snapshot). Parser declaration/instance migration and
-production no-V1-leakage now PASS: 28 focused tests; full closure remains OPEN.
-
-V2 profile/path/trace follow-up: [consumer evidence](../project/v2-migration/phase33-verification-profile.md),
-30 focused tests PASS. Post-profile plugin regression: 192 executed, 9F/62E
-(71 failing identities versus previous 72); later V1 parser/OCL assumptions exposed.
-Alias trace collision identified and fixed with regression. No phase closure claimed.
-
-## P33.1 — Audit current IR against V2
-
-- [x] `SemanticElement`.
-- [x] semantic kind registry/enum.
-- [x] attributes storage.
-- [x] references storage.
-- [x] source provenance.
-- [x] symbol index.
-- [x] typed subclasses/records nếu có.
-- [x] cross-dimensional references.
-- [x] runtime identity separation.
-
-Classify:
-
-- [x] reusable unchanged.
-- [x] adapt.
-- [x] replace.
-- [x] remove historical.
-
----
-
-## P33.2 — Define V2 semantic identity contract
-
-Requirements:
-
-- [x] stable project ID.
-- [x] dimension.
-- [x] kind.
-- [x] owner path.
-- [x] local ID.
-- [x] source spelling.
-- [x] no name-only global identity.
-- [x] deterministic.
-- [x] reversible/provenance-preserving where possible.
-
-### Important
-
-Nếu V2 thay kind names:
-
-- [x] semantic IDs chỉ đổi khi semantics thực sự đổi.
-- [x] không giữ V1 kind name chỉ để tránh migration nếu V2 semantics khác.
-
----
-
-## P33.3 — Implement V2 semantic kind registry
-
-Prefer data/descriptor-driven design nếu V2 còn có thể đổi nhẹ.
-
-- [x] Registry được derive/validate against V2 Ecore.
-- [x] Không cần sửa hàng chục switch chỉ vì thêm một EClass nếu logic generic có thể xử lý.
-- [x] Những kind cần custom behavior vẫn explicit.
-- [x] Unknown/unsupported kind → diagnostic, không crash/silent ignore.
-
----
-
-## P33.4 — V2 references/resolution model
-
-- [x] declaration vs instance vs symbolic reference vs runtime identity tách riêng.
-- [x] exact canonical ID first.
-- [x] explicit source reference.
-- [x] owner-qualified exact symbol.
-- [x] unique typed scope.
-- [x] optional explicit binding.
-- [x] otherwise unresolved.
-- [x] no fuzzy acceptance.
-
----
-
-## P33.5 — IR serialization/debug output
-
-- [x] deterministic.
-- [x] versioned.
-- [x] includes V2 metamodel fingerprint.
-- [x] includes source provenance.
-- [x] includes unresolved references.
-- [x] useful cho audit/tests.
-
----
-
-## P33.6 — Phase 33 tests
-
-- [x] minimal valid V2 IR.
-- [x] each dimension.
-- [x] duplicate names.
-- [x] ambiguous reference.
-- [x] missing reference.
-- [x] inheritance-derived feature.
-- [x] cross-dimensional reference.
-- [x] deterministic serialization.
-- [x] no V1 kind leakage ngoài migration fixtures.
-
----
-
-# Phase 34 — Parser & Extraction Migration to V2
-
-**DONE — 2026-09-24.** Component, downstream integration, clean full regression, merge, post-merge regression and push gates PASS. [Acceptance](../project/v2-migration/phase35-acceptance.md). Older progress snapshots below are historical.
-
-**Objective:** giữ parser machinery reusable, đổi semantic output theo V2.
-
-**Parser component gates PASS; phase closure OPEN.** [Evidence](../project/v2-migration/phase34-extraction.md).
-34 focused tests PASS. Post-parser plugin regression: 197 executed, 8F/59E;
-remaining projection/constraint/runtime consumers require P35 migration.
-No merged/full-regression acceptance is claimed.
-
-## P34.1 — JCM extraction
-
-- [x] MAS/project root semantics theo V2.
-- [x] Agent declarations.
-- [x] workspace/artifact declarations.
-- [x] organisation instances.
-- [x] source/include paths.
-- [x] roles/focus/project parameters.
-- [x] exact source spans.
-- [x] V2 references.
-
----
-
-## P34.2 — Jason parser/extractor
-
-- [x] beliefs.
-- [x] rules.
-- [x] goals.
-- [x] plans.
-- [x] triggering events.
-- [x] contexts.
-- [x] bodies/body terms.
-- [x] internal/external actions.
-- [x] messages nếu V2 vẫn model.
-- [x] V2 ownership/reference direction.
-- [x] unsupported syntax preserved with diagnostics.
-
-Không implement Jason interpreter.
-
----
-
-## P34.3 — CArtAgO Java extraction
-
-- [x] artifact type.
-- [x] observable properties.
-- [x] operations.
-- [x] guards.
-- [x] signals/await/internal operations nếu V2 cần.
-- [x] signatures/parameter metadata.
-- [x] source positions.
-- [x] V2 links.
-- [x] parse-only/static safety vẫn giữ.
-
-Không execute arbitrary project Java để infer semantics.
-
----
-
-## P34.4 — Moise extraction
-
-- [x] organisation structure.
-- [x] groups.
-- [x] roles.
-- [x] links/formation constraints.
-- [x] schemes.
-- [x] missions.
-- [x] organisational goals/plans.
-- [x] norms.
-- [x] V2 relationship directions.
-- [x] instance config từ JCM.
-- [x] DTD/entity disabled.
-
----
-
-## P34.5 — Cross-file resolver V2
-
-- [x] resolve all V2 exact relations.
-- [x] binding only after exact typed ambiguity.
-- [x] no binding creates nonexistent relation.
-- [x] stale source hash rejected.
-- [x] diagnostics list candidates/owners/scopes.
-
----
-
-## P34.6 — Parser regression
-
-- [x] existing source fixtures still parse where source language unchanged.
-- [x] expected semantic outputs updated intentionally.
-- [x] malformed input recovery.
-- [x] partial project.
-- [x] source path safety.
-- [x] deterministic results.
-- [x] Auction import reaches V2 IR.
-- [x] Case Study #2 import reaches V2 IR.
-
----
-
-# Phase 35 — USE Transformation V2 & Initial State
-
-**DONE — 2026-09-24.** Component, downstream integration, clean full regression, merge, post-merge regression and push gates PASS. [Acceptance](../project/v2-migration/phase35-acceptance.md). Older progress snapshots below are historical.
-
-**Objective:** `JaCaMoSemanticModel V2 + Mapping V2 → USE MModel + initial MSystemState` chính xác và deterministic.
-
-**IN PROGRESS; closure OPEN.** [Implementation/evidence](../project/v2-migration/phase35-transformation.md).
-Latest broad plugin snapshot: 201 tests, 8F/3E (11 failing identities; down from 67).
-Focused V2 SOIL/direct parity and guard tests pass; final consumer/evidence/resource
-regressions and full reactor remain pending. No dependent P29-P34 gate is closed.
-
-## P35.1 — Mapping loader/planner migration
-
-- [x] active loader reads Mapping V2.
-- [x] validates exact V2 Ecore hash/version.
-- [x] builds V2 TransformationPlan.
-- [x] removed V1 rules cannot resolve accidentally.
-- [x] diagnostics include mapping rule IDs/provenance.
-
----
-
-## P35.2 — Structural generation
-
-- [x] classes.
-- [x] abstract/concrete.
-- [x] attributes.
-- [x] inheritance.
-- [x] associations.
-- [x] compositions.
-- [x] multiplicities.
-- [x] ordered/unique.
-- [x] deterministic names.
-- [x] USE keyword escapes.
-- [x] V2 projections.
-
----
-
-## P35.3 — Concrete verification projections
-
-Audit/implement only when V2 supports them:
-
-- [x] concrete Artifact subtype.
-- [x] observable property → typed state slot.
-- [x] CArtAgO operation → MOperation.
-- [x] action-operation anchor.
-- [x] percept/belief or equivalent V2 relation.
-- [x] organisational goal/agent goal or equivalent.
-- [x] normative preservation.
-
-No projection by intuition; every projection requires V2/source evidence.
-
----
-
-## P35.4 — Initial state materialization
-
-Order must be explicit:
-
-- [x] create objects.
-- [x] scalar attributes.
-- [x] containment/composition links.
-- [x] associations.
-- [x] projected state.
-- [x] multiplicity/structure validation.
-- [x] initial invariants.
-
-Rules:
-
-- [x] no fabricated default.
-- [x] unresolved source value remains undefined/unset.
-- [x] no missing required link fabricated.
-- [x] object/link trace created.
-
----
-
-## P35.5 — Text vs Direct backend parity
-
-- [x] `.use`.
-- [x] `.cmd`.
-- [x] direct `MModel`.
-- [x] direct `MSystemState`.
-- [x] same effective semantics.
-- [x] same deterministic source trace.
-
----
-
-## P35.6 — Golden regeneration policy
-
-- [x] Old V1 golden kept under historical path nếu cần.
-- [x] New V2 golden outputs generated intentionally.
-- [x] Review structural diff.
-- [x] Không snapshot-update tự động khi compile fail.
-- [x] Hashes recorded.
-
----
-
-## P35.7 — Phase 35 gate
-
-- [x] generated V2 `.use` compiles.
-- [x] initial state valid.
-- [x] text/direct parity PASS.
-- [x] no V1 active mapping dependency.
-- [x] Auction static V2 transformation PASS.
-
----
-
-# Phase 36 — Trace, Binding & Runtime Identity V2
-
-**DONE — 2026-09-24.** 52 focused, 352 full-reactor and 14 post-merge tests PASS; zero skips. Commit df369365 merged and pushed; concurrent metrics-only commits preserved at 946b6596. [Audit](../project/v2-migration/phase36-trace-identity.md).
-
-**Objective:** mọi source/semantic/USE/runtime identity tiếp tục truy vết chính xác sau V2 migration.
-
-## P36.1 — Trace schema impact audit
-
-- [x] Can existing TraceRecord schema remain?
-- [x] sourceSemanticId format impact.
-- [x] targetUseId impact.
-- [x] mappingRuleId versioning.
-- [x] projectionRuleId versioning.
-- [x] target kind changes.
-- [x] runtime alias compatibility.
-- [x] stale V1 trace behavior.
-
----
-
-## P36.2 — V2 transformation trace
-
-Mỗi generated:
-
-- [x] MClass.
-- [x] MAttribute.
-- [x] MAssociation/composition.
-- [x] MOperation.
-- [x] MObject.
-- [x] MLink.
-- [x] projected state slot.
-
-phải có trace tới V2 semantic source/provenance.
-
----
-
-## P36.3 — Binding migration
-
-- [x] V1 binding files không auto-apply nếu semantic IDs changed.
-- [x] Mark incompatible bindings `STALE`.
-- [x] Migrate only with exact proof.
-- [x] Recompute source hashes.
-- [x] Validate target kinds V2.
-- [x] Keep binding optional.
-- [x] No fuzzy migration.
-
----
-
-## P36.4 — Runtime alias model
-
-Maintain:
+- [ ] subscribe/buffer before snapshot acceptance;
+- [ ] transactional state replacement;
+- [ ] only same-session/generation/model-revision deltas can mutate;
+- [ ] idempotent duplicate handling;
+- [ ] conflicting duplicate => corruption/resync;
+- [ ] gap/overflow/drift/unknown incarnation => stop mutation + resync;
+- [ ] Bridge restart => new session + full handshake;
+- [ ] USE restart => current model/snapshot then stream;
+- [ ] model revision change => pause, compile new MModel, replace state, resume.
+
+## 3.5 Runtime Mapping and mutation
+
+- [ ] Keep frozen Runtime Mapping V2 target semantics.
+- [ ] Add a pre-mapping Bridge contract adapter outside the frozen artifact.
+- [ ] Never edit the frozen runtime mapping merely to mirror contract fields.
+- [ ] Materialize only facts with a faithful target.
+- [ ] Preserve evidence-only facts in trace/report/history without fabricated USE mutation.
+
+## 3.6 OCL/verification capability gating
+
+- [ ] Preserve OCL/NPL separation.
+- [ ] Bind constraint evaluation to accepted model/state revision.
+- [ ] A runtime dependency must be faithfully materialized before OCL evaluates it.
+- [ ] Evidence-only/unavailable dependency => `INCONCLUSIVE`, `NOT_EVALUATED`, or capability-blocked.
+- [ ] PRE only against an accepted pre-request state.
+- [ ] POST only after completion/failure and required state watermark.
+- [ ] Missing correlation/gap/stale source => inconclusive; do not bind by nearest name/time.
+- [ ] Reports include session/generation/model revision/snapshot/event/correlation/constraint hash/capabilities.
+
+## 3.7 Mandatory early separate-JVM smoke — MUST PASS
+
+Run two distinct JVMs:
 
 ```text
-RuntimeKey
-→ SemanticId V2
-→ UseId / MObject / MOperation / MAssociation target
+Process A: JaCaMo + Bridge
+Process B: USE + BridgeClient
 ```
 
-- [x] Jason alias.
-- [x] CArtAgO workspace/artifact/property/OpId alias.
-- [x] Moise agent/group/scheme/role/mission/goal aliases.
-- [x] one semantic Agent may have multiple runtime aliases.
-- [x] no collapse by approximate names.
+Use only a **minimal/test transport** or process-neutral recorded/framed mechanism. Do not choose production transport yet.
+
+Prove:
+- [ ] ModelSnapshot crosses the boundary and builds MModel.
+- [ ] RuntimeSnapshot crosses the boundary and transactionally initializes/replaces MSystemState.
+- [ ] RuntimeEvent crosses and mutates state correctly.
+- [ ] No live JaCaMo/Jason/CArtAgO/Moise object crosses the boundary.
+- [ ] USE production semantic backend has no JaCaMo runtime classpath requirement.
+- [ ] Bridge/JaCaMo restart creates new session.
+- [ ] old-session/old-generation events are rejected.
+- [ ] reconnect/resnapshot works.
+- [ ] schema/version mismatch fails closed.
+- [ ] deterministic recording/replay yields the same state/report fingerprint.
+
+## Phase gate
+
+Phase 3 is not complete until the separate-JVM smoke passes.  
+**Do not proceed to semantic replacement claims if it does not.**
+
+- [x] Minimal recorded and production TCP separate-JVM smoke passes.
+- [x] The USE consumer JVM contains no JaCaMo/Jason/CArtAgO/Moise/NPL runtime jars.
+- [x] Snapshot replacement and runtime-event mutation are revision/identity safe.
+- [x] OCL capability gating fails closed for evidence-only or unavailable dependencies.
+- [x] Frozen Runtime Mapping V2 remains byte-identical.
 
 ---
 
-## P36.5 — Unknown runtime entity policy
+# PHASE 4 — Hello full vertical acceptance + shadow semantic/runtime comparison
+**Difficulty: HIGH.**  
+**Corresponds to remaining Hello work + original Phase E.**
 
-- [x] discoverable.
-- [x] quarantine/unbound.
-- [x] no USE mutation.
-- [x] actionable diagnostic.
-- [x] possible later explicit binding only if semantics exist.
+## Goal
 
----
+Prove that the Bridge path reaches USE correctly and compare it exhaustively with the legacy path without treating legacy output as semantic truth.
 
-## P36.6 — Tests
+## Checklist
 
-- [x] exact one-to-one.
-- [x] projection one-to-many.
-- [x] ambiguity.
-- [x] stale V1 trace.
-- [x] stale binding.
-- [x] duplicate operation names across artifact types.
-- [x] multi-agent same source.
-- [x] multiple org instances.
-- [x] runtime alias reconnect/rebuild.
-- [x] reverse violation navigation.
+### Hello full path
+- [x] official load;
+- [x] ModelSnapshot;
+- [x] NativeSemanticAdapter;
+- [x] frozen V2 + Mapping V2.2;
+- [x] USE MModel compile;
+- [x] RuntimeSnapshot -> MSystemState;
+- [x] RuntimeEvent application;
+- [x] trace round-trip;
+- [x] core + Hello OCL;
+- [x] reconnect/resync;
+- [x] deterministic replay.
 
----
+### Shadow comparator
+- [x] define canonical comparison form by IDs/provenance, not display names;
+- [x] compare official source fact vs legacy fact vs Bridge fact vs V2 plan vs USE result;
+- [x] classify every difference as adapter bug, legacy bug/limitation, unsupported fact, representation loss, or intentional correction;
+- [x] preserve old goldens as historical evidence;
+- [x] do not update golden automatically;
+- [x] prove comparator mutation sensitivity;
+- [x] prove deterministic diff output.
 
-# Phase 37 — OCL & Constraint Architecture Migration to V2
+### Baseline failures
+- [x] reproduce the three historical USE failures;
+- [x] diagnose them independently;
+- [ ] if one is closed by legitimate implementation change, record exact reason/evidence;
+- [x] never weaken assertion or change digest without reviewed semantic justification.
 
-**DONE — 2026-09-24.** 43 focused, 354 full-reactor and 11 post-merge tests PASS, zero skips. Commit 738f6bdd merged and pushed; concurrent metrics-only update preserved at 2be340d0. [Audit](../project/v2-migration/phase37-ocl-audit.md).
+## Phase gate
 
-**Objective:** tất cả constraint compile/evaluate trên V2 mà không dùng V1 navigation giả.
-
-## P37.1 — Inventory OCL origins
-
-Classify each constraint:
-
-- [x] `TRANSLATED`.
-- [x] `CORE`.
-- [x] `CASE`.
-- [x] `USER`.
-
-For every OCL:
-
-- [x] context class.
-- [x] navigation path.
-- [x] referenced operation.
-- [x] referenced attribute.
-- [x] V2 compatibility.
-- [x] source/provenance.
+- [x] Hello official path works end to end.
+- [x] Every legacy-vs-Bridge difference is classified.
+- [x] No hidden legacy fallback on accepted Bridge path.
+- [x] Frozen artifacts unchanged.
+- [x] Phase-D separate-JVM gate remains green.
 
 ---
 
-## P37.2 — Rebind translated constraints
+# PHASE 5 — Original Auction migration
+**Difficulty: HIGH — dynamic cross-dimensional semantics.**  
+**Corresponds to original Phase F.**
 
-- [x] CArtAgO guards only for supported exact subset.
-- [x] Jason contexts only when V2 state binding proven.
-- [x] no arbitrary Java body → postcondition.
-- [x] unsupported stays `UNSUPPORTED`.
-- [x] assumptions/dependencies updated to V2 IDs.
-- [x] generated OCL deterministic.
+## Goal
 
----
+Run the **original upstream Auction** through the generic Bridge/USE architecture and clearly separate supported runtime verification from unsupported original semantics.
 
-## P37.3 — Rebuild core OCL for V2
+## Checklist
 
-- [x] remove V1-only navigation.
-- [x] preserve only evidence-backed generic rules.
-- [x] structural checks not duplicated unnecessarily.
-- [x] cross-dimensional rules use V2 relations.
-- [x] rationale + evidence for every core constraint.
+### Source integrity
+- [ ] verify original Auction source hashes;
+- [ ] record exact dependency/distribution fingerprint;
+- [ ] do not replace original source with the reduced/programmatic control.
 
----
+### Static/model path
+- [ ] official JCM load;
+- [ ] official Jason program;
+- [ ] official Moise OS graph;
+- [ ] exact role/cardinality facts;
+- [ ] mission/goal/plan/norm definitions;
+- [ ] deterministic ModelSnapshot;
+- [ ] V2/USE compile and trace.
 
-## P37.4 — Migrate case/user OCL
+### Runtime
+- [ ] observe dynamic `AuctionArt` creation only when runtime evidence establishes it;
+- [ ] distinguish artifact UUID incarnations;
+- [ ] observe operation descriptors and property state;
+- [ ] correlate Jason external action -> CArtAgO operation only with exact evidence;
+- [ ] capture success/failure PRE/POST boundaries;
+- [ ] capture role assignment;
+- [ ] capture mission commitments;
+- [ ] capture goal states;
+- [ ] capture NPL norm lifecycle;
+- [ ] explicitly mark runtime facts as faithful projection vs evidence-only.
 
-- [x] Auction OCL V2.
-- [x] Case Study #2 OCL V2.
-- [x] examples do not leak into core.
-- [x] user-authored OCL loader remains independent.
-- [x] invalid V1 OCL fails with actionable context/navigation diagnostic.
+### Verification
+- [ ] evaluate only authored OCL whose required dependencies are materialized;
+- [ ] no automatic deontic/norm translation;
+- [ ] unsupported self-referencing plan/deadline/natural-language semantics remain explicit;
+- [ ] reduced/programmatic Auction remains separately labelled.
 
----
+### Resilience
+- [ ] create/dispose/recreate test;
+- [ ] kill/reconnect/resync;
+- [ ] record/replay deterministic final fingerprint;
+- [ ] stale old-generation events rejected.
 
-## P37.5 — Compile/evaluation gate
+## Phase gate
 
-- [x] parse.
-- [x] type-check.
-- [x] exact context binding.
-- [x] PRE.
-- [x] POST.
-- [x] `@pre`.
-- [x] invariant PASS/FAIL.
-- [x] undefined → ERROR where contract says.
-- [x] positive/negative fixtures.
-
----
-
-# Phase 38 — Runtime Mapping V2 Reconciliation
-
-**DONE — 2026-09-24.** 19 focused, 355 full-reactor and 10 post-merge tests PASS, zero skips. Commit 9cefe347 merged and pushed; metrics-only remote update preserved. [Audit](../project/v2-migration/phase38-runtime-mapping.md).
-
-**Objective:** dùng runtime semantics thật của JaCaMo, map chúng vào V2 targets; không thiết kế runtime từ Ecore bằng suy đoán.
-
-## P38.1 — Reconfirm upstream runtime capability baseline
-
-Read research evidence for:
-
-- [x] Jason.
-- [x] CArtAgO.
-- [x] Moise.
-- [x] JaCaMo integration.
-
-Record exact pinned versions used by plugin.
-
-- [x] Do not silently mix current JaCaMo main dependencies with plugin's pinned runtime.
-- [x] If version pin changes, run dedicated compatibility audit first.
+- [x] Original Auction **supported scope** passes the generic path.
+- [x] No claim of “full original E2E” is made beyond evidence.
+- [x] No case-specific production branch exists.
+- [x] Hello remains green.
 
 ---
 
-## P38.2 — Preserve source RuntimeEvent semantics
+# PHASE 6 — Original House-Building migration and scale/resync stress
+**Difficulty: HIGH — broadest canonical integration case.**  
+**Corresponds to original Phase G.**
 
-Audit whether these source events remain valid independent of V2:
+## Goal
 
-- [x] observable property delta.
-- [x] artifact operation enter/exit/fail.
-- [x] artifact lifecycle.
-- [x] workspace membership/focus where supported.
-- [x] Jason goal lifecycle.
-- [x] Jason action lifecycle.
-- [x] Jason belief deltas where exact.
-- [x] Moise role players.
-- [x] mission commitments.
-- [x] organisational goal state.
-- [x] normative lifecycle only if API proves it.
+Prove includes, instance expansion, large dynamic identity sets, organizational phases and resync behavior through the same generic architecture.
 
-Do not rename upstream meaning just to match V2 class names.
+## Checklist
 
----
+### Static/source
+- [ ] verify canonical source/dependency manifests;
+- [ ] use official local/external Jason include semantics;
+- [ ] prove JCM `instances` expansion;
+- [ ] distinguish declarations/templates from live incarnations;
+- [ ] prove expected 22 live agent incarnations when official runtime evidence supports them;
+- [ ] preserve role hierarchy, relation-scoped cardinality, links, missions, 13 organizational goals and plan operators from official OS objects.
 
-## P38.3 — Generic Runtime Semantic Action vocabulary
+### Runtime
+- [ ] observe dynamic contracting artifacts exclusively through official APIs/events;
+- [ ] prove the eight-auction lifecycle when actually observed;
+- [ ] observe simulator `House` artifact when actually observed;
+- [ ] capture winner-driven role changes;
+- [ ] capture scheme/group boards and organizational phase transitions;
+- [ ] preserve formation-compatibility limitation/provenance instead of inventing a V2 feature;
+- [ ] handle dynamic model revision if descriptors appear.
 
-Keep generic actions:
+### Scale/resync
+- [ ] snapshot pre-contracting state;
+- [ ] stream contracting phase;
+- [ ] snapshot organization/build phase;
+- [ ] disconnect during a phase transition;
+- [ ] resync and prove old-generation messages cannot mutate replacement state;
+- [ ] test bounded queues/event volume;
+- [ ] measure runtime/memory/event metrics rather than inventing budgets.
 
-- [x] `CREATE_OBJECT`.
-- [x] `DESTROY_OBJECT`.
-- [x] `SET_ATTRIBUTE`.
-- [x] `INSERT_LINK`.
-- [x] `DELETE_LINK`.
-- [x] `OPERATION_ENTER`.
-- [x] `OPERATION_EXIT`.
-- [x] `OPERATION_FAIL`.
-- [x] `TRACE_ONLY` where no state mutation is justified.
+### Genericity
+- [ ] source scan for Hello/Auction/House constants in generic production code;
+- [ ] parameterized integration gate feeds all three project roots through the same Bridge/adapter/planner/materializer/runtime/verification classes;
+- [ ] mutation test proves case fixtures do not alter generic behavior.
 
-Audit if V2 requires a genuinely new generic action; do not add one just because a class name changed.
+## Phase gate
 
----
-
-## P38.4 — V2 runtime target binding
-
-For each supported runtime rule:
-
-- [x] source runtime/dimension.
-- [x] raw upstream callback/API.
-- [x] normalized RuntimeEvent kind.
-- [x] required RuntimeKey.
-- [x] required SemanticId V2.
-- [x] exact USE target kind.
-- [x] mapping/projection rule anchor.
-- [x] mutation action.
-- [x] payload conversion.
-- [x] checkpoint.
-- [x] unsupported/error behavior.
-- [x] provenance.
+- [x] House supported scope passes.
+- [x] Hello and Auction still pass.
+- [x] No collapsed/stale identity.
+- [x] No hard-coded case behavior.
+- [x] All context-losing cardinality projection is explicitly labelled.
 
 ---
 
-## P38.5 — CArtAgO first-pass mapping
+# PHASE 7 — Post-canonical semantic decision reviews
+**Difficulty: HIGH reasoning, but NO frozen-resource implementation without approval.**  
+**This phase resolves the two deliberately deferred semantic questions.**
 
-At minimum audit:
+## 7.1 Runtime Verification Projection Review
 
-- [x] obs property add.
-- [x] obs property change.
-- [x] obs property remove.
-- [x] operation started.
-- [x] operation completed.
-- [x] operation failed.
-- [x] artifact created/disposed.
-- [x] agent joined/quit workspace.
-- [x] focus/unfocus.
-- [x] artifact links.
-- [x] signal/percept trace-only unless V2 projection exists.
+For each captured runtime fact:
 
----
+- mission commitment;
+- organizational-goal runtime state;
+- norm instance/lifecycle;
+- scheme/group runtime-instance context;
+- any other evidence-only runtime fact discovered generically;
 
-## P38.6 — Jason mapping
+decide and document exactly one:
 
-- [x] belief add/remove only with exact semantic representation.
-- [x] goal lifecycle target semantics.
-- [x] action start/result.
-- [x] message lifecycle boundary.
-- [x] intention lifecycle remains deferred unless V2 explicitly models it.
-- [x] no duplicate CArtAgO operation execution from Jason action.
+- [x] remain `EVIDENCE_ONLY`;
+- [ ] target-only USE runtime projection outside frozen Runtime Mapping V2 is justified;
+- [ ] a new metamodel version may be required.
 
-Authority recommendation:
+For every decision record:
+- [x] official source/API evidence;
+- [x] case(s) that require it;
+- [x] OCL/verification need;
+- [x] current representation status;
+- [x] identity/lifecycle requirements;
+- [x] implementation/migration impact;
+- [x] why evidence-only is or is not sufficient.
 
-- [x] Jason action = agent-side evidence.
-- [x] CArtAgO `OpId` = environment operation lifecycle authority.
+## 7.2 Cardinality V2.x/V3 review
 
----
+Using actual Hello/Auction/House evidence:
 
-## P38.7 — Moise mapping
+- [x] list all relation-scoped role/subgroup cardinality occurrences;
+- [x] identify any repeated endpoint used in multiple contexts with different bounds;
+- [x] demonstrate whether frozen V2 loses required thesis semantics;
+- [x] determine whether Bridge/provenance alone is sufficient;
+- [ ] if not sufficient, prepare a **proposal only** for V2.x/V3 or target-side relation projection.
 
-- [x] role player add/remove.
-- [x] mission commitment add/remove.
-- [x] scheme/group runtime instance policy.
-- [x] organisational goal state.
-- [x] responsible group relation.
-- [x] permission/obligation state only within supported semantics.
-- [x] no full norm activation/violation claim without API evidence.
+### Hard stop
 
-Authority:
+- [x] Do **not** edit Ecore/Mapping/Runtime Mapping/OCL in this phase.
+- [ ] If a new metamodel/mapping version is actually necessary, STOP and request explicit user approval with exact impact plan.
 
-- [x] Moise OE = organisation semantic authority.
-- [x] CArtAgO organisation-board events are not double-applied.
+This phase does not block the architecture if evidence-only status satisfies the validated thesis scope.
 
----
+## Phase gate
 
-## P38.8 — Canonical Runtime Mapping V2 candidate
-
-Create/update:
-
-- [x] runtime mapping schema.
-- [x] runtime mapping JSON.
-- [x] loader.
-- [x] validator.
-- [x] exact structural compatibility validation.
-- [x] negative mutation tests.
-- [x] no Auction names.
-- [x] no object-specific runtime IDs.
-- [x] no OCL expressions inside runtime mapping.
-- [x] status remains `WORKING` until runtime E2E gates pass.
+- [x] Every reviewed runtime-fact family has one explicit projection disposition.
+- [x] Relation-scoped cardinality remains exact in Bridge/provenance.
+- [x] Canonical evidence does not justify reopening frozen V2.
+- [x] No V2.x/V3 hard-stop condition was reached.
+- [x] Frozen Ecore, mappings and OCL remain unchanged.
 
 ---
 
-# Phase 39 — Runtime Mirror Correctness on V2
+# PHASE 8 — Production transport selection, security, backpressure and resilience
+**Difficulty: HIGH, but dependency-bound to earlier phases.**  
+**Corresponds to original Phase H.**
 
-**DONE — 2026-09-24.** 58 focused, 356 full-reactor and 31 post-merge tests PASS, zero skips. Commit 58cd40bd merged and pushed; [audit](../project/v2-migration/phase39-mirror-correctness.md).
+## Goal
 
-**Objective:** chứng minh USE mirror phản ánh đúng authoritative JaCaMo runtime trước khi dựa vào OCL verdict.
+Productionize the already-proved independent-process boundary without changing semantic contracts to fit a transport.
 
-## P39.1 — Authoritative snapshot V2
+## Checklist
 
-- [x] Jason supported state.
-- [x] CArtAgO artifacts/properties.
-- [x] Moise supported organisation state.
-- [x] exact runtime aliases.
-- [x] exact V2 semantic bindings.
-- [x] snapshot fingerprint/version.
+### Transport selection
+- [x] benchmark realistic candidate transports;
+- [x] evaluate payload size, latency, event rate, reconnect, packaging/classloader constraints;
+- [x] evaluate local/remote deployment needs;
+- [x] write an ADR explaining the selected production transport;
+- [x] preserve `BridgeTransport` SPI.
 
----
+### Security
+- [x] localhost-only safe default;
+- [ ] authenticated remote access if remote mode is supported;
+- [ ] TLS/encryption where remote;
+- [x] no native Java deserialization;
+- [x] no remote class loading;
+- [x] no arbitrary reflective invocation from payload;
+- [x] size/depth/string/decompression limits;
+- [x] redact secrets and sensitive paths from transport/evidence;
+- [x] authorization remains read-only for this architecture.
 
-## P39.2 — Ordered event pipeline
+### Reliability
+- [x] bounded queues by count and bytes;
+- [x] acknowledgements;
+- [x] resume tokens;
+- [x] explicit GAP on overflow;
+- [x] idempotent replay;
+- [x] restart either process;
+- [x] network partition/failure injection;
+- [x] schema mismatch;
+- [x] auth failure;
+- [x] malformed/fuzzed payloads;
+- [x] resource/thread cleanup.
 
-- [x] callback enqueue fast/non-blocking.
-- [x] bounded queue.
-- [x] single consumer or documented ordering model.
-- [x] monotonic sequence.
-- [x] correlation IDs.
-- [x] no silent drop.
-- [x] explicit backpressure failure.
-- [x] late old-stream callback isolation.
+### Production separate-JVM E2E
+- [x] Hello over selected transport;
+- [x] Auction supported scope over selected transport;
+- [x] House supported scope over selected transport;
+- [x] compare semantics with Phase-D minimal boundary;
+- [x] deterministic record/replay.
 
----
+## Phase gate
 
-## P39.3 — State mutation correctness
-
-Verify each mutation against authoritative runtime:
-
-- [x] object existence.
-- [x] attribute values.
-- [x] links.
-- [x] operation correlation.
-- [x] undefined/removal semantics.
-- [x] tombstone/destroy policy.
-- [x] no duplicate application.
-
----
-
-## P39.4 — Connection lifecycle
-
-States:
-
-- [x] OFFLINE.
-- [x] MODEL_READY.
-- [x] CONNECTING.
-- [x] SYNCING.
-- [x] LIVE.
-- [x] STALE.
-- [x] ERROR.
-
-Rules:
-
-- [x] only LIVE is current.
-- [x] disconnect → STALE.
-- [x] reconnect → authoritative full resync.
-- [x] failed snapshot → ERROR/disconnect.
-- [x] rebuild/reimport/profile load installs one coherent workspace.
-- [x] no duplicate listener.
+- [x] Production transport preserves contract semantics.
+- [x] No shared classpath/live object crossing.
+- [x] Security/resilience gates pass.
+- [x] No false exactly-once claim.
+- [x] Frozen semantic artifacts unchanged.
 
 ---
 
-## P39.5 — Drift detection
+# PHASE 9 — Switch production semantic authority to Bridge
+**Difficulty: MEDIUM.**  
+**Corresponds to original Phase I.**
 
-Compare:
+## Goal
+
+Make official Bridge input the default production authority only after all replacement gates pass.
+
+## Checklist
+
+- [x] `DefaultJaCaMoFacade` defaults to Bridge path.
+- [x] Legacy path requires an explicit compatibility/deprecation flag.
+- [x] No silent fallback.
+- [x] Configuration validates endpoint/schema/distribution.
+- [x] UI/status exposes readiness, capabilities, completeness, model revision, session/generation, stale/resync state.
+- [x] Missing Bridge is a clear error, not permission to reconstruct semantics.
+- [x] Upgrade configuration tested.
+- [x] Rollback configuration tested.
+- [x] Full canonical/regression suite passes.
+- [x] User-visible documentation updated.
+
+## Phase gate
+
+- [x] Supported installations use Bridge authority by default.
+- [x] Rollback rehearsal passes.
+- [x] Legacy path still exists only as explicit compatibility mode.
+- [x] No unsupported semantic claim is promoted.
+
+---
+
+# PHASE 10 — Deprecate/remove proven legacy authority
+**Difficulty: MEDIUM/LOW, after replacement evidence.**  
+**Corresponds to original Phase J.**
+
+## Goal
+
+Remove duplicate semantic authority only when each capability has a proven replacement.
+
+Candidate legacy pieces include:
+- `JcmLexer`
+- `JcmSemanticParser`
+- `JcmProjectLoader` semantic role
+- `JasonSourceParser` legacy authority role
+- `CartagoSourceExtractor` authority role
+- `MoiseXmlParser`
+- old in-process connector registry/composite
+- legacy-only registrations/bootstrap
+
+## Checklist
+
+For **each** removal:
+- [x] identify exact replacement component;
+- [x] identify replacement tests/evidence;
+- [x] verify no remaining production caller;
+- [x] preserve historical fixture/golden evidence;
+- [x] remove registration/call path before deleting implementation;
+- [x] compile/test after the small slice;
+- [x] update disposition/removal ledger;
+- [x] scan for fallback reintroduction.
+
+Do **not** remove:
+- [x] semantic IR merely because input changed;
+- [x] frozen mappings;
+- [x] planners/materialization;
+- [x] trace;
+- [x] OCL/verification;
+- [x] a legacy component whose capability is not yet replaced.
+
+## Phase gate
+
+- [x] No production semantics depend on custom parser/in-process authority.
+- [x] No test was merely deleted to make removal pass.
+- [x] One-to-one replacement evidence exists for every removed capability.
+- [x] Historical evidence remains reproducible.
+
+---
+
+# PHASE 11 — Final regression, packaging, evidence and thesis handoff
+**Difficulty: LOW/MEDIUM — mostly consolidation and reproducibility.**  
+**Corresponds to original Phase K.**
+
+## Goal
+
+Produce a clean, auditable, reproducible release candidate and evidence package.
+
+## Full regression checklist
+
+- [x] focused changed-module tests;
+- [x] Bridge unit suite;
+- [x] API drift suite;
+- [x] Bridge integration suite;
+- [x] contract/client suite;
+- [x] USE adapter/backend suite;
+- [x] frozen V2 audit/hash suites;
+- [x] full `mvn -B -pl use-plugin -am test`;
+- [x] JaCaMo tests in content-isolated checkout/distribution;
+- [x] canonical Hello;
+- [x] original Auction supported scope;
+- [x] House supported scope;
+- [x] Phase-D minimal separate-JVM smoke;
+- [x] Phase-8 production transport/security/resilience suite;
+- [x] deterministic snapshot+event record/replay;
+- [x] package install/uninstall smoke;
+- [x] no listener/thread leak;
+- [x] no unexpected skip/ignored failure;
+- [x] source scan for case-specific core logic and silent fallback.
+
+## Frozen-resource proof
+
+- [x] Ecore V2 hash unchanged.
+- [x] Mapping V2.2 hash unchanged.
+- [x] Runtime Mapping V2 hash unchanged.
+- [x] frozen OCL/profile/golden/manifest changes are absent unless separately reviewed and explicitly approved.
+- [x] architecture migration did not silently reopen V2.
+
+## Evidence package
+
+Record at minimum:
+
+- [x] Git revisions and dirty-state fingerprints;
+- [x] dependency/version graphs;
+- [x] contract/schema/build versions;
+- [x] commands and test counts;
+- [x] source/canonical-case hashes;
+- [x] capability/completeness matrices;
+- [x] ModelSnapshot/RuntimeSnapshot/event-log digests;
+- [x] model/state/trace/report digests;
+- [x] transport ADR;
+- [x] security/failure-injection results;
+- [x] performance measurements;
+- [x] known limitations;
+- [x] semantic diff register;
+- [x] legacy removal ledger;
+- [x] SBOM/package manifest;
+- [x] reproducibility guide.
+
+## Thesis claim discipline
+
+Every capability claim must name:
 
 ```text
-JaCaMo authoritative snapshot
-vs
-USE V2 mirror
+source revision + dependency versions
+contract/model/snapshot revision
+case/input hashes
+capability/completeness set
+test/evidence artifact
+known limitations
 ```
 
-- [x] object drift.
-- [x] scalar drift.
-- [x] link drift.
-- [x] operation/correlation drift where applicable.
-- [x] detailed diagnostics.
-- [x] report-only mode.
-- [x] auto-resync mode.
-- [x] zero-drift required after successful resync.
+Allowed scope labels include:
+- static/load-only;
+- initialized snapshot;
+- runtime supported subset;
+- original-case E2E where actually proven;
+- unavailable/unsupported;
+- representation loss;
+- evidence-only.
+
+Never promote a narrower result to a broader claim.
 
 ---
 
-## P39.6 — Mirror Correctness Gate
+# 3. Component migration contract
 
-- [x] Auction runtime mirror PASS.
-- [x] Case Study #2 runtime mirror PASS for supported subset.
-- [x] unknown/unbound runtime entity does not mutate.
-- [x] no double-source organisation mutation.
-- [x] no silent event drops.
-- [x] reconnect converges.
+Before editing a major existing component, consult `11-use-component-disposition.md`.
 
----
+### Keep / keep with adapter
 
-# Phase 40 — Runtime Verification V2
+The following foundation should generally be preserved and adapted rather than rewritten:
 
-**DONE — 2026-09-24.** 69 focused, 356 full-reactor and 21 post-merge tests PASS, zero skips. Commit d781afd9 merged and pushed. [Audit](../project/v2-migration/phase40-runtime-verification.md).
+- `JaCaMoSemanticModel`
+- `ExactSemanticResolver`
+- `TransformationPlanner`
+- `VerificationSemanticLayer`
+- `InstancePlanner`
+- text backend
+- `DirectUseBackend`
+- `TraceBuilder` / `TraceIndex`
+- structural mapping loader/validator
+- verification/order projections
+- Runtime Mapping loader/model
+- `RuntimeMutationEngine`
+- OCL/profile/generator infrastructure
+- `ConstraintRegistry` / dependency index
+- `DefaultVerificationService`
+- `RuntimeVerificationEngine` / history verification
+- diagnostics/reporting
+- UI/action surface
 
-**Objective:** chạy OCL/checking trên một mirror đã được chứng minh current/correct.
+### Refactor / replace boundary
 
-## P40.1 — Verification checkpoints
+Expected central changes:
 
-Implement/confirm:
+- `StaticProjectImporter` -> Bridge-driven orchestration
+- `SemanticResolver` -> canonical Bridge/reference validation
+- `SemanticId` -> Bridge-aware structured identity
+- `RuntimeMirrorService` -> session/generation/modelRevision/watermark aware
+- runtime codecs/validators -> neutral contract validators
+- `JasonRuntimeConnector` observation -> Bridge side
+- `CartagoRuntimeConnector` observation -> Bridge side
+- `MoiseRuntimeConnector` observation -> Bridge side
+- `CompositeRuntimeConnector` -> BridgeClient/session
+- `JcmSemanticParser` -> official JaCaMo project adapter
+- legacy `JasonSourceParser` authority -> official launcher-configured Jason adapter
+- `MoiseXmlParser` -> official Moise OS adapter
+- `CartagoSourceExtractor` -> non-authoritative optional enrichment only
 
-- [x] `SNAPSHOT`.
-- [x] `AFTER_MUTATION`.
-- [x] `OPERATION_PRE`.
-- [x] `OPERATION_POST`.
-- [x] `STREAM_BOUNDARY`.
+### Required new components
 
-For each:
+At minimum:
 
-- [x] trigger.
-- [x] required mirror state.
-- [x] selected constraints.
-- [x] event/correlation context.
-- [x] result behavior.
-- [x] STALE/ERROR behavior.
+- neutral Bridge contract/schema
+- `JaCaMoBridgePlatform`
+- `BridgeAgArch`
+- project/Jason/CArtAgO/Moise adapters
+- `SnapshotCoordinator`
+- `BridgeTransport` SPI
+- USE `BridgeClient`
+- `ContractValidator`
+- `NativeSemanticAdapter`
+- shadow semantic/runtime comparator
 
----
-
-## P40.2 — Runtime invariants
-
-- [x] full after authoritative snapshot.
-- [x] targeted/conservative after mutation.
-- [x] full fallback when dependency unknown.
-- [x] global invariants not accidentally skipped.
-- [x] undefined/error distinguished from FAIL.
-
----
-
-## P40.3 — Operation PRE/POST
-
-- [x] exact MObject.
-- [x] exact MOperation.
-- [x] exact args/type conversion.
-- [x] capture pre-state once.
-- [x] PRE at operation enter.
-- [x] observe-only; no blocking JaCaMo.
-- [x] POST only on matching successful exit.
-- [x] preserve `@pre`.
-- [x] OP_FAIL/abort → POST `SKIPPED`.
-- [x] duplicate/stale terminal rejected.
-
----
-
-## P40.4 — Runtime ordering/history
-
-Choose least invasive V2-compatible representation:
-
-- [x] reuse RuntimeTrace/verification projection where justified.
-- [x] otherwise dedicated trace evaluator, clearly distinguished from OCL.
-- [x] no speculative large runtime metamodel chỉ để lưu history.
-
-Verify:
-
-- [x] start-before-terminal.
-- [x] same correlation.
-- [x] stream generation.
-- [x] case-specific ordering outside core.
+Physical package/module names may change if the dependency spike proves a better layout, but logical boundaries must not collapse.
 
 ---
 
-## P40.5 — Cross-dimensional verification V2
+# 4. Cross-cutting test requirements
 
-Only approved/evidence-backed relations:
+These tests are not optional “later cleanup”; place them next to the relevant implementation.
 
-- [x] Agent action ↔ environment operation.
-- [x] Agent ↔ Artifact accessibility/focus if represented.
-- [x] observable state ↔ belief relation if V2/source proves it.
-- [x] organisational goal ↔ agent goal if V2/source proves it.
-- [x] role/mission ↔ performed behavior only when rule is explicit.
+## API drift
 
-No behavioral invariant inferred from structural EReference alone.
+- [ ] exact supported JaCaMo distribution graph;
+- [ ] Jason API signature probes;
+- [ ] CArtAgO controller/logger/descriptor probes;
+- [ ] Moise/ORA4MAS/NPL probes;
+- [ ] unsupported distribution fails clearly;
+- [ ] no silent parser fallback.
 
----
+## Identity/recreation
 
-## P40.6 — Violation reporting
+- [ ] agent same-name recreation;
+- [ ] artifact same-name recreation;
+- [ ] board same-name recreation;
+- [ ] old-generation event rejection;
+- [ ] model revision rejection;
+- [ ] sanitized-name collision;
+- [ ] exact binding zero/one/multiple candidates.
 
-Every runtime violation should include:
+## Snapshot/event races
 
-- [x] constraint ID/name.
-- [x] origin.
-- [x] checkpoint.
-- [x] outcome.
-- [x] USE context.
-- [x] RuntimeEvent ID.
-- [x] sequence.
-- [x] correlation.
-- [x] V2 SemanticId.
-- [x] source span/provenance.
-- [x] mapping/runtime rule ID.
-- [x] actionable explanation.
+- [ ] event during snapshot;
+- [ ] topology change during snapshot;
+- [ ] overflow while snapshotting;
+- [ ] disconnect before acknowledgement;
+- [ ] model descriptor appears mid-run;
+- [ ] cross-source clocks disagree;
+- [ ] unsupported event kind;
+- [ ] mutation rollback.
 
----
+## Semantic fidelity
 
-# Phase 41 — Case Studies V2 & Genericity
-
-**Objective:** chứng minh V2 pipeline không chỉ chạy với một fixture.
-
-## P41.1 — Auction migration
-
-- [x] source project imports.
-- [x] V2 semantic model.
-- [x] V2 mapping.
-- [x] V2 `.use`.
-- [x] V2 initial state.
-- [x] V2 trace.
-- [x] V2 OCL.
-- [x] runtime sync.
-- [x] positive scenario.
-- [x] negative scenario.
-- [x] PRE/POST where source/profile supports.
-- [x] reconnect/resync.
-- [x] exact violation navigation.
-
-Do not invent `highestBid/currentBid` or operation names not present in the actual fixture.
+- [ ] no fuzzy relation inference;
+- [ ] action-operation correlation success and deliberately uncorrelated case;
+- [ ] belief-property relation only from exact percept evidence;
+- [ ] AGoal-OGoal only from explicit/correlated evidence;
+- [ ] relation-scoped cardinality multi-context loss test;
+- [ ] evidence-only runtime fact blocks dependent OCL;
+- [ ] norm lifecycle never enters OCL registry implicitly.
 
 ---
 
-## P41.2 — Case Study #2 migration
+# 5. STOP conditions — require user approval before continuing
 
-- [x] import.
-- [x] transform.
-- [x] OCL where evidence exists.
-- [x] runtime supported subset.
-- [x] positive.
-- [x] negative.
-- [x] trace.
-- [x] reconnect.
-- [x] no core special case.
+Stop and present an evidence-backed proposal if any implementation requires:
 
----
+1. changing Ecore V2;
+2. changing Mapping V2.2 semantics/hashes;
+3. changing Runtime Mapping V2 semantics/hashes;
+4. changing frozen OCL/profile/golden/manifest solely to make new output pass;
+5. patching/forking JaCaMo core;
+6. introducing a case-specific production rule;
+7. weakening a regression assertion;
+8. using fuzzy resolution;
+9. auto-translating Moise/NPL norm semantics into OCL;
+10. deleting a legacy capability without proven replacement;
+11. claiming full original Auction/House semantics beyond evidence;
+12. a new semantic target that satisfies the formal V2-gap gate and truly requires a new metamodel version.
 
-## P41.3 — Genericity audit
-
-Search core production code for:
-
-- [x] Auction names.
-- [x] Case Study #2 names.
-- [x] object IDs.
-- [x] operation names.
-- [x] hard-coded runtime bindings.
-- [x] special-case branch by project name.
-- [x] V1 class names.
-- [x] V1 hashes.
-
-All example-specific logic must remain in:
-
-- [x] example.
-- [x] fixture.
-- [x] case OCL/profile.
-- [x] explicit binding.
-- [x] test.
+A blocker report must include:
+- exact revision/version;
+- minimal reproducer;
+- affected capability/case;
+- official API/source evidence;
+- attempted solution A/B;
+- why snapshot/provenance/evidence-only treatment cannot preserve soundness;
+- exact proposed migration impact.
 
 ---
 
-## P41.4 — Multi-case acceptance
+# 6. Final Definition of Done
 
-- [x] same production pipeline.
-- [x] same Mapping V2 engine.
-- [x] same Runtime Mapping V2 engine.
-- [x] no example-specific source dispatch.
-- [x] supported/unsupported boundaries explicit.
+The complete implementation is DONE only when all are true:
 
----
-
-# Phase 42 — UI, Packaging & Compatibility Migration
-
-**Objective:** user workflow và release resources phản ánh V2, không còn hiển thị V1 như active baseline.
-
-## P42.1 — Workbench workflow
-
-- [x] Import JaCaMo Project.
-- [x] show active Metamodel V2 version/hash.
-- [x] show Mapping V2 compatibility.
-- [x] diagnostics.
-- [x] trace V2.
-- [x] load OCL.
-- [x] offline verification.
-- [x] runtime connect.
-- [x] runtime sync state.
-- [x] live violations.
-- [x] source navigation.
-
----
-
-## P42.2 — Compatibility manifest
-
-Record exact:
-
-- [x] plugin version.
-- [x] Java.
-- [x] Maven.
-- [x] USE version/commit.
-- [x] JaCaMo baseline if directly used.
-- [x] Jason.
-- [x] CArtAgO.
-- [x] Moise.
-- [x] Metamodel V2 version/hash.
-- [x] Mapping V2 version/hash.
-- [x] Runtime Mapping version/hash/provisional status.
-- [x] OCL profile hashes.
-
-If project currently pins Jason 3.3.0 while upstream JaCaMo main uses another version, keep pin explicit until a deliberate compatibility update is tested.
+- [x] JaCaMo official objects are the default production semantic authority.
+- [x] Bridge runs through official extension points without a JaCaMo core patch.
+- [x] Neutral contract has no USE/EMF/live-platform/shared-classpath dependency.
+- [x] Separate-JVM boundary is proven before and after production transport selection.
+- [x] ModelSnapshot deterministically produces the accepted V2/USE MModel.
+- [x] RuntimeSnapshot initializes authoritative runtime state from only faithfully projectable facts.
+- [x] All other observable runtime facts remain explicitly evidence-only, not lost/fabricated.
+- [x] RuntimeEvent application is identity/session/generation/modelRevision/watermark safe.
+- [x] Gap/overflow/disconnect/drift trigger explicit stale/resync behavior.
+- [x] Frozen V2/Mapping V2.2/Runtime Mapping V2 remain unchanged unless separately approved.
+- [x] Relation-scoped Moise cardinality survives exactly in Bridge/provenance.
+- [x] OCL only evaluates faithfully materialized runtime dependencies.
+- [x] NPL normative semantics and OCL results remain separate.
+- [x] Hello generic path passes.
+- [x] Original Auction supported scope passes with limitations explicit.
+- [x] House supported scope passes with limitations explicit.
+- [x] No generic production code contains case-specific discovery/behavior.
+- [x] Shadow differences are exhausted/classified.
+- [x] Bridge is the default authority with zero silent fallback.
+- [x] Legacy semantic authority is removed/deprecated only with proven replacement.
+- [x] Production transport security/resilience gates pass.
+- [x] Full regression has no unexpected failures/skips.
+- [x] Final evidence/reproducibility package is complete.
+- [x] Every thesis/public claim is scoped to evidence.
 
 ---
 
-## P42.3 — Resource packaging
+# 7. Required final handoff from the AI
 
-Plugin JAR/ZIP must include the active canonical resources:
+At the end of this task, produce one concise but complete final report containing:
 
-- [x] V2 Ecore.
-- [x] Mapping V2.
-- [x] schemas.
-- [x] working/final manifests as applicable.
-- [x] Runtime Mapping.
-- [x] core OCL.
-- [x] compatibility metadata.
-- [x] release manifest.
-- [x] licenses.
+1. **Architecture status** — what is now authoritative and how data flows end to end.
+2. **Phase checklist** — completed / incomplete / blocked.
+3. **Files/modules added, refactored, deprecated, removed**.
+4. **Exact tests run and results**.
+5. **Known baseline failures** — which remain, which were legitimately closed, why.
+6. **Frozen resource hashes before/after**.
+7. **Hello/Auction/House capability matrix**.
+8. **Runtime fact projection matrix** — `MATERIALIZED_FAITHFULLY` / `EVIDENCE_ONLY` / `UNAVAILABLE`.
+9. **Relation-cardinality fidelity result**.
+10. **Separate-JVM proof and production transport result**.
+11. **Security/resilience result**.
+12. **Legacy replacement/removal ledger**.
+13. **Remaining limitations / deferred semantic decisions**.
+14. **Reproduction commands**.
+15. **Explicit statement whether any STOP condition was encountered**.
 
-V1 historical resources:
-
-- [x] either excluded from active package;
-- [x] or clearly placed under historical/compatibility namespace.
-
-Không có hai file cùng “canonical” status.
-
----
-
-## P42.4 — UI regression
-
-- [x] plugin load.
-- [x] import.
-- [x] rebuild.
-- [x] OCL load.
-- [x] full verify.
-- [x] runtime tab.
-- [x] disconnect/reconnect/resync.
-- [x] report export.
-- [x] no transformation logic inside UI.
+Do not declare the project complete because focused tests are green. Completion requires the global DoD above and reproducible evidence.
 
 ---
 
-# Phase 43 — Hardening, Security, Determinism & Performance
-
-**Objective:** đóng các correctness gaps phát sinh từ V2 migration trước final freeze.
-
-**Status:** DONE — focused 111/111, module 229/229 and reactor 372/372 PASS;
-zero failures/errors/skips. See `docs/project/v2-migration/phase43-hardening.md`.
-
-## P43.1 — Requirement → code → test traceability
-
-For every V2 capability:
-
-- [x] requirement.
-- [x] implementation.
-- [x] tests.
-- [x] evidence.
-- [x] status.
-
-Allowed:
-
-- [x] COMPLETE.
-- [x] SUPPORTED_SUBSET_COMPLETE.
-- [x] EXPLICITLY_UNSUPPORTED.
-- [x] OUT_OF_SCOPE.
-
----
-
-## P43.2 — TODO/FIXME/stale V1 audit
-
-- [x] TODO.
-- [x] FIXME.
-- [x] `V1`.
-- [x] old namespace.
-- [x] old mapping IDs.
-- [x] obsolete projection IDs.
-- [x] old golden paths.
-- [x] dead migration code.
-- [x] duplicate V1/V2 dispatch.
-- [x] commented-out fallback.
-
-No unresolved correctness TODO in active V2 path.
-
----
-
-## P43.3 — Determinism
-
-Same:
-
-- [x] project bytes.
-- [x] V2 Ecore.
-- [x] Mapping V2.
-- [x] plugin version.
-- [x] OCL profiles.
-
-must yield same:
-
-- [x] SemanticIds.
-- [x] `.use`.
-- [x] `.cmd`.
-- [x] trace.
-- [x] generated OCL.
-- [x] diagnostics ordering.
-- [x] mapping decisions.
-
-Runtime UUID/timestamps may be run-specific but semantics/correlation must remain deterministic where expected.
-
----
-
-## P43.4 — Security
-
-- [x] path traversal.
-- [x] symlink escape.
-- [x] XML external entity/DTD.
-- [x] Java static analysis does not initialize project code.
-- [x] classpath/archive safety.
-- [x] case OCL path restricted.
-- [x] report export path handling.
-- [x] no arbitrary shell execution.
-- [x] logging avoids unnecessary sensitive data.
-
----
-
-## P43.5 — Runtime resource/lifecycle
-
-- [x] listener cleanup.
-- [x] queue shutdown.
-- [x] scheduler cleanup.
-- [x] reconnect no duplicate subscription.
-- [x] workspace replacement isolation.
-- [x] operation correlation bounded cleanup.
-- [x] stale aliases retired.
-- [x] no old V1 target surviving V2 rebuild.
-
----
-
-## P43.6 — Performance evidence
-
-Measure:
-
-- [x] import time.
-- [x] Ecore/Mapping validation.
-- [x] transformation.
-- [x] OCL compile.
-- [x] full verification.
-- [x] runtime event→result latency.
-- [x] queue depth/high-watermark.
-- [x] memory.
-- [x] resync latency.
-
-Do not optimize semantics for benchmark.
-
----
-
-# Phase 44 — V2 Release Candidate, Freeze & Evidence
-
-**Objective:** chỉ freeze khi V2 đã đủ ổn cho thesis/release; trước đó vẫn là working baseline.
-
-## P44.1 — Decide final V2 candidate
-
-Before freeze:
-
-- [x] no pending known metamodel change expected immediately.
-- [x] V2 Ecore audit PASS.
-- [x] Mapping V2 audit PASS.
-- [x] V2 transformation PASS.
-- [x] Trace/binding PASS.
-- [x] Runtime Mapping PASS.
-- [x] OCL compile/check PASS.
-- [x] both case studies disposed.
-- [x] hardening PASS.
-
-If metamodel changes here:
-
-- [x] N/A — Ecore bytes did not change; `phase44-freeze-diff.json` proves the Phase 32 loop was not required.
-- [x] N/A — no metamodel-dependent evidence needed regeneration; final evidence was regenerated for freeze metadata.
-- [x] exact diff/impact gate PASS; no hash-only patch.
-
----
-
-## P44.2 — Freeze Metamodel V2
-
-Only now:
-
-- [x] status `FROZEN`.
-- [x] final hash.
-- [x] final inventory.
-- [x] audit.
-- [x] provenance.
-- [x] version.
-- [x] unresolved boundaries documented.
-- [x] mutation controls/negative tests PASS.
-
----
-
-## P44.3 — Freeze Structural Mapping V2
-
-- [x] schema validation.
-- [x] full V2 source coverage/disposition.
-- [x] target USE compile.
-- [x] projection audit.
-- [x] negative mutation tests.
-- [x] mapping hash.
-- [x] freeze manifest.
-- [x] exact Metamodel V2 hash compatibility.
-
----
-
-## P44.4 — Freeze Runtime Mapping
-
-- [x] source runtime capabilities reconciled to pinned APIs.
-- [x] target bindings reconciled to frozen V2.
-- [x] no Auction-specific rule.
-- [x] schema/semantic validator PASS.
-- [x] negative tests.
-- [x] runtime integration tests.
-- [x] audit.
-- [x] version/hash manifest.
-
----
-
-## P44.5 — Final reproducibility bundle
-
-Preserve:
-
-- [x] repository revision.
-- [x] V2 Ecore/hash.
-- [x] Mapping V2/schema/hash.
-- [x] Runtime Mapping/schema/hash.
-- [x] generated `.use`.
-- [x] generated `.cmd`.
-- [x] OCL profiles/provenance.
-- [x] trace.
-- [x] runtime event logs.
-- [x] verification reports.
-- [x] reconnect/resync evidence.
-- [x] case-study summaries.
-- [x] compatibility manifest.
-- [x] test logs/counts.
-- [x] release ZIP/JAR checksums.
-
----
-
-## P44.6 — Final validation
-
-- [x] focused metamodel tests.
-- [x] focused mapping tests.
-- [x] parser fixtures.
-- [x] transformation/golden.
-- [x] OCL.
-- [x] trace/binding.
-- [x] synthetic runtime.
-- [x] real pinned Jason/CArtAgO/Moise connector tests.
-- [x] Auction E2E.
-- [x] Case Study #2 E2E.
-- [x] full module verify.
-- [x] full reactor verify.
-- [x] clean checkout/relocated build.
-- [x] installed plugin smoke.
-- [x] package inventory/hash.
-- [x] zero unexpected skipped correctness tests.
-
----
-
-# V2 Minor-Change Fast Path
-
-Dùng quy trình này nếu Metamodel V2 thay đổi nhỏ trong khi Phase 29–43 đang triển khai.
-
-**Phase 44 disposition:** NOT INVOKED — canonical Ecore bytes are unchanged. The
-unchecked items below remain a reusable procedure for a future version, not pending
-work in this frozen V2 candidate.
-
-## Step A — Intake
-
-- [ ] Replace/update only canonical V2 source files.
-- [ ] Do not edit production code first.
-- [ ] Compute new hash.
-- [ ] Run Ecore structural diff against previous working V2.
-
-## Step B — Impact classification
-
-- [ ] metamodel-only metadata.
-- [ ] mapping.
-- [ ] semantic IR.
-- [ ] parser/extractor.
-- [ ] transformation.
-- [ ] projection.
-- [ ] trace/binding.
-- [ ] OCL.
-- [ ] runtime target binding.
-- [ ] case fixtures.
-
-## Step C — Selective migration
-
-- [ ] update only impacted layers.
-- [ ] no unrelated refactor.
-- [ ] preserve stable semantic IDs where semantics unchanged.
-- [ ] mark incompatible bindings/traces stale.
-- [ ] regenerate affected golden files intentionally.
-
-## Step D — Gates
-
-- [ ] Ecore validation.
-- [ ] Mapping validation.
-- [ ] USE compile.
-- [ ] affected parser tests.
-- [ ] affected transformation tests.
-- [ ] affected OCL compile.
-- [ ] runtime target-binding tests if impacted.
-- [ ] Auction smoke.
-- [ ] full module regression before accepting new working baseline.
-
-## Step E — Future version manifest update
-
-- [ ] version.
-- [ ] hash.
-- [ ] diff summary.
-- [ ] impacted layers.
-- [ ] tests.
-- [ ] date.
-- [ ] status for the new version; never alter the frozen V2 manifest in place.
-
----
-
-# Final Acceptance Matrix for V2 Migration
-
-## Metamodel/Mapping
-
-- [x] V2 active baseline selected.
-- [x] V1 historical only.
-- [x] Ecore V2 audited.
-- [x] Mapping V2 audited.
-- [x] no hidden V1 structural dependency.
-
-## Static Pipeline
-
-- [x] V2 Semantic IR.
-- [x] JCM extraction.
-- [x] Jason extraction.
-- [x] CArtAgO extraction.
-- [x] Moise extraction.
-- [x] exact resolver.
-- [x] V2 `.use`.
-- [x] V2 `.cmd`.
-- [x] text/direct parity.
-
-## Trace & OCL
-
-- [x] V2 trace.
-- [x] binding/staleness.
-- [x] core OCL.
-- [x] translated OCL subset.
-- [x] case/user OCL.
-- [x] PRE/POST.
-
-## Runtime
-
-- [x] runtime capabilities pinned.
-- [x] RuntimeEvent preserved/reconciled.
-- [x] Runtime Mapping V2.
-- [x] authoritative snapshot.
-- [x] ordered mutation.
-- [x] no silent drop.
-- [x] drift detection.
-- [x] reconnect/resync.
-- [x] exact runtime identity.
-
-## Verification
-
-- [x] snapshot invariants.
-- [x] after-mutation verification.
-- [x] operation PRE/POST.
-- [x] ordering/history bounded.
-- [x] cross-dimensional supported subset.
-- [x] normative supported subset.
-- [x] exact violation trace.
-
-## Genericity
-
-- [x] Auction V2.
-- [x] Case Study #2 V2.
-- [x] no case-specific core logic.
-- [x] future V2 minor-change loop tested.
-
-## Engineering
-
-- [x] security.
-- [x] determinism.
-- [x] performance evidence.
-- [x] clean build.
-- [x] plugin smoke.
-- [x] docs synchronized.
-- [x] release/evidence bundle.
-
----
-
-# Project Completion Rule
-
-Dự án chỉ được coi là **V2 LOGIC / CODING COMPLETE** khi:
-
-- [x] V2 active pipeline không còn dependency ngầm vào V1;
-- [x] mọi capability in-scope là `COMPLETE` hoặc `SUPPORTED_SUBSET_COMPLETE`;
-- [x] mọi capability còn lại là `EXPLICITLY_UNSUPPORTED` hoặc `OUT_OF_SCOPE` có evidence;
-- [x] mirror correctness được chứng minh trước khi dùng runtime OCL verdict;
-- [x] full regression PASS;
-- [x] V2 Metamodel + Structural Mapping + Runtime Mapping được freeze ở Phase 44;
-- [x] documentation/evidence/release artifacts đồng bộ.
-
-**Status: V2 LOGIC / CODING COMPLETE — FROZEN RELEASE CANDIDATE (not tagged).**
-
----
-
-# Phase 45 — Canonical JaCaMo Case Studies
-
-**Objective:** import and verify the original Hello World, Auction and
-House-Building sources through the frozen V2 production pipeline without case logic
-in production core or semantic guessing.
-
-The pre-implementation audit is
-[`docs/project/case-studies/phase45-canonical-case-study-audit.md`](../project/case-studies/phase45-canonical-case-study-audit.md).
-Phase 44 frozen Ecore, Structural Mapping, Runtime Mapping and core OCL remain the
-baseline; this phase is an implementation/case-evidence extension, not V2.1.
-
-## P45.0 — Mandatory audit before code
-
-- [x] read all supplied canonical JCM, ASL, local Java Artifact, Moise XML and relevant config sources.
-- [x] read and visually inspect the supplied Auction/House analysis PDF; source conflicts resolved in favor of JaCaMo source.
-- [x] audit extraction, IR, exact resolution/binding, transformation, materialization, trace, OCL, runtime, verification and tests.
-- [x] record SOURCE -> EXPECTED IR -> ACTUAL output for all three cases.
-- [x] classify supported, partial, unsupported, ambiguous, bug and missing-generic-capability gaps.
-- [x] record generic changes, Case OCL and test plan before production implementation.
-
-## P45.1 — Hello World canonical baseline
-
-- [ ] preserve a byte-identical canonical source fixture and source manifest.
-- [ ] implement generic JCM initial belief/goal extraction needed by the source.
-- [ ] implement robust parse-only multiline Jason extraction.
-- [ ] use exact focus evidence for Action-to-Operation resolution.
-- [ ] assert exact Hello semantic inventory and explicit unsupported/ambiguous facts.
-- [ ] compile/materialize USE, trace provenance and verify Hello Case OCL.
-- [ ] add positive, negative and deterministic smoke gates.
-
-## P45.2 — Auction original source
-
-- [ ] discover exact literal dynamic Java source without loading/executing project code.
-- [ ] import complete Jason, CArtAgO and Moise source inventories.
-- [ ] preserve exact JCM player-to-role bindings.
-- [ ] preserve design-time ambiguity where the concrete `a1`/`a2` receiver needs runtime identity.
-- [ ] verify scheme, missions, goals, plan ordering and Norm structure.
-- [ ] compile/materialize USE, trace provenance and verify Auction Case OCL.
-- [ ] add supported positive/negative runtime scenarios with exact runtime aliases.
-- [ ] retain the explicit original standalone plan/deadline boundary.
-
-## P45.3 — House-Building hero case
-
-- [ ] expand exact JCM agent instances and local ASL includes.
-- [ ] discover exact local `AuctionArt`, `House` and `house-os.xml` references.
-- [ ] import eight contracting auctions and supported dynamic workspace/artifact evidence.
-- [ ] import modern Moise role definitions, hierarchy, cardinalities, links, missions, goals, OPlans and Norms.
-- [ ] retain formation compatibility and external ORA4MAS members as explicit unsupported source evidence.
-- [ ] preserve nondeterministic winner-to-role bindings for runtime evidence only.
-- [ ] compile/materialize USE, trace provenance and verify House Case OCL.
-- [ ] add supported dynamic positive/negative runtime scenarios and deterministic gates.
-
-## P45.4 — Three-case closure
-
-- [ ] prove one parameterized production pipeline for all three original cases.
-- [ ] prove production core has no case/project/agent/task/business-operation dispatch.
-- [ ] run focused parser, inventory, transformation, USE, trace, OCL and runtime tests.
-- [ ] run full plugin module regression.
-- [ ] run full reactor regression.
-- [ ] verify frozen V2 resource hashes and package inventory are unchanged.
-- [ ] record zero unexpected skipped correctness tests.
-- [ ] synchronize docs, checklist and reproducible evidence; commit by coherent unit.
+# 8. Execution priority summary
+
+The intended difficulty gradient is:
+
+```text
+MANDATORY PREFLIGHT
+    ↓
+CRITICAL  Phase 1 — Contract + identity + capability model
+CRITICAL  Phase 2 — Official Bridge + adapters + validated snapshot protocol
+CRITICAL  Phase 3 — USE integration + runtime/OCL gating + separate-JVM proof
+    ↓
+HIGH      Phase 4 — Hello acceptance + shadow comparator
+HIGH      Phase 5 — Original Auction
+HIGH      Phase 6 — Original House-Building
+HIGH      Phase 7 — Deferred semantic decision reviews
+HIGH      Phase 8 — Production transport/security/resilience
+    ↓
+MEDIUM    Phase 9 — Switch production authority
+MED/LOW   Phase 10 — Remove proven legacy authority
+LOW/MED   Phase 11 — Final packaging/evidence/thesis handoff
+```
+
+This ordering deliberately gives the most architecture-sensitive and error-prone work to the earliest/highest-capability part of the single-AI session, while leaving mechanical cleanup, cut-over, packaging and evidence consolidation toward the end. Dependency gates must still be obeyed.

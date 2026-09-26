@@ -38,6 +38,7 @@ public final class StaticProjectImporter {
             }
         }
         new SemanticResolver().resolve(context, bindings);
+        new OrderEvidenceLoader().apply(context);
         List<SemanticElement> frozen = context.elements.stream().map(ElementDraft::freeze).toList();
         if (context.projectName == null) {
             diagnostics.add(new Diagnostic("SEMANTIC_PROJECT_MISSING", Severity.FATAL, Phase.SEMANTIC_MODEL,

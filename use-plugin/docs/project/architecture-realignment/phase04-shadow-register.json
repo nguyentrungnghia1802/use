@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0.0",
+  "case": "hello",
+  "sourceSha256": "c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101",
+  "fingerprint": "789657d98e2f3d6090ea2131b0cff3a375154aebd59e4f9f2ec7cc6fc51d8ca2",
+  "officialToBridge": {"differences": 0, "classification": "NO_ADAPTER_BUG"},
+  "officialToLegacy": {
+    "differences": 8,
+    "classification": "LEGACY_LIMITATION",
+    "kinds": ["Action", "Belief", "Event", "Operation", "Plan", "Property", "Role", "Workspace"]
+  },
+  "officialToV2Plan": {
+    "differences": 20,
+    "classification": "REPRESENTATION_LOSS",
+    "detail": "Reviewed synthetic OrderEntry projection classes R001/R002/R003/R004/R007/R008/R014/R015/R017/R018/R019/R020/R021/R022/R023/R025/R030/R031/R032/R035; the reproducible test emits the exact digest register."
+  },
+  "v2PlanToUseResult": {"differences": 0, "classification": "NO_BACKEND_DIVERGENCE"},
+  "generatedBy": "HelloShadowComparisonTest"
+}

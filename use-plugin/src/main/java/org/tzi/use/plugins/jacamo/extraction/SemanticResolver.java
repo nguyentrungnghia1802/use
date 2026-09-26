@@ -27,7 +27,8 @@ final class SemanticResolver {
                 if (reference.targetId() != null) { resolved.add(reference); continue; }
                 Set<MetamodelKind> targets = new HashSet<>();
                 for (var kind : registry.kinds()) if (registry.owners(kind.name()).contains(descriptor.get().sourceTarget())) targets.add(kind);
-                var result = resolver.resolve(new ResolutionRequest(source.id.value(), reference.originalSpelling(), targets, null, List.of()));
+                List<String> scope = exactOperationScope(context, source, reference);
+                var result = resolver.resolve(new ResolutionRequest(source.id.value(), reference.originalSpelling(), targets, null, scope));
                 if (result.status() == ResolutionResult.Status.RESOLVED)
                     resolved.add(new SemanticReference(reference.feature(), reference.originalSpelling(), result.target().id()));
                 else {
@@ -37,7 +38,10 @@ final class SemanticResolver {
                         case INVALID_BINDING -> "BINDING_INVALID";
                         default -> "RESOLUTION_UNRESOLVED";
                     };
-                    context.diagnostic(code, reference.feature().equals("operation") ? Severity.ERROR : Severity.WARNING,
+                    boolean runtimeDependent = source.sourceFacts.get("receiverResolution")
+                            instanceof AttributeValue.Text text && text.value().equals("RUNTIME_DEPENDENT");
+                    context.diagnostic(code, reference.feature().equals("operation") && !runtimeDependent
+                                    ? Severity.ERROR : Severity.WARNING,
                             Phase.RESOLUTION, source.provenance.getFirst().span(), source.id.value(),
                             "Reference has no unique exact typed target", reference.feature() + "=" + reference.originalSpelling()
                                     + "; " + result.diagnostic(), "Provide exact owner qualification or a binding within existing candidates");
@@ -54,6 +58,25 @@ final class SemanticResolver {
                         "Binding is stale or outside an exact source relation", binding.target(), "Regenerate binding against current source identities and hashes");
         }
         completeOppositeMembership(context, registry);
+    }
+
+    /** Uses only explicit receiver evidence; artifact names and types are never approximated. */
+    private List<String> exactOperationScope(ExtractionContext context, ElementDraft source,
+                                             SemanticReference reference) {
+        if (!reference.feature().equals("operation")) return List.of();
+        if (source.sourceFacts.get("receiverArtifact") instanceof AttributeValue.Text receiver) {
+            return List.of(receiver.value().split("[./]"));
+        }
+        if (!(source.sourceFacts.get("receiverArtifactType") instanceof AttributeValue.Text type)) return List.of();
+        List<ElementDraft> artifacts = context.elements.stream()
+                .filter(element -> element.kind == MetamodelKind.Artifact)
+                .filter(element -> new AttributeValue.Text(type.value()).equals(element.attributes.get("type")))
+                .toList();
+        if (artifacts.size() != 1) return List.of();
+        ElementDraft artifact = artifacts.getFirst();
+        List<String> owner = new ArrayList<>(artifact.id.ownerPath());
+        owner.add(artifact.name);
+        return owner;
     }
 
     /** Opposites entail membership, not independent order. Multi-member inferred order stays unresolved. */

@@ -9,6 +9,8 @@
     <packaging>pom</packaging>
     <version>7.5.0</version>
     <modules>
+        <module>jacamo-bridge-contract</module>
+        <module>jacamo-bridge-jacamo</module>
         <module>use-assembly</module>
         <module>use-core</module>
         <module>use-gui</module>
