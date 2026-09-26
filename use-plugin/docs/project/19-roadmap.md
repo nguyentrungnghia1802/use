@@ -3,6 +3,11 @@
 > Mục tiêu: đưa dự án từ baseline hiện tại đến trạng thái **logic/coding complete**, ưu tiên để Agent tự thực hiện toàn bộ công việc kỹ thuật A-Z.  
 > `task.md` sẽ mô tả chi tiết từng task; file này chỉ định hướng phase, dependency và điểm kết thúc.  
 > Các việc thật sự cần người dùng cung cấp/ quyết định được dồn xuống gần cuối roadmap.
+>
+> **Current disposition (2026-09-25):** Phase 29–44 completed and the V2
+> metamodel, structural mapping and runtime mapping are `FROZEN`. The phase
+> descriptions below preserve the historical roadmap; use
+> `docs/agent/task.md` and Phase 44 for current status.
 
 ---
 

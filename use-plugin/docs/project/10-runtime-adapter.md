@@ -1,6 +1,6 @@
 # Runtime Adapter
 
-> Current V2 target contract: [Phase 35 reconciliation](v2-migration/phase35-runtime-targets.md). Default runtime loading uses Mapping V2 fingerprints and schema 3.0.0; older frozen V1 results below are historical. Full clean reactor PASS 350/350; see Phase 35 acceptance for workflow closure.
+> Current V2 target contract: [Phase 35 reconciliation](v2-migration/phase35-runtime-targets.md). Default runtime loading uses Mapping V2 fingerprints and schema 3.0.0; older frozen V1 results below are historical. The final Phase 44 clean reactor and relocated checkout both PASS 374/374; Phase 35's 350/350 result is historical workflow evidence.
 
 > Current source/action reconciliation: [Phase 38](v2-migration/phase38-runtime-mapping.md).
 > V2 mirror correctness and bounded synchronization: [Phase 39](v2-migration/phase39-mirror-correctness.md).
@@ -309,49 +309,25 @@ The [project capability matrix](../research/jacamo_runtime_research/IMPLEMENTATI
 
 See [event and identity contract](runtime-event-identity.md). RuntimeMutationEngine owns a RuntimeTrace ledger with generation/order/duplicate checks and explicit mutation outcomes. CArtAgO unknown/retired observations are quarantined separately; CompositeRuntimeConnector retains retired child events. Existing event wire version remains 1.0.0.
 
-## Runtime mapping draft (2026-09-19)
+## Historical runtime-mapping and launcher evidence
 
-Phase 18 introduces a strict declarative draft loader, semantic validator and derived
-compatibility report. See [runtime-mapping-draft.md](runtime-mapping-draft.md).
-Initial module regression: 135/135 PASS. V1 target bindings are temporary; no runtime
-mapping freeze or OCL expansion is implied.
+The temporary V1 runtime-mapping draft was retired after the production loader
+moved to Runtime Mapping V2. The active, frozen mapping and its source-event
+authorization are documented by [Phase 38](v2-migration/phase38-runtime-mapping.md)
+and the [Phase 44 freeze](v2-migration/phase44-final-v2-freeze.md).
 
-Phase 19 integrates this draft into mutation dispatch and state-check checkpoints.
-Unknown property mappings are quarantined instead of silently applied; unknown
-CArtAgO operations leave connector quarantine evidence. Object recreation is limited
-to the original exact trace/class, and operation terminals must match the open target.
-See the integrated contract and limitations in runtime-mapping-draft.md.
-
-## Phase 18-20 execution scope (2026-09-19)
-
-Runtime Mapping Draft is integrated; the supported mirror subset has executable
-zero-drift evidence. Full-project Phase 20 uses its documented technical-limitation
-exit alternative. The pinned launcher probe exposes .jcm syntax and Moise OS schema
-gaps in the static fixture. See [phase20-runtime-evidence.md](phase20-runtime-evidence.md).
-That historical in-process scenario does not prove autonomous execution; the
-standalone control below supplies separate actual AgentSpeak execution evidence.
-
-The pinned launcher exposes organisation state through `ora4mas.nopl.oe.Group`
-and `ora4mas.nopl.oe.Scheme`. The final completeness audit implements
-`MoiseRuntimeConnector.forBoards` with `MoiseBoardSnapshotSource`: exact owner/board
-identities, cloned state at caller-controlled quiescent checkpoints, role/mission
-net deltas and goal satisfaction. Invalid/duplicate identity moves the connector
-to ERROR and requires disconnect before reconnect. No unrelated OE is constructed.
-The real AgentSpeak launcher control now passes role adoption, mission commitment,
-goal satisfaction, artifact operations and reconnect/resync. Organisation facts
-remain trace-only under frozen V1; satisfaction-only state does not imply NPL
-enabled/waiting/deadline equivalence. See phase20-final-completeness-audit.md.
-
-Phase 23 adds `MoiseRuntimeConnector.normativeSnapshot()` for deterministic direct
-OE derived obligation/permission evidence. It does not emit normative mutations or
-claim NPL lifecycle. See [the bounded audit](phase23-cross-dimensional-evidence.md).
+The retained launcher controls establish a bounded supported subset: direct board
+observation, exact identity, role/mission/goal activity, artifact operations, and
+reconnect/resync. They do not establish original Auction plan/deadline equivalence
+or a general NPL lifecycle. See the [final completeness audit](phase20-final-completeness-audit.md)
+and the [Phase 23 boundary audit](phase23-cross-dimensional-evidence.md).
 
 
 ## Final target decision (Phase 25–26)
 
 The D25-01/Phase 26 V1 conclusion is historical. Active Runtime Mapping V2 binds
-exactly to Structural Mapping V2 and remains working until Phase 44. No general
-standalone launcher or NPL equivalence is implied.
+exactly to Structural Mapping V2 and is frozen at Phase 44. No general standalone
+launcher or NPL equivalence is implied.
 
 ## Phase 27 failure and cleanup contract
 

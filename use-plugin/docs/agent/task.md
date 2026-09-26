@@ -2,7 +2,9 @@
 
 > **Mục tiêu:** chuyển dự án hiện tại sang **Metamodel V2 + Mapping V2** làm baseline phát triển chính, đồng thời giữ lại tối đa hạ tầng đã được kiểm chứng: import framework, USE adapter, trace/binding infrastructure, runtime connectors, RuntimeEvent/RuntimeTrace, synchronization, verification engine, UI/reporting, build/test infrastructure.
 >
-> **Trạng thái V2:** `WORKING_BASELINE`, chưa `FROZEN`. Cho phép thay đổi nhỏ trong quá trình phát triển, nhưng mọi thay đổi phải đi qua diff → impact analysis → migration → regression; không sửa hash/fixture chỉ để làm test pass.
+> **Trạng thái V2:** `FROZEN_RELEASE_CANDIDATE` từ Phase 44. Mọi thay đổi
+> sau freeze phải tạo version mới, diff/impact analysis, migration và regression;
+> không sửa hash/fixture chỉ để làm test pass.
 >
 > **Active source locations do người dùng chỉ định**
 >
@@ -13,7 +15,12 @@
 
 ---
 
-> **2026-09-24 final consumer gate:** clean reactor **350/350 PASS**, Python **11/11 PASS**. All component and downstream integration gates in Phase 29–35 now pass. Earlier counts/OPEN paragraphs below are historical migration snapshots, superseded by [final acceptance](../project/v2-migration/phase35-acceptance.md) and its per-test evidence. Phase branches are merged and pushed; post-merge full regression also PASS 350/350. Phase 29–35 are DONE; no final V2 freeze/release is claimed.
+> **2026-09-25 Phase 44 freeze:** focused 154/154, module 231/231, clean
+> reactor 374/374, and relocated clean reactor 374/374 all pass with zero
+> failures, errors, or skipped correctness tests. Earlier 350/350 and OPEN
+> paragraphs below are historical migration snapshots. The frozen contracts and
+> final evidence are recorded in [Phase 44](../project/v2-migration/phase44-final-v2-freeze.md);
+> the candidate is not a published Git tag.
 
 # Global Rules cho Phase 29+
 
@@ -71,7 +78,10 @@ Một task chỉ được `[x]` khi:
 
 **Objective:** chuyển source-of-truth active từ V1 sang V2 một cách có kiểm soát trước khi sửa sâu production code.
 
-> Execution update 2026-09-23: P29.1/P29.2 intake captured; Phase 29 remains OPEN. Fresh baseline: 306 tests, 3 failures, 73 errors, zero skips. See [baseline](../project/v2-migration/phase29-pre-migration-baseline.md), [inventory](../project/v2-migration/v2-input-inventory.md), and [gate dependency decision](../project/v2-migration/phase29-gate-dependency.md). User authorized staged Phase 29–35 migration: downstream-dependent gates remain OPEN until their actual regressions pass. No rollback to V1; no production tasks moved into Phase 29.
+> Historical execution update, 2026-09-23: this is the initial failing intake
+> snapshot before the completed Phase 29–35 migration. See [baseline](../project/v2-migration/phase29-pre-migration-baseline.md),
+> [acceptance](../project/v2-migration/phase35-acceptance.md), and the Phase 44
+> freeze record for the authoritative final status.
 
 ## P29.1 — Capture repository baseline trước migration
 
@@ -125,7 +135,7 @@ Executable selection gates below now PASS after P32.2/P35.1–P35.7; policy is r
 
 ### Tasks
 
-- [x] V2 = `WORKING_BASELINE`.
+- [x] V2 = `WORKING_BASELINE` at the historical Phase 29 checkpoint; `FROZEN` at Phase 44.
 - [x] V1 = `HISTORICAL_BASELINE`.
 - [x] Production import/transformation mặc định dùng V2.
 - [x] V1 chỉ được load qua explicit compatibility/test path nếu còn cần.
@@ -302,7 +312,7 @@ Create/update manifest containing:
 - [x] hash.
 - [x] package/nsURI.
 - [x] structural counts generated dynamically.
-- [x] status = `WORKING_BASELINE`.
+- [x] status = `WORKING_BASELINE` in the historical working manifest; `FROZEN` in the final manifest.
 - [x] created/updated date.
 - [x] provenance.
 - [x] known unresolved items.
@@ -451,8 +461,8 @@ Generate structural fixture từ Mapping V2:
 
 ## P31.6 — Mapping V2 working status
 
-- [x] Mapping V2 = `WORKING_BASELINE`.
-- [x] Không freeze final.
+- [x] Mapping V2 = `WORKING_BASELINE` at Phase 31; `FROZEN` at Phase 44.
+- [x] Không freeze final before Phase 44.
 - [x] Có hash/version record.
 - [x] Có compatibility pointer tới exact Metamodel V2 hash.
 - [x] Mọi future Ecore change phải invalidate/reconcile mapping status.
@@ -1818,7 +1828,7 @@ work in this frozen V2 candidate.
 - [ ] Auction smoke.
 - [ ] full module regression before accepting new working baseline.
 
-## Step E — Working manifest update
+## Step E — Future version manifest update
 
 - [ ] version.
 - [ ] hash.
@@ -1826,7 +1836,7 @@ work in this frozen V2 candidate.
 - [ ] impacted layers.
 - [ ] tests.
 - [ ] date.
-- [ ] status remains `WORKING_BASELINE` until Phase 44.
+- [ ] status for the new version; never alter the frozen V2 manifest in place.
 
 ---
 
@@ -1915,3 +1925,68 @@ Dự án chỉ được coi là **V2 LOGIC / CODING COMPLETE** khi:
 - [x] documentation/evidence/release artifacts đồng bộ.
 
 **Status: V2 LOGIC / CODING COMPLETE — FROZEN RELEASE CANDIDATE (not tagged).**
+
+---
+
+# Phase 45 — Canonical JaCaMo Case Studies
+
+**Objective:** import and verify the original Hello World, Auction and
+House-Building sources through the frozen V2 production pipeline without case logic
+in production core or semantic guessing.
+
+The pre-implementation audit is
+[`docs/project/case-studies/phase45-canonical-case-study-audit.md`](../project/case-studies/phase45-canonical-case-study-audit.md).
+Phase 44 frozen Ecore, Structural Mapping, Runtime Mapping and core OCL remain the
+baseline; this phase is an implementation/case-evidence extension, not V2.1.
+
+## P45.0 — Mandatory audit before code
+
+- [x] read all supplied canonical JCM, ASL, local Java Artifact, Moise XML and relevant config sources.
+- [x] read and visually inspect the supplied Auction/House analysis PDF; source conflicts resolved in favor of JaCaMo source.
+- [x] audit extraction, IR, exact resolution/binding, transformation, materialization, trace, OCL, runtime, verification and tests.
+- [x] record SOURCE -> EXPECTED IR -> ACTUAL output for all three cases.
+- [x] classify supported, partial, unsupported, ambiguous, bug and missing-generic-capability gaps.
+- [x] record generic changes, Case OCL and test plan before production implementation.
+
+## P45.1 — Hello World canonical baseline
+
+- [ ] preserve a byte-identical canonical source fixture and source manifest.
+- [ ] implement generic JCM initial belief/goal extraction needed by the source.
+- [ ] implement robust parse-only multiline Jason extraction.
+- [ ] use exact focus evidence for Action-to-Operation resolution.
+- [ ] assert exact Hello semantic inventory and explicit unsupported/ambiguous facts.
+- [ ] compile/materialize USE, trace provenance and verify Hello Case OCL.
+- [ ] add positive, negative and deterministic smoke gates.
+
+## P45.2 — Auction original source
+
+- [ ] discover exact literal dynamic Java source without loading/executing project code.
+- [ ] import complete Jason, CArtAgO and Moise source inventories.
+- [ ] preserve exact JCM player-to-role bindings.
+- [ ] preserve design-time ambiguity where the concrete `a1`/`a2` receiver needs runtime identity.
+- [ ] verify scheme, missions, goals, plan ordering and Norm structure.
+- [ ] compile/materialize USE, trace provenance and verify Auction Case OCL.
+- [ ] add supported positive/negative runtime scenarios with exact runtime aliases.
+- [ ] retain the explicit original standalone plan/deadline boundary.
+
+## P45.3 — House-Building hero case
+
+- [ ] expand exact JCM agent instances and local ASL includes.
+- [ ] discover exact local `AuctionArt`, `House` and `house-os.xml` references.
+- [ ] import eight contracting auctions and supported dynamic workspace/artifact evidence.
+- [ ] import modern Moise role definitions, hierarchy, cardinalities, links, missions, goals, OPlans and Norms.
+- [ ] retain formation compatibility and external ORA4MAS members as explicit unsupported source evidence.
+- [ ] preserve nondeterministic winner-to-role bindings for runtime evidence only.
+- [ ] compile/materialize USE, trace provenance and verify House Case OCL.
+- [ ] add supported dynamic positive/negative runtime scenarios and deterministic gates.
+
+## P45.4 — Three-case closure
+
+- [ ] prove one parameterized production pipeline for all three original cases.
+- [ ] prove production core has no case/project/agent/task/business-operation dispatch.
+- [ ] run focused parser, inventory, transformation, USE, trace, OCL and runtime tests.
+- [ ] run full plugin module regression.
+- [ ] run full reactor regression.
+- [ ] verify frozen V2 resource hashes and package inventory are unchanged.
+- [ ] record zero unexpected skipped correctness tests.
+- [ ] synchronize docs, checklist and reproducible evidence; commit by coherent unit.

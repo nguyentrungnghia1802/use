@@ -33,7 +33,7 @@
               v                                    v
  +--------------------------+          +--------------------------+
  | Mapping Engine           |          | Constraint Extractor     |
- | mapping-v1.json          |          | + Translator             |
+ | Mapping V2               |          | + Translator             |
  +------------+-------------+          +------------+-------------+
               |                                     |
               v                                     v

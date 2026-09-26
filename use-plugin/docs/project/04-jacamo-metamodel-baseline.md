@@ -1,118 +1,50 @@
 # JaCaMo Metamodel Baseline
 
-> Active baseline is `Core/Metamodel/version-2/jacamo_v2_complete.ecore` with Mapping 2.2.0. Production migration and clean reactor PASS; see [final acceptance](v2-migration/phase35-acceptance.md). The V1 class inventory and equivalence discussion below remain historical, not the current descriptor inventory.
+## Active baseline
 
+The checked-in active metamodel is
+Core/Metamodel/version-2/jacamo_v2_complete.ecore. Its frozen identity,
+inventory and checksums are recorded in release/v2-freeze-manifest.json.
+The implementation selects this baseline through ActiveBaseline; it does not
+silently fall back to Version 1.
 
-## 1. Vai trò
+| Contract item | Frozen V2 value |
+| --- | --- |
+| Ecore version | V2 |
+| Enumerations | 7 |
+| Classes | 21 |
+| Attributes | 48 |
+| References | 37 |
+| Opposite reference pairs | 3 |
 
-`jacamo_v2_complete.ecore` là active semantic vocabulary baseline dùng cho mapping và verification.
+The Ecore file and freeze manifest are authoritative for names, types,
+containment and opposites. This overview deliberately does not duplicate their
+full element inventory.
 
-Nó không phải:
-- runtime state model;
-- USE model;
-- OCL AST;
-- case-study model.
+## Scope
 
----
+The structural baseline defines the JaCaMo concepts that the plugin can map to
+USE. Runtime launch behavior, source-extraction coverage and original Auction
+semantics have separate contracts and acceptance evidence; structural freezing
+does not imply that every upstream runtime behavior is supported.
 
-## 2. Baseline hiện tại
+## Mapping relationship
 
-Baseline reconstruction hiện có:
-- 37 EClass;
-- 67 EAttribute đã khai báo/type xác định;
-- 63 EReference;
-- 14 inheritance edge;
-- 3 visible-but-unresolved attributes chưa được khai báo vì datatype chưa đủ bằng chứng.
+The corresponding structural mapping is
+Core/Mapping/version-2/jacamo-use-mapping-v2.json, validated by its adjacent
+schema. Runtime mapping is a separate V2 resource loaded by
+RuntimeMappingLoader. See 05-metamodel-mapping-contract.md for the mapping
+boundary and the Phase 44 closure evidence for the final acceptance state.
 
-Dimensions:
-- Agent/Jason;
-- Environment/CArtAgO;
-- Organisation/Moise;
-- cross-dimensional references.
+## Historical Version 1 material
 
----
+Version-1 Ecore and mapping inputs remain in their versioned directories for
+reproducibility, compatibility analysis and retained release evidence. They do
+not define the currently loaded schema or active mapping contract.
 
-## 3. Cross-dimensional relations quan trọng
+## Change rule
 
-Phải preserve:
-- `ExternalAction.operation → AbsOperation`
-- `ObsProperty.obsproperty → Belief`
-- `OGoal.OGoalToGoal → Goal`
-- `Agent.joinWorkspace → Workspace`
-- `Agent.artifact → Artifact`
-- `Role.players → Agent`
-- `Organisation.deploysAgent → Agent`
-- `Plan.RefArtifact → Artifact`
-
-Không tạo duplicate binding class ở metamodel nếu existing relation đã đủ semantics.
-
----
-
-## 4. Unresolved source facts
-
-Các phần visible nhưng datatype/default chưa đủ bằng chứng phải giữ explicit:
-- `ObsProperty.initialValue`
-- `AbsOperation.paramName`
-- `TriggeringEvent.addAndDel`
-
-`Message.isBroadcast`:
-- EBoolean đã xác định;
-- original author default không được suy ra chỉ từ intrinsic Ecore Boolean default.
-
-Mapping/translator không được fabricate các field unresolved này.
-
----
-
-## 5. Inheritance cần provenance/review
-
-Baseline reconstruction hiện preserve:
-- `Norm extends Organisation`
-- `Group extends Organisation`
-- `Role extends Organisation`
-- `Scheme extends Organisation`
-- `TriggeringEvent extends Action`
-
-Implementation phải map đúng file canonical hiện tại, nhưng tài liệu/research claim phải phân biệt:
-- "reconstruction declares X"
-với
-- "original authors unquestionably intended X".
-
----
-
-## 6. Evolution
-
-Khi Ecore thay đổi:
-1. compute new fingerprint;
-2. classify added/changed/removed;
-3. update mapping;
-4. update schema/audit;
-5. run coverage validator;
-6. bump baseline version;
-7. regenerate fixtures;
-8. rerun full test suite.
-
-Không sửa Ecore để tiện code mà không cập nhật evidence/audit.
-
----
-
-## 7. Verification responsibilities từ Ecore
-
-Ecore cung cấp:
-- vocabulary;
-- ownership;
-- type;
-- multiplicity;
-- containment;
-- inheritance;
-- navigation graph.
-
-Ecore **không tự cung cấp** mọi semantic OCL rule.
-
-Ví dụ `Role.min` và `Role.max` tồn tại không tự động chứng minh rule `min <= max`. Rule đó cần source semantics hoặc verification profile riêng.
-
-
-## Final target decision (Phase 25–26)
-
-The D25-01 V1 decision and Phase 26 Runtime Mapping V1 audit are retained as
-historical evidence. Active production uses the V2 contracts identified at the top
-of this document. No general standalone launcher or NPL equivalence is implied.
+The V2 baseline is frozen. Any future structural change requires a new
+versioned Ecore and mapping, explicit migration/acceptance evidence and an
+updated freeze manifest; editing V2 in place would invalidate the frozen
+contract.

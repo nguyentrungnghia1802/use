@@ -115,7 +115,10 @@ Do not block, control, repair, or alter JaCaMo execution unless an explicit futu
 
 # 3. Source of Truth
 
-The project is now migrating to **Metamodel V2 + Mapping V2**. V2 is the active working semantic baseline even though small changes are still expected. V1 remains historical evidence only unless an explicit migration/audit task requires it.
+The project uses **Metamodel V2 + Mapping V2** as its active frozen semantic
+baseline. Any later semantic change requires a new versioned baseline and
+acceptance evidence; V1 remains historical evidence only unless an explicit
+migration/audit task requires it.
 
 ## 3.1 Semantic authority
 
@@ -148,7 +151,7 @@ Source code, executable configuration, and tests determine implemented behavior.
 Always distinguish:
 
 ```text
-CURRENT V2 SPECIFICATION / WORKING BASELINE
+CURRENT FROZEN V2 SPECIFICATION
 CURRENT IMPLEMENTATION
 CURRENT EVIDENCE
 HISTORICAL V1 BASELINE
@@ -165,11 +168,11 @@ Evidence discipline:
 - do not overclaim beyond tested versions, case studies, runtime scope, or supported translation subset;
 - explicitly label V1 evidence as historical when V2 is the active baseline.
 
-# 4. Active V2 Working Baseline and Historical V1
+# 4. Active Frozen V2 Baseline and Historical V1
 
 ## 4.1 Active baseline
 
-The active development baseline is located under:
+The active frozen baseline is located under:
 
 ```text
 Core/Metamodel/version-2/**
@@ -178,7 +181,10 @@ Core/Mapping/version-2/**
 
 Treat these V2 artifacts as the default semantic source for all work from Phase 29 onward.
 
-V2 is currently a **WORKING_BASELINE**, not a final frozen release. Small evidence-backed changes are allowed through the controlled evolution process in this file and `docs/agent/task.md`. Do not wait for a hypothetical 100% final metamodel before progressing with implementation.
+V2 is a **FROZEN_RELEASE_CANDIDATE**, not a working baseline. Do not edit the
+frozen V2 contract in place. A semantic change requires a new versioned
+Ecore/mapping contract, impact analysis, acceptance evidence and a new freeze
+manifest.
 
 Do not hard-code V2 class/feature counts into production logic. Inventory and coverage checks should derive the active structure from the V2 Ecore/Mapping. Counts may be pinned only in explicit evidence/freeze tests when intentionally approved.
 
@@ -193,9 +199,10 @@ The former V1 baseline (37 EClass, 67 declared EAttribute, 63 EReference, 14 inh
 
 V1 is **not** the active production semantic contract. Do not preserve V1 compatibility by adding permanent dual semantics unless an explicit task requires it. Do not modify V2 to imitate obsolete V1 structure.
 
-## 4.3 Controlled V2 evolution
+## 4.3 Post-freeze V2 evolution
 
-For every intentional V2 metamodel/mapping change:
+For every intentional post-freeze metamodel/mapping change, create a new
+versioned baseline and then:
 
 ```text
 V2 structural diff
@@ -215,7 +222,9 @@ V2 structural diff
 
 Never update only a hash/fingerprint or golden output to silence a mismatch.
 
-Final V2 freeze occurs only when an explicit release/freeze task authorizes it. Until then, hashes and version identifiers provide reproducibility for each working baseline revision; they do not prohibit legitimate V2 evolution.
+The V2 final freeze is recorded by Phase 44 and release/v2-freeze-manifest.json.
+Future semantic evolution must create a new versioned baseline; hashes and version
+identifiers make each accepted baseline reproducible.
 
 # 5. Hard Invariants
 ## INV-001 — JaCaMo executes; USE verifies
@@ -1255,6 +1264,8 @@ Evidence must support Status Claims
 
 ```
 
-For current development, “Specification” means the active V2 working baseline plus explicitly approved verification/runtime extensions. Historical V1 contracts remain evidence, not the active target.
+For current development, “Specification” means the active frozen V2 baseline
+plus explicitly approved, versioned verification/runtime extensions. Historical
+V1 contracts remain evidence, not the active target.
 
 If any relationship is broken, the task is not complete.

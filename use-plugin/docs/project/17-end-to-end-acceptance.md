@@ -1,6 +1,6 @@
 # End-to-End Acceptance Criteria
 
-> **HISTORICAL_EVIDENCE:** This document records the original Phase 15 release acceptance criteria and validation state (v1.0.0, 265 tests passed at commit `a4951e91`, tag `use-jacamo-plugin-v1.0.0`). It is retained as historical evidence. For historical v1.0.1 hotfix validation (271 tests), see [13-testing-quality.md](13-testing-quality.md#9-v101-current-verification-2026-09-18), [HOTFIX-1.0.1.md](../../release/HOTFIX-1.0.1.md), and [report.md](../../../docs/report/report.md).
+> **HISTORICAL_EVIDENCE:** This document records the original Phase 15 release acceptance criteria and validation state (v1.0.0, 265 tests passed at commit `a4951e91`, tag `use-jacamo-plugin-v1.0.0`). It is retained as historical evidence. For historical v1.0.1 hotfix validation (271 tests), see [13-testing-quality.md](13-testing-quality.md#9-v101-current-verification-2026-09-18), [HOTFIX-1.0.1.md](../../release/HOTFIX-1.0.1.md), and [report-01.md](../../../docs/report/report-01.md).
 
 ## 1. Metamodel/Mapping
 

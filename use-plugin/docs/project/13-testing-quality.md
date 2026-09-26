@@ -1,6 +1,6 @@
 # Testing and Quality Strategy
 
-> Current V2 target contract: [Phase 35 reconciliation](v2-migration/phase35-runtime-targets.md). Default runtime loading uses Mapping V2 fingerprints and schema 3.0.0; older frozen V1 results below are historical. Full clean reactor PASS 350/350; see Phase 35 acceptance for workflow closure.
+> Current V2 target contract: [Phase 35 reconciliation](v2-migration/phase35-runtime-targets.md). Default runtime loading uses Mapping V2 fingerprints and schema 3.0.0; older frozen V1 results below are historical. The final Phase 44 clean reactor and relocated checkout both PASS 374/374; Phase 35's 350/350 result is historical workflow evidence.
 
 ## 1. Principle
 
@@ -357,12 +357,13 @@ resources, SHA sidecar, USE plugin discovery, and isolated child-JVM loading. Tw
 separate builds produced the same ZIP hash only under the recorded identical source,
 dependency, JDK, and Maven scope; no cross-toolchain guarantee is inferred.
 
-## Runtime mapping draft (2026-09-19)
+## Historical Phase 18–20 runtime evidence
 
-Phase 18 introduces a strict declarative draft loader, semantic validator and derived
-compatibility report. See [runtime-mapping-draft.md](runtime-mapping-draft.md).
-Initial module regression: 135/135 PASS. V1 target bindings are temporary; no runtime
-mapping freeze or OCL expansion is implied.
+The temporary V1 runtime-mapping draft was retired after Runtime Mapping V2 became
+the active production loader contract. The current frozen runtime mapping is
+validated by [Phase 38](v2-migration/phase38-runtime-mapping.md) and the
+[Phase 44 freeze](v2-migration/phase44-final-v2-freeze.md). The older counts in
+this section remain phase-local historical evidence only.
 
 Phase 19: module regression 139/139 PASS; final focused mapping/mirror/Auction
 24/24 PASS. Wrong semantic target/create regressions were RED before the fix.

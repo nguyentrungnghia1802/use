@@ -1,6 +1,8 @@
 # JaCaMo Runtime Research Pack
 
-Purpose: provide a source-backed runtime inventory that can be imported into the USE-JaCaMo thesis project and used as the **input evidence** for designing `Runtime Mapping V1`.
+Purpose: provide a source-backed upstream runtime inventory used as research
+evidence for the plugin's runtime-mapping design. It is not the current plugin
+runtime-mapping contract.
 
 This pack intentionally does **not** declare the final JaCaMo -> USE runtime mapping as settled fact. It separates:
 
@@ -32,7 +34,6 @@ Important compatibility note for the thesis repository: existing USE-JaCaMo docu
 5. `04_USE_MAPPING_CANDIDATES.md` — runtime facts/events that should later be compared with USE targets.
 6. `05_AUCTION_RUNTIME_WALKTHROUGH.md` — Auction-specific execution walkthrough using the official example.
 7. `runtime-capabilities-v1.json` — machine-readable inventory for later validator/mapping work.
-8. `runtime-mapping-candidate-v0.json` — **DRAFT ONLY**, a candidate dispatch table to compare against the USE side.
 
 ## Core conclusion
 
@@ -48,4 +49,6 @@ JaCaMo itself provides the integration and startup semantics that bind these run
 
 ## Project implementation reconciliation
 
-See [Phase 16 reconciliation and project capability matrix](IMPLEMENTATION_RECONCILIATION.md). The upstream inventory remains research evidence; projectBaseline records the actual plugin pins. Runtime mapping remains DRAFT_WAITING_FOR_METAMODEL_V2.
+See [Phase 16 reconciliation and project capability matrix](IMPLEMENTATION_RECONCILIATION.md).
+The upstream inventory remains research evidence; it does not override the pinned
+plugin dependencies or the frozen Runtime Mapping V2 contract.
