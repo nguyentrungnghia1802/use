@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0.0",
+  "orders": [
+    {
+      "evidenceId": "hello-jacamo-gui-agent-order",
+      "owner": "jacamo:helloworld:environment:Artifact:MAS/jacamo:gui",
+      "feature": "agents",
+      "targets": [
+        "jacamo:helloworld:agent:Agent:MAS:francois",
+        "jacamo:helloworld:agent:Agent:MAS:maria",
+        "jacamo:helloworld:agent:Agent:MAS:giacomo",
+        "jacamo:helloworld:agent:Agent:MAS:alice"
+      ],
+      "ownerSourceHash": "c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101",
+      "provenance": "Curated independent Artifact.agents order for target-only V2 projection; exact members come from JCM focus declarations."
+    },
+    {
+      "evidenceId": "hello-italy-gui-agent-order",
+      "owner": "jacamo:helloworld:environment:Artifact:MAS/italy:gui",
+      "feature": "agents",
+      "targets": [
+        "jacamo:helloworld:agent:Agent:MAS:francois",
+        "jacamo:helloworld:agent:Agent:MAS:giacomo",
+        "jacamo:helloworld:agent:Agent:MAS:bob"
+      ],
+      "ownerSourceHash": "c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101",
+      "provenance": "Curated independent Artifact.agents order for target-only V2 projection; exact members come from JCM focus declarations."
+    },
+    {
+      "evidenceId": "hello-usa-gui-agent-order",
+      "owner": "jacamo:helloworld:environment:Artifact:MAS/usa:gui",
+      "feature": "agents",
+      "targets": [
+        "jacamo:helloworld:agent:Agent:MAS:alice",
+        "jacamo:helloworld:agent:Agent:MAS:bob"
+      ],
+      "ownerSourceHash": "c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101",
+      "provenance": "Curated independent Artifact.agents order for target-only V2 projection; exact members come from JCM focus declarations."
+    }
+  ]
+}

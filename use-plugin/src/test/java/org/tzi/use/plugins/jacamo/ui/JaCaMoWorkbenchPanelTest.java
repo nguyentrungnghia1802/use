@@ -21,6 +21,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import org.junit.jupiter.api.Test;
 import org.tzi.use.plugins.jacamo.JaCaMoFacade;
+import org.tzi.use.plugins.jacamo.SemanticAuthority;
+import org.tzi.use.plugins.jacamo.bridge.BridgeClientState;
 import org.tzi.use.plugins.jacamo.diagnostics.Diagnostic;
 import org.tzi.use.plugins.jacamo.runtime.MirrorState;
 import org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor;
@@ -77,6 +79,9 @@ class JaCaMoWorkbenchPanelTest {
         panel.importProject(Path.of("auction.jcm"));
         facade.runtime = new JaCaMoFacade.RuntimeStatus(MirrorState.LIVE, 3, 5, 8, 1, 2, 0,
                 Instant.parse("2026-09-15T09:00:00Z"), "event-8", 42, 11, 2);
+        facade.authority = new JaCaMoFacade.AuthorityStatus(SemanticAuthority.BRIDGE, BridgeClientState.LIVE,
+                Map.of("official.model", "COMPLETE", "runtime.snapshot", "COMPLETE"), "COMPLETE",
+                "model-9", "session-9", 9, "tcp://127.0.0.1:6553", "");
         facade.latest = VerificationReport.offline("runtime-event-8", true,
                 List.of(new VerificationResult("C-LIVE", VerificationOutcome.FAIL, "object",
                         "live violation", "context C inv: false", List.of("source"), null, List.of())));
@@ -88,6 +93,12 @@ class JaCaMoWorkbenchPanelTest {
         assertEquals("LIVE", label(panel, "runtime-state").getText());
         assertEquals("3", label(panel, "runtime-queue-depth").getText());
         assertEquals("event-8", label(panel, "runtime-last-event").getText());
+        assertEquals("BRIDGE", label(panel, "semantic-authority").getText());
+        assertEquals("LIVE", label(panel, "bridge-readiness").getText());
+        assertEquals("COMPLETE", label(panel, "bridge-completeness").getText());
+        assertEquals("model-9", label(panel, "bridge-model-revision").getText());
+        assertEquals("session-9 / generation=9", label(panel, "bridge-session-generation").getText());
+        assertEquals("tcp://127.0.0.1:6553", label(panel, "bridge-endpoint").getText());
         assertEquals(VerificationOutcome.FAIL, table(panel, "verification-table").getValueAt(0, 2));
         assertEquals(1, facade.disconnects);
         assertEquals(1, facade.resyncs);
@@ -219,6 +230,7 @@ class JaCaMoWorkbenchPanelTest {
         private List<TraceRow> traces = List.of(new TraceRow("source", "Goal", "object:g", "OBJECT", "M001",
                 "VP006", "PROJECTED", Path.of("agent.asl"), 7, "AGENT"));
         private RuntimeStatus runtime = RuntimeStatus.offline();
+        private AuthorityStatus authority = AuthorityStatus.offline();
         private VerificationReport latest = VerificationReport.offline("run", true,
                 List.of(new VerificationResult("C1", VerificationOutcome.PASS, "object", "holds",
                         "context C inv: true", List.of("source"), null, List.of())));
@@ -249,6 +261,7 @@ class JaCaMoWorkbenchPanelTest {
             return latest;
         }
         @Override public RuntimeStatus runtimeStatus() { return runtime; }
+        @Override public AuthorityStatus authorityStatus() { return authority; }
         @Override public ProjectSummary rebuild() { rebuilds++; return projectSummary(); }
         @Override public void loadVerificationProfile(Path profile) { loadedProfile = profile; }
         @Override public VerificationReport runFullVerification() { fullChecks++; return latestVerification(); }
@@ -256,8 +269,6 @@ class JaCaMoWorkbenchPanelTest {
         @Override public void connectRuntime() { connects++; }
         @Override public void disconnectRuntime() { disconnects++; }
         @Override public void resyncRuntime() { resyncs++; }
-        @Override public void configureRuntime(org.tzi.use.plugins.jacamo.runtime.RuntimeConnector connector,
-                                               URI endpoint, int queueCapacity) { }
         @Override public void persistBinding(Path destination, BindingRequest request, String selectedTargetId,
                                              String reason) {
             persistedTarget = selectedTargetId;

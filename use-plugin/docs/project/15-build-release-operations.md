@@ -14,6 +14,8 @@ Use Maven structure compatible với USE repository/version được pin.
 
 Required build outputs:
 - plugin JAR;
+- neutral Bridge contract JAR;
+- JaCaMo-side official adapter/platform JAR;
 - test reports;
 - packaged resources;
 - optional distribution zip.
@@ -69,7 +71,10 @@ that exact name exists in the current checkout. An annotated `v1.0.1` tag exists
 `7f77b1f4`, one documentation-only commit behind the audit baseline. The artifact is
 `use-jacamo-plugin-1.0.1.zip`. The release manifest records the package inventory,
 compatibility versions, and known limits. The package does not redistribute
-Jason/CArtAgO/Moise dependencies; supply them on the USE host classpath.
+Jason/CArtAgO/Moise dependencies. They belong on the JaCaMo process classpath
+together with the two `bridge/lib` JARs; they must not be added to USE. The USE
+plugin JAR embeds the neutral contract but not official JaCaMo adapters or legacy
+in-process connectors.
 The plugin Maven module has its own `1.0.1` version; USE remains the `7.5.0`
 parent and provided API dependency. The plugin JAR embeds its JSON Schema
 validator/runtime dependencies and ships Apache/MIT license texts. The isolated

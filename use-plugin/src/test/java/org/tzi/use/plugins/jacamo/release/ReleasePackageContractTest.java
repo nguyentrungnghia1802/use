@@ -33,6 +33,8 @@ class ReleasePackageContractTest {
             "examples/auction/src/env/auction/AuctionArtifact.java",
             "examples/auction/src/org/auction.xml",
             "examples/auction/verification/auction.ocl",
+            "bridge/lib/jacamo-bridge-contract-1.0.0.jar",
+            "bridge/lib/jacamo-bridge-jacamo-1.0.0.jar",
             "lib/plugins/use-jacamo-plugin-1.0.1.jar",
             "release/v2-freeze-manifest.json",
             "ocl/jacamo-core-v2-manifest.json",
@@ -76,8 +78,10 @@ class ReleasePackageContractTest {
             assertFalse(source.isBlank(), "every package entry needs a repository source");
             assertFalse(target.isBlank(), "every package entry needs an archive path");
             if (entry.path("generated").asBoolean()) {
-                assertEquals("target/use-plugin-1.0.1.jar", source,
-                        "only the Maven-built plugin JAR may be a generated package input");
+                assertTrue(Set.of("target/use-plugin-1.0.1.jar",
+                                "../jacamo-bridge-contract/target/jacamo-bridge-contract-1.0.0-SNAPSHOT.jar",
+                                "../jacamo-bridge-jacamo/target/jacamo-bridge-jacamo-1.0.0-SNAPSHOT.jar")
+                        .contains(source), "generated package input must be a reactor-built JAR: " + source);
             } else {
                 assertTrue(Files.isRegularFile(root.resolve(source)), () -> "missing release source: " + source);
             }

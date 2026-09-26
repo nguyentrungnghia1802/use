@@ -56,6 +56,8 @@ public final class JcmProjectLoader {
             Document entryDocument = parse(entry);
             if (entryDocument == null) return new ProjectDiscoveryResult(null, diagnostics);
             visit(entry, entryDocument);
+            Path orderEvidence = root.resolve("order-evidence.json");
+            if (Files.isRegularFile(orderEvidence)) addSource(orderEvidence.toRealPath(), SourceKind.OTHER, null);
             ProjectGraph graph = new ProjectGraph(new ProjectRoot(root, entryDocument.name()), entry,
                     List.copyOf(sources.values()), edges);
             return new ProjectDiscoveryResult(graph, diagnostics);

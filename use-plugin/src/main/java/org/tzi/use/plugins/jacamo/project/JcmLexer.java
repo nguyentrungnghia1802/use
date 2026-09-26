@@ -6,9 +6,10 @@ import java.util.List;
 
 /** Small lexical scanner for discovery only; it does not parse dimension syntax. */
 public final class JcmLexer {
-    public record Token(String text, int line, int column) {
+    public record Token(String text, String sourceText, int line, int column) {
+        public Token(String text, int line, int column) { this(text, text, line, column); }
         public SourceSpan span(Path path) {
-            return new SourceSpan(path, line, column, line, column + Math.max(0, text.length() - 1));
+            return new SourceSpan(path, line, column, line, column + Math.max(0, sourceText.length() - 1));
         }
     }
 
@@ -46,7 +47,7 @@ public final class JcmLexer {
                     else if (current == '\n') { line++; column = 1; }
                 }
                 String text = input.substring(start + 1, Math.max(start + 1, i - 1));
-                tokens.add(new Token(text, startLine, startColumn));
+                tokens.add(new Token(text, input.substring(start, i), startLine, startColumn));
             } else if (isSymbol(ch)) {
                 tokens.add(new Token(String.valueOf(ch), startLine, startColumn));
                 i++; column++;
@@ -66,6 +67,7 @@ public final class JcmLexer {
     }
 
     private static boolean isSymbol(char ch) {
-        return ch == '{' || ch == '}' || ch == ':' || ch == ',' || ch == '(' || ch == ')' || ch == ';';
+        return ch == '{' || ch == '}' || ch == ':' || ch == ',' || ch == '(' || ch == ')' || ch == '['
+                || ch == ']' || ch == ';';
     }
 }

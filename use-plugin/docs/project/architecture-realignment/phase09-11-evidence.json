@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0.0",
+  "status": "PHASE_9_TO_11_COMPLETE",
+  "capturedAt": "2026-09-26T19:35:00+07:00",
+  "revisions": {
+    "useBase": "deba015212db37563b46b87eee650da6e0fac7d4",
+    "jacamoAuthority": "3866858a7ebf6be85d9199c13a09cf4bfb8191be",
+    "preHandoffWorkingSetSha256": "4a7b0e0586fb501839beccdb32eaf67a657ff97011cd292729a68b5c8d636be0"
+  },
+  "versions": {
+    "contract": "1.0.0",
+    "adapter": "1.0.0",
+    "plugin": "1.0.1",
+    "jacamo": "1.3.1",
+    "jason": "3.3.2",
+    "cartago": "3.1",
+    "moise": "1.1",
+    "npl": "0.6.1"
+  },
+  "authority": {
+    "default": "BRIDGE",
+    "silentFallback": false,
+    "legacyCompatibility": "REMOVED_AFTER_ROLLBACK_REHEARSAL",
+    "endpoint": "authenticated-loopback-tcp",
+    "delivery": "at-least-once-idempotent"
+  },
+  "tests": {
+    "contract": {"run": 8, "failures": 0, "errors": 0, "skipped": 0},
+    "adapter": {"run": 9, "failures": 0, "errors": 0, "skipped": 0},
+    "useCoreUnit": {"run": 12, "failures": 0, "errors": 0, "skipped": 0},
+    "useCoreIntegration": {"run": 1, "failures": 0, "errors": 0, "skipped": 0},
+    "useGuiUnit": {"run": 1, "failures": 0, "errors": 0, "skipped": 0},
+    "useGuiIntegration": {"run": 129, "failures": 0, "errors": 0, "skipped": 0},
+    "usePlugin": {"run": 255, "expectedHistoricalFailures": 3, "unexpectedFailures": 0, "errors": 0, "skipped": 0},
+    "releaseIntegration": {"run": 4, "failures": 0, "errors": 0, "skipped": 0},
+    "jacamoIsolated": {"run": 6, "failures": 0, "errors": 0, "skipped": 0},
+    "separateJvm": {"run": 2, "failures": 0, "errors": 0, "skipped": 0}
+  },
+  "expectedHistoricalFailures": [
+    "ConstraintClosureTest.distinctV2OwnersWithJavaHashCollisionsKeepDistinctConstraintIdentities",
+    "GoldenPipelineTest.auctionArtifactsMatchReviewedGoldenDigests",
+    "InstanceMaterializationTest.textAndDirectBackendsShareOneVerificationPlanAndPassInitialValidation"
+  ],
+  "frozenHashes": {
+    "ecoreV2": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c",
+    "mappingV2_2": "fc03b90cf0729260747bfeffa6a6cd463eefd2259c0c3cd60ed22bd140ec48b1",
+    "runtimeMappingV2": "5b2c00f052010fb35a71eb7f50ae4650f8a09c7647332b47a7199c12cbf8a5f0",
+    "freezeManifest": "7965aef8eae099e398de50cb30a65f1b6c5b9207a6500db678825340bca73c77",
+    "diff": []
+  },
+  "evidenceDigests": {
+    "canonicalEvidence": "3fd38ec66df9649cf916c79e025fc8448bb9742aeb79ef5146b36db3a31ad0e4",
+    "helloShadowRegister": "4f1b169af505b2f0964b6da78881d52b69e89a159fef9d50d58f6d90bbfde087",
+    "helloShadowFingerprint": "789657d98e2f3d6090ea2131b0cff3a375154aebd59e4f9f2ec7cc6fc51d8ca2",
+    "recordedAuctionEventLog": "2b4fd4777ab5026236351c1e6a435d1c9b9540e3ce44aab0445a1c4ac3778002",
+    "transportBenchmark": "3725916e07745602bbaedbac2fb058f7f65d5237b67c4f8fb092341e9d524fa5"
+  },
+  "canonical": {
+    "hello": {"inputSha256": "c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101", "modelRevision": "dc259e108c885dd45e27f29bc5a4d6cf755a4681dd23ff03f1c9736b68b74d39", "status": "PASS"},
+    "auction": {"inputSha256": "c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb", "modelRevision": "d144c7b8e9d8a9a515fa9b3d08f1e1aa9b75c4d08bf4ae743565cdfaaf16d4c4", "status": "SUPPORTED_SCOPE_PASS"},
+    "house": {"inputSha256": "c14ae6299b0d2e0034d7daaa233b9bf1b94a7b337aa39477ec865c52ca5fef08", "modelRevision": "e2a4700b050f00ff58fc73256a9e3812cb4ec7eb6c4c41fb60429db30deec1f4", "status": "SUPPORTED_SCOPE_PASS"}
+  },
+  "projection": {
+    "faithful": "exact target-bound object/attribute/relation/operation facts",
+    "evidenceOnly": "unbound Jason, CArtAgO, Moise and NPL observations",
+    "unavailable": "complete belief/board streams and absent descriptor metadata"
+  },
+  "transport": {"payloadBytes": 65536, "recordedMedianNanos": 9900, "tcpMedianNanos": 637500, "remoteMode": false},
+  "package": {
+    "pluginJarSha256": "e78670b5d10389c1c1ee9276b0d0f6aae34a3b859e334e07e53c203c3a6fc37a",
+    "releaseZipSha256": "2bd9fc9eeff29a0b5ef3ee157eaeff032e68746240b19b647a971116625569e9",
+    "legacyAuthorityClassesPresent": false,
+    "installSmoke": "PASS"
+  },
+  "stopCondition": null
+}

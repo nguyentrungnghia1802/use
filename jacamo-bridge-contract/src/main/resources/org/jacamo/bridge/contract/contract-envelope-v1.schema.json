@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:jacamo-bridge:contract-envelope:1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "messageType", "bridgeBuild", "distribution", "projectKey", "modelRevision", "sessionId", "generation", "messageId", "producedAt", "capabilities", "completeness", "watermarks", "evidence", "payloadDigest", "payload"],
+  "properties": {
+    "schemaVersion": { "type": "string", "pattern": "^1\\.[0-9]+\\.[0-9]+$" },
+    "messageType": { "enum": ["HANDSHAKE", "MODEL_SNAPSHOT", "RUNTIME_SNAPSHOT", "RUNTIME_EVENT", "ACK", "GAP"] },
+    "bridgeBuild": { "type": "string", "minLength": 1 },
+    "distribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["jacamoVersion", "distributionDigest", "components"],
+      "properties": {
+        "jacamoVersion": { "type": "string", "minLength": 1 },
+        "distributionDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "components": { "type": "object", "additionalProperties": { "type": "string" } }
+      }
+    },
+    "projectKey": { "type": "string", "minLength": 1 },
+    "modelRevision": { "type": "string", "minLength": 1 },
+    "sessionId": { "type": "string", "minLength": 1 },
+    "generation": { "type": "integer", "minimum": 0 },
+    "messageId": { "type": "string", "minLength": 1 },
+    "producedAt": { "type": "string", "format": "date-time" },
+    "capabilities": { "type": "array" },
+    "completeness": { "enum": ["COMPLETE", "PARTIAL", "UNAVAILABLE"] },
+    "watermarks": { "type": "object" },
+    "evidence": { "type": "array" },
+    "payloadDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "payload": { "type": "object" }
+  }
+}

@@ -9,6 +9,8 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <files>
         <file><source>${project.build.directory}/${project.build.finalName}.jar</source><outputDirectory>lib/plugins</outputDirectory><destName>use-jacamo-plugin-1.0.1.jar</destName></file>
+        <file><source>../jacamo-bridge-contract/target/jacamo-bridge-contract-1.0.0-SNAPSHOT.jar</source><outputDirectory>bridge/lib</outputDirectory><destName>jacamo-bridge-contract-1.0.0.jar</destName></file>
+        <file><source>../jacamo-bridge-jacamo/target/jacamo-bridge-jacamo-1.0.0-SNAPSHOT.jar</source><outputDirectory>bridge/lib</outputDirectory><destName>jacamo-bridge-jacamo-1.0.0.jar</destName></file>
         <file><source>Core/Metamodel/version-2/jacamo_v2_complete.ecore</source><outputDirectory>Core/Metamodel/version-2</outputDirectory></file>
         <file><source>Core/Mapping/version-2/jacamo-use-mapping-v2.json</source><outputDirectory>Core/Mapping/version-2</outputDirectory></file>
         <file><source>Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json</source><outputDirectory>Core/Mapping/version-2</outputDirectory></file>

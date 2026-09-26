@@ -1,0 +1,13 @@
+{
+  "caseId": "hello-world",
+  "upstreamRoot": "doc/tutorials/hello-world/code/helloworld",
+  "canonicalEntry": "helloworld.jcm",
+  "sourceAuthority": "JaCaMo source",
+  "files": {
+    "helloworld.jcm": "c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101",
+    "src/agt/hello.asl": "7c9a0dcd47c8b256b33506299968faad71aeb47a2bec814958f07993b219922a",
+    "src/agt/hf.asl": "fbb17e720c1395490c84b2e1000c98cb8e73653219fa86f959fe983059e8f07b",
+    "src/env/display/GUIConsole.java": "37216ecc8b59e58686ebf67371b1b4f68784446f67d167672fec5be32f794e98",
+    "src/org/o1.xml": "6b9794e719dabe233e6dc00baf0d5e6256a7e8a8b189c454bccd527fe17a4206"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0.0",
+  "status": "PHASE_0_TO_8_SUPPORTED_SCOPE_COMPLETE",
+  "date": "2026-09-26",
+  "finalRegressionCapturedAt": "2026-09-26T17:28:22+07:00",
+  "revisions": {
+    "use": "deba015212db37563b46b87eee650da6e0fac7d4",
+    "jacamo": "3866858a7ebf6be85d9199c13a09cf4bfb8191be"
+  },
+  "distribution": {
+    "jacamo": "1.3.1",
+    "jasonBridge": "3.3.2",
+    "legacyUseCompatibilityJason": "3.3.0",
+    "cartago": "3.1",
+    "moise": "1.1",
+    "npl": "0.6.1"
+  },
+  "frozenHashes": {
+    "ecoreV2": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c",
+    "mappingV2_2": "fc03b90cf0729260747bfeffa6a6cd463eefd2259c0c3cd60ed22bd140ec48b1",
+    "runtimeMappingV2": "5b2c00f052010fb35a71eb7f50ae4650f8a09c7647332b47a7199c12cbf8a5f0",
+    "freezeManifest": "7965aef8eae099e398de50cb30a65f1b6c5b9207a6500db678825340bca73c77"
+  },
+  "tests": {
+    "useCommand": "mvn -B -pl use-plugin -am test",
+    "jacamoCommand": "gradlew.bat test --rerun-tasks --console=plain (isolated detached worktree)",
+    "contract": {"run": 8, "failures": 0},
+    "bridgeAdapter": {"run": 8, "failures": 0},
+    "useCore": {"run": 12, "failures": 0},
+    "useGui": {"run": 1, "failures": 0},
+    "usePlugin": {"run": 248, "expectedHistoricalFailures": 3, "unexpectedFailures": 0, "errors": 0, "skipped": 0},
+    "jacamoIsolated": {"run": 6, "failures": 0}
+  },
+  "canonical": {
+    "hello": {"jcmSha256": "c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101", "modelRevision": "dc259e108c885dd45e27f29bc5a4d6cf755a4681dd23ff03f1c9736b68b74d39", "useObjects": 1095, "status": "PASS"},
+    "auction": {"jcmSha256": "c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb", "modelRevision": "d144c7b8e9d8a9a515fa9b3d08f1e1aa9b75c4d08bf4ae743565cdfaaf16d4c4", "useObjects": 994, "status": "SUPPORTED_SCOPE_PASS"},
+    "house": {"jcmSha256": "c14ae6299b0d2e0034d7daaa233b9bf1b94a7b337aa39477ec865c52ca5fef08", "modelRevision": "e2a4700b050f00ff58fc73256a9e3812cb4ec7eb6c4c41fb60429db30deec1f4", "configuredAgentInstances": 22, "useObjects": 1024, "status": "SUPPORTED_SCOPE_PASS"}
+  },
+  "transport": {"kind": "authenticated-loopback-tcp", "remoteMode": false, "payloadBytes": 65536, "recordedMedianNanos": 12700, "tcpMedianNanos": 534200, "delivery": "at-least-once-idempotent"},
+  "limitations": [
+    "Original Auction self-referencing plan and natural-language/deontic deadline equivalence is unproven.",
+    "Original House eight-auction, simulator House and dynamic organization lifecycle were not observed in an autonomous Bridge run.",
+    "Moise board and NPL lifecycle facts remain evidence-only unless an exact reviewed target projection exists.",
+    "Three historical USE baseline failures remain intentionally visible; no golden or assertion was weakened."
+  ]
+}

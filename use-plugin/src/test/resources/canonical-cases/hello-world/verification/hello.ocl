@@ -1,0 +1,10 @@
+-- [CASE-HELLO] Canonical source declares exactly five display.GUIConsole artifacts.
+context Organization inv HelloCanonicalGuiInventory:
+  Artifact.allInstances->select(a | a.type = 'display.GUIConsole')->size() = 5
+
+-- [CASE-HELLO] Exact JCM players evidence assigns each canonical team role once.
+context Organization inv HelloCanonicalTeamAssignments:
+  Role.allInstances->select(r | r.id = 'rv' and r.agents->exists(a | a.name = 'francois'))->size() = 1 and
+  Role.allInstances->select(r | r.id = 'rl' and r.agents->exists(a | a.name = 'maria'))->size() = 1 and
+  Role.allInstances->select(r | r.id = 'rc' and r.agents->exists(a | a.name = 'giacomo'))->size() = 1 and
+  Role.allInstances->select(r | r.id = 'rs' and r.agents->exists(a | a.name = 'alice'))->size() = 1

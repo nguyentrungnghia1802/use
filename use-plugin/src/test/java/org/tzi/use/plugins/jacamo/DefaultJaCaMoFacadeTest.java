@@ -6,30 +6,27 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.tzi.use.plugins.jacamo.runtime.MirrorState;
-import org.tzi.use.plugins.jacamo.runtime.RuntimeEventCodec;
-import org.tzi.use.plugins.jacamo.runtime.RuntimeSnapshot;
-import org.tzi.use.plugins.jacamo.runtime.SyntheticRuntimeConnector;
+import org.tzi.use.plugins.jacamo.extraction.StaticProjectImporter;
 
 class DefaultJaCaMoFacadeTest {
     @TempDir Path temporary;
 
     @Test
-    void realAuctionImportExposesPipelineSummaryTraceDiagnosticsAndVerification() {
-        try (DefaultJaCaMoFacade facade = new DefaultJaCaMoFacade(Path.of("."))) {
-            JaCaMoFacade.ProjectSummary summary = facade.importProject(Path.of("src/test/resources/auction/auction.jcm"));
+    void originalAuctionBridgeImportExposesPipelineSummaryTraceDiagnosticsAndVerification() {
+        try (DefaultJaCaMoFacade facade = bridgeAuction()) {
+            JaCaMoFacade.ProjectSummary summary = facade.importProject(auction());
 
             assertEquals("auction", summary.projectId());
             assertEquals("FROZEN", summary.mappingStatus());
             assertTrue(summary.structureValid());
-            assertEquals(new org.tzi.use.plugins.jacamo.mapping.MappingLoader().loadCanonical(Path.of(".")).classes().size() + 1, summary.generatedClasses());
+            assertEquals(new org.tzi.use.plugins.jacamo.mapping.MappingLoader().loadCanonical(Path.of(".")).classes().size(),
+                    summary.generatedClasses(), "official Bridge path must not add a parser-derived synthetic class");
             assertTrue(summary.generatedObjects() > 10);
             assertFalse(facade.sources().isEmpty());
             assertFalse(facade.traces().isEmpty());
@@ -39,29 +36,22 @@ class DefaultJaCaMoFacadeTest {
     }
 
     @Test
-    void runtimeDashboardStatusComesFromTheRealMirrorService() throws Exception {
-        try (DefaultJaCaMoFacade facade = new DefaultJaCaMoFacade(Path.of("."))) {
-            facade.importProject(Path.of("src/test/resources/auction/auction.jcm"));
-            Path replay = Files.writeString(temporary.resolve("events.json"), "[]");
-            RuntimeSnapshot snapshot = new RuntimeSnapshot("snapshot-0", Instant.parse("2026-09-15T09:00:00Z"),
-                    0, List.of(), "fingerprint-0");
-            SyntheticRuntimeConnector connector = new SyntheticRuntimeConnector("ui-smoke", snapshot, replay,
-                    new RuntimeEventCodec());
-            facade.configureRuntime(connector, URI.create("synthetic://auction"), 8);
-
-            facade.connectRuntime();
+    void runtimeDashboardStatusComesFromTheAuthoritativeBridge() {
+        try (DefaultJaCaMoFacade facade = bridgeAuction()) {
+            facade.importProject(auction());
             JaCaMoFacade.RuntimeStatus live = facade.runtimeStatus();
             assertEquals(MirrorState.LIVE, live.state());
-            assertEquals(Instant.parse("2026-09-15T09:00:00Z"), live.lastSync());
             facade.disconnectRuntime();
             assertEquals(MirrorState.STALE, facade.runtimeStatus().state());
+            facade.connectRuntime();
+            assertEquals(MirrorState.LIVE, facade.runtimeStatus().state());
         }
     }
 
     @Test
     void bindingPersistenceRejectsAnyTargetOutsideTheExactCandidateSet() {
-        try (DefaultJaCaMoFacade facade = new DefaultJaCaMoFacade(Path.of("."))) {
-            facade.importProject(Path.of("src/test/resources/auction/auction.jcm"));
+        try (DefaultJaCaMoFacade facade = bridgeAuction()) {
+            facade.importProject(auction());
             String source = "jacamo:auction:AGENT:ExternalAction:buyer:bid";
             String target = "jacamo:auction:ENVIRONMENT:Operation:auction:bid";
             JaCaMoFacade.BindingRequest request = new JaCaMoFacade.BindingRequest(source, "buyer", "ExternalAction",
@@ -78,8 +68,8 @@ class DefaultJaCaMoFacadeTest {
 
     @Test
     void reportExportUsesTheRealLatestVerification() throws Exception {
-        try (DefaultJaCaMoFacade facade = new DefaultJaCaMoFacade(Path.of("."))) {
-            facade.importProject(Path.of("src/test/resources/auction/auction.jcm"));
+        try (DefaultJaCaMoFacade facade = bridgeAuction()) {
+            facade.importProject(auction());
             Path report = temporary.resolve("report.json");
             facade.exportVerificationReport(report);
             String json = Files.readString(report);
@@ -91,18 +81,17 @@ class DefaultJaCaMoFacadeTest {
     @Test
     void failedImportPreservesActionableDiagnosticsFromTheRealImporter() throws Exception {
         Path malformed = Files.writeString(temporary.resolve("broken.jcm"), "this is not a JaCaMo project");
-        try (DefaultJaCaMoFacade facade = new DefaultJaCaMoFacade(Path.of("."))) {
-            assertThrows(IllegalArgumentException.class, () -> facade.importProject(malformed));
-            assertFalse(facade.diagnostics().isEmpty());
-            assertTrue(facade.diagnostics().stream().allMatch(value -> value.code() != null
+        var imported = new StaticProjectImporter().importProject(malformed);
+        assertFalse(imported.success());
+        assertFalse(imported.diagnostics().isEmpty());
+        assertTrue(imported.diagnostics().stream().allMatch(value -> value.code() != null
                     && value.phase() != null && !value.remediation().isBlank()));
-        }
     }
 
     @Test
     void repeatedExplicitBindingsPreserveEarlierExactSelections() throws Exception {
-        try (DefaultJaCaMoFacade facade = new DefaultJaCaMoFacade(Path.of("."))) {
-            facade.importProject(Path.of("src/test/resources/auction/auction.jcm"));
+        try (DefaultJaCaMoFacade facade = bridgeAuction()) {
+            facade.importProject(auction());
             Path output = temporary.resolve("binding.json");
             String hash = "b".repeat(64);
             String sourceA = "jacamo:auction:AGENT:ExternalAction:buyer:bid";
@@ -127,8 +116,8 @@ class DefaultJaCaMoFacadeTest {
 
     @Test
     void exportRejectsUnsupportedDestinationsInsteadOfGuessingAFormat() {
-        try (DefaultJaCaMoFacade facade = new DefaultJaCaMoFacade(Path.of("."))) {
-            facade.importProject(Path.of("src/test/resources/auction/auction.jcm"));
+        try (DefaultJaCaMoFacade facade = bridgeAuction()) {
+            facade.importProject(auction());
             Path unsafe = temporary.resolve("report.txt");
             IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
                     () -> facade.exportVerificationReport(unsafe));
@@ -139,8 +128,8 @@ class DefaultJaCaMoFacadeTest {
 
     @Test
     void reportExportSupportsMarkdownDestinations() throws Exception {
-        try (DefaultJaCaMoFacade facade = new DefaultJaCaMoFacade(Path.of("."))) {
-            facade.importProject(Path.of("src/test/resources/auction/auction.jcm"));
+        try (DefaultJaCaMoFacade facade = bridgeAuction()) {
+            facade.importProject(auction());
             Path report = temporary.resolve("report.md");
 
             facade.exportVerificationReport(report);
@@ -156,8 +145,8 @@ class DefaultJaCaMoFacadeTest {
         Path selectedRoot = Files.createDirectory(temporary.resolve("selected"));
         Path outside = Files.createDirectory(temporary.resolve("outside"));
         Path linked = PathLinkSupport.createDirectoryLink(selectedRoot.resolve("linked"), outside);
-        try (DefaultJaCaMoFacade facade = new DefaultJaCaMoFacade(Path.of("."))) {
-            facade.importProject(Path.of("src/test/resources/auction/auction.jcm"));
+        try (DefaultJaCaMoFacade facade = bridgeAuction()) {
+            facade.importProject(auction());
 
             IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
                     () -> facade.exportVerificationReport(linked.resolve("report.json")));
@@ -182,8 +171,8 @@ class DefaultJaCaMoFacadeTest {
 
     @Test
     void auctionPerformanceMetricsAreMeasuredWithoutFlakyWallClockThresholds() {
-        try (DefaultJaCaMoFacade facade = new DefaultJaCaMoFacade(Path.of("."))) {
-            facade.importProject(Path.of("src/test/resources/auction/auction.jcm"));
+        try (DefaultJaCaMoFacade facade = bridgeAuction()) {
+            facade.importProject(auction());
             facade.runFullVerification();
 
             JaCaMoFacade.PerformanceMetrics metrics = facade.performanceMetrics();
@@ -197,5 +186,14 @@ class DefaultJaCaMoFacadeTest {
             assertTrue(metrics.usedMemoryBytes() <= Runtime.getRuntime().maxMemory());
             assertEquals(0, metrics.runtimeLastLatencyNanos());
         }
+    }
+
+    private DefaultJaCaMoFacade bridgeAuction() {
+        return BridgeFacadeTestSupport.facade(auction());
+    }
+
+    private Path auction() {
+        return Path.of("..", "..", "JaCaMo", "examples", "auction", "auction.jcm")
+                .toAbsolutePath().normalize();
     }
 }

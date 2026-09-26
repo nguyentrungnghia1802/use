@@ -23,9 +23,10 @@ The historical annotated tag `v1.0.1` points to `7f77b1f4`; current development
 has advanced through the Phase 44 V2 freeze. The manifest name `use-jacamo-plugin-v1.0.1`
 is not a Git tag in this checkout, so it must not be reported as published.
 
-This release adds conservative, traceable JaCaMo project import and offline/live
-verification to USE 7.5.0. It supports the pinned Auction example and the verified
-Jason 3.3.0, CArtAgO 3.1 and Moise 1.1 integration scope.
+This release makes official JaCaMo objects, exported through the neutral Bridge,
+the only production semantic authority for USE 7.5.0. Custom parser and in-process
+connector implementations remain historical test evidence and are absent from the
+release JAR.
 
 ## Install
 
@@ -34,12 +35,23 @@ Jason 3.3.0, CArtAgO 3.1 and Moise 1.1 integration scope.
    in `lib/plugins` and the active metamodel/mapping under `Core/*/version-2/`.
    The JAR also embeds byte-identical canonical V2 Ecore, mapping/schema,
    compatibility metadata, release manifest and unified freeze manifest resources.
-3. Make Jason 3.3.0, CArtAgO 3.1, Moise 1.1 and their required runtime dependencies
-   available on the USE JVM classpath. They are intentionally not redistributed in
-   this archive. The plugin's JSON Schema validator and its dependencies are
-   embedded in the plugin JAR.
-4. Start USE from the installation root and confirm `Plugins > JaCaMo > Status` or
-   run `jacamo status` in the USE shell.
+3. Add `bridge/lib/jacamo-bridge-contract-1.0.0.jar` and
+   `bridge/lib/jacamo-bridge-jacamo-1.0.0.jar` to the JaCaMo application's
+   classpath. JaCaMo/Jason/CArtAgO/Moise dependencies stay in that process and do
+   not enter the USE JVM.
+4. Create a 32-byte-or-longer random secret encoded as hexadecimal in a regular,
+   non-symlink file readable only by the two local processes. Configure the JCM's
+   official `platform:` entry with
+   `org.jacamo.bridge.adapter.JaCaMoBridgePlatform("port=7777", "secretFile=/absolute/path/bridge-secret.hex", "distributionSha256=<64-lowercase-hex>")`.
+   Add `org.jacamo.bridge.adapter.BridgeAgArch` to agents whose Jason lifecycle
+   evidence is required.
+5. Start USE with matching properties:
+   `-Duse.jacamo.bridge.endpoint=tcp://127.0.0.1:7777`,
+   `-Duse.jacamo.bridge.secret-file=/absolute/path/bridge-secret.hex`, and
+   `-Duse.jacamo.bridge.distribution-sha256=<same-64-lowercase-hex>`.
+6. Confirm `Plugins > JaCaMo > Status` or run `jacamo status`. Missing Bridge,
+   schema/distribution mismatch, authentication failure, or selected-project
+   mismatch fails explicitly; there is no parser fallback.
 
 The automated load smoke validates discovery, descriptor parsing, the shell command
 and both menu actions. Interactive GUI execution in a separately installed binary
@@ -47,16 +59,16 @@ distribution remains a documented manual environment check.
 
 ## Workflow
 
-Open `Plugins > JaCaMo > Open Workbench...`, select a `.jcm` entry, inspect import
-diagnostics and mapping compatibility, generate the USE model/state, run full
-verification, and export JSON or Markdown reports. Runtime verification requires an
-explicit connector configuration through the service API; the workbench does not
-launch an external `.jcm` application or provide connector configuration fields.
-Reconnect performs a full authoritative resync.
+Open `Plugins > JaCaMo > Open Workbench...` and select the same `.jcm` entry hosted
+by the Bridge. Selection is checked by exact JCM digest and project key before the
+official snapshot can materialize a USE model. The Runtime tab exposes authority,
+readiness, negotiated capabilities, completeness, model revision,
+session/generation, redacted endpoint and stale/resync state. Import, Connect,
+Reconnect and Resync perform an authoritative Bridge synchronization; the
+workbench never launches or reconstructs a JaCaMo application.
 
-If exact typed resolution is ambiguous, place the schema-valid `binding.json` in
-the JaCaMo project root. Production import reads and validates it, rejects stale or
-invalid entries, and never guesses a target.
+Historical `binding.json` and custom parser behavior are retained only in tests.
+Production Bridge identity is exact and never invokes fuzzy/source reconstruction.
 
 The included `examples/auction` project is the release acceptance fixture. See
 `docs/user-workflow.md`, `docs/architecture.md`, `KNOWN-LIMITATIONS.md`, and

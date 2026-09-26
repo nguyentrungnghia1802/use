@@ -33,22 +33,26 @@ Mapping V2 ID, schema version, working/frozen status and full SHA-256. Exact bin
 candidates are handled in Binding. The source path and line can be copied from the
 Trace tab.
 
-The production workbench does not expose connector construction or endpoint fields.
-`Connect` therefore works only after a host/integration has called the facade's
-`configureRuntime` API. The UI is not a standalone external `.jcm` launcher.
+The production workbench reads the validated Bridge endpoint configuration from the
+documented `use.jacamo.bridge.*` system properties. The Runtime tab shows semantic
+authority, readiness, negotiated capabilities, completeness, model revision,
+session/generation, endpoint and diagnostics. Selecting a `.jcm` is an exact
+project/digest assertion against the official ModelSnapshot, not a request to parse
+it in USE. `Connect`, `Reconnect` and `Resync` obtain a fresh authoritative cut.
+The UI is not a standalone external `.jcm` launcher and never silently falls back.
 
 ---
 
 ## 3. Import wizard
 
 Step:
-1. select `.jcm`;
-2. detect project root/source paths;
-3. parse;
-4. show diagnostics;
-5. show mapping fingerprint compatibility;
-6. show optional binding requirements;
-7. generate/load USE representation.
+1. select the `.jcm` already hosted by the JaCaMo Bridge;
+2. negotiate schema/distribution/capabilities;
+3. validate exact project key and JCM digest;
+4. validate ModelSnapshot and RuntimeSnapshot;
+5. adapt canonical identities into the neutral semantic IR;
+6. show diagnostics and mapping fingerprint compatibility;
+7. generate/load the USE representation and apply faithfully projectable runtime facts.
 
 Do not hide warnings.
 
@@ -105,10 +109,9 @@ Khi ambiguous:
 - user chooses;
 - persist explicit `<project-root>/binding.json`.
 
-The current panel can persist a request supplied by the host workflow. Production
-import consumes project-root `binding.json` automatically, but import does not itself
-open a binding dialog or invent a request after failure. Without a valid binding, an
-ambiguous formal operation remains `RESOLUTION_AMBIGUOUS`.
+The current panel can preserve an explicit historical binding request supplied by a
+host workflow. The production Bridge path does not consume parser-era `binding.json`;
+ambiguous official references remain explicit contract diagnostics.
 
 Không auto-select candidate bằng fuzzy ranking.
 

@@ -67,6 +67,14 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private final JLabel runtimeLastSync = named(new JLabel("-"), "runtime-last-sync");
     private final JLabel runtimeLastEvent = named(new JLabel(""), "runtime-last-event");
     private final JLabel runtimeLatency = named(new JLabel("0 ns"), "runtime-latency");
+    private final JLabel semanticAuthority = named(new JLabel("BRIDGE"), "semantic-authority");
+    private final JLabel bridgeReadiness = named(new JLabel("DISCONNECTED"), "bridge-readiness");
+    private final JLabel bridgeCapabilities = named(new JLabel("-"), "bridge-capabilities");
+    private final JLabel bridgeCompleteness = named(new JLabel("UNAVAILABLE"), "bridge-completeness");
+    private final JLabel bridgeRevision = named(new JLabel("-"), "bridge-model-revision");
+    private final JLabel bridgeSession = named(new JLabel("-"), "bridge-session-generation");
+    private final JLabel bridgeEndpoint = named(new JLabel("-"), "bridge-endpoint");
+    private final JLabel bridgeDiagnostic = named(new JLabel("-"), "bridge-diagnostic");
     private final BindingResolutionPanel bindingPanel;
     private Path selectedSource;
 
@@ -122,6 +130,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
 
     public void refreshRuntime() {
         JaCaMoFacade.RuntimeStatus current = facade.runtimeStatus();
+        JaCaMoFacade.AuthorityStatus authority = facade.authorityStatus();
         runtimeState.setText(current.state().name());
         runtimeQueue.setText(Integer.toString(current.queueDepth()));
         runtimeCounters.setText("processed=" + current.processed() + " rejected=" + current.rejected()
@@ -130,6 +139,17 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         runtimeLastSync.setText(current.lastSync() == null ? "-" : current.lastSync().toString());
         runtimeLastEvent.setText(current.lastEvent());
         runtimeLatency.setText(current.lastLatencyNanos() + " ns | snapshot=" + current.snapshotVersion());
+        semanticAuthority.setText(authority.authority().name());
+        bridgeReadiness.setText(authority.readiness().name());
+        bridgeCapabilities.setText(authority.capabilities().isEmpty() ? "-" : authority.capabilities().entrySet()
+                .stream().sorted(Map.Entry.comparingByKey()).map(entry -> entry.getKey() + "=" + entry.getValue())
+                .collect(java.util.stream.Collectors.joining(", ")));
+        bridgeCompleteness.setText(authority.completeness());
+        bridgeRevision.setText(authority.modelRevision().isBlank() ? "-" : authority.modelRevision());
+        bridgeSession.setText(authority.sessionId().isBlank() ? "-"
+                : authority.sessionId() + " / generation=" + authority.generation());
+        bridgeEndpoint.setText(authority.endpoint().isBlank() ? "-" : authority.endpoint());
+        bridgeDiagnostic.setText(authority.diagnostic().isBlank() ? "-" : authority.diagnostic());
         refreshVerification();
     }
 
@@ -220,6 +240,14 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
 
     private JPanel runtimePanel() {
         JPanel values = new JPanel(new GridLayout(0, 2, 8, 4));
+        addField(values, "Semantic authority", semanticAuthority);
+        addField(values, "Bridge readiness", bridgeReadiness);
+        addField(values, "Capabilities", bridgeCapabilities);
+        addField(values, "Completeness", bridgeCompleteness);
+        addField(values, "Model revision", bridgeRevision);
+        addField(values, "Session/generation", bridgeSession);
+        addField(values, "Endpoint", bridgeEndpoint);
+        addField(values, "Bridge diagnostic", bridgeDiagnostic);
         addField(values, "State", runtimeState);
         addField(values, "Queue depth", runtimeQueue);
         addField(values, "Counters", runtimeCounters);

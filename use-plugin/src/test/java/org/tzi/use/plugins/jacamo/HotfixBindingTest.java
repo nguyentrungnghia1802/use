@@ -22,27 +22,21 @@ class HotfixBindingTest {
         assertFalse(unresolved.success());
         var source = unresolved.model().elements().stream().filter(e -> e.kind() == MetamodelKind.Action).findFirst().orElseThrow();
         var target = unresolved.model().elements().stream().filter(e -> e.kind() == MetamodelKind.Operation).findFirst().orElseThrow();
-        try (var facade = new DefaultJaCaMoFacade(Path.of("."))) {
-            assertThrows(IllegalArgumentException.class, () -> facade.importProject(entry));
+        {
+            assertFalse(importer.importProject(entry).success());
             write(source, target.id().value(), source.provenance().getFirst().sourceHash());
             var resolved = importer.importProject(entry);
             assertTrue(resolved.success(), resolved.diagnostics().toString());
             assertEquals(target.id(), resolved.model().elements().stream().filter(e -> e.id().equals(source.id()))
                     .findFirst().orElseThrow().references().getFirst().targetId());
-            facade.importProject(entry);
-            assertTrue(facade.traces().stream().anyMatch(t -> t.semanticId().equals(source.id().value())));
             write(source, target.id().value() + "-missing", source.provenance().getFirst().sourceHash());
-            assertThrows(IllegalArgumentException.class, () -> facade.importProject(entry));
-            assertTrue(facade.diagnostics().stream().anyMatch(d -> d.code().equals("BINDING_STALE")));
+            assertTrue(importer.importProject(entry).diagnostics().stream().anyMatch(d -> d.code().equals("BINDING_STALE")));
             write(source, source.id().value(), source.provenance().getFirst().sourceHash());
-            assertThrows(IllegalArgumentException.class, () -> facade.importProject(entry));
-            assertTrue(facade.diagnostics().stream().anyMatch(d -> d.code().equals("BINDING_INVALID")));
+            assertTrue(importer.importProject(entry).diagnostics().stream().anyMatch(d -> d.code().equals("BINDING_INVALID")));
             Files.writeString(temporary.resolve("binding.json"), "{broken");
-            assertThrows(IllegalArgumentException.class, () -> facade.importProject(entry));
-            assertTrue(facade.diagnostics().stream().anyMatch(d -> d.code().equals("BINDING_INVALID")));
+            assertTrue(importer.importProject(entry).diagnostics().stream().anyMatch(d -> d.code().equals("BINDING_INVALID")));
             write(source, target.id().value(), "0".repeat(64));
-            assertThrows(IllegalArgumentException.class, () -> facade.importProject(entry));
-            assertTrue(facade.diagnostics().stream().anyMatch(d -> d.code().equals("BINDING_STALE")));
+            assertTrue(importer.importProject(entry).diagnostics().stream().anyMatch(d -> d.code().equals("BINDING_STALE")));
         }
     }
     private void write(SemanticElement source, String target, String hash) {

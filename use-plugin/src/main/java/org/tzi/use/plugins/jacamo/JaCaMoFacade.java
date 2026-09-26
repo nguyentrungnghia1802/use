@@ -1,13 +1,13 @@
 package org.tzi.use.plugins.jacamo;
 
-import java.net.URI;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import org.tzi.use.plugins.jacamo.diagnostics.Diagnostic;
+import org.tzi.use.plugins.jacamo.bridge.BridgeConnectionConfig;
+import org.tzi.use.plugins.jacamo.bridge.BridgeClientState;
 import org.tzi.use.plugins.jacamo.runtime.MirrorState;
-import org.tzi.use.plugins.jacamo.runtime.RuntimeConnector;
 import org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor;
 import org.tzi.use.plugins.jacamo.verification.VerificationReport;
 
@@ -27,13 +27,14 @@ public interface JaCaMoFacade {
     default VerificationReport latestVerification() { return null; }
     default void loadVerificationProfile(Path profile) { throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED"); }
     default void exportVerificationReport(Path destination) { throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED"); }
-    default void configureRuntime(RuntimeConnector connector, URI endpoint, int queueCapacity) {
-        throw new UnsupportedOperationException("RUNTIME_NOT_CONFIGURED");
+    default void configureBridge(BridgeConnectionConfig configuration) {
+        throw new UnsupportedOperationException("BRIDGE_NOT_CONFIGURED");
     }
     default void connectRuntime() { throw new UnsupportedOperationException("RUNTIME_NOT_CONFIGURED"); }
     default void disconnectRuntime() { throw new UnsupportedOperationException("RUNTIME_NOT_CONFIGURED"); }
     default void resyncRuntime() { throw new UnsupportedOperationException("RUNTIME_NOT_CONFIGURED"); }
     default RuntimeStatus runtimeStatus() { return RuntimeStatus.offline(); }
+    default AuthorityStatus authorityStatus() { return AuthorityStatus.offline(); }
     /** Returns the latest measured pipeline and runtime values; zero means that no measurement is available yet. */
     default PerformanceMetrics performanceMetrics() { return PerformanceMetrics.empty(); }
     default void persistBinding(Path destination, BindingRequest request, String selectedTargetId, String reason) {
@@ -57,6 +58,15 @@ public interface JaCaMoFacade {
                          long lastLatencyNanos, long snapshotVersion, int violationCount) {
         public static RuntimeStatus offline() {
             return new RuntimeStatus(MirrorState.OFFLINE, 0, 0, 0, 0, 0, 0, null, "", 0, 0, 0);
+        }
+    }
+    record AuthorityStatus(SemanticAuthority authority, BridgeClientState readiness,
+                           Map<String,String> capabilities, String completeness, String modelRevision,
+                           String sessionId, long generation, String endpoint, String diagnostic) {
+        public AuthorityStatus { capabilities=Map.copyOf(capabilities); }
+        public static AuthorityStatus offline() {
+            return new AuthorityStatus(SemanticAuthority.BRIDGE, BridgeClientState.DISCONNECTED,
+                    Map.of(), "UNAVAILABLE", "", "", 0, "", "BRIDGE_NOT_CONFIGURED");
         }
     }
     /**

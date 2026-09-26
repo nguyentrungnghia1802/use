@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.tzi.use.plugins.jacamo.diagnostics.Phase;
 import org.tzi.use.plugins.jacamo.diagnostics.Severity;
@@ -61,6 +62,9 @@ final class JcmSemanticParser {
                         parseAgentConfig(agent, tokens.subList(cursor + 1, end < 0 ? cursor + 1 : end));
                         if (end >= 0) i = end;
                     }
+                    for (ElementDraft expanded : expandAgentInstances(context, agent, path)) {
+                        materializeInitialMentalState(context, expanded, path);
+                    }
                 } else if (text.equals("workspace") && i + 1 < tokens.size()) {
                     String name = tokens.get(i + 1).text();
                     ElementDraft workspace = context.element(MetamodelKind.Workspace, name, List.of("MAS"), path,
@@ -104,13 +108,22 @@ final class JcmSemanticParser {
     }
 
     private void parseAgentConfig(ElementDraft agent, List<JcmLexer.Token> body) {
+        int beliefIndex = 0, goalIndex = 0;
         for (int i = 0; i + 1 < body.size(); i++) {
             String key = body.get(i).text();
             if (!KEYS.contains(key) || !body.get(i + 1).text().equals(":")) continue;
             int end = nextKey(body, i + 2);
             String value = join(body.subList(i + 2, end));
             if (!value.isBlank()) agent.sourceFacts.put(key, new AttributeValue.Text(value));
-            if (key.equals("focus")) {
+            if (key.equals("beliefs") || key.equals("goals")) {
+                for (ConfigTerm term : configTerms(body.subList(i + 2, end))) {
+                    String prefix = key.equals("beliefs") ? "initialBelief" : "initialGoal";
+                    int ordinal = key.equals("beliefs") ? beliefIndex++ : goalIndex++;
+                    agent.sourceFacts.put(prefix + "@" + String.format(java.util.Locale.ROOT, "%09d", term.line())
+                                    + "@" + String.format(java.util.Locale.ROOT, "%09d", ordinal),
+                            new AttributeValue.Text(term.expression()));
+                }
+            } else if (key.equals("focus")) {
                 for (String item : commaValues(body.subList(i + 2, end))) {
                     agent.references.add(new SemanticReference("artifacts", item, null));
                 }
@@ -128,6 +141,117 @@ final class JcmSemanticParser {
             i = end - 1;
         }
     }
+
+    private List<ElementDraft> expandAgentInstances(ExtractionContext context, ElementDraft declared, Path path) {
+        int count = 1;
+        if (declared.sourceFacts.get("instances") instanceof AttributeValue.Text instances) {
+            try { count = Integer.parseInt(instances.value().trim()); }
+            catch (NumberFormatException invalid) {
+                context.diagnostic("JCM_AGENT_INSTANCES_INVALID", Severity.ERROR, Phase.PARSING,
+                        declared.provenance.getFirst().span(), declared.id.value(),
+                        "Agent instances must be a positive integer", instances.value(),
+                        "Use a positive decimal instances value");
+            }
+        }
+        if (count < 1) {
+            context.diagnostic("JCM_AGENT_INSTANCES_INVALID", Severity.ERROR, Phase.PARSING,
+                    declared.provenance.getFirst().span(), declared.id.value(),
+                    "Agent instances must be positive", Integer.toString(count),
+                    "Use instances: 1 or greater");
+            return List.of(declared);
+        }
+        if (count == 1) return List.of(declared);
+        context.elements.remove(declared);
+        List<ElementDraft> expanded = new ArrayList<>();
+        for (int index = 1; index <= count; index++) {
+            String name = declared.name + index;
+            var span = declared.provenance.getFirst().span();
+            ElementDraft instance = context.element(MetamodelKind.Agent, name, List.of("MAS"), path,
+                    span.startLine(), span.startColumn(), "jcm-parser",
+                    declared.provenance.getFirst().originalSpelling());
+            instance.attributes.putAll(declared.attributes);
+            instance.attributes.put("name", new AttributeValue.Text(name));
+            instance.sourceFacts.putAll(declared.sourceFacts);
+            instance.sourceFacts.put("declaredAgentName", new AttributeValue.Text(declared.name));
+            instance.sourceFacts.put("instanceIndex", new AttributeValue.IntegerNumber(index));
+            instance.references.addAll(declared.references);
+            expanded.add(instance);
+        }
+        return expanded;
+    }
+
+    private void materializeInitialMentalState(ExtractionContext context, ElementDraft agent, Path path) {
+        agent.sourceFacts.entrySet().stream()
+                .filter(entry -> entry.getKey().startsWith("initialBelief@")
+                        || entry.getKey().startsWith("initialGoal@"))
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(entry -> {
+                    String expression = ((AttributeValue.Text) entry.getValue()).value();
+                    String[] key = entry.getKey().split("@");
+                    int line = Integer.parseInt(key[1]);
+                    boolean belief = entry.getKey().startsWith("initialBelief@");
+                    MetamodelKind kind = belief ? MetamodelKind.Belief : MetamodelKind.AGoal;
+                    String local = expression;
+                    ElementDraft element = context.elementWithLocalId(kind, functor(expression), local,
+                            List.of("MAS", agent.name, belief ? "belief" : "goal"), path,
+                            line, 1, "jcm-parser", expression);
+                    element.attributes.put("literal", new AttributeValue.Text(expression));
+                    element.sourceFacts.put("isInitial", new AttributeValue.Bool(true));
+                    element.sourceFacts.put("declarationKind", new AttributeValue.Text("JCM_INITIAL"));
+                    if (!belief) element.attributes.put("type",
+                            new AttributeValue.EnumLiteral("AgentGoalType", "ACHIEVEMENT"));
+                    agent.references.add(new SemanticReference(belief ? "beliefs" : "goals",
+                            expression, element.id));
+                });
+    }
+
+    private List<ConfigTerm> configTerms(List<JcmLexer.Token> tokens) {
+        List<ConfigTerm> terms = new ArrayList<>();
+        for (int cursor = 0; cursor < tokens.size();) {
+            while (cursor < tokens.size() && tokens.get(cursor).text().equals(",")) cursor++;
+            if (cursor >= tokens.size()) break;
+            int start = cursor;
+            if (cursor + 1 < tokens.size() && tokens.get(cursor + 1).text().equals("(")) {
+                int depth = 0;
+                cursor++;
+                while (cursor < tokens.size()) {
+                    String token = tokens.get(cursor).text();
+                    if (token.equals("(")) depth++;
+                    else if (token.equals(")") && --depth == 0) { cursor++; break; }
+                    cursor++;
+                }
+            } else cursor++;
+            while (cursor < tokens.size() && tokens.get(cursor).text().equals("[")) {
+                int depth = 0;
+                while (cursor < tokens.size()) {
+                    String token = tokens.get(cursor).text();
+                    if (token.equals("[")) depth++;
+                    else if (token.equals("]") && --depth == 0) { cursor++; break; }
+                    cursor++;
+                }
+            }
+            List<JcmLexer.Token> expression = tokens.subList(start, cursor);
+            if (!expression.isEmpty()) terms.add(new ConfigTerm(joinSource(expression),
+                    expression.getFirst().line(), expression.getFirst().column()));
+        }
+        return terms;
+    }
+
+    private String joinSource(List<JcmLexer.Token> tokens) {
+        StringBuilder result = new StringBuilder();
+        for (JcmLexer.Token token : tokens) result.append(token.sourceText());
+        return result.toString();
+    }
+
+    private String functor(String expression) {
+        int open = expression.indexOf('(');
+        int annotation = expression.indexOf('[');
+        int end = open < 0 ? expression.length() : open;
+        if (annotation >= 0) end = Math.min(end, annotation);
+        return expression.substring(0, end).trim();
+    }
+
+    private record ConfigTerm(String expression, int line, int column) { }
 
     private void parseWorkspace(ExtractionContext context, ElementDraft workspace,
                                 List<JcmLexer.Token> body, Path path, String workspaceName) {

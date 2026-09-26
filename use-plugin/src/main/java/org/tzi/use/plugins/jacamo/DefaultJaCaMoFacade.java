@@ -1,6 +1,5 @@
 package org.tzi.use.plugins.jacamo;
 
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
@@ -13,13 +12,25 @@ import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.ArrayDeque;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
+import org.jacamo.bridge.contract.RuntimeEvent;
+import org.tzi.use.plugins.jacamo.bridge.BridgeClient;
+import org.tzi.use.plugins.jacamo.bridge.BridgeClientState;
+import org.tzi.use.plugins.jacamo.bridge.BridgeConnectionConfig;
+import org.tzi.use.plugins.jacamo.bridge.BridgeMirrorStateMachine;
+import org.tzi.use.plugins.jacamo.bridge.BridgeProtocolException;
+import org.tzi.use.plugins.jacamo.bridge.BridgeRuntimeProjector;
+import org.tzi.use.plugins.jacamo.bridge.BridgeTransportFactory;
+import org.tzi.use.plugins.jacamo.bridge.NativeSemanticAdapter;
 import org.tzi.use.plugins.jacamo.binding.BindingEntry;
 import org.tzi.use.plugins.jacamo.binding.BindingFile;
 import org.tzi.use.plugins.jacamo.binding.BindingStore;
 import org.tzi.use.plugins.jacamo.constraint.ConstraintExtractor;
 import org.tzi.use.plugins.jacamo.diagnostics.Diagnostic;
-import org.tzi.use.plugins.jacamo.extraction.ImportResult;
-import org.tzi.use.plugins.jacamo.extraction.StaticProjectImporter;
 import org.tzi.use.plugins.jacamo.mapping.ActiveBaseline;
 import org.tzi.use.plugins.jacamo.mapping.MappingModel;
 import org.tzi.use.plugins.jacamo.mapping.TransformationPlanner;
@@ -29,10 +40,7 @@ import org.tzi.use.plugins.jacamo.materialization.InstancePlanner;
 import org.tzi.use.plugins.jacamo.materialization.TextBackend;
 import org.tzi.use.plugins.jacamo.ocl.OclGenerator;
 import org.tzi.use.plugins.jacamo.ocl.OclProfileLoader;
-import org.tzi.use.plugins.jacamo.runtime.QueueMetrics;
 import org.tzi.use.plugins.jacamo.runtime.MirrorState;
-import org.tzi.use.plugins.jacamo.runtime.RuntimeConnector;
-import org.tzi.use.plugins.jacamo.runtime.RuntimeMirrorService;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeMutationEngine;
 import org.tzi.use.plugins.jacamo.semantic.Dimension;
 import org.tzi.use.plugins.jacamo.trace.TraceBuilder;
@@ -52,39 +60,58 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     public static final DefaultJaCaMoFacade INSTANCE = new DefaultJaCaMoFacade(detectCheckout());
 
     private final Path checkout;
+    private final SemanticAuthority authority;
+    private final Supplier<BridgeConnectionConfig> bridgeConfigurationSource;
+    private final BridgeTransportFactory bridgeTransportFactory;
+    private BridgeConnectionConfig configuredBridge;
+    private BridgeClient bridgeClient;
+    private BridgeMirrorStateMachine bridgeMirror;
+    private BridgeClient.Accepted bridgeAccepted;
+    private String bridgeDiagnostic = "";
+    private java.time.Instant bridgeLastSync;
+    private final AtomicLong bridgeProcessed = new AtomicLong();
     private Path entry;
     private Path userProfile;
     private Workspace workspace;
-    private RuntimeConnector configuredConnector;
-    private URI configuredEndpoint;
-    private int configuredQueueCapacity = 256;
-    private RuntimeMirrorService runtime;
     private RuntimeVerificationEngine runtimeVerification;
     private List<Diagnostic> lastDiagnostics = List.of();
     private long lastFullCheckNanos;
 
     public DefaultJaCaMoFacade(Path checkout) {
+        this(checkout, SemanticAuthority.configured(System.getProperty("use.jacamo.authority")),
+                BridgeConnectionConfig::fromSystemProperties, BridgeTransportFactory.localTcp());
+    }
+
+    public DefaultJaCaMoFacade(Path checkout, SemanticAuthority authority,
+                               Supplier<BridgeConnectionConfig> bridgeConfigurationSource,
+                               BridgeTransportFactory bridgeTransportFactory) {
         this.checkout = checkout.toAbsolutePath().normalize();
+        this.authority = java.util.Objects.requireNonNull(authority, "authority");
+        if (authority != SemanticAuthority.BRIDGE)
+            throw new IllegalArgumentException("SEMANTIC_AUTHORITY_REMOVED:" + authority);
+        this.bridgeConfigurationSource = java.util.Objects.requireNonNull(bridgeConfigurationSource,
+                "bridgeConfigurationSource");
+        this.bridgeTransportFactory = java.util.Objects.requireNonNull(bridgeTransportFactory,
+                "bridgeTransportFactory");
     }
 
     @Override public synchronized String status() {
-        return workspace == null ? "JaCaMo plugin ready; no project imported"
-                : "JaCaMo project " + workspace.summary.projectId() + " ready";
+        AuthorityStatus state = authorityStatus();
+        return "JaCaMo Bridge " + state.readiness() + (state.modelRevision().isBlank() ? ""
+                : " model=" + state.modelRevision()) + (state.diagnostic().isBlank() ? ""
+                : " diagnostic=" + state.diagnostic());
     }
 
     @Override public synchronized ProjectSummary importProject(Path jcmFile) {
         if (jcmFile == null || !jcmFile.getFileName().toString().toLowerCase().endsWith(".jcm"))
             throw new IllegalArgumentException("IMPORT_JCM_REQUIRED");
         Path candidate = jcmFile.toAbsolutePath().normalize();
-        Workspace next = build(candidate, null);
-        installWorkspace(next, candidate, null);
-        return workspace.summary;
+        return synchronizeBridge(candidate, null);
     }
 
     @Override public synchronized ProjectSummary rebuild() {
         requireWorkspace();
-        installWorkspace(build(entry, userProfile), entry, userProfile);
-        return workspace.summary;
+        return synchronizeBridge(entry, userProfile);
     }
 
     @Override public synchronized ProjectSummary projectSummary() { return workspace == null ? null : workspace.summary; }
@@ -115,8 +142,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         if (profile == null || !Files.isRegularFile(profile.toAbsolutePath().normalize()))
             throw new IllegalArgumentException("OCL_USER_PROFILE_IO");
         Path candidate = profile.toAbsolutePath().normalize();
-        Workspace next = build(entry, candidate);
-        installWorkspace(next, entry, candidate);
+        synchronizeBridge(entry, candidate);
     }
 
     @Override public synchronized void exportVerificationReport(Path destination) {
@@ -164,48 +190,54 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         }
     }
 
-    @Override public synchronized void configureRuntime(RuntimeConnector connector, URI endpoint, int queueCapacity) {
-        if (connector == null || endpoint == null || queueCapacity < 1)
-            throw new IllegalArgumentException("RUNTIME_CONFIGURATION_INVALID");
-        configuredConnector = connector;
-        configuredEndpoint = endpoint;
-        configuredQueueCapacity = queueCapacity;
+    @Override public synchronized void configureBridge(BridgeConnectionConfig configuration) {
+        configuredBridge = java.util.Objects.requireNonNull(configuration, "configuration");
+        bridgeDiagnostic = "";
     }
 
     @Override public synchronized void connectRuntime() {
         requireWorkspace();
-        if (configuredConnector == null) throw new IllegalStateException("RUNTIME_CONNECTOR_NOT_CONFIGURED");
-        if (runtime != null) runtime.close();
-        runtimeVerification = new RuntimeVerificationEngine(workspace.direct.system(), workspace.registry, workspace.trace);
-        runtime = new RuntimeMirrorService(configuredConnector,
-                workspace.mutationEngine(), configuredQueueCapacity,
-                runtimeVerification);
-        runtime.connect(configuredEndpoint);
+        synchronizeBridge(entry, userProfile);
     }
 
     @Override public synchronized void disconnectRuntime() {
-        if (runtime != null) runtime.disconnect();
+        closeBridgeClient();
     }
 
     @Override public synchronized void resyncRuntime() {
-        if (runtime == null) throw new IllegalStateException("RUNTIME_NOT_CONNECTED");
-        runtime.resync();
+        requireWorkspace();
+        synchronizeBridge(entry, userProfile);
     }
 
     @Override public synchronized RuntimeStatus runtimeStatus() {
-        if (runtime == null) return workspace == null ? RuntimeStatus.offline()
-                : new RuntimeStatus(MirrorState.MODEL_READY, 0, 0, 0, 0, 0, 0, null, "", 0, 0, 0);
-        QueueMetrics metrics = runtime.metrics();
-        var latest = runtimeVerification == null ? null : runtimeVerification.latestReport();
-        String event = latest == null || latest.event() == null ? "" : latest.event().eventId();
-        long latency = latest == null ? 0 : latest.latencyNanos();
-        long version = runtimeVerification == null ? 0 : runtimeVerification.snapshotVersion();
+        BridgeClientState state = bridgeMirror == null ? BridgeClientState.DISCONNECTED : bridgeMirror.state();
+        MirrorState mirrorState = switch (state) {
+            case DISCONNECTED -> workspace == null ? MirrorState.OFFLINE : MirrorState.STALE;
+            case NEGOTIATING -> MirrorState.CONNECTING;
+            case MODEL_SYNC, SNAPSHOT_SYNC -> MirrorState.SYNCING;
+            case LIVE -> MirrorState.LIVE;
+            case RESYNC_REQUIRED, STALE -> MirrorState.STALE;
+        };
         int violations = runtimeVerification == null ? 0 : (int) runtimeVerification.reports().stream()
                 .flatMap(report -> report.verification().results().stream())
                 .filter(result -> result.outcome() == VerificationOutcome.FAIL).count();
-        return new RuntimeStatus(runtime.state(), metrics.depth(), metrics.highWatermark(), metrics.processed(),
-                metrics.rejected(), metrics.failed(), metrics.dropped(), runtime.lastSyncAt(), event, latency,
-                version, violations);
+        return new RuntimeStatus(mirrorState, 0, 0, bridgeProcessed.get(), 0,
+                state == BridgeClientState.RESYNC_REQUIRED ? 1 : 0, 0, bridgeLastSync, "", 0,
+                bridgeAccepted == null ? 0 : bridgeAccepted.generation(), violations);
+    }
+
+    @Override public synchronized AuthorityStatus authorityStatus() {
+        BridgeConnectionConfig configuration = configuredBridge;
+        String endpoint = configuration == null ? "" : configuration.displayEndpoint();
+        BridgeClientState readiness = bridgeMirror == null ? BridgeClientState.DISCONNECTED : bridgeMirror.state();
+        if (bridgeAccepted == null)
+            return new AuthorityStatus(authority, readiness, Map.of(), "UNAVAILABLE", "", "", 0,
+                    endpoint, bridgeDiagnostic.isBlank() ? "BRIDGE_NOT_SYNCHRONIZED" : bridgeDiagnostic);
+        Map<String,String> capabilities = new LinkedHashMap<>();
+        bridgeAccepted.capabilities().forEach(value -> capabilities.put(value.name(), value.status().name()));
+        return new AuthorityStatus(authority, readiness, capabilities, bridgeAccepted.completeness().name(),
+                bridgeAccepted.modelRevision(), bridgeAccepted.sessionId(), bridgeAccepted.generation(), endpoint,
+                bridgeDiagnostic);
     }
 
     @Override public synchronized PerformanceMetrics performanceMetrics() {
@@ -234,52 +266,125 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         store.write(output, new BindingFile("1.0.0", entries));
     }
 
-    @Override public synchronized void close() { if (runtime != null) runtime.close(); }
+    @Override public synchronized void close() {
+        closeBridgeClient();
+    }
 
     private void installWorkspace(Workspace next, Path nextEntry, Path nextProfile) {
-        Workspace previous = workspace;
         var verification = new RuntimeVerificationEngine(next.direct.system(), next.registry, next.trace);
-        Runnable install = () -> {
-            if (previous != null) next.trace.copyRuntimeKeysFrom(previous.trace);
-            workspace = next;
-            entry = nextEntry;
-            userProfile = nextProfile;
-            runtimeVerification = verification;
-            next.latest = null;
-        };
-        if (runtime == null) install.run();
-        else runtime.replaceWorkspace(next.mutationEngine(), verification, install);
+        workspace = next;
+        entry = nextEntry;
+        userProfile = nextProfile;
+        runtimeVerification = verification;
+        next.latest = null;
         // Static verification predates the authoritative runtime snapshot.
         runFullVerification();
     }
 
-    private Workspace build(Path jcmFile, Path verificationProfile) {
-        long importStarted = System.nanoTime();
-        ImportResult imported = new StaticProjectImporter().importProject(jcmFile);
-        long importNanos = System.nanoTime() - importStarted;
-        lastDiagnostics = imported.diagnostics();
-        if (!imported.success()) throw new IllegalArgumentException("IMPORT_FAILED: " + imported.diagnostics());
+    private ProjectSummary synchronizeBridge(Path selectedJcm, Path verificationProfile) {
+        BridgeConnectionConfig configuration = configuredBridge == null ? bridgeConfigurationSource.get() : configuredBridge;
+        configuredBridge = configuration;
+        BridgeMirrorStateMachine candidateMirror = new BridgeMirrorStateMachine(8_192);
+        ArrayDeque<RuntimeEvent> pending = new ArrayDeque<>();
+        AtomicReference<BridgeRuntimeProjector> projectorReference = new AtomicReference<>();
+        BridgeClient candidate = null;
+        try {
+            candidate = new BridgeClient(bridgeTransportFactory.open(configuration), candidateMirror,
+                    configuration.distributionSha256(), configuration.requiredCapabilities(),
+                    configuration.maxBufferedEvents(), event -> {
+                        synchronized (pending) {
+                            BridgeRuntimeProjector projector = projectorReference.get();
+                            if (projector == null) {
+                                if (pending.size() >= configuration.maxBufferedEvents())
+                                    throw new BridgeProtocolException("BRIDGE_FACADE_BUFFER_OVERFLOW");
+                                pending.addLast(event);
+                            } else if (projector.apply(event)) {
+                                bridgeProcessed.incrementAndGet();
+                            }
+                        }
+                    });
+            long importStarted = System.nanoTime();
+            BridgeClient.Accepted accepted = candidate.synchronize();
+            validateBridgeSelection(selectedJcm, accepted);
+            NativeSemanticAdapter.Result adapted = new NativeSemanticAdapter().adapt(accepted.model(),
+                    selectedJcm.getParent(), accepted.projectKey());
+            long importNanos = System.nanoTime() - importStarted;
+            Workspace next = buildSemantic(selectedJcm, verificationProfile, adapted.model(),
+                    adapted.model().diagnostics(), importNanos);
+            Set<String> sources = accepted.runtime().endWatermarks().keySet();
+            if (sources.isEmpty()) throw new BridgeProtocolException("BRIDGE_RUNTIME_SOURCE_REQUIRED");
+            BridgeRuntimeProjector projector = new BridgeRuntimeProjector(sources, adapted, next.trace,
+                    next.mutationEngine());
+            synchronized (pending) {
+                projector.applySnapshot(accepted.runtime());
+                projectorReference.set(projector);
+                while (!pending.isEmpty()) if (projector.apply(pending.removeFirst())) bridgeProcessed.incrementAndGet();
+            }
+            BridgeClient previousClient = bridgeClient;
+            installWorkspace(next, selectedJcm, verificationProfile);
+            bridgeClient = candidate;
+            bridgeMirror = candidateMirror;
+            bridgeAccepted = accepted;
+            bridgeLastSync = accepted.runtime().captureEndedAt();
+            bridgeDiagnostic = "";
+            if (previousClient != null) previousClient.close();
+            return workspace.summary;
+        } catch (RuntimeException error) {
+            if (candidate != null) candidate.close();
+            bridgeDiagnostic = error.getMessage() == null ? error.getClass().getSimpleName() : error.getMessage();
+            throw error;
+        }
+    }
+
+    private void validateBridgeSelection(Path selectedJcm, BridgeClient.Accepted accepted) {
+        try {
+            String digest = java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256")
+                    .digest(Files.readAllBytes(selectedJcm)));
+            boolean matched = accepted.model().sources().stream().anyMatch(source ->
+                    "JCM".equals(source.attributes().get("kind")) && digest.equals(source.attributes().get("digest")));
+            if (!matched) throw new BridgeProtocolException("BRIDGE_PROJECT_SELECTION_MISMATCH");
+            boolean projectKeyMatched = accepted.model().sources().stream()
+                    .anyMatch(source -> source.id().scope().equals(accepted.projectKey()));
+            if (!projectKeyMatched) throw new BridgeProtocolException("BRIDGE_PROJECT_KEY_MISMATCH");
+        } catch (BridgeProtocolException error) {
+            throw error;
+        } catch (Exception error) {
+            throw new BridgeProtocolException("BRIDGE_PROJECT_SELECTION_UNREADABLE", error);
+        }
+    }
+
+    private void closeBridgeClient() {
+        if (bridgeClient != null) {
+            bridgeClient.close();
+            bridgeClient = null;
+        }
+    }
+
+    private Workspace buildSemantic(Path jcmFile, Path verificationProfile,
+                                    org.tzi.use.plugins.jacamo.semantic.JaCaMoSemanticModel model,
+                                    List<Diagnostic> importDiagnostics, long importNanos) {
+        lastDiagnostics = List.copyOf(importDiagnostics);
         long generationStarted = System.nanoTime();
         ActiveBaseline.Selection activeBaseline = new ActiveBaseline().fromCheckout(checkout);
         MappingModel mapping = activeBaseline.mapping();
-        var baseline = new TransformationPlanner().plan(imported.model(), mapping);
+        var baseline = new TransformationPlanner().plan(model, mapping);
         var structure = new VerificationSemanticLayer().apply(baseline, mapping,
                 new VerificationProfileLoader().loadActive(mapping)).transformation();
-        InstancePlan instances = new InstancePlanner().plan(imported.model(), mapping, structure);
-        var constraints = new ConstraintExtractor().extract(imported.model(), structure, Map.of());
+        InstancePlan instances = new InstancePlanner().plan(model, mapping, structure);
+        var constraints = new ConstraintExtractor().extract(model, structure, Map.of());
         OclProfileLoader profiles = new OclProfileLoader();
         List<OclProfileLoader.LoadedProfile> loaded = new ArrayList<>();
         loaded.add(profiles.loadCore());
-        Path project = imported.model().projectRoot().path();
-        Path caseProfile = project.resolve("verification/" + imported.model().projectId() + ".ocl");
+        Path project = model.projectRoot().path();
+        Path caseProfile = project.resolve("verification/" + model.projectId() + ".ocl");
         if (Files.isRegularFile(caseProfile)) loaded.add(profiles.loadCase(project, project.relativize(caseProfile)));
         if (verificationProfile != null)
             loaded.add(profiles.loadUser(verificationProfile.getParent(), verificationProfile.getFileName()));
-        var generated = new OclGenerator().generate(imported.model().projectId(), structure, constraints, loaded);
-        String commands = new TextBackend().generate(imported.model().projectId(), structure, instances).initialCommands();
+        var generated = new OclGenerator().generate(model.projectId(), structure, constraints, loaded);
+        String commands = new TextBackend().generate(model.projectId(), structure, instances).initialCommands();
         DirectUseBackend.Result direct = new DirectUseBackend().materialize(
                 new TextBackend.GeneratedArtifacts(generated.useModel(), commands), instances);
-        TraceIndex trace = new TraceBuilder().build(imported.model(), mapping, structure, instances);
+        TraceIndex trace = new TraceBuilder().build(model, mapping, structure, instances);
         List<ConstraintRegistry.RegisteredProfile> registrations = new ArrayList<>();
         for (OclProfileLoader.LoadedProfile profile : loaded) {
             ConstraintOrigin origin = profile.origin().toString().contains("jacamo-core")
@@ -292,24 +397,24 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         long verificationStarted = System.nanoTime();
         VerificationReport latest = new DefaultVerificationService().runFullVerification(direct.system(), registry, trace);
         lastFullCheckNanos = System.nanoTime() - verificationStarted;
-        List<Diagnostic> diagnostics = new ArrayList<>(imported.diagnostics());
+        List<Diagnostic> diagnostics = new ArrayList<>(importDiagnostics);
         diagnostics.addAll(direct.diagnostics());
         lastDiagnostics = List.copyOf(diagnostics);
         Map<Dimension, Long> counts = new EnumMap<>(Dimension.class);
-        for (Dimension dimension : Dimension.values()) counts.put(dimension, imported.model().elements().stream()
+        for (Dimension dimension : Dimension.values()) counts.put(dimension, model.elements().stream()
                 .filter(element -> element.kind().dimension() == dimension).count());
         Map<String, Long> dimensionCounts = new LinkedHashMap<>();
         counts.forEach((key, value) -> dimensionCounts.put(key.name(), value));
         long warnings = diagnostics.stream().filter(value -> value.severity().name().equals("WARNING")).count();
         long errors = diagnostics.stream().filter(value -> value.severity().name().matches("ERROR|FATAL")).count();
-        ProjectSummary summary = new ProjectSummary(jcmFile, project, imported.model().projectId(),
-                imported.model().sourceIndex().size(), dimensionCounts,
+        ProjectSummary summary = new ProjectSummary(jcmFile, project, model.projectId(),
+                model.sourceIndex().size(), dimensionCounts,
                 ActiveBaseline.VERSION, activeBaseline.hashes().get(ActiveBaseline.ECORE),
                 mapping.mappingId(), mapping.schemaVersion(), activeBaseline.hashes().get(ActiveBaseline.MAPPING),
                 mapping.status(),
                 structure.classes().size(), instances.objects().size(), direct.structureValid(),
                 Math.toIntExact(warnings), Math.toIntExact(errors));
-        List<SourceRow> sources = imported.model().sourceIndex().values().stream().map(source ->
+        List<SourceRow> sources = model.sourceIndex().values().stream().map(source ->
                 new SourceRow(source.path(), source.kind().name(), source.byteLength(), source.sha256())).toList();
         List<TraceRow> traces = trace.records().stream().map(record -> new TraceRow(record.sourceSemanticId(),
                 record.sourceKind(), record.targetUseId(), record.targetKind(), record.mappingRuleId(),
@@ -317,7 +422,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 record.sourceSpan() == null ? null : record.sourceSpan().path(),
                 record.sourceSpan() == null ? 0 : record.sourceSpan().startLine(),
                 dimension(record.sourceSemanticId()))).toList();
-        Map<String, String> sourceHashes = imported.model().elements().stream().collect(java.util.stream.Collectors.toMap(
+        Map<String, String> sourceHashes = model.elements().stream().collect(java.util.stream.Collectors.toMap(
                 element -> element.id().value(), element -> element.provenance().getFirst().sourceHash()));
         return new Workspace(summary, sources, List.copyOf(diagnostics), traces, direct, trace, registry, latest,
                 sourceHashes, importNanos, generationNanos, structure, instances);
