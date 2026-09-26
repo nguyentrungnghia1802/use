@@ -1,7 +1,8 @@
 # V1 coupling inventory — intake
 
-Machine-readable lexical occurrences: [v1-coupling-occurrences.json](v1-coupling-occurrences.json).
-The reproducible baseline-revision scan contains 8,817 conservative exact-token occurrences
+The raw pre-migration lexical dump was retired during documentation cleanup because
+it is an intermediate scan, not an active contract. This retained summary records
+its result: 8,817 conservative exact-token occurrences
 across 305 text files, plus the checked-in old plugin JAR.
 It is an intake index, not proof all semantic dependencies are resolved.
 

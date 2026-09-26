@@ -2,7 +2,9 @@
 
 > **Mục tiêu:** chuyển dự án hiện tại sang **Metamodel V2 + Mapping V2** làm baseline phát triển chính, đồng thời giữ lại tối đa hạ tầng đã được kiểm chứng: import framework, USE adapter, trace/binding infrastructure, runtime connectors, RuntimeEvent/RuntimeTrace, synchronization, verification engine, UI/reporting, build/test infrastructure.
 >
-> **Trạng thái V2:** `WORKING_BASELINE`, chưa `FROZEN`. Cho phép thay đổi nhỏ trong quá trình phát triển, nhưng mọi thay đổi phải đi qua diff → impact analysis → migration → regression; không sửa hash/fixture chỉ để làm test pass.
+> **Trạng thái V2:** `FROZEN_RELEASE_CANDIDATE` từ Phase 44. Mọi thay đổi
+> sau freeze phải tạo version mới, diff/impact analysis, migration và regression;
+> không sửa hash/fixture chỉ để làm test pass.
 >
 > **Active source locations do người dùng chỉ định**
 >
@@ -13,7 +15,12 @@
 
 ---
 
-> **2026-09-24 final consumer gate:** clean reactor **350/350 PASS**, Python **11/11 PASS**. All component and downstream integration gates in Phase 29–35 now pass. Earlier counts/OPEN paragraphs below are historical migration snapshots, superseded by [final acceptance](../project/v2-migration/phase35-acceptance.md) and its per-test evidence. Phase branches are merged and pushed; post-merge full regression also PASS 350/350. Phase 29–35 are DONE; no final V2 freeze/release is claimed.
+> **2026-09-25 Phase 44 freeze:** focused 154/154, module 231/231, clean
+> reactor 374/374, and relocated clean reactor 374/374 all pass with zero
+> failures, errors, or skipped correctness tests. Earlier 350/350 and OPEN
+> paragraphs below are historical migration snapshots. The frozen contracts and
+> final evidence are recorded in [Phase 44](../project/v2-migration/phase44-final-v2-freeze.md);
+> the candidate is not a published Git tag.
 
 # Global Rules cho Phase 29+
 
@@ -71,7 +78,10 @@ Một task chỉ được `[x]` khi:
 
 **Objective:** chuyển source-of-truth active từ V1 sang V2 một cách có kiểm soát trước khi sửa sâu production code.
 
-> Execution update 2026-09-23: P29.1/P29.2 intake captured; Phase 29 remains OPEN. Fresh baseline: 306 tests, 3 failures, 73 errors, zero skips. See [baseline](../project/v2-migration/phase29-pre-migration-baseline.md), [inventory](../project/v2-migration/v2-input-inventory.md), and [gate dependency decision](../project/v2-migration/phase29-gate-dependency.md). User authorized staged Phase 29–35 migration: downstream-dependent gates remain OPEN until their actual regressions pass. No rollback to V1; no production tasks moved into Phase 29.
+> Historical execution update, 2026-09-23: this is the initial failing intake
+> snapshot before the completed Phase 29–35 migration. See [baseline](../project/v2-migration/phase29-pre-migration-baseline.md),
+> [acceptance](../project/v2-migration/phase35-acceptance.md), and the Phase 44
+> freeze record for the authoritative final status.
 
 ## P29.1 — Capture repository baseline trước migration
 
@@ -125,7 +135,7 @@ Executable selection gates below now PASS after P32.2/P35.1–P35.7; policy is r
 
 ### Tasks
 
-- [x] V2 = `WORKING_BASELINE`.
+- [x] V2 = `WORKING_BASELINE` at the historical Phase 29 checkpoint; `FROZEN` at Phase 44.
 - [x] V1 = `HISTORICAL_BASELINE`.
 - [x] Production import/transformation mặc định dùng V2.
 - [x] V1 chỉ được load qua explicit compatibility/test path nếu còn cần.
@@ -302,7 +312,7 @@ Create/update manifest containing:
 - [x] hash.
 - [x] package/nsURI.
 - [x] structural counts generated dynamically.
-- [x] status = `WORKING_BASELINE`.
+- [x] status = `WORKING_BASELINE` in the historical working manifest; `FROZEN` in the final manifest.
 - [x] created/updated date.
 - [x] provenance.
 - [x] known unresolved items.
@@ -451,8 +461,8 @@ Generate structural fixture từ Mapping V2:
 
 ## P31.6 — Mapping V2 working status
 
-- [x] Mapping V2 = `WORKING_BASELINE`.
-- [x] Không freeze final.
+- [x] Mapping V2 = `WORKING_BASELINE` at Phase 31; `FROZEN` at Phase 44.
+- [x] Không freeze final before Phase 44.
 - [x] Có hash/version record.
 - [x] Có compatibility pointer tới exact Metamodel V2 hash.
 - [x] Mọi future Ecore change phải invalidate/reconcile mapping status.
@@ -1818,7 +1828,7 @@ work in this frozen V2 candidate.
 - [ ] Auction smoke.
 - [ ] full module regression before accepting new working baseline.
 
-## Step E — Working manifest update
+## Step E — Future version manifest update
 
 - [ ] version.
 - [ ] hash.
@@ -1826,7 +1836,7 @@ work in this frozen V2 candidate.
 - [ ] impacted layers.
 - [ ] tests.
 - [ ] date.
-- [ ] status remains `WORKING_BASELINE` until Phase 44.
+- [ ] status for the new version; never alter the frozen V2 manifest in place.
 
 ---
 

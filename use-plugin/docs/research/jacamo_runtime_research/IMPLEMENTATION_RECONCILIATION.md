@@ -1,15 +1,16 @@
 # Runtime research reconciliation — Phase 16
 
-Audited 2026-09-19 against baseline `c38d61f3`. This is project implementation evidence,
-not a change to the frozen Ecore, Structural Mapping V1, or OCL semantics.
+Historical Phase 16 audit, recorded 2026-09-19 against baseline `c38d61f3`.
+It is project implementation evidence, not the active V2 contract. Active
+Metamodel, Structural Mapping, and Runtime Mapping are frozen at Phase 44.
 
 ## Versions and provenance
 
 The research pack is already installed (ten files including SOURCE_MANIFEST.md).
 Its source/API claims are upstream facts at the revisions listed in that manifest;
 event normalization and identity examples are project proposals; USE targets in
-04_USE_MAPPING_CANDIDATES.md and runtime-mapping-candidate-v0.json are unapproved
-candidate mappings. They are not canonical resources.
+04_USE_MAPPING_CANDIDATES.md contains unapproved candidate mappings. It is not a
+canonical resource.
 
 Resolved `mvn -B -pl use-plugin dependency:tree` agrees with pom.xml and
 compatibility.json: Jason 3.3.0, CArtAgO 3.1, Moise 1.1, USE 7.5.0, Java 21.

@@ -1,107 +1,72 @@
 # Repository Structure
 
-This document describes the checked-in structure at v1.0.1. It is not a proposed
-layout. Generated files under `target/` are build outputs and are not sources of truth.
+This document describes the checked-in active V2 layout. Build output under
+target is derived material and is not a source of truth.
 
 ## Reactor
 
-```text
-use/
-├── pom.xml
-├── use-core/
-├── use-gui/
-├── use-assembly/
-├── manual/
-├── documentation/
-├── docs/report/
-└── use-plugin/
-```
+    use/
+      pom.xml
+      use-core/
+      use-gui/
+      use-plugin/
 
-The root Maven reactor builds five projects: the root POM, `use-core`, `use-gui`,
-`use-assembly`, and `use-plugin`.
+The JaCaMo integration lives in use-plugin. Its parent reactor and sibling
+modules provide the USE runtime used by the plugin tests and distribution.
 
 ## Plugin module
 
-```text
-use-plugin/
-├── pom.xml
-├── README.md
-├── CHANGELOG.md
-├── KNOWN-LIMITATIONS.md
-├── compatibility.json
-├── NOTICE
-├── licenses/
-├── Core/
-│   ├── Metamodel/
-│   │   ├── JaCaMo-Metamodel.ecore
-│   │   ├── Metamodel-2024.jpg
-│   │   └── README.md
-│   └── Mapping/
-│       ├── jacamo-use-mapping-v1.json
-│       ├── jacamo-use-mapping.schema.json
-│       ├── freeze-manifest.json
-│       ├── METAMODEL-MAPPING-AUDIT.md
-│       └── README.md
-├── docs/
-│   ├── DOCUMENTATION-MANIFEST.json
-│   ├── project/
-│   ├── agent/
-│   │   └── tasks/task-01.md
-│   └── superpowers/plans/
-├── release/
-│   ├── release-manifest.json
-│   ├── HOTFIX-1.0.1.md
-│   └── evidence/v1.0.1/
-└── src/
-    ├── assembly/release.xml
-    ├── main/java/org/tzi/use/plugins/jacamo/
-    ├── main/resources/
-    └── test/
-```
+    use-plugin/
+      Core/
+        Metamodel/
+          version-1/                 historical reproducibility baseline
+          version-2/
+            jacamo_v2_complete.ecore active metamodel
+        Mapping/
+          version-1/                 historical reproducibility baseline
+          version-2/
+            jacamo-use-mapping-v2.json
+            jacamo-use-mapping-v2.schema.json
+      docs/
+        agent/task.md                current execution tracker
+        project/                     specifications and acceptance evidence
+        research/                    retained upstream research evidence
+        superpowers/plans/           retained release-referenced evidence
+      release/
+        v2-freeze-manifest.json      active frozen-baseline manifest
+        historical/                  retained historical release records
+      src/
+        main/
+        test/
 
-## Production packages
+## Active baseline
 
-| Package | Responsibility |
+The active structural contract is V2:
+
+- Core/Metamodel/version-2/jacamo_v2_complete.ecore;
+- Core/Mapping/version-2/jacamo-use-mapping-v2.json and its schema;
+- release/v2-freeze-manifest.json; and
+- the V2 resources loaded through ActiveBaseline and RuntimeMappingLoader.
+
+Version-1 inputs remain checked in only for historical/reproducibility
+evidence. They are not a runtime fallback for the active baseline.
+
+## Relevant source areas
+
+| Area | Purpose |
 | --- | --- |
-| root plugin package | facade, plugin registration, command/actions |
-| `project` | `.jcm` discovery and project graph |
-| `extraction` | static Jason/CArtAgO/Moise extraction and semantic resolution |
-| `semantic` | source-independent semantic model and stable IDs |
-| `binding`, `resolution` | schema-valid explicit binding and exact typed resolution |
-| `mapping` | frozen mapping load, validation, transformation planning |
-| `materialization` | textual and direct USE model/state materialization |
-| `constraint`, `ocl` | supported expression extraction and OCL generation/loading |
-| `trace` | source-to-USE trace and runtime aliases |
-| `verification` | constraint registry, offline/runtime checks and reports |
-| `runtime` | connectors, ordered queue, mutations, snapshots and lifecycle |
-| `ui` | facade-backed Swing workbench |
-| `evidence` | deterministic acceptance evidence helpers |
+| src/main/java/org/tzi/use/plugins/jacamo | plugin entry points, import pipeline, project loading, mapping and runtime adapters |
+| src/main/resources/org/tzi/use/plugins/jacamo | shipped mapping, schema and runtime resource copies |
+| src/test/java/org/tzi/use/plugins/jacamo | structural, importer, runtime and release-hardening tests |
+| src/test/resources | canonical cases and fixture projects used by the tests |
 
-## Resources and project-local inputs
+## Evidence and release records
 
-The plugin descriptor is `src/main/resources/useplugin.xml`. Canonical Ecore,
-mapping, compatibility, release manifest, schemas, core OCL, and verification
-profile are also embedded as classpath resources during packaging.
+Phase 29 onward records the V2 migration and acceptance evidence. Phase 44 is
+the frozen-baseline closure. Earlier Phase 16–28 material is retained only
+where it provides release, compatibility or original-Auction semantic evidence;
+it must not be read as the active V2 architecture.
 
-A JaCaMo project may contain:
-
-```text
-<project-root>/
-├── <project>.jcm
-├── src/...
-├── binding.json                    # optional exact ambiguity resolution
-└── verification/
-    └── <project-id>.ocl            # optional case OCL
-```
-
-`binding.json` is at project root, not under `verification/`. Production import
-loads it automatically when present. A user-selected OCL file is separate from the
-automatic case profile.
-
-## Test and evidence boundaries
-
-`src/test/resources/auction/` is the pinned acceptance fixture. It may demonstrate
-a supported path without establishing generic support. `release/evidence/v1.0.1/`
-is retained release evidence; it does not replace a fresh test run when current
-verification is required. `docs/agent/tasks/task-01.md` and `docs/superpowers/plans/`
-are historical execution records, not active architecture specifications.
+The current tracker is docs/agent/task.md. Retired task plans, stale manifests
+and one-off documentation sync records are intentionally absent from this
+layout.

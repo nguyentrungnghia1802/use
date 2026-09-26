@@ -232,11 +232,14 @@ Reasonable next work is evidence expansion, not retroactive widening of v1.0.1 c
 
 ## 12. Documentation map
 
-Documents `01`–`18` describe active scope, architecture, implementation contracts,
-quality, evidence, and limitations. [19-roadmap.md](19-roadmap.md), [task-01.md](../agent/tasks/task-01.md),
-and `docs/superpowers/plans/` are historical execution records, not current status.
-[HOTFIX-1.0.1.md](../../release/HOTFIX-1.0.1.md) and [report.md](../../../docs/report/report.md) retain release evidence; the
-current synchronization inventory is [DOCUMENTATION-SYNC-v1.0.1.md](DOCUMENTATION-SYNC-v1.0.1.md).
+Documents 01–18 describe active scope, architecture, implementation contracts,
+quality, evidence, and limitations. The V2 migration evidence ends in the
+Phase 44 freeze record; the active task tracker is
+[task.md](../agent/task.md). Historical V1 release evidence remains in
+[HOTFIX-1.0.1.md](../../release/HOTFIX-1.0.1.md) and the repository report.
+Retired V1 task plans, the stale v1.0.1 documentation manifest, and the
+one-off v1.0.1 synchronization inventory are intentionally not part of the
+current documentation set.
 
 ## Runtime development after baseline
 
