@@ -1,5 +1,28 @@
 # USE JaCaMo Plugin 1.0.1
 
+> **2026-09-28 final system acceptance:** the canonical tutorial Hello World,
+> original Auction and original House-Building all ran in real JaCaMo producer JVMs
+> through the same generic authenticated Bridge to a classpath-isolated USE consumer.
+> All three produced official snapshots/events, USE state, 28/28 authored OCL PASS,
+> and reconnect/resync evidence. House created all eight auctions, `simulator.House`
+> and the dynamic organization, but root goal `house_built` remained
+> `NOT_SATISFIED`; final House termination is not claimed. The current Auction
+> contains no stale self-referencing/natural-language construct. See the
+> [final acceptance index](docs/project/evidence/final-system-acceptance/README.md).
+
+> **Historical 2026-09-27 executable live-runtime closure:** the production
+> `JaCaMoBridgePlatform` now injects `BridgeAgArch`, owns the official
+> `SnapshotCoordinator` sources, and serves a non-empty authenticated runtime cut.
+> The reproducible Windows/JDK 21 helper is
+> `tools/live-hello-bridge.ps1`; its final Hello run used the canonical JCM SHA-256
+> `c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101`, derived
+> distribution fingerprint
+> `a8cd26dadf45393fb4c73ffc7fc7a6f309b17a7af3a243a6a17f4712505fd6c9`, and
+> produced `756` runtime facts and `1,095` USE objects in a separate consumer JVM.
+> `BridgeVerificationGate` is now part of the production runtime verification path.
+> This run is retained as the first live Hello closure and is superseded for current
+> three-case acceptance by the 2026-09-28 record above.
+
 > **V2 frozen release candidate:** Metamodel V2 and Mapping 2.2.0 drive IR,
 > extraction, transformation, trace, OCL and runtime target binding. Independent
 > directional order is represented by generic target-only ranks. Phase 35 clean
@@ -43,8 +66,8 @@ release JAR.
    non-symlink file readable only by the two local processes. Configure the JCM's
    official `platform:` entry with
    `org.jacamo.bridge.adapter.JaCaMoBridgePlatform("port=7777", "secretFile=/absolute/path/bridge-secret.hex", "distributionSha256=<64-lowercase-hex>")`.
-   Add `org.jacamo.bridge.adapter.BridgeAgArch` to agents whose Jason lifecycle
-   evidence is required.
+   The platform injects `org.jacamo.bridge.adapter.BridgeAgArch` into configured
+   agents before creation; do not edit the original case solely for observation.
 5. Start USE with matching properties:
    `-Duse.jacamo.bridge.endpoint=tcp://127.0.0.1:7777`,
    `-Duse.jacamo.bridge.secret-file=/absolute/path/bridge-secret.hex`, and
@@ -54,8 +77,9 @@ release JAR.
    mismatch fails explicitly; there is no parser fallback.
 
 The automated load smoke validates discovery, descriptor parsing, the shell command
-and both menu actions. Interactive GUI execution in a separately installed binary
-distribution remains a documented manual environment check.
+and both menu actions. `GuiPluginStagingIT` additionally prevents the source-tree GUI
+from loading an obsolete plugin copy. Interactive GUI execution in a separately
+installed binary distribution remains a documented manual environment check.
 
 ## Workflow
 
@@ -77,6 +101,30 @@ The included `examples/auction` project is the release acceptance fixture. See
 The historical v1.0.1 hotfix suite was 271/271 tests: 13 in `use-core`, 130 in `use-gui`,
 and 128 in `use-plugin` (125 unit/component plus 3 release integration tests).
 See `docs/project/00-README.md` for the canonical onboarding path.
+
+## Reproducible live Hello evidence
+
+From the `use` repository root, run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\use-plugin\tools\live-hello-bridge.ps1 `
+  -JcmPath ..\jacamo\doc\tutorials\hello-world\code\helloworld\helloworld.jcm `
+  -ProjectKey helloworld -CaseName original-tutorial-hello-world `
+  -ObservationSeconds 15 -Headless:$false `
+  -EvidenceDirectory .\use-plugin\target\final-system-acceptance\hello-rerun
+```
+
+The helper copies the canonical JCM to a temporary directory, injects only the
+official Bridge platform entry, generates a random secret, derives the runtime
+fingerprint, starts JaCaMo and a classpath-isolated USE consumer, and records
+`summary.json`, producer/consumer logs and fingerprint components. It never edits
+`jacamo/` or the canonical source. Use `-JcmPath` together with an explicit
+`-ProjectKey` for another exact JCM; the helper never infers semantic names.
+
+For a presentation that opens the configured USE GUI and keeps the derived JaCaMo
+producer alive until the GUI closes, add `-InteractiveGui -TimeoutSeconds 1800`.
+The helper prints the exact derived `.jcm` path to select in the workbench. This is
+a launch convenience only; JaCaMo remains semantic/execution authority.
 
 ## Verify the download
 

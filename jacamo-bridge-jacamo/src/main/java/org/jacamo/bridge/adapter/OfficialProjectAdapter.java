@@ -53,7 +53,7 @@ public final class OfficialProjectAdapter {
         var roleCards=new ArrayList<org.jacamo.bridge.contract.RelationCardinality>(); var subgroupCards=new ArrayList<org.jacamo.bridge.contract.RelationCardinality>();
         for(JaCaMoOrgParameters org:project.getOrgs().stream().sorted(Comparator.comparing(JaCaMoOrgParameters::getName)).toList()){
             String source=org.getParameter("source"); if(source==null){unresolved.add(new UnresolvedFact("organisation-source",org.getName(),CapabilityStatus.UNAVAILABLE,"official project has no OS source",List.of(sourceEvidence)));continue;}
-            Path path=root.resolve(source).normalize(); if(!java.nio.file.Files.exists(path))path=root.resolve("src/org").resolve(source).normalize();
+            Path path=resolveProjectPath(root, source); if(!java.nio.file.Files.exists(path))path=root.resolve("src/org").resolve(source).normalize();
             if(!java.nio.file.Files.exists(path)){unresolved.add(new UnresolvedFact("organisation-source",org.getName(),CapabilityStatus.UNAVAILABLE,"OS source does not exist: "+source,List.of(sourceEvidence)));continue;}
             var result=moise.load(root,path,projectKey); organisations.addAll(result.facts()); roleCards.addAll(result.groupRoleCardinalities()); subgroupCards.addAll(result.parentSubGroupCardinalities());
         }
@@ -64,4 +64,18 @@ public final class OfficialProjectAdapter {
         return new ModelSnapshot(revision,sources,agents,workspaces,artifacts,organisations,roleCards,subgroupCards,cross,unresolved,provenance);
     }
     private BridgeEntityId id(String authority,String dimension,String kind,String scope,String local){return new BridgeEntityId(authority,dimension,kind,scope,local,"model");}
+
+    private Path resolveProjectPath(Path root, String source) {
+        try {
+            java.net.URI uri = java.net.URI.create(source);
+            if ("file".equalsIgnoreCase(uri.getScheme())) {
+                Path parsed = uri.isOpaque() ? Path.of(uri.getSchemeSpecificPart()) : Path.of(uri);
+                return parsed.isAbsolute() ? parsed.normalize() : root.resolve(parsed).normalize();
+            }
+        } catch (IllegalArgumentException ignored) {
+            // The official parser may return a plain relative source; Path handles that exact value below.
+        }
+        Path parsed = Path.of(source);
+        return parsed.isAbsolute() ? parsed.normalize() : root.resolve(parsed).normalize();
+    }
 }

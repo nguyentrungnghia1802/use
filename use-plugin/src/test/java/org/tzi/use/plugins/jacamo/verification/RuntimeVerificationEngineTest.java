@@ -25,6 +25,8 @@ import org.tzi.use.plugins.jacamo.constraint.ConstraintExtractor;
 import org.tzi.use.plugins.jacamo.constraint.ConstraintSpec;
 import org.tzi.use.plugins.jacamo.constraint.Expression;
 import org.tzi.use.plugins.jacamo.extraction.StaticProjectImporter;
+import org.tzi.use.plugins.jacamo.bridge.BridgeClientState;
+import org.tzi.use.plugins.jacamo.bridge.BridgeVerificationGate;
 import org.tzi.use.plugins.jacamo.mapping.MappingLoader;
 import org.tzi.use.plugins.jacamo.mapping.TransformationPlanner;
 import org.tzi.use.plugins.jacamo.materialization.DirectUseBackend;
@@ -97,6 +99,32 @@ class RuntimeVerificationEngineTest {
         var enter=event(2,RuntimeEventKind.OP_ENTER,f.runtimeKey(),f.artifactSemanticId(),Map.of("operation","placeBid","arguments",List.of("item",1)),"stale");
         verifier.beforeMutation(enter);
         assertTrue(verifier.latestReport().verification().results().stream().allMatch(r -> r.outcome()==VerificationOutcome.SKIPPED));
+    }
+
+    @Test
+    void productionRuntimeVerificationPathPersistsBridgeGateDecisionBeforeOcl() {
+        Fixture fixture = fixture(false);
+        BridgeVerificationGate gate = new BridgeVerificationGate();
+        BridgeVerificationGate.Context context = new BridgeVerificationGate.Context(
+                "live-session", 7, "live-revision", "live-snapshot", "", "", "constraint-hash",
+                Set.of("official.model", "runtime.snapshot"));
+        RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
+                fixture.registry(), fixture.trace(), new DefaultVerificationService(),
+                (event, requiredKinds) -> gate.assess(BridgeClientState.LIVE, List.of(), requiredKinds, context));
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
+
+        verifier.snapshotApplied(new RuntimeSnapshot("live-snapshot", Instant.EPOCH, 1, List.of(), "snapshot-hash"));
+
+        RuntimeVerificationReport report = verifier.latestReport();
+        assertNotNull(report);
+        assertEquals(BridgeVerificationGate.Decision.NOT_EVALUATED.name(), report.admissionDecision());
+        assertTrue(report.admissionDiagnostics().stream().anyMatch(value ->
+                value.startsWith("REQUIRED_RUNTIME_FACT_MISSING:")));
+        assertEquals("live-session", report.admissionContext().sessionId());
+        assertEquals(VerificationOutcome.SKIPPED, report.verification().results().getFirst().outcome());
+        String json = new RuntimeVerificationReportExporter().toJson(report);
+        assertTrue(json.contains("bridgeVerificationGate"));
+        assertTrue(json.contains("NOT_EVALUATED"));
     }
 
     @Test void operationCompletionAndReportRetentionAreBounded() {

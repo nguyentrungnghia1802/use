@@ -4,14 +4,17 @@ import java.time.Instant;
 import java.util.List;
 import org.tzi.use.plugins.jacamo.runtime.MirrorState;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeEvent;
+import org.tzi.use.plugins.jacamo.bridge.BridgeVerificationGate;
 
 public record RuntimeVerificationReport(String schemaVersion, String reportId, Instant timestamp,
                                         MirrorState connectionState, long snapshotVersion,
                                         String snapshotFingerprint, RuntimeEvent event,
-                                        VerificationReport verification, long latencyNanos,
-                                        List<String> diagnostics, VerificationCheckpoint checkpoint,
-                                        List<org.tzi.use.plugins.jacamo.trace.TraceRecord> provenance,
-                                        List<RuntimeVerificationAttribution> attribution) {
+                                         VerificationReport verification, long latencyNanos,
+                                         List<String> diagnostics, VerificationCheckpoint checkpoint,
+                                         List<org.tzi.use.plugins.jacamo.trace.TraceRecord> provenance,
+                                         List<RuntimeVerificationAttribution> attribution,
+                                         String admissionDecision, List<String> admissionDiagnostics,
+                                         BridgeVerificationGate.Context admissionContext) {
     public RuntimeVerificationReport {
         if (!"1.0.0".equals(schemaVersion) || reportId == null || reportId.isBlank() || timestamp == null
                 || connectionState == null || snapshotVersion < 0 || verification == null || latencyNanos < 0)
@@ -20,6 +23,9 @@ public record RuntimeVerificationReport(String schemaVersion, String reportId, I
         diagnostics = List.copyOf(diagnostics);
         provenance = List.copyOf(provenance);
         attribution = List.copyOf(attribution);
+        admissionDecision = admissionDecision == null || admissionDecision.isBlank()
+                ? "UNGUARDED" : admissionDecision;
+        admissionDiagnostics = List.copyOf(admissionDiagnostics == null ? List.of() : admissionDiagnostics);
         java.util.Objects.requireNonNull(checkpoint);
     }
 
@@ -27,7 +33,8 @@ public record RuntimeVerificationReport(String schemaVersion, String reportId, I
             MirrorState connectionState, long snapshotVersion, String snapshotFingerprint, RuntimeEvent event,
             VerificationReport verification, long latencyNanos, List<String> diagnostics) {
         this(schemaVersion, reportId, timestamp, connectionState, snapshotVersion, snapshotFingerprint,
-            event, verification, latencyNanos, diagnostics, VerificationCheckpoint.DIAGNOSTIC, List.of(), List.of());
+            event, verification, latencyNanos, diagnostics, VerificationCheckpoint.DIAGNOSTIC, List.of(), List.of(),
+            "UNGUARDED", List.of(), null);
     }
 
     public boolean hasViolation() {

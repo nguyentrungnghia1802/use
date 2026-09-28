@@ -22,6 +22,7 @@ public final class BridgeAgArch extends AgArch {
     private String sessionId;
     private String incarnation;
     private long generation;
+    private transient BridgeEntityId runtimeIdentity;
     private transient Map<ActionExec,String> correlations;
 
     @Override public void init() {
@@ -30,6 +31,9 @@ public final class BridgeAgArch extends AgArch {
         generation = Long.parseLong(System.getProperty("jacamo.bridge.generation", "0"));
         incarnation = UUID.randomUUID().toString();
         correlations = java.util.Collections.synchronizedMap(new java.util.IdentityHashMap<>());
+        runtimeIdentity = new BridgeEntityId("jason", "agent", "runtime-agent",
+                System.getProperty("jacamo.bridge.projectKey", "unnegotiated"), getAgName(), incarnation);
+        BridgeRuntimeRegistry.registerAgent(getAgName(), runtimeIdentity);
         emit(RuntimeEventKind.CREATED, Map.of(), Map.of("agent", getAgName()), "");
     }
 
@@ -46,13 +50,17 @@ public final class BridgeAgArch extends AgArch {
 
     @Override public void stop() {
         if (observer != null) emit(RuntimeEventKind.DISPOSED, Map.of("agent", getAgName()), Map.of(),"");
+        if (runtimeIdentity != null) BridgeRuntimeRegistry.unregisterAgent(getAgName(), runtimeIdentity);
+        runtimeIdentity = null;
         observer = null;if(correlations!=null)correlations.clear(); super.stop();
     }
 
     private void emit(RuntimeEventKind kind, Map<String,Object> before, Map<String,Object> after,String correlation) {
         long current = sequence.incrementAndGet();
         String projectKey = System.getProperty("jacamo.bridge.projectKey", "unnegotiated");
-        var id = new BridgeEntityId("jason", "agent", "runtime-agent", projectKey, getAgName(), incarnation);
+        var id = runtimeIdentity == null
+                ? new BridgeEntityId("jason", "agent", "runtime-agent", projectKey, getAgName(), incarnation)
+                : runtimeIdentity;
         observer.accept(new RuntimeEvent(sessionId + ":jason:" + incarnation + ":" + current, sessionId, generation,
                 System.getProperty("jacamo.bridge.modelRevision", "unnegotiated"), "jason", "jason:" + incarnation,
                 current, Instant.now(), kind, org.jacamo.bridge.contract.RuntimeFactKind.AGENT,

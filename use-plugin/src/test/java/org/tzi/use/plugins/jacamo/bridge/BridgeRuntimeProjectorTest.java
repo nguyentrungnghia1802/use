@@ -37,6 +37,8 @@ class BridgeRuntimeProjectorTest {
                 Instant.EPOCH,RuntimeEventKind.CREATED,RuntimeFactKind.AGENT,ProjectionStatus.EVIDENCE_ONLY,
                 dynamic,null,"","",Map.of(),Map.of("name","late-agent"),new SourceWatermark("jason:late",1),
                 Completeness.PARTIAL,List.of());
+        assertFalse(BridgeRuntimeProjector.requiresMaterialization(evidence));
+        assertTrue(BridgeRuntimeProjector.requiresMaterialization(event));
         assertFalse(projector.apply(evidence),"dynamic evidence-only source must remain outside USE state");
         assertEquals("BRIDGE_RUNTIME_EVENT_REWIND",
                 assertThrows(BridgeProtocolException.class,()->projector.apply(evidence)).getMessage());

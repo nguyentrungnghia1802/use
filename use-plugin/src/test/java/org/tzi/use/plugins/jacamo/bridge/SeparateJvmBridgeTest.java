@@ -5,10 +5,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CompletableFuture;
+import org.jacamo.bridge.adapter.RuntimeDistributionFingerprint;
 import org.junit.jupiter.api.Test;
 
 class SeparateJvmBridgeTest {
@@ -44,10 +48,79 @@ class SeparateJvmBridgeTest {
             }
         }
     }
+
+    @Test void realHelloWorldProductionBridgeCrossesSeparateJvmsWithNonEmptyRuntimeSnapshot() throws Exception {
+        Path source = Path.of("src/test/resources/canonical-cases/hello-world").toAbsolutePath().normalize();
+        Path project = Files.createTempDirectory("jacamo-real-hello-");
+        copyTree(source, project);
+        Path jcm = project.resolve("helloworld.jcm");
+        Path secretFile = project.resolve("bridge-secret.hex");
+        byte[] secret = new byte[32];
+        new SecureRandom().nextBytes(secret);
+        String secretHex = java.util.HexFormat.of().formatHex(secret);
+        Files.writeString(secretFile, secretHex);
+        int port;
+        try (var reservation = new java.net.ServerSocket(0, 1, java.net.InetAddress.getLoopbackAddress())) {
+            port = reservation.getLocalPort();
+        }
+        String distribution = RuntimeDistributionFingerprint.compute().distributionDigest();
+        String parameters = "    platform: org.jacamo.bridge.adapter.JaCaMoBridgePlatform(\"port="
+                + port + "\", \"secretFile=" + portable(secretFile) + "\", \"jcmFile="
+                + portable(jcm) + "\", \"distributionSha256=" + distribution + "\")";
+        String projectText = Files.readString(jcm);
+        int closing = projectText.lastIndexOf('}');
+        assertTrue(closing > 0, "canonical JCM must have a closing MAS block");
+        Files.writeString(jcm, projectText.substring(0, closing) + parameters + System.lineSeparator()
+                + projectText.substring(closing));
+        Path stop = project.resolve("stop.flag");
+        String full = exactPlatformClasspath();
+        String isolated = Arrays.stream(full.split(Pattern.quote(java.io.File.pathSeparator)))
+                .filter(this::allowedUseClasspath).collect(java.util.stream.Collectors.joining(java.io.File.pathSeparator));
+        Process producer = start(full, "jason.infra.local.LiveJaCaMoLauncherMain", project,
+                jcm.toString(), stop.toString(), "45");
+        CompletableFuture<String> producerOutputFuture = readAsync(producer);
+        String producerOutput = "";
+        try {
+            waitForPort(port, producer);
+            String consumer = run(isolated, LiveBridgeConsumerMain.class.getName(), Integer.toString(port),
+                    secretHex, distribution, project.toString(), "helloworld");
+            assertTrue(consumer.contains("REAL_BRIDGE_CONSUMER_OK"), consumer);
+            assertTrue(consumer.contains("facts="), consumer);
+            assertTrue(consumer.contains("evidenceOnly="), consumer);
+        } finally {
+            Files.writeString(stop, "stop");
+            if (!producer.waitFor(20, TimeUnit.SECONDS)) producer.destroyForcibly();
+            producerOutput = producerOutputFuture.get(5, TimeUnit.SECONDS);
+            assertTrue(producerOutput.contains("REAL_JACAMO_BRIDGE_READY"), producerOutput);
+            assertEquals(0, producer.exitValue(), producerOutput);
+        }
+    }
+
+    private void copyTree(Path source, Path destination) throws Exception {
+        try (var paths = Files.walk(source)) {
+            for (Path path : paths.toList()) {
+                Path target = destination.resolve(source.relativize(path));
+                if (Files.isDirectory(path)) Files.createDirectories(target);
+                else Files.copy(path, target, StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+    }
+
+    private String portable(Path path) { return path.toAbsolutePath().normalize().toString().replace('\\', '/'); }
     private boolean allowedUseClasspath(String value){String name=Path.of(value).getFileName().toString().toLowerCase(Locale.ROOT);String full=value.toLowerCase(Locale.ROOT);if(full.contains("jacamo-bridge-jacamo"))return false;return !(name.startsWith("jason-interpreter-")||name.startsWith("cartago-")||name.startsWith("moise-")||name.startsWith("npl-")||name.matches("jacamo-1\\.3(?:\\..*)?\\.jar")||name.startsWith("jaca-")||name.startsWith("intmas-")||name.startsWith("sai-"));}
     private String exactPlatformClasspath(){String separator=java.io.File.pathSeparator;String base=Arrays.stream(System.getProperty("java.class.path").split(Pattern.quote(separator))).filter(value->!Path.of(value).getFileName().toString().toLowerCase(Locale.ROOT).startsWith("jason-interpreter-")).collect(java.util.stream.Collectors.joining(separator));Path jason=Path.of(System.getProperty("user.home"),".m2","repository","io","github","jason-lang","jason-interpreter","3.3.2","jason-interpreter-3.3.2.jar");assertTrue(Files.isRegularFile(jason),jason.toString());return base+separator+jason+separator+Path.of("..","jacamo-bridge-jacamo","target","test-classes").toAbsolutePath();}
     private String run(String cp,String main,String...args)throws Exception{var command=new java.util.ArrayList<String>();command.add(Path.of(System.getProperty("java.home"),"bin","java.exe").toString());command.add("-cp");command.add(cp);command.add(main);command.addAll(java.util.List.of(args));Process process=new ProcessBuilder(command).redirectErrorStream(true).start();String output=new String(process.getInputStream().readAllBytes(),StandardCharsets.UTF_8);assertEquals(0,process.waitFor(),output);return output;}
     private Process start(String cp,String main,String...args)throws Exception{var command=new java.util.ArrayList<String>();command.add(Path.of(System.getProperty("java.home"),"bin","java.exe").toString());command.add("-cp");command.add(cp);command.add(main);command.addAll(java.util.List.of(args));return new ProcessBuilder(command).redirectErrorStream(true).start();}
+    private Process start(String cp,String main,Path workingDirectory,String...args)throws Exception{var command=new java.util.ArrayList<String>();command.add(Path.of(System.getProperty("java.home"),"bin","java.exe").toString());command.add("-cp");command.add(cp);command.add(main);command.addAll(java.util.List.of(args));return new ProcessBuilder(command).directory(workingDirectory.toFile()).redirectErrorStream(true).start();}
+    private CompletableFuture<String> readAsync(Process process) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            } catch (Exception error) {
+                throw new java.util.concurrent.CompletionException(error);
+            }
+        });
+    }
     private void waitForPort(int port,Process process)throws Exception{long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(15);while(System.nanoTime()<deadline){if(!process.isAlive())return;try(var socket=new java.net.Socket()){socket.connect(new java.net.InetSocketAddress(java.net.InetAddress.getLoopbackAddress(),port),100);return;}catch(Exception ignored){Thread.sleep(25);}}fail("TCP bridge server did not open port "+port);}
     private String lastLine(String output){return output.strip().lines().reduce((a,b)->b).orElse("");}
 }

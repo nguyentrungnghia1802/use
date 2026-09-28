@@ -18,6 +18,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import org.jacamo.bridge.contract.RuntimeEvent;
+import org.jacamo.bridge.contract.CanonicalJson;
+import org.jacamo.bridge.contract.RuntimeFactKind;
 import org.tzi.use.plugins.jacamo.bridge.BridgeClient;
 import org.tzi.use.plugins.jacamo.bridge.BridgeClientState;
 import org.tzi.use.plugins.jacamo.bridge.BridgeConnectionConfig;
@@ -25,6 +27,7 @@ import org.tzi.use.plugins.jacamo.bridge.BridgeMirrorStateMachine;
 import org.tzi.use.plugins.jacamo.bridge.BridgeProtocolException;
 import org.tzi.use.plugins.jacamo.bridge.BridgeRuntimeProjector;
 import org.tzi.use.plugins.jacamo.bridge.BridgeTransportFactory;
+import org.tzi.use.plugins.jacamo.bridge.BridgeVerificationGate;
 import org.tzi.use.plugins.jacamo.bridge.NativeSemanticAdapter;
 import org.tzi.use.plugins.jacamo.binding.BindingEntry;
 import org.tzi.use.plugins.jacamo.binding.BindingFile;
@@ -230,14 +233,40 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         BridgeConnectionConfig configuration = configuredBridge;
         String endpoint = configuration == null ? "" : configuration.displayEndpoint();
         BridgeClientState readiness = bridgeMirror == null ? BridgeClientState.DISCONNECTED : bridgeMirror.state();
+        String diagnostic = bridgeDiagnostic;
+        if (bridgeClient != null && !bridgeClient.diagnostic().isBlank()) diagnostic = bridgeClient.diagnostic();
         if (bridgeAccepted == null)
             return new AuthorityStatus(authority, readiness, Map.of(), "UNAVAILABLE", "", "", 0,
-                    endpoint, bridgeDiagnostic.isBlank() ? "BRIDGE_NOT_SYNCHRONIZED" : bridgeDiagnostic);
+                    endpoint, diagnostic.isBlank() ? "BRIDGE_NOT_SYNCHRONIZED" : diagnostic);
         Map<String,String> capabilities = new LinkedHashMap<>();
         bridgeAccepted.capabilities().forEach(value -> capabilities.put(value.name(), value.status().name()));
         return new AuthorityStatus(authority, readiness, capabilities, bridgeAccepted.completeness().name(),
                 bridgeAccepted.modelRevision(), bridgeAccepted.sessionId(), bridgeAccepted.generation(), endpoint,
-                bridgeDiagnostic);
+                diagnostic);
+    }
+
+    @Override public synchronized FormalStateStatus formalStateStatus() {
+        if (workspace == null) return FormalStateStatus.empty();
+        var system = workspace.direct.system();
+        var state = system.state();
+        List<String> rows = new ArrayList<>();
+        system.model().classes().forEach(value -> rows.add("class|" + value.name()));
+        system.model().associations().forEach(value -> rows.add("association|" + value.name()));
+        state.allObjects().forEach(object -> {
+            rows.add("object|" + object.name() + "|" + object.cls().name());
+            object.state(state).attributeValueMap().forEach((attribute, value) ->
+                    rows.add("attribute|" + object.name() + "|" + attribute.name() + "|" + value));
+        });
+        state.allLinks().forEach(link -> rows.add("link|" + link));
+        rows.sort(String::compareTo);
+        try {
+            String digest = java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256")
+                    .digest(String.join("\n", rows).getBytes(StandardCharsets.UTF_8)));
+            return new FormalStateStatus(system.model().classes().size(), system.model().associations().size(),
+                    state.numObjects(), state.allLinks().size(), digest);
+        } catch (java.security.NoSuchAlgorithmException impossible) {
+            throw new IllegalStateException(impossible);
+        }
     }
 
     @Override public synchronized PerformanceMetrics performanceMetrics() {
@@ -270,8 +299,27 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         closeBridgeClient();
     }
 
-    private void installWorkspace(Workspace next, Path nextEntry, Path nextProfile) {
-        var verification = new RuntimeVerificationEngine(next.direct.system(), next.registry, next.trace);
+    private RuntimeVerificationEngine createRuntimeVerification(Workspace next,
+                                                                BridgeMirrorStateMachine mirror,
+                                                                BridgeClient.Accepted accepted) {
+        BridgeVerificationGate gate = new BridgeVerificationGate();
+        var admission = (java.util.function.BiFunction<org.tzi.use.plugins.jacamo.runtime.RuntimeEvent,
+                Set<RuntimeFactKind>, BridgeVerificationGate.Assessment>) (event, requiredKinds) -> {
+            String snapshotId = mirror.snapshotId() == null ? accepted.runtime().snapshotId() : mirror.snapshotId();
+            String eventId = event == null ? "" : event.eventId();
+            String correlationId = event == null ? "" : event.correlationId();
+            var context = new BridgeVerificationGate.Context(accepted.sessionId(), accepted.generation(),
+                    accepted.modelRevision(), snapshotId, eventId, correlationId,
+                    bridgeConstraintHash(next.registry), accepted.capabilities().stream()
+                            .map(org.jacamo.bridge.contract.Capability::name).collect(java.util.stream.Collectors.toSet()));
+            return gate.assess(mirror.state(), mirror.facts().values(), requiredKinds, context);
+        };
+        return new RuntimeVerificationEngine(next.direct.system(), next.registry, next.trace,
+                new DefaultVerificationService(), admission);
+    }
+
+    private void installWorkspace(Workspace next, Path nextEntry, Path nextProfile,
+                                  RuntimeVerificationEngine verification) {
         workspace = next;
         entry = nextEntry;
         userProfile = nextProfile;
@@ -295,6 +343,10 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                         synchronized (pending) {
                             BridgeRuntimeProjector projector = projectorReference.get();
                             if (projector == null) {
+                                // The authoritative mirror already retains and validates evidence-only events. They
+                                // cannot mutate USE, so retaining every high-rate operation observation while the
+                                // semantic workspace is built only manufactures a facade buffer overflow.
+                                if (!BridgeRuntimeProjector.requiresMaterialization(event)) return;
                                 if (pending.size() >= configuration.maxBufferedEvents())
                                     throw new BridgeProtocolException("BRIDGE_FACADE_BUFFER_OVERFLOW");
                                 pending.addLast(event);
@@ -313,15 +365,18 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                     adapted.model().diagnostics(), importNanos);
             Set<String> sources = accepted.runtime().endWatermarks().keySet();
             if (sources.isEmpty()) throw new BridgeProtocolException("BRIDGE_RUNTIME_SOURCE_REQUIRED");
+            RuntimeMutationEngine mutationEngine = next.mutationEngine();
+            RuntimeVerificationEngine verification = createRuntimeVerification(next, candidateMirror, accepted);
+            verification.stateChanged(MirrorState.LIVE);
             BridgeRuntimeProjector projector = new BridgeRuntimeProjector(sources, adapted, next.trace,
-                    next.mutationEngine());
+                    mutationEngine, verification);
             synchronized (pending) {
                 projector.applySnapshot(accepted.runtime());
                 projectorReference.set(projector);
                 while (!pending.isEmpty()) if (projector.apply(pending.removeFirst())) bridgeProcessed.incrementAndGet();
             }
             BridgeClient previousClient = bridgeClient;
-            installWorkspace(next, selectedJcm, verificationProfile);
+            installWorkspace(next, selectedJcm, verificationProfile, verification);
             bridgeClient = candidate;
             bridgeMirror = candidateMirror;
             bridgeAccepted = accepted;
@@ -333,6 +388,15 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             if (candidate != null) candidate.close();
             bridgeDiagnostic = error.getMessage() == null ? error.getClass().getSimpleName() : error.getMessage();
             throw error;
+        }
+    }
+
+    private String bridgeConstraintHash(ConstraintRegistry registry) {
+        try {
+            return java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256")
+                    .digest(CanonicalJson.encode(registry.fingerprints())));
+        } catch (Exception error) {
+            throw new IllegalStateException("BRIDGE_CONSTRAINT_FINGERPRINT_FAILED", error);
         }
     }
 

@@ -32,6 +32,12 @@ class DefaultJaCaMoFacadeTest {
             assertFalse(facade.traces().isEmpty());
             assertFalse(facade.constraints().isEmpty());
             assertFalse(facade.latestVerification().results().isEmpty());
+            JaCaMoFacade.FormalStateStatus formal = facade.formalStateStatus();
+            assertTrue(formal.classCount() >= summary.generatedClasses());
+            assertEquals(summary.generatedObjects(), formal.objectCount());
+            assertTrue(formal.associationCount() > 0);
+            assertTrue(formal.linkCount() > 0);
+            assertEquals(64, formal.sha256().length());
         }
     }
 

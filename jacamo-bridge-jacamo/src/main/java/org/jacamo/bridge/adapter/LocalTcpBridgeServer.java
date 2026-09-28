@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayDeque;
@@ -18,6 +19,7 @@ import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -29,10 +31,12 @@ import org.jacamo.bridge.contract.CanonicalJson;
 
 /** Local-only read-only Bridge server with authenticated bounded length-framed JSON. */
 public final class LocalTcpBridgeServer implements AutoCloseable {
+    private static final byte[] SUBSCRIPTION_READY = "BRIDGE_SUBSCRIPTION_READY".getBytes(StandardCharsets.US_ASCII);
     private record Outbound(String resumeToken,byte[] frame){Outbound{frame=frame.clone();}}
     private final InetAddress address;private final int requestedPort;private final byte[] secret;private final int maxFrameBytes;
     private final int queueCount;private final long queueBytes;private final Supplier<byte[]> handshake,model,runtime,gap;
     private final AtomicBoolean running=new AtomicBoolean();private final Set<String> nonces=ConcurrentHashMap.newKeySet();
+    private final AtomicLong acknowledgements=new AtomicLong();private volatile String lastAcknowledgement="";
     private final CopyOnWriteArrayList<Subscriber> subscribers=new CopyOnWriteArrayList<>();private final ArrayDeque<Outbound> replay=new ArrayDeque<>();private long replayBytes;
     private final Set<Socket> clients=ConcurrentHashMap.newKeySet();
     private ServerSocket server;private Thread acceptThread;private ThreadPoolExecutor workers;
@@ -47,7 +51,10 @@ public final class LocalTcpBridgeServer implements AutoCloseable {
     }
     public synchronized void start()throws Exception{if(!running.compareAndSet(false,true))throw new IllegalStateException("BRIDGE_SERVER_ALREADY_RUNNING");
         server=new ServerSocket();server.bind(new InetSocketAddress(address,requestedPort));
-        workers=new ThreadPoolExecutor(2,4,30,TimeUnit.SECONDS,new ArrayBlockingQueue<>(64),r->Thread.ofPlatform().daemon().name("jacamo-bridge-tcp-worker").unstarted(r),new ThreadPoolExecutor.AbortPolicy());
+        // SUBSCRIBE is intentionally long-lived. A hand-off queue lets bounded worker growth serve ordinary
+        // request/response calls even while subscribers are connected, instead of parking those calls behind the
+        // subscription threads in a FIFO queue.
+        workers=new ThreadPoolExecutor(2,16,30,TimeUnit.SECONDS,new SynchronousQueue<>(),r->Thread.ofPlatform().daemon().name("jacamo-bridge-tcp-worker").unstarted(r),new ThreadPoolExecutor.AbortPolicy());
         acceptThread=Thread.ofPlatform().daemon().name("jacamo-bridge-tcp-accept").start(this::acceptLoop);
     }
     public synchronized int port(){if(server==null)throw new IllegalStateException("BRIDGE_SERVER_NOT_STARTED");return server.getLocalPort();}
@@ -57,9 +64,13 @@ public final class LocalTcpBridgeServer implements AutoCloseable {
     }
     private void acceptLoop(){while(running.get())try{Socket socket=server.accept();socket.setSoTimeout(10000);clients.add(socket);try{workers.execute(()->handle(socket));}catch(RuntimeException rejected){clients.remove(socket);socket.close();throw rejected;}}catch(Exception e){if(running.get()&&workers!=null&&workers.isShutdown())break;}}
     private void handle(Socket socket){try(socket){Map<String,Object> request=readRequest(socket);String operation=(String)request.get("operation");String resume=(String)request.get("resumeToken");switch(operation){
-            case "HANDSHAKE"->write(socket,handshake.get());case "MODEL_SNAPSHOT"->write(socket,model.get());case "RUNTIME_SNAPSHOT"->write(socket,runtime.get());case "ACK"->write(socket,new byte[]{'O','K'});case "SUBSCRIBE"->subscribe(socket,resume);default->throw new IllegalArgumentException("BRIDGE_OPERATION_REJECTED");}}
+            case "HANDSHAKE"->write(socket,handshake.get());case "MODEL_SNAPSHOT"->write(socket,model.get());case "RUNTIME_SNAPSHOT"->write(socket,runtime.get());case "ACK"->{lastAcknowledgement=resume;acknowledgements.incrementAndGet();write(socket,new byte[]{'O','K'});}case "SUBSCRIBE"->subscribe(socket,resume);default->throw new IllegalArgumentException("BRIDGE_OPERATION_REJECTED");}}
         catch(Exception ignored){/* Authentication/protocol details are intentionally not reflected to peers. */}finally{clients.remove(socket);}}
     private void subscribe(Socket socket,String resume)throws Exception{var subscriber=new Subscriber(socket);subscribers.add(subscriber);try{
+        DataOutputStream ready = new DataOutputStream(socket.getOutputStream());
+        ready.writeInt(SUBSCRIPTION_READY.length);
+        ready.write(SUBSCRIPTION_READY);
+        ready.flush();
         if(!resume.isBlank()){List<Outbound> retained; synchronized(replay){retained=new ArrayList<>(replay);}int index=-1;for(int i=0;i<retained.size();i++)if(retained.get(i).resumeToken().equals(resume)){index=i;break;}if(index<0)subscriber.offer(new Outbound("GAP",gap.get()));else for(int i=index+1;i<retained.size();i++)subscriber.offer(retained.get(i));}
         subscriber.drain();
     }finally{subscribers.remove(subscriber);}}
@@ -74,10 +85,13 @@ public final class LocalTcpBridgeServer implements AutoCloseable {
     private void write(Socket socket,byte[] frame)throws Exception{checkFrame(frame);var out=new DataOutputStream(socket.getOutputStream());out.writeInt(frame.length);out.write(frame);out.flush();}
     private void checkFrame(byte[] frame){if(frame==null||frame.length<1||frame.length>maxFrameBytes)throw new IllegalArgumentException("BRIDGE_FRAME_SIZE_REJECTED");}
     private String hmac(String value)throws Exception{Mac mac=Mac.getInstance("HmacSHA256");mac.init(new SecretKeySpec(secret,"HmacSHA256"));return HexFormat.of().formatHex(mac.doFinal(value.getBytes(StandardCharsets.UTF_8)));}
+    public long acknowledgementCount(){return acknowledgements.get();}
+    public String lastAcknowledgement(){return lastAcknowledgement;}
     @Override public synchronized void close(){if(!running.compareAndSet(true,false))return;for(Subscriber s:subscribers)s.close();subscribers.clear();for(Socket socket:clients)try{socket.close();}catch(Exception ignored){}clients.clear();try{server.close();}catch(Exception ignored){}if(workers!=null){workers.shutdownNow();try{workers.awaitTermination(3,TimeUnit.SECONDS);}catch(InterruptedException e){Thread.currentThread().interrupt();}}if(acceptThread!=null)try{acceptThread.join(1000);}catch(InterruptedException e){Thread.currentThread().interrupt();}java.util.Arrays.fill(secret,(byte)0);}
     private final class Subscriber{private final Socket socket;private final ArrayBlockingQueue<Outbound> queue=new ArrayBlockingQueue<>(queueCount);private final AtomicLong bytes=new AtomicLong();private volatile boolean overflow;
-        Subscriber(Socket socket){this.socket=socket;}void offer(Outbound item){long next=bytes.addAndGet(item.frame().length);if(next>queueBytes||!queue.offer(item)){bytes.addAndGet(-item.frame().length);overflow=true;queue.clear();bytes.set(0);Outbound marker=new Outbound("GAP",gap.get());if(marker.frame().length<=queueBytes){queue.offer(marker);bytes.set(marker.frame().length);}}}
-        void drain()throws Exception{while(running.get()&&!socket.isClosed()){Outbound item=queue.poll(1,TimeUnit.SECONDS);if(item!=null){bytes.addAndGet(-item.frame().length);write(socket,item.frame());if(item.resumeToken().equals("GAP"))return;}}}
+        Subscriber(Socket socket){this.socket=socket;}synchronized void offer(Outbound item){if(overflow)return;long next=bytes.addAndGet(item.frame().length);if(next>queueBytes||!queue.offer(item)){bytes.addAndGet(-item.frame().length);overflow=true;queue.clear();bytes.set(0);Outbound marker=new Outbound("GAP",gap.get());if(marker.frame().length<=queueBytes){queue.offer(marker);bytes.set(marker.frame().length);}}}
+        void drain()throws Exception{socket.setSoTimeout(5);while(running.get()&&!socket.isClosed()){Outbound item=queue.poll(250,TimeUnit.MILLISECONDS);if(item!=null){bytes.addAndGet(-item.frame().length);write(socket,item.frame());if(item.resumeToken().equals("GAP"))return;}else if(peerClosed())return;}}
+        private boolean peerClosed(){try{return socket.getInputStream().read()<0;}catch(SocketTimeoutException idle){return false;}catch(Exception closed){return true;}}
         void close(){try{socket.close();}catch(Exception ignored){}}
     }
 }

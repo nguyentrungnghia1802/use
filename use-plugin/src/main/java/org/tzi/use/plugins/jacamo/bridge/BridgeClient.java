@@ -53,7 +53,7 @@ public final class BridgeClient implements AutoCloseable {
         RuntimeSnapshot runtime=ContractPayloads.runtime(runtimeEnvelope.payload()); mirror.replace(runtime);
         synchronized(buffered){
             if(asynchronousFailure!=null)throw fail(asynchronousFailure);
-            while(!buffered.isEmpty())applyEvent(buffered.removeFirst());
+            while(!buffered.isEmpty())applyBufferedEvent(buffered.removeFirst(),runtime);
             bootstrapping=false;
         }
         return new Accepted(model,runtime,handshake.distribution().distributionDigest(),handshake.projectKey(),
@@ -72,18 +72,31 @@ public final class BridgeClient implements AutoCloseable {
                 return;
             }
         }
-        synchronized(this){applyEvent(bytes);}
+        try{synchronized(this){applyEvent(bytes);}}
+        catch(RuntimeException error){synchronized(buffered){if(asynchronousFailure==null)asynchronousFailure=diagnostic(error);}throw error;}
     }
     private void acceptSubscriptionFailure(RuntimeException error){
-        synchronized(buffered){asynchronousFailure="BRIDGE_SUBSCRIPTION_DISCONNECTED";}
+        synchronized(buffered){if(asynchronousFailure==null)asynchronousFailure=diagnostic(error);}
         mirror.transition(BridgeClientState.RESYNC_REQUIRED);
     }
+    public String diagnostic(){synchronized(buffered){return asynchronousFailure==null?"":asynchronousFailure;}}
     public synchronized boolean receive(byte[] bytes){return applyEvent(bytes);}
-    private boolean applyEvent(byte[] bytes){ContractEnvelope envelope=decode(bytes,MessageType.RUNTIME_EVENT);requireSame(envelope);RuntimeEvent event=ContractPayloads.event(envelope.payload());boolean result=mirror.apply(event);if(result)try{acceptedEvent.accept(event);}catch(RuntimeException error){throw fail("BRIDGE_EVENT_PROJECTION_REJECTED",error);}transport.acknowledge(event.sourceId()+":"+event.sourceSequence());return result;}
+    private boolean applyBufferedEvent(byte[] bytes,RuntimeSnapshot snapshot){RuntimeEvent event=decodeEvent(bytes);var covered=snapshot.endWatermarks().get(event.sourceId());if(covered!=null&&event.sourceSequence()<=covered.sequence()){transport.acknowledge(event.sourceId()+":"+event.sourceSequence());return false;}return applyEvent(event);}
+    private boolean applyEvent(byte[] bytes){return applyEvent(decodeEvent(bytes));}
+    private RuntimeEvent decodeEvent(byte[] bytes){ContractEnvelope envelope=decode(bytes,MessageType.RUNTIME_EVENT);requireSame(envelope);return ContractPayloads.event(envelope.payload());}
+    private boolean applyEvent(RuntimeEvent event){boolean result=mirror.apply(event);if(!result&&mirror.state()==BridgeClientState.RESYNC_REQUIRED)synchronized(buffered){if(asynchronousFailure==null)asynchronousFailure="BRIDGE_EVENT_"+event.kind()+":source="+event.sourceId()+":sequence="+event.sourceSequence();}if(result)try{acceptedEvent.accept(event);}catch(RuntimeException error){throw fail("BRIDGE_EVENT_PROJECTION_REJECTED",error);}transport.acknowledge(event.sourceId()+":"+event.sourceSequence());return result;}
     private ContractEnvelope decode(byte[] bytes,MessageType expected){try{ContractEnvelope value=ContractCodec.decode(bytes,4*1024*1024,64,256*1024);new ContractValidator().validate(value);if(value.messageType()!=expected)throw fail("BRIDGE_MESSAGE_TYPE:"+value.messageType());return value;}catch(BridgeProtocolException e){throw e;}catch(RuntimeException e){throw fail("BRIDGE_ENVELOPE_REJECTED",e);}}
     private void requireSame(ContractEnvelope value){if(!value.sessionId().equals(mirror.sessionId()))throw fail("BRIDGE_SESSION_STALE");if(value.generation()!=mirror.generation())throw fail("BRIDGE_GENERATION_STALE");if(!value.modelRevision().equals(mirror.modelRevision()))throw fail("BRIDGE_MODEL_REVISION_STALE");}
     private BridgeProtocolException fail(String message){mirror.transition(BridgeClientState.RESYNC_REQUIRED);return new BridgeProtocolException(message);}
     private BridgeProtocolException fail(String message,Throwable cause){mirror.transition(BridgeClientState.RESYNC_REQUIRED);return new BridgeProtocolException(message,cause);}
+    private static String diagnostic(Throwable error){
+        var parts=new java.util.ArrayList<String>();
+        for(Throwable current=error;current!=null&&parts.size()<8;current=current.getCause()){
+            String message=current.getMessage();
+            parts.add(current.getClass().getSimpleName()+(message==null||message.isBlank()?"":":"+message));
+        }
+        return String.join(" <- ",parts);
+    }
     @Override public synchronized void close(){
         synchronized(buffered){bootstrapping=false;buffered.clear();asynchronousFailure=null;}
         if(subscription!=null){subscription.close();subscription=null;}transport.close();mirror.transition(BridgeClientState.DISCONNECTED);

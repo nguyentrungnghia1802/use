@@ -56,8 +56,63 @@ class LocalTcpBridgeTransportTest {
         Fixture f=fixture(Path.of("src/test/resources/canonical-cases/hello-world/helloworld.jcm").toAbsolutePath().normalize(),"partition-session");
         var server=server(f,()->{});server.start();var mirror=new BridgeMirrorStateMachine(32);
         try(var client=new BridgeClient(new LocalTcpBridgeTransport(InetAddress.getLoopbackAddress(),server.port(),SECRET,4*1024*1024,2000),mirror,DISTRIBUTION,Set.of("official.model","runtime.snapshot"),8)){
-            client.synchronize();assertEquals(BridgeClientState.LIVE,mirror.state());server.close();long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(3);while(mirror.state()==BridgeClientState.LIVE&&System.nanoTime()<deadline)Thread.onSpinWait();assertEquals(BridgeClientState.RESYNC_REQUIRED,mirror.state());
+            client.synchronize();assertEquals(BridgeClientState.LIVE,mirror.state());server.close();long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(3);while(mirror.state()==BridgeClientState.LIVE&&System.nanoTime()<deadline)Thread.onSpinWait();assertEquals(BridgeClientState.RESYNC_REQUIRED,mirror.state());assertFalse(client.diagnostic().isBlank());
         }finally{server.close();}
+    }
+
+    @Test void idleAuthenticatedSubscriptionDoesNotBecomeAFalseNetworkPartition() throws Exception {
+        Fixture f=fixture(Path.of("src/test/resources/canonical-cases/hello-world/helloworld.jcm").toAbsolutePath().normalize(),"idle-session");
+        try(var server=server(f,()->{})){server.start();var mirror=new BridgeMirrorStateMachine(32);
+            try(var client=new BridgeClient(new LocalTcpBridgeTransport(InetAddress.getLoopbackAddress(),server.port(),SECRET,4*1024*1024,200),mirror,DISTRIBUTION,Set.of("official.model","runtime.snapshot"),8)){
+                client.synchronize();Thread.sleep(750);assertEquals(BridgeClientState.LIVE,mirror.state());assertTrue(client.diagnostic().isBlank());
+            }
+        }
+    }
+
+    @Test void cumulativeAcknowledgementsAreBatchedDuringBurstsAndFlushedOnClose() throws Exception {
+        Fixture f=fixture(Path.of("src/test/resources/canonical-cases/hello-world/helloworld.jcm").toAbsolutePath().normalize(),"ack-batch-session");
+        try(var server=server(f,()->{})){server.start();
+            var transport=new LocalTcpBridgeTransport(InetAddress.getLoopbackAddress(),server.port(),SECRET,4*1024*1024,2000);
+            for(int sequence=1;sequence<=127;sequence++)transport.acknowledge("cartago:"+sequence);
+            assertEquals(0,server.acknowledgementCount());
+            transport.acknowledge("cartago:128");
+            assertEquals(1,server.acknowledgementCount());
+            assertEquals("cartago:128",server.lastAcknowledgement());
+            for(int sequence=129;sequence<=200;sequence++)transport.acknowledge("cartago:"+sequence);
+            transport.close();
+            assertEquals(2,server.acknowledgementCount());
+            assertEquals("cartago:200",server.lastAcknowledgement());
+        }
+    }
+
+    @Test void concurrentSubscriptionsAndReconnectsCannotStarveSnapshotRequests() throws Exception {
+        Fixture f=fixture(Path.of("src/test/resources/canonical-cases/hello-world/helloworld.jcm").toAbsolutePath().normalize(),"multi-session");
+        try(var server=server(f,()->{})){server.start();
+            var firstMirror=new BridgeMirrorStateMachine(32);var secondMirror=new BridgeMirrorStateMachine(32);
+            try(var first=new BridgeClient(new LocalTcpBridgeTransport(InetAddress.getLoopbackAddress(),server.port(),SECRET,4*1024*1024,1000),firstMirror,DISTRIBUTION,Set.of("official.model","runtime.snapshot"),8);
+                var second=new BridgeClient(new LocalTcpBridgeTransport(InetAddress.getLoopbackAddress(),server.port(),SECRET,4*1024*1024,1000),secondMirror,DISTRIBUTION,Set.of("official.model","runtime.snapshot"),8)){
+                first.synchronize();second.synchronize();assertEquals(BridgeClientState.LIVE,firstMirror.state());assertEquals(BridgeClientState.LIVE,secondMirror.state());
+            }
+            Thread.sleep(500);
+            var reconnectMirror=new BridgeMirrorStateMachine(32);
+            try(var reconnect=new BridgeClient(new LocalTcpBridgeTransport(InetAddress.getLoopbackAddress(),server.port(),SECRET,4*1024*1024,1000),reconnectMirror,DISTRIBUTION,Set.of("official.model","runtime.snapshot"),8)){
+                reconnect.synchronize();assertEquals(BridgeClientState.LIVE,reconnectMirror.state());
+            }
+        }
+    }
+
+    @Test void bootstrapDropsOnlyBufferedEventsAlreadyCoveredByTheAcceptedSnapshotCut() throws Exception {
+        Fixture base=fixture(Path.of("src/test/resources/canonical-cases/hello-world/helloworld.jcm").toAbsolutePath().normalize(),"covered-session");
+        String source=base.event.sourceId();
+        RuntimeFact reflected=new RuntimeFact(base.runtime.facts().getFirst().id(),RuntimeFactKind.AGENT,Map.of("active",false),List.of(),ProjectionStatus.MATERIALIZED_FAITHFULLY,Completeness.COMPLETE,List.of());
+        RuntimeSnapshot covered=new RuntimeSnapshot("covered",base.model.modelRevision(),Instant.EPOCH,Instant.EPOCH,
+                Map.of(source,new SourceWatermark(source,0)),Map.of(source,new SourceWatermark(source,1)),1,List.of(reflected),Map.of(source,Completeness.COMPLETE),"c".repeat(64));
+        Fixture f=new Fixture(base.handshake,base.model,covered,base.event,base.gap);AtomicReference<LocalTcpBridgeServer> serverRef=new AtomicReference<>();
+        try(var server=server(f,()->serverRef.get().publish(f.event.sourceId()+":"+f.event.sourceSequence(),ContractCodec.encode(f.eventEnvelope())))){serverRef.set(server);server.start();var mirror=new BridgeMirrorStateMachine(32);var projected=new java.util.concurrent.atomic.AtomicInteger();
+            try(var client=new BridgeClient(new LocalTcpBridgeTransport(InetAddress.getLoopbackAddress(),server.port(),SECRET,4*1024*1024,1000),mirror,DISTRIBUTION,Set.of("official.model","runtime.snapshot"),8,event->projected.incrementAndGet())){
+                client.synchronize();assertEquals(BridgeClientState.LIVE,mirror.state());assertEquals(0,projected.get());assertEquals(false,mirror.facts().values().iterator().next().values().get("active"));
+            }
+        }
     }
 
     private void runCase(Path jcm)throws Exception{

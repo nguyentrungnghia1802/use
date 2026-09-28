@@ -9,7 +9,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.BiFunction;
 import java.util.function.LongSupplier;
+import org.jacamo.bridge.contract.RuntimeFactKind;
+import org.tzi.use.plugins.jacamo.bridge.BridgeVerificationGate;
 import org.tzi.use.plugins.jacamo.runtime.MirrorState;
 import org.tzi.use.plugins.jacamo.runtime.MutationResult;
 import org.tzi.use.plugins.jacamo.runtime.MutationStatus;
@@ -39,6 +42,7 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     private final VerificationService verification;
     private final ConstraintDependencyIndex dependencies;
     private final LongSupplier nanoTime;
+    private final BiFunction<RuntimeEvent, Set<RuntimeFactKind>, BridgeVerificationGate.Assessment> bridgeAdmission;
     private final Object operationLifecycle = new Object();
     private final ConcurrentMap<String, VerificationOperationState> operationCorrelations = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, Long> receivedNanos = new ConcurrentHashMap<>();
@@ -61,18 +65,38 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
 
     public RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
                                      VerificationService verification) {
-        this(system, registry, trace, verification, System::nanoTime);
+        this(system, registry, trace, verification, System::nanoTime, null);
+    }
+
+    /** Production constructor: every runtime OCL check must first pass the Bridge admission gate. */
+    public RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
+                                     VerificationService verification,
+                                     BiFunction<RuntimeEvent, Set<RuntimeFactKind>, BridgeVerificationGate.Assessment> bridgeAdmission) {
+        this(system, registry, trace, verification, System::nanoTime, bridgeAdmission);
     }
 
     RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
-                              VerificationService verification, LongSupplier nanoTime) {
-        this(system, registry, trace, verification, nanoTime, RuntimeRetention.OPERATION_CORRELATIONS,
-                RuntimeRetention.VERIFICATION_REPORTS);
+                               VerificationService verification, LongSupplier nanoTime) {
+        this(system, registry, trace, verification, nanoTime, null);
     }
 
     RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
                               VerificationService verification, LongSupplier nanoTime,
-                              int operationCorrelationLimit, int reportLimit) {
+                              BiFunction<RuntimeEvent, Set<RuntimeFactKind>, BridgeVerificationGate.Assessment> bridgeAdmission) {
+        this(system, registry, trace, verification, nanoTime, RuntimeRetention.OPERATION_CORRELATIONS,
+                RuntimeRetention.VERIFICATION_REPORTS, bridgeAdmission);
+    }
+
+    RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
+                               VerificationService verification, LongSupplier nanoTime,
+                               int operationCorrelationLimit, int reportLimit) {
+        this(system, registry, trace, verification, nanoTime, operationCorrelationLimit, reportLimit, null);
+    }
+
+    RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
+                               VerificationService verification, LongSupplier nanoTime,
+                               int operationCorrelationLimit, int reportLimit,
+                               BiFunction<RuntimeEvent, Set<RuntimeFactKind>, BridgeVerificationGate.Assessment> bridgeAdmission) {
         if (system == null || registry == null || trace == null || verification == null || nanoTime == null)
             throw new IllegalArgumentException("RUNTIME_VERIFICATION_INVALID");
         this.system = system;
@@ -80,6 +104,7 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
         this.trace = trace;
         this.verification = verification;
         this.nanoTime = nanoTime;
+        this.bridgeAdmission = bridgeAdmission;
         this.operationCorrelationLimit = RuntimeRetention.requirePositive(operationCorrelationLimit,
                 "operationCorrelations");
         this.reportLimit = RuntimeRetention.requirePositive(reportLimit, "verificationReports");
@@ -142,6 +167,12 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
         snapshotVersion++;
         snapshotFingerprint = snapshot.fingerprint();
         long started = nanoTime.getAsLong();
+        BridgeVerificationGate.Assessment admission = assessBridge(null);
+        if (admission != null && !admission.mayEvaluateOcl()) {
+            append(null, gateDiagnostic(admission, null), nanoTime.getAsLong() - started,
+                    List.of("BRIDGE_GATE_" + admission.decision().name()), admission);
+            return;
+        }
         VerificationReport full = runtimeFull("snapshot:" + snapshot.snapshotId());
         append(null, full, nanoTime.getAsLong() - started, List.of("RUNTIME_AUTHORITATIVE_SNAPSHOT"));
     }
@@ -150,6 +181,12 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
         if (event.kind() != RuntimeEventKind.OP_ENTER) return;
         if (!requireCurrent(event)) return;
         long started = eventStart(event);
+        BridgeVerificationGate.Assessment admission = assessBridge(event);
+        if (admission != null && !admission.mayEvaluateOcl()) {
+            append(event, gateDiagnostic(admission, event), nanoTime.getAsLong() - started,
+                    List.of("BRIDGE_GATE_" + admission.decision().name()), admission);
+            return;
+        }
         try {
             synchronized (operationLifecycle) {
                 if (correlationOverflow)
@@ -205,6 +242,12 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
             return;
         }
         if (!requireCurrent(event)) return;
+        BridgeVerificationGate.Assessment admission = assessBridge(event);
+        if (admission != null && !admission.mayEvaluateOcl()) {
+            append(event, gateDiagnostic(admission, event), nanoTime.getAsLong() - started,
+                    List.of("BRIDGE_GATE_" + admission.decision().name()), admission);
+            return;
+        }
         if (event.kind() == RuntimeEventKind.OP_EXIT) {
             complete(event, started);
             return;
@@ -334,12 +377,29 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     }
 
     private void append(RuntimeEvent event, VerificationReport report, long latency, List<String> diagnostics) {
+        append(event, report, latency, diagnostics, null);
+    }
+
+    private void append(RuntimeEvent event, VerificationReport report, long latency, List<String> diagnostics,
+                         BridgeVerificationGate.Assessment admission) {
         var provenance = provenance(event, report);
         totalReports++;
         if (RuntimeRetention.append(reports, new RuntimeVerificationReport("1.0.0",
                 UUID.randomUUID().toString(), Instant.now(), connectionState, snapshotVersion,
                 snapshotFingerprint, event, report, latency, diagnostics, checkpoint(event, diagnostics),
-                provenance, attribution(event, report)), reportLimit)) retiredReports++;
+                provenance, attribution(event, report), admission == null ? "UNGUARDED" : admission.decision().name(),
+                admission == null ? List.of() : admission.diagnostics(), admission == null ? null : admission.context()), reportLimit)) retiredReports++;
+    }
+
+    private BridgeVerificationGate.Assessment assessBridge(RuntimeEvent event) {
+        if (bridgeAdmission == null) return null;
+        return bridgeAdmission.apply(event, java.util.EnumSet.allOf(RuntimeFactKind.class));
+    }
+
+    private VerificationReport gateDiagnostic(BridgeVerificationGate.Assessment admission, RuntimeEvent event) {
+        String explanation = "BridgeVerificationGate=" + admission.decision() + ": "
+                + String.join(", ", admission.diagnostics());
+        return diagnostic("BRIDGE_RUNTIME_GATE", VerificationOutcome.SKIPPED, explanation, event);
     }
 
     private List<RuntimeVerificationAttribution> attribution(RuntimeEvent event, VerificationReport report) {

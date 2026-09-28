@@ -35,6 +35,8 @@ public interface JaCaMoFacade {
     default void resyncRuntime() { throw new UnsupportedOperationException("RUNTIME_NOT_CONFIGURED"); }
     default RuntimeStatus runtimeStatus() { return RuntimeStatus.offline(); }
     default AuthorityStatus authorityStatus() { return AuthorityStatus.offline(); }
+    /** Deterministic read-only evidence for the currently materialized USE model and state. */
+    default FormalStateStatus formalStateStatus() { return FormalStateStatus.empty(); }
     /** Returns the latest measured pipeline and runtime values; zero means that no measurement is available yet. */
     default PerformanceMetrics performanceMetrics() { return PerformanceMetrics.empty(); }
     default void persistBinding(Path destination, BindingRequest request, String selectedTargetId, String reason) {
@@ -68,6 +70,17 @@ public interface JaCaMoFacade {
             return new AuthorityStatus(SemanticAuthority.BRIDGE, BridgeClientState.DISCONNECTED,
                     Map.of(), "UNAVAILABLE", "", "", 0, "", "BRIDGE_NOT_CONFIGURED");
         }
+    }
+    record FormalStateStatus(int classCount, int associationCount, int objectCount, int linkCount,
+                             String sha256) {
+        public FormalStateStatus {
+            if (classCount < 0 || associationCount < 0 || objectCount < 0 || linkCount < 0)
+                throw new IllegalArgumentException("FORMAL_STATE_COUNT_INVALID");
+            sha256 = sha256 == null ? "" : sha256;
+            if (!sha256.isEmpty() && !sha256.matches("[0-9a-f]{64}"))
+                throw new IllegalArgumentException("FORMAL_STATE_SHA256_INVALID");
+        }
+        public static FormalStateStatus empty() { return new FormalStateStatus(0, 0, 0, 0, ""); }
     }
     /**
      * Durations are observed nanoseconds, not performance guarantees. Runtime latency spans connector receipt through

@@ -19,8 +19,11 @@ import org.jacamo.bridge.contract.CanonicalJson;
 
 /** Production local-only authenticated, length-framed JSON transport. */
 public final class LocalTcpBridgeTransport implements BridgeTransport {
+    private static final byte[] SUBSCRIPTION_READY = "BRIDGE_SUBSCRIPTION_READY".getBytes(StandardCharsets.US_ASCII);
+    private static final int ACK_BATCH_SIZE = 128;
     private final InetAddress address; private final int port; private final byte[] secret;
     private final int maxFrameBytes; private final int timeoutMillis; private final AtomicBoolean closed=new AtomicBoolean();
+    private final Object ackLock=new Object();private final java.util.LinkedHashMap<String,String> pendingAcks=new java.util.LinkedHashMap<>();private int pendingAckEvents;
     private volatile Socket subscriptionSocket; private volatile Thread subscriptionThread;
 
     public LocalTcpBridgeTransport(InetAddress address,int port,byte[] secret,int maxFrameBytes,int timeoutMillis){
@@ -38,11 +41,20 @@ public final class LocalTcpBridgeTransport implements BridgeTransport {
         Objects.requireNonNull(failure);
         try{
             Socket socket=connect();subscriptionSocket=socket;writeRequest(socket,"SUBSCRIBE",resumeToken==null?"":resumeToken);
+            byte[] ready=readFrame(new DataInputStream(socket.getInputStream()));
+            if(!MessageDigest.isEqual(ready,SUBSCRIPTION_READY))throw new BridgeProtocolException("BRIDGE_SUBSCRIBE_BARRIER_REJECTED");
+            // Request/response calls are bounded by timeoutMillis, but an authenticated event stream may be
+            // legitimately idle for longer than that.  Closing the transport still closes this socket and wakes
+            // the reader, so the subscription must not interpret an idle interval as a network partition.
+            socket.setSoTimeout(0);
             Thread reader=Thread.ofPlatform().daemon().name("jacamo-bridge-tcp-subscription").start(()->readSubscription(socket,next,failure));subscriptionThread=reader;
             return ()->closeSubscription(socket,reader);
         }catch(Exception e){throw new BridgeProtocolException("BRIDGE_SUBSCRIBE_FAILED",e);}
     }
-    @Override public void acknowledge(String resumeToken){if(resumeToken==null||resumeToken.isBlank())throw new IllegalArgumentException("BRIDGE_ACK_TOKEN_REQUIRED");request("ACK",resumeToken);}
+    @Override public void acknowledge(String resumeToken){if(resumeToken==null||resumeToken.isBlank())throw new IllegalArgumentException("BRIDGE_ACK_TOKEN_REQUIRED");java.util.List<String> batch=java.util.List.of();synchronized(ackLock){int separator=resumeToken.lastIndexOf(':');String source=separator>0?resumeToken.substring(0,separator):resumeToken;pendingAcks.put(source,resumeToken);if(++pendingAckEvents>=ACK_BATCH_SIZE)batch=drainAcks();}flushAcks(batch);}
+    private java.util.List<String> drainAcks(){if(pendingAcks.isEmpty()){pendingAckEvents=0;return java.util.List.of();}var result=java.util.List.copyOf(pendingAcks.values());pendingAcks.clear();pendingAckEvents=0;return result;}
+    private void flushAcks(java.util.List<String> tokens){for(String token:tokens)request("ACK",token);}
+    private void flushPendingAcks(){java.util.List<String> batch;synchronized(ackLock){batch=drainAcks();}flushAcks(batch);}
     private byte[] request(String operation,String resumeToken){ensureOpen();try(Socket socket=connect()){writeRequest(socket,operation,resumeToken);return readFrame(new DataInputStream(socket.getInputStream()));}catch(Exception e){throw new BridgeProtocolException("BRIDGE_TCP_REQUEST_FAILED:"+operation,e);}}
     private Socket connect()throws Exception{Socket socket=new Socket();socket.connect(new InetSocketAddress(address,port),timeoutMillis);socket.setSoTimeout(timeoutMillis);return socket;}
     private void writeRequest(Socket socket,String operation,String resumeToken)throws Exception{
@@ -55,5 +67,5 @@ public final class LocalTcpBridgeTransport implements BridgeTransport {
     private String hmac(String value)throws Exception{Mac mac=Mac.getInstance("HmacSHA256");mac.init(new SecretKeySpec(secret,"HmacSHA256"));return HexFormat.of().formatHex(mac.doFinal(value.getBytes(StandardCharsets.UTF_8)));}
     private void ensureOpen(){if(closed.get())throw new IllegalStateException("BRIDGE_TRANSPORT_CLOSED");}
     private synchronized void closeSubscription(Socket socket,Thread reader){try{socket.close();}catch(Exception ignored){}if(reader!=Thread.currentThread())try{reader.join(Math.min(timeoutMillis,1000));}catch(InterruptedException e){Thread.currentThread().interrupt();}if(subscriptionSocket==socket){subscriptionSocket=null;subscriptionThread=null;}}
-    @Override public synchronized void close(){if(!closed.compareAndSet(false,true))return;Socket socket=subscriptionSocket;Thread reader=subscriptionThread;if(socket!=null)closeSubscription(socket,reader);java.util.Arrays.fill(secret,(byte)0);}
+    @Override public synchronized void close(){if(closed.get())return;try{flushPendingAcks();}catch(RuntimeException ignored){/* Active batches fail closed; shutdown flush is best effort. */}if(!closed.compareAndSet(false,true))return;Socket socket=subscriptionSocket;Thread reader=subscriptionThread;if(socket!=null)closeSubscription(socket,reader);java.util.Arrays.fill(secret,(byte)0);}
 }

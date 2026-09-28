@@ -14,6 +14,7 @@ import org.jacamo.bridge.contract.RuntimeFact;
 import org.jacamo.bridge.contract.RuntimeSnapshot;
 import org.tzi.use.plugins.jacamo.runtime.MutationStatus;
 import org.tzi.use.plugins.jacamo.runtime.RuntimeMutationEngine;
+import org.tzi.use.plugins.jacamo.runtime.RuntimeEventObserver;
 import org.tzi.use.plugins.jacamo.semantic.Dimension;
 import org.tzi.use.plugins.jacamo.semantic.SemanticId;
 import org.tzi.use.plugins.jacamo.trace.TraceIndex;
@@ -24,12 +25,15 @@ public final class BridgeRuntimeProjector {
     public record ProjectionResult(int materialized, List<String> evidenceOnly, List<String> unavailable) {
         public ProjectionResult { evidenceOnly=List.copyOf(evidenceOnly);unavailable=List.copyOf(unavailable); }
     }
-    private final Set<String> sourceIds;private final NativeSemanticAdapter.Result model;private final TraceIndex trace;private final RuntimeMutationEngine mutations;
+    private final Set<String> sourceIds;private final NativeSemanticAdapter.Result model;private final TraceIndex trace;private final RuntimeMutationEngine mutations;private final RuntimeEventObserver observer;
     private final Map<String,Long> acceptedSourceWatermarks=new LinkedHashMap<>();private long internalSequence;
     public BridgeRuntimeProjector(String sourceId,NativeSemanticAdapter.Result model,TraceIndex trace,RuntimeMutationEngine mutations){this(Set.of(required(sourceId)),model,trace,mutations);}
     public BridgeRuntimeProjector(Set<String> sourceIds,NativeSemanticAdapter.Result model,TraceIndex trace,RuntimeMutationEngine mutations){
+        this(sourceIds,model,trace,mutations,RuntimeEventObserver.NOOP);
+    }
+    public BridgeRuntimeProjector(Set<String> sourceIds,NativeSemanticAdapter.Result model,TraceIndex trace,RuntimeMutationEngine mutations,RuntimeEventObserver observer){
         if(sourceIds==null||sourceIds.isEmpty()||sourceIds.stream().anyMatch(id->id==null||id.isBlank()))throw new IllegalArgumentException("sourceIds");
-        this.sourceIds=Set.copyOf(sourceIds);this.model=model;this.trace=trace;this.mutations=mutations;
+        this.sourceIds=Set.copyOf(sourceIds);this.model=model;this.trace=trace;this.mutations=mutations;this.observer=observer==null?RuntimeEventObserver.NOOP:observer;
     }
 
     public synchronized ProjectionResult applySnapshot(RuntimeSnapshot snapshot){
@@ -41,7 +45,9 @@ public final class BridgeRuntimeProjector {
             BridgeRelationId binding=fact.relations().stream().filter(r->r.relationKind().equals("runtime-model-binding")).findFirst().orElseThrow(()->new BridgeProtocolException("BRIDGE_RUNTIME_BINDING_REQUIRED:"+fact.id().canonical()));
             normalized.add(normalize(fact.id(),binding,kind,fact.values(),"",++internalSequence,snapshot.captureEndedAt()));
         }
-        mutations.applySnapshot(new org.tzi.use.plugins.jacamo.runtime.RuntimeSnapshot(snapshot.snapshotId(),snapshot.captureEndedAt(),internalSequence,normalized,snapshot.stateFingerprint()));
+        var runtimeSnapshot=new org.tzi.use.plugins.jacamo.runtime.RuntimeSnapshot(snapshot.snapshotId(),snapshot.captureEndedAt(),internalSequence,normalized,snapshot.stateFingerprint());
+        mutations.applySnapshot(runtimeSnapshot);
+        observer.snapshotApplied(runtimeSnapshot);
         acceptedSourceWatermarks.clear();
         for(String sourceId:sourceIds)acceptedSourceWatermarks.put(sourceId,snapshot.endWatermarks().containsKey(sourceId)?snapshot.endWatermarks().get(sourceId).sequence():0L);
         return new ProjectionResult(normalized.size(),evidence,unavailable);
@@ -50,12 +56,24 @@ public final class BridgeRuntimeProjector {
     public synchronized boolean apply(org.jacamo.bridge.contract.RuntimeEvent event){
         long acceptedSourceWatermark=acceptedSourceWatermarks.getOrDefault(event.sourceId(),-1L);
         if(event.sourceSequence()<=acceptedSourceWatermark)throw new BridgeProtocolException("BRIDGE_RUNTIME_EVENT_REWIND");
-        if(event.projectionStatus()!=ProjectionStatus.MATERIALIZED_FAITHFULLY||event.completeness()!=Completeness.COMPLETE){acceptedSourceWatermarks.put(event.sourceId(),event.sourceSequence());return false;}
-        Object raw=event.after().get("normalizedEventKind");if(!(raw instanceof String kind))return false;
+        if(!requiresMaterialization(event)){acceptedSourceWatermarks.put(event.sourceId(),event.sourceSequence());return false;}
+        String kind=(String)event.after().get("normalizedEventKind");
         if(event.entityId()==null||event.relationId()==null||!event.relationId().relationKind().equals("runtime-model-binding"))throw new BridgeProtocolException("BRIDGE_RUNTIME_BINDING_REQUIRED:"+event.eventId());
-        var result=mutations.apply(normalize(event.entityId(),event.relationId(),kind,event.after(),event.correlationId(),++internalSequence,event.observedAt()));
+        var normalized=normalize(event.entityId(),event.relationId(),kind,event.after(),event.correlationId(),++internalSequence,event.observedAt());
+        observer.eventReceived(normalized);
+        observer.beforeMutation(normalized);
+        var result=mutations.apply(normalized);
+        observer.afterMutation(normalized,result);
+        observer.eventCompleted(normalized);
         if(result.status()!=MutationStatus.APPLIED)throw new BridgeProtocolException("BRIDGE_RUNTIME_MUTATION_REJECTED:"+result.diagnostic());
         acceptedSourceWatermarks.put(event.sourceId(),event.sourceSequence());return true;
+    }
+
+    /** True only when an authoritative event can mutate the frozen USE runtime projection. */
+    public static boolean requiresMaterialization(org.jacamo.bridge.contract.RuntimeEvent event){
+        return event.projectionStatus()==ProjectionStatus.MATERIALIZED_FAITHFULLY
+                && event.completeness()==Completeness.COMPLETE
+                && event.after().get("normalizedEventKind") instanceof String;
     }
 
     private org.tzi.use.plugins.jacamo.runtime.RuntimeEvent normalize(BridgeEntityId runtime,BridgeRelationId binding,String kind,Map<String,Object> values,String correlation,long sequence,java.time.Instant time){

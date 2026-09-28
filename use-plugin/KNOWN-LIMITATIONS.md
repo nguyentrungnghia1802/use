@@ -1,5 +1,48 @@
 # Known Limitations
 
+## Final system acceptance boundary (2026-09-28)
+
+- Original Hello, Auction and House all pass the real separate-JVM generic Bridge
+  path for the observed supported scope. The current evidence index is
+  [final-system-acceptance](docs/project/evidence/final-system-acceptance/README.md).
+- The current original Auction does not contain the self-referencing organizational
+  plan or natural-language deadline mentioned by older records. Its plan is
+  `start,bid,decide`; its authored constraints are `10 seconds` and `1 hour`.
+  Absence in the current input is not evidence of equivalence for an older fixture.
+- The original House run observed 22 agents, all eight auction artifacts,
+  `simulator.House`, dynamic group/scheme/NPL boards, role players, mission
+  commitments, fulfilled commitment obligations and 12 satisfied leaf/intermediate
+  goals. It did not reach `house_built=SATISFIED` or print `*** Finished ***` within
+  the 50-second acceptance window. Full original termination therefore remains
+  unavailable.
+- Runtime facts without an exact approved frozen Runtime Mapping target remain
+  `EVIDENCE_ONLY`; the 28/28 authored OCL results are not a promotion of those facts
+  into USE truth.
+- Native Swing click-through was unavailable to the audit automation surface. UI
+  component/action/package tests passed, a responsive `USE` window was observed,
+  and `tools/live-hello-bridge.ps1 -InteractiveGui` provides the manual demo path.
+
+## Historical post-migration live Bridge boundary (2026-09-27)
+
+- `JaCaMoBridgePlatform` exports the official `ModelSnapshot`, injects
+  `BridgeAgArch`, owns `SnapshotCoordinator` with Jason/CArtAgO/Moise/NPL sources,
+  and hosts authenticated loopback TCP. A final separate-JVM Hello run produced a
+  non-empty cut (`756` facts, `1,095` USE objects); source observations remain
+  explicitly evidence-only when the frozen Runtime Mapping has no faithful target.
+- The runtime cut is buffered and validated per source; it is not a globally atomic
+  Jason+CArtAgO+Moise snapshot. Gaps, topology drift and stale identities require
+  resync, and exactly-once delivery is not claimed.
+- The distribution SHA-256 is now derived from the actual JaCaMo/Jason/CArtAgO/
+  Moise/NPL/Bridge code sources by `RuntimeDistributionFingerprint`, exported with
+  component digests, and compared exactly during handshake.
+- The GUI does not launch JaCaMo and has no endpoint/secret/fingerprint editor.
+  The tested Windows helper `tools/live-hello-bridge.ps1` prepares a temporary
+  derived JCM and starts the producer plus isolated consumer; it never edits
+  `JaCaMo/` or canonical sources.
+- `BridgeVerificationGate` is integrated into the production
+  `DefaultJaCaMoFacade` runtime verification path. Evidence-only, unavailable,
+  stale or incomplete dependencies are recorded as `INCONCLUSIVE` or
+  `NOT_EVALUATED`, never as definitive OCL truth.
 - V2 consumers use frozen Mapping 2.2.0 and Runtime Mapping schema 3.0.0. The final
   reactor and relocated checkout each pass 374/374 tests with zero skips; exact
   gate and bundle records are in the Phase 44 evidence. See
@@ -38,7 +81,9 @@
   Invalid, duplicate, wrong-kind, malformed, or source-hash-stale entries block import;
   bindings do not create candidates or provide fuzzy resolution.
 - Interactive installed-distribution GUI testing and other OS/JDK/component versions
-  are outside the automated release gate.
+  are outside the automated release gate. The 2026-09-27 audit did start the
+  source-tree GUI successfully and observed a responsive window titled `USE`; the
+  available automation surface could not inspect native Swing controls.
 - The JaCaMo-side Bridge JAR requires the host application's JaCaMo component
   libraries. USE requires only its plugin JAR; live JaCaMo objects never cross the
   process or classpath boundary.

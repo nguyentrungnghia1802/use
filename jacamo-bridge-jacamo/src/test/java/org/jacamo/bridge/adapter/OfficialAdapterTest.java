@@ -66,7 +66,7 @@ class OfficialAdapterTest {
         var platform = new JaCaMoBridgePlatform();
         platform.setJcmProject(new OfficialProjectLoader().load(hello()));
         platform.init(new String[] {"port=" + port, "secretFile=" + secret,
-                "distributionSha256=" + "1".repeat(64)});
+                "distributionSha256=" + RuntimeDistributionFingerprint.compute().distributionDigest()});
         platform.start();
         try (var socket = new java.net.Socket()) {
             socket.connect(new java.net.InetSocketAddress(java.net.InetAddress.getLoopbackAddress(),

@@ -15,6 +15,11 @@ public final class RuntimeVerificationReportExporter {
                 .put("snapshotFingerprint", report.snapshotFingerprint())
                 .put("latencyNanos", report.latencyNanos())
                 .put("checkpoint", report.checkpoint().name());
+        ObjectNode gate = root.putObject("bridgeVerificationGate").put("decision", report.admissionDecision());
+        ArrayNode gateDiagnostics = gate.putArray("diagnostics");
+        report.admissionDiagnostics().forEach(gateDiagnostics::add);
+        if (report.admissionContext() == null) gate.putNull("context");
+        else gate.set("context", JSON.valueToTree(report.admissionContext()));
         if (report.event() == null) root.putNull("event");
         else root.putObject("event").put("eventId", report.event().eventId())
                 .put("kind", report.event().kind().name()).put("sequence", report.event().sequence())
@@ -79,6 +84,8 @@ public final class RuntimeVerificationReportExporter {
                 .append("- Connection: ").append(report.connectionState()).append("\n")
                 .append("- Snapshot version: ").append(report.snapshotVersion()).append("\n")
                 .append("- Event: `").append(event).append("`\n")
+                .append("- Bridge verification gate: ").append(report.admissionDecision()).append("\n")
+                .append("- Gate diagnostics: ").append(cell(String.join(", ", report.admissionDiagnostics()))).append("\n")
                 .append("- Latency: ").append(report.latencyNanos()).append(" ns\n\n")
                 .append("| Constraint | Origin | Outcome | Context | Runtime rule | Trace |\n|---|---|---|---|---|---|\n");
         for (VerificationResult result : report.verification().results()) {

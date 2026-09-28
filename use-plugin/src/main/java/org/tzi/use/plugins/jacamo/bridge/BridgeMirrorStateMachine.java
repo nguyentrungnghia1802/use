@@ -61,7 +61,7 @@ public final class BridgeMirrorStateMachine {
             if(duplicate==EventLedger.Result.DUPLICATE)return false;
             state=BridgeClientState.RESYNC_REQUIRED;throw new BridgeProtocolException("BRIDGE_EVENT_SEQUENCE_REWIND");
         }
-        if(previous>=0 && event.sourceSequence()!=previous+1){state=BridgeClientState.RESYNC_REQUIRED;throw new BridgeProtocolException("BRIDGE_EVENT_GAP:"+event.sourceId());}
+        if(previous>=0 && event.sourceSequence()!=previous+1){state=BridgeClientState.RESYNC_REQUIRED;throw new BridgeProtocolException("BRIDGE_EVENT_GAP:"+event.sourceId()+":previous="+previous+":current="+event.sourceSequence());}
         EventLedger.Result accepted;
         try { accepted=ledger.accept(event,ContractPayloads.event(event)); }
         catch(ContractException conflict){state=BridgeClientState.RESYNC_REQUIRED;throw new BridgeProtocolException("BRIDGE_EVENT_CONFLICT",conflict);}
