@@ -58,6 +58,13 @@ final class ExtractionContext {
         draft.provenance.add(provenance(path, line, column, parser, spelling));
     }
 
+    void addPrimaryProvenance(ElementDraft draft, Path path, int line, int column,
+                              String parser, String spelling) {
+        SourceProvenance origin = provenance(path, line, column, parser, spelling);
+        draft.provenance.remove(origin);
+        draft.provenance.addFirst(origin);
+    }
+
     SourceProvenance provenance(Path path, int line, int column, String parser, String spelling) {
         SourceFile source = source(path);
         if (parser.equals("jason-parser")) {

@@ -132,10 +132,10 @@ final class JasonSourceParser {
                            String source, Literal literal) {
         int line = sourceLine(literal.getSrcInfo());
         String expression = normalize(literal.toString());
-        String spelling = sourceStatement(source, line, expression);
+        String spelling = withoutStatementTerminator(sourceStatement(source, line, expression));
         ElementDraft existing = existingMentalState(context, agent, MetamodelKind.Belief, expression);
         if (existing != null) {
-            context.addProvenance(existing, path, line, sourceColumn(source, line, literal.getFunctor()),
+            context.addPrimaryProvenance(existing, path, line, sourceColumn(source, line, literal.getFunctor()),
                     "jason-parser", spelling);
             existing.sourceFacts.put("alsoDeclaredInASL", new AttributeValue.Bool(true));
             if (agent.references.stream().noneMatch(reference -> reference.feature().equals("beliefs")
@@ -158,12 +158,13 @@ final class JasonSourceParser {
         int line = sourceLine(rule.getSrcInfo());
         String statement = normalize(rule.toString());
         String spelling = sourceStatement(source, line, statement);
+        String sourceEvidence = withoutStatementTerminator(spelling);
         String key = "rule@" + relativeSource(context, path) + ":" + String.format(Locale.ROOT, "%09d", line);
         agent.sourceFacts.put(key, new AttributeValue.Text(statement));
         context.addProvenance(agent, path, line, sourceColumn(source, line, rule.getFunctor()),
                 "jason-parser", spelling);
         diagnostic(context, path, line, "JASON_RULE_SOURCE_ONLY", Severity.WARNING,
-                "V2 has no Rule EClass; rule retained as source fact", statement,
+                "V2 has no Rule EClass; rule retained as source fact", sourceEvidence,
                 "Do not translate rule semantics without an explicit supported contract");
     }
 
@@ -171,10 +172,10 @@ final class JasonSourceParser {
                          String source, Literal literal) {
         int line = sourceLine(literal.getSrcInfo());
         String expression = normalize(literal.toString());
-        String spelling = sourceStatement(source, line, "!" + expression);
+        String spelling = expression;
         ElementDraft existing = existingMentalState(context, agent, MetamodelKind.AGoal, expression);
         if (existing != null) {
-            context.addProvenance(existing, path, line, sourceColumn(source, line, literal.getFunctor()),
+            context.addPrimaryProvenance(existing, path, line, sourceColumn(source, line, literal.getFunctor()),
                     "jason-parser", spelling);
             existing.sourceFacts.put("alsoDeclaredInASL", new AttributeValue.Bool(true));
             if (agent.references.stream().noneMatch(reference -> reference.feature().equals("goals")
@@ -196,7 +197,8 @@ final class JasonSourceParser {
     private void addPlan(ExtractionContext context, ElementDraft agent, Path path, String source,
                          Plan syntax, boolean primarySource) {
         int line = sourceLine(syntax.getTrigger().getLiteral().getSrcInfo());
-        String statement = sourceStatement(source, line, normalize(syntax.toASString()));
+        String statement = withoutStatementTerminator(
+                sourceStatement(source, line, normalize(syntax.toASString())));
         String planName = primarySource ? "plan@" + line
                 : "plan@" + relativeSource(context, path) + ":" + line;
         planName = uniqueName(context, MetamodelKind.Plan, List.of("MAS", agent.name), planName);
@@ -217,8 +219,10 @@ final class JasonSourceParser {
         trigger.attributes.put("type", new AttributeValue.Text(syntax.getTrigger().getType().toString()));
         plan.references.add(new SemanticReference("triggeringEvent", triggerExpression, trigger.id));
 
-        if (syntax.getContext() != null) {
-            String expression = normalize(syntax.getContext().toString());
+        String contextExpression = syntax.getContext() == null
+                ? explicitSourceContext(statement) : normalize(syntax.getContext().toString());
+        if (contextExpression != null) {
+            String expression = contextExpression;
             plan.attributes.put("context", new AttributeValue.Text(expression));
             if (expression.contains("|")) diagnostic(context, path, line,
                     "JASON_UNSUPPORTED_EXPRESSION", Severity.WARNING,
@@ -280,10 +284,12 @@ final class JasonSourceParser {
                 : term instanceof Structure structure ? structure.getFunctor() : expression;
         if (name.startsWith(".")) name = name.substring(1);
         int line = sourceLine(term.getSrcInfo());
+        boolean internal = body.getBodyType() == PlanBody.BodyType.internalAction;
+        String marker = (internal ? "." : "") + name;
+        String spelling = lexicalBodyTerm(source, line, marker, expression);
         ElementDraft action = context.element(MetamodelKind.Action, name,
                 List.of("MAS", agent.name, plan.name, "action" + ordinal), path, line,
-                sourceColumn(source, line, name), "jason-parser", expression);
-        boolean internal = body.getBodyType() == PlanBody.BodyType.internalAction;
+                sourceColumn(source, line, marker), "jason-parser", spelling);
         action.attributes.put("name", new AttributeValue.Text(name));
         action.attributes.put("kind", new AttributeValue.EnumLiteral("ActionKind",
                 internal ? "INTERNAL" : "EXTERNAL"));
@@ -500,6 +506,100 @@ final class JasonSourceParser {
                     && (next == '\0' || Character.isWhitespace(next) || next == '/')) {
                 return source.substring(start, index + 1).stripTrailing();
             }
+        }
+        return fallback;
+    }
+
+    private String withoutStatementTerminator(String statement) {
+        String result = statement.stripTrailing();
+        return result.endsWith(".") ? result.substring(0, result.length() - 1).stripTrailing() : result;
+    }
+
+    /**
+     * Jason represents an explicitly authored universally-true context as a null AST context.
+     * Recover any explicit top-level context from the already-validated source statement so
+     * source constraints are not silently erased by that normalization.
+     */
+    private String explicitSourceContext(String statement) {
+        int arrow = topLevelArrow(statement);
+        if (arrow < 0) return null;
+        int colon = -1;
+        int parentheses = 0, brackets = 0, braces = 0;
+        boolean quoted = false, escaped = false;
+        for (int index = 0; index < arrow; index++) {
+            char ch = statement.charAt(index);
+            if (quoted) {
+                if (escaped) escaped = false;
+                else if (ch == '\\') escaped = true;
+                else if (ch == '"') quoted = false;
+                continue;
+            }
+            if (ch == '"') { quoted = true; continue; }
+            if (ch == '(') parentheses++;
+            else if (ch == ')') parentheses--;
+            else if (ch == '[') brackets++;
+            else if (ch == ']') brackets--;
+            else if (ch == '{') braces++;
+            else if (ch == '}') braces--;
+            else if (ch == ':' && parentheses == 0 && brackets == 0 && braces == 0
+                    && (index == 0 || statement.charAt(index - 1) != ':')
+                    && (index + 1 >= arrow || statement.charAt(index + 1) != ':')) colon = index;
+        }
+        if (colon < 0) return null;
+        String context = statement.substring(colon + 1, arrow).strip();
+        return context.isEmpty() ? null : normalize(context);
+    }
+
+    private int topLevelArrow(String statement) {
+        int parentheses = 0, brackets = 0, braces = 0;
+        boolean quoted = false, escaped = false;
+        for (int index = 0; index + 1 < statement.length(); index++) {
+            char ch = statement.charAt(index);
+            if (quoted) {
+                if (escaped) escaped = false;
+                else if (ch == '\\') escaped = true;
+                else if (ch == '"') quoted = false;
+                continue;
+            }
+            if (ch == '"') { quoted = true; continue; }
+            if (ch == '(') parentheses++;
+            else if (ch == ')') parentheses--;
+            else if (ch == '[') brackets++;
+            else if (ch == ']') brackets--;
+            else if (ch == '{') braces++;
+            else if (ch == '}') braces--;
+            else if (ch == '<' && statement.charAt(index + 1) == '-'
+                    && parentheses == 0 && brackets == 0 && braces == 0) return index;
+        }
+        return -1;
+    }
+
+    /** Returns lexical source spelling for provenance while the official AST remains semantic authority. */
+    private String lexicalBodyTerm(String source, int line, String marker, String fallback) {
+        int lineStart = lineOffset(source, line);
+        int lineEnd = source.indexOf('\n', lineStart);
+        if (lineEnd < 0) lineEnd = source.length();
+        int start = source.indexOf(marker, lineStart);
+        if (start < 0 || start >= lineEnd) return fallback;
+        int parentheses = 0, brackets = 0, braces = 0;
+        boolean quoted = false, escaped = false;
+        for (int index = start + marker.length(); index < source.length(); index++) {
+            char ch = source.charAt(index);
+            if (quoted) {
+                if (escaped) escaped = false;
+                else if (ch == '\\') escaped = true;
+                else if (ch == '"') quoted = false;
+                continue;
+            }
+            if (ch == '"') { quoted = true; continue; }
+            if (ch == '(') parentheses++;
+            else if (ch == ')') parentheses--;
+            else if (ch == '[') brackets++;
+            else if (ch == ']') brackets--;
+            else if (ch == '{') braces++;
+            else if (ch == '}') braces--;
+            else if ((ch == ';' || ch == '.') && parentheses == 0 && brackets == 0 && braces == 0)
+                return source.substring(start, index).stripTrailing();
         }
         return fallback;
     }

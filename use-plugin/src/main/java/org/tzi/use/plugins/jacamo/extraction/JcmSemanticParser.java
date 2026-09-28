@@ -192,8 +192,10 @@ final class JcmSemanticParser {
                     boolean belief = entry.getKey().startsWith("initialBelief@");
                     MetamodelKind kind = belief ? MetamodelKind.Belief : MetamodelKind.AGoal;
                     String local = expression;
+                    List<String> owner = belief ? List.of("MAS", agent.name)
+                            : List.of("MAS", agent.name, "goal");
                     ElementDraft element = context.elementWithLocalId(kind, functor(expression), local,
-                            List.of("MAS", agent.name, belief ? "belief" : "goal"), path,
+                            owner, path,
                             line, 1, "jcm-parser", expression);
                     element.attributes.put("literal", new AttributeValue.Text(expression));
                     element.sourceFacts.put("isInitial", new AttributeValue.Bool(true));

@@ -1,0 +1,197 @@
+{
+  "schemaVersion": "1.0.0",
+  "capturedAt": "2026-09-28T14:16:21+07:00",
+  "status": "PASS",
+  "branch": "fix/historical-regressions",
+  "baseHead": "747c6ad4645629894115482a40a1cd250072135d",
+  "introducingCommit": "40b696b479139ef847766ea897fcc2b7ff208fcb",
+  "controlRevision": "7c435addcc91d7bbe7928953a11778f1b8e32d73",
+  "commitCreated": false,
+  "pushed": false,
+  "merged": false,
+  "productionChanges": [
+    {
+      "path": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/extraction/ExtractionContext.java",
+      "sha256": "57fe20ac492bc9d5f745dfd748f6df46382df3ac494f6b1aa148ff28b1396311"
+    },
+    {
+      "path": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.java",
+      "sha256": "140c899c94d7884dd373782d78f8c8faa238cc0e5b8324350058e8a7a291cff0"
+    },
+    {
+      "path": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.java",
+      "sha256": "2ab1a3f205d257c8b284bccd2f42c2dd644b75a3d37564ec398471e8fc5f4dbf"
+    }
+  ],
+  "regressions": [
+    {
+      "test": "ConstraintClosureTest.distinctV2OwnersWithJavaHashCollisionsKeepDistinctConstraintIdentities",
+      "before": "expected 2 constraints but got 0",
+      "rootCause": "Jason normalized an explicitly authored universally true context to null and the adapter erased the authored context",
+      "component": "JasonSourceParser",
+      "category": "SOURCE_SEMANTIC_LOSS",
+      "after": "PASS; two equal-Java-hash dependencies retain two distinct canonical constraint IDs",
+      "assertionChanged": false
+    },
+    {
+      "test": "GoldenPipelineTest.auctionArtifactsMatchReviewedGoldenDigests",
+      "before": {
+        "auction.cmd": "61dd7135a78a193a89f801320b2143a2f6e775e24ad58781b0b57e405ed51292",
+        "diagnostics.txt": "b34a96c8c43f189f371c6e4cd96bfeeed873316deb70b6ed6703a48dcb2dffa8",
+        "trace.json": "e48a442724a53ce99567e75cb518b62228bb0b4b68e67d6aed68c914e273588c"
+      },
+      "rootCause": "JCM and ASL beliefs used different owner paths, duplicate provenance precedence was wrong, and AST rendering replaced lexical evidence spelling",
+      "component": "JcmSemanticParser, JasonSourceParser, ExtractionContext",
+      "category": "IDENTITY_PROVENANCE_LEXICAL_EVIDENCE_REGRESSION",
+      "after": {
+        "auction.cmd": "a630838c653adfaf86f59e7b8d66e37ff04c0c19464589c962921d07a25cdff1",
+        "diagnostics.txt": "477b0b9336f65e73cc39faebe5e324d203dc935211e0cddb4da69bc93521800c",
+        "trace.json": "4db0faea1c2379f03459ca82307e4b31f3b4edbfc6d3be89ef9da46075c95edd"
+      },
+      "goldenChanged": false,
+      "assertionChanged": false
+    },
+    {
+      "test": "InstanceMaterializationTest.textAndDirectBackendsShareOneVerificationPlanAndPassInitialValidation",
+      "before": "auction.cmd digest mismatch before direct-backend assertions",
+      "rootCause": "The upstream JCM/ASL owner mismatch changed the one shared InstancePlan; the backends themselves had not diverged",
+      "component": "JcmSemanticParser and shared extraction plan",
+      "category": "SHARED_PLAN_IDENTITY_REGRESSION",
+      "after": "PASS; text and direct backends consume the same deterministic plan and initial validation passes",
+      "assertionChanged": false
+    }
+  ],
+  "tests": {
+    "targeted": {
+      "collision": { "tests": 1, "passed": 1 },
+      "goldenPipeline": { "tests": 1, "passed": 1 },
+      "instanceMaterializationClass": { "tests": 2, "passed": 2 },
+      "phase44ControlClasses": { "tests": 9, "passed": 9 }
+    },
+    "moduleTest": {
+      "command": "mvn -B -pl use-plugin -am test",
+      "tests": 292,
+      "passed": 292,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "pluginVerify": {
+      "command": "mvn -B -pl use-plugin verify",
+      "tests": 266,
+      "passed": 266,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "fullReactorVerify": {
+      "command": "mvn -B verify",
+      "tests": 427,
+      "passed": 427,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "moduleTotals": {
+        "jacamo-bridge-contract": 8,
+        "jacamo-bridge-jacamo": 10,
+        "use-core": 13,
+        "use-gui": 130,
+        "use-plugin": 266
+      }
+    }
+  },
+  "reviewedAuctionDigests": {
+    "auction.use": "dd8fdf8d3a822be770d20e5bae5253142db9897932f7975c5c2effd1184e300c",
+    "auction.cmd": "a630838c653adfaf86f59e7b8d66e37ff04c0c19464589c962921d07a25cdff1",
+    "diagnostics.txt": "477b0b9336f65e73cc39faebe5e324d203dc935211e0cddb4da69bc93521800c",
+    "trace.json": "4db0faea1c2379f03459ca82307e4b31f3b4edbfc6d3be89ef9da46075c95edd",
+    "allMatch": true,
+    "goldenChanged": false
+  },
+  "packaging": {
+    "pluginJarSha256": "c68030334d6f15fd83476a79f7c6833da69064652461457a2c3b7667ef47ae1a",
+    "releaseZipSha256": "7c4da8a8ce8bbc5db39fde98988881d329b0f74a2bcc2e12266deb3be9dc5175",
+    "sidecarMatches": true
+  },
+  "liveCases": {
+    "hello": {
+      "evidence": "use-plugin/target/historical-regressions-fix/live-hello/20260928-135125",
+      "classification": "SUPPORTED_SCOPE_PASS",
+      "sourceSha256": "c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101",
+      "reconnectFacts": 836,
+      "events": 162,
+      "objects": 1095,
+      "links": 1641,
+      "stateSha256": "c3b6fa094dab8570acbebb114817d0546518530e5aaea936f08f63146c858caf",
+      "oclPassed": 28,
+      "reconnect": true,
+      "consumerRuntimeHasJaCaMoJars": false,
+      "summarySha256": "bd2e33f4ed25b29f8b1ec0716aa39eee1eed89a0827a1120175436ac4db6d4b7",
+      "consumerEvidenceSha256": "607e3e8a56fe8c90efc83bc9824b821e99cb8b14de3ca0fc60e1e008b6108145",
+      "eventLogSha256": "2ef3975d75c5109cbf8d413c2ef3a9b50d06faf5634564d827a59bcb1ffd57a0"
+    },
+    "auction": {
+      "evidence": "use-plugin/target/historical-regressions-fix/live-auction/20260928-135243",
+      "classification": "SUPPORTED_SCOPE_PASS",
+      "sourceSha256": "c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb",
+      "reconnectFacts": 483,
+      "events": 111,
+      "objects": 994,
+      "links": 1432,
+      "stateSha256": "91b3c1af7639e9873a51c0db1d208332d8003432eb9deed52006a5ec2f6d3202",
+      "oclPassed": 28,
+      "reconnect": true,
+      "consumerRuntimeHasJaCaMoJars": false,
+      "summarySha256": "141cd1ce1781ae6c975886348c5ebfe9c6c90e389dfd6a51e899ad25f12d77b3",
+      "consumerEvidenceSha256": "9ed885fb74fedde0a6bc056d0e5a55da036a126c1b9e3de7921574590faf0114",
+      "eventLogSha256": "1e87ee21ded3c6e4cd2cc568d798d9a885e33e1cacd547ab76a8a5ced46b8f7c"
+    },
+    "house": {
+      "evidence": "use-plugin/target/historical-regressions-fix/live-house/20260928-135336",
+      "classification": "SUPPORTED_SCOPE_PASS_WITH_ROOT_LIFECYCLE_BOUNDARY",
+      "sourceSha256": "c14ae6299b0d2e0034d7daaa233b9bf1b94a7b337aa39477ec865c52ca5fef08",
+      "reconnectFacts": 957,
+      "events": 174,
+      "objects": 1024,
+      "links": 1448,
+      "stateSha256": "7f2d5e820a17347aba915d471da4bb5c60d20393894b2d223fb418c5b0463950",
+      "rootGoal": "house_built",
+      "rootGoalState": "NOT_SATISFIED",
+      "oclPassed": 28,
+      "reconnect": true,
+      "consumerRuntimeHasJaCaMoJars": false,
+      "summarySha256": "3efae31bed37b2bec2ec148c65186a30d54bbd0cfe3f0dc100c0343320e6b9d3",
+      "consumerEvidenceSha256": "403a245c09270df3b918b8b08cd970392e213eca42fb0fd5b4acf3ab997cdd81",
+      "eventLogSha256": "9d81fe55cfe23d18d9b75c3309fd414e93bc09b8024918211e7a6ce73a6ea045"
+    }
+  },
+  "frozenResources": {
+    "ecoreV2Sha256": "4AE51638A078F0A933982844063993084F17D420694AC8A868D95B9DF063C35C",
+    "mappingV22Sha256": "FC03B90CF0729260747BFEFFA6A6CD463EEFD2259C0C3CD60ED22BD140EC48B1",
+    "runtimeMappingV2Sha256": "5B2C00F052010FB35A71EB7F50AE4650F8A09C7647332B47A7199C12CBF8A5F0",
+    "freezeManifestSha256": "7965AEF8EAE099E398DE50CB30A65F1B6C5B9207A6500DB678825340BCA73C77",
+    "changed": false
+  },
+  "jacamo": {
+    "headBefore": "3866858a7ebf6be85d9199c13a09cf4bfb8191be",
+    "headAfter": "3866858a7ebf6be85d9199c13a09cf4bfb8191be",
+    "statusPathCountBefore": 45,
+    "statusPathCountAfter": 45,
+    "tree": { "files": 761, "before": "2B3825C99F53F3EDF3E9B20F6EE7A16909386D1B24A6BABCDD5F051459B64DC1", "after": "2B3825C99F53F3EDF3E9B20F6EE7A16909386D1B24A6BABCDD5F051459B64DC1" },
+    "hello": { "files": 56, "before": "4E088324651D8A63DB12C9B004E4A8A82B438394FB9A322769F917ADE55331AD", "after": "4E088324651D8A63DB12C9B004E4A8A82B438394FB9A322769F917ADE55331AD" },
+    "auction": { "files": 12, "before": "61CE6572D24A8C6F26590AC3A702255B9F1DAA5F67C2E73E5E24E50DBE03D540", "after": "61CE6572D24A8C6F26590AC3A702255B9F1DAA5F67C2E73E5E24E50DBE03D540" },
+    "house": { "files": 37, "before": "95A196CADCA77134D54945A0C47266FD2CA4C8E8C6921261DA95A504A98CA3E3", "after": "95A196CADCA77134D54945A0C47266FD2CA4C8E8C6921261DA95A504A98CA3E3" },
+    "changedByTask": false
+  },
+  "scopeGuards": {
+    "testFilesChanged": false,
+    "assertionsChanged": false,
+    "goldensChanged": false,
+    "oclChanged": false,
+    "frozenResourcesChanged": false,
+    "jacamoChanged": false,
+    "caseSpecificProductionLogic": false,
+    "javaHashIdentityUsed": false
+  },
+  "stopConditionCrossed": false
+}
