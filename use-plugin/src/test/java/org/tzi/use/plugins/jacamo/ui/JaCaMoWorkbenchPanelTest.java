@@ -16,10 +16,12 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.tzi.use.plugins.jacamo.JaCaMoFacade;
 import org.tzi.use.plugins.jacamo.SemanticAuthority;
 import org.tzi.use.plugins.jacamo.bridge.BridgeClientState;
@@ -31,6 +33,19 @@ import org.tzi.use.plugins.jacamo.verification.VerificationReport;
 import org.tzi.use.plugins.jacamo.verification.VerificationResult;
 
 class JaCaMoWorkbenchPanelTest {
+    @Test
+    void projectChooserStartsAtAndSelectsTheDerivedJcmHint(@TempDir Path temporaryDirectory) throws Exception {
+        Path derivedJcm = temporaryDirectory.resolve("helloworld.jcm");
+        Files.writeString(derivedJcm, "project helloworld");
+
+        JFileChooser chooser = JaCaMoWorkbenchPanel.createProjectChooser(derivedJcm);
+
+        assertEquals(temporaryDirectory.toAbsolutePath().normalize(),
+                chooser.getCurrentDirectory().toPath().toAbsolutePath().normalize());
+        assertEquals(derivedJcm.toAbsolutePath().normalize(),
+                chooser.getSelectedFile().toPath().toAbsolutePath().normalize());
+    }
+
     @Test
     void importRefreshesOverviewTraceDiagnosticsAndVerificationFromFacade() {
         RecordingFacade facade = new RecordingFacade();
@@ -155,6 +170,22 @@ class JaCaMoWorkbenchPanelTest {
 
         assertEquals(1, table(panel, "diagnostics-table").getRowCount());
         assertTrue(label(panel, "workbench-status").getText().contains("IMPORT_FAILED"));
+    }
+
+    @Test
+    void longErrorMessagesAreWrappedForStatusAndDialogPresentation() {
+        String longError = "BRIDGE_TCP_REQUEST_FAILED:" + "x".repeat(160);
+        RecordingFacade facade = new RecordingFacade();
+        facade.importFailure = new IllegalArgumentException(longError);
+        List<String> presented = new ArrayList<>();
+        JaCaMoWorkbenchPanel panel = new JaCaMoWorkbenchPanel(facade, presented::add);
+
+        panel.importProject(Path.of("broken.jcm"));
+
+        assertEquals(1, presented.size());
+        assertTrue(presented.get(0).contains(longError));
+        assertTrue(JaCaMoWorkbenchPanel.displayMessage(presented.get(0)).contains("<br>"));
+        assertTrue(label(panel, "workbench-status").getText().contains("<br>"));
     }
 
     @Test

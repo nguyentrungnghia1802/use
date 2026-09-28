@@ -5,6 +5,8 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -36,9 +38,13 @@ import org.tzi.use.plugins.jacamo.verification.VerificationResult;
 
 /** Swing workbench for the complete JaCaMo workflow. All semantic work is delegated to the facade. */
 public final class JaCaMoWorkbenchPanel extends JPanel {
+    /** Optional launch-time hint used by the interactive demo to open Import at its derived JCM. */
+    static final String PROJECT_FILE_HINT_PROPERTY = "use.jacamo.workbench.project-file";
+    private static final int MESSAGE_WRAP_COLUMNS = 96;
+
     private final JaCaMoFacade facade;
     private final Consumer<String> errorPresenter;
-    private final JLabel status = named(new JLabel("Select a .jcm project"), "workbench-status");
+    private final JLabel status = named(new JLabel(displayMessage("Select a .jcm project")), "workbench-status");
     private final JLabel projectId = named(new JLabel("-"), "project-id");
     private final JLabel projectRoot = named(new JLabel("-"), "project-root");
     private final JLabel metamodelBaseline = named(new JLabel("-"), "metamodel-baseline");
@@ -79,7 +85,8 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private Path selectedSource;
 
     public JaCaMoWorkbenchPanel(JaCaMoFacade facade) {
-        this(facade, message -> JOptionPane.showMessageDialog(null, message, "JaCaMo", JOptionPane.ERROR_MESSAGE));
+        this(facade, message -> JOptionPane.showMessageDialog(null, new JLabel(displayMessage(message)),
+                "JaCaMo", JOptionPane.ERROR_MESSAGE));
     }
 
     JaCaMoWorkbenchPanel(JaCaMoFacade facade, Consumer<String> errorPresenter) {
@@ -107,13 +114,13 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         execute("Import failed", () -> {
             facade.importProject(normalized);
             refreshProject();
-            status.setText("Imported " + normalized);
+            setStatus("Imported " + normalized);
         });
         refreshDiagnostics();
     }
 
     public void rebuildProject() {
-        execute("Rebuild failed", () -> { facade.rebuild(); refreshProject(); status.setText("Project rebuilt"); });
+        execute("Rebuild failed", () -> { facade.rebuild(); refreshProject(); setStatus("Project rebuilt"); });
     }
 
     public void runFullVerification() {
@@ -125,7 +132,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     }
 
     public void exportVerificationReport(Path destination) {
-        execute("Report export failed", () -> { facade.exportVerificationReport(destination); status.setText("Report: " + destination); });
+        execute("Report export failed", () -> { facade.exportVerificationReport(destination); setStatus("Report: " + destination); });
     }
 
     public void refreshRuntime() {
@@ -355,10 +362,34 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     }
 
     private void chooseProject() {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileFilter(new FileNameExtensionFilter("JaCaMo project (*.jcm)", "jcm"));
+        JFileChooser chooser = createProjectChooser(projectFileHint());
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) importProject(chooser.getSelectedFile().toPath());
     }
+
+    static JFileChooser createProjectChooser(Path projectFileHint) {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileNameExtensionFilter("JaCaMo project (*.jcm)", "jcm"));
+        if (projectFileHint == null) return chooser;
+
+        Path normalized = projectFileHint.toAbsolutePath().normalize();
+        Path directory = Files.isDirectory(normalized) ? normalized : normalized.getParent();
+        if (directory != null && Files.isDirectory(directory)) {
+            chooser.setCurrentDirectory(directory.toFile());
+            if (Files.isRegularFile(normalized)) chooser.setSelectedFile(normalized.toFile());
+        }
+        return chooser;
+    }
+
+    private static Path projectFileHint() {
+        String configured = System.getProperty(PROJECT_FILE_HINT_PROPERTY, "").trim();
+        if (configured.isEmpty()) return null;
+        try {
+            return Path.of(configured);
+        } catch (InvalidPathException ignored) {
+            return null;
+        }
+    }
+
     private void chooseProfile() {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileFilter(new FileNameExtensionFilter("OCL profile (*.ocl)", "ocl"));
@@ -372,9 +403,59 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private void execute(String title, Runnable operation) {
         try { operation.run(); }
         catch (RuntimeException exception) {
-            status.setText(title + ": " + exception.getMessage());
-            errorPresenter.accept(title + ": " + exception.getMessage());
+            String message = title + ": " + exception.getMessage();
+            setStatus(message);
+            errorPresenter.accept(message);
         }
+    }
+
+    private void setStatus(String message) { status.setText(displayMessage(message)); }
+
+    static String displayMessage(String message) {
+        return "<html>" + escapeHtml(wrapMessage(message)).replace("\n", "<br>") + "</html>";
+    }
+
+    private static String wrapMessage(String message) {
+        String normalized = message == null ? "" : message.replace("\r\n", "\n").replace('\r', '\n');
+        String[] lines = normalized.split("\n", -1);
+        StringBuilder wrapped = new StringBuilder(normalized.length() + lines.length * 4);
+        for (int index = 0; index < lines.length; index++) {
+            if (index > 0) wrapped.append('\n');
+            appendWrappedLine(wrapped, lines[index]);
+        }
+        return wrapped.toString();
+    }
+
+    private static void appendWrappedLine(StringBuilder output, String line) {
+        if (line.isBlank()) return;
+        int column = 0;
+        for (String word : line.trim().split("\\s+")) {
+            if (word.isEmpty()) continue;
+            if (column > 0 && column + 1 + word.length() <= MESSAGE_WRAP_COLUMNS) {
+                output.append(' ');
+                column++;
+            } else if (column > 0) {
+                output.append('\n');
+                column = 0;
+            }
+            int offset = 0;
+            while (offset < word.length()) {
+                int remaining = MESSAGE_WRAP_COLUMNS - column;
+                int length = Math.min(remaining, word.length() - offset);
+                output.append(word, offset, offset + length);
+                offset += length;
+                column += length;
+                if (offset < word.length()) {
+                    output.append('\n');
+                    column = 0;
+                }
+            }
+        }
+    }
+
+    private static String escapeHtml(String value) {
+        return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                .replace("\"", "&quot;").replace("'", "&#39;");
     }
 
     private static JPanel tablePanel(JTable table) {

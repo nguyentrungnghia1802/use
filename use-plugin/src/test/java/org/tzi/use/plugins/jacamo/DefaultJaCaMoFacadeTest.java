@@ -42,6 +42,20 @@ class DefaultJaCaMoFacadeTest {
     }
 
     @Test
+    void packagedGuiRootUsesClasspathBaselineDuringBridgeImport() {
+        Path stagedGuiRoot = temporary.resolve("use-gui-demo");
+
+        try (DefaultJaCaMoFacade facade = BridgeFacadeTestSupport.facade(auction(), stagedGuiRoot)) {
+            JaCaMoFacade.ProjectSummary summary = facade.importProject(auction());
+
+            assertEquals("FROZEN", summary.mappingStatus());
+            assertTrue(summary.structureValid());
+            assertTrue(summary.generatedClasses() > 0);
+            assertTrue(summary.generatedObjects() > 0);
+        }
+    }
+
+    @Test
     void runtimeDashboardStatusComesFromTheAuthoritativeBridge() {
         try (DefaultJaCaMoFacade facade = bridgeAuction()) {
             facade.importProject(auction());

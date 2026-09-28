@@ -17,6 +17,16 @@ class ActiveBaselineTest {
         assertEquals(file.mapping(), new MappingLoader().loadCanonical(Path.of(".")));
         assertThrows(UnsupportedOperationException.class, () -> file.hashes().put("tampered", "value"));
     }
+    @Test void stagedGuiRootUsesImmutablePackagedBaseline() throws Exception {
+        Path stagedGuiRoot = Files.createDirectory(temporary.resolve("use-gui-demo"));
+
+        var selected = new ActiveBaseline().active(stagedGuiRoot);
+        var packaged = new ActiveBaseline().packaged();
+
+        assertEquals(packaged.mapping(), selected.mapping());
+        assertEquals(packaged.hashes(), selected.hashes());
+        assertEquals(packaged.origin(), selected.origin());
+    }
     @Test void missingOrStaleV2NeverFallsBackToHistoricalInputs() throws Exception {
         var error = assertThrows(MappingException.class, () -> new ActiveBaseline().fromCheckout(temporary));
         assertEquals("ACTIVE_BASELINE_LOAD_FAILED", error.code());

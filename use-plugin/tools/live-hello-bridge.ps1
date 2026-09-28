@@ -254,6 +254,7 @@ try {
 
         $guiArguments = @(
             "-Duser.dir=$guiInstall",
+            "-Duse.jacamo.workbench.project-file=$jcmFile",
             "-Duse.jacamo.bridge.endpoint=tcp://127.0.0.1:$port",
             "-Duse.jacamo.bridge.secret-file=$secretFile",
             "-Duse.jacamo.bridge.distribution-sha256=$distribution",
@@ -262,14 +263,14 @@ try {
         $producerCommand = 'java -cp "{0}" {1} "{2}" "{3}" {4} {5}' -f $producerClasspath,
             "jason.infra.local.LiveJaCaMoLauncherMain", $jcmFile, $stopFile, $TimeoutSeconds,
             $Headless.ToString().ToLowerInvariant()
-        $guiCommand = 'javaw "-Duser.dir={0}" "-Duse.jacamo.bridge.endpoint=tcp://127.0.0.1:{1}" "-Duse.jacamo.bridge.secret-file={2}" "-Duse.jacamo.bridge.distribution-sha256={3}" -jar "{4}"' -f `
-            $guiInstall, $port, $secretFile, $distribution, $guiJar
+        $guiCommand = 'javaw "-Duser.dir={0}" "-Duse.jacamo.workbench.project-file={1}" "-Duse.jacamo.bridge.endpoint=tcp://127.0.0.1:{2}" "-Duse.jacamo.bridge.secret-file={3}" "-Duse.jacamo.bridge.distribution-sha256={4}" -jar "{5}"' -f `
+            $guiInstall, $jcmFile, $port, $secretFile, $distribution, $guiJar
         [IO.File]::WriteAllLines((Join-Path $runEvidence "launch-commands.txt"),
             @($producerCommand, $guiCommand), [Text.UTF8Encoding]::new($false))
 
         Write-Host "INTERACTIVE_GUI_READY"
         Write-Host "Open: Plugins > JaCaMo > Open Workbench..."
-        Write-Host "Import this exact derived JCM: $jcmFile"
+        Write-Host "Import is pre-positioned at the derived JCM: $jcmFile"
         Write-Host "The original source remains unchanged: $sourceJcm"
         Write-Host "Close the USE window to stop the derived JaCaMo producer."
         $gui = Start-InteractiveJava $guiInstall $guiArguments

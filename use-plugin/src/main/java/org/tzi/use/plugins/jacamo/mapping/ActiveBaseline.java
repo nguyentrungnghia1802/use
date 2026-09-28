@@ -24,6 +24,19 @@ public final class ActiveBaseline {
         return select(name -> Files.readAllBytes(paths.get(name)), paths.toString());
     }
 
+    /**
+     * Select the active V2 baseline for either a source checkout or a packaged
+     * plugin installation. Packaged USE launches do not contain the checkout's
+     * Core/release directories, so they must read the immutable classpath
+     * resources instead of deriving paths from user.dir.
+     */
+    public Selection active(Path checkout) {
+        Path root = Objects.requireNonNull(checkout, "checkout").toAbsolutePath().normalize();
+        boolean sourceCheckout = Files.isDirectory(root.resolve("Core"))
+                || Files.isDirectory(root.resolve("use-plugin").resolve("Core"));
+        return sourceCheckout ? fromCheckout(root) : packaged();
+    }
+
     public Selection packaged() {
         return select(name -> {
             String root = FREEZE.equals(name) ? RELEASE_ROOT : RESOURCE_ROOT;

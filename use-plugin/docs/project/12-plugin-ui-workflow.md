@@ -51,11 +51,13 @@ powershell -ExecutionPolicy Bypass -File .\use-plugin\tools\live-hello-bridge.ps
 ```
 
 The helper builds a disposable USE install, launches it with the exact Bridge
-endpoint/secret/distribution fingerprint, and prints the derived `.jcm` path. In the
-GUI:
+endpoint/secret/distribution fingerprint, and passes the derived `.jcm` path to the
+Workbench. The Import chooser therefore opens in the correct temporary folder with
+that file preselected. In the GUI:
 
 1. open `Plugins > JaCaMo > Open Workbench...`;
-2. click **Import JaCaMo Project...** and select the printed derived `.jcm`;
+2. click **Import JaCaMo Project...** and click **Open**; the derived `.jcm` is
+   already selected in its temporary folder;
 3. inspect Project, Trace, Diagnostics, Verification, Runtime and Binding;
 4. in Runtime, confirm authority `BRIDGE` and readiness `LIVE`, then click
    **Reconnect** and **Resync**;

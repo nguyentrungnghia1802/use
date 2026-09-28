@@ -30,12 +30,21 @@ final class BridgeFacadeTestSupport {
             new Capability("runtime.snapshot", CapabilityStatus.COMPLETE, List.of(), ""));
 
     static DefaultJaCaMoFacade facade(Path jcm) {
-        return facade(jcm, () -> false);
+        return facade(jcm, Path.of("."), () -> false);
     }
 
     static DefaultJaCaMoFacade facade(Path jcm, java.util.function.BooleanSupplier unavailable) {
+        return facade(jcm, Path.of("."), unavailable);
+    }
+
+    static DefaultJaCaMoFacade facade(Path jcm, Path checkout) {
+        return facade(jcm, checkout, () -> false);
+    }
+
+    static DefaultJaCaMoFacade facade(Path jcm, Path checkout,
+                                      java.util.function.BooleanSupplier unavailable) {
         Path selected = jcm.toAbsolutePath().normalize();
-        return new DefaultJaCaMoFacade(Path.of("."), SemanticAuthority.BRIDGE,
+        return new DefaultJaCaMoFacade(checkout, SemanticAuthority.BRIDGE,
                 BridgeFacadeTestSupport::configuration, ignored -> {
                     if (unavailable.getAsBoolean()) throw new IllegalStateException("TEST_BRIDGE_UNAVAILABLE");
                     try {

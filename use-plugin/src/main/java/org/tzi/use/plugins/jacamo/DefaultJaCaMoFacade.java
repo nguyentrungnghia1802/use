@@ -429,7 +429,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                                     List<Diagnostic> importDiagnostics, long importNanos) {
         lastDiagnostics = List.copyOf(importDiagnostics);
         long generationStarted = System.nanoTime();
-        ActiveBaseline.Selection activeBaseline = new ActiveBaseline().fromCheckout(checkout);
+        ActiveBaseline.Selection activeBaseline = new ActiveBaseline().active(checkout);
         MappingModel mapping = activeBaseline.mapping();
         var baseline = new TransformationPlanner().plan(model, mapping);
         var structure = new VerificationSemanticLayer().apply(baseline, mapping,
