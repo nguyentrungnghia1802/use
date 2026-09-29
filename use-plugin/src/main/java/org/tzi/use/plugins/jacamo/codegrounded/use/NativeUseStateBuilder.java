@@ -25,6 +25,7 @@ import org.tzi.use.uml.mm.MAssociation;
 import org.tzi.use.uml.mm.MAttribute;
 import org.tzi.use.uml.mm.MClass;
 import org.tzi.use.uml.ocl.value.EnumValue;
+import org.tzi.use.uml.ocl.value.BooleanValue;
 import org.tzi.use.uml.ocl.value.IntegerValue;
 import org.tzi.use.uml.ocl.value.StringValue;
 import org.tzi.use.uml.sys.MObject;
@@ -46,6 +47,96 @@ public final class NativeUseStateBuilder {
         Map<String,MObject> semanticObjects = new LinkedHashMap<>();
         Set<String> objectNames = new HashSet<>();
         try {
+            var semantic = source.snapshot();
+            for (var agent : semantic.agentDeclarations()) {
+                MObject agentObject = object(api, semanticObjects, objectNames, "Agent", agent.metadata(), agent.name());
+                text(api, agentObject, "name", agent.name());
+                text(api, agentObject, "sourceUri", agent.sourceUri());
+                text(api, agentObject, "options", NativeUseModelBuilder.canonicalJson(agent.options()));
+                text(api, agentObject, "architectureClasses",
+                        NativeUseModelBuilder.canonicalJson(agent.architectureClasses()));
+                text(api, agentObject, "agentClass", agent.agentClass());
+                text(api, agentObject, "beliefBaseClass", agent.beliefBaseClass());
+                text(api, agentObject, "host", agent.host());
+                integer(api, agentObject, "instances", agent.instances());
+                trace.add(catalog.require("J02"), TracePhase.INSTANCE_MATERIALIZATION, agent.metadata(),
+                        "MObject", agentObject.name(), List.of());
+            }
+            for (var workspace : semantic.workspaceDeclarations()) {
+                MObject workspaceObject = object(api, semanticObjects, objectNames, "Workspace", workspace.metadata(),
+                        workspace.name());
+                text(api, workspaceObject, "name", workspace.name());
+                text(api, workspaceObject, "host", workspace.host());
+                bool(api, workspaceObject, "debug", workspace.debug());
+                trace.add(catalog.require("J03"), TracePhase.INSTANCE_MATERIALIZATION, workspace.metadata(),
+                        "MObject", workspaceObject.name(), List.of("JCM_DECLARATION_NOT_RUNTIME_WORKSPACE_ID"));
+            }
+            for (var artifact : semantic.artifactDeclarations()) {
+                MObject artifactObject = object(api, semanticObjects, objectNames, "ArtifactDeclaration",
+                        artifact.metadata(), artifact.name());
+                text(api, artifactObject, "name", artifact.name());
+                text(api, artifactObject, "workspace", artifact.workspace());
+                text(api, artifactObject, "javaClass", artifact.javaClass());
+                text(api, artifactObject, "parameters",
+                        NativeUseModelBuilder.canonicalJson(artifact.parameters()));
+                trace.add(catalog.require("J04"), TracePhase.INSTANCE_MATERIALIZATION, artifact.metadata(),
+                        "MObject", artifactObject.name(), List.of("DECLARATION_NOT_LIVE_CARTAGO_ARTIFACT"));
+            }
+            for (var organization : semantic.organizationDeployments()) {
+                MObject organizationObject = object(api, semanticObjects, objectNames, "OrganizationDeployment",
+                        organization.metadata(), organization.name());
+                text(api, organizationObject, "name", organization.name());
+                text(api, organizationObject, "source", organization.source());
+                text(api, organizationObject, "institution", organization.institution());
+                text(api, organizationObject, "debug", organization.debug());
+                trace.add(catalog.require("J05"), TracePhase.INSTANCE_MATERIALIZATION, organization.metadata(),
+                        "MObject", organizationObject.name(), List.of("DEPLOYMENT_NOT_MOISE_OS"));
+            }
+            for (var group : semantic.groupDeployments()) {
+                MObject groupObject = object(api, semanticObjects, objectNames, "GroupDeployment", group.metadata(),
+                        group.name());
+                text(api, groupObject, "organization", group.organization());
+                text(api, groupObject, "name", group.name());
+                text(api, groupObject, "type", group.type());
+                text(api, groupObject, "responsibleFor",
+                        NativeUseModelBuilder.canonicalJson(group.responsibleFor()));
+                trace.add(catalog.require("J06"), TracePhase.INSTANCE_MATERIALIZATION, group.metadata(),
+                        "MObject", groupObject.name(), List.of("DEPLOYMENT_NOT_MOISE_GROUP"));
+            }
+            for (var scheme : semantic.schemeDeployments()) {
+                MObject schemeObject = object(api, semanticObjects, objectNames, "SchemeDeployment", scheme.metadata(),
+                        scheme.name());
+                text(api, schemeObject, "organization", scheme.organization());
+                text(api, schemeObject, "name", scheme.name());
+                text(api, schemeObject, "type", scheme.type());
+                trace.add(catalog.require("J07"), TracePhase.INSTANCE_MATERIALIZATION, scheme.metadata(),
+                        "MObject", schemeObject.name(), List.of("DEPLOYMENT_NOT_MOISE_SCHEME"));
+            }
+            for (var institution : semantic.institutionDeployments()) {
+                MObject institutionObject = object(api, semanticObjects, objectNames, "InstitutionDeployment",
+                        institution.metadata(), institution.name());
+                text(api, institutionObject, "name", institution.name());
+                text(api, institutionObject, "workspaces",
+                        NativeUseModelBuilder.canonicalJson(institution.workspaces()));
+                text(api, institutionObject, "opaqueParameters",
+                        NativeUseModelBuilder.canonicalJson(institution.opaqueParameters()));
+                trace.add(catalog.require("J08"), TracePhase.INSTANCE_MATERIALIZATION, institution.metadata(),
+                        "MObject", institutionObject.name(), List.of("OPAQUE_FIELDS_RETAINED_AS_CANONICAL_DATA"));
+            }
+            for (var tuple : semantic.rawRoleTuples()) {
+                trace.add(catalog.require("J09"), TracePhase.INSTANCE_MATERIALIZATION, tuple.metadata(),
+                        "RAW_ROLE_TUPLE", tuple.metadata().semanticId(), List.of("UNRESOLVED_UNTIL_X04"));
+            }
+            for (var tuple : semantic.rawFocusTuples()) {
+                trace.add(catalog.require("J10"), TracePhase.INSTANCE_MATERIALIZATION, tuple.metadata(),
+                        "RAW_FOCUS_TUPLE", tuple.metadata().semanticId(), List.of("UNRESOLVED_UNTIL_X06"));
+            }
+            for (var provenance : semantic.importProvenance()) {
+                trace.add(catalog.require("J11"), TracePhase.INSTANCE_MATERIALIZATION, provenance.metadata(),
+                        "IMPORT_PROVENANCE", provenance.metadata().semanticId(),
+                        provenance.status() == org.jacamo.bridge.contract.CapabilityStatus.COMPLETE
+                                ? List.of() : List.of(provenance.status().name()));
+            }
             for (var program : source.programs()) {
                 MObject programObject = object(api, semanticObjects, objectNames, "AgentProgram",
                         program.metadata(), program.declarationId());
@@ -251,6 +342,10 @@ public final class NativeUseStateBuilder {
 
     private static void integer(UseSystemApi api, MObject object, String name, int value) throws UseApiException {
         api.setAttributeValueEx(object, attribute(object, name), IntegerValue.valueOf(value));
+    }
+
+    private static void bool(UseSystemApi api, MObject object, String name, boolean value) throws UseApiException {
+        api.setAttributeValueEx(object, attribute(object, name), BooleanValue.get(value));
     }
 
     private static void provenance(CodeGroundedTraceCollector trace, CodeGroundedRuleCatalog catalog,

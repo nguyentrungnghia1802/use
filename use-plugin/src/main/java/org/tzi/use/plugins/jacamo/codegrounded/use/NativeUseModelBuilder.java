@@ -1,6 +1,7 @@
 package org.tzi.use.plugins.jacamo.codegrounded.use;
 
 import java.util.List;
+import org.jacamo.bridge.contract.CanonicalJson;
 import org.jacamo.bridge.contract.CapabilityStatus;
 import org.tzi.use.api.UseApiException;
 import org.tzi.use.api.UseModelApi;
@@ -40,12 +41,45 @@ public final class NativeUseModelBuilder {
             api.createEnumeration("PlanBodyType", BODY_TYPES);
             api.createEnumeration("ActionKind", ACTION_KINDS);
 
-            for (String name : List.of("AgentProgram", "PlanLibrary", "Plan", "Trigger", "PlanBodyElement",
-                    "Action", "Belief", "AgentGoal", "BeliefRule", "A17PlanOrderEntry", "A19BodyOrderEntry"))
+            for (String name : List.of("Agent", "Workspace", "ArtifactDeclaration", "OrganizationDeployment",
+                    "GroupDeployment", "SchemeDeployment", "InstitutionDeployment", "AgentProgram", "PlanLibrary",
+                    "Plan", "Trigger", "PlanBodyElement", "Action", "Belief", "AgentGoal", "BeliefRule",
+                    "A17PlanOrderEntry", "A19BodyOrderEntry"))
                 api.createClass(name, false);
-            for (String name : List.of("AgentProgram", "PlanLibrary", "Plan", "Trigger", "PlanBodyElement",
-                    "Action", "Belief", "AgentGoal", "BeliefRule", "A17PlanOrderEntry", "A19BodyOrderEntry"))
+            for (String name : List.of("Agent", "Workspace", "ArtifactDeclaration", "OrganizationDeployment",
+                    "GroupDeployment", "SchemeDeployment", "InstitutionDeployment", "AgentProgram", "PlanLibrary",
+                    "Plan", "Trigger", "PlanBodyElement", "Action", "Belief", "AgentGoal", "BeliefRule",
+                    "A17PlanOrderEntry", "A19BodyOrderEntry"))
                 api.createAttribute(name, "semanticId", "String");
+            api.createAttribute("Agent", "name", "String");
+            api.createAttribute("Agent", "sourceUri", "String");
+            api.createAttribute("Agent", "options", "String");
+            api.createAttribute("Agent", "architectureClasses", "String");
+            api.createAttribute("Agent", "agentClass", "String");
+            api.createAttribute("Agent", "beliefBaseClass", "String");
+            api.createAttribute("Agent", "host", "String");
+            api.createAttribute("Agent", "instances", "Integer");
+            api.createAttribute("Workspace", "name", "String");
+            api.createAttribute("Workspace", "host", "String");
+            api.createAttribute("Workspace", "debug", "Boolean");
+            api.createAttribute("ArtifactDeclaration", "name", "String");
+            api.createAttribute("ArtifactDeclaration", "workspace", "String");
+            api.createAttribute("ArtifactDeclaration", "javaClass", "String");
+            api.createAttribute("ArtifactDeclaration", "parameters", "String");
+            api.createAttribute("OrganizationDeployment", "name", "String");
+            api.createAttribute("OrganizationDeployment", "source", "String");
+            api.createAttribute("OrganizationDeployment", "institution", "String");
+            api.createAttribute("OrganizationDeployment", "debug", "String");
+            api.createAttribute("GroupDeployment", "organization", "String");
+            api.createAttribute("GroupDeployment", "name", "String");
+            api.createAttribute("GroupDeployment", "type", "String");
+            api.createAttribute("GroupDeployment", "responsibleFor", "String");
+            api.createAttribute("SchemeDeployment", "organization", "String");
+            api.createAttribute("SchemeDeployment", "name", "String");
+            api.createAttribute("SchemeDeployment", "type", "String");
+            api.createAttribute("InstitutionDeployment", "name", "String");
+            api.createAttribute("InstitutionDeployment", "workspaces", "String");
+            api.createAttribute("InstitutionDeployment", "opaqueParameters", "String");
             api.createAttribute("AgentProgram", "declarationId", "String");
             api.createAttribute("AgentProgram", "sourceUri", "String");
             api.createAttribute("AgentProgram", "sourceDigest", "String");
@@ -112,7 +146,8 @@ public final class NativeUseModelBuilder {
                                     JacamoSpecificationModel source) {
         trace.add(catalog.require("J01"), TracePhase.MODEL_DECLARATION, source.project().metadata(),
                 "MModel", "model:" + modelName(source.project().name()), List.of());
-        for (String id : List.of("A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10",
+        for (String id : List.of("J02", "J03", "J04", "J05", "J06", "J07", "J08", "J09", "J10", "J11",
+                "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10",
                 "A11", "A16", "A17", "A18", "A19", "A20", "A21", "A22")) {
             CodeGroundedRule rule = catalog.require(id);
             trace.add(new CodeGroundedTraceRecord(id, TracePhase.MODEL_DECLARATION, rule.sourceKindFqcn(),
@@ -146,6 +181,11 @@ public final class NativeUseModelBuilder {
         if (safe.isBlank()) safe = "JaCaMo";
         if (Character.isDigit(safe.charAt(0))) safe = "JaCaMo_" + safe;
         return safe + "_CodeGrounded";
+    }
+
+    /** Canonical JSON is used as a scalar only where the USE schema has no typed collection projection. */
+    public static String canonicalJson(Object value) {
+        return new String(CanonicalJson.encode(value), java.nio.charset.StandardCharsets.UTF_8);
     }
 
     public record Result(MModel model, CodeGroundedTraceIndex trace, List<NativeConstraintSpec> constraints,

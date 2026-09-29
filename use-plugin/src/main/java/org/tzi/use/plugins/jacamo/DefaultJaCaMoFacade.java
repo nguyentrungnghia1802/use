@@ -512,7 +512,14 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         long generationNanos = System.nanoTime() - generationStarted;
         MSystem system = pipeline.state().system();
         Map<String,Long> counts = new LinkedHashMap<>();
-        counts.put("JCM", 1L);
+        long jcmDeclarations = pipeline.source().snapshot().agentDeclarations().size()
+                + pipeline.source().snapshot().workspaceDeclarations().size()
+                + pipeline.source().snapshot().artifactDeclarations().size()
+                + pipeline.source().snapshot().organizationDeployments().size()
+                + pipeline.source().snapshot().groupDeployments().size()
+                + pipeline.source().snapshot().schemeDeployments().size()
+                + pipeline.source().snapshot().institutionDeployments().size();
+        counts.put("JCM", 1L + jcmDeclarations);
         long plans = pipeline.source().programs().stream().mapToLong(value -> value.planLibrary().plans().size()).sum();
         long body = pipeline.source().programs().stream().flatMap(value -> value.planLibrary().plans().stream())
                 .mapToLong(value -> value.body().size()).sum();
@@ -527,7 +534,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         ProjectSummary summary = new ProjectSummary(jcmFile, jcmFile.getParent(), pipeline.source().project().name(),
                 snapshot.sources().size(), counts, "CODE_GROUNDED_NATIVE-1.0.0",
                 pipeline.model().structuralHash(), "CodeGroundedRuleCatalog", "1.0.0", catalogHash,
-                "PHASE_2", system.model().classes().size(), system.state().numObjects(),
+                "PHASE_3", system.model().classes().size(), system.state().numObjects(),
                 pipeline.state().structureValid(), 0, 0);
         List<SourceRow> sources;
         try {

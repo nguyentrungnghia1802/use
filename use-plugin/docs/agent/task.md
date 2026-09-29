@@ -306,37 +306,37 @@ Exact names may follow repository conventions.
 
 ## J02 Agent declaration
 
-- [ ] Preserve name/source/options/classes/host/instances when exact.
-- [ ] Keep distinct from Jason `AgentProgram`.
-- [ ] Declare `MClass Agent`.
-- [ ] Materialize Agent declaration object in state.
+- [x] Preserve name/source/options/classes/host/instances when exact.
+- [x] Keep distinct from Jason `AgentProgram`.
+- [x] Declare `MClass Agent`.
+- [x] Materialize Agent declaration object in state.
 
 ## J03 Workspace declaration
 
-- [ ] Separate declaration from runtime `WorkspaceId`.
+- [x] Separate declaration from runtime `WorkspaceId`.
 
 ## J04 Artifact declaration
 
-- [ ] Preserve declaration name and `ClassParameters`.
-- [ ] Map to `ArtifactDeclaration`.
-- [ ] Never treat as live `Artifact`.
+- [x] Preserve declaration name and `ClassParameters`.
+- [x] Map to `ArtifactDeclaration`.
+- [x] Never treat as live `Artifact`.
 
 ## J05 Organization deployment
 
-- [ ] Keep distinct from Moise `OS`.
+- [x] Keep distinct from Moise `OS`.
 
 ## J06 Group deployment
 
-- [ ] Keep distinct from Moise `Group`.
+- [x] Keep distinct from Moise `Group`.
 
 ## J07 Scheme deployment
 
-- [ ] Keep distinct from Moise `Scheme`.
+- [x] Keep distinct from Moise `Scheme`.
 
 ## J08 Institution deployment
 
-- [ ] Preserve only API-proven fields.
-- [ ] Keep opaque fields opaque.
+- [x] Preserve only API-proven fields.
+- [x] Keep opaque fields opaque.
 
 ## J09 Raw role tuple
 
@@ -1322,16 +1322,18 @@ J02–J10
 J11 full tests
 ```
 
-- [ ] deployment classes/objects;
-- [ ] raw references;
-- [ ] provenance.
+- [x] deployment classes/objects;
+- [x] raw references;
+- [x] provenance.
 
 Gate:
 
-- [ ] declaration/spec/runtime distinct;
-- [ ] ArtifactDeclaration ≠ Artifact;
-- [ ] J09/J10 unresolved until X;
-- [ ] import provenance deterministic.
+- [x] declaration/spec/runtime distinct;
+- [x] ArtifactDeclaration ≠ Artifact;
+- [x] J09/J10 unresolved until X;
+- [x] import provenance deterministic.
+
+**Phase 3 evidence — 2026-09-29:** PASS for J02–J11 static deployment scope. `OfficialProjectAdapter` retains official JaCaMo declaration DTOs and generated-token import provenance; `NativeUseModelBuilder` declares typed `Agent`, `Workspace`, `ArtifactDeclaration`, `OrganizationDeployment`, `GroupDeployment`, `SchemeDeployment`, and `InstitutionDeployment` classes; `NativeUseStateBuilder` materializes only those declarations and keeps J09/J10 as raw trace records (`UNRESOLVED_UNTIL_X04`/`UNRESOLVED_UNTIL_X06`). `ArtifactDeclaration` is the only artifact declaration class in the native schema; no live `Artifact` class or declaration-name runtime link is fabricated. `CodeGroundedPhase3Test` passed `2/2`; the focused reactor verify passed `11/11` unit plus `2/2` integration tests; the full reactor unit gate passed contract `10/10`, official adapters `15/15`, use-core `12/12`, use-gui `1/1`, and use-plugin `285/285`, with zero failures/errors/skips. No CArtAgO/Moise/cross-framework/runtime phase was started.
 
 ---
 
