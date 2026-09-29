@@ -1573,9 +1573,11 @@ ADAPTER_BUG
 UNSUPPORTED_FACT
 ```
 
-- [ ] legacy never decides new semantics;
-- [ ] no name-based reconciliation;
-- [ ] retain diff evidence.
+- [x] legacy never decides new semantics;
+- [x] no name-based reconciliation;
+- [x] retain diff evidence.
+
+**Section 26 evidence — 2026-09-29:** PASS. `ShadowSemanticComparator` indexes facts by canonical identity plus provenance digest, rejects duplicate facts, requires an explicit classification, and produces a deterministic fingerprint/register; it never reconciles by display name. `HelloShadowComparisonTest` retains the Hello shadow register, while `ShadowSemanticComparatorTest (1/1)`, `NativeSemanticAdapterTest (3/3)`, `DefaultBridgeAuthorityTest (5/5)`, `ProductionAuthorityPhase8Test (3/3)`, and `LegacyV2OclIsolationTest (2/2)` pass. Native implicit facade entry points remain `CODE_GROUNDED_NATIVE`; V2 compatibility is explicit only.
 
 ---
 
