@@ -18,7 +18,7 @@
 | Case-study acceptance | PASS (bounded scope) | `Phase9CaseStudyAcceptanceTest 2/2`, `bfb22e4b` |
 | Mapping Inspector | PASS | `JaCaMoWorkbenchPanelTest 13/13`, `3f649c90` |
 | Export/reproducibility | PASS (implemented subset) | `CodeGroundedExportTest 2/2`, `4a2048b8` |
-| Packaging/release | PASS | reactor `309/309`, integration `7/7`, `8b1e0e82` (latest audit rerun `313/313`) |
+| Packaging/release | PASS | reactor `315/315`, integration `7/7`, `1f622231` |
 | Shadow comparison | PASS | `HelloShadowComparisonTest`, `4be438e2` |
 | Runtime safety | PASS (implemented subset) | `RuntimeFoundationTest 26/26`, `ebbeca6b` |
 
@@ -52,10 +52,10 @@ branch, no second native `MSystem`, and same-session runtime/OCL/verification
 use. `CodeGroundedIdentitySafetyTest` adds direct delimiter-safe opaque identity
 and invalid-component regression coverage (`2/2`).
 
-The post-audit full reactor gate passed with contract `11/11`, official
-adapters `17/17`, use-core `12/12`, use-gui `1/1`, use-plugin `313/313`, and
+The post-checkpoint full reactor gate passed with contract `11/11`, official
+adapters `17/17`, use-core `12/12`, use-gui `1/1`, use-plugin `315/315`, and
 integration/release `7/7`, with zero failures/errors/skips. Checkpoint:
-`809532b7`.
+`1f622231`.
 
 Capability-gated native constraints are now reported explicitly. The native
 planner emits the C08 live-observable-property rule as
@@ -72,6 +72,10 @@ through reflection before creating a concrete artifact subtype and `MOperation`.
 and exported with a stable structural hash, while a non-exact method remains a
 structural `Operation` and is traced as not projected. No case-study name or
 V2 model is used by this path.
+
+The full post-checkpoint reactor rerun passed with contract `11/11`, official
+adapters `17/17`, use-core `12/12`, use-gui `1/1`, use-plugin `315/315`, and
+integration/release `7/7`, with zero failures/errors/skips.
 
 ## Case-study evidence
 
