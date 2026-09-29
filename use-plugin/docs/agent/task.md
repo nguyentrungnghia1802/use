@@ -191,7 +191,7 @@ diagnostics
 - [x] Semantic IDs independent from display/object names.
 - [ ] Runtime IDs remain opaque when required.
 - [x] Version IDs if contract schema changes.
-- [ ] Add stale identity/model revision detection.
+- [x] Add stale identity/model revision detection.
 
 ## 3.3 USE object naming
 
@@ -917,7 +917,7 @@ Trace:
 - [ ] value;
 - [x] link;
 - [x] order entry;
-- [ ] runtime mutation;
+- [x] runtime mutation;
 - [ ] skipped/unavailable fact;
 - [x] export target.
 
@@ -926,7 +926,7 @@ Index:
 - [x] source → target;
 - [x] target → source/rule;
 - [ ] runtime aliases;
-- [ ] revision/session validation.
+- [x] revision/session validation.
 
 ---
 
@@ -1136,19 +1136,19 @@ Pipeline:
 ```text
 RuntimeSnapshot / RuntimeEvent
         ↓
-runtime semantic adapter
+typed native runtime projector (CODE_GROUNDED_NATIVE)
         ↓
-BridgeRuntimeProjector
+native rule/evidence gate
         ↓
-rule/evidence gate
+exact BridgeEntityId binding
         ↓
-TraceIndex resolution
+NativeRuntimeMutationEngine
         ↓
-RuntimeMutationEngine
+the activated session MSystem.state()
         ↓
-session.system().state()
-        ↓
-USE verification
+USE OCL gate
+
+LEGACY_V2 keeps the separate BridgeRuntimeProjector → RuntimeMutationEngine path.
 ```
 
 Statuses:
@@ -1162,13 +1162,13 @@ UNKNOWN
 
 Tasks:
 
-- [ ] Only faithful facts mutate USE.
-- [ ] RuntimeMutationEngine targets current session system.
-- [ ] Reject stale model revision/session/generation.
-- [ ] No private facade state.
-- [ ] Reconnect/resync safely rebuilds state/indices.
-- [ ] Runtime events cannot invent undeclared types without explicit model revision protocol.
-- [ ] Preserve AgentId/WorkspaceId/ArtifactId/board identities.
+- [x] Only faithful facts mutate USE.
+- [x] `NativeRuntimeMutationEngine` targets the current session system in native mode; legacy `RuntimeMutationEngine` remains V2-only.
+- [x] Reject stale model revision/session/generation.
+- [x] No private facade formal state; the native projector owns the pipeline's activated `MSystem` only.
+- [x] Reconnect/resync safely rebuilds state/indices.
+- [x] Runtime events cannot invent undeclared types without explicit model revision protocol.
+- [x] Preserve AgentId/WorkspaceId/ArtifactId/board identities.
 
 ---
 
@@ -1402,23 +1402,25 @@ Gate:
 
 ## Phase 7 — Runtime native synchronization
 
-- [ ] Jason runtime projection;
-- [ ] CArtAgO runtime projection;
-- [ ] Moise board snapshots;
-- [ ] NPL evidence;
-- [ ] runtime rule registry;
-- [ ] same-session mutations;
-- [ ] reconnect/resync;
-- [ ] stale event rejection;
-- [ ] runtime OCL gates.
+- [x] Jason runtime projection;
+- [x] CArtAgO runtime projection;
+- [x] Moise board snapshots;
+- [x] NPL evidence;
+- [x] runtime rule registry;
+- [x] same-session mutations;
+- [x] reconnect/resync;
+- [x] stale event rejection;
+- [x] runtime OCL gates.
 
 Gate:
 
-- [ ] every mutation targets current session state;
-- [ ] no parallel/private state;
-- [ ] stale events rejected;
-- [ ] evidence-only cannot mutate;
-- [ ] resync deterministic.
+- [x] every mutation targets current session state;
+- [x] no parallel/private state;
+- [x] stale events rejected;
+- [x] evidence-only cannot mutate;
+- [x] resync deterministic.
+
+**Phase 7 evidence — 2026-09-29:** PASS for the bounded native runtime synchronization slice. `NativeRuntimeProjector`, `NativeRuntimeMutationEngine`, `CodeGroundedRuntimeRuleRegistry`, and `NativeRuntimeTraceRecord` are native-only and do not call the V2 projector/mapping. Faithful Jason `Agent.host` and CArtAgO `Artifact.name` updates, exact relation insert/delete, and attribute unset mutate the pipeline `MSystem`; `NativeRuntimeFacadeIntegrationTest` proves a buffered event is applied after `Session.setSystem` preparation and the facade/session retain the same system. Moise group-board and NPL norm facts are retained as evidence-only and do not mutate formal state. Snapshot resync resets the same system to its baseline, stale replay/session/generation/model-revision events reject closed, undeclared mutation kinds reject closed, and the OCL gate runs after each faithful mutation. Focused Phase 7 tests passed `4/4`; the full reactor passed `297/297` with zero failures/errors/skips. PARTIAL: Jason A12–A15 action/intention/TransitionSystem semantics and `RuntimeVerificationEngine` rule-registry migration remain unchecked; the current native runtime scope is typed attribute/link projection plus evidence-only facts.
 
 ---
 
@@ -1661,7 +1663,7 @@ V2 becomes historical-only when:
 - [x] objects
 - [x] values
 - [x] links
-- [ ] removal/update
+- [x] removal/update
 - [x] undefined
 - [ ] collisions
 - [x] ordered helpers
@@ -1676,14 +1678,14 @@ V2 becomes historical-only when:
 - [x] native install
 - [x] capability gate
 - [x] no V2 load
-- [ ] runtime same mode
+- [x] runtime same mode
 
 ## Jason
 - [x] all audited BodyTypes
 - [x] plan order
 - [x] body order
 - [x] trigger enums
-- [ ] source/runtime distinction
+- [x] source/runtime distinction
 
 ## CArtAgO
 - [x] descriptor authority

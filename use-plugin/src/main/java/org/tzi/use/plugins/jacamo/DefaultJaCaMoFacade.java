@@ -35,6 +35,7 @@ import org.tzi.use.plugins.jacamo.binding.BindingStore;
 import org.tzi.use.plugins.jacamo.constraint.ConstraintExtractor;
 import org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNativePipeline;
 import org.tzi.use.plugins.jacamo.codegrounded.NativeUseSessionActivator;
+import org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector;
 import org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalog;
 import org.tzi.use.plugins.jacamo.codegrounded.constraint.NativeProfileCompatibilityPreflight;
 import org.tzi.use.plugins.jacamo.diagnostics.Diagnostic;
@@ -392,15 +393,30 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         BridgeMirrorStateMachine candidateMirror = new BridgeMirrorStateMachine(8_192);
         ArrayDeque<RuntimeEvent> pending = new ArrayDeque<>();
         AtomicReference<BridgeRuntimeProjector> projectorReference = new AtomicReference<>();
+        AtomicReference<NativeRuntimeProjector> nativeProjectorReference = new AtomicReference<>();
         BridgeClient candidate = null;
         try {
             candidate = new BridgeClient(bridgeTransportFactory.open(configuration), candidateMirror,
                     configuration.distributionSha256(), configuration.requiredCapabilities(),
                     configuration.maxBufferedEvents(), event -> {
                         if (pipelineMode == PipelineMode.CODE_GROUNDED_NATIVE) {
-                            // Runtime projection is intentionally outside the current static native phase. The Bridge mirror remains the
-                            // evidence authority, while no historical V2 runtime mapper may mutate the native system.
-                            bridgeProcessed.incrementAndGet();
+                            synchronized (pending) {
+                                NativeRuntimeProjector projector = nativeProjectorReference.get();
+                                if (projector == null) {
+                                    // Faithful events are retained until the native pipeline owns the accepted
+                                    // session. Evidence-only events stay in the authoritative Bridge mirror.
+                                    if (!nativeRequiresMaterialization(event)) {
+                                        bridgeProcessed.incrementAndGet();
+                                        return;
+                                    }
+                                    if (pending.size() >= configuration.maxBufferedEvents())
+                                        throw new BridgeProtocolException("BRIDGE_FACADE_BUFFER_OVERFLOW");
+                                    pending.addLast(event);
+                                } else {
+                                    projector.apply(event);
+                                    bridgeProcessed.incrementAndGet();
+                                }
+                            }
                             return;
                         }
                         synchronized (pending) {
@@ -425,6 +441,17 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 long importNanos = System.nanoTime() - importStarted;
                 NativeWorkspace next = buildNativeSemantic(selectedJcm, accepted.model(), importNanos);
                 if (session != null) new NativeUseSessionActivator().activate(session, next.pipeline);
+                NativeRuntimeProjector nativeProjector = new NativeRuntimeProjector(next.pipeline,
+                        accepted.sessionId(), accepted.generation(), accepted.modelRevision());
+                synchronized (pending) {
+                    nativeProjector.applySnapshot(accepted.runtime());
+                    nativeProjectorReference.set(nativeProjector);
+                    while (!pending.isEmpty()) {
+                        nativeProjector.apply(pending.removeFirst());
+                        bridgeProcessed.incrementAndGet();
+                    }
+                }
+                next.runtimeProjector = nativeProjector;
                 BridgeClient previousClient = bridgeClient;
                 nativeWorkspace = next;
                 workspace = null;
@@ -503,6 +530,13 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             bridgeClient.close();
             bridgeClient = null;
         }
+    }
+
+    private boolean nativeRequiresMaterialization(RuntimeEvent event) {
+        return event.projectionStatus() == org.jacamo.bridge.contract.ProjectionStatus.MATERIALIZED_FAITHFULLY
+                && event.completeness() == org.jacamo.bridge.contract.Completeness.COMPLETE
+                && event.after().get("normalizedEventKind") instanceof String normalized
+                && !normalized.isBlank();
     }
 
     private NativeWorkspace buildNativeSemantic(Path jcmFile, org.jacamo.bridge.contract.ModelSnapshot snapshot,
@@ -761,6 +795,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         private final CodeGroundedNativePipeline.Result pipeline;
         private final long importNanos;
         private final long generationNanos;
+        private NativeRuntimeProjector runtimeProjector;
         private VerificationReport latest;
 
         private NativeWorkspace(ProjectSummary summary, List<SourceRow> sources, List<TraceRow> traces,

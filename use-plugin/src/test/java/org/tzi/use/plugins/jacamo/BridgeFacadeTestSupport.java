@@ -3,6 +3,7 @@ package org.tzi.use.plugins.jacamo;
 import java.net.URI;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +19,7 @@ import org.jacamo.bridge.contract.DistributionFingerprint;
 import org.jacamo.bridge.contract.MessageType;
 import org.jacamo.bridge.contract.ModelSnapshot;
 import org.jacamo.bridge.contract.RuntimeSnapshot;
+import org.jacamo.bridge.contract.RuntimeEvent;
 import org.jacamo.bridge.contract.SourceWatermark;
 import org.tzi.use.plugins.jacamo.bridge.BridgeConnectionConfig;
 import org.tzi.use.plugins.jacamo.bridge.RecordedBridgeTransport;
@@ -62,6 +64,12 @@ final class BridgeFacadeTestSupport {
 
     static DefaultJaCaMoFacade nativeFacade(Path jcm, Session session,
                                             java.util.function.BooleanSupplier unavailable) {
+        return nativeFacadeWithEvents(jcm, session, unavailable, List.of());
+    }
+
+    static DefaultJaCaMoFacade nativeFacadeWithEvents(Path jcm, Session session,
+                                                      java.util.function.BooleanSupplier unavailable,
+                                                      List<RuntimeEvent> events) {
         Path selected = jcm.toAbsolutePath().normalize();
         return new DefaultJaCaMoFacade(Path.of("."), SemanticAuthority.BRIDGE,
                 BridgeFacadeTestSupport::configuration, ignored -> {
@@ -69,7 +77,7 @@ final class BridgeFacadeTestSupport {
                     try {
                         ModelSnapshot model = new OfficialProjectAdapter().adapt(
                                 new OfficialProjectLoader().load(selected), selected);
-                        return new RecordedBridgeTransport(frames(model, model.sources().getFirst().id().scope()));
+                        return new RecordedBridgeTransport(frames(model, model.sources().getFirst().id().scope(), events));
                     } catch (RuntimeException error) {
                         throw error;
                     } catch (Exception error) {
@@ -84,6 +92,10 @@ final class BridgeFacadeTestSupport {
     }
 
     private static List<byte[]> frames(ModelSnapshot model, String projectKey) {
+        return frames(model, projectKey, List.of());
+    }
+
+    private static List<byte[]> frames(ModelSnapshot model, String projectKey, List<RuntimeEvent> events) {
         String source = "jason:test-facade";
         RuntimeSnapshot runtime = new RuntimeSnapshot("test-snapshot", model.modelRevision(), Instant.EPOCH,
                 Instant.EPOCH, Map.of(source, new SourceWatermark(source, 0)),
@@ -91,11 +103,14 @@ final class BridgeFacadeTestSupport {
                 Map.of(source, Completeness.COMPLETE), "f".repeat(64));
         DistributionFingerprint distribution = new DistributionFingerprint("1.3.1", DISTRIBUTION,
                 Map.of("jason", "3.3.2", "cartago", "3.1", "moise", "1.1", "npl", "0.6.1"));
-        return List.of(
+        List<byte[]> frames = new ArrayList<>(List.of(
                 encode(MessageType.HANDSHAKE, model, projectKey, distribution, Map.of("readOnly", true)),
                 encode(MessageType.MODEL_SNAPSHOT, model, projectKey, distribution, ContractPayloads.model(model)),
                 encode(MessageType.RUNTIME_SNAPSHOT, model, projectKey, distribution,
-                        ContractPayloads.runtime(runtime)));
+                        ContractPayloads.runtime(runtime))));
+        for (RuntimeEvent event : events)
+            frames.add(encode(MessageType.RUNTIME_EVENT, model, projectKey, distribution, ContractPayloads.event(event)));
+        return frames;
     }
 
     private static byte[] encode(MessageType type, ModelSnapshot model, String projectKey,
