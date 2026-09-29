@@ -1584,14 +1584,16 @@ UNSUPPORTED_FACT
 # 27. Performance/safety
 
 - [ ] bounded semantic snapshots;
-- [ ] bounded event queues;
-- [ ] no network/build on Swing EDT;
-- [ ] atomic activation;
-- [ ] old session survives failure;
-- [ ] no listener leaks;
-- [ ] deterministic model creation;
-- [ ] large plan/body tests;
+- [x] bounded event queues;
+- [x] no network/build on Swing EDT;
+- [x] atomic activation;
+- [x] old session survives failure;
+- [x] no listener leaks;
+- [x] deterministic model creation;
+- [x] large plan/body tests;
 - [ ] trace size monitored.
+
+**Section 27 evidence — 2026-09-29:** PASS for the bounded/runtime/session safety items that have direct evidence. `RuntimeFoundationTest (26/26)` covers bounded ordered queues, snapshot-buffer overflow, backpressure/tombstones, observer/listener shutdown, stale callback isolation, rollback, reconnect/resync, and timing metrics. `JaCaMoWorkbenchPanelTest (13/13)` proves import/build work is dispatched off the Swing EDT and UI publication/refresh stays on the UI boundary. `NativeUseSessionActivationTest (2/2)` proves validation-before-activation and preservation of the previous `MSystem` on failure; `NativeRuntimeFacadeIntegrationTest (1/1)` proves runtime mutation occurs in the activated session system; `CodeGroundedDeterminismTest (1/1)` proves repeatable native model/export/trace output; `CodeGroundedLargePlanTest (1/1)` retains a 256-element official Jason body and ordered links. Semantic snapshot hard limits and production trace-size monitoring remain unchecked because no separate native limit/telemetry contract exists yet.
 
 ---
 
