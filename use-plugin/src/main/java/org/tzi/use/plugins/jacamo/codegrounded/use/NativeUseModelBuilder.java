@@ -24,6 +24,7 @@ public final class NativeUseModelBuilder {
             "achieveNF", "constraint");
     public static final List<String> TRIGGER_OPERATORS = List.of("add", "del", "goalState");
     public static final List<String> TRIGGER_TYPES = List.of("belief", "achieve", "test", "signal");
+    public static final List<String> ACTION_KINDS = List.of("EXTERNAL", "INTERNAL");
 
     public Result build(JacamoSpecificationModel source) {
         CodeGroundedTraceCollector trace = new CodeGroundedTraceCollector();
@@ -37,12 +38,14 @@ public final class NativeUseModelBuilder {
             api.createEnumeration("TriggerOperator", TRIGGER_OPERATORS);
             api.createEnumeration("TriggerType", TRIGGER_TYPES);
             api.createEnumeration("PlanBodyType", BODY_TYPES);
-            api.createEnumeration("ActionKind", "EXTERNAL", "INTERNAL");
+            api.createEnumeration("ActionKind", ACTION_KINDS);
 
             for (String name : List.of("AgentProgram", "PlanLibrary", "Plan", "Trigger", "PlanBodyElement",
-                    "A17PlanOrderEntry", "A19BodyOrderEntry")) api.createClass(name, false);
+                    "Action", "Belief", "AgentGoal", "BeliefRule", "A17PlanOrderEntry", "A19BodyOrderEntry"))
+                api.createClass(name, false);
             for (String name : List.of("AgentProgram", "PlanLibrary", "Plan", "Trigger", "PlanBodyElement",
-                    "A17PlanOrderEntry", "A19BodyOrderEntry")) api.createAttribute(name, "semanticId", "String");
+                    "Action", "Belief", "AgentGoal", "BeliefRule", "A17PlanOrderEntry", "A19BodyOrderEntry"))
+                api.createAttribute(name, "semanticId", "String");
             api.createAttribute("AgentProgram", "declarationId", "String");
             api.createAttribute("AgentProgram", "sourceUri", "String");
             api.createAttribute("AgentProgram", "sourceDigest", "String");
@@ -56,6 +59,19 @@ public final class NativeUseModelBuilder {
             api.createAttribute("PlanBodyElement", "ordinal", "Integer");
             api.createAttribute("PlanBodyElement", "bodyType", "PlanBodyType");
             api.createAttribute("PlanBodyElement", "term", "String");
+            api.createAttribute("Action", "planBodySemanticId", "String");
+            api.createAttribute("Action", "term", "String");
+            api.createAttribute("Action", "functor", "String");
+            api.createAttribute("Action", "arity", "Integer");
+            api.createAttribute("Action", "kind", "ActionKind");
+            api.createAttribute("Belief", "ordinal", "Integer");
+            api.createAttribute("Belief", "literal", "String");
+            api.createAttribute("AgentGoal", "ordinal", "Integer");
+            api.createAttribute("AgentGoal", "literal", "String");
+            api.createAttribute("AgentGoal", "goalKind", "String");
+            api.createAttribute("BeliefRule", "ordinal", "Integer");
+            api.createAttribute("BeliefRule", "head", "String");
+            api.createAttribute("BeliefRule", "body", "String");
             api.createAttribute("A17PlanOrderEntry", "rank", "Integer");
             api.createAttribute("A19BodyOrderEntry", "rank", "Integer");
 
@@ -69,6 +85,10 @@ public final class NativeUseModelBuilder {
                     MAggregationKind.COMPOSITION, "PlanBodyElement", "bodyElements", "*", false, true);
             association(api, "A20PlanBodyNext", "PlanBodyElement", "current", "0..1",
                     MAggregationKind.NONE, "PlanBodyElement", "next", "0..1", false, false);
+            association(api, "A21ProgramBelief", "AgentProgram", "program", "1",
+                    MAggregationKind.COMPOSITION, "Belief", "initialBeliefs", "*", false, true);
+            association(api, "A22ProgramGoal", "AgentProgram", "program", "1",
+                    MAggregationKind.COMPOSITION, "AgentGoal", "initialGoals", "*", false, true);
             association(api, "A17OrderOwner", "PlanLibrary", "owner", "1", MAggregationKind.COMPOSITION,
                     "A17PlanOrderEntry", "a17Entries", "*", false, false);
             association(api, "A17OrderMember", "Plan", "member", "1", MAggregationKind.NONE,
@@ -92,7 +112,8 @@ public final class NativeUseModelBuilder {
                                     JacamoSpecificationModel source) {
         trace.add(catalog.require("J01"), TracePhase.MODEL_DECLARATION, source.project().metadata(),
                 "MModel", "model:" + modelName(source.project().name()), List.of());
-        for (String id : List.of("A01", "A02", "A03", "A04", "A05", "A16", "A17", "A18", "A19", "A20")) {
+        for (String id : List.of("A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10",
+                "A11", "A16", "A17", "A18", "A19", "A20", "A21", "A22")) {
             CodeGroundedRule rule = catalog.require(id);
             trace.add(new CodeGroundedTraceRecord(id, TracePhase.MODEL_DECLARATION, rule.sourceKindFqcn(),
                     rule.sourceKindFqcn(), "schema:" + id, targetKind(rule.targetUseKind()),

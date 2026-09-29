@@ -17,6 +17,7 @@ import jason.asSemantics.InternalAction;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Plan;
 import jason.asSyntax.PlanBody;
+import jason.asSyntax.Rule;
 import jason.asSyntax.Structure;
 import org.jacamo.bridge.contract.BridgeEntityId;
 import org.jacamo.bridge.contract.CapabilityStatus;
@@ -24,6 +25,10 @@ import org.jacamo.bridge.contract.ModelFact;
 import org.jacamo.bridge.contract.semantic.EvidenceAuthority;
 import org.jacamo.bridge.contract.semantic.Fidelity;
 import org.jacamo.bridge.contract.semantic.JasonSemanticContract.AgentProgramSemantic;
+import org.jacamo.bridge.contract.semantic.JasonSemanticContract.ActionSemantic;
+import org.jacamo.bridge.contract.semantic.JasonSemanticContract.AgentGoalSemantic;
+import org.jacamo.bridge.contract.semantic.JasonSemanticContract.BeliefRuleSemantic;
+import org.jacamo.bridge.contract.semantic.JasonSemanticContract.BeliefSemantic;
 import org.jacamo.bridge.contract.semantic.JasonSemanticContract.PlanBodyElementSemantic;
 import org.jacamo.bridge.contract.semantic.JasonSemanticContract.PlanLibrarySemantic;
 import org.jacamo.bridge.contract.semantic.JasonSemanticContract.PlanSemantic;
@@ -54,11 +59,46 @@ public final class OfficialJasonAdapter {
         try{
             agent.parseAS(source.toFile());
             var facts=new ArrayList<ModelFact>();int legacyOrdinal=0;
-            for(Literal belief:agent.getInitialBels())facts.add(fact("belief",canonicalAst(belief.toString()),line(belief),legacyOrdinal++,projectKey,declarationId,evidence,parent));
-            for(Literal goal:agent.getInitialGoals())facts.add(fact("goal",canonicalAst(goal.toString()),line(goal),legacyOrdinal++,projectKey,declarationId,evidence,parent));
-
             String programId="jason:agent-program:"+projectKey+":"+declarationId;
             String libraryId=programId+":plan-library";
+            var typedActions=new ArrayList<ActionSemantic>();
+            var typedBeliefs=new ArrayList<BeliefSemantic>();
+            var typedGoals=new ArrayList<AgentGoalSemantic>();
+            var typedRules=new ArrayList<BeliefRuleSemantic>();
+            int beliefOrdinal=0;int ruleOrdinal=0;
+            for(Literal belief:agent.getInitialBels()){
+                String literal=canonicalAst(belief.toString());
+                if(belief instanceof Rule rule){
+                    String ruleId=programId+":belief-rule:"+ruleOrdinal+":"+AdapterEvidence.digest(
+                            (canonicalAst(rule.getHead().toString())+"|"+canonicalAst(rule.getBody().toString()))
+                                    .getBytes(StandardCharsets.UTF_8));
+                    var metadata=SemanticEvidence.metadata(ruleId,"JASON_BELIEF_RULE","jason.asSyntax.Rule",
+                            EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,
+                            startLine(rule),endLine(rule),List.of());
+                    typedRules.add(new BeliefRuleSemantic(metadata,ruleOrdinal++,canonicalAst(rule.getHead().toString()),
+                            canonicalAst(rule.getBody().toString())));
+                    facts.add(fact("belief-rule",literal,startLine(rule),legacyOrdinal++,projectKey,declarationId,evidence,parent));
+                }else{
+                    String beliefId=programId+":belief:"+beliefOrdinal+":"+AdapterEvidence.digest(
+                            literal.getBytes(StandardCharsets.UTF_8));
+                    var metadata=SemanticEvidence.metadata(beliefId,"JASON_BELIEF","jason.asSyntax.Literal",
+                            EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,
+                            startLine(belief),endLine(belief),List.of());
+                    typedBeliefs.add(new BeliefSemantic(metadata,beliefOrdinal++,literal));
+                    facts.add(fact("belief",literal,startLine(belief),legacyOrdinal++,projectKey,declarationId,evidence,parent));
+                }
+            }
+            int goalOrdinal=0;
+            for(Literal goal:agent.getInitialGoals()){
+                String literal=canonicalAst(goal.toString());
+                String goalId=programId+":goal:"+goalOrdinal+":"+AdapterEvidence.digest(
+                        literal.getBytes(StandardCharsets.UTF_8));
+                var metadata=SemanticEvidence.metadata(goalId,"JASON_AGENT_GOAL","jason.asSyntax.Literal",
+                        EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,
+                        startLine(goal),endLine(goal),List.of());
+                typedGoals.add(new AgentGoalSemantic(metadata,goalOrdinal++,literal,"ACHIEVE"));
+                facts.add(fact("goal",literal,startLine(goal),legacyOrdinal++,projectKey,declarationId,evidence,parent));
+            }
             var typedPlans=new ArrayList<PlanSemantic>();int planOrdinal=0;
             for(Plan plan:agent.getPL().getPlans()){
                 int ordinal=planOrdinal++;
@@ -85,6 +125,18 @@ public final class OfficialJasonAdapter {
                             EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,
                             draft.line(),draft.line(),List.of());
                     typedBody.add(new PlanBodyElementSemantic(metadata,i,draft.type(),draft.term(),next));
+                    if(draft.type().equals("action")||draft.type().equals("internalAction")){
+                        var term=draft.source().getBodyTerm();
+                        String functor=term instanceof Structure structure?structure.getFunctor():"";
+                        int arity=term instanceof Structure structure?structure.getArity():0;
+                        String actionId=bodyId+":action";
+                        var actionMetadata=SemanticEvidence.metadata(actionId,
+                                draft.type().equals("action")?"JASON_EXTERNAL_ACTION":"JASON_INTERNAL_ACTION",
+                                "jason.asSyntax.PlanBody",EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,
+                                CapabilityStatus.COMPLETE,evidence,draft.line(),draft.line(),List.of());
+                        typedActions.add(new ActionSemantic(actionMetadata,bodyId,draft.term(),functor,arity,
+                                draft.type().equals("action")?"EXTERNAL":"INTERNAL"));
+                    }
                 }
                 String labelFunctor=plan.getLabel()==null?"":plan.getLabel().getFunctor();
                 String sourceLabel=GENERATED_LABEL.matcher(labelFunctor).matches()?"":labelFunctor;
@@ -131,7 +183,8 @@ public final class OfficialJasonAdapter {
             var library=new PlanLibrarySemantic(libraryMetadata,typedPlans);
             var programMetadata=SemanticEvidence.metadata(programId,"JASON_AGENT_PROGRAM","jason.asSemantics.Agent",
                     EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,1,1,List.of());
-            var program=new AgentProgramSemantic(programMetadata,declarationId,evidence.sourceUri(),evidence.sourceDigest(),library);
+            var program=new AgentProgramSemantic(programMetadata,declarationId,evidence.sourceUri(),evidence.sourceDigest(),library,
+                    typedActions,typedBeliefs,typedGoals,typedRules);
             return new Result(facts,program);
         }finally{agent.stopAg();}
     }
@@ -154,7 +207,9 @@ public final class OfficialJasonAdapter {
         Set<String> actual=Arrays.stream(PlanBody.BodyType.values()).map(Enum::name).collect(Collectors.toUnmodifiableSet());
         if(!actual.equals(AUDITED_BODY_TYPES))throw new IllegalStateException("JASON_BODY_TYPE_API_DRIFT:"+actual);
     }
-    private int line(jason.asSyntax.Term term){return term.getSrcInfo()==null?0:term.getSrcInfo().getSrcLine();}
+    private int line(jason.asSyntax.Term term){return startLine(term);}
+    private int startLine(jason.asSyntax.Term term){return term.getSrcInfo()==null?0:term.getSrcInfo().getBeginSrcLine();}
+    private int endLine(jason.asSyntax.Term term){return term.getSrcInfo()==null?startLine(term):term.getSrcInfo().getEndSrcLine();}
     private ModelFact fact(String kind,String ast,int line,int ordinal,String projectKey,String declarationId,
                            org.jacamo.bridge.contract.Evidence evidence,BridgeEntityId parent){
         var id=new BridgeEntityId("jason","agent",kind,projectKey,declarationId+":"+ordinal,"model");

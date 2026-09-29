@@ -49,6 +49,30 @@ class OfficialJasonAdapterTest {
                 Arrays.stream(PlanBody.BodyType.values()).map(Enum::name).collect(Collectors.toSet()));
     }
 
+    @Test void phase2UsesOfficialJasonFactsForActionsBeliefsGoalsRulesAndSourceInfo() throws Exception {
+        Path source = temporary.resolve("phase2.asl");
+        Files.writeString(source, "belief(a).\n"
+                + "eligible(X) :- available(X).\n"
+                + "!boot.\n"
+                + "+!boot <- external(a); .print(\"ok\").\n");
+
+        var program = new OfficialJasonAdapter().adapt(temporary, source, "phase2", "agent").program();
+
+        assertEquals(List.of("belief(a)"), program.beliefs().stream().map(value -> value.literal()).toList());
+        assertEquals(List.of("boot"), program.goals().stream().map(value -> value.literal()).toList());
+        assertEquals("ACHIEVE", program.goals().getFirst().goalKind());
+        assertEquals(List.of("eligible(X)"), program.beliefRules().stream().map(value -> value.head()).toList());
+        assertEquals(List.of("available(X)"), program.beliefRules().stream().map(value -> value.body()).toList());
+        assertEquals(Set.of("EXTERNAL", "INTERNAL"), program.actions().stream()
+                .map(value -> value.kind()).collect(Collectors.toSet()));
+        assertTrue(program.actions().stream().allMatch(value -> program.planLibrary().plans().stream()
+                .flatMap(plan -> plan.body().stream())
+                .anyMatch(body -> body.metadata().semanticId().equals(value.planBodySemanticId()))));
+        assertTrue(program.beliefs().stream().allMatch(value -> value.metadata().evidence().getFirst().startLine() > 0));
+        assertTrue(program.beliefRules().stream().allMatch(value -> value.metadata().evidence().getFirst().endLine()
+                >= value.metadata().evidence().getFirst().startLine()));
+    }
+
     @Test void j11UsesOfficialLexerOnlyForRecursiveProvenance() throws Exception {
         Path child = temporary.resolve("child.jcm");
         Path entry = temporary.resolve("entry.jcm");

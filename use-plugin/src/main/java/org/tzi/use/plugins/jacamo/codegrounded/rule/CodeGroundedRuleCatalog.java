@@ -17,7 +17,8 @@ import org.jacamo.bridge.contract.semantic.Fidelity;
 public final class CodeGroundedRuleCatalog {
     private static final Set<String> FIRST_SLICE = Set.of(
             "J01", "J09", "J10", "J11",
-            "A01", "A02", "A03", "A04", "A05", "A16", "A17", "A18", "A19", "A20");
+            "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10", "A11",
+            "A16", "A17", "A18", "A19", "A20", "A21", "A22");
     private static final List<CodeGroundedRule> RULES = build();
     private static final Map<String, CodeGroundedRule> BY_ID = index(RULES);
 

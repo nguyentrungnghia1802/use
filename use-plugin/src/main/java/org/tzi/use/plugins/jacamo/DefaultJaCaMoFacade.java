@@ -191,7 +191,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             if (!preflight.compatible())
                 throw new IllegalArgumentException("NATIVE_PROFILE_INCOMPATIBLE: "
                         + String.join(",", preflight.diagnostics()));
-            throw new UnsupportedOperationException("NATIVE_PROFILE_INSTALL_NOT_IN_PHASE_1B");
+            throw new UnsupportedOperationException("NATIVE_PROFILE_INSTALL_NOT_IN_CURRENT_NATIVE_SCOPE");
         }
         if (profile == null || !Files.isRegularFile(profile.toAbsolutePath().normalize()))
             throw new IllegalArgumentException("OCL_USER_PROFILE_IO");
@@ -335,7 +335,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                                                       String selectedTargetId, String reason) {
         requireWorkspace();
         if (nativeWorkspace != null)
-            throw new UnsupportedOperationException("NATIVE_BINDING_PERSISTENCE_NOT_IN_PHASE_1B");
+            throw new UnsupportedOperationException("NATIVE_BINDING_PERSISTENCE_NOT_IN_CURRENT_NATIVE_SCOPE");
         BindingCandidate candidate = request.candidates().stream()
                 .filter(value -> value.semanticId().equals(selectedTargetId)).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("BINDING_TARGET_NOT_A_CANDIDATE"));
@@ -398,7 +398,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                     configuration.distributionSha256(), configuration.requiredCapabilities(),
                     configuration.maxBufferedEvents(), event -> {
                         if (pipelineMode == PipelineMode.CODE_GROUNDED_NATIVE) {
-                            // Runtime projection is intentionally outside Phase 1B. The Bridge mirror remains the
+                            // Runtime projection is intentionally outside the current static native phase. The Bridge mirror remains the
                             // evidence authority, while no historical V2 runtime mapper may mutate the native system.
                             bridgeProcessed.incrementAndGet();
                             return;
@@ -516,13 +516,18 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         long plans = pipeline.source().programs().stream().mapToLong(value -> value.planLibrary().plans().size()).sum();
         long body = pipeline.source().programs().stream().flatMap(value -> value.planLibrary().plans().stream())
                 .mapToLong(value -> value.body().size()).sum();
-        counts.put("JASON", (long) pipeline.source().programs().size() * 2 + plans * 2 + body);
+        long actions = pipeline.source().programs().stream().mapToLong(value -> value.actions().size()).sum();
+        long beliefs = pipeline.source().programs().stream().mapToLong(value -> value.beliefs().size()).sum();
+        long goals = pipeline.source().programs().stream().mapToLong(value -> value.goals().size()).sum();
+        long beliefRules = pipeline.source().programs().stream().mapToLong(value -> value.beliefRules().size()).sum();
+        counts.put("JASON", (long) pipeline.source().programs().size() * 2 + plans * 2 + body
+                + actions + beliefs + goals + beliefRules);
         counts.put("CARTAGO", 0L); counts.put("MOISE", 0L); counts.put("CROSS", 0L);
         String catalogHash = sha256(new CodeGroundedRuleCatalog().rules().toString());
         ProjectSummary summary = new ProjectSummary(jcmFile, jcmFile.getParent(), pipeline.source().project().name(),
                 snapshot.sources().size(), counts, "CODE_GROUNDED_NATIVE-1.0.0",
                 pipeline.model().structuralHash(), "CodeGroundedRuleCatalog", "1.0.0", catalogHash,
-                "PHASE_1B", system.model().classes().size(), system.state().numObjects(),
+                "PHASE_2", system.model().classes().size(), system.state().numObjects(),
                 pipeline.state().structureValid(), 0, 0);
         List<SourceRow> sources;
         try {

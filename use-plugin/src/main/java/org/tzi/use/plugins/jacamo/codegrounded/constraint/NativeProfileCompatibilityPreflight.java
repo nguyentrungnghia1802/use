@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import org.tzi.use.uml.mm.MModel;
 
-/** Read-only compatibility check. Phase 1B does not install external/V2 profiles into the native model. */
+/** Read-only compatibility check. The static native path does not install external/V2 profiles. */
 public final class NativeProfileCompatibilityPreflight {
     private static final Pattern CONTEXT = Pattern.compile("(?m)^\\s*context\\s+([A-Za-z_][A-Za-z0-9_]*)\\b");
 

@@ -1,6 +1,6 @@
 package org.jacamo.bridge.contract.semantic;
 
-/** Typed CArtAgO contract surface. Population remains capability-gated after Phase 1B. */
+/** Typed CArtAgO contract surface. Population remains capability-gated in later phases. */
 public final class CartagoSemanticContract {
     private CartagoSemanticContract() { }
     public record EnvironmentSemantic(SemanticNode value) { }

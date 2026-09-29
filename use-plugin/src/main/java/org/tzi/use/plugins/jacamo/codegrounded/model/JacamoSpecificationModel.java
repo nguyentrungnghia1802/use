@@ -57,6 +57,10 @@ public final class JacamoSpecificationModel {
                 if (plan.trigger() != null) register(identities, plan.trigger().metadata());
                 plan.body().forEach(value -> register(identities, value.metadata()));
             }
+            program.actions().forEach(value -> register(identities, value.metadata()));
+            program.beliefs().forEach(value -> register(identities, value.metadata()));
+            program.goals().forEach(value -> register(identities, value.metadata()));
+            program.beliefRules().forEach(value -> register(identities, value.metadata()));
         }
     }
 

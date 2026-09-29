@@ -63,6 +63,54 @@ public final class NativeUseStateBuilder {
                 link(api, schema, "A16AgentProgramPlanLibrary", programObject, libraryObject);
                 trace.add(catalog.require("A16"), TracePhase.INSTANCE_MATERIALIZATION, program.metadata(),
                         "MLink", linkIdentity("A16", program.metadata().semanticId(), library.metadata().semanticId()), List.of());
+                provenance(trace, catalog, program.metadata(), "program:" + program.metadata().semanticId());
+
+                for (int beliefIndex = 0; beliefIndex < program.beliefs().size(); beliefIndex++) {
+                    var belief = program.beliefs().get(beliefIndex);
+                    if (belief.ordinal() != beliefIndex)
+                        throw new IllegalArgumentException("A21_BELIEF_ORDINAL_NONCONTIGUOUS: " + belief.metadata().semanticId());
+                    MObject beliefObject = object(api, semanticObjects, objectNames, "Belief", belief.metadata(),
+                            "belief_" + beliefIndex);
+                    integer(api, beliefObject, "ordinal", belief.ordinal());
+                    text(api, beliefObject, "literal", belief.literal());
+                    link(api, schema, "A21ProgramBelief", programObject, beliefObject);
+                    trace.add(catalog.require("A08"), TracePhase.INSTANCE_MATERIALIZATION, belief.metadata(),
+                            "MObject", beliefObject.name(), List.of());
+                    trace.add(catalog.require("A21"), TracePhase.INSTANCE_MATERIALIZATION, belief.metadata(),
+                            "MLink", linkIdentity("A21", program.metadata().semanticId(), belief.metadata().semanticId()), List.of());
+                    provenance(trace, catalog, belief.metadata(), "belief:" + belief.metadata().semanticId());
+                }
+
+                for (int goalIndex = 0; goalIndex < program.goals().size(); goalIndex++) {
+                    var goal = program.goals().get(goalIndex);
+                    if (goal.ordinal() != goalIndex)
+                        throw new IllegalArgumentException("A22_GOAL_ORDINAL_NONCONTIGUOUS: " + goal.metadata().semanticId());
+                    MObject goalObject = object(api, semanticObjects, objectNames, "AgentGoal", goal.metadata(),
+                            "goal_" + goalIndex);
+                    integer(api, goalObject, "ordinal", goal.ordinal());
+                    text(api, goalObject, "literal", goal.literal());
+                    text(api, goalObject, "goalKind", goal.goalKind());
+                    link(api, schema, "A22ProgramGoal", programObject, goalObject);
+                    trace.add(catalog.require("A09"), TracePhase.INSTANCE_MATERIALIZATION, goal.metadata(),
+                            "MObject", goalObject.name(), List.of());
+                    trace.add(catalog.require("A22"), TracePhase.INSTANCE_MATERIALIZATION, goal.metadata(),
+                            "MLink", linkIdentity("A22", program.metadata().semanticId(), goal.metadata().semanticId()), List.of());
+                    provenance(trace, catalog, goal.metadata(), "goal:" + goal.metadata().semanticId());
+                }
+
+                for (int ruleIndex = 0; ruleIndex < program.beliefRules().size(); ruleIndex++) {
+                    var beliefRule = program.beliefRules().get(ruleIndex);
+                    if (beliefRule.ordinal() != ruleIndex)
+                        throw new IllegalArgumentException("A10_RULE_ORDINAL_NONCONTIGUOUS: " + beliefRule.metadata().semanticId());
+                    MObject ruleObject = object(api, semanticObjects, objectNames, "BeliefRule", beliefRule.metadata(),
+                            "rule_" + ruleIndex);
+                    integer(api, ruleObject, "ordinal", beliefRule.ordinal());
+                    text(api, ruleObject, "head", beliefRule.head());
+                    text(api, ruleObject, "body", beliefRule.body());
+                    trace.add(catalog.require("A10"), TracePhase.INSTANCE_MATERIALIZATION, beliefRule.metadata(),
+                            "MObject", ruleObject.name(), List.of());
+                    provenance(trace, catalog, beliefRule.metadata(), "rule:" + beliefRule.metadata().semanticId());
+                }
 
                 List<JasonSemanticContract.PlanSemantic> plans = library.plans();
                 for (int planIndex = 0; planIndex < plans.size(); planIndex++) {
@@ -133,6 +181,24 @@ public final class NativeUseStateBuilder {
                         }
                     }
                 }
+
+                for (var action : program.actions()) {
+                    MObject bodyObject = semanticObjects.get(action.planBodySemanticId());
+                    if (bodyObject == null)
+                        throw new IllegalArgumentException("ACTION_BODY_SEMANTIC_ID_UNRESOLVED: "
+                                + action.planBodySemanticId());
+                    requireLiteral(NativeUseModelBuilder.ACTION_KINDS, action.kind(), "JASON_ACTION_KIND_UNSUPPORTED");
+                    MObject actionObject = object(api, semanticObjects, objectNames, "Action", action.metadata(),
+                            action.kind().toLowerCase() + "_" + action.functor());
+                    text(api, actionObject, "planBodySemanticId", action.planBodySemanticId());
+                    text(api, actionObject, "term", action.term());
+                    text(api, actionObject, "functor", action.functor());
+                    integer(api, actionObject, "arity", action.arity());
+                    enumeration(api, schema, actionObject, "kind", "ActionKind", action.kind());
+                    trace.add(catalog.require(action.kind().equals("EXTERNAL") ? "A06" : "A07"),
+                            TracePhase.INSTANCE_MATERIALIZATION, action.metadata(), "MObject", actionObject.name(), List.of());
+                    provenance(trace, catalog, action.metadata(), "action:" + action.metadata().semanticId());
+                }
             }
             StringWriter validation = new StringWriter();
             PrintWriter output = new PrintWriter(validation, true);
@@ -185,6 +251,12 @@ public final class NativeUseStateBuilder {
 
     private static void integer(UseSystemApi api, MObject object, String name, int value) throws UseApiException {
         api.setAttributeValueEx(object, attribute(object, name), IntegerValue.valueOf(value));
+    }
+
+    private static void provenance(CodeGroundedTraceCollector trace, CodeGroundedRuleCatalog catalog,
+                                   SemanticMetadata metadata, String targetIdentity) {
+        trace.add(catalog.require("A11"), TracePhase.INSTANCE_MATERIALIZATION, metadata,
+                "PROVENANCE", targetIdentity, List.of());
     }
 
     private static void enumeration(UseSystemApi api, NativeUseModelBuilder.Result schema, MObject object,
