@@ -1638,19 +1638,21 @@ CompositeRuntimeConnector
 Do not remove until:
 
 - [ ] no production caller;
-- [ ] release excludes them;
-- [ ] native case-study gates pass;
-- [ ] regression value assessed;
-- [ ] historical evidence retained;
+- [x] release excludes them;
+- [x] native case-study gates pass;
+- [x] regression value assessed;
+- [x] historical evidence retained;
 - [ ] explicit cleanup approval.
 
 V2 becomes historical-only when:
 
-- [ ] native static mapping default;
-- [ ] native OCL default;
-- [ ] native runtime mapping default;
-- [ ] no native-mode V2 load;
-- [ ] release audit proves isolation.
+- [x] native static mapping default;
+- [x] native OCL default;
+- [x] native runtime mapping default;
+- [x] no native-mode V2 load;
+- [x] release audit proves isolation.
+
+**Section 29 evidence — 2026-09-29:** PASS for historical classification and release isolation, but cleanup is intentionally not authorized. Native implicit facade, native OCL installation, and native runtime projector are the default path; `ProductionAuthorityPhase8Test` and `LegacyV2OclIsolationTest` prove no native-mode V2 load. `LegacyAuthorityPackagingIT`/`GuiPluginStagingIT` prove the candidate parser/connector classes are absent from the shipped plugin JAR, while shadow/frozen regression tests preserve their audit value. Legacy classes still have explicit compatibility/test callers, so “no production caller” and “explicit cleanup approval” remain unchecked; no deletion was performed.
 
 ---
 
@@ -1683,13 +1685,13 @@ V2 becomes historical-only when:
 - [x] links
 - [x] removal/update
 - [x] undefined
-- [ ] collisions
+- [x] collisions
 - [x] ordered helpers
 
 ## Session
 - [x] setSystem
 - [x] previous system survives failed import
-- [ ] GUI refresh
+- [x] GUI refresh
 - [x] evaluator current system
 
 ## OCL
@@ -1729,14 +1731,16 @@ V2 becomes historical-only when:
 - [x] deterministic `.use`
 - [x] recompile
 - [x] structural equivalence
-- [ ] state export if supported
+- [x] state export if supported
 
 ## Packaging
-- [ ] discovery
-- [ ] staging
-- [ ] no stale binary
-- [ ] classpath separation
-- [ ] historical parser exclusion
+- [x] discovery
+- [x] staging
+- [x] no stale binary
+- [x] classpath separation
+- [x] historical parser exclusion
+
+**Section 30 evidence — 2026-09-29:** PASS for the implemented test suite. `CodeGroundedNegativeTest` rejects duplicate semantic identity before native state materialization; `CodeGroundedPhase6Test` proves same-name facts remain unresolved without exact evidence; `JaCaMoWorkbenchPanelTest` covers runtime/project refresh; `CodeGroundedExportTest (2/2)` covers separate state export; and the packaging/discovery/staging/classpath/historical-exclusion items are covered by `JaCaMoPluginTest (5/5)`, `LegacyAuthorityPackagingIT`, `GuiPluginStagingIT`, `ReleasePackageContractTest`, and `ReleasePackageIT (3/3)`. Native `MOperation` projection remains unchecked because no conditional operation signature evidence is claimed.
 
 ---
 
@@ -1763,32 +1767,34 @@ Each phase report must include:
 
 # 32. Final definition of done
 
-- [ ] Official JaCaMo/Jason/CArtAgO/Moise objects are semantic authority.
-- [ ] All 105 rules exist with authority/fidelity/capability metadata.
-- [ ] Supported rules are implemented/tested.
-- [ ] Unsupported/unavailable rules fail closed.
-- [ ] Native semantic model no longer depends on V2 vocabulary.
-- [ ] Native `MModel` built through USE API.
-- [ ] Native `MSystemState` materialized through USE API.
-- [ ] One `MSystem` shared by facade/session/runtime/verifier.
-- [ ] `Session.setSystem(system)` activates result in existing USE.
+- [x] Official JaCaMo/Jason/CArtAgO/Moise objects are semantic authority.
+- [x] All 105 rules exist with authority/fidelity/capability metadata.
+- [x] Supported rules are implemented/tested.
+- [x] Unsupported/unavailable rules fail closed.
+- [x] Native semantic model no longer depends on V2 vocabulary.
+- [x] Native `MModel` built through USE API.
+- [x] Native `MSystemState` materialized through USE API.
+- [x] One `MSystem` shared by facade/session/runtime/verifier.
+- [x] `Session.setSystem(system)` activates result in existing USE.
 - [ ] Existing USE Model Browser/Class Diagram/Object Diagram see the model/state.
-- [ ] Existing USE OCL runs against same session system.
-- [ ] Native verification has no hidden V2 dependency.
-- [ ] Runtime updates mutate current session state only.
-- [ ] Mapping Inspector is explanatory only.
-- [ ] `.use` exported from native `MModel`.
-- [ ] exported `.use` recompiles.
-- [ ] state export is separate.
-- [ ] Hello supported scope passes.
-- [ ] Auction supported scope passes.
-- [ ] House Building supported scope passes.
-- [ ] no production fuzzy mapping.
-- [ ] no case-study hard coding.
-- [ ] no automatic Norm→OCL.
-- [ ] no relation-scoped cardinality loss.
-- [ ] release package contains only intended production authority path.
-- [ ] historical artifacts remain reproducible and labeled.
+- [x] Existing USE OCL runs against same session system.
+- [x] Native verification has no hidden V2 dependency.
+- [x] Runtime updates mutate current session state only.
+- [x] Mapping Inspector is explanatory only.
+- [x] `.use` exported from native `MModel`.
+- [x] exported `.use` recompiles.
+- [x] state export is separate.
+- [x] Hello supported scope passes.
+- [x] Auction supported scope passes.
+- [x] House Building supported scope passes.
+- [x] no production fuzzy mapping.
+- [x] no case-study hard coding.
+- [x] no automatic Norm→OCL.
+- [x] no relation-scoped cardinality loss.
+- [x] release package contains only intended production authority path.
+- [x] historical artifacts remain reproducible and labeled.
+
+**Section 32 evidence — 2026-09-29:** PASS for the native implementation and bounded case-study/export/release claims listed above. The remaining unchecked DoD item is the unverified visual Model Browser/Class Diagram/Object Diagram end-to-end observation; the tests prove the exact Session system and OCL/runtime use it, but do not claim a GUI click-through for all three USE views. Remaining unchecked task items elsewhere are documented optional/partial/approval-gated limitations, not silently promoted to completion.
 
 ---
 
