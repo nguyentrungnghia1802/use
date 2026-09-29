@@ -56,21 +56,21 @@ optional export .use / .cmd
 
 ## 0.3 Forbidden shortcuts
 
-- [ ] Do not patch/fork JaCaMo core unless a proven blocker requires it.
-- [ ] Do not use custom JCM/ASL/Moise parsing as production semantic authority when official APIs already expose the facts.
-- [ ] Do not use old Ecore or Mapping V2 as semantic authority in `CODE_GROUNDED_NATIVE`.
-- [ ] Do not fuzzy-map by names.
-- [ ] Do not infer `Action → Operation` from name equality.
-- [ ] Do not infer `Belief → ObservableProperty` from literal/property name equality.
-- [ ] Do not infer `AgentGoal → OrganizationalGoal` from literal/id equality.
-- [ ] Do not equate JCM agent name, Jason runtime identity, CArtAgO `AgentId`, and Moise agent identity without exact evidence.
-- [ ] Do not equate artifact declaration name and runtime `ArtifactId`.
-- [ ] Do not auto-translate Moise Norms into OCL.
-- [ ] Do not hard-code Hello World, Auction, House Building, or any case-study name in production mapping.
-- [ ] Do not create a second model/runtime UI that replaces USE.
-- [ ] Do not silently drop unsupported semantic facts.
-- [ ] Do not silently mix legacy V2 OCL/mapping with code-grounded native model mode.
-- [ ] Do not modify frozen historical Ecore/mapping/golden artifacts in place.
+- [x] Do not patch/fork JaCaMo core unless a proven blocker requires it.
+- [x] Do not use custom JCM/ASL/Moise parsing as production semantic authority when official APIs already expose the facts.
+- [x] Do not use old Ecore or Mapping V2 as semantic authority in `CODE_GROUNDED_NATIVE`.
+- [x] Do not fuzzy-map by names.
+- [x] Do not infer `Action → Operation` from name equality.
+- [x] Do not infer `Belief → ObservableProperty` from literal/property name equality.
+- [x] Do not infer `AgentGoal → OrganizationalGoal` from literal/id equality.
+- [x] Do not equate JCM agent name, Jason runtime identity, CArtAgO `AgentId`, and Moise agent identity without exact evidence.
+- [x] Do not equate artifact declaration name and runtime `ArtifactId`.
+- [x] Do not auto-translate Moise Norms into OCL.
+- [x] Do not hard-code Hello World, Auction, House Building, or any case-study name in production mapping.
+- [x] Do not create a second model/runtime UI that replaces USE.
+- [x] Do not silently drop unsupported semantic facts.
+- [x] Do not silently mix legacy V2 OCL/mapping with code-grounded native model mode.
+- [x] Do not modify frozen historical Ecore/mapping/golden artifacts in place.
 
 ---
 
@@ -84,20 +84,20 @@ optional export .use / .cmd
 - [x] Run existing Bridge/adapter/facade/workbench tests.
 - [x] Run current module build.
 - [x] Run current release/package workflow.
-- [ ] Record baseline failures separately from new regressions.
-- [ ] Store baseline summary in implementation report.
+- [x] Record baseline failures separately from new regressions.
+- [x] Store baseline summary in implementation report.
 
 ## 1.2 Frozen/historical artifacts
 
 Keep immutable unless explicitly versioned:
 
-- [ ] frozen Ecore V2;
-- [ ] Mapping V2 / V2.2;
-- [ ] Runtime Mapping V2;
-- [ ] frozen OCL;
-- [ ] golden outputs;
-- [ ] freeze manifests;
-- [ ] historical audit evidence.
+- [x] frozen Ecore V2;
+- [x] Mapping V2 / V2.2;
+- [x] Runtime Mapping V2;
+- [x] frozen OCL;
+- [x] golden outputs;
+- [x] freeze manifests;
+- [x] historical audit evidence.
 
 ## 1.3 Pipeline modes
 
@@ -111,7 +111,7 @@ CODE_GROUNDED_NATIVE
 - [x] One import/session uses exactly one mode.
 - [x] `CODE_GROUNDED_NATIVE` must not call Mapping V2.
 - [x] `CODE_GROUNDED_NATIVE` must not load V2 OCL/profile JSON.
-- [ ] Runtime verification uses the same mode as static model construction.
+- [x] Runtime verification uses the same mode as static model construction.
 - [x] Add tests rejecting mixed-mode execution.
 
 ---
@@ -189,7 +189,7 @@ diagnostics
 
 - [x] Stable semantic IDs.
 - [x] Semantic IDs independent from display/object names.
-- [ ] Runtime IDs remain opaque when required.
+- [x] Runtime IDs remain opaque when required.
 - [x] Version IDs if contract schema changes.
 - [x] Add stale identity/model revision detection.
 
@@ -202,7 +202,7 @@ Deterministic naming:
 ```
 
 - [x] Never resolve semantic links by MObject name.
-- [ ] Add collision tests.
+- [x] Add collision tests.
 
 ---
 
@@ -242,7 +242,7 @@ Exact names may follow repository conventions.
 - [x] `AgentGoalSemantic`
 - [x] `BeliefRuleSemantic`
 - [x] `SourceEvidence`
-- [ ] supported runtime DTOs
+- [x] supported runtime DTOs
 
 ## 4.3 CArtAgO DTOs
 
@@ -792,7 +792,7 @@ Requirements:
 - [x] stable semantic IDs;
 - [x] no dependency on V2 vocabulary in native mode;
 - [x] capability/fidelity explicit;
-- [ ] unresolved refs explicit;
+- [x] unresolved refs explicit;
 - [x] project/spec/runtime separation.
 
 Compatibility projection if needed:
@@ -826,12 +826,12 @@ Responsibilities:
 
 Before `MSystem`:
 
-- [ ] all classes/enums declared;
-- [ ] associations resolved;
-- [ ] multiplicities validated;
-- [ ] compositions validated;
-- [ ] native constraints compile;
-- [ ] no mandatory unresolved model refs;
+- [x] all classes/enums declared;
+- [x] associations resolved;
+- [x] multiplicities validated;
+- [x] compositions validated;
+- [x] native constraints compile;
+- [x] no mandatory unresolved model refs;
 - [x] structural hash available.
 
 ---
@@ -846,9 +846,9 @@ Responsibilities:
 - [x] deterministic objects;
 - [x] attributes;
 - [x] links;
-- [ ] runtime link/value changes;
+- [x] runtime link/value changes;
 - [x] semanticId → MObject index;
-- [ ] trace every mutation;
+- [x] trace every mutation;
 - [x] correct undefined handling.
 
 ## First-slice state
@@ -987,7 +987,7 @@ SKIPPED_CAPABILITY
 - [x] A17 order consistency.
 - [x] A19 order consistency.
 - [x] A20 next/order consistency.
-- [ ] ownership/composition checks where appropriate.
+- [x] ownership/composition checks where appropriate.
 
 ## 15.5 OCL tests
 
@@ -1045,7 +1045,7 @@ Tasks:
 
 - [x] Pass `IPluginAction.getSession()` into Workbench/import flow.
 - [x] Refactor `DefaultJaCaMoFacade` to use same `MSystem`.
-- [ ] Facade/session/runtime/verifier share one system.
+- [x] Facade/session/runtime/verifier share one system.
 - [x] Build off EDT.
 - [x] Activate/UI update on EDT where required.
 - [x] Only call `setSystem()` after all gates pass.
@@ -1096,10 +1096,10 @@ Details:
 
 Never add:
 
-- [ ] second runtime;
-- [ ] second OCL engine;
-- [ ] substitute class/object diagram;
-- [ ] parallel MSystem.
+- [x] second runtime;
+- [x] second OCL engine;
+- [x] substitute class/object diagram;
+- [x] parallel MSystem.
 
 ---
 
@@ -1178,25 +1178,25 @@ Tasks:
 
 Keep:
 
-- [ ] existing USE evaluator;
-- [ ] model-independent parts of `DefaultVerificationService`;
-- [ ] report framework;
-- [ ] BridgeVerificationGate;
-- [ ] completeness/evidence gating.
+- [x] existing USE evaluator;
+- [x] model-independent parts of `DefaultVerificationService`;
+- [x] report framework;
+- [x] BridgeVerificationGate;
+- [x] completeness/evidence gating.
 
 Refactor:
 
-- [ ] code-grounded rule/capability registry;
-- [ ] remove static Runtime Mapping V2 loading in native mode;
-- [ ] bind constraints to exact native target;
+- [x] code-grounded rule/capability registry;
+- [x] remove static Runtime Mapping V2 loading in native mode;
+- [x] bind constraints to exact native target;
 - [ ] report skipped constraints;
-- [ ] preserve evidence/fidelity.
+- [x] preserve evidence/fidelity.
 
 No overclaim:
 
-- [ ] partial snapshot → non-definitive;
-- [ ] evidence-only fact cannot satisfy state requirement;
-- [ ] unknown remains unknown.
+- [x] partial snapshot → non-definitive;
+- [x] evidence-only fact cannot satisfy state requirement;
+- [x] unknown remains unknown.
 
 ---
 

@@ -22,6 +22,36 @@
 | Shadow comparison | PASS | `HelloShadowComparisonTest`, `4be438e2` |
 | Runtime safety | PASS (implemented subset) | `RuntimeFoundationTest 26/26`, `ebbeca6b` |
 
+## Baseline and invariant audit — 2026-09-29
+
+The preserved audit baseline is recorded separately from the native migration
+results. `use-plugin/docs/architecture-realignment/16-test-strategy.md` records
+the 2026-09-26 reactor result as `use-core 12/12`, `use-gui 1/1`, and
+`use-plugin 228` tests with three pre-existing failures and no errors/skips:
+`GoldenPipelineTest` digest mismatch, `ConstraintClosureTest` expected `2` but
+got `0`, and `InstanceMaterializationTest` golden digest mismatch. These are
+classified as dirty-frontend baseline failures; no production code or golden
+was changed to hide them. The current checkout remains intentionally dirty
+because the user's `agent.md`, deleted `tasks/task-01.md`, three design/mapping
+documents, and generated `target/` are preserved outside the phase commits.
+
+Frozen V2/Ecore/OCL/mapping/golden/freeze-manifest and historical evidence
+paths have no migration diff at the checkpoint. `V2FinalFreezeTest`,
+`CompatibilityManifestTest`, `V2HardeningAuditTest`, and the release tests keep
+their exact hashes/labels and prove the native path does not mutate or ship
+the frozen authority as its semantic implementation.
+
+The native isolation audit is backed by `NativeSemanticAdapterTest`,
+`ProductionAuthorityPhase8Test`, `LegacyV2OclIsolationTest`,
+`CodeGroundedPhase6Test`, `CodeGroundedNegativeTest`, `CodeGroundedPhase9Test`,
+`NativeUseSessionActivationTest`, `NativeRuntimeFacadeIntegrationTest`, and
+`JaCaMoWorkbenchPanelTest`. Together they cover official-API authority,
+exact-ID-only binding, opaque runtime incarnations, collision rejection,
+fail-closed unavailable/evidence-only facts, no case-specific production
+branch, no second native `MSystem`, and same-session runtime/OCL/verification
+use. `CodeGroundedIdentitySafetyTest` adds direct delimiter-safe opaque identity
+and invalid-component regression coverage (`2/2`).
+
 ## Case-study evidence
 
 - **Hello World:** official JCM/Jason/Moise facts are materialized through the
