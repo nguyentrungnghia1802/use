@@ -96,27 +96,27 @@ public final class NativeUseModelBuilder {
             api.createAttribute("Agent", "beliefBaseClass", "String");
             api.createAttribute("Agent", "host", "String");
             api.createAttribute("Agent", "instances", "Integer");
-            api.createAttribute("WorkspaceDeclaration", "name", "String");
-            api.createAttribute("WorkspaceDeclaration", "host", "String");
-            api.createAttribute("WorkspaceDeclaration", "debug", "Boolean");
-            api.createAttribute("ArtifactDeclaration", "name", "String");
-            api.createAttribute("ArtifactDeclaration", "workspace", "String");
-            api.createAttribute("ArtifactDeclaration", "javaClass", "String");
-            api.createAttribute("ArtifactDeclaration", "parameters", "String");
-            api.createAttribute("OrganizationDeployment", "name", "String");
-            api.createAttribute("OrganizationDeployment", "source", "String");
-            api.createAttribute("OrganizationDeployment", "institution", "String");
-            api.createAttribute("OrganizationDeployment", "debug", "String");
-            api.createAttribute("GroupDeployment", "organization", "String");
-            api.createAttribute("GroupDeployment", "name", "String");
-            api.createAttribute("GroupDeployment", "type", "String");
-            api.createAttribute("GroupDeployment", "responsibleFor", "String");
-            api.createAttribute("SchemeDeployment", "organization", "String");
-            api.createAttribute("SchemeDeployment", "name", "String");
-            api.createAttribute("SchemeDeployment", "type", "String");
-            api.createAttribute("InstitutionDeployment", "name", "String");
-            api.createAttribute("InstitutionDeployment", "workspaces", "String");
-            api.createAttribute("InstitutionDeployment", "opaqueParameters", "String");
+            attribute(api, profile, "WorkspaceDeclaration", "name", "String");
+            attribute(api, profile, "WorkspaceDeclaration", "host", "String");
+            attribute(api, profile, "WorkspaceDeclaration", "debug", "Boolean");
+            attribute(api, profile, "ArtifactDeclaration", "name", "String");
+            attribute(api, profile, "ArtifactDeclaration", "workspace", "String");
+            attribute(api, profile, "ArtifactDeclaration", "javaClass", "String");
+            attribute(api, profile, "ArtifactDeclaration", "parameters", "String");
+            attribute(api, profile, "OrganizationDeployment", "name", "String");
+            attribute(api, profile, "OrganizationDeployment", "source", "String");
+            attribute(api, profile, "OrganizationDeployment", "institution", "String");
+            attribute(api, profile, "OrganizationDeployment", "debug", "String");
+            attribute(api, profile, "GroupDeployment", "organization", "String");
+            attribute(api, profile, "GroupDeployment", "name", "String");
+            attribute(api, profile, "GroupDeployment", "type", "String");
+            attribute(api, profile, "GroupDeployment", "responsibleFor", "String");
+            attribute(api, profile, "SchemeDeployment", "organization", "String");
+            attribute(api, profile, "SchemeDeployment", "name", "String");
+            attribute(api, profile, "SchemeDeployment", "type", "String");
+            attribute(api, profile, "InstitutionDeployment", "name", "String");
+            attribute(api, profile, "InstitutionDeployment", "workspaces", "String");
+            attribute(api, profile, "InstitutionDeployment", "opaqueParameters", "String");
             api.createAttribute("Environment", "name", "String");
             api.createAttribute("Environment", "environmentId", "String");
             api.createAttribute("Environment", "version", "String");
@@ -137,14 +137,14 @@ public final class NativeUseModelBuilder {
             api.createAttribute("Artifact", "artifactTypeSemanticId", "String");
             api.createAttribute("Artifact", "workspaceSemanticId", "String");
             api.createAttribute("Artifact", "creatorAgentSemanticId", "String");
-            api.createAttribute("Operation", "artifactSemanticId", "String");
-            api.createAttribute("Operation", "keyId", "String");
-            api.createAttribute("Operation", "name", "String");
-            api.createAttribute("Operation", "arity", "Integer");
-            api.createAttribute("Operation", "dynamic", "Boolean");
-            api.createAttribute("Operation", "linkOperation", "Boolean");
-            api.createAttribute("Operation", "ui", "Boolean");
-            api.createAttribute("Operation", "internal", "Boolean");
+            attribute(api, profile, "Operation", "artifactSemanticId", "String");
+            attribute(api, profile, "Operation", "keyId", "String");
+            attribute(api, profile, "Operation", "name", "String");
+            attribute(api, profile, "Operation", "arity", "Integer");
+            attribute(api, profile, "Operation", "dynamic", "Boolean");
+            attribute(api, profile, "Operation", "linkOperation", "Boolean");
+            attribute(api, profile, "Operation", "ui", "Boolean");
+            attribute(api, profile, "Operation", "internal", "Boolean");
             if (profile.materializesClass("BackingJavaOperation")) {
                 api.createAttribute("BackingJavaOperation", "operationDescriptorId", "String");
                 api.createAttribute("BackingJavaOperation", "declaringClass", "String");
@@ -154,10 +154,10 @@ public final class NativeUseModelBuilder {
                 api.createAttribute("BackingJavaOperation", "varArgs", "Boolean");
                 api.createAttribute("BackingJavaOperation", "classLoaderIdentity", "String");
             }
-            api.createAttribute("Guard", "operationDescriptorId", "String");
-            api.createAttribute("Guard", "name", "String");
-            api.createAttribute("Guard", "arity", "Integer");
-            api.createAttribute("Guard", "implementationClass", "String");
+            attribute(api, profile, "Guard", "operationDescriptorId", "String");
+            attribute(api, profile, "Guard", "name", "String");
+            attribute(api, profile, "Guard", "arity", "Integer");
+            attribute(api, profile, "Guard", "implementationClass", "String");
             if (profile.materializesClass("LiveObservableProperty")) {
                 api.createAttribute("LiveObservableProperty", "artifactSemanticId", "String");
                 api.createAttribute("LiveObservableProperty", "propertyId", "String");
@@ -178,40 +178,40 @@ public final class NativeUseModelBuilder {
                 api.createAttribute("ArtifactInfo", "observablePropertySemanticIds", "String");
                 api.createAttribute("ArtifactInfo", "linkedArtifactSemanticIds", "String");
             }
-            api.createAttribute("Signal", "artifactSemanticId", "String");
-            api.createAttribute("Signal", "name", "String");
-            api.createAttribute("Signal", "values", "String");
+            attribute(api, profile, "Signal", "artifactSemanticId", "String");
+            attribute(api, profile, "Signal", "name", "String");
+            attribute(api, profile, "Signal", "values", "String");
             api.createAttribute("CartagoAgentIdentity", "globalId", "String");
             api.createAttribute("CartagoAgentIdentity", "localId", "Integer");
             api.createAttribute("CartagoAgentIdentity", "name", "String");
             api.createAttribute("CartagoAgentIdentity", "role", "String");
             api.createAttribute("CartagoAgentIdentity", "workspaceSemanticId", "String");
-            api.createAttribute("AgentProgram", "declarationId", "String");
-            api.createAttribute("AgentProgram", "sourceUri", "String");
-            api.createAttribute("AgentProgram", "sourceDigest", "String");
+            attribute(api, profile, "AgentProgram", "declarationId", "String");
+            attribute(api, profile, "AgentProgram", "sourceUri", "String");
+            attribute(api, profile, "AgentProgram", "sourceDigest", "String");
             api.createAttribute("Plan", "ordinal", "Integer");
             api.createAttribute("Plan", "label", "String");
             // "context" is a USE grammar keyword. Keep source semantics exact while using a target-only safe name.
             api.createAttribute("Plan", "jasonContext", "String");
-            api.createAttribute("Trigger", "operator", "TriggerOperator");
-            api.createAttribute("Trigger", "triggerType", "TriggerType");
-            api.createAttribute("Trigger", "literal", "String");
+            attribute(api, profile, "Trigger", "operator", "TriggerOperator");
+            attribute(api, profile, "Trigger", "triggerType", "TriggerType");
+            attribute(api, profile, "Trigger", "literal", "String");
             api.createAttribute("PlanBodyElement", "ordinal", "Integer");
             api.createAttribute("PlanBodyElement", "bodyType", "PlanBodyType");
             api.createAttribute("PlanBodyElement", "term", "String");
-            api.createAttribute("Action", "planBodySemanticId", "String");
-            api.createAttribute("Action", "term", "String");
-            api.createAttribute("Action", "functor", "String");
-            api.createAttribute("Action", "arity", "Integer");
-            api.createAttribute("Action", "kind", "ActionKind");
-            api.createAttribute("Belief", "ordinal", "Integer");
-            api.createAttribute("Belief", "literal", "String");
-            api.createAttribute("AgentGoal", "ordinal", "Integer");
-            api.createAttribute("AgentGoal", "literal", "String");
-            api.createAttribute("AgentGoal", "goalKind", "String");
-            api.createAttribute("BeliefRule", "ordinal", "Integer");
-            api.createAttribute("BeliefRule", "head", "String");
-            api.createAttribute("BeliefRule", "body", "String");
+            attribute(api, profile, "Action", "planBodySemanticId", "String");
+            attribute(api, profile, "Action", "term", "String");
+            attribute(api, profile, "Action", "functor", "String");
+            attribute(api, profile, "Action", "arity", "Integer");
+            attribute(api, profile, "Action", "kind", "ActionKind");
+            attribute(api, profile, "Belief", "ordinal", "Integer");
+            attribute(api, profile, "Belief", "literal", "String");
+            attribute(api, profile, "AgentGoal", "ordinal", "Integer");
+            attribute(api, profile, "AgentGoal", "literal", "String");
+            attribute(api, profile, "AgentGoal", "goalKind", "String");
+            attribute(api, profile, "BeliefRule", "ordinal", "Integer");
+            attribute(api, profile, "BeliefRule", "head", "String");
+            attribute(api, profile, "BeliefRule", "body", "String");
             if (profile.materializesClass("A17PlanOrderEntry"))
                 api.createAttribute("A17PlanOrderEntry", "rank", "Integer");
             if (profile.materializesClass("A19BodyOrderEntry"))
@@ -289,20 +289,24 @@ public final class NativeUseModelBuilder {
                 api.createAttribute("ExactBindingEvidence", "bindingContext", "String");
             }
 
-            association(api, "A16AgentProgramPlanLibrary", "AgentProgram", "agentProgram", "1",
-                    MAggregationKind.COMPOSITION, "PlanLibrary", "planLibrary", "1", false, false);
+            if (profile.materializesClass("AgentProgram"))
+                association(api, "A16AgentProgramPlanLibrary", "AgentProgram", "agentProgram", "1",
+                        MAggregationKind.COMPOSITION, "PlanLibrary", "planLibrary", "1", false, false);
             association(api, "A17PlanLibraryPlan", "PlanLibrary", "planLibrary", "1",
                     MAggregationKind.COMPOSITION, "Plan", "plans", "*", false, true);
-            association(api, "A18PlanTrigger", "Plan", "plan", "1",
-                    MAggregationKind.COMPOSITION, "Trigger", "trigger", "1", false, false);
+            if (profile.materializesClass("Trigger"))
+                association(api, "A18PlanTrigger", "Plan", "plan", "1",
+                        MAggregationKind.COMPOSITION, "Trigger", "trigger", "1", false, false);
             association(api, "A19PlanBodyElement", "Plan", "plan", "1",
                     MAggregationKind.COMPOSITION, "PlanBodyElement", "bodyElements", "*", false, true);
             association(api, "A20PlanBodyNext", "PlanBodyElement", "current", "0..1",
                     MAggregationKind.NONE, "PlanBodyElement", "next", "0..1", false, false);
-            association(api, "A21ProgramBelief", "AgentProgram", "program", "1",
-                    MAggregationKind.COMPOSITION, "Belief", "initialBeliefs", "*", false, true);
-            association(api, "A22ProgramGoal", "AgentProgram", "program", "1",
-                    MAggregationKind.COMPOSITION, "AgentGoal", "initialGoals", "*", false, true);
+            if (profile.materializesClass("AgentProgram") && profile.materializesClass("Belief"))
+                association(api, "A21ProgramBelief", "AgentProgram", "program", "1",
+                        MAggregationKind.COMPOSITION, "Belief", "initialBeliefs", "*", false, true);
+            if (profile.materializesClass("AgentProgram") && profile.materializesClass("AgentGoal"))
+                association(api, "A22ProgramGoal", "AgentProgram", "program", "1",
+                        MAggregationKind.COMPOSITION, "AgentGoal", "initialGoals", "*", false, true);
             if (profile.materializesOrderEntries()) {
                 association(api, "A17OrderOwner", "PlanLibrary", "owner", "1", MAggregationKind.COMPOSITION,
                         "A17PlanOrderEntry", "a17Entries", "*", false, false);
@@ -319,12 +323,14 @@ public final class NativeUseModelBuilder {
                     MAggregationKind.COMPOSITION, "Artifact", "artifacts", "*", false, true);
             association(api, "C15ArtifactType", "Artifact", "artifact", "*", MAggregationKind.NONE,
                     "ArtifactType", "artifacts", "1", false, false);
-            association(api, "C16ArtifactOperation", "Artifact", "artifact", "1",
-                    MAggregationKind.COMPOSITION, "Operation", "artifactOperations", "*", false, true);
+            if (profile.materializesClass("Operation"))
+                association(api, "C16ArtifactOperation", "Artifact", "artifact", "1",
+                        MAggregationKind.COMPOSITION, "Operation", "artifactOperations", "*", false, true);
             association(api, "C17ArtifactObservableProperty", "Artifact", "artifact", "1",
                     MAggregationKind.COMPOSITION, "ObservablePropertySnapshot", "properties", "*", false, true);
-            association(api, "C18OperationGuard", "Operation", "operation", "1", MAggregationKind.NONE,
-                    "Guard", "guard", "0..1", false, false);
+            if (profile.materializesClass("Operation") && profile.materializesClass("Guard"))
+                association(api, "C18OperationGuard", "Operation", "operation", "1", MAggregationKind.NONE,
+                        "Guard", "guard", "0..1", false, false);
             association(api, "C19WorkspaceAgent", "Workspace", "workspace", "1", MAggregationKind.NONE,
                     "CartagoAgentIdentity", "agents", "*", false, true);
             association(api, "C20AgentArtifactFocus", "CartagoAgentIdentity", "agent", "1", MAggregationKind.NONE,
@@ -385,23 +391,28 @@ public final class NativeUseModelBuilder {
                     "Role", "m42Norms", "0..*", false, true);
             association(api, "M43NormMission", "Norm", "m43Mission", "0..1", MAggregationKind.NONE,
                     "Mission", "m43Norms", "0..*", false, true);
-            association(api, "X01ActionOperation", "Action", "x01Operation", "0..1",
-                    MAggregationKind.NONE, "Operation", "x01Actions", "0..*", false, true);
+            if (profile.materializesClass("Action") && profile.materializesClass("Operation"))
+                association(api, "X01ActionOperation", "Action", "x01Operation", "0..1",
+                        MAggregationKind.NONE, "Operation", "x01Actions", "0..*", false, true);
             // C08 live properties are unavailable; X02 binds to the exact C09 property snapshot.
-            association(api, "X02BeliefProperty", "Belief", "x02Property", "0..1",
-                    MAggregationKind.NONE, "ObservablePropertySnapshot", "x02Beliefs", "0..*", false, true);
-            association(api, "X03TriggerSignal", "Trigger", "x03Signal", "0..1",
-                    MAggregationKind.NONE, "Signal", "x03Triggers", "0..*", false, true);
+            if (profile.materializesClass("Belief"))
+                association(api, "X02BeliefProperty", "Belief", "x02Property", "0..1",
+                        MAggregationKind.NONE, "ObservablePropertySnapshot", "x02Beliefs", "0..*", false, true);
+            if (profile.materializesClass("Trigger") && profile.materializesClass("Signal"))
+                association(api, "X03TriggerSignal", "Trigger", "x03Signal", "0..1",
+                        MAggregationKind.NONE, "Signal", "x03Triggers", "0..*", false, true);
             association(api, "X04AgentRole", "Agent", "x04Roles", "0..*",
                     MAggregationKind.NONE, "Role", "x04Agents", "0..*", false, true);
             association(api, "X05AgentWorkspace", "Agent", "x05Workspaces", "0..*",
                     MAggregationKind.NONE, "Workspace", "x05Agents", "0..*", false, true);
             association(api, "X06AgentArtifactFocus", "Agent", "x06Artifacts", "0..*",
                     MAggregationKind.NONE, "Artifact", "x06Agents", "0..*", false, true);
-            association(api, "X07AgentGoalOrganizationalGoal", "AgentGoal", "x07OrganizationalGoal", "0..1",
-                    MAggregationKind.NONE, "OrganizationalGoal", "x07AgentGoals", "0..*", false, true);
-            association(api, "X08DeclarationArtifact", "ArtifactDeclaration", "x08RuntimeArtifact", "0..1",
-                    MAggregationKind.NONE, "Artifact", "x08Declarations", "0..*", false, true);
+            if (profile.materializesClass("AgentGoal"))
+                association(api, "X07AgentGoalOrganizationalGoal", "AgentGoal", "x07OrganizationalGoal", "0..1",
+                        MAggregationKind.NONE, "OrganizationalGoal", "x07AgentGoals", "0..*", false, true);
+            if (profile.materializesClass("ArtifactDeclaration"))
+                association(api, "X08DeclarationArtifact", "ArtifactDeclaration", "x08RuntimeArtifact", "0..1",
+                        MAggregationKind.NONE, "Artifact", "x08Declarations", "0..*", false, true);
             association(api, "X09AgentIdentity", "Agent", "x09CartagoIdentities", "0..*",
                     MAggregationKind.NONE, "CartagoAgentIdentity", "x09Agents", "0..*", false, true);
 
@@ -480,6 +491,21 @@ public final class NativeUseModelBuilder {
             case "BackingJavaOperation" -> catalog.require("C06");
             case "LiveObservableProperty" -> catalog.require("C08");
             case "ArtifactInfo" -> catalog.require("C10");
+            case "WorkspaceDeclaration" -> catalog.require("J03");
+            case "ArtifactDeclaration" -> catalog.require("J04");
+            case "OrganizationDeployment" -> catalog.require("J05");
+            case "GroupDeployment" -> catalog.require("J06");
+            case "SchemeDeployment" -> catalog.require("J07");
+            case "InstitutionDeployment" -> catalog.require("J08");
+            case "AgentProgram" -> catalog.require("A01");
+            case "Trigger" -> catalog.require("A04");
+            case "Action" -> catalog.require("A06");
+            case "Belief" -> catalog.require("A08");
+            case "AgentGoal" -> catalog.require("A09");
+            case "BeliefRule" -> catalog.require("A10");
+            case "Signal" -> catalog.require("C11");
+            case "Guard" -> catalog.require("C07");
+            case "Operation" -> catalog.require("C05");
             case "SourceImportProvenance", "RuntimeEvidenceHistory", "SnapshotOnlyHelpers" -> catalog.require("J11");
             default -> throw new IllegalStateException("NATIVE_PROJECTION_RULE_MISSING:" + concept);
         };
@@ -528,6 +554,11 @@ public final class NativeUseModelBuilder {
 
     private static String declarationIdentity(String target) {
         return target.replace(' ', ':');
+    }
+
+    private static void attribute(UseModelApi api, NativeProjectionProfile profile, String className,
+                                  String attributeName, String type) throws UseApiException {
+        if (profile.materializesClass(className)) api.createAttribute(className, attributeName, type);
     }
 
     private static void association(UseModelApi api, String name, String firstClass, String firstRole,

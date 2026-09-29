@@ -18,7 +18,8 @@ class CodeGroundedPhase3Test {
     @Test void nativePhase3MaterializesJcmDeclarationsAndRetainsRawReferences() throws Exception {
         var base = CodeGroundedTestFixtures.helloSnapshot();
         var snapshot = withSyntheticInstitutionAndImport(base);
-        var result = new CodeGroundedNativePipeline().build(snapshot);
+        var result = new CodeGroundedNativePipeline().build(snapshot,
+                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
         var system = result.state().system();
 
         assertEquals(snapshot.semanticContract().agentDeclarations().size(),
@@ -60,7 +61,8 @@ class CodeGroundedPhase3Test {
     }
 
     @Test void phase3SchemaContainsAllDeploymentTypesWithoutRuntimeCollapse() throws Exception {
-        var result = CodeGroundedTestFixtures.helloPipeline();
+        var result = new CodeGroundedNativePipeline().build(CodeGroundedTestFixtures.helloSnapshot(),
+                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
         for (String className : List.of("Agent", "WorkspaceDeclaration", "ArtifactDeclaration", "OrganizationDeployment",
                 "GroupDeployment", "SchemeDeployment", "InstitutionDeployment"))
             assertNotNull(result.model().model().getClass(className), className);

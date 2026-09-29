@@ -56,7 +56,8 @@ class CodeGroundedPhase6Test {
         ModelSnapshot base = withSyntheticJason(CodeGroundedTestFixtures.helloSnapshot());
         var contract = base.semanticContract();
         var environment = environment(contract.project().metadata(), true);
-        var result = new CodeGroundedNativePipeline().build(with(base, environment, List.of()));
+        var result = new CodeGroundedNativePipeline().build(with(base, environment, List.of()),
+                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
         var system = result.state().system();
 
         assertEquals(0, links(system, "X01ActionOperation"), "same action/operation names are not evidence");
@@ -73,7 +74,8 @@ class CodeGroundedPhase6Test {
                 bindingMetadata("phase6:x09:restart"), agentId, firstCartagoIdentity,
                 "incarnation-1", "join-observation", Map.of("contextId", "phase6-restart"))
                 .toExactBinding();
-        var restartResult = new CodeGroundedNativePipeline().build(with(base, environment, List.of(binding)));
+        var restartResult = new CodeGroundedNativePipeline().build(with(base, environment, List.of(binding)),
+                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
         assertEquals(1, links(restartResult.state().system(), "X09AgentIdentity"));
         var selectedIdentity = restartResult.state().semanticObjectIndex().get(firstCartagoIdentity);
         var restartedIdentity = restartResult.state().semanticObjectIndex()
@@ -97,7 +99,8 @@ class CodeGroundedPhase6Test {
                 environment.artifacts().get(0).metadata().semanticId(), "dispatch-record", Map.of())
                 .toExactBinding();
         IllegalArgumentException failure = assertThrows(IllegalArgumentException.class,
-                () -> new CodeGroundedNativePipeline().build(with(base, environment, List.of(invalid))));
+                () -> new CodeGroundedNativePipeline().build(with(base, environment, List.of(invalid)),
+                        org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL));
         assertTrue(failure.getMessage().contains("CROSS_TARGET_CLASS_MISMATCH_X01"));
     }
 

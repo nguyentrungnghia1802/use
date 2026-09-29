@@ -26,7 +26,8 @@ class CodeGroundedPhase2Test {
         var base = CodeGroundedTestFixtures.helloSnapshot();
         var snapshot = withProgram(base, program);
 
-        var result = new CodeGroundedNativePipeline().build(snapshot);
+        var result = new CodeGroundedNativePipeline().build(snapshot,
+                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
         var system = result.state().system();
         assertEquals(2, system.state().objectsOfClass(system.model().getClass("Action")).size());
         assertEquals(1, system.state().objectsOfClass(system.model().getClass("Belief")).size());
@@ -55,7 +56,8 @@ class CodeGroundedPhase2Test {
         var empty = new AgentProgramSemantic(program.metadata(), program.declarationId(), program.sourceUri(),
                 program.sourceDigest(), new PlanLibrarySemantic(program.planLibrary().metadata(), List.of()),
                 List.of(), program.beliefs(), program.goals(), program.beliefRules());
-        var result = new CodeGroundedNativePipeline().build(withProgram(CodeGroundedTestFixtures.helloSnapshot(), empty));
+        var result = new CodeGroundedNativePipeline().build(withProgram(CodeGroundedTestFixtures.helloSnapshot(), empty),
+                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
         var system = result.state().system();
         assertEquals(0, system.state().objectsOfClass(system.model().getClass("Plan")).size());
         assertTrue(result.state().structureValid());

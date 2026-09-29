@@ -68,65 +68,101 @@ public final class NativeUseStateBuilder {
                         "MObject", agentObject.name(), List.of());
             }
             for (var workspace : semantic.workspaceDeclarations()) {
-                MObject workspaceObject = object(api, semanticObjects, objectNames, "WorkspaceDeclaration", workspace.metadata(),
-                        workspace.name());
-                text(api, workspaceObject, "name", workspace.name());
-                text(api, workspaceObject, "host", workspace.host());
-                bool(api, workspaceObject, "debug", workspace.debug());
-                trace.add(catalog.require("J03"), TracePhase.INSTANCE_MATERIALIZATION, workspace.metadata(),
-                        "MObject", workspaceObject.name(), List.of("JCM_DECLARATION_NOT_RUNTIME_WORKSPACE_ID"));
+                if (schema.profile().materializesClass("WorkspaceDeclaration")) {
+                    MObject workspaceObject = object(api, semanticObjects, objectNames, "WorkspaceDeclaration",
+                            workspace.metadata(), workspace.name());
+                    text(api, workspaceObject, "name", workspace.name());
+                    text(api, workspaceObject, "host", workspace.host());
+                    bool(api, workspaceObject, "debug", workspace.debug());
+                    trace.add(catalog.require("J03"), TracePhase.INSTANCE_MATERIALIZATION, workspace.metadata(),
+                            "MObject", workspaceObject.name(), List.of("JCM_DECLARATION_NOT_RUNTIME_WORKSPACE_ID"));
+                } else {
+                    trace.add(catalog.require("J03"), TracePhase.INSTANCE_MATERIALIZATION, workspace.metadata(),
+                            "EVIDENCE_ONLY", "evidence:J03:" + workspace.metadata().semanticId(),
+                            List.of("STATUS=EVIDENCE_ONLY", "JCM_DECLARATION_NOT_RUNTIME_WORKSPACE_ID"));
+                }
             }
             for (var artifact : semantic.artifactDeclarations()) {
-                MObject artifactObject = object(api, semanticObjects, objectNames, "ArtifactDeclaration",
-                        artifact.metadata(), artifact.name());
-                text(api, artifactObject, "name", artifact.name());
-                text(api, artifactObject, "workspace", artifact.workspace());
-                text(api, artifactObject, "javaClass", artifact.javaClass());
-                text(api, artifactObject, "parameters",
-                        NativeUseModelBuilder.canonicalJson(artifact.parameters()));
-                trace.add(catalog.require("J04"), TracePhase.INSTANCE_MATERIALIZATION, artifact.metadata(),
-                        "MObject", artifactObject.name(), List.of("DECLARATION_NOT_LIVE_CARTAGO_ARTIFACT"));
+                if (schema.profile().materializesClass("ArtifactDeclaration")) {
+                    MObject artifactObject = object(api, semanticObjects, objectNames, "ArtifactDeclaration",
+                            artifact.metadata(), artifact.name());
+                    text(api, artifactObject, "name", artifact.name());
+                    text(api, artifactObject, "workspace", artifact.workspace());
+                    text(api, artifactObject, "javaClass", artifact.javaClass());
+                    text(api, artifactObject, "parameters",
+                            NativeUseModelBuilder.canonicalJson(artifact.parameters()));
+                    trace.add(catalog.require("J04"), TracePhase.INSTANCE_MATERIALIZATION, artifact.metadata(),
+                            "MObject", artifactObject.name(), List.of("DECLARATION_NOT_LIVE_CARTAGO_ARTIFACT"));
+                } else {
+                    trace.add(catalog.require("J04"), TracePhase.INSTANCE_MATERIALIZATION, artifact.metadata(),
+                            "EVIDENCE_ONLY", "evidence:J04:" + artifact.metadata().semanticId(),
+                            List.of("STATUS=EVIDENCE_ONLY", "DECLARATION_NOT_LIVE_CARTAGO_ARTIFACT"));
+                }
             }
             for (var organization : semantic.organizationDeployments()) {
-                MObject organizationObject = object(api, semanticObjects, objectNames, "OrganizationDeployment",
-                        organization.metadata(), organization.name());
-                text(api, organizationObject, "name", organization.name());
-                text(api, organizationObject, "source", organization.source());
-                text(api, organizationObject, "institution", organization.institution());
-                text(api, organizationObject, "debug", organization.debug());
-                trace.add(catalog.require("J05"), TracePhase.INSTANCE_MATERIALIZATION, organization.metadata(),
-                        "MObject", organizationObject.name(), List.of("DEPLOYMENT_NOT_MOISE_OS"));
+                if (schema.profile().materializesClass("OrganizationDeployment")) {
+                    MObject organizationObject = object(api, semanticObjects, objectNames, "OrganizationDeployment",
+                            organization.metadata(), organization.name());
+                    text(api, organizationObject, "name", organization.name());
+                    text(api, organizationObject, "source", organization.source());
+                    text(api, organizationObject, "institution", organization.institution());
+                    text(api, organizationObject, "debug", organization.debug());
+                    trace.add(catalog.require("J05"), TracePhase.INSTANCE_MATERIALIZATION, organization.metadata(),
+                            "MObject", organizationObject.name(), List.of("DEPLOYMENT_NOT_MOISE_OS"));
+                } else {
+                    trace.add(catalog.require("J05"), TracePhase.INSTANCE_MATERIALIZATION, organization.metadata(),
+                            "EVIDENCE_ONLY", "evidence:J05:" + organization.metadata().semanticId(),
+                            List.of("STATUS=EVIDENCE_ONLY", "DEPLOYMENT_NOT_MOISE_OS"));
+                }
             }
             for (var group : semantic.groupDeployments()) {
-                MObject groupObject = object(api, semanticObjects, objectNames, "GroupDeployment", group.metadata(),
-                        group.name());
-                text(api, groupObject, "organization", group.organization());
-                text(api, groupObject, "name", group.name());
-                text(api, groupObject, "type", group.type());
-                text(api, groupObject, "responsibleFor",
-                        NativeUseModelBuilder.canonicalJson(group.responsibleFor()));
-                trace.add(catalog.require("J06"), TracePhase.INSTANCE_MATERIALIZATION, group.metadata(),
-                        "MObject", groupObject.name(), List.of("DEPLOYMENT_NOT_MOISE_GROUP"));
+                if (schema.profile().materializesClass("GroupDeployment")) {
+                    MObject groupObject = object(api, semanticObjects, objectNames, "GroupDeployment", group.metadata(),
+                            group.name());
+                    text(api, groupObject, "organization", group.organization());
+                    text(api, groupObject, "name", group.name());
+                    text(api, groupObject, "type", group.type());
+                    text(api, groupObject, "responsibleFor",
+                            NativeUseModelBuilder.canonicalJson(group.responsibleFor()));
+                    trace.add(catalog.require("J06"), TracePhase.INSTANCE_MATERIALIZATION, group.metadata(),
+                            "MObject", groupObject.name(), List.of("DEPLOYMENT_NOT_MOISE_GROUP"));
+                } else {
+                    trace.add(catalog.require("J06"), TracePhase.INSTANCE_MATERIALIZATION, group.metadata(),
+                            "EVIDENCE_ONLY", "evidence:J06:" + group.metadata().semanticId(),
+                            List.of("STATUS=EVIDENCE_ONLY", "DEPLOYMENT_NOT_MOISE_GROUP"));
+                }
             }
             for (var scheme : semantic.schemeDeployments()) {
-                MObject schemeObject = object(api, semanticObjects, objectNames, "SchemeDeployment", scheme.metadata(),
-                        scheme.name());
-                text(api, schemeObject, "organization", scheme.organization());
-                text(api, schemeObject, "name", scheme.name());
-                text(api, schemeObject, "type", scheme.type());
-                trace.add(catalog.require("J07"), TracePhase.INSTANCE_MATERIALIZATION, scheme.metadata(),
-                        "MObject", schemeObject.name(), List.of("DEPLOYMENT_NOT_MOISE_SCHEME"));
+                if (schema.profile().materializesClass("SchemeDeployment")) {
+                    MObject schemeObject = object(api, semanticObjects, objectNames, "SchemeDeployment", scheme.metadata(),
+                            scheme.name());
+                    text(api, schemeObject, "organization", scheme.organization());
+                    text(api, schemeObject, "name", scheme.name());
+                    text(api, schemeObject, "type", scheme.type());
+                    trace.add(catalog.require("J07"), TracePhase.INSTANCE_MATERIALIZATION, scheme.metadata(),
+                            "MObject", schemeObject.name(), List.of("DEPLOYMENT_NOT_MOISE_SCHEME"));
+                } else {
+                    trace.add(catalog.require("J07"), TracePhase.INSTANCE_MATERIALIZATION, scheme.metadata(),
+                            "EVIDENCE_ONLY", "evidence:J07:" + scheme.metadata().semanticId(),
+                            List.of("STATUS=EVIDENCE_ONLY", "DEPLOYMENT_NOT_MOISE_SCHEME"));
+                }
             }
             for (var institution : semantic.institutionDeployments()) {
-                MObject institutionObject = object(api, semanticObjects, objectNames, "InstitutionDeployment",
-                        institution.metadata(), institution.name());
-                text(api, institutionObject, "name", institution.name());
-                text(api, institutionObject, "workspaces",
-                        NativeUseModelBuilder.canonicalJson(institution.workspaces()));
-                text(api, institutionObject, "opaqueParameters",
-                        NativeUseModelBuilder.canonicalJson(institution.opaqueParameters()));
-                trace.add(catalog.require("J08"), TracePhase.INSTANCE_MATERIALIZATION, institution.metadata(),
-                        "MObject", institutionObject.name(), List.of("OPAQUE_FIELDS_RETAINED_AS_CANONICAL_DATA"));
+                if (schema.profile().materializesClass("InstitutionDeployment")) {
+                    MObject institutionObject = object(api, semanticObjects, objectNames, "InstitutionDeployment",
+                            institution.metadata(), institution.name());
+                    text(api, institutionObject, "name", institution.name());
+                    text(api, institutionObject, "workspaces",
+                            NativeUseModelBuilder.canonicalJson(institution.workspaces()));
+                    text(api, institutionObject, "opaqueParameters",
+                            NativeUseModelBuilder.canonicalJson(institution.opaqueParameters()));
+                    trace.add(catalog.require("J08"), TracePhase.INSTANCE_MATERIALIZATION, institution.metadata(),
+                            "MObject", institutionObject.name(), List.of("OPAQUE_FIELDS_RETAINED_AS_CANONICAL_DATA"));
+                } else {
+                    trace.add(catalog.require("J08"), TracePhase.INSTANCE_MATERIALIZATION, institution.metadata(),
+                            "EVIDENCE_ONLY", "evidence:J08:" + institution.metadata().semanticId(),
+                            List.of("STATUS=EVIDENCE_ONLY", "OPAQUE_FIELDS_RETAINED_AS_CANONICAL_DATA"));
+                }
             }
             for (var tuple : semantic.rawRoleTuples()) {
                 trace.add(catalog.require("J09"), TracePhase.INSTANCE_MATERIALIZATION, tuple.metadata(),
@@ -192,18 +228,24 @@ public final class NativeUseStateBuilder {
                             "MObject", artifactObject.name(), List.of());
                 }
                 for (var operation : environment.operations()) {
-                    MObject operationObject = object(api, semanticObjects, objectNames, "Operation",
-                            operation.metadata(), operation.name());
-                    text(api, operationObject, "artifactSemanticId", operation.artifactSemanticId());
-                    text(api, operationObject, "keyId", operation.keyId());
-                    text(api, operationObject, "name", operation.name());
-                    integer(api, operationObject, "arity", operation.arity());
-                    bool(api, operationObject, "dynamic", operation.dynamic());
-                    bool(api, operationObject, "linkOperation", operation.linkOperation());
-                    bool(api, operationObject, "ui", operation.ui());
-                    bool(api, operationObject, "internal", operation.internal());
-                    trace.add(catalog.require("C05"), TracePhase.INSTANCE_MATERIALIZATION, operation.metadata(),
-                            "MObject", operationObject.name(), List.of());
+                    if (schema.profile().materializesClass("Operation")) {
+                        MObject operationObject = object(api, semanticObjects, objectNames, "Operation",
+                                operation.metadata(), operation.name());
+                        text(api, operationObject, "artifactSemanticId", operation.artifactSemanticId());
+                        text(api, operationObject, "keyId", operation.keyId());
+                        text(api, operationObject, "name", operation.name());
+                        integer(api, operationObject, "arity", operation.arity());
+                        bool(api, operationObject, "dynamic", operation.dynamic());
+                        bool(api, operationObject, "linkOperation", operation.linkOperation());
+                        bool(api, operationObject, "ui", operation.ui());
+                        bool(api, operationObject, "internal", operation.internal());
+                        trace.add(catalog.require("C05"), TracePhase.INSTANCE_MATERIALIZATION, operation.metadata(),
+                                "MObject", operationObject.name(), List.of());
+                    } else {
+                        trace.add(catalog.require("C05"), TracePhase.INSTANCE_MATERIALIZATION, operation.metadata(),
+                                "EVIDENCE_ONLY", "evidence:C05:" + operation.metadata().semanticId(),
+                                List.of("STATUS=EVIDENCE_ONLY", "NATIVE_MOPERATION_REMAINS_AVAILABLE"));
+                    }
                 }
                 if (schema.profile().materializesClass("BackingJavaOperation")) {
                     for (var backing : environment.backingOperations()) {
@@ -231,13 +273,19 @@ public final class NativeUseStateBuilder {
                                         : List.of("STATUS=EVIDENCE_ONLY", "NATIVE_MOPERATION_NOT_PROJECTED"));
                 }
                 for (var guard : environment.guards()) {
-                    MObject guardObject = object(api, semanticObjects, objectNames, "Guard", guard.metadata(), guard.name());
-                    text(api, guardObject, "operationDescriptorId", guard.operationDescriptorId());
-                    text(api, guardObject, "name", guard.name());
-                    integer(api, guardObject, "arity", guard.arity());
-                    text(api, guardObject, "implementationClass", guard.implementationClass());
-                    trace.add(catalog.require("C07"), TracePhase.INSTANCE_MATERIALIZATION, guard.metadata(),
-                            "MObject", guardObject.name(), List.of());
+                    if (schema.profile().materializesClass("Guard")) {
+                        MObject guardObject = object(api, semanticObjects, objectNames, "Guard", guard.metadata(), guard.name());
+                        text(api, guardObject, "operationDescriptorId", guard.operationDescriptorId());
+                        text(api, guardObject, "name", guard.name());
+                        integer(api, guardObject, "arity", guard.arity());
+                        text(api, guardObject, "implementationClass", guard.implementationClass());
+                        trace.add(catalog.require("C07"), TracePhase.INSTANCE_MATERIALIZATION, guard.metadata(),
+                                "MObject", guardObject.name(), List.of());
+                    } else {
+                        trace.add(catalog.require("C07"), TracePhase.INSTANCE_MATERIALIZATION, guard.metadata(),
+                                "EVIDENCE_ONLY", "evidence:C07:" + guard.metadata().semanticId(),
+                                List.of("STATUS=EVIDENCE_ONLY"));
+                    }
                 }
                 if (!environment.liveProperties().isEmpty())
                     throw new IllegalArgumentException("C08_LIVE_PROPERTY_NOT_EXPOSED_BY_AUDITED_API");
@@ -277,12 +325,18 @@ public final class NativeUseStateBuilder {
                                 List.of("STATUS=EVIDENCE_ONLY"));
                 }
                 for (var signal : environment.signals()) {
-                    MObject signalObject = object(api, semanticObjects, objectNames, "Signal", signal.metadata(), signal.name());
-                    text(api, signalObject, "artifactSemanticId", signal.artifactSemanticId());
-                    text(api, signalObject, "name", signal.name());
-                    text(api, signalObject, "values", NativeUseModelBuilder.canonicalJson(signal.values()));
-                    trace.add(catalog.require("C11"), TracePhase.INSTANCE_MATERIALIZATION, signal.metadata(),
-                            "MObject", signalObject.name(), List.of());
+                    if (schema.profile().materializesClass("Signal")) {
+                        MObject signalObject = object(api, semanticObjects, objectNames, "Signal", signal.metadata(), signal.name());
+                        text(api, signalObject, "artifactSemanticId", signal.artifactSemanticId());
+                        text(api, signalObject, "name", signal.name());
+                        text(api, signalObject, "values", NativeUseModelBuilder.canonicalJson(signal.values()));
+                        trace.add(catalog.require("C11"), TracePhase.INSTANCE_MATERIALIZATION, signal.metadata(),
+                                "MObject", signalObject.name(), List.of());
+                    } else {
+                        trace.add(catalog.require("C11"), TracePhase.INSTANCE_MATERIALIZATION, signal.metadata(),
+                                "EVIDENCE_ONLY", "evidence:C11:" + signal.metadata().semanticId(),
+                                List.of("STATUS=EVIDENCE_ONLY"));
+                    }
                 }
                 for (var agent : environment.agents()) {
                     MObject agentObject = object(api, semanticObjects, objectNames, "CartagoAgentIdentity",
@@ -313,11 +367,17 @@ public final class NativeUseStateBuilder {
                             "MLink", linkIdentity("C15", artifact.metadata().semanticId(), artifact.artifactTypeSemanticId()), List.of());
                 }
                 for (var operation : environment.operations()) {
-                    MObject operationObject = required(semanticObjects, operation.metadata().semanticId(), "C16_OPERATION_OBJECT");
-                    MObject artifactObject = required(semanticObjects, operation.artifactSemanticId(), "C16_ARTIFACT_REFERENCE");
-                    link(api, schema, "C16ArtifactOperation", artifactObject, operationObject);
-                    trace.add(catalog.require("C16"), TracePhase.INSTANCE_MATERIALIZATION, operation.metadata(),
-                            "MLink", linkIdentity("C16", operation.artifactSemanticId(), operation.metadata().semanticId()), List.of());
+                    if (schema.profile().materializesClass("Operation")) {
+                        MObject operationObject = required(semanticObjects, operation.metadata().semanticId(), "C16_OPERATION_OBJECT");
+                        MObject artifactObject = required(semanticObjects, operation.artifactSemanticId(), "C16_ARTIFACT_REFERENCE");
+                        link(api, schema, "C16ArtifactOperation", artifactObject, operationObject);
+                        trace.add(catalog.require("C16"), TracePhase.INSTANCE_MATERIALIZATION, operation.metadata(),
+                                "MLink", linkIdentity("C16", operation.artifactSemanticId(), operation.metadata().semanticId()), List.of());
+                    } else {
+                        trace.add(catalog.require("C16"), TracePhase.INSTANCE_MATERIALIZATION, operation.metadata(),
+                                "EVIDENCE_ONLY", "evidence:C16:" + operation.metadata().semanticId(),
+                                List.of("STATUS=EVIDENCE_ONLY"));
+                    }
                 }
                 for (var property : environment.propertySnapshots()) {
                     MObject propertyObject = required(semanticObjects, property.metadata().semanticId(), "C17_PROPERTY_OBJECT");
@@ -327,11 +387,17 @@ public final class NativeUseStateBuilder {
                             "MLink", linkIdentity("C17", property.artifactSemanticId(), property.metadata().semanticId()), List.of());
                 }
                 for (var guard : environment.guards()) {
-                    MObject guardObject = required(semanticObjects, guard.metadata().semanticId(), "C18_GUARD_OBJECT");
-                    MObject operationObject = required(semanticObjects, guard.operationDescriptorId(), "C18_OPERATION_REFERENCE");
-                    link(api, schema, "C18OperationGuard", operationObject, guardObject);
-                    trace.add(catalog.require("C18"), TracePhase.INSTANCE_MATERIALIZATION, guard.metadata(),
-                            "MLink", linkIdentity("C18", guard.operationDescriptorId(), guard.metadata().semanticId()), List.of());
+                    if (schema.profile().materializesClass("Guard") && schema.profile().materializesClass("Operation")) {
+                        MObject guardObject = required(semanticObjects, guard.metadata().semanticId(), "C18_GUARD_OBJECT");
+                        MObject operationObject = required(semanticObjects, guard.operationDescriptorId(), "C18_OPERATION_REFERENCE");
+                        link(api, schema, "C18OperationGuard", operationObject, guardObject);
+                        trace.add(catalog.require("C18"), TracePhase.INSTANCE_MATERIALIZATION, guard.metadata(),
+                                "MLink", linkIdentity("C18", guard.operationDescriptorId(), guard.metadata().semanticId()), List.of());
+                    } else {
+                        trace.add(catalog.require("C18"), TracePhase.INSTANCE_MATERIALIZATION, guard.metadata(),
+                                "EVIDENCE_ONLY", "evidence:C18:" + guard.metadata().semanticId(),
+                                List.of("STATUS=EVIDENCE_ONLY"));
+                    }
                 }
                 for (var agent : environment.agents()) {
                     MObject agentObject = required(semanticObjects, agent.metadata().semanticId(), "C19_AGENT_OBJECT");
@@ -350,28 +416,50 @@ public final class NativeUseStateBuilder {
                 }
             }
             for (var program : source.programs()) {
-                MObject programObject = object(api, semanticObjects, objectNames, "AgentProgram",
-                        program.metadata(), program.declarationId());
-                text(api, programObject, "declarationId", program.declarationId());
-                text(api, programObject, "sourceUri", program.sourceUri());
-                text(api, programObject, "sourceDigest", program.sourceDigest());
-                trace.add(catalog.require("A01"), TracePhase.INSTANCE_MATERIALIZATION, program.metadata(),
-                        "MObject", programObject.name(), List.of());
+                MObject programObject = null;
+                if (schema.profile().materializesClass("AgentProgram")) {
+                    programObject = object(api, semanticObjects, objectNames, "AgentProgram",
+                            program.metadata(), program.declarationId());
+                    text(api, programObject, "declarationId", program.declarationId());
+                    text(api, programObject, "sourceUri", program.sourceUri());
+                    text(api, programObject, "sourceDigest", program.sourceDigest());
+                    trace.add(catalog.require("A01"), TracePhase.INSTANCE_MATERIALIZATION, program.metadata(),
+                            "MObject", programObject.name(), List.of());
+                } else {
+                    trace.add(catalog.require("A01"), TracePhase.INSTANCE_MATERIALIZATION, program.metadata(),
+                            "EVIDENCE_ONLY", "evidence:A01:" + program.metadata().semanticId(),
+                            List.of("STATUS=EVIDENCE_ONLY", "PROGRAM_WRAPPER_NOT_REQUIRED_BY_AUTO_OCL"));
+                }
 
                 var library = java.util.Objects.requireNonNull(program.planLibrary(), "A02_PLAN_LIBRARY_REQUIRED");
                 MObject libraryObject = object(api, semanticObjects, objectNames, "PlanLibrary", library.metadata(),
                         program.declarationId());
                 trace.add(catalog.require("A02"), TracePhase.INSTANCE_MATERIALIZATION, library.metadata(),
                         "MObject", libraryObject.name(), List.of());
-                link(api, schema, "A16AgentProgramPlanLibrary", programObject, libraryObject);
-                trace.add(catalog.require("A16"), TracePhase.INSTANCE_MATERIALIZATION, program.metadata(),
-                        "MLink", linkIdentity("A16", program.metadata().semanticId(), library.metadata().semanticId()), List.of());
+                if (schema.profile().materializesClass("AgentProgram")) {
+                    link(api, schema, "A16AgentProgramPlanLibrary", programObject, libraryObject);
+                    trace.add(catalog.require("A16"), TracePhase.INSTANCE_MATERIALIZATION, program.metadata(),
+                            "MLink", linkIdentity("A16", program.metadata().semanticId(), library.metadata().semanticId()), List.of());
+                } else {
+                    trace.add(catalog.require("A16"), TracePhase.INSTANCE_MATERIALIZATION, program.metadata(),
+                            "EVIDENCE_ONLY", "evidence:A16:" + program.metadata().semanticId(),
+                            List.of("STATUS=EVIDENCE_ONLY"));
+                }
                 provenance(trace, catalog, program.metadata(), "program:" + program.metadata().semanticId());
 
                 for (int beliefIndex = 0; beliefIndex < program.beliefs().size(); beliefIndex++) {
                     var belief = program.beliefs().get(beliefIndex);
                     if (belief.ordinal() != beliefIndex)
                         throw new IllegalArgumentException("A21_BELIEF_ORDINAL_NONCONTIGUOUS: " + belief.metadata().semanticId());
+                    if (!schema.profile().materializesClass("Belief")) {
+                        trace.add(catalog.require("A08"), TracePhase.INSTANCE_MATERIALIZATION, belief.metadata(),
+                                "EVIDENCE_ONLY", "evidence:A08:" + belief.metadata().semanticId(),
+                                List.of("STATUS=EVIDENCE_ONLY"));
+                        trace.add(catalog.require("A21"), TracePhase.INSTANCE_MATERIALIZATION, belief.metadata(),
+                                "EVIDENCE_ONLY", "evidence:A21:" + belief.metadata().semanticId(),
+                                List.of("STATUS=EVIDENCE_ONLY"));
+                        continue;
+                    }
                     MObject beliefObject = object(api, semanticObjects, objectNames, "Belief", belief.metadata(),
                             "belief_" + beliefIndex);
                     integer(api, beliefObject, "ordinal", belief.ordinal());
@@ -388,6 +476,15 @@ public final class NativeUseStateBuilder {
                     var goal = program.goals().get(goalIndex);
                     if (goal.ordinal() != goalIndex)
                         throw new IllegalArgumentException("A22_GOAL_ORDINAL_NONCONTIGUOUS: " + goal.metadata().semanticId());
+                    if (!schema.profile().materializesClass("AgentGoal")) {
+                        trace.add(catalog.require("A09"), TracePhase.INSTANCE_MATERIALIZATION, goal.metadata(),
+                                "EVIDENCE_ONLY", "evidence:A09:" + goal.metadata().semanticId(),
+                                List.of("STATUS=EVIDENCE_ONLY"));
+                        trace.add(catalog.require("A22"), TracePhase.INSTANCE_MATERIALIZATION, goal.metadata(),
+                                "EVIDENCE_ONLY", "evidence:A22:" + goal.metadata().semanticId(),
+                                List.of("STATUS=EVIDENCE_ONLY"));
+                        continue;
+                    }
                     MObject goalObject = object(api, semanticObjects, objectNames, "AgentGoal", goal.metadata(),
                             "goal_" + goalIndex);
                     integer(api, goalObject, "ordinal", goal.ordinal());
@@ -405,6 +502,12 @@ public final class NativeUseStateBuilder {
                     var beliefRule = program.beliefRules().get(ruleIndex);
                     if (beliefRule.ordinal() != ruleIndex)
                         throw new IllegalArgumentException("A10_RULE_ORDINAL_NONCONTIGUOUS: " + beliefRule.metadata().semanticId());
+                    if (!schema.profile().materializesClass("BeliefRule")) {
+                        trace.add(catalog.require("A10"), TracePhase.INSTANCE_MATERIALIZATION, beliefRule.metadata(),
+                                "EVIDENCE_ONLY", "evidence:A10:" + beliefRule.metadata().semanticId(),
+                                List.of("STATUS=EVIDENCE_ONLY"));
+                        continue;
+                    }
                     MObject ruleObject = object(api, semanticObjects, objectNames, "BeliefRule", beliefRule.metadata(),
                             "rule_" + ruleIndex);
                     integer(api, ruleObject, "ordinal", beliefRule.ordinal());
@@ -440,16 +543,25 @@ public final class NativeUseStateBuilder {
                             "JASON_TRIGGER_OPERATOR_UNSUPPORTED");
                     requireLiteral(NativeUseModelBuilder.TRIGGER_TYPES, trigger.type(),
                             "JASON_TRIGGER_TYPE_UNSUPPORTED");
-                    MObject triggerObject = object(api, semanticObjects, objectNames, "Trigger", trigger.metadata(),
-                            "trigger_" + planIndex);
-                    enumeration(api, schema, triggerObject, "operator", "TriggerOperator", trigger.operator());
-                    enumeration(api, schema, triggerObject, "triggerType", "TriggerType", trigger.type());
-                    text(api, triggerObject, "literal", trigger.literal());
-                    link(api, schema, "A18PlanTrigger", planObject, triggerObject);
-                    trace.add(catalog.require("A04"), TracePhase.INSTANCE_MATERIALIZATION, trigger.metadata(),
-                            "MObject", triggerObject.name(), List.of());
-                    trace.add(catalog.require("A18"), TracePhase.INSTANCE_MATERIALIZATION, trigger.metadata(),
-                            "MLink", linkIdentity("A18", plan.metadata().semanticId(), trigger.metadata().semanticId()), List.of());
+                    if (schema.profile().materializesClass("Trigger")) {
+                        MObject triggerObject = object(api, semanticObjects, objectNames, "Trigger", trigger.metadata(),
+                                "trigger_" + planIndex);
+                        enumeration(api, schema, triggerObject, "operator", "TriggerOperator", trigger.operator());
+                        enumeration(api, schema, triggerObject, "triggerType", "TriggerType", trigger.type());
+                        text(api, triggerObject, "literal", trigger.literal());
+                        link(api, schema, "A18PlanTrigger", planObject, triggerObject);
+                        trace.add(catalog.require("A04"), TracePhase.INSTANCE_MATERIALIZATION, trigger.metadata(),
+                                "MObject", triggerObject.name(), List.of());
+                        trace.add(catalog.require("A18"), TracePhase.INSTANCE_MATERIALIZATION, trigger.metadata(),
+                                "MLink", linkIdentity("A18", plan.metadata().semanticId(), trigger.metadata().semanticId()), List.of());
+                    } else {
+                        trace.add(catalog.require("A04"), TracePhase.INSTANCE_MATERIALIZATION, trigger.metadata(),
+                                "EVIDENCE_ONLY", "evidence:A04:" + trigger.metadata().semanticId(),
+                                List.of("STATUS=EVIDENCE_ONLY"));
+                        trace.add(catalog.require("A18"), TracePhase.INSTANCE_MATERIALIZATION, trigger.metadata(),
+                                "EVIDENCE_ONLY", "evidence:A18:" + trigger.metadata().semanticId(),
+                                List.of("STATUS=EVIDENCE_ONLY"));
+                    }
 
                     List<MObject> bodyObjects = new ArrayList<>();
                     for (int bodyIndex = 0; bodyIndex < plan.body().size(); bodyIndex++) {
@@ -488,20 +600,26 @@ public final class NativeUseStateBuilder {
                 }
 
                 for (var action : program.actions()) {
-                    MObject bodyObject = semanticObjects.get(action.planBodySemanticId());
-                    if (bodyObject == null)
-                        throw new IllegalArgumentException("ACTION_BODY_SEMANTIC_ID_UNRESOLVED: "
-                                + action.planBodySemanticId());
                     requireLiteral(NativeUseModelBuilder.ACTION_KINDS, action.kind(), "JASON_ACTION_KIND_UNSUPPORTED");
-                    MObject actionObject = object(api, semanticObjects, objectNames, "Action", action.metadata(),
-                            action.kind().toLowerCase() + "_" + action.functor());
-                    text(api, actionObject, "planBodySemanticId", action.planBodySemanticId());
-                    text(api, actionObject, "term", action.term());
-                    text(api, actionObject, "functor", action.functor());
-                    integer(api, actionObject, "arity", action.arity());
-                    enumeration(api, schema, actionObject, "kind", "ActionKind", action.kind());
-                    trace.add(catalog.require(action.kind().equals("EXTERNAL") ? "A06" : "A07"),
-                            TracePhase.INSTANCE_MATERIALIZATION, action.metadata(), "MObject", actionObject.name(), List.of());
+                    if (schema.profile().materializesClass("Action")) {
+                        MObject bodyObject = semanticObjects.get(action.planBodySemanticId());
+                        if (bodyObject == null)
+                            throw new IllegalArgumentException("ACTION_BODY_SEMANTIC_ID_UNRESOLVED: "
+                                    + action.planBodySemanticId());
+                        MObject actionObject = object(api, semanticObjects, objectNames, "Action", action.metadata(),
+                                action.kind().toLowerCase() + "_" + action.functor());
+                        text(api, actionObject, "planBodySemanticId", action.planBodySemanticId());
+                        text(api, actionObject, "term", action.term());
+                        text(api, actionObject, "functor", action.functor());
+                        integer(api, actionObject, "arity", action.arity());
+                        enumeration(api, schema, actionObject, "kind", "ActionKind", action.kind());
+                        trace.add(catalog.require(action.kind().equals("EXTERNAL") ? "A06" : "A07"),
+                                TracePhase.INSTANCE_MATERIALIZATION, action.metadata(), "MObject", actionObject.name(), List.of());
+                    } else {
+                        trace.add(catalog.require(action.kind().equals("EXTERNAL") ? "A06" : "A07"),
+                                TracePhase.INSTANCE_MATERIALIZATION, action.metadata(), "EVIDENCE_ONLY",
+                                "evidence:ACTION:" + action.metadata().semanticId(), List.of("STATUS=EVIDENCE_ONLY"));
+                    }
                     provenance(trace, catalog, action.metadata(), "action:" + action.metadata().semanticId());
                 }
             }
@@ -569,6 +687,14 @@ public final class NativeUseStateBuilder {
             }
 
             Endpoint endpoint = endpoint(binding.ruleId());
+            if (!schema.profile().materializesClass(endpoint.sourceClass())
+                    || !schema.profile().materializesClass(endpoint.targetClass())) {
+                trace.add(catalog.require(binding.ruleId()), TracePhase.INSTANCE_MATERIALIZATION, binding.metadata(),
+                        "EVIDENCE_ONLY", "evidence:" + binding.ruleId() + ":" + binding.metadata().semanticId(),
+                        List.of("STATUS=PROFILE_EXCLUDED", "NO_FALLBACK_MAPPING",
+                                "SOURCE_CLASS=" + endpoint.sourceClass(), "TARGET_CLASS=" + endpoint.targetClass()));
+                continue;
+            }
             MObject source = required(semanticObjects, binding.sourceIds().get(0),
                     "CROSS_SOURCE_OBJECT_MISSING_" + binding.ruleId());
             MObject target = required(semanticObjects, binding.targetIds().get(0),

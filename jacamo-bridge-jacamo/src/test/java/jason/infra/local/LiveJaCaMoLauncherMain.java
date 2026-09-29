@@ -3,6 +3,8 @@ package jason.infra.local;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import jacamo.infra.JaCaMoLauncher;
@@ -29,7 +31,19 @@ public final class LiveJaCaMoLauncherMain {
             throw new IllegalArgumentException("REAL_JACAMO_PROJECT_MISSING:" + project);
 
         BaseLocalMAS.logger = Logger.getLogger(JaCaMoLauncher.class.getName());
-        JaCaMoLauncher launcher = new JaCaMoLauncher();
+        JaCaMoLauncher launcher = new JaCaMoLauncher() {
+            /**
+             * A disposable production-launcher JVM must not inherit a user's Jason GUI/FileHandler
+             * configuration.  In headless mode that configuration can instantiate
+             * MASConsoleLogHandler and fail before JaCaMo parses the supplied project.  The
+             * launcher still uses the official JaCaMo bootstrap; only its default logging input
+             * is made deterministic and process-local.
+             */
+            @Override protected InputStream getDefaultLogProperties() {
+                return new ByteArrayInputStream(("handlers=java.util.logging.ConsoleHandler\n"
+                        + ".level=INFO\n").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            }
+        };
         BaseLocalMAS.runner = launcher;
         RuntimeServicesFactory.set(new JaCaMoRuntimeServices(launcher));
         boolean created = false;

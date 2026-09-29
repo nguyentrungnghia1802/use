@@ -1,5 +1,6 @@
 package org.tzi.use.plugins.jacamo.codegrounded;
 
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,6 +34,11 @@ class NativeProjectionProfileTest {
                 .anyMatch(value -> value.name().equals("A19BodyOrderEntry")));
         assertEquals(NativeProjectionStatus.EVIDENCE_ONLY,
                 auto.projectionProfile().conceptStatuses().get("ExactBindingEvidence"));
+        for (String concept : List.of("WorkspaceDeclaration", "ArtifactDeclaration", "OrganizationDeployment",
+                "GroupDeployment", "SchemeDeployment", "InstitutionDeployment", "AgentProgram", "Trigger",
+                "Action", "Belief", "AgentGoal", "BeliefRule", "Signal", "Guard", "Operation"))
+            assertEquals(NativeProjectionStatus.EVIDENCE_ONLY,
+                    auto.projectionProfile().conceptStatuses().get(concept), concept);
         assertEquals(NativeProjectionStatus.PROFILE_EXCLUDED,
                 auto.projectionProfile().conceptStatuses().get("A17PlanOrderEntry"));
         assertTrue(auto.trace().records().stream().anyMatch(value -> value.targetKind().equals("ProjectionStatus")
