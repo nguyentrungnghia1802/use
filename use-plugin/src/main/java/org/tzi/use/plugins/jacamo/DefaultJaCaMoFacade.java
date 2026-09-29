@@ -105,7 +105,10 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     public DefaultJaCaMoFacade(Path checkout, SemanticAuthority authority,
                                Supplier<BridgeConnectionConfig> bridgeConfigurationSource,
                                BridgeTransportFactory bridgeTransportFactory) {
-        this(checkout, authority, bridgeConfigurationSource, bridgeTransportFactory, PipelineMode.LEGACY_V2, null);
+        // The production constructor must never opt into the compatibility projector implicitly.
+        // Callers that need the frozen V2 path must pass PipelineMode.LEGACY_V2 explicitly.
+        this(checkout, authority, bridgeConfigurationSource, bridgeTransportFactory,
+                PipelineMode.CODE_GROUNDED_NATIVE, null);
     }
 
     public DefaultJaCaMoFacade(Path checkout, SemanticAuthority authority,

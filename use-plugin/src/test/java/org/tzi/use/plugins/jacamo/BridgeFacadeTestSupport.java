@@ -59,7 +59,7 @@ final class BridgeFacadeTestSupport {
                     } catch (Exception error) {
                         throw new IllegalStateException("TEST_OFFICIAL_ADAPTER_FAILED", error);
                     }
-                });
+                }, PipelineMode.LEGACY_V2, null);
     }
 
     static DefaultJaCaMoFacade nativeFacade(Path jcm, Session session,

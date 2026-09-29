@@ -1426,18 +1426,20 @@ Gate:
 
 ## Phase 8 — Production authority switch
 
-- [ ] `CODE_GROUNDED_NATIVE` becomes production authority.
-- [ ] `LEGACY_V2` becomes explicit compatibility/shadow mode only.
-- [ ] No automatic fallback to legacy.
-- [ ] Update defaults.
-- [ ] Update packaging exclusions.
-- [ ] Verify historical parsers/connectors not shipped as authority.
+- [x] `CODE_GROUNDED_NATIVE` becomes production authority.
+- [x] `LEGACY_V2` becomes explicit compatibility/shadow mode only.
+- [x] No automatic fallback to legacy.
+- [x] Update defaults.
+- [x] Update packaging exclusions.
+- [x] Verify historical parsers/connectors not shipped as authority.
 
 Gate:
 
 - [ ] native supported scope complete;
-- [ ] no legacy calls from native path;
-- [ ] release/package tests pass.
+- [x] no legacy calls from native path;
+- [x] release/package tests pass.
+
+**Phase 8 evidence — 2026-09-29:** PASS for the production-authority and packaging boundary. The implicit `DefaultJaCaMoFacade` constructors, `DefaultJaCaMoFacade.INSTANCE`, `forSession`, and the Workbench action now select `CODE_GROUNDED_NATIVE`; `LEGACY_V2` is reachable only through an explicit `PipelineMode.LEGACY_V2` constructor argument. `ProductionAuthorityPhase8Test` passed `3/3` for implicit-native entry points, explicit legacy mode, and native fail-closed behavior without compatibility-workspace creation. `LegacyV2OclIsolationTest` passed `2/2` and confirmed the native facade branch returns before the V2 projector and contains no V2 mapping/profile calls. A full reactor `verify` passed `300/300` unit tests plus `7/7` release/integration tests with zero failures/errors/skips; `LegacyAuthorityPackagingIT`, `GuiPluginStagingIT`, and `ReleasePackageIT` proved native runtime classes are packaged, historical parsers/connectors and JaCaMo-side adapters are excluded from the plugin JAR, the staged GUI JAR is byte-identical, Bridge libraries are present, and the release checksum matches. PARTIAL: the native supported runtime scope is still bounded; Jason A12–A15 and the `RuntimeVerificationEngine` native rule-registry migration remain unchecked, so the Phase 8 gate is not complete and Phase 9 must not start.
 
 ---
 
