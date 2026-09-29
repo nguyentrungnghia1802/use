@@ -1601,18 +1601,20 @@ UNSUPPORTED_FACT
 
 Update only after corresponding code gate passes:
 
-- [ ] architecture README;
-- [ ] setup/run;
-- [ ] Bridge config;
-- [ ] mapping docs;
-- [ ] USE session behavior;
-- [ ] Mapping Inspector;
-- [ ] runtime limits;
-- [ ] export docs;
-- [ ] compatibility mode;
-- [ ] case-study evidence;
-- [ ] known limitations;
-- [ ] migration report.
+- [x] architecture README;
+- [x] setup/run;
+- [x] Bridge config;
+- [x] mapping docs;
+- [x] USE session behavior;
+- [x] Mapping Inspector;
+- [x] runtime limits;
+- [x] export docs;
+- [x] compatibility mode;
+- [x] case-study evidence;
+- [x] known limitations;
+- [x] migration report.
+
+**Section 28 evidence — 2026-09-29:** PASS. Added `CODE-GROUNDED-NATIVE-README.md` for architecture, setup/run, Bridge configuration, mapping/inspector behavior, USE session ownership, runtime limits, exports, and compatibility mode; added `CODE-GROUNDED-NATIVE-MIGRATION-REPORT.md` for phase gates, call graph, case-study evidence, limitations, and rollback/audit scope. The documents explicitly preserve the frozen V2/Ecore/golden boundary and distinguish supported subsets from unavailable/live claims.
 
 Historical audit docs remain, clearly labeled historical/date-scoped.
 
