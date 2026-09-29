@@ -60,6 +60,13 @@ class CodeGroundedPhase7Test {
         assertTrue(projector.lastOclGate().passed());
         assertTrue(projector.trace().stream().anyMatch(trace -> trace.ruleId().equals("R-JASON-AGENT-ATTRIBUTE")
                 && trace.outcome().equals(NativeRuntimeMutationEngine.Status.MATERIALIZED.name())));
+        var alias = projector.runtimeAliases().get(runtimeAgent.canonical());
+        assertNotNull(alias);
+        assertEquals(agentSemanticId, alias.targetSemanticId());
+        assertEquals(agent.name(), alias.targetUseId());
+        assertEquals(SESSION, alias.sessionId());
+        assertEquals(GENERATION, alias.generation());
+        assertEquals(REVISION, alias.modelRevision());
 
     }
 
@@ -195,6 +202,7 @@ class CodeGroundedPhase7Test {
         assertEquals(0, projection.materialized());
         assertEquals(4, projection.evidenceOnly().size());
         assertEquals(4, projector.evidence().size());
+        assertTrue(projector.runtimeAliases().isEmpty());
         assertEquals(before, digest(result.state().system()));
         assertTrue(projector.trace().stream().allMatch(value ->
                 value.outcome().equals(NativeRuntimeMutationEngine.Status.EVIDENCE_ONLY.name())));

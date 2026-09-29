@@ -20,6 +20,18 @@ import org.tzi.use.uml.sys.MSystem;
  * authority; this class is the only native component that can mutate the active USE state.
  */
 public final class NativeRuntimeProjector {
+    public record RuntimeAlias(String runtimeIdentity, String targetSemanticId, String targetUseId,
+                               String sessionId, long generation, String modelRevision) {
+        public RuntimeAlias {
+            runtimeIdentity = required(runtimeIdentity, "runtimeIdentity");
+            targetSemanticId = required(targetSemanticId, "targetSemanticId");
+            targetUseId = required(targetUseId, "targetUseId");
+            sessionId = required(sessionId, "sessionId");
+            if (generation < 0) throw new IllegalArgumentException("generation");
+            modelRevision = required(modelRevision, "modelRevision");
+        }
+    }
+
     public record ProjectionResult(int materialized, List<String> evidenceOnly,
                                    List<String> unavailable, List<String> rejected) {
         public ProjectionResult {
@@ -36,6 +48,7 @@ public final class NativeRuntimeProjector {
     private final NativeRuntimeMutationEngine mutations;
     private final Map<String, Long> sourceWatermarks = new LinkedHashMap<>();
     private final Map<String, RuntimeFact> evidence = new LinkedHashMap<>();
+    private final Map<String, RuntimeAlias> runtimeAliases = new LinkedHashMap<>();
     private final List<NativeRuntimeTraceRecord> trace = new ArrayList<>();
     private String snapshotId = "";
     private boolean resyncRequired;
@@ -67,6 +80,7 @@ public final class NativeRuntimeProjector {
     public NativeRuntimeMutationEngine.OclGate lastOclGate() { synchronized (this) { return lastOclGate; } }
     public Map<String, Long> sourceWatermarks() { synchronized (this) { return Map.copyOf(sourceWatermarks); } }
     public Map<String, RuntimeFact> evidence() { synchronized (this) { return Map.copyOf(evidence); } }
+    public Map<String, RuntimeAlias> runtimeAliases() { synchronized (this) { return Map.copyOf(runtimeAliases); } }
     public List<NativeRuntimeTraceRecord> trace() { synchronized (this) { return List.copyOf(trace); } }
 
     public synchronized ProjectionResult applySnapshot(RuntimeSnapshot snapshot) {
@@ -74,6 +88,7 @@ public final class NativeRuntimeProjector {
         mutations.resetToBaseline();
         sourceWatermarks.clear();
         evidence.clear();
+        runtimeAliases.clear();
         trace.clear();
         snapshotId = snapshot.snapshotId();
         resyncRequired = false;
@@ -115,6 +130,7 @@ public final class NativeRuntimeProjector {
         } catch (RuntimeException error) {
             mutations.resetToBaseline();
             sourceWatermarks.clear();
+            runtimeAliases.clear();
             resyncRequired = true;
             throw error;
         }
@@ -147,12 +163,26 @@ public final class NativeRuntimeProjector {
 
     private void record(String eventId, String sourceId, String runtimeIdentity,
                         NativeRuntimeMutationEngine.ApplyResult result, long sequence, long eventGeneration) {
+        if (result.status() == NativeRuntimeMutationEngine.Status.MATERIALIZED)
+            registerAlias(runtimeIdentity, result);
         String targetSemantic = result.targetSemanticId().isBlank() ? "evidence:" + runtimeIdentity : result.targetSemanticId();
         String targetUse = result.targetUseId().isBlank() ? "evidence" : result.targetUseId();
         trace.add(new NativeRuntimeTraceRecord(result.ruleId().isBlank() ? "R-NATIVE-EVIDENCE" : result.ruleId(),
                 TracePhase.RUNTIME_MUTATION, eventId, sourceId, runtimeIdentity, targetSemantic, targetUse,
                 result.status().name(), sequence, sessionId, eventGeneration, modelRevision,
                 result.diagnostic().isBlank() ? List.of() : List.of(result.diagnostic())));
+    }
+
+    private void registerAlias(String runtimeIdentity, NativeRuntimeMutationEngine.ApplyResult result) {
+        RuntimeAlias alias = new RuntimeAlias(runtimeIdentity, result.targetSemanticId(), result.targetUseId(),
+                sessionId, generation, modelRevision);
+        RuntimeAlias previous = runtimeAliases.putIfAbsent(runtimeIdentity, alias);
+        if (previous != null && !previous.equals(alias)) {
+            mutations.resetToBaseline();
+            runtimeAliases.clear();
+            resyncRequired = true;
+            throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_ALIAS_COLLISION:" + runtimeIdentity);
+        }
     }
 
     private org.jacamo.bridge.contract.BridgeRelationId snapshotBinding(RuntimeFact fact) {

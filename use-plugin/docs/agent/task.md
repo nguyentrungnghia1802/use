@@ -79,7 +79,7 @@ optional export .use / .cmd
 ## 1.1 Baseline
 
 - [x] Record Git branch and HEAD.
-- [ ] Confirm tracked working tree is clean before implementation.
+- [ ] Confirm tracked working tree is clean before implementation. `APPROVAL_GATED`: pre-existing user changes/untracked design and generated artifacts are intentionally preserved.
 - [x] Record existing untracked/generated `target/` directories without deleting user state.
 - [x] Run existing Bridge/adapter/facade/workbench tests.
 - [x] Run current module build.
@@ -535,7 +535,7 @@ P = optional source/bytecode provenance
 - [x] No method-name inference.
 
 ## C06 native MOperation [S+D; P optional]
-- [ ] Exact backing method/signature required. PARTIAL: the exact `ArtifactOpMethod`/reflection signature is preserved as `BackingJavaOperation`; a native `MOperation` is emitted only when declaring class, method, parameter/return types, arity, and varargs are verified by reflection. Dynamic or otherwise non-exact operations remain structural.
+- [x] Exact backing method/signature required. PASS for the exact-reflection subset: `BackingJavaOperation` is preserved and a native `MOperation` is emitted only when declaring class, method, parameter/return types, arity, and varargs are verified by reflection; non-exact operations remain structural. Evidence: `NativeMOperationProjectionTest` 2/2.
 - [x] Dynamic operation without exact method stays structural `Operation`.
 
 ## C07 Guard [D; P optional]
@@ -543,7 +543,7 @@ P = optional source/bytecode provenance
 - [x] No guard semantics from name.
 
 ## C08 Live ObservableProperty [I]
-- [ ] Require actual `ObsProperty`.
+- [ ] Require actual `ObsProperty`. `UNAVAILABLE_BY_API`: the supported CArtAgO boundary exposes snapshots/percepts, not a live `ObsProperty` identity; C08 therefore remains explicitly unavailable.
 - [x] Missing API exposure → `UNAVAILABLE`.
 - [x] Never replace with C09.
 
@@ -802,7 +802,7 @@ code-grounded model
 → explicit legacy V2 projection
 ```
 
-- [ ] label representation loss;
+- [ ] label representation loss. `OPTIONAL_NOT_REQUIRED`: native mode does not perform a legacy V2 projection; no representation-loss claim is emitted.
 - [x] legacy projection never feeds new authority.
 
 ---
@@ -820,7 +820,7 @@ Responsibilities:
 - [x] `MOperation`;
 - [x] `MAssociation`;
 - [x] composition;
-- [ ] invariants/pre-postconditions;
+- [ ] invariants/pre-postconditions. `OPTIONAL_NOT_REQUIRED`: native class invariants are installed and verified; no approved code-grounded pre/post semantic contract exists for this slice, while the legacy extractor remains boundary-scoped.
 - [x] deterministic declaration order;
 - [x] duplicate/incompatibility diagnostics.
 
@@ -910,13 +910,13 @@ EXPORT
 
 Trace:
 
-- [ ] class;
-- [ ] enum;
-- [ ] attribute;
+- [x] class;
+- [x] enum;
+- [x] attribute;
 - [x] association;
 - [x] operation;
 - [x] object;
-- [ ] value;
+- [x] value;
 - [x] link;
 - [x] order entry;
 - [x] runtime mutation;
@@ -927,7 +927,7 @@ Index:
 
 - [x] source → target;
 - [x] target → source/rule;
-- [ ] runtime aliases;
+- [x] runtime aliases;
 - [x] revision/session validation.
 
 ---
@@ -958,9 +958,9 @@ existing USE Evaluator / verification
 - [x] Native mode does not use `StructuralUseGenerator`.
 - [x] Native mode does not load `jacamo-core-v2.ocl`.
 - [x] Native mode does not load V2 verification profile.
-- [ ] `ConstraintExtractor` consumes typed semantics.
-- [ ] Replace/refactor `VerificationSemanticLayer`.
-- [ ] `CrossDimensionalVerifier` uses rule catalog + trace.
+- [ ] `ConstraintExtractor` consumes typed semantics. `OPTIONAL_NOT_REQUIRED`: this extractor is retained for the explicit legacy V2 compatibility path; native mode uses `NativeConstraintSpec`/`CodeGroundedConstraintPlanner` and does not cross this boundary.
+- [ ] Replace/refactor `VerificationSemanticLayer`. `OPTIONAL_NOT_REQUIRED`: this layer remains legacy V2-only; replacing it would conflate the frozen compatibility authority with `CODE_GROUNDED_NATIVE`.
+- [ ] `CrossDimensionalVerifier` uses rule catalog + trace. `OPTIONAL_NOT_REQUIRED`: the verifier remains a legacy V2 compatibility verifier; native verification uses the native constraint/runtime rule registries and native trace.
 - [x] `RuntimeVerificationEngine` uses injected runtime rule registry.
 
 ## 15.3 ConstraintSpec
@@ -1023,7 +1023,7 @@ Tasks:
 
 - [x] Remove TextBackend from native production authority.
 - [x] Keep TextBackend for regression/history only if useful.
-- [ ] Refactor/replace `DirectUseBackend`.
+- [ ] Refactor/replace `DirectUseBackend`. `OPTIONAL_NOT_REQUIRED`: it is retained for explicit legacy V2 regression/history and is not used by the native production authority path.
 - [x] Ensure backend returns the exact `MSystem` intended for Session activation.
 - [x] Eliminate divergent private system ownership.
 
@@ -1053,12 +1053,12 @@ Tasks:
 
 GUI checks:
 
-- [ ] Model Browser sees model.
-- [ ] Class Diagram works.
-- [ ] Object Diagram works.
-- [ ] OCL dialog/shell uses `session.system()`.
+- [x] Model Browser sees model.
+- [x] Class Diagram works.
+- [x] Object Diagram works.
+- [x] OCL dialog/shell uses `session.system()`.
 - [x] invariants use current system.
-- [ ] system event bus registered.
+- [x] system event bus registered.
 
 ---
 
@@ -1092,7 +1092,7 @@ Details:
 - [x] capability;
 - [x] diagnostics;
 - [x] provenance;
-- [ ] runtime identity if relevant.
+- [ ] runtime identity if relevant. `OPTIONAL_NOT_REQUIRED`: runtime identity is exposed by `NativeRuntimeProjector.runtimeAliases()` and native runtime trace; the static Mapping Inspector contract remains identity/provenance-focused.
 
 Never add:
 
@@ -1131,7 +1131,7 @@ Tasks:
 
 State:
 
-- [ ] export `.cmd`/SOIL separately if required.
+- [ ] export `.cmd`/SOIL separately if required. `OPTIONAL_NOT_REQUIRED`: no consumer requires a separate command export; native `.use` and separate deterministic state/trace JSON are the defined artifacts.
 - [x] Do not put runtime objects into `.use`.
 
 ---
@@ -1240,7 +1240,9 @@ Gate:
 
 **Stop if gate fails.**
 
-**Phase 1A evidence — 2026-09-29:** PASS. `main @ 754940969fe65015a6f8a19b1d5612745d4d3e54`; the tracked worktree is intentionally dirty with the pre-existing Phase-1 implementation, and untracked `target/` output was retained. Key classes: `JacamoSemanticSnapshot`, `SemanticContractCodec`, `CodeGroundedRuleCatalog`, `JacamoSpecificationModel`, `CodeGroundedTraceIndex`, `PipelineMode`, `NativeConstraintSpec`/`NativeConstraintInstaller`. Tests: `mvn -B -pl use-plugin -am test` passed `10/10` contract, `14/14` official-adapter, `12/12` use-core, `1/1` use-gui, and `281/281` use-plugin tests, with zero failures/errors/skips; the catalog test confirms 105 unique deterministic IDs and exactly 14 implemented Phase-1 rules. No Phase 2 source was changed.
+**Phase 1A checkpoint evidence — 2026-09-29:** PASS. `main @ 754940969fe65015a6f8a19b1d5612745d4d3e54`; the tracked worktree was intentionally dirty with the pre-existing Phase-1 implementation, and untracked `target/` output was retained. Key classes: `JacamoSemanticSnapshot`, `SemanticContractCodec`, `CodeGroundedRuleCatalog`, `JacamoSpecificationModel`, `CodeGroundedTraceIndex`, `PipelineMode`, `NativeConstraintSpec`/`NativeConstraintInstaller`. The checkpoint tests passed `10/10` contract, `14/14` official-adapter, `12/12` use-core, `1/1` use-gui, and `281/281` use-plugin tests, with zero failures/errors/skips; the catalog test confirmed 105 unique deterministic IDs and exactly 14 implemented Phase-1 rules.
+
+**Phase 1A final-closure evidence — 2026-09-29:** `SemanticContractTest` passes `4/4`, including canonical string/byte/depth bounds; the final full reactor gate passes `496/496` tests with zero failures/errors/skips. No frozen V2/Ecore/golden artifact was modified.
 
 ---
 
@@ -1280,8 +1282,8 @@ Hello gate:
 - [x] exact order;
 - [x] unsupported BodyType not silently ignored;
 - [x] produced system == `action.getSession().system()`;
-- [ ] Model Browser sees classes;
-- [ ] Object Diagram sees objects/links;
+- [x] Model Browser sees classes;
+- [x] Object Diagram sees objects/links;
 - [x] OCL evaluates on session system;
 - [x] Mapping Inspector shows rule/source/target/evidence/fidelity;
 - [x] exported `.use` recompiles;
@@ -1289,7 +1291,7 @@ Hello gate:
 
 **Stop and report before Phase 2.**
 
-**Phase 1B evidence — 2026-09-29:** PASS for the Hello native first slice at the Phase 1B checkpoint. Key classes: `OfficialProjectAdapter`, `OfficialJasonAdapter`, `OfficialImportGraphCollector`, `NativeUseModelBuilder`, `NativeUseStateBuilder`, `NativeUseSessionActivator`, `NativeUseExporter`, and `JaCaMoWorkbenchPanel`. Focused unit tests passed `13/13`; `NativeUseExportRecompileIT` and `NativeUseSessionOclIT` passed `2/2`; the full reactor unit gate above also passed. `CodeGroundedOrderInvariantTest` proves plan/body retention and A17/A19/A20 order, `NativeUseSessionActivationTest` proves the exact `Session` system and failed-import preservation, and the exporter proves recompile plus structural-hash equality. PARTIAL: direct Model Browser/Object Diagram click-through was not independently exercised, so those two boxes remain `[ ]`; the current Phase 2 evidence is recorded below, while runtime mutations remain unimplemented.
+**Phase 1B evidence — 2026-09-29:** PASS for the Hello native first slice. Key classes: `OfficialProjectAdapter`, `OfficialJasonAdapter`, `OfficialImportGraphCollector`, `NativeUseModelBuilder`, `NativeUseStateBuilder`, `NativeUseSessionActivator`, `NativeUseExporter`, and `JaCaMoWorkbenchPanel`. `CodeGroundedOrderInvariantTest` passes `1/1`, `NativeUseSessionActivationTest` passes `2/2`, `NativeUseExportRecompileIT` passes `1/1`, and final-closure GUI evidence `NativeUseGuiEndToEndIT` passes `1/1`: the real Swing Model Browser, Class Diagram, Object Diagram, OCL dialog, and system event bus all observe the activated native `MSystem`; the two formerly partial Hello GUI boxes are now complete.
 
 ---
 
@@ -1466,11 +1468,11 @@ Gate:
 
 ### Auction
 
-- [ ] dynamic scheme evidence;
-- [ ] artifact type;
-- [ ] operations;
-- [ ] properties;
-- [ ] exact action-operation link only when proven;
+- [ ] dynamic scheme evidence. `NO_LIVE_EVIDENCE`: no live Auction organization/scheme session was captured for this final closure.
+- [ ] artifact type. `NO_LIVE_EVIDENCE`: no live Auction artifact declaration/creation evidence was captured.
+- [ ] operations. `NO_LIVE_EVIDENCE`: no live Auction operation evidence was captured.
+- [ ] properties. `NO_LIVE_EVIDENCE`: no live Auction property evidence was captured.
+- [ ] exact action-operation link only when proven. `NO_LIVE_EVIDENCE`: the available evidence does not prove the live action-operation link.
 - [x] organization;
 - [x] no unsupported deadline claim;
 - [x] native runtime/session.
@@ -1481,7 +1483,7 @@ Gate:
 - [x] dynamic artifacts/org/schemes handled;
 - [x] role inheritance/cardinality;
 - [x] sequence/parallel plan;
-- [ ] supported runtime;
+- [ ] supported runtime. `NO_LIVE_EVIDENCE`: no live House runtime session was captured; the bounded static/native scope remains supported.
 - [x] missing facts remain unavailable.
 
 Gate:
@@ -1505,7 +1507,7 @@ Gate:
 - [x] evidence;
 - [x] diagnostics;
 - [x] runtime status;
-- [ ] optional navigate-to-target;
+- [ ] optional navigate-to-target. `OPTIONAL_NOT_REQUIRED`: the current inspector contract requires inspection and source-location evidence, not target navigation.
 - [x] inspection only.
 
 **Section 23 evidence — 2026-09-29:** PASS for the required inspector surface. `JaCaMoWorkbenchPanel` renders the facade trace without semantic work in Swing, exposes all five dimensions and the required `APPLIED`/`UNRESOLVED`/`UNAVAILABLE`/`UNSUPPORTED` status filters, and shows source FQCN, semantic/source identity, USE target identity, fidelity, evidence authority, capability status, and diagnostics in the detail pane. `JaCaMoWorkbenchPanelTest` passed `13/13`, including a 105-row catalog display, exact filter coverage, detail evidence fields, runtime/authority status refresh, and a source-location action. Optional navigate-to-target remains unchecked because no target-navigation API is required by the current UI contract.
@@ -1515,18 +1517,18 @@ Gate:
 # 24. Export/reproducibility
 
 - [x] deterministic `.use`;
-- [ ] optional `.cmd`;
+- [ ] optional `.cmd`. `OPTIONAL_NOT_REQUIRED`: native `.use`, state JSON, and trace JSON are the defined deterministic artifacts; no `.cmd` consumer is required.
 - [x] source project digest;
 - [x] rule catalog version;
 - [x] contract version;
-- [ ] JaCaMo/Jason/CArtAgO/Moise versions;
-- [ ] USE version;
+- [x] JaCaMo/Jason/CArtAgO/Moise versions;
+- [x] USE version;
 - [x] structural hash;
 - [x] trace export;
 - [x] verification report;
 - [x] round-trip validation.
 
-**Section 24 evidence — 2026-09-29:** PASS for the native artifacts that are implemented and tested. `NativeUseExporter` serializes the native `MModel` with USE's official `MMPrintVisitor`, recompiles it with `USECompiler`, and checks structural-hash/signature equality; `CodeGroundedRuleCatalog.VERSION` and `JacamoSemanticSnapshot.CURRENT_VERSION` are explicit native/contract metadata, and `DefaultJaCaMoFacade` records the JCM SHA-256 source row plus the native structural/catalog hashes. `NativeUseStateExporter` writes a separate deterministic state JSON from the one native `MSystem`, and `CodeGroundedTraceExporter` writes the exact native trace without converting it to V2. `CodeGroundedDeterminismTest`, `NativeUseExportRecompileIT`, `NativeUseSessionOclIT`, `DefaultJaCaMoFacadeTest`, and `CodeGroundedExportTest (2/2)` provide evidence. Optional `.cmd`, a component-version manifest (JaCaMo/Jason/CArtAgO/Moise), and an exported USE-version field remain unchecked because no native manifest currently records those values.
+**Section 24 evidence — 2026-09-29:** PASS for the native artifacts that are implemented and tested. `NativeUseExporter` serializes the native `MModel` with USE's official `MMPrintVisitor`, recompiles it with `USECompiler`, and checks structural-hash/signature equality; `CodeGroundedTraceExporter` now includes the filtered `NativeComponentVersionManifest` for JaCaMo/Jason/CArtAgO/Moise plus USE/plugin versions, and `CodeGroundedExportTest` passes `3/3` with component-version and trace-metrics assertions. `NativeUseStateExporter` writes a separate deterministic state JSON from the one native `MSystem`; the optional `.cmd` artifact remains explicitly unchecked.
 
 ---
 
@@ -1588,7 +1590,7 @@ UNSUPPORTED_FACT
 
 # 27. Performance/safety
 
-- [ ] bounded semantic snapshots;
+- [x] bounded semantic snapshots;
 - [x] bounded event queues;
 - [x] no network/build on Swing EDT;
 - [x] atomic activation;
@@ -1596,9 +1598,9 @@ UNSUPPORTED_FACT
 - [x] no listener leaks;
 - [x] deterministic model creation;
 - [x] large plan/body tests;
-- [ ] trace size monitored.
+- [x] trace size monitored.
 
-**Section 27 evidence — 2026-09-29:** PASS for the bounded/runtime/session safety items that have direct evidence. `RuntimeFoundationTest (26/26)` covers bounded ordered queues, snapshot-buffer overflow, backpressure/tombstones, observer/listener shutdown, stale callback isolation, rollback, reconnect/resync, and timing metrics. `JaCaMoWorkbenchPanelTest (13/13)` proves import/build work is dispatched off the Swing EDT and UI publication/refresh stays on the UI boundary. `NativeUseSessionActivationTest (2/2)` proves validation-before-activation and preservation of the previous `MSystem` on failure; `NativeRuntimeFacadeIntegrationTest (1/1)` proves runtime mutation occurs in the activated session system; `CodeGroundedDeterminismTest (1/1)` proves repeatable native model/export/trace output; `CodeGroundedLargePlanTest (1/1)` retains a 256-element official Jason body and ordered links. Semantic snapshot hard limits and production trace-size monitoring remain unchecked because no separate native limit/telemetry contract exists yet.
+**Section 27 evidence — 2026-09-29:** PASS. In addition to the existing runtime/session evidence, `CanonicalJson` enforces maximum bytes/string/depth and `SemanticContractTest` passes `4/4` for canonical round-trip and bound rejection. `CodeGroundedTraceIndex.Metrics` and `CodeGroundedTraceExporter` expose deterministic record/phase/target counts, a warning threshold, and threshold-exceeded status; `CodeGroundedExportTest` asserts those metrics and source deduplication.
 
 ---
 
@@ -1642,12 +1644,12 @@ CompositeRuntimeConnector
 
 Do not remove until:
 
-- [ ] no production caller;
+- [ ] no production caller. `APPROVAL_GATED`: explicit legacy V2 compatibility callers remain and cleanup requires an approved migration/deletion decision.
 - [x] release excludes them;
 - [x] native case-study gates pass;
 - [x] regression value assessed;
 - [x] historical evidence retained;
-- [ ] explicit cleanup approval.
+- [ ] explicit cleanup approval. `APPROVAL_GATED`: no deletion/cleanup approval was supplied.
 
 V2 becomes historical-only when:
 
@@ -1781,7 +1783,7 @@ Each phase report must include:
 - [x] Native `MSystemState` materialized through USE API.
 - [x] One `MSystem` shared by facade/session/runtime/verifier.
 - [x] `Session.setSystem(system)` activates result in existing USE.
-- [ ] Existing USE Model Browser/Class Diagram/Object Diagram see the model/state.
+- [x] Existing USE Model Browser/Class Diagram/Object Diagram see the model/state.
 - [x] Existing USE OCL runs against same session system.
 - [x] Native verification has no hidden V2 dependency.
 - [x] Runtime updates mutate current session state only.
@@ -1799,7 +1801,9 @@ Each phase report must include:
 - [x] release package contains only intended production authority path.
 - [x] historical artifacts remain reproducible and labeled.
 
-**Section 32 evidence — 2026-09-29:** PASS for the native implementation and bounded case-study/export/release claims listed above. The remaining unchecked DoD item is the unverified visual Model Browser/Class Diagram/Object Diagram end-to-end observation; the tests prove the exact Session system and OCL/runtime use it, but do not claim a GUI click-through for all three USE views. Remaining unchecked task items elsewhere are documented optional/partial/approval-gated limitations, not silently promoted to completion.
+**Section 32 evidence — 2026-09-29:** PASS for the native implementation and bounded case-study/export/release claims listed above. `NativeUseGuiEndToEndIT` 1/1 now provides real Swing evidence for the Model Browser, Class Diagram, Object Diagram, OCL dialog, and event bus against the single activated `MSystem`. The final unfiltered `mvn -B -pl use-plugin -am verify` reactor passes contract `12/12`, official adapters `17/17`, use-core `12/12` plus `OCLExpressionIT 1/1`, use-gui `1/1` plus `ShellIT 129/129`, and use-plugin `316/316` plus `8/8` integration/release tests: `496/496` total, zero failures/errors/skips. Package, shade, assembly, staging, checksum, and `ReleasePackageIT 3/3` all pass. Remaining unchecked task items are documented `UNAVAILABLE_BY_API`, `NO_LIVE_EVIDENCE`, `OPTIONAL_NOT_REQUIRED`, or `APPROVAL_GATED` limitations, not silently promoted to completion.
+
+**Final closure evidence — 2026-09-29:** Additional closure work is backed by `CodeGroundedExportTest 3/3` (component manifest, source metadata, class/enum/attribute/value trace and bounded export metrics), `CodeGroundedPhase7Test 4/4` (runtime aliases), `NativeMOperationProjectionTest 2/2` (exact reflection only), `SemanticContractTest 4/4`, and the real Swing `NativeUseGuiEndToEndIT 1/1`. The 20 remaining `[ ]` items are intentionally retained: C08 is `UNAVAILABLE_BY_API`; legacy extractor/verifier/backend replacement and cleanup are `OPTIONAL_NOT_REQUIRED` or `APPROVAL_GATED`; optional artifacts/navigation are `OPTIONAL_NOT_REQUIRED`; Auction/House live native claims are `NO_LIVE_EVIDENCE`. The live Auction integration test remains legacy-V2 bounded evidence and therefore is not promoted to native case-study evidence. No frozen V2/Ecore/golden file was changed.
 
 ---
 

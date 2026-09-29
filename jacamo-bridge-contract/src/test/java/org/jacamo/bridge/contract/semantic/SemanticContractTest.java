@@ -72,6 +72,15 @@ class SemanticContractTest {
                 || binding.context().containsKey("incarnationId")));
     }
 
+    @Test void canonicalSemanticEnvelopeRejectsUnboundedInput() {
+        assertThrows(ContractException.class, () -> org.jacamo.bridge.contract.CanonicalJson.encode(
+                Map.of("diagnostic", "x".repeat(org.jacamo.bridge.contract.CanonicalJson.DEFAULT_MAX_STRING + 1))));
+        assertThrows(ContractException.class, () -> org.jacamo.bridge.contract.CanonicalJson.decode(
+                new byte[org.jacamo.bridge.contract.CanonicalJson.DEFAULT_MAX_BYTES + 1]));
+        assertThrows(ContractException.class, () -> org.jacamo.bridge.contract.CanonicalJson.decode(
+                "[[[true]]]".getBytes(java.nio.charset.StandardCharsets.UTF_8), 32, 1, 32));
+    }
+
     private static JacamoSemanticSnapshot sample() {
         var evidence = new SourceEvidence(EvidenceAuthority.OFFICIAL_JACAMO_API, "project:/hello.jcm",
                 "a".repeat(64), "jacamo.project.JaCaMoProject", "jcm:project:hello", 1, 7, "", "session-1", 1,

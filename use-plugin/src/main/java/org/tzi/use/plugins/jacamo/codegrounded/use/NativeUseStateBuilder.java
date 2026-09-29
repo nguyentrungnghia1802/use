@@ -22,6 +22,7 @@ import org.tzi.use.plugins.jacamo.codegrounded.model.JacamoSpecificationModel;
 import org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalog;
 import org.tzi.use.plugins.jacamo.codegrounded.trace.CodeGroundedTraceCollector;
 import org.tzi.use.plugins.jacamo.codegrounded.trace.CodeGroundedTraceIndex;
+import org.tzi.use.plugins.jacamo.codegrounded.trace.CodeGroundedTraceRecord;
 import org.tzi.use.plugins.jacamo.codegrounded.trace.TracePhase;
 import org.tzi.use.uml.mm.MAssociation;
 import org.tzi.use.uml.mm.MAttribute;
@@ -31,6 +32,7 @@ import org.tzi.use.uml.ocl.value.BooleanValue;
 import org.tzi.use.uml.ocl.value.IntegerValue;
 import org.tzi.use.uml.ocl.value.RealValue;
 import org.tzi.use.uml.ocl.value.StringValue;
+import org.tzi.use.uml.ocl.value.Value;
 import org.tzi.use.uml.sys.MObject;
 import org.tzi.use.uml.sys.MSystem;
 
@@ -486,6 +488,7 @@ public final class NativeUseStateBuilder {
                 }
             }
             applyExactBindings(api, schema, semanticObjects, objectNames, trace, catalog, semantic.exactBindings());
+            valueTraces(trace, system);
             StringWriter validation = new StringWriter();
             PrintWriter output = new PrintWriter(validation, true);
             boolean structureValid = system.state().checkStructure(output);
@@ -496,6 +499,31 @@ public final class NativeUseStateBuilder {
         } catch (UseApiException error) {
             throw new IllegalStateException("NATIVE_USE_STATE_BUILD_FAILED: " + error.getMessage(), error);
         }
+    }
+
+    private static void valueTraces(CodeGroundedTraceCollector trace, MSystem system) {
+        Map<String, CodeGroundedTraceRecord> objectEvidence = new LinkedHashMap<>();
+        trace.records().stream()
+                .filter(record -> record.phase() == TracePhase.INSTANCE_MATERIALIZATION)
+                .filter(record -> record.targetKind().equals("MObject") || record.targetKind().equals("ORDER_ENTRY"))
+                .forEach(record -> objectEvidence.putIfAbsent(record.targetIdentity(), record));
+        system.state().allObjects().stream().sorted(java.util.Comparator.comparing(MObject::name)).forEach(object -> {
+            CodeGroundedTraceRecord evidence = objectEvidence.get(object.name());
+            if (evidence == null)
+                throw new IllegalStateException("NATIVE_VALUE_TRACE_SOURCE_MISSING:" + object.name());
+            object.state(system.state()).attributeValueMap().entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey(java.util.Comparator.comparing(MAttribute::name)))
+                    .forEach(entry -> trace.add(valueRecord(evidence, object, entry.getKey(), entry.getValue())));
+        });
+    }
+
+    private static CodeGroundedTraceRecord valueRecord(CodeGroundedTraceRecord evidence, MObject object,
+                                                         MAttribute attribute, Value value) {
+        return new CodeGroundedTraceRecord(evidence.ruleId(), TracePhase.INSTANCE_MATERIALIZATION,
+                evidence.sourceKind(), evidence.sourceJavaFqcn(), evidence.sourceIdentity(), "MValue",
+                "value:" + object.name() + "." + attribute.name(), evidence.evidenceAuthority(),
+                evidence.fidelity(), evidence.capabilityStatus(),
+                List.of(value.isUndefined() ? "UNDEFINED" : "DEFINED", "VALUE_TYPE=" + value.type()));
     }
 
     private static void applyExactBindings(UseSystemApi api, NativeUseModelBuilder.Result schema,

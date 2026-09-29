@@ -397,8 +397,8 @@ public final class NativeUseModelBuilder {
             List<NativeConstraintSpec> constraints = new CodeGroundedConstraintPlanner().plan(catalog);
             NativeConstraintInstaller.InstallationResult installation =
                     new NativeConstraintInstaller().installWithReport(api, constraints);
-            modelTraces(trace, catalog, source, operationPlan);
             MModel model = api.getModel();
+            modelTraces(trace, catalog, source, operationPlan, model);
             return new Result(model, trace.index(), constraints, installation.skipped(),
                     operationPlan.artifactTypeClassNames(), operationPlan.operationDescriptorIds(),
                     NativeUseStructure.sha256(model));
@@ -408,7 +408,8 @@ public final class NativeUseModelBuilder {
     }
 
     private static void modelTraces(CodeGroundedTraceCollector trace, CodeGroundedRuleCatalog catalog,
-                                    JacamoSpecificationModel source, NativeOperationPlan operationPlan) {
+                                    JacamoSpecificationModel source, NativeOperationPlan operationPlan,
+                                    MModel model) {
         trace.add(catalog.require("J01"), TracePhase.MODEL_DECLARATION, source.project().metadata(),
                 "MModel", "model:" + modelName(source.project().name()), List.of());
         for (String id : List.of("J02", "J03", "J04", "J05", "J06", "J07", "J08", "J09", "J10", "J11",
@@ -431,6 +432,56 @@ public final class NativeUseModelBuilder {
             trace.add(catalog.require("C06"), TracePhase.MODEL_DECLARATION, projection.backing().metadata(),
                     "MOperation", projection.ownerUseClass() + "::" + projection.descriptor().name(),
                     List.of("EXACT_REFLECTION_SIGNATURE", "NATIVE_OPERATION_PROJECTED"));
+        model.classes().stream().sorted(Comparator.comparing(value -> value.name())).forEach(cls -> {
+            CodeGroundedRule rule = declarationRule(catalog, cls.name(), operationPlan);
+            trace.add(declarationRecord(rule, "MClass", "class:" + cls.name(),
+                    operationPlan.artifactTypeClassNames().containsValue(cls.name())
+                            ? List.of("GENERATED_EXACT_ARTIFACT_SUBTYPE") : List.of()));
+            cls.attributes().stream().sorted(Comparator.comparing(value -> value.name())).forEach(attribute ->
+                    trace.add(declarationRecord(rule, "MAttribute",
+                            "attribute:" + cls.name() + "." + attribute.name(), List.of())));
+        });
+        model.enumTypes().stream().sorted(Comparator.comparing(value -> value.name())).forEach(enumeration -> {
+            CodeGroundedRule rule = catalog.require(enumRule(enumeration.name()));
+            trace.add(declarationRecord(rule, "EnumType", "enum:" + enumeration.name(),
+                    List.of("LITERALS=" + String.join(",", enumeration.getLiterals()))));
+        });
+    }
+
+    private static CodeGroundedTraceRecord declarationRecord(CodeGroundedRule rule, String targetKind,
+                                                               String targetIdentity, List<String> diagnostics) {
+        return new CodeGroundedTraceRecord(rule.ruleId(), TracePhase.MODEL_DECLARATION, rule.sourceKindFqcn(),
+                rule.sourceKindFqcn(), "schema:" + rule.ruleId(), targetKind, targetIdentity,
+                rule.sourceAuthority(), rule.fidelity(), rule.capabilityStatus(), diagnostics);
+    }
+
+    private static CodeGroundedRule declarationRule(CodeGroundedRuleCatalog catalog, String className,
+                                                      NativeOperationPlan operationPlan) {
+        if (operationPlan.artifactTypeClassNames().containsValue(className)) return catalog.require("C03");
+        String special = switch (className) {
+            case "A17PlanOrderEntry" -> "A17";
+            case "A19BodyOrderEntry" -> "A19";
+            case "BackingJavaOperation" -> "C06";
+            case "ExactBindingEvidence" -> "X01";
+            default -> null;
+        };
+        if (special != null) return catalog.require(special);
+        return catalog.rules().stream()
+                .filter(rule -> rule.targetUseKind().equals("MClass " + className))
+                .min(Comparator.comparing(CodeGroundedRule::ruleId))
+                .orElseThrow(() -> new IllegalStateException("NATIVE_CLASS_TRACE_RULE_MISSING:" + className));
+    }
+
+    private static String enumRule(String enumName) {
+        return switch (enumName) {
+            case "TriggerOperator", "TriggerType" -> "A04";
+            case "PlanBodyType" -> "A05";
+            case "ActionKind" -> "A06";
+            case "MoisePlanOperator" -> "M13";
+            case "MoiseGoalType" -> "M12";
+            case "MoiseNormType" -> "M14";
+            default -> throw new IllegalStateException("NATIVE_ENUM_TRACE_RULE_MISSING:" + enumName);
+        };
     }
 
     private static String targetKind(String target) {

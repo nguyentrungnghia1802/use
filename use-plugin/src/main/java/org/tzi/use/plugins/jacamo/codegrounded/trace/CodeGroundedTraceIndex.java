@@ -5,9 +5,26 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /** Bidirectional exact-identity index for code-grounded traces. */
 public final class CodeGroundedTraceIndex {
+    public static final int DEFAULT_WARNING_THRESHOLD = 50_000;
+
+    public record Metrics(int recordCount, Map<String, Integer> byPhase,
+                          Map<String, Integer> byTargetKind, int warningThreshold,
+                          boolean warningThresholdExceeded) {
+        public Metrics {
+            if (recordCount < 0 || warningThreshold < 1) throw new IllegalArgumentException("TRACE_METRICS_INVALID");
+            byPhase = immutable(byPhase);
+            byTargetKind = immutable(byTargetKind);
+        }
+
+        private static Map<String, Integer> immutable(Map<String, Integer> values) {
+            return Collections.unmodifiableMap(new LinkedHashMap<>(values));
+        }
+    }
+
     private final List<CodeGroundedTraceRecord> records;
     private final Map<String,List<CodeGroundedTraceRecord>> bySource;
     private final Map<String,List<CodeGroundedTraceRecord>> byTarget;
@@ -24,6 +41,20 @@ public final class CodeGroundedTraceIndex {
     }
     public List<CodeGroundedTraceRecord> sourcesForTarget(String targetIdentity) {
         return byTarget.getOrDefault(targetIdentity, List.of());
+    }
+
+    public Metrics metrics() { return metrics(DEFAULT_WARNING_THRESHOLD); }
+
+    public Metrics metrics(int warningThreshold) {
+        if (warningThreshold < 1) throw new IllegalArgumentException("TRACE_WARNING_THRESHOLD_INVALID");
+        Map<String, Integer> byPhase = new TreeMap<>();
+        Map<String, Integer> byTargetKind = new TreeMap<>();
+        records.forEach(record -> {
+            byPhase.merge(record.phase().name(), 1, Integer::sum);
+            byTargetKind.merge(record.targetKind(), 1, Integer::sum);
+        });
+        return new Metrics(records.size(), byPhase, byTargetKind, warningThreshold,
+                records.size() > warningThreshold);
     }
 
     private static Map<String,List<CodeGroundedTraceRecord>> index(List<CodeGroundedTraceRecord> records,
