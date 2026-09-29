@@ -20,7 +20,11 @@ public final class CodeGroundedRuleCatalog {
             "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10", "A11",
             "A16", "A17", "A18", "A19", "A20", "A21", "A22",
             "C01", "C02", "C03", "C04", "C05", "C07", "C09", "C10", "C11", "C12",
-            "C13", "C14", "C15", "C16", "C17", "C18", "C19", "C20");
+            "C13", "C14", "C15", "C16", "C17", "C18", "C19", "C20",
+            "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11",
+            "M12", "M13", "M14", "M15", "M16", "M17", "M18", "M19", "M20", "M21", "M22",
+            "M23", "M24", "M25", "M26", "M27", "M28", "M29", "M30", "M31", "M32", "M33",
+            "M34", "M35", "M36", "M37", "M38", "M39", "M40", "M41", "M42", "M43");
     private static final List<CodeGroundedRule> RULES = build();
     private static final Map<String, CodeGroundedRule> BY_ID = index(RULES);
 

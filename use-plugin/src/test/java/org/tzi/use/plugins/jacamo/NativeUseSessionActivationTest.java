@@ -32,7 +32,8 @@ class NativeUseSessionActivationTest {
             assertSame(resynchronized, facade.materializedSystem());
             assertSame(resynchronized, session.system());
             assertNotNull(session.system().model().getClass("AgentProgram"));
-            assertNull(session.system().model().getClass("Organization"), "Phase 2+ classes must not leak into Phase 1B");
+            assertNotNull(session.system().model().getClass("Organization"),
+                    "Phase 5 Moise classes are part of the native session schema");
         }
     }
 

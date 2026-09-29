@@ -24,6 +24,7 @@ import org.jacamo.bridge.contract.semantic.EvidenceAuthority;
 import org.jacamo.bridge.contract.semantic.Fidelity;
 import org.jacamo.bridge.contract.semantic.JacamoSemanticSnapshot;
 import org.jacamo.bridge.contract.semantic.JasonSemanticContract.AgentProgramSemantic;
+import org.jacamo.bridge.contract.semantic.MoiseSemanticContract.OrganizationSemantic;
 import org.jacamo.bridge.contract.semantic.JcmSemanticContract.AgentDeclarationSemantic;
 import org.jacamo.bridge.contract.semantic.JcmSemanticContract.AgentFocusTupleSemantic;
 import org.jacamo.bridge.contract.semantic.JcmSemanticContract.AgentRoleTupleSemantic;
@@ -59,6 +60,7 @@ public final class OfficialProjectAdapter {
         var typedGroups=new ArrayList<GroupDeploymentSemantic>();var typedSchemes=new ArrayList<SchemeDeploymentSemantic>();
         var typedInstitutions=new ArrayList<InstitutionDeploymentSemantic>();var rawRoles=new ArrayList<AgentRoleTupleSemantic>();
         var rawFocus=new ArrayList<AgentFocusTupleSemantic>();var programs=new ArrayList<AgentProgramSemantic>();
+        var typedMoiseOrganizations=new ArrayList<OrganizationSemantic>();
 
         for(AgentParameters base:project.getAgents().stream().sorted(Comparator.comparing(AgentParameters::getAgName)).toList()){
             JaCaMoAgentParameters agent=(JaCaMoAgentParameters)base;
@@ -151,7 +153,9 @@ public final class OfficialProjectAdapter {
             Path path=resolveProjectPath(root,orgSource);if(!Files.exists(path))path=root.resolve("src/org").resolve(orgSource).normalize();
             if(!Files.exists(path)){unresolved.add(new UnresolvedFact("organisation-source",org.getName(),CapabilityStatus.UNAVAILABLE,
                     "OS source does not exist: "+orgSource,List.of(sourceEvidence)));continue;}
-            var result=moise.load(root,path,projectKey);organisations.addAll(result.facts());roleCards.addAll(result.groupRoleCardinalities());
+             var result=moise.load(root,path,projectKey);organisations.addAll(result.facts());
+             typedMoiseOrganizations.add(result.organization());
+             roleCards.addAll(result.groupRoleCardinalities());
             subgroupCards.addAll(result.parentSubGroupCardinalities());
         }
         project.getInstitutions().stream().sorted(Comparator.comparing(value->value.getName())).forEach(institution->{
@@ -174,9 +178,10 @@ public final class OfficialProjectAdapter {
         typedInstitutions.sort(Comparator.comparing(value->value.metadata().semanticId()));
         rawRoles.sort(Comparator.comparing(value->value.metadata().semanticId()));rawFocus.sort(Comparator.comparing(value->value.metadata().semanticId()));
         programs.sort(Comparator.comparing(value->value.metadata().semanticId()));
+        typedMoiseOrganizations.sort(Comparator.comparing(value->value.metadata().semanticId()));
         var semantic=new JacamoSemanticSnapshot(JacamoSemanticSnapshot.CURRENT_VERSION,typedProject,typedAgents,typedWorkspaces,
                 typedArtifacts,typedOrganisations,typedGroups,typedSchemes,typedInstitutions,rawRoles,rawFocus,imports,programs,
-                List.of(),List.of(),List.of(),List.of());
+                List.of(),typedMoiseOrganizations,List.of(),List.of());
         var provenance=Map.of("authority","official-jacamo-objects","frozenV2","projection-downstream",
                 "semanticContract",JacamoSemanticSnapshot.CURRENT_VERSION);
         var pending=new ModelSnapshot("pending",sources,agents,workspaces,artifacts,organisations,roleCards,subgroupCards,

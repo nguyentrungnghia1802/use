@@ -26,6 +26,9 @@ public final class NativeUseModelBuilder {
     public static final List<String> TRIGGER_OPERATORS = List.of("add", "del", "goalState");
     public static final List<String> TRIGGER_TYPES = List.of("belief", "achieve", "test", "signal");
     public static final List<String> ACTION_KINDS = List.of("EXTERNAL", "INTERNAL");
+    public static final List<String> MOISE_PLAN_OPERATORS = List.of("sequence", "choice", "parallel");
+    public static final List<String> MOISE_GOAL_TYPES = List.of("performance", "achievement", "maintenance");
+    public static final List<String> MOISE_NORM_TYPES = List.of("obligation", "permission");
 
     public Result build(JacamoSpecificationModel source) {
         CodeGroundedTraceCollector trace = new CodeGroundedTraceCollector();
@@ -40,20 +43,31 @@ public final class NativeUseModelBuilder {
             api.createEnumeration("TriggerType", TRIGGER_TYPES);
             api.createEnumeration("PlanBodyType", BODY_TYPES);
             api.createEnumeration("ActionKind", ACTION_KINDS);
+            api.createEnumeration("MoisePlanOperator", MOISE_PLAN_OPERATORS);
+            api.createEnumeration("MoiseGoalType", MOISE_GOAL_TYPES);
+            api.createEnumeration("MoiseNormType", MOISE_NORM_TYPES);
 
             for (String name : List.of("Agent", "WorkspaceDeclaration", "ArtifactDeclaration", "OrganizationDeployment",
                     "GroupDeployment", "SchemeDeployment", "InstitutionDeployment", "AgentProgram", "PlanLibrary",
                     "Plan", "Trigger", "PlanBodyElement", "Action", "Belief", "AgentGoal", "BeliefRule",
                     "Environment", "Workspace", "ArtifactType", "Artifact", "Operation", "BackingJavaOperation",
                     "Guard", "LiveObservableProperty", "ObservablePropertySnapshot", "ArtifactInfo", "Signal",
-                    "CartagoAgentIdentity", "A17PlanOrderEntry", "A19BodyOrderEntry"))
+                    "CartagoAgentIdentity", "A17PlanOrderEntry", "A19BodyOrderEntry", "Organization",
+                    "StructuralSpecification", "FunctionalSpecification", "NormativeSpecification", "Group", "Role",
+                    "RoleRelation", "Link", "Compatibility", "Scheme", "Mission", "OrganizationalGoal",
+                    "OrganizationalPlan", "Norm", "GroupRoleCardinality", "SubGroupCardinality",
+                    "SchemeMissionCardinality"))
                 api.createClass(name, false);
             for (String name : List.of("Agent", "WorkspaceDeclaration", "ArtifactDeclaration", "OrganizationDeployment",
                     "GroupDeployment", "SchemeDeployment", "InstitutionDeployment", "AgentProgram", "PlanLibrary",
                     "Plan", "Trigger", "PlanBodyElement", "Action", "Belief", "AgentGoal", "BeliefRule",
                     "Environment", "Workspace", "ArtifactType", "Artifact", "Operation", "BackingJavaOperation",
                     "Guard", "LiveObservableProperty", "ObservablePropertySnapshot", "ArtifactInfo", "Signal",
-                    "CartagoAgentIdentity", "A17PlanOrderEntry", "A19BodyOrderEntry"))
+                    "CartagoAgentIdentity", "A17PlanOrderEntry", "A19BodyOrderEntry", "Organization",
+                    "StructuralSpecification", "FunctionalSpecification", "NormativeSpecification", "Group", "Role",
+                    "RoleRelation", "Link", "Compatibility", "Scheme", "Mission", "OrganizationalGoal",
+                    "OrganizationalPlan", "Norm", "GroupRoleCardinality", "SubGroupCardinality",
+                    "SchemeMissionCardinality"))
                 api.createAttribute(name, "semanticId", "String");
             api.createAttribute("Agent", "name", "String");
             api.createAttribute("Agent", "sourceUri", "String");
@@ -175,6 +189,71 @@ public final class NativeUseModelBuilder {
             api.createAttribute("BeliefRule", "body", "String");
             api.createAttribute("A17PlanOrderEntry", "rank", "Integer");
             api.createAttribute("A19BodyOrderEntry", "rank", "Integer");
+            api.createAttribute("Organization", "name", "String");
+            api.createAttribute("Organization", "sourceUri", "String");
+            api.createAttribute("StructuralSpecification", "organizationSemanticId", "String");
+            api.createAttribute("StructuralSpecification", "specificationId", "String");
+            api.createAttribute("StructuralSpecification", "rootGroupSemanticId", "String");
+            api.createAttribute("FunctionalSpecification", "organizationSemanticId", "String");
+            api.createAttribute("FunctionalSpecification", "specificationId", "String");
+            api.createAttribute("NormativeSpecification", "organizationSemanticId", "String");
+            api.createAttribute("NormativeSpecification", "specificationId", "String");
+            api.createAttribute("Group", "groupId", "String");
+            api.createAttribute("Group", "parentGroupSemanticId", "String");
+            api.createAttribute("Role", "roleId", "String");
+            api.createAttribute("Role", "isAbstract", "Boolean");
+            api.createAttribute("RoleRelation", "relationId", "String");
+            api.createAttribute("RoleRelation", "relationKind", "String");
+            api.createAttribute("RoleRelation", "groupSemanticId", "String");
+            api.createAttribute("RoleRelation", "sourceRoleSemanticId", "String");
+            api.createAttribute("RoleRelation", "targetRoleSemanticId", "String");
+            api.createAttribute("RoleRelation", "scope", "String");
+            api.createAttribute("RoleRelation", "extendsToSubGroups", "Boolean");
+            api.createAttribute("RoleRelation", "bidirectional", "Boolean");
+            api.createAttribute("Link", "roleRelationSemanticId", "String");
+            api.createAttribute("Link", "linkType", "String");
+            api.createAttribute("Compatibility", "roleRelationSemanticId", "String");
+            api.createAttribute("Scheme", "schemeId", "String");
+            api.createAttribute("Scheme", "functionalSpecificationSemanticId", "String");
+            api.createAttribute("Scheme", "rootGoalSemanticId", "String");
+            api.createAttribute("Mission", "missionId", "String");
+            api.createAttribute("Mission", "schemeSemanticId", "String");
+            api.createAttribute("Mission", "goalSemanticIds", "String");
+            api.createAttribute("OrganizationalGoal", "goalId", "String");
+            api.createAttribute("OrganizationalGoal", "schemeSemanticId", "String");
+            api.createAttribute("OrganizationalGoal", "goalType", "MoiseGoalType");
+            api.createAttribute("OrganizationalGoal", "description", "String");
+            api.createAttribute("OrganizationalGoal", "arguments", "String");
+            api.createAttribute("OrganizationalGoal", "minAgentsToSatisfy", "Integer");
+            api.createAttribute("OrganizationalGoal", "ttf", "String");
+            api.createAttribute("OrganizationalGoal", "location", "String");
+            api.createAttribute("OrganizationalGoal", "dependencySemanticIds", "String");
+            api.createAttribute("OrganizationalGoal", "planSemanticId", "String");
+            api.createAttribute("OrganizationalGoal", "inPlanSemanticId", "String");
+            api.createAttribute("OrganizationalPlan", "planId", "String");
+            api.createAttribute("OrganizationalPlan", "schemeSemanticId", "String");
+            api.createAttribute("OrganizationalPlan", "targetGoalSemanticId", "String");
+            api.createAttribute("OrganizationalPlan", "planOperator", "MoisePlanOperator");
+            api.createAttribute("OrganizationalPlan", "successRate", "Real");
+            api.createAttribute("Norm", "normId", "String");
+            api.createAttribute("Norm", "normativeSpecificationSemanticId", "String");
+            api.createAttribute("Norm", "roleSemanticId", "String");
+            api.createAttribute("Norm", "missionSemanticId", "String");
+            api.createAttribute("Norm", "normType", "MoiseNormType");
+            api.createAttribute("Norm", "condition", "String");
+            api.createAttribute("Norm", "timeConstraint", "String");
+            api.createAttribute("GroupRoleCardinality", "groupSemanticId", "String");
+            api.createAttribute("GroupRoleCardinality", "roleSemanticId", "String");
+            api.createAttribute("GroupRoleCardinality", "minCardinality", "Integer");
+            api.createAttribute("GroupRoleCardinality", "maxCardinality", "Integer");
+            api.createAttribute("SubGroupCardinality", "parentGroupSemanticId", "String");
+            api.createAttribute("SubGroupCardinality", "subGroupSemanticId", "String");
+            api.createAttribute("SubGroupCardinality", "minCardinality", "Integer");
+            api.createAttribute("SubGroupCardinality", "maxCardinality", "Integer");
+            api.createAttribute("SchemeMissionCardinality", "schemeSemanticId", "String");
+            api.createAttribute("SchemeMissionCardinality", "missionSemanticId", "String");
+            api.createAttribute("SchemeMissionCardinality", "minCardinality", "Integer");
+            api.createAttribute("SchemeMissionCardinality", "maxCardinality", "Integer");
 
             association(api, "A16AgentProgramPlanLibrary", "AgentProgram", "agentProgram", "1",
                     MAggregationKind.COMPOSITION, "PlanLibrary", "planLibrary", "1", false, false);
@@ -214,6 +293,62 @@ public final class NativeUseModelBuilder {
                     "CartagoAgentIdentity", "agents", "*", false, true);
             association(api, "C20AgentArtifactFocus", "CartagoAgentIdentity", "agent", "1", MAggregationKind.NONE,
                     "Artifact", "focusedArtifacts", "*", false, true);
+            association(api, "M18OrganizationSS", "Organization", "m18StructuralSpecification", "1",
+                    MAggregationKind.COMPOSITION, "StructuralSpecification", "m18Organization", "1", false, false);
+            association(api, "M19OrganizationFS", "Organization", "m19FunctionalSpecification", "1",
+                    MAggregationKind.COMPOSITION, "FunctionalSpecification", "m19Organization", "1", false, false);
+            association(api, "M20OrganizationNS", "Organization", "m20NormativeSpecification", "1",
+                    MAggregationKind.COMPOSITION, "NormativeSpecification", "m20Organization", "1", false, false);
+            association(api, "M21SSRole", "StructuralSpecification", "m21Roles", "1",
+                    MAggregationKind.COMPOSITION, "Role", "m21StructuralSpecification", "*", false, true);
+            association(api, "M22SSGroup", "StructuralSpecification", "m22RootGroup", "0..1",
+                    MAggregationKind.COMPOSITION, "Group", "m22StructuralSpecification", "1", false, false);
+            association(api, "M23GroupSubgroup", "Group", "m23ParentGroup", "0..1",
+                    MAggregationKind.COMPOSITION, "Group", "m23Subgroups", "*", false, true);
+            association(api, "M24RoleSuperRole", "Role", "m24SubRole", "0..*", MAggregationKind.NONE,
+                    "Role", "m24SuperRoles", "0..*", false, false);
+            association(api, "M07RoleRelationLink", "RoleRelation", "m07LinkRelation", "1",
+                    MAggregationKind.NONE, "Link", "m07RoleRelation", "0..1", false, false);
+            association(api, "M07RoleRelationCompatibility", "RoleRelation", "m07CompatibilityRelation", "1",
+                    MAggregationKind.NONE, "Compatibility", "m07CompatibilityRelation", "0..1", false, false);
+            association(api, "M25LinkSource", "Link", "m25SourceLink", "0..*", MAggregationKind.NONE,
+                    "Role", "m25SourceRole", "1", false, false);
+            association(api, "M26LinkTarget", "Link", "m26TargetLink", "0..*", MAggregationKind.NONE,
+                    "Role", "m26TargetRole", "1", false, false);
+            association(api, "M27CompatibilitySource", "Compatibility", "m27SourceCompatibility", "0..*", MAggregationKind.NONE,
+                    "Role", "m27SourceRole", "1", false, false);
+            association(api, "M28CompatibilityTarget", "Compatibility", "m28TargetCompatibility", "0..*", MAggregationKind.NONE,
+                    "Role", "m28TargetRole", "1", false, false);
+            association(api, "M29CardinalityOwner", "GroupRoleCardinality", "m29GroupRoleCardinality", "0..*",
+                    MAggregationKind.NONE, "Group", "m29RoleCardinalities", "1", false, false);
+            association(api, "M30CardinalityMember", "GroupRoleCardinality", "m30GroupRoleCardinality", "0..*",
+                    MAggregationKind.NONE, "Role", "m30RoleMemberships", "1", false, false);
+            association(api, "M31SubgroupCardinalityOwner", "SubGroupCardinality", "m31ParentCardinality", "0..*",
+                    MAggregationKind.NONE, "Group", "m31SubgroupCardinalities", "1", false, false);
+            association(api, "M32SubgroupCardinalityMember", "SubGroupCardinality", "m32ChildCardinality", "0..*",
+                    MAggregationKind.NONE, "Group", "m32ParentCardinalities", "1", false, false);
+            association(api, "M33FSScheme", "FunctionalSpecification", "m33Schemes", "1",
+                    MAggregationKind.COMPOSITION, "Scheme", "m33FunctionalSpecification", "*", false, true);
+            association(api, "M34SchemeMission", "Scheme", "m34Missions", "1", MAggregationKind.COMPOSITION,
+                    "Mission", "m34Scheme", "*", false, true);
+            association(api, "M35SchemeRootGoal", "Scheme", "m35RootGoal", "0..1", MAggregationKind.NONE,
+                    "OrganizationalGoal", "m35Scheme", "0..1", false, false);
+            association(api, "M36SchemeCardinality", "SchemeMissionCardinality", "m36SchemeCardinality", "0..*",
+                    MAggregationKind.NONE, "Scheme", "m36MissionCardinalities", "1", false, false);
+            association(api, "M37MissionCardinality", "SchemeMissionCardinality", "m37MissionCardinality", "0..*",
+                    MAggregationKind.NONE, "Mission", "m37SchemeCardinalities", "1", false, false);
+            association(api, "M38MissionGoal", "Mission", "m38Goals", "0..*", MAggregationKind.NONE,
+                    "OrganizationalGoal", "m38Missions", "0..*", false, true);
+            association(api, "M39GoalPlan", "OrganizationalGoal", "m39Plan", "1", MAggregationKind.NONE,
+                    "OrganizationalPlan", "m39TargetGoal", "0..1", false, false);
+            association(api, "M40PlanSubGoals", "OrganizationalPlan", "m40Plan", "0..1", MAggregationKind.NONE,
+                    "OrganizationalGoal", "m40SubGoals", "*", false, true);
+            association(api, "M41NSNorm", "NormativeSpecification", "m41Norms", "1",
+                    MAggregationKind.COMPOSITION, "Norm", "m41NormativeSpecification", "*", false, true);
+            association(api, "M42NormRole", "Norm", "m42Role", "0..1", MAggregationKind.NONE,
+                    "Role", "m42Norms", "0..*", false, true);
+            association(api, "M43NormMission", "Norm", "m43Mission", "0..1", MAggregationKind.NONE,
+                    "Mission", "m43Norms", "0..*", false, true);
 
             List<NativeConstraintSpec> constraints = new CodeGroundedConstraintPlanner().plan(catalog);
             new NativeConstraintInstaller().install(api, constraints);
@@ -232,6 +367,10 @@ public final class NativeUseModelBuilder {
         for (String id : List.of("J02", "J03", "J04", "J05", "J06", "J07", "J08", "J09", "J10", "J11",
                 "C01", "C02", "C03", "C04", "C05", "C06", "C07", "C08", "C09", "C10", "C11", "C12",
                 "C13", "C14", "C15", "C16", "C17", "C18", "C19", "C20",
+                "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11",
+                "M12", "M13", "M14", "M15", "M16", "M17", "M18", "M19", "M20", "M21", "M22",
+                "M23", "M24", "M25", "M26", "M27", "M28", "M29", "M30", "M31", "M32", "M33",
+                "M34", "M35", "M36", "M37", "M38", "M39", "M40", "M41", "M42", "M43",
                 "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10",
                 "A11", "A16", "A17", "A18", "A19", "A20", "A21", "A22")) {
             CodeGroundedRule rule = catalog.require(id);

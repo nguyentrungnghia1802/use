@@ -20,11 +20,11 @@ class ProfileCompatibilityPreflightTest {
         new NativeUseSessionActivator().activate(session, result);
         var previous = session.system();
         Path profile = Files.writeString(temporary.resolve("legacy-v2.ocl"),
-                "context Organization inv LegacyOnly: true");
+                "context LegacyOnly inv LegacyOnly: true");
         var preflight = new NativeProfileCompatibilityPreflight().inspect(profile, previous.model());
         assertFalse(preflight.compatible());
-        assertEquals(java.util.List.of("NATIVE_PROFILE_CONTEXT_MISSING:Organization"), preflight.diagnostics());
+        assertEquals(java.util.List.of("NATIVE_PROFILE_CONTEXT_MISSING:LegacyOnly"), preflight.diagnostics());
         assertSame(previous, session.system(), "preflight evidence alone must not mutate the session");
-        assertNull(previous.model().getClass("Organization"));
+        assertNull(previous.model().getClass("LegacyOnly"));
     }
 }

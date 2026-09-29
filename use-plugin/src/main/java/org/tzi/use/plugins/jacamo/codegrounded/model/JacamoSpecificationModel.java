@@ -64,6 +64,30 @@ public final class JacamoSpecificationModel {
             environment.agents().forEach(value -> register(identities, value.metadata()));
             environment.focuses().forEach(value -> register(identities, value.metadata()));
         }
+        for (var organization : snapshot.moiseOrganizations()) {
+            register(identities, organization.metadata());
+            var structural = organization.structuralSpecification();
+            register(identities, structural.metadata());
+            structural.roles().forEach(value -> register(identities, value.metadata()));
+            structural.groups().forEach(value -> register(identities, value.metadata()));
+            structural.roleRelations().forEach(value -> register(identities, value.metadata()));
+            structural.links().forEach(value -> register(identities, value.metadata()));
+            structural.compatibilities().forEach(value -> register(identities, value.metadata()));
+            structural.groupRoleCardinalities().forEach(value -> register(identities, value.metadata()));
+            structural.subGroupCardinalities().forEach(value -> register(identities, value.metadata()));
+            var functional = organization.functionalSpecification();
+            register(identities, functional.metadata());
+            functional.schemeMissionCardinalities().forEach(value -> register(identities, value.metadata()));
+            functional.schemes().forEach(scheme -> {
+                register(identities, scheme.metadata());
+                scheme.missions().forEach(value -> register(identities, value.metadata()));
+                scheme.goals().forEach(value -> register(identities, value.metadata()));
+                scheme.plans().forEach(value -> register(identities, value.metadata()));
+            });
+            var normative = organization.normativeSpecification();
+            register(identities, normative.metadata());
+            normative.norms().forEach(value -> register(identities, value.metadata()));
+        }
         for (var program : programs) {
             register(identities, program.metadata());
             register(identities, program.planLibrary().metadata());

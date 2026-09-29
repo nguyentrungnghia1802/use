@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.jacamo.bridge.contract.semantic.JasonSemanticContract;
+import org.jacamo.bridge.contract.semantic.MoiseSemanticContract;
 import org.jacamo.bridge.contract.semantic.SemanticMetadata;
 import org.tzi.use.api.UseApiException;
 import org.tzi.use.api.UseSystemApi;
@@ -27,6 +28,7 @@ import org.tzi.use.uml.mm.MClass;
 import org.tzi.use.uml.ocl.value.EnumValue;
 import org.tzi.use.uml.ocl.value.BooleanValue;
 import org.tzi.use.uml.ocl.value.IntegerValue;
+import org.tzi.use.uml.ocl.value.RealValue;
 import org.tzi.use.uml.ocl.value.StringValue;
 import org.tzi.use.uml.sys.MObject;
 import org.tzi.use.uml.sys.MSystem;
@@ -137,6 +139,8 @@ public final class NativeUseStateBuilder {
                         provenance.status() == org.jacamo.bridge.contract.CapabilityStatus.COMPLETE
                                 ? List.of() : List.of(provenance.status().name()));
             }
+            for (var organization : semantic.moiseOrganizations())
+                materializeMoise(api, schema, semanticObjects, objectNames, trace, catalog, organization);
             for (var environment : semantic.cartagoEnvironments()) {
                 MObject environmentObject = object(api, semanticObjects, objectNames, "Environment",
                         environment.metadata(), environment.environmentId());
@@ -485,6 +489,331 @@ public final class NativeUseStateBuilder {
         } catch (UseApiException error) {
             throw new IllegalStateException("NATIVE_USE_STATE_BUILD_FAILED: " + error.getMessage(), error);
         }
+    }
+
+    private static void materializeMoise(UseSystemApi api, NativeUseModelBuilder.Result schema,
+                                         Map<String, MObject> semanticObjects, Set<String> objectNames,
+                                         CodeGroundedTraceCollector trace, CodeGroundedRuleCatalog catalog,
+                                         MoiseSemanticContract.OrganizationSemantic organization)
+            throws UseApiException {
+        MObject organizationObject = object(api, semanticObjects, objectNames, "Organization",
+                organization.metadata(), organization.name());
+        text(api, organizationObject, "name", organization.name());
+        text(api, organizationObject, "sourceUri", organization.sourceUri());
+        trace.add(catalog.require("M01"), TracePhase.INSTANCE_MATERIALIZATION, organization.metadata(),
+                "MObject", organizationObject.name(), List.of());
+
+        var structural = organization.structuralSpecification();
+        MObject structuralObject = object(api, semanticObjects, objectNames, "StructuralSpecification",
+                structural.metadata(), structural.specificationId());
+        text(api, structuralObject, "organizationSemanticId", structural.organizationSemanticId());
+        text(api, structuralObject, "specificationId", structural.specificationId());
+        text(api, structuralObject, "rootGroupSemanticId", structural.rootGroupSemanticId());
+        link(api, schema, "M18OrganizationSS", organizationObject, structuralObject);
+        trace.add(catalog.require("M02"), TracePhase.INSTANCE_MATERIALIZATION, structural.metadata(),
+                "MObject", structuralObject.name(), List.of());
+        trace.add(catalog.require("M18"), TracePhase.INSTANCE_MATERIALIZATION, structural.metadata(),
+                "MLink", linkIdentity("M18", organization.metadata().semanticId(), structural.metadata().semanticId()), List.of());
+
+        var functional = organization.functionalSpecification();
+        MObject functionalObject = object(api, semanticObjects, objectNames, "FunctionalSpecification",
+                functional.metadata(), functional.specificationId());
+        text(api, functionalObject, "organizationSemanticId", functional.organizationSemanticId());
+        text(api, functionalObject, "specificationId", functional.specificationId());
+        link(api, schema, "M19OrganizationFS", organizationObject, functionalObject);
+        trace.add(catalog.require("M03"), TracePhase.INSTANCE_MATERIALIZATION, functional.metadata(),
+                "MObject", functionalObject.name(), List.of());
+        trace.add(catalog.require("M19"), TracePhase.INSTANCE_MATERIALIZATION, functional.metadata(),
+                "MLink", linkIdentity("M19", organization.metadata().semanticId(), functional.metadata().semanticId()), List.of());
+
+        var normative = organization.normativeSpecification();
+        MObject normativeObject = object(api, semanticObjects, objectNames, "NormativeSpecification",
+                normative.metadata(), normative.specificationId());
+        text(api, normativeObject, "organizationSemanticId", normative.organizationSemanticId());
+        text(api, normativeObject, "specificationId", normative.specificationId());
+        link(api, schema, "M20OrganizationNS", organizationObject, normativeObject);
+        trace.add(catalog.require("M04"), TracePhase.INSTANCE_MATERIALIZATION, normative.metadata(),
+                "MObject", normativeObject.name(), List.of());
+        trace.add(catalog.require("M20"), TracePhase.INSTANCE_MATERIALIZATION, normative.metadata(),
+                "MLink", linkIdentity("M20", organization.metadata().semanticId(), normative.metadata().semanticId()), List.of());
+
+        Map<String, MoiseSemanticContract.RoleRelationSemantic> relations = new LinkedHashMap<>();
+        Map<String, MObject> groupObjects = new LinkedHashMap<>();
+        Map<String, MObject> roleObjects = new LinkedHashMap<>();
+        for (var role : structural.roles()) {
+            MObject roleObject = object(api, semanticObjects, objectNames, "Role", role.metadata(), role.roleId());
+            roleObjects.put(role.roleId(), roleObject);
+            text(api, roleObject, "roleId", role.roleId());
+            bool(api, roleObject, "isAbstract", role.abstractRole());
+            trace.add(catalog.require("M06"), TracePhase.INSTANCE_MATERIALIZATION, role.metadata(),
+                    "MObject", roleObject.name(), List.of());
+        }
+        for (var role : structural.roles()) {
+            MObject roleObject = roleObjects.get(role.roleId());
+            for (String superRoleId : role.superRoleSemanticIds()) {
+                MObject superRoleObject = roleObjects.get(superRoleId);
+                if (superRoleObject == null) {
+                    throw new IllegalArgumentException("M24_SUPER_ROLE_OBJECT: " + superRoleId);
+                }
+                link(api, schema, "M24RoleSuperRole", roleObject, superRoleObject);
+                trace.add(catalog.require("M24"), TracePhase.INSTANCE_MATERIALIZATION, role.metadata(),
+                        "MLink", linkIdentity("M24", role.roleId(), superRoleId), List.of());
+            }
+        }
+        for (var group : structural.groups()) {
+            MObject groupObject = object(api, semanticObjects, objectNames, "Group", group.metadata(), group.groupId());
+            groupObjects.put(group.groupId(), groupObject);
+            text(api, groupObject, "groupId", group.groupId());
+            text(api, groupObject, "parentGroupSemanticId", group.parentGroupSemanticId());
+            trace.add(catalog.require("M05"), TracePhase.INSTANCE_MATERIALIZATION, group.metadata(),
+                    "MObject", groupObject.name(), List.of());
+            if (!group.parentGroupSemanticId().isBlank()) {
+                link(api, schema, "M23GroupSubgroup", required(semanticObjects, group.parentGroupSemanticId(),
+                        "M23_PARENT_GROUP_OBJECT"), groupObject);
+                trace.add(catalog.require("M23"), TracePhase.INSTANCE_MATERIALIZATION, group.metadata(),
+                        "MLink", linkIdentity("M23", group.parentGroupSemanticId(), group.groupId()), List.of());
+            }
+        }
+        if (!structural.rootGroupSemanticId().isBlank()) {
+            link(api, schema, "M22SSGroup", structuralObject,
+                    required(semanticObjects, structural.rootGroupSemanticId(), "M22_ROOT_GROUP_OBJECT"));
+            trace.add(catalog.require("M22"), TracePhase.INSTANCE_MATERIALIZATION, structural.metadata(),
+                    "MLink", linkIdentity("M22", structural.metadata().semanticId(), structural.rootGroupSemanticId()), List.of());
+        }
+        for (var role : structural.roles()) {
+            link(api, schema, "M21SSRole", structuralObject, roleObjects.get(role.roleId()));
+            trace.add(catalog.require("M21"), TracePhase.INSTANCE_MATERIALIZATION, role.metadata(),
+                    "MLink", linkIdentity("M21", structural.metadata().semanticId(), role.roleId()), List.of());
+        }
+        for (var relation : structural.roleRelations()) {
+            relations.put(relation.relationId(), relation);
+            MObject relationObject = object(api, semanticObjects, objectNames, "RoleRelation", relation.metadata(),
+                    relation.relationId());
+            text(api, relationObject, "relationId", relation.relationId());
+            text(api, relationObject, "relationKind", relation.relationKind());
+            text(api, relationObject, "groupSemanticId", relation.groupSemanticId());
+            text(api, relationObject, "sourceRoleSemanticId", relation.sourceRoleSemanticId());
+            text(api, relationObject, "targetRoleSemanticId", relation.targetRoleSemanticId());
+            text(api, relationObject, "scope", relation.scope());
+            bool(api, relationObject, "extendsToSubGroups", relation.extendsToSubGroups());
+            bool(api, relationObject, "bidirectional", relation.bidirectional());
+            trace.add(catalog.require("M07"), TracePhase.INSTANCE_MATERIALIZATION, relation.metadata(),
+                    "MObject", relationObject.name(), List.of());
+        }
+        for (var link : structural.links()) {
+            MObject linkObject = object(api, semanticObjects, objectNames, "Link", link.metadata(), link.linkType());
+            text(api, linkObject, "roleRelationSemanticId", link.roleRelationSemanticId());
+            text(api, linkObject, "linkType", link.linkType());
+            MoiseSemanticContract.RoleRelationSemantic relation = requiredRelation(relations,
+                    link.roleRelationSemanticId(), "M08_ROLE_RELATION");
+            link(api, schema, "M07RoleRelationLink", required(semanticObjects, relation.relationId(),
+                    "M07_ROLE_RELATION_OBJECT"), linkObject);
+            linkRoleEndpoint(api, schema, semanticObjects, "M25LinkSource", linkObject,
+                    relation.sourceRoleSemanticId(), "M25_LINK_SOURCE");
+            linkRoleEndpoint(api, schema, semanticObjects, "M26LinkTarget", linkObject,
+                    relation.targetRoleSemanticId(), "M26_LINK_TARGET");
+            trace.add(catalog.require("M08"), TracePhase.INSTANCE_MATERIALIZATION, link.metadata(),
+                    "MObject", linkObject.name(), List.of());
+            trace.add(catalog.require("M25"), TracePhase.INSTANCE_MATERIALIZATION, link.metadata(),
+                    "MLink", linkIdentity("M25", link.metadata().semanticId(), relation.sourceRoleSemanticId()), List.of());
+            trace.add(catalog.require("M26"), TracePhase.INSTANCE_MATERIALIZATION, link.metadata(),
+                    "MLink", linkIdentity("M26", link.metadata().semanticId(), relation.targetRoleSemanticId()), List.of());
+        }
+        for (var compatibility : structural.compatibilities()) {
+            MObject compatibilityObject = object(api, semanticObjects, objectNames, "Compatibility",
+                    compatibility.metadata(), compatibility.roleRelationSemanticId());
+            text(api, compatibilityObject, "roleRelationSemanticId", compatibility.roleRelationSemanticId());
+            MoiseSemanticContract.RoleRelationSemantic relation = requiredRelation(relations,
+                    compatibility.roleRelationSemanticId(), "M09_ROLE_RELATION");
+            link(api, schema, "M07RoleRelationCompatibility", required(semanticObjects, relation.relationId(),
+                    "M07_ROLE_RELATION_OBJECT"), compatibilityObject);
+            linkRoleEndpoint(api, schema, semanticObjects, "M27CompatibilitySource", compatibilityObject,
+                    relation.sourceRoleSemanticId(), "M27_COMPATIBILITY_SOURCE");
+            linkRoleEndpoint(api, schema, semanticObjects, "M28CompatibilityTarget", compatibilityObject,
+                    relation.targetRoleSemanticId(), "M28_COMPATIBILITY_TARGET");
+            trace.add(catalog.require("M09"), TracePhase.INSTANCE_MATERIALIZATION, compatibility.metadata(),
+                    "MObject", compatibilityObject.name(), List.of());
+            trace.add(catalog.require("M27"), TracePhase.INSTANCE_MATERIALIZATION, compatibility.metadata(),
+                    "MLink", linkIdentity("M27", compatibility.metadata().semanticId(), relation.sourceRoleSemanticId()), List.of());
+            trace.add(catalog.require("M28"), TracePhase.INSTANCE_MATERIALIZATION, compatibility.metadata(),
+                    "MLink", linkIdentity("M28", compatibility.metadata().semanticId(), relation.targetRoleSemanticId()), List.of());
+        }
+        for (var cardinality : structural.groupRoleCardinalities()) {
+            MObject cardinalityObject = object(api, semanticObjects, objectNames, "GroupRoleCardinality",
+                    cardinality.metadata(), cardinality.groupId());
+            text(api, cardinalityObject, "groupSemanticId", cardinality.groupId());
+            text(api, cardinalityObject, "roleSemanticId", cardinality.roleId());
+            integer(api, cardinalityObject, "minCardinality", cardinality.min());
+            integer(api, cardinalityObject, "maxCardinality", cardinality.max());
+            link(api, schema, "M29CardinalityOwner", cardinalityObject,
+                    required(semanticObjects, cardinality.groupId(), "M29_GROUP_OBJECT"));
+            link(api, schema, "M30CardinalityMember", cardinalityObject,
+                    required(semanticObjects, cardinality.roleId(), "M30_ROLE_OBJECT"));
+            trace.add(catalog.require("M15"), TracePhase.INSTANCE_MATERIALIZATION, cardinality.metadata(),
+                    "MObject", cardinalityObject.name(), List.of());
+            trace.add(catalog.require("M29"), TracePhase.INSTANCE_MATERIALIZATION, cardinality.metadata(),
+                    "MLink", linkIdentity("M29", cardinality.metadata().semanticId(), cardinality.groupId()), List.of());
+            trace.add(catalog.require("M30"), TracePhase.INSTANCE_MATERIALIZATION, cardinality.metadata(),
+                    "MLink", linkIdentity("M30", cardinality.metadata().semanticId(), cardinality.roleId()), List.of());
+        }
+        for (var cardinality : structural.subGroupCardinalities()) {
+            MObject cardinalityObject = object(api, semanticObjects, objectNames, "SubGroupCardinality",
+                    cardinality.metadata(), cardinality.parentGroupId());
+            text(api, cardinalityObject, "parentGroupSemanticId", cardinality.parentGroupId());
+            text(api, cardinalityObject, "subGroupSemanticId", cardinality.subGroupId());
+            integer(api, cardinalityObject, "minCardinality", cardinality.min());
+            integer(api, cardinalityObject, "maxCardinality", cardinality.max());
+            link(api, schema, "M31SubgroupCardinalityOwner", cardinalityObject,
+                    required(semanticObjects, cardinality.parentGroupId(), "M31_PARENT_GROUP_OBJECT"));
+            link(api, schema, "M32SubgroupCardinalityMember", cardinalityObject,
+                    required(semanticObjects, cardinality.subGroupId(), "M32_CHILD_GROUP_OBJECT"));
+            trace.add(catalog.require("M16"), TracePhase.INSTANCE_MATERIALIZATION, cardinality.metadata(),
+                    "MObject", cardinalityObject.name(), List.of());
+            trace.add(catalog.require("M31"), TracePhase.INSTANCE_MATERIALIZATION, cardinality.metadata(),
+                    "MLink", linkIdentity("M31", cardinality.metadata().semanticId(), cardinality.parentGroupId()), List.of());
+            trace.add(catalog.require("M32"), TracePhase.INSTANCE_MATERIALIZATION, cardinality.metadata(),
+                    "MLink", linkIdentity("M32", cardinality.metadata().semanticId(), cardinality.subGroupId()), List.of());
+        }
+
+        Map<String, MObject> schemeObjects = new LinkedHashMap<>();
+        for (var scheme : functional.schemes()) {
+            MObject schemeObject = object(api, semanticObjects, objectNames, "Scheme", scheme.metadata(), scheme.schemeId());
+            schemeObjects.put(scheme.schemeId(), schemeObject);
+            text(api, schemeObject, "schemeId", scheme.schemeId());
+            text(api, schemeObject, "functionalSpecificationSemanticId", scheme.functionalSpecificationSemanticId());
+            text(api, schemeObject, "rootGoalSemanticId", scheme.rootGoalSemanticId());
+            link(api, schema, "M33FSScheme", functionalObject, schemeObject);
+            trace.add(catalog.require("M10"), TracePhase.INSTANCE_MATERIALIZATION, scheme.metadata(),
+                    "MObject", schemeObject.name(), List.of());
+            trace.add(catalog.require("M33"), TracePhase.INSTANCE_MATERIALIZATION, scheme.metadata(),
+                    "MLink", linkIdentity("M33", functional.metadata().semanticId(), scheme.metadata().semanticId()), List.of());
+            for (var mission : scheme.missions()) {
+                MObject missionObject = object(api, semanticObjects, objectNames, "Mission", mission.metadata(), mission.missionId());
+                text(api, missionObject, "missionId", mission.missionId());
+                text(api, missionObject, "schemeSemanticId", mission.schemeSemanticId());
+                text(api, missionObject, "goalSemanticIds", NativeUseModelBuilder.canonicalJson(mission.goalSemanticIds()));
+                link(api, schema, "M34SchemeMission", schemeObject, missionObject);
+                trace.add(catalog.require("M11"), TracePhase.INSTANCE_MATERIALIZATION, mission.metadata(),
+                        "MObject", missionObject.name(), List.of());
+                trace.add(catalog.require("M34"), TracePhase.INSTANCE_MATERIALIZATION, mission.metadata(),
+                        "MLink", linkIdentity("M34", scheme.schemeId(), mission.missionId()), List.of());
+            }
+            for (var goal : scheme.goals()) {
+                MObject goalObject = object(api, semanticObjects, objectNames, "OrganizationalGoal", goal.metadata(), goal.goalId());
+                text(api, goalObject, "goalId", goal.goalId());
+                text(api, goalObject, "schemeSemanticId", goal.schemeSemanticId());
+                enumeration(api, schema, goalObject, "goalType", "MoiseGoalType", goal.goalType());
+                text(api, goalObject, "description", goal.description());
+                text(api, goalObject, "arguments", goal.arguments());
+                integer(api, goalObject, "minAgentsToSatisfy", goal.minAgentsToSatisfy());
+                text(api, goalObject, "ttf", goal.ttf());
+                text(api, goalObject, "location", goal.location());
+                text(api, goalObject, "dependencySemanticIds", NativeUseModelBuilder.canonicalJson(goal.dependencySemanticIds()));
+                text(api, goalObject, "planSemanticId", goal.planSemanticId());
+                text(api, goalObject, "inPlanSemanticId", goal.inPlanSemanticId());
+                trace.add(catalog.require("M12"), TracePhase.INSTANCE_MATERIALIZATION, goal.metadata(),
+                        "MObject", goalObject.name(), List.of());
+            }
+            for (var mission : scheme.missions()) {
+                MObject missionObject = required(semanticObjects, mission.missionId(), "M38_MISSION_OBJECT");
+                for (String goalId : mission.goalSemanticIds()) {
+                    link(api, schema, "M38MissionGoal", missionObject,
+                            required(semanticObjects, goalId, "M38_GOAL_OBJECT"));
+                    trace.add(catalog.require("M38"), TracePhase.INSTANCE_MATERIALIZATION, mission.metadata(),
+                            "MLink", linkIdentity("M38", mission.missionId(), goalId), List.of());
+                }
+            }
+            for (var plan : scheme.plans()) {
+                MObject planObject = object(api, semanticObjects, objectNames, "OrganizationalPlan", plan.metadata(), plan.planId());
+                text(api, planObject, "planId", plan.planId());
+                text(api, planObject, "schemeSemanticId", plan.schemeSemanticId());
+                text(api, planObject, "targetGoalSemanticId", plan.targetGoalSemanticId());
+                enumeration(api, schema, planObject, "planOperator", "MoisePlanOperator", plan.operator());
+                real(api, planObject, "successRate", plan.successRate());
+                link(api, schema, "M39GoalPlan", required(semanticObjects, plan.targetGoalSemanticId(),
+                        "M39_TARGET_GOAL_OBJECT"), planObject);
+                trace.add(catalog.require("M13"), TracePhase.INSTANCE_MATERIALIZATION, plan.metadata(),
+                        "MObject", planObject.name(), List.of());
+                trace.add(catalog.require("M39"), TracePhase.INSTANCE_MATERIALIZATION, plan.metadata(),
+                        "MLink", linkIdentity("M39", plan.targetGoalSemanticId(), plan.planId()), List.of());
+                for (String subGoalId : plan.orderedSubGoalSemanticIds()) {
+                    link(api, schema, "M40PlanSubGoals", planObject,
+                            required(semanticObjects, subGoalId, "M40_SUBGOAL_OBJECT"));
+                    trace.add(catalog.require("M40"), TracePhase.INSTANCE_MATERIALIZATION, plan.metadata(),
+                            "MLink", linkIdentity("M40", plan.planId(), subGoalId), List.of());
+                }
+            }
+            if (!scheme.rootGoalSemanticId().isBlank()) {
+                link(api, schema, "M35SchemeRootGoal", schemeObject,
+                        required(semanticObjects, scheme.rootGoalSemanticId(), "M35_ROOT_GOAL_OBJECT"));
+                trace.add(catalog.require("M35"), TracePhase.INSTANCE_MATERIALIZATION, scheme.metadata(),
+                        "MLink", linkIdentity("M35", scheme.schemeId(), scheme.rootGoalSemanticId()), List.of());
+            }
+        }
+        for (var cardinality : functional.schemeMissionCardinalities()) {
+            MObject cardinalityObject = object(api, semanticObjects, objectNames, "SchemeMissionCardinality",
+                    cardinality.metadata(), cardinality.schemeId());
+            text(api, cardinalityObject, "schemeSemanticId", cardinality.schemeId());
+            text(api, cardinalityObject, "missionSemanticId", cardinality.missionId());
+            integer(api, cardinalityObject, "minCardinality", cardinality.min());
+            integer(api, cardinalityObject, "maxCardinality", cardinality.max());
+            link(api, schema, "M36SchemeCardinality", cardinalityObject,
+                    required(semanticObjects, cardinality.schemeId(), "M36_SCHEME_OBJECT"));
+            link(api, schema, "M37MissionCardinality", cardinalityObject,
+                    required(semanticObjects, cardinality.missionId(), "M37_MISSION_OBJECT"));
+            trace.add(catalog.require("M17"), TracePhase.INSTANCE_MATERIALIZATION, cardinality.metadata(),
+                    "MObject", cardinalityObject.name(), List.of());
+            trace.add(catalog.require("M36"), TracePhase.INSTANCE_MATERIALIZATION, cardinality.metadata(),
+                    "MLink", linkIdentity("M36", cardinality.metadata().semanticId(), cardinality.schemeId()), List.of());
+            trace.add(catalog.require("M37"), TracePhase.INSTANCE_MATERIALIZATION, cardinality.metadata(),
+                    "MLink", linkIdentity("M37", cardinality.metadata().semanticId(), cardinality.missionId()), List.of());
+        }
+        for (var norm : normative.norms()) {
+            MObject normObject = object(api, semanticObjects, objectNames, "Norm", norm.metadata(), norm.normId());
+            text(api, normObject, "normId", norm.normId());
+            text(api, normObject, "normativeSpecificationSemanticId", norm.normativeSpecificationSemanticId());
+            text(api, normObject, "roleSemanticId", norm.roleSemanticId());
+            text(api, normObject, "missionSemanticId", norm.missionSemanticId());
+            enumeration(api, schema, normObject, "normType", "MoiseNormType", norm.operationType());
+            text(api, normObject, "condition", norm.condition());
+            text(api, normObject, "timeConstraint", norm.timeConstraint());
+            link(api, schema, "M41NSNorm", normativeObject, normObject);
+            trace.add(catalog.require("M14"), TracePhase.INSTANCE_MATERIALIZATION, norm.metadata(),
+                    "MObject", normObject.name(), List.of("NORM_RETAINED_AS_DATA_NO_OCL"));
+            trace.add(catalog.require("M41"), TracePhase.INSTANCE_MATERIALIZATION, norm.metadata(),
+                    "MLink", linkIdentity("M41", normative.metadata().semanticId(), norm.normId()), List.of());
+            if (!norm.roleSemanticId().isBlank()) {
+                link(api, schema, "M42NormRole", normObject,
+                        required(semanticObjects, norm.roleSemanticId(), "M42_ROLE_OBJECT"));
+                trace.add(catalog.require("M42"), TracePhase.INSTANCE_MATERIALIZATION, norm.metadata(),
+                        "MLink", linkIdentity("M42", norm.normId(), norm.roleSemanticId()), List.of());
+            }
+            if (!norm.missionSemanticId().isBlank()) {
+                link(api, schema, "M43NormMission", normObject,
+                        required(semanticObjects, norm.missionSemanticId(), "M43_MISSION_OBJECT"));
+                trace.add(catalog.require("M43"), TracePhase.INSTANCE_MATERIALIZATION, norm.metadata(),
+                        "MLink", linkIdentity("M43", norm.normId(), norm.missionSemanticId()), List.of());
+            }
+        }
+    }
+
+    private static void linkRoleEndpoint(UseSystemApi api, NativeUseModelBuilder.Result schema,
+                                         Map<String, MObject> semanticObjects, String association,
+                                         MObject relationObject, String roleId, String diagnostic)
+            throws UseApiException {
+        if (roleId == null || roleId.isBlank()) throw new IllegalArgumentException(diagnostic + "_UNAVAILABLE");
+        link(api, schema, association, relationObject, required(semanticObjects, roleId, diagnostic));
+    }
+
+    private static MoiseSemanticContract.RoleRelationSemantic requiredRelation(
+            Map<String, MoiseSemanticContract.RoleRelationSemantic> relations, String relationId, String diagnostic) {
+        var relation = relations.get(relationId);
+        if (relation == null) throw new IllegalArgumentException(diagnostic + ": " + relationId);
+        return relation;
+    }
+
+    private static void real(UseSystemApi api, MObject object, String name, double value) throws UseApiException {
+        api.setAttributeValueEx(object, attribute(object, name), new RealValue(value));
     }
 
     private static void orderEntry(UseSystemApi api, NativeUseModelBuilder.Result schema,

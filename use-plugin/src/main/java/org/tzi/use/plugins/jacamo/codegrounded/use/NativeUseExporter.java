@@ -31,7 +31,8 @@ public final class NativeUseExporter {
         List<String> roundTrip = NativeUseStructure.signature(recompiled);
         if (!original.equals(roundTrip))
             throw new IllegalStateException("NATIVE_USE_EXPORT_STRUCTURE_MISMATCH: original=" + original
-                    + " roundTrip=" + roundTrip);
+                    + " roundTrip=" + roundTrip + " onlyOriginal=" + difference(original, roundTrip)
+                    + " onlyRoundTrip=" + difference(roundTrip, original));
         return new Result(text, recompiled, NativeUseStructure.sha256(model),
                 NativeUseStructure.sha256(recompiled), diagnostics.toString());
     }
@@ -59,5 +60,9 @@ public final class NativeUseExporter {
         for (int index = 0; index < lines.length; index++)
             result.append(index + 1).append(": ").append(lines[index]).append('\n');
         return result.toString();
+    }
+
+    private static List<String> difference(List<String> left, List<String> right) {
+        return left.stream().filter(entry -> !right.contains(entry)).toList();
     }
 }

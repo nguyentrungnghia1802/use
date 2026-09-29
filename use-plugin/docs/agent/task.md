@@ -262,23 +262,23 @@ Exact names may follow repository conventions.
 
 ## 4.4 Moise DTOs
 
-- [ ] `OrganizationSemantic`
-- [ ] `StructuralSpecificationSemantic`
-- [ ] `FunctionalSpecificationSemantic`
-- [ ] `NormativeSpecificationSemantic`
-- [ ] `GroupSemantic`
-- [ ] `RoleSemantic`
-- [ ] `RoleRelationSemantic`
-- [ ] `LinkSemantic`
-- [ ] `CompatibilitySemantic`
-- [ ] `SchemeSemantic`
-- [ ] `MissionSemantic`
-- [ ] `OrganizationalGoalSemantic`
-- [ ] `OrganizationalPlanSemantic`
-- [ ] `NormSemantic`
-- [ ] `GroupRoleCardinalitySemantic`
-- [ ] `SubGroupCardinalitySemantic`
-- [ ] `SchemeMissionCardinalitySemantic`
+- [x] `OrganizationSemantic`
+- [x] `StructuralSpecificationSemantic`
+- [x] `FunctionalSpecificationSemantic`
+- [x] `NormativeSpecificationSemantic`
+- [x] `GroupSemantic`
+- [x] `RoleSemantic`
+- [x] `RoleRelationSemantic`
+- [x] `LinkSemantic`
+- [x] `CompatibilitySemantic`
+- [x] `SchemeSemantic`
+- [x] `MissionSemantic`
+- [x] `OrganizationalGoalSemantic`
+- [x] `OrganizationalPlanSemantic`
+- [x] `NormSemantic`
+- [x] `GroupRoleCardinalitySemantic`
+- [x] `SubGroupCardinalitySemantic`
+- [x] `SchemeMissionCardinalitySemantic`
 
 ## 4.5 Cross-dimension evidence DTOs
 
@@ -598,130 +598,130 @@ P = optional source/bytecode provenance
 # 9. Moise mapping — M01–M43
 
 ## M01 Organization
-- [ ] `OS` → `MClass Organization`.
+- [x] `OS` → `MClass Organization`.
 
 ## M02 StructuralSpecification
-- [ ] `SS` → explicit `MClass`.
+- [x] `SS` → explicit `MClass`.
 
 ## M03 FunctionalSpecification
-- [ ] `FS` → explicit `MClass`.
+- [x] `FS` → explicit `MClass`.
 
 ## M04 NormativeSpecification
-- [ ] `NS` → explicit `MClass`.
+- [x] `NS` → explicit `MClass`.
 
 ## M05 Group
-- [ ] `Group` → `MClass Group`.
+- [x] `Group` → `MClass Group`.
 
 ## M06 Role
-- [ ] `Role` → `MClass Role`.
-- [ ] Preserve abstract flag and super-role references.
+- [x] `Role` → `MClass Role`.
+- [x] Preserve abstract flag and super-role references.
 
 ## M07 RoleRelation
-- [ ] `RoleRel` → `MClass RoleRelation`.
+- [x] `RoleRel` → `MClass RoleRelation`.
 
 ## M08 Link
-- [ ] `Link` → `MClass Link`.
+- [x] `Link` → `MClass Link`.
 
 ## M09 Compatibility
-- [ ] `Compatibility` → separate `MClass`.
+- [x] `Compatibility` → separate `MClass`.
 
 ## M10 Scheme
-- [ ] `Scheme` → `MClass Scheme`.
+- [x] `Scheme` → `MClass Scheme`.
 
 ## M11 Mission
-- [ ] `Mission` → `MClass Mission`.
-- [ ] No universal cardinality attributes.
+- [x] `Mission` → `MClass Mission`.
+- [x] No universal cardinality attributes.
 
 ## M12 OrganizationalGoal
-- [ ] `Goal` → `MClass OrganizationalGoal`.
-- [ ] Preserve type/arguments/dependencies.
-- [ ] Keep `ttf` textual unless stronger semantics proven.
+- [x] `Goal` → `MClass OrganizationalGoal`.
+- [x] Preserve type/arguments/dependencies.
+- [x] Keep `ttf` textual unless stronger semantics proven.
 
 ## M13 OrganizationalPlan
-- [ ] `Plan` → `MClass OrganizationalPlan`.
-- [ ] Preserve operator/order.
+- [x] `Plan` → `MClass OrganizationalPlan`.
+- [x] Preserve operator/order.
 
 ## M14 Norm
-- [ ] `Norm` → `MClass Norm`.
-- [ ] Preserve role/mission/condition/op type/time text.
-- [ ] No automatic OCL.
+- [x] `Norm` → `MClass Norm`.
+- [x] Preserve role/mission/condition/op type/time text.
+- [x] No automatic OCL.
 
 ## M15 GroupRoleCardinality
-- [ ] Relation object `(group, role, min, max)`.
+- [x] Relation object `(group, role, min, max)`.
 
 ## M16 SubGroupCardinality
-- [ ] Relation object `(parentGroup, subGroup, min, max)`.
+- [x] Relation object `(parentGroup, subGroup, min, max)`.
 
 ## M17 SchemeMissionCardinality
-- [ ] Relation object `(scheme, mission, min, max)`.
+- [x] Relation object `(scheme, mission, min, max)`.
 
 ## M18 Organization–SS
-- [ ] composition.
+- [x] composition.
 
 ## M19 Organization–FS
-- [ ] composition.
+- [x] composition.
 
 ## M20 Organization–NS
-- [ ] composition.
+- [x] composition.
 
 ## M21 SS–Role
-- [ ] composition.
+- [x] composition.
 
 ## M22 SS–Group
-- [ ] composition/root group ownership.
+- [x] composition/root group ownership.
 
 ## M23 Group–Subgroup
-- [ ] composition; cardinality stays M16.
+- [x] composition; cardinality stays M16.
 
 ## M24 Role–superRole
-- [ ] self-association.
-- [ ] No UML generalization without proof.
+- [x] self-association.
+- [x] No UML generalization without proof.
 
 ## M25–M28 Link/Compatibility endpoints
-- [ ] source/target Role relations.
+- [x] source/target Role relations.
 
 ## M29–M32 Cardinality endpoints
-- [ ] owner/member relations.
+- [x] owner/member relations.
 
 ## M33 FS–Scheme
-- [ ] composition.
+- [x] composition.
 
 ## M34 Scheme–Mission
-- [ ] composition.
+- [x] composition.
 
 ## M35 Scheme–root Goal
-- [ ] exact relation; no duplicate goal identity.
+- [x] exact relation; no duplicate goal identity.
 
 ## M36–M37 SchemeMissionCardinality endpoints
-- [ ] Scheme and Mission links.
+- [x] Scheme and Mission links.
 
 ## M38 Mission–Goal
-- [ ] exact membership.
+- [x] exact membership.
 
 ## M39 OrganizationalGoal–Plan
-- [ ] exact relation.
+- [x] exact relation.
 
 ## M40 OrganizationalPlan–subGoals
-- [ ] ordered relation.
+- [x] ordered relation.
 
 ## M41 NS–Norm
-- [ ] composition.
+- [x] composition.
 
 ## M42 Norm–Role
-- [ ] association.
+- [x] association.
 
 ## M43 Norm–Mission
-- [ ] association.
+- [x] association.
 
 ## Moise enums/tests
 
-- [ ] Norm operation type enum.
-- [ ] Plan operator enum.
-- [ ] Cardinality owner context tests.
-- [ ] Link/Compatibility distinction tests.
-- [ ] Role hierarchy self-association test.
-- [ ] Textual time preservation test.
-- [ ] Norm does not auto-generate OCL.
+- [x] Norm operation type enum.
+- [x] Plan operator enum.
+- [x] Cardinality owner context tests.
+- [x] Link/Compatibility distinction tests.
+- [x] Role hierarchy self-association test.
+- [x] Textual time preservation test.
+- [x] Norm does not auto-generate OCL.
 
 ---
 
@@ -1370,12 +1370,14 @@ M01–M43
 
 Gate:
 
-- [ ] no cardinality flattening;
-- [ ] SS/FS/NS explicit;
-- [ ] Link/Compatibility distinct;
-- [ ] role hierarchy not forced to UML generalization;
-- [ ] no Norm→OCL;
-- [ ] time text preserved.
+- [x] no cardinality flattening;
+- [x] SS/FS/NS explicit;
+- [x] Link/Compatibility distinct;
+- [x] role hierarchy not forced to UML generalization;
+- [x] no Norm→OCL;
+- [x] time text preserved.
+
+**Phase 5 evidence — 2026-09-29:** PASS for M01–M43. `OfficialMoiseAdapter` loads the official `OS` graph through `OS.loadOSFromURI` and emits typed immutable Moise DTOs with exact semantic IDs; `NativeUseModelBuilder` declares the native Moise classes, enums, relation-scoped cardinality objects, composition/endpoints, and role self-association; `NativeUseStateBuilder` materializes them into the same `MSystem` without Norm-to-OCL translation. `CodeGroundedPhase5Test` passed `2/2` with the official Hello OS and a synthetic official-DTO graph covering role inheritance, Link vs Compatibility, all cardinality tuples, ordered plan goals, enum values, and textual norm time; focused catalog/native gates passed `10/10`, adapter evidence passed `6/6`, and native export/recompile plus session/OCL passed. The full reactor gate passed `290/290` tests with zero failures/errors/skips. The M22 multiplicity direction was corrected and reverified with a subgroup fixture. No V2/Ecore/golden files were changed.
 
 ---
 
@@ -1689,11 +1691,11 @@ V2 becomes historical-only when:
 - [x] unavailable live property
 
 ## Moise
-- [ ] SS/FS/NS
-- [ ] Link/Compatibility
-- [ ] M15/M16/M17 tuples
-- [ ] ordered plans
-- [ ] norm/time preservation
+- [x] SS/FS/NS
+- [x] Link/Compatibility
+- [x] M15/M16/M17 tuples
+- [x] ordered plans
+- [x] norm/time preservation
 
 ## X rules
 - [ ] positive exact evidence

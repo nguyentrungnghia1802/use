@@ -65,6 +65,7 @@ public final class SemanticContractCodec {
         if (type == String.class) { if(value instanceof String text)return text; throw new ContractException("semantic string required"); }
         if (type == int.class || type == Integer.class) { if(value instanceof Number n)return Math.toIntExact(n.longValue()); throw new ContractException("semantic integer required"); }
         if (type == long.class || type == Long.class) { if(value instanceof Number n)return n.longValue(); throw new ContractException("semantic long required"); }
+        if (type == double.class || type == Double.class) { if(value instanceof Number n)return n.doubleValue(); throw new ContractException("semantic double required"); }
         if (type == boolean.class || type == Boolean.class) { if(value instanceof Boolean b)return b; throw new ContractException("semantic boolean required"); }
         if (type.isEnum()) {
             if (!(value instanceof String text)) throw new ContractException("semantic enum required");
