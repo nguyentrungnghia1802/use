@@ -375,10 +375,11 @@ public final class NativeUseModelBuilder {
                     MAggregationKind.NONE, "CartagoAgentIdentity", "x09Agents", "0..*", false, true);
 
             List<NativeConstraintSpec> constraints = new CodeGroundedConstraintPlanner().plan(catalog);
-            new NativeConstraintInstaller().install(api, constraints);
+            NativeConstraintInstaller.InstallationResult installation =
+                    new NativeConstraintInstaller().installWithReport(api, constraints);
             modelTraces(trace, catalog, source);
             MModel model = api.getModel();
-            return new Result(model, trace.index(), constraints, NativeUseStructure.sha256(model));
+            return new Result(model, trace.index(), constraints, installation.skipped(), NativeUseStructure.sha256(model));
         } catch (UseApiException error) {
             throw new IllegalStateException("NATIVE_USE_MODEL_BUILD_FAILED: " + error.getMessage(), error);
         }
@@ -438,7 +439,10 @@ public final class NativeUseModelBuilder {
     }
 
     public record Result(MModel model, CodeGroundedTraceIndex trace, List<NativeConstraintSpec> constraints,
-                         String structuralHash) {
-        public Result { constraints = List.copyOf(constraints); }
+                         List<NativeConstraintSpec> skippedConstraints, String structuralHash) {
+        public Result {
+            constraints = List.copyOf(constraints);
+            skippedConstraints = List.copyOf(skippedConstraints);
+        }
     }
 }

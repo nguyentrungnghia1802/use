@@ -590,14 +590,21 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 record.sourceIdentity(), record.sourceJavaFqcn(), record.targetIdentity(), record.targetKind(),
                 record.ruleId(), record.fidelity().name(), record.capabilityStatus().name(), jcmFile, 0,
                 record.ruleId().substring(0, 1), record.evidenceAuthority().name(), record.diagnostics())).toList();
-        List<org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor> constraints = system.model()
+        List<org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor> constraints = new ArrayList<>(system.model()
                 .classInvariants().stream().map(invariant -> new org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor(
                         "NATIVE:" + invariant.name(), invariant.name(), invariant.cls().name(), null,
                         org.tzi.use.plugins.jacamo.verification.ConstraintKind.INV,
                         org.tzi.use.plugins.jacamo.verification.ConstraintOrigin.CORE, jcmFile,
                         new org.tzi.use.plugins.jacamo.project.SourceSpan(jcmFile, 1, 1, 1, 1),
                         nativeConstraintDependencies(invariant.name()), invariant.isActive(),
-                        invariant.bodyExpression().toString())).toList();
+                        invariant.bodyExpression().toString())).toList());
+        pipeline.model().skippedConstraints().forEach(spec -> constraints.add(
+                new org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor(
+                        "NATIVE:SKIPPED:" + spec.name(), spec.name(), spec.targetContext(), null,
+                        org.tzi.use.plugins.jacamo.verification.ConstraintKind.INV,
+                        org.tzi.use.plugins.jacamo.verification.ConstraintOrigin.CORE, jcmFile,
+                        new org.tzi.use.plugins.jacamo.project.SourceSpan(jcmFile, 1, 1, 1, 1),
+                        spec.requiredRuleIds(), false, spec.oclBody())));
         NativeWorkspace next = new NativeWorkspace(summary, sources, traces, constraints, pipeline,
                 importNanos, generationNanos);
         lastDiagnostics = List.of();
@@ -612,10 +619,14 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         results.add(new org.tzi.use.plugins.jacamo.verification.VerificationResult("USE_STRUCTURE",
                 validation.structureValid ? VerificationOutcome.PASS : VerificationOutcome.FAIL, null,
                 validation.output, "", List.of(), null, List.of()));
-        for (var descriptor : nativeState.constraints)
+        for (var descriptor : nativeState.constraints) {
+            boolean skipped = descriptor.id().startsWith("NATIVE:SKIPPED:");
             results.add(new org.tzi.use.plugins.jacamo.verification.VerificationResult(descriptor.id(),
-                    validation.invariantsValid ? VerificationOutcome.PASS : VerificationOutcome.FAIL, null,
-                    validation.output, descriptor.oclSource(), List.of(), null, List.of()));
+                    skipped ? VerificationOutcome.SKIPPED
+                            : validation.invariantsValid ? VerificationOutcome.PASS : VerificationOutcome.FAIL,
+                    null, skipped ? "SKIPPED_CAPABILITY" : validation.output, descriptor.oclSource(),
+                    List.of(), null, List.of()));
+        }
         nativeState.latest = VerificationReport.offline(java.util.UUID.randomUUID().toString(),
                 validation.structureValid, results, Map.of("nativeModelSha256", nativeState.pipeline.model().structuralHash(),
                         "exportSha256", nativeState.pipeline.export().recompiledStructuralHash()));

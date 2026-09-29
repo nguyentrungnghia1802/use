@@ -27,7 +27,10 @@ public final class CodeGroundedConstraintPlanner {
                                 + "e.member.next = self.a19Entries->any(n | n.rank = e.rank + 1).member "
                                 + "else e.member.next.oclIsUndefined() endif)",
                         List.of("A19", "A20"), List.of("jason.ast"), Fidelity.EXACT, "CODE_GROUNDED",
-                        ConstraintMigrationStatus.NATIVE));
+                        ConstraintMigrationStatus.NATIVE),
+                new NativeConstraintSpec("C08LiveObservablePropertyAvailable", "Artifact", "true",
+                        List.of("C08"), List.of("cartago.live-observable-property"), Fidelity.EXACT,
+                        "CODE_GROUNDED", ConstraintMigrationStatus.SKIPPED_CAPABILITY));
     }
 
     private static void requireImplemented(CodeGroundedRuleCatalog catalog, String... ruleIds) {

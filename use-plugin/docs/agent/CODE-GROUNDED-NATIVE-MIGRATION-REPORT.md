@@ -18,7 +18,7 @@
 | Case-study acceptance | PASS (bounded scope) | `Phase9CaseStudyAcceptanceTest 2/2`, `bfb22e4b` |
 | Mapping Inspector | PASS | `JaCaMoWorkbenchPanelTest 13/13`, `3f649c90` |
 | Export/reproducibility | PASS (implemented subset) | `CodeGroundedExportTest 2/2`, `4a2048b8` |
-| Packaging/release | PASS | reactor `309/309`, integration `7/7`, `8b1e0e82` |
+| Packaging/release | PASS | reactor `309/309`, integration `7/7`, `8b1e0e82` (latest audit rerun `313/313`) |
 | Shadow comparison | PASS | `HelloShadowComparisonTest`, `4be438e2` |
 | Runtime safety | PASS (implemented subset) | `RuntimeFoundationTest 26/26`, `ebbeca6b` |
 
@@ -51,6 +51,18 @@ fail-closed unavailable/evidence-only facts, no case-specific production
 branch, no second native `MSystem`, and same-session runtime/OCL/verification
 use. `CodeGroundedIdentitySafetyTest` adds direct delimiter-safe opaque identity
 and invalid-component regression coverage (`2/2`).
+
+The post-audit full reactor gate passed with contract `11/11`, official
+adapters `17/17`, use-core `12/12`, use-gui `1/1`, use-plugin `313/313`, and
+integration/release `7/7`, with zero failures/errors/skips. Checkpoint:
+`809532b7`.
+
+Capability-gated native constraints are now reported explicitly. The native
+planner emits the C08 live-observable-property rule as
+`SKIPPED_CAPABILITY`; `NativeConstraintInstaller.InstallationResult` carries
+the skipped spec without installing an OCL invariant, and the facade exposes a
+`SKIPPED` verification result with `SKIPPED_CAPABILITY`. `NativeConstraintInstallerTest`
+passes `2/2`, including the no-OCL-installation regression.
 
 ## Case-study evidence
 

@@ -1189,7 +1189,7 @@ Refactor:
 - [x] code-grounded rule/capability registry;
 - [x] remove static Runtime Mapping V2 loading in native mode;
 - [x] bind constraints to exact native target;
-- [ ] report skipped constraints;
+- [x] report skipped constraints;
 - [x] preserve evidence/fidelity.
 
 No overclaim:
