@@ -1,6 +1,19 @@
 package org.tzi.use.plugins.jacamo.codegrounded.use;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.jacamo.bridge.contract.semantic.CartagoSemanticContract.ArtifactSemantic;
+import org.jacamo.bridge.contract.semantic.CartagoSemanticContract.ArtifactTypeSemantic;
+import org.jacamo.bridge.contract.semantic.CartagoSemanticContract.BackingJavaOperationSemantic;
+import org.jacamo.bridge.contract.semantic.CartagoSemanticContract.OperationDescriptorSemantic;
 import org.jacamo.bridge.contract.CanonicalJson;
 import org.jacamo.bridge.contract.CapabilityStatus;
 import org.tzi.use.api.UseApiException;
@@ -37,6 +50,7 @@ public final class NativeUseModelBuilder {
 
     public Result build(JacamoSpecificationModel source, CodeGroundedTraceCollector trace) {
         var catalog = new CodeGroundedRuleCatalog();
+        NativeOperationPlan operationPlan = NativeOperationPlan.resolve(source);
         UseModelApi api = new UseModelApi(modelName(source.project().name()));
         try {
             api.createEnumeration("TriggerOperator", TRIGGER_OPERATORS);
@@ -58,6 +72,8 @@ public final class NativeUseModelBuilder {
                     "OrganizationalPlan", "Norm", "GroupRoleCardinality", "SubGroupCardinality",
                     "SchemeMissionCardinality", "ExactBindingEvidence"))
                 api.createClass(name, false);
+            for (String name : operationPlan.artifactTypeClassNames().values()) api.createClass(name, false);
+            for (String name : operationPlan.artifactTypeClassNames().values()) api.createGeneralization(name, "Artifact");
             for (String name : List.of("Agent", "WorkspaceDeclaration", "ArtifactDeclaration", "OrganizationDeployment",
                     "GroupDeployment", "SchemeDeployment", "InstitutionDeployment", "AgentProgram", "PlanLibrary",
                     "Plan", "Trigger", "PlanBodyElement", "Action", "Belief", "AgentGoal", "BeliefRule",
@@ -374,19 +390,25 @@ public final class NativeUseModelBuilder {
             association(api, "X09AgentIdentity", "Agent", "x09CartagoIdentities", "0..*",
                     MAggregationKind.NONE, "CartagoAgentIdentity", "x09Agents", "0..*", false, true);
 
+            for (NativeOperationProjection projection : operationPlan.operations())
+                api.createOperation(projection.ownerUseClass(), projection.descriptor().name(),
+                        projection.parameters(), projection.returnType());
+
             List<NativeConstraintSpec> constraints = new CodeGroundedConstraintPlanner().plan(catalog);
             NativeConstraintInstaller.InstallationResult installation =
                     new NativeConstraintInstaller().installWithReport(api, constraints);
-            modelTraces(trace, catalog, source);
+            modelTraces(trace, catalog, source, operationPlan);
             MModel model = api.getModel();
-            return new Result(model, trace.index(), constraints, installation.skipped(), NativeUseStructure.sha256(model));
+            return new Result(model, trace.index(), constraints, installation.skipped(),
+                    operationPlan.artifactTypeClassNames(), operationPlan.operationDescriptorIds(),
+                    NativeUseStructure.sha256(model));
         } catch (UseApiException error) {
             throw new IllegalStateException("NATIVE_USE_MODEL_BUILD_FAILED: " + error.getMessage(), error);
         }
     }
 
     private static void modelTraces(CodeGroundedTraceCollector trace, CodeGroundedRuleCatalog catalog,
-                                    JacamoSpecificationModel source) {
+                                    JacamoSpecificationModel source, NativeOperationPlan operationPlan) {
         trace.add(catalog.require("J01"), TracePhase.MODEL_DECLARATION, source.project().metadata(),
                 "MModel", "model:" + modelName(source.project().name()), List.of());
         for (String id : List.of("J02", "J03", "J04", "J05", "J06", "J07", "J08", "J09", "J10", "J11",
@@ -405,6 +427,10 @@ public final class NativeUseModelBuilder {
                     declarationIdentity(rule.targetUseKind()), rule.sourceAuthority(), rule.fidelity(),
                     rule.capabilityStatus(), List.of()));
         }
+        for (NativeOperationProjection projection : operationPlan.operations())
+            trace.add(catalog.require("C06"), TracePhase.MODEL_DECLARATION, projection.backing().metadata(),
+                    "MOperation", projection.ownerUseClass() + "::" + projection.descriptor().name(),
+                    List.of("EXACT_REFLECTION_SIGNATURE", "NATIVE_OPERATION_PROJECTED"));
     }
 
     private static String targetKind(String target) {
@@ -438,11 +464,138 @@ public final class NativeUseModelBuilder {
         return new String(CanonicalJson.encode(value), java.nio.charset.StandardCharsets.UTF_8);
     }
 
+    private static String nativeArtifactTypeClassName(String semanticId) {
+        return "CArtAgOArtifactType_" + hash12(semanticId);
+    }
+
+    private static String hash12(String value) {
+        try {
+            return java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256")
+                    .digest(value.getBytes(java.nio.charset.StandardCharsets.UTF_8))).substring(0, 12);
+        } catch (java.security.NoSuchAlgorithmException impossible) { throw new IllegalStateException(impossible); }
+    }
+
+    private static Class<?> loadClass(String name) {
+        try {
+            return switch (name) {
+                case "boolean" -> boolean.class;
+                case "byte" -> byte.class;
+                case "short" -> short.class;
+                case "int" -> int.class;
+                case "long" -> long.class;
+                case "float" -> float.class;
+                case "double" -> double.class;
+                case "char" -> char.class;
+                case "void" -> void.class;
+                default -> Class.forName(name, false, Thread.currentThread().getContextClassLoader());
+            };
+        } catch (ClassNotFoundException | LinkageError error) {
+            return null;
+        }
+    }
+
+    private static String useType(String javaType) {
+        return switch (javaType) {
+            case "boolean", "java.lang.Boolean" -> "Boolean";
+            case "byte", "java.lang.Byte", "short", "java.lang.Short", "int", "java.lang.Integer",
+                    "long", "java.lang.Long" -> "Integer";
+            case "float", "java.lang.Float", "double", "java.lang.Double" -> "Real";
+            case "java.lang.String" -> "String";
+            default -> null;
+        };
+    }
+
+    private static boolean validUseIdentifier(String value) {
+        return value != null && value.matches("[A-Za-z_][A-Za-z0-9_]*");
+    }
+
+    private record NativeOperationProjection(OperationDescriptorSemantic descriptor,
+                                             BackingJavaOperationSemantic backing,
+                                             String ownerUseClass, String[][] parameters,
+                                             String returnType) { }
+
+    private record NativeOperationPlan(Map<String, String> artifactTypeClassNames,
+                                       List<NativeOperationProjection> operations) {
+        private NativeOperationPlan {
+            artifactTypeClassNames = Collections.unmodifiableMap(new LinkedHashMap<>(artifactTypeClassNames));
+            operations = List.copyOf(operations);
+        }
+
+        private Set<String> operationDescriptorIds() {
+            Set<String> ids = new LinkedHashSet<>();
+            operations.forEach(value -> ids.add(value.descriptor().metadata().semanticId()));
+            return Collections.unmodifiableSet(ids);
+        }
+
+        private static NativeOperationPlan resolve(JacamoSpecificationModel source) {
+            Map<String, ArtifactTypeSemantic> types = new LinkedHashMap<>();
+            Map<String, ArtifactSemantic> artifacts = new LinkedHashMap<>();
+            Map<String, OperationDescriptorSemantic> descriptors = new LinkedHashMap<>();
+            Map<String, BackingJavaOperationSemantic> backing = new LinkedHashMap<>();
+            source.snapshot().cartagoEnvironments().stream()
+                    .sorted(Comparator.comparing(value -> value.metadata().semanticId())).forEach(environment -> {
+                        environment.artifactTypes().forEach(value -> types.put(value.metadata().semanticId(), value));
+                        environment.artifacts().forEach(value -> artifacts.put(value.metadata().semanticId(), value));
+                        environment.operations().forEach(value -> descriptors.put(value.metadata().semanticId(), value));
+                        environment.backingOperations().forEach(value -> backing.put(value.metadata().semanticId(), value));
+                    });
+
+            Map<String, String> typeClassNames = new LinkedHashMap<>();
+            List<NativeOperationProjection> projections = new ArrayList<>();
+            backing.values().stream().sorted(Comparator.comparing(value -> value.metadata().semanticId())).forEach(value -> {
+                OperationDescriptorSemantic descriptor = descriptors.get(value.operationDescriptorId());
+                ArtifactSemantic artifact = descriptor == null ? null : artifacts.get(descriptor.artifactSemanticId());
+                ArtifactTypeSemantic type = artifact == null ? null : types.get(artifact.artifactTypeSemanticId());
+                NativeOperationProjection projection = exactProjection(descriptor, value, type);
+                if (projection != null) {
+                    typeClassNames.putIfAbsent(type.metadata().semanticId(), projection.ownerUseClass());
+                    projections.add(projection);
+                }
+            });
+            return new NativeOperationPlan(typeClassNames, projections);
+        }
+
+        private static NativeOperationProjection exactProjection(OperationDescriptorSemantic descriptor,
+                                                                  BackingJavaOperationSemantic backing,
+                                                                  ArtifactTypeSemantic type) {
+            if (descriptor == null || type == null || descriptor.arity() < -1
+                    || !validUseIdentifier(descriptor.name())) return null;
+            Class<?> artifactClass = loadClass(type.javaClassName());
+            Class<?> declaringClass = loadClass(backing.declaringClass());
+            if (artifactClass == null || declaringClass == null || !declaringClass.isAssignableFrom(artifactClass)) return null;
+            if (descriptor.arity() >= 0 && descriptor.arity() != backing.parameterTypes().size()) return null;
+            Class<?>[] parameterTypes = new Class<?>[backing.parameterTypes().size()];
+            String[][] parameters = new String[parameterTypes.length][2];
+            for (int index = 0; index < parameterTypes.length; index++) {
+                String javaType = backing.parameterTypes().get(index);
+                parameterTypes[index] = loadClass(javaType);
+                String useType = useType(javaType);
+                if (parameterTypes[index] == null || useType == null) return null;
+                parameters[index] = new String[] {"p" + index, useType};
+            }
+            Method method;
+            try {
+                method = declaringClass.getDeclaredMethod(backing.methodName(), parameterTypes);
+            } catch (NoSuchMethodException error) {
+                return null;
+            }
+            if (!Modifier.isPublic(method.getModifiers()) || !method.getReturnType().getName().equals(backing.returnType())
+                    || method.isVarArgs() != backing.varArgs()) return null;
+            String returnType = "void".equals(backing.returnType()) ? null : useType(backing.returnType());
+            if (!"void".equals(backing.returnType()) && returnType == null) return null;
+            return new NativeOperationProjection(descriptor, backing, nativeArtifactTypeClassName(type.metadata().semanticId()),
+                    parameters, returnType);
+        }
+    }
+
     public record Result(MModel model, CodeGroundedTraceIndex trace, List<NativeConstraintSpec> constraints,
-                         List<NativeConstraintSpec> skippedConstraints, String structuralHash) {
+                         List<NativeConstraintSpec> skippedConstraints, Map<String, String> nativeArtifactTypeClassNames,
+                         Set<String> nativeOperationDescriptorIds, String structuralHash) {
         public Result {
             constraints = List.copyOf(constraints);
             skippedConstraints = List.copyOf(skippedConstraints);
+            nativeArtifactTypeClassNames = Collections.unmodifiableMap(new LinkedHashMap<>(nativeArtifactTypeClassNames));
+            nativeOperationDescriptorIds = Collections.unmodifiableSet(new LinkedHashSet<>(nativeOperationDescriptorIds));
         }
     }
 }

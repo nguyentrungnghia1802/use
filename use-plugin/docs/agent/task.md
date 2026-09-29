@@ -535,7 +535,7 @@ P = optional source/bytecode provenance
 - [x] No method-name inference.
 
 ## C06 native MOperation [S+D; P optional]
-- [ ] Exact backing method/signature required. PARTIAL: the exact `ArtifactOpMethod`/reflection signature is preserved as `BackingJavaOperation`; optional native `MOperation` projection is not yet emitted.
+- [ ] Exact backing method/signature required. PARTIAL: the exact `ArtifactOpMethod`/reflection signature is preserved as `BackingJavaOperation`; a native `MOperation` is emitted only when declaring class, method, parameter/return types, arity, and varargs are verified by reflection. Dynamic or otherwise non-exact operations remain structural.
 - [x] Dynamic operation without exact method stays structural `Operation`.
 
 ## C07 Guard [D; P optional]
@@ -817,7 +817,7 @@ Responsibilities:
 - [x] `MClass`;
 - [x] `EnumType`;
 - [x] `MAttribute`;
-- [ ] `MOperation`;
+- [x] `MOperation`;
 - [x] `MAssociation`;
 - [x] composition;
 - [ ] invariants/pre-postconditions;
@@ -914,13 +914,13 @@ Trace:
 - [ ] enum;
 - [ ] attribute;
 - [x] association;
-- [ ] operation;
+- [x] operation;
 - [x] object;
 - [ ] value;
 - [x] link;
 - [x] order entry;
 - [x] runtime mutation;
-- [ ] skipped/unavailable fact;
+- [x] skipped/unavailable fact;
 - [x] export target.
 
 Index:
@@ -1358,7 +1358,7 @@ Gate:
 - [x] ArtifactId-based runtime identity;
 - [x] dynamic limitations explicit.
 
-**Phase 4 evidence — 2026-09-29:** PASS for the available CArtAgO contract slice: `OfficialCartagoAdapter` reads only official `CartagoEnvironment`, `WorkspaceDescriptor`/`WorkspaceId`, controller inventories, `ArtifactId`, `ArtifactInfo`, `OpDescriptor`, `ArtifactObsProperty`, `ArtifactOpMethod`, `IArtifactGuard`, and opaque `AgentId` values; no simple-name join or method-name inference is used. `NativeUseModelBuilder`/`NativeUseStateBuilder` materialize exact C01–C05, C07, C09–C20 classes/links in the same `MSystem`, preserve `ArtifactId` UUID/workspace identity, keep C09 snapshots separate from the C08 live-property class, and retain focus/unfocus as exact event evidence. C08 is fail-closed as `UNAVAILABLE` because the audited controller API does not expose a live `ObsProperty`; non-empty live-property input is rejected rather than converted to C09. C06 is intentionally PARTIAL: exact reflective backing signature is preserved as `BackingJavaOperation`, while optional native `MOperation` projection is not emitted; dynamic operations remain structural. `OfficialCartagoAdapterTest` passed `1/1`; `CodeGroundedPhase4Test` passed `3/3` including exact-ID negative coverage; the focused reactor verify passed official adapters `12/12`, code-grounded unit `14/14`, and native integration `2/2`; full reactor unit gate passed contract `10/10`, adapters `16/16`, use-core `12/12`, use-gui `1/1`, and use-plugin `288/288`, with zero failures/errors/skips. The catalog now reports 47 implemented rules, C06 capability-gated/partial, and C08 unavailable. No Moise, cross-framework, or runtime synchronization implementation was started.
+**Phase 4 evidence — 2026-09-29:** PASS for the available CArtAgO contract slice: `OfficialCartagoAdapter` reads only official `CartagoEnvironment`, `WorkspaceDescriptor`/`WorkspaceId`, controller inventories, `ArtifactId`, `ArtifactInfo`, `OpDescriptor`, `ArtifactObsProperty`, `ArtifactOpMethod`, `IArtifactGuard`, and opaque `AgentId` values; no simple-name join or method-name inference is used. `NativeUseModelBuilder`/`NativeUseStateBuilder` materialize exact C01–C05, C07, C09–C20 classes/links in the same `MSystem`, preserve `ArtifactId` UUID/workspace identity, keep C09 snapshots separate from the C08 live-property class, and retain focus/unfocus as exact event evidence. C08 is fail-closed as `UNAVAILABLE` because the audited controller API does not expose a live `ObsProperty`; non-empty live-property input is rejected rather than converted to C09. C06 remains PARTIAL: exact reflective backing signature is preserved as `BackingJavaOperation`, and `NativeUseModelBuilder` emits a concrete native `MOperation` only after exact declaring-class, method, parameter/return, arity, and varargs checks; dynamic or non-exact operations remain structural. `CodeGroundedPhase4Test` passed `3/3`; `NativeMOperationProjectionTest` passed `2/2` for positive and negative reflection evidence; the focused native regression set passed `12/12`. The catalog still reports C06 capability-gated/partial and C08 unavailable.
 
 ---
 
@@ -1673,7 +1673,7 @@ V2 becomes historical-only when:
 - [x] classes
 - [x] enums
 - [x] attributes
-- [ ] operations
+- [x] operations
 - [x] associations
 - [x] compositions
 - [x] multiplicities
@@ -1740,7 +1740,7 @@ V2 becomes historical-only when:
 - [x] classpath separation
 - [x] historical parser exclusion
 
-**Section 30 evidence — 2026-09-29:** PASS for the implemented test suite. `CodeGroundedNegativeTest` rejects duplicate semantic identity before native state materialization; `CodeGroundedPhase6Test` proves same-name facts remain unresolved without exact evidence; `JaCaMoWorkbenchPanelTest` covers runtime/project refresh; `CodeGroundedExportTest (2/2)` covers separate state export; and the packaging/discovery/staging/classpath/historical-exclusion items are covered by `JaCaMoPluginTest (5/5)`, `LegacyAuthorityPackagingIT`, `GuiPluginStagingIT`, `ReleasePackageContractTest`, and `ReleasePackageIT (3/3)`. Native `MOperation` projection remains unchecked because no conditional operation signature evidence is claimed.
+**Section 30 evidence — 2026-09-29:** PASS for the implemented test suite. `CodeGroundedNegativeTest` rejects duplicate semantic identity before native state materialization; `CodeGroundedPhase6Test` proves same-name facts remain unresolved without exact evidence; `JaCaMoWorkbenchPanelTest` covers runtime/project refresh; `CodeGroundedExportTest (2/2)` covers separate state export; and the packaging/discovery/staging/classpath/historical-exclusion items are covered by `JaCaMoPluginTest (5/5)`, `LegacyAuthorityPackagingIT`, `GuiPluginStagingIT`, `ReleasePackageContractTest`, and `ReleasePackageIT (3/3)`. `NativeMOperationProjectionTest (2/2)` proves exact reflection creates the concrete artifact subtype and `MOperation`, while a non-exact method remains structural; the focused native regression set passed `12/12`.
 
 ---
 

@@ -177,7 +177,9 @@ public final class NativeUseStateBuilder {
                                     ? List.of("ARTIFACT_TYPE_CLASSLOADER_UNAVAILABLE") : List.of());
                 }
                 for (var artifact : environment.artifacts()) {
-                    MObject artifactObject = object(api, semanticObjects, objectNames, "Artifact",
+                    String artifactClass = schema.nativeArtifactTypeClassNames()
+                            .getOrDefault(artifact.artifactTypeSemanticId(), "Artifact");
+                    MObject artifactObject = object(api, semanticObjects, objectNames, artifactClass,
                             artifact.metadata(), artifact.name());
                     text(api, artifactObject, "name", artifact.name());
                     text(api, artifactObject, "uuid", artifact.uuid());
@@ -212,7 +214,10 @@ public final class NativeUseStateBuilder {
                     bool(api, backingObject, "varArgs", backing.varArgs());
                     text(api, backingObject, "classLoaderIdentity", backing.classLoaderIdentity());
                     trace.add(catalog.require("C06"), TracePhase.INSTANCE_MATERIALIZATION, backing.metadata(),
-                            "MObject", backingObject.name(), List.of("NATIVE_MOPERATION_NOT_PROJECTED"));
+                            "MObject", backingObject.name(), schema.nativeOperationDescriptorIds()
+                                    .contains(backing.operationDescriptorId())
+                                            ? List.of("NATIVE_MOPERATION_PROJECTED")
+                                            : List.of("NATIVE_MOPERATION_NOT_PROJECTED"));
                 }
                 for (var guard : environment.guards()) {
                     MObject guardObject = object(api, semanticObjects, objectNames, "Guard", guard.metadata(), guard.name());

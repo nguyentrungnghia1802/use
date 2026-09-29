@@ -64,6 +64,15 @@ the skipped spec without installing an OCL invariant, and the facade exposes a
 `SKIPPED` verification result with `SKIPPED_CAPABILITY`. `NativeConstraintInstallerTest`
 passes `2/2`, including the no-OCL-installation regression.
 
+Exact native operation projection is capability-gated rather than inferred.
+`NativeUseModelBuilder.NativeOperationPlan` requires the exact declaring class,
+method name, parameter types, return type, arity, and varargs flag to resolve
+through reflection before creating a concrete artifact subtype and `MOperation`.
+`NativeMOperationProjectionTest` passes `2/2`: the exact signature is projected
+and exported with a stable structural hash, while a non-exact method remains a
+structural `Operation` and is traced as not projected. No case-study name or
+V2 model is used by this path.
+
 ## Case-study evidence
 
 - **Hello World:** official JCM/Jason/Moise facts are materialized through the
@@ -102,8 +111,8 @@ and exported trace are read-only evidence surfaces.
 The unchecked task items are deliberate: optional `.cmd`; exported JaCaMo,
 Jason, CArtAgO, Moise, and USE component-version manifest; bounded semantic
 snapshot hard limits; trace-size telemetry; optional inspector target
-navigation; optional native `MOperation` projection; and destructive legacy
-cleanup pending explicit approval. Live claims that lack official/runtime
+navigation; non-exact/dynamic native `MOperation` projection; and destructive
+legacy cleanup pending explicit approval. Live claims that lack official/runtime
 evidence remain `UNKNOWN`, `UNAVAILABLE`, or `UNSUPPORTED`.
 
 Historical V2/Ecore/golden artifacts are not modified. The release candidate
