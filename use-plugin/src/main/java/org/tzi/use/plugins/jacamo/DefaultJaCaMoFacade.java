@@ -575,7 +575,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         String catalogHash = sha256(new CodeGroundedRuleCatalog().rules().toString());
         ProjectSummary summary = new ProjectSummary(jcmFile, jcmFile.getParent(), pipeline.source().project().name(),
                 snapshot.sources().size(), counts, "CODE_GROUNDED_NATIVE-1.0.0",
-                pipeline.model().structuralHash(), "CodeGroundedRuleCatalog", "1.0.0", catalogHash,
+                pipeline.model().structuralHash(), "CodeGroundedRuleCatalog", CodeGroundedRuleCatalog.VERSION, catalogHash,
                 "PHASE_4", system.model().classes().size(), system.state().numObjects(),
                 pipeline.state().structureValid(), 0, 0);
         List<SourceRow> sources;

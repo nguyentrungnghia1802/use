@@ -1509,17 +1509,19 @@ Gate:
 
 # 24. Export/reproducibility
 
-- [ ] deterministic `.use`;
+- [x] deterministic `.use`;
 - [ ] optional `.cmd`;
-- [ ] source project digest;
-- [ ] rule catalog version;
-- [ ] contract version;
+- [x] source project digest;
+- [x] rule catalog version;
+- [x] contract version;
 - [ ] JaCaMo/Jason/CArtAgO/Moise versions;
 - [ ] USE version;
-- [ ] structural hash;
-- [ ] trace export;
-- [ ] verification report;
-- [ ] round-trip validation.
+- [x] structural hash;
+- [x] trace export;
+- [x] verification report;
+- [x] round-trip validation.
+
+**Section 24 evidence — 2026-09-29:** PASS for the native artifacts that are implemented and tested. `NativeUseExporter` serializes the native `MModel` with USE's official `MMPrintVisitor`, recompiles it with `USECompiler`, and checks structural-hash/signature equality; `CodeGroundedRuleCatalog.VERSION` and `JacamoSemanticSnapshot.CURRENT_VERSION` are explicit native/contract metadata, and `DefaultJaCaMoFacade` records the JCM SHA-256 source row plus the native structural/catalog hashes. `NativeUseStateExporter` writes a separate deterministic state JSON from the one native `MSystem`, and `CodeGroundedTraceExporter` writes the exact native trace without converting it to V2. `CodeGroundedDeterminismTest`, `NativeUseExportRecompileIT`, `NativeUseSessionOclIT`, `DefaultJaCaMoFacadeTest`, and `CodeGroundedExportTest (2/2)` provide evidence. Optional `.cmd`, a component-version manifest (JaCaMo/Jason/CArtAgO/Moise), and an exported USE-version field remain unchecked because no native manifest currently records those values.
 
 ---
 

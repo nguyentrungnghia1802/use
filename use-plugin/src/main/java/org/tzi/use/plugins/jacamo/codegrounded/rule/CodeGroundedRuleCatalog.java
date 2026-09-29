@@ -15,6 +15,9 @@ import org.jacamo.bridge.contract.semantic.Fidelity;
  * A catalog entry describes the intended contract even when the audited API cannot yet supply it.
  */
 public final class CodeGroundedRuleCatalog {
+    /** Version of the code-grounded rule contract exported with native evidence. */
+    public static final String VERSION = "1.0.0";
+
     private static final Set<String> FIRST_SLICE = Set.of(
             "J01", "J02", "J03", "J04", "J05", "J06", "J07", "J08", "J09", "J10", "J11",
             "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10", "A11",
