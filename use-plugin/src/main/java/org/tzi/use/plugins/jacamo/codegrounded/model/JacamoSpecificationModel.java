@@ -49,6 +49,21 @@ public final class JacamoSpecificationModel {
         snapshot.rawRoleTuples().forEach(value -> register(identities, value.metadata()));
         snapshot.rawFocusTuples().forEach(value -> register(identities, value.metadata()));
         snapshot.importProvenance().forEach(value -> register(identities, value.metadata()));
+        for (var environment : snapshot.cartagoEnvironments()) {
+            register(identities, environment.metadata());
+            environment.workspaces().forEach(value -> register(identities, value.metadata()));
+            environment.artifactTypes().forEach(value -> register(identities, value.metadata()));
+            environment.artifacts().forEach(value -> register(identities, value.metadata()));
+            environment.operations().forEach(value -> register(identities, value.metadata()));
+            environment.backingOperations().forEach(value -> register(identities, value.metadata()));
+            environment.guards().forEach(value -> register(identities, value.metadata()));
+            environment.liveProperties().forEach(value -> register(identities, value.metadata()));
+            environment.propertySnapshots().forEach(value -> register(identities, value.metadata()));
+            environment.artifactInfos().forEach(value -> register(identities, value.metadata()));
+            environment.signals().forEach(value -> register(identities, value.metadata()));
+            environment.agents().forEach(value -> register(identities, value.metadata()));
+            environment.focuses().forEach(value -> register(identities, value.metadata()));
+        }
         for (var program : programs) {
             register(identities, program.metadata());
             register(identities, program.planLibrary().metadata());

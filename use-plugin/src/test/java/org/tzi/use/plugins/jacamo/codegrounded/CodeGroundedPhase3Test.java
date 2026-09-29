@@ -24,7 +24,7 @@ class CodeGroundedPhase3Test {
         assertEquals(snapshot.semanticContract().agentDeclarations().size(),
                 system.state().objectsOfClass(system.model().getClass("Agent")).size());
         assertEquals(snapshot.semanticContract().workspaceDeclarations().size(),
-                system.state().objectsOfClass(system.model().getClass("Workspace")).size());
+                system.state().objectsOfClass(system.model().getClass("WorkspaceDeclaration")).size());
         assertEquals(snapshot.semanticContract().artifactDeclarations().size(),
                 system.state().objectsOfClass(system.model().getClass("ArtifactDeclaration")).size());
         assertEquals(snapshot.semanticContract().organizationDeployments().size(),
@@ -36,7 +36,9 @@ class CodeGroundedPhase3Test {
         assertEquals(snapshot.semanticContract().institutionDeployments().size(),
                 system.state().objectsOfClass(system.model().getClass("InstitutionDeployment")).size());
 
-        assertNull(system.model().getClass("Artifact"), "JCM declarations must not fabricate live CArtAgO artifacts");
+        assertNotNull(system.model().getClass("Artifact"), "the native schema reserves a distinct CArtAgO runtime class");
+        assertEquals(0, system.state().objectsOfClass(system.model().getClass("Artifact")).size(),
+                "JCM declarations must not fabricate live CArtAgO artifacts");
         assertTrue(result.trace().records().stream().anyMatch(value -> value.ruleId().equals("J09")
                 && value.targetKind().equals("RAW_ROLE_TUPLE")));
         assertTrue(result.trace().records().stream().anyMatch(value -> value.ruleId().equals("J10")
@@ -48,7 +50,7 @@ class CodeGroundedPhase3Test {
                         && value.targetKind().equals("MLink")));
 
         String query = "Agent.allInstances->size() = " + snapshot.semanticContract().agentDeclarations().size()
-                + " and Workspace.allInstances->size() = " + snapshot.semanticContract().workspaceDeclarations().size()
+                + " and WorkspaceDeclaration.allInstances->size() = " + snapshot.semanticContract().workspaceDeclarations().size()
                 + " and ArtifactDeclaration.allInstances->size() = "
                 + snapshot.semanticContract().artifactDeclarations().size();
         assertEquals("true", org.tzi.use.api.UseSystemApi.create(system, false).evaluate(query).toString());
@@ -59,10 +61,12 @@ class CodeGroundedPhase3Test {
 
     @Test void phase3SchemaContainsAllDeploymentTypesWithoutRuntimeCollapse() throws Exception {
         var result = CodeGroundedTestFixtures.helloPipeline();
-        for (String className : List.of("Agent", "Workspace", "ArtifactDeclaration", "OrganizationDeployment",
+        for (String className : List.of("Agent", "WorkspaceDeclaration", "ArtifactDeclaration", "OrganizationDeployment",
                 "GroupDeployment", "SchemeDeployment", "InstitutionDeployment"))
             assertNotNull(result.model().model().getClass(className), className);
-        assertNull(result.model().model().getClass("Artifact"));
+        assertNotNull(result.model().model().getClass("Artifact"));
+        assertEquals(0, result.state().system().state()
+                .objectsOfClass(result.model().model().getClass("Artifact")).size());
         for (String ruleId : List.of("J02", "J03", "J04", "J05", "J06", "J07", "J08", "J09", "J10", "J11"))
             assertTrue(result.trace().records().stream().anyMatch(value -> value.ruleId().equals(ruleId)), ruleId);
     }

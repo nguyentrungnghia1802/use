@@ -63,7 +63,7 @@ public final class NativeUseStateBuilder {
                         "MObject", agentObject.name(), List.of());
             }
             for (var workspace : semantic.workspaceDeclarations()) {
-                MObject workspaceObject = object(api, semanticObjects, objectNames, "Workspace", workspace.metadata(),
+                MObject workspaceObject = object(api, semanticObjects, objectNames, "WorkspaceDeclaration", workspace.metadata(),
                         workspace.name());
                 text(api, workspaceObject, "name", workspace.name());
                 text(api, workspaceObject, "host", workspace.host());
@@ -136,6 +136,190 @@ public final class NativeUseStateBuilder {
                         "IMPORT_PROVENANCE", provenance.metadata().semanticId(),
                         provenance.status() == org.jacamo.bridge.contract.CapabilityStatus.COMPLETE
                                 ? List.of() : List.of(provenance.status().name()));
+            }
+            for (var environment : semantic.cartagoEnvironments()) {
+                MObject environmentObject = object(api, semanticObjects, objectNames, "Environment",
+                        environment.metadata(), environment.environmentId());
+                text(api, environmentObject, "name", environment.name());
+                text(api, environmentObject, "environmentId", environment.environmentId());
+                text(api, environmentObject, "version", environment.version());
+                text(api, environmentObject, "defaultInfrastructureLayer", environment.defaultInfrastructureLayer());
+                trace.add(catalog.require("C01"), TracePhase.INSTANCE_MATERIALIZATION, environment.metadata(),
+                        "MObject", environmentObject.name(), List.of());
+
+                for (var workspace : environment.workspaces()) {
+                    MObject workspaceObject = object(api, semanticObjects, objectNames, "Workspace",
+                            workspace.metadata(), workspace.fullName());
+                    text(api, workspaceObject, "fullName", workspace.fullName());
+                    text(api, workspaceObject, "name", workspace.name());
+                    text(api, workspaceObject, "uuid", workspace.uuid());
+                    text(api, workspaceObject, "parentSemanticId", workspace.parentSemanticId());
+                    text(api, workspaceObject, "environmentSemanticId", workspace.environmentSemanticId());
+                    bool(api, workspaceObject, "local", workspace.local());
+                    text(api, workspaceObject, "protocol", workspace.protocol());
+                    text(api, workspaceObject, "remotePath", workspace.remotePath());
+                    text(api, workspaceObject, "address", workspace.address());
+                    trace.add(catalog.require("C02"), TracePhase.INSTANCE_MATERIALIZATION, workspace.metadata(),
+                            "MObject", workspaceObject.name(), List.of());
+                }
+                for (var artifactType : environment.artifactTypes()) {
+                    MObject typeObject = object(api, semanticObjects, objectNames, "ArtifactType",
+                            artifactType.metadata(), artifactType.javaClassName());
+                    text(api, typeObject, "javaClassName", artifactType.javaClassName());
+                    text(api, typeObject, "classLoaderIdentity", artifactType.classLoaderIdentity());
+                    trace.add(catalog.require("C03"), TracePhase.INSTANCE_MATERIALIZATION, artifactType.metadata(),
+                            "MObject", typeObject.name(), artifactType.classLoaderIdentity().isBlank()
+                                    ? List.of("ARTIFACT_TYPE_CLASSLOADER_UNAVAILABLE") : List.of());
+                }
+                for (var artifact : environment.artifacts()) {
+                    MObject artifactObject = object(api, semanticObjects, objectNames, "Artifact",
+                            artifact.metadata(), artifact.name());
+                    text(api, artifactObject, "name", artifact.name());
+                    text(api, artifactObject, "uuid", artifact.uuid());
+                    text(api, artifactObject, "artifactTypeSemanticId", artifact.artifactTypeSemanticId());
+                    text(api, artifactObject, "workspaceSemanticId", artifact.workspaceSemanticId());
+                    text(api, artifactObject, "creatorAgentSemanticId", artifact.creatorAgentSemanticId());
+                    trace.add(catalog.require("C04"), TracePhase.INSTANCE_MATERIALIZATION, artifact.metadata(),
+                            "MObject", artifactObject.name(), List.of());
+                }
+                for (var operation : environment.operations()) {
+                    MObject operationObject = object(api, semanticObjects, objectNames, "Operation",
+                            operation.metadata(), operation.name());
+                    text(api, operationObject, "artifactSemanticId", operation.artifactSemanticId());
+                    text(api, operationObject, "keyId", operation.keyId());
+                    text(api, operationObject, "name", operation.name());
+                    integer(api, operationObject, "arity", operation.arity());
+                    bool(api, operationObject, "dynamic", operation.dynamic());
+                    bool(api, operationObject, "linkOperation", operation.linkOperation());
+                    bool(api, operationObject, "ui", operation.ui());
+                    bool(api, operationObject, "internal", operation.internal());
+                    trace.add(catalog.require("C05"), TracePhase.INSTANCE_MATERIALIZATION, operation.metadata(),
+                            "MObject", operationObject.name(), List.of());
+                }
+                for (var backing : environment.backingOperations()) {
+                    MObject backingObject = object(api, semanticObjects, objectNames, "BackingJavaOperation",
+                            backing.metadata(), backing.methodName());
+                    text(api, backingObject, "operationDescriptorId", backing.operationDescriptorId());
+                    text(api, backingObject, "declaringClass", backing.declaringClass());
+                    text(api, backingObject, "methodName", backing.methodName());
+                    text(api, backingObject, "parameterTypes", NativeUseModelBuilder.canonicalJson(backing.parameterTypes()));
+                    text(api, backingObject, "returnType", backing.returnType());
+                    bool(api, backingObject, "varArgs", backing.varArgs());
+                    text(api, backingObject, "classLoaderIdentity", backing.classLoaderIdentity());
+                    trace.add(catalog.require("C06"), TracePhase.INSTANCE_MATERIALIZATION, backing.metadata(),
+                            "MObject", backingObject.name(), List.of("NATIVE_MOPERATION_NOT_PROJECTED"));
+                }
+                for (var guard : environment.guards()) {
+                    MObject guardObject = object(api, semanticObjects, objectNames, "Guard", guard.metadata(), guard.name());
+                    text(api, guardObject, "operationDescriptorId", guard.operationDescriptorId());
+                    text(api, guardObject, "name", guard.name());
+                    integer(api, guardObject, "arity", guard.arity());
+                    text(api, guardObject, "implementationClass", guard.implementationClass());
+                    trace.add(catalog.require("C07"), TracePhase.INSTANCE_MATERIALIZATION, guard.metadata(),
+                            "MObject", guardObject.name(), List.of());
+                }
+                if (!environment.liveProperties().isEmpty())
+                    throw new IllegalArgumentException("C08_LIVE_PROPERTY_NOT_EXPOSED_BY_AUDITED_API");
+                trace.add(catalog.require("C08"), TracePhase.INSTANCE_MATERIALIZATION, environment.metadata(),
+                        "UNAVAILABLE", "C08:" + environment.metadata().semanticId(),
+                        List.of("C08_UNAVAILABLE_NO_LIVE_OBSPROPERTY_API"));
+                for (var property : environment.propertySnapshots()) {
+                    MObject propertyObject = object(api, semanticObjects, objectNames, "ObservablePropertySnapshot",
+                            property.metadata(), property.name());
+                    text(api, propertyObject, "artifactSemanticId", property.artifactSemanticId());
+                    text(api, propertyObject, "propertyId", property.propertyId());
+                    text(api, propertyObject, "name", property.name());
+                    text(api, propertyObject, "values", NativeUseModelBuilder.canonicalJson(property.values()));
+                    text(api, propertyObject, "valueTypes", NativeUseModelBuilder.canonicalJson(property.valueTypes()));
+                    text(api, propertyObject, "annotations", NativeUseModelBuilder.canonicalJson(property.annotations()));
+                    trace.add(catalog.require("C09"), TracePhase.INSTANCE_MATERIALIZATION, property.metadata(),
+                            "MObject", propertyObject.name(), List.of());
+                }
+                for (var info : environment.artifactInfos()) {
+                    MObject infoObject = object(api, semanticObjects, objectNames, "ArtifactInfo",
+                            info.metadata(), info.artifactSemanticId());
+                    text(api, infoObject, "artifactSemanticId", info.artifactSemanticId());
+                    text(api, infoObject, "creatorAgentSemanticId", info.creatorAgentSemanticId());
+                    text(api, infoObject, "operationSemanticIds", NativeUseModelBuilder.canonicalJson(info.operationSemanticIds()));
+                    text(api, infoObject, "observablePropertySemanticIds",
+                            NativeUseModelBuilder.canonicalJson(info.observablePropertySemanticIds()));
+                    text(api, infoObject, "linkedArtifactSemanticIds",
+                            NativeUseModelBuilder.canonicalJson(info.linkedArtifactSemanticIds()));
+                    trace.add(catalog.require("C10"), TracePhase.INSTANCE_MATERIALIZATION, info.metadata(),
+                            "MObject", infoObject.name(), List.of());
+                }
+                for (var signal : environment.signals()) {
+                    MObject signalObject = object(api, semanticObjects, objectNames, "Signal", signal.metadata(), signal.name());
+                    text(api, signalObject, "artifactSemanticId", signal.artifactSemanticId());
+                    text(api, signalObject, "name", signal.name());
+                    text(api, signalObject, "values", NativeUseModelBuilder.canonicalJson(signal.values()));
+                    trace.add(catalog.require("C11"), TracePhase.INSTANCE_MATERIALIZATION, signal.metadata(),
+                            "MObject", signalObject.name(), List.of());
+                }
+                for (var agent : environment.agents()) {
+                    MObject agentObject = object(api, semanticObjects, objectNames, "CartagoAgentIdentity",
+                            agent.metadata(), agent.globalId());
+                    text(api, agentObject, "globalId", agent.globalId());
+                    integer(api, agentObject, "localId", agent.localId());
+                    text(api, agentObject, "name", agent.name());
+                    text(api, agentObject, "role", agent.role());
+                    text(api, agentObject, "workspaceSemanticId", agent.workspaceSemanticId());
+                    trace.add(catalog.require("C12"), TracePhase.INSTANCE_MATERIALIZATION, agent.metadata(),
+                            "MObject", agentObject.name(), List.of());
+                }
+                for (var workspace : environment.workspaces()) {
+                    MObject workspaceObject = required(semanticObjects, workspace.metadata().semanticId(), "C13_WORKSPACE_OBJECT");
+                    link(api, schema, "C13EnvironmentWorkspace", environmentObject, workspaceObject);
+                    trace.add(catalog.require("C13"), TracePhase.INSTANCE_MATERIALIZATION, workspace.metadata(),
+                            "MLink", linkIdentity("C13", environment.metadata().semanticId(), workspace.metadata().semanticId()), List.of());
+                }
+                for (var artifact : environment.artifacts()) {
+                    MObject artifactObject = required(semanticObjects, artifact.metadata().semanticId(), "C14_ARTIFACT_OBJECT");
+                    MObject workspaceObject = required(semanticObjects, artifact.workspaceSemanticId(), "C14_WORKSPACE_REFERENCE");
+                    link(api, schema, "C14WorkspaceArtifact", workspaceObject, artifactObject);
+                    MObject typeObject = required(semanticObjects, artifact.artifactTypeSemanticId(), "C15_TYPE_REFERENCE");
+                    link(api, schema, "C15ArtifactType", artifactObject, typeObject);
+                    trace.add(catalog.require("C14"), TracePhase.INSTANCE_MATERIALIZATION, artifact.metadata(),
+                            "MLink", linkIdentity("C14", artifact.workspaceSemanticId(), artifact.metadata().semanticId()), List.of());
+                    trace.add(catalog.require("C15"), TracePhase.INSTANCE_MATERIALIZATION, artifact.metadata(),
+                            "MLink", linkIdentity("C15", artifact.metadata().semanticId(), artifact.artifactTypeSemanticId()), List.of());
+                }
+                for (var operation : environment.operations()) {
+                    MObject operationObject = required(semanticObjects, operation.metadata().semanticId(), "C16_OPERATION_OBJECT");
+                    MObject artifactObject = required(semanticObjects, operation.artifactSemanticId(), "C16_ARTIFACT_REFERENCE");
+                    link(api, schema, "C16ArtifactOperation", artifactObject, operationObject);
+                    trace.add(catalog.require("C16"), TracePhase.INSTANCE_MATERIALIZATION, operation.metadata(),
+                            "MLink", linkIdentity("C16", operation.artifactSemanticId(), operation.metadata().semanticId()), List.of());
+                }
+                for (var property : environment.propertySnapshots()) {
+                    MObject propertyObject = required(semanticObjects, property.metadata().semanticId(), "C17_PROPERTY_OBJECT");
+                    MObject artifactObject = required(semanticObjects, property.artifactSemanticId(), "C17_ARTIFACT_REFERENCE");
+                    link(api, schema, "C17ArtifactObservableProperty", artifactObject, propertyObject);
+                    trace.add(catalog.require("C17"), TracePhase.INSTANCE_MATERIALIZATION, property.metadata(),
+                            "MLink", linkIdentity("C17", property.artifactSemanticId(), property.metadata().semanticId()), List.of());
+                }
+                for (var guard : environment.guards()) {
+                    MObject guardObject = required(semanticObjects, guard.metadata().semanticId(), "C18_GUARD_OBJECT");
+                    MObject operationObject = required(semanticObjects, guard.operationDescriptorId(), "C18_OPERATION_REFERENCE");
+                    link(api, schema, "C18OperationGuard", operationObject, guardObject);
+                    trace.add(catalog.require("C18"), TracePhase.INSTANCE_MATERIALIZATION, guard.metadata(),
+                            "MLink", linkIdentity("C18", guard.operationDescriptorId(), guard.metadata().semanticId()), List.of());
+                }
+                for (var agent : environment.agents()) {
+                    MObject agentObject = required(semanticObjects, agent.metadata().semanticId(), "C19_AGENT_OBJECT");
+                    MObject workspaceObject = required(semanticObjects, agent.workspaceSemanticId(), "C19_WORKSPACE_REFERENCE");
+                    link(api, schema, "C19WorkspaceAgent", workspaceObject, agentObject);
+                    trace.add(catalog.require("C19"), TracePhase.INSTANCE_MATERIALIZATION, agent.metadata(),
+                            "MLink", linkIdentity("C19", agent.workspaceSemanticId(), agent.metadata().semanticId()), List.of());
+                }
+                for (var focus : environment.focuses()) {
+                    MObject agentObject = required(semanticObjects, focus.agentSemanticId(), "C20_AGENT_REFERENCE");
+                    MObject artifactObject = required(semanticObjects, focus.artifactSemanticId(), "C20_ARTIFACT_REFERENCE");
+                    if (focus.focused()) link(api, schema, "C20AgentArtifactFocus", agentObject, artifactObject);
+                    trace.add(catalog.require("C20"), TracePhase.INSTANCE_MATERIALIZATION, focus.metadata(),
+                            focus.focused() ? "MLink" : "FOCUS_EVENT", linkIdentity("C20", focus.agentSemanticId(),
+                                    focus.artifactSemanticId()), List.of(focus.focused() ? "FOCUS" : "UNFOCUS"));
+                }
             }
             for (var program : source.programs()) {
                 MObject programObject = object(api, semanticObjects, objectNames, "AgentProgram",
@@ -342,6 +526,12 @@ public final class NativeUseStateBuilder {
 
     private static void integer(UseSystemApi api, MObject object, String name, int value) throws UseApiException {
         api.setAttributeValueEx(object, attribute(object, name), IntegerValue.valueOf(value));
+    }
+
+    private static MObject required(Map<String, MObject> semanticObjects, String semanticId, String diagnostic) {
+        MObject object = semanticObjects.get(semanticId);
+        if (object == null) throw new IllegalArgumentException(diagnostic + ": " + semanticId);
+        return object;
     }
 
     private static void bool(UseSystemApi api, MObject object, String name, boolean value) throws UseApiException {

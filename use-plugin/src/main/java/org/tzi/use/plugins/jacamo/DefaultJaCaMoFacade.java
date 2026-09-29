@@ -529,12 +529,17 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         long beliefRules = pipeline.source().programs().stream().mapToLong(value -> value.beliefRules().size()).sum();
         counts.put("JASON", (long) pipeline.source().programs().size() * 2 + plans * 2 + body
                 + actions + beliefs + goals + beliefRules);
-        counts.put("CARTAGO", 0L); counts.put("MOISE", 0L); counts.put("CROSS", 0L);
+        long cartago = pipeline.source().snapshot().cartagoEnvironments().stream().mapToLong(value -> 1L
+                + value.workspaces().size() + value.artifactTypes().size() + value.artifacts().size()
+                + value.operations().size() + value.backingOperations().size() + value.guards().size()
+                + value.liveProperties().size() + value.propertySnapshots().size() + value.artifactInfos().size()
+                + value.signals().size() + value.agents().size()).sum();
+        counts.put("CARTAGO", cartago); counts.put("MOISE", 0L); counts.put("CROSS", 0L);
         String catalogHash = sha256(new CodeGroundedRuleCatalog().rules().toString());
         ProjectSummary summary = new ProjectSummary(jcmFile, jcmFile.getParent(), pipeline.source().project().name(),
                 snapshot.sources().size(), counts, "CODE_GROUNDED_NATIVE-1.0.0",
                 pipeline.model().structuralHash(), "CodeGroundedRuleCatalog", "1.0.0", catalogHash,
-                "PHASE_3", system.model().classes().size(), system.state().numObjects(),
+                "PHASE_4", system.model().classes().size(), system.state().numObjects(),
                 pipeline.state().structureValid(), 0, 0);
         List<SourceRow> sources;
         try {

@@ -237,27 +237,28 @@ Exact names may follow repository conventions.
 - [x] `PlanSemantic`
 - [x] `TriggerSemantic`
 - [x] `PlanBodyElementSemantic`
-- [ ] `ActionSemantic`
-- [ ] `BeliefSemantic`
-- [ ] `AgentGoalSemantic`
-- [ ] `BeliefRuleSemantic`
+- [x] `ActionSemantic`
+- [x] `BeliefSemantic`
+- [x] `AgentGoalSemantic`
+- [x] `BeliefRuleSemantic`
 - [x] `SourceEvidence`
 - [ ] supported runtime DTOs
 
 ## 4.3 CArtAgO DTOs
 
-- [ ] `EnvironmentSemantic`
-- [ ] `WorkspaceSemantic`
-- [ ] `ArtifactTypeSemantic`
-- [ ] `ArtifactSemantic`
-- [ ] `OperationDescriptorSemantic`
-- [ ] `BackingJavaOperationSemantic`
-- [ ] `GuardSemantic`
-- [ ] `LiveObservablePropertySemantic`
-- [ ] `ObservablePropertySnapshotSemantic`
-- [ ] `ArtifactInfoSemantic`
-- [ ] `SignalSemantic`
-- [ ] `CartagoAgentIdentitySemantic`
+- [x] `EnvironmentSemantic`
+- [x] `WorkspaceSemantic`
+- [x] `ArtifactTypeSemantic`
+- [x] `ArtifactSemantic`
+- [x] `OperationDescriptorSemantic`
+- [x] `BackingJavaOperationSemantic`
+- [x] `GuardSemantic`
+- [x] `LiveObservablePropertySemantic`
+- [x] `ObservablePropertySnapshotSemantic`
+- [x] `ArtifactInfoSemantic`
+- [x] `SignalSemantic`
+- [x] `CartagoAgentIdentitySemantic`
+- [x] `FocusSemantic`
 
 ## 4.4 Moise DTOs
 
@@ -514,83 +515,83 @@ P = optional source/bytecode provenance
 ```
 
 ## C01 Environment [I]
-- [ ] Initialized `CartagoEnvironment`.
+- [x] Initialized `CartagoEnvironment`.
 
 ## C02 Workspace [D+I]
-- [ ] `WorkspaceDescriptor` + `WorkspaceId`.
+- [x] `WorkspaceDescriptor` + `WorkspaceId`.
 
 ## C03 ArtifactType [S]
-- [ ] Exact concrete `Class<? extends Artifact>`/classloader identity.
-- [ ] No simple-name matching.
+- [x] Exact concrete `Class<? extends Artifact>`/classloader identity.
+- [x] No simple-name matching.
 
 ## C04 Artifact [I+R]
-- [ ] `ArtifactId` runtime identity.
-- [ ] `ArtifactInfo` enriches snapshot.
+- [x] `ArtifactId` runtime identity.
+- [x] `ArtifactInfo` enriches snapshot.
 
 ## C05 Operation [D]
-- [ ] `OpDescriptor`.
-- [ ] No method-name inference.
+- [x] `OpDescriptor`.
+- [x] No method-name inference.
 
 ## C06 native MOperation [S+D; P optional]
-- [ ] Exact backing method/signature required.
-- [ ] Dynamic operation without exact method stays structural `Operation`.
+- [ ] Exact backing method/signature required. PARTIAL: the exact `ArtifactOpMethod`/reflection signature is preserved as `BackingJavaOperation`; optional native `MOperation` projection is not yet emitted.
+- [x] Dynamic operation without exact method stays structural `Operation`.
 
 ## C07 Guard [D; P optional]
-- [ ] Descriptor exact binding.
-- [ ] No guard semantics from name.
+- [x] Descriptor exact binding.
+- [x] No guard semantics from name.
 
 ## C08 Live ObservableProperty [I]
 - [ ] Require actual `ObsProperty`.
-- [ ] Missing API exposure → `UNAVAILABLE`.
-- [ ] Never replace with C09.
+- [x] Missing API exposure → `UNAVAILABLE`.
+- [x] Never replace with C09.
 
 ## C09 Property snapshot [R]
-- [ ] `ArtifactObsProperty`/percept snapshot.
-- [ ] Separate from live property identity.
+- [x] `ArtifactObsProperty`/percept snapshot.
+- [x] Separate from live property identity.
 
 ## C10 ArtifactInfo [R]
-- [ ] Runtime snapshot record.
+- [x] Runtime snapshot record.
 
 ## C11 Signal [R; P optional]
-- [ ] Runtime signal/percept event is authority.
-- [ ] No fake `@SIGNAL`.
+- [x] Runtime signal/percept event is authority.
+- [x] No fake `@SIGNAL`.
 
 ## C12 AgentId [I+R]
-- [ ] Keep opaque identity.
+- [x] Keep opaque identity.
 
 ## C13 Environment–Workspace [I+D]
-- [ ] Exact topology.
+- [x] Exact topology.
 
 ## C14 Workspace–Artifact [I+R]
-- [ ] Exact workspace identity.
+- [x] Exact workspace identity.
 
 ## C15 Artifact–ArtifactType [I+S]
-- [ ] Exact class/runtime correlation only.
+- [x] Exact class/runtime correlation only.
 
 ## C16 Artifact–Operation [D+R]
-- [ ] Exact descriptor ownership.
+- [x] Exact descriptor ownership.
 
 ## C17 Artifact–ObservableProperty [R; I if C08 exists]
-- [ ] Snapshot ownership exact.
-- [ ] Live relation only with C08.
+- [x] Snapshot ownership exact.
+- [x] Live relation only with C08.
 
 ## C18 Operation–Guard [D]
-- [ ] Exact descriptor binding.
+- [x] Exact descriptor binding.
 
 ## C19 Workspace–Agent [R]
-- [ ] Scoped runtime inventory/join-quit evidence.
+- [x] Scoped runtime inventory/join-quit evidence.
 
 ## C20 Agent–Artifact focus [R]
-- [ ] Exact focus/unfocus event.
-- [ ] J10 config is not runtime evidence.
+- [x] Exact focus/unfocus event.
+- [x] J10 config is not runtime evidence.
 
 ## CArtAgO negative tests
 
-- [ ] No simple-name resolution.
-- [ ] No design inference from runtime inventory.
-- [ ] C08/C09 distinct.
-- [ ] No `@SIGNAL` assumption.
-- [ ] Unavailable remains unavailable.
+- [x] No simple-name resolution.
+- [x] No design inference from runtime inventory.
+- [x] C08/C09 distinct.
+- [x] No `@SIGNAL` assumption.
+- [x] Unavailable remains unavailable.
 
 ---
 
@@ -1333,7 +1334,7 @@ Gate:
 - [x] J09/J10 unresolved until X;
 - [x] import provenance deterministic.
 
-**Phase 3 evidence — 2026-09-29:** PASS for J02–J11 static deployment scope. `OfficialProjectAdapter` retains official JaCaMo declaration DTOs and generated-token import provenance; `NativeUseModelBuilder` declares typed `Agent`, `Workspace`, `ArtifactDeclaration`, `OrganizationDeployment`, `GroupDeployment`, `SchemeDeployment`, and `InstitutionDeployment` classes; `NativeUseStateBuilder` materializes only those declarations and keeps J09/J10 as raw trace records (`UNRESOLVED_UNTIL_X04`/`UNRESOLVED_UNTIL_X06`). `ArtifactDeclaration` is the only artifact declaration class in the native schema; no live `Artifact` class or declaration-name runtime link is fabricated. `CodeGroundedPhase3Test` passed `2/2`; the focused reactor verify passed `11/11` unit plus `2/2` integration tests; the full reactor unit gate passed contract `10/10`, official adapters `15/15`, use-core `12/12`, use-gui `1/1`, and use-plugin `285/285`, with zero failures/errors/skips. No CArtAgO/Moise/cross-framework/runtime phase was started.
+**Phase 3 evidence — 2026-09-29:** PASS for J02–J11 static deployment scope. `OfficialProjectAdapter` retains official JaCaMo declaration DTOs and generated-token import provenance; `NativeUseModelBuilder` declares typed `Agent`, `WorkspaceDeclaration`, `ArtifactDeclaration`, `OrganizationDeployment`, `GroupDeployment`, `SchemeDeployment`, and `InstitutionDeployment` classes; `NativeUseStateBuilder` materializes only those declarations and keeps J09/J10 as raw trace records (`UNRESOLVED_UNTIL_X04`/`UNRESOLVED_UNTIL_X06`). During the Phase 4 schema audit, the JCM target was corrected to `WorkspaceDeclaration` so the CArtAgO runtime `Workspace` class remains distinct; the Phase 3 fixture still creates zero live `Artifact` objects. `ArtifactDeclaration` remains distinct from the reserved CArtAgO `Artifact` runtime class, with no declaration-name runtime link fabricated. `CodeGroundedPhase3Test` passed `2/2`; the focused reactor verify passed `11/11` unit plus `2/2` integration tests; the full reactor unit gate passed contract `10/10`, official adapters `15/15`, use-core `12/12`, use-gui `1/1`, and use-plugin `285/285`, with zero failures/errors/skips. No CArtAgO/Moise/cross-framework/runtime phase was started at that checkpoint.
 
 ---
 
@@ -1347,13 +1348,15 @@ C01–C20
 
 Gate:
 
-- [ ] authority matrix followed;
-- [ ] no simple-name matching;
-- [ ] C08 unavailable remains unavailable;
-- [ ] C09 distinct;
-- [ ] exact operation ownership;
-- [ ] ArtifactId-based runtime identity;
-- [ ] dynamic limitations explicit.
+- [x] authority matrix followed;
+- [x] no simple-name matching;
+- [x] C08 unavailable remains unavailable;
+- [x] C09 distinct;
+- [x] exact operation ownership;
+- [x] ArtifactId-based runtime identity;
+- [x] dynamic limitations explicit.
+
+**Phase 4 evidence — 2026-09-29:** PASS for the available CArtAgO contract slice: `OfficialCartagoAdapter` reads only official `CartagoEnvironment`, `WorkspaceDescriptor`/`WorkspaceId`, controller inventories, `ArtifactId`, `ArtifactInfo`, `OpDescriptor`, `ArtifactObsProperty`, `ArtifactOpMethod`, `IArtifactGuard`, and opaque `AgentId` values; no simple-name join or method-name inference is used. `NativeUseModelBuilder`/`NativeUseStateBuilder` materialize exact C01–C05, C07, C09–C20 classes/links in the same `MSystem`, preserve `ArtifactId` UUID/workspace identity, keep C09 snapshots separate from the C08 live-property class, and retain focus/unfocus as exact event evidence. C08 is fail-closed as `UNAVAILABLE` because the audited controller API does not expose a live `ObsProperty`; non-empty live-property input is rejected rather than converted to C09. C06 is intentionally PARTIAL: exact reflective backing signature is preserved as `BackingJavaOperation`, while optional native `MOperation` projection is not emitted; dynamic operations remain structural. `OfficialCartagoAdapterTest` passed `1/1`; `CodeGroundedPhase4Test` passed `3/3` including exact-ID negative coverage; the focused reactor verify passed official adapters `12/12`, code-grounded unit `14/14`, and native integration `2/2`; full reactor unit gate passed contract `10/10`, adapters `16/16`, use-core `12/12`, use-gui `1/1`, and use-plugin `288/288`, with zero failures/errors/skips. The catalog now reports 47 implemented rules, C06 capability-gated/partial, and C08 unavailable. No Moise, cross-framework, or runtime synchronization implementation was started.
 
 ---
 
@@ -1679,11 +1682,11 @@ V2 becomes historical-only when:
 - [ ] source/runtime distinction
 
 ## CArtAgO
-- [ ] descriptor authority
-- [ ] ArtifactId identity
-- [ ] C08/C09 distinction
-- [ ] no simple-name binding
-- [ ] unavailable live property
+- [x] descriptor authority
+- [x] ArtifactId identity
+- [x] C08/C09 distinction
+- [x] no simple-name binding
+- [x] unavailable live property
 
 ## Moise
 - [ ] SS/FS/NS

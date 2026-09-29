@@ -18,7 +18,9 @@ public final class CodeGroundedRuleCatalog {
     private static final Set<String> FIRST_SLICE = Set.of(
             "J01", "J02", "J03", "J04", "J05", "J06", "J07", "J08", "J09", "J10", "J11",
             "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10", "A11",
-            "A16", "A17", "A18", "A19", "A20", "A21", "A22");
+            "A16", "A17", "A18", "A19", "A20", "A21", "A22",
+            "C01", "C02", "C03", "C04", "C05", "C07", "C09", "C10", "C11", "C12",
+            "C13", "C14", "C15", "C16", "C17", "C18", "C19", "C20");
     private static final List<CodeGroundedRule> RULES = build();
     private static final Map<String, CodeGroundedRule> BY_ID = index(RULES);
 
@@ -44,7 +46,7 @@ public final class CodeGroundedRuleCatalog {
                         "jacamo.project.parser.JaCaMoProjectParserTokenManager"
                 },
                 new String[] {
-                        "MModel", "MClass Agent", "MClass Workspace", "MClass ArtifactDeclaration",
+                        "MModel", "MClass Agent", "MClass WorkspaceDeclaration", "MClass ArtifactDeclaration",
                         "MClass OrganizationDeployment", "MClass GroupDeployment", "MClass SchemeDeployment",
                         "MClass InstitutionDeployment", "Trace raw role tuple", "Trace raw focus tuple",
                         "Trace import provenance"

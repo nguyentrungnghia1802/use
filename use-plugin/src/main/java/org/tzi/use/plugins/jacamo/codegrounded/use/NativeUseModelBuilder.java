@@ -41,15 +41,19 @@ public final class NativeUseModelBuilder {
             api.createEnumeration("PlanBodyType", BODY_TYPES);
             api.createEnumeration("ActionKind", ACTION_KINDS);
 
-            for (String name : List.of("Agent", "Workspace", "ArtifactDeclaration", "OrganizationDeployment",
+            for (String name : List.of("Agent", "WorkspaceDeclaration", "ArtifactDeclaration", "OrganizationDeployment",
                     "GroupDeployment", "SchemeDeployment", "InstitutionDeployment", "AgentProgram", "PlanLibrary",
                     "Plan", "Trigger", "PlanBodyElement", "Action", "Belief", "AgentGoal", "BeliefRule",
-                    "A17PlanOrderEntry", "A19BodyOrderEntry"))
+                    "Environment", "Workspace", "ArtifactType", "Artifact", "Operation", "BackingJavaOperation",
+                    "Guard", "LiveObservableProperty", "ObservablePropertySnapshot", "ArtifactInfo", "Signal",
+                    "CartagoAgentIdentity", "A17PlanOrderEntry", "A19BodyOrderEntry"))
                 api.createClass(name, false);
-            for (String name : List.of("Agent", "Workspace", "ArtifactDeclaration", "OrganizationDeployment",
+            for (String name : List.of("Agent", "WorkspaceDeclaration", "ArtifactDeclaration", "OrganizationDeployment",
                     "GroupDeployment", "SchemeDeployment", "InstitutionDeployment", "AgentProgram", "PlanLibrary",
                     "Plan", "Trigger", "PlanBodyElement", "Action", "Belief", "AgentGoal", "BeliefRule",
-                    "A17PlanOrderEntry", "A19BodyOrderEntry"))
+                    "Environment", "Workspace", "ArtifactType", "Artifact", "Operation", "BackingJavaOperation",
+                    "Guard", "LiveObservableProperty", "ObservablePropertySnapshot", "ArtifactInfo", "Signal",
+                    "CartagoAgentIdentity", "A17PlanOrderEntry", "A19BodyOrderEntry"))
                 api.createAttribute(name, "semanticId", "String");
             api.createAttribute("Agent", "name", "String");
             api.createAttribute("Agent", "sourceUri", "String");
@@ -59,9 +63,9 @@ public final class NativeUseModelBuilder {
             api.createAttribute("Agent", "beliefBaseClass", "String");
             api.createAttribute("Agent", "host", "String");
             api.createAttribute("Agent", "instances", "Integer");
-            api.createAttribute("Workspace", "name", "String");
-            api.createAttribute("Workspace", "host", "String");
-            api.createAttribute("Workspace", "debug", "Boolean");
+            api.createAttribute("WorkspaceDeclaration", "name", "String");
+            api.createAttribute("WorkspaceDeclaration", "host", "String");
+            api.createAttribute("WorkspaceDeclaration", "debug", "Boolean");
             api.createAttribute("ArtifactDeclaration", "name", "String");
             api.createAttribute("ArtifactDeclaration", "workspace", "String");
             api.createAttribute("ArtifactDeclaration", "javaClass", "String");
@@ -80,6 +84,69 @@ public final class NativeUseModelBuilder {
             api.createAttribute("InstitutionDeployment", "name", "String");
             api.createAttribute("InstitutionDeployment", "workspaces", "String");
             api.createAttribute("InstitutionDeployment", "opaqueParameters", "String");
+            api.createAttribute("Environment", "name", "String");
+            api.createAttribute("Environment", "environmentId", "String");
+            api.createAttribute("Environment", "version", "String");
+            api.createAttribute("Environment", "defaultInfrastructureLayer", "String");
+            api.createAttribute("Workspace", "fullName", "String");
+            api.createAttribute("Workspace", "name", "String");
+            api.createAttribute("Workspace", "uuid", "String");
+            api.createAttribute("Workspace", "parentSemanticId", "String");
+            api.createAttribute("Workspace", "environmentSemanticId", "String");
+            api.createAttribute("Workspace", "local", "Boolean");
+            api.createAttribute("Workspace", "protocol", "String");
+            api.createAttribute("Workspace", "remotePath", "String");
+            api.createAttribute("Workspace", "address", "String");
+            api.createAttribute("ArtifactType", "javaClassName", "String");
+            api.createAttribute("ArtifactType", "classLoaderIdentity", "String");
+            api.createAttribute("Artifact", "name", "String");
+            api.createAttribute("Artifact", "uuid", "String");
+            api.createAttribute("Artifact", "artifactTypeSemanticId", "String");
+            api.createAttribute("Artifact", "workspaceSemanticId", "String");
+            api.createAttribute("Artifact", "creatorAgentSemanticId", "String");
+            api.createAttribute("Operation", "artifactSemanticId", "String");
+            api.createAttribute("Operation", "keyId", "String");
+            api.createAttribute("Operation", "name", "String");
+            api.createAttribute("Operation", "arity", "Integer");
+            api.createAttribute("Operation", "dynamic", "Boolean");
+            api.createAttribute("Operation", "linkOperation", "Boolean");
+            api.createAttribute("Operation", "ui", "Boolean");
+            api.createAttribute("Operation", "internal", "Boolean");
+            api.createAttribute("BackingJavaOperation", "operationDescriptorId", "String");
+            api.createAttribute("BackingJavaOperation", "declaringClass", "String");
+            api.createAttribute("BackingJavaOperation", "methodName", "String");
+            api.createAttribute("BackingJavaOperation", "parameterTypes", "String");
+            api.createAttribute("BackingJavaOperation", "returnType", "String");
+            api.createAttribute("BackingJavaOperation", "varArgs", "Boolean");
+            api.createAttribute("BackingJavaOperation", "classLoaderIdentity", "String");
+            api.createAttribute("Guard", "operationDescriptorId", "String");
+            api.createAttribute("Guard", "name", "String");
+            api.createAttribute("Guard", "arity", "Integer");
+            api.createAttribute("Guard", "implementationClass", "String");
+            api.createAttribute("LiveObservableProperty", "artifactSemanticId", "String");
+            api.createAttribute("LiveObservableProperty", "propertyId", "String");
+            api.createAttribute("LiveObservableProperty", "name", "String");
+            api.createAttribute("LiveObservableProperty", "values", "String");
+            api.createAttribute("LiveObservableProperty", "annotations", "String");
+            api.createAttribute("ObservablePropertySnapshot", "artifactSemanticId", "String");
+            api.createAttribute("ObservablePropertySnapshot", "propertyId", "String");
+            api.createAttribute("ObservablePropertySnapshot", "name", "String");
+            api.createAttribute("ObservablePropertySnapshot", "values", "String");
+            api.createAttribute("ObservablePropertySnapshot", "valueTypes", "String");
+            api.createAttribute("ObservablePropertySnapshot", "annotations", "String");
+            api.createAttribute("ArtifactInfo", "artifactSemanticId", "String");
+            api.createAttribute("ArtifactInfo", "creatorAgentSemanticId", "String");
+            api.createAttribute("ArtifactInfo", "operationSemanticIds", "String");
+            api.createAttribute("ArtifactInfo", "observablePropertySemanticIds", "String");
+            api.createAttribute("ArtifactInfo", "linkedArtifactSemanticIds", "String");
+            api.createAttribute("Signal", "artifactSemanticId", "String");
+            api.createAttribute("Signal", "name", "String");
+            api.createAttribute("Signal", "values", "String");
+            api.createAttribute("CartagoAgentIdentity", "globalId", "String");
+            api.createAttribute("CartagoAgentIdentity", "localId", "Integer");
+            api.createAttribute("CartagoAgentIdentity", "name", "String");
+            api.createAttribute("CartagoAgentIdentity", "role", "String");
+            api.createAttribute("CartagoAgentIdentity", "workspaceSemanticId", "String");
             api.createAttribute("AgentProgram", "declarationId", "String");
             api.createAttribute("AgentProgram", "sourceUri", "String");
             api.createAttribute("AgentProgram", "sourceDigest", "String");
@@ -131,6 +198,22 @@ public final class NativeUseModelBuilder {
                     "A19BodyOrderEntry", "a19Entries", "*", false, false);
             association(api, "A19OrderMember", "PlanBodyElement", "member", "1", MAggregationKind.NONE,
                     "A19BodyOrderEntry", "a19Memberships", "0..1", false, false);
+            association(api, "C13EnvironmentWorkspace", "Environment", "environment", "1",
+                    MAggregationKind.COMPOSITION, "Workspace", "workspaces", "*", false, true);
+            association(api, "C14WorkspaceArtifact", "Workspace", "workspace", "1",
+                    MAggregationKind.COMPOSITION, "Artifact", "artifacts", "*", false, true);
+            association(api, "C15ArtifactType", "Artifact", "artifact", "*", MAggregationKind.NONE,
+                    "ArtifactType", "artifacts", "1", false, false);
+            association(api, "C16ArtifactOperation", "Artifact", "artifact", "1",
+                    MAggregationKind.COMPOSITION, "Operation", "artifactOperations", "*", false, true);
+            association(api, "C17ArtifactObservableProperty", "Artifact", "artifact", "1",
+                    MAggregationKind.COMPOSITION, "ObservablePropertySnapshot", "properties", "*", false, true);
+            association(api, "C18OperationGuard", "Operation", "operation", "1", MAggregationKind.NONE,
+                    "Guard", "guard", "0..1", false, false);
+            association(api, "C19WorkspaceAgent", "Workspace", "workspace", "1", MAggregationKind.NONE,
+                    "CartagoAgentIdentity", "agents", "*", false, true);
+            association(api, "C20AgentArtifactFocus", "CartagoAgentIdentity", "agent", "1", MAggregationKind.NONE,
+                    "Artifact", "focusedArtifacts", "*", false, true);
 
             List<NativeConstraintSpec> constraints = new CodeGroundedConstraintPlanner().plan(catalog);
             new NativeConstraintInstaller().install(api, constraints);
@@ -147,6 +230,8 @@ public final class NativeUseModelBuilder {
         trace.add(catalog.require("J01"), TracePhase.MODEL_DECLARATION, source.project().metadata(),
                 "MModel", "model:" + modelName(source.project().name()), List.of());
         for (String id : List.of("J02", "J03", "J04", "J05", "J06", "J07", "J08", "J09", "J10", "J11",
+                "C01", "C02", "C03", "C04", "C05", "C06", "C07", "C08", "C09", "C10", "C11", "C12",
+                "C13", "C14", "C15", "C16", "C17", "C18", "C19", "C20",
                 "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10",
                 "A11", "A16", "A17", "A18", "A19", "A20", "A21", "A22")) {
             CodeGroundedRule rule = catalog.require(id);

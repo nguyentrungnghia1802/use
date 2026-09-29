@@ -10,10 +10,12 @@ import org.jacamo.bridge.contract.semantic.EvidenceAuthority;
 import org.junit.jupiter.api.Test;
 
 class CodeGroundedRuleCatalogTest {
-    private static final List<String> IMPLEMENTED_PHASE_1_TO_3 = List.of(
+    private static final List<String> IMPLEMENTED_PHASE_1_TO_4 = List.of(
             "J01", "J02", "J03", "J04", "J05", "J06", "J07", "J08", "J09", "J10", "J11",
             "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10", "A11",
-            "A16", "A17", "A18", "A19", "A20", "A21", "A22");
+            "A16", "A17", "A18", "A19", "A20", "A21", "A22",
+            "C01", "C02", "C03", "C04", "C05", "C07", "C09", "C10", "C11", "C12",
+            "C13", "C14", "C15", "C16", "C17", "C18", "C19", "C20");
 
     @Test void catalogIsCompleteUniqueAndDeterministic() {
         var first = new CodeGroundedRuleCatalog().rules();
@@ -41,10 +43,12 @@ class CodeGroundedRuleCatalogTest {
         assertEquals(ImplementationStatus.UNAVAILABLE_IN_AUDITED_API,
                 catalog.require("C08").implementationStatus());
         assertEquals(CapabilityStatus.UNAVAILABLE, catalog.require("C08").capabilityStatus());
+        assertEquals(ImplementationStatus.PLANNED_CAPABILITY_GATED, catalog.require("C06").implementationStatus());
+        assertEquals(CapabilityStatus.PARTIAL, catalog.require("C06").capabilityStatus());
     }
 
-    @Test void phase3ClosurePinsExactlyTwentyNineImplementedRules() {
-        assertEquals(IMPLEMENTED_PHASE_1_TO_3, new CodeGroundedRuleCatalog().rules().stream()
+    @Test void phase4ClosurePinsFortySevenImplementedRulesAndKeepsConditionalRulesExplicit() {
+        assertEquals(IMPLEMENTED_PHASE_1_TO_4, new CodeGroundedRuleCatalog().rules().stream()
                 .filter(rule -> rule.implementationStatus() == ImplementationStatus.IMPLEMENTED)
                 .map(CodeGroundedRule::ruleId).toList());
     }
