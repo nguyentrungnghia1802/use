@@ -1529,25 +1529,27 @@ Gate:
 
 ## Build
 
-- [ ] full reactor;
-- [ ] JDK 21;
-- [ ] plugin JAR contains native path;
-- [ ] JaCaMo-side adapter separated as designed;
-- [ ] no stale committed plugin JAR.
+- [x] full reactor;
+- [x] JDK 21;
+- [x] plugin JAR contains native path;
+- [x] JaCaMo-side adapter separated as designed;
+- [x] no stale committed plugin JAR.
 
 ## Plugin
 
-- [ ] actions load;
-- [ ] Workbench receives Session;
-- [ ] status action works/consolidated.
+- [x] actions load;
+- [x] Workbench receives Session;
+- [x] status action works/consolidated.
 
 ## Packaging gates
 
-- [ ] obsolete semantic parsers not production authority;
-- [ ] new rule catalog/builders packaged;
-- [ ] release ZIP contains required Bridge libs;
-- [ ] staged GUI plugin equals current build;
-- [ ] checksums recorded.
+- [x] obsolete semantic parsers not production authority;
+- [x] new rule catalog/builders packaged;
+- [x] release ZIP contains required Bridge libs;
+- [x] staged GUI plugin equals current build;
+- [x] checksums recorded.
+
+**Section 25 evidence — 2026-09-29:** PASS. `mvn -B -pl use-plugin -am verify` completed the full reactor on Java 21 with `309` unit tests and `7` integration/release tests, all with zero failures/errors/skips. The build produced the plugin JAR, release ZIP, and SHA-256 sidecar; `LegacyAuthorityPackagingIT` verifies the native facade/runtime/rule catalog/model/state/trace classes are in the JAR while obsolete parser/connector classes and JaCaMo-side adapter classes are absent. `JaCaMoPluginTest (5/5)` verifies plugin discovery, status command, both actions, Session binding, and facade status. `GuiPluginStagingIT` verifies byte identity between the current production JAR and GUI staging; `ReleasePackageContractTest`/`ReleasePackageIT (3/3)` verify Bridge libraries, manifest inventory, isolated loading, pinned USE discovery, and checksum equality.
 
 ---
 
