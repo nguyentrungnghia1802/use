@@ -127,6 +127,26 @@ class RuntimeVerificationEngineTest {
         assertTrue(json.contains("NOT_EVALUATED"));
     }
 
+    @Test
+    void runtimeRuleRegistryIsInjectedAndSelectedByTheVerifier() {
+        Fixture fixture = fixture(false);
+        RuntimeRuleRegistry injected = event -> new RuntimeRuleRegistry.Rule(
+                "INJECTED-RUNTIME-RULE", "AFTER_MUTATION");
+        RuntimeVerificationEngine verifier = new RuntimeVerificationEngine(fixture.direct().system(),
+                fixture.registry(), fixture.trace(), new DefaultVerificationService(), injected);
+        assertSame(injected, verifier.runtimeRules());
+        verifier.stateChanged(org.tzi.use.plugins.jacamo.runtime.MirrorState.LIVE);
+        RuntimeEvent event = event(1, RuntimeEventKind.SET_ATTRIBUTE, fixture.runtimeKey(),
+                fixture.artifactSemanticId(),
+                Map.of("attribute", "open", "valueType", "BOOLEAN", "value", false), null);
+        verifier.eventReceived(event);
+        verifier.afterMutation(event, org.tzi.use.plugins.jacamo.runtime.MutationResult.applied());
+        assertNotNull(verifier.latestReport());
+        assertFalse(verifier.latestReport().attribution().isEmpty());
+        assertTrue(verifier.latestReport().attribution().stream()
+                .allMatch(value -> value.runtimeRuleId().equals("INJECTED-RUNTIME-RULE")));
+    }
+
     @Test void operationCompletionAndReportRetentionAreBounded() {
         Fixture fixture = fixture(true);
         AtomicLong clock = new AtomicLong(1);

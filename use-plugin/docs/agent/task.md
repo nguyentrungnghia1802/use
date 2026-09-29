@@ -485,20 +485,22 @@ Exact names may follow repository conventions.
 
 ## A12 ActionExec
 
-- [ ] Runtime-only event/state projection.
-- [ ] Preserve result/failure evidence.
+- [x] Runtime-only event/state projection.
+- [x] Preserve result/failure evidence.
 
 ## A13 Intention
 
-- [ ] Optional runtime concept only if verification requires it.
+- [x] Optional runtime concept only if verification requires it.
 
 ## A14 Runtime Event
 
-- [ ] Distinguish from source Trigger.
+- [x] Distinguish from source Trigger.
 
 ## A15 TransitionSystem evidence
 
-- [ ] Runtime controller evidence only by default.
+- [x] Runtime controller evidence only by default.
+
+**A12–A15 evidence — 2026-09-29:** PASS for the bounded native Jason runtime evidence scope. `BridgeAgArch` emits typed `ACTION_EXECUTION` events and preserves result, failure reason/message, correlation, and exact `Intention` identity evidence; `JasonSnapshotSource` captures `INTENTION`, `RUNTIME_EVENT`, and `TRANSITION_SYSTEM` facts from the official Jason `Circumstance`/`TransitionSystem` APIs. `CodeGroundedRuntimeRuleRegistry` assigns distinct native evidence rules, and `NativeRuntimeProjector` keeps all four concepts evidence-only without creating static `Intention`, `RuntimeEvent`, or `TransitionSystem` classes. `CodeGroundedPhase7Test` passed `4/4`, including no-state-pollution/rule-ID assertions; `OfficialAdapterTest` passed `7/7`, including official `ActionExec` failure evidence. A13 is intentionally evidence-only because no native OCL constraint requires an `Intention` model class.
 
 ---
 
@@ -959,7 +961,7 @@ existing USE Evaluator / verification
 - [ ] `ConstraintExtractor` consumes typed semantics.
 - [ ] Replace/refactor `VerificationSemanticLayer`.
 - [ ] `CrossDimensionalVerifier` uses rule catalog + trace.
-- [ ] `RuntimeVerificationEngine` uses injected runtime rule registry.
+- [x] `RuntimeVerificationEngine` uses injected runtime rule registry.
 
 ## 15.3 ConstraintSpec
 
@@ -1435,11 +1437,11 @@ Gate:
 
 Gate:
 
-- [ ] native supported scope complete;
+- [x] native supported scope complete;
 - [x] no legacy calls from native path;
 - [x] release/package tests pass.
 
-**Phase 8 evidence — 2026-09-29:** PASS for the production-authority and packaging boundary. The implicit `DefaultJaCaMoFacade` constructors, `DefaultJaCaMoFacade.INSTANCE`, `forSession`, and the Workbench action now select `CODE_GROUNDED_NATIVE`; `LEGACY_V2` is reachable only through an explicit `PipelineMode.LEGACY_V2` constructor argument. `ProductionAuthorityPhase8Test` passed `3/3` for implicit-native entry points, explicit legacy mode, and native fail-closed behavior without compatibility-workspace creation. `LegacyV2OclIsolationTest` passed `2/2` and confirmed the native facade branch returns before the V2 projector and contains no V2 mapping/profile calls. A full reactor `verify` passed `300/300` unit tests plus `7/7` release/integration tests with zero failures/errors/skips; `LegacyAuthorityPackagingIT`, `GuiPluginStagingIT`, and `ReleasePackageIT` proved native runtime classes are packaged, historical parsers/connectors and JaCaMo-side adapters are excluded from the plugin JAR, the staged GUI JAR is byte-identical, Bridge libraries are present, and the release checksum matches. PARTIAL: the native supported runtime scope is still bounded; Jason A12–A15 and the `RuntimeVerificationEngine` native rule-registry migration remain unchecked, so the Phase 8 gate is not complete and Phase 9 must not start.
+**Phase 8 evidence — 2026-09-29:** PASS for the production-authority, bounded native runtime scope, and explicit verification-rule boundary. The implicit `DefaultJaCaMoFacade` constructors, `DefaultJaCaMoFacade.INSTANCE`, `forSession`, and the Workbench action select `CODE_GROUNDED_NATIVE`; `LEGACY_V2` is reachable only through an explicit `PipelineMode.LEGACY_V2` constructor argument. `ProductionAuthorityPhase8Test` passed `3/3`, `LegacyV2OclIsolationTest` passed `2/2`, and `RuntimeVerificationEngineTest` passed `20/20` including injected-rule selection. `CodeGroundedPhase7Test` passed `4/4` and `OfficialAdapterTest` passed `7/7` for A12–A15 evidence. The post-change full reactor gate passed `302/302` unit tests plus `7/7` integration/release tests with zero failures/errors/skips. `LegacyAuthorityPackagingIT`, `GuiPluginStagingIT`, and `ReleasePackageIT` proved native runtime classes are packaged, historical parsers/connectors and JaCaMo-side adapters are excluded from the plugin JAR, the staged GUI JAR is byte-identical, Bridge libraries are present, and the release checksum matches. Native supported scope is complete for the explicitly implemented faithful attribute/link mutations and typed evidence-only runtime concepts; unsupported semantics remain fail-closed and no V2 runtime mapping is called by native code.
 
 ---
 

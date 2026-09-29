@@ -85,18 +85,18 @@ public final class NativeRuntimeMutationEngine {
                                            RuntimeFactKind factKind, ProjectionStatus projectionStatus,
                                            Completeness completeness, Map<String, Object> payload) {
         String identity = runtimeIdentity == null ? "<missing>" : runtimeIdentity.canonical();
+        String normalized = textOrNull(payload, "normalizedEventKind");
+        CodeGroundedRuntimeRuleRegistry.Rule rule = normalized == null ? null : registry.select(factKind, normalized);
+        if (rule == null) rule = registry.evidenceRule(factKind);
+        if (rule != null && rule.action() == CodeGroundedRuntimeRuleRegistry.Action.EVIDENCE_ONLY)
+            return ApplyResult.evidence(rule.id(), identity, "RUNTIME_FACT_EVIDENCE_ONLY");
         if (projectionStatus != ProjectionStatus.MATERIALIZED_FAITHFULLY
                 || completeness != Completeness.COMPLETE)
             return ApplyResult.evidence("R-NATIVE-EVIDENCE", identity, "NON_AUTHORITATIVE_RUNTIME_FACT");
-        String normalized = textOrNull(payload, "normalizedEventKind");
         if (normalized == null)
             return ApplyResult.evidence("R-NATIVE-EVIDENCE", identity, "NO_NATIVE_MUTATION_KIND");
-        CodeGroundedRuntimeRuleRegistry.Rule rule = registry.select(factKind, normalized);
-        if (rule == null) rule = registry.evidenceRule(factKind);
         if (rule == null)
             return ApplyResult.rejected("R-NATIVE-RULE-MISSING", "NATIVE_RUNTIME_RULE_MISSING:" + factKind + ":" + normalized);
-        if (rule.action() == CodeGroundedRuntimeRuleRegistry.Action.EVIDENCE_ONLY)
-            return ApplyResult.evidence(rule.id(), identity, "RUNTIME_FACT_EVIDENCE_ONLY");
 
         StateImage before = capture();
         try {

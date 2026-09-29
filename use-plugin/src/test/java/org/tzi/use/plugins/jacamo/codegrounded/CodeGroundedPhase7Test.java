@@ -168,6 +168,53 @@ class CodeGroundedPhase7Test {
         assertTrue(projector.lastOclGate().passed());
     }
 
+    @Test
+    void jasonA12ToA15RemainTypedRuntimeEvidenceWithoutStaticModelPollution() throws Exception {
+        var result = CodeGroundedTestFixtures.helloPipeline();
+        String before = digest(result.state().system());
+        String projectKey = "phase7-jason";
+        List<RuntimeFact> facts = List.of(
+                runtimeEvidence(projectKey, "action", RuntimeFactKind.ACTION_EXECUTION,
+                        Map.of("normalizedEventKind", "ACTION_EXECUTION_FAILED", "runtimeConcept", "ActionExec",
+                                "sourceLayer", "RUNTIME", "action", "fail_action", "result", false,
+                                "failureReason", "missing-resource")),
+                runtimeEvidence(projectKey, "intention", RuntimeFactKind.INTENTION,
+                        Map.of("normalizedEventKind", "INTENTION", "runtimeConcept", "Intention",
+                                "sourceLayer", "RUNTIME", "intentionId", 7)),
+                runtimeEvidence(projectKey, "event", RuntimeFactKind.RUNTIME_EVENT,
+                        Map.of("normalizedEventKind", "RUNTIME_EVENT", "runtimeConcept", "Event",
+                                "sourceLayer", "RUNTIME", "trigger", "+!goal")),
+                runtimeEvidence(projectKey, "transition", RuntimeFactKind.TRANSITION_SYSTEM,
+                        Map.of("normalizedEventKind", "TRANSITION_SYSTEM", "runtimeConcept", "TransitionSystem",
+                                "sourceLayer", "RUNTIME", "runningIntentions", 1)));
+        var projector = new NativeRuntimeProjector(result, SESSION, GENERATION, REVISION);
+
+        NativeRuntimeProjector.ProjectionResult projection = projector.applySnapshot(
+                snapshot("phase7-jason-evidence", facts, Map.of("jason", 4L)));
+
+        assertEquals(0, projection.materialized());
+        assertEquals(4, projection.evidenceOnly().size());
+        assertEquals(4, projector.evidence().size());
+        assertEquals(before, digest(result.state().system()));
+        assertTrue(projector.trace().stream().allMatch(value ->
+                value.outcome().equals(NativeRuntimeMutationEngine.Status.EVIDENCE_ONLY.name())));
+        assertTrue(projector.trace().stream().map(value -> value.ruleId()).toList().containsAll(List.of(
+                "R-JASON-A12-ACTION-EXECUTION-EVIDENCE",
+                "R-JASON-A13-INTENTION-EVIDENCE",
+                "R-JASON-A14-RUNTIME-EVENT-EVIDENCE",
+                "R-JASON-A15-TRANSITION-SYSTEM-EVIDENCE")));
+        assertTrue(result.state().system().model().classes().stream()
+                .noneMatch(value -> value.name().equals("Intention") || value.name().equals("RuntimeEvent")
+                        || value.name().equals("TransitionSystem")));
+    }
+
+    private static RuntimeFact runtimeEvidence(String projectKey, String local,
+                                                RuntimeFactKind kind, Map<String, Object> values) {
+        return new RuntimeFact(new BridgeEntityId("jason", "agent", kind.name().toLowerCase(),
+                        projectKey, local, "incarnation-1"), kind, values, List.of(),
+                ProjectionStatus.EVIDENCE_ONLY, Completeness.COMPLETE, List.of());
+    }
+
     private static RuntimeEvent event(String id, long sequence, RuntimeEventKind kind, RuntimeFactKind factKind,
                                       BridgeEntityId runtime, BridgeRelationId binding, Map<String, Object> after) {
         return new RuntimeEvent(id, SESSION, GENERATION, REVISION, "native-test", "jason", sequence,

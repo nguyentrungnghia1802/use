@@ -4,7 +4,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import jason.asSemantics.ActionExec;
+import jason.asSemantics.Agent;
+import jason.asSemantics.Circumstance;
+import jason.asSemantics.Intention;
+import jason.asSemantics.TransitionSystem;
+import jason.asSyntax.ASSyntax;
+import jason.runtime.Settings;
+import org.jacamo.bridge.contract.RuntimeEventKind;
+import org.jacamo.bridge.contract.RuntimeFactKind;
 import org.jacamo.bridge.contract.ProjectionStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -99,5 +109,43 @@ class OfficialAdapterTest {
         var houseOs = new OfficialMoiseAdapter().load(houseRoot, houseRoot.resolve("src/org/house-os.xml"), "house_building");
         assertEquals(13, houseOs.facts().stream().filter(f -> f.factKind().equals("organisational-goal")).count());
         assertFalse(houseOs.groupRoleCardinalities().isEmpty());
+    }
+
+    @Test void officialJasonActionExecEmitsTypedResultAndFailureEvidence() throws Exception {
+        List<org.jacamo.bridge.contract.RuntimeEvent> events = new ArrayList<>();
+        List<String> keys = List.of("jacamo.bridge.session", "jacamo.bridge.generation",
+                "jacamo.bridge.modelRevision", "jacamo.bridge.projectKey");
+        java.util.Map<String, String> previous = new java.util.HashMap<>();
+        keys.forEach(key -> previous.put(key, System.getProperty(key)));
+        try (AutoCloseable attached = BridgeRuntimeRegistry.attach(events::add)) {
+            System.setProperty("jacamo.bridge.session", "official-action-session");
+            System.setProperty("jacamo.bridge.generation", "4");
+            System.setProperty("jacamo.bridge.modelRevision", "official-action-revision");
+            System.setProperty("jacamo.bridge.projectKey", "official-action-project");
+
+            BridgeAgArch architecture = new BridgeAgArch();
+            architecture.setTS(new TransitionSystem(new Agent(), new Circumstance(), new Settings(), architecture));
+            architecture.init();
+            ActionExec action = new ActionExec(ASSyntax.parseLiteral("do_it"), new Intention());
+            architecture.act(action);
+            action.setResult(false);
+            action.setFailureReason(ASSyntax.parseLiteral("resource_missing"), "missing resource");
+            architecture.actionExecuted(action);
+            architecture.stop();
+        } finally {
+            keys.forEach(key -> {
+                String value = previous.get(key);
+                if (value == null) System.clearProperty(key); else System.setProperty(key, value);
+            });
+        }
+
+        var failed = events.stream().filter(event -> event.kind() == RuntimeEventKind.FAILED).findFirst().orElseThrow();
+        assertEquals(RuntimeFactKind.ACTION_EXECUTION, failed.factKind());
+        assertEquals("ActionExec", failed.after().get("runtimeConcept"));
+        assertEquals("RUNTIME", failed.after().get("sourceLayer"));
+        assertEquals(false, failed.after().get("result"));
+        assertEquals("resource_missing", failed.after().get("failureReason"));
+        assertEquals("missing resource", failed.after().get("failureMessage"));
+        assertEquals("ACTION_EXECUTION_FAILED", failed.after().get("normalizedEventKind"));
     }
 }

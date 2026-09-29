@@ -33,14 +33,12 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     public record RetentionMetrics(int activeOperationCorrelations, int completedOperationCorrelations,
                                    int reports, long totalReports, long retiredReports,
                                    long retiredCompletedCorrelations, boolean correlationOverflow) { }
-    private static final org.tzi.use.plugins.jacamo.runtime.RuntimeMapping RUNTIME_MAPPING =
-        new org.tzi.use.plugins.jacamo.runtime.RuntimeMappingLoader().loadDefault();
-
     private final MSystem system;
     private final ConstraintRegistry registry;
     private final TraceIndex trace;
     private final VerificationService verification;
     private final ConstraintDependencyIndex dependencies;
+    private final RuntimeRuleRegistry runtimeRules;
     private final LongSupplier nanoTime;
     private final BiFunction<RuntimeEvent, Set<RuntimeFactKind>, BridgeVerificationGate.Assessment> bridgeAdmission;
     private final Object operationLifecycle = new Object();
@@ -60,55 +58,89 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     private String snapshotFingerprint = "";
 
     public RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace) {
-        this(system, registry, trace, new DefaultVerificationService());
+        this(system, registry, trace, new DefaultVerificationService(), V2RuntimeRuleRegistry.loadDefault(),
+                System::nanoTime, null);
     }
 
     public RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
                                      VerificationService verification) {
-        this(system, registry, trace, verification, System::nanoTime, null);
+        this(system, registry, trace, verification, V2RuntimeRuleRegistry.loadDefault(), System::nanoTime, null);
     }
 
     /** Production constructor: every runtime OCL check must first pass the Bridge admission gate. */
     public RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
                                      VerificationService verification,
                                      BiFunction<RuntimeEvent, Set<RuntimeFactKind>, BridgeVerificationGate.Assessment> bridgeAdmission) {
-        this(system, registry, trace, verification, System::nanoTime, bridgeAdmission);
+        this(system, registry, trace, verification, V2RuntimeRuleRegistry.loadDefault(), System::nanoTime,
+                bridgeAdmission);
+    }
+
+    /** Production constructor with an explicit runtime-rule authority. */
+    public RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
+                                     VerificationService verification, RuntimeRuleRegistry runtimeRules,
+                                     BiFunction<RuntimeEvent, Set<RuntimeFactKind>, BridgeVerificationGate.Assessment> bridgeAdmission) {
+        this(system, registry, trace, verification, runtimeRules, System::nanoTime, bridgeAdmission);
+    }
+
+    public RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
+                                     VerificationService verification, RuntimeRuleRegistry runtimeRules) {
+        this(system, registry, trace, verification, runtimeRules, System::nanoTime, null);
     }
 
     RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
                                VerificationService verification, LongSupplier nanoTime) {
-        this(system, registry, trace, verification, nanoTime, null);
+        this(system, registry, trace, verification, V2RuntimeRuleRegistry.loadDefault(), nanoTime, null);
     }
 
     RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
                               VerificationService verification, LongSupplier nanoTime,
                               BiFunction<RuntimeEvent, Set<RuntimeFactKind>, BridgeVerificationGate.Assessment> bridgeAdmission) {
-        this(system, registry, trace, verification, nanoTime, RuntimeRetention.OPERATION_CORRELATIONS,
+        this(system, registry, trace, verification, V2RuntimeRuleRegistry.loadDefault(), nanoTime,
+                RuntimeRetention.OPERATION_CORRELATIONS,
                 RuntimeRetention.VERIFICATION_REPORTS, bridgeAdmission);
     }
 
     RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
                                VerificationService verification, LongSupplier nanoTime,
                                int operationCorrelationLimit, int reportLimit) {
-        this(system, registry, trace, verification, nanoTime, operationCorrelationLimit, reportLimit, null);
+        this(system, registry, trace, verification, V2RuntimeRuleRegistry.loadDefault(), nanoTime,
+                operationCorrelationLimit, reportLimit, null);
     }
 
     RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
-                               VerificationService verification, LongSupplier nanoTime,
-                               int operationCorrelationLimit, int reportLimit,
+                              VerificationService verification, LongSupplier nanoTime,
+                              int operationCorrelationLimit, int reportLimit,
+                              BiFunction<RuntimeEvent, Set<RuntimeFactKind>, BridgeVerificationGate.Assessment> bridgeAdmission) {
+        this(system, registry, trace, verification, V2RuntimeRuleRegistry.loadDefault(), nanoTime,
+                operationCorrelationLimit, reportLimit, bridgeAdmission);
+    }
+
+    RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
+                               VerificationService verification, RuntimeRuleRegistry runtimeRules,
+                               LongSupplier nanoTime, int operationCorrelationLimit, int reportLimit,
                                BiFunction<RuntimeEvent, Set<RuntimeFactKind>, BridgeVerificationGate.Assessment> bridgeAdmission) {
-        if (system == null || registry == null || trace == null || verification == null || nanoTime == null)
+        if (system == null || registry == null || trace == null || verification == null
+                || runtimeRules == null || nanoTime == null)
             throw new IllegalArgumentException("RUNTIME_VERIFICATION_INVALID");
         this.system = system;
         this.registry = registry;
         this.trace = trace;
         this.verification = verification;
+        this.runtimeRules = RuntimeRuleRegistry.require(runtimeRules);
         this.nanoTime = nanoTime;
         this.bridgeAdmission = bridgeAdmission;
         this.operationCorrelationLimit = RuntimeRetention.requirePositive(operationCorrelationLimit,
                 "operationCorrelations");
         this.reportLimit = RuntimeRetention.requirePositive(reportLimit, "verificationReports");
         this.dependencies = new ConstraintDependencyIndex(registry.descriptors());
+    }
+
+    RuntimeVerificationEngine(MSystem system, ConstraintRegistry registry, TraceIndex trace,
+                               VerificationService verification, RuntimeRuleRegistry runtimeRules,
+                               LongSupplier nanoTime,
+                               BiFunction<RuntimeEvent, Set<RuntimeFactKind>, BridgeVerificationGate.Assessment> bridgeAdmission) {
+        this(system, registry, trace, verification, runtimeRules, nanoTime,
+                RuntimeRetention.OPERATION_CORRELATIONS, RuntimeRetention.VERIFICATION_REPORTS, bridgeAdmission);
     }
 
     @Override public synchronized void stateChanged(MirrorState state) { connectionState = state; }
@@ -256,7 +288,7 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
             abort(event, started);
             return;
         }
-        if (!RUNTIME_MAPPING.select(event).checkpoint().equals("AFTER_MUTATION")) return;
+        if (!runtimeRules.select(event).checkpoint().equals("AFTER_MUTATION")) return;
         snapshotVersion++;
         ConstraintDependencyIndex.Selection selection = dependencies.select(changedDependencies(event));
         VerificationReport report = selection.fullCheckFallback()
@@ -286,6 +318,8 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
                     correlationOverflow);
         }
     }
+
+    RuntimeRuleRegistry runtimeRules() { return runtimeRules; }
 
     private VerificationReport runtimeFull(String runId) {
         VerificationReport full = verification.runFullVerification(system, registry, trace);
@@ -403,7 +437,7 @@ public final class RuntimeVerificationEngine implements RuntimeEventObserver {
     }
 
     private List<RuntimeVerificationAttribution> attribution(RuntimeEvent event, VerificationReport report) {
-        String runtimeRule = event == null ? "" : RUNTIME_MAPPING.select(event).id();
+        String runtimeRule = event == null ? "" : runtimeRules.select(event).id();
         return report.results().stream().map(result -> {
             var descriptor = registry.byId(result.constraintId());
             var exact = new java.util.TreeMap<String,org.tzi.use.plugins.jacamo.trace.TraceRecord>();
