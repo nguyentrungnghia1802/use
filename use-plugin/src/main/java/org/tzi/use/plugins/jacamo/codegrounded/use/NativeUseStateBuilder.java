@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.jacamo.bridge.contract.semantic.CrossSemanticContract;
 import org.jacamo.bridge.contract.semantic.JasonSemanticContract;
 import org.jacamo.bridge.contract.semantic.MoiseSemanticContract;
 import org.jacamo.bridge.contract.semantic.SemanticMetadata;
@@ -479,6 +480,7 @@ public final class NativeUseStateBuilder {
                     provenance(trace, catalog, action.metadata(), "action:" + action.metadata().semanticId());
                 }
             }
+            applyExactBindings(api, schema, semanticObjects, objectNames, trace, catalog, semantic.exactBindings());
             StringWriter validation = new StringWriter();
             PrintWriter output = new PrintWriter(validation, true);
             boolean structureValid = system.state().checkStructure(output);
@@ -490,6 +492,60 @@ public final class NativeUseStateBuilder {
             throw new IllegalStateException("NATIVE_USE_STATE_BUILD_FAILED: " + error.getMessage(), error);
         }
     }
+
+    private static void applyExactBindings(UseSystemApi api, NativeUseModelBuilder.Result schema,
+                                           Map<String, MObject> semanticObjects, Set<String> objectNames,
+                                           CodeGroundedTraceCollector trace, CodeGroundedRuleCatalog catalog,
+                                           List<CrossSemanticContract.ExactBindingSemantic> bindings)
+            throws UseApiException {
+        for (var binding : bindings) {
+            if (binding.sourceIds().size() != 1 || binding.targetIds().size() != 1)
+                throw new IllegalArgumentException("CROSS_BINDING_CARDINALITY_UNSUPPORTED: "
+                        + binding.metadata().semanticId());
+            MObject evidence = object(api, semanticObjects, objectNames, "ExactBindingEvidence", binding.metadata(),
+                    binding.ruleId());
+            text(api, evidence, "ruleId", binding.ruleId());
+            text(api, evidence, "sourceIds", NativeUseModelBuilder.canonicalJson(binding.sourceIds()));
+            text(api, evidence, "targetIds", NativeUseModelBuilder.canonicalJson(binding.targetIds()));
+            text(api, evidence, "bindingContext", NativeUseModelBuilder.canonicalJson(binding.context()));
+            trace.add(catalog.require(binding.ruleId()), TracePhase.INSTANCE_MATERIALIZATION, binding.metadata(),
+                    "MObject", evidence.name(), List.of("EXACT_EVIDENCE", "CONTEXT_RETAINED"));
+
+            Endpoint endpoint = endpoint(binding.ruleId());
+            MObject source = required(semanticObjects, binding.sourceIds().get(0),
+                    "CROSS_SOURCE_OBJECT_MISSING_" + binding.ruleId());
+            MObject target = required(semanticObjects, binding.targetIds().get(0),
+                    "CROSS_TARGET_OBJECT_MISSING_" + binding.ruleId());
+            if (!endpoint.sourceClass().equals(source.cls().name()))
+                throw new IllegalArgumentException("CROSS_SOURCE_CLASS_MISMATCH_" + binding.ruleId()
+                        + ": " + source.cls().name());
+            if (!endpoint.targetClass().equals(target.cls().name()))
+                throw new IllegalArgumentException("CROSS_TARGET_CLASS_MISMATCH_" + binding.ruleId()
+                        + ": " + target.cls().name());
+            link(api, schema, endpoint.association(), source, target);
+            trace.add(catalog.require(binding.ruleId()), TracePhase.INSTANCE_MATERIALIZATION, binding.metadata(),
+                    "MLink", linkIdentity(binding.ruleId(), binding.sourceIds().get(0), binding.targetIds().get(0)),
+                    List.of("EXACT_EVIDENCE", "CONTEXT_RETAINED"));
+        }
+    }
+
+    private static Endpoint endpoint(String ruleId) {
+        return switch (ruleId) {
+            case "X01" -> new Endpoint("X01ActionOperation", "Action", "Operation");
+            // X02 deliberately targets the exact C09 snapshot because C08 live properties are unavailable.
+            case "X02" -> new Endpoint("X02BeliefProperty", "Belief", "ObservablePropertySnapshot");
+            case "X03" -> new Endpoint("X03TriggerSignal", "Trigger", "Signal");
+            case "X04" -> new Endpoint("X04AgentRole", "Agent", "Role");
+            case "X05" -> new Endpoint("X05AgentWorkspace", "Agent", "Workspace");
+            case "X06" -> new Endpoint("X06AgentArtifactFocus", "Agent", "Artifact");
+            case "X07" -> new Endpoint("X07AgentGoalOrganizationalGoal", "AgentGoal", "OrganizationalGoal");
+            case "X08" -> new Endpoint("X08DeclarationArtifact", "ArtifactDeclaration", "Artifact");
+            case "X09" -> new Endpoint("X09AgentIdentity", "Agent", "CartagoAgentIdentity");
+            default -> throw new IllegalArgumentException("CROSS_RULE_ID_UNSUPPORTED: " + ruleId);
+        };
+    }
+
+    private record Endpoint(String association, String sourceClass, String targetClass) { }
 
     private static void materializeMoise(UseSystemApi api, NativeUseModelBuilder.Result schema,
                                          Map<String, MObject> semanticObjects, Set<String> objectNames,

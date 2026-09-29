@@ -10,7 +10,7 @@ import org.jacamo.bridge.contract.semantic.EvidenceAuthority;
 import org.junit.jupiter.api.Test;
 
 class CodeGroundedRuleCatalogTest {
-    private static final List<String> IMPLEMENTED_PHASE_1_TO_5 = List.of(
+    private static final List<String> IMPLEMENTED_PHASE_1_TO_6 = List.of(
             "J01", "J02", "J03", "J04", "J05", "J06", "J07", "J08", "J09", "J10", "J11",
             "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10", "A11",
             "A16", "A17", "A18", "A19", "A20", "A21", "A22",
@@ -19,7 +19,8 @@ class CodeGroundedRuleCatalogTest {
             "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11",
             "M12", "M13", "M14", "M15", "M16", "M17", "M18", "M19", "M20", "M21", "M22",
             "M23", "M24", "M25", "M26", "M27", "M28", "M29", "M30", "M31", "M32", "M33",
-            "M34", "M35", "M36", "M37", "M38", "M39", "M40", "M41", "M42", "M43");
+            "M34", "M35", "M36", "M37", "M38", "M39", "M40", "M41", "M42", "M43",
+            "X01", "X02", "X03", "X04", "X05", "X06", "X07", "X08", "X09");
 
     @Test void catalogIsCompleteUniqueAndDeterministic() {
         var first = new CodeGroundedRuleCatalog().rules();
@@ -51,8 +52,8 @@ class CodeGroundedRuleCatalogTest {
         assertEquals(CapabilityStatus.PARTIAL, catalog.require("C06").capabilityStatus());
     }
 
-    @Test void phase5ClosurePinsNinetyImplementedRulesAndKeepsConditionalRulesExplicit() {
-        assertEquals(IMPLEMENTED_PHASE_1_TO_5, new CodeGroundedRuleCatalog().rules().stream()
+    @Test void phase6ClosurePinsAllCrossRulesAndKeepsUnavailableRulesExplicit() {
+        assertEquals(IMPLEMENTED_PHASE_1_TO_6, new CodeGroundedRuleCatalog().rules().stream()
                 .filter(rule -> rule.implementationStatus() == ImplementationStatus.IMPLEMENTED)
                 .map(CodeGroundedRule::ruleId).toList());
     }

@@ -39,6 +39,39 @@ class SemanticContractTest {
         assertThrows(ContractException.class, () -> SemanticContractCodec.fromTree(extraKey));
     }
 
+    @Test void typedCrossEvidenceRecordsProduceOnlyExplicitBindings() {
+        var metadata = new SemanticMetadata("cross:x01", "EXACT_CROSS_BINDING", getClass().getName(),
+                EvidenceAuthority.EXPLICIT_BINDING, Fidelity.CONDITIONAL, CapabilityStatus.COMPLETE,
+                List.of(), List.of());
+        var bindings = List.of(
+                new CrossSemanticContract.ActionOperationBindingSemantic(metadata, "action", "operation",
+                        "dispatch", Map.of()).toExactBinding(),
+                new CrossSemanticContract.BeliefObservablePropertyBindingSemantic(metadata, "belief", "property",
+                        "percept", Map.of()).toExactBinding(),
+                new CrossSemanticContract.TriggerSignalBindingSemantic(metadata, "trigger", "signal",
+                        "signal", Map.of()).toExactBinding(),
+                new CrossSemanticContract.AgentRoleBindingSemantic(metadata, "agent", "role", "organization", "group",
+                        "board", Map.of()).toExactBinding(),
+                new CrossSemanticContract.AgentWorkspaceBindingSemantic(metadata, "agent", "workspace", "membership",
+                        Map.of()).toExactBinding(),
+                new CrossSemanticContract.AgentArtifactFocusBindingSemantic(metadata, "agent", "artifact", "focus",
+                        Map.of()).toExactBinding(),
+                new CrossSemanticContract.AgentGoalOrganizationalGoalBindingSemantic(metadata, "agent-goal", "org-goal",
+                        "event", Map.of()).toExactBinding(),
+                new CrossSemanticContract.ArtifactDeclarationBindingSemantic(metadata, "declaration", "artifact",
+                        "creation", Map.of()).toExactBinding(),
+                new CrossSemanticContract.AgentIdentityBindingSemantic(metadata, "agent", "identity", "incarnation-1",
+                        "join", Map.of()).toExactBinding());
+        assertEquals(List.of("X01", "X02", "X03", "X04", "X05", "X06", "X07", "X08", "X09"),
+                bindings.stream().map(CrossSemanticContract.ExactBindingSemantic::ruleId).toList());
+        assertTrue(bindings.stream().allMatch(binding -> binding.context().containsKey("dispatchEvidence")
+                || binding.context().containsKey("provenanceEvidence")
+                || binding.context().containsKey("evidenceKind")
+                || binding.context().containsKey("focusEvidence")
+                || binding.context().containsKey("creationEvidence")
+                || binding.context().containsKey("incarnationId")));
+    }
+
     private static JacamoSemanticSnapshot sample() {
         var evidence = new SourceEvidence(EvidenceAuthority.OFFICIAL_JACAMO_API, "project:/hello.jcm",
                 "a".repeat(64), "jacamo.project.JaCaMoProject", "jcm:project:hello", 1, 7, "", "session-1", 1,

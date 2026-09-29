@@ -56,7 +56,7 @@ public final class NativeUseModelBuilder {
                     "StructuralSpecification", "FunctionalSpecification", "NormativeSpecification", "Group", "Role",
                     "RoleRelation", "Link", "Compatibility", "Scheme", "Mission", "OrganizationalGoal",
                     "OrganizationalPlan", "Norm", "GroupRoleCardinality", "SubGroupCardinality",
-                    "SchemeMissionCardinality"))
+                    "SchemeMissionCardinality", "ExactBindingEvidence"))
                 api.createClass(name, false);
             for (String name : List.of("Agent", "WorkspaceDeclaration", "ArtifactDeclaration", "OrganizationDeployment",
                     "GroupDeployment", "SchemeDeployment", "InstitutionDeployment", "AgentProgram", "PlanLibrary",
@@ -67,7 +67,7 @@ public final class NativeUseModelBuilder {
                     "StructuralSpecification", "FunctionalSpecification", "NormativeSpecification", "Group", "Role",
                     "RoleRelation", "Link", "Compatibility", "Scheme", "Mission", "OrganizationalGoal",
                     "OrganizationalPlan", "Norm", "GroupRoleCardinality", "SubGroupCardinality",
-                    "SchemeMissionCardinality"))
+                    "SchemeMissionCardinality", "ExactBindingEvidence"))
                 api.createAttribute(name, "semanticId", "String");
             api.createAttribute("Agent", "name", "String");
             api.createAttribute("Agent", "sourceUri", "String");
@@ -254,6 +254,11 @@ public final class NativeUseModelBuilder {
             api.createAttribute("SchemeMissionCardinality", "missionSemanticId", "String");
             api.createAttribute("SchemeMissionCardinality", "minCardinality", "Integer");
             api.createAttribute("SchemeMissionCardinality", "maxCardinality", "Integer");
+            api.createAttribute("ExactBindingEvidence", "ruleId", "String");
+            api.createAttribute("ExactBindingEvidence", "sourceIds", "String");
+            api.createAttribute("ExactBindingEvidence", "targetIds", "String");
+            // "context" is a USE grammar keyword; retain the exact evidence under a target-safe name.
+            api.createAttribute("ExactBindingEvidence", "bindingContext", "String");
 
             association(api, "A16AgentProgramPlanLibrary", "AgentProgram", "agentProgram", "1",
                     MAggregationKind.COMPOSITION, "PlanLibrary", "planLibrary", "1", false, false);
@@ -349,6 +354,25 @@ public final class NativeUseModelBuilder {
                     "Role", "m42Norms", "0..*", false, true);
             association(api, "M43NormMission", "Norm", "m43Mission", "0..1", MAggregationKind.NONE,
                     "Mission", "m43Norms", "0..*", false, true);
+            association(api, "X01ActionOperation", "Action", "x01Operation", "0..1",
+                    MAggregationKind.NONE, "Operation", "x01Actions", "0..*", false, true);
+            // C08 live properties are unavailable; X02 binds to the exact C09 property snapshot.
+            association(api, "X02BeliefProperty", "Belief", "x02Property", "0..1",
+                    MAggregationKind.NONE, "ObservablePropertySnapshot", "x02Beliefs", "0..*", false, true);
+            association(api, "X03TriggerSignal", "Trigger", "x03Signal", "0..1",
+                    MAggregationKind.NONE, "Signal", "x03Triggers", "0..*", false, true);
+            association(api, "X04AgentRole", "Agent", "x04Roles", "0..*",
+                    MAggregationKind.NONE, "Role", "x04Agents", "0..*", false, true);
+            association(api, "X05AgentWorkspace", "Agent", "x05Workspaces", "0..*",
+                    MAggregationKind.NONE, "Workspace", "x05Agents", "0..*", false, true);
+            association(api, "X06AgentArtifactFocus", "Agent", "x06Artifacts", "0..*",
+                    MAggregationKind.NONE, "Artifact", "x06Agents", "0..*", false, true);
+            association(api, "X07AgentGoalOrganizationalGoal", "AgentGoal", "x07OrganizationalGoal", "0..1",
+                    MAggregationKind.NONE, "OrganizationalGoal", "x07AgentGoals", "0..*", false, true);
+            association(api, "X08DeclarationArtifact", "ArtifactDeclaration", "x08RuntimeArtifact", "0..1",
+                    MAggregationKind.NONE, "Artifact", "x08Declarations", "0..*", false, true);
+            association(api, "X09AgentIdentity", "Agent", "x09CartagoIdentities", "0..*",
+                    MAggregationKind.NONE, "CartagoAgentIdentity", "x09Agents", "0..*", false, true);
 
             List<NativeConstraintSpec> constraints = new CodeGroundedConstraintPlanner().plan(catalog);
             new NativeConstraintInstaller().install(api, constraints);
@@ -372,7 +396,8 @@ public final class NativeUseModelBuilder {
                 "M23", "M24", "M25", "M26", "M27", "M28", "M29", "M30", "M31", "M32", "M33",
                 "M34", "M35", "M36", "M37", "M38", "M39", "M40", "M41", "M42", "M43",
                 "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10",
-                "A11", "A16", "A17", "A18", "A19", "A20", "A21", "A22")) {
+                "A11", "A16", "A17", "A18", "A19", "A20", "A21", "A22",
+                "X01", "X02", "X03", "X04", "X05", "X06", "X07", "X08", "X09")) {
             CodeGroundedRule rule = catalog.require(id);
             trace.add(new CodeGroundedTraceRecord(id, TracePhase.MODEL_DECLARATION, rule.sourceKindFqcn(),
                     rule.sourceKindFqcn(), "schema:" + id, targetKind(rule.targetUseKind()),

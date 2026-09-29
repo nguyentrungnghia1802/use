@@ -282,7 +282,7 @@ Exact names may follow repository conventions.
 
 ## 4.5 Cross-dimension evidence DTOs
 
-- [ ] Add typed exact-binding/evidence records for X rules.
+- [x] Add typed exact-binding/evidence records for X rules.
 
 ## 4.6 Contract compatibility
 
@@ -730,39 +730,39 @@ P = optional source/bytecode provenance
 All default to unresolved until exact evidence exists.
 
 ## X01 Action–Operation
-- [ ] Exact dispatch/binding/runtime evidence only.
+- [x] Exact dispatch/binding/runtime evidence only.
 
 ## X02 Belief–ObservableProperty
-- [ ] Exact percept/property provenance only.
+- [x] Exact percept/property provenance only.
 
 ## X03 Trigger–Signal
-- [ ] Exact signal/percept provenance only.
+- [x] Exact signal/percept provenance only.
 
 ## X04 Agent–Role
-- [ ] Resolve J09 with organization/group context or runtime role-player evidence.
+- [x] Resolve J09 with organization/group context or runtime role-player evidence.
 
 ## X05 Agent–Workspace
-- [ ] Exact configuration/runtime membership evidence.
+- [x] Exact configuration/runtime membership evidence.
 
 ## X06 Agent–Artifact focus
-- [ ] Resolve J10 or exact runtime C20 evidence.
+- [x] Resolve J10 or exact runtime C20 evidence.
 
 ## X07 AgentGoal–OrganizationalGoal
-- [ ] Explicit organization/runtime binding only.
+- [x] Explicit organization/runtime binding only.
 
 ## X08 ArtifactDeclaration–runtime Artifact
-- [ ] Exact creation correlation such as `makeArtifact(...) → ArtifactId`.
+- [x] Exact creation correlation such as `makeArtifact(...) → ArtifactId`.
 
 ## X09 JCM/Jason Agent–CArtAgO AgentId
-- [ ] Exact join/action/focus observation.
+- [x] Exact join/action/focus observation.
 
 ## X tests
 
-- [ ] Exact-positive.
-- [ ] Same-name-negative.
-- [ ] Unresolved state.
-- [ ] Runtime restart/incarnation.
-- [ ] No cross-context leakage.
+- [x] Exact-positive.
+- [x] Same-name-negative.
+- [x] Unresolved state.
+- [x] Runtime restart/incarnation.
+- [x] No cross-context leakage.
 
 ---
 
@@ -1391,10 +1391,12 @@ X01–X09
 
 Gate:
 
-- [ ] zero fuzzy bindings;
-- [ ] unresolved remains unresolved;
-- [ ] context retained;
-- [ ] exact bindings survive runtime/export.
+- [x] zero fuzzy bindings;
+- [x] unresolved remains unresolved;
+- [x] context retained;
+- [x] exact bindings survive runtime/export.
+
+**Phase 6 evidence — 2026-09-29:** PASS for X01–X09. `CrossSemanticContract` now exposes nine typed exact-binding records that lower to immutable, context-bearing bindings; `NativeUseModelBuilder` declares the X associations and an `ExactBindingEvidence` class; `NativeUseStateBuilder` resolves only exact semantic IDs, validates endpoint classes, preserves context, and leaves J09/J10 unresolved without evidence. `CodeGroundedPhase6Test` passed `3/3`: all nine positive bindings survived one `MSystem` materialization and export/recompile, same-name candidates stayed unlinked, unresolved J09/J10 remained diagnostic, restart/incarnation identity selected only the exact target, and a wrong endpoint failed closed. Contract/catalog tests passed `6/6`; Phase 2–6/native regression passed `20/20`. No fuzzy matching, V2/Ecore/golden edits, or second `MSystem` were introduced.
 
 ---
 
@@ -1698,10 +1700,10 @@ V2 becomes historical-only when:
 - [x] norm/time preservation
 
 ## X rules
-- [ ] positive exact evidence
-- [ ] same-name negative
-- [ ] unresolved
-- [ ] restart identity
+- [x] positive exact evidence
+- [x] same-name negative
+- [x] unresolved
+- [x] restart identity
 
 ## Export
 - [x] deterministic `.use`

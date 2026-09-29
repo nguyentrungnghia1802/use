@@ -48,6 +48,13 @@ public final class JacamoSpecificationModel {
         snapshot.institutionDeployments().forEach(value -> register(identities, value.metadata()));
         snapshot.rawRoleTuples().forEach(value -> register(identities, value.metadata()));
         snapshot.rawFocusTuples().forEach(value -> register(identities, value.metadata()));
+        snapshot.exactBindings().forEach(value -> {
+            register(identities, value.metadata());
+            if (!value.ruleId().matches("X0[1-9]"))
+                throw new IllegalArgumentException("CROSS_RULE_ID_UNSUPPORTED: " + value.ruleId());
+            if (value.sourceIds().isEmpty() || value.targetIds().isEmpty())
+                throw new IllegalArgumentException("CROSS_BINDING_ENDPOINTS_REQUIRED: " + value.metadata().semanticId());
+        });
         snapshot.importProvenance().forEach(value -> register(identities, value.metadata()));
         for (var environment : snapshot.cartagoEnvironments()) {
             register(identities, environment.metadata());
