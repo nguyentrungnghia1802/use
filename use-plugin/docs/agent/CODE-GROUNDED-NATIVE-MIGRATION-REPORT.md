@@ -1,7 +1,7 @@
 # Code-Grounded Native migration report
 
-**Date:** 2026-09-29  
-**Scope:** Phase 2 onward, through the completed gates in `task.md`  
+**Date:** 2026-09-29
+**Scope:** Phase 2 onward, through the completed gates in `task.md`
 **Authority:** official Java/API adapters -> neutral contract -> native USE
 
 ## Gate summary
