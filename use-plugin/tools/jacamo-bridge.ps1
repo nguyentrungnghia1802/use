@@ -226,6 +226,7 @@ try {
         $guiArguments = @(
             "-Duser.dir=$guiInstall",
             "-Duse.jacamo.workbench.project-file=$jcmFile",
+            "-Duse.jacamo.workbench.auto-import=true",
             "-Duse.jacamo.bridge.endpoint=tcp://127.0.0.1:$port",
             "-Duse.jacamo.bridge.secret-file=$secretFile",
             "-Duse.jacamo.bridge.distribution-sha256=$distribution",
@@ -233,7 +234,8 @@ try {
         )
         [IO.File]::WriteAllLines((Join-Path $runEvidence "launch-commands.txt"),
             @("java -cp <official-runtime> jason.infra.local.LiveJaCaMoLauncherMain $jcmFile $stopFile",
-              "javaw -jar $guiJar"), [Text.UTF8Encoding]::new($false))
+              "javaw -Duse.jacamo.workbench.auto-import=true -Duse.jacamo.workbench.project-file=$jcmFile -jar $guiJar"),
+            [Text.UTF8Encoding]::new($false))
         Write-Host "INTERACTIVE_GUI_READY"
         Write-Host "Open the JaCaMo Workbench from the USE Plugins menu."
         Write-Host "Derived JCM: $jcmFile"

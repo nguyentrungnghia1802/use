@@ -22,6 +22,10 @@ class GenericLauncherScriptTest {
         assertTrue(script.contains("code_grounded_native"));
         assertTrue(script.contains("interactivegui"));
         assertTrue(script.contains("runtimeprojectclasses"));
+        assertTrue(script.contains("$stagedproject"));
+        assertTrue(script.contains("workingdirectory"));
+        assertTrue(script.contains("use.jacamo.workbench.auto-import=true"));
+        assertTrue(script.contains("use.jacamo.workbench.project-file=$jcmfile"));
         assertFalse(script.contains("live-hello-bridge.ps1"));
         assertFalse(script.contains("helloworld"));
         assertFalse(script.contains("auction"));

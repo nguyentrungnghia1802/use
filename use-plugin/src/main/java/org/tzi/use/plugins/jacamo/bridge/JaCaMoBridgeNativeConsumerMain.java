@@ -66,6 +66,12 @@ public final class JaCaMoBridgeNativeConsumerMain {
             evidence.put("stateSha256", formal.sha256());
             evidence.put("verificationOutcomeCount", second.results().size());
             evidence.put("resync", true);
+            Path nativeUse = options.evidenceDirectory().resolve(imported.projectId() + ".use");
+            Path nativeSoil = options.evidenceDirectory().resolve(imported.projectId() + ".cmd");
+            facade.exportNativeUse(nativeUse);
+            facade.exportNativeSoil(nativeSoil);
+            evidence.put("nativeUse", nativeUse.toString());
+            evidence.put("nativeSoil", nativeSoil.toString());
             Files.write(options.evidenceDirectory().resolve("summary.json"), CanonicalJson.encode(evidence));
             facade.exportVerificationReport(options.evidenceDirectory().resolve("verification-report.json"));
             LOG.info("JACAMO_BRIDGE_NATIVE_OK pipeline=CODE_GROUNDED_NATIVE project="

@@ -38,6 +38,8 @@ import org.tzi.use.plugins.jacamo.codegrounded.NativeUseSessionActivator;
 import org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector;
 import org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalog;
 import org.tzi.use.plugins.jacamo.codegrounded.constraint.NativeProfileCompatibilityPreflight;
+import org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseExporter;
+import org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseSoilExporter;
 import org.tzi.use.plugins.jacamo.diagnostics.Diagnostic;
 import org.tzi.use.plugins.jacamo.mapping.ActiveBaseline;
 import org.tzi.use.plugins.jacamo.mapping.MappingModel;
@@ -236,6 +238,16 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             if (cleanup != null) message += "; REPORT_EXPORT_CLEANUP_FAILED: " + cleanup.getMessage();
             throw new IllegalArgumentException(message, exception);
         }
+    }
+
+    @Override public synchronized void exportNativeUse(Path destination) {
+        requireNativeWorkspace();
+        new NativeUseExporter().export(nativeWorkspace.pipeline.model().model(), destination);
+    }
+
+    @Override public synchronized void exportNativeSoil(Path destination) {
+        requireNativeWorkspace();
+        new NativeUseSoilExporter().export(nativeWorkspace.pipeline.state().system(), destination);
     }
 
     static Exception cleanupTemporaryReport(Path temporary, Exception primary) {
@@ -738,6 +750,11 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
 
     private void requireWorkspace() {
         if (workspace == null && nativeWorkspace == null) throw new IllegalStateException("PROJECT_NOT_IMPORTED");
+    }
+
+    private void requireNativeWorkspace() {
+        if (nativeWorkspace == null)
+            throw new IllegalStateException("NATIVE_EXPORT_REQUIRES_CODE_GROUNDED_NATIVE");
     }
 
     private void rejectSymbolicPath(Path output) throws java.io.IOException {

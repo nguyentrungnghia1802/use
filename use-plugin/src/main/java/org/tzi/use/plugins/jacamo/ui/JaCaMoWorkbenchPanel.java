@@ -40,6 +40,8 @@ import org.tzi.use.plugins.jacamo.verification.VerificationResult;
 public final class JaCaMoWorkbenchPanel extends JPanel {
     /** Optional launch-time hint used by the interactive demo to open Import at its derived JCM. */
     static final String PROJECT_FILE_HINT_PROPERTY = "use.jacamo.workbench.project-file";
+    /** One-shot launch flag: the generic launcher supplies the JCM once; the panel consumes it. */
+    static final String AUTO_IMPORT_PROPERTY = "use.jacamo.workbench.auto-import";
     private static final int MESSAGE_WRAP_COLUMNS = 96;
 
     private final JaCaMoFacade facade;
@@ -83,6 +85,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private final JLabel bridgeDiagnostic = named(new JLabel("-"), "bridge-diagnostic");
     private final BindingResolutionPanel bindingPanel;
     private Path selectedSource;
+    private boolean autoImportStarted;
 
     public JaCaMoWorkbenchPanel(JaCaMoFacade facade) {
         this(facade, message -> JOptionPane.showMessageDialog(null, new JLabel(displayMessage(message)),
@@ -107,6 +110,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         add(tabs, BorderLayout.CENTER);
         add(status, BorderLayout.SOUTH);
         refreshRuntime();
+        autoImportIfConfigured();
     }
 
     public void importProject(Path jcmFile) {
@@ -134,6 +138,16 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     public void exportVerificationReport(Path destination) {
         executeBackground("Report export failed", () -> facade.exportVerificationReport(destination),
                 () -> setStatus("Report: " + destination));
+    }
+
+    public void exportNativeUse(Path destination) {
+        executeBackground(".use export failed", () -> facade.exportNativeUse(destination),
+                () -> setStatus("Native .use: " + destination));
+    }
+
+    public void exportNativeSoil(Path destination) {
+        executeBackground(".cmd export failed", () -> facade.exportNativeSoil(destination),
+                () -> setStatus("Native .cmd: " + destination));
     }
 
     public void refreshRuntime() {
@@ -172,6 +186,8 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         toolbar.add(button("Load OCL...", "load-profile", this::chooseProfile));
         toolbar.add(button("Run Full Verification", "run-verification", this::runFullVerification));
         toolbar.add(button("Export Report...", "export-report", this::chooseReport));
+        toolbar.add(button("Export .use...", "export-use", this::chooseNativeUse));
+        toolbar.add(button("Export .cmd...", "export-soil", this::chooseNativeSoil));
         return toolbar;
     }
 
@@ -386,6 +402,22 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) importProject(chooser.getSelectedFile().toPath());
     }
 
+    private void autoImportIfConfigured() {
+        if (!Boolean.parseBoolean(System.getProperty(AUTO_IMPORT_PROPERTY, "false")) || autoImportStarted) return;
+        autoImportStarted = true;
+        // Consume the one-shot flag before starting asynchronous work. A reopened panel must not
+        // select the staged JCM a second time; the ordinary chooser remains available as fallback.
+        System.clearProperty(AUTO_IMPORT_PROPERTY);
+        Path configured = projectFileHint();
+        if (configured == null) {
+            String message = "Auto-import failed: WORKBENCH_PROJECT_FILE_REQUIRED";
+            setStatus(message);
+            errorPresenter.accept(message);
+            return;
+        }
+        importProject(configured);
+    }
+
     static JFileChooser createProjectChooser(Path projectFileHint) {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileFilter(new FileNameExtensionFilter("JaCaMo project (*.jcm)", "jcm"));
@@ -418,6 +450,18 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private void chooseReport() {
         JFileChooser chooser = new JFileChooser();
         if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) exportVerificationReport(chooser.getSelectedFile().toPath());
+    }
+    private void chooseNativeUse() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileNameExtensionFilter("USE model (*.use)", "use"));
+        if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
+            exportNativeUse(chooser.getSelectedFile().toPath());
+    }
+    private void chooseNativeSoil() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileNameExtensionFilter("USE SOIL commands (*.cmd)", "cmd"));
+        if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
+            exportNativeSoil(chooser.getSelectedFile().toPath());
     }
 
     private void execute(String title, Runnable operation) {

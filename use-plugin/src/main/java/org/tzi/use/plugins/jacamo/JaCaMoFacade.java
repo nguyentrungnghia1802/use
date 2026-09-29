@@ -27,6 +27,8 @@ public interface JaCaMoFacade {
     default VerificationReport latestVerification() { return null; }
     default void loadVerificationProfile(Path profile) { throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED"); }
     default void exportVerificationReport(Path destination) { throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED"); }
+    default void exportNativeUse(Path destination) { throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED"); }
+    default void exportNativeSoil(Path destination) { throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED"); }
     default void configureBridge(BridgeConnectionConfig configuration) {
         throw new UnsupportedOperationException("BRIDGE_NOT_CONFIGURED");
     }

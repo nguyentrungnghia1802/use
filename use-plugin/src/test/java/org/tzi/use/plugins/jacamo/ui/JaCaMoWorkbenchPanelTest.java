@@ -2,6 +2,7 @@ package org.tzi.use.plugins.jacamo.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -79,6 +80,26 @@ class JaCaMoWorkbenchPanelTest {
         assertTrue(facade.publishedLatch.await(5, java.util.concurrent.TimeUnit.SECONDS));
         assertFalse(facade.importedOnEdt);
         assertEquals("auction", label(panel, "project-id").getText());
+    }
+
+    @Test
+    void oneShotLauncherPropertyAutoImportsTheSingleJcmAndLeavesChooserAsFallback() throws Exception {
+        String previousPath = System.getProperty(JaCaMoWorkbenchPanel.PROJECT_FILE_HINT_PROPERTY);
+        String previousAuto = System.getProperty(JaCaMoWorkbenchPanel.AUTO_IMPORT_PROPERTY);
+        Path staged = Path.of("C:/temp/jacamo-staged/auction.jcm").toAbsolutePath().normalize();
+        try {
+            System.setProperty(JaCaMoWorkbenchPanel.PROJECT_FILE_HINT_PROPERTY, staged.toString());
+            System.setProperty(JaCaMoWorkbenchPanel.AUTO_IMPORT_PROPERTY, "true");
+            RecordingFacade facade = new RecordingFacade();
+            new JaCaMoWorkbenchPanel(facade, ignored -> { });
+
+            assertTrue(facade.importedLatch.await(5, java.util.concurrent.TimeUnit.SECONDS));
+            assertEquals(staged, facade.imported);
+            assertNull(System.getProperty(JaCaMoWorkbenchPanel.AUTO_IMPORT_PROPERTY));
+        } finally {
+            restoreProperty(JaCaMoWorkbenchPanel.PROJECT_FILE_HINT_PROPERTY, previousPath);
+            restoreProperty(JaCaMoWorkbenchPanel.AUTO_IMPORT_PROPERTY, previousAuto);
+        }
     }
 
     @Test
@@ -249,6 +270,10 @@ class JaCaMoWorkbenchPanelTest {
         panel.loadVerificationProfile(Path.of("case.ocl"));
         panel.runFullVerification();
         panel.exportVerificationReport(Path.of("report.json"));
+        panel.exportNativeUse(Path.of("native.use"));
+        panel.exportNativeSoil(Path.of("native.cmd"));
+        assertTrue(button(panel, "export-use").isEnabled());
+        assertTrue(button(panel, "export-soil").isEnabled());
         button(panel, "runtime-connect").doClick();
         button(panel, "runtime-disconnect").doClick();
         button(panel, "runtime-reconnect").doClick();
@@ -258,6 +283,8 @@ class JaCaMoWorkbenchPanelTest {
         assertEquals(Path.of("case.ocl"), facade.loadedProfile);
         assertEquals(1, facade.fullChecks);
         assertEquals(Path.of("report.json"), facade.exportedReport);
+        assertEquals(Path.of("native.use"), facade.exportedUse);
+        assertEquals(Path.of("native.cmd"), facade.exportedSoil);
         assertEquals(2, facade.connects);
         assertEquals(1, facade.disconnects);
         assertEquals(1, facade.resyncs);
@@ -281,6 +308,10 @@ class JaCaMoWorkbenchPanelTest {
         for (int index = 0; index < combo.getItemCount(); index++)
             if (value.equals(combo.getItemAt(index))) return true;
         return false;
+    }
+    private static void restoreProperty(String key, String previous) {
+        if (previous == null) System.clearProperty(key);
+        else System.setProperty(key, previous);
     }
     private static <T extends Component> T component(Container root, String name, Class<T> type) {
         for (Component child : root.getComponents()) {
@@ -312,6 +343,8 @@ class JaCaMoWorkbenchPanelTest {
         private int connects;
         private Path loadedProfile;
         private Path exportedReport;
+        private Path exportedUse;
+        private Path exportedSoil;
         private String persistedTarget;
         private String persistedReason;
         private RuntimeException importFailure;
@@ -360,6 +393,8 @@ class JaCaMoWorkbenchPanelTest {
         @Override public void loadVerificationProfile(Path profile) { loadedProfile = profile; }
         @Override public VerificationReport runFullVerification() { fullChecks++; return latestVerification(); }
         @Override public void exportVerificationReport(Path destination) { exportedReport = destination; }
+        @Override public void exportNativeUse(Path destination) { exportedUse = destination; }
+        @Override public void exportNativeSoil(Path destination) { exportedSoil = destination; }
         @Override public void connectRuntime() { connects++; }
         @Override public void disconnectRuntime() { disconnects++; }
         @Override public void resyncRuntime() { resyncs++; }
