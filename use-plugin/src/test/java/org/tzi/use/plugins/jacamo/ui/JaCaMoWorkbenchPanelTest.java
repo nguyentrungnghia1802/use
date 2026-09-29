@@ -20,11 +20,13 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.tzi.use.plugins.jacamo.JaCaMoFacade;
 import org.tzi.use.plugins.jacamo.SemanticAuthority;
 import org.tzi.use.plugins.jacamo.bridge.BridgeClientState;
+import org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalog;
 import org.tzi.use.plugins.jacamo.diagnostics.Diagnostic;
 import org.tzi.use.plugins.jacamo.runtime.MirrorState;
 import org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor;
@@ -99,6 +101,41 @@ class JaCaMoWorkbenchPanelTest {
         table.setRowSelectionInterval(0, 0);
         assertTrue(label(panel, "source-location").getText().endsWith("agent.asl:7"));
         assertTrue(button(panel, "copy-source").isEnabled());
+    }
+
+    @Test
+    void mappingInspectorShowsAllCatalogRulesAndRequiredStatusFilters() {
+        RecordingFacade facade = new RecordingFacade();
+        facade.traces = new CodeGroundedRuleCatalog().rules().stream().map(rule -> new JaCaMoFacade.TraceRow(
+                rule.ruleId(), rule.sourceKindFqcn(), "association:" + rule.ruleId(), "ASSOCIATION",
+                rule.ruleId(), rule.fidelity().name(), rule.capabilityStatus().name(),
+                Path.of("mapping.java"), 1, rule.dimension().name(), rule.sourceAuthority().name(),
+                List.of(rule.diagnosticPolicy()))).toList();
+        JaCaMoWorkbenchPanel panel = new JaCaMoWorkbenchPanel(facade);
+        panel.importProject(Path.of("auction.jcm"));
+
+        assertEquals(105, table(panel, "trace-table").getRowCount());
+        for (String value : List.of("J", "A", "C", "M", "X"))
+            assertTrue(comboContains(combo(panel, "trace-dimension-filter"), value), value);
+        for (String value : List.of("APPLIED", "UNRESOLVED", "UNAVAILABLE", "UNSUPPORTED"))
+            assertTrue(comboContains(combo(panel, "trace-status-filter"), value), value);
+    }
+
+    @Test
+    void mappingInspectorDetailShowsFqcnTargetEvidenceFidelityAndDiagnostics() {
+        RecordingFacade facade = new RecordingFacade();
+        facade.traces = List.of(new JaCaMoFacade.TraceRow("agent-id", "jason.asSemantics.Agent",
+                "object:agent_1", "OBJECT", "A06", "EXACT", "APPLIED", Path.of("agent.asl"), 7,
+                "A", "OFFICIAL_JASON_API", List.of("UNRESOLVED_UNTIL_X")));
+        JaCaMoWorkbenchPanel panel = new JaCaMoWorkbenchPanel(facade);
+        panel.importProject(Path.of("auction.jcm"));
+        table(panel, "trace-table").setRowSelectionInterval(0, 0);
+        String detail = textArea(panel, "mapping-detail").getText();
+        assertTrue(detail.contains("jason.asSemantics.Agent"));
+        assertTrue(detail.contains("object:agent_1"));
+        assertTrue(detail.contains("OFFICIAL_JASON_API"));
+        assertTrue(detail.contains("EXACT"));
+        assertTrue(detail.contains("UNRESOLVED_UNTIL_X"));
     }
 
     @Test
@@ -234,10 +271,16 @@ class JaCaMoWorkbenchPanelTest {
 
     private static JTable table(Container root, String name) { return component(root, name, JTable.class); }
     private static JLabel label(Container root, String name) { return component(root, name, JLabel.class); }
+    private static JTextArea textArea(Container root, String name) { return component(root, name, JTextArea.class); }
     private static JButton button(Container root, String name) { return component(root, name, JButton.class); }
     @SuppressWarnings("unchecked")
     private static JComboBox<String> combo(Container root, String name) {
         return component(root, name, JComboBox.class);
+    }
+    private static boolean comboContains(JComboBox<String> combo, String value) {
+        for (int index = 0; index < combo.getItemCount(); index++)
+            if (value.equals(combo.getItemAt(index))) return true;
+        return false;
     }
     private static <T extends Component> T component(Container root, String name, Class<T> type) {
         for (Component child : root.getComponents()) {

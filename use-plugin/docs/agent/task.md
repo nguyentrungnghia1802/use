@@ -1491,17 +1491,19 @@ Gate:
 
 # 23. Mapping Inspector completion
 
-- [ ] show all 105 IDs;
-- [ ] filter J/A/C/M/X;
-- [ ] filter APPLIED/UNRESOLVED/UNAVAILABLE/UNSUPPORTED;
-- [ ] source FQCN;
-- [ ] target USE ID;
-- [ ] fidelity;
-- [ ] evidence;
-- [ ] diagnostics;
-- [ ] runtime status;
+- [x] show all 105 IDs;
+- [x] filter J/A/C/M/X;
+- [x] filter APPLIED/UNRESOLVED/UNAVAILABLE/UNSUPPORTED;
+- [x] source FQCN;
+- [x] target USE ID;
+- [x] fidelity;
+- [x] evidence;
+- [x] diagnostics;
+- [x] runtime status;
 - [ ] optional navigate-to-target;
-- [ ] inspection only.
+- [x] inspection only.
+
+**Section 23 evidence — 2026-09-29:** PASS for the required inspector surface. `JaCaMoWorkbenchPanel` renders the facade trace without semantic work in Swing, exposes all five dimensions and the required `APPLIED`/`UNRESOLVED`/`UNAVAILABLE`/`UNSUPPORTED` status filters, and shows source FQCN, semantic/source identity, USE target identity, fidelity, evidence authority, capability status, and diagnostics in the detail pane. `JaCaMoWorkbenchPanelTest` passed `13/13`, including a 105-row catalog display, exact filter coverage, detail evidence fields, runtime/authority status refresh, and a source-location action. Optional navigate-to-target remains unchecked because no target-navigation API is required by the current UI contract.
 
 ---
 

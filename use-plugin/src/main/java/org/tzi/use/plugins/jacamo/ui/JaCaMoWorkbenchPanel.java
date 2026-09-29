@@ -195,8 +195,8 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         statusFilter.addItem("ALL");
         for (String value : List.of("J", "A", "C", "M", "X", "AGENT", "ENVIRONMENT", "ORGANISATION", "UNKNOWN"))
             dimensionFilter.addItem(value);
-        for (String value : List.of("COMPLETE", "PARTIAL", "UNAVAILABLE", "RESOLVED", "PROJECTED", "AMBIGUOUS",
-                "UNRESOLVED", "STALE")) statusFilter.addItem(value);
+        for (String value : List.of("APPLIED", "COMPLETE", "PARTIAL", "UNAVAILABLE", "UNSUPPORTED",
+                "RESOLVED", "PROJECTED", "AMBIGUOUS", "UNRESOLVED", "STALE")) statusFilter.addItem(value);
         dimensionFilter.addActionListener(event -> applyTraceFilter());
         statusFilter.addActionListener(event -> applyTraceFilter());
         traces.setRowSorter(traceSorter);
