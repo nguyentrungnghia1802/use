@@ -1073,7 +1073,7 @@ Keep:
 - [x] runtime sync status;
 - [x] mapping trace;
 - [x] fidelity/evidence;
-- [ ] export controls if useful.
+- [x] export controls if useful.
 
 Main table:
 
@@ -1100,6 +1100,11 @@ Never add:
 - [x] second OCL engine;
 - [x] substitute class/object diagram;
 - [x] parallel MSystem.
+
+**Section 18 evidence — 2026-09-29:** `JaCaMoWorkbenchPanel` exposes the
+`Export Report...` control and delegates it to the facade; the complete workflow
+test covers the export action together with import, rebuild, OCL, verification,
+and runtime controls.
 
 ---
 
