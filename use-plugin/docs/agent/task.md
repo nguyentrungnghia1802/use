@@ -1449,15 +1449,15 @@ Gate:
 
 ### Hello World
 
-- [ ] JCM declarations;
-- [ ] Jason program;
-- [ ] plan/trigger/body;
-- [ ] workspace/artifact declarations;
-- [ ] Moise OS;
-- [ ] native session activation;
-- [ ] OCL;
-- [ ] export;
-- [ ] supported runtime.
+- [x] JCM declarations;
+- [x] Jason program;
+- [x] plan/trigger/body;
+- [x] workspace/artifact declarations;
+- [x] Moise OS;
+- [x] native session activation;
+- [x] OCL;
+- [x] export;
+- [x] supported runtime.
 
 ### Auction
 
@@ -1466,24 +1466,26 @@ Gate:
 - [ ] operations;
 - [ ] properties;
 - [ ] exact action-operation link only when proven;
-- [ ] organization;
-- [ ] no unsupported deadline claim;
-- [ ] native runtime/session.
+- [x] organization;
+- [x] no unsupported deadline claim;
+- [x] native runtime/session.
 
 ### House Building
 
-- [ ] `.jcm` not treated as complete specification;
-- [ ] dynamic artifacts/org/schemes handled;
-- [ ] role inheritance/cardinality;
-- [ ] sequence/parallel plan;
+- [x] `.jcm` not treated as complete specification;
+- [x] dynamic artifacts/org/schemes handled;
+- [x] role inheritance/cardinality;
+- [x] sequence/parallel plan;
 - [ ] supported runtime;
-- [ ] missing facts remain unavailable.
+- [x] missing facts remain unavailable.
 
 Gate:
 
-- [ ] no case-specific branches;
-- [ ] all claims evidence-backed;
-- [ ] limitations documented.
+- [x] no case-specific branches;
+- [x] all claims evidence-backed;
+- [x] limitations documented.
+
+**Phase 9 evidence — 2026-09-29:** PASS for the explicitly bounded native acceptance scope. `CodeGroundedPhase9Test` runs Hello World, the official Auction example, and House Building through the same `OfficialProjectAdapter` → `CodeGroundedNativePipeline` path; `Phase9CaseStudyAcceptanceTest` adds `3/3` evidence tests for one `Session`/`MSystem`, native verification, export validity, static dimension retention, no fabricated live artifacts, Auction official organization/scheme/OS facts, and House Building's separate official OS/cardinality/sequence/parallel evidence. Hello's JCM/Jason/plan-body/workspace/artifact/Moise/OCL/export/runtime claims are covered by the Phase 2–8 tests plus the native session/export integration tests. Auction organization and native session are PASS; Norm facts remain data and are not promoted to OCL. House Building's `.jcm` is explicitly shown incomplete: dynamic organization/artifact facts remain unavailable until an official runtime/OS snapshot is supplied, while role inheritance/cardinality and sequence/parallel plan facts are copied only from the official OS object graph. The following remain intentionally unchecked: live Auction CArtAgO artifact type/operation/property capture, exact action-operation binding for that live artifact, and House live runtime, because no native live evidence exists for those claims. No case-specific production branch, fuzzy mapping, deadline inference, or unsupported runtime claim was added. Focused Phase 9 gate passed `3/3`; no frozen V2/Ecore/golden file was changed.
 
 ---
 
