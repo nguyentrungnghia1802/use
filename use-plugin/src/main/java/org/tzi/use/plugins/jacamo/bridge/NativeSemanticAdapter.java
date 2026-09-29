@@ -17,7 +17,6 @@ import org.jacamo.bridge.contract.RelationCardinality;
 import org.tzi.use.plugins.jacamo.diagnostics.Diagnostic;
 import org.tzi.use.plugins.jacamo.diagnostics.Phase;
 import org.tzi.use.plugins.jacamo.diagnostics.Severity;
-import org.tzi.use.plugins.jacamo.mapping.ActiveBaseline;
 import org.tzi.use.plugins.jacamo.project.ProjectRoot;
 import org.tzi.use.plugins.jacamo.project.SourceFile;
 import org.tzi.use.plugins.jacamo.project.SourceKind;
@@ -95,7 +94,55 @@ public final class NativeSemanticAdapter {
     }
     private void addOwners(List<SemanticReference> refs,String feature,List<Draft> owned){owned.stream().sorted(Comparator.comparing(d->d.id().value())).forEach(d->refs.add(new SemanticReference(feature,d.fact().id().canonical(),d.id())));}
     private void addReverse(List<SemanticReference> refs,String feature,Draft owner,Map<String,Draft> index,String sourceFeature,MetamodelKind targetKind){index.values().stream().filter(d->d.kind().equals(targetKind)).filter(d->d.fact().references().getOrDefault(sourceFeature,List.of()).stream().anyMatch(id->id.canonical().equals(owner.fact().id().canonical()))).sorted(Comparator.comparing(d->d.id().value())).forEach(d->refs.add(new SemanticReference(feature,d.fact().id().canonical(),d.id())));}
-    private void addCross(List<SemanticReference> refs,String feature,Draft owner,Map<String,Draft> index,List<ModelFact> facts,String ownerEnd,String targetEnd){facts.stream().filter(d->d.factKind().equals("focus")||d.factKind().equals("player-role")).filter(d->d.references().getOrDefault(ownerEnd,List.of()).stream().anyMatch(id->id.canonical().equals(owner.fact().id().canonical()))).flatMap(d->d.references().getOrDefault(targetEnd,List.of()).stream()).map(id->index.get(id.canonical())).filter(java.util.Objects::nonNull).distinct().sorted(Comparator.comparing(d->d.id().value())).forEach(d->refs.add(new SemanticReference(feature,d.fact().id().canonical(),d.id())));}
+    private void addCross(List<SemanticReference> refs,String feature,Draft owner,Map<String,Draft> index,List<ModelFact> facts,String ownerEnd,String targetEnd){
+        var targets=new TreeMap<String,Draft>();
+        facts.stream().filter(d->d.factKind().equals("focus")||d.factKind().equals("player-role"))
+                .filter(d->d.references().getOrDefault(ownerEnd,List.of()).stream()
+                        .anyMatch(id->id.canonical().equals(owner.fact().id().canonical())))
+                .flatMap(d->d.references().getOrDefault(targetEnd,List.of()).stream())
+                .map(id->index.get(id.canonical())).filter(java.util.Objects::nonNull)
+                .forEach(d->targets.put(d.id().value(),d));
+
+        // J09/J10 deliberately keep the official JaCaMo tuples unresolved in the Bridge contract.
+        // This adapter belongs only to the historical V2 compatibility path, so it recreates the
+        // former projection here, after ingestion, and only when both tuple endpoints resolve to
+        // one exact canonical Bridge identity. The code-grounded native path never calls this class.
+        facts.stream().filter(this::isRawCrossTuple)
+                .filter(d->exactTupleEndpoint(d,ownerEnd,index)
+                        .anyMatch(id->id.equals(owner.fact().id().canonical())))
+                .flatMap(d->exactTupleEndpoint(d,targetEnd,index))
+                .map(index::get).filter(java.util.Objects::nonNull)
+                .forEach(d->targets.put(d.id().value(),d));
+        targets.values().forEach(d->refs.add(new SemanticReference(feature,d.fact().id().canonical(),d.id())));
+    }
+    private boolean isRawCrossTuple(ModelFact fact){
+        return fact.completeness()==CapabilityStatus.COMPLETE
+                &&(fact.factKind().equals("focus-tuple")||fact.factKind().equals("role-tuple"));
+    }
+    private java.util.stream.Stream<String> exactTupleEndpoint(ModelFact tuple,String end,Map<String,Draft> index){
+        String direct=tuple.attributes().get(end);
+        if(end.equals("agent"))return direct==null||!index.containsKey(direct)?java.util.stream.Stream.empty():java.util.stream.Stream.of(direct);
+        String scope=tuple.id().scope();
+        if(tuple.factKind().equals("role-tuple")&&end.equals("role")&&direct!=null&&!direct.isBlank())
+            return exactPresent(index,new BridgeEntityId("moise","organisation","role",scope,direct,"model"));
+        if(tuple.factKind().equals("focus-tuple")&&end.equals("artifact")){
+            String workspace=tuple.attributes().get("workspace");
+            if(workspace==null||workspace.isBlank()||direct==null||direct.isBlank())return java.util.stream.Stream.empty();
+            return exactPresent(index,new BridgeEntityId("jacamo","environment","artifact-declaration",scope,workspace+"/"+direct,"model"));
+        }
+        if(tuple.factKind().equals("focus-tuple")&&end.equals("workspace")){
+            if(direct==null||direct.isBlank())return java.util.stream.Stream.empty();
+            var candidates=List.of(
+                    new BridgeEntityId("jacamo","environment","workspace-declaration",scope,direct,"model").canonical(),
+                    new BridgeEntityId("cartago","environment","workspace-declaration",scope,direct,"model").canonical());
+            List<String> present=candidates.stream().filter(index::containsKey).distinct().toList();
+            return present.size()==1?present.stream():java.util.stream.Stream.empty();
+        }
+        return java.util.stream.Stream.empty();
+    }
+    private java.util.stream.Stream<String> exactPresent(Map<String,Draft> index,BridgeEntityId id){
+        return index.containsKey(id.canonical())?java.util.stream.Stream.of(id.canonical()):java.util.stream.Stream.empty();
+    }
     private void addCrossReverse(List<SemanticReference> refs,String feature,Draft owner,Map<String,Draft> index,List<ModelFact> facts,String ownerEnd,String targetEnd){addCross(refs,feature,owner,index,facts,ownerEnd,targetEnd);}
     private String feature(String feature,MetamodelKind owner){
         if(feature.equals("parent")||feature.equals("scheme")||feature.equals("agent")||feature.equals("artifact")||feature.equals("workspace")||feature.equals("group")||feature.equals("targetGoal"))return null;

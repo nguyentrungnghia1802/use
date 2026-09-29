@@ -1,0 +1,192 @@
+package org.tzi.use.plugins.jacamo.codegrounded.rule;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.jacamo.bridge.contract.CapabilityStatus;
+import org.jacamo.bridge.contract.semantic.EvidenceAuthority;
+import org.jacamo.bridge.contract.semantic.Fidelity;
+
+/**
+ * Complete deterministic registry for J01-J11, A01-A22, C01-C20, M01-M43 and X01-X09.
+ * A catalog entry describes the intended contract even when the audited API cannot yet supply it.
+ */
+public final class CodeGroundedRuleCatalog {
+    private static final Set<String> FIRST_SLICE = Set.of(
+            "J01", "J09", "J10", "J11",
+            "A01", "A02", "A03", "A04", "A05", "A16", "A17", "A18", "A19", "A20");
+    private static final List<CodeGroundedRule> RULES = build();
+    private static final Map<String, CodeGroundedRule> BY_ID = index(RULES);
+
+    public List<CodeGroundedRule> rules() { return RULES; }
+
+    public CodeGroundedRule require(String ruleId) {
+        CodeGroundedRule rule = BY_ID.get(ruleId);
+        if (rule == null) throw new IllegalArgumentException("CODE_GROUNDED_RULE_UNKNOWN: " + ruleId);
+        return rule;
+    }
+
+    public Map<String, CodeGroundedRule> byId() { return BY_ID; }
+
+    private static List<CodeGroundedRule> build() {
+        List<CodeGroundedRule> rules = new ArrayList<>(105);
+        addFamily(rules, 'J', RuleDimension.JCM, EvidenceAuthority.OFFICIAL_JACAMO_API,
+                new String[] {
+                        "jacamo.project.JaCaMoProject", "jacamo.project.JaCaMoAgentParameters",
+                        "jacamo.project.JaCaMoWorkspaceParameters", "jason.mas2j.ClassParameters",
+                        "jacamo.project.JaCaMoOrgParameters", "jacamo.project.JaCaMoGroupParameters",
+                        "jacamo.project.JaCaMoSchemeParameters", "jacamo.project.JaCaMoInstParameters",
+                        "jacamo.project.JaCaMoAgentParameters.roles", "jacamo.project.JaCaMoAgentParameters.focus",
+                        "jacamo.project.parser.JaCaMoProjectParserTokenManager"
+                },
+                new String[] {
+                        "MModel", "MClass Agent", "MClass Workspace", "MClass ArtifactDeclaration",
+                        "MClass OrganizationDeployment", "MClass GroupDeployment", "MClass SchemeDeployment",
+                        "MClass InstitutionDeployment", "Trace raw role tuple", "Trace raw focus tuple",
+                        "Trace import provenance"
+                });
+        addFamily(rules, 'A', RuleDimension.JASON, EvidenceAuthority.OFFICIAL_JASON_API,
+                new String[] {
+                        "jason.asSemantics.Agent", "jason.pl.PlanLibrary", "jason.asSyntax.Plan",
+                        "jason.asSyntax.Trigger", "jason.asSyntax.PlanBody", "jason.asSyntax.PlanBody.BodyType.action",
+                        "jason.asSyntax.PlanBody.BodyType.internalAction", "jason.asSyntax.Literal",
+                        "jason.asSemantics.Circumstance", "jason.asSyntax.Rule", "jason.asSyntax.SourceInfo",
+                        "jason.asSemantics.ActionExec", "jason.asSemantics.Intention", "jason.asSemantics.Event",
+                        "jason.asSemantics.TransitionSystem", "jason.asSemantics.Agent.getPL",
+                        "jason.pl.PlanLibrary.getPlans", "jason.asSyntax.Plan.getTrigger",
+                        "jason.asSyntax.Plan.getBody", "jason.asSyntax.PlanBody.getBodyNext",
+                        "jason.asSemantics.Agent.getBB", "jason.asSemantics.Agent.getInitialGoals"
+                },
+                new String[] {
+                        "MClass AgentProgram", "MClass PlanLibrary", "MClass Plan", "MClass Trigger",
+                        "MClass PlanBodyElement", "MClass Action", "MClass Action", "MClass Belief",
+                        "MClass AgentGoal", "MClass BeliefRule", "Trace source provenance", "MSystemState runtime action",
+                        "MSystemState runtime intention", "MSystemState runtime event", "Trace runtime controller",
+                        "MAssociation A16AgentProgramPlanLibrary", "MAssociation A17PlanLibraryPlan",
+                        "MAssociation A18PlanTrigger", "MAssociation A19PlanBodyElement",
+                        "MAssociation A20PlanBodyNext", "MAssociation A21ProgramBelief",
+                        "MAssociation A22ProgramGoal"
+                });
+        addFamily(rules, 'C', RuleDimension.CARTAGO, EvidenceAuthority.OFFICIAL_CARTAGO_API,
+                new String[] {
+                        "cartago.CartagoEnvironment", "cartago.WorkspaceDescriptor", "java.lang.Class<cartago.Artifact>",
+                        "cartago.ArtifactId", "cartago.OpDescriptor", "java.lang.reflect.Method",
+                        "cartago.Guard", "cartago.ObsProperty", "cartago.ArtifactObsProperty", "cartago.ArtifactInfo",
+                        "cartago.Signal", "cartago.AgentId", "cartago.CartagoEnvironment.workspaces",
+                        "cartago.ArtifactInfo.getWorkspaceId", "cartago.ArtifactId.getArtifactType",
+                        "cartago.OpDescriptor", "cartago.ArtifactInfo.getObsProperties", "cartago.OpDescriptor.guard",
+                        "cartago.Workspace.joinedAgents", "cartago.focus"
+                },
+                new String[] {
+                        "MClass Environment", "MClass Workspace", "MClass ArtifactType", "MClass Artifact",
+                        "MClass Operation", "MOperation", "MClass Guard", "MClass LiveObservableProperty",
+                        "MClass ObservablePropertySnapshot", "MClass ArtifactInfo", "MClass Signal", "MClass CartagoAgentIdentity",
+                        "MAssociation C13EnvironmentWorkspace", "MAssociation C14WorkspaceArtifact",
+                        "MAssociation C15ArtifactType", "MAssociation C16ArtifactOperation",
+                        "MAssociation C17ArtifactObservableProperty", "MAssociation C18OperationGuard",
+                        "MAssociation C19WorkspaceAgent", "MAssociation C20AgentArtifactFocus"
+                });
+        addFamily(rules, 'M', RuleDimension.MOISE, EvidenceAuthority.OFFICIAL_MOISE_API,
+                new String[] {
+                        "moise.os.OS", "moise.os.ss.SS", "moise.os.fs.FS", "moise.os.ns.NS", "moise.os.ss.Group",
+                        "moise.os.ss.Role", "moise.os.ss.RoleRel", "moise.os.ss.Link", "moise.os.ss.Compatibility",
+                        "moise.os.fs.Scheme", "moise.os.fs.Mission", "moise.os.fs.Goal", "moise.os.fs.Plan",
+                        "moise.os.ns.Norm", "moise.os.ss.Cardinality", "moise.os.ss.Cardinality",
+                        "moise.os.fs.Cardinality", "moise.os.OS.getSS", "moise.os.OS.getFS", "moise.os.OS.getNS",
+                        "moise.os.ss.SS.getRolesDef", "moise.os.ss.SS.getRootGrSpec", "moise.os.ss.Group.getSubGroups",
+                        "moise.os.ss.Role.getSuperRoles", "moise.os.ss.Link.getSource", "moise.os.ss.Link.getTarget",
+                        "moise.os.ss.Compatibility.getSource", "moise.os.ss.Compatibility.getTarget",
+                        "moise.os.ss.Cardinality.owner", "moise.os.ss.Cardinality.member",
+                        "moise.os.ss.Cardinality.owner", "moise.os.ss.Cardinality.member", "moise.os.fs.FS.getSchemes",
+                        "moise.os.fs.Scheme.getMissions", "moise.os.fs.Scheme.getRootGoal",
+                        "moise.os.fs.Cardinality.owner", "moise.os.fs.Cardinality.member", "moise.os.fs.Mission.getGoals",
+                        "moise.os.fs.Goal.getPlan", "moise.os.fs.Plan.getSubGoals", "moise.os.ns.NS.getNorms",
+                        "moise.os.ns.Norm.getRole", "moise.os.ns.Norm.getMission"
+                },
+                new String[] {
+                        "MClass Organization", "MClass StructuralSpecification", "MClass FunctionalSpecification",
+                        "MClass NormativeSpecification", "MClass Group", "MClass Role", "MClass RoleRelation",
+                        "MClass Link", "MClass Compatibility", "MClass Scheme", "MClass Mission",
+                        "MClass OrganizationalGoal", "MClass OrganizationalPlan", "MClass Norm",
+                        "MClass GroupRoleCardinality", "MClass SubGroupCardinality", "MClass SchemeMissionCardinality",
+                        "MAssociation M18OrganizationSS", "MAssociation M19OrganizationFS", "MAssociation M20OrganizationNS",
+                        "MAssociation M21SSRole", "MAssociation M22SSGroup", "MAssociation M23GroupSubgroup",
+                        "MAssociation M24RoleSuperRole", "MAssociation M25LinkSource", "MAssociation M26LinkTarget",
+                        "MAssociation M27CompatibilitySource", "MAssociation M28CompatibilityTarget",
+                        "MAssociation M29CardinalityOwner", "MAssociation M30CardinalityMember",
+                        "MAssociation M31SubgroupCardinalityOwner", "MAssociation M32SubgroupCardinalityMember",
+                        "MAssociation M33FSScheme", "MAssociation M34SchemeMission", "MAssociation M35SchemeRootGoal",
+                        "MAssociation M36SchemeCardinality", "MAssociation M37MissionCardinality",
+                        "MAssociation M38MissionGoal", "MAssociation M39GoalPlan", "MAssociation M40PlanSubGoals",
+                        "MAssociation M41NSNorm", "MAssociation M42NormRole", "MAssociation M43NormMission"
+                });
+        addFamily(rules, 'X', RuleDimension.CROSS, EvidenceAuthority.EXPLICIT_BINDING,
+                new String[] {
+                        "jason.asSyntax.PlanBody+cartago.OpDescriptor", "jason.asSyntax.Literal+cartago.ObsProperty",
+                        "jason.asSyntax.Trigger+cartago.Signal", "jacamo.project.JaCaMoAgentParameters.roles+moise.os.ss.Role",
+                        "jacamo.project.JaCaMoAgentParameters+cartago.WorkspaceId",
+                        "jacamo.project.JaCaMoAgentParameters.focus+cartago.ArtifactId",
+                        "jason.asSemantics.Event+moise.os.fs.Goal", "jason.mas2j.ClassParameters+cartago.ArtifactId",
+                        "jacamo.project.JaCaMoAgentParameters+jason.asSemantics.Agent+cartago.AgentId"
+                },
+                new String[] {
+                        "MAssociation X01ActionOperation", "MAssociation X02BeliefProperty",
+                        "MAssociation X03TriggerSignal", "MAssociation X04AgentRole",
+                        "MAssociation X05AgentWorkspace", "MAssociation X06AgentArtifactFocus",
+                        "MAssociation X07AgentGoalOrganizationalGoal", "MAssociation X08DeclarationArtifact",
+                        "MAssociation X09AgentIdentity"
+                });
+        if (rules.size() != 105) throw new IllegalStateException("CODE_GROUNDED_RULE_COUNT: " + rules.size());
+        return List.copyOf(rules);
+    }
+
+    private static void addFamily(List<CodeGroundedRule> rules, char prefix, RuleDimension dimension,
+                                  EvidenceAuthority authority, String[] sources, String[] targets) {
+        if (sources.length != targets.length) throw new IllegalStateException("RULE_FAMILY_METADATA_MISMATCH: " + prefix);
+        for (int index = 0; index < sources.length; index++) {
+            String id = "%c%02d".formatted(prefix, index + 1);
+            EvidenceAuthority ruleAuthority = id.equals("J11") ? EvidenceAuthority.OFFICIAL_GENERATED_LEXER : authority;
+            Fidelity fidelity = fidelity(id);
+            CapabilityStatus capability = capability(id);
+            ImplementationStatus implementation = implementation(id);
+            String policy = switch (implementation) {
+                case IMPLEMENTED -> "FAIL_CLOSED_ON_CONTRACT_OR_API_DRIFT";
+                case UNAVAILABLE_IN_AUDITED_API -> "EMIT_UNAVAILABLE_DIAGNOSTIC_AND_PRESERVE_UNKNOWN";
+                case EXPLICITLY_UNSUPPORTED -> "EMIT_EXPLICITLY_UNSUPPORTED_DIAGNOSTIC";
+                case PLANNED_CAPABILITY_GATED -> "SKIP_WITH_CAPABILITY_DIAGNOSTIC";
+            };
+            rules.add(new CodeGroundedRule(id, dimension, ruleAuthority, sources[index], targets[index], fidelity,
+                    capability, implementation, policy));
+        }
+    }
+
+    private static Fidelity fidelity(String id) {
+        if (id.equals("J11")) return Fidelity.PROVENANCE_ONLY;
+        if (id.matches("A1[2-5]|C0[489]|C1[0-2]|C1[479]|C20")) return Fidelity.RUNTIME_ONLY;
+        if (id.startsWith("X")) return Fidelity.CONDITIONAL;
+        if (id.equals("C08")) return Fidelity.UNKNOWN;
+        return Fidelity.EXACT;
+    }
+
+    private static CapabilityStatus capability(String id) {
+        if (id.equals("C08")) return CapabilityStatus.UNAVAILABLE;
+        return FIRST_SLICE.contains(id) ? CapabilityStatus.COMPLETE : CapabilityStatus.PARTIAL;
+    }
+
+    private static ImplementationStatus implementation(String id) {
+        if (FIRST_SLICE.contains(id)) return ImplementationStatus.IMPLEMENTED;
+        if (id.equals("C08")) return ImplementationStatus.UNAVAILABLE_IN_AUDITED_API;
+        return ImplementationStatus.PLANNED_CAPABILITY_GATED;
+    }
+
+    private static Map<String, CodeGroundedRule> index(List<CodeGroundedRule> rules) {
+        Map<String, CodeGroundedRule> result = new LinkedHashMap<>();
+        for (CodeGroundedRule rule : rules)
+            if (result.put(rule.ruleId(), rule) != null)
+                throw new IllegalStateException("CODE_GROUNDED_RULE_DUPLICATE: " + rule.ruleId());
+        return Collections.unmodifiableMap(result);
+    }
+}

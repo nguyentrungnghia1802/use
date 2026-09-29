@@ -21,6 +21,7 @@ import org.jacamo.bridge.contract.RuntimeSnapshot;
 import org.jacamo.bridge.contract.SourceWatermark;
 import org.tzi.use.plugins.jacamo.bridge.BridgeConnectionConfig;
 import org.tzi.use.plugins.jacamo.bridge.RecordedBridgeTransport;
+import org.tzi.use.main.Session;
 
 /** Official-snapshot facade fixture. Historical parser tests remain separate and never feed production. */
 final class BridgeFacadeTestSupport {
@@ -57,6 +58,24 @@ final class BridgeFacadeTestSupport {
                         throw new IllegalStateException("TEST_OFFICIAL_ADAPTER_FAILED", error);
                     }
                 });
+    }
+
+    static DefaultJaCaMoFacade nativeFacade(Path jcm, Session session,
+                                            java.util.function.BooleanSupplier unavailable) {
+        Path selected = jcm.toAbsolutePath().normalize();
+        return new DefaultJaCaMoFacade(Path.of("."), SemanticAuthority.BRIDGE,
+                BridgeFacadeTestSupport::configuration, ignored -> {
+                    if (unavailable.getAsBoolean()) throw new IllegalStateException("TEST_BRIDGE_UNAVAILABLE");
+                    try {
+                        ModelSnapshot model = new OfficialProjectAdapter().adapt(
+                                new OfficialProjectLoader().load(selected), selected);
+                        return new RecordedBridgeTransport(frames(model, model.sources().getFirst().id().scope()));
+                    } catch (RuntimeException error) {
+                        throw error;
+                    } catch (Exception error) {
+                        throw new IllegalStateException("TEST_OFFICIAL_ADAPTER_FAILED", error);
+                    }
+                }, PipelineMode.CODE_GROUNDED_NATIVE, session);
     }
 
     static BridgeConnectionConfig configuration() {

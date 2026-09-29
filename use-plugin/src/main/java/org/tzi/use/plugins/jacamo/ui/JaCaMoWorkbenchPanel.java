@@ -54,8 +54,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private final JLabel sourceLocation = named(new JLabel("No source selected"), "source-location");
     private final JButton copySource = named(new JButton("Copy source path"), "copy-source");
     private final DefaultTableModel sourcesModel = readOnlyModel("Path", "Kind", "Bytes", "SHA-256");
-    private final DefaultTableModel tracesModel = readOnlyModel("Source", "Source kind", "USE target", "Target kind",
-            "Mapping rule", "Projection rule", "Status", "Source path", "Line", "Dimension");
+    private final DefaultTableModel tracesModel = readOnlyModel("Rule", "Source", "Target", "Fidelity", "Status");
     private final DefaultTableModel diagnosticsModel = readOnlyModel("Code", "Severity", "Phase", "File", "Line",
             "Message", "Remediation");
     private final DefaultTableModel verificationModel = readOnlyModel("Constraint", "Origin", "Status", "Context",
@@ -64,6 +63,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private final JTable traces = named(new JTable(tracesModel), "trace-table");
     private final JTable diagnostics = named(new JTable(diagnosticsModel), "diagnostics-table");
     private final JTable verification = named(new JTable(verificationModel), "verification-table");
+    private final JTextArea traceDetail = named(new JTextArea(), "mapping-detail");
     private final JComboBox<String> dimensionFilter = named(new JComboBox<>(), "trace-dimension-filter");
     private final JComboBox<String> statusFilter = named(new JComboBox<>(), "trace-status-filter");
     private final TableRowSorter<DefaultTableModel> traceSorter = new TableRowSorter<>(tracesModel);
@@ -99,7 +99,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         add(toolbar(), BorderLayout.NORTH);
         JTabbedPane tabs = named(new JTabbedPane(), "workbench-tabs");
         tabs.addTab("Project", projectPanel());
-        tabs.addTab("Trace", tracePanel());
+        tabs.addTab("Mapping Inspector", tracePanel());
         tabs.addTab("Diagnostics", tablePanel(diagnostics));
         tabs.addTab("Verification", verificationPanel());
         tabs.addTab("Runtime", runtimePanel());
@@ -111,28 +111,29 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
 
     public void importProject(Path jcmFile) {
         Path normalized = java.util.Objects.requireNonNull(jcmFile, "jcmFile").toAbsolutePath().normalize();
-        execute("Import failed", () -> {
-            facade.importProject(normalized);
+        executeBackground("Import failed", () -> facade.importProject(normalized), () -> {
             refreshProject();
             setStatus("Imported " + normalized);
         });
-        refreshDiagnostics();
+        if (!javax.swing.SwingUtilities.isEventDispatchThread()) refreshDiagnostics();
     }
 
     public void rebuildProject() {
-        execute("Rebuild failed", () -> { facade.rebuild(); refreshProject(); setStatus("Project rebuilt"); });
+        executeBackground("Rebuild failed", facade::rebuild,
+                () -> { refreshProject(); setStatus("Project rebuilt"); });
     }
 
     public void runFullVerification() {
-        execute("Verification failed", () -> { facade.runFullVerification(); refreshVerification(); });
+        executeBackground("Verification failed", facade::runFullVerification, this::refreshVerification);
     }
 
     public void loadVerificationProfile(Path profile) {
-        execute("Profile load failed", () -> { facade.loadVerificationProfile(profile); refreshProject(); });
+        executeBackground("Profile load failed", () -> facade.loadVerificationProfile(profile), this::refreshProject);
     }
 
     public void exportVerificationReport(Path destination) {
-        execute("Report export failed", () -> { facade.exportVerificationReport(destination); setStatus("Report: " + destination); });
+        executeBackground("Report export failed", () -> facade.exportVerificationReport(destination),
+                () -> setStatus("Report: " + destination));
     }
 
     public void refreshRuntime() {
@@ -192,18 +193,30 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private JPanel tracePanel() {
         dimensionFilter.addItem("ALL");
         statusFilter.addItem("ALL");
-        for (String value : List.of("AGENT", "ENVIRONMENT", "ORGANISATION", "UNKNOWN")) dimensionFilter.addItem(value);
-        for (String value : List.of("RESOLVED", "PROJECTED", "AMBIGUOUS", "UNRESOLVED", "STALE")) statusFilter.addItem(value);
+        for (String value : List.of("J", "A", "C", "M", "X", "AGENT", "ENVIRONMENT", "ORGANISATION", "UNKNOWN"))
+            dimensionFilter.addItem(value);
+        for (String value : List.of("COMPLETE", "PARTIAL", "UNAVAILABLE", "RESOLVED", "PROJECTED", "AMBIGUOUS",
+                "UNRESOLVED", "STALE")) statusFilter.addItem(value);
         dimensionFilter.addActionListener(event -> applyTraceFilter());
         statusFilter.addActionListener(event -> applyTraceFilter());
         traces.setRowSorter(traceSorter);
+        traceDetail.setEditable(false);
+        traceDetail.setLineWrap(true);
+        traceDetail.setWrapStyleWord(true);
         traces.getSelectionModel().addListSelectionListener(event -> {
             if (!event.getValueIsAdjusting() && traces.getSelectedRow() >= 0) {
                 int row = traces.convertRowIndexToModel(traces.getSelectedRow());
-                Object path = tracesModel.getValueAt(row, 7);
-                if (path instanceof Path sourcePath) {
+                JaCaMoFacade.TraceRow selected = facade.traces().get(row);
+                traceDetail.setText("Rule: " + selected.mappingRule() + "\nSource FQCN: " + selected.sourceKind()
+                        + "\nSemantic ID: " + selected.semanticId() + "\nTarget: " + selected.targetKind() + " "
+                        + selected.targetUseId() + "\nEvidence: " + selected.evidenceAuthority()
+                        + "\nFidelity: " + selected.projectionRule() + "\nCapability/status: " + selected.status()
+                        + (selected.traceDiagnostics().isEmpty() ? "" : "\nDiagnostics: "
+                        + String.join(", ", selected.traceDiagnostics())));
+                Path sourcePath = selected.sourcePath();
+                if (sourcePath != null) {
                     selectedSource = sourcePath.toAbsolutePath().normalize();
-                    sourceLocation.setText(selectedSource + ":" + tracesModel.getValueAt(row, 8));
+                    sourceLocation.setText(selectedSource + ":" + selected.sourceLine());
                     copySource.setEnabled(true);
                 } else {
                     selectedSource = null;
@@ -217,7 +230,10 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         filters.add(new JLabel("Status:")); filters.add(statusFilter);
         JPanel panel = new JPanel(new BorderLayout(4, 4));
         panel.add(filters, BorderLayout.NORTH);
-        panel.add(new JScrollPane(traces), BorderLayout.CENTER);
+        JSplitPane traceSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(traces),
+                new JScrollPane(traceDetail));
+        traceSplit.setResizeWeight(0.75);
+        panel.add(traceSplit, BorderLayout.CENTER);
         JPanel sourceControls = new JPanel(new FlowLayout(FlowLayout.LEADING));
         sourceControls.add(sourceLocation);
         sourceControls.add(copySource);
@@ -262,18 +278,15 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         addField(values, "Last event", runtimeLastEvent);
         addField(values, "Latency", runtimeLatency);
         JPanel controls = new JPanel(new FlowLayout(FlowLayout.LEADING));
-        controls.add(button("Connect", "runtime-connect", () -> execute("Runtime connect failed", () -> {
-            facade.connectRuntime(); refreshRuntime();
-        })));
+        controls.add(button("Connect", "runtime-connect", () -> executeBackground("Runtime connect failed",
+                facade::connectRuntime, this::refreshRuntime)));
         controls.add(button("Disconnect", "runtime-disconnect", () -> execute("Runtime disconnect failed", () -> {
             facade.disconnectRuntime(); refreshRuntime();
         })));
-        controls.add(button("Reconnect", "runtime-reconnect", () -> execute("Runtime reconnect failed", () -> {
-            facade.connectRuntime(); refreshRuntime();
-        })));
-        controls.add(button("Resync", "runtime-resync", () -> execute("Runtime resync failed", () -> {
-            facade.resyncRuntime(); refreshRuntime();
-        })));
+        controls.add(button("Reconnect", "runtime-reconnect", () -> executeBackground("Runtime reconnect failed",
+                facade::connectRuntime, this::refreshRuntime)));
+        controls.add(button("Resync", "runtime-resync", () -> executeBackground("Runtime resync failed",
+                facade::resyncRuntime, this::refreshRuntime)));
         controls.add(button("Refresh", "runtime-refresh", this::refreshRuntime));
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(values, BorderLayout.CENTER);
@@ -298,8 +311,8 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
                 row.path(), row.kind(), row.bytes(), row.sha256()
         }).toList());
         replaceRows(tracesModel, facade.traces().stream().map(row -> new Object[] {
-                row.semanticId(), row.sourceKind(), row.targetUseId(), row.targetKind(), row.mappingRule(),
-                row.projectionRule(), row.status(), row.sourcePath(), row.sourceLine(), row.dimension()
+                row.mappingRule(), row.sourceKind() + " | " + row.semanticId(),
+                row.targetKind() + " | " + row.targetUseId(), row.projectionRule(), row.status()
         }).toList());
         refreshDiagnostics();
         refreshVerification();
@@ -355,10 +368,17 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private void applyTraceFilter() {
         String dimension = String.valueOf(dimensionFilter.getSelectedItem());
         String state = String.valueOf(statusFilter.getSelectedItem());
-        java.util.ArrayList<RowFilter<DefaultTableModel, Integer>> filters = new java.util.ArrayList<>();
-        if (!"ALL".equals(dimension)) filters.add(RowFilter.regexFilter("^" + Pattern.quote(dimension) + "$", 9));
-        if (!"ALL".equals(state)) filters.add(RowFilter.regexFilter("^" + Pattern.quote(state) + "$", 6));
-        traceSorter.setRowFilter(filters.isEmpty() ? null : RowFilter.andFilter(filters));
+        if ("ALL".equals(dimension) && "ALL".equals(state)) {
+            traceSorter.setRowFilter(null);
+            return;
+        }
+        traceSorter.setRowFilter(new RowFilter<>() {
+            @Override public boolean include(Entry<? extends DefaultTableModel, ? extends Integer> entry) {
+                JaCaMoFacade.TraceRow row = facade.traces().get(entry.getIdentifier());
+                return ("ALL".equals(dimension) || dimension.equals(row.dimension()))
+                        && ("ALL".equals(state) || state.equals(row.status()));
+            }
+        });
     }
 
     private void chooseProject() {
@@ -407,6 +427,27 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
             setStatus(message);
             errorPresenter.accept(message);
         }
+    }
+
+    private void executeBackground(String title, Runnable operation, Runnable afterSuccess) {
+        if (!javax.swing.SwingUtilities.isEventDispatchThread()) {
+            execute(title, () -> { operation.run(); afterSuccess.run(); });
+            return;
+        }
+        setStatus(title.replace(" failed", "") + "...");
+        new javax.swing.SwingWorker<Void,Void>() {
+            @Override protected Void doInBackground() { operation.run(); return null; }
+            @Override protected void done() {
+                try { get(); afterSuccess.run(); }
+                catch (Exception error) {
+                    Throwable cause = error instanceof java.util.concurrent.ExecutionException && error.getCause() != null
+                            ? error.getCause() : error;
+                    String message = title + ": " + cause.getMessage();
+                    setStatus(message);
+                    errorPresenter.accept(message);
+                }
+            }
+        }.execute();
     }
 
     private void setStatus(String message) { status.setText(displayMessage(message)); }

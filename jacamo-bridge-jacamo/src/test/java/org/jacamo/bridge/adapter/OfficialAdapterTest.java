@@ -29,7 +29,10 @@ class OfficialAdapterTest {
         assertTrue(first.organisationFacts().stream().anyMatch(f->f.factKind().equals("role")));
         assertTrue(first.organisationFacts().stream().anyMatch(f->f.factKind().equals("norm")));
         assertFalse(first.groupRoleCardinalities().isEmpty());
-        assertTrue(first.crossDimensionalRelations().stream().anyMatch(f->f.factKind().equals("focus")));
+        assertFalse(first.crossDimensionalRelations().stream().anyMatch(f->f.factKind().equals("focus")),
+                "J10 must remain a raw tuple until X06 resolves it");
+        assertTrue(first.crossDimensionalRelations().stream().anyMatch(f->f.factKind().equals("focus-tuple")));
+        assertFalse(first.semanticContract().rawFocusTuples().isEmpty());
         assertTrue(first.sources().stream().allMatch(f->f.evidence().stream().allMatch(e->e.sourceUri().startsWith("project:/"))));
     }
 

@@ -2,6 +2,7 @@ package org.jacamo.bridge.contract;
 
 import java.util.List;
 import java.util.Map;
+import org.jacamo.bridge.contract.semantic.JacamoSemanticSnapshot;
 
 /** Deterministic model snapshot produced from official JaCaMo-side authorities. */
 public record ModelSnapshot(
@@ -15,7 +16,18 @@ public record ModelSnapshot(
         List<RelationCardinality> parentSubGroupCardinalities,
         List<ModelFact> crossDimensionalRelations,
         List<UnresolvedFact> unresolvedFacts,
-        Map<String, String> projectionProvenance) {
+        Map<String, String> projectionProvenance,
+        JacamoSemanticSnapshot semanticContract) {
+    public ModelSnapshot(String modelRevision, List<ModelFact> sources, List<ModelFact> agentDeclarations,
+                         List<ModelFact> workspaces, List<ModelFact> configuredArtifacts,
+                         List<ModelFact> organisationFacts, List<RelationCardinality> groupRoleCardinalities,
+                         List<RelationCardinality> parentSubGroupCardinalities,
+                         List<ModelFact> crossDimensionalRelations, List<UnresolvedFact> unresolvedFacts,
+                         Map<String,String> projectionProvenance) {
+        this(modelRevision,sources,agentDeclarations,workspaces,configuredArtifacts,organisationFacts,
+                groupRoleCardinalities,parentSubGroupCardinalities,crossDimensionalRelations,unresolvedFacts,
+                projectionProvenance,JacamoSemanticSnapshot.empty());
+    }
     public ModelSnapshot {
         modelRevision = ContractSupport.required(modelRevision, "modelRevision");
         sources = ContractSupport.list(sources);
@@ -28,5 +40,6 @@ public record ModelSnapshot(
         crossDimensionalRelations = ContractSupport.list(crossDimensionalRelations);
         unresolvedFacts = ContractSupport.list(unresolvedFacts);
         projectionProvenance = ContractSupport.map(projectionProvenance);
+        semanticContract = java.util.Objects.requireNonNull(semanticContract, "semanticContract");
     }
 }

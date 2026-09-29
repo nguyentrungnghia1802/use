@@ -15,17 +15,20 @@ public final class JaCaMoWorkbenchAction implements IPluginActionDelegate {
     private final BiConsumer<MainWindow, JaCaMoFacade> launcher;
 
     public JaCaMoWorkbenchAction() {
-        this(DefaultJaCaMoFacade.INSTANCE, JaCaMoWorkbenchAction::openDialog);
+        this(null, JaCaMoWorkbenchAction::openDialog);
     }
 
     JaCaMoWorkbenchAction(JaCaMoFacade facade, BiConsumer<MainWindow, JaCaMoFacade> launcher) {
-        this.facade = java.util.Objects.requireNonNull(facade, "facade");
+        this.facade = facade;
         this.launcher = java.util.Objects.requireNonNull(launcher, "launcher");
     }
 
     @Override public void performAction(IPluginAction action) {
         MainWindow parent = action == null ? null : action.getParent();
-        SwingUtilities.invokeLater(() -> launcher.accept(parent, facade));
+        JaCaMoFacade service = facade != null ? facade
+                : action != null && action.getSession() != null
+                ? DefaultJaCaMoFacade.forSession(action.getSession()) : DefaultJaCaMoFacade.INSTANCE;
+        SwingUtilities.invokeLater(() -> launcher.accept(parent, service));
     }
 
     @Override public boolean shouldBeEnabled(IPluginAction action) { return true; }

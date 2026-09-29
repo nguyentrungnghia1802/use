@@ -20,6 +20,13 @@ class NativeSemanticAdapterTest {
         Path jcm=hello(); var snapshot=new OfficialProjectAdapter().adapt(new OfficialProjectLoader().load(jcm),jcm);
         var adapted=new NativeSemanticAdapter().adapt(snapshot,jcm.getParent(),"helloworld"); var semantic=adapted.model();
         assertEquals(snapshot.modelRevision(),adapted.modelRevision());
+        long rawRoleTuples=snapshot.crossDimensionalRelations().stream().filter(f->f.factKind().equals("role-tuple")).count();
+        assertTrue(rawRoleTuples>0);
+        assertTrue(snapshot.crossDimensionalRelations().stream().filter(f->f.factKind().equals("role-tuple"))
+                .allMatch(f->f.references().isEmpty()),"official J09 contract must remain raw");
+        assertEquals(rawRoleTuples,semantic.elements().stream().filter(e->e.kind()==MetamodelKind.Agent)
+                .flatMap(e->e.references().stream()).filter(r->r.feature().equals("roles")&&r.targetId()!=null).count(),
+                "legacy V2 compatibility must resolve only exact canonical tuple endpoints");
         assertTrue(semantic.elements().stream().anyMatch(e->e.kind()==MetamodelKind.Agent));
         assertTrue(semantic.elements().stream().anyMatch(e->e.kind()==MetamodelKind.Plan));
         assertTrue(semantic.elements().stream().anyMatch(e->e.kind()==MetamodelKind.Norm));
@@ -36,5 +43,16 @@ class NativeSemanticAdapterTest {
         String sources=java.nio.file.Files.walk(Path.of("src/main/java/org/tzi/use/plugins/jacamo/bridge"))
                 .filter(java.nio.file.Files::isRegularFile).map(path->{try{return java.nio.file.Files.readString(path);}catch(Exception e){throw new RuntimeException(e);}}).reduce("",String::concat);
         for(String forbidden:java.util.List.of("import jacamo.","import jason.","import cartago.","import moise.","import npl."))assertFalse(sources.contains(forbidden),forbidden);
+    }
+
+    @Test void adapterStopsAtDtoToSemanticModelBoundary() throws Exception {
+        String source=java.nio.file.Files.readString(java.nio.file.Path.of(
+                "src/main/java/org/tzi/use/plugins/jacamo/bridge/NativeSemanticAdapter.java"));
+        assertTrue(source.contains("JaCaMoSemanticModel"));
+        assertTrue(source.contains("ModelSnapshot"));
+        for(String forbidden:java.util.List.of("org.tzi.use.api.","org.tzi.use.uml.","org.tzi.use.parser.",
+                "UseModelApi","UseSystemApi","MModel","MSystem","ActiveBaseline","MappingLoader",
+                "TransformationPlanner","StructuralUseGenerator","TextBackend","DirectUseBackend"))
+            assertFalse(source.contains(forbidden),forbidden);
     }
 }

@@ -20,14 +20,19 @@ public final class ContractPayloads {
         map.put("parentSubGroupCardinalities", snapshot.parentSubGroupCardinalities().stream().map(ContractPayloads::cardinality).toList());
         map.put("crossDimensionalRelations", facts(snapshot.crossDimensionalRelations()));
         map.put("unresolvedFacts", snapshot.unresolvedFacts().stream().map(ContractPayloads::unresolved).toList());
-        map.put("projectionProvenance", snapshot.projectionProvenance()); return map;
+        map.put("projectionProvenance", snapshot.projectionProvenance());
+        map.put("semanticContract", org.jacamo.bridge.contract.semantic.SemanticContractCodec.toTree(snapshot.semanticContract()));
+        return map;
     }
 
     public static ModelSnapshot model(Map<String, Object> map) {
         return new ModelSnapshot(text(map, "modelRevision"), modelFacts(map, "sources"), modelFacts(map, "agentDeclarations"),
                 modelFacts(map, "workspaces"), modelFacts(map, "configuredArtifacts"), modelFacts(map, "organisationFacts"),
                 cardinalities(map, "groupRoleCardinalities"), cardinalities(map, "parentSubGroupCardinalities"),
-                modelFacts(map, "crossDimensionalRelations"), unresolved(map, "unresolvedFacts"), stringMap(map, "projectionProvenance"));
+                modelFacts(map, "crossDimensionalRelations"), unresolved(map, "unresolvedFacts"), stringMap(map, "projectionProvenance"),
+                map.containsKey("semanticContract")
+                        ? org.jacamo.bridge.contract.semantic.SemanticContractCodec.fromTree(map.get("semanticContract"))
+                        : org.jacamo.bridge.contract.semantic.JacamoSemanticSnapshot.empty());
     }
 
     public static Map<String, Object> runtime(RuntimeSnapshot snapshot) {

@@ -54,7 +54,18 @@ public interface JaCaMoFacade {
     record SourceRow(Path path, String kind, long bytes, String sha256) { }
     record TraceRow(String semanticId, String sourceKind, String targetUseId, String targetKind,
                     String mappingRule, String projectionRule, String status, Path sourcePath,
-                    int sourceLine, String dimension) { }
+                    int sourceLine, String dimension, String evidenceAuthority, List<String> traceDiagnostics) {
+        public TraceRow {
+            evidenceAuthority = evidenceAuthority == null ? "" : evidenceAuthority;
+            traceDiagnostics = List.copyOf(traceDiagnostics == null ? List.of() : traceDiagnostics);
+        }
+        public TraceRow(String semanticId, String sourceKind, String targetUseId, String targetKind,
+                        String mappingRule, String projectionRule, String status, Path sourcePath,
+                        int sourceLine, String dimension) {
+            this(semanticId, sourceKind, targetUseId, targetKind, mappingRule, projectionRule, status,
+                    sourcePath, sourceLine, dimension, "", List.of());
+        }
+    }
     record RuntimeStatus(MirrorState state, int queueDepth, int highWatermark, long processed,
                          long rejected, long failed, long dropped, Instant lastSync, String lastEvent,
                          long lastLatencyNanos, long snapshotVersion, int violationCount) {

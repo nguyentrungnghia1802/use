@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Test;
 import org.tzi.use.runtime.MainPluginRuntime;
 import org.tzi.use.runtime.IPlugin;
 import org.tzi.use.runtime.gui.IPluginActionDelegate;
+import org.tzi.use.runtime.gui.IPluginAction;
+import org.tzi.use.main.Session;
 import org.tzi.use.runtime.gui.impl.ActionExtensionPoint;
 import org.tzi.use.runtime.impl.PluginRuntime;
 import org.tzi.use.runtime.model.PluginModel;
@@ -113,5 +115,24 @@ class JaCaMoPluginTest {
 
         assertEquals(java.util.List.of(facade), opened);
         assertTrue(action.shouldBeEnabled(null));
+    }
+
+    @Test
+    void defaultWorkbenchActionBindsNativeFacadeToPluginActionSession() throws Exception {
+        Session session = new Session();
+        var opened = new ArrayList<JaCaMoFacade>();
+        var delegate = new JaCaMoWorkbenchAction(null, (parent, service) -> opened.add(service));
+        IPluginAction action = new IPluginAction() {
+            @Override public void actionPerformed(java.awt.event.ActionEvent event) { }
+            @Override public Session getSession() { return session; }
+            @Override public org.tzi.use.gui.main.MainWindow getParent() { return null; }
+        };
+
+        delegate.performAction(action);
+        javax.swing.SwingUtilities.invokeAndWait(() -> { });
+
+        assertEquals(1, opened.size());
+        assertEquals(PipelineMode.CODE_GROUNDED_NATIVE,
+                ((DefaultJaCaMoFacade) opened.getFirst()).pipelineMode());
     }
 }

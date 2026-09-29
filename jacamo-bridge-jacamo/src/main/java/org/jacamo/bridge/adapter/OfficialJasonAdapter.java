@@ -1,10 +1,16 @@
 package org.jacamo.bridge.adapter;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import jason.asSemantics.Agent;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.InternalAction;
@@ -15,78 +21,156 @@ import jason.asSyntax.Structure;
 import org.jacamo.bridge.contract.BridgeEntityId;
 import org.jacamo.bridge.contract.CapabilityStatus;
 import org.jacamo.bridge.contract.ModelFact;
+import org.jacamo.bridge.contract.semantic.EvidenceAuthority;
+import org.jacamo.bridge.contract.semantic.Fidelity;
+import org.jacamo.bridge.contract.semantic.JasonSemanticContract.AgentProgramSemantic;
+import org.jacamo.bridge.contract.semantic.JasonSemanticContract.PlanBodyElementSemantic;
+import org.jacamo.bridge.contract.semantic.JasonSemanticContract.PlanLibrarySemantic;
+import org.jacamo.bridge.contract.semantic.JasonSemanticContract.PlanSemantic;
+import org.jacamo.bridge.contract.semantic.JasonSemanticContract.TriggerSemantic;
 
-/** Official Jason parser/AST adapter. Source text is provenance, never the accepted semantic parser. */
+/** Official Jason 3.3.2 parser/object adapter. Source text is provenance, never semantic authority. */
 public final class OfficialJasonAdapter {
-    /** Reserved label format emitted by Jason PlanLibrary#getUniqueLabel(). */
-    private static final Pattern GENERATED_LABEL = Pattern.compile("p__\\d+");
-    public List<ModelFact> parse(Path projectRoot, Path source, String projectKey, String declarationId) throws Exception {
-        var evidence = AdapterEvidence.file("jason-parser", projectRoot, source, "Agent.parseAS official AST");
-        var parent = new BridgeEntityId("jacamo", "agent", "declaration", projectKey, declarationId, "model");
-        // Parsing is an observation operation; it must not start Jason's web
-        // mind-inspector service or any other listening endpoint.
-        jason.util.Config.get().put(jason.util.Config.START_WEB_MI, "false");
-        var agent = new SafeParsingAgent(); agent.setConsiderToAddMIForThisAgent(false); agent.initAg();
-        try {
-            agent.parseAS(source.toFile()); var result = new ArrayList<ModelFact>(); int ordinal = 0;
-            for (Literal belief : agent.getInitialBels()) result.add(fact("belief", canonicalAst(belief.toString()), belief.getSrcInfo() == null ? 0 : belief.getSrcInfo().getSrcLine(), ordinal++, projectKey, declarationId, evidence, parent));
-            for (Literal goal : agent.getInitialGoals()) result.add(fact("goal", canonicalAst(goal.toString()), goal.getSrcInfo() == null ? 0 : goal.getSrcInfo().getSrcLine(), ordinal++, projectKey, declarationId, evidence, parent));
-            for (Plan plan : agent.getPL().getPlans()) {
-                int planOrdinal=ordinal++;
-                String labelFunctor = plan.getLabel() == null ? "" : plan.getLabel().getFunctor();
-                boolean generatedLabel = GENERATED_LABEL.matcher(labelFunctor).matches();
-                Map<String,String> attributes = Map.of("label", generatedLabel ? "" : labelFunctor,
-                        "labelKind", generatedLabel ? "JASON_GENERATED" : "SOURCE_DECLARED",
-                        "atomic", Boolean.toString(plan.isAtomic()), "breakpoint", Boolean.toString(plan.hasBreakpoint()),
-                        "allUnifiers", Boolean.toString(plan.isAllUnifs()), "trigger", canonicalAst(String.valueOf(plan.getTrigger())),
-                        "context", canonicalAst(String.valueOf(plan.getContext())), "bodyAst", canonicalAst(String.valueOf(plan.getBody())),
-                        "sourceLine", Integer.toString(plan.getSrcInfo() == null ? 0 : plan.getSrcInfo().getSrcLine()));
-                var id = new BridgeEntityId("jason", "agent", "plan", projectKey, declarationId + ":" + planOrdinal, "model");
-                var triggerId=new BridgeEntityId("jason","agent","event",projectKey,declarationId+":"+planOrdinal+":trigger","model");
-                var trigger=plan.getTrigger();
-                result.add(new ModelFact("event",triggerId,Map.of("operator",String.valueOf(trigger.getOperator()),"type",String.valueOf(trigger.getType()),"literal",canonicalAst(String.valueOf(trigger.getLiteral()))),Map.of(),CapabilityStatus.COMPLETE,List.of(evidence)));
-                var actionIds=new ArrayList<BridgeEntityId>(); int actionOrdinal=0;
-                for(PlanBody body=plan.getBody();body!=null;body=body.getBodyNext()){
-                    if(body.getBodyTerm()==null)continue;
-                    boolean internal=body.getBodyType()==PlanBody.BodyType.internalAction;
-                    if(!internal&&body.getBodyType()!=PlanBody.BodyType.action)continue;
-                    var actionId=new BridgeEntityId("jason","agent","action",projectKey,declarationId+":"+planOrdinal+":action:"+actionOrdinal++,"model");
-                    var term=body.getBodyTerm();String actionName=term instanceof Structure structure?structure.getFunctor():canonicalAst(term.toString());int arity=term instanceof Structure structure?structure.getArity():0;
-                    result.add(new ModelFact("action",actionId,Map.of("name",actionName,"arity",Integer.toString(arity),"kind",internal?"internal":"external","ast",canonicalAst(term.toString())),Map.of(),CapabilityStatus.COMPLETE,List.of(evidence)));actionIds.add(actionId);
-                }
-                result.add(new ModelFact("plan", id, attributes, Map.of("agent",List.of(parent),"triggeringEvent",List.of(triggerId),"actions",actionIds), CapabilityStatus.COMPLETE, List.of(evidence)));
-            }
-            return List.copyOf(result);
-        } finally { agent.stopAg(); }
+    private static final Pattern GENERATED_LABEL=Pattern.compile("p__\\d+");
+    private static final Set<String> AUDITED_BODY_TYPES=Set.of("none","action","internalAction","achieve","test",
+            "addBel","addBelNewFocus","addBelBegin","addBelEnd","delBel","delBelNewFocus","delAddBel",
+            "achieveNF","constraint");
+
+    public record Result(List<ModelFact> facts, AgentProgramSemantic program) {
+        public Result { facts=List.copyOf(facts); }
     }
-    private ModelFact fact(String kind,String ast,int line,int ordinal,String projectKey,String declarationId,org.jacamo.bridge.contract.Evidence evidence,BridgeEntityId parent) {
+
+    /** Compatibility view retained for the explicit LEGACY_V2 pipeline. */
+    public List<ModelFact> parse(Path projectRoot,Path source,String projectKey,String declarationId)throws Exception{
+        return adapt(projectRoot,source,projectKey,declarationId).facts();
+    }
+
+    public Result adapt(Path projectRoot,Path source,String projectKey,String declarationId)throws Exception{
+        verifyAuditedBodyTypeSet();
+        var evidence=AdapterEvidence.file("jason-parser",projectRoot,source,"Agent.parseAS official Jason AST");
+        var parent=new BridgeEntityId("jacamo","agent","declaration",projectKey,declarationId,"model");
+        jason.util.Config.get().put(jason.util.Config.START_WEB_MI,"false");
+        var agent=new SafeParsingAgent();agent.setConsiderToAddMIForThisAgent(false);agent.initAg();
+        try{
+            agent.parseAS(source.toFile());
+            var facts=new ArrayList<ModelFact>();int legacyOrdinal=0;
+            for(Literal belief:agent.getInitialBels())facts.add(fact("belief",canonicalAst(belief.toString()),line(belief),legacyOrdinal++,projectKey,declarationId,evidence,parent));
+            for(Literal goal:agent.getInitialGoals())facts.add(fact("goal",canonicalAst(goal.toString()),line(goal),legacyOrdinal++,projectKey,declarationId,evidence,parent));
+
+            String programId="jason:agent-program:"+projectKey+":"+declarationId;
+            String libraryId=programId+":plan-library";
+            var typedPlans=new ArrayList<PlanSemantic>();int planOrdinal=0;
+            for(Plan plan:agent.getPL().getPlans()){
+                int ordinal=planOrdinal++;
+                var bodyDrafts=body(plan);
+                String triggerOperator=plan.getTrigger().getOperator().name();
+                String triggerType=plan.getTrigger().getType().name();
+                String triggerLiteral=canonicalAst(String.valueOf(plan.getTrigger().getLiteral()));
+                String context=canonicalAst(String.valueOf(plan.getContext()));
+                String digest=AdapterEvidence.digest((triggerOperator+"|"+triggerType+"|"+triggerLiteral+"|"+context+"|"
+                        +bodyDrafts.stream().map(d->d.type()+":"+d.term()).collect(Collectors.joining("|")))
+                        .getBytes(StandardCharsets.UTF_8));
+                String planId=libraryId+":plan:"+ordinal+":"+digest;
+                String triggerId=planId+":trigger";
+                int planLine=plan.getSrcInfo()==null?0:plan.getSrcInfo().getSrcLine();
+                var triggerMetadata=SemanticEvidence.metadata(triggerId,"JASON_TRIGGER","jason.asSyntax.Trigger",
+                        EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,
+                        planLine,planLine,List.of());
+                var typedTrigger=new TriggerSemantic(triggerMetadata,triggerOperator,triggerType,triggerLiteral);
+                var typedBody=new ArrayList<PlanBodyElementSemantic>();
+                for(int i=0;i<bodyDrafts.size();i++){
+                    BodyDraft draft=bodyDrafts.get(i);String bodyId=bodyId(planId,i,draft);
+                    String next=i+1<bodyDrafts.size()?bodyId(planId,i+1,bodyDrafts.get(i+1)):"";
+                    var metadata=SemanticEvidence.metadata(bodyId,"JASON_PLAN_BODY_ELEMENT","jason.asSyntax.PlanBody",
+                            EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,
+                            draft.line(),draft.line(),List.of());
+                    typedBody.add(new PlanBodyElementSemantic(metadata,i,draft.type(),draft.term(),next));
+                }
+                String labelFunctor=plan.getLabel()==null?"":plan.getLabel().getFunctor();
+                String sourceLabel=GENERATED_LABEL.matcher(labelFunctor).matches()?"":labelFunctor;
+                var planMetadata=SemanticEvidence.metadata(planId,"JASON_PLAN","jason.asSyntax.Plan",
+                        EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,
+                        planLine,planLine,List.of());
+                typedPlans.add(new PlanSemantic(planMetadata,ordinal,sourceLabel,context,typedTrigger,typedBody));
+
+                // Compatibility facts remain available only to LEGACY_V2. The complete typed body above is authoritative.
+                int oldOrdinal=legacyOrdinal++;
+                var planBridgeId=new BridgeEntityId("jason","agent","plan",projectKey,declarationId+":"+oldOrdinal,"model");
+                var triggerBridgeId=new BridgeEntityId("jason","agent","event",projectKey,declarationId+":"+oldOrdinal+":trigger","model");
+                facts.add(new ModelFact("event",triggerBridgeId,Map.of("operator",String.valueOf(plan.getTrigger().getOperator()),
+                        "type",String.valueOf(plan.getTrigger().getType()),"literal",triggerLiteral),Map.of(),
+                        CapabilityStatus.COMPLETE,List.of(evidence)));
+                var actionIds=new ArrayList<BridgeEntityId>();var bodyIds=new ArrayList<BridgeEntityId>();int actionOrdinal=0;
+                for(int i=0;i<bodyDrafts.size();i++){
+                    BodyDraft draft=bodyDrafts.get(i);
+                    var bodyBridgeId=new BridgeEntityId("jason","agent","plan-body-element",projectKey,
+                            declarationId+":"+oldOrdinal+":body:"+i,"model");bodyIds.add(bodyBridgeId);
+                    facts.add(new ModelFact("plan-body-element",bodyBridgeId,Map.of("bodyType",draft.type(),"term",draft.term(),
+                            "ordinal",Integer.toString(i)),Map.of(),CapabilityStatus.COMPLETE,List.of(evidence)));
+                    if(!draft.type().equals("action")&&!draft.type().equals("internalAction"))continue;
+                    PlanBody original=draft.source();var term=original.getBodyTerm();
+                    var actionId=new BridgeEntityId("jason","agent","action",projectKey,
+                            declarationId+":"+oldOrdinal+":action:"+actionOrdinal++,"model");
+                    String actionName=term instanceof Structure structure?structure.getFunctor():draft.term();
+                    int arity=term instanceof Structure structure?structure.getArity():0;
+                    facts.add(new ModelFact("action",actionId,Map.of("name",actionName,"arity",Integer.toString(arity),
+                            "kind",draft.type().equals("internalAction")?"internal":"external","ast",draft.term()),
+                            Map.of(),CapabilityStatus.COMPLETE,List.of(evidence)));actionIds.add(actionId);
+                }
+                facts.add(new ModelFact("plan",planBridgeId,Map.of("label",sourceLabel,
+                        "labelKind",sourceLabel.isBlank()?"JASON_GENERATED":"SOURCE_DECLARED",
+                        "atomic",Boolean.toString(plan.isAtomic()),"breakpoint",Boolean.toString(plan.hasBreakpoint()),
+                        "allUnifiers",Boolean.toString(plan.isAllUnifs()),"trigger",canonicalAst(String.valueOf(plan.getTrigger())),
+                        "context",context,"bodyAst",canonicalAst(String.valueOf(plan.getBody())),
+                        "sourceLine",Integer.toString(planLine)),Map.of("agent",List.of(parent),
+                        "triggeringEvent",List.of(triggerBridgeId),"actions",actionIds,"bodyElements",bodyIds),
+                        CapabilityStatus.COMPLETE,List.of(evidence)));
+            }
+            var libraryMetadata=SemanticEvidence.metadata(libraryId,"JASON_PLAN_LIBRARY","jason.pl.PlanLibrary",
+                    EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,1,1,List.of());
+            var library=new PlanLibrarySemantic(libraryMetadata,typedPlans);
+            var programMetadata=SemanticEvidence.metadata(programId,"JASON_AGENT_PROGRAM","jason.asSemantics.Agent",
+                    EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,1,1,List.of());
+            var program=new AgentProgramSemantic(programMetadata,declarationId,evidence.sourceUri(),evidence.sourceDigest(),library);
+            return new Result(facts,program);
+        }finally{agent.stopAg();}
+    }
+
+    private List<BodyDraft> body(Plan plan){
+        var result=new ArrayList<BodyDraft>();Set<PlanBody> seen=Collections.newSetFromMap(new IdentityHashMap<>());
+        for(PlanBody node=plan.getBody();node!=null;node=node.getBodyNext()){
+            if(!seen.add(node))throw new IllegalStateException("JASON_PLAN_BODY_CYCLE");
+            String type=node.getBodyType().name();
+            if(!AUDITED_BODY_TYPES.contains(type))throw new IllegalStateException("JASON_BODY_TYPE_UNSUPPORTED:"+type);
+            String term=node.getBodyTerm()==null?"":canonicalAst(node.getBodyTerm().toString());
+            result.add(new BodyDraft(node,type,term,line(node)));
+        }
+        return List.copyOf(result);
+    }
+
+    private String bodyId(String planId,int ordinal,BodyDraft draft){return planId+":body:"+ordinal+":"+AdapterEvidence.digest(
+            (draft.type()+"|"+draft.term()).getBytes(StandardCharsets.UTF_8));}
+    private void verifyAuditedBodyTypeSet(){
+        Set<String> actual=Arrays.stream(PlanBody.BodyType.values()).map(Enum::name).collect(Collectors.toUnmodifiableSet());
+        if(!actual.equals(AUDITED_BODY_TYPES))throw new IllegalStateException("JASON_BODY_TYPE_API_DRIFT:"+actual);
+    }
+    private int line(jason.asSyntax.Term term){return term.getSrcInfo()==null?0:term.getSrcInfo().getSrcLine();}
+    private ModelFact fact(String kind,String ast,int line,int ordinal,String projectKey,String declarationId,
+                           org.jacamo.bridge.contract.Evidence evidence,BridgeEntityId parent){
         var id=new BridgeEntityId("jason","agent",kind,projectKey,declarationId+":"+ordinal,"model");
         return new ModelFact(kind,id,Map.of("ast",ast,"sourceLine",Integer.toString(line)),Map.of("agent",List.of(parent)),CapabilityStatus.COMPLETE,List.of(evidence));
     }
-    /**
-     * Jason assigns process-global numeric names to anonymous variables.  They
-     * are deliberately semantically unobservable, so the neutral contract
-     * prints them as the Jason source-level anonymous token.  Quoted content is
-     * left byte-for-byte intact.
-     */
-    static String canonicalAst(String rendered) {
-        var out = new StringBuilder(rendered.length()); boolean quoted=false; char quote=0; boolean escaped=false;
-        for(int i=0;i<rendered.length();){
-            char c=rendered.charAt(i);
-            if(quoted){out.append(c); if(escaped)escaped=false; else if(c=='\\')escaped=true; else if(c==quote)quoted=false; i++; continue;}
+
+    static String canonicalAst(String rendered){
+        var out=new StringBuilder(rendered.length());boolean quoted=false;char quote=0;boolean escaped=false;
+        for(int i=0;i<rendered.length();){char c=rendered.charAt(i);if(quoted){out.append(c);if(escaped)escaped=false;else if(c=='\\')escaped=true;else if(c==quote)quoted=false;i++;continue;}
             if(c=='\''||c=='\"'){quoted=true;quote=c;out.append(c);i++;continue;}
-            if(c=='_'&&i+1<rendered.length()&&Character.isDigit(rendered.charAt(i+1))
-                    &&(i==0||!Character.isJavaIdentifierPart(rendered.charAt(i-1)))){
-                int end=i+2; while(end<rendered.length()&&Character.isDigit(rendered.charAt(end)))end++;
-                if(end==rendered.length()||!Character.isJavaIdentifierPart(rendered.charAt(end))){out.append('_');i=end;continue;}
-            }
-            out.append(c);i++;
-        }
-        return out.toString();
+            if(c=='_'&&i+1<rendered.length()&&Character.isDigit(rendered.charAt(i+1))&&(i==0||!Character.isJavaIdentifierPart(rendered.charAt(i-1)))){int end=i+2;while(end<rendered.length()&&Character.isDigit(rendered.charAt(end)))end++;if(end==rendered.length()||!Character.isJavaIdentifierPart(rendered.charAt(end))){out.append('_');i=end;continue;}}
+            out.append(c);i++;}return out.toString();
     }
-    /** Parsing untrusted source never reflectively instantiates internal actions. */
-    private static final class SafeParsingAgent extends Agent {
-        private final InternalAction inert = new DefaultInternalAction();
-        @Override public InternalAction getIA(String name) { return inert; }
+    private record BodyDraft(PlanBody source,String type,String term,int line){ }
+    private static final class SafeParsingAgent extends Agent{
+        private final InternalAction inert=new DefaultInternalAction();
+        @Override public InternalAction getIA(String name){return inert;}
     }
 }
