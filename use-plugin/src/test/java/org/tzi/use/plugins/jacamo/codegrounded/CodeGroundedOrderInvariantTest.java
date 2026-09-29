@@ -6,7 +6,8 @@ import org.junit.jupiter.api.Test;
 
 class CodeGroundedOrderInvariantTest {
     @Test void helloRetainsEveryPlanBodyNodeAndExactA17A19A20Order() throws Exception {
-        var result = CodeGroundedTestFixtures.helloPipeline();
+        var result = new CodeGroundedNativePipeline().build(CodeGroundedTestFixtures.helloSnapshot(),
+                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
         long sourcePlans = result.source().programs().stream()
                 .mapToLong(program -> program.planLibrary().plans().size()).sum();
         long sourceBodies = result.source().programs().stream().flatMap(program -> program.planLibrary().plans().stream())

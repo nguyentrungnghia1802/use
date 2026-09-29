@@ -42,13 +42,34 @@ public final class NativeUseModelBuilder {
     public static final List<String> MOISE_PLAN_OPERATORS = List.of("sequence", "choice", "parallel");
     public static final List<String> MOISE_GOAL_TYPES = List.of("performance", "achievement", "maintenance");
     public static final List<String> MOISE_NORM_TYPES = List.of("obligation", "permission");
+    private static final List<String> BASE_CLASSES = List.of(
+            "Agent", "WorkspaceDeclaration", "ArtifactDeclaration", "OrganizationDeployment",
+            "GroupDeployment", "SchemeDeployment", "InstitutionDeployment", "AgentProgram", "PlanLibrary",
+            "Plan", "Trigger", "PlanBodyElement", "Action", "Belief", "AgentGoal", "BeliefRule",
+            "Environment", "Workspace", "ArtifactType", "Artifact", "Operation", "BackingJavaOperation",
+            "Guard", "LiveObservableProperty", "ObservablePropertySnapshot", "ArtifactInfo", "Signal",
+            "CartagoAgentIdentity", "A17PlanOrderEntry", "A19BodyOrderEntry", "Organization",
+            "StructuralSpecification", "FunctionalSpecification", "NormativeSpecification", "Group", "Role",
+            "RoleRelation", "Link", "Compatibility", "Scheme", "Mission", "OrganizationalGoal",
+            "OrganizationalPlan", "Norm", "GroupRoleCardinality", "SubGroupCardinality",
+            "SchemeMissionCardinality", "ExactBindingEvidence");
 
     public Result build(JacamoSpecificationModel source) {
         CodeGroundedTraceCollector trace = new CodeGroundedTraceCollector();
-        return build(source, trace);
+        return build(source, trace, NativeProjectionMode.AUTO);
     }
 
     public Result build(JacamoSpecificationModel source, CodeGroundedTraceCollector trace) {
+        return build(source, trace, NativeProjectionMode.AUTO);
+    }
+
+    public Result build(JacamoSpecificationModel source, NativeProjectionMode mode) {
+        return build(source, new CodeGroundedTraceCollector(), mode);
+    }
+
+    public Result build(JacamoSpecificationModel source, CodeGroundedTraceCollector trace,
+                        NativeProjectionMode mode) {
+        NativeProjectionProfile profile = NativeProjectionProfile.forMode(mode);
         var catalog = new CodeGroundedRuleCatalog();
         NativeOperationPlan operationPlan = NativeOperationPlan.resolve(source);
         UseModelApi api = new UseModelApi(modelName(source.project().name()));
@@ -61,30 +82,12 @@ public final class NativeUseModelBuilder {
             api.createEnumeration("MoiseGoalType", MOISE_GOAL_TYPES);
             api.createEnumeration("MoiseNormType", MOISE_NORM_TYPES);
 
-            for (String name : List.of("Agent", "WorkspaceDeclaration", "ArtifactDeclaration", "OrganizationDeployment",
-                    "GroupDeployment", "SchemeDeployment", "InstitutionDeployment", "AgentProgram", "PlanLibrary",
-                    "Plan", "Trigger", "PlanBodyElement", "Action", "Belief", "AgentGoal", "BeliefRule",
-                    "Environment", "Workspace", "ArtifactType", "Artifact", "Operation", "BackingJavaOperation",
-                    "Guard", "LiveObservableProperty", "ObservablePropertySnapshot", "ArtifactInfo", "Signal",
-                    "CartagoAgentIdentity", "A17PlanOrderEntry", "A19BodyOrderEntry", "Organization",
-                    "StructuralSpecification", "FunctionalSpecification", "NormativeSpecification", "Group", "Role",
-                    "RoleRelation", "Link", "Compatibility", "Scheme", "Mission", "OrganizationalGoal",
-                    "OrganizationalPlan", "Norm", "GroupRoleCardinality", "SubGroupCardinality",
-                    "SchemeMissionCardinality", "ExactBindingEvidence"))
-                api.createClass(name, false);
+            for (String name : BASE_CLASSES)
+                if (profile.materializesClass(name)) api.createClass(name, false);
             for (String name : operationPlan.artifactTypeClassNames().values()) api.createClass(name, false);
             for (String name : operationPlan.artifactTypeClassNames().values()) api.createGeneralization(name, "Artifact");
-            for (String name : List.of("Agent", "WorkspaceDeclaration", "ArtifactDeclaration", "OrganizationDeployment",
-                    "GroupDeployment", "SchemeDeployment", "InstitutionDeployment", "AgentProgram", "PlanLibrary",
-                    "Plan", "Trigger", "PlanBodyElement", "Action", "Belief", "AgentGoal", "BeliefRule",
-                    "Environment", "Workspace", "ArtifactType", "Artifact", "Operation", "BackingJavaOperation",
-                    "Guard", "LiveObservableProperty", "ObservablePropertySnapshot", "ArtifactInfo", "Signal",
-                    "CartagoAgentIdentity", "A17PlanOrderEntry", "A19BodyOrderEntry", "Organization",
-                    "StructuralSpecification", "FunctionalSpecification", "NormativeSpecification", "Group", "Role",
-                    "RoleRelation", "Link", "Compatibility", "Scheme", "Mission", "OrganizationalGoal",
-                    "OrganizationalPlan", "Norm", "GroupRoleCardinality", "SubGroupCardinality",
-                    "SchemeMissionCardinality", "ExactBindingEvidence"))
-                api.createAttribute(name, "semanticId", "String");
+            for (String name : BASE_CLASSES)
+                if (profile.materializesClass(name)) api.createAttribute(name, "semanticId", "String");
             api.createAttribute("Agent", "name", "String");
             api.createAttribute("Agent", "sourceUri", "String");
             api.createAttribute("Agent", "options", "String");
@@ -142,33 +145,39 @@ public final class NativeUseModelBuilder {
             api.createAttribute("Operation", "linkOperation", "Boolean");
             api.createAttribute("Operation", "ui", "Boolean");
             api.createAttribute("Operation", "internal", "Boolean");
-            api.createAttribute("BackingJavaOperation", "operationDescriptorId", "String");
-            api.createAttribute("BackingJavaOperation", "declaringClass", "String");
-            api.createAttribute("BackingJavaOperation", "methodName", "String");
-            api.createAttribute("BackingJavaOperation", "parameterTypes", "String");
-            api.createAttribute("BackingJavaOperation", "returnType", "String");
-            api.createAttribute("BackingJavaOperation", "varArgs", "Boolean");
-            api.createAttribute("BackingJavaOperation", "classLoaderIdentity", "String");
+            if (profile.materializesClass("BackingJavaOperation")) {
+                api.createAttribute("BackingJavaOperation", "operationDescriptorId", "String");
+                api.createAttribute("BackingJavaOperation", "declaringClass", "String");
+                api.createAttribute("BackingJavaOperation", "methodName", "String");
+                api.createAttribute("BackingJavaOperation", "parameterTypes", "String");
+                api.createAttribute("BackingJavaOperation", "returnType", "String");
+                api.createAttribute("BackingJavaOperation", "varArgs", "Boolean");
+                api.createAttribute("BackingJavaOperation", "classLoaderIdentity", "String");
+            }
             api.createAttribute("Guard", "operationDescriptorId", "String");
             api.createAttribute("Guard", "name", "String");
             api.createAttribute("Guard", "arity", "Integer");
             api.createAttribute("Guard", "implementationClass", "String");
-            api.createAttribute("LiveObservableProperty", "artifactSemanticId", "String");
-            api.createAttribute("LiveObservableProperty", "propertyId", "String");
-            api.createAttribute("LiveObservableProperty", "name", "String");
-            api.createAttribute("LiveObservableProperty", "values", "String");
-            api.createAttribute("LiveObservableProperty", "annotations", "String");
+            if (profile.materializesClass("LiveObservableProperty")) {
+                api.createAttribute("LiveObservableProperty", "artifactSemanticId", "String");
+                api.createAttribute("LiveObservableProperty", "propertyId", "String");
+                api.createAttribute("LiveObservableProperty", "name", "String");
+                api.createAttribute("LiveObservableProperty", "values", "String");
+                api.createAttribute("LiveObservableProperty", "annotations", "String");
+            }
             api.createAttribute("ObservablePropertySnapshot", "artifactSemanticId", "String");
             api.createAttribute("ObservablePropertySnapshot", "propertyId", "String");
             api.createAttribute("ObservablePropertySnapshot", "name", "String");
             api.createAttribute("ObservablePropertySnapshot", "values", "String");
             api.createAttribute("ObservablePropertySnapshot", "valueTypes", "String");
             api.createAttribute("ObservablePropertySnapshot", "annotations", "String");
-            api.createAttribute("ArtifactInfo", "artifactSemanticId", "String");
-            api.createAttribute("ArtifactInfo", "creatorAgentSemanticId", "String");
-            api.createAttribute("ArtifactInfo", "operationSemanticIds", "String");
-            api.createAttribute("ArtifactInfo", "observablePropertySemanticIds", "String");
-            api.createAttribute("ArtifactInfo", "linkedArtifactSemanticIds", "String");
+            if (profile.materializesClass("ArtifactInfo")) {
+                api.createAttribute("ArtifactInfo", "artifactSemanticId", "String");
+                api.createAttribute("ArtifactInfo", "creatorAgentSemanticId", "String");
+                api.createAttribute("ArtifactInfo", "operationSemanticIds", "String");
+                api.createAttribute("ArtifactInfo", "observablePropertySemanticIds", "String");
+                api.createAttribute("ArtifactInfo", "linkedArtifactSemanticIds", "String");
+            }
             api.createAttribute("Signal", "artifactSemanticId", "String");
             api.createAttribute("Signal", "name", "String");
             api.createAttribute("Signal", "values", "String");
@@ -203,8 +212,10 @@ public final class NativeUseModelBuilder {
             api.createAttribute("BeliefRule", "ordinal", "Integer");
             api.createAttribute("BeliefRule", "head", "String");
             api.createAttribute("BeliefRule", "body", "String");
-            api.createAttribute("A17PlanOrderEntry", "rank", "Integer");
-            api.createAttribute("A19BodyOrderEntry", "rank", "Integer");
+            if (profile.materializesClass("A17PlanOrderEntry"))
+                api.createAttribute("A17PlanOrderEntry", "rank", "Integer");
+            if (profile.materializesClass("A19BodyOrderEntry"))
+                api.createAttribute("A19BodyOrderEntry", "rank", "Integer");
             api.createAttribute("Organization", "name", "String");
             api.createAttribute("Organization", "sourceUri", "String");
             api.createAttribute("StructuralSpecification", "organizationSemanticId", "String");
@@ -270,11 +281,13 @@ public final class NativeUseModelBuilder {
             api.createAttribute("SchemeMissionCardinality", "missionSemanticId", "String");
             api.createAttribute("SchemeMissionCardinality", "minCardinality", "Integer");
             api.createAttribute("SchemeMissionCardinality", "maxCardinality", "Integer");
-            api.createAttribute("ExactBindingEvidence", "ruleId", "String");
-            api.createAttribute("ExactBindingEvidence", "sourceIds", "String");
-            api.createAttribute("ExactBindingEvidence", "targetIds", "String");
-            // "context" is a USE grammar keyword; retain the exact evidence under a target-safe name.
-            api.createAttribute("ExactBindingEvidence", "bindingContext", "String");
+            if (profile.materializesClass("ExactBindingEvidence")) {
+                api.createAttribute("ExactBindingEvidence", "ruleId", "String");
+                api.createAttribute("ExactBindingEvidence", "sourceIds", "String");
+                api.createAttribute("ExactBindingEvidence", "targetIds", "String");
+                // "context" is a USE grammar keyword; retain the exact evidence under a target-safe name.
+                api.createAttribute("ExactBindingEvidence", "bindingContext", "String");
+            }
 
             association(api, "A16AgentProgramPlanLibrary", "AgentProgram", "agentProgram", "1",
                     MAggregationKind.COMPOSITION, "PlanLibrary", "planLibrary", "1", false, false);
@@ -290,14 +303,16 @@ public final class NativeUseModelBuilder {
                     MAggregationKind.COMPOSITION, "Belief", "initialBeliefs", "*", false, true);
             association(api, "A22ProgramGoal", "AgentProgram", "program", "1",
                     MAggregationKind.COMPOSITION, "AgentGoal", "initialGoals", "*", false, true);
-            association(api, "A17OrderOwner", "PlanLibrary", "owner", "1", MAggregationKind.COMPOSITION,
-                    "A17PlanOrderEntry", "a17Entries", "*", false, false);
-            association(api, "A17OrderMember", "Plan", "member", "1", MAggregationKind.NONE,
-                    "A17PlanOrderEntry", "a17Memberships", "0..1", false, false);
-            association(api, "A19OrderOwner", "Plan", "owner", "1", MAggregationKind.COMPOSITION,
-                    "A19BodyOrderEntry", "a19Entries", "*", false, false);
-            association(api, "A19OrderMember", "PlanBodyElement", "member", "1", MAggregationKind.NONE,
-                    "A19BodyOrderEntry", "a19Memberships", "0..1", false, false);
+            if (profile.materializesOrderEntries()) {
+                association(api, "A17OrderOwner", "PlanLibrary", "owner", "1", MAggregationKind.COMPOSITION,
+                        "A17PlanOrderEntry", "a17Entries", "*", false, false);
+                association(api, "A17OrderMember", "Plan", "member", "1", MAggregationKind.NONE,
+                        "A17PlanOrderEntry", "a17Memberships", "0..1", false, false);
+                association(api, "A19OrderOwner", "Plan", "owner", "1", MAggregationKind.COMPOSITION,
+                        "A19BodyOrderEntry", "a19Entries", "*", false, false);
+                association(api, "A19OrderMember", "PlanBodyElement", "member", "1", MAggregationKind.NONE,
+                        "A19BodyOrderEntry", "a19Memberships", "0..1", false, false);
+            }
             association(api, "C13EnvironmentWorkspace", "Environment", "environment", "1",
                     MAggregationKind.COMPOSITION, "Workspace", "workspaces", "*", false, true);
             association(api, "C14WorkspaceArtifact", "Workspace", "workspace", "1",
@@ -394,14 +409,14 @@ public final class NativeUseModelBuilder {
                 api.createOperation(projection.ownerUseClass(), projection.descriptor().name(),
                         projection.parameters(), projection.returnType());
 
-            List<NativeConstraintSpec> constraints = new CodeGroundedConstraintPlanner().plan(catalog);
+            List<NativeConstraintSpec> constraints = new CodeGroundedConstraintPlanner().plan(catalog, profile);
             NativeConstraintInstaller.InstallationResult installation =
                     new NativeConstraintInstaller().installWithReport(api, constraints);
             MModel model = api.getModel();
-            modelTraces(trace, catalog, source, operationPlan, model);
+            modelTraces(trace, catalog, source, operationPlan, model, profile);
             return new Result(model, trace.index(), constraints, installation.skipped(),
                     operationPlan.artifactTypeClassNames(), operationPlan.operationDescriptorIds(),
-                    NativeUseStructure.sha256(model));
+                    NativeUseStructure.sha256(model), profile);
         } catch (UseApiException error) {
             throw new IllegalStateException("NATIVE_USE_MODEL_BUILD_FAILED: " + error.getMessage(), error);
         }
@@ -409,7 +424,7 @@ public final class NativeUseModelBuilder {
 
     private static void modelTraces(CodeGroundedTraceCollector trace, CodeGroundedRuleCatalog catalog,
                                     JacamoSpecificationModel source, NativeOperationPlan operationPlan,
-                                    MModel model) {
+                                    MModel model, NativeProjectionProfile profile) {
         trace.add(catalog.require("J01"), TracePhase.MODEL_DECLARATION, source.project().metadata(),
                 "MModel", "model:" + modelName(source.project().name()), List.of());
         for (String id : List.of("J02", "J03", "J04", "J05", "J06", "J07", "J08", "J09", "J10", "J11",
@@ -446,6 +461,28 @@ public final class NativeUseModelBuilder {
             trace.add(declarationRecord(rule, "EnumType", "enum:" + enumeration.name(),
                     List.of("LITERALS=" + String.join(",", enumeration.getLiterals()))));
         });
+        profile.conceptStatuses().forEach((concept, status) -> {
+            if (status == NativeProjectionStatus.MATERIALIZED) return;
+            CodeGroundedRule rule = projectionRule(catalog, concept);
+            trace.add(new CodeGroundedTraceRecord(rule.ruleId(), TracePhase.MODEL_DECLARATION,
+                    rule.sourceKindFqcn(), rule.sourceKindFqcn(), "projection:" + concept,
+                    "ProjectionStatus", "projection:" + concept, rule.sourceAuthority(), rule.fidelity(),
+                    rule.capabilityStatus(), List.of("STATUS=" + status.name(),
+                            "RATIONALE=" + profile.rationales().get(concept))));
+        });
+    }
+
+    private static CodeGroundedRule projectionRule(CodeGroundedRuleCatalog catalog, String concept) {
+        return switch (concept) {
+            case "ExactBindingEvidence" -> catalog.require("X01");
+            case "A17PlanOrderEntry" -> catalog.require("A17");
+            case "A19BodyOrderEntry" -> catalog.require("A19");
+            case "BackingJavaOperation" -> catalog.require("C06");
+            case "LiveObservableProperty" -> catalog.require("C08");
+            case "ArtifactInfo" -> catalog.require("C10");
+            case "SourceImportProvenance", "RuntimeEvidenceHistory", "SnapshotOnlyHelpers" -> catalog.require("J11");
+            default -> throw new IllegalStateException("NATIVE_PROJECTION_RULE_MISSING:" + concept);
+        };
     }
 
     private static CodeGroundedTraceRecord declarationRecord(CodeGroundedRule rule, String targetKind,
@@ -641,12 +678,14 @@ public final class NativeUseModelBuilder {
 
     public record Result(MModel model, CodeGroundedTraceIndex trace, List<NativeConstraintSpec> constraints,
                          List<NativeConstraintSpec> skippedConstraints, Map<String, String> nativeArtifactTypeClassNames,
-                         Set<String> nativeOperationDescriptorIds, String structuralHash) {
+                         Set<String> nativeOperationDescriptorIds, String structuralHash,
+                         NativeProjectionProfile profile) {
         public Result {
             constraints = List.copyOf(constraints);
             skippedConstraints = List.copyOf(skippedConstraints);
             nativeArtifactTypeClassNames = Collections.unmodifiableMap(new LinkedHashMap<>(nativeArtifactTypeClassNames));
             nativeOperationDescriptorIds = Collections.unmodifiableSet(new LinkedHashSet<>(nativeOperationDescriptorIds));
+            profile = java.util.Objects.requireNonNull(profile, "profile");
         }
     }
 }

@@ -31,7 +31,8 @@ class CodeGroundedPhase6Test {
         var contract = base.semanticContract();
         var environment = environment(contract.project().metadata(), false);
         var bindings = allBindings(contract, environment);
-        var result = new CodeGroundedNativePipeline().build(with(base, environment, bindings));
+        var result = new CodeGroundedNativePipeline().build(with(base, environment, bindings),
+                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
 
         for (String ruleId : List.of("X01", "X02", "X03", "X04", "X05", "X06", "X07", "X08", "X09")) {
             assertEquals(1, links(result.state().system(), association(ruleId)), ruleId);

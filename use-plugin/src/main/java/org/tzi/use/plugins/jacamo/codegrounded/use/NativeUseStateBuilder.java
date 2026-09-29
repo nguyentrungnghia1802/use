@@ -205,21 +205,30 @@ public final class NativeUseStateBuilder {
                     trace.add(catalog.require("C05"), TracePhase.INSTANCE_MATERIALIZATION, operation.metadata(),
                             "MObject", operationObject.name(), List.of());
                 }
-                for (var backing : environment.backingOperations()) {
-                    MObject backingObject = object(api, semanticObjects, objectNames, "BackingJavaOperation",
-                            backing.metadata(), backing.methodName());
-                    text(api, backingObject, "operationDescriptorId", backing.operationDescriptorId());
-                    text(api, backingObject, "declaringClass", backing.declaringClass());
-                    text(api, backingObject, "methodName", backing.methodName());
-                    text(api, backingObject, "parameterTypes", NativeUseModelBuilder.canonicalJson(backing.parameterTypes()));
-                    text(api, backingObject, "returnType", backing.returnType());
-                    bool(api, backingObject, "varArgs", backing.varArgs());
-                    text(api, backingObject, "classLoaderIdentity", backing.classLoaderIdentity());
-                    trace.add(catalog.require("C06"), TracePhase.INSTANCE_MATERIALIZATION, backing.metadata(),
-                            "MObject", backingObject.name(), schema.nativeOperationDescriptorIds()
-                                    .contains(backing.operationDescriptorId())
-                                            ? List.of("NATIVE_MOPERATION_PROJECTED")
-                                            : List.of("NATIVE_MOPERATION_NOT_PROJECTED"));
+                if (schema.profile().materializesClass("BackingJavaOperation")) {
+                    for (var backing : environment.backingOperations()) {
+                        MObject backingObject = object(api, semanticObjects, objectNames, "BackingJavaOperation",
+                                backing.metadata(), backing.methodName());
+                        text(api, backingObject, "operationDescriptorId", backing.operationDescriptorId());
+                        text(api, backingObject, "declaringClass", backing.declaringClass());
+                        text(api, backingObject, "methodName", backing.methodName());
+                        text(api, backingObject, "parameterTypes", NativeUseModelBuilder.canonicalJson(backing.parameterTypes()));
+                        text(api, backingObject, "returnType", backing.returnType());
+                        bool(api, backingObject, "varArgs", backing.varArgs());
+                        text(api, backingObject, "classLoaderIdentity", backing.classLoaderIdentity());
+                        trace.add(catalog.require("C06"), TracePhase.INSTANCE_MATERIALIZATION, backing.metadata(),
+                                "MObject", backingObject.name(), schema.nativeOperationDescriptorIds()
+                                        .contains(backing.operationDescriptorId())
+                                                ? List.of("NATIVE_MOPERATION_PROJECTED")
+                                                : List.of("NATIVE_MOPERATION_NOT_PROJECTED"));
+                    }
+                } else {
+                    for (var backing : environment.backingOperations())
+                        trace.add(catalog.require("C06"), TracePhase.INSTANCE_MATERIALIZATION, backing.metadata(),
+                                "EVIDENCE_ONLY", "evidence:C06:" + backing.metadata().semanticId(),
+                                schema.nativeOperationDescriptorIds().contains(backing.operationDescriptorId())
+                                        ? List.of("STATUS=EVIDENCE_ONLY", "NATIVE_MOPERATION_PROJECTED")
+                                        : List.of("STATUS=EVIDENCE_ONLY", "NATIVE_MOPERATION_NOT_PROJECTED"));
                 }
                 for (var guard : environment.guards()) {
                     MObject guardObject = object(api, semanticObjects, objectNames, "Guard", guard.metadata(), guard.name());
@@ -247,18 +256,25 @@ public final class NativeUseStateBuilder {
                     trace.add(catalog.require("C09"), TracePhase.INSTANCE_MATERIALIZATION, property.metadata(),
                             "MObject", propertyObject.name(), List.of());
                 }
-                for (var info : environment.artifactInfos()) {
-                    MObject infoObject = object(api, semanticObjects, objectNames, "ArtifactInfo",
-                            info.metadata(), info.artifactSemanticId());
-                    text(api, infoObject, "artifactSemanticId", info.artifactSemanticId());
-                    text(api, infoObject, "creatorAgentSemanticId", info.creatorAgentSemanticId());
-                    text(api, infoObject, "operationSemanticIds", NativeUseModelBuilder.canonicalJson(info.operationSemanticIds()));
-                    text(api, infoObject, "observablePropertySemanticIds",
-                            NativeUseModelBuilder.canonicalJson(info.observablePropertySemanticIds()));
-                    text(api, infoObject, "linkedArtifactSemanticIds",
-                            NativeUseModelBuilder.canonicalJson(info.linkedArtifactSemanticIds()));
-                    trace.add(catalog.require("C10"), TracePhase.INSTANCE_MATERIALIZATION, info.metadata(),
-                            "MObject", infoObject.name(), List.of());
+                if (schema.profile().materializesClass("ArtifactInfo")) {
+                    for (var info : environment.artifactInfos()) {
+                        MObject infoObject = object(api, semanticObjects, objectNames, "ArtifactInfo",
+                                info.metadata(), info.artifactSemanticId());
+                        text(api, infoObject, "artifactSemanticId", info.artifactSemanticId());
+                        text(api, infoObject, "creatorAgentSemanticId", info.creatorAgentSemanticId());
+                        text(api, infoObject, "operationSemanticIds", NativeUseModelBuilder.canonicalJson(info.operationSemanticIds()));
+                        text(api, infoObject, "observablePropertySemanticIds",
+                                NativeUseModelBuilder.canonicalJson(info.observablePropertySemanticIds()));
+                        text(api, infoObject, "linkedArtifactSemanticIds",
+                                NativeUseModelBuilder.canonicalJson(info.linkedArtifactSemanticIds()));
+                        trace.add(catalog.require("C10"), TracePhase.INSTANCE_MATERIALIZATION, info.metadata(),
+                                "MObject", infoObject.name(), List.of());
+                    }
+                } else {
+                    for (var info : environment.artifactInfos())
+                        trace.add(catalog.require("C10"), TracePhase.INSTANCE_MATERIALIZATION, info.metadata(),
+                                "EVIDENCE_ONLY", "evidence:C10:" + info.metadata().semanticId(),
+                                List.of("STATUS=EVIDENCE_ONLY"));
                 }
                 for (var signal : environment.signals()) {
                     MObject signalObject = object(api, semanticObjects, objectNames, "Signal", signal.metadata(), signal.name());
@@ -414,9 +430,10 @@ public final class NativeUseStateBuilder {
                     link(api, schema, "A17PlanLibraryPlan", libraryObject, planObject);
                     trace.add(catalog.require("A17"), TracePhase.INSTANCE_MATERIALIZATION, plan.metadata(),
                             "MLink", linkIdentity("A17", library.metadata().semanticId(), plan.metadata().semanticId()), List.of());
-                    orderEntry(api, schema, semanticObjects, objectNames, trace, catalog, "A17", "A17PlanOrderEntry",
-                            "A17OrderOwner", "A17OrderMember", libraryObject, planObject, library.metadata(),
-                            plan.metadata(), planIndex);
+                    if (schema.profile().materializesOrderEntries())
+                        orderEntry(api, schema, semanticObjects, objectNames, trace, catalog, "A17", "A17PlanOrderEntry",
+                                "A17OrderOwner", "A17OrderMember", libraryObject, planObject, library.metadata(),
+                                plan.metadata(), planIndex);
 
                     var trigger = java.util.Objects.requireNonNull(plan.trigger(), "A04_TRIGGER_REQUIRED");
                     requireLiteral(NativeUseModelBuilder.TRIGGER_OPERATORS, trigger.operator(),
@@ -446,9 +463,10 @@ public final class NativeUseStateBuilder {
                         enumeration(api, schema, bodyObject, "bodyType", "PlanBodyType", body.bodyType());
                         text(api, bodyObject, "term", body.term());
                         link(api, schema, "A19PlanBodyElement", planObject, bodyObject);
-                        orderEntry(api, schema, semanticObjects, objectNames, trace, catalog, "A19",
-                                "A19BodyOrderEntry", "A19OrderOwner", "A19OrderMember", planObject, bodyObject,
-                                plan.metadata(), body.metadata(), bodyIndex);
+                        if (schema.profile().materializesOrderEntries())
+                            orderEntry(api, schema, semanticObjects, objectNames, trace, catalog, "A19",
+                                    "A19BodyOrderEntry", "A19OrderOwner", "A19OrderMember", planObject, bodyObject,
+                                    plan.metadata(), body.metadata(), bodyIndex);
                         trace.add(catalog.require("A05"), TracePhase.INSTANCE_MATERIALIZATION, body.metadata(),
                                 "MObject", bodyObject.name(), List.of());
                         trace.add(catalog.require("A19"), TracePhase.INSTANCE_MATERIALIZATION, body.metadata(),
@@ -495,7 +513,7 @@ public final class NativeUseStateBuilder {
             boolean invariantsValid = system.state().check(output, false, true, true, List.of());
             if (!structureValid || !invariantsValid)
                 throw new IllegalStateException("NATIVE_USE_STATE_INVALID: " + validation);
-            return new Result(system, semanticObjects, trace.index(), true, true, validation.toString());
+            return new Result(system, semanticObjects, trace.index(), true, true, validation.toString(), schema.profile());
         } catch (UseApiException error) {
             throw new IllegalStateException("NATIVE_USE_STATE_BUILD_FAILED: " + error.getMessage(), error);
         }
@@ -535,14 +553,20 @@ public final class NativeUseStateBuilder {
             if (binding.sourceIds().size() != 1 || binding.targetIds().size() != 1)
                 throw new IllegalArgumentException("CROSS_BINDING_CARDINALITY_UNSUPPORTED: "
                         + binding.metadata().semanticId());
-            MObject evidence = object(api, semanticObjects, objectNames, "ExactBindingEvidence", binding.metadata(),
-                    binding.ruleId());
-            text(api, evidence, "ruleId", binding.ruleId());
-            text(api, evidence, "sourceIds", NativeUseModelBuilder.canonicalJson(binding.sourceIds()));
-            text(api, evidence, "targetIds", NativeUseModelBuilder.canonicalJson(binding.targetIds()));
-            text(api, evidence, "bindingContext", NativeUseModelBuilder.canonicalJson(binding.context()));
-            trace.add(catalog.require(binding.ruleId()), TracePhase.INSTANCE_MATERIALIZATION, binding.metadata(),
-                    "MObject", evidence.name(), List.of("EXACT_EVIDENCE", "CONTEXT_RETAINED"));
+            if (schema.profile().materializesClass("ExactBindingEvidence")) {
+                MObject evidence = object(api, semanticObjects, objectNames, "ExactBindingEvidence", binding.metadata(),
+                        binding.ruleId());
+                text(api, evidence, "ruleId", binding.ruleId());
+                text(api, evidence, "sourceIds", NativeUseModelBuilder.canonicalJson(binding.sourceIds()));
+                text(api, evidence, "targetIds", NativeUseModelBuilder.canonicalJson(binding.targetIds()));
+                text(api, evidence, "bindingContext", NativeUseModelBuilder.canonicalJson(binding.context()));
+                trace.add(catalog.require(binding.ruleId()), TracePhase.INSTANCE_MATERIALIZATION, binding.metadata(),
+                        "MObject", evidence.name(), List.of("EXACT_EVIDENCE", "CONTEXT_RETAINED"));
+            } else {
+                trace.add(catalog.require(binding.ruleId()), TracePhase.INSTANCE_MATERIALIZATION, binding.metadata(),
+                        "EVIDENCE_ONLY", "evidence:" + binding.ruleId() + ":" + binding.metadata().semanticId(),
+                        List.of("STATUS=EVIDENCE_ONLY", "EXACT_EVIDENCE", "CONTEXT_RETAINED"));
+            }
 
             Endpoint endpoint = endpoint(binding.ruleId());
             MObject source = required(semanticObjects, binding.sourceIds().get(0),
@@ -1006,7 +1030,10 @@ public final class NativeUseStateBuilder {
 
     public record Result(MSystem system, Map<String,MObject> semanticObjectIndex,
                          CodeGroundedTraceIndex trace, boolean structureValid, boolean invariantsValid,
-                         String validationOutput) {
-        public Result { semanticObjectIndex = Collections.unmodifiableMap(new LinkedHashMap<>(semanticObjectIndex)); }
+                         String validationOutput, NativeProjectionProfile profile) {
+        public Result {
+            semanticObjectIndex = Collections.unmodifiableMap(new LinkedHashMap<>(semanticObjectIndex));
+            profile = java.util.Objects.requireNonNull(profile, "profile");
+        }
     }
 }

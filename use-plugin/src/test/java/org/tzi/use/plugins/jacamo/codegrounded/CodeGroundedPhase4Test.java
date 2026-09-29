@@ -28,7 +28,8 @@ class CodeGroundedPhase4Test {
     void nativePhase4MaterializesTypedCartagoSnapshotWithExactLinksAndUnavailableC08() throws Exception {
         var base = CodeGroundedTestFixtures.helloSnapshot();
         var environment = syntheticEnvironment(base.semanticContract().project().metadata());
-        var result = new CodeGroundedNativePipeline().build(withEnvironment(base, environment));
+        var result = new CodeGroundedNativePipeline().build(withEnvironment(base, environment),
+                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
         var system = result.state().system();
 
         assertEquals(1, system.state().objectsOfClass(system.model().getClass("Environment")).size());

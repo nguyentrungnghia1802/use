@@ -14,7 +14,7 @@
 > `JaCaMoBridgePlatform` now injects `BridgeAgArch`, owns the official
 > `SnapshotCoordinator` sources, and serves a non-empty authenticated runtime cut.
 > The reproducible Windows/JDK 21 helper is
-> `tools/live-hello-bridge.ps1`; its final Hello run used the canonical JCM SHA-256
+> `tools/jacamo-bridge.ps1`; its final Hello run used the canonical JCM SHA-256
 > `c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101`, derived
 > distribution fingerprint
 > `a8cd26dadf45393fb4c73ffc7fc7a6f309b17a7af3a243a6a17f4712505fd6c9`, and
@@ -102,24 +102,24 @@ The historical v1.0.1 hotfix suite was 271/271 tests: 13 in `use-core`, 130 in `
 and 128 in `use-plugin` (125 unit/component plus 3 release integration tests).
 See `docs/project/00-README.md` for the canonical onboarding path.
 
-## Reproducible live Hello evidence
+## Reproducible live Bridge evidence
 
 From the `use` repository root, run:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\use-plugin\tools\live-hello-bridge.ps1 `
+powershell -ExecutionPolicy Bypass -File .\use-plugin\tools\jacamo-bridge.ps1 `
   -JcmPath ..\jacamo\doc\tutorials\hello-world\code\helloworld\helloworld.jcm `
-  -ProjectKey helloworld -CaseName original-tutorial-hello-world `
   -ObservationSeconds 15 -Headless:$false `
   -EvidenceDirectory .\use-plugin\target\final-system-acceptance\hello-rerun
 ```
 
-The helper copies the canonical JCM to a temporary directory, injects only the
+The generic launcher copies the selected JCM project to a temporary directory, injects only the
 official Bridge platform entry, generates a random secret, derives the runtime
 fingerprint, starts JaCaMo and a classpath-isolated USE consumer, and records
 `summary.json`, producer/consumer logs and fingerprint components. It never edits
-`jacamo/` or the canonical source. Use `-JcmPath` together with an explicit
-`-ProjectKey` for another exact JCM; the helper never infers semantic names.
+the source project. Use the same `-JcmPath` form for any valid `.jcm`; the selected
+project identity is checked by the official Bridge and no semantic name is inferred
+by the launcher.
 
 For a presentation that opens the configured USE GUI and keeps the derived JaCaMo
 producer alive until the GUI closes, add `-InteractiveGui -TimeoutSeconds 1800`.

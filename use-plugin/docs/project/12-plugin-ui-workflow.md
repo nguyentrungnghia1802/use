@@ -20,9 +20,8 @@ does not become JaCaMo authority or edit Bridge configuration. To reproduce the
 supported live original Hello cut on Windows/JDK 21, run from the `use` root:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\use-plugin\tools\live-hello-bridge.ps1 `
+powershell -ExecutionPolicy Bypass -File .\use-plugin\tools\jacamo-bridge.ps1 `
   -JcmPath ..\jacamo\doc\tutorials\hello-world\code\helloworld\helloworld.jcm `
-  -ProjectKey helloworld -CaseName original-tutorial-hello-world `
   -ObservationSeconds 15 -Headless:$false `
   -EvidenceDirectory .\use-plugin\target\final-system-acceptance\hello-rerun
 ```
@@ -38,14 +37,13 @@ Hello/Auction/House evidence is indexed in
 
 ### Interactive GUI demo
 
-For a live presentation, use the helper's manual GUI mode instead of opening an
+For a live presentation, use the generic launcher's manual GUI mode instead of opening an
 unconfigured USE process:
 
 ```powershell
 cd D:\_CODE_BANK\Project_\08_Thesis\use
-powershell -ExecutionPolicy Bypass -File .\use-plugin\tools\live-hello-bridge.ps1 `
+powershell -ExecutionPolicy Bypass -File .\use-plugin\tools\jacamo-bridge.ps1 `
   -JcmPath ..\jacamo\doc\tutorials\hello-world\code\helloworld\helloworld.jcm `
-  -ProjectKey helloworld -CaseName hello-gui-demo `
   -InteractiveGui -Headless:$false -TimeoutSeconds 1800 `
   -EvidenceDirectory .\use-plugin\target\gui-demo
 ```
