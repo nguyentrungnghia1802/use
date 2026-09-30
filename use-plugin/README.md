@@ -1,14 +1,10 @@
 # USE JaCaMo Plugin 1.0.1
 
-> **2026-09-28 final system acceptance:** the canonical tutorial Hello World,
-> original Auction and original House-Building all ran in real JaCaMo producer JVMs
-> through the same generic authenticated Bridge to a classpath-isolated USE consumer.
-> All three produced official snapshots/events, USE state, 28/28 authored OCL PASS,
-> and reconnect/resync evidence. House created all eight auctions, `simulator.House`
-> and the dynamic organization, but root goal `house_built` remained
-> `NOT_SATISFIED`; final House termination is not claimed. The current Auction
-> contains no stale self-referencing/natural-language construct. See the
-> [final acceptance index](docs/project/evidence/final-system-acceptance/README.md).
+> **Current production authority:** the active path is
+> `official JaCaMo/Jason/CArtAgO/Moise objects → typed Bridge semantic contract →
+> JacamoSpecificationModel → J/A/C/M/X rules → native USE MModel/MSystemState →
+> Session/OCL/runtime verification`. `CODE_GROUNDED_NATIVE` is the default and
+> does not load V2 mappings, V2 OCL, or legacy text generation.
 
 > **Historical 2026-09-27 executable live-runtime closure:** the production
 > `JaCaMoBridgePlatform` now injects `BridgeAgArch`, owns the official
@@ -23,28 +19,20 @@
 > This run is retained as the first live Hello closure and is superseded for current
 > three-case acceptance by the 2026-09-28 record above.
 
-> **V2 frozen release candidate:** Metamodel V2 and Mapping 2.2.0 drive IR,
-> extraction, transformation, trace, OCL and runtime target binding. Independent
-> directional order is represented by generic target-only ranks. Phase 35 clean
-> acceptance is 350/350 PASS; the final Phase 44 reactor and relocated checkout are
-> each 374/374 PASS with zero skips. See
-> [transformation](docs/project/v2-migration/phase35-transformation.md) and
-> [final freeze evidence](docs/project/v2-migration/phase44-final-v2-freeze.md).
-> The archive is `use-jacamo-plugin-1.0.1-v2-frozen.zip`, status
-> `FROZEN_V2_RELEASE_CANDIDATE`. The contracts are frozen; no Git release tag is
-> published by this engineering freeze.
+> **Historical compatibility evidence:** frozen V1/V2 Ecore, mapping, OCL and
+> runtime resources remain only for explicit compatibility/regression audits. They
+> are not the semantic authority of the native path and are not modified by cleanup.
 
-> **2026-09-20 final completeness update:** Direct launcher-board observation and
-> AgentSpeak-driven standalone control now PASS. Original Auction plan/deadline
-> equivalence remains unsupported (B). The new audit supersedes older adapter-gap
-> and component-only claims below; historical results remain historical. See
-> [final audit](docs/project/phase20-final-completeness-audit.md).
+> **Current closure boundary:** the native path is covered by the focused and full
+> reactor gates recorded in `docs/agent/task.md`. Original Auction plan/deadline
+> equivalence remains unsupported; no historical live-run report is treated as
+> native semantic evidence.
 
 
 Current repository state: Maven artifact and plugin descriptor version `1.0.1`.
-The historical annotated tag `v1.0.1` points to `7f77b1f4`; current development
-has advanced through the Phase 44 V2 freeze. The manifest name `use-jacamo-plugin-v1.0.1`
-is not a Git tag in this checkout, so it must not be reported as published.
+The historical annotated tag `v1.0.1` points to `7f77b1f4`; the native production
+path is the authority in this checkout. Historical release manifests remain
+evidence and must not be reported as a current published tag.
 
 This release makes official JaCaMo objects, exported through the neutral Bridge,
 the only production semantic authority for USE 7.5.0. Custom parser and in-process
@@ -54,10 +42,9 @@ release JAR.
 ## Install
 
 1. Use JDK 21 and USE 7.5.0.
-2. Extract this archive into the USE installation root. This places the plugin JAR
-   in `lib/plugins` and the active metamodel/mapping under `Core/*/version-2/`.
-   The JAR also embeds byte-identical canonical V2 Ecore, mapping/schema,
-   compatibility metadata, release manifest and unified freeze manifest resources.
+2. Extract the plugin archive into the USE installation root. This places the
+   plugin JAR in `lib/plugins`; the active model is built from the official Bridge
+   snapshot through native USE APIs at import time.
 3. Add `bridge/lib/jacamo-bridge-contract-1.0.0.jar` and
    `bridge/lib/jacamo-bridge-jacamo-1.0.0.jar` to the JaCaMo application's
    classpath. JaCaMo/Jason/CArtAgO/Moise dependencies stay in that process and do
@@ -98,9 +85,8 @@ The included `examples/auction` project is the release acceptance fixture. See
 `docs/user-workflow.md`, `docs/architecture.md`, `KNOWN-LIMITATIONS.md`, and
 `compatibility.json` for the exact supported scope.
 
-The historical v1.0.1 hotfix suite was 271/271 tests: 13 in `use-core`, 130 in `use-gui`,
-and 128 in `use-plugin` (125 unit/component plus 3 release integration tests).
-See `docs/project/00-README.md` for the canonical onboarding path.
+The current onboarding and architecture contract are in
+`docs/agent/CODE-GROUNDED-NATIVE-README.md` and `docs/agent/task.md`.
 
 ## Reproducible live Bridge evidence
 
@@ -132,10 +118,9 @@ The build produces `use-jacamo-plugin-1.0.1-v2-frozen.zip.sha256` beside the arc
 the first hexadecimal field with a SHA-256 digest of the ZIP before installation.
 
 
-### Historical Phase 26 runtime contract
+### Historical V1/V2 compatibility contract
 
-Phase 26 froze the historical V1 contract. Active production now selects Metamodel
-V2, Structural Mapping 2.2.0 and Runtime Mapping V2/schema 3.0.0 with exact frozen hashes.
-The historical audit remains at
-docs/project/phase26-runtime-mapping-audit.md. Standalone/NPL limitations are
-unchanged unless a later evidence document explicitly promotes them.
+The V1/V2 resources and their exact freeze evidence are retained only because the
+explicit `LEGACY_V2` compatibility API and regression/freeze tests still call them.
+They do not define native production semantics. No native caller loads those
+resources implicitly.

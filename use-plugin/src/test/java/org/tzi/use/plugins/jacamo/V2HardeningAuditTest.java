@@ -57,18 +57,18 @@ class V2HardeningAuditTest {
     @Test void activeDocumentationDoesNotPresentV1AsTheCurrentBaseline() throws Exception {
         List<Path> active = List.of(
                 Path.of("README.md"),
-                Path.of("docs/project/00-README.md"),
+                Path.of("docs/agent/agent.md"),
+                Path.of("docs/agent/CODE-GROUNDED-NATIVE-README.md"),
+                Path.of("docs/agent/CODE-GROUNDED-NATIVE-MIGRATION-REPORT.md"),
+                Path.of("docs/agent/JACAMO-USE-CONCEPT-MAPPING-RULES.md"),
+                Path.of("docs/agent/JACAMO-USE-JAVA-MODEL-TRANSFORMATION-SPEC.md"),
+                Path.of("docs/agent/NEW-CODE-GROUNDED-JACAMO-USE-ARCHITECTURE-DESIGN.md"),
                 Path.of("docs/project/01-vision-scope.md"),
                 Path.of("docs/project/02-system-architecture.md"),
-                Path.of("docs/project/04-jacamo-metamodel-baseline.md"),
-                Path.of("docs/project/05-metamodel-mapping-contract.md"),
-                Path.of("docs/project/08-use-transformation.md"),
-                Path.of("docs/project/10-runtime-adapter.md"),
-                Path.of("docs/project/13-testing-quality.md"),
-                Path.of("docs/project/14-auction-case-study.md"),
+                Path.of("docs/project/12-plugin-ui-workflow.md"),
                 Path.of("docs/project/15-build-release-operations.md"),
-                Path.of("docs/project/17-end-to-end-acceptance.md"),
-                Path.of("docs/project/19-roadmap.md"));
+                Path.of("docs/project/16-research-evidence-boundaries.md"),
+                Path.of("docs/project/runtime-event-identity.md"));
         List<String> staleClaims = List.of(
                 "The final structural target is unchanged V1",
                 "Final metamodel remains unchanged canonical V1",

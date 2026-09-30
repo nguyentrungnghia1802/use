@@ -2,9 +2,9 @@
 
 ## Final system acceptance boundary (2026-09-28)
 
-- Original Hello, Auction and House all pass the real separate-JVM generic Bridge
-  path for the observed supported scope. The current evidence index is
-  [final-system-acceptance](docs/project/evidence/final-system-acceptance/README.md).
+- Original Hello, Auction and House have only bounded evidence for the supported
+  Bridge scope. Current native acceptance is defined by the focused/full tests in
+  `docs/agent/task.md`; no archived case-study report is a production authority.
 - The current original Auction does not contain the self-referencing organizational
   plan or natural-language deadline mentioned by older records. Its plan is
   `start,bid,decide`; its authored constraints are `10 seconds` and `1 hour`.
@@ -19,8 +19,8 @@
   `EVIDENCE_ONLY`; the 28/28 authored OCL results are not a promotion of those facts
   into USE truth.
 - Native Swing click-through was unavailable to the audit automation surface. UI
-  component/action/package tests passed, a responsive `USE` window was observed,
-  and `tools/live-hello-bridge.ps1 -InteractiveGui` provides the manual demo path.
+  component/action/package tests passed; use the generic
+  `tools/jacamo-bridge.ps1 -InteractiveGui` launcher for a manual demo.
 
 ## Historical post-migration live Bridge boundary (2026-09-27)
 
@@ -36,17 +36,16 @@
   Moise/NPL/Bridge code sources by `RuntimeDistributionFingerprint`, exported with
   component digests, and compared exactly during handshake.
 - The GUI does not launch JaCaMo and has no endpoint/secret/fingerprint editor.
-  The tested Windows helper `tools/live-hello-bridge.ps1` prepares a temporary
+  The tested Windows helper `tools/jacamo-bridge.ps1` prepares a temporary
   derived JCM and starts the producer plus isolated consumer; it never edits
   `JaCaMo/` or canonical sources.
 - `BridgeVerificationGate` is integrated into the production
   `DefaultJaCaMoFacade` runtime verification path. Evidence-only, unavailable,
   stale or incomplete dependencies are recorded as `INCONCLUSIVE` or
   `NOT_EVALUATED`, never as definitive OCL truth.
-- V2 consumers use frozen Mapping 2.2.0 and Runtime Mapping schema 3.0.0. The final
-  reactor and relocated checkout each pass 374/374 tests with zero skips; exact
-  gate and bundle records are in the Phase 44 evidence. See
-  [current runtime boundaries](docs/project/v2-migration/phase35-runtime-targets.md).
+- The explicit compatibility branch still uses frozen Mapping 2.2.0 and Runtime
+  Mapping schema 3.0.0. The native branch does not load them; current gate results
+  and native boundaries are recorded in `docs/agent/task.md`.
 - Ordered membership changes require complete authoritative directional orders
   during resynchronization; bare link/endpoint mutations are rejected before
   corrupting rank projection. Rank-only updates and reconnect are tested.
@@ -56,13 +55,10 @@
 
 - Compatibility evidence is limited to Windows 11 amd64, Oracle JDK 21.0.5, Maven
   3.9.9, USE 7.5.0, JaCaMo 1.3.1, Jason 3.3.2, CArtAgO 3.1 and Moise 1.1.
-- Phase 20 now passes a real JaCaMo 1.3.0 `.jcm` launcher control through
-  AgentSpeak role/mission/goal execution, the checked-in artifact, board connectors,
-  frozen Runtime Mapping and USE mirror/resync. This is a supported subset, not
-  equivalence to the original static Auction plan/deadline. Direct board observation
-  is implemented; no replacement OE is used. Original Auction remains
-  EXPLICITLY_UNSUPPORTED due to invalid/incomplete fixture semantics (B).
-  See [final audit](docs/project/phase20-final-completeness-audit.md).
+- A bounded JaCaMo launcher/control subset is supported, but it is not equivalent
+  to the original static Auction plan/deadline. Direct board observation is
+  implemented; no replacement OE is used. Original Auction equivalence remains
+  `NO_LIVE_EVIDENCE`/unsupported where the exact authored semantics are absent.
 - The Moise live scenario constructs a real programmatic OS/OE subset. The checked-in
   XML is static import provenance, not the runtime OS used by that scenario.
 - Communication links, formation cardinality, sequence plans, normative time
@@ -96,7 +92,8 @@ operations are never evicted; correlation-capacity overflow fails closed until a
 stream boundary or authoritative resync. Jason mind and Moise instance observations
 are not proof of corresponding USE state mutation. CArtAgO unknown/retired
 observations remain quarantined outside the bound mirror subset. See
-docs/project/v2-migration/phase43-hardening.md. No new Ecore or OCL support is claimed.
+`docs/project/runtime-event-identity.md`. No new Ecore or OCL support is claimed
+for the native path.
 
 ## Phase 21-23 boundaries
 
@@ -128,5 +125,6 @@ docs/project/v2-migration/phase43-hardening.md. No new Ecore or OCL support is c
 Observer infrastructure failures leave ERROR rather than current LIVE truth.
 Cleanup failures remain explicit and retryable; disconnect and authoritative
 resync are required before claiming current state again. No arbitrary observer
-that blocks indefinitely is supported. See docs/project/phase27-hardening-audit.md
-and the final acceptance/boundary matrix in docs/project/phase28-project-closure.md.
+that blocks indefinitely is supported. See `docs/agent/task.md` for the current
+acceptance boundary and `docs/agent/CODE-GROUNDED-NATIVE-README.md` for the
+production path.

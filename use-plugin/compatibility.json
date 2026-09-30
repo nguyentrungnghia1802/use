@@ -64,7 +64,7 @@
         "errors": 0,
         "skipped": 0,
         "checkoutStatusAfterBuild": "clean",
-        "evidence": "docs/project/13-testing-quality.md#8-phase-13-verification-evidence-2026-09-16"
+        "evidence": "docs/agent/task.md"
       }
     },
     {
@@ -76,7 +76,7 @@
         "Static Auction OS fails Moise 1.1 XSD including after namespace/version repair",
         "Launcher ora4mas.nopl.oe.Group/Scheme state requires an adapter; current connector consumes moise.oe.OE"
       ],
-      "evidence": "docs/project/phase20-runtime-evidence.md",
+      "evidence": "docs/agent/task.md",
       "host": {
         "osName": "Windows 11",
         "osVersion": "10.0",

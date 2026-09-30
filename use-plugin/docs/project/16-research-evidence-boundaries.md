@@ -88,9 +88,10 @@ Mọi experiment phải pin:
 - OCL hashes;
 - runtime scenario inputs.
 
-## Phase 23 pinned normative evidence
+## Compatibility evidence boundary
 
-[Cross-dimensional/normative audit](phase23-cross-dimensional-evidence.md) records
-OE 1.1 derived obligation/permission snapshots. These are runtime API facts, kept
-separate from structural Norm and OCL truth. Prohibition and full lifecycle remain
-unsupported; no fulfilment/violation/deadline is inferred from set differences.
+The explicit compatibility branch may retain archived OE 1.1 obligation/permission
+snapshots as runtime API facts, kept separate from structural Norm and OCL truth.
+Prohibition and full lifecycle remain unsupported; no fulfilment/violation/deadline
+is inferred from set differences. Native production acceptance is recorded in
+`docs/agent/task.md`.

@@ -33,7 +33,7 @@ producer/consumer logs plus `summary.json`. It never edits `jacamo/` or the orig
 input. The runtime cut is per-source buffered rather than a globally atomic
 cross-subsystem snapshot; evidence-only facts cannot become USE truth. Final
 Hello/Auction/House evidence is indexed in
-`evidence/final-system-acceptance/README.md`.
+`evidence/final-system-acceptance/README.md` (historical Bridge evidence only).
 
 ### Interactive GUI demo
 
@@ -95,10 +95,9 @@ Workbench toolbar:
 
 The Runtime tab contains Connect, Disconnect, Reconnect, Resync, and Refresh.
 The six tabs are Project, Trace, Diagnostics, Verification, Runtime, and Binding.
-The Project tab shows the active Metamodel V2 version and full SHA-256 plus the
-Mapping V2 ID, schema version, working/frozen status and full SHA-256. Exact binding
-candidates are handled in Binding. The source path and line can be copied from the
-Trace tab.
+The Project tab shows the native code-grounded pipeline version, structural hash,
+rule-catalog version and contract metadata. Exact binding candidates are handled
+in Binding. The source path and line can be copied from the Trace tab.
 
 The production workbench reads the validated Bridge endpoint configuration from the
 documented `use.jacamo.bridge.*` system properties. The Runtime tab shows semantic

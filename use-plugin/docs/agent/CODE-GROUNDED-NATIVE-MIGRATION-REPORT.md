@@ -25,9 +25,10 @@
 ## Baseline and invariant audit — 2026-09-29
 
 The preserved audit baseline is recorded separately from the native migration
-results. `use-plugin/docs/architecture-realignment/16-test-strategy.md` records
-the 2026-09-26 reactor result as `use-core 12/12`, `use-gui 1/1`, and
-`use-plugin 228` tests with three pre-existing failures and no errors/skips:
+results. The current architecture contract and acceptance checklist are
+`docs/agent/CODE-GROUNDED-NATIVE-README.md` and `docs/agent/task.md`. The
+2026-09-26 reactor result was `use-core 12/12`, `use-gui 1/1`, and `use-plugin
+228` tests with three pre-existing failures and no errors/skips:
 `GoldenPipelineTest` digest mismatch, `ConstraintClosureTest` expected `2` but
 got `0`, and `InstanceMaterializationTest` golden digest mismatch. These are
 classified as dirty-frontend baseline failures; no production code or golden
@@ -35,8 +36,8 @@ was changed to hide them. The current checkout remains intentionally dirty
 because the user's `agent.md`, deleted `tasks/task-01.md`, three design/mapping
 documents, and generated `target/` are preserved outside the phase commits.
 
-Frozen V2/Ecore/OCL/mapping/golden/freeze-manifest and historical evidence
-paths have no migration diff at the checkpoint. `V2FinalFreezeTest`,
+Frozen V2/Ecore/OCL/mapping/golden/freeze-manifest paths have no migration diff
+at the checkpoint. `V2FinalFreezeTest`,
 `CompatibilityManifestTest`, `V2HardeningAuditTest`, and the release tests keep
 their exact hashes/labels and prove the native path does not mutate or ship
 the frozen authority as its semantic implementation.

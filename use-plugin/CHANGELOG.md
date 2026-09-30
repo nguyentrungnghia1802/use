@@ -1,5 +1,14 @@
 # Changelog
 
+## Native production closure — 2026-09-30
+
+- Keep the official-object Bridge contract, typed semantic model, J/A/C/M/X rule
+  catalog, native USE model/state, Session/OCL and runtime verification path as the
+  only default production authority.
+- Remove unreferenced case-specific launcher/archive artifacts and stale migration
+  reports. Frozen V1/V2 resources remain explicit compatibility evidence because
+  `LEGACY_V2` and its freeze tests are still part of the supported API surface.
+
 ## V2 frozen release candidate — not tagged
 
 - Default to Metamodel V2 / Mapping 2.2.0 with exact fingerprints and descriptor-backed IR.
@@ -25,9 +34,8 @@
 - Pass 271/271 tests: 13 `use-core`, 130 `use-gui`, and 128 `use-plugin` (125 unit/component plus 3 release integration).
 - Preserve the supported boundary: real in-process Jason/CArtAgO/Moise APIs are exercised, not a standalone
   external `.jcm` launcher; runtime verification observes and reports but does not enforce JaCaMo behavior.
-- See [the hotfix record](release/HOTFIX-1.0.1.md),
-  [the validation report](../docs/report/report.md), and
-  [known limitations](KNOWN-LIMITATIONS.md).
+- See [known limitations](KNOWN-LIMITATIONS.md) and the active native architecture
+  contract under `docs/agent/`.
 
 ## 1.0.0 - 2026-09-16
 

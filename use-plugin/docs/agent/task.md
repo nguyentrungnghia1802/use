@@ -1649,7 +1649,8 @@ Do not remove until:
 - [x] native case-study gates pass;
 - [x] regression value assessed;
 - [x] historical evidence retained;
-- [ ] explicit cleanup approval. `APPROVAL_GATED`: no deletion/cleanup approval was supplied.
+- [x] explicit cleanup approval. The 2026-09-30 repository-cleanup request authorizes deletion of
+  unreferenced obsolete artifacts; legacy compatibility code with explicit callers remains blocked.
 
 V2 becomes historical-only when:
 
@@ -1659,7 +1660,9 @@ V2 becomes historical-only when:
 - [x] no native-mode V2 load;
 - [x] release audit proves isolation.
 
-**Section 29 evidence — 2026-09-29:** PASS for historical classification and release isolation, but cleanup is intentionally not authorized. Native implicit facade, native OCL installation, and native runtime projector are the default path; `ProductionAuthorityPhase8Test` and `LegacyV2OclIsolationTest` prove no native-mode V2 load. `LegacyAuthorityPackagingIT`/`GuiPluginStagingIT` prove the candidate parser/connector classes are absent from the shipped plugin JAR, while shadow/frozen regression tests preserve their audit value. Legacy classes still have explicit compatibility/test callers, so “no production caller” and “explicit cleanup approval” remain unchecked; no deletion was performed.
+**Section 29 evidence — 2026-09-29:** PASS for historical classification and release isolation, but at that time cleanup was intentionally not authorized. Native implicit facade, native OCL installation, and native runtime projector are the default path; `ProductionAuthorityPhase8Test` and `LegacyV2OclIsolationTest` prove no native-mode V2 load. `LegacyAuthorityPackagingIT`/`GuiPluginStagingIT` prove the candidate parser/connector classes are absent from the shipped plugin JAR, while shadow/frozen regression tests preserve their audit value. Legacy classes still have explicit compatibility/test callers, so “no production caller” remained unchecked at that checkpoint; no deletion was performed then.
+
+**Cleanup audit evidence — 2026-09-30:** the cleanup request supplied explicit approval. Caller/reference audit classified the obsolete launcher/task/layout, the old architecture-realignment and phase/archive/report trees, V1 release evidence, and unreferenced V1/V2 audit tools as `DELETE_OBSOLETE`; the generic `use-plugin/tools/jacamo-bridge.ps1` is now the only launcher documented by active workflow docs. The focused post-cleanup gate passed `57/57`, and the full reactor `mvn -B -pl use-plugin -am verify` passed `505/505` tests (`497` unit/component + `8` integration/release) with zero failures/errors/skips. The three immutable `v2-final` bundle files remain because `phase44` freeze documents reference them. The old parser/mapping/materialization/runtime/verification classes and frozen V1/V2 resources remain `BLOCKED_BY_ACTIVE_DEPENDENCY` because `DefaultJaCaMoFacade` still exposes an explicit `LEGACY_V2` compatibility constructor and historical/freeze tests call those APIs. No frozen Ecore, Mapping, OCL, profile, runtime mapping, golden, or freeze-manifest file was changed.
 
 ---
 
