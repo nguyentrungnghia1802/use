@@ -56,6 +56,7 @@ public class PluginActionFactory {
 			
 			PluginActionModel currentActionModel = currentActionDescriptor.getPluginActionModel();
 			
+			currentActionDescMap.put("id", currentActionModel.getId());
 			currentActionDescMap.put("menu", currentActionModel.getMenu());
 			currentActionDescMap
 					.put("tooltip", currentActionModel.getTooltip());

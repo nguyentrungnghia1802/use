@@ -24,8 +24,18 @@ class GenericLauncherScriptTest {
         assertTrue(script.contains("runtimeprojectclasses"));
         assertTrue(script.contains("$stagedproject"));
         assertTrue(script.contains("workingdirectory"));
+        assertTrue(script.contains("redirectstandarderror = $true"));
+        assertTrue(script.contains("readtoendasync"));
+        assertTrue(script.contains("runtime_project_build_failed:$gradleexitcode"));
+        assertFalse(script.contains("& $stagedgradlewrapper"));
+        assertTrue(script.contains("psobject.properties['argumentlist']"));
+        assertTrue(script.contains("$startinfo.arguments ="));
         assertTrue(script.contains("use.jacamo.workbench.auto-import=true"));
+        assertTrue(script.contains("use.jacamo.workbench.ready-file=$guireadyfile"));
+        assertTrue(script.contains("interactive_gui_model_ready"));
+        assertTrue(script.contains("use.plugin.auto-action-id=org.tzi.use.plugins.jacamo.workbench.action"));
         assertTrue(script.contains("use.jacamo.workbench.project-file=$jcmfile"));
+        assertTrue(script.contains("$producerheadless = if ($interactivegui) { $false } else { $headless }"));
         assertFalse(script.contains("live-hello-bridge.ps1"));
         assertFalse(script.contains("helloworld"));
         assertFalse(script.contains("auction"));

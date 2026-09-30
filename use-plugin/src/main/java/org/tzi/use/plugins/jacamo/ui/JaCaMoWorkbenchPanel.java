@@ -8,6 +8,7 @@ import java.awt.datatransfer.StringSelection;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -31,6 +32,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import org.tzi.use.plugins.jacamo.JaCaMoFacade;
+import org.jacamo.bridge.contract.CanonicalJson;
 import org.tzi.use.plugins.jacamo.diagnostics.Diagnostic;
 import org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor;
 import org.tzi.use.plugins.jacamo.verification.VerificationReport;
@@ -42,6 +44,8 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     static final String PROJECT_FILE_HINT_PROPERTY = "use.jacamo.workbench.project-file";
     /** One-shot launch flag: the generic launcher supplies the JCM once; the panel consumes it. */
     static final String AUTO_IMPORT_PROPERTY = "use.jacamo.workbench.auto-import";
+    /** Optional atomic evidence marker written only after a configured import succeeds. */
+    static final String READY_FILE_PROPERTY = "use.jacamo.workbench.ready-file";
     private static final int MESSAGE_WRAP_COLUMNS = 96;
 
     private final JaCaMoFacade facade;
@@ -118,6 +122,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         executeBackground("Import failed", () -> facade.importProject(normalized), () -> {
             refreshProject();
             setStatus("Imported " + normalized);
+            writeReadyEvidence(normalized);
         });
         if (!javax.swing.SwingUtilities.isEventDispatchThread()) refreshDiagnostics();
     }
@@ -416,6 +421,43 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
             return;
         }
         importProject(configured);
+    }
+
+    private void writeReadyEvidence(Path imported) {
+        String configured = System.getProperty(READY_FILE_PROPERTY, "").trim();
+        if (configured.isEmpty()) return;
+        System.clearProperty(READY_FILE_PROPERTY);
+        try {
+            Path ready = Path.of(configured).toAbsolutePath().normalize();
+            if (ready.getParent() != null) Files.createDirectories(ready.getParent());
+            var formal = facade.formalStateStatus();
+            var authority = facade.authorityStatus();
+            var evidence = new LinkedHashMap<String, Object>();
+            evidence.put("status", "READY");
+            evidence.put("projectFile", imported.toString());
+            evidence.put("classCount", formal.classCount());
+            evidence.put("associationCount", formal.associationCount());
+            evidence.put("objectCount", formal.objectCount());
+            evidence.put("linkCount", formal.linkCount());
+            evidence.put("stateSha256", formal.sha256());
+            evidence.put("bridgeReadiness", authority.readiness().name());
+            evidence.put("bridgeCompleteness", authority.completeness());
+            evidence.put("modelRevision", authority.modelRevision());
+            evidence.put("sessionId", authority.sessionId());
+            evidence.put("generation", authority.generation());
+            Path temporary = ready.resolveSibling(ready.getFileName() + ".tmp");
+            Files.write(temporary, CanonicalJson.encode(evidence));
+            try {
+                Files.move(temporary, ready, StandardCopyOption.REPLACE_EXISTING,
+                        StandardCopyOption.ATOMIC_MOVE);
+            } catch (java.nio.file.AtomicMoveNotSupportedException ignored) {
+                Files.move(temporary, ready, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (Exception error) {
+            String message = "Ready evidence failed: " + error.getMessage();
+            setStatus(message);
+            errorPresenter.accept(message);
+        }
     }
 
     static JFileChooser createProjectChooser(Path projectFileHint) {

@@ -13,7 +13,12 @@ import org.jacamo.bridge.contract.RuntimeFactKind;
  * mutation kind carried by the authoritative event; names are never used as a selector.
  */
 public final class CodeGroundedRuntimeRuleRegistry {
-    public enum Action { ATTRIBUTE_SET, ATTRIBUTE_UNSET, LINK_INSERT, LINK_DELETE, EVIDENCE_ONLY }
+    public enum Action {
+        ATTRIBUTE_SET, ATTRIBUTE_UNSET, LINK_INSERT, LINK_DELETE,
+        UPSERT_CARTAGO_WORKSPACE, UPSERT_CARTAGO_AGENT_IDENTITY,
+        UPSERT_CARTAGO_ARTIFACT, UPSERT_CARTAGO_PROPERTY_SNAPSHOT,
+        EVIDENCE_ONLY
+    }
 
     public record Rule(String id, RuntimeFactKind factKind, Set<String> normalizedEventKinds,
                        Set<String> targetClasses, Action action, boolean requiresExactBinding) {
@@ -42,6 +47,16 @@ public final class CodeGroundedRuntimeRuleRegistry {
                         Set.of("SET_ATTRIBUTE"), Set.of("ObservablePropertySnapshot"), Action.ATTRIBUTE_SET),
                 rule("R-CARTAGO-PROPERTY-ATTRIBUTE-UNSET", RuntimeFactKind.PROPERTY,
                         Set.of("UNSET_ATTRIBUTE"), Set.of("ObservablePropertySnapshot"), Action.ATTRIBUTE_UNSET),
+                upsert("R-CARTAGO-WORKSPACE-UPSERT", RuntimeFactKind.WORKSPACE,
+                        "UPSERT_CARTAGO_WORKSPACE", "Workspace", Action.UPSERT_CARTAGO_WORKSPACE),
+                upsert("R-CARTAGO-AGENT-IDENTITY-UPSERT", RuntimeFactKind.AGENT,
+                        "UPSERT_CARTAGO_AGENT_IDENTITY", "CartagoAgentIdentity",
+                        Action.UPSERT_CARTAGO_AGENT_IDENTITY),
+                upsert("R-CARTAGO-ARTIFACT-UPSERT", RuntimeFactKind.ARTIFACT,
+                        "UPSERT_CARTAGO_ARTIFACT", "Artifact", Action.UPSERT_CARTAGO_ARTIFACT),
+                upsert("R-CARTAGO-PROPERTY-SNAPSHOT-UPSERT", RuntimeFactKind.PROPERTY,
+                        "UPSERT_CARTAGO_PROPERTY_SNAPSHOT", "ObservablePropertySnapshot",
+                        Action.UPSERT_CARTAGO_PROPERTY_SNAPSHOT),
                 rule("R-NATIVE-RELATION-INSERT", RuntimeFactKind.RELATION_STATE,
                         Set.of("INSERT_LINK"), Set.of("*"), Action.LINK_INSERT),
                 rule("R-NATIVE-RELATION-DELETE", RuntimeFactKind.RELATION_STATE,
@@ -94,5 +109,10 @@ public final class CodeGroundedRuntimeRuleRegistry {
     private static Rule evidence(String id, RuntimeFactKind factKind) {
         return new Rule(id, factKind, Set.of("*"), Set.of("*"),
                 Action.EVIDENCE_ONLY, false);
+    }
+
+    private static Rule upsert(String id, RuntimeFactKind factKind, String eventKind,
+                               String targetClass, Action action) {
+        return new Rule(id, factKind, Set.of(eventKind), Set.of(targetClass), action, false);
     }
 }

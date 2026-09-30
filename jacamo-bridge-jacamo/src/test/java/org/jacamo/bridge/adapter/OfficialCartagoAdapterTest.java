@@ -11,6 +11,16 @@ import org.junit.jupiter.api.Test;
 
 class OfficialCartagoAdapterTest {
     @Test
+    void sharedSnapshotAndLoggerIdentityUsesExactWorkspaceAndIncarnation() {
+        assertEquals(
+                "beid:v1:cartago/environment/artifact/%2Fmain/session_francois/artifact-uuid",
+                CartagoSnapshotSource.artifactId("/main", "session_francois", "artifact-uuid").canonical());
+        assertEquals(
+                "beid:v1:cartago/environment/agent/%2Fmain/francois/39",
+                CartagoSnapshotSource.agentId("/main", "francois", 39).canonical());
+    }
+
+    @Test
     void initializedEnvironmentUsesOfficialWorkspaceDescriptorIdentityAndClosedLivePropertyBoundary() throws Exception {
         CartagoEnvironment environment = CartagoEnvironment.getInstance();
         environment.init();

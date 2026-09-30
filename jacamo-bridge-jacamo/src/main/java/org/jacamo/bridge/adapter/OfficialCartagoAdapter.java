@@ -215,8 +215,13 @@ public final class OfficialCartagoAdapter {
     private static String propertyId(String artifactId, String propertyId) { return "cartago:property:" + artifactId + ":" + propertyId; }
     private static String artifactTypeId(String environmentId, String type) { return "cartago:artifact-type:" + environmentId + ":" + type; }
     private static String artifactKey(ArtifactId id) { return id.getWorkspaceId().getFullName() + ":" + id.getId(); }
-    private static String agentId(String environmentId, AgentId id) { return "cartago:agent:" + environmentId + ":" + id.getGlobalId() + ":" + id.getLocalId(); }
-    private static String agentKey(AgentId id) { return id.getGlobalId() + ":" + id.getLocalId(); }
+    private static String agentId(String environmentId, AgentId id) {
+        return "cartago:agent:" + environmentId + ":" + id.getWorkspaceId().getFullName()
+                + ":" + id.getGlobalId() + ":" + id.getLocalId();
+    }
+    private static String agentKey(AgentId id) {
+        return id.getWorkspaceId().getFullName() + ":" + id.getGlobalId() + ":" + id.getLocalId();
+    }
     private static String text(Object value) { return value == null ? "" : String.valueOf(value); }
     private static <T> List<T> safe(List<T> value) { return value == null ? List.of() : value; }
 }

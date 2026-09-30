@@ -99,7 +99,8 @@ public final class NativeRuntimeProjector {
         try {
             int ordinal = 0;
             for (RuntimeFact fact : snapshot.facts().stream()
-                    .sorted(Comparator.comparing(value -> value.id().canonical())).toList()) {
+                    .sorted(Comparator.comparingInt(NativeRuntimeProjector::materializationRank)
+                            .thenComparing(value -> value.id().canonical())).toList()) {
                 evidence.put(fact.id().canonical(), fact);
                 if (fact.projectionStatus() == org.jacamo.bridge.contract.ProjectionStatus.UNAVAILABLE
                         || fact.completeness() == Completeness.UNAVAILABLE) {
@@ -220,5 +221,17 @@ public final class NativeRuntimeProjector {
     private static String required(String value, String field) {
         if (value == null || value.isBlank()) throw new IllegalArgumentException(field);
         return value;
+    }
+
+    private static int materializationRank(RuntimeFact fact) {
+        Object normalized = fact.values().get("normalizedEventKind");
+        if (!(normalized instanceof String kind)) return 100;
+        return switch (kind) {
+            case "UPSERT_CARTAGO_WORKSPACE" -> 10;
+            case "UPSERT_CARTAGO_AGENT_IDENTITY" -> 20;
+            case "UPSERT_CARTAGO_ARTIFACT" -> 30;
+            case "UPSERT_CARTAGO_PROPERTY_SNAPSHOT" -> 40;
+            default -> 50;
+        };
     }
 }

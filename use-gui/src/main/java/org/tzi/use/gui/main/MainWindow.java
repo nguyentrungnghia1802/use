@@ -98,6 +98,8 @@ import java.util.List;
  */
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
+    static final String AUTO_PLUGIN_ACTION_PROPERTY = "use.plugin.auto-action-id";
+
     private final Session fSession;
 
     private final StatusBar fStatusBar;
@@ -160,6 +162,33 @@ public class MainWindow extends JFrame {
 
     private Map<Map<String, String>, PluginActionProxy> pluginActions =
             new HashMap<Map<String, String>, PluginActionProxy>();
+
+    private void invokeConfiguredPluginAction() {
+        String requestedId = System.getProperty(AUTO_PLUGIN_ACTION_PROPERTY);
+        if (requestedId == null || requestedId.isBlank()) {
+            return;
+        }
+
+        System.clearProperty(AUTO_PLUGIN_ACTION_PROPERTY);
+        for (Map.Entry<Map<String, String>, PluginActionProxy> entry : pluginActions.entrySet()) {
+            if (!requestedId.equals(entry.getKey().get("id"))) {
+                continue;
+            }
+
+            PluginActionProxy action = entry.getValue();
+            SwingUtilities.invokeLater(() -> {
+                action.calculateEnabled();
+                if (action.isEnabled()) {
+                    action.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, requestedId));
+                } else {
+                    Log.error("Configured plugin action is disabled: " + requestedId);
+                }
+            });
+            return;
+        }
+
+        Log.error("Configured plugin action was not found: " + requestedId);
+    }
 
     MainWindow(Session session, IRuntime pluginRuntime) {
         super("USE");
@@ -522,6 +551,8 @@ public class MainWindow extends JFrame {
                     }
                 }
             }
+
+            invokeConfiguredPluginAction();
         }
 
         // -- GUI Plugin integration (end)

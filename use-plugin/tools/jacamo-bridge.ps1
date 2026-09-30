@@ -47,6 +47,43 @@ function Invoke-MavenBuild([string[]]$Arguments) {
     if ($LASTEXITCODE -ne 0) { throw "MAVEN_FAILED:$LASTEXITCODE" }
 }
 
+function ConvertTo-WindowsProcessArgument([AllowEmptyString()][string]$Argument) {
+    if ($Argument.Length -gt 0 -and $Argument -notmatch '[\s"]') { return $Argument }
+
+    $quoted = New-Object Text.StringBuilder
+    [void]$quoted.Append('"')
+    $backslashes = 0
+    foreach ($character in $Argument.ToCharArray()) {
+        if ($character -eq '\') {
+            $backslashes++
+            continue
+        }
+        if ($character -eq '"') {
+            for ($index = 0; $index -lt (($backslashes * 2) + 1); $index++) {
+                [void]$quoted.Append('\')
+            }
+            [void]$quoted.Append('"')
+            $backslashes = 0
+            continue
+        }
+        for ($index = 0; $index -lt $backslashes; $index++) { [void]$quoted.Append('\') }
+        $backslashes = 0
+        [void]$quoted.Append($character)
+    }
+    for ($index = 0; $index -lt ($backslashes * 2); $index++) { [void]$quoted.Append('\') }
+    [void]$quoted.Append('"')
+    return $quoted.ToString()
+}
+
+function Set-ProcessStartInfoArguments([Diagnostics.ProcessStartInfo]$StartInfo, [string[]]$Arguments) {
+    # ArgumentList is available on modern .NET but not on Windows PowerShell 5.1/.NET Framework.
+    if ($null -ne $StartInfo.PSObject.Properties['ArgumentList']) {
+        foreach ($argument in $Arguments) { [void]$StartInfo.ArgumentList.Add($argument) }
+        return
+    }
+    $StartInfo.Arguments = (($Arguments | ForEach-Object { ConvertTo-WindowsProcessArgument $_ }) -join ' ')
+}
+
 function Start-CapturedJava([string]$ClassPath, [string]$MainClass, [string]$WorkingDirectory,
                             [string[]]$Arguments) {
     $java = (Get-Command java -ErrorAction Stop).Source
@@ -56,9 +93,7 @@ function Start-CapturedJava([string]$ClassPath, [string]$MainClass, [string]$Wor
     $info.UseShellExecute = $false
     $info.RedirectStandardOutput = $true
     $info.RedirectStandardError = $true
-    foreach ($argument in (@("-cp", $ClassPath, $MainClass) + $Arguments)) {
-        [void]$info.ArgumentList.Add($argument)
-    }
+    Set-ProcessStartInfoArguments $info (@("-cp", $ClassPath, $MainClass) + $Arguments)
     $process = [Diagnostics.Process]::new()
     $process.StartInfo = $info
     [void]$process.Start()
@@ -161,9 +196,39 @@ try {
         $projectBuildLog = Join-Path $runEvidence "runtime-project-build.log"
         Push-Location $stagedProject
         try {
-            & $stagedGradleWrapper --no-daemon --console=plain classes 2>&1 |
-                Tee-Object -FilePath $projectBuildLog | Out-Host
-            if ($LASTEXITCODE -ne 0) { throw "RUNTIME_PROJECT_BUILD_FAILED:$LASTEXITCODE" }
+            # Windows PowerShell 5.1 promotes native stderr records to terminating errors when
+            # ErrorActionPreference is Stop, even when Gradle exits successfully. javac writes
+            # ordinary diagnostics such as "uses unchecked or unsafe operations" to stderr, so
+            # capture both streams at the process boundary and judge the build by its exit code.
+            $gradleStartInfo = New-Object System.Diagnostics.ProcessStartInfo
+            $gradleStartInfo.FileName = $env:ComSpec
+            $gradleStartInfo.Arguments = '/d /s /c ""{0}" --no-daemon --console=plain classes"' -f `
+                $stagedGradleWrapper.Replace('"', '""')
+            $gradleStartInfo.WorkingDirectory = $stagedProject
+            $gradleStartInfo.UseShellExecute = $false
+            $gradleStartInfo.CreateNoWindow = $true
+            $gradleStartInfo.RedirectStandardOutput = $true
+            $gradleStartInfo.RedirectStandardError = $true
+
+            $gradleProcess = New-Object System.Diagnostics.Process
+            $gradleProcess.StartInfo = $gradleStartInfo
+            try {
+                if (-not $gradleProcess.Start()) { throw "RUNTIME_PROJECT_BUILD_START_FAILED" }
+                $gradleStdoutTask = $gradleProcess.StandardOutput.ReadToEndAsync()
+                $gradleStderrTask = $gradleProcess.StandardError.ReadToEndAsync()
+                $gradleProcess.WaitForExit()
+                $gradleStdout = $gradleStdoutTask.GetAwaiter().GetResult()
+                $gradleStderr = $gradleStderrTask.GetAwaiter().GetResult()
+                $gradleExitCode = $gradleProcess.ExitCode
+            } finally {
+                $gradleProcess.Dispose()
+            }
+
+            $gradleOutput = @($gradleStdout, $gradleStderr) |
+                Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+            $gradleOutput | Out-File -LiteralPath $projectBuildLog -Encoding utf8
+            $gradleOutput | Out-Host
+            if ($gradleExitCode -ne 0) { throw "RUNTIME_PROJECT_BUILD_FAILED:$gradleExitCode" }
         } finally {
             Pop-Location
         }
@@ -199,8 +264,9 @@ try {
     [IO.File]::WriteAllText($jcmFile, $jcmText, [Text.UTF8Encoding]::new($false))
     $injectedDigest = (Get-FileHash -Algorithm SHA256 -LiteralPath $jcmFile).Hash.ToLowerInvariant()
 
+    $producerHeadless = if ($InteractiveGui) { $false } else { $Headless }
     $producer = Start-CapturedJava $producerClasspath "jason.infra.local.LiveJaCaMoLauncherMain" $stagedProject @(
-        $jcmFile, $stopFile, $TimeoutSeconds.ToString(), $Headless.ToString().ToLowerInvariant())
+        $jcmFile, $stopFile, $TimeoutSeconds.ToString(), $producerHeadless.ToString().ToLowerInvariant())
     Wait-LoopbackPort $port $producer $TimeoutSeconds
 
     if ($InteractiveGui) {
@@ -217,6 +283,7 @@ try {
         if (-not (Test-Path -LiteralPath $pluginJarSource -PathType Leaf)) { throw "PLUGIN_JAR_MISSING:$pluginJarSource" }
         $guiJar = Join-Path $guiRuntime "use-gui.jar"
         $guiPlugin = Join-Path $guiPlugins "use-jacamo-plugin-1.0.1.jar"
+        $guiReadyFile = Join-Path $runEvidence "gui-ready.json"
         Copy-Item -LiteralPath $guiJarSource -Destination $guiJar -Force
         Copy-Item -LiteralPath $pluginJarSource -Destination $guiPlugin -Force
         if ((Get-FileHash -LiteralPath $pluginJarSource -Algorithm SHA256).Hash -ne
@@ -225,8 +292,10 @@ try {
         }
         $guiArguments = @(
             "-Duser.dir=$guiInstall",
+            "-Duse.plugin.auto-action-id=org.tzi.use.plugins.jacamo.workbench.action",
             "-Duse.jacamo.workbench.project-file=$jcmFile",
             "-Duse.jacamo.workbench.auto-import=true",
+            "-Duse.jacamo.workbench.ready-file=$guiReadyFile",
             "-Duse.jacamo.bridge.endpoint=tcp://127.0.0.1:$port",
             "-Duse.jacamo.bridge.secret-file=$secretFile",
             "-Duse.jacamo.bridge.distribution-sha256=$distribution",
@@ -234,16 +303,22 @@ try {
         )
         [IO.File]::WriteAllLines((Join-Path $runEvidence "launch-commands.txt"),
             @("java -cp <official-runtime> jason.infra.local.LiveJaCaMoLauncherMain $jcmFile $stopFile",
-              "javaw -Duse.jacamo.workbench.auto-import=true -Duse.jacamo.workbench.project-file=$jcmFile -jar $guiJar"),
+              "javaw -Duse.plugin.auto-action-id=org.tzi.use.plugins.jacamo.workbench.action -Duse.jacamo.workbench.auto-import=true -Duse.jacamo.workbench.project-file=$jcmFile -jar $guiJar"),
             [Text.UTF8Encoding]::new($false))
         Write-Host "INTERACTIVE_GUI_READY"
-        Write-Host "Open the JaCaMo Workbench from the USE Plugins menu."
+        Write-Host "The JaCaMo Workbench is opening and importing the derived JCM automatically."
         Write-Host "Derived JCM: $jcmFile"
         Write-Host "Original source remains unchanged: $sourceJcm"
         Write-Host "Close the USE window to stop the derived JaCaMo producer."
         $gui = Start-InteractiveJava $guiInstall $guiArguments
+        $guiReadyReported = $false
         while (-not $gui.HasExited) {
             if ($producer.Process.HasExited) { throw "PRODUCER_EXITED_DURING_INTERACTIVE_GUI:`n$(Get-CapturedOutput $producer)" }
+            if (-not $guiReadyReported -and (Test-Path -LiteralPath $guiReadyFile -PathType Leaf)) {
+                Write-Host "INTERACTIVE_GUI_MODEL_READY evidence=$guiReadyFile"
+                Get-Content -Raw -LiteralPath $guiReadyFile | Write-Host
+                $guiReadyReported = $true
+            }
             Start-Sleep -Milliseconds 500
         }
         [IO.File]::WriteAllText((Join-Path $runEvidence "summary.json"), (@{

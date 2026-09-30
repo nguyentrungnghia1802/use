@@ -89,6 +89,9 @@ class JaCaMoPluginTest {
         var useActions = ((ActionExtensionPoint) ActionExtensionPoint.getInstance())
                 .createPluginActions(null, null);
         assertEquals(2, useActions.size(), "USE action extension point must expose both menu actions");
+        assertTrue(useActions.keySet().stream().anyMatch(action ->
+                "org.tzi.use.plugins.jacamo.workbench.action".equals(action.get("id"))),
+                "Workbench action must retain its exact plugin action id for deterministic startup");
         useActions.values().forEach(useAction -> {
             useAction.calculateEnabled();
             assertTrue(useAction.isEnabled());

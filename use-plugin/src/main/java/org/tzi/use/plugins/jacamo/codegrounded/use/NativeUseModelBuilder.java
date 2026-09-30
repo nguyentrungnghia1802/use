@@ -333,7 +333,7 @@ public final class NativeUseModelBuilder {
                         "Guard", "guard", "0..1", false, false);
             association(api, "C19WorkspaceAgent", "Workspace", "workspace", "1", MAggregationKind.NONE,
                     "CartagoAgentIdentity", "agents", "*", false, true);
-            association(api, "C20AgentArtifactFocus", "CartagoAgentIdentity", "agent", "1", MAggregationKind.NONE,
+            association(api, "C20AgentArtifactFocus", "CartagoAgentIdentity", "agent", "0..*", MAggregationKind.NONE,
                     "Artifact", "focusedArtifacts", "*", false, true);
             association(api, "M18OrganizationSS", "Organization", "m18StructuralSpecification", "1",
                     MAggregationKind.COMPOSITION, "StructuralSpecification", "m18Organization", "1", false, false);

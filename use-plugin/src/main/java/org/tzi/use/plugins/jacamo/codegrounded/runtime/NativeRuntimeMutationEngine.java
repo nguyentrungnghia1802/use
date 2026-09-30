@@ -14,6 +14,7 @@ import org.jacamo.bridge.contract.RuntimeFactKind;
 import org.tzi.use.api.UseApiException;
 import org.tzi.use.api.UseSystemApi;
 import org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseStateBuilder;
+import org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseModelBuilder;
 import org.tzi.use.uml.mm.MAssociation;
 import org.tzi.use.uml.mm.MAttribute;
 import org.tzi.use.uml.ocl.value.BooleanValue;
@@ -68,7 +69,7 @@ public final class NativeRuntimeMutationEngine {
                                        CodeGroundedRuntimeRuleRegistry registry) {
         this.system = Objects.requireNonNull(system, "system");
         this.api = UseSystemApi.create(system, false);
-        this.semanticObjectIndex = Map.copyOf(semanticObjectIndex);
+        this.semanticObjectIndex = new LinkedHashMap<>(semanticObjectIndex);
         this.registry = Objects.requireNonNull(registry, "registry");
         this.baseline = capture();
     }
@@ -100,7 +101,14 @@ public final class NativeRuntimeMutationEngine {
 
         StateImage before = capture();
         try {
-            BoundTarget target = resolveTarget(runtimeIdentity, binding);
+            BoundTarget target;
+            switch (rule.action()) {
+                case UPSERT_CARTAGO_WORKSPACE -> target = upsertWorkspace(payload);
+                case UPSERT_CARTAGO_AGENT_IDENTITY -> target = upsertCartagoAgent(payload);
+                case UPSERT_CARTAGO_ARTIFACT -> target = upsertArtifact(payload);
+                case UPSERT_CARTAGO_PROPERTY_SNAPSHOT -> target = upsertPropertySnapshot(payload);
+                default -> target = resolveTarget(runtimeIdentity, binding);
+            }
             if (!rule.targetClasses().contains("*") && !rule.targetClasses().contains(target.object().cls().name()))
                 return ApplyResult.rejected(rule.id(), "NATIVE_RUNTIME_TARGET_CLASS_MISMATCH:" + target.object().cls().name());
             switch (rule.action()) {
@@ -108,6 +116,8 @@ public final class NativeRuntimeMutationEngine {
                 case ATTRIBUTE_UNSET -> setAttribute(target.object(), payload, true);
                 case LINK_INSERT -> link(payload, true);
                 case LINK_DELETE -> link(payload, false);
+                case UPSERT_CARTAGO_WORKSPACE, UPSERT_CARTAGO_AGENT_IDENTITY,
+                        UPSERT_CARTAGO_ARTIFACT, UPSERT_CARTAGO_PROPERTY_SNAPSHOT -> { }
                 case EVIDENCE_ONLY -> throw new IllegalStateException("handled above");
             }
             OclGate gate = validateOcl();
@@ -145,6 +155,129 @@ public final class NativeRuntimeMutationEngine {
         if (target == null)
             throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_TRACE_TARGET_REQUIRED:" + staticIdentity.canonical());
         return new BoundTarget(staticIdentity.canonical(), target);
+    }
+
+    private BoundTarget upsertWorkspace(Map<String, Object> payload) throws UseApiException {
+        String environmentSemanticId = required(payload, "environmentSemanticId");
+        MObject environment = upsertObject(environmentSemanticId, "Environment",
+                required(payload, "environmentId"));
+        setText(environment, "name", requiredTextAllowEmpty(payload, "environmentName"));
+        setText(environment, "environmentId", required(payload, "environmentId"));
+        setText(environment, "version", requiredTextAllowEmpty(payload, "environmentVersion"));
+        setText(environment, "defaultInfrastructureLayer",
+                requiredTextAllowEmpty(payload, "defaultInfrastructureLayer"));
+
+        String semanticId = required(payload, "semanticId");
+        MObject workspace = upsertObject(semanticId, "Workspace", required(payload, "name"));
+        setText(workspace, "fullName", required(payload, "fullName"));
+        setText(workspace, "name", required(payload, "name"));
+        setText(workspace, "uuid", required(payload, "uuid"));
+        setText(workspace, "parentSemanticId", requiredTextAllowEmpty(payload, "parentSemanticId"));
+        setText(workspace, "environmentSemanticId", environmentSemanticId);
+        setBoolean(workspace, "local", requiredBoolean(payload, "local"));
+        setText(workspace, "protocol", requiredTextAllowEmpty(payload, "protocol"));
+        setText(workspace, "remotePath", requiredTextAllowEmpty(payload, "remotePath"));
+        setText(workspace, "address", requiredTextAllowEmpty(payload, "address"));
+        ensureLink("C13EnvironmentWorkspace", environment, workspace);
+        return new BoundTarget(semanticId, workspace);
+    }
+
+    private BoundTarget upsertCartagoAgent(Map<String, Object> payload) throws UseApiException {
+        String semanticId = required(payload, "semanticId");
+        MObject agent = upsertObject(semanticId, "CartagoAgentIdentity", required(payload, "name"));
+        setText(agent, "globalId", required(payload, "globalId"));
+        setInteger(agent, "localId", requiredInteger(payload, "localId"));
+        setText(agent, "name", required(payload, "name"));
+        setText(agent, "role", requiredTextAllowEmpty(payload, "role"));
+        String workspaceSemanticId = required(payload, "workspaceSemanticId");
+        setText(agent, "workspaceSemanticId", workspaceSemanticId);
+        ensureLink("C19WorkspaceAgent", requiredObject(workspaceSemanticId), agent);
+        return new BoundTarget(semanticId, agent);
+    }
+
+    private BoundTarget upsertArtifact(Map<String, Object> payload) throws UseApiException {
+        String typeSemanticId = required(payload, "artifactTypeSemanticId");
+        String typeName = required(payload, "artifactTypeJavaClassName");
+        MObject type = upsertObject(typeSemanticId, "ArtifactType", typeName);
+        setText(type, "javaClassName", typeName);
+        setText(type, "classLoaderIdentity",
+                requiredTextAllowEmpty(payload, "artifactTypeClassLoaderIdentity"));
+
+        String semanticId = required(payload, "semanticId");
+        MObject artifact = upsertObject(semanticId, "Artifact", required(payload, "name"));
+        setText(artifact, "name", required(payload, "name"));
+        setText(artifact, "uuid", required(payload, "uuid"));
+        setText(artifact, "artifactTypeSemanticId", typeSemanticId);
+        String workspaceSemanticId = required(payload, "workspaceSemanticId");
+        setText(artifact, "workspaceSemanticId", workspaceSemanticId);
+        setText(artifact, "creatorAgentSemanticId",
+                requiredTextAllowEmpty(payload, "creatorAgentSemanticId"));
+        ensureLink("C14WorkspaceArtifact", requiredObject(workspaceSemanticId), artifact);
+        ensureLink("C15ArtifactType", artifact, type);
+        return new BoundTarget(semanticId, artifact);
+    }
+
+    private BoundTarget upsertPropertySnapshot(Map<String, Object> payload) throws UseApiException {
+        String semanticId = required(payload, "semanticId");
+        MObject property = upsertObject(semanticId, "ObservablePropertySnapshot", required(payload, "name"));
+        String artifactSemanticId = required(payload, "artifactSemanticId");
+        setText(property, "artifactSemanticId", artifactSemanticId);
+        setText(property, "propertyId", required(payload, "propertyId"));
+        setText(property, "name", required(payload, "name"));
+        setText(property, "values", NativeUseModelBuilder.canonicalJson(requiredValue(payload, "values")));
+        setText(property, "valueTypes", NativeUseModelBuilder.canonicalJson(requiredValue(payload, "valueTypes")));
+        setText(property, "annotations", NativeUseModelBuilder.canonicalJson(requiredValue(payload, "annotations")));
+        ensureLink("C17ArtifactObservableProperty", requiredObject(artifactSemanticId), property);
+        return new BoundTarget(semanticId, property);
+    }
+
+    private MObject upsertObject(String semanticId, String className, String human) throws UseApiException {
+        MObject existing = semanticObjectIndex.get(semanticId);
+        if (existing != null) {
+            if (!className.equals(existing.cls().name()))
+                throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_OBJECT_CLASS_MISMATCH:" + semanticId);
+            return existing;
+        }
+        var cls = system.model().getClass(className);
+        if (cls == null) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_CLASS_MISSING:" + className);
+        String objectName = NativeUseStateBuilder.objectName(className, human, semanticId);
+        MObject byName = system.state().objectByName(objectName);
+        if (byName != null) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_OBJECT_NAME_COLLISION:" + objectName);
+        MObject object = api.createObjectEx(cls, objectName);
+        setText(object, "semanticId", semanticId);
+        semanticObjectIndex.put(semanticId, object);
+        return object;
+    }
+
+    private MObject requiredObject(String semanticId) {
+        MObject object = semanticObjectIndex.get(semanticId);
+        if (object == null) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_OBJECT_UNRESOLVED:" + semanticId);
+        return object;
+    }
+
+    private void ensureLink(String associationName, MObject first, MObject second) throws UseApiException {
+        MAssociation association = system.model().getAssociation(associationName);
+        if (association == null) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_ASSOCIATION_MISSING:" + associationName);
+        MObject[] connected = {first, second};
+        if (!system.state().hasLinkBetweenObjects(association, connected)) api.createLinkEx(association, connected);
+    }
+
+    private void setText(MObject object, String name, String value) throws UseApiException {
+        api.setAttributeValueEx(object, requiredAttribute(object, name), new StringValue(value));
+    }
+
+    private void setInteger(MObject object, String name, int value) throws UseApiException {
+        api.setAttributeValueEx(object, requiredAttribute(object, name), IntegerValue.valueOf(value));
+    }
+
+    private void setBoolean(MObject object, String name, boolean value) throws UseApiException {
+        api.setAttributeValueEx(object, requiredAttribute(object, name), BooleanValue.get(value));
+    }
+
+    private MAttribute requiredAttribute(MObject object, String name) {
+        MAttribute attribute = object.cls().attribute(name, true);
+        if (attribute == null) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_ATTRIBUTE_MISSING:" + name);
+        return attribute;
     }
 
     private void setAttribute(MObject object, Map<String, Object> payload, boolean unset) throws UseApiException {
@@ -197,6 +330,10 @@ public final class NativeRuntimeMutationEngine {
     private void restore(StateImage image) {
         try {
             for (MLink link : new ArrayList<>(system.state().allLinks())) api.deleteLinkEx(link);
+            for (MObject object : new ArrayList<>(system.state().allObjects()))
+                if (!image.attributes().containsKey(object.name())) api.deleteObjectEx(object);
+            semanticObjectIndex.entrySet().removeIf(entry ->
+                    !image.attributes().containsKey(entry.getValue().name()));
             for (var objectEntry : image.attributes().entrySet()) {
                 MObject object = system.state().objectByName(objectEntry.getKey());
                 if (object == null) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_BASELINE_OBJECT_MISSING:" + objectEntry.getKey());
@@ -262,6 +399,33 @@ public final class NativeRuntimeMutationEngine {
         String value = textOrNull(payload, name);
         if (value == null) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_PAYLOAD_REQUIRED:" + name);
         return value;
+    }
+
+    private static String requiredTextAllowEmpty(Map<String, Object> payload, String name) {
+        Object value = payload == null ? null : payload.get(name);
+        if (!(value instanceof String text))
+            throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_PAYLOAD_REQUIRED:" + name);
+        return text;
+    }
+
+    private static Object requiredValue(Map<String, Object> payload, String name) {
+        Object value = payload == null ? null : payload.get(name);
+        if (value == null) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_PAYLOAD_REQUIRED:" + name);
+        return value;
+    }
+
+    private static int requiredInteger(Map<String, Object> payload, String name) {
+        Object value = payload == null ? null : payload.get(name);
+        if (!(value instanceof Number number) || number.doubleValue() != number.intValue())
+            throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_INTEGER_VALUE_INVALID:" + name);
+        return number.intValue();
+    }
+
+    private static boolean requiredBoolean(Map<String, Object> payload, String name) {
+        Object value = payload == null ? null : payload.get(name);
+        if (!(value instanceof Boolean booleanValue))
+            throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_BOOLEAN_VALUE_INVALID:" + name);
+        return booleanValue;
     }
 
     private static String textOrNull(Map<String, Object> payload, String name) {

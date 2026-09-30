@@ -132,6 +132,71 @@ class CodeGroundedPhase7Test {
     }
 
     @Test
+    void exactCartagoSnapshotMaterializesRuntimeObjectsInThePipelineSystem() throws Exception {
+        var result = CodeGroundedTestFixtures.helloPipeline();
+        var system = result.state().system();
+        int baselineObjects = system.state().numObjects();
+        String environment = "cartago:environment:runtime-env";
+        String workspace = "cartago:workspace:runtime-env:/main:workspace-1";
+        String agent = "cartago:agent:runtime-env:agent-global:1";
+        String type = "cartago:artifact-type:runtime-env:example.RuntimeArtifact";
+        String artifact = "cartago:artifact:runtime-env:/main:artifact-1";
+        String property = "cartago:property:" + artifact + ":status-1";
+        List<RuntimeFact> facts = List.of(
+                faithfulFact("workspace", RuntimeFactKind.WORKSPACE, Map.ofEntries(
+                        Map.entry("normalizedEventKind", "UPSERT_CARTAGO_WORKSPACE"),
+                        Map.entry("semanticId", workspace), Map.entry("fullName", "/main"),
+                        Map.entry("name", "main"), Map.entry("uuid", "workspace-1"),
+                        Map.entry("parentSemanticId", ""), Map.entry("environmentSemanticId", environment),
+                        Map.entry("local", true), Map.entry("protocol", ""), Map.entry("remotePath", ""),
+                        Map.entry("address", ""), Map.entry("environmentName", "runtime"),
+                        Map.entry("environmentId", "runtime-env"), Map.entry("environmentVersion", "1"),
+                        Map.entry("defaultInfrastructureLayer", "local"))),
+                faithfulFact("agent", RuntimeFactKind.AGENT, Map.ofEntries(
+                        Map.entry("normalizedEventKind", "UPSERT_CARTAGO_AGENT_IDENTITY"),
+                        Map.entry("semanticId", agent), Map.entry("globalId", "agent-global"),
+                        Map.entry("localId", 1), Map.entry("name", "worker"), Map.entry("role", "worker"),
+                        Map.entry("workspaceSemanticId", workspace))),
+                faithfulFact("artifact", RuntimeFactKind.ARTIFACT, Map.ofEntries(
+                        Map.entry("normalizedEventKind", "UPSERT_CARTAGO_ARTIFACT"),
+                        Map.entry("semanticId", artifact), Map.entry("name", "runtimeArtifact"),
+                        Map.entry("uuid", "artifact-1"), Map.entry("artifactTypeSemanticId", type),
+                        Map.entry("artifactTypeJavaClassName", "example.RuntimeArtifact"),
+                        Map.entry("artifactTypeClassLoaderIdentity", "runtime-loader"),
+                        Map.entry("workspaceSemanticId", workspace), Map.entry("creatorAgentSemanticId", agent))),
+                faithfulFact("property", RuntimeFactKind.PROPERTY, Map.ofEntries(
+                        Map.entry("normalizedEventKind", "UPSERT_CARTAGO_PROPERTY_SNAPSHOT"),
+                        Map.entry("semanticId", property), Map.entry("artifactSemanticId", artifact),
+                        Map.entry("propertyId", "status-1"), Map.entry("name", "status"),
+                        Map.entry("values", List.of("ready")), Map.entry("valueTypes", List.of("java.lang.String")),
+                        Map.entry("annotations", List.of()))));
+        var projector = new NativeRuntimeProjector(result, SESSION, GENERATION, REVISION);
+
+        NativeRuntimeProjector.ProjectionResult projection = projector.applySnapshot(
+                snapshot("cartago-live", facts, Map.of("cartago", 1L)));
+
+        assertSame(system, projector.system());
+        assertEquals(4, projection.materialized());
+        assertEquals(baselineObjects + 6, system.state().numObjects());
+        assertEquals(1, system.state().linksOfAssociation(system.model()
+                .getAssociation("C13EnvironmentWorkspace")).size());
+        assertEquals(1, system.state().linksOfAssociation(system.model()
+                .getAssociation("C14WorkspaceArtifact")).size());
+        assertEquals(1, system.state().linksOfAssociation(system.model()
+                .getAssociation("C15ArtifactType")).size());
+        assertEquals(1, system.state().linksOfAssociation(system.model()
+                .getAssociation("C17ArtifactObservableProperty")).size());
+        assertEquals(1, system.state().linksOfAssociation(system.model()
+                .getAssociation("C19WorkspaceAgent")).size());
+        assertEquals(4, projector.runtimeAliases().size());
+        assertTrue(projector.lastOclGate().passed());
+
+        projector.applySnapshot(snapshot("cartago-empty", List.of(), Map.of("cartago", 2L)));
+        assertEquals(baselineObjects, system.state().numObjects(), "authoritative resync removes stale runtime objects");
+        assertSame(system, projector.system());
+    }
+
+    @Test
     void staleSessionAndReplayEventsAreRejectedAndResyncRestoresTheSameSystemDeterministically() throws Exception {
         var result = CodeGroundedTestFixtures.helloPipeline();
         var projector = new NativeRuntimeProjector(result, SESSION, GENERATION, REVISION);
@@ -221,6 +286,12 @@ class CodeGroundedPhase7Test {
         return new RuntimeFact(new BridgeEntityId("jason", "agent", kind.name().toLowerCase(),
                         projectKey, local, "incarnation-1"), kind, values, List.of(),
                 ProjectionStatus.EVIDENCE_ONLY, Completeness.COMPLETE, List.of());
+    }
+
+    private static RuntimeFact faithfulFact(String local, RuntimeFactKind kind, Map<String, Object> values) {
+        return new RuntimeFact(new BridgeEntityId("cartago", "environment", kind.name().toLowerCase(),
+                "phase7-runtime", local, "snapshot"), kind, values, List.of(),
+                ProjectionStatus.MATERIALIZED_FAITHFULLY, Completeness.COMPLETE, List.of());
     }
 
     private static RuntimeEvent event(String id, long sequence, RuntimeEventKind kind, RuntimeFactKind factKind,

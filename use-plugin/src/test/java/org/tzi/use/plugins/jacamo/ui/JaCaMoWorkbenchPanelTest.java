@@ -86,19 +86,26 @@ class JaCaMoWorkbenchPanelTest {
     void oneShotLauncherPropertyAutoImportsTheSingleJcmAndLeavesChooserAsFallback() throws Exception {
         String previousPath = System.getProperty(JaCaMoWorkbenchPanel.PROJECT_FILE_HINT_PROPERTY);
         String previousAuto = System.getProperty(JaCaMoWorkbenchPanel.AUTO_IMPORT_PROPERTY);
+        String previousReady = System.getProperty(JaCaMoWorkbenchPanel.READY_FILE_PROPERTY);
         Path staged = Path.of("C:/temp/jacamo-staged/auction.jcm").toAbsolutePath().normalize();
+        Path ready = Files.createTempDirectory("jacamo-workbench-ready-").resolve("ready.json");
         try {
             System.setProperty(JaCaMoWorkbenchPanel.PROJECT_FILE_HINT_PROPERTY, staged.toString());
             System.setProperty(JaCaMoWorkbenchPanel.AUTO_IMPORT_PROPERTY, "true");
+            System.setProperty(JaCaMoWorkbenchPanel.READY_FILE_PROPERTY, ready.toString());
             RecordingFacade facade = new RecordingFacade();
             new JaCaMoWorkbenchPanel(facade, ignored -> { });
 
             assertTrue(facade.importedLatch.await(5, java.util.concurrent.TimeUnit.SECONDS));
             assertEquals(staged, facade.imported);
             assertNull(System.getProperty(JaCaMoWorkbenchPanel.AUTO_IMPORT_PROPERTY));
+            assertNull(System.getProperty(JaCaMoWorkbenchPanel.READY_FILE_PROPERTY));
+            assertTrue(Files.readString(ready).contains("\"status\":\"READY\""));
+            assertTrue(Files.readString(ready).contains("\"projectFile\":"));
         } finally {
             restoreProperty(JaCaMoWorkbenchPanel.PROJECT_FILE_HINT_PROPERTY, previousPath);
             restoreProperty(JaCaMoWorkbenchPanel.AUTO_IMPORT_PROPERTY, previousAuto);
+            restoreProperty(JaCaMoWorkbenchPanel.READY_FILE_PROPERTY, previousReady);
         }
     }
 

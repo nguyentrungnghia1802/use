@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -80,42 +81,105 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
         refreshRegistrations();
         var facts = new ArrayList<RuntimeFact>();
         boolean complete = !registeredWorkspaces.isEmpty();
-        for (String workspace : List.copyOf(registeredWorkspaces)) {
-            try {
-                ICartagoController controller = environment.getController(workspace);
-                for (AgentId agent : controller.getCurrentAgents()) {
-                    facts.add(new RuntimeFact(agentId(agent), RuntimeFactKind.AGENT,
-                            Map.of("name", safe(agent.getAgentName()), "role", safe(agent.getAgentRole())), List.of(),
-                            ProjectionStatus.EVIDENCE_ONLY, Completeness.COMPLETE, List.of()));
-                }
-                for (ArtifactId artifact : controller.getCurrentArtifacts()) {
-                    var info = controller.getArtifactInfo(artifact.getName());
-                    if (info == null || !artifact.equals(info.getId()))
-                        throw new IllegalStateException("CARTAGO_ARTIFACT_NAME_RACE: " + artifact.getName());
-                    var aid = artifactId(artifact);
-                    facts.add(new RuntimeFact(aid, RuntimeFactKind.ARTIFACT,
-                            Map.of("name", safe(artifact.getName()), "type", safe(artifact.getArtifactType()),
-                                    "workspace", artifact.getWorkspaceId().getFullName()), List.of(),
-                            ProjectionStatus.EVIDENCE_ONLY, Completeness.COMPLETE, List.of()));
-                    info.getOperations().stream().sorted(Comparator.comparing(op -> op.getKeyId())).forEach(op ->
-                            facts.add(new RuntimeFact(new BridgeEntityId("cartago", "environment", "operation-descriptor",
-                                    aid.canonical(), op.getKeyId(), artifact.getId().toString()), RuntimeFactKind.OPERATION,
-                                    Map.of("signature", op.getKeyId(), "dynamic", op.isDynamic(), "link", op.isLinkOperation()),
-                                    List.of(), ProjectionStatus.EVIDENCE_ONLY, Completeness.COMPLETE, List.of())));
-                    for (ArtifactObsProperty property : info.getObsProperties()) {
-                        facts.add(new RuntimeFact(new BridgeEntityId("cartago", "environment", "observable-property",
-                                aid.canonical(), property.getFullId(), artifact.getId().toString()), RuntimeFactKind.PROPERTY,
-                                Map.of("name", safe(property.getName()), "values",
-                                        Arrays.stream(property.getValues()).map(String::valueOf).toList()), List.of(),
-                                ProjectionStatus.EVIDENCE_ONLY, Completeness.COMPLETE, List.of()));
-                    }
-                }
-            } catch (Exception error) { complete = false; }
+        try {
+            var snapshot = new OfficialCartagoAdapter().capture(environment);
+            String environmentSemanticId = snapshot.metadata().semanticId();
+            String environmentId = snapshot.environmentId();
+            var artifactTypes = snapshot.artifactTypes().stream().collect(java.util.stream.Collectors.toMap(
+                    value -> value.metadata().semanticId(), value -> value));
+            var workspaceNames = snapshot.workspaces().stream().collect(java.util.stream.Collectors.toMap(
+                    value -> value.metadata().semanticId(), value -> value.fullName()));
+
+            for (var workspace : snapshot.workspaces()) {
+                var values = values("UPSERT_CARTAGO_WORKSPACE", workspace.metadata().semanticId());
+                values.put("fullName", workspace.fullName());
+                values.put("name", workspace.name());
+                values.put("uuid", workspace.uuid());
+                values.put("parentSemanticId", workspace.parentSemanticId());
+                values.put("environmentSemanticId", workspace.environmentSemanticId());
+                values.put("local", workspace.local());
+                values.put("protocol", workspace.protocol());
+                values.put("remotePath", workspace.remotePath());
+                values.put("address", workspace.address());
+                values.put("environmentName", snapshot.name());
+                values.put("environmentId", environmentId);
+                values.put("environmentVersion", snapshot.version());
+                values.put("defaultInfrastructureLayer", snapshot.defaultInfrastructureLayer());
+                facts.add(faithful(new BridgeEntityId("cartago", "environment", "workspace", environmentId,
+                        workspace.fullName(), workspace.uuid()), RuntimeFactKind.WORKSPACE, values));
+            }
+            for (var agent : snapshot.agents()) {
+                String workspaceFullName = requiredWorkspaceName(workspaceNames, agent.workspaceSemanticId());
+                var values = values("UPSERT_CARTAGO_AGENT_IDENTITY", agent.metadata().semanticId());
+                values.put("globalId", agent.globalId());
+                values.put("localId", agent.localId());
+                values.put("name", agent.name());
+                values.put("role", agent.role());
+                values.put("workspaceSemanticId", agent.workspaceSemanticId());
+                facts.add(faithful(agentId(workspaceFullName, agent.globalId(), agent.localId()),
+                        RuntimeFactKind.AGENT, values));
+            }
+            for (var artifact : snapshot.artifacts()) {
+                String workspaceFullName = requiredWorkspaceName(workspaceNames, artifact.workspaceSemanticId());
+                var type = artifactTypes.get(artifact.artifactTypeSemanticId());
+                if (type == null) throw new IllegalStateException("CARTAGO_ARTIFACT_TYPE_MISSING: "
+                        + artifact.artifactTypeSemanticId());
+                var values = values("UPSERT_CARTAGO_ARTIFACT", artifact.metadata().semanticId());
+                values.put("name", artifact.name());
+                values.put("uuid", artifact.uuid());
+                values.put("artifactTypeSemanticId", artifact.artifactTypeSemanticId());
+                values.put("artifactTypeJavaClassName", type.javaClassName());
+                values.put("artifactTypeClassLoaderIdentity", type.classLoaderIdentity());
+                values.put("workspaceSemanticId", artifact.workspaceSemanticId());
+                values.put("creatorAgentSemanticId", artifact.creatorAgentSemanticId());
+                facts.add(faithful(artifactId(workspaceFullName, artifact.name(), artifact.uuid()),
+                        RuntimeFactKind.ARTIFACT, values));
+            }
+            for (var property : snapshot.propertySnapshots()) {
+                var values = values("UPSERT_CARTAGO_PROPERTY_SNAPSHOT", property.metadata().semanticId());
+                values.put("artifactSemanticId", property.artifactSemanticId());
+                values.put("propertyId", property.propertyId());
+                values.put("name", property.name());
+                values.put("values", property.values());
+                values.put("valueTypes", property.valueTypes());
+                values.put("annotations", property.annotations());
+                facts.add(faithful(new BridgeEntityId("cartago", "environment", "observable-property-snapshot",
+                        property.artifactSemanticId(), property.propertyId(), "snapshot"),
+                        RuntimeFactKind.PROPERTY, values));
+            }
+            for (var operation : snapshot.operations()) {
+                facts.add(new RuntimeFact(new BridgeEntityId("cartago", "environment", "operation-descriptor",
+                        operation.artifactSemanticId(), operation.keyId(), "snapshot"), RuntimeFactKind.OPERATION,
+                        Map.of("signature", operation.keyId(), "dynamic", operation.dynamic(),
+                                "link", operation.linkOperation()), List.of(), ProjectionStatus.EVIDENCE_ONLY,
+                        Completeness.COMPLETE, List.of()));
+            }
+        } catch (Exception error) {
+            complete = false;
         }
         completeness = registeredWorkspaces.isEmpty() ? Completeness.UNAVAILABLE
                 : complete ? Completeness.COMPLETE : Completeness.PARTIAL;
         facts.sort(Comparator.comparing(fact -> fact.id().canonical()));
         return facts;
+    }
+
+    private RuntimeFact faithful(BridgeEntityId id, RuntimeFactKind kind, Map<String, Object> values) {
+        return new RuntimeFact(id, kind, values, List.of(), ProjectionStatus.MATERIALIZED_FAITHFULLY,
+                Completeness.COMPLETE, List.of());
+    }
+
+    private LinkedHashMap<String, Object> values(String normalizedEventKind, String semanticId) {
+        var values = new LinkedHashMap<String, Object>();
+        values.put("normalizedEventKind", normalizedEventKind);
+        values.put("semanticId", semanticId);
+        return values;
+    }
+
+    private static String requiredWorkspaceName(Map<String, String> workspaceNames, String semanticId) {
+        String value = workspaceNames.get(semanticId);
+        if (value == null || value.isBlank())
+            throw new IllegalStateException("CARTAGO_WORKSPACE_IDENTITY_MISSING: " + semanticId);
+        return value;
     }
 
     @Override public Completeness completeness() { return completeness; }
@@ -153,10 +217,19 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
     }
 
     private String safe(Object value) { return value == null ? "" : value.toString(); }
-    private BridgeEntityId artifactId(ArtifactId id) { return new BridgeEntityId("cartago", "environment", "artifact",
-            id.getWorkspaceId().getFullName(), id.getName(), id.getId().toString()); }
-    private BridgeEntityId agentId(AgentId id) { return new BridgeEntityId("cartago", "environment", "agent",
-            id.getWorkspaceId().getFullName(), id.getGlobalId(), Integer.toString(id.getLocalId())); }
+    private BridgeEntityId artifactId(ArtifactId id) {
+        return artifactId(id.getWorkspaceId().getFullName(), id.getName(), id.getId().toString());
+    }
+    static BridgeEntityId artifactId(String workspaceFullName, String name, String uuid) {
+        return new BridgeEntityId("cartago", "environment", "artifact", workspaceFullName, name, uuid);
+    }
+    private BridgeEntityId agentId(AgentId id) {
+        return agentId(id.getWorkspaceId().getFullName(), id.getGlobalId(), id.getLocalId());
+    }
+    static BridgeEntityId agentId(String workspaceFullName, String globalId, int localId) {
+        return new BridgeEntityId("cartago", "environment", "agent", workspaceFullName, globalId,
+                Integer.toString(localId));
+    }
 
     private synchronized void event(RuntimeEventKind kind, ArtifactId artifact, AgentId agent, Map<String,Object> values) {
         Consumer<RuntimeEvent> sink = observer;
