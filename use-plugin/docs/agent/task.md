@@ -79,7 +79,7 @@ optional export .use / .cmd
 ## 1.1 Baseline
 
 - [x] Record Git branch and HEAD.
-- [ ] Confirm tracked working tree is clean before implementation. `APPROVAL_GATED`: pre-existing user changes/untracked design and generated artifacts are intentionally preserved.
+- [ ] Confirm tracked working tree is clean before implementation. `APPROVAL_GATED`: this historical pre-implementation gate was not true at the start; the post-cleanup checkpoint is clean, but that cannot be counted retroactively.
 - [x] Record existing untracked/generated `target/` directories without deleting user state.
 - [x] Run existing Bridge/adapter/facade/workbench tests.
 - [x] Run current module build.
