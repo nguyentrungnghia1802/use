@@ -115,6 +115,40 @@ class CodeGroundedPhase5Test {
         assertEquals(NativeUseStructure.sha256(model), result.export().recompiledStructuralHash());
     }
 
+    @Test
+    void multipleNormsCanShareRoleAndMissionWhileEachNormHasOptionalSingleReferences() throws Exception {
+        var original = syntheticOrganization();
+        var ns = original.normativeSpecification();
+        var norm = ns.norms().get(0);
+        var shared = new MoiseSemanticContract.NormSemantic(meta("phase5:shared-norm", "MOISE_NORM"),
+                "phase5:shared-norm", ns.specificationId(), norm.roleSemanticId(), norm.missionSemanticId(),
+                "permission", "true", "");
+        var unbound = new MoiseSemanticContract.NormSemantic(meta("phase5:unbound-norm", "MOISE_NORM"),
+                "phase5:unbound-norm", ns.specificationId(), "", "", "permission", "true", "");
+        var normative = new MoiseSemanticContract.NormativeSpecificationSemantic(ns.metadata(),
+                ns.organizationSemanticId(), ns.specificationId(), List.of(norm, shared, unbound));
+        var organization = new MoiseSemanticContract.OrganizationSemantic(original.metadata(), original.name(),
+                original.sourceUri(), original.structuralSpecification(), original.functionalSpecification(), normative);
+        var result = new CodeGroundedNativePipeline().build(
+                withMoise(CodeGroundedTestFixtures.helloSnapshot(), organization));
+
+        assertEquals(3, objects(result.state().system(), "Norm"));
+        assertEquals(2, links(result.state().system(), "M42NormRole"));
+        assertEquals(2, links(result.state().system(), "M43NormMission"));
+        for (String name : List.of("M42NormRole", "M43NormMission")) {
+            var ends = result.model().model().getAssociation(name).associationEnds();
+            assertEquals("Norm", ends.get(0).cls().name());
+            assertTrue(ends.get(0).multiplicity().contains(2), "Role/Mission may be referenced by multiple norms");
+            assertTrue(ends.get(1).multiplicity().contains(0));
+            assertTrue(ends.get(1).multiplicity().contains(1));
+            assertFalse(ends.get(1).multiplicity().contains(2), "Each norm has at most one Role/Mission");
+            assertFalse(ends.get(1).isOrdered(), "Scalar references must survive USE export/recompile");
+        }
+        assertTrue(result.state().structureValid());
+        assertTrue(result.state().invariantsValid());
+        assertEquals(result.model().structuralHash(), result.export().recompiledStructuralHash());
+    }
+
     private static int objects(org.tzi.use.uml.sys.MSystem system, String className) {
         return system.state().objectsOfClass(system.model().getClass(className)).size();
     }

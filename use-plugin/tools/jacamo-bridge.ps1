@@ -233,12 +233,20 @@ try {
             Pop-Location
         }
         $runtimeProjectClasses = Join-Path $stagedProject "build\classes\java\main"
-        if (-not (Test-Path -LiteralPath $runtimeProjectClasses -PathType Container)) {
+        if (Test-Path -LiteralPath $runtimeProjectClasses -PathType Container) {
+            $runtimeProjectBuild = "GRADLE_CLASSES_PASS"
+        } elseif ($gradleStdout -match '(?m)^> Task :compileJava NO-SOURCE\s*$') {
+            # A valid JaCaMo project may contain only ASL/JCM/XML resources and no custom
+            # Java environment classes. Gradle reports compileJava NO-SOURCE in that case;
+            # the official runtime classpath is still sufficient to launch the project.
+            $runtimeProjectBuild = "GRADLE_CLASSES_NOT_REQUIRED"
+            Write-Host "RUNTIME_PROJECT_CLASSES_NOT_REQUIRED:$runtimeProjectClasses"
+        } else {
             throw "RUNTIME_PROJECT_CLASSES_MISSING:$runtimeProjectClasses"
         }
-        $runtimeProjectBuild = "GRADLE_CLASSES_PASS"
         $runtimeResources = Join-Path $stagedProject "build\resources\main"
-        $runtimeEntries = @($runtimeProjectClasses)
+        $runtimeEntries = @()
+        if (Test-Path -LiteralPath $runtimeProjectClasses -PathType Container) { $runtimeEntries += $runtimeProjectClasses }
         if (Test-Path -LiteralPath $runtimeResources -PathType Container) { $runtimeEntries += $runtimeResources }
         $producerClasspath = [string]::Join([IO.Path]::PathSeparator, @($runtimeEntries + $producerClasspath))
     }

@@ -27,6 +27,8 @@ class GenericLauncherScriptTest {
         assertTrue(script.contains("redirectstandarderror = $true"));
         assertTrue(script.contains("readtoendasync"));
         assertTrue(script.contains("runtime_project_build_failed:$gradleexitcode"));
+        assertTrue(script.contains("runtime_project_classes_not_required"));
+        assertTrue(script.contains("gradle_classes_not_required"));
         assertFalse(script.contains("& $stagedgradlewrapper"));
         assertTrue(script.contains("psobject.properties['argumentlist']"));
         assertTrue(script.contains("$startinfo.arguments ="));

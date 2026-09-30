@@ -312,8 +312,8 @@ ObsProperty / ArtifactObsProperty
 | `M39` | OrganizationalGoal has Plan | association/composition | `MAssociation` | Preserve exact Moise goal-plan ownership/reference. |
 | `M40` | OrganizationalPlan has subGoals | ordered association | `MAssociation` | Preserve operator plus source order when defined. |
 | `M41` | NS contains Norms | composition | `MAssociation` | NormativeSpecification → Norm |
-| `M42` | Norm applies to Role | association | `MAssociation` | Norm → Role |
-| `M43` | Norm references Mission | association | `MAssociation` | Norm → Mission |
+| `M42` | Norm applies to Role | association | `MAssociation` | Each Norm references 0..1 Role; one Role may be referenced by 0..* Norms. Scalar reference is unordered. |
+| `M43` | Norm references Mission | association | `MAssociation` | Each Norm references 0..1 Mission; one Mission may be referenced by 0..* Norms. Scalar reference is unordered. |
 
 ### Moise enum rules
 

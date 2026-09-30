@@ -387,10 +387,12 @@ public final class NativeUseModelBuilder {
                     "OrganizationalGoal", "m40SubGoals", "*", false, true);
             association(api, "M41NSNorm", "NormativeSpecification", "m41Norms", "1",
                     MAggregationKind.COMPOSITION, "Norm", "m41NormativeSpecification", "*", false, true);
-            association(api, "M42NormRole", "Norm", "m42Role", "0..1", MAggregationKind.NONE,
-                    "Role", "m42Norms", "0..*", false, true);
-            association(api, "M43NormMission", "Norm", "m43Mission", "0..1", MAggregationKind.NONE,
-                    "Mission", "m43Norms", "0..*", false, true);
+            // The first-end multiplicity counts Norm objects attached to one Role/Mission;
+            // the opposite end counts the single Role/Mission reference held by one Norm.
+            association(api, "M42NormRole", "Norm", "m42Role", "0..*", MAggregationKind.NONE,
+                    "Role", "m42Norms", "0..1", false, false);
+            association(api, "M43NormMission", "Norm", "m43Mission", "0..*", MAggregationKind.NONE,
+                    "Mission", "m43Norms", "0..1", false, false);
             if (profile.materializesClass("Action") && profile.materializesClass("Operation"))
                 association(api, "X01ActionOperation", "Action", "x01Operation", "0..1",
                         MAggregationKind.NONE, "Operation", "x01Actions", "0..*", false, true);

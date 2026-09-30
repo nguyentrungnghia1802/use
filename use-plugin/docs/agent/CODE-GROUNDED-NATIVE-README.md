@@ -41,6 +41,21 @@ and checksum before running the release/integration gates. The JaCaMo-side
 adapter artifact is `jacamo-bridge-jacamo`; it is not packaged into the USE
 GUI plugin JAR.
 
+Launch a project in the existing USE GUI after the build:
+
+```powershell
+& '.\use-plugin\tools\jacamo-bridge.ps1' `
+  -JcmPath 'D:\path\to\project.jcm' `
+  -EvidenceDirectory 'D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\jacamo-bridge-evidence' `
+  -InteractiveGui -SkipBuild
+```
+
+Wait for `INTERACTIVE_GUI_MODEL_READY`: the Workbench has imported and activated
+the model automatically. Close USE to stop that run. Projects containing only
+ASL/JCM/XML may legitimately produce `compileJava NO-SOURCE`; the launcher
+records `GRADLE_CLASSES_NOT_REQUIRED` and uses the official runtime classpath.
+Missing Java output without that Gradle evidence remains a launcher error.
+
 ## Bridge configuration
 
 `BridgeConnectionConfig` describes the separate-JVM endpoint, shared secret,

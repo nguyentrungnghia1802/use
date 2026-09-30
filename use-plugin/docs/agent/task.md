@@ -715,6 +715,14 @@ P = optional source/bytecode provenance
 ## M43 Norm–Mission
 - [x] association.
 
+**M42/M43 regression evidence — 2026-09-30:** `moise.os.ns.Norm.getRole()` and
+`getMission()` return single references (confirmed in the resolved Moise 1.1
+bytecode). The native multiplicities were reversed: each Norm must have 0..1
+Role/Mission, while a Role/Mission can be referenced by 0..* Norms. Corrected
+both endpoints and removed ordering from the scalar ends so `.use` recompile
+preserves the structure. `CodeGroundedPhase5Test` passes 3/3, including shared
+Role/Mission targets and absent references; native state and export hashes pass.
+
 ## Moise enums/tests
 
 - [x] Norm operation type enum.
@@ -1854,6 +1862,27 @@ Mapping Inspector
 ```
 
 # 34. Execution order
+
+**Writing Paper launcher regression — 2026-09-30:** PASS for the supported
+native scope. `jacamo-bridge.ps1` accepts absent Java output only when a
+successful Gradle build explicitly reports `compileJava NO-SOURCE`; it adds
+only existing build output directories to the producer classpath. Executing
+the actual PowerShell class-output gate passes 3/3: NO-SOURCE, existing output,
+and missing-output rejection. Focused Maven tests pass 4/4. Full unfiltered
+`mvn -B -pl use-plugin -am verify` passes 506/506 (contract 12, adapters 18,
+core 12 + 1 integration, GUI 1 + 129 integration, plugin 325 + 8
+integration/release), zero failures/errors/skips, including package, checksum,
+GUI staging, and release tests. Headless evidence is
+`use-plugin/target/jacamo-bridge-evidence-writing-paper-final/20260930-153546`:
+27 classes, 336 objects, 430 links, valid structure/invariants/export.
+Packaged GUI evidence is
+`use-plugin/target/jacamo-bridge-evidence-writing-paper-gui-final/20260930-154056/gui-ready.json`:
+automatic import reports READY, 27 classes, 41 associations, 336 objects,
+430 links, Bridge LIVE with explicit PARTIAL completeness. This is evidence
+of session activation, not a claim of all runtime semantics being materialized.
+The existing single `MSystem` and `CODE_GROUNDED_NATIVE` path are retained;
+no frozen V2/Ecore/golden file changed. Existing unavailable/optional/approval
+checkboxes are unchanged by this regression fix.
 
 ```text
 Phase 1A  Foundation / typed contract / 105-rule catalog / native APIs / OCL separation
