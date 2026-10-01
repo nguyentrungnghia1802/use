@@ -69,6 +69,8 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private final JTable traces = named(new JTable(tracesModel), "trace-table");
     private final JTable diagnostics = named(new JTable(diagnosticsModel), "diagnostics-table");
     private final JTable verification = named(new JTable(verificationModel), "verification-table");
+    private final JTextArea verificationSummary = named(new JTextArea(7, 60), "verification-summary");
+    private final JLabel verificationBlocked = named(new JLabel(""), "verification-capability-blocked");
     private final JTextArea traceDetail = named(new JTextArea(), "mapping-detail");
     private final JComboBox<String> dimensionFilter = named(new JComboBox<>(), "trace-dimension-filter");
     private final JComboBox<String> statusFilter = named(new JComboBox<>(), "trace-status-filter");
@@ -82,7 +84,16 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private final JLabel runtimeVerification = named(new JLabel("NOT_RUN"), "runtime-verification");
     private final JLabel runtimeCoverage = named(new JLabel("UNAVAILABLE"), "runtime-coverage");
     private final JLabel runtimeFailures = named(new JLabel("-"), "runtime-failing-constraints");
-    private final JTextArea runtimeHistory = named(new JTextArea(6, 60), "runtime-verification-history");
+    private final DefaultTableModel historyModel = readOnlyModel("StateVersion", "Event", "Constraint", "Result", "Time");
+    private final JTable runtimeHistory = named(new JTable(historyModel), "runtime-verification-history");
+    private final javax.swing.JCheckBox changesOnly = named(new javax.swing.JCheckBox("Show result changes only"), "history-changes-only");
+    private final javax.swing.JCheckBox showObservations = named(new javax.swing.JCheckBox("Show evidence-only observations"), "history-show-observed");
+    private final JLabel historyRetention = named(new JLabel("No history"), "history-retention");
+    private final JTextArea historyDetail = named(new JTextArea(), "history-detail");
+    private org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeHistoryPage historyPage = org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeHistoryPage.empty();
+    private List<RuntimeHistoryRows.Row> historyRows = List.of();
+    private boolean persistedHistory;
+    private long pageOffset;
     private final JLabel semanticAuthority = named(new JLabel("BRIDGE"), "semantic-authority");
     private final JLabel bridgeReadiness = named(new JLabel("DISCONNECTED"), "bridge-readiness");
     private final JLabel bridgeCapabilities = named(new JLabel("-"), "bridge-capabilities");
@@ -95,6 +106,9 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private String selectedSource;
     private boolean autoImportStarted;
     private int backgroundOperations;
+    private final JLabel workflowState = named(new JLabel("NOT_IMPORTED"), "workflow-state");
+    private final JButton startRuntime = named(new JButton("Start Runtime"), "start-runtime");
+    private final JButton loadProfile = named(new JButton("Load OCL..."), "load-profile");
     // Refresh only cached facade status, never start a second runtime or a network resync.
     private final javax.swing.Timer runtimeStatusTimer = new javax.swing.Timer(1000, event -> {
         if (backgroundOperations == 0) refreshRuntime();
@@ -120,19 +134,21 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         this.facade = java.util.Objects.requireNonNull(facade, "facade");
         this.errorPresenter = java.util.Objects.requireNonNull(errorPresenter, "errorPresenter");
         this.bindingPanel = new BindingResolutionPanel(facade);
+        startRuntime.addActionListener(event -> startRuntime());
+        loadProfile.addActionListener(event -> chooseProfile());
         copySource.setEnabled(false);
         copySource.addActionListener(event -> copySelectedSource());
         add(toolbar(), BorderLayout.NORTH);
         JTabbedPane tabs = named(new JTabbedPane(), "workbench-tabs");
         tabs.addTab("Project", projectPanel());
         tabs.addTab("Mapping Inspector", tracePanel());
-        tabs.addTab("Diagnostics", tablePanel(diagnostics));
+        tabs.addTab("Mapping Rules", new MappingRulesPanel());
         tabs.addTab("Verification", verificationPanel());
         tabs.addTab("Runtime", runtimePanel());
-        tabs.addTab("Binding", bindingPanel);
         add(tabs, BorderLayout.CENTER);
         add(status, BorderLayout.SOUTH);
         refreshRuntime();
+        refreshDiagnostics();
         autoImportIfConfigured();
     }
 
@@ -140,6 +156,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         Path normalized = java.util.Objects.requireNonNull(jcmFile, "jcmFile").toAbsolutePath().normalize();
         executeBackground("Import failed", () -> facade.importProject(normalized), () -> {
             refreshProject();
+            persistedHistory = false;
             setStatus("Imported " + normalized);
             writeReadyEvidence(normalized);
         });
@@ -159,6 +176,10 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         executeBackground("Profile load failed", () -> facade.loadVerificationProfile(profile), this::refreshProject);
     }
 
+    public void startRuntime() {
+        executeBackground("Runtime start failed", facade::startRuntime, this::refreshRuntime);
+    }
+
     public void exportVerificationReport(Path destination) {
         executeBackground("Report export failed", () -> facade.exportVerificationReport(destination),
                 () -> setStatus("Report: " + destination));
@@ -175,6 +196,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     }
 
     public void refreshRuntime() {
+        refreshWorkflowControls();
         JaCaMoFacade.RuntimeStatus current = facade.runtimeStatus();
         JaCaMoFacade.AuthorityStatus authority = facade.authorityStatus();
         runtimeState.setText(current.state().name());
@@ -193,14 +215,12 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
                     + " SKIPPED=" + result.count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.SKIPPED));
             runtimeCoverage.setText(displayMessage(result.coverage() + " / " + result.freshness() + " / " + result.diagnostic()));
             runtimeFailures.setText(displayMessage(String.join(", ", result.failingConstraints())));
-            var history = facade.runtimeVerificationHistory();
-            runtimeHistory.setText(history.stream().skip(Math.max(0, history.size() - 12)).map(item ->
-                    "v" + item.stateVersion() + " " + item.eventId() + " PASS=" + item.count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.PASS)
-                    + " FAIL=" + item.count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.FAIL)
-                    + " ERROR=" + item.count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.ERROR)
-                    + " SKIPPED=" + item.count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.SKIPPED)
-                    + " " + item.coverage() + " " + item.failingConstraints()).collect(java.util.stream.Collectors.joining("\n")));
+        } else {
+            runtimeVerification.setText("NOT_RUN (no current formal result)");
+            runtimeCoverage.setText("UNAVAILABLE / current constraint set has no result");
+            runtimeFailures.setText("-");
         }
+        if (!persistedHistory) { historyPage = facade.runtimeHistoryTail(); refreshHistoryRows(); }
         semanticAuthority.setText(authority.authority().name());
         bridgeReadiness.setText(authority.readiness().name());
         bridgeCapabilities.setText(authority.capabilities().isEmpty() ? "-" : authority.capabilities().entrySet()
@@ -217,18 +237,27 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
 
     public void showBindingRequest(Path destination, JaCaMoFacade.BindingRequest request) {
         bindingPanel.showRequest(destination, request);
+        if (!java.awt.GraphicsEnvironment.isHeadless())
+            JOptionPane.showMessageDialog(this, bindingPanel, "Explicit binding (legacy compatibility)",
+                    JOptionPane.PLAIN_MESSAGE);
     }
 
     private JPanel toolbar() {
-        JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEADING));
-        toolbar.add(button("Import JaCaMo Project...", "import-project", this::chooseProject));
-        toolbar.add(button("Rebuild", "rebuild-project", this::rebuildProject));
-        toolbar.add(button("Load OCL...", "load-profile", this::chooseProfile));
-        toolbar.add(button("Run Full Verification", "run-verification", this::runFullVerification));
-        toolbar.add(button("Export Report...", "export-report", this::chooseReport));
-        toolbar.add(button("Export .use...", "export-use", this::chooseNativeUse));
-        toolbar.add(button("Export .cmd...", "export-soil", this::chooseNativeSoil));
-        toolbar.add(button("Export replay...", "export-replay", this::chooseRuntimeReplay));
+        JPanel toolbar = new JPanel(new GridLayout(0,1));
+        JPanel actions=new JPanel(new FlowLayout(FlowLayout.LEADING));
+        JPanel exports=new JPanel(new FlowLayout(FlowLayout.LEADING));
+        actions.add(button("Import JaCaMo Project...", "import-project", this::chooseProject));
+        actions.add(button("Rebuild", "rebuild-project", this::rebuildProject));
+        actions.add(loadProfile);
+        actions.add(startRuntime);
+        actions.add(button("Run Full Verification", "run-verification", this::runFullVerification));
+        exports.add(button("Export Report...", "export-report", this::chooseReport));
+        exports.add(button("Export .use...", "export-use", this::chooseNativeUse));
+        exports.add(button("Export .cmd...", "export-soil", this::chooseNativeSoil));
+        exports.add(button("Export replay...", "export-replay", this::chooseRuntimeReplay));
+        exports.add(button("Recorded replay...", "recorded-replay", this::chooseRecordedReplay));
+        exports.add(button("Re-analyze with current OCL...", "reanalyze-replay", this::chooseReanalysis));
+        toolbar.add(actions); toolbar.add(exports);
         return toolbar;
     }
 
@@ -239,11 +268,17 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         addField(summary, "Active metamodel", metamodelBaseline);
         addField(summary, "Mapping compatibility", mappingStatus);
         addField(summary, "Generation", generationStatus);
-        addField(summary, "Dimensions", dimensionCounts);
+        dimensionCounts.setToolTipText("Source semantic records include containers, cardinalities, program nodes and binding evidence;"
+                + " these are not live-domain object counts.");
+        addField(summary, "Semantic records (including support)", dimensionCounts);
         JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, summary, tablePanel(sources));
         split.setResizeWeight(0.25);
         JPanel panel = new JPanel(new BorderLayout());
-        panel.add(split, BorderLayout.CENTER);
+        JSplitPane withDiagnostics = new JSplitPane(JSplitPane.VERTICAL_SPLIT, split, tablePanel(diagnostics));
+        withDiagnostics.setResizeWeight(0.65);
+        panel.add(withDiagnostics, BorderLayout.CENTER);
+        panel.add(new JLabel("Diagnostics: code / severity / message / remediation. Binding is explicit only;"
+                + " persistence does not imply native runtime binding."), BorderLayout.SOUTH);
         return panel;
     }
 
@@ -321,13 +356,19 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(verification), new JScrollPane(detail));
         split.setResizeWeight(0.65);
         JPanel panel = new JPanel(new BorderLayout());
+        verificationSummary.setEditable(false);
+        verificationSummary.setLineWrap(true);
+        verificationSummary.setWrapStyleWord(true);
+        panel.add(new JScrollPane(verificationSummary), BorderLayout.NORTH);
         panel.add(split, BorderLayout.CENTER);
+        panel.add(verificationBlocked, BorderLayout.SOUTH);
         return panel;
     }
 
     private JPanel runtimePanel() {
         JPanel values = new JPanel(new GridLayout(0, 2, 8, 4));
         addField(values, "Semantic authority", semanticAuthority);
+        addField(values, "Workflow (not Bridge readiness)", workflowState);
         addField(values, "Bridge readiness", bridgeReadiness);
         addField(values, "Capabilities", bridgeCapabilities);
         addField(values, "Completeness", bridgeCompleteness);
@@ -344,22 +385,40 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         addField(values, "Verification", runtimeVerification);
         addField(values, "Coverage / GAP", runtimeCoverage);
         addField(values, "Failing constraints", runtimeFailures);
-        runtimeHistory.setEditable(false);
-        values.add(new JLabel("Retained observations (last 12)"));
-        values.add(new JScrollPane(runtimeHistory));
+        changesOnly.addActionListener(event -> refreshHistoryRows());
+        showObservations.addActionListener(event -> refreshHistoryRows());
+        historyDetail.setEditable(false); historyDetail.setLineWrap(true); historyDetail.setWrapStyleWord(true);
+        runtimeHistory.getSelectionModel().addListSelectionListener(event -> {
+            int row = runtimeHistory.getSelectedRow();
+            if (!event.getValueIsAdjusting() && row >= 0 && row < historyRows.size()) historyDetail.setText(historyRows.get(row).detail());
+        });
+        var historyControls = new JPanel(new FlowLayout(FlowLayout.LEADING));
+        historyControls.add(changesOnly); historyControls.add(showObservations);
+        historyControls.add(button("Live tail", "history-live-tail", () -> { persistedHistory=false; refreshRuntime(); }));
+        historyControls.add(button("First disk page", "history-first-page", () -> loadHistoryPage(0)));
+        historyControls.add(button("Previous", "history-previous-page", () -> loadHistoryPage(Math.max(0,pageOffset-64))));
+        historyControls.add(button("Next", "history-next-page", () -> loadHistoryPage(historyPage.nextOrdinal())));
+        var history = new JPanel(new BorderLayout());
+        history.add(historyControls, BorderLayout.NORTH);
+        var detailSplit=new JSplitPane(JSplitPane.VERTICAL_SPLIT,new JScrollPane(runtimeHistory),new JScrollPane(historyDetail));
+        detailSplit.setResizeWeight(0.75); history.add(detailSplit, BorderLayout.CENTER);
+        history.add(historyRetention, BorderLayout.SOUTH);
         JPanel controls = new JPanel(new FlowLayout(FlowLayout.LEADING));
         controls.add(button("Connect", "runtime-connect", () -> executeBackground("Runtime connect failed",
                 facade::connectRuntime, this::refreshRuntime)));
-        controls.add(button("Disconnect", "runtime-disconnect", () -> execute("Runtime disconnect failed", () -> {
-            facade.disconnectRuntime(); refreshRuntime();
-        })));
+        controls.add(button("Disconnect", "runtime-disconnect", () -> executeBackground("Runtime disconnect failed",
+                facade::disconnectRuntime, this::refreshRuntime)));
         controls.add(button("Reconnect", "runtime-reconnect", () -> executeBackground("Runtime reconnect failed",
                 facade::connectRuntime, this::refreshRuntime)));
         controls.add(button("Resync", "runtime-resync", () -> executeBackground("Runtime resync failed",
                 facade::resyncRuntime, this::refreshRuntime)));
         controls.add(button("Refresh", "runtime-refresh", this::refreshRuntime));
+        controls.add(button("Cancel pending start", "cancel-runtime-start", () -> {
+            facade.cancelRuntimeStartup(); refreshRuntime();
+        }));
         JPanel panel = new JPanel(new BorderLayout());
-        panel.add(values, BorderLayout.CENTER);
+        var split=new JSplitPane(JSplitPane.VERTICAL_SPLIT,new JScrollPane(values),history);
+        split.setResizeWeight(0.40); panel.add(split, BorderLayout.CENTER);
         panel.add(controls, BorderLayout.SOUTH);
         return panel;
     }
@@ -390,6 +449,44 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     }
 
     private void refreshVerification() {
+        var snapshot = facade.verificationSnapshot();
+        var result = snapshot.result();
+        var interval = snapshot.profile();
+        var profile = interval == null ? null : interval.profile();
+        String loaded = interval == null ? "NOT_LOADED" : Long.toString(interval.loadedVersion());
+        verificationSummary.setText("Profile: " + (profile == null ? "NONE / NOT_LOADED" : profile.sourceFile() + " | sha256=" + profile.sourceHash())
+                + "\nLoaded at stateVersion: " + loaded + " | current=" + snapshot.currentVersion()
+                + " | last verified=" + (result == null ? "NOT_RUN" : result.stateVersion())
+                + "\nInterval: " + (interval == null ? "CORE_ONLY" : interval.intervalId())
+                + (result == null ? "\nNOT_RUN (no current formal result)" : "\nSession=" + result.sessionId() + " / generation=" + result.generation()
+                        + " / modelRevision=" + result.modelRevision() + "\nConstraint set=" + result.constraintSetHash()
+                        + "\nCoverage=" + result.coverage() + " / freshness=" + result.freshness()
+                        + " | PASS=" + result.count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.PASS)
+                        + " FAIL=" + result.count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.FAIL)
+                        + " ERROR=" + result.count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.ERROR)
+                        + " SKIPPED=" + result.count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.SKIPPED))
+                + (interval == null ? "" : "\nProfile has NOT verified LIVE states before V" + interval.loadedVersion()
+                        + "; retrospective analysis is REPLAY, not live evidence."));
+        if (result != null) {
+            var external = profile == null ? java.util.Set.<String>of() : profile.constraints().stream()
+                    .map(value -> "EXTERNAL:" + value.constraintId()).collect(java.util.stream.Collectors.toSet());
+            replaceRows(verificationModel, result.outcomes().stream().map(value -> new Object[] {
+                    value.constraintId(), external.contains(value.constraintId()) ? "EXTERNAL/USER" : "SYSTEM/CORE",
+                    value.outcome(), value.contextClass(), value.diagnostic(), value.expression(),
+                    external.contains(value.constraintId()) ? profile.sourceFile() + " | " + profile.sourceHash() : "native registry"
+            }).toList());
+            verificationBlocked.setText(displayMessage("Not evaluated / capability-blocked descriptors: " + facade.constraints().stream()
+                    .filter(value -> value.id().startsWith("NATIVE:SKIPPED:"))
+                    .map(ConstraintDescriptor::id).collect(java.util.stream.Collectors.joining(", "))));
+            return;
+        }
+        if (snapshot.currentVersion()>0 || interval!=null) {
+            replaceRows(verificationModel,List.of());
+            verificationBlocked.setText(displayMessage("Not evaluated / capability-blocked descriptors: " + facade.constraints().stream()
+                    .filter(value -> value.id().startsWith("NATIVE:SKIPPED:"))
+                    .map(ConstraintDescriptor::id).collect(java.util.stream.Collectors.joining(", "))));
+            return;
+        }
         Map<String, ConstraintDescriptor> descriptors = new LinkedHashMap<>();
         facade.constraints().forEach(value -> descriptors.put(value.id(), value));
         VerificationReport report = facade.latestVerification();
@@ -570,6 +667,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private void execute(String title, Runnable operation) {
         try { operation.run(); }
         catch (RuntimeException exception) {
+            refreshDiagnostics();
             String message = title + ": " + exception.getMessage();
             setStatus(message);
             errorPresenter.accept(message);
@@ -577,12 +675,14 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     }
 
     private void executeBackground(String title, Runnable operation, Runnable afterSuccess) {
+        if (backgroundOperations != 0) { setStatus("WORKBENCH_BUSY: wait for the current operation"); return; }
         if (!javax.swing.SwingUtilities.isEventDispatchThread()) {
             execute(title, () -> { operation.run(); afterSuccess.run(); });
             return;
         }
         setStatus(title.replace(" failed", "") + "...");
         backgroundOperations++;
+        refreshWorkflowControls();
         new javax.swing.SwingWorker<Void,Void>() {
             @Override protected Void doInBackground() { operation.run(); return null; }
             @Override protected void done() {
@@ -592,11 +692,63 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
                             ? error.getCause() : error;
                     String message = title + ": " + cause.getMessage();
                     setStatus(message);
+                    refreshDiagnostics();
                     errorPresenter.accept(message);
                 }
-                finally { backgroundOperations--; }
+                finally { backgroundOperations--; refreshWorkflowControls(); }
             }
         }.execute();
+    }
+    public void recordedReplay(Path bundle) {
+        var report=new java.util.concurrent.atomic.AtomicReference<org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReplay.ReplayReport>();
+        executeBackground("Recorded replay failed",()->report.set(facade.replayRuntime(bundle)),()-> {
+            var result=report.get(); setStatus("RECORDED_REPLAY complete="+result.complete()+" entries="+result.checkedEntries()+" "+result.diagnostics());
+        });
+    }
+    public void reanalyzeReplay(Path bundle, Path output) {
+        var report=new java.util.concurrent.atomic.AtomicReference<org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReanalysis.Report>();
+        executeBackground("Re-analysis failed",()->report.set(facade.reanalyzeRuntime(bundle,output)),()-> {
+            var result=report.get();
+            setStatus(result.origin()+" complete="+result.complete()+" entries="+result.checkedEntries()+" profile="+result.profileHash()
+                    +" output="+result.output()+" (offline, not LIVE or recorded-result parity) "+result.diagnostics());
+        });
+    }
+    private Path chooseReplayBundle(String title) {
+        var chooser=new JFileChooser(); chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); chooser.setDialogTitle(title);
+        return chooser.showOpenDialog(this)==JFileChooser.APPROVE_OPTION ? chooser.getSelectedFile().toPath() : null;
+    }
+    private void chooseRecordedReplay() { Path bundle=chooseReplayBundle("Validate recorded timeline/profile/result parity"); if(bundle!=null) recordedReplay(bundle); }
+    private void chooseReanalysis() {
+        Path bundle=chooseReplayBundle("Re-analyze observed history with CURRENT installed OCL (offline)"); if(bundle==null) return;
+        var chooser=new JFileChooser(); chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setDialogTitle("Select a separate EMPTY re-analysis output directory; LIVE result is unchanged");
+        if(chooser.showSaveDialog(this)==JFileChooser.APPROVE_OPTION) reanalyzeReplay(bundle,chooser.getSelectedFile().toPath());
+    }
+
+    public void loadHistoryPage(long offset) {
+        var page = new java.util.concurrent.atomic.AtomicReference<org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeHistoryPage>();
+        executeBackground("History read failed", () -> page.set(facade.runtimeHistoryPage(offset,64)), () -> {
+            persistedHistory=true; pageOffset=offset; historyPage=page.get(); refreshHistoryRows();
+        });
+    }
+    private void refreshHistoryRows() {
+        historyRows=RuntimeHistoryRows.expand(historyPage,changesOnly.isSelected(),showObservations.isSelected());
+        replaceRows(historyModel,historyRows.stream().map(row -> new Object[]{row.entry().result().stateVersion(), row.event(),
+                row.outcome().constraintId(), row.outcome().outcome(), row.entry().result().verifiedAt()}).toList());
+        historyRetention.setText(displayMessage((persistedHistory ? "Disk page" : "Bounded live tail (not whole history)")
+                + " | shown from ordinal=" + (historyPage.entries().isEmpty() ? "NONE" : historyPage.entries().getFirst().ordinal())
+                + " | shown records=" + historyPage.entries().size() + " | disk records=" + historyPage.persistedEntries()
+                + " | memory retained from ordinal=" + historyPage.retainedFromOrdinal()
+                + " | " + (historyPage.gap() ? "PERSISTENCE GAP: " + historyPage.diagnostic() : "disk persistence intact")
+                + " | first visible result per interval is retained; evidence-only is not an OCL re-check"));
+    }
+
+    private void refreshWorkflowControls() {
+        var workflow = facade.workflowStatus();
+        workflowState.setText(displayMessage(workflow.state() + " | " + workflow.diagnostic()
+                + " | bootstrap=" + workflow.bootstrapAt() + " | started=" + workflow.startedAt()));
+        startRuntime.setEnabled(backgroundOperations == 0 && workflow.startAvailable());
+        loadProfile.setEnabled(backgroundOperations == 0 && facade.projectSummary() != null);
     }
 
     private void setStatus(String message) { status.setText(displayMessage(message)); }

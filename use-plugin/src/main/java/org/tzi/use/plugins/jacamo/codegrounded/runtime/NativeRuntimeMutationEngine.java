@@ -11,6 +11,7 @@ import org.jacamo.bridge.contract.BridgeRelationId;
 import org.jacamo.bridge.contract.Completeness;
 import org.jacamo.bridge.contract.ProjectionStatus;
 import org.jacamo.bridge.contract.RuntimeFactKind;
+import org.jacamo.bridge.contract.RuntimeSnapshot;
 import org.tzi.use.api.UseApiException;
 import org.tzi.use.api.UseSystemApi;
 import org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseStateBuilder;
@@ -86,6 +87,42 @@ public final class NativeRuntimeMutationEngine {
     /** Restores the static native state in the same MSystem before an authoritative resync. */
     public synchronized void resetToBaseline() {
         restore(baseline);
+    }
+
+    /**
+     * Bootstrap CArtAgO records are observed runtime instances, not permanent declarations.
+     * Reconcile them against a COMPLETE authoritative snapshot after applying its upserts.
+     * An unavailable/partial source cannot prove absence and must not cause deletions.
+     */
+    public synchronized void reconcileAuthoritativeCartago(RuntimeSnapshot snapshot) {
+        if (snapshot.sourceCompleteness().get("cartago") != Completeness.COMPLETE) return;
+        java.util.Set<String> retained = new java.util.HashSet<>();
+        for (var fact : snapshot.facts()) {
+            String kind = textOrNull(fact.values(), "normalizedEventKind");
+            if (kind == null || !java.util.Set.of("UPSERT_CARTAGO_WORKSPACE", "UPSERT_CARTAGO_AGENT_IDENTITY",
+                    "UPSERT_CARTAGO_ARTIFACT", "UPSERT_CARTAGO_PROPERTY_SNAPSHOT").contains(kind)) continue;
+            if (fact.completeness() != Completeness.COMPLETE
+                    || fact.projectionStatus() != ProjectionStatus.MATERIALIZED_FAITHFULLY) return;
+            retained.add(required(fact.values(), "semanticId"));
+            if (kind.equals("UPSERT_CARTAGO_WORKSPACE")) retained.add(required(fact.values(), "environmentSemanticId"));
+            if (kind.equals("UPSERT_CARTAGO_ARTIFACT")) retained.add(required(fact.values(), "artifactTypeSemanticId"));
+        }
+        try {
+            // Children precede owners, so USE composition deletion cannot leave stale index entries.
+            for (String className : List.of("ObservablePropertySnapshot", "Artifact", "CartagoAgentIdentity",
+                    "Workspace", "ArtifactType", "Environment")) {
+                var cls = system.model().getClass(className);
+                if (cls == null) continue;
+                List<String> obsolete = semanticObjectIndex.entrySet().stream()
+                        .filter(entry -> entry.getValue().cls().isSubClassifierOf(cls) && !retained.contains(entry.getKey()))
+                        .map(Map.Entry::getKey).toList();
+                for (String id : obsolete) {
+                    if (className.equals("Artifact")) deleteArtifact(id); else delete(id);
+                }
+            }
+        } catch (UseApiException error) {
+            throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_AUTHORITATIVE_RECONCILIATION_FAILED", error);
+        }
     }
 
     public synchronized ApplyResult apply(BridgeEntityId runtimeIdentity, BridgeRelationId binding,
@@ -317,12 +354,25 @@ public final class NativeRuntimeMutationEngine {
     }
 
     private void deleteArtifact(String semanticId) throws UseApiException {
-        List<String> properties = semanticObjectIndex.entrySet().stream()
-                .filter(entry -> entry.getValue().cls().name().equals("ObservablePropertySnapshot")
-                        && new StringValue(semanticId).equals(entry.getValue().state(system.state()).attributeValue("artifactSemanticId")))
+        java.util.Set<String> operationIds = semanticObjectIndex.entrySet().stream()
+                .filter(entry -> entry.getValue().cls().name().equals("Operation")
+                        && ownedBy(entry.getValue(), "artifactSemanticId", semanticId))
+                .map(Map.Entry::getKey).collect(java.util.stream.Collectors.toSet());
+        List<String> operationHelpers = semanticObjectIndex.entrySet().stream()
+                .filter(entry -> java.util.Set.of("BackingJavaOperation", "Guard").contains(entry.getValue().cls().name())
+                        && operationIds.contains(attribute(entry.getValue(), "operationDescriptorId")))
                 .map(Map.Entry::getKey).toList();
-        for (String property : properties) delete(property);
+        for (String helper : operationHelpers) delete(helper);
+        List<String> owned = semanticObjectIndex.entrySet().stream()
+                .filter(entry -> java.util.Set.of("ObservablePropertySnapshot", "Operation", "ArtifactInfo", "Signal")
+                        .contains(entry.getValue().cls().name()) && ownedBy(entry.getValue(), "artifactSemanticId", semanticId))
+                .map(Map.Entry::getKey).toList();
+        for (String child : owned) delete(child);
         delete(semanticId);
+    }
+
+    private boolean ownedBy(MObject object, String ownerAttribute, String semanticId) {
+        return new StringValue(semanticId).equals(object.state(system.state()).attributeValue(ownerAttribute));
     }
 
     private void delete(String semanticId) throws UseApiException {

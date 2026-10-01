@@ -58,6 +58,47 @@ class CodeGroundedRuleCatalogTest {
                 .map(CodeGroundedRule::ruleId).toList());
     }
 
+    @Test void auditedMetadataUsesSnapshotAndOfficialGuardCardinalityAndSignalTypes() {
+        var catalog = new CodeGroundedRuleCatalog();
+        assertEquals("jason.asSyntax.Literal+cartago.ArtifactObsProperty (C09 snapshot)", catalog.require("X02").sourceKindFqcn());
+        assertEquals("cartago.IArtifactGuard", catalog.require("C07").sourceKindFqcn());
+        assertEquals("cartago.Tuple", catalog.require("C11").sourceKindFqcn());
+        for (String id : List.of("M15", "M16", "M17"))
+            assertTrue(catalog.require(id).sourceKindFqcn().startsWith("moise.os.Cardinality"));
+        assertEquals(org.jacamo.bridge.contract.semantic.Fidelity.UNKNOWN, catalog.require("C08").fidelity());
+    }
+
+    @Test void relationMetadataNamesActualOfficialApisAndNativeOperationsRemainConditional() throws Exception {
+        var catalog = new CodeGroundedRuleCatalog();
+        var methods = Map.of(
+                "C13", cartago.CartagoEnvironment.class.getMethod("getRootWSP"),
+                "C14", cartago.ArtifactId.class.getMethod("getWorkspaceId"),
+                "C18", cartago.OpDescriptor.class.getMethod("getGuard"),
+                "C19", cartago.ICartagoController.class.getMethod("getCurrentAgents"),
+                "C20", cartago.ICartagoLogger.class.getMethod("artifactFocussed", long.class,
+                        cartago.AgentId.class, cartago.ArtifactId.class, cartago.IEventFilter.class));
+        methods.forEach((id, method) -> assertEquals(method.getDeclaringClass().getName() + "." + method.getName(),
+                catalog.require(id).sourceKindFqcn(), id));
+        assertEquals(org.jacamo.bridge.contract.semantic.Fidelity.CONDITIONAL, catalog.require("C06").fidelity());
+        assertEquals(CapabilityStatus.PARTIAL, catalog.require("C06").capabilityStatus());
+    }
+
+    @Test void runtimeEvidenceIsNotAdvertisedAsMaterializedJasonState() throws Exception {
+        var catalog = new CodeGroundedRuleCatalog();
+        var registry = new org.tzi.use.plugins.jacamo.codegrounded.runtime.CodeGroundedRuntimeRuleRegistry();
+        var facts = Map.of("A12", org.jacamo.bridge.contract.RuntimeFactKind.ACTION_EXECUTION,
+                "A13", org.jacamo.bridge.contract.RuntimeFactKind.INTENTION,
+                "A14", org.jacamo.bridge.contract.RuntimeFactKind.RUNTIME_EVENT,
+                "A15", org.jacamo.bridge.contract.RuntimeFactKind.TRANSITION_SYSTEM);
+        facts.forEach((id, kind) -> {
+            assertEquals(org.tzi.use.plugins.jacamo.codegrounded.runtime.CodeGroundedRuntimeRuleRegistry.Action.EVIDENCE_ONLY,
+                    registry.evidenceRule(kind).action());
+            assertEquals("Trace runtime evidence (EVIDENCE_ONLY)", catalog.require(id).targetUseKind(), id);
+        });
+        var goals = jason.asSemantics.Agent.class.getMethod("getInitialGoals");
+        assertEquals(goals.getDeclaringClass().getName() + "." + goals.getName(), catalog.require("A09").sourceKindFqcn());
+    }
+
     private static List<String> expectedIds() {
         var ids = new java.util.ArrayList<String>();
         for (var family : List.of(Map.entry('J', 11), Map.entry('A', 22), Map.entry('C', 20),

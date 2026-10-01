@@ -94,6 +94,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     private volatile RuntimeVerificationEngine runtimeVerification;
     private volatile List<Diagnostic> lastDiagnostics = List.of();
     private volatile long lastFullCheckNanos;
+    private final ManagedRuntimeWorkflow workflow = new ManagedRuntimeWorkflow();
 
     public DefaultJaCaMoFacade(Path checkout) {
         this(checkout, SemanticAuthority.configured(System.getProperty("use.jacamo.authority")),
@@ -154,11 +155,45 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public synchronized ProjectSummary importProject(Path jcmFile) {
-        if (jcmFile == null || !jcmFile.getFileName().toString().toLowerCase().endsWith(".jcm"))
+        if (jcmFile == null || !jcmFile.getFileName().toString().toLowerCase().endsWith(".jcm")) {
+            workflow.importFailed("IMPORT_JCM_REQUIRED");
             throw new IllegalArgumentException("IMPORT_JCM_REQUIRED");
+        }
         Path candidate = jcmFile.toAbsolutePath().normalize();
-        return synchronizeBridge(candidate, null);
+        workflow.importing();
+        try {
+            var imported = synchronizeBridge(candidate, null);
+            workflow.imported(candidate, authorityStatus(), session != null && session.system() == currentSystem());
+            return imported;
+        } catch (RuntimeException failure) { workflow.importFailed(failure.getMessage()); throw failure; }
     }
+
+    @Override public WorkflowStatus workflowStatus() {
+        var state=workflow.status();
+        if(state.startAvailable()) {
+            var current=nativeWorkspace; var accepted=authorityStatus();
+            var snapshot=verificationSnapshot();
+            if(current==null || session==null || session.system()!=currentSystem()
+                    || accepted.readiness()!=BridgeClientState.LIVE || !workflow.owns(accepted)
+                    || snapshot.result()==null || !snapshot.result().freshness().equals("CURRENT_OBSERVED"))
+                return new WorkflowStatus(state.state(),false,state.managed(),state.runId(),
+                        "STARTUP_NATIVE_SESSION_OR_BRIDGE_NOT_CURRENT",state.bootstrapAt(),state.startedAt());
+        }
+        return state;
+    }
+    @Override public org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot verificationSnapshot() {
+        var current = nativeWorkspace;
+        return current == null || current.runtimeProjector == null
+                ? org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot.empty()
+                : current.runtimeProjector.coordinator().verificationSnapshot();
+    }
+    @Override public void startRuntime() {
+        requireNativeWorkspace();
+        var state=workflowStatus();
+        if(!state.startAvailable()) throw new IllegalStateException("START_RUNTIME_UNAVAILABLE:"+state.diagnostic());
+        workflow.start();
+    }
+    @Override public void cancelRuntimeStartup() { workflow.cancel(); }
 
     @Override public synchronized ProjectSummary rebuild() {
         requireWorkspace();
@@ -210,8 +245,10 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
 
     @Override public VerificationReport latestVerification() {
         var nativeState = nativeWorkspace; var legacyState = workspace; var runtime = runtimeVerification;
-        if (nativeState != null && nativeState.runtimeProjector != null)
-            return nativeReport(nativeState, nativeState.runtimeProjector.coordinator().latest());
+        if (nativeState != null && nativeState.runtimeProjector != null) {
+            var result = nativeState.runtimeProjector.coordinator().verificationSnapshot().result();
+            return result == null ? null : nativeReport(nativeState, result);
+        }
         if (nativeState != null) return nativeState.latest;
         if (legacyState == null) return null;
         var runtimeLatest = runtime == null ? null : runtime.latestReport();
@@ -223,6 +260,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         if (nativeWorkspace != null) {
             if (profile == null) throw new IllegalArgumentException("OCL_USER_PROFILE_IO");
             nativeWorkspace.runtimeProjector.coordinator().loadProfile(profile);
+            workflow.profileReady();
             userProfile = profile.toAbsolutePath().normalize();
             return;
         }
@@ -279,7 +317,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
 
     @Override public RuntimeVerificationResult runtimeVerificationResult() {
         var nativeState = nativeWorkspace;
-        return nativeState == null || nativeState.runtimeProjector == null ? null : nativeState.runtimeProjector.coordinator().latest();
+        return nativeState == null || nativeState.runtimeProjector == null ? null : nativeState.runtimeProjector.coordinator().verificationSnapshot().result();
     }
     @Override public List<RuntimeVerificationResult> runtimeVerificationHistory() {
         var nativeState = nativeWorkspace;
@@ -313,10 +351,14 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public synchronized void disconnectRuntime() {
-        closeNativeRuntimeArtifacts();
+        // Disconnect is observation loss, not producer stop or permission to discard its evidence/profile.
+        var current=nativeWorkspace;
+        if(current!=null && current.runtimeProjector!=null) {
+            current.stopRuntimeDelivery.run();
+            current.runtimeProjector.coordinator().coverageGap("BRIDGE_DISCONNECTED");
+        }
         closeBridgeClient();
         bridgeMirror = null;
-        bridgeAccepted = null;
         bridgeDiagnostic = "BRIDGE_DISCONNECTED";
     }
 
@@ -433,10 +475,36 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public synchronized void close() {
+        if (!workflow.status().state().equals("LIVE")) workflow.cancel();
         closeNativeRuntimeArtifacts();
         closeBridgeClient();
         bridgeMirror = null;
         bridgeAccepted = null;
+    }
+    @Override public org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeHistoryPage runtimeHistoryTail() {
+        var current = nativeWorkspace;
+        return current == null || current.runtimeProjector == null ? org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeHistoryPage.empty()
+                : current.runtimeProjector.coordinator().journal().tailPage(128);
+    }
+    @Override public org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeHistoryPage runtimeHistoryPage(long offset, int limit) {
+        var current = nativeWorkspace;
+        if (current == null || current.runtimeProjector == null) throw new IllegalStateException("PROJECT_NOT_IMPORTED");
+        return current.runtimeProjector.coordinator().journal().page(offset, limit);
+    }
+    @Override public org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReanalysis.Report reanalyzeRuntime(Path bundle, Path output) {
+        var current=nativeWorkspace;
+        if(current==null || current.runtimeProjector==null) throw new IllegalStateException("PROJECT_NOT_IMPORTED");
+        var coordinator=current.runtimeProjector.coordinator();
+        var profile=coordinator.read(()->coordinator.constraints().profile());
+        if(profile==null) throw new IllegalStateException("NATIVE_PROFILE_NOT_LOADED");
+        if(output.toAbsolutePath().normalize().startsWith(coordinator.directory())) throw new IllegalArgumentException("REANALYSIS_OUTPUT_INSIDE_LIVE_RUNTIME");
+        return new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReanalysis().analyze(bundle,
+                profile.sourceFile(),profile.source(),profile.constraints().stream().collect(java.util.stream.Collectors.toMap(
+                        org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.RegisteredConstraint::constraintId,
+                        org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.RegisteredConstraint::enabled)),
+                profile.constraints().stream().collect(java.util.stream.Collectors.toMap(
+                        org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.RegisteredConstraint::constraintId,
+                        org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.RegisteredConstraint::negated)),output);
     }
 
     private RuntimeVerificationEngine createRuntimeVerification(Workspace next,
@@ -682,12 +750,26 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 + value.operations().size() + value.backingOperations().size() + value.guards().size()
                 + value.liveProperties().size() + value.propertySnapshots().size() + value.artifactInfos().size()
                 + value.signals().size() + value.agents().size()).sum();
-        counts.put("CARTAGO", cartago); counts.put("MOISE", 0L); counts.put("CROSS", 0L);
+        long moise = pipeline.source().snapshot().moiseOrganizations().stream().mapToLong(organization -> {
+            var structural = organization.structuralSpecification();
+            var functional = organization.functionalSpecification();
+            // These are typed source records, including explicit containers and relation helpers,
+            // not a claim that every record is a separate live JaCaMo domain object.
+            return 4L + structural.roles().size() + structural.groups().size()
+                    + structural.roleRelations().size() + structural.links().size() + structural.compatibilities().size()
+                    + structural.groupRoleCardinalities().size() + structural.subGroupCardinalities().size()
+                    + functional.schemes().size() + functional.schemeMissionCardinalities().size()
+                    + functional.schemes().stream().mapToLong(scheme ->
+                            (long) scheme.missions().size() + scheme.goals().size() + scheme.plans().size()).sum()
+                    + organization.normativeSpecification().norms().size();
+        }).sum();
+        counts.put("CARTAGO", cartago); counts.put("MOISE", moise);
+        counts.put("CROSS", (long) pipeline.source().snapshot().exactBindings().size());
         String catalogHash = sha256(new CodeGroundedRuleCatalog().rules().toString());
         ProjectSummary summary = new ProjectSummary(jcmFile, jcmFile.getParent(), pipeline.source().project().name(),
                 snapshot.sources().size(), counts, "CODE_GROUNDED_NATIVE-1.0.0",
                 pipeline.model().structuralHash(), "CodeGroundedRuleCatalog", CodeGroundedRuleCatalog.VERSION, catalogHash,
-                "PHASE_4", system.model().classes().size(), system.state().numObjects(),
+                "NATIVE_CURRENT", system.model().classes().size(), system.state().numObjects(),
                 pipeline.state().structureValid(), 0, 0);
         List<SourceRow> sources;
         try {

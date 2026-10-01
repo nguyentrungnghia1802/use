@@ -2,8 +2,9 @@
 
 **Status:** observed-state runtime verification, evidence-bounded (2026-10-01)
 
-This is the concise operational reference. `task_runtime_verification.md` is
-the active runtime implementation/evidence record; `task.md` retains earlier
+This is the concise operational reference. `task_workbench_ocl_runtime.md` is
+the current Workbench/startup/re-analysis task; `task_runtime_verification.md`
+records the underlying runtime implementation. `task.md` retains earlier
 native-projection gates. `JACAMO-USE-CONCEPT-MAPPING-RULES.md` is the maintained semantic
 rule contract. `agent.md` contains working rules. Production source and
 executable tests remain authoritative; frozen V2/Ecore/golden artifacts are
@@ -54,7 +55,12 @@ Launch a project in the existing USE GUI after the build:
 ```
 
 Wait for `INTERACTIVE_GUI_MODEL_READY`: the Workbench has imported and activated
-the model automatically. Close USE to stop that run. Projects containing only
+the model automatically, but managed local agents have not started reasoning.
+Optionally use **Load OCL...** and wait for **OCL_READY**, then click
+**Start Runtime**. **LIVE** requires the owned producer's actual start ACK;
+baseline invariant FAIL does not block Start. Platforms, artifacts and timers
+are already bootstrapped: this boundary does not pause an entire JaCaMo MAS.
+Close USE to stop that run. Projects containing only
 ASL/JCM/XML may legitimately produce `compileJava NO-SOURCE`; the launcher
 records `GRADLE_CLASSES_NOT_REQUIRED` and uses the official runtime classpath.
 Missing Java output without that Gradle evidence remains a launcher error.
@@ -72,8 +78,9 @@ beliefs/goals remain program-source facts, unsupported dynamic facts remain
 evidence-only, C08 stays unavailable, and selecting FULL does not invent a
 deployed `Agent` → `AgentProgram` association.
 
-In interactive mode, `TimeoutSeconds` bounds Bridge startup and GUI import,
-not the lifetime of an already imported session. The producer remains alive
+In interactive mode, `TimeoutSeconds` bounds Bridge startup, GUI import and
+the managed producer's wait for Start (the control record carries its deadline).
+It does not bound the lifetime after successful Start. The producer remains alive
 until USE closes and the launcher writes its stop file. Headless observations
 remain timeout-bounded. `gui-ready.json` proves initial activation only; the
 Workbench Runtime tab refreshes Bridge readiness and the latest native
@@ -122,6 +129,12 @@ source bytes/file/hash, model revision, enabled status and compiler-AST
 dependencies. Installation triggers a baseline verification. Invalid profiles
 leave the current profile and state version unchanged.
 
+Verification shows the profile, actual loaded stateVersion, current stateVersion,
+latest result per invariant and PASS/FAIL/ERROR/SKIPPED counts. SYSTEM/CORE and
+EXTERNAL/USER results remain distinct; evidence-only observations are not formal
+invariant evaluations. A late install explicitly has no LIVE verification claim
+for states before its loaded version.
+
 Missing `AUTO` classes/associations produce explicit compiler incompatibility:
 there is no inferred expansion or placeholder object/class. Constraints whose
 runtime source is incomplete, disabled, or unavailable (including C08) are
@@ -157,6 +170,14 @@ selects or changes semantic mappings. Native trace schema `1.2.0` preserves
 the original `SourceEvidence` (URI, content SHA-256 and line range), including
 each Plan's local or dependency-JAR include source. The inspector displays
 JAR entry URIs directly; it never labels them as the agent root or JCM file.
+
+The five top-level tabs are **Project | Mapping Inspector | Mapping Rules |
+Verification | Runtime**. Mapping Rules has exactly **Rule | JaCaMo → USE**
+columns and lists the catalog, not mapped instances. Capability/fidelity labels
+remain visible in those descriptions. Diagnostics and explicit-binding backends
+remain available without separate top-level tabs. Project semantic-record counts
+include program nodes, containers and cardinality helpers, not only live domain
+objects; exact CROSS counts are not inferred from matching names.
 
 ## Runtime boundary
 
@@ -207,6 +228,12 @@ requires a new recording session; resync cannot erase an earlier journal GAP.
 These are observed supported states/checkpoints, not every internal JaCaMo
 state. There is no JaCaMo pause/step enforcement.
 
+Runtime expands formal results into **StateVersion / Event / Constraint / Result /
+Time** rows. **Show result changes only** compares each exact invariant within
+its recorded interval. The UI's 128-record live tail is explicitly bounded;
+64-record disk pages expose older persisted history. Memory eviction is not a
+disk GAP, and persistence loss is never labelled as complete history.
+
 ## Export and reproducibility
 
 - `NativeUseExporter` emits deterministic `.use` text with USE's official
@@ -231,6 +258,13 @@ semantic result hash must match. Corrupt/missing data fails closed; recorded
 coverage gaps return explicitly incomplete replay. Export rejects a lost
 journal. Invariant checks are not run on intermediate baseline SOIL steps.
 
+**Recorded replay...** checks that original timeline. **Re-analyze with current
+OCL...** first validates it, reconstructs its states in an isolated offline
+system, and evaluates the current profile there. Output is labelled
+`REPLAY_REANALYSIS`, not LIVE or original-result parity. It neither replaces
+the live Session nor overwrites its current result/history, and does not turn
+late-loaded OCL into past LIVE evidence. Use a separate empty output directory.
+
 Manual SOIL mutations or constraint-flag edits outside this recorded workflow
 are not reconstructed automatically; a replay hash mismatch is an error, not
 fuzzy repair. Component-version manifest, USE-version field, and production
@@ -252,14 +286,34 @@ consistent.
 
 ## Evidence commands
 
-Focused native/export/runtime checks:
+Focused Workbench/native/runtime checks (unit tests and actual GUI/live ITs):
 
 ```powershell
-mvn -B -pl use-plugin -am "-Dtest=ExternalOclConstraintServiceTest,RuntimeVerificationCoordinatorTest,NativeRuntimeReplayTest,NativeRuntimeBridgeCoverageTest,LiveCartagoNativeVerificationTest,NativeRuntimeFacadeIntegrationTest,NativeUseGuiEndToEndIT,NativeUseSoilExporterTest,GenericLauncherScriptTest,JaCaMoWorkbenchPanelTest" "-Dsurefire.failIfNoSpecifiedTests=false" test
+mvn -B -pl use-plugin -am `
+  "-Dtest=ManagedStartupControlTest,LiveJaCaMoLauncherLifetimeTest,ManagedRuntimeWorkflowTest,ManagedBootstrapTest,CodeGroundedRuleCatalogTest,ExternalOclConstraintServiceTest,NativeMOperationProjectionTest,ProductionAuthorityPhase8Test,LegacyV2OclIsolationTest,NativeProjectionAuditTest,NativeUseSessionActivationTest,NativeRuntimeReanalysisTest,NativeRuntimeReplayTest,NativeRuntimeFacadeIntegrationTest,RuntimeVerificationCoordinatorTest,RuntimeHistoryTest,JaCaMoWorkbenchPanelTest,GenericLauncherScriptTest" `
+  "-Dit.test=NativeUseGuiEndToEndIT,ManagedAuctionWorkbenchIT" `
+  "-Dsurefire.failIfNoSpecifiedTests=false" `
+  "-Dfailsafe.failIfNoSpecifiedTests=false" `
+  "-Dit.failIfNoSpecifiedTests=false" "-DfailIfNoTests=false" verify
 ```
 
 The acceptance scope and dated evidence are recorded in
-`task_runtime_verification.md` and the earlier `task.md`; the active
+`task_workbench_ocl_runtime.md`, `task_runtime_verification.md` and the earlier `task.md`; the active
 mapping contract is in `JACAMO-USE-CONCEPT-MAPPING-RULES.md`. Unchecked task
 items remain open where implementation, API availability, or live evidence is
 missing; they are not implied to pass by this README.
+
+## Maven CI portability
+
+The GitHub Maven job checks out USE and the audited JaCaMo source side by side.
+The case-study revision is pinned to `3866858a7ebf6be85d9199c13a09cf4bfb8191be`;
+the local JaCaMo documentation-only commit does not change those case sources.
+Linux keeps a `JaCaMo` path alias for historical fixture paths, without editing
+the examples. Child-JVM tests use `java` on Unix and `java.exe` on Windows from
+the configured JDK. GUI integration tests run under Xvfb, not a headless skip.
+
+The previous missing-ZIP failure was secondary: Maven failed first while a
+contract test tried to launch Windows `java.exe` on Ubuntu, and `mvn | tee`
+masked that failure. CI now uses explicit Bash/pipefail, requires both release
+archive families, uploads their actual paths, and retains build/test logs on
+failure. No test, frozen asset, mapping or runtime capability is bypassed.

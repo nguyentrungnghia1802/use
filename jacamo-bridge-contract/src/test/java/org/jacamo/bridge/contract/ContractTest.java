@@ -119,7 +119,8 @@ class ContractTest {
                 .reduce("", String::concat);
         for (String forbidden : List.of("org.tzi.use", "org.eclipse.emf", "jacamo.", "jason.", "cartago.", "moise.", "npl."))
             assertFalse(sources.contains("import " + forbidden), forbidden);
-        String java = Path.of(System.getProperty("java.home"), "bin", "java.exe").toString();
+        String javaName = System.getProperty("os.name").startsWith("Windows") ? "java.exe" : "java";
+        String java = Path.of(System.getProperty("java.home"), "bin", javaName).toString();
         String cp = String.join(System.getProperty("path.separator"), "target/classes", "target/test-classes");
         Process process = new ProcessBuilder(java, "-cp", cp, IsolatedContractConsumerMain.class.getName()).redirectErrorStream(true).start();
         String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);

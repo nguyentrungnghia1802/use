@@ -56,6 +56,24 @@ class ExternalOclConstraintServiceTest {
         assertNull(system.model().getClass("LiveObservableProperty"));
         assertEquals(VerificationOutcome.SKIPPED, outcome(service.evaluate(Map.of("jason", Completeness.COMPLETE), true), "EXTERNAL:Agent::Same"));
     }
+    @Test void fullProjectionDoesNotTurnUnavailableLivePropertiesIntoVacuousPass() throws Exception {
+        var pipeline = new CodeGroundedNativePipeline().build(CodeGroundedTestFixtures.helloSnapshot(),
+                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
+        var system = pipeline.state().system();
+        var service = new ExternalOclConstraintService(system);
+        assertNotNull(system.model().getClass("LiveObservableProperty"));
+        assertTrue(system.state().objectsOfClass(system.model().getClass("LiveObservableProperty")).isEmpty());
+        service.installSource("c08.ocl", "context LiveObservableProperty inv Unavailable: true\n"
+                + "context Agent inv NoLiveProperties: LiveObservableProperty.allInstances()->isEmpty()", "revision");
+        var results = service.evaluate(Map.of("cartago", Completeness.COMPLETE, "jason", Completeness.COMPLETE), false);
+        for (String id : java.util.List.of("EXTERNAL:LiveObservableProperty::Unavailable", "EXTERNAL:Agent::NoLiveProperties")) {
+            assertEquals(VerificationOutcome.SKIPPED, outcome(results, id));
+            assertEquals("C08_UNAVAILABLE_BY_API", results.stream().filter(value -> value.constraintId().equals(id))
+                    .findFirst().orElseThrow().diagnostic());
+        }
+        assertSame(system, service.system());
+    }
+
     private static VerificationOutcome outcome(java.util.List<ExternalOclConstraintService.Outcome> outcomes, String id) {
         return outcomes.stream().filter(value -> value.constraintId().equals(id)).findFirst().orElseThrow().outcome();
     }

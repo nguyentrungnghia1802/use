@@ -23,6 +23,20 @@ import org.tzi.use.uml.ocl.value.StringValue;
 
 /** Proves that the production native facade consumes a buffered runtime event in the session system. */
 class NativeRuntimeFacadeIntegrationTest {
+    @Test void disconnectKeepsSameSystemProfileAndHistoryButMarksStaleUntilResync(@org.junit.jupiter.api.io.TempDir java.nio.file.Path directory) throws Exception {
+        var jcm=java.nio.file.Path.of("src/test/resources/canonical-cases/hello-world/helloworld.jcm").toAbsolutePath();
+        Session session=new Session();
+        try(var facade=BridgeFacadeTestSupport.nativeFacade(jcm,session,()->false)) {
+            facade.importProject(jcm); var system=session.system();
+            var path=directory.resolve("user.ocl");java.nio.file.Files.writeString(path,"context Plan inv Demo: true"); facade.loadVerificationProfile(path);
+            var profile=facade.verificationSnapshot().profile(); int entries=facade.runtimeVerificationHistory().size();
+            facade.disconnectRuntime(); assertSame(system,session.system()); assertSame(system,facade.materializedSystem());
+            assertEquals(profile,facade.verificationSnapshot().profile());assertTrue(facade.runtimeVerificationHistory().size()>entries);
+            assertEquals("STALE",facade.runtimeVerificationResult().freshness());
+            facade.resyncRuntime(); assertSame(system,session.system()); assertEquals(profile,facade.verificationSnapshot().profile());
+            assertEquals("CURRENT_OBSERVED",facade.runtimeVerificationResult().freshness());
+        }
+    }
     @Test void failedProductionResyncCannotLeaveAPassingCachedResult() throws Exception {
         var jcm = java.nio.file.Path.of("src/test/resources/canonical-cases/hello-world/helloworld.jcm").toAbsolutePath();
         var unavailable = new java.util.concurrent.atomic.AtomicBoolean(); Session session = new Session();

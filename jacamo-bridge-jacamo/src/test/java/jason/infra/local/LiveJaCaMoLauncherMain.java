@@ -28,6 +28,9 @@ public final class LiveJaCaMoLauncherMain {
         Path consumerReady = args.length > 4 && !args[4].isBlank()
                 ? Path.of(args[4]).toAbsolutePath().normalize() : null;
         long startupSeconds = args.length > 5 ? Long.parseLong(args[5]) : 60L;
+        Path startupDirectory = args.length > 6 && !args[6].isBlank() ? Path.of(args[6]).toAbsolutePath().normalize() : null;
+        String runId = args.length > 7 ? args[7] : "";
+        Path controlledProject = project;
         if (consumerReady != null && startupSeconds < 1)
             throw new IllegalArgumentException("REAL_JACAMO_STARTUP_TIMEOUT_INVALID");
         // Zero lifetime is an explicit stop-file-controlled interactive session, not a startup timeout.
@@ -41,6 +44,25 @@ public final class LiveJaCaMoLauncherMain {
         JaCaMoLauncher launcher = new JaCaMoLauncher() {
             /** Official platforms (including Bridge) start before RunLocalMAS calls this hook. */
             @Override protected void startAgs() {
+                if (startupDirectory != null) {
+                    var owner = org.jacamo.bridge.contract.ManagedStartupControl.owner(runId, controlledProject,
+                            System.getProperty("jacamo.bridge.session", ""),
+                            Long.parseLong(System.getProperty("jacamo.bridge.generation", "0")),
+                            System.getProperty("jacamo.bridge.modelRevision", ""), ProcessHandle.current().pid());
+                    org.jacamo.bridge.contract.ManagedStartupControl.waiting(startupDirectory, owner, startupSeconds);
+                    System.out.println("REAL_JACAMO_MANAGED_WAIT_START run=" + runId);
+                    System.out.flush();
+                    try {
+                        var request = org.jacamo.bridge.contract.ManagedStartupControl.awaitRequest(startupDirectory, owner, stop);
+                        super.startAgs();
+                        org.jacamo.bridge.contract.ManagedStartupControl.acknowledged(startupDirectory, request);
+                        System.out.println("REAL_JACAMO_MANAGED_START_ACK run=" + runId);
+                        System.out.flush();
+                        return;
+                    } catch (InterruptedException error) {
+                        Thread.currentThread().interrupt(); throw new IllegalStateException("STARTUP_INTERRUPTED", error);
+                    }
+                }
                 if (consumerReady != null) {
                     System.out.println("REAL_JACAMO_WAIT_CONSUMER_READY");
                     System.out.flush();
@@ -64,6 +86,13 @@ public final class LiveJaCaMoLauncherMain {
                 return new ByteArrayInputStream(("handlers=java.util.logging.ConsoleHandler\n"
                         + ".level=INFO\n").getBytes(java.nio.charset.StandardCharsets.UTF_8));
             }
+            @Override public synchronized void setupLogger(String ignoredProjectLoggingFile) {
+                // A project log.properties can redirect stderr into an unrelated Swing console.
+                // Preserve case sources; deterministic launch diagnostics belong to this process.
+                try (InputStream configuration = getDefaultLogProperties()) {
+                    java.util.logging.LogManager.getLogManager().readConfiguration(configuration);
+                } catch (java.io.IOException failure) { throw new IllegalStateException("LAUNCH_LOG_CONFIGURATION_FAILED", failure); }
+            }
         };
         BaseLocalMAS.runner = launcher;
         RuntimeServicesFactory.set(new JaCaMoRuntimeServices(launcher));
@@ -79,10 +108,14 @@ public final class LiveJaCaMoLauncherMain {
             // Supplying the already validated source path keeps the official adapters rooted
             // in the staged project without changing JaCaMo itself.
             launcher.getJaCaMoProject().setProjectFile(project.toFile());
+            if (startupDirectory != null && launcher.getProject().isJade())
+                throw new IllegalStateException("UNSUPPORTED_STARTUP_CONTROL:JADE starts agents in platform.start()");
             System.out.println("REAL_JACAMO_INIT_OK");
             System.out.flush();
             launcher.create();
             created = true;
+            if (startupDirectory != null) validateControlledPlatforms(launcher.getPlatforms().stream()
+                    .map(platform -> platform.getClass().getName()).toList());
             System.out.println("REAL_JACAMO_CREATE_OK platforms=" + launcher.getPlatforms().size()
                     + " agents=" + launcher.getAgs().size());
             System.out.flush();
@@ -155,6 +188,14 @@ public final class LiveJaCaMoLauncherMain {
                 throw new IllegalStateException("REAL_JACAMO_TIMEOUT");
             Thread.sleep(50L);
         }
+    }
+
+    static void validateControlledPlatforms(java.util.List<String> platforms) {
+        var audited = java.util.Set.of("jacamo.platform.Cartago", "jacamo.platform.Moise", "jacamo.platform.Sai",
+                "jacamo.platform.EnvironmentWebInspector",
+                "org.jacamo.bridge.adapter.JaCaMoBridgePlatform");
+        for (String platform : platforms) if (!audited.contains(platform))
+            throw new IllegalStateException("UNSUPPORTED_STARTUP_CONTROL:" + platform);
     }
 
     static void awaitConsumerReady(Path ready, Path stop, long timeoutSeconds) throws InterruptedException {

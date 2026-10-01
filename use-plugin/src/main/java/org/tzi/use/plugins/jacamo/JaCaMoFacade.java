@@ -26,6 +26,9 @@ public interface JaCaMoFacade {
     default VerificationReport runFullVerification() { throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED"); }
     default VerificationReport latestVerification() { return null; }
     default void loadVerificationProfile(Path profile) { throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED"); }
+    default WorkflowStatus workflowStatus() { return new WorkflowStatus("NOT_IMPORTED", false, false, "", "OBSERVE_ONLY", "", ""); }
+    default void startRuntime() { throw new UnsupportedOperationException("START_RUNTIME_UNAVAILABLE:OBSERVE_ONLY"); }
+    default void cancelRuntimeStartup() { }
     default void exportVerificationReport(Path destination) { throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED"); }
     default void exportNativeUse(Path destination) { throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED"); }
     default void exportNativeSoil(Path destination) { throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED"); }
@@ -37,8 +40,23 @@ public interface JaCaMoFacade {
     default void resyncRuntime() { throw new UnsupportedOperationException("RUNTIME_NOT_CONFIGURED"); }
     default RuntimeStatus runtimeStatus() { return RuntimeStatus.offline(); }
     default org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult runtimeVerificationResult() { return null; }
+    default org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot verificationSnapshot() {
+        return new org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot(0, runtimeVerificationResult(), null);
+    }
     default List<org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult> runtimeVerificationHistory() { return List.of(); }
     default void exportRuntimeReplay(Path directory) { throw new UnsupportedOperationException("NATIVE_RUNTIME_NOT_CONFIGURED"); }
+    default org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReplay.ReplayReport replayRuntime(Path bundle) {
+        return new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReplay().replay(bundle);
+    }
+    default org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReanalysis.Report reanalyzeRuntime(Path bundle, Path output) {
+        throw new UnsupportedOperationException("NATIVE_PROFILE_NOT_LOADED");
+    }
+    default org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeHistoryPage runtimeHistoryTail() {
+        return org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeHistoryPage.empty();
+    }
+    default org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeHistoryPage runtimeHistoryPage(long offset, int limit) {
+        throw new UnsupportedOperationException("PERSISTED_HISTORY_NOT_CONFIGURED");
+    }
     default AuthorityStatus authorityStatus() { return AuthorityStatus.offline(); }
     /** Deterministic read-only evidence for the currently materialized USE model and state. */
     default FormalStateStatus formalStateStatus() { return FormalStateStatus.empty(); }
@@ -57,6 +75,8 @@ public interface JaCaMoFacade {
         public ProjectSummary { dimensionCounts = Map.copyOf(dimensionCounts); }
     }
     record SourceRow(Path path, String kind, long bytes, String sha256) { }
+    record WorkflowStatus(String state, boolean startAvailable, boolean managed, String runId,
+                          String diagnostic, String bootstrapAt, String startedAt) { }
     record TraceRow(String semanticId, String sourceKind, String targetUseId, String targetKind,
                     String mappingRule, String projectionRule, String status, Path sourcePath,
                     int sourceLine, String dimension, String evidenceAuthority, List<String> traceDiagnostics,

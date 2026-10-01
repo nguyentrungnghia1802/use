@@ -39,6 +39,69 @@ class CodeGroundedPhase7Test {
     private static final String REVISION = "phase7-revision";
 
     @Test
+    void authoritativeCartagoResyncMustNotResurrectArtifactsFromTheBootstrapModel() throws Exception {
+        var result = new CodeGroundedNativePipeline().build(withEnvironment(CodeGroundedTestFixtures.helloSnapshot()));
+        var system = result.state().system();
+        assertEquals(1, system.state().objectsOfClass(system.model().getClass("Artifact")).size());
+        var projector = new NativeRuntimeProjector(result, SESSION, GENERATION, REVISION);
+
+        // The bootstrap semantic model contains a live artifact, not a permanent JCM declaration.
+        // A later COMPLETE authoritative snapshot proves that it no longer exists.
+        projector.applySnapshot(snapshot("disposed-before-resync", List.of(), Map.of("cartago", 2L)));
+
+        assertSame(system, projector.system());
+        assertEquals(0, system.state().objectsOfClass(system.model().getClass("Artifact")).size(),
+                "bootstrap runtime instances must not survive an authoritative empty snapshot");
+        assertEquals(0, system.state().objectsOfClass(system.model().getClass("Workspace")).size());
+        assertEquals(0, system.state().objectsOfClass(system.model().getClass("CartagoAgentIdentity")).size());
+        assertTrue(projector.mutations().structureValid());
+        String digest = digest(system);
+        projector.applySnapshot(snapshot("disposed-repeated-resync", List.of(), Map.of("cartago", 3L)));
+        assertEquals(digest, digest(system));
+    }
+
+    @Test
+    void fullBootstrapSnapshotHelpersAreRemovedWithTheirDisposedArtifact() throws Exception {
+        var result = new CodeGroundedNativePipeline().build(withEnvironment(CodeGroundedTestFixtures.helloSnapshot()),
+                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
+        var system = result.state().system();
+        var index = new java.util.LinkedHashMap<>(result.state().semanticObjectIndex());
+        String artifactId = result.source().snapshot().cartagoEnvironments().getFirst().artifacts().getFirst().metadata().semanticId();
+        var api = org.tzi.use.api.UseSystemApi.create(system, false);
+        String operationId = "unit:exact-operation";
+        var operation = api.createObjectEx(system.model().getClass("Operation"), "bootstrap_operation");
+        api.setAttributeValueEx(operation, operation.cls().attribute("semanticId", true), new StringValue(operationId));
+        api.setAttributeValueEx(operation, operation.cls().attribute("artifactSemanticId", true), new StringValue(artifactId));
+        api.createLinkEx(system.model().getAssociation("C16ArtifactOperation"), new org.tzi.use.uml.sys.MObject[]{index.get(artifactId), operation});
+        index.put(operationId, operation);
+        for (String cls : List.of("BackingJavaOperation", "Guard", "ArtifactInfo")) {
+            String id = "unit:exact-" + cls;
+            var object = api.createObjectEx(system.model().getClass(cls), "bootstrap_" + cls);
+            api.setAttributeValueEx(object, object.cls().attribute("semanticId", true), new StringValue(id));
+            String attribute = cls.equals("ArtifactInfo") ? "artifactSemanticId" : "operationDescriptorId";
+            api.setAttributeValueEx(object, object.cls().attribute(attribute, true), new StringValue(cls.equals("ArtifactInfo") ? artifactId : operationId));
+            index.put(id, object);
+        }
+        try (var projector = new NativeRuntimeProjector(system, index, SESSION, GENERATION, REVISION,
+                new org.tzi.use.plugins.jacamo.codegrounded.runtime.CodeGroundedRuntimeRuleRegistry())) {
+            projector.applySnapshot(snapshot("full-disposed-bootstrap", List.of(), Map.of("cartago", 1L)));
+            for (String cls : List.of("Artifact", "Operation", "BackingJavaOperation", "Guard", "ArtifactInfo"))
+                assertEquals(0, system.state().objectsOfClass(system.model().getClass(cls)).size(), cls);
+            assertTrue(projector.mutations().structureValid());
+        }
+    }
+
+    @Test
+    void unavailableCartagoSnapshotMustNotPretendAbsenceOrDeleteBootstrapObjects() throws Exception {
+        var result = new CodeGroundedNativePipeline().build(withEnvironment(CodeGroundedTestFixtures.helloSnapshot()));
+        var projector = new NativeRuntimeProjector(result, SESSION, GENERATION, REVISION);
+        var incomplete = new RuntimeSnapshot("cartago-unavailable", REVISION, Instant.EPOCH, Instant.EPOCH,
+                Map.of(), Map.of(), 1, List.of(), Map.of("cartago", Completeness.UNAVAILABLE), "unavailable-fingerprint");
+        projector.applySnapshot(incomplete);
+        assertEquals(1, result.state().system().state().objectsOfClass(result.state().system().model().getClass("Artifact")).size());
+    }
+
+    @Test
     void faithfulJasonMutationAndRelationUseThePipelineSystem() throws Exception {
         var result = CodeGroundedTestFixtures.helloPipeline();
         var system = result.state().system();

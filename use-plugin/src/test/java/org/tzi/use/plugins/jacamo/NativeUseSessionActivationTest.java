@@ -12,6 +12,32 @@ import org.tzi.use.main.Session;
 import org.tzi.use.uml.sys.MSystem;
 
 class NativeUseSessionActivationTest {
+    @Test void projectSummaryCountsOfficialMoiseRecordsAndOnlyProvidedExactBindings() throws Exception {
+        for (Path project : java.util.List.of(hello(), Path.of("../../jacamo/examples/auction/auction.jcm")
+                .toAbsolutePath().normalize())) {
+            var source = new org.jacamo.bridge.adapter.OfficialProjectAdapter().adapt(
+                    new org.jacamo.bridge.adapter.OfficialProjectLoader().load(project), project).semanticContract();
+            assertFalse(source.moiseOrganizations().isEmpty());
+            // Parsed JCM role tuples are not, by themselves, accepted exact cross bindings.
+            // These static fixtures intentionally supply no such binding; never inflate CROSS.
+            assertTrue(source.exactBindings().isEmpty());
+            Session session = new Session();
+            try (var facade = BridgeFacadeTestSupport.nativeFacade(project, session, () -> false)) {
+                var summary = facade.importProject(project);
+                var moiseClasses = new org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalog().rules().stream()
+                        .filter(rule -> rule.ruleId().startsWith("M") && rule.targetUseKind().startsWith("MClass "))
+                        .map(rule -> rule.targetUseKind().substring("MClass ".length())).collect(java.util.stream.Collectors.toSet());
+                long representedMoise = session.system().state().allObjects().stream()
+                        .filter(object -> moiseClasses.contains(object.cls().name())).count();
+                assertTrue(representedMoise > 0);
+                assertEquals(representedMoise, summary.dimensionCounts().get("MOISE"));
+                assertEquals((long) source.exactBindings().size(), summary.dimensionCounts().get("CROSS"));
+                assertEquals("NATIVE_CURRENT", summary.mappingStatus());
+                assertSame(session.system(), facade.materializedSystem());
+            }
+        }
+    }
+
     @Test void facadeActivatesTheExactValidatedNativeSystem() {
         Session session = new Session();
         try (var facade = BridgeFacadeTestSupport.nativeFacade(hello(), session, () -> false)) {

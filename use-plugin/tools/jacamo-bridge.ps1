@@ -58,6 +58,8 @@ $jcmFile = Join-Path $stagedProject (Split-Path -Leaf $sourceJcm)
 $secretFile = Join-Path $stagedProject "bridge-secret.hex"
 $stopFile = Join-Path $stagedProject "stop.flag"
 $consumerReadyFile = if ([string]::IsNullOrWhiteSpace($externalOcl)) { "" } else { Join-Path $stagedProject "consumer-ready.flag" }
+$startupControlDirectory = if ($InteractiveGui) { Join-Path $runEvidence "startup-control" } else { "" }
+if ($InteractiveGui) { New-Item -ItemType Directory -Path $startupControlDirectory | Out-Null }
 $producer = $null
 $consumer = $null
 $gui = $null
@@ -301,7 +303,7 @@ try {
     $producerLifetimeSeconds = if ($InteractiveGui) { 0 } else { $TimeoutSeconds }
     $producer = Start-CapturedJava $producerClasspath "jason.infra.local.LiveJaCaMoLauncherMain" $stagedProject @(
         $jcmFile, $stopFile, $producerLifetimeSeconds.ToString(), $producerHeadless.ToString().ToLowerInvariant(),
-        $consumerReadyFile, $TimeoutSeconds.ToString())
+        $consumerReadyFile, $TimeoutSeconds.ToString(), $startupControlDirectory, $runId)
     Wait-LoopbackPort $port $producer $TimeoutSeconds
 
     if ($InteractiveGui) {
@@ -334,6 +336,8 @@ try {
             "-Duse.jacamo.workbench.project-file=$jcmFile",
             "-Duse.jacamo.workbench.auto-import=true",
             "-Duse.jacamo.workbench.ready-file=$guiReadyFile",
+            "-Duse.jacamo.startup.directory=$startupControlDirectory",
+            "-Duse.jacamo.startup.run-id=$runId",
             "-Duse.jacamo.bridge.endpoint=tcp://127.0.0.1:$port",
             "-Duse.jacamo.bridge.secret-file=$secretFile",
             "-Duse.jacamo.bridge.distribution-sha256=$distribution",
@@ -346,6 +350,8 @@ try {
         Write-Host "INTERACTIVE_GUI_READY"
         Write-Host "Native USE projection: $ProjectionMode"
         Write-Host "The JaCaMo Workbench is opening and importing the derived JCM automatically."
+        Write-Host "Local agents wait at the official startAgs hook. Optional Load OCL, then click Start Runtime."
+        Write-Host "Platforms/environment timers already bootstrap; this delay is not original timing equivalence."
         Write-Host "Derived JCM: $jcmFile"
         Write-Host "Original source remains unchanged: $sourceJcm"
         Write-Host "Close the USE window to stop the derived JaCaMo producer."

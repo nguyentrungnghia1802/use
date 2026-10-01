@@ -64,7 +64,7 @@ public final class CodeGroundedRuleCatalog {
                         "jason.asSemantics.Agent", "jason.pl.PlanLibrary", "jason.asSyntax.Plan",
                         "jason.asSyntax.Trigger", "jason.asSyntax.PlanBody", "jason.asSyntax.PlanBody.BodyType.action",
                         "jason.asSyntax.PlanBody.BodyType.internalAction", "jason.asSyntax.Literal",
-                        "jason.asSemantics.Circumstance", "jason.asSyntax.Rule", "jason.asSyntax.SourceInfo",
+                        "jason.asSemantics.Agent.getInitialGoals", "jason.asSyntax.Rule", "jason.asSyntax.SourceInfo",
                         "jason.asSemantics.ActionExec", "jason.asSemantics.Intention", "jason.asSemantics.Event",
                         "jason.asSemantics.TransitionSystem", "jason.asSemantics.Agent.getPL",
                         "jason.pl.PlanLibrary.getPlans", "jason.asSyntax.Plan.getTrigger",
@@ -74,8 +74,8 @@ public final class CodeGroundedRuleCatalog {
                 new String[] {
                         "MClass AgentProgram", "MClass PlanLibrary", "MClass Plan", "MClass Trigger",
                         "MClass PlanBodyElement", "MClass Action", "MClass Action", "MClass Belief",
-                        "MClass AgentGoal", "MClass BeliefRule", "Trace source provenance", "MSystemState runtime action",
-                        "MSystemState runtime intention", "MSystemState runtime event", "Trace runtime controller",
+                        "MClass AgentGoal", "MClass BeliefRule", "Trace source provenance", "Trace runtime evidence (EVIDENCE_ONLY)",
+                        "Trace runtime evidence (EVIDENCE_ONLY)", "Trace runtime evidence (EVIDENCE_ONLY)", "Trace runtime evidence (EVIDENCE_ONLY)",
                         "MAssociation A16AgentProgramPlanLibrary", "MAssociation A17PlanLibraryPlan",
                         "MAssociation A18PlanTrigger", "MAssociation A19PlanBodyElement",
                         "MAssociation A20PlanBodyNext", "MAssociation A21ProgramBelief",
@@ -85,11 +85,11 @@ public final class CodeGroundedRuleCatalog {
                 new String[] {
                         "cartago.CartagoEnvironment", "cartago.WorkspaceDescriptor", "java.lang.Class<cartago.Artifact>",
                         "cartago.ArtifactId", "cartago.OpDescriptor", "java.lang.reflect.Method",
-                        "cartago.Guard", "cartago.ObsProperty", "cartago.ArtifactObsProperty", "cartago.ArtifactInfo",
-                        "cartago.Signal", "cartago.AgentId", "cartago.CartagoEnvironment.workspaces",
-                        "cartago.ArtifactInfo.getWorkspaceId", "cartago.ArtifactId.getArtifactType",
-                        "cartago.OpDescriptor", "cartago.ArtifactInfo.getObsProperties", "cartago.OpDescriptor.guard",
-                        "cartago.Workspace.joinedAgents", "cartago.focus"
+                        "cartago.IArtifactGuard", "cartago.ObsProperty", "cartago.ArtifactObsProperty", "cartago.ArtifactInfo",
+                        "cartago.Tuple", "cartago.AgentId", "cartago.CartagoEnvironment.getRootWSP",
+                        "cartago.ArtifactId.getWorkspaceId", "cartago.ArtifactId.getArtifactType",
+                        "cartago.OpDescriptor", "cartago.ArtifactInfo.getObsProperties", "cartago.OpDescriptor.getGuard",
+                        "cartago.ICartagoController.getCurrentAgents", "cartago.ICartagoLogger.artifactFocussed"
                 },
                 new String[] {
                         "MClass Environment", "MClass Workspace", "MClass ArtifactType", "MClass Artifact",
@@ -105,15 +105,15 @@ public final class CodeGroundedRuleCatalog {
                         "moise.os.OS", "moise.os.ss.SS", "moise.os.fs.FS", "moise.os.ns.NS", "moise.os.ss.Group",
                         "moise.os.ss.Role", "moise.os.ss.RoleRel", "moise.os.ss.Link", "moise.os.ss.Compatibility",
                         "moise.os.fs.Scheme", "moise.os.fs.Mission", "moise.os.fs.Goal", "moise.os.fs.Plan",
-                        "moise.os.ns.Norm", "moise.os.ss.Cardinality", "moise.os.ss.Cardinality",
-                        "moise.os.fs.Cardinality", "moise.os.OS.getSS", "moise.os.OS.getFS", "moise.os.OS.getNS",
+                        "moise.os.ns.Norm", "moise.os.Cardinality (Group.getRoleCardinality)", "moise.os.Cardinality (Group.getSubGroupCardinality)",
+                        "moise.os.Cardinality (Scheme.getMissionCardinality)", "moise.os.OS.getSS", "moise.os.OS.getFS", "moise.os.OS.getNS",
                         "moise.os.ss.SS.getRolesDef", "moise.os.ss.SS.getRootGrSpec", "moise.os.ss.Group.getSubGroups",
                         "moise.os.ss.Role.getSuperRoles", "moise.os.ss.Link.getSource", "moise.os.ss.Link.getTarget",
                         "moise.os.ss.Compatibility.getSource", "moise.os.ss.Compatibility.getTarget",
-                        "moise.os.ss.Cardinality.owner", "moise.os.ss.Cardinality.member",
-                        "moise.os.ss.Cardinality.owner", "moise.os.ss.Cardinality.member", "moise.os.fs.FS.getSchemes",
+                        "moise.os.ss.Group.getRoleCardinality (owner)", "moise.os.ss.Group.getRoles (member)",
+                        "moise.os.ss.Group.getSubGroupCardinality (owner)", "moise.os.ss.Group.getSubGroups (member)", "moise.os.fs.FS.getSchemes",
                         "moise.os.fs.Scheme.getMissions", "moise.os.fs.Scheme.getRootGoal",
-                        "moise.os.fs.Cardinality.owner", "moise.os.fs.Cardinality.member", "moise.os.fs.Mission.getGoals",
+                        "moise.os.fs.Scheme.getMissionCardinality (owner)", "moise.os.fs.Scheme.getMissions (member)", "moise.os.fs.Mission.getGoals",
                         "moise.os.fs.Goal.getPlan", "moise.os.fs.Plan.getSubGoals", "moise.os.ns.NS.getNorms",
                         "moise.os.ns.Norm.getRole", "moise.os.ns.Norm.getMission"
                 },
@@ -136,8 +136,8 @@ public final class CodeGroundedRuleCatalog {
                 });
         addFamily(rules, 'X', RuleDimension.CROSS, EvidenceAuthority.EXPLICIT_BINDING,
                 new String[] {
-                        "jason.asSyntax.PlanBody+cartago.OpDescriptor", "jason.asSyntax.Literal+cartago.ObsProperty",
-                        "jason.asSyntax.Trigger+cartago.Signal", "jacamo.project.JaCaMoAgentParameters.roles+moise.os.ss.Role",
+                        "jason.asSyntax.PlanBody+cartago.OpDescriptor", "jason.asSyntax.Literal+cartago.ArtifactObsProperty (C09 snapshot)",
+                        "jason.asSyntax.Trigger+cartago.Tuple", "jacamo.project.JaCaMoAgentParameters.roles+moise.os.ss.Role",
                         "jacamo.project.JaCaMoAgentParameters+cartago.WorkspaceId",
                         "jacamo.project.JaCaMoAgentParameters.focus+cartago.ArtifactId",
                         "jason.asSemantics.Event+moise.os.fs.Goal", "jason.mas2j.ClassParameters+cartago.ArtifactId",
@@ -176,9 +176,10 @@ public final class CodeGroundedRuleCatalog {
 
     private static Fidelity fidelity(String id) {
         if (id.equals("J11")) return Fidelity.PROVENANCE_ONLY;
+        if (id.equals("C08")) return Fidelity.UNKNOWN;
+        if (id.equals("C06")) return Fidelity.CONDITIONAL;
         if (id.matches("A1[2-5]|C0[489]|C1[0-2]|C1[479]|C20")) return Fidelity.RUNTIME_ONLY;
         if (id.startsWith("X")) return Fidelity.CONDITIONAL;
-        if (id.equals("C08")) return Fidelity.UNKNOWN;
         return Fidelity.EXACT;
     }
 

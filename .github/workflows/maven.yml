@@ -1,37 +1,71 @@
 name: Java CI with Maven
-on: 
-  push
+on:
+  push:
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: use
     steps:
     - uses: actions/checkout@v4
+      with:
+        path: use
+    - name: Check out audited JaCaMo case studies
+      uses: actions/checkout@v4
+      with:
+        repository: jacamo-lang/jacamo
+        ref: 3866858a7ebf6be85d9199c13a09cf4bfb8191be
+        path: jacamo
+        persist-credentials: false
+    - name: Preserve legacy fixture path casing
+      working-directory: .
+      run: ln -s jacamo JaCaMo
     - name: Set up JDK
       uses: actions/setup-java@v4
       with:
         java-version: '21'
-        distribution: 'adopt'
+        distribution: 'temurin'
         cache: maven
+        cache-dependency-path: use/**/pom.xml
+    - name: Install virtual display for GUI integration tests
+      run: |
+        sudo apt-get update
+        sudo apt-get install --yes xvfb xauth
     - name: Build with Maven
       run: |
+        set -o pipefail
         start_time=$(date +%s)
-        mvn --batch-mode --update-snapshots verify | tee build_output.log
-        end_time=$(date +%s)
-        build_time=$((end_time - start_time))
-        echo "BUILD_TIME_SECONDS=$build_time" >> build_output.log
-    - name: Upload build result
-      run: mkdir staging && cp use-assembly/target/*.zip staging
+        trap 'echo "BUILD_TIME_SECONDS=$(($(date +%s) - start_time))" >> build_output.log' EXIT
+        xvfb-run --auto-servernum mvn --batch-mode --update-snapshots -Djava.awt.headless=false verify 2>&1 | tee build_output.log
+    - name: Check release archives
+      run: |
+        shopt -s nullglob
+        use_archives=(use-assembly/target/*.zip)
+        plugin_archives=(use-plugin/target/use-jacamo-plugin-*.zip)
+        test "${#use_archives[@]}" -gt 0
+        test "${#plugin_archives[@]}" -gt 0
     - uses: actions/upload-artifact@v4
       with:
         name: Package
-        path: staging
+        if-no-files-found: error
+        path: |
+          use/use-assembly/target/*.zip
+          use/use-plugin/target/use-jacamo-plugin-*.zip
+          use/use-plugin/target/use-jacamo-plugin-*.zip.sha256
     - uses: actions/upload-artifact@v4
+      if: always()
       with: 
         name: build-log
-        path: build_output.log
+        path: use/build_output.log
     - uses: actions/upload-artifact@v4
+      if: always()
       with:
         name: failure-reports
         path: |
-          docs/archunit-results/cycles-current-failure-report.txt
-          docs/archunit-results/layers-current-failure-report.txt
+          use/**/target/surefire-reports/**
+          use/**/target/failsafe-reports/**
+          use/docs/archunit-results/cycles-current-failure-report.txt
+          use/docs/archunit-results/layers-current-failure-report.txt

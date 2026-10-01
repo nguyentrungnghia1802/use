@@ -37,4 +37,19 @@ public record RuntimeVerificationResult(String sessionId, long generation, Strin
         map.put("verifiedAt", verifiedAt.toString()); map.put("durationNanos", durationNanos);
         map.put("resultHash", resultHash()); return Map.copyOf(map);
     }
+    public static RuntimeVerificationResult fromMap(Map<String,Object> value) {
+        List<ExternalOclConstraintService.Outcome> outcomes = ((List<?>)value.get("outcomes")).stream().map(raw -> {
+            var item = CanonicalJson.object(raw);
+            return new ExternalOclConstraintService.Outcome((String)item.get("constraintId"), (String)item.get("contextClass"),
+                    VerificationOutcome.valueOf((String)item.get("outcome")), (String)item.get("diagnostic"), (String)item.get("expression"));
+        }).toList();
+        var result = new RuntimeVerificationResult((String)value.get("sessionId"), ((Number)value.get("generation")).longValue(),
+                (String)value.get("modelRevision"), ((Number)value.get("stateVersion")).longValue(), (String)value.get("eventId"),
+                (String)value.get("sourceId"), ((Number)value.get("sourceSequence")).longValue(), Instant.parse((String)value.get("observedAt")),
+                Instant.parse((String)value.get("appliedAt")), Instant.parse((String)value.get("verifiedAt")), (String)value.get("checkpointId"),
+                (String)value.get("constraintSetHash"), (String)value.get("stateHash"), outcomes, ((Number)value.get("durationNanos")).longValue(),
+                (String)value.get("coverage"), (String)value.get("freshness"), (String)value.get("diagnostic"));
+        if (!result.resultHash().equals(value.get("resultHash"))) throw new IllegalArgumentException("HISTORY_RESULT_HASH_MISMATCH");
+        return result;
+    }
 }

@@ -43,6 +43,22 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
     private long generation, stateVersion, verificationCount;
     private Map<String, Completeness> sources = Map.of();
     private boolean coverageLost;
+    private VerificationSnapshot.ProfileInterval profileInterval;
+    public VerificationSnapshot verificationSnapshot() {
+        return read(() -> {
+            var profile = constraints.profile();
+            var interval = profileInterval == null ? null : new VerificationSnapshot.ProfileInterval(
+                    profileInterval.loadedVersion(), profileInterval.intervalId(), profileInterval.installedAt(),
+                    profileInterval.sessionId(), profileInterval.generation(), profileInterval.installedModelRevision(), profile);
+            var current = latest != null && latest.constraintSetHash().equals(constraints.constraintSetHash()) ? latest : null;
+            return new VerificationSnapshot(stateVersion, current, interval);
+        });
+    }
+    private void recordProfileInterval(ExternalOclConstraintService.Profile profile) {
+        profileInterval = new VerificationSnapshot.ProfileInterval(stateVersion,
+                sessionId + ":" + generation + ":" + modelRevision + ":profile:" + stateVersion + ":" + profile.sourceHash(),
+                Instant.now(), sessionId, generation, modelRevision, profile);
+    }
     public RuntimeVerificationCoordinator(NativeRuntimeMutationEngine engine, String sessionId, long generation,
             String revision) { this(engine, sessionId, generation, revision,
                     createEphemeralDirectory(defaultRuntimeRoot()), 512, 64L * 1024 * 1024, true); }
@@ -176,8 +192,9 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
         return read(() -> {
             var profile = constraints.install(path, modelRevision);
             stateVersion++;
+            recordProfileInterval(profile);
             var result = finish("PROFILE", "profile:" + profile.sourceHash(), "ocl", 0, Instant.now(),
-                    Map.of("sourceFile", profile.sourceFile(), "source", profile.source(), "modelRevision", modelRevision), true, false, "");
+                    profilePayload(profile), true, false, "");
             publishCurrent(); return result;
         });
     }
@@ -187,16 +204,30 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
     public RuntimeVerificationResult loadSavedProfile(ExternalOclConstraintService.Profile profile) {
         return loadProfileSource(profile.sourceFile(), profile.source(), profile.constraints().stream().collect(
                 java.util.stream.Collectors.toMap(ExternalOclConstraintService.RegisteredConstraint::constraintId,
-                        ExternalOclConstraintService.RegisteredConstraint::enabled)));
+                        ExternalOclConstraintService.RegisteredConstraint::enabled)), profile.constraints().stream().collect(
+                java.util.stream.Collectors.toMap(ExternalOclConstraintService.RegisteredConstraint::constraintId,
+                        ExternalOclConstraintService.RegisteredConstraint::negated)));
     }
     public RuntimeVerificationResult loadProfileSource(String file, String source, Map<String, Boolean> enabled) {
+        return loadProfileSource(file, source, enabled, Map.of());
+    }
+    public RuntimeVerificationResult loadProfileSource(String file, String source, Map<String, Boolean> enabled,
+                                                     Map<String, Boolean> negated) {
         return read(() -> {
-            var profile = constraints.installSource(file, source, modelRevision, enabled);
+            var profile = constraints.installSource(file, source, modelRevision, enabled, negated);
             stateVersion++;
+            recordProfileInterval(profile);
             var result = finish("PROFILE", "profile:" + profile.sourceHash(), "ocl", 0, Instant.now(),
-                    Map.of("sourceFile", file, "source", source, "modelRevision", modelRevision, "enabled", enabled), true, false, "");
+                    profilePayload(profile), true, false, "");
             publishCurrent(); return result;
         });
+    }
+    private Map<String,Object> profilePayload(ExternalOclConstraintService.Profile profile) {
+        return Map.of("sourceFile",profile.sourceFile(),"source",profile.source(),"modelRevision",modelRevision,
+                "enabled",profile.constraints().stream().collect(java.util.stream.Collectors.toMap(
+                        ExternalOclConstraintService.RegisteredConstraint::constraintId,ExternalOclConstraintService.RegisteredConstraint::enabled)),
+                "negated",profile.constraints().stream().collect(java.util.stream.Collectors.toMap(
+                        ExternalOclConstraintService.RegisteredConstraint::constraintId,ExternalOclConstraintService.RegisteredConstraint::negated)));
     }
     public RuntimeVerificationResult manualVerify() {
         return read(() -> { var result = finish("MANUAL", "manual", "user", 0, Instant.now(), Map.of(), false, false, "");
@@ -232,7 +263,7 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
                 stateVersion, eventId, source, sequence, observed, applied, Instant.now(), checkpointId,
                 constraints.constraintSetHash(), hash, outcomes, System.nanoTime() - started, coverage,
                 coverageLost ? "STALE" : "CURRENT_OBSERVED", diagnostic);
-        if (!journal.append(kind, payload, result)) {
+        if (!journal.append(kind, payload, result, profileInterval == null ? "CORE_ONLY" : profileInterval.intervalId())) {
             coverageLost = true;
             result = new RuntimeVerificationResult(sessionId, generation, modelRevision, stateVersion, eventId, source,
                     sequence, observed, applied, Instant.now(), checkpointId, constraints.constraintSetHash(), hash,

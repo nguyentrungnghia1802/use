@@ -115,6 +115,7 @@ public final class NativeRuntimeProjector implements AutoCloseable {
                 applied.add(Map.entry(fact, result));
                 (result.status() == NativeRuntimeMutationEngine.Status.MATERIALIZED ? materialized : evidenceOnly).add(fact.id().canonical());
             }
+            mutations.reconcileAuthoritativeCartago(snapshot);
             if (!mutations.structureValid()) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_SNAPSHOT_STRUCTURE_INVALID");
             coordinator.acceptedSnapshot(session, nextGeneration, snapshot.modelRevision(), snapshot.sourceCompleteness());
             sessionId = session; generation = nextGeneration;
@@ -174,6 +175,7 @@ public final class NativeRuntimeProjector implements AutoCloseable {
             var previous = aliases.putIfAbsent(identity, alias);
             if (previous != null && !previous.equals(alias)) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_ALIAS_COLLISION:" + identity);
             if (system().state().objectByName(result.targetUseId()) == null) aliases.remove(identity);
+            aliases.entrySet().removeIf(entry -> system().state().objectByName(entry.getValue().targetUseId()) == null);
         }
         if (trace.size() == 8192) trace.remove(0);
         trace.add(new NativeRuntimeTraceRecord(result.ruleId(), TracePhase.RUNTIME_MUTATION, eventId, source, identity,

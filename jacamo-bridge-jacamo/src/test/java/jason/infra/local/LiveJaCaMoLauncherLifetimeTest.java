@@ -10,6 +10,13 @@ import org.junit.jupiter.api.io.TempDir;
 
 class LiveJaCaMoLauncherLifetimeTest {
     @TempDir Path temporary;
+    @Test void onlyAuditedLocalPlatformsHaveControlledStartAuthority() {
+        assertDoesNotThrow(() -> LiveJaCaMoLauncherMain.validateControlledPlatforms(java.util.List.of(
+                "jacamo.platform.Cartago", "jacamo.platform.Moise", "jacamo.platform.Sai", "org.jacamo.bridge.adapter.JaCaMoBridgePlatform")));
+        for (String name : java.util.List.of("jacamo.platform.Jade", "example.CustomPlatform"))
+            assertTrue(assertThrows(IllegalStateException.class,
+                    () -> LiveJaCaMoLauncherMain.validateControlledPlatforms(java.util.List.of(name))).getMessage().startsWith("UNSUPPORTED_STARTUP_CONTROL"));
+    }
 
     @Test void interactiveLifetimeSurvivesABoundedDeadlineAndStopsOnlyOnStopFile() throws Exception {
         Path stop = temporary.resolve("stop");

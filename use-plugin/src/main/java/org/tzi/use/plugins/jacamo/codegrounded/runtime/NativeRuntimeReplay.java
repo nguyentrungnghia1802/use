@@ -22,7 +22,7 @@ import org.tzi.use.uml.sys.MObject;
 public final class NativeRuntimeReplay {
     public record ReplayReport(boolean complete, int checkedEntries, String finalStateHash, String finalResultHash,
                                List<String> diagnostics) { public ReplayReport { diagnostics = List.copyOf(diagnostics); } }
-    private static final List<String> FILES = List.of("model.use", "baseline.cmd", "constraints.ocl", "runtime.jsonl");
+    static final List<String> FILES = List.of("model.use", "baseline.cmd", "constraints.ocl", "runtime.jsonl");
     public void exportBundle(NativeRuntimeProjector projector, String coreUseText, Path directory) {
         projector.coordinator().read(() -> {
             var coordinator = projector.coordinator();
@@ -52,6 +52,9 @@ public final class NativeRuntimeReplay {
         NativeRuntimeProjector projector = null;
         try {
             Path root = directory.toAbsolutePath().normalize();
+            if (Files.isSymbolicLink(root) || !Files.isDirectory(root) || Files.isSymbolicLink(root.resolve("manifest.json"))
+                    || !Files.isRegularFile(root.resolve("manifest.json")) || Files.size(root.resolve("manifest.json")) > 65536)
+                throw new IllegalArgumentException("REPLAY_MANIFEST_MISSING_OR_UNSAFE");
             Map<String, Object> manifest = CanonicalJson.object(CanonicalJson.decode(Files.readAllBytes(root.resolve("manifest.json"))));
             if (!"1.0.0".equals(manifest.get("schemaVersion"))) throw new IllegalArgumentException("REPLAY_SCHEMA_UNSUPPORTED");
             Map<String, Object> hashes = CanonicalJson.object(manifest.get("files"));
@@ -97,26 +100,9 @@ public final class NativeRuntimeReplay {
                                 ((Number) expected.get("generation")).longValue(), (String) expected.get("modelRevision"), new CodeGroundedRuntimeRuleRegistry());
                         if (!projector.coordinator().latest().stateHash().equals(manifest.get("baselineStateHash")))
                             throw new IllegalArgumentException("REPLAY_BASELINE_HASH_MISMATCH");
-                    } else switch (kind) {
-                        case "SNAPSHOT" -> projector.applySnapshot(ContractPayloads.runtime(payload), (String) expected.get("sessionId"),
-                                ((Number) expected.get("generation")).longValue());
-                        case "EVENT" -> projector.apply(ContractPayloads.event(payload));
-                        case "PROFILE" -> {
-                            lastProfile = (String) payload.get("source");
-                            Map<String, Boolean> enabled = new LinkedHashMap<>();
-                            if (payload.containsKey("enabled")) CanonicalJson.object(payload.get("enabled"))
-                                    .forEach((id, value) -> enabled.put(id, (Boolean) value));
-                            projector.coordinator().loadProfileSource((String) payload.get("sourceFile"), lastProfile, enabled);
-                        }
-                        case "MANUAL" -> projector.coordinator().manualVerify();
-                        case "COVERAGE" -> projector.coordinator().coverageGap(payload.containsKey("event")
-                                ? ContractPayloads.event(CanonicalJson.object(payload.get("event"))) : null, (String) payload.get("diagnostic"));
-                        case "REJECTED" -> {
-                            boolean rejected = false;
-                            try { projector.apply(ContractPayloads.event(payload)); } catch (RuntimeException error) { rejected = true; }
-                            if (!rejected) throw new IllegalArgumentException("REPLAY_EXPECTED_REJECTION");
-                        }
-                        default -> throw new IllegalArgumentException("REPLAY_ENTRY_UNSUPPORTED:" + kind);
+                    } else {
+                        applyEntry(projector, kind, payload, expected, true);
+                        if (kind.equals("PROFILE")) lastProfile = (String)payload.get("source");
                     }
                     var actual = projector.coordinator().lastObservation();
                     stateHash = actual.stateHash(); resultHash = actual.resultHash();
@@ -135,6 +121,32 @@ public final class NativeRuntimeReplay {
             return new ReplayReport(false, checked, stateHash, resultHash, List.of(error.getClass().getSimpleName() + ":" + error.getMessage()));
         } finally {
             if (projector != null) projector.close();
+        }
+    }
+    /** The same production mutations serve both modes; only recorded PROFILE installation differs. */
+    static void applyEntry(NativeRuntimeProjector projector, String kind, Map<String,Object> payload,
+                           Map<String,Object> expected, boolean recordedProfile) {
+        switch (kind) {
+            case "SNAPSHOT" -> projector.applySnapshot(ContractPayloads.runtime(payload), (String)expected.get("sessionId"),
+                    ((Number)expected.get("generation")).longValue());
+            case "EVENT" -> projector.apply(ContractPayloads.event(payload));
+            case "PROFILE" -> {
+                if (!recordedProfile) { projector.coordinator().manualVerify(); break; }
+                Map<String,Boolean> enabled=new LinkedHashMap<>();
+                Map<String,Boolean> negated=new LinkedHashMap<>();
+                if (payload.containsKey("enabled")) CanonicalJson.object(payload.get("enabled")).forEach((id,value)->enabled.put(id,(Boolean)value));
+                if (payload.containsKey("negated")) CanonicalJson.object(payload.get("negated")).forEach((id,value)->negated.put(id,(Boolean)value));
+                projector.coordinator().loadProfileSource((String)payload.get("sourceFile"),(String)payload.get("source"),enabled,negated);
+            }
+            case "MANUAL" -> projector.coordinator().manualVerify();
+            case "COVERAGE" -> projector.coordinator().coverageGap(payload.containsKey("event")
+                    ? ContractPayloads.event(CanonicalJson.object(payload.get("event"))) : null,(String)payload.get("diagnostic"));
+            case "REJECTED" -> {
+                boolean rejected=false;
+                try { projector.apply(ContractPayloads.event(payload)); } catch (RuntimeException error) { rejected=true; }
+                if (!rejected) throw new IllegalArgumentException("REPLAY_EXPECTED_REJECTION");
+            }
+            default -> throw new IllegalArgumentException("REPLAY_ENTRY_UNSUPPORTED:" + kind);
         }
     }
 }

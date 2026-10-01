@@ -42,12 +42,17 @@ import org.tzi.use.uml.sys.events.tags.EventContext;
  * All calls in production are serialized by RuntimeVerificationCoordinator. */
 public final class ExternalOclConstraintService {
     public record RegisteredConstraint(String constraintId, String contextClass, String sourceFile,
-            String sourceHash, String modelRevision, boolean enabled, Set<String> requiredClasses,
+            String sourceHash, String modelRevision, boolean enabled, boolean negated, Set<String> requiredClasses,
             Set<String> requiredRules, Set<String> requiredSources) {
         public RegisteredConstraint {
             requiredClasses = Set.copyOf(requiredClasses);
             requiredRules = Set.copyOf(requiredRules);
             requiredSources = Set.copyOf(requiredSources);
+        }
+        public RegisteredConstraint(String constraintId,String contextClass,String sourceFile,String sourceHash,
+                String modelRevision,boolean enabled,Set<String> requiredClasses,Set<String> requiredRules,
+                Set<String> requiredSources) {
+            this(constraintId,contextClass,sourceFile,sourceHash,modelRevision,enabled,false,requiredClasses,requiredRules,requiredSources);
         }
     }
     public record Profile(String sourceFile, String sourceHash, String source, String modelRevision,
@@ -69,7 +74,8 @@ public final class ExternalOclConstraintService {
     public MSystem system() { return system; }
     public Profile profile() {
         if (profile != null && profile.constraints().stream().anyMatch(item ->
-                owned.get(item.constraintId()).isActive() != item.enabled()))
+                owned.get(item.constraintId()).isActive() != item.enabled()
+                        || owned.get(item.constraintId()).isNegated() != item.negated()))
             profile = new Profile(profile.sourceFile(), profile.sourceHash(), profile.source(), profile.modelRevision(),
                     owned.values().stream().map(inv -> registration(inv, profile.sourceFile(), profile.sourceHash(), profile.modelRevision())).toList());
         return profile;
@@ -91,6 +97,11 @@ public final class ExternalOclConstraintService {
     }
 
     public Profile installSource(String sourceFile, String source, String revision, Map<String, Boolean> enabled) {
+        return installSource(sourceFile, source, revision, enabled, Map.of());
+    }
+
+    public Profile installSource(String sourceFile, String source, String revision, Map<String, Boolean> enabled,
+                                 Map<String, Boolean> negated) {
         if (sourceFile == null || source == null || revision == null || revision.isBlank())
             throw new IllegalArgumentException("EXTERNAL_OCL_SOURCE_REQUIRED");
         byte[] bytes = source.getBytes(StandardCharsets.UTF_8);
@@ -116,6 +127,7 @@ public final class ExternalOclConstraintService {
             var existing = owned.get(id);
             if (existing != null) { invariant.setActive(existing.isActive()); invariant.setNegated(existing.isNegated()); }
             if (enabled.containsKey(id)) invariant.setActive(enabled.get(id));
+            if (negated.containsKey(id)) invariant.setNegated(negated.get(id));
         });
         List<RegisteredConstraint> registry = candidate.values().stream().map(invariant ->
                 registration(invariant, sourceFile, hash, revision)).toList();
@@ -224,7 +236,7 @@ public final class ExternalOclConstraintService {
             if (rule != null) { rules.add(rule); sources.add(rule.startsWith("C") ? "cartago" : "jason"); }
         }
         return new RegisteredConstraint(invariant.qualifiedName(), invariant.cls().name(), file, hash,
-                revision, invariant.isActive(), classes, rules, sources);
+                revision, invariant.isActive(), invariant.isNegated(), classes, rules, sources);
     }
 
     private static void requireNamedDeclarations(String source, String name, PrintWriter errors) {

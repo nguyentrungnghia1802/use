@@ -19,6 +19,27 @@ import org.tzi.use.uml.sys.events.AtomicStateChangedEvent;
 class RuntimeVerificationCoordinatorTest {
     @TempDir java.nio.file.Path directory;
     static final String PROFILE = "context ObservablePropertySnapshot inv NoB: self.values <> '[\"B\"]'";
+    @Test void profileIntervalsKeepActualInstallVersionDespiteTailEvictionAndAtomicInvalidReplacement() throws Exception {
+        var projector = projector(); var coordinator = projector.coordinator();
+        assertNull(coordinator.verificationSnapshot().profile());
+        projector.apply(delta("B", 1, "B"));
+        coordinator.loadProfileSource("first.ocl", PROFILE);
+        var installed = coordinator.verificationSnapshot();
+        assertEquals(installed.currentVersion(), installed.profile().loadedVersion());
+        assertTrue(installed.profile().loadedVersion() > 0);
+        assertEquals(VerificationOutcome.FAIL, external(installed.result()));
+        assertThrows(IllegalArgumentException.class, () -> coordinator.loadProfileSource("bad.ocl", "context Missing inv Broken: true"));
+        assertEquals(installed, coordinator.verificationSnapshot());
+        for (int index = 0; index < 520; index++) coordinator.manualVerify();
+        var retained = coordinator.verificationSnapshot();
+        assertEquals(installed.currentVersion(), retained.currentVersion());
+        assertEquals(installed.profile(), retained.profile());
+        assertFalse(coordinator.history().contains(installed.result()));
+        coordinator.loadProfileSource("second.ocl", PROFILE);
+        assertNotEquals(installed.profile().intervalId(), coordinator.verificationSnapshot().profile().intervalId());
+        assertEquals(retained.currentVersion() + 1, coordinator.verificationSnapshot().profile().loadedVersion());
+        assertSame(projector.system(), coordinator.system());
+    }
     @Test void propertyABACommitsViolatingStateAndKeepsImmutableHistoryWithOneCheckAndNotification() throws Exception {
         var projector = projector(); var coordinator = projector.coordinator(); var system = projector.system();
         var baseline = coordinator.loadProfileSource("constraints.ocl", PROFILE);
@@ -71,6 +92,9 @@ class RuntimeVerificationCoordinatorTest {
         var projector = projector(); int objects = projector.system().state().numObjects();
         projector.apply(event("dispose", 1, RuntimeEventKind.DISPOSED, ID,
                 Map.of("normalizedEventKind", "DELETE_CARTAGO_ARTIFACT", "semanticId", ARTIFACT)));
+        assertTrue(projector.runtimeAliases().values().stream().allMatch(alias ->
+                projector.system().state().objectByName(alias.targetUseId()) != null),
+                "disposing an artifact must remove aliases for its deleted property snapshots too");
         assertEquals(objects - 2, projector.system().state().numObjects());
         var id = new BridgeEntityId("cartago", "environment", "artifact", "/main", "box", "uuid-2");
         projector.apply(event("create", 2, RuntimeEventKind.CREATED, id, artifact("cartago:artifact:env:/main:uuid-2", "uuid-2")));
