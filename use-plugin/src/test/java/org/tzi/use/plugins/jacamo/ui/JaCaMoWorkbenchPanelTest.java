@@ -132,6 +132,28 @@ class JaCaMoWorkbenchPanelTest {
     }
 
     @Test
+    void mappingInspectorShowsJarSourceWithoutPretendingItIsTheAgentOrJcmFile() {
+        RecordingFacade facade = new RecordingFacade();
+        String uri = "jar:file:/C:/dependency.jar!/templates/included.asl";
+        var evidence = new org.jacamo.bridge.contract.semantic.SourceEvidence(
+                org.jacamo.bridge.contract.semantic.EvidenceAuthority.OFFICIAL_JASON_API, uri, "a".repeat(64),
+                "jason.asSyntax.Plan", "plan", 7, 11, "", "", 0,
+                org.jacamo.bridge.contract.semantic.Fidelity.EXACT,
+                org.jacamo.bridge.contract.CapabilityStatus.COMPLETE, List.of());
+        facade.traces = List.of(new JaCaMoFacade.TraceRow("plan", "jason.asSyntax.Plan", "object:p", "MObject",
+                "A03", "EXACT", "COMPLETE", null, 7, "A", "OFFICIAL_JASON_API", List.of(), List.of(evidence)));
+        JaCaMoWorkbenchPanel panel = new JaCaMoWorkbenchPanel(facade);
+        panel.importProject(Path.of("fixture.jcm"));
+        table(panel, "trace-table").setRowSelectionInterval(0, 0);
+        assertEquals(uri + ":7", label(panel, "source-location").getText());
+        assertTrue(button(panel, "copy-source").isEnabled());
+        String detail = textArea(panel, "mapping-detail").getText();
+        assertTrue(detail.contains(uri));
+        assertTrue(detail.contains("Source lines: 7-11"));
+        assertTrue(detail.contains("a".repeat(64)));
+    }
+
+    @Test
     void mappingInspectorShowsAllCatalogRulesAndRequiredStatusFilters() {
         RecordingFacade facade = new RecordingFacade();
         facade.traces = new CodeGroundedRuleCatalog().rules().stream().map(rule -> new JaCaMoFacade.TraceRow(
@@ -164,6 +186,32 @@ class JaCaMoWorkbenchPanelTest {
         assertTrue(detail.contains("OFFICIAL_JASON_API"));
         assertTrue(detail.contains("EXACT"));
         assertTrue(detail.contains("UNRESOLVED_UNTIL_X"));
+    }
+
+    @Test
+    void displayedWorkbenchAutomaticallyStopsClaimingLiveAfterSubscriptionFailure() throws Exception {
+        RecordingFacade facade = new RecordingFacade();
+        JaCaMoWorkbenchPanel panel = new JaCaMoWorkbenchPanel(facade);
+        javax.swing.SwingUtilities.invokeAndWait(() -> {
+            facade.authority = new JaCaMoFacade.AuthorityStatus(SemanticAuthority.BRIDGE, BridgeClientState.LIVE,
+                    Map.of(), "PARTIAL", "model", "session", 1, "tcp://127.0.0.1:1", "");
+            panel.refreshRuntime();
+            assertEquals("LIVE", label(panel, "bridge-readiness").getText());
+            panel.addNotify();
+            facade.authority = new JaCaMoFacade.AuthorityStatus(SemanticAuthority.BRIDGE, BridgeClientState.RESYNC_REQUIRED,
+                    Map.of(), "PARTIAL", "model", "session", 1, "tcp://127.0.0.1:1", "BRIDGE_SUBSCRIPTION_FAILED");
+        });
+        var refreshed = new java.util.concurrent.atomic.AtomicBoolean();
+        try {
+            long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(5);
+            while (!refreshed.get() && System.nanoTime() < deadline) {
+                javax.swing.SwingUtilities.invokeAndWait(() -> refreshed.set(
+                        label(panel, "bridge-readiness").getText().equals("RESYNC_REQUIRED")
+                        && label(panel, "bridge-diagnostic").getText().contains("BRIDGE_SUBSCRIPTION_FAILED")));
+                Thread.sleep(25);
+            }
+            assertTrue(refreshed.get(), "cached LIVE label must update without a manual Refresh click");
+        } finally { javax.swing.SwingUtilities.invokeAndWait(panel::removeNotify); }
     }
 
     @Test

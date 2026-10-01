@@ -104,7 +104,7 @@ public final class NativeUseSoilExporter {
                 throw new IllegalArgumentException("NATIVE_SOIL_COMMAND_PREFIX_REQUIRED:" + lineNumber);
             String soil = line.substring(1).trim();
             MStatement statement = ShellCommandCompiler.compileShellCommand(model, replay.state(),
-                    replay.getVariableEnvironment(), soil, "native-export.cmd:" + lineNumber, errors, true);
+                    replay.getVariableEnvironment(), soil, "native-export.cmd:" + lineNumber, errors, false);
             if (statement == null)
                 throw new IllegalStateException("NATIVE_SOIL_REPLAY_COMPILE_FAILED:" + lineNumber + ": " + diagnostics);
             try {

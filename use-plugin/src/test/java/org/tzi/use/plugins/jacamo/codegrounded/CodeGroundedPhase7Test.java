@@ -214,7 +214,8 @@ class CodeGroundedPhase7Test {
                 runtimeAgent, binding, Map.of("normalizedEventKind", "INVENT_UNDECLARED_TYPE"));
         assertThrows(RuntimeException.class, () -> projector.apply(undeclaredRule));
         assertEquals(beforeReplay, digest(result.state().system()));
-        assertThrows(RuntimeException.class, () -> projector.apply(first));
+        // Exact duplicate is idempotent; conflicting IDs/rewind still require resync.
+        assertFalse(projector.apply(first));
         assertTrue(projector.resyncRequired());
         assertEquals(beforeReplay, digest(result.state().system()));
 
@@ -289,8 +290,18 @@ class CodeGroundedPhase7Test {
     }
 
     private static RuntimeFact faithfulFact(String local, RuntimeFactKind kind, Map<String, Object> values) {
-        return new RuntimeFact(new BridgeEntityId("cartago", "environment", kind.name().toLowerCase(),
-                "phase7-runtime", local, "snapshot"), kind, values, List.of(),
+        BridgeEntityId id = switch (kind) {
+            case WORKSPACE -> new BridgeEntityId("cartago", "environment", "workspace", (String) values.get("environmentId"),
+                    (String) values.get("fullName"), (String) values.get("uuid"));
+            case AGENT -> new BridgeEntityId("cartago", "environment", "agent", "/main", (String) values.get("globalId"),
+                    values.get("localId").toString());
+            case ARTIFACT -> new BridgeEntityId("cartago", "environment", "artifact", "/main", (String) values.get("name"),
+                    (String) values.get("uuid"));
+            case PROPERTY -> new BridgeEntityId("cartago", "environment", "observable-property-snapshot", (String) values.get("artifactSemanticId"),
+                    (String) values.get("propertyId"), "snapshot");
+            default -> throw new IllegalArgumentException("Unexpected test fact: " + local);
+        };
+        return new RuntimeFact(id, kind, values, List.of(),
                 ProjectionStatus.MATERIALIZED_FAITHFULLY, Completeness.COMPLETE, List.of());
     }
 

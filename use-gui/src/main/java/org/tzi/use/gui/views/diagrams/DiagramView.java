@@ -72,6 +72,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.text.NumberFormat;
 import java.util.List;
@@ -1243,19 +1244,26 @@ public abstract class DiagramView extends JPanel
     protected Path getDefaultLayoutFile() {
         String suffix = getDefaultLayoutFileSuffix();
 
-        if (this.getOptions().getDirectory() == null ||
-                suffix == null)
+        String configuredDirectory = System.getProperty("use.gui.default-layout-directory", "").trim();
+        if (configuredDirectory.isBlank() || suffix == null)
             return null;
 
         Path modelFile = this.getOptions().getModelFileName();
+        if (modelFile == null) return null;
         String fileNameOnly = modelFile.getFileName().toString();
 
         if (fileNameOnly.contains(".")) {
             fileNameOnly = fileNameOnly.substring(0, fileNameOnly.lastIndexOf('.'));
         }
 
-        Path defaultLayoutFile = this.getOptions().getDirectory().resolve(fileNameOnly + suffix);
-        return defaultLayoutFile;
+        try {
+            Path layoutDirectory = Path.of(configuredDirectory).toAbsolutePath().normalize();
+            Files.createDirectories(layoutDirectory);
+            return layoutDirectory.resolve(fileNameOnly + suffix);
+        } catch (IOException | InvalidPathException error) {
+            fLog.println("Unable to prepare generated default layout directory: " + error.getMessage());
+            return null;
+        }
     }
 
     /**

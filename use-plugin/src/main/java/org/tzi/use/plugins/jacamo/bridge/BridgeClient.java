@@ -13,6 +13,7 @@ import org.jacamo.bridge.contract.RuntimeSnapshot;
 
 /** Fail-closed client: validates envelope and identity before typed payload decoding. */
 public final class BridgeClient implements AutoCloseable {
+    public record CoverageFailure(RuntimeEvent event, String diagnostic) { }
     public record Accepted(ModelSnapshot model, RuntimeSnapshot runtime, String distributionDigest,
                            String projectKey, java.util.List<org.jacamo.bridge.contract.Capability> capabilities,
                            org.jacamo.bridge.contract.Completeness completeness,
@@ -22,6 +23,8 @@ public final class BridgeClient implements AutoCloseable {
     private final BridgeTransport transport; private final BridgeMirrorStateMachine mirror;
     private final String requiredDistribution; private final Set<String> requiredCapabilities;
     private final java.util.function.Consumer<RuntimeEvent> acceptedEvent;
+    private final java.util.function.BiConsumer<RuntimeEvent, String> coverageFailure;
+    private final Object deliveryLock = new Object();
     private final int maxBufferedEvents; private final ArrayDeque<byte[]> buffered=new ArrayDeque<>();
     private BridgeTransport.Subscription subscription;
     private boolean bootstrapping;
@@ -32,9 +35,22 @@ public final class BridgeClient implements AutoCloseable {
     }
     public BridgeClient(BridgeTransport transport,BridgeMirrorStateMachine mirror,String requiredDistribution,
                         Set<String> requiredCapabilities,int maxBufferedEvents,java.util.function.Consumer<RuntimeEvent> acceptedEvent){
+        this(transport,mirror,requiredDistribution,requiredCapabilities,maxBufferedEvents,acceptedEvent,diagnostic->{});
+    }
+    public BridgeClient(BridgeTransport transport,BridgeMirrorStateMachine mirror,String requiredDistribution,
+                        Set<String> requiredCapabilities,int maxBufferedEvents,java.util.function.Consumer<RuntimeEvent> acceptedEvent,
+                        java.util.function.Consumer<String> coverageFailure){
+        this(transport,mirror,requiredDistribution,requiredCapabilities,maxBufferedEvents,acceptedEvent,
+                (event,diagnostic)->coverageFailure.accept(diagnostic));
+        java.util.Objects.requireNonNull(coverageFailure);
+    }
+    public BridgeClient(BridgeTransport transport,BridgeMirrorStateMachine mirror,String requiredDistribution,
+                        Set<String> requiredCapabilities,int maxBufferedEvents,java.util.function.Consumer<RuntimeEvent> acceptedEvent,
+                        java.util.function.BiConsumer<RuntimeEvent,String> coverageFailure){
         this.transport=java.util.Objects.requireNonNull(transport);this.mirror=java.util.Objects.requireNonNull(mirror);
         this.requiredDistribution=java.util.Objects.requireNonNull(requiredDistribution);this.requiredCapabilities=Set.copyOf(requiredCapabilities);
         this.acceptedEvent=java.util.Objects.requireNonNull(acceptedEvent);
+        this.coverageFailure=java.util.Objects.requireNonNull(coverageFailure);
         if(maxBufferedEvents<1)throw new IllegalArgumentException("maxBufferedEvents");this.maxBufferedEvents=maxBufferedEvents;
     }
     public synchronized Accepted synchronize(){
@@ -66,29 +82,39 @@ public final class BridgeClient implements AutoCloseable {
                 if(buffered.size()>=maxBufferedEvents){
                     asynchronousFailure="BRIDGE_BUFFER_OVERFLOW";
                     mirror.transition(BridgeClientState.RESYNC_REQUIRED);
+                    coverageFailure.accept(null,asynchronousFailure);
                     return;
                 }
                 buffered.add(bytes);
                 return;
             }
         }
-        try{synchronized(this){applyEvent(bytes);}}
+        try{synchronized(deliveryLock){applyEvent(bytes);}}
         catch(RuntimeException error){synchronized(buffered){if(asynchronousFailure==null)asynchronousFailure=diagnostic(error);}throw error;}
     }
     private void acceptSubscriptionFailure(RuntimeException error){
         synchronized(buffered){if(asynchronousFailure==null)asynchronousFailure=diagnostic(error);}
         mirror.transition(BridgeClientState.RESYNC_REQUIRED);
+        coverageFailure.accept(null,diagnostic(error));
     }
     public String diagnostic(){synchronized(buffered){return asynchronousFailure==null?"":asynchronousFailure;}}
-    public synchronized boolean receive(byte[] bytes){return applyEvent(bytes);}
+    public boolean receive(byte[] bytes){synchronized(deliveryLock){return applyEvent(bytes);}}
     private boolean applyBufferedEvent(byte[] bytes,RuntimeSnapshot snapshot){RuntimeEvent event=decodeEvent(bytes);var covered=snapshot.endWatermarks().get(event.sourceId());if(covered!=null&&event.sourceSequence()<=covered.sequence()){transport.acknowledge(event.sourceId()+":"+event.sourceSequence());return false;}return applyEvent(event);}
     private boolean applyEvent(byte[] bytes){return applyEvent(decodeEvent(bytes));}
     private RuntimeEvent decodeEvent(byte[] bytes){ContractEnvelope envelope=decode(bytes,MessageType.RUNTIME_EVENT);requireSame(envelope);return ContractPayloads.event(envelope.payload());}
-    private boolean applyEvent(RuntimeEvent event){boolean result=mirror.apply(event);if(!result&&mirror.state()==BridgeClientState.RESYNC_REQUIRED)synchronized(buffered){if(asynchronousFailure==null)asynchronousFailure="BRIDGE_EVENT_"+event.kind()+":source="+event.sourceId()+":sequence="+event.sourceSequence();}if(result)try{acceptedEvent.accept(event);}catch(RuntimeException error){throw fail("BRIDGE_EVENT_PROJECTION_REJECTED",error);}transport.acknowledge(event.sourceId()+":"+event.sourceSequence());return result;}
+    private boolean applyEvent(RuntimeEvent event){
+        boolean result;
+        try { result=mirror.apply(event); }
+        catch(RuntimeException error){throw fail("BRIDGE_EVENT_ORDER_REJECTED",error,event);}
+        if(!result&&mirror.state()==BridgeClientState.RESYNC_REQUIRED){String message="BRIDGE_EVENT_"+event.kind()+":source="+event.sourceId()+":sequence="+event.sourceSequence()+":"+event.after().getOrDefault("diagnostic", "");synchronized(buffered){if(asynchronousFailure==null)asynchronousFailure=message;}coverageFailure.accept(event,message);}
+        if(result)try{acceptedEvent.accept(event);}catch(RuntimeException error){throw fail("BRIDGE_EVENT_PROJECTION_REJECTED",error,event);}
+        transport.acknowledge(event.sourceId()+":"+event.sourceSequence());return result;
+    }
     private ContractEnvelope decode(byte[] bytes,MessageType expected){try{ContractEnvelope value=ContractCodec.decode(bytes,4*1024*1024,64,256*1024);new ContractValidator().validate(value);if(value.messageType()!=expected)throw fail("BRIDGE_MESSAGE_TYPE:"+value.messageType());return value;}catch(BridgeProtocolException e){throw e;}catch(RuntimeException e){throw fail("BRIDGE_ENVELOPE_REJECTED",e);}}
     private void requireSame(ContractEnvelope value){if(!value.sessionId().equals(mirror.sessionId()))throw fail("BRIDGE_SESSION_STALE");if(value.generation()!=mirror.generation())throw fail("BRIDGE_GENERATION_STALE");if(!value.modelRevision().equals(mirror.modelRevision()))throw fail("BRIDGE_MODEL_REVISION_STALE");}
-    private BridgeProtocolException fail(String message){mirror.transition(BridgeClientState.RESYNC_REQUIRED);return new BridgeProtocolException(message);}
-    private BridgeProtocolException fail(String message,Throwable cause){mirror.transition(BridgeClientState.RESYNC_REQUIRED);return new BridgeProtocolException(message,cause);}
+    private BridgeProtocolException fail(String message){mirror.transition(BridgeClientState.RESYNC_REQUIRED);coverageFailure.accept(null,message);return new BridgeProtocolException(message);}
+    private BridgeProtocolException fail(String message,Throwable cause){return fail(message,cause,null);}
+    private BridgeProtocolException fail(String message,Throwable cause,RuntimeEvent event){mirror.transition(BridgeClientState.RESYNC_REQUIRED);coverageFailure.accept(event,message+":"+diagnostic(cause));return new BridgeProtocolException(message,cause);}
     private static String diagnostic(Throwable error){
         var parts=new java.util.ArrayList<String>();
         for(Throwable current=error;current!=null&&parts.size()<8;current=current.getCause()){

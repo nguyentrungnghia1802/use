@@ -27,20 +27,28 @@ import org.tzi.use.uml.sys.events.tags.ModelChangedEvent;
 
 /**
  * Event for loaded class invariant.
- * 
+ *
  * @author Frank Hilken
  */
 public class ClassInvariantsLoadedEvent extends Event implements ModelChangedEvent {
 
 	private final Collection<MClassInvariant> invariant;
-	
+	private final boolean evaluationDeferred;
+
 	public ClassInvariantsLoadedEvent(EventContext ctx, Collection<MClassInvariant> newInv) {
-		super(ctx);
-		invariant = newInv;
+		this(ctx, newInv, false);
 	}
-	
+
+	/** A native atomic coordinator will publish the verified result after its checkpoint. */
+	public ClassInvariantsLoadedEvent(EventContext ctx, Collection<MClassInvariant> newInv, boolean evaluationDeferred) {
+		super(ctx);
+		invariant = java.util.List.copyOf(newInv);
+		this.evaluationDeferred = evaluationDeferred;
+	}
+	public boolean isEvaluationDeferred() { return evaluationDeferred; }
+
 	public Collection<MClassInvariant> getInvariants() {
 		return invariant;
 	}
-	
+
 }

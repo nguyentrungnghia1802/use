@@ -13,7 +13,7 @@ public final class CodeGroundedTraceCollector {
                     String targetKind, String targetIdentity, List<String> diagnostics) {
         records.add(new CodeGroundedTraceRecord(rule.ruleId(), phase, source.sourceKind(),
                 source.sourceJavaFqcn(), source.semanticId(), targetKind, targetIdentity,
-                source.evidenceAuthority(), source.fidelity(), source.capabilityStatus(), diagnostics));
+                source.evidenceAuthority(), source.fidelity(), source.capabilityStatus(), diagnostics, source.evidence()));
     }
 
     public void add(CodeGroundedTraceRecord record) { records.add(java.util.Objects.requireNonNull(record)); }

@@ -42,15 +42,20 @@ class SnapshotCoordinatorTest {
         var two=new BridgeEntityId("cartago","environment","artifact","w","a","uuid-2");
         assertNotEquals(one,two); assertNotEquals(one.canonical(),two.canonical());
     }
+    @Test void sameTopologyWithMutationDuringCaptureIsNotAnAuthoritativeCut() throws Exception {
+        try (var coordinator = new SnapshotCoordinator(List.of(new FakeSource(false, false)), 8)) {
+            assertThrows(ContractException.class, () -> coordinator.capture("model-1", 2));
+        }
+    }
 
     private static final class FakeSource implements SnapshotSource {
-        private final boolean overflow;private final boolean mutateOnce;private final AtomicLong sequence=new AtomicLong();private final AtomicBoolean closed=new AtomicBoolean();private Consumer<RuntimeEvent> observer;private int topologyCalls;
+        private final boolean overflow;private final boolean mutateOnce;private final AtomicLong sequence=new AtomicLong();private final AtomicBoolean closed=new AtomicBoolean();private Consumer<RuntimeEvent> observer;private int topologyCalls;private int captures;
         FakeSource(boolean overflow,boolean mutateOnce){this.overflow=overflow;this.mutateOnce=mutateOnce;}
         @Override public String sourceId(){return "fake";}
         @Override public void attach(Consumer<RuntimeEvent> observer){this.observer=observer;}
         @Override public SourceWatermark watermark(){return new SourceWatermark(sourceId(),sequence.get());}
         @Override public String topologyFingerprint(){topologyCalls++;if(mutateOnce&&topologyCalls==2)return "changed";if(mutateOnce&&topologyCalls==4){long seq=sequence.incrementAndGet();observer.accept(event(seq));}return "stable";}
-        @Override public List<RuntimeFact> capture(){int count=overflow?3:1;for(int i=0;i<count;i++){long seq=sequence.incrementAndGet();observer.accept(event(seq));}return List.of(new RuntimeFact(id(),RuntimeFactKind.AGENT,Map.of(),List.of(),ProjectionStatus.MATERIALIZED_FAITHFULLY,Completeness.COMPLETE,List.of()));}
+        @Override public List<RuntimeFact> capture(){int count=overflow?3:mutateOnce&&captures++>0?0:1;for(int i=0;i<count;i++){long seq=sequence.incrementAndGet();observer.accept(event(seq));}return List.of(new RuntimeFact(id(),RuntimeFactKind.AGENT,Map.of(),List.of(),ProjectionStatus.MATERIALIZED_FAITHFULLY,Completeness.COMPLETE,List.of()));}
         @Override public Completeness completeness(){return Completeness.COMPLETE;}
         @Override public void close(){closed.set(true);}
         private BridgeEntityId id(){return new BridgeEntityId("fake","agent","runtime","p","a","i");}

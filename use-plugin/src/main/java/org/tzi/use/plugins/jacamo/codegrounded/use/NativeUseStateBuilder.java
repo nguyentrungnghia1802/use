@@ -659,7 +659,7 @@ public final class NativeUseStateBuilder {
                 evidence.sourceKind(), evidence.sourceJavaFqcn(), evidence.sourceIdentity(), "MValue",
                 "value:" + object.name() + "." + attribute.name(), evidence.evidenceAuthority(),
                 evidence.fidelity(), evidence.capabilityStatus(),
-                List.of(value.isUndefined() ? "UNDEFINED" : "DEFINED", "VALUE_TYPE=" + value.type()));
+                List.of(value.isUndefined() ? "UNDEFINED" : "DEFINED", "VALUE_TYPE=" + value.type()), evidence.sourceEvidence());
     }
 
     private static void applyExactBindings(UseSystemApi api, NativeUseModelBuilder.Result schema,

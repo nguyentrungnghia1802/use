@@ -1,6 +1,7 @@
 package org.tzi.use.plugins.jacamo;
 
 import java.awt.BorderLayout;
+import java.awt.event.WindowAdapter;
 import java.util.function.BiConsumer;
 import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
@@ -35,10 +36,23 @@ public final class JaCaMoWorkbenchAction implements IPluginActionDelegate {
 
     private static void openDialog(MainWindow parent, JaCaMoFacade facade) {
         JDialog dialog = new JDialog(parent, "USE JaCaMo Workbench", false);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.addWindowListener(new WindowAdapter() {
+            @Override public void windowClosing(java.awt.event.WindowEvent event) { closeFacade(facade); }
+            @Override public void windowClosed(java.awt.event.WindowEvent event) { closeFacade(facade); }
+        });
         dialog.setLayout(new BorderLayout());
         dialog.add(new JaCaMoWorkbenchPanel(facade), BorderLayout.CENTER);
         dialog.setSize(1100, 720);
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
+    }
+
+    private static void closeFacade(JaCaMoFacade facade) {
+        if (facade instanceof AutoCloseable closeable) {
+            try { closeable.close(); } catch (Exception ignored) { }
+        } else {
+            facade.disconnectRuntime();
+        }
     }
 }

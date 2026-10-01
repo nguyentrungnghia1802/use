@@ -1,7 +1,7 @@
 # JaCaMo ↔ USE Concept Mapping Rules
 
 **File:** `JACAMO-USE-CONCEPT-MAPPING-RULES.md`  
-**Status:** Code-grounded implementation draft  
+**Status:** Maintained code-grounded rule contract; implementation status and evidence are tracked in `task.md`.
 **Primary goal:** map JaCaMo/Jason/CArtAgO/Moise semantic concepts into **native USE concepts** so that the resulting model runs inside the existing USE application (`MModel` + `MSystemState`).  
 **Non-goal:** create a second modeling/execution UI. A mapping panel, if present, is diagnostic only: it shows which source concept matched which rule and which native USE element was created.
 
@@ -225,8 +225,8 @@ Do not fabricate enum members that do not exist in the audited code.
 | `C05` | Operation descriptor | `cartago.OpDescriptor` | class `Operation` | `MClass` | Preserve structural operation metadata such as name/arity/type. |
 | `C06` | Backing Java operation | `cartago.ArtifactOpMethod` + reflective `Method` | native operation projection | `MOperation` | **Conditional.** Create native `MOperation` only when signature evidence is sufficiently complete. |
 | `C07` | Guard | `cartago.ArtifactGuardMethod` | class `Guard` or operation metadata | `MClass` / association | Preserve if verification scope uses guards; do not invent guard semantics from strings. |
-| `C08` | Live observable property | `cartago.ObsProperty` | class `ObservableProperty` | `MClass` | Live mutable source object; state values belong to `MSystemState`. |
-| `C09` | Observable property snapshot | `cartago.ArtifactObsProperty` | observation snapshot | state/provenance | Do not collapse with live `ObsProperty` identity. |
+| `C08` | Live observable property | `cartago.ObsProperty` | class `LiveObservableProperty` | `MClass` only in `FULL`; excluded from `AUTO` | The audited API does not expose live `ObsProperty` instances. Keep the capability `UNAVAILABLE`; never fabricate an object or values. |
+| `C09` | Observable property snapshot | `cartago.ArtifactObsProperty` | `ObservablePropertySnapshot` | `MClass` + `MObject` in `MSystemState` | Materialize only an actual snapshot; preserve its exact identity and recorded values. This is not a live `ObsProperty`. |
 | `C10` | Artifact information snapshot | `cartago.ArtifactInfo` | runtime snapshot record | state/provenance | Used to materialize/refresh Artifact, operations and observed properties. |
 | `C11` | Signal | `Artifact.signal(...)` + runtime event/filter evidence | class `Signal` | `MClass` | There is no audited `@SIGNAL` annotation; create Signal only from supported runtime/API evidence. |
 | `C12` | CArtAgO agent identity | `cartago.AgentId` | runtime agent identity | state/trace | Do not equate directly with Jason/JCM agent name; linking requires cross-rule evidence. |
@@ -246,16 +246,18 @@ Do not fabricate enum members that do not exist in the audited code.
 
 ### CArtAgO native projection rule
 
-Structural `Operation` and `ObservableProperty` remain first-class concepts even when native UML projection is impossible.
+Structural `Operation` and the distinct live/snapshot property concepts remain explicit even when a native projection is unavailable.
 
 ```text
 OpDescriptor
    -> Operation MClass/object          [always when descriptor exists]
    -> MOperation                       [only if exact signature evidence exists]
 
-ObsProperty / ArtifactObsProperty
-   -> ObservableProperty MClass/object [when established]
-   -> MAttribute                       [optional, only with stable exact type policy]
+ObsProperty
+   -> LiveObservableProperty MClass  [FULL profile only; currently no live instances/API]
+ArtifactObsProperty
+   -> ObservablePropertySnapshot MClass/object [only from an actual snapshot]
+   -> values/valueTypes recorded as exact snapshot data; do not infer domain MAttributes
 ```
 
 ---
@@ -346,7 +348,7 @@ These rules are intentionally separate because no one source API proves them by 
 | ID | Relation | Required evidence | USE target | Policy |
 |---|---|---|---|---|
 | `X01` | Jason Action → CArtAgO Operation | exact dispatch/binding/runtime correlation or explicit validated binding | `MAssociation Action--Operation` | Never same-name matching. |
-| `X02` | Jason Belief → CArtAgO ObservableProperty | exact percept/property provenance | `MAssociation Belief--ObservableProperty` | Never literal/property-name matching. |
+| `X02` | Jason Belief → CArtAgO ObservablePropertySnapshot | exact percept/property provenance | `MAssociation Belief--ObservablePropertySnapshot` | Never literal/property-name matching; does not imply C08 live-property support. |
 | `X03` | Jason Trigger → CArtAgO Signal | exact percept/signal provenance | `MAssociation Trigger--Signal` | Never trigger/signal-name matching. |
 | `X04` | JCM/Jason Agent → Moise Role | exact JCM role tuple resolved against OS or runtime board role-player evidence | `MAssociation Agent--Role` | Preserve organization/group context in trace. |
 | `X05` | Agent → Workspace | exact JCM workspace membership or CArtAgO runtime evidence | `MAssociation Agent--Workspace` | Do not infer from local names. |
@@ -388,28 +390,18 @@ USE object diagrams
 USE existing shell/GUI model handling
 ```
 
-## 9.2 Optional text export
+## 9.2 Native model creation and optional text export
 
-It is acceptable for the first implementation to internally use the existing compiler/text backend:
-
-```text
-rules
- -> generated .use
- -> USE compiler
- -> MModel
-```
-
-provided the final object used by the application is the native `MModel`.
-
-Later it may be refactored to:
+Production mapping builds `MModel` and `MSystemState` through native USE APIs. The optional `.use` export is a serialization/reproducibility artifact:
 
 ```text
-rules
- -> native USE builders/API
- -> MModel
+native MModel
+ -> USE printer
+ -> .use artifact
+ -> optional recompile/parity check
 ```
 
-The semantic result must remain the same.
+The generated text/compiler path is not the production semantic authority and must not replace native model/state construction.
 
 ## 9.3 No second execution UI
 
@@ -479,49 +471,9 @@ Every applied rule should record one of:
 
 ---
 
-# 12. Implementation order
+# 12. Implementation status authority
 
-Implement in this order so every step can be tested inside USE.
-
-```text
-STEP 1
-J01 + A01..A05 + A16..A20
-JaCaMo project + Jason program/Plan/Trigger/PlanBody
-        ↓
-native USE MModel
-        ↓
-open/use in existing USE
-
-STEP 2
-A06..A10 + beliefs/goals/actions
-        ↓
-compile/materialize in USE
-
-STEP 3
-C01..C20
-CArtAgO environment/artifact/operation/property structure
-        ↓
-USE model/state
-
-STEP 4
-M01..M43
-Moise OS/SS/FS/NS + Group/Role/Scheme/Mission/Goal/Norm
-        ↓
-USE model/state
-
-STEP 5
-X01..X09
-cross-dimensional exact bindings
-        ↓
-USE associations + trace
-
-STEP 6
-runtime events/snapshots
-        ↓
-MSystemState mutations
-        ↓
-OCL verification in the existing USE runtime
-```
+This document defines mapping semantics, not a forward implementation schedule. Phase gates, completed work, remaining gaps, and evidence are maintained in `task.md`; actual behavior is determined by production code and executable tests.
 
 ---
 
@@ -535,7 +487,7 @@ same Java class name => same USE class meaning
 JCM declaration => live runtime object
 Agent name string => universal CArtAgO/Moise identity
 Action name => Operation binding
-Belief literal => ObservableProperty binding
+Belief literal => ObservablePropertySnapshot binding
 Agent goal literal => OrganizationalGoal binding
 Moise Norm => automatically generated OCL
 ```

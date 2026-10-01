@@ -13,7 +13,7 @@ import org.jacamo.bridge.contract.CanonicalJson;
 
 /** Exports the exact code-grounded trace without converting it to the V2 trace schema. */
 public final class CodeGroundedTraceExporter {
-    public static final String SCHEMA_VERSION = "1.1.0";
+    public static final String SCHEMA_VERSION = "1.2.0";
 
     public String export(CodeGroundedTraceIndex trace) {
         Objects.requireNonNull(trace, "trace");
@@ -62,6 +62,25 @@ public final class CodeGroundedTraceExporter {
         row.put("evidenceAuthority", value.evidenceAuthority());
         row.put("fidelity", value.fidelity());
         row.put("capabilityStatus", value.capabilityStatus());
+        row.put("sourceEvidence", value.sourceEvidence().stream().map(CodeGroundedTraceExporter::evidence).toList());
+        return row;
+    }
+
+    private static Map<String, Object> evidence(org.jacamo.bridge.contract.semantic.SourceEvidence value) {
+        Map<String, Object> row = new LinkedHashMap<>();
+        row.put("sourceUri", value.sourceUri());
+        row.put("sourceDigest", value.sourceDigest());
+        row.put("startLine", value.startLine());
+        row.put("endLine", value.endLine());
+        row.put("authority", value.authority());
+        row.put("sourceJavaFqcn", value.sourceJavaFqcn());
+        row.put("sourceSemanticId", value.sourceSemanticId());
+        row.put("runtimeIdentity", value.runtimeIdentity());
+        row.put("sessionId", value.sessionId());
+        row.put("generation", value.generation());
+        row.put("fidelity", value.fidelity());
+        row.put("capabilityStatus", value.capabilityStatus());
+        row.put("diagnostics", value.diagnostics());
         return row;
     }
 
@@ -76,15 +95,18 @@ public final class CodeGroundedTraceExporter {
     }
 
     private record SourceDescriptor(String sourceKind, String sourceJavaFqcn, String sourceIdentity,
-                                    String evidenceAuthority, String fidelity, String capabilityStatus) {
+                                    String evidenceAuthority, String fidelity, String capabilityStatus,
+                                    List<org.jacamo.bridge.contract.semantic.SourceEvidence> sourceEvidence) {
         private static SourceDescriptor from(CodeGroundedTraceRecord value) {
             return new SourceDescriptor(value.sourceKind(), value.sourceJavaFqcn(), value.sourceIdentity(),
-                    value.evidenceAuthority().name(), value.fidelity().name(), value.capabilityStatus().name());
+                    value.evidenceAuthority().name(), value.fidelity().name(), value.capabilityStatus().name(),
+                    value.sourceEvidence());
         }
 
         private String sortKey() {
             return String.join("\u0000", sourceKind, sourceJavaFqcn, sourceIdentity,
-                    evidenceAuthority, fidelity, capabilityStatus);
+                    evidenceAuthority, fidelity, capabilityStatus, new String(CanonicalJson.encode(
+                            sourceEvidence.stream().map(CodeGroundedTraceExporter::evidence).toList()), StandardCharsets.UTF_8));
         }
     }
 }

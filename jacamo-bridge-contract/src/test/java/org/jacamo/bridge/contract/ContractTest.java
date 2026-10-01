@@ -103,6 +103,8 @@ class ContractTest {
 
     @Test void duplicateEventsAreIdempotentButConflictingPayloadFailsClosed() {
         var event = event("event-1"); var ledger = new EventLedger(4);
+        assertEquals(EventLedger.Result.APPLIED, ledger.inspect(event, ContractPayloads.event(event)));
+        assertEquals(EventLedger.Result.APPLIED, ledger.inspect(event, ContractPayloads.event(event)));
         assertEquals(EventLedger.Result.APPLIED, ledger.accept(event, ContractPayloads.event(event)));
         assertEquals(EventLedger.Result.DUPLICATE, ledger.accept(event, ContractPayloads.event(event)));
         var conflicting = new RuntimeEvent(event.eventId(), event.sessionId(), event.generation(), event.modelRevision(), event.subsystem(),

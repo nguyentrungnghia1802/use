@@ -27,7 +27,7 @@ public final class CodeGroundedNativePipeline {
                 source.project().metadata().sourceKind(), source.project().metadata().sourceJavaFqcn(),
                 source.project().metadata().semanticId(), "USE_FILE", model.model().name() + ".use",
                 source.project().metadata().evidenceAuthority(), source.project().metadata().fidelity(),
-                source.project().metadata().capabilityStatus(), java.util.List.of()));
+                source.project().metadata().capabilityStatus(), java.util.List.of(), source.project().metadata().evidence()));
         if (state.system().model() != model.model()) throw new IllegalStateException("NATIVE_SYSTEM_MODEL_IDENTITY_DIVERGED");
         if (!export.originalStructuralHash().equals(export.recompiledStructuralHash()))
             throw new IllegalStateException("NATIVE_EXPORT_HASH_MISMATCH");

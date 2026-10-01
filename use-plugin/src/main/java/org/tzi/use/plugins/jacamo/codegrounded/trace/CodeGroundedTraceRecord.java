@@ -17,7 +17,8 @@ public record CodeGroundedTraceRecord(
         EvidenceAuthority evidenceAuthority,
         Fidelity fidelity,
         CapabilityStatus capabilityStatus,
-        List<String> diagnostics) {
+        List<String> diagnostics,
+        List<org.jacamo.bridge.contract.semantic.SourceEvidence> sourceEvidence) {
     public CodeGroundedTraceRecord {
         for (String value : List.of(ruleId, sourceKind, sourceJavaFqcn, sourceIdentity, targetKind, targetIdentity))
             if (value == null || value.isBlank()) throw new IllegalArgumentException("CODE_GROUNDED_TRACE_FIELD_REQUIRED");
@@ -26,5 +27,13 @@ public record CodeGroundedTraceRecord(
         java.util.Objects.requireNonNull(fidelity, "fidelity");
         java.util.Objects.requireNonNull(capabilityStatus, "capabilityStatus");
         diagnostics = List.copyOf(diagnostics == null ? List.of() : diagnostics);
+        sourceEvidence = List.copyOf(sourceEvidence == null ? List.of() : sourceEvidence);
+    }
+
+    public CodeGroundedTraceRecord(String ruleId, TracePhase phase, String sourceKind, String sourceJavaFqcn,
+            String sourceIdentity, String targetKind, String targetIdentity, EvidenceAuthority evidenceAuthority,
+            Fidelity fidelity, CapabilityStatus capabilityStatus, List<String> diagnostics) {
+        this(ruleId, phase, sourceKind, sourceJavaFqcn, sourceIdentity, targetKind, targetIdentity,
+                evidenceAuthority, fidelity, capabilityStatus, diagnostics, List.of());
     }
 }

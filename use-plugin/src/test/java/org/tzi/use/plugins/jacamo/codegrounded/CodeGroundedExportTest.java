@@ -46,6 +46,14 @@ class CodeGroundedExportTest {
         assertTrue(records.stream().map(value -> ((Map<?, ?>) value).get("ruleId")).anyMatch("J01"::equals));
         assertTrue(sources.stream().map(value -> ((Map<?, ?>) value).get("evidenceAuthority"))
                 .anyMatch("OFFICIAL_JACAMO_API"::equals));
+        assertTrue(sources.stream().map(value -> (List<?>) ((Map<?, ?>) value).get("sourceEvidence"))
+                .flatMap(List::stream).anyMatch(value -> ((Map<?, ?>) value).get("sourceUri").equals("project:/helloworld.jcm")));
+        first.source().programs().forEach(program -> program.planLibrary().plans().forEach(plan -> {
+            var traceRows = first.trace().targetsForSource(plan.metadata().semanticId());
+            assertTrue(traceRows.stream().anyMatch(row -> row.targetKind().equals("MObject")));
+            assertTrue(traceRows.stream().filter(row -> row.targetKind().equals("MObject") || row.targetKind().equals("MValue"))
+                    .allMatch(row -> row.sourceEvidence().equals(plan.metadata().evidence())));
+        }));
     }
 
     @Test

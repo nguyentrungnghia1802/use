@@ -23,6 +23,70 @@ import org.tzi.use.uml.ocl.value.StringValue;
 
 /** Proves that the production native facade consumes a buffered runtime event in the session system. */
 class NativeRuntimeFacadeIntegrationTest {
+    @Test void failedProductionResyncCannotLeaveAPassingCachedResult() throws Exception {
+        var jcm = java.nio.file.Path.of("src/test/resources/canonical-cases/hello-world/helloworld.jcm").toAbsolutePath();
+        var unavailable = new java.util.concurrent.atomic.AtomicBoolean(); Session session = new Session();
+        try (var facade = BridgeFacadeTestSupport.nativeFacade(jcm, session, unavailable::get)) {
+            facade.importProject(jcm); var system = session.system();
+            assertTrue(facade.runtimeVerificationResult().count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.PASS) > 0);
+            unavailable.set(true); assertThrows(RuntimeException.class, facade::resyncRuntime);
+            assertSame(system, session.system());
+            assertEquals("STALE", facade.runtimeVerificationResult().freshness());
+            assertEquals(0, facade.runtimeVerificationResult().count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.PASS));
+            unavailable.set(false); facade.resyncRuntime();
+            assertSame(system, session.system()); assertEquals("CURRENT_OBSERVED", facade.runtimeVerificationResult().freshness());
+        }
+    }
+    @Test void uiReadsCannotDeadlockBehindTheWriterMonitorBeforeItsEdtBarrier(@org.junit.jupiter.api.io.TempDir java.nio.file.Path directory) throws Exception {
+        var jcm = java.nio.file.Path.of("src/test/resources/canonical-cases/hello-world/helloworld.jcm").toAbsolutePath();
+        Session session = new Session();
+        try (var facade = BridgeFacadeTestSupport.nativeFacade(jcm, session, () -> false);
+             var workers = java.util.concurrent.Executors.newSingleThreadExecutor()) {
+            facade.importProject(jcm); var system = session.system();
+            var writerHasMonitor = new java.util.concurrent.CountDownLatch(1);
+            var uiFinished = new java.util.concurrent.CountDownLatch(1);
+            var writer = workers.submit(() -> {
+                synchronized (facade) {
+                    writerHasMonitor.countDown();
+                    assertTrue(uiFinished.await(5, java.util.concurrent.TimeUnit.SECONDS), "UI reads waited for the facade writer monitor");
+                    facade.runFullVerification(); facade.exportNativeSoil(directory.resolve("consistent.cmd"));
+                }
+                return null;
+            });
+            assertTrue(writerHasMonitor.await(5, java.util.concurrent.TimeUnit.SECONDS));
+            var ui = new java.util.concurrent.FutureTask<Void>(() -> {
+                facade.status(); facade.runtimeStatus(); facade.latestVerification(); facade.constraints();
+                facade.formalStateStatus(); facade.performanceMetrics(); uiFinished.countDown(); return null;
+            });
+            javax.swing.SwingUtilities.invokeLater(ui);
+            ui.get(10, java.util.concurrent.TimeUnit.SECONDS); writer.get(10, java.util.concurrent.TimeUnit.SECONDS);
+            assertSame(system, session.system()); assertSame(system, facade.materializedSystem());
+            assertTrue(java.nio.file.Files.size(directory.resolve("consistent.cmd")) > 0);
+        }
+    }
+    @Test void externalProfileAndStateVersionSurviveProductionResyncOnTheSameSession(@org.junit.jupiter.api.io.TempDir java.nio.file.Path directory) throws Exception {
+        var jcm = java.nio.file.Path.of("src/test/resources/canonical-cases/hello-world/helloworld.jcm").toAbsolutePath();
+        Session session = new Session();
+        try (var facade = BridgeFacadeTestSupport.nativeFacade(jcm, session, () -> false)) {
+            facade.importProject(jcm); var system = session.system();
+            var profile = directory.resolve("constraints.ocl"); java.nio.file.Files.writeString(profile, "context Plan inv ObservedViolation: false");
+            facade.loadVerificationProfile(profile);
+            long version = facade.runtimeVerificationResult().stateVersion();
+            String hash = facade.runtimeVerificationResult().constraintSetHash();
+            assertTrue(facade.latestVerification().results().stream().anyMatch(result -> result.constraintId().equals("EXTERNAL:Plan::ObservedViolation")
+                    && result.outcome() == org.tzi.use.plugins.jacamo.verification.VerificationOutcome.FAIL));
+            facade.resyncRuntime();
+            assertSame(system, session.system()); assertSame(system, facade.materializedSystem());
+            assertTrue(facade.runtimeVerificationResult().stateVersion() > version);
+            assertEquals(hash, facade.runtimeVerificationResult().constraintSetHash());
+            assertTrue(facade.constraints().stream().anyMatch(constraint -> constraint.id().equals("EXTERNAL:Plan::ObservedViolation")));
+            java.nio.file.Files.writeString(profile, "context Missing inv Broken: true");
+            assertThrows(IllegalArgumentException.class, () -> facade.loadVerificationProfile(profile));
+            assertEquals(hash, facade.runtimeVerificationResult().constraintSetHash());
+            facade.resyncRuntime(); // Rebind the accepted source bytes, not the now-invalid on-disk file.
+            assertSame(system, session.system()); assertEquals(hash, facade.runtimeVerificationResult().constraintSetHash());
+        }
+    }
     @Test
     void bufferedFaithfulEventMutatesTheActivatedSessionSystem() throws Exception {
         java.nio.file.Path jcm = java.nio.file.Path.of(

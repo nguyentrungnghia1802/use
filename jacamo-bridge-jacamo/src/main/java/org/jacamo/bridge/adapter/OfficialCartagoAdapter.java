@@ -207,15 +207,15 @@ public final class OfficialCartagoAdapter {
     private static String workspaceId(String environmentId, String fullName, WorkspaceDescriptor descriptor) {
         return "cartago:workspace:" + environmentId + ":" + fullName + ":" + descriptor.getId().getUUID();
     }
-    private static String artifactId(String environmentId, ArtifactId id) {
+    static String artifactId(String environmentId, ArtifactId id) {
         return "cartago:artifact:" + environmentId + ":" + id.getWorkspaceId().getFullName() + ":" + id.getId();
     }
     private static String operationId(String artifactId, String keyId) { return "cartago:operation:" + artifactId + ":" + keyId; }
     private static String guardId(String operationId) { return "cartago:guard:" + operationId; }
-    private static String propertyId(String artifactId, String propertyId) { return "cartago:property:" + artifactId + ":" + propertyId; }
-    private static String artifactTypeId(String environmentId, String type) { return "cartago:artifact-type:" + environmentId + ":" + type; }
+    static String propertyId(String artifactId, String propertyId) { return "cartago:property:" + artifactId + ":" + propertyId; }
+    static String artifactTypeId(String environmentId, String type) { return "cartago:artifact-type:" + environmentId + ":" + type; }
     private static String artifactKey(ArtifactId id) { return id.getWorkspaceId().getFullName() + ":" + id.getId(); }
-    private static String agentId(String environmentId, AgentId id) {
+    static String agentId(String environmentId, AgentId id) {
         return "cartago:agent:" + environmentId + ":" + id.getWorkspaceId().getFullName()
                 + ":" + id.getGlobalId() + ":" + id.getLocalId();
     }

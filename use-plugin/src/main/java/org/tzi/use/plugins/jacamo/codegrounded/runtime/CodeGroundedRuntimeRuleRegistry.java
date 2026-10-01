@@ -17,6 +17,7 @@ public final class CodeGroundedRuntimeRuleRegistry {
         ATTRIBUTE_SET, ATTRIBUTE_UNSET, LINK_INSERT, LINK_DELETE,
         UPSERT_CARTAGO_WORKSPACE, UPSERT_CARTAGO_AGENT_IDENTITY,
         UPSERT_CARTAGO_ARTIFACT, UPSERT_CARTAGO_PROPERTY_SNAPSHOT,
+        APPLY_CARTAGO_PROPERTY_DELTA, DELETE_CARTAGO_ARTIFACT,
         EVIDENCE_ONLY
     }
 
@@ -57,6 +58,10 @@ public final class CodeGroundedRuntimeRuleRegistry {
                 upsert("R-CARTAGO-PROPERTY-SNAPSHOT-UPSERT", RuntimeFactKind.PROPERTY,
                         "UPSERT_CARTAGO_PROPERTY_SNAPSHOT", "ObservablePropertySnapshot",
                         Action.UPSERT_CARTAGO_PROPERTY_SNAPSHOT),
+                upsert("R-CARTAGO-PROPERTY-DELTA", RuntimeFactKind.ARTIFACT,
+                        "APPLY_CARTAGO_PROPERTY_DELTA", "Artifact", Action.APPLY_CARTAGO_PROPERTY_DELTA),
+                upsert("R-CARTAGO-ARTIFACT-DELETE", RuntimeFactKind.ARTIFACT,
+                        "DELETE_CARTAGO_ARTIFACT", "Artifact", Action.DELETE_CARTAGO_ARTIFACT),
                 rule("R-NATIVE-RELATION-INSERT", RuntimeFactKind.RELATION_STATE,
                         Set.of("INSERT_LINK"), Set.of("*"), Action.LINK_INSERT),
                 rule("R-NATIVE-RELATION-DELETE", RuntimeFactKind.RELATION_STATE,

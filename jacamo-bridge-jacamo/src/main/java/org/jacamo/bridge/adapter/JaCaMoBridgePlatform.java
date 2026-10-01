@@ -53,6 +53,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
 
     private final AdapterReadinessRegistry readiness = new AdapterReadinessRegistry();
     private final ArrayBlockingQueue<RuntimeEvent> events = new ArrayBlockingQueue<>(EVENT_CAPACITY);
+    private final java.util.concurrent.atomic.AtomicBoolean publicationGap = new java.util.concurrent.atomic.AtomicBoolean();
     private final AtomicLong generations = new AtomicLong();
     private JaCaMoProject project;
     private ModelSnapshot modelSnapshot;
@@ -226,9 +227,11 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
     }
 
     private void enqueueEvent(RuntimeEvent event) {
-        if (!events.offer(event))
+        if (!events.offer(event)) {
+            publicationGap.set(true);
             readiness.update("events", AdapterReadiness.FAILED,
                     "bounded event queue overflow; resync required");
+        }
     }
 
     private void startServer(long generation) throws Exception {
@@ -272,6 +275,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
         publisher = Thread.ofPlatform().daemon().name("jacamo-bridge-publisher").start(() -> {
             while (publishing) {
                 try {
+                    if (publicationGap.getAndSet(false)) server.publish("platform:gap", gap.get());
                     RuntimeEvent event = events.poll(500, TimeUnit.MILLISECONDS);
                     if (event != null) server.publish(event.sourceId() + ":" + event.sourceSequence(),
                             encode(MessageType.RUNTIME_EVENT, projectKey, generation, distribution,
@@ -280,6 +284,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
                     Thread.currentThread().interrupt();
                     return;
                 } catch (RuntimeException failure) {
+                    publicationGap.set(true);
                     readiness.update("transport", AdapterReadiness.FAILED,
                             "event publication failed; resync required");
                 }

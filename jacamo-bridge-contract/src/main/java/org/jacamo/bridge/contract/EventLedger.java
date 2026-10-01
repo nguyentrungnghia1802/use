@@ -11,14 +11,21 @@ public final class EventLedger {
     private final LinkedHashMap<String, String> digests = new LinkedHashMap<>();
     public EventLedger(int capacity) { if (capacity < 1) throw new IllegalArgumentException("capacity"); this.capacity = capacity; }
     public synchronized Result accept(RuntimeEvent event, Map<String, Object> canonicalEvent) {
+        if (inspect(event, canonicalEvent) == Result.DUPLICATE) return Result.DUPLICATE;
+        String digest = ContractSupport.sha256(new String(CanonicalJson.encode(canonicalEvent), StandardCharsets.UTF_8));
+        digests.put(event.eventId(), digest);
+        while (digests.size() > capacity) digests.remove(digests.keySet().iterator().next());
+        return Result.APPLIED;
+    }
+
+    /** Validate without acknowledging: a rejected state transaction must remain retryable/rejectable. */
+    public synchronized Result inspect(RuntimeEvent event, Map<String, Object> canonicalEvent) {
         String digest = ContractSupport.sha256(new String(CanonicalJson.encode(canonicalEvent), StandardCharsets.UTF_8));
         String known = digests.get(event.eventId());
         if (known != null) {
             if (!known.equals(digest)) throw new ContractException("same eventId has conflicting payload: " + event.eventId());
             return Result.DUPLICATE;
         }
-        digests.put(event.eventId(), digest);
-        while (digests.size() > capacity) digests.remove(digests.keySet().iterator().next());
         return Result.APPLIED;
     }
 }

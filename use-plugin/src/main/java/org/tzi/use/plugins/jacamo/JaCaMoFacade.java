@@ -36,6 +36,9 @@ public interface JaCaMoFacade {
     default void disconnectRuntime() { throw new UnsupportedOperationException("RUNTIME_NOT_CONFIGURED"); }
     default void resyncRuntime() { throw new UnsupportedOperationException("RUNTIME_NOT_CONFIGURED"); }
     default RuntimeStatus runtimeStatus() { return RuntimeStatus.offline(); }
+    default org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult runtimeVerificationResult() { return null; }
+    default List<org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult> runtimeVerificationHistory() { return List.of(); }
+    default void exportRuntimeReplay(Path directory) { throw new UnsupportedOperationException("NATIVE_RUNTIME_NOT_CONFIGURED"); }
     default AuthorityStatus authorityStatus() { return AuthorityStatus.offline(); }
     /** Deterministic read-only evidence for the currently materialized USE model and state. */
     default FormalStateStatus formalStateStatus() { return FormalStateStatus.empty(); }
@@ -56,10 +59,18 @@ public interface JaCaMoFacade {
     record SourceRow(Path path, String kind, long bytes, String sha256) { }
     record TraceRow(String semanticId, String sourceKind, String targetUseId, String targetKind,
                     String mappingRule, String projectionRule, String status, Path sourcePath,
-                    int sourceLine, String dimension, String evidenceAuthority, List<String> traceDiagnostics) {
+                    int sourceLine, String dimension, String evidenceAuthority, List<String> traceDiagnostics,
+                    List<org.jacamo.bridge.contract.semantic.SourceEvidence> sourceEvidence) {
         public TraceRow {
             evidenceAuthority = evidenceAuthority == null ? "" : evidenceAuthority;
             traceDiagnostics = List.copyOf(traceDiagnostics == null ? List.of() : traceDiagnostics);
+            sourceEvidence = List.copyOf(sourceEvidence == null ? List.of() : sourceEvidence);
+        }
+        public TraceRow(String semanticId, String sourceKind, String targetUseId, String targetKind,
+                        String mappingRule, String projectionRule, String status, Path sourcePath,
+                        int sourceLine, String dimension, String evidenceAuthority, List<String> traceDiagnostics) {
+            this(semanticId, sourceKind, targetUseId, targetKind, mappingRule, projectionRule, status,
+                    sourcePath, sourceLine, dimension, evidenceAuthority, traceDiagnostics, List.of());
         }
         public TraceRow(String semanticId, String sourceKind, String targetUseId, String targetKind,
                         String mappingRule, String projectionRule, String status, Path sourcePath,

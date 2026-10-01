@@ -460,12 +460,14 @@ public class ClassInvariantView extends JPanel implements View {
 
     @Subscribe
     public void onClassInvariantLoading(ClassInvariantsLoadedEvent ev){
+        if (ev.isEvaluationDeferred()) { if (worker != null) worker.cancel(false); init(); return; }
     	init();
     	update();
     }
     
    	@Subscribe
     public void onClassInvariantUnloading(ClassInvariantsUnloadedEvent ev){
+        if (ev.isEvaluationDeferred()) { if (worker != null) worker.cancel(false); init(); return; }
    		init();
    		update();
    	}
@@ -481,6 +483,29 @@ public class ClassInvariantView extends JPanel implements View {
 	 */
     @Subscribe
     public void onSystemStateChanged(SystemStateChangedEvent e) {
+        if (e instanceof org.tzi.use.uml.sys.events.AtomicStateChangedEvent atomic && !atomic.getInvariantEvaluations().isEmpty()) {
+            if (worker != null && !worker.isDone()) worker.cancel(false);
+            init();
+            int failed = 0, errors = 0, skipped = 0;
+            for (int i = 0; i < fClassInvariants.length; i++) {
+                var result = atomic.getInvariantEvaluations().get(fClassInvariants[i].qualifiedName());
+                if (result == null) { skipped++; continue; }
+                Value value = null;
+                switch (result.outcome()) {
+                    case "PASS" -> value = BooleanValue.TRUE;
+                    case "FAIL" -> { value = BooleanValue.FALSE; failed++; }
+                    case "ERROR" -> errors++;
+                    default -> skipped++;
+                }
+                fValues[i] = new EvalResult(i, value, result.outcome() + ": " + result.diagnostic(), 0);
+            }
+            fLabel.setText("Observed checkpoint: FAIL=" + failed + " ERROR=" + errors + " SKIPPED=" + skipped);
+            fLabel.setForeground(failed + errors > 0 ? Color.red : skipped > 0 ? Color.gray : Color.black);
+            fMyTableModel.fireTableDataChanged();
+            setCursor(Cursor.getDefaultCursor());
+            setOpenEvalBrowserEnabled(true);
+            return;
+        }
     	update();
     }
     
@@ -577,21 +602,26 @@ public class ClassInvariantView extends JPanel implements View {
     	boolean violationLabel = false; 
     	
     	MSystemState systemState;
+        private final MClassInvariant[] invariants;
+        private final EvalResult[] values;
     	
     	protected synchronized int incrementProgress() {
     		return ++progress;
     	}
     	
     	public InvWorker() { 
-    		systemState = fSystem.state();
+            // Capture on the event thread: a background evaluator must not observe half of
+            // the next API transaction. This is a read snapshot, not another active MSystem.
+            systemState = new MSystemState("invariant-view-snapshot", fSystem.state());
+            invariants = fClassInvariants.clone();
+            values = new EvalResult[invariants.length];
     	}
     	
 		@Override
 		protected Void doInBackground() throws Exception {
 			long start = System.currentTimeMillis();
 
-			progressEnd = fClassInvariants.length;
-			clearValues();
+			progressEnd = invariants.length;
         
 			// check invariants
 			if (Options.EVAL_NUMTHREADS > 1)
@@ -604,21 +634,22 @@ public class ClassInvariantView extends JPanel implements View {
             List<Future<EvalResult>> futures = new ArrayList<Future<EvalResult>>();
             ExecutorCompletionService<EvalResult> ecs = new ExecutorCompletionService<EvalResult>(executor);
             
-            for (int i = 0; i < fClassInvariants.length; i++) {
-            	if(!fClassInvariants[i].isActive()){
+            for (int i = 0; i < invariants.length; i++) {
+                if(!invariants[i].isActive()){
             		continue;
             	}
-        		MyEvaluatorCallable cb = new MyEvaluatorCallable(systemState, i, fClassInvariants[i]);
+                MyEvaluatorCallable cb = new MyEvaluatorCallable(systemState, i, invariants[i]);
         		futures.add(ecs.submit(cb));
             }
             
-            for (int i = 0; i < fClassInvariants.length && !isCancelled(); i++) {
-            	if(!fClassInvariants[i].isActive()){
+            for (int i = 0; i < invariants.length && !isCancelled(); i++) {
+                if(!invariants[i].isActive()){
             		continue;
             	}
                 try {
                 	EvalResult res = ecs.take().get();
-                    fValues[res.index] = res;
+                    if (res == null || isCancelled()) break;
+                    values[res.index] = res;
                     publish(incrementProgress());
                     
                     boolean ok = false;
@@ -652,6 +683,8 @@ public class ClassInvariantView extends JPanel implements View {
 
 		@Override
 		protected void process(List<Integer> chunks) {
+            if (worker != this || isCancelled()) return;
+            fValues = values.clone();
 			int lastProgress = chunks.get(chunks.size() - 1);
 			
 			fLabel.setForeground(Color.black);
@@ -666,6 +699,8 @@ public class ClassInvariantView extends JPanel implements View {
 
 		@Override
 		protected void done() {
+            if (worker != this || isCancelled()) return;
+            fValues = values.clone();
 			setOpenEvalBrowserEnabled(true);
 
 			String text;

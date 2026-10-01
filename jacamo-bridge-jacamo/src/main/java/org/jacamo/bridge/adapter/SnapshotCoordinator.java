@@ -66,7 +66,11 @@ public final class SnapshotCoordinator implements AutoCloseable {
             var start = watermarks(); var topology = topology(); var facts = new ArrayList<RuntimeFact>();
             for (SnapshotSource source : sources) facts.addAll(source.capture());
             var end = watermarks(); var afterTopology = topology(); Instant endTime = Instant.now();
-            if (overflow.get() || !topology.equals(afterTopology) || regressed(start, end)) {
+            boolean changedAuthoritativeSource = facts.stream()
+                    .filter(fact -> fact.projectionStatus() == org.jacamo.bridge.contract.ProjectionStatus.MATERIALIZED_FAITHFULLY)
+                    .map(fact -> fact.id().authority()).distinct()
+                    .anyMatch(source -> !java.util.Objects.equals(start.get(source), end.get(source)));
+            if (overflow.get() || !topology.equals(afterTopology) || regressed(start, end) || changedAuthoritativeSource) {
                 // Do not discard events observed during a rejected cut.  A
                 // later accepted cut either includes them in its watermark or
                 // replays them after its watermark; dropping them would create

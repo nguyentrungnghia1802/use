@@ -50,6 +50,7 @@ import org.tzi.use.uml.sys.MObject;
 import org.tzi.use.uml.sys.MSystem;
 import org.tzi.use.uml.sys.MSystemException;
 import org.tzi.use.uml.sys.events.AttributeAssignedEvent;
+import org.tzi.use.uml.sys.events.AtomicStateChangedEvent;
 import org.tzi.use.uml.sys.events.LinkDeletedEvent;
 import org.tzi.use.uml.sys.events.LinkInsertedEvent;
 import org.tzi.use.uml.sys.events.ObjectCreatedEvent;
@@ -149,6 +150,16 @@ public class NewObjectDiagramView extends JPanel
         viewcount++;
     }
     
+    @Subscribe
+    public void onAtomicStateChanged(AtomicStateChangedEvent event) {
+        event.getDeletedLinks().forEach(fObjectDiagram::deleteLink);
+        event.getDeletedObjects().forEach(fObjectDiagram::deleteObject);
+        event.getNewObjects().forEach(fObjectDiagram::addObject);
+        event.getNewLinks().forEach(fObjectDiagram::addLink);
+        event.getModifiedObjects().forEach(fObjectDiagram::updateObject);
+        fObjectDiagram.invalidateContent(true);
+    }
+
     @Subscribe
     public void onTransition(TransitionEvent e) {
     	fObjectDiagram.updateObject(e.getSource());

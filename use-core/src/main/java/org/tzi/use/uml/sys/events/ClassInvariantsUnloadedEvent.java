@@ -27,20 +27,27 @@ import org.tzi.use.uml.sys.events.tags.ModelChangedEvent;
 
 /**
  * Event for unloaded class invariants.
- * 
+ *
  * @author Frank Hilken
  */
 public class ClassInvariantsUnloadedEvent extends Event implements ModelChangedEvent {
 
 	private final Collection<MClassInvariant> invariant;
-	
+	private final boolean evaluationDeferred;
+
 	public ClassInvariantsUnloadedEvent(EventContext ctx, Collection<MClassInvariant> inv) {
-		super(ctx);
-		invariant = inv;
+		this(ctx, inv, false);
 	}
-	
+
+	public ClassInvariantsUnloadedEvent(EventContext ctx, Collection<MClassInvariant> inv, boolean evaluationDeferred) {
+		super(ctx);
+		invariant = java.util.List.copyOf(inv);
+		this.evaluationDeferred = evaluationDeferred;
+	}
+	public boolean isEvaluationDeferred() { return evaluationDeferred; }
+
 	public Collection<MClassInvariant> getInvariants() {
 		return invariant;
 	}
-	
+
 }

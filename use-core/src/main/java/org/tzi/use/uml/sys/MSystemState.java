@@ -651,6 +651,7 @@ public final class MSystemState {
 					Set<MLink> removedLinks = linkSet.removeAll(aend, obj);
 					
 					for (MLink removed : removedLinks) {
+                        removeLinkFromWholePartGraph(removed);
 						if (removed instanceof MLinkObject) {
 							DeleteObjectResult resLinkObject = auxDeleteObject((MLinkObject) removed);
 							
@@ -992,6 +993,15 @@ public final class MSystemState {
 		// get link set for association
 		MLinkSet linkSet = fLinkSets.get(link.association());
 		linkSet.add(link);
+        // Undo/native rollback restores a previously validated link. Restore its
+        // whole-part index as well; otherwise the next deletion sees missing graph nodes.
+        if (link.association().aggregationKind() == MAggregationKind.AGGREGATION
+                || link.association().aggregationKind() == MAggregationKind.COMPOSITION) {
+            MWholePartLink wholePartLink = new MWholePartLinkImpl(link);
+            fWholePartLinkGraph.add(wholePartLink.source());
+            fWholePartLinkGraph.add(wholePartLink.target());
+            fWholePartLinkGraph.addEdge(wholePartLink);
+        }
 	}
 
 	/**

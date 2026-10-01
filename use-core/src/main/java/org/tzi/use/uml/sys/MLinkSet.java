@@ -184,6 +184,7 @@ public final class MLinkSet {
             
             if (linkEnd.object().equals(obj) ) {
                 res.add(link);
+                objectsToLinksMap.remove(link.linkedObjects(), link);
                 it.remove();
             }
         }

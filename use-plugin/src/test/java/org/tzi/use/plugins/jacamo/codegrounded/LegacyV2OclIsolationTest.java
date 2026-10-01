@@ -38,7 +38,7 @@ class LegacyV2OclIsolationTest {
         String nativeBuild = section(source, "private NativeWorkspace buildNativeSemantic",
                 "private VerificationReport runNativeVerification");
         String nativeVerification = section(source, "private VerificationReport runNativeVerification",
-                "private StringWriterPair validateNative");
+                "private List<String> nativeConstraintDependencies");
         assertForbiddenAbsent(nativeBuild + nativeVerification);
     }
 

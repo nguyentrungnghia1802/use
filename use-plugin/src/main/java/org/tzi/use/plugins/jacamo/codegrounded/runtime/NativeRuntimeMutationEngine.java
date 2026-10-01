@@ -56,14 +56,18 @@ public final class NativeRuntimeMutationEngine {
     }
 
     private record BoundTarget(String semanticId, MObject object) { }
-    private record LinkImage(String association, List<String> objectNames) { }
-    private record StateImage(Map<String, Map<String, Value>> attributes, List<LinkImage> links) { }
+    // Ephemeral rollback/baseline images retain exact USE object/link identity, not a history state.
+    private record LinkImage(String association, List<String> objectNames, MLink original) { }
+    private record ObjectImage(String className, Map<String, Value> attributes, MObject original) { }
+    public record StateImage(Map<String, ObjectImage> objects, List<LinkImage> links,
+                             Map<String, String> semanticNames, java.util.Set<String> tombstones) { }
 
     private final MSystem system;
     private final UseSystemApi api;
     private final Map<String, MObject> semanticObjectIndex;
     private final CodeGroundedRuntimeRuleRegistry registry;
     private final StateImage baseline;
+    private final java.util.Set<String> tombstones = new java.util.HashSet<>();
 
     public NativeRuntimeMutationEngine(MSystem system, Map<String, MObject> semanticObjectIndex,
                                        CodeGroundedRuntimeRuleRegistry registry) {
@@ -76,6 +80,8 @@ public final class NativeRuntimeMutationEngine {
 
     public MSystem system() { return system; }
     public CodeGroundedRuntimeRuleRegistry registry() { return registry; }
+    public synchronized StateImage savepoint() { return capture(); }
+    public synchronized void rollback(StateImage image) { restore(image); }
 
     /** Restores the static native state in the same MSystem before an authoritative resync. */
     public synchronized void resetToBaseline() {
@@ -85,6 +91,12 @@ public final class NativeRuntimeMutationEngine {
     public synchronized ApplyResult apply(BridgeEntityId runtimeIdentity, BridgeRelationId binding,
                                            RuntimeFactKind factKind, ProjectionStatus projectionStatus,
                                            Completeness completeness, Map<String, Object> payload) {
+        return apply(runtimeIdentity, binding, factKind, projectionStatus, completeness, payload, true);
+    }
+
+    public synchronized ApplyResult apply(BridgeEntityId runtimeIdentity, BridgeRelationId binding,
+            RuntimeFactKind factKind, ProjectionStatus projectionStatus, Completeness completeness,
+            Map<String, Object> payload, boolean validateStructure) {
         String identity = runtimeIdentity == null ? "<missing>" : runtimeIdentity.canonical();
         String normalized = textOrNull(payload, "normalizedEventKind");
         CodeGroundedRuntimeRuleRegistry.Rule rule = normalized == null ? null : registry.select(factKind, normalized);
@@ -107,23 +119,29 @@ public final class NativeRuntimeMutationEngine {
                 case UPSERT_CARTAGO_AGENT_IDENTITY -> target = upsertCartagoAgent(payload);
                 case UPSERT_CARTAGO_ARTIFACT -> target = upsertArtifact(payload);
                 case UPSERT_CARTAGO_PROPERTY_SNAPSHOT -> target = upsertPropertySnapshot(payload);
+                case APPLY_CARTAGO_PROPERTY_DELTA, DELETE_CARTAGO_ARTIFACT -> {
+                    String semanticId = required(payload, "semanticId");
+                    target = new BoundTarget(semanticId, requiredObject(semanticId));
+                }
                 default -> target = resolveTarget(runtimeIdentity, binding);
             }
             if (!rule.targetClasses().contains("*") && !rule.targetClasses().contains(target.object().cls().name()))
-                return ApplyResult.rejected(rule.id(), "NATIVE_RUNTIME_TARGET_CLASS_MISMATCH:" + target.object().cls().name());
+                throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_TARGET_CLASS_MISMATCH:" + target.object().cls().name());
+            validateCartagoIdentity(rule.action(), runtimeIdentity, target, payload);
             switch (rule.action()) {
                 case ATTRIBUTE_SET -> setAttribute(target.object(), payload, false);
                 case ATTRIBUTE_UNSET -> setAttribute(target.object(), payload, true);
                 case LINK_INSERT -> link(payload, true);
                 case LINK_DELETE -> link(payload, false);
+                case APPLY_CARTAGO_PROPERTY_DELTA -> propertyDelta(target.semanticId(), payload);
+                case DELETE_CARTAGO_ARTIFACT -> deleteArtifact(target.semanticId());
                 case UPSERT_CARTAGO_WORKSPACE, UPSERT_CARTAGO_AGENT_IDENTITY,
                         UPSERT_CARTAGO_ARTIFACT, UPSERT_CARTAGO_PROPERTY_SNAPSHOT -> { }
                 case EVIDENCE_ONLY -> throw new IllegalStateException("handled above");
             }
-            OclGate gate = validateOcl();
-            if (!gate.passed()) {
+            if (validateStructure && !structureValid()) {
                 restore(before);
-                return ApplyResult.rejected(rule.id(), "NATIVE_RUNTIME_OCL_GATE_FAILED:" + gate.diagnostic());
+                return ApplyResult.rejected(rule.id(), "NATIVE_RUNTIME_STRUCTURE_INVALID");
             }
             return new ApplyResult(Status.MATERIALIZED, rule.id(), target.semanticId(), target.object().name(),
                     "NATIVE_RUNTIME_MUTATION_APPLIED");
@@ -134,12 +152,8 @@ public final class NativeRuntimeMutationEngine {
         }
     }
 
-    public synchronized OclGate validateOcl() {
-        java.io.StringWriter output = new java.io.StringWriter();
-        java.io.PrintWriter writer = new java.io.PrintWriter(output, true);
-        boolean structure = system.state().checkStructure(writer);
-        boolean invariants = system.state().check(writer, false, true, true, List.of());
-        return new OclGate(structure, invariants, output.toString());
+    public synchronized boolean structureValid() {
+        return system.state().checkStructure(new java.io.PrintWriter(new java.io.StringWriter()));
     }
 
     private BoundTarget resolveTarget(BridgeEntityId runtimeIdentity, BridgeRelationId binding) {
@@ -158,6 +172,7 @@ public final class NativeRuntimeMutationEngine {
     }
 
     private BoundTarget upsertWorkspace(Map<String, Object> payload) throws UseApiException {
+        requireStableIdentity(payload, "fullName", "uuid", "environmentSemanticId");
         String environmentSemanticId = required(payload, "environmentSemanticId");
         MObject environment = upsertObject(environmentSemanticId, "Environment",
                 required(payload, "environmentId"));
@@ -183,6 +198,7 @@ public final class NativeRuntimeMutationEngine {
     }
 
     private BoundTarget upsertCartagoAgent(Map<String, Object> payload) throws UseApiException {
+        requireStableIdentity(payload, "globalId", "workspaceSemanticId");
         String semanticId = required(payload, "semanticId");
         MObject agent = upsertObject(semanticId, "CartagoAgentIdentity", required(payload, "name"));
         setText(agent, "globalId", required(payload, "globalId"));
@@ -196,6 +212,7 @@ public final class NativeRuntimeMutationEngine {
     }
 
     private BoundTarget upsertArtifact(Map<String, Object> payload) throws UseApiException {
+        requireStableIdentity(payload, "name", "uuid", "workspaceSemanticId");
         String typeSemanticId = required(payload, "artifactTypeSemanticId");
         String typeName = required(payload, "artifactTypeJavaClassName");
         MObject type = upsertObject(typeSemanticId, "ArtifactType", typeName);
@@ -214,10 +231,17 @@ public final class NativeRuntimeMutationEngine {
                 requiredTextAllowEmpty(payload, "creatorAgentSemanticId"));
         ensureLink("C14WorkspaceArtifact", requiredObject(workspaceSemanticId), artifact);
         ensureLink("C15ArtifactType", artifact, type);
+        if (payload.containsKey("properties")) propertyDelta(semanticId,
+                Map.of("properties", payload.get("properties"), "removedPropertySemanticIds", List.of()));
         return new BoundTarget(semanticId, artifact);
     }
 
     private BoundTarget upsertPropertySnapshot(Map<String, Object> payload) throws UseApiException {
+        requireStableIdentity(payload, "artifactSemanticId", "propertyId");
+        List<String> values = stringList(payload, "values");
+        List<String> types = stringList(payload, "valueTypes");
+        stringList(payload, "annotations");
+        if (values.size() != types.size()) throw new NativeRuntimeProtocolException("C09_VALUE_TYPE_ARITY_MISMATCH");
         String semanticId = required(payload, "semanticId");
         MObject property = upsertObject(semanticId, "ObservablePropertySnapshot", required(payload, "name"));
         String artifactSemanticId = required(payload, "artifactSemanticId");
@@ -231,7 +255,91 @@ public final class NativeRuntimeMutationEngine {
         return new BoundTarget(semanticId, property);
     }
 
+    private void propertyDelta(String artifactId, Map<String, Object> payload) throws UseApiException {
+        for (String id : stringList(payload, "removedPropertySemanticIds")) {
+            MObject property = requiredObject(id);
+            if (!property.cls().name().equals("ObservablePropertySnapshot")
+                    || !new StringValue(artifactId).equals(property.state(system.state()).attributeValue("artifactSemanticId")))
+                throw new NativeRuntimeProtocolException("C09_PROPERTY_OWNER_MISMATCH:" + id);
+            delete(id);
+        }
+        Object raw = requiredValue(payload, "properties");
+        if (!(raw instanceof List<?> properties)) throw new NativeRuntimeProtocolException("C09_TYPED_PROPERTIES_REQUIRED");
+        java.util.Set<String> ids = new java.util.HashSet<>();
+        for (Object item : properties) {
+            if (!(item instanceof Map<?, ?> map) || map.keySet().stream().anyMatch(key -> !(key instanceof String)))
+                throw new NativeRuntimeProtocolException("C09_TYPED_PROPERTY_REQUIRED");
+            @SuppressWarnings("unchecked") Map<String, Object> property = (Map<String, Object>) map;
+            if (!artifactId.equals(required(property, "artifactSemanticId")) || !ids.add(required(property, "semanticId")))
+                throw new NativeRuntimeProtocolException("C09_PROPERTY_IDENTITY_MISMATCH");
+            upsertPropertySnapshot(property);
+        }
+    }
+
+    private void requireStableIdentity(Map<String, Object> payload, String... attributes) {
+        MObject existing = semanticObjectIndex.get(required(payload, "semanticId"));
+        if (existing == null) return;
+        for (String attribute : attributes)
+            if (!new StringValue(required(payload, attribute)).equals(existing.state(system.state()).attributeValue(attribute)))
+                throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_INCARNATION_REDIRECT:" + attribute);
+    }
+
+    private String attribute(MObject object, String name) {
+        Value value = object.state(system.state()).attributeValue(name);
+        if (!(value instanceof StringValue text)) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_IDENTITY_UNDEFINED:" + name);
+        return text.value();
+    }
+
+    private void validateCartagoIdentity(CodeGroundedRuntimeRuleRegistry.Action action, BridgeEntityId id,
+            BoundTarget target, Map<String, Object> payload) {
+        String kind, scope, local, incarnation;
+        switch (action) {
+            case UPSERT_CARTAGO_WORKSPACE -> {
+                kind = "workspace"; scope = required(payload, "environmentId");
+                local = attribute(target.object(), "fullName"); incarnation = attribute(target.object(), "uuid");
+            }
+            case UPSERT_CARTAGO_AGENT_IDENTITY -> {
+                kind = "agent"; scope = attribute(requiredObject(attribute(target.object(), "workspaceSemanticId")), "fullName");
+                local = attribute(target.object(), "globalId"); incarnation = Long.toString(requiredInteger(payload, "localId"));
+            }
+            case UPSERT_CARTAGO_ARTIFACT, APPLY_CARTAGO_PROPERTY_DELTA, DELETE_CARTAGO_ARTIFACT -> {
+                kind = "artifact"; scope = attribute(requiredObject(attribute(target.object(), "workspaceSemanticId")), "fullName");
+                local = attribute(target.object(), "name"); incarnation = attribute(target.object(), "uuid");
+            }
+            case UPSERT_CARTAGO_PROPERTY_SNAPSHOT -> {
+                kind = "observable-property-snapshot"; scope = attribute(target.object(), "artifactSemanticId");
+                local = attribute(target.object(), "propertyId"); incarnation = "snapshot";
+            }
+            default -> { return; } // Generic mutations require their explicit runtime-model-binding instead.
+        }
+        if (id == null || !id.equals(new BridgeEntityId("cartago", "environment", kind, scope, local, incarnation)))
+            throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_TYPED_IDENTITY_MISMATCH:" + kind);
+    }
+
+    private void deleteArtifact(String semanticId) throws UseApiException {
+        List<String> properties = semanticObjectIndex.entrySet().stream()
+                .filter(entry -> entry.getValue().cls().name().equals("ObservablePropertySnapshot")
+                        && new StringValue(semanticId).equals(entry.getValue().state(system.state()).attributeValue("artifactSemanticId")))
+                .map(Map.Entry::getKey).toList();
+        for (String property : properties) delete(property);
+        delete(semanticId);
+    }
+
+    private void delete(String semanticId) throws UseApiException {
+        api.deleteObjectEx(requiredObject(semanticId));
+        semanticObjectIndex.remove(semanticId);
+        tombstones.add(semanticId);
+    }
+
+    private static List<String> stringList(Map<String, Object> payload, String key) {
+        Object raw = requiredValue(payload, key);
+        if (!(raw instanceof List<?> list) || list.stream().anyMatch(item -> !(item instanceof String)))
+            throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_STRING_LIST_REQUIRED:" + key);
+        return list.stream().map(String.class::cast).toList();
+    }
+
     private MObject upsertObject(String semanticId, String className, String human) throws UseApiException {
+        if (tombstones.contains(semanticId)) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_DISPOSED_INCARNATION:" + semanticId);
         MObject existing = semanticObjectIndex.get(semanticId);
         if (existing != null) {
             if (!className.equals(existing.cls().name()))
@@ -312,34 +420,41 @@ public final class NativeRuntimeMutationEngine {
     }
 
     private StateImage capture() {
-        Map<String, Map<String, Value>> attributes = new LinkedHashMap<>();
+        Map<String, ObjectImage> attributes = new LinkedHashMap<>();
         system.state().allObjects().stream().sorted(Comparator.comparing(MObject::name)).forEach(object -> {
             Map<String, Value> values = new LinkedHashMap<>();
             object.cls().allAttributes().forEach(attribute ->
                     values.put(attribute.name(), object.state(system.state()).attributeValue(attribute)));
-            attributes.put(object.name(), Map.copyOf(values));
+            attributes.put(object.name(), new ObjectImage(object.cls().name(), Map.copyOf(values), object));
         });
         List<LinkImage> links = system.state().allLinks().stream()
                 .sorted(Comparator.comparing((MLink link) -> link.association().name())
                         .thenComparing(link -> link.linkedObjects().stream().map(MObject::name).toList().toString()))
                 .map(link -> new LinkImage(link.association().name(),
-                        link.linkedObjects().stream().map(MObject::name).toList())).toList();
-        return new StateImage(Map.copyOf(attributes), links);
+                        link.linkedObjects().stream().map(MObject::name).toList(), link)).toList();
+        Map<String, String> names = new LinkedHashMap<>();
+        semanticObjectIndex.forEach((id, object) -> names.put(id, object.name()));
+        return new StateImage(Map.copyOf(attributes), links, Map.copyOf(names), java.util.Set.copyOf(tombstones));
     }
 
     private void restore(StateImage image) {
         try {
             for (MLink link : new ArrayList<>(system.state().allLinks())) api.deleteLinkEx(link);
             for (MObject object : new ArrayList<>(system.state().allObjects()))
-                if (!image.attributes().containsKey(object.name())) api.deleteObjectEx(object);
-            semanticObjectIndex.entrySet().removeIf(entry ->
-                    !image.attributes().containsKey(entry.getValue().name()));
-            for (var objectEntry : image.attributes().entrySet()) {
+                if (!image.objects().containsKey(object.name())) api.deleteObjectEx(object);
+            for (var objectEntry : image.objects().entrySet()) {
                 MObject object = system.state().objectByName(objectEntry.getKey());
-                if (object == null) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_BASELINE_OBJECT_MISSING:" + objectEntry.getKey());
-                for (var attributeEntry : objectEntry.getValue().entrySet())
+                if (object != objectEntry.getValue().original()) {
+                    if (object != null) api.deleteObjectEx(object);
+                    object = objectEntry.getValue().original();
+                    system.state().restoreObject(new org.tzi.use.uml.sys.MObjectState(object));
+                }
+                for (var attributeEntry : objectEntry.getValue().attributes().entrySet())
                     api.setAttributeValueEx(object, object.cls().attribute(attributeEntry.getKey(), true), attributeEntry.getValue());
             }
+            semanticObjectIndex.clear();
+            image.semanticNames().forEach((id, name) -> semanticObjectIndex.put(id, system.state().objectByName(name)));
+            tombstones.clear(); tombstones.addAll(image.tombstones());
             for (LinkImage link : image.links()) {
                 MAssociation association = system.model().getAssociation(link.association());
                 if (association == null) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_BASELINE_ASSOCIATION_MISSING:" + link.association());
@@ -347,9 +462,9 @@ public final class NativeRuntimeMutationEngine {
                         ).toArray(MObject[]::new);
                 if (java.util.Arrays.stream(objects).anyMatch(Objects::isNull))
                     throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_BASELINE_LINK_OBJECT_MISSING:" + link.association());
-                if (!system.state().hasLinkBetweenObjects(association, objects)) api.createLinkEx(association, objects);
+                if (!system.state().hasLinkBetweenObjects(association, objects)) system.state().insertLink(link.original());
             }
-        } catch (UseApiException error) {
+        } catch (UseApiException | org.tzi.use.uml.sys.MSystemException error) {
             throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_BASELINE_RESTORE_FAILED", error);
         }
     }

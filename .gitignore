@@ -121,4 +121,23 @@ fabric.properties
 /use-gui/lib/plugins/use-jacamo-plugin-1.0.1.jar
 /docs/archunit-results/*-current-failure-report.txt
 
+# Maven/Gradle build outputs and runtime evidence are generated below target/.
+# Runtime journals/checkpoints are ephemeral unless a caller supplies an explicit
+# evidence directory or uses an export API.
+**/target/
+**/target/jacamo-runtime/
+**/target/jacamo-bridge-evidence/
+**/target/live-hello-evidence/
+**/target/jacamo-bridge-classpath.txt
+
+# Explicit local live-run exports contain journals, logs and installed binaries.
+# Keep the evidence on disk without publishing generated runs with source code.
+/use-plugin/evidence/
+
+# Legacy automatic USE diagram caches. Explicit layout exports use the chooser
+# and are not covered by these names.
+/_default.clt
+**/_comdia.clt
+**/_default.slt
+
 **/.DS_Store

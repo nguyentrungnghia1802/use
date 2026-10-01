@@ -49,6 +49,99 @@ class OfficialJasonAdapterTest {
                 Arrays.stream(PlanBody.BodyType.values()).map(Enum::name).collect(Collectors.toSet()));
     }
 
+    @Test void nestedIncludesPreserveExactFilesDigestsSpansAndCompatibilityEvidence() throws Exception {
+        runIsolatedParser("nested");
+    }
+
+    private void checkNestedIncludes() throws Exception {
+        Path included = Files.createDirectories(temporary.resolve("inc")).resolve("entry.asl");
+        Path nested = included.getParent().resolve("nested.asl");
+        Path source = temporary.resolve("entry.asl");
+        Files.writeString(nested, "+!nested <-\n .print(\"nested\").\n");
+        Files.writeString(included, "{ include(\"nested.asl\") }\n+!included <- .print(\"included\").\n");
+        Files.writeString(source, "{ include(\"inc/entry.asl\") }\n+!root <- .print(\"root\").\n");
+        var result = new OfficialJasonAdapter().adapt(temporary, source, "fixture", "agent");
+        var plans = result.program().planLibrary().plans();
+        assertEquals(List.of("nested", "included", "root"), plans.stream().map(p -> p.trigger().literal()).toList());
+        var expected = List.of(nested, included, source);
+        for (int i = 0; i < plans.size(); i++) {
+            var plan = plans.get(i);
+            var evidence = plan.metadata().evidence().getFirst();
+            String uri = "project:/" + temporary.relativize(expected.get(i)).toString().replace('\\', '/');
+            assertEquals(uri, evidence.sourceUri());
+            assertEquals(AdapterEvidence.digest(Files.readAllBytes(expected.get(i))), evidence.sourceDigest());
+            assertTrue(evidence.startLine() > 0);
+            assertTrue(evidence.endLine() >= evidence.startLine());
+            assertEquals(uri, plan.trigger().metadata().evidence().getFirst().sourceUri());
+            assertTrue(plan.body().stream().allMatch(b -> b.metadata().evidence().getFirst().sourceUri().equals(uri)));
+            assertEquals(uri, result.facts().stream().filter(f -> f.factKind().equals("plan"))
+                    .toList().get(i).evidence().getFirst().sourceUri());
+        }
+        assertEquals(2, plans.getFirst().metadata().evidence().getFirst().endLine());
+        assertEquals("project:/entry.asl", result.program().sourceUri());
+        assertEquals(result.program(), new OfficialJasonAdapter().adapt(temporary, source, "fixture", "agent").program());
+    }
+
+    @Test void packageIncludesUseExactJarEntryBytesNotRootAgentEvidence() throws Exception {
+        runIsolatedParser("package");
+    }
+
+    private void checkPackageIncludes() throws Exception {
+        Path jcm = temporary.resolve("fixture.jcm");
+        Files.writeString(jcm, "mas fixture { }");
+        new OfficialProjectLoader().load(jcm); // official $jacamo package registration
+        Path source = temporary.resolve("agent.asl");
+        Files.writeString(source, "{ include(\"$jacamo/templates/common-cartago.asl\") }\n+!own <- .print(\"own\").\n");
+        var program = new OfficialJasonAdapter().adapt(temporary, source, "fixture", "agent").program();
+        var imported = program.planLibrary().plans().stream().filter(p -> !p.trigger().literal().equals("own")).toList();
+        assertFalse(imported.isEmpty());
+        var resource = jacamo.infra.JaCaMoLauncher.class.getResource("/templates/common-cartago.asl");
+        assertNotNull(resource);
+        String hash;
+        try (var input = resource.openStream()) { hash = AdapterEvidence.digest(input.readAllBytes()); }
+        final String expectedHash = hash;
+        assertTrue(imported.stream().allMatch(p -> {
+            var ev = p.metadata().evidence().getFirst();
+            return ev.sourceUri().startsWith("jar:file:/")
+                    && ev.sourceUri().endsWith("!/templates/common-cartago.asl") && ev.sourceDigest().equals(expectedHash);
+        }));
+        assertTrue(imported.stream().flatMap(p -> p.body().stream()).allMatch(b ->
+                b.metadata().evidence().getFirst().sourceDigest().equals(expectedHash)));
+        assertEquals("project:/agent.asl", program.planLibrary().plans().getLast().metadata().evidence().getFirst().sourceUri());
+    }
+
+    private void runIsolatedParser(String mode) throws Exception {
+        // Jason 3.3.2 Include.process opens streams without closing them. Isolate the
+        // real parser (and all assertions) so Windows can delete fixtures after JVM exit.
+        var process = new ProcessBuilder(Path.of(System.getProperty("java.home"), "bin", "java").toString(),
+                "-Djava.awt.headless=true", "-cp", System.getProperty("java.class.path"),
+                getClass().getName(), mode, temporary.toString()).redirectErrorStream(true).start();
+        try {
+            assertTrue(process.waitFor(30, java.util.concurrent.TimeUnit.SECONDS), "include parser child timeout");
+            String output = new String(process.getInputStream().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+            assertEquals(0, process.exitValue(), output);
+            assertTrue(output.contains("INCLUDE_PROVENANCE_ASSERTIONS_PASS"), output);
+        } finally { if (process.isAlive()) process.destroyForcibly(); }
+    }
+
+    public static void main(String[] args) throws Exception {
+        var probe = new OfficialJasonAdapterTest();
+        probe.temporary = Path.of(args[1]);
+        if (args[0].equals("nested")) probe.checkNestedIncludes();
+        else if (args[0].equals("package")) probe.checkPackageIncludes();
+        else throw new IllegalArgumentException("unknown include probe");
+        System.out.println("INCLUDE_PROVENANCE_ASSERTIONS_PASS");
+    }
+
+    @Test void sourceResolutionNeverSearchesBasenamesOrFetchesRemoteContent() throws Exception {
+        var sources = new JasonSourceEvidence(temporary);
+        Files.writeString(temporary.resolve("agent.asl"), "+!root.\n");
+        assertThrows(java.io.IOException.class, () -> sources.resolve("agent.asl"));
+        assertThrows(java.io.IOException.class, () -> sources.resolve("https://example.invalid/agent.asl"));
+        assertThrows(java.io.IOException.class, () -> sources.resolve("jar:https://example.invalid/a.jar!/agent.asl"));
+        assertThrows(java.io.IOException.class, () -> sources.resolve(""));
+    }
+
     @Test void phase2UsesOfficialJasonFactsForActionsBeliefsGoalsRulesAndSourceInfo() throws Exception {
         Path source = temporary.resolve("phase2.asl");
         Files.writeString(source, "belief(a).\n"

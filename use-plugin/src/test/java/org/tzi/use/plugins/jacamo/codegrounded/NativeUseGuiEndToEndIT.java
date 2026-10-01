@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -37,6 +38,58 @@ import org.tzi.use.uml.sys.MObject;
 
 /** Exercises the existing Swing views against the one activated native MSystem. */
 class NativeUseGuiEndToEndIT {
+    @Test void atomicRuntimeCheckpointRefreshesObjectDiagramAndUsesPrecomputedInvariantResults() throws Exception {
+        assertFalse(GraphicsEnvironment.isHeadless());
+        String oldHeight = System.getProperty("use.gui.view.classdiagram.class.minheight");
+        String oldWidth = System.getProperty("use.gui.view.classdiagram.class.minwidth");
+        System.setProperty("use.gui.view.classdiagram.class.minheight", "40");
+        System.setProperty("use.gui.view.classdiagram.class.minwidth", "140");
+        var pipeline = CodeGroundedTestFixtures.guiPipeline();
+        var projector = new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector(pipeline,
+                RuntimeVerificationFixtures.SESSION, 1, RuntimeVerificationFixtures.REVISION);
+        projector.applySnapshot(RuntimeVerificationFixtures.snapshot("gui-baseline", 0));
+        Session session = new Session(); MainWindow.setJavaFxCall(true);
+        MainWindow window = onEdt(() -> MainWindow.create(session, PluginRuntime.getInstance()));
+        org.tzi.use.gui.views.ClassInvariantView[] invariantView = new org.tzi.use.gui.views.ClassInvariantView[1];
+        try {
+            new NativeUseSessionActivator().activate(session, pipeline); flushEdt();
+            onEdt(() -> { menuItem(window.getJMenuBar(), "Object diagram").doClick();
+                invariantView[0] = new org.tzi.use.gui.views.ClassInvariantView(window, session.system()); return null; });
+            projector.coordinator().loadProfileSource("gui.ocl", RuntimeVerificationCoordinatorTest.PROFILE);
+            var diagram = onEdt(() -> window.getObjectDiagrams().getFirst());
+            long checks = projector.coordinator().verificationCount();
+            projector.apply(RuntimeVerificationFixtures.delta("gui-B", 1, "B"));
+            onEdt(() -> {
+                assertSame(session.system(), diagram.system());
+                assertTrue(session.system().state().allObjects().stream().allMatch(diagram.getDiagram().getVisibleData().fObjectToNodeMap::containsKey));
+                assertTrue(session.system().state().allLinks().stream().allMatch(diagram.getDiagram().getVisibleData()::containsLink));
+                var table = components(invariantView[0], javax.swing.JTable.class).getFirst();
+                int row = java.util.stream.IntStream.range(0, table.getRowCount()).filter(index -> table.getValueAt(index, 0).toString()
+                        .contains("ObservablePropertySnapshot::NoB")).findFirst().orElseThrow();
+                assertTrue(table.getValueAt(row, 1).toString().contains("false")); return null;
+            });
+            assertEquals(checks + 1, projector.coordinator().verificationCount());
+            var originalObjects = java.util.Set.copyOf(session.system().state().allObjects());
+            var brokenProperty = new java.util.LinkedHashMap<>(RuntimeVerificationFixtures.property("A"));
+            brokenProperty.put("valueTypes", java.util.List.of());
+            assertThrows(RuntimeException.class, () -> projector.apply(RuntimeVerificationFixtures.event("gui-rejected", 2,
+                    org.jacamo.bridge.contract.RuntimeEventKind.CHANGED, RuntimeVerificationFixtures.ID,
+                    java.util.Map.of("normalizedEventKind", "APPLY_CARTAGO_PROPERTY_DELTA", "semanticId", RuntimeVerificationFixtures.ARTIFACT,
+                            "removedPropertySemanticIds", java.util.List.of(RuntimeVerificationFixtures.PROPERTY), "properties", java.util.List.of(brokenProperty)))));
+            onEdt(() -> { assertTrue(originalObjects.stream().allMatch(object -> session.system().state().objectByName(object.name()) == object));
+                assertEquals(originalObjects, diagram.getDiagram().getVisibleData().fObjectToNodeMap.keySet()); return null; });
+            projector.applySnapshot(RuntimeVerificationFixtures.snapshot("gui-resync", 1));
+            projector.apply(RuntimeVerificationFixtures.event("gui-dispose", 2, org.jacamo.bridge.contract.RuntimeEventKind.DISPOSED,
+                    RuntimeVerificationFixtures.ID, java.util.Map.of("normalizedEventKind", "DELETE_CARTAGO_ARTIFACT",
+                            "semanticId", RuntimeVerificationFixtures.ARTIFACT)));
+            onEdt(() -> { assertEquals(session.system().state().numObjects(), diagram.getDiagram().getVisibleData().fObjectToNodeMap.size()); return null; });
+        } finally {
+            onEdt(() -> { if (invariantView[0] != null) invariantView[0].detachModel();
+                window.getObjectDiagrams().forEach(view -> view.detachModel()); window.dispose(); MainWindow.setJavaFxCall(false);
+                restoreProperty("use.gui.view.classdiagram.class.minheight", oldHeight);
+                restoreProperty("use.gui.view.classdiagram.class.minwidth", oldWidth); return null; });
+        }
+    }
     @Test
     void modelBrowserDiagramsOclAndEventBusUseTheActivatedNativeSystem() throws Exception {
         assertFalse(GraphicsEnvironment.isHeadless(), "GUI closure evidence requires a real graphics environment");

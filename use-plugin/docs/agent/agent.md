@@ -1,411 +1,644 @@
-# Agent Working Rules — USE JaCaMo Plugin
+# Agent Working Rules — USE JaCaMo Runtime Verification
 
-> Goal: implement the code-grounded JaCaMo → native USE architecture consistently, safely, and incrementally.
+> Goal: implement `task_runtime_verification.md` so JaCaMo runtime states/checkpoints can be verified by external OCL on the same native USE system, with attributable results, coverage status, history, and replay.
 
 # 1. Role
 
-You are the implementation agent for the USE JaCaMo Plugin.
+You are the implementation agent for the USE JaCaMo Plugin runtime-verification phase.
 
-Your job is to keep these aligned:
+Keep this chain consistent:
 
 ```text
-Official JaCaMo/Jason/CArtAgO/Moise semantics
-→ semantic contract
-→ J/A/C/M/X mapping rules
-→ native USE MModel
-→ native USE MSystemState
-→ existing USE Session / GUI / OCL / verification
-→ tests / evidence / documentation
+Official JaCaMo/Jason/CArtAgO/Moise runtime semantics
+→ typed runtime snapshot/event contract
+→ exact J/A/C/M/X mapping + verification projection
+→ one native USE MModel / MSystemState
+→ external OCL constraints
+→ runtime mutation/checkpoint
+→ OCL verification
+→ PASS / FAIL / ERROR / SKIPPED result
+→ journal/checkpoint/history
+→ USE Session / Workbench / replay
 ```
 
-Do not optimize for “code compiles”. Optimize for semantic correctness, exact evidence, traceability, determinism, and maintainability.
+Do not optimize for “events arrive” or “tests compile”.
+
+Optimize for:
+- exact runtime authority;
+- one active `MSystem`;
+- deterministic state mutation;
+- attributable verification results;
+- explicit coverage/gaps;
+- replayability;
+- no semantic guessing.
+
+---
 
 # 2. Read these files first
 
-The following files are in the same directory as this `agent.md` and define the active direction:
+Read in this order:
 
-1. `NEW-CODE-GROUNDED-JACAMO-USE-ARCHITECTURE-DESIGN.md`
-2. `task.md`
-3. `JACAMO-USE-JAVA-MODEL-TRANSFORMATION-SPEC.md`
-4. `JACAMO-USE-CONCEPT-MAPPING-RULES.md`
+1. `task_runtime_verification.md`
+2. `JACAMO-USE-CONCEPT-MAPPING-RULES.md`
+3. `CODE-GROUNDED-NATIVE-README.md`
+4. current runtime/constraint/export source and tests
 
 Use them as:
 
 ```text
-Architecture design      = target architecture
-task.md                  = active execution plan and gates
-Java transformation spec = source/target semantic rationale
-Concept mapping rules    = rule contract Jxx/Axx/Cxx/Mxx/Xxx
+task_runtime_verification.md = active implementation gates
+mapping rules                = semantic mapping contract
+native README                = current operational behavior/boundaries
+source + tests               = implementation authority
 ```
 
-For actual implementation behavior, current source code and executable tests remain authoritative.
+If source and docs disagree:
+- do not guess;
+- record the discrepancy;
+- resolve from current code/API/runtime evidence;
+- update docs only after behavior is proven.
 
-If code and documents disagree, do not guess. Record the discrepancy and resolve it with code/API evidence.
+Historical Ecore / Mapping V2 material is not semantic authority for this task.
+
+---
 
 # 3. Source-of-truth order
 
 Use this priority:
 
-1. current production source code and exact dependency APIs/bytecode;
-2. current executable tests/runtime evidence;
-3. current Bridge contract and semantic DTOs;
-4. the four active files listed above;
-5. old Ecore / Mapping V2 / historical docs only as compatibility/regression evidence.
-
-Old V2 artifacts are no longer the semantic authority for `CODE_GROUNDED_NATIVE`.
+1. current production source code;
+2. exact framework APIs/bytecode;
+3. executable tests and live runtime evidence;
+4. current Bridge protocol and semantic/runtime DTOs;
+5. `task_runtime_verification.md` and maintained docs;
+6. historical V2/Ecore/mapping material only as regression evidence.
 
 Do not silently edit frozen V2/Ecore/mapping/golden artifacts.
 
-# 4. Core architecture
+---
 
-JaCaMo executes; USE models and verifies.
+# 4. Active architecture
+
+Static/bootstrap path:
 
 ```text
-JaCaMo official objects
-        ↓
-official adapters
-        ↓
-typed semantic contract
-        ↓
-JacamoSpecificationModel
-        ↓
-Jxx / Axx / Cxx / Mxx / Xxx rules
-        ↓
-native MModel
-        ↓
-native MSystemState
-        ↓
-Session.setSystem(...)
-        ↓
-existing USE GUI / OCL / verification
+project.jcm
+→ official JaCaMo APIs
+→ typed semantic contract
+→ JacamoSpecificationModel
+→ J/A/C/M/X mapping
+→ verification projection
+→ native MModel
+→ native MSystemState
+→ Session.setSystem(...)
 ```
 
-`.use` is an export artifact from `MModel`, not the semantic authority.
+Runtime verification path:
 
-The JaCaMo Workbench is an import/control/mapping-inspection UI only. It must not become a second model runtime, OCL engine, class diagram, object diagram, or state owner.
+```text
+official runtime listener/snapshot
+→ typed RuntimeEvent / RuntimeSnapshot
+→ Bridge ordering/identity/coverage validation
+→ RuntimeVerificationCoordinator
+→ atomic mutation/checkpoint on current MSystemState
+→ stateVersion++
+→ evaluate registered OCL invariants
+→ immutable verification result
+→ journal/checkpoint store
+→ Workbench/report/event bus
+```
+
+Offline replay path:
+
+```text
+.use
++ baseline .cmd
++ constraints.ocl
++ runtime journal/checkpoints
+→ same native mutation/verification semantics
+→ state/result hash comparison
+```
+
+`.use` and `.cmd` are export/replay artifacts, not semantic authorities.
+
+---
 
 # 5. Hard invariants
 
-## INV-001 — Official APIs are semantic authority
-Do not reconstruct semantics with custom parsers when official JaCaMo/Jason/CArtAgO/Moise APIs already expose them.
+## INV-001 — One active USE system
 
-## INV-002 — No semantic guessing
-Unknown, unsupported, ambiguous, or unresolved facts remain explicit.
+Facade, Session, runtime mutation, OCL verification, UI inspection, export, and replay of the live workspace must refer to the same active `MSystem`.
 
-## INV-003 — No fuzzy/name-based formal mapping
-Never infer semantic identity or relation from equal/similar names.
+Do not create a second hidden runtime model/state.
 
-Especially forbidden:
+## INV-002 — Official runtime evidence only
 
-```text
-Action.name == Operation.name
-Belief.literal == Property.name
-AgentGoal.literal == OrganizationalGoal.id
-JCM agent name == CArtAgO AgentId
-artifact declaration name == ArtifactId
-```
+Only runtime facts supported by official JaCaMo/Jason/CArtAgO/Moise APIs or exact Bridge evidence may mutate native USE state.
 
-## INV-004 — Keep semantic layers separate
+Unknown/unsupported data remains explicit.
 
-Distinguish:
+## INV-003 — No fuzzy runtime identity
+
+Never bind runtime elements by similar/equal names alone.
+
+Forbidden examples:
 
 ```text
-JCM deployment/configuration
-Jason program/specification
-CArtAgO type/runtime
-Moise specification
-runtime state/events
+action name == operation name
+belief literal == property name
+agent name == CArtAgO AgentId
+artifact declaration name == runtime ArtifactId
+goal string == organizational goal id
 ```
 
-Do not collapse these layers into one object model.
+Require exact semantic ID, trace, incarnation, correlation, or other documented evidence.
 
-## INV-005 — Type model and runtime state are separate
+## INV-004 — Runtime state and evidence are distinct
 
-```text
-semantic type → MClass/MAttribute/MAssociation/MOperation/EnumType → MModel
-concrete object → MObject/value/link → MSystemState
-```
-
-## INV-006 — One active USE system
-Facade, Session, runtime mutation, and verification must operate on the same `MSystem`.
-
-## INV-007 — Trace before runtime mutation
-An untraced or stale runtime fact must not mutate USE state.
-
-## INV-008 — Moise cardinality keeps relation context
-
-Preserve:
-
-```text
-(group, role, min, max)
-(parentGroup, subgroup, min, max)
-(scheme, mission, min, max)
-```
-
-Do not flatten these into universal attributes on Role/Group/Mission.
-
-## INV-009 — Norm semantics remain distinct
-Do not automatically translate Moise norms/deontics into OCL.
-
-## INV-010 — Mapping is generic
-Do not hard-code Hello World, Auction, House Building, or any case-specific identity.
-
-## INV-011 — Fail closed
-Missing capability/evidence becomes `UNKNOWN`, `UNAVAILABLE`, `UNRESOLVED`, or `SKIPPED_CAPABILITY`; never fabricate a target.
-
-## INV-012 — Native mode is isolated from V2
-`CODE_GROUNDED_NATIVE` must not silently load Mapping V2, V2 OCL, Runtime Mapping V2, or V2 verification profiles.
-
-# 6. Rule contract
-
-Rule families:
-
-```text
-Jxx = JCM / JaCaMo deployment
-Axx = Jason / Agent / BDI
-Cxx = CArtAgO
-Mxx = Moise
-Xxx = exact cross-dimension relations
-```
-
-The full catalog contains 105 rules:
-
-```text
-J01–J11
-A01–A22
-C01–C20
-M01–M43
-X01–X09
-```
-
-Every generated target element must be traceable to:
-
-```text
-ruleId
-sourceKind/FQCN
-sourceSemanticId
-evidence
-targetUseKind
-targetUseId
-fidelity
-capability/status
-diagnostic
-```
-
-Missing or duplicate rule IDs are build failures.
-
-# 7. Implementation boundaries
-
-## JaCaMo-side adapters
-Allowed:
-- official project/program/runtime inspection;
-- exact identity/evidence capture;
-- typed DTO creation.
-
-Forbidden:
-- USE classes;
-- target-model decisions;
-- fuzzy resolution.
-
-## Semantic contract
-Allowed:
-- immutable typed facts;
-- IDs, evidence, fidelity, capability.
-
-Forbidden:
-- live JaCaMo objects;
-- USE runtime objects.
-
-## Mapping/rules
-Allowed:
-- source semantic concept → native USE construct;
-- exact cross-dimension resolution when evidence exists.
-
-Forbidden:
-- parsing source text;
-- case-specific rules;
-- guessed bindings.
-
-## USE adapter
-Allowed:
-- native `MModel` construction;
-- `MSystem` / `MSystemState` materialization;
-- native invariants/pre/postconditions;
-- Session activation.
-
-Forbidden:
-- source parsing;
-- semantic guessing.
-
-## Runtime adapter
-Allowed:
-- exact event/snapshot projection;
-- trace-based target resolution;
-- ordered state mutation;
-- reconnect/resync.
-
-Forbidden:
-- reparsing project source per event;
-- mutating stale/unresolved targets.
-
-## UI
-Allowed:
-- import/control/status;
-- mapping trace/evidence/fidelity/diagnostics;
-- navigation to existing USE views.
-
-Forbidden:
-- transformation/domain logic;
-- independent runtime/model ownership.
-
-# 8. Development protocol
-
-Before editing:
-
-1. read `task.md`;
-2. read the relevant sections of the other three active design/mapping files;
-3. inspect current callers/tests for the affected subsystem;
-4. run `git status`, branch, and recent log;
-5. preserve any existing user work;
-6. identify exact acceptance gate for the current phase.
-
-During implementation:
-
-```text
-spec/evidence
-→ focused failing test when practical
-→ smallest correct change
-→ focused tests
-→ nearby regressions
-→ diff review
-→ documentation/evidence update
-→ phase gate
-```
-
-Do not continue to the next phase if the mandatory gate fails.
-
-# 9. Git and scope
-
-- Do not destructive-reset or clean unknown work.
-- Do not force-push the primary branch.
-- Keep commits coherent and tested.
-- Prefer Conventional Commits.
-- Do not combine unrelated refactors with the active phase.
-- Do not delete historical code/tests until `task.md` cleanup criteria are satisfied.
-
-# 10. Testing requirements
-
-Every meaningful change should include relevant:
-
-- happy path;
-- invalid/missing evidence;
-- ambiguity/unresolved case;
-- deterministic output;
-- negative control;
-- regression test.
-
-Always test the layer changed.
-
-Key native gates include:
-
-```text
-MModel construction
-MSystemState materialization
-Session.setSystem(...)
-existing USE OCL evaluation
-mapping trace completeness
-no V2 load in native mode
-.use export + recompile
-runtime stale/resync handling
-```
-
-Case-study progression:
-
-```text
-Hello World
-→ Auction
-→ House Building
-```
-
-No case-specific production branches.
-
-# 11. Runtime correctness
-
-Runtime facts are accepted only when their session/model revision/generation/evidence is valid.
-
-Use explicit states such as:
+Use explicit statuses such as:
 
 ```text
 MATERIALIZED_FAITHFULLY
 EVIDENCE_ONLY
 UNAVAILABLE
 UNKNOWN
+SKIPPED
+STALE
+INCOMPLETE
 ```
 
-Only faithful materializable facts may mutate `session.system().state()`.
+Evidence-only events may be journaled but must not be presented as formal state mutation.
 
-Reconnect/resync must re-establish authoritative state before LIVE verification resumes.
+## INV-005 — External OCL uses USE itself
 
-# 12. Security
+Use the existing USE compiler/model APIs.
 
-Treat imported projects as untrusted.
+Do not implement a second OCL parser, evaluator, or constraint language.
 
-Do not automatically execute arbitrary shell commands, project scripts, or arbitrary Java merely to infer static semantics.
+## INV-006 — OCL profile installation is atomic
 
-Validate paths, symlinks, archives, classpath entries, OCL paths, and export destinations.
+An external `.ocl` profile is either fully accepted for the current model revision or not installed.
 
-Reflection/class loading must be justified by the supported framework contract.
+No partially installed profile after syntax/type/context/name-conflict failure.
 
-# 13. Documentation and evidence
+## INV-007 — No vacuous PASS from missing projection
 
-After each phase/task:
+If a constraint requires a class/attribute/association that is absent from AUTO projection:
 
-- update `task.md` only when gates actually pass;
-- update active architecture/mapping docs only when behavior truly changed;
-- preserve historical evidence as historical;
-- search for stale claims;
-- do not rewrite old evidence as if freshly rerun.
+- expand projection only when the semantic source truly provides the concept/data; or
+- report incompatibility / `SKIPPED` / `UNAVAILABLE`.
 
-A phase report must include:
+Never create empty/stub classes merely to make OCL compile or make `allInstances()` pass.
 
-1. Git diff summary;
-2. files/classes changed;
-3. rule IDs implemented;
-4. current production call graph;
-5. tests and exact results;
-6. acceptance evidence;
-7. remaining `UNKNOWN` / `UNAVAILABLE`;
-8. legacy code still present/called;
-9. plan-vs-code discrepancies;
-10. risks/technical debt;
-11. rollback point;
-12. recommended next phase.
+## INV-008 — User invariant FAIL is observational
 
-# 14. Definition of done
-
-A task is DONE only when applicable items pass:
-
-- [ ] semantics are code/API-grounded;
-- [ ] correct rule IDs are implemented/traced;
-- [ ] focused and regression tests pass;
-- [ ] native USE model/state are valid;
-- [ ] Session integration is correct;
-- [ ] OCL/verification uses the same active system;
-- [ ] no hidden V2 dependency exists in native mode;
-- [ ] unresolved facts remain explicit;
-- [ ] documentation/evidence matches implementation;
-- [ ] final diff is reviewed.
-
-# 15. Final rule
-
-The agent owns project consistency, not only code generation.
+For a faithful runtime state:
 
 ```text
-Official semantics must agree with Mapping Rules
-Mapping Rules must agree with Native USE Model/State
-Tests must prove Implementation
-Runtime must mutate the same active USE System
-Documentation and Evidence must match current behavior
+apply state
+→ evaluate OCL
+→ record FAIL if violated
+→ keep the faithful state
+→ continue observation
 ```
 
-If any relationship is broken, the task is not complete.
+Do not rollback a faithful runtime state merely because a user invariant is false.
+
+Rollback/quarantine is only for:
+- malformed payload;
+- invalid identity/protocol;
+- structurally invalid mutation;
+- incomplete/unsafe atomic transaction.
+
+Enforcement is a separate feature and is outside this task unless explicitly added later.
+
+## INV-009 — Atomic runtime boundary
+
+Do not evaluate constraints on half-applied object/link/property updates.
+
+Verification runs after the complete accepted mutation/checkpoint transaction.
+
+## INV-010 — Monotonic state version
+
+Every committed formal runtime mutation/checkpoint gets a monotonic local `stateVersion`.
+
+`generation`, timestamp, source sequence, and model revision do not replace `stateVersion`.
+
+## INV-011 — Coverage must be explicit
+
+Queue overflow, GAP, stale snapshot, missing payload, source discontinuity, unsupported capability, or failed resync must never be reported as continuous PASS.
+
+Use `STALE`, `INCOMPLETE`, `SKIPPED`, or equivalent explicit status.
+
+## INV-012 — Runtime history is immutable evidence
+
+Do not store mutable `MSystemState` references as historical records.
+
+Journal/checkpoint/result records must be immutable or persisted in a form suitable for deterministic replay.
+
+## INV-013 — Runtime ordering is not inferred from wall-clock time
+
+Use source sequence/incarnation/Bridge ordering semantics.
+
+Timestamps are metadata, not proof of causal order.
+
+## INV-014 — No hidden V2 dependency
+
+`CODE_GROUNDED_NATIVE` runtime verification must not silently load:
+- Mapping V2;
+- Runtime Mapping V2;
+- V2 OCL profiles;
+- legacy verification engines as semantic authority.
+
+## INV-015 — Generic implementation
+
+No Hello/Auction/House-specific production branch, identity, constraint, or runtime binding.
+
+Case studies are tests only.
+
+---
+
+# 6. External OCL contract
+
+Supported target format is named invariant declarations, e.g.:
+
+```ocl
+context Workspace
+inv WorkspaceUuidDefined:
+    not self.uuid.oclIsUndefined()
+```
+
+Rules:
+
+- compile/type-check against the current native `MModel`;
+- exact class/attribute/association names;
+- no fuzzy aliases;
+- register exact `Class::Invariant` identity;
+- retain source path/hash and model revision;
+- baseline verify immediately after successful install;
+- recompile/rebind after compatible model replacement;
+- reject or mark incompatible if required structure no longer exists.
+
+Keep at least:
+
+```text
+constraintId
+contextClass
+sourceFile
+sourceHash
+modelRevision
+enabled
+requiredCapabilities/rules
+```
+
+Do not silently drop external constraints during resync.
+
+---
+
+# 7. Runtime coordinator contract
+
+There must be one serialization point for runtime apply/check/report.
+
+Preferred flow:
+
+```text
+accept event/checkpoint
+→ validate session/generation/modelRevision/incarnation/order
+→ verify coverage
+→ begin atomic mutation
+→ apply native changes
+→ structural validation
+→ commit
+→ stateVersion++
+→ evaluate constraints
+→ store result
+→ publish native/UI update
+```
+
+Requirements:
+
+- no duplicate full-check for the same committed event;
+- baseline/resync/profile change => full check;
+- faithful mutation => post-commit invariant verification;
+- evidence-only event => journal/status only, no fake state version unless the chosen versioning contract explicitly includes observation-only records;
+- manual OCL check/export must see a consistent committed state;
+- avoid concurrent mutation/read races between Bridge thread, Swing/UI, exporters, and shell actions.
+
+Prefer a single-writer coordinator plus safe read snapshots/locking over scattered locks.
+
+---
+
+# 8. Verification result semantics
+
+Per-constraint outcome must distinguish:
+
+```text
+PASS
+FAIL
+ERROR
+SKIPPED
+```
+
+Meaning:
+
+- `PASS`: expression evaluated to true on an adequately covered state;
+- `FAIL`: expression evaluated to false;
+- `ERROR`: undefined/invalid/evaluation/compiler/runtime error as defined by USE semantics;
+- `SKIPPED`: required state/capability/coverage is unavailable or unsafe to claim.
+
+Do not convert all constraints to FAIL from one aggregate boolean.
+
+A result/checkpoint should retain at least:
+
+```text
+sessionId
+generation
+modelRevision
+stateVersion
+checkpointId
+eventId
+sourceId
+sourceSequence
+observedAt
+appliedAt
+verifiedAt
+constraintSetHash
+stateHash
+coverageStatus
+perConstraintOutcome
+diagnostic
+duration
+```
+
+---
+
+# 9. Runtime source priorities
+
+Implement faithful runtime materialization incrementally.
+
+Priority:
+
+1. CArtAgO C09 observable-property snapshot/delta and exact artifact lifecycle;
+2. other runtime facts only when official typed authority exists;
+3. Jason/Moise/NPL facts remain `EVIDENCE_ONLY/SKIPPED` until their materialization semantics are proven.
+
+Important:
+
+- C09 is a property snapshot, not C08 live `ObsProperty`;
+- do not invent C08 support;
+- do not parse arbitrary strings into typed semantics;
+- preserve artifact/workspace/property identity and incarnation;
+- create/dispose/recreate must not accidentally reuse stale target identity.
+
+---
+
+# 10. Journal and checkpoints
+
+Runtime journal/checkpoint storage must support:
+
+```text
+baseline
+→ accepted runtime transaction/event
+→ verification result
+→ later replay
+```
+
+Required behavior:
+
+- bounded resource usage;
+- explicit retention policy;
+- explicit GAP/overflow marker;
+- no silent loss;
+- no claim of complete verification after coverage loss;
+- checkpoint/state hashes sufficient to detect replay divergence.
+
+If full lossless history cannot be guaranteed, report exactly what interval/checkpoints are verified.
+
+The thesis claim is:
+
+> verified observed runtime states/checkpoints of the supported projection
+
+not:
+
+> verified every internal JaCaMo state.
+
+---
+
+# 11. Workbench/UI boundary
+
+Workbench is an observer/controller over the existing USE system.
+
+Allowed:
+- load/replace external OCL profile;
+- show current runtime stateVersion/checkpoint;
+- show PASS/FAIL/ERROR/SKIPPED;
+- show coverage/GAP/backlog/drop diagnostics;
+- show last failing constraints;
+- navigate to normal USE model/object/invariant views;
+- request resync/manual verify/export.
+
+Forbidden:
+- independent runtime state;
+- independent OCL evaluator;
+- separate model ownership;
+- case-study-specific runtime logic.
+
+Publish UI updates after atomic commit/checkpoint, not after every low-level field write.
+
+---
+
+# 12. Offline replay contract
+
+Replay must reuse production-native semantics, not implement a second interpretation.
+
+Input:
+
+```text
+.use
+baseline .cmd
+constraints.ocl
+runtime journal/checkpoints
+```
+
+Flow:
+
+```text
+load .use
+→ replay baseline .cmd
+→ install .ocl
+→ baseline verify
+→ replay each supported transaction
+→ evaluate at the same boundaries
+→ compare stateHash/resultHash/outcomes
+```
+
+Rules:
+
+- same identity/mutation rules as live path;
+- no fuzzy repair during replay;
+- GAP/corrupt/missing payload => fail closed or explicit partial replay;
+- do not evaluate incomplete `.cmd` construction steps as JaCaMo runtime checkpoints;
+- replay must not become a competing live semantic authority.
+
+---
+
+# 13. Development protocol
+
+Before editing:
+
+1. read `task_runtime_verification.md`;
+2. inspect current callers/tests for runtime, constraints, Session, export, UI;
+3. inspect exact USE APIs before creating new abstractions;
+4. run `git status`, branch, recent log;
+5. preserve existing user work;
+6. identify the smallest acceptance gate for the current task section.
+
+During implementation:
+
+```text
+current behavior/evidence
+→ failing focused test where practical
+→ smallest semantic change
+→ focused tests
+→ runtime negative controls
+→ nearby regressions
+→ diff review
+→ task evidence update
+```
+
+Do not combine unrelated cleanup/refactoring with this runtime phase.
+
+Do not proceed past a mandatory gate that fails.
+
+---
+
+# 14. Testing requirements
+
+At minimum prove:
+
+## External OCL
+- valid multi-context profile;
+- syntax error;
+- missing context;
+- missing attribute/association;
+- type error/non-Boolean body;
+- duplicate/conflicting invariant;
+- atomic rejection;
+- resync/rebind behavior.
+
+## Runtime mutation
+- `PASS → FAIL → PASS`;
+- transient FAIL retained in history;
+- C09 value `A → B → A`;
+- artifact create/dispose/recreate;
+- exact identity/incarnation;
+- malformed payload rollback without corrupting state.
+
+## Ordering/coverage
+- duplicate;
+- conflicting duplicate;
+- rewind;
+- sequence GAP;
+- stale generation/session/model revision;
+- queue overflow;
+- incomplete snapshot/coverage;
+- reconnect/resync.
+
+## Concurrency/UI
+- manual verify sees committed state;
+- export sees committed state;
+- Workbench report changes after native runtime mutation;
+- object/invariant views refresh from the same `MSystem`;
+- no stale result overwrites newer stateVersion.
+
+## Replay
+- same state hashes;
+- same per-constraint outcomes;
+- corrupted journal detected;
+- GAP produces explicit partial/incomplete result.
+
+Always run:
+- focused tests;
+- nearby regression tests;
+- full reactor `verify`;
+- package/release tests before marking DONE.
+
+---
+
+# 15. Git and scope
+
+- Do not destructive-reset/clean unknown work.
+- Do not force-push primary branch.
+- Keep commits coherent and tested.
+- Prefer Conventional Commits.
+- Do not modify frozen V2/Ecore/golden artifacts.
+- Do not reintroduce deleted legacy runtime paths.
+- Do not add case-study hard coding.
+- Do not change unrelated mapping semantics to make runtime tests pass.
+
+---
+
+# 16. Documentation/evidence
+
+Update `task_runtime_verification.md` only when the corresponding acceptance gate actually passes.
+
+Update maintained runtime docs only after implementation is proven.
+
+Final evidence must include:
+
+1. current production runtime call graph;
+2. external `.ocl` installation path;
+3. exact runtime concepts materialized;
+4. verification-result schema;
+5. journal/checkpoint strategy;
+6. violation policy;
+7. Workbench behavior;
+8. replay behavior;
+9. exact test commands/results;
+10. remaining `EVIDENCE_ONLY`, `UNAVAILABLE`, `SKIPPED`;
+11. coverage limitations;
+12. final git diff/stat.
+
+Do not present fixture/unit coverage as proof of a live producer path unless an end-to-end test actually proves it.
+
+---
+
+# 17. Definition of done
+
+`task_runtime_verification.md` is DONE only when all applicable items are true:
+
+- [ ] external `.ocl` compiles/installs atomically on current native model;
+- [ ] baseline verification is attributable per constraint;
+- [ ] runtime mutation and OCL verification use the same active `MSystem`;
+- [ ] faithful runtime mutation creates a new stateVersion;
+- [ ] `PASS / FAIL / ERROR / SKIPPED` are distinguished correctly;
+- [ ] invariant FAIL does not erase the faithful violating state;
+- [ ] transient violations remain visible in history;
+- [ ] GAP/overflow/unsupported capability cannot become false PASS;
+- [ ] runtime results are journaled/checkpointed;
+- [ ] Workbench shows current runtime verification status;
+- [ ] offline replay reproduces supported checkpoints/results;
+- [ ] no hidden V2/fuzzy/case-specific path exists;
+- [ ] focused/full/package tests pass;
+- [ ] documentation matches actual behavior.
+
+---
+
+# 18. Final rule
+
+The runtime-verification phase is not complete merely because JaCaMo emitted events or USE called `check()`.
+
+It is complete only when:
+
+```text
+observed JaCaMo runtime fact
+→ exact accepted mutation/checkpoint
+→ same native USE state
+→ registered external OCL
+→ attributable verification result
+→ explicit coverage status
+→ durable evidence/history
+→ visible/replayable result
+```
+
+If any link is missing, do not claim runtime verification is complete.

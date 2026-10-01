@@ -17,10 +17,9 @@ Use this authority order:
 1. actual production source code and exact resolved dependency APIs/bytecode;
 2. executable tests and runtime evidence;
 3. current Bridge semantic contract;
-4. `NEW-CODE-GROUNDED-JACAMO-USE-ARCHITECTURE-DESIGN.md`;
-5. `JACAMO-USE-JAVA-MODEL-TRANSFORMATION-SPEC.md`;
-6. `JACAMO-USE-CONCEPT-MAPPING-RULES.md`;
-7. old Ecore / Mapping V2 / historical docs only as compatibility evidence.
+4. `JACAMO-USE-CONCEPT-MAPPING-RULES.md`;
+5. `CODE-GROUNDED-NATIVE-README.md` for current operational behavior;
+6. old Ecore / Mapping V2 / historical docs only as compatibility evidence.
 
 If code and documents disagree:
 
@@ -437,6 +436,7 @@ Exact names may follow repository conventions.
 
 - [x] Use `SourceInfo`.
 - [x] Keep as provenance/trace.
+- [x] Preserve exact local/nested/dependency-JAR include sources through native object/value trace, export and Mapping Inspector (2026-09-30 regression evidence below).
 
 ## A16 AgentProgram–PlanLibrary
 
@@ -1631,7 +1631,9 @@ Update only after corresponding code gate passes:
 
 **Section 28 evidence — 2026-09-29:** PASS. Added `CODE-GROUNDED-NATIVE-README.md` for architecture, setup/run, Bridge configuration, mapping/inspector behavior, USE session ownership, runtime limits, exports, and compatibility mode; added `CODE-GROUNDED-NATIVE-MIGRATION-REPORT.md` for phase gates, call graph, case-study evidence, limitations, and rollback/audit scope. The documents explicitly preserve the frozen V2/Ecore/golden boundary and distinguish supported subsets from unavailable/live claims.
 
-Historical audit docs remain, clearly labeled historical/date-scoped.
+**Documentation consolidation — 2026-09-30:** the migration report and pre-implementation design/spec documents were retired after their current operational guidance, semantic rules, and implementation evidence were consolidated into this task, `CODE-GROUNDED-NATIVE-README.md`, and `JACAMO-USE-CONCEPT-MAPPING-RULES.md`. The Section 28 entry above is historical evidence of work completed then, not a claim that the retired report remains present.
+
+No separate historical audit/report documents are maintained in `docs/agent`; dated implementation and audit evidence remains in this task.
 
 ---
 
@@ -1862,6 +1864,43 @@ Mapping Inspector
 ```
 
 # 34. Execution order
+
+**Jason include trace and interactive lifetime regression — 2026-09-30:**
+
+- [x] Resolve each parsed Plan's exact `SourceInfo` file/resource URI, SHA-256 and line range; nested includes, same-basename includes and package JARs are tested. `JasonSourceEvidence` performs no filename search or remote fetch. The official parser receives an absolute root URL via its stream API; root stream ownership is retained. `CodeGroundedTraceCollector`, value traces, schema `1.2.0` export, facade rows and Mapping Inspector retain this evidence instead of attributing every record to the root ASL/JCM.
+- [x] Keep an interactive producer alive until the explicit stop file following USE exit. `TimeoutSeconds` still bounds Bridge startup/GUI import and headless lifetime; timeout/failure exits are nonzero. The displayed Workbench refreshes cached readiness automatically and stops showing stale LIVE after subscription failure. No new runtime/resync loop is introduced.
+
+Focused tests PASS `31/31`: `OfficialJasonAdapterTest (8)`,
+`LiveJaCaMoLauncherLifetimeTest (2)`, `GenericLauncherScriptTest (1)`,
+`CodeGroundedExportTest (3)`, `NativeTraceSourceTest (1)`, and
+`JaCaMoWorkbenchPanelTest (16)`. Local include assertions execute in a separate
+JVM because the official Jason 3.3.2 `Include.process` retains its input handles
+on Windows; all source/digest/span assertions still execute against the real parser.
+Full unfiltered `mvn -B -pl use-plugin -am verify` PASS `514/514`:
+contract `12`, adapters `23`, core `12 + 1 IT`, GUI `1 + 129 IT`, plugin
+`328 + 8 IT`; zero failures/errors/skips. Counts are taken from this run's
+log, not stale XML files retained from older suites. Package, checksum,
+GUI staging, release and native Swing/OCL integration gates PASS.
+
+Actual Writing Paper static-to-native trace audit PASS: `66` Plans / `130`
+body nodes retained, with `14` local Plans and `52` imported Plans
+(`common-cartago: 18`, `common-moise: 24`, `org-obedient: 10`). Evidence:
+`use-plugin/target/source-lifetime/writing-paper-trace.json` and
+`native-trace-audit.log`. Headless live import/verification/resync/export PASS:
+`use-plugin/target/source-lifetime/headless-evidence/20260930-170754`.
+Packaged GUI auto-import READY: `gui-evidence/20260930-170743/gui-ready.json`
+under the same evidence root; `27` classes / `336` objects / `430` links.
+With startup timeout `15s`, the producer remained alive at age `230s`.
+An authenticated late consumer import/resync PASS reused the GUI's exact
+session `0e807748-cd36-4264-b2a4-b9e92f0fab41`, not merely an open TCP port:
+`gui-live-after-deadline/summary.json`. Ending only the identity-checked test
+GUI process triggered launcher stop-file cleanup, exit `0`, and listener
+shutdown; see `gui-lifetime-evidence.json`. This is supported live evidence
+with explicit `PARTIAL` completeness, not a claim of complete runtime semantics.
+The original JCM SHA-256 remains
+`ce9754dcc822fb6624d88e03487fe22316b5196e7b24504f6c642f0848e11ba4`.
+Single `MSystem` and `CODE_GROUNDED_NATIVE` are retained. No frozen
+V2/Ecore/golden or pre-existing unavailable/optional/approval checkbox changed.
 
 **Writing Paper launcher regression — 2026-09-30:** PASS for the supported
 native scope. `jacamo-bridge.ps1` accepts absent Java output only when a

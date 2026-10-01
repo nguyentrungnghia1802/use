@@ -36,9 +36,11 @@ import org.tzi.use.plugins.jacamo.constraint.ConstraintExtractor;
 import org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNativePipeline;
 import org.tzi.use.plugins.jacamo.codegrounded.NativeUseSessionActivator;
 import org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector;
+import org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationCoordinator;
 import org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalog;
-import org.tzi.use.plugins.jacamo.codegrounded.constraint.NativeProfileCompatibilityPreflight;
+import org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult;
 import org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseExporter;
+import org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode;
 import org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseSoilExporter;
 import org.tzi.use.plugins.jacamo.diagnostics.Diagnostic;
 import org.tzi.use.plugins.jacamo.mapping.ActiveBaseline;
@@ -74,23 +76,24 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     private final Path checkout;
     private final SemanticAuthority authority;
     private final PipelineMode pipelineMode;
+    private final NativeProjectionMode projectionMode;
     private final Session session;
     private final Supplier<BridgeConnectionConfig> bridgeConfigurationSource;
     private final BridgeTransportFactory bridgeTransportFactory;
-    private BridgeConnectionConfig configuredBridge;
-    private BridgeClient bridgeClient;
-    private BridgeMirrorStateMachine bridgeMirror;
-    private BridgeClient.Accepted bridgeAccepted;
-    private String bridgeDiagnostic = "";
-    private java.time.Instant bridgeLastSync;
+    private volatile BridgeConnectionConfig configuredBridge;
+    private volatile BridgeClient bridgeClient;
+    private volatile BridgeMirrorStateMachine bridgeMirror;
+    private volatile BridgeClient.Accepted bridgeAccepted;
+    private volatile String bridgeDiagnostic = "";
+    private volatile java.time.Instant bridgeLastSync;
     private final AtomicLong bridgeProcessed = new AtomicLong();
     private Path entry;
     private Path userProfile;
-    private Workspace workspace;
-    private NativeWorkspace nativeWorkspace;
-    private RuntimeVerificationEngine runtimeVerification;
-    private List<Diagnostic> lastDiagnostics = List.of();
-    private long lastFullCheckNanos;
+    private volatile Workspace workspace;
+    private volatile NativeWorkspace nativeWorkspace;
+    private volatile RuntimeVerificationEngine runtimeVerification;
+    private volatile List<Diagnostic> lastDiagnostics = List.of();
+    private volatile long lastFullCheckNanos;
 
     public DefaultJaCaMoFacade(Path checkout) {
         this(checkout, SemanticAuthority.configured(System.getProperty("use.jacamo.authority")),
@@ -126,6 +129,10 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         this.bridgeTransportFactory = java.util.Objects.requireNonNull(bridgeTransportFactory,
                 "bridgeTransportFactory");
         this.pipelineMode = java.util.Objects.requireNonNull(pipelineMode, "pipelineMode");
+        // Freeze the launch selection for this facade, including subsequent rebuilds/resyncs.
+        this.projectionMode = pipelineMode == PipelineMode.CODE_GROUNDED_NATIVE
+                ? NativeProjectionMode.configured(System.getProperty(NativeProjectionMode.PROPERTY))
+                : NativeProjectionMode.AUTO;
         this.session = session;
     }
 
@@ -134,9 +141,12 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     public PipelineMode pipelineMode() { return pipelineMode; }
+    public NativeProjectionMode projectionMode() { return projectionMode; }
     MSystem materializedSystem() { return currentSystem(); }
 
-    @Override public synchronized String status() {
+    // Read-only UI methods must never hold the facade monitor while a writer waits for USE's EDT.
+    // Published workspace pointers are immutable installations; formal reads use their coordinator.
+    @Override public String status() {
         AuthorityStatus state = authorityStatus();
         return "JaCaMo Bridge " + state.readiness() + (state.modelRevision().isBlank() ? ""
                 : " model=" + state.modelRevision()) + (state.diagnostic().isBlank() ? ""
@@ -155,19 +165,37 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         return synchronizeBridge(entry, userProfile);
     }
 
-    @Override public synchronized ProjectSummary projectSummary() {
-        return nativeWorkspace != null ? nativeWorkspace.summary : workspace == null ? null : workspace.summary;
+    @Override public ProjectSummary projectSummary() {
+        var nativeState = nativeWorkspace; var legacyState = workspace;
+        return nativeState != null ? nativeState.summary : legacyState == null ? null : legacyState.summary;
     }
-    @Override public synchronized List<SourceRow> sources() {
-        return nativeWorkspace != null ? nativeWorkspace.sources : workspace == null ? List.of() : workspace.sources;
+    @Override public List<SourceRow> sources() {
+        var nativeState = nativeWorkspace; var legacyState = workspace;
+        return nativeState != null ? nativeState.sources : legacyState == null ? List.of() : legacyState.sources;
     }
-    @Override public synchronized List<Diagnostic> diagnostics() { return lastDiagnostics; }
-    @Override public synchronized List<TraceRow> traces() {
-        return nativeWorkspace != null ? nativeWorkspace.traces : workspace == null ? List.of() : workspace.traces;
+    @Override public List<Diagnostic> diagnostics() { return lastDiagnostics; }
+    @Override public List<TraceRow> traces() {
+        var nativeState = nativeWorkspace; var legacyState = workspace;
+        return nativeState != null ? nativeState.traces : legacyState == null ? List.of() : legacyState.traces;
     }
-    @Override public synchronized List<org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor> constraints() {
-        return nativeWorkspace != null ? nativeWorkspace.constraints
-                : workspace == null ? List.of() : workspace.registry.descriptors();
+    @Override public List<org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor> constraints() {
+        var nativeState = nativeWorkspace; var legacyState = workspace;
+        if (nativeState == null) return legacyState == null ? List.of() : legacyState.registry.descriptors();
+        List<org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor> descriptors = new ArrayList<>(nativeState.constraints);
+        if (nativeState.runtimeProjector != null) nativeState.runtimeProjector.coordinator().read(() -> {
+            var profile = nativeState.runtimeProjector.coordinator().constraints().profile();
+            if (profile != null) for (var constraint : profile.constraints()) {
+                var invariant = nativeState.pipeline.model().model().classInvariants().stream()
+                        .filter(item -> item.qualifiedName().equals(constraint.constraintId())).findFirst().orElseThrow();
+                Path source = Path.of(constraint.sourceFile());
+                descriptors.add(new org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor("EXTERNAL:" + constraint.constraintId(),
+                        constraint.constraintId(), constraint.contextClass(), null, org.tzi.use.plugins.jacamo.verification.ConstraintKind.INV,
+                        ConstraintOrigin.USER, source, new org.tzi.use.plugins.jacamo.project.SourceSpan(source, 1, 1, 1, 1),
+                        List.copyOf(constraint.requiredRules()), constraint.enabled(), invariant.bodyExpression().toString()));
+            }
+            return null;
+        });
+        return List.copyOf(descriptors);
     }
 
     @Override public synchronized VerificationReport runFullVerification() {
@@ -180,24 +208,23 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         return workspace.latest;
     }
 
-    @Override public synchronized VerificationReport latestVerification() {
-        if (nativeWorkspace != null) return nativeWorkspace.latest;
-        if (workspace == null) return null;
-        var runtimeLatest = runtimeVerification == null ? null : runtimeVerification.latestReport();
-        return runtimeLatest == null ? workspace.latest : runtimeLatest.verification();
+    @Override public VerificationReport latestVerification() {
+        var nativeState = nativeWorkspace; var legacyState = workspace; var runtime = runtimeVerification;
+        if (nativeState != null && nativeState.runtimeProjector != null)
+            return nativeReport(nativeState, nativeState.runtimeProjector.coordinator().latest());
+        if (nativeState != null) return nativeState.latest;
+        if (legacyState == null) return null;
+        var runtimeLatest = runtime == null ? null : runtime.latestReport();
+        return runtimeLatest == null ? legacyState.latest : runtimeLatest.verification();
     }
 
     @Override public synchronized void loadVerificationProfile(Path profile) {
         requireWorkspace();
         if (nativeWorkspace != null) {
-            if (profile == null || !Files.isRegularFile(profile.toAbsolutePath().normalize()))
-                throw new IllegalArgumentException("OCL_USER_PROFILE_IO");
-            var preflight = new NativeProfileCompatibilityPreflight().inspect(profile,
-                    nativeWorkspace.pipeline.model().model());
-            if (!preflight.compatible())
-                throw new IllegalArgumentException("NATIVE_PROFILE_INCOMPATIBLE: "
-                        + String.join(",", preflight.diagnostics()));
-            throw new UnsupportedOperationException("NATIVE_PROFILE_INSTALL_NOT_IN_CURRENT_NATIVE_SCOPE");
+            if (profile == null) throw new IllegalArgumentException("OCL_USER_PROFILE_IO");
+            nativeWorkspace.runtimeProjector.coordinator().loadProfile(profile);
+            userProfile = profile.toAbsolutePath().normalize();
+            return;
         }
         if (profile == null || !Files.isRegularFile(profile.toAbsolutePath().normalize()))
             throw new IllegalArgumentException("OCL_USER_PROFILE_IO");
@@ -242,12 +269,26 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
 
     @Override public synchronized void exportNativeUse(Path destination) {
         requireNativeWorkspace();
-        new NativeUseExporter().export(nativeWorkspace.pipeline.model().model(), destination);
+        nativeWorkspace.runtimeProjector.coordinator().read(() -> new NativeUseExporter().export(nativeWorkspace.pipeline.model().model(), destination));
     }
 
     @Override public synchronized void exportNativeSoil(Path destination) {
         requireNativeWorkspace();
-        new NativeUseSoilExporter().export(nativeWorkspace.pipeline.state().system(), destination);
+        nativeWorkspace.runtimeProjector.coordinator().read(() -> new NativeUseSoilExporter().export(nativeWorkspace.pipeline.state().system(), destination));
+    }
+
+    @Override public RuntimeVerificationResult runtimeVerificationResult() {
+        var nativeState = nativeWorkspace;
+        return nativeState == null || nativeState.runtimeProjector == null ? null : nativeState.runtimeProjector.coordinator().latest();
+    }
+    @Override public List<RuntimeVerificationResult> runtimeVerificationHistory() {
+        var nativeState = nativeWorkspace;
+        return nativeState == null || nativeState.runtimeProjector == null ? List.of() : nativeState.runtimeProjector.coordinator().history();
+    }
+    @Override public synchronized void exportRuntimeReplay(Path directory) {
+        requireNativeWorkspace();
+        new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReplay().exportBundle(
+                nativeWorkspace.runtimeProjector, nativeWorkspace.pipeline.export().useText(), directory);
     }
 
     static Exception cleanupTemporaryReport(Path temporary, Exception primary) {
@@ -272,7 +313,11 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public synchronized void disconnectRuntime() {
+        closeNativeRuntimeArtifacts();
         closeBridgeClient();
+        bridgeMirror = null;
+        bridgeAccepted = null;
+        bridgeDiagnostic = "BRIDGE_DISCONNECTED";
     }
 
     @Override public synchronized void resyncRuntime() {
@@ -280,8 +325,9 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         synchronizeBridge(entry, userProfile);
     }
 
-    @Override public synchronized RuntimeStatus runtimeStatus() {
-        BridgeClientState state = bridgeMirror == null ? BridgeClientState.DISCONNECTED : bridgeMirror.state();
+    @Override public RuntimeStatus runtimeStatus() {
+        var mirror = bridgeMirror; var nativeState = nativeWorkspace; var runtime = runtimeVerification; var accepted = bridgeAccepted;
+        BridgeClientState state = mirror == null ? BridgeClientState.DISCONNECTED : mirror.state();
         MirrorState mirrorState = switch (state) {
             case DISCONNECTED -> workspace == null && nativeWorkspace == null ? MirrorState.OFFLINE : MirrorState.STALE;
             case NEGOTIATING -> MirrorState.CONNECTING;
@@ -289,32 +335,50 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             case LIVE -> MirrorState.LIVE;
             case RESYNC_REQUIRED, STALE -> MirrorState.STALE;
         };
-        int violations = runtimeVerification == null ? 0 : (int) runtimeVerification.reports().stream()
+        int violations = runtime == null ? 0 : (int) runtime.reports().stream()
                 .flatMap(report -> report.verification().results().stream())
                 .filter(result -> result.outcome() == VerificationOutcome.FAIL).count();
+        if (nativeState != null && nativeState.runtimeProjector != null) {
+            var coordinator = nativeState.runtimeProjector.coordinator();
+            return coordinator.read(() -> {
+            var result = coordinator.latest(); var observed = coordinator.lastObservation();
+            long rejected = coordinator.history().stream().filter(item -> item.freshness().equals("STALE")).count();
+            return new RuntimeStatus(result.freshness().equals("STALE") ? MirrorState.STALE : mirrorState,
+                    coordinator.backlog(), coordinator.highWatermark(), bridgeProcessed.get(), rejected,
+                    result.count(VerificationOutcome.ERROR), coordinator.journal().hasGap() ? 1 : 0,
+                    bridgeLastSync, observed.eventId() + " / " + observed.checkpointId(), result.durationNanos(), result.stateVersion(),
+                    (int) coordinator.history().stream().mapToLong(item -> item.count(VerificationOutcome.FAIL)).sum());
+            });
+        }
         return new RuntimeStatus(mirrorState, 0, 0, bridgeProcessed.get(), 0,
                 state == BridgeClientState.RESYNC_REQUIRED ? 1 : 0, 0, bridgeLastSync, "", 0,
-                bridgeAccepted == null ? 0 : bridgeAccepted.generation(), violations);
+                accepted == null ? 0 : accepted.generation(), violations);
     }
 
-    @Override public synchronized AuthorityStatus authorityStatus() {
+    @Override public AuthorityStatus authorityStatus() {
         BridgeConnectionConfig configuration = configuredBridge;
+        var mirror = bridgeMirror; var client = bridgeClient; var accepted = bridgeAccepted;
         String endpoint = configuration == null ? "" : configuration.displayEndpoint();
-        BridgeClientState readiness = bridgeMirror == null ? BridgeClientState.DISCONNECTED : bridgeMirror.state();
+        BridgeClientState readiness = mirror == null ? BridgeClientState.DISCONNECTED : mirror.state();
         String diagnostic = bridgeDiagnostic;
-        if (bridgeClient != null && !bridgeClient.diagnostic().isBlank()) diagnostic = bridgeClient.diagnostic();
-        if (bridgeAccepted == null)
+        if (client != null && !client.diagnostic().isBlank()) diagnostic = client.diagnostic();
+        if (accepted == null)
             return new AuthorityStatus(authority, readiness, Map.of(), "UNAVAILABLE", "", "", 0,
                     endpoint, diagnostic.isBlank() ? "BRIDGE_NOT_SYNCHRONIZED" : diagnostic);
         Map<String,String> capabilities = new LinkedHashMap<>();
-        bridgeAccepted.capabilities().forEach(value -> capabilities.put(value.name(), value.status().name()));
-        return new AuthorityStatus(authority, readiness, capabilities, bridgeAccepted.completeness().name(),
-                bridgeAccepted.modelRevision(), bridgeAccepted.sessionId(), bridgeAccepted.generation(), endpoint,
+        accepted.capabilities().forEach(value -> capabilities.put(value.name(), value.status().name()));
+        return new AuthorityStatus(authority, readiness, capabilities, accepted.completeness().name(),
+                accepted.modelRevision(), accepted.sessionId(), accepted.generation(), endpoint,
                 diagnostic);
     }
 
-    @Override public synchronized FormalStateStatus formalStateStatus() {
-        MSystem system = currentSystem();
+    @Override public FormalStateStatus formalStateStatus() {
+        var nativeState = nativeWorkspace;
+        if (nativeState != null && nativeState.runtimeProjector != null)
+            return nativeState.runtimeProjector.coordinator().read(() -> readFormalStateStatus(nativeState.pipeline.state().system()));
+        return readFormalStateStatus(currentSystem());
+    }
+    private FormalStateStatus readFormalStateStatus(MSystem system) {
         if (system == null) return FormalStateStatus.empty();
         var state = system.state();
         List<String> rows = new ArrayList<>();
@@ -337,12 +401,13 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         }
     }
 
-    @Override public synchronized PerformanceMetrics performanceMetrics() {
-        if (workspace == null && nativeWorkspace == null) return PerformanceMetrics.empty();
+    @Override public PerformanceMetrics performanceMetrics() {
+        var nativeState = nativeWorkspace; var legacyState = workspace;
+        if (legacyState == null && nativeState == null) return PerformanceMetrics.empty();
         RuntimeStatus runtimeStatus = runtimeStatus();
         Runtime jvm = Runtime.getRuntime();
-        long importNanos = nativeWorkspace != null ? nativeWorkspace.importNanos : workspace.importNanos;
-        long generationNanos = nativeWorkspace != null ? nativeWorkspace.generationNanos : workspace.generationNanos;
+        long importNanos = nativeState != null ? nativeState.importNanos : legacyState.importNanos;
+        long generationNanos = nativeState != null ? nativeState.generationNanos : legacyState.generationNanos;
         return new PerformanceMetrics(importNanos, generationNanos, lastFullCheckNanos,
                 runtimeStatus.lastLatencyNanos(), jvm.totalMemory() - jvm.freeMemory());
     }
@@ -368,7 +433,10 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public synchronized void close() {
+        closeNativeRuntimeArtifacts();
         closeBridgeClient();
+        bridgeMirror = null;
+        bridgeAccepted = null;
     }
 
     private RuntimeVerificationEngine createRuntimeVerification(Workspace next,
@@ -409,21 +477,21 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         ArrayDeque<RuntimeEvent> pending = new ArrayDeque<>();
         AtomicReference<BridgeRuntimeProjector> projectorReference = new AtomicReference<>();
         AtomicReference<NativeRuntimeProjector> nativeProjectorReference = new AtomicReference<>();
+        AtomicReference<NativeRuntimeProjector> newlyCreatedNativeProjector = new AtomicReference<>();
+        AtomicReference<BridgeClient.CoverageFailure> nativeCoverageFailure = new AtomicReference<>();
+        java.util.concurrent.atomic.AtomicBoolean deliveryActive = new java.util.concurrent.atomic.AtomicBoolean(true);
         BridgeClient candidate = null;
         try {
             candidate = new BridgeClient(bridgeTransportFactory.open(configuration), candidateMirror,
                     configuration.distributionSha256(), configuration.requiredCapabilities(),
                     configuration.maxBufferedEvents(), event -> {
                         if (pipelineMode == PipelineMode.CODE_GROUNDED_NATIVE) {
+                            if (!deliveryActive.get()) return;
                             synchronized (pending) {
+                                if (!deliveryActive.get()) return;
                                 NativeRuntimeProjector projector = nativeProjectorReference.get();
                                 if (projector == null) {
-                                    // Faithful events are retained until the native pipeline owns the accepted
-                                    // session. Evidence-only events stay in the authoritative Bridge mirror.
-                                    if (!nativeRequiresMaterialization(event)) {
-                                        bridgeProcessed.incrementAndGet();
-                                        return;
-                                    }
+                                    // Evidence-only events are journalled too; they never increment stateVersion.
                                     if (pending.size() >= configuration.maxBufferedEvents())
                                         throw new BridgeProtocolException("BRIDGE_FACADE_BUFFER_OVERFLOW");
                                     pending.addLast(event);
@@ -448,37 +516,59 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                                 bridgeProcessed.incrementAndGet();
                             }
                         }
+                    }, (event, diagnostic) -> {
+                        if (!deliveryActive.get()) return;
+                        nativeCoverageFailure.set(new BridgeClient.CoverageFailure(event, diagnostic));
+                        var projector = nativeProjectorReference.get();
+                        if (projector != null) javax.swing.SwingUtilities.invokeLater(() -> {
+                            // A queued callback from a superseded subscription cannot poison the new generation.
+                            if (deliveryActive.get()) projector.coordinator().coverageGap(event, diagnostic);
+                        });
                     });
             long importStarted = System.nanoTime();
             BridgeClient.Accepted accepted = candidate.synchronize();
             validateBridgeSelection(selectedJcm, accepted);
             if (pipelineMode == PipelineMode.CODE_GROUNDED_NATIVE) {
                 long importNanos = System.nanoTime() - importStarted;
-                NativeWorkspace next = buildNativeSemantic(selectedJcm, accepted.model(), importNanos);
-                if (session != null) new NativeUseSessionActivator().activate(session, next.pipeline);
-                NativeRuntimeProjector nativeProjector = new NativeRuntimeProjector(next.pipeline,
-                        accepted.sessionId(), accepted.generation(), accepted.modelRevision());
+                NativeWorkspace previous = nativeWorkspace;
+                boolean compatibleResync = previous != null && previous.runtimeProjector != null && bridgeAccepted != null
+                        && bridgeAccepted.modelRevision().equals(accepted.modelRevision());
+                var savedProfile = previous == null || previous.runtimeProjector == null ? null
+                        : previous.runtimeProjector.coordinator().read(() -> previous.runtimeProjector.coordinator().constraints().profile());
+                NativeWorkspace next = compatibleResync ? previous : buildNativeSemantic(selectedJcm, accepted.model(), importNanos);
+                NativeRuntimeProjector nativeProjector = compatibleResync ? previous.runtimeProjector
+                        : new NativeRuntimeProjector(next.pipeline, accepted.sessionId(), accepted.generation(),
+                                accepted.modelRevision(), RuntimeVerificationCoordinator.createEphemeralDirectory(runtimeRoot()));
+                if (!compatibleResync) newlyCreatedNativeProjector.set(nativeProjector);
+                if (!compatibleResync && savedProfile != null)
+                    nativeProjector.coordinator().loadSavedProfile(savedProfile);
+                if (previous != null) previous.stopRuntimeDelivery.run();
+                BridgeClient previousClient = bridgeClient;
+                if (previousClient != null) previousClient.close();
                 synchronized (pending) {
-                    nativeProjector.applySnapshot(accepted.runtime());
+                    nativeProjector.applySnapshot(accepted.runtime(), accepted.sessionId(), accepted.generation());
                     nativeProjectorReference.set(nativeProjector);
                     while (!pending.isEmpty()) {
                         nativeProjector.apply(pending.removeFirst());
                         bridgeProcessed.incrementAndGet();
                     }
                 }
+                var failure = nativeCoverageFailure.get();
+                if (failure != null) nativeProjector.coordinator().coverageGap(failure.event(), failure.diagnostic());
                 next.runtimeProjector = nativeProjector;
-                BridgeClient previousClient = bridgeClient;
+                next.stopRuntimeDelivery = () -> deliveryActive.set(false);
+                if (!compatibleResync && session != null) new NativeUseSessionActivator().activate(session, next.pipeline);
+                if (!compatibleResync && previous != null && previous.runtimeProjector != null)
+                    previous.runtimeProjector.close();
                 nativeWorkspace = next;
                 workspace = null;
                 entry = selectedJcm;
-                userProfile = null;
                 runtimeVerification = null;
                 bridgeClient = candidate;
                 bridgeMirror = candidateMirror;
                 bridgeAccepted = accepted;
                 bridgeLastSync = accepted.runtime().captureEndedAt();
                 bridgeDiagnostic = "";
-                if (previousClient != null) previousClient.close();
                 return next.summary;
             }
             NativeSemanticAdapter.Result adapted = new NativeSemanticAdapter().adapt(accepted.model(),
@@ -508,8 +598,13 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             if (previousClient != null) previousClient.close();
             return workspace.summary;
         } catch (RuntimeException error) {
+            deliveryActive.set(false);
             if (candidate != null) candidate.close();
+            NativeRuntimeProjector created = newlyCreatedNativeProjector.get();
+            if (created != null && (nativeWorkspace == null || nativeWorkspace.runtimeProjector != created)) created.close();
             bridgeDiagnostic = error.getMessage() == null ? error.getClass().getSimpleName() : error.getMessage();
+            if (pipelineMode == PipelineMode.CODE_GROUNDED_NATIVE && nativeWorkspace != null && nativeWorkspace.runtimeProjector != null)
+                nativeWorkspace.runtimeProjector.coordinator().coverageGap("BRIDGE_RESYNC_FAILED:" + bridgeDiagnostic);
             throw error;
         }
     }
@@ -547,17 +642,21 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         }
     }
 
-    private boolean nativeRequiresMaterialization(RuntimeEvent event) {
-        return event.projectionStatus() == org.jacamo.bridge.contract.ProjectionStatus.MATERIALIZED_FAITHFULLY
-                && event.completeness() == org.jacamo.bridge.contract.Completeness.COMPLETE
-                && event.after().get("normalizedEventKind") instanceof String normalized
-                && !normalized.isBlank();
+    private void closeNativeRuntimeArtifacts() {
+        NativeWorkspace current = nativeWorkspace;
+        if (current == null) return;
+        current.stopRuntimeDelivery.run();
+        if (current.runtimeProjector != null) {
+            current.runtimeProjector.close();
+            current.runtimeProjector = null;
+        }
+        runtimeVerification = null;
     }
 
     private NativeWorkspace buildNativeSemantic(Path jcmFile, org.jacamo.bridge.contract.ModelSnapshot snapshot,
                                                 long importNanos) {
         long generationStarted = System.nanoTime();
-        CodeGroundedNativePipeline.Result pipeline = new CodeGroundedNativePipeline().build(snapshot);
+        CodeGroundedNativePipeline.Result pipeline = new CodeGroundedNativePipeline().build(snapshot, projectionMode);
         long generationNanos = System.nanoTime() - generationStarted;
         MSystem system = pipeline.state().system();
         Map<String,Long> counts = new LinkedHashMap<>();
@@ -598,13 +697,10 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         } catch (Exception error) {
             throw new IllegalStateException("NATIVE_SOURCE_EVIDENCE_FAILED: " + jcmFile, error);
         }
-        List<TraceRow> traces = pipeline.trace().records().stream().map(record -> new TraceRow(
-                record.sourceIdentity(), record.sourceJavaFqcn(), record.targetIdentity(), record.targetKind(),
-                record.ruleId(), record.fidelity().name(), record.capabilityStatus().name(), jcmFile, 0,
-                record.ruleId().substring(0, 1), record.evidenceAuthority().name(), record.diagnostics())).toList();
+        List<TraceRow> traces = pipeline.trace().records().stream().map(record -> nativeTraceRow(record, jcmFile)).toList();
         List<org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor> constraints = new ArrayList<>(system.model()
                 .classInvariants().stream().map(invariant -> new org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor(
-                        "NATIVE:" + invariant.name(), invariant.name(), invariant.cls().name(), null,
+                        "NATIVE:" + invariant.qualifiedName(), invariant.name(), invariant.cls().name(), null,
                         org.tzi.use.plugins.jacamo.verification.ConstraintKind.INV,
                         org.tzi.use.plugins.jacamo.verification.ConstraintOrigin.CORE, jcmFile,
                         new org.tzi.use.plugins.jacamo.project.SourceSpan(jcmFile, 1, 1, 1, 1),
@@ -620,38 +716,48 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         NativeWorkspace next = new NativeWorkspace(summary, sources, traces, constraints, pipeline,
                 importNanos, generationNanos);
         lastDiagnostics = List.of();
-        runNativeVerification(next);
         return next;
     }
 
-    private VerificationReport runNativeVerification(NativeWorkspace nativeState) {
-        long started = System.nanoTime();
-        StringWriterPair validation = validateNative(nativeState.pipeline.state().system());
-        List<org.tzi.use.plugins.jacamo.verification.VerificationResult> results = new ArrayList<>();
-        results.add(new org.tzi.use.plugins.jacamo.verification.VerificationResult("USE_STRUCTURE",
-                validation.structureValid ? VerificationOutcome.PASS : VerificationOutcome.FAIL, null,
-                validation.output, "", List.of(), null, List.of()));
-        for (var descriptor : nativeState.constraints) {
-            boolean skipped = descriptor.id().startsWith("NATIVE:SKIPPED:");
-            results.add(new org.tzi.use.plugins.jacamo.verification.VerificationResult(descriptor.id(),
-                    skipped ? VerificationOutcome.SKIPPED
-                            : validation.invariantsValid ? VerificationOutcome.PASS : VerificationOutcome.FAIL,
-                    null, skipped ? "SKIPPED_CAPABILITY" : validation.output, descriptor.oclSource(),
-                    List.of(), null, List.of()));
+    static TraceRow nativeTraceRow(org.tzi.use.plugins.jacamo.codegrounded.trace.CodeGroundedTraceRecord record,
+                                   Path jcmFile) {
+        Path path = null;
+        int line = 0;
+        if (!record.sourceEvidence().isEmpty()) {
+            var evidence = record.sourceEvidence().getFirst();
+            line = evidence.startLine();
+            String uri = evidence.sourceUri();
+            if (uri.startsWith("project:/")) path = jcmFile.toAbsolutePath().getParent()
+                    .resolve(uri.substring("project:/".length())).normalize();
+            else if (uri.startsWith("file:")) path = Path.of(java.net.URI.create(uri)).toAbsolutePath().normalize();
+            // A jar entry is a URI, not a local Path. Retain it in sourceEvidence for the inspector.
         }
-        nativeState.latest = VerificationReport.offline(java.util.UUID.randomUUID().toString(),
-                validation.structureValid, results, Map.of("nativeModelSha256", nativeState.pipeline.model().structuralHash(),
-                        "exportSha256", nativeState.pipeline.export().recompiledStructuralHash()));
-        lastFullCheckNanos = System.nanoTime() - started;
-        return nativeState.latest;
+        return new TraceRow(record.sourceIdentity(), record.sourceJavaFqcn(), record.targetIdentity(), record.targetKind(),
+                record.ruleId(), record.fidelity().name(), record.capabilityStatus().name(), path, line,
+                record.ruleId().substring(0, 1), record.evidenceAuthority().name(), record.diagnostics(), record.sourceEvidence());
     }
 
-    private StringWriterPair validateNative(MSystem system) {
-        java.io.StringWriter output = new java.io.StringWriter();
-        java.io.PrintWriter writer = new java.io.PrintWriter(output, true);
-        boolean structureValid = system.state().checkStructure(writer);
-        boolean invariantsValid = system.state().check(writer, false, true, true, List.of());
-        return new StringWriterPair(structureValid, invariantsValid, output.toString());
+    private VerificationReport runNativeVerification(NativeWorkspace nativeState) {
+        if (nativeState.runtimeProjector == null) throw new IllegalStateException("NATIVE_RUNTIME_COORDINATOR_REQUIRED");
+        var result = nativeState.runtimeProjector.coordinator().manualVerify();
+        lastFullCheckNanos = result.durationNanos();
+        return nativeReport(nativeState, result);
+    }
+
+    private VerificationReport nativeReport(NativeWorkspace nativeState, RuntimeVerificationResult runtime) {
+        if (runtime == null) return nativeState.latest;
+        List<org.tzi.use.plugins.jacamo.verification.VerificationResult> results = new ArrayList<>();
+        for (var outcome : runtime.outcomes()) results.add(new org.tzi.use.plugins.jacamo.verification.VerificationResult(
+                outcome.constraintId(), outcome.outcome(), outcome.contextClass(), outcome.diagnostic(), outcome.expression(), List.of(), null, List.of()));
+        nativeState.constraints.stream().filter(descriptor -> descriptor.id().startsWith("NATIVE:SKIPPED:")).forEach(descriptor ->
+                results.add(new org.tzi.use.plugins.jacamo.verification.VerificationResult(descriptor.id(), VerificationOutcome.SKIPPED,
+                        descriptor.context(), "SKIPPED_CAPABILITY", descriptor.oclSource(), List.of(), null, List.of())));
+        return new VerificationReport("1.0.0", runtime.resultHash(), runtime.verifiedAt(), "RUNTIME_NATIVE", true, results,
+                Map.of("nativeModelSha256", nativeState.pipeline.model().structuralHash(), "stateHash", runtime.stateHash(),
+                        "stateVersion", Long.toString(runtime.stateVersion()), "sessionId", runtime.sessionId(),
+                        "generation", Long.toString(runtime.generation()), "modelRevision", runtime.modelRevision(),
+                        "constraintSetHash", runtime.constraintSetHash(), "coverage", runtime.coverage(), "freshness", runtime.freshness(),
+                        "eventId", runtime.eventId()));
     }
 
     private List<String> nativeConstraintDependencies(String name) {
@@ -671,8 +777,9 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     private MSystem currentSystem() {
-        if (nativeWorkspace != null) return nativeWorkspace.pipeline.state().system();
-        return workspace == null ? null : workspace.direct.system();
+        var nativeState = nativeWorkspace; var legacyState = workspace;
+        if (nativeState != null) return nativeState.pipeline.state().system();
+        return legacyState == null ? null : legacyState.direct.system();
     }
 
     private Workspace buildSemantic(Path jcmFile, Path verificationProfile,
@@ -753,7 +860,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     private void requireNativeWorkspace() {
-        if (nativeWorkspace == null)
+        if (nativeWorkspace == null || nativeWorkspace.runtimeProjector == null)
             throw new IllegalStateException("NATIVE_EXPORT_REQUIRES_CODE_GROUNDED_NATIVE");
     }
 
@@ -777,6 +884,12 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 return candidate;
         }
         return current;
+    }
+
+    private Path runtimeRoot() {
+        String configured = System.getProperty("use.jacamo.runtime.root", "").trim();
+        if (!configured.isBlank()) return Path.of(configured).toAbsolutePath().normalize();
+        return checkout.resolve("use-plugin").resolve("target").resolve("jacamo-runtime");
     }
 
     private static final class Workspace {
@@ -827,6 +940,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         private final long importNanos;
         private final long generationNanos;
         private NativeRuntimeProjector runtimeProjector;
+        private Runnable stopRuntimeDelivery = () -> { };
         private VerificationReport latest;
 
         private NativeWorkspace(ProjectSummary summary, List<SourceRow> sources, List<TraceRow> traces,
@@ -843,5 +957,4 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         }
     }
 
-    private record StringWriterPair(boolean structureValid, boolean invariantsValid, String output) { }
 }

@@ -9,7 +9,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import jacamo.infra.JaCaMoLauncher;
 import jacamo.infra.JaCaMoRuntimeServices;
-import jason.JasonException;
 import jason.runtime.RuntimeServicesFactory;
 import org.jacamo.bridge.adapter.JaCaMoBridgePlatform;
 
@@ -26,12 +25,34 @@ public final class LiveJaCaMoLauncherMain {
         Path stop = Path.of(args[1]).toAbsolutePath().normalize();
         long timeoutSeconds = args.length > 2 ? Long.parseLong(args[2]) : 60L;
         boolean headless = args.length <= 3 || Boolean.parseBoolean(args[3]);
+        Path consumerReady = args.length > 4 && !args[4].isBlank()
+                ? Path.of(args[4]).toAbsolutePath().normalize() : null;
+        long startupSeconds = args.length > 5 ? Long.parseLong(args[5]) : 60L;
+        if (consumerReady != null && startupSeconds < 1)
+            throw new IllegalArgumentException("REAL_JACAMO_STARTUP_TIMEOUT_INVALID");
+        // Zero lifetime is an explicit stop-file-controlled interactive session, not a startup timeout.
+        if (timeoutSeconds < 0 || (headless && timeoutSeconds == 0))
+            throw new IllegalArgumentException("REAL_JACAMO_LIFETIME_INVALID");
         System.setProperty("java.awt.headless", Boolean.toString(headless));
         if (!Files.isRegularFile(project, LinkOption.NOFOLLOW_LINKS))
             throw new IllegalArgumentException("REAL_JACAMO_PROJECT_MISSING:" + project);
 
         BaseLocalMAS.logger = Logger.getLogger(JaCaMoLauncher.class.getName());
         JaCaMoLauncher launcher = new JaCaMoLauncher() {
+            /** Official platforms (including Bridge) start before RunLocalMAS calls this hook. */
+            @Override protected void startAgs() {
+                if (consumerReady != null) {
+                    System.out.println("REAL_JACAMO_WAIT_CONSUMER_READY");
+                    System.out.flush();
+                    try { awaitConsumerReady(consumerReady, stop, startupSeconds); }
+                    catch (InterruptedException error) {
+                        Thread.currentThread().interrupt(); throw new IllegalStateException("REAL_JACAMO_START_INTERRUPTED", error);
+                    }
+                    System.out.println("REAL_JACAMO_CONSUMER_READY_START_AGENTS");
+                    System.out.flush();
+                }
+                super.startAgs();
+            }
             /**
              * A disposable production-launcher JVM must not inherit a user's Jason GUI/FileHandler
              * configuration.  In headless mode that configuration can instantiate
@@ -48,6 +69,7 @@ public final class LiveJaCaMoLauncherMain {
         RuntimeServicesFactory.set(new JaCaMoRuntimeServices(launcher));
         boolean created = false;
         JaCaMoBridgePlatform bridge = null;
+        boolean stoppedNormally = false;
         try {
             System.out.println("REAL_JACAMO_INIT project=" + project + " headless=" + headless);
             System.out.flush();
@@ -75,12 +97,10 @@ public final class LiveJaCaMoLauncherMain {
             System.out.println("REAL_JACAMO_BRIDGE_READY port=" + bridge.serverPort()
                     + " session=" + bridge.sessionId() + " agents=" + launcher.getAgs().size());
             System.out.flush();
-            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(timeoutSeconds);
-            while (!Files.exists(stop, LinkOption.NOFOLLOW_LINKS) && System.nanoTime() < deadline)
-                Thread.sleep(50L);
-            if (!Files.exists(stop, LinkOption.NOFOLLOW_LINKS))
-                throw new IllegalStateException("REAL_JACAMO_TIMEOUT");
-        } catch (JasonException error) {
+            awaitStopFile(stop, timeoutSeconds);
+            stoppedNormally = true;
+        } catch (Exception error) {
+            error.printStackTrace(System.err);
             throw error;
         } finally {
             if (created) {
@@ -121,8 +141,30 @@ public final class LiveJaCaMoLauncherMain {
                 }
                 System.out.println("REAL_JACAMO_BRIDGE_STOPPED");
                 System.out.flush();
-                System.exit(0);
+                // Never turn a timeout/bootstrap failure into a successful process exit.
+                System.exit(stoppedNormally ? 0 : 1);
             }
+        }
+    }
+
+    static void awaitStopFile(Path stop, long lifetimeSeconds) throws Exception {
+        if (lifetimeSeconds < 0) throw new IllegalArgumentException("REAL_JACAMO_LIFETIME_INVALID");
+        long started = System.nanoTime();
+        while (!Files.exists(stop, LinkOption.NOFOLLOW_LINKS)) {
+            if (lifetimeSeconds > 0 && System.nanoTime() - started >= TimeUnit.SECONDS.toNanos(lifetimeSeconds))
+                throw new IllegalStateException("REAL_JACAMO_TIMEOUT");
+            Thread.sleep(50L);
+        }
+    }
+
+    static void awaitConsumerReady(Path ready, Path stop, long timeoutSeconds) throws InterruptedException {
+        if (timeoutSeconds < 1) throw new IllegalArgumentException("REAL_JACAMO_STARTUP_TIMEOUT_INVALID");
+        long started = System.nanoTime();
+        while (!Files.isRegularFile(ready, LinkOption.NOFOLLOW_LINKS)) {
+            if (Files.exists(stop, LinkOption.NOFOLLOW_LINKS)) throw new IllegalStateException("REAL_JACAMO_START_CANCELLED");
+            if (System.nanoTime() - started >= TimeUnit.SECONDS.toNanos(timeoutSeconds))
+                throw new IllegalStateException("REAL_JACAMO_CONSUMER_READY_TIMEOUT");
+            Thread.sleep(20L);
         }
     }
 }

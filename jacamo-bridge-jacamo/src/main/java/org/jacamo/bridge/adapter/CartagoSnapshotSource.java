@@ -38,6 +38,8 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
     private final CartagoEnvironment environment;
     private final Set<String> configuredWorkspaces;
     private final Set<String> registeredWorkspaces = new LinkedHashSet<>();
+    private final Set<BridgeEntityId> knownArtifacts = new LinkedHashSet<>();
+    private final Set<BridgeEntityId> pendingCreations = new LinkedHashSet<>();
     private final String sessionId;
     private final long generation;
     private final AtomicLong sequence = new AtomicLong();
@@ -134,6 +136,8 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
                 values.put("creatorAgentSemanticId", artifact.creatorAgentSemanticId());
                 facts.add(faithful(artifactId(workspaceFullName, artifact.name(), artifact.uuid()),
                         RuntimeFactKind.ARTIFACT, values));
+                BridgeEntityId id = artifactId(workspaceFullName, artifact.name(), artifact.uuid());
+                if (!pendingCreations.contains(id)) knownArtifacts.add(id);
             }
             for (var property : snapshot.propertySnapshots()) {
                 var values = values("UPSERT_CARTAGO_PROPERTY_SNAPSHOT", property.metadata().semanticId());
@@ -182,7 +186,9 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
         return value;
     }
 
-    @Override public Completeness completeness() { return completeness; }
+    @Override public synchronized Completeness completeness() {
+        return pendingCreations.isEmpty() ? completeness : Completeness.PARTIAL;
+    }
 
     @Override public synchronized void close() throws Exception {
         if (observer == null) return;
@@ -192,6 +198,7 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
             catch (Exception error) { if (failure == null) failure = error; else failure.addSuppressed(error); }
         }
         registeredWorkspaces.clear();
+        knownArtifacts.clear(); pendingCreations.clear();
         observer = null;
         if (failure != null) throw failure;
     }
@@ -205,6 +212,8 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
             try {
                 environment.registerLogger(workspace, this);
                 registeredWorkspaces.add(workspace);
+                for (ArtifactId artifact : environment.getController(workspace).getCurrentArtifacts())
+                    if (!pendingCreations.contains(artifactId(artifact))) knownArtifacts.add(artifactId(artifact));
             } catch (Exception ignored) { /* built-in Cartago may not have created it yet */ }
         }
     }
@@ -240,7 +249,8 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
         sink.accept(new RuntimeEvent(sessionId + ":cartago:" + next, sessionId, generation,
                 System.getProperty("jacamo.bridge.modelRevision", "unnegotiated"), "cartago", sourceId(), next,
                 Instant.now(), kind, artifact != null ? RuntimeFactKind.ARTIFACT : RuntimeFactKind.AGENT,
-                ProjectionStatus.EVIDENCE_ONLY, id, null, correlation, "", Map.of(), values,
+                values.containsKey("normalizedEventKind") ? ProjectionStatus.MATERIALIZED_FAITHFULLY : ProjectionStatus.EVIDENCE_ONLY,
+                id, null, correlation, "", Map.of(), values,
                 new SourceWatermark(sourceId(), next), Completeness.COMPLETE, List.of()));
     }
 
@@ -256,11 +266,82 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
             Map.of("operation", op.getName(), "opId", id.toString())); }
     @Override public void opFailed(long time, OpId id, ArtifactId artifact, Op op, String message, Tuple descriptor) { event(RuntimeEventKind.FAILED,
             artifact, null, Map.of("operation", op.getName(), "opId", id.toString(), "message", safe(message), "descriptor", safe(descriptor))); }
-    @Override public void newPercept(long time, ArtifactId artifact, Tuple signal, ArtifactObsProperty[] added,
-                                     ArtifactObsProperty[] removed, ArtifactObsProperty[] changed) { event(RuntimeEventKind.CHANGED, artifact, null,
-            Map.of("signal", safe(signal), "added", Arrays.toString(added), "removed", Arrays.toString(removed), "changed", Arrays.toString(changed))); }
-    @Override public void artifactCreated(long time, ArtifactId artifact, AgentId creator) { event(RuntimeEventKind.CREATED, artifact, creator, Map.of()); }
-    @Override public void artifactDisposed(long time, ArtifactId artifact, AgentId disposer) { event(RuntimeEventKind.DISPOSED, artifact, disposer, Map.of()); }
+    @Override public synchronized void newPercept(long time, ArtifactId artifact, Tuple signal, ArtifactObsProperty[] added,
+                                     ArtifactObsProperty[] removed, ArtifactObsProperty[] changed) {
+        synchronized (this) {
+            if (!knownArtifacts.contains(artifactId(artifact))) {
+                // Official init emits property callbacks BEFORE artifactCreated. Do not
+                // expose half-initialized state: creation's revalidated controller snapshot
+                // commits the final initial properties at the real lifecycle boundary.
+                pendingCreations.add(artifactId(artifact));
+                if (pendingCreations.size() > 8192) { pendingCreations.clear(); gap("CARTAGO_CREATION_BUFFER_OVERFLOW"); }
+                return;
+            }
+        }
+        if ((added == null || added.length == 0) && (removed == null || removed.length == 0)
+                && (changed == null || changed.length == 0)) {
+            event(RuntimeEventKind.CHANGED, artifact, null, Map.of("signal", safe(signal))); return;
+        }
+        String parent = OfficialCartagoAdapter.artifactId(String.valueOf(environment.getId()), artifact);
+        List<Map<String, Object>> properties = new ArrayList<>();
+        if (added != null) for (ArtifactObsProperty property : added) properties.add(propertyPayload(parent, property));
+        if (changed != null) for (ArtifactObsProperty property : changed) properties.add(propertyPayload(parent, property));
+        List<String> removedIds = removed == null ? List.of() : Arrays.stream(removed)
+                .map(property -> OfficialCartagoAdapter.propertyId(parent, property.getFullId())).toList();
+        var payload = values("APPLY_CARTAGO_PROPERTY_DELTA", parent);
+        payload.put("properties", properties); payload.put("removedPropertySemanticIds", removedIds);
+        payload.put("signal", safe(signal));
+        event(RuntimeEventKind.CHANGED, artifact, null, payload);
+    }
+    static Map<String, Object> propertyPayload(String artifact, ArtifactObsProperty property) {
+        return Map.of("semanticId", OfficialCartagoAdapter.propertyId(artifact, property.getFullId()),
+                "artifactSemanticId", artifact, "propertyId", property.getFullId(), "name", property.getName(),
+                "values", Arrays.stream(property.getValues()).map(value -> value == null ? "" : value.toString()).toList(),
+                "valueTypes", Arrays.stream(property.getValues()).map(value -> value == null ? "NULL" : value.getClass().getName()).toList(),
+                "annotations", property.getAnnots() == null ? List.of() : property.getAnnots().stream().map(Object::toString).toList());
+    }
+    @Override public synchronized void artifactCreated(long time, ArtifactId artifact, AgentId creator) {
+        String environmentId = String.valueOf(environment.getId());
+        var payload = values("UPSERT_CARTAGO_ARTIFACT", OfficialCartagoAdapter.artifactId(environmentId, artifact));
+        payload.put("name", artifact.getName()); payload.put("uuid", artifact.getId().toString());
+        payload.put("workspaceSemanticId", "cartago:workspace:" + environmentId + ":"
+                + artifact.getWorkspaceId().getFullName() + ":" + artifact.getWorkspaceId().getUUID());
+        payload.put("artifactTypeSemanticId", OfficialCartagoAdapter.artifactTypeId(environmentId, artifact.getArtifactType()));
+        payload.put("artifactTypeJavaClassName", artifact.getArtifactType());
+        String loader = "";
+        try {
+            Class<?> type = Class.forName(artifact.getArtifactType(), false, Thread.currentThread().getContextClassLoader());
+            loader = type.getProtectionDomain().getCodeSource() == null ? String.valueOf(type.getClassLoader())
+                    : String.valueOf(type.getProtectionDomain().getCodeSource().getLocation());
+        } catch (ClassNotFoundException ignored) { /* Class-loader identity is unavailable, not inferred. */ }
+        payload.put("artifactTypeClassLoaderIdentity", loader);
+        payload.put("creatorAgentSemanticId", creator == null ? "" : OfficialCartagoAdapter.agentId(environmentId, creator));
+        try {
+            var info = environment.getController(artifact.getWorkspaceId().getFullName()).getArtifactInfo(artifact.getName());
+            if (info == null || !artifact.equals(info.getId())) throw new IllegalStateException("ARTIFACT_ID_REVALIDATION_FAILED");
+            // Artifact creation and its initial C09 properties form one observed transaction.
+            // Omitting initial properties could turn an invariant into a false vacuous PASS.
+            payload.put("properties", info.getObsProperties().stream().map(property ->
+                    propertyPayload((String) payload.get("semanticId"), property)).toList());
+        } catch (Exception error) {
+            gap("CARTAGO_CREATION_SNAPSHOT_UNAVAILABLE:" + error.getMessage()); return;
+        }
+        synchronized (this) { knownArtifacts.add(artifactId(artifact)); pendingCreations.remove(artifactId(artifact)); }
+        event(RuntimeEventKind.CREATED, artifact, creator, payload);
+    }
+    private synchronized void gap(String diagnostic) {
+        Consumer<RuntimeEvent> sink = observer; if (sink == null) return;
+        long next = sequence.incrementAndGet();
+        sink.accept(new RuntimeEvent(sessionId + ":cartago:gap:" + next, sessionId, generation,
+                System.getProperty("jacamo.bridge.modelRevision", "unnegotiated"), "cartago", sourceId(), next,
+                Instant.now(), RuntimeEventKind.GAP, null, null, null, null, "", "", Map.of(),
+                Map.of("diagnostic", diagnostic), new SourceWatermark(sourceId(), next), Completeness.PARTIAL, List.of()));
+    }
+    @Override public synchronized void artifactDisposed(long time, ArtifactId artifact, AgentId disposer) {
+        event(RuntimeEventKind.DISPOSED, artifact, disposer, values("DELETE_CARTAGO_ARTIFACT",
+                OfficialCartagoAdapter.artifactId(String.valueOf(environment.getId()), artifact)));
+        synchronized (this) { knownArtifacts.remove(artifactId(artifact)); pendingCreations.remove(artifactId(artifact)); }
+    }
     @Override public void artifactFocussed(long time, AgentId agent, ArtifactId artifact, IEventFilter filter) { event(RuntimeEventKind.FOCUSED,
             artifact, agent, Map.of("agent", agent.getGlobalId())); }
     @Override public void artifactNoMoreFocussed(long time, AgentId agent, ArtifactId artifact) { event(RuntimeEventKind.UNFOCUSED,

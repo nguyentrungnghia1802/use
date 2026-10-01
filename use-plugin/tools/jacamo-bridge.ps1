@@ -8,11 +8,15 @@ param(
     [int]$BridgeTimeoutMillis = 60000,
     [bool]$Headless = $true,
     [switch]$InteractiveGui,
-    [switch]$SkipBuild
+    [switch]$SkipBuild,
+    [string]$OclProfilePath = "",
+    [ValidateSet("AUTO", "FULL")]
+    [string]$ProjectionMode = "AUTO"
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+$ProjectionMode = $ProjectionMode.ToUpperInvariant()
 
 $useRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
 $usePluginRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -23,22 +27,42 @@ $sourceProject = Split-Path -Parent $sourceJcm
 if (-not (Test-Path -LiteralPath $sourceProject -PathType Container)) { throw "JCM_PROJECT_ROOT_MISSING:$sourceProject" }
 if (-not (Test-Path -LiteralPath $sourceJcm -PathType Leaf)) { throw "JCM_FILE_NOT_FOUND:$sourceJcm" }
 
+# External profiles remain in USE (or another caller-selected location), never in the staged JCM.
+$externalOcl = ""
+if (-not [string]::IsNullOrWhiteSpace($OclProfilePath)) {
+    $externalOcl = [IO.Path]::GetFullPath($OclProfilePath)
+    if (-not $externalOcl.ToLowerInvariant().EndsWith(".ocl") -or
+        -not (Test-Path -LiteralPath $externalOcl -PathType Leaf)) {
+        throw "OCL_PROFILE_NOT_FOUND_OR_INVALID:$externalOcl"
+    }
+    if ($InteractiveGui) { throw "OCL_AUTO_LOAD_HEADLESS_ONLY: use the Workbench profile loader in interactive mode" }
+}
+
+$persistEvidence = -not [string]::IsNullOrWhiteSpace($EvidenceDirectory)
 if ([string]::IsNullOrWhiteSpace($EvidenceDirectory)) {
-    $EvidenceDirectory = Join-Path $usePluginRoot "target\jacamo-bridge-evidence"
+    $EvidenceDirectory = Join-Path $usePluginRoot "target\jacamo-runtime"
 }
 $EvidenceDirectory = [IO.Path]::GetFullPath($EvidenceDirectory)
 New-Item -ItemType Directory -Force -Path $EvidenceDirectory | Out-Null
-$runId = Get-Date -Format "yyyyMMdd-HHmmss"
+$runId = (Get-Date -Format "yyyyMMdd-HHmmss-fff") + "-" + ([Guid]::NewGuid().ToString("N").Substring(0, 8))
 $runEvidence = Join-Path $EvidenceDirectory $runId
 New-Item -ItemType Directory -Force -Path $runEvidence | Out-Null
+$runtimeDirectory = Join-Path $runEvidence "runtime"
+$layoutDirectory = Join-Path $runEvidence "layout"
 $projectStem = [IO.Path]::GetFileNameWithoutExtension($sourceJcm)
 $safeProjectStem = $projectStem -replace '[^A-Za-z0-9_-]', '-'
-$stagedProject = Join-Path ([IO.Path]::GetTempPath()) ("jacamo-bridge-" + $safeProjectStem + "-" + [Guid]::NewGuid().ToString("N"))
+# Keep the derived project inside the managed run directory.  It is deleted in
+# finally, while persistent evidence keeps only the explicitly exported files.
+$stagedProject = Join-Path $runEvidence ("staging-" + $safeProjectStem)
 $jcmFile = Join-Path $stagedProject (Split-Path -Leaf $sourceJcm)
 $secretFile = Join-Path $stagedProject "bridge-secret.hex"
 $stopFile = Join-Path $stagedProject "stop.flag"
+$consumerReadyFile = if ([string]::IsNullOrWhiteSpace($externalOcl)) { "" } else { Join-Path $stagedProject "consumer-ready.flag" }
 $producer = $null
+$consumer = $null
+$gui = $null
 $runCompleted = $false
+$producerFailure = $null
 $runtimeProjectBuild = "NOT_REQUIRED"
 $runtimeProjectClasses = ""
 
@@ -85,7 +109,7 @@ function Set-ProcessStartInfoArguments([Diagnostics.ProcessStartInfo]$StartInfo,
 }
 
 function Start-CapturedJava([string]$ClassPath, [string]$MainClass, [string]$WorkingDirectory,
-                            [string[]]$Arguments) {
+                            [string[]]$Arguments, [string[]]$JvmArguments = @()) {
     $java = (Get-Command java -ErrorAction Stop).Source
     $info = [Diagnostics.ProcessStartInfo]::new()
     $info.FileName = $java
@@ -93,7 +117,7 @@ function Start-CapturedJava([string]$ClassPath, [string]$MainClass, [string]$Wor
     $info.UseShellExecute = $false
     $info.RedirectStandardOutput = $true
     $info.RedirectStandardError = $true
-    Set-ProcessStartInfoArguments $info (@("-cp", $ClassPath, $MainClass) + $Arguments)
+    Set-ProcessStartInfoArguments $info (@($JvmArguments) + @("-cp", $ClassPath, $MainClass) + $Arguments)
     $process = [Diagnostics.Process]::new()
     $process.StartInfo = $info
     [void]$process.Start()
@@ -273,8 +297,11 @@ try {
     $injectedDigest = (Get-FileHash -Algorithm SHA256 -LiteralPath $jcmFile).Hash.ToLowerInvariant()
 
     $producerHeadless = if ($InteractiveGui) { $false } else { $Headless }
+    # GUI lifetime follows the USE window. TimeoutSeconds still bounds startup and headless runs.
+    $producerLifetimeSeconds = if ($InteractiveGui) { 0 } else { $TimeoutSeconds }
     $producer = Start-CapturedJava $producerClasspath "jason.infra.local.LiveJaCaMoLauncherMain" $stagedProject @(
-        $jcmFile, $stopFile, $TimeoutSeconds.ToString(), $producerHeadless.ToString().ToLowerInvariant())
+        $jcmFile, $stopFile, $producerLifetimeSeconds.ToString(), $producerHeadless.ToString().ToLowerInvariant(),
+        $consumerReadyFile, $TimeoutSeconds.ToString())
     Wait-LoopbackPort $port $producer $TimeoutSeconds
 
     if ($InteractiveGui) {
@@ -300,6 +327,9 @@ try {
         }
         $guiArguments = @(
             "-Duser.dir=$guiInstall",
+            "-Duse.jacamo.runtime.root=$runtimeDirectory",
+            "-Duse.jacamo.projection.mode=$ProjectionMode",
+            "-Duse.gui.default-layout-directory=$layoutDirectory",
             "-Duse.plugin.auto-action-id=org.tzi.use.plugins.jacamo.workbench.action",
             "-Duse.jacamo.workbench.project-file=$jcmFile",
             "-Duse.jacamo.workbench.auto-import=true",
@@ -311,15 +341,17 @@ try {
         )
         [IO.File]::WriteAllLines((Join-Path $runEvidence "launch-commands.txt"),
             @("java -cp <official-runtime> jason.infra.local.LiveJaCaMoLauncherMain $jcmFile $stopFile",
-              "javaw -Duse.plugin.auto-action-id=org.tzi.use.plugins.jacamo.workbench.action -Duse.jacamo.workbench.auto-import=true -Duse.jacamo.workbench.project-file=$jcmFile -jar $guiJar"),
+              "javaw -Duse.jacamo.projection.mode=$ProjectionMode -Duse.plugin.auto-action-id=org.tzi.use.plugins.jacamo.workbench.action -Duse.jacamo.workbench.auto-import=true -Duse.jacamo.workbench.project-file=$jcmFile -jar $guiJar"),
             [Text.UTF8Encoding]::new($false))
         Write-Host "INTERACTIVE_GUI_READY"
+        Write-Host "Native USE projection: $ProjectionMode"
         Write-Host "The JaCaMo Workbench is opening and importing the derived JCM automatically."
         Write-Host "Derived JCM: $jcmFile"
         Write-Host "Original source remains unchanged: $sourceJcm"
         Write-Host "Close the USE window to stop the derived JaCaMo producer."
         $gui = Start-InteractiveJava $guiInstall $guiArguments
         $guiReadyReported = $false
+        $guiStartupDeadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
         while (-not $gui.HasExited) {
             if ($producer.Process.HasExited) { throw "PRODUCER_EXITED_DURING_INTERACTIVE_GUI:`n$(Get-CapturedOutput $producer)" }
             if (-not $guiReadyReported -and (Test-Path -LiteralPath $guiReadyFile -PathType Leaf)) {
@@ -327,8 +359,12 @@ try {
                 Get-Content -Raw -LiteralPath $guiReadyFile | Write-Host
                 $guiReadyReported = $true
             }
+            if (-not $guiReadyReported -and [DateTime]::UtcNow -ge $guiStartupDeadline) {
+                throw "INTERACTIVE_GUI_IMPORT_TIMEOUT:$guiReadyFile"
+            }
             Start-Sleep -Milliseconds 500
         }
+        if (-not $guiReadyReported) { throw "INTERACTIVE_GUI_EXITED_BEFORE_IMPORT:$guiReadyFile" }
         [IO.File]::WriteAllText((Join-Path $runEvidence "summary.json"), (@{
             status = "MANUAL_GUI_SESSION_COMPLETED"
             classification = "INTERACTIVE_DEMO_ONLY"
@@ -336,6 +372,7 @@ try {
             sourceJcmSha256 = $sourceDigest
             derivedJcm = $jcmFile
             pipeline = "CODE_GROUNDED_NATIVE"
+            projectionMode = $ProjectionMode
             distributionSha256 = $distribution
             port = $port
         } | ConvertTo-Json -Depth 4), [Text.UTF8Encoding]::new($false))
@@ -345,9 +382,12 @@ try {
     }
 
     $consumerClasspath = Get-FilteredConsumerClasspath $bridgeClasspathFile
-    $consumer = Start-CapturedJava $consumerClasspath "org.tzi.use.plugins.jacamo.bridge.JaCaMoBridgeNativeConsumerMain" $stagedProject @(
-        $port.ToString(), $secretFile, $distribution, $jcmFile, $useRoot, $runEvidence,
-        $ObservationSeconds.ToString(), $MaxBufferedEvents.ToString(), $BridgeTimeoutMillis.ToString())
+    $consumer = Start-CapturedJava -ClassPath $consumerClasspath -MainClass "org.tzi.use.plugins.jacamo.bridge.JaCaMoBridgeNativeConsumerMain" `
+        -WorkingDirectory $stagedProject -Arguments @(
+            $port.ToString(), $secretFile, $distribution, $jcmFile, $useRoot, $runEvidence,
+            $ObservationSeconds.ToString(), $MaxBufferedEvents.ToString(), $BridgeTimeoutMillis.ToString(),
+            $persistEvidence.ToString().ToLowerInvariant(), $externalOcl, $consumerReadyFile) `
+        -JvmArguments @("-Duse.jacamo.runtime.root=$runtimeDirectory", "-Duse.jacamo.projection.mode=$ProjectionMode")
     if (-not $consumer.Process.WaitForExit($TimeoutSeconds * 1000)) {
         $consumer.Process.Kill($true)
         throw "CONSUMER_TIMEOUT"
@@ -360,14 +400,17 @@ try {
 
     [IO.File]::WriteAllText((Join-Path $runEvidence "launch-commands.txt"),
         "java -cp <official-runtime> jason.infra.local.LiveJaCaMoLauncherMain $jcmFile`n" +
-        "java -cp <native-consumer> org.tzi.use.plugins.jacamo.bridge.JaCaMoBridgeNativeConsumerMain ...",
+        "java -Duse.jacamo.projection.mode=$ProjectionMode -cp <native-consumer> org.tzi.use.plugins.jacamo.bridge.JaCaMoBridgeNativeConsumerMain ...",
         [Text.UTF8Encoding]::new($false))
     $summary = @{
         status = "PASS"
         classification = "GENERIC_JCM_SUPPORTED_SCOPE_PASS"
         pipeline = "CODE_GROUNDED_NATIVE"
+        projectionMode = $ProjectionMode
         sourceJcm = $sourceJcm
         sourceJcmSha256 = $sourceDigest
+        oclProfile = $externalOcl
+        awaitOclBaselineBeforeAgents = -not [string]::IsNullOrWhiteSpace($consumerReadyFile)
         injectedJcmSha256 = $injectedDigest
         derivedJcm = $jcmFile
         distributionSha256 = $distribution
@@ -383,9 +426,16 @@ try {
     Write-Host "JACAMO_BRIDGE_NATIVE_PASS evidence=$runEvidence"
     $runCompleted = $true
 } finally {
+    if ($null -ne $gui -and -not $gui.HasExited) {
+        try { $gui.CloseMainWindow() | Out-Null } catch { }
+        try { if (-not $gui.WaitForExit(5000)) { $gui.Kill($true) } } catch { }
+    }
+    if ($null -ne $consumer -and -not $consumer.Process.HasExited) {
+        try { $consumer.Process.Kill($true) } catch { }
+    }
     if ($null -ne $producer) {
         if (-not $producer.Process.HasExited) {
-            [IO.File]::WriteAllText($stopFile, "stop", [Text.UTF8Encoding]::new($false))
+            try { [IO.File]::WriteAllText($stopFile, "stop", [Text.UTF8Encoding]::new($false)) } catch { }
             if (-not $producer.Process.WaitForExit(20000)) { $producer.Process.Kill($true) }
         }
         try { Get-CapturedOutput $producer | Out-File -LiteralPath (Join-Path $runEvidence "producer.log") -Encoding utf8 } catch { }
@@ -396,7 +446,35 @@ try {
             }
         } catch { }
         if ($runCompleted -and $producer.Process.HasExited -and $producer.Process.ExitCode -ne 0) {
-            throw "PRODUCER_FAILED:$($producer.Process.ExitCode)"
+            $producerFailure = "PRODUCER_FAILED:$($producer.Process.ExitCode)"
         }
     }
+    foreach ($generatedFile in @($stopFile, $secretFile, $consumerReadyFile) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) {
+        try { if (Test-Path -LiteralPath $generatedFile) { Remove-Item -LiteralPath $generatedFile -Force } } catch { }
+    }
+    try {
+        $resolvedStage = [IO.Path]::GetFullPath($stagedProject)
+        $expectedStageRoot = [IO.Path]::GetFullPath($runEvidence).TrimEnd([IO.Path]::DirectorySeparatorChar)
+        if (-not [IO.Path]::GetDirectoryName($resolvedStage).Equals($expectedStageRoot, [StringComparison]::OrdinalIgnoreCase) -or
+            -not [IO.Path]::GetFileName($resolvedStage).StartsWith("staging-", [StringComparison]::Ordinal)) {
+            throw "STAGING_CLEANUP_PATH_INVALID:$resolvedStage"
+        }
+        if (Test-Path -LiteralPath $resolvedStage) { Remove-Item -LiteralPath $stagedProject -Recurse -Force }
+    } catch { Write-Warning "Staging cleanup skipped/failed: $($_.Exception.Message)" }
+    if (-not $persistEvidence) {
+        try {
+            $resolvedRun = [IO.Path]::GetFullPath($runEvidence)
+            $expectedEvidenceRoot = [IO.Path]::GetFullPath($EvidenceDirectory).TrimEnd([IO.Path]::DirectorySeparatorChar)
+            if (-not [IO.Path]::GetDirectoryName($resolvedRun).Equals($expectedEvidenceRoot, [StringComparison]::OrdinalIgnoreCase) -or
+                [IO.Path]::GetFileName($resolvedRun) -ne $runId) { throw "EVIDENCE_CLEANUP_PATH_INVALID:$resolvedRun" }
+            if (Test-Path -LiteralPath $resolvedRun) { Remove-Item -LiteralPath $runEvidence -Recurse -Force }
+        } catch { Write-Warning "Evidence cleanup skipped/failed: $($_.Exception.Message)" }
+        try {
+            if ((Test-Path -LiteralPath $EvidenceDirectory -PathType Container) -and
+                -not (Get-ChildItem -LiteralPath $EvidenceDirectory -Force | Select-Object -First 1)) {
+                Remove-Item -LiteralPath $EvidenceDirectory -Force
+            }
+        } catch { }
+    }
+    if ($null -ne $producerFailure) { throw $producerFailure }
 }

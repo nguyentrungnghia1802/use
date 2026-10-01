@@ -57,7 +57,12 @@ public final class OfficialJasonAdapter {
         jason.util.Config.get().put(jason.util.Config.START_WEB_MI,"false");
         var agent=new SafeParsingAgent();agent.setConsiderToAddMIForThisAgent(false);agent.initAg();
         try{
-            agent.parseAS(source.toFile());
+            // File overload drops the parent directory (File.getName()). Supply the exact
+            // URL to the official stream overload and retain ownership of the root stream.
+            var sourceUrl=source.toAbsolutePath().normalize().toUri().toURL();
+            agent.setASLSrc(sourceUrl.toString());
+            try(var input=sourceUrl.openStream()){agent.parseAS(input,sourceUrl.toString());}
+            var sourceEvidence=new JasonSourceEvidence(projectRoot);
             var facts=new ArrayList<ModelFact>();int legacyOrdinal=0;
             String programId="jason:agent-program:"+projectKey+":"+declarationId;
             String libraryId=programId+":plan-library";
@@ -67,40 +72,44 @@ public final class OfficialJasonAdapter {
             var typedRules=new ArrayList<BeliefRuleSemantic>();
             int beliefOrdinal=0;int ruleOrdinal=0;
             for(Literal belief:agent.getInitialBels()){
+                var beliefEvidence=sourceEvidence.of(belief,evidence);
                 String literal=canonicalAst(belief.toString());
                 if(belief instanceof Rule rule){
                     String ruleId=programId+":belief-rule:"+ruleOrdinal+":"+AdapterEvidence.digest(
                             (canonicalAst(rule.getHead().toString())+"|"+canonicalAst(rule.getBody().toString()))
                                     .getBytes(StandardCharsets.UTF_8));
                     var metadata=SemanticEvidence.metadata(ruleId,"JASON_BELIEF_RULE","jason.asSyntax.Rule",
-                            EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,
+                            EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,beliefEvidence,
                             startLine(rule),endLine(rule),List.of());
                     typedRules.add(new BeliefRuleSemantic(metadata,ruleOrdinal++,canonicalAst(rule.getHead().toString()),
                             canonicalAst(rule.getBody().toString())));
-                    facts.add(fact("belief-rule",literal,startLine(rule),legacyOrdinal++,projectKey,declarationId,evidence,parent));
+                    facts.add(fact("belief-rule",literal,startLine(rule),legacyOrdinal++,projectKey,declarationId,beliefEvidence,parent));
                 }else{
                     String beliefId=programId+":belief:"+beliefOrdinal+":"+AdapterEvidence.digest(
                             literal.getBytes(StandardCharsets.UTF_8));
                     var metadata=SemanticEvidence.metadata(beliefId,"JASON_BELIEF","jason.asSyntax.Literal",
-                            EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,
+                            EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,beliefEvidence,
                             startLine(belief),endLine(belief),List.of());
                     typedBeliefs.add(new BeliefSemantic(metadata,beliefOrdinal++,literal));
-                    facts.add(fact("belief",literal,startLine(belief),legacyOrdinal++,projectKey,declarationId,evidence,parent));
+                    facts.add(fact("belief",literal,startLine(belief),legacyOrdinal++,projectKey,declarationId,beliefEvidence,parent));
                 }
             }
             int goalOrdinal=0;
             for(Literal goal:agent.getInitialGoals()){
+                var goalEvidence=sourceEvidence.of(goal,evidence);
                 String literal=canonicalAst(goal.toString());
                 String goalId=programId+":goal:"+goalOrdinal+":"+AdapterEvidence.digest(
                         literal.getBytes(StandardCharsets.UTF_8));
                 var metadata=SemanticEvidence.metadata(goalId,"JASON_AGENT_GOAL","jason.asSyntax.Literal",
-                        EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,
+                        EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,goalEvidence,
                         startLine(goal),endLine(goal),List.of());
                 typedGoals.add(new AgentGoalSemantic(metadata,goalOrdinal++,literal,"ACHIEVE"));
-                facts.add(fact("goal",literal,startLine(goal),legacyOrdinal++,projectKey,declarationId,evidence,parent));
+                facts.add(fact("goal",literal,startLine(goal),legacyOrdinal++,projectKey,declarationId,goalEvidence,parent));
             }
             var typedPlans=new ArrayList<PlanSemantic>();int planOrdinal=0;
             for(Plan plan:agent.getPL().getPlans()){
+                if(plan.getSrcInfo()==null)throw new IllegalStateException("JASON_PLAN_SOURCE_INFO_MISSING");
+                var planEvidence=sourceEvidence.of(plan,evidence);
                 int ordinal=planOrdinal++;
                 var bodyDrafts=body(plan);
                 String triggerOperator=plan.getTrigger().getOperator().name();
@@ -112,18 +121,18 @@ public final class OfficialJasonAdapter {
                         .getBytes(StandardCharsets.UTF_8));
                 String planId=libraryId+":plan:"+ordinal+":"+digest;
                 String triggerId=planId+":trigger";
-                int planLine=plan.getSrcInfo()==null?0:plan.getSrcInfo().getSrcLine();
+                int planLine=startLine(plan);
                 var triggerMetadata=SemanticEvidence.metadata(triggerId,"JASON_TRIGGER","jason.asSyntax.Trigger",
-                        EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,
-                        planLine,planLine,List.of());
+                        EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,
+                        sourceEvidence.of(plan.getTrigger(),planEvidence),planLine,endLine(plan),List.of());
                 var typedTrigger=new TriggerSemantic(triggerMetadata,triggerOperator,triggerType,triggerLiteral);
                 var typedBody=new ArrayList<PlanBodyElementSemantic>();
                 for(int i=0;i<bodyDrafts.size();i++){
                     BodyDraft draft=bodyDrafts.get(i);String bodyId=bodyId(planId,i,draft);
                     String next=i+1<bodyDrafts.size()?bodyId(planId,i+1,bodyDrafts.get(i+1)):"";
                     var metadata=SemanticEvidence.metadata(bodyId,"JASON_PLAN_BODY_ELEMENT","jason.asSyntax.PlanBody",
-                            EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,
-                            draft.line(),draft.line(),List.of());
+                            EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,
+                            sourceEvidence.of(draft.source(),planEvidence),draft.line(),endLine(draft.source()),List.of());
                     typedBody.add(new PlanBodyElementSemantic(metadata,i,draft.type(),draft.term(),next));
                     if(draft.type().equals("action")||draft.type().equals("internalAction")){
                         var term=draft.source().getBodyTerm();
@@ -133,7 +142,8 @@ public final class OfficialJasonAdapter {
                         var actionMetadata=SemanticEvidence.metadata(actionId,
                                 draft.type().equals("action")?"JASON_EXTERNAL_ACTION":"JASON_INTERNAL_ACTION",
                                 "jason.asSyntax.PlanBody",EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,
-                                CapabilityStatus.COMPLETE,evidence,draft.line(),draft.line(),List.of());
+                                CapabilityStatus.COMPLETE,sourceEvidence.of(draft.source(),planEvidence),
+                                draft.line(),endLine(draft.source()),List.of());
                         typedActions.add(new ActionSemantic(actionMetadata,bodyId,draft.term(),functor,arity,
                                 draft.type().equals("action")?"EXTERNAL":"INTERNAL"));
                     }
@@ -141,8 +151,8 @@ public final class OfficialJasonAdapter {
                 String labelFunctor=plan.getLabel()==null?"":plan.getLabel().getFunctor();
                 String sourceLabel=GENERATED_LABEL.matcher(labelFunctor).matches()?"":labelFunctor;
                 var planMetadata=SemanticEvidence.metadata(planId,"JASON_PLAN","jason.asSyntax.Plan",
-                        EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,
-                        planLine,planLine,List.of());
+                        EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,planEvidence,
+                        planLine,endLine(plan),List.of());
                 typedPlans.add(new PlanSemantic(planMetadata,ordinal,sourceLabel,context,typedTrigger,typedBody));
 
                 // Compatibility facts remain available only to LEGACY_V2. The complete typed body above is authoritative.
@@ -151,14 +161,15 @@ public final class OfficialJasonAdapter {
                 var triggerBridgeId=new BridgeEntityId("jason","agent","event",projectKey,declarationId+":"+oldOrdinal+":trigger","model");
                 facts.add(new ModelFact("event",triggerBridgeId,Map.of("operator",String.valueOf(plan.getTrigger().getOperator()),
                         "type",String.valueOf(plan.getTrigger().getType()),"literal",triggerLiteral),Map.of(),
-                        CapabilityStatus.COMPLETE,List.of(evidence)));
+                        CapabilityStatus.COMPLETE,List.of(planEvidence)));
                 var actionIds=new ArrayList<BridgeEntityId>();var bodyIds=new ArrayList<BridgeEntityId>();int actionOrdinal=0;
                 for(int i=0;i<bodyDrafts.size();i++){
                     BodyDraft draft=bodyDrafts.get(i);
                     var bodyBridgeId=new BridgeEntityId("jason","agent","plan-body-element",projectKey,
                             declarationId+":"+oldOrdinal+":body:"+i,"model");bodyIds.add(bodyBridgeId);
                     facts.add(new ModelFact("plan-body-element",bodyBridgeId,Map.of("bodyType",draft.type(),"term",draft.term(),
-                            "ordinal",Integer.toString(i)),Map.of(),CapabilityStatus.COMPLETE,List.of(evidence)));
+                            "ordinal",Integer.toString(i)),Map.of(),CapabilityStatus.COMPLETE,
+                            List.of(sourceEvidence.of(draft.source(),planEvidence))));
                     if(!draft.type().equals("action")&&!draft.type().equals("internalAction"))continue;
                     PlanBody original=draft.source();var term=original.getBodyTerm();
                     var actionId=new BridgeEntityId("jason","agent","action",projectKey,
@@ -167,7 +178,7 @@ public final class OfficialJasonAdapter {
                     int arity=term instanceof Structure structure?structure.getArity():0;
                     facts.add(new ModelFact("action",actionId,Map.of("name",actionName,"arity",Integer.toString(arity),
                             "kind",draft.type().equals("internalAction")?"internal":"external","ast",draft.term()),
-                            Map.of(),CapabilityStatus.COMPLETE,List.of(evidence)));actionIds.add(actionId);
+                            Map.of(),CapabilityStatus.COMPLETE,List.of(sourceEvidence.of(draft.source(),planEvidence))));actionIds.add(actionId);
                 }
                 facts.add(new ModelFact("plan",planBridgeId,Map.of("label",sourceLabel,
                         "labelKind",sourceLabel.isBlank()?"JASON_GENERATED":"SOURCE_DECLARED",
@@ -176,7 +187,7 @@ public final class OfficialJasonAdapter {
                         "context",context,"bodyAst",canonicalAst(String.valueOf(plan.getBody())),
                         "sourceLine",Integer.toString(planLine)),Map.of("agent",List.of(parent),
                         "triggeringEvent",List.of(triggerBridgeId),"actions",actionIds,"bodyElements",bodyIds),
-                        CapabilityStatus.COMPLETE,List.of(evidence)));
+                        CapabilityStatus.COMPLETE,List.of(planEvidence)));
             }
             var libraryMetadata=SemanticEvidence.metadata(libraryId,"JASON_PLAN_LIBRARY","jason.pl.PlanLibrary",
                     EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,1,1,List.of());

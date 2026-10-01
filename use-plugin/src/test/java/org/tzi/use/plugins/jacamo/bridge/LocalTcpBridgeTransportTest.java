@@ -127,8 +127,19 @@ class LocalTcpBridgeTransportTest {
         }
     }
 
-    private LocalTcpBridgeServer server(Fixture f,Runnable duringRuntime){return new LocalTcpBridgeServer(InetAddress.getLoopbackAddress(),0,SECRET,4*1024*1024,8,16L*1024*1024,
-            ()->ContractCodec.encode(f.handshake),()->ContractCodec.encode(f.modelEnvelope()),()->{duringRuntime.run();return ContractCodec.encode(f.runtimeEnvelope());},()->ContractCodec.encode(f.gapEnvelope()));}
+    private LocalTcpBridgeServer server(Fixture f,Runnable duringRuntime){
+        // Fixtures are immutable. Prepare their real wire frames before starting
+        // a timed network request: the idle-stream control's 200 ms deadline must
+        // not also benchmark cold model digest/JSON generation on a server worker.
+        byte[] handshake=ContractCodec.encode(f.handshake);
+        long encodingStarted=System.nanoTime();
+        byte[] model=ContractCodec.encode(f.modelEnvelope());
+        System.out.println("TCP_FIXTURE_MODEL_ENCODING_NANOS="+(System.nanoTime()-encodingStarted)+" bytes="+model.length);
+        byte[] runtime=ContractCodec.encode(f.runtimeEnvelope());
+        byte[] gap=ContractCodec.encode(f.gapEnvelope());
+        return new LocalTcpBridgeServer(InetAddress.getLoopbackAddress(),0,SECRET,4*1024*1024,8,16L*1024*1024,
+                ()->handshake,()->model,()->{duringRuntime.run();return runtime;},()->gap);
+    }
 
     private Fixture fixture(Path jcm,String session)throws Exception{
         ModelSnapshot model=new OfficialProjectAdapter().adapt(new OfficialProjectLoader().load(jcm),jcm);long generation=1;String source="jason:test";
