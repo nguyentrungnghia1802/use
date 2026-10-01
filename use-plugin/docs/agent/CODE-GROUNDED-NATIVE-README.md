@@ -317,3 +317,9 @@ contract test tried to launch Windows `java.exe` on Ubuntu, and `mvn | tee`
 masked that failure. CI now uses explicit Bash/pipefail, requires both release
 archive families, uploads their actual paths, and retains build/test logs on
 failure. No test, frozen asset, mapping or runtime capability is bypassed.
+
+The nested-include provenance fixture supplies exact file URIs on both OSes.
+Jason 3.3.2's `SourcePath.addParentInPath` removes a leading Unix slash, so a
+relative nested include in this standalone-parser fixture is not portable.
+All plan/file/hash/span/compatibility assertions remain intact; this does not
+replace the official parser or claim repaired upstream relative-path semantics.

@@ -58,8 +58,11 @@ class OfficialJasonAdapterTest {
         Path nested = included.getParent().resolve("nested.asl");
         Path source = temporary.resolve("entry.asl");
         Files.writeString(nested, "+!nested <-\n .print(\"nested\").\n");
-        Files.writeString(included, "{ include(\"nested.asl\") }\n+!included <- .print(\"included\").\n");
-        Files.writeString(source, "{ include(\"inc/entry.asl\") }\n+!root <- .print(\"root\").\n");
+        // Jason 3.3.2 SourcePath.addParentInPath strips the leading Unix slash.
+        // Exact file URIs make this provenance fixture portable without replacing
+        // the official Include implementation or weakening any source/span assertion.
+        Files.writeString(included, "{ include(\"" + nested.toUri() + "\") }\n+!included <- .print(\"included\").\n");
+        Files.writeString(source, "{ include(\"" + included.toUri() + "\") }\n+!root <- .print(\"root\").\n");
         var result = new OfficialJasonAdapter().adapt(temporary, source, "fixture", "agent");
         var plans = result.program().planLibrary().plans();
         assertEquals(List.of("nested", "included", "root"), plans.stream().map(p -> p.trigger().literal()).toList());
