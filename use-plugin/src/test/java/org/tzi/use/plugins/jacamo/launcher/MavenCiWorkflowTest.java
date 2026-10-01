@@ -33,6 +33,23 @@ class MavenCiWorkflowTest {
         assertTrue(cases.path("ref").asText().matches("[0-9a-f]{40}"));
         assertEquals("jacamo", cases.path("path").asText());
         assertEquals("ln -s jacamo JaCaMo", step(job, "Preserve legacy fixture path casing").path("run").asText());
+        JsonNode bytePolicy = step(job, "Match audited JaCaMo checkout bytes");
+        assertEquals(".", bytePolicy.path("working-directory").asText());
+        assertEquals("git config --global core.autocrlf true", bytePolicy.path("run").asText());
+        List<String> stepNames = new ArrayList<>();
+        job.path("steps").forEach(step -> stepNames.add(step.path("name").asText()));
+        assertTrue(stepNames.indexOf("Match audited JaCaMo checkout bytes")
+                < stepNames.indexOf("Check out audited JaCaMo case studies"));
+    }
+
+    @Test void frozenResourcesDeclareTheirExactCheckoutByteFormat() throws Exception {
+        List<String> attributes = Files.readAllLines(Path.of(".gitattributes"));
+        for (String resource : List.of(
+                "ocl/jacamo-core-v2.ocl", "ocl/jacamo-core-v2-manifest.json",
+                "verification/jacamo-verification-profile-v2.json")) {
+            assertTrue(attributes.contains("src/main/resources/org/tzi/use/plugins/jacamo/"
+                    + resource + " text eol=crlf"), resource);
+        }
     }
 
     @Test void realReleaseFilesAreRequiredAndFailureEvidenceIsAlwaysUploaded() throws Exception {

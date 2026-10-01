@@ -7,6 +7,13 @@ Core/Mapping/**/*.json -text
 # Canonical runtime contract hashes identify exact bytes.
 src/main/resources/org/tzi/use/plugins/jacamo/runtime/*.json -text
 
+# These frozen resources were committed as LF blobs before their CRLF release
+# bytes were pinned. Reproduce those exact bytes on every host, without changing
+# the frozen content or its fingerprints.
+src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2.ocl text eol=crlf
+src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2-manifest.json text eol=crlf
+src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json text eol=crlf
+
 # Final V2 freeze manifest is itself pinned by compatibility metadata.
 release/v2-freeze-manifest.json -text
 

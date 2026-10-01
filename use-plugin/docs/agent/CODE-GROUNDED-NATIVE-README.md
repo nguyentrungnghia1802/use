@@ -323,3 +323,11 @@ Jason 3.3.2's `SourcePath.addParentInPath` removes a leading Unix slash, so a
 relative nested include in this standalone-parser fixture is not portable.
 All plan/file/hash/span/compatibility assertions remain intact; this does not
 replace the official parser or claim repaired upstream relative-path semantics.
+
+The frozen OCL/profile fingerprints and upstream case-study hash assertions pin
+the audited CRLF checkout bytes. Three legacy frozen resource blobs had been
+stored as LF before their release hashes were pinned; explicit `eol=crlf`
+attributes now reproduce those same frozen bytes on Linux and Windows. The
+ephemeral CI runner checks out the pinned JaCaMo revision with `core.autocrlf`
+enabled to match the audited upstream bytes. No frozen resource, golden digest,
+or case-study source is edited, and the exact-byte assertions remain unchanged.
