@@ -331,3 +331,10 @@ attributes now reproduce those same frozen bytes on Linux and Windows. The
 ephemeral CI runner checks out the pinned JaCaMo revision with `core.autocrlf`
 enabled to match the audited upstream bytes. No frozen resource, golden digest,
 or case-study source is edited, and the exact-byte assertions remain unchanged.
+
+Legacy OCL export orders authored profiles before the packaged core using an
+explicit loader source kind, then portable paths; absolute host path sorting
+used to reverse that order on Linux and invalidate the reviewed output digest.
+The profile-order regression checks both Unix/Windows paths and input orders.
+The asynchronous Workbench import test now waits for the actual label update
+on the EDT, not an earlier facade-summary read; production UI behavior is kept.

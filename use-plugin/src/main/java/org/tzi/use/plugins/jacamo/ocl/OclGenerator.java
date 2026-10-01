@@ -39,7 +39,12 @@ public final class OclGenerator {
         for (ConstraintSpec constraint : emitted.stream().filter(c -> c.kind() == ConstraintSpec.Kind.INVARIANT).toList())
             extra.append("context ").append(constraint.contextClass()).append(" inv ").append(safe(constraint.name()))
                     .append(":\n  ").append(render(constraint.expression())).append("\n\n");
-        profiles.stream().sorted(Comparator.comparing(p -> p.origin().toString())).forEach(profile ->
+        // Preserve the reviewed authored-then-core order independently of drive
+        // letters, leading Unix slashes and host path separators.
+        var orderedProfiles = profiles.stream().sorted(Comparator
+                .comparing(OclProfileLoader.LoadedProfile::sourceKind)
+                .thenComparing(profile -> portable(profile.origin()))).toList();
+        orderedProfiles.forEach(profile ->
                 extra.append(profile.content().strip()).append("\n\n"));
         model += extra;
         String manifest = emitted.stream().map(c -> c.id() + "|" + c.sourceKind() + "|" + c.status() + "|"
@@ -48,7 +53,7 @@ public final class OclGenerator {
         manifest += constraints.stream().filter(c -> c.status()!=TranslationStatus.EXACT).sorted(Comparator.comparing(ConstraintSpec::id))
             .map(c -> "NOT_EMITTED|"+c.id()+"|"+c.status()+"|"+c.provenance().sourceHash()+"|"+String.join(",",c.dependencies())+"|"+String.join(";",c.assumptions()).replace("\n"," ")+"\n")
             .collect(java.util.stream.Collectors.joining());
-        manifest += profiles.stream().sorted(Comparator.comparing(p -> p.origin().toString()))
+        manifest += orderedProfiles.stream()
                 .map(p -> "PROFILE|" + portable(p.origin()) + "|" + p.sha256() + "\n")
                 .collect(java.util.stream.Collectors.joining());
         return new GeneratedOcl(model, manifest, emitted, plan.orderProjections());

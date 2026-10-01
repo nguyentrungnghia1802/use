@@ -152,11 +152,23 @@ class JaCaMoWorkbenchPanelTest {
     void interactiveImportBuildsOffEdtAndPublishesUiOnEdt() throws Exception {
         RecordingFacade facade = new RecordingFacade();
         JaCaMoWorkbenchPanel panel = new JaCaMoWorkbenchPanel(facade, ignored -> { });
-        javax.swing.SwingUtilities.invokeAndWait(() -> panel.importProject(Path.of("auction.jcm")));
+        var labelPublished = new java.util.concurrent.CountDownLatch(1);
+        var publishedOnEdt = new java.util.concurrent.atomic.AtomicBoolean();
+        javax.swing.SwingUtilities.invokeAndWait(() -> {
+            label(panel, "project-id").addPropertyChangeListener("text", event -> {
+                if ("auction".equals(event.getNewValue())) {
+                    publishedOnEdt.set(javax.swing.SwingUtilities.isEventDispatchThread());
+                    labelPublished.countDown();
+                }
+            });
+            panel.importProject(Path.of("auction.jcm"));
+        });
         assertTrue(facade.importedLatch.await(5, java.util.concurrent.TimeUnit.SECONDS));
-        assertTrue(facade.publishedLatch.await(5, java.util.concurrent.TimeUnit.SECONDS));
+        assertTrue(labelPublished.await(5, java.util.concurrent.TimeUnit.SECONDS));
         assertFalse(facade.importedOnEdt);
-        assertEquals("auction", label(panel, "project-id").getText());
+        assertTrue(publishedOnEdt.get());
+        javax.swing.SwingUtilities.invokeAndWait(() ->
+                assertEquals("auction", label(panel, "project-id").getText()));
     }
 
     @Test
@@ -503,7 +515,6 @@ class JaCaMoWorkbenchPanelTest {
         private String persistedReason;
         private RuntimeException importFailure;
         private final java.util.concurrent.CountDownLatch importedLatch = new java.util.concurrent.CountDownLatch(1);
-        private final java.util.concurrent.CountDownLatch publishedLatch = new java.util.concurrent.CountDownLatch(1);
         private boolean importedOnEdt;
         private List<TraceRow> traces = List.of(new TraceRow("source", "Goal", "object:g", "OBJECT", "M001",
                 "VP006", "PROJECTED", Path.of("agent.asl"), 7, "AGENT"));
@@ -522,7 +533,6 @@ class JaCaMoWorkbenchPanelTest {
             return projectSummary();
         }
         @Override public ProjectSummary projectSummary() {
-            if (javax.swing.SwingUtilities.isEventDispatchThread()) publishedLatch.countDown();
             return new ProjectSummary(Path.of("auction.jcm"), Path.of("."), "auction", 1,
                     Map.of("AGENT", 4L), "V2", "a".repeat(64),
                     "JaCaMo-agentmetamodel-v2__to__USE-v2.2", "2.2.0", "b".repeat(64),
