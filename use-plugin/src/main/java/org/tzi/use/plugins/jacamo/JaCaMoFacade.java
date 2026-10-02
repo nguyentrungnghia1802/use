@@ -45,6 +45,12 @@ public interface JaCaMoFacade {
     }
     default List<org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult> runtimeVerificationHistory() { return List.of(); }
     default void exportRuntimeReplay(Path directory) { throw new UnsupportedOperationException("NATIVE_RUNTIME_NOT_CONFIGURED"); }
+    default void openStepReplay(Path recording) { throw new UnsupportedOperationException("STEP_REPLAY_NOT_CONFIGURED"); }
+    default void resetStepReplay() { throw new UnsupportedOperationException("REPLAY_NOT_OPEN"); }
+    default void previousStepReplay() { throw new UnsupportedOperationException("REPLAY_NOT_OPEN"); }
+    default void nextStepReplay() { throw new UnsupportedOperationException("REPLAY_NOT_OPEN"); }
+    default org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController.Status stepReplayStatus() { return null; }
+    default boolean stepReplayBusy() { return false; }
     default org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReplay.ReplayReport replayRuntime(Path bundle) {
         return new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReplay().replay(bundle);
     }

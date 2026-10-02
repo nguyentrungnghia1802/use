@@ -69,8 +69,22 @@ public final class ExternalOclConstraintService {
     private final MSystem system;
     private final Map<String, MClassInvariant> owned = new LinkedHashMap<>();
     private Profile profile;
+    private java.util.function.Consumer<Object> notifications;
 
-    public ExternalOclConstraintService(MSystem system) { this.system = java.util.Objects.requireNonNull(system); }
+    public ExternalOclConstraintService(MSystem system) {
+        this.system = java.util.Objects.requireNonNull(system);
+        notifications=system.getEventBus()::post;
+    }
+    public void notifications(java.util.function.Consumer<Object> sink) { notifications=java.util.Objects.requireNonNull(sink); }
+    /** Ephemeral failure guard, not a cached historical profile or another evaluator. */
+    public record Savepoint(Map<String,MClassInvariant> owned, Profile profile) { }
+    public Savepoint savepoint() { return new Savepoint(Map.copyOf(owned),profile()); }
+    public void restore(Savepoint before) {
+        owned.keySet().forEach(system.model()::removeClassInvariant);
+        try { for (var inv:before.owned().values()) system.model().addClassInvariant(inv); }
+        catch (MInvalidModelException error) { throw new IllegalStateException("EXTERNAL_OCL_RESTORE_FAILED",error); }
+        owned.clear(); owned.putAll(before.owned()); profile=before.profile();
+    }
     public MSystem system() { return system; }
     public Profile profile() {
         if (profile != null && profile.constraints().stream().anyMatch(item ->
@@ -102,6 +116,7 @@ public final class ExternalOclConstraintService {
 
     public Profile installSource(String sourceFile, String source, String revision, Map<String, Boolean> enabled,
                                  Map<String, Boolean> negated) {
+        system.assertUserMutationAllowed();
         if (sourceFile == null || source == null || revision == null || revision.isBlank())
             throw new IllegalArgumentException("EXTERNAL_OCL_SOURCE_REQUIRED");
         byte[] bytes = source.getBytes(StandardCharsets.UTF_8);
@@ -149,9 +164,9 @@ public final class ExternalOclConstraintService {
         }
         owned.clear(); owned.putAll(candidate);
         profile = new Profile(sourceFile, hash, source, revision, registry);
-        if (!previous.isEmpty()) system.getEventBus().post(new ClassInvariantsUnloadedEvent(
+        if (!previous.isEmpty()) notifications.accept(new ClassInvariantsUnloadedEvent(
                 EventContext.NORMAL_EXECUTION, List.copyOf(previous.values()), true));
-        system.getEventBus().post(new ClassInvariantsLoadedEvent(EventContext.NORMAL_EXECUTION,
+        notifications.accept(new ClassInvariantsLoadedEvent(EventContext.NORMAL_EXECUTION,
                 List.copyOf(candidate.values()), true));
         return profile;
     }

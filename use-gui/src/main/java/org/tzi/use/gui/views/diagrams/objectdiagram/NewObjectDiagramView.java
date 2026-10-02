@@ -74,6 +74,8 @@ public class NewObjectDiagramView extends JPanel
   implements View, PrintableView, SortChangeListener {
 
     protected final MSystem fSystem;
+    private boolean detached;
+    private boolean counted;
     protected final MainWindow fMainWindow;
 
     protected NewObjectDiagram fObjectDiagram;
@@ -91,7 +93,11 @@ public class NewObjectDiagramView extends JPanel
 
         this.setFocusable(true);
         
-        initDiagram(false, null);
+        try { initDiagram(false, null); }
+        catch (RuntimeException | Error failure) {
+            detachModel();
+            throw failure;
+        }
     }
 
     public void initDiagram(boolean loadDefaultLayout, ObjDiagramOptions opt) {
@@ -147,7 +153,7 @@ public class NewObjectDiagramView extends JPanel
         }
         
         fObjectDiagram.initialize();
-        viewcount++;
+        if (!counted) { counted = true; viewcount++; }
     }
     
     @Subscribe
@@ -310,10 +316,12 @@ public class NewObjectDiagramView extends JPanel
      */
     @Override
 	public void detachModel() {
+        if (detached) return;
+        detached = true;
         fSystem.getEventBus().unregister(this);
         ModelBrowserSorting.getInstance().removeSortChangeListener( this );
         fSystem.unregisterRequiresAllDerivedValues();
-        viewcount--;
+        if (counted) { counted = false; viewcount--; }
     }
 
     void createObject(String clsName) {

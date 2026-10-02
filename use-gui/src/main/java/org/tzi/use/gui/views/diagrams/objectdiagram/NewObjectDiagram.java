@@ -976,6 +976,7 @@ public class NewObjectDiagram extends DiagramViewWithObjectNode implements Highl
 		private MObject[] fParticipants;
 
 		ActionInsertLink(MAssociation association, MObject[] participants) {
+            setEnabled(!fParent.fSystem.isReadOnly());
 			fAssociation = association;
 			fParticipants = participants;
 
@@ -1004,6 +1005,7 @@ public class NewObjectDiagram extends DiagramViewWithObjectNode implements Highl
 		private MLink link;
 
 		ActionDeleteLink(MLink link) {
+            setEnabled(!fParent.fSystem.isReadOnly());
 			this.link = link;
 			MObject[] participants = link.linkedObjectsAsArray();
 			StringBuilder txt = new StringBuilder("delete (");
@@ -1038,6 +1040,7 @@ public class NewObjectDiagram extends DiagramViewWithObjectNode implements Highl
 
 		ActionDelete(String text, Set<MObject> objects) {
 			super(text);
+            setEnabled(!fParent.fSystem.isReadOnly());
 			fObjects = objects;
 		}
 
@@ -1497,6 +1500,7 @@ public class NewObjectDiagram extends DiagramViewWithObjectNode implements Highl
 	 * @param dtde
 	 */
 	public void dropObjectFromModelBrowser(DropTargetDropEvent dtde) {
+        if (fParent.fSystem.isReadOnly()) { dtde.rejectDrop(); return; }
 
 		try {
 			dtde.acceptDrop(DnDConstants.ACTION_MOVE);

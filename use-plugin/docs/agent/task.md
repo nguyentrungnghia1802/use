@@ -1,1950 +1,306 @@
-# TASK — Code-Grounded JaCaMo → Native USE Transformation
-
-**Project:** USE Extension for JaCaMo Design-Time and Runtime Verification using UML/OCL
-**Repository:** `D:\_CODE_BANK\Project_\08_Thesis\use`
-**Primary target:** transform official JaCaMo/Jason/CArtAgO/Moise semantics into native USE `MModel` + `MSystemState`, activate them in the existing USE session, and use existing USE GUI/OCL/verification.
-**Status:** implementation master plan from A→Z.
-**Execution rule:** implement phase-by-phase; do not skip gates; keep repository buildable; fail closed when semantics/evidence are unavailable.
-
----
-
-# 0. Source of truth and non-negotiable rules
-
-## 0.1 Source priority
-
-Use this authority order:
-
-1. actual production source code and exact resolved dependency APIs/bytecode;
-2. executable tests and runtime evidence;
-3. current Bridge semantic contract;
-4. `JACAMO-USE-CONCEPT-MAPPING-RULES.md`;
-5. `CODE-GROUNDED-NATIVE-README.md` for current operational behavior;
-6. old Ecore / Mapping V2 / historical docs only as compatibility evidence.
-
-If code and documents disagree:
-
-- do not silently rewrite semantics;
-- record the discrepancy;
-- keep code/API evidence;
-- update the plan/ADR explicitly.
-
-## 0.2 Final production architecture
-
-```text
-JaCaMo official objects/APIs
-(.jcm / Jason / CArtAgO / Moise)
-        ↓
-official/code-grounded semantic adapters
-        ↓
-typed neutral semantic contract
-        ↓
-JacamoSpecificationModel / semantic DTO layer
-        ↓
-Jxx / Axx / Cxx / Mxx / Xxx rules
-        ↓
-native USE MModel
-        ↓
-native USE MSystemState
-        ↓
-Session.setSystem(...)
-        ↓
-existing USE GUI / OCL / invariants / verification
-        ↓
-optional export .use / .cmd
-```
-
-## 0.3 Forbidden shortcuts
-
-- [x] Do not patch/fork JaCaMo core unless a proven blocker requires it.
-- [x] Do not use custom JCM/ASL/Moise parsing as production semantic authority when official APIs already expose the facts.
-- [x] Do not use old Ecore or Mapping V2 as semantic authority in `CODE_GROUNDED_NATIVE`.
-- [x] Do not fuzzy-map by names.
-- [x] Do not infer `Action → Operation` from name equality.
-- [x] Do not infer `Belief → ObservableProperty` from literal/property name equality.
-- [x] Do not infer `AgentGoal → OrganizationalGoal` from literal/id equality.
-- [x] Do not equate JCM agent name, Jason runtime identity, CArtAgO `AgentId`, and Moise agent identity without exact evidence.
-- [x] Do not equate artifact declaration name and runtime `ArtifactId`.
-- [x] Do not auto-translate Moise Norms into OCL.
-- [x] Do not hard-code Hello World, Auction, House Building, or any case-study name in production mapping.
-- [x] Do not create a second model/runtime UI that replaces USE.
-- [x] Do not silently drop unsupported semantic facts.
-- [x] Do not silently mix legacy V2 OCL/mapping with code-grounded native model mode.
-- [x] Do not modify frozen historical Ecore/mapping/golden artifacts in place.
-
----
-
-# 1. Repository baseline and protection
-
-## 1.1 Baseline
-
-- [x] Record Git branch and HEAD.
-- [ ] Confirm tracked working tree is clean before implementation. `APPROVAL_GATED`: this historical pre-implementation gate was not true at the start; the post-cleanup checkpoint is clean, but that cannot be counted retroactively.
-- [x] Record existing untracked/generated `target/` directories without deleting user state.
-- [x] Run existing Bridge/adapter/facade/workbench tests.
-- [x] Run current module build.
-- [x] Run current release/package workflow.
-- [x] Record baseline failures separately from new regressions.
-- [x] Store baseline summary in implementation report.
-
-## 1.2 Frozen/historical artifacts
-
-Keep immutable unless explicitly versioned:
-
-- [x] frozen Ecore V2;
-- [x] Mapping V2 / V2.2;
-- [x] Runtime Mapping V2;
-- [x] frozen OCL;
-- [x] golden outputs;
-- [x] freeze manifests;
-- [x] historical audit evidence.
-
-## 1.3 Pipeline modes
-
-Introduce/confirm exactly two atomic modes:
-
-```text
-LEGACY_V2
-CODE_GROUNDED_NATIVE
-```
-
-- [x] One import/session uses exactly one mode.
-- [x] `CODE_GROUNDED_NATIVE` must not call Mapping V2.
-- [x] `CODE_GROUNDED_NATIVE` must not load V2 OCL/profile JSON.
-- [x] Runtime verification uses the same mode as static model construction.
-- [x] Add tests rejecting mixed-mode execution.
-
----
-
-# 2. Rule catalog foundation — all 105 rules
-
-Required counts:
-
-```text
-J01–J11 = 11
-A01–A22 = 22
-C01–C20 = 20
-M01–M43 = 43
-X01–X09 =  9
-----------------
-Total    = 105
-```
-
-Every rule exposes:
-
-```text
-ruleId
-dimension
-sourceAuthority
-sourceKind/FQCN
-targetUseKind
-fidelity
-capabilityStatus
-implementationStatus
-diagnosticPolicy
-```
-
-Allowed statuses:
-
-```text
-IMPLEMENTED
-PLANNED_CAPABILITY_GATED
-UNAVAILABLE_IN_AUDITED_API
-EXPLICITLY_UNSUPPORTED
-```
-
-Tasks:
-
-- [x] Implement code-level catalog.
-- [x] Add `CodeGroundedRuleCatalogTest`.
-- [x] Fail build on missing IDs.
-- [x] Fail build on duplicates.
-- [x] Fail build if authority is missing.
-- [x] Fail build if target/fidelity policy is missing.
-- [x] Keep catalog deterministic.
-
----
-
-# 3. Common semantic/evidence infrastructure
-
-## 3.1 Evidence model
-
-Preserve/extend evidence so every fact can carry:
-
-```text
-authority
-sourcePath/sourceUri
-sourceDigest
-sourceFQCN
-sourceSemanticId
-runtimeIdentity
-line/source span
-snapshot generation/session
-fidelity
-capability
-diagnostics
-```
-
-## 3.2 Semantic identity
-
-- [x] Stable semantic IDs.
-- [x] Semantic IDs independent from display/object names.
-- [x] Runtime IDs remain opaque when required.
-- [x] Version IDs if contract schema changes.
-- [x] Add stale identity/model revision detection.
-
-## 3.3 USE object naming
-
-Deterministic naming:
-
-```text
-<kind>_<safe-human-part>_<hash8(source-id)>
-```
-
-- [x] Never resolve semantic links by MObject name.
-- [x] Add collision tests.
-
----
-
-# 4. Typed Bridge semantic contract
-
-Target logical package:
-
-```text
-org.jacamo.bridge.contract.semantic
-```
-
-Exact names may follow repository conventions.
-
-## 4.1 JCM DTOs
-
-- [x] `ProjectSemantic`
-- [x] `AgentDeclarationSemantic`
-- [x] `WorkspaceDeclarationSemantic`
-- [x] `ArtifactDeclarationSemantic`
-- [x] `OrganizationDeploymentSemantic`
-- [x] `GroupDeploymentSemantic`
-- [x] `SchemeDeploymentSemantic`
-- [x] `InstitutionDeploymentSemantic`
-- [x] `AgentRoleTupleSemantic`
-- [x] `AgentFocusTupleSemantic`
-- [x] import/uses provenance
-
-## 4.2 Jason DTOs
-
-- [x] `AgentProgramSemantic`
-- [x] `PlanLibrarySemantic`
-- [x] `PlanSemantic`
-- [x] `TriggerSemantic`
-- [x] `PlanBodyElementSemantic`
-- [x] `ActionSemantic`
-- [x] `BeliefSemantic`
-- [x] `AgentGoalSemantic`
-- [x] `BeliefRuleSemantic`
-- [x] `SourceEvidence`
-- [x] supported runtime DTOs
-
-## 4.3 CArtAgO DTOs
-
-- [x] `EnvironmentSemantic`
-- [x] `WorkspaceSemantic`
-- [x] `ArtifactTypeSemantic`
-- [x] `ArtifactSemantic`
-- [x] `OperationDescriptorSemantic`
-- [x] `BackingJavaOperationSemantic`
-- [x] `GuardSemantic`
-- [x] `LiveObservablePropertySemantic`
-- [x] `ObservablePropertySnapshotSemantic`
-- [x] `ArtifactInfoSemantic`
-- [x] `SignalSemantic`
-- [x] `CartagoAgentIdentitySemantic`
-- [x] `FocusSemantic`
-
-## 4.4 Moise DTOs
-
-- [x] `OrganizationSemantic`
-- [x] `StructuralSpecificationSemantic`
-- [x] `FunctionalSpecificationSemantic`
-- [x] `NormativeSpecificationSemantic`
-- [x] `GroupSemantic`
-- [x] `RoleSemantic`
-- [x] `RoleRelationSemantic`
-- [x] `LinkSemantic`
-- [x] `CompatibilitySemantic`
-- [x] `SchemeSemantic`
-- [x] `MissionSemantic`
-- [x] `OrganizationalGoalSemantic`
-- [x] `OrganizationalPlanSemantic`
-- [x] `NormSemantic`
-- [x] `GroupRoleCardinalitySemantic`
-- [x] `SubGroupCardinalitySemantic`
-- [x] `SchemeMissionCardinalitySemantic`
-
-## 4.5 Cross-dimension evidence DTOs
-
-- [x] Add typed exact-binding/evidence records for X rules.
-
-## 4.6 Contract compatibility
-
-- [x] Define schema version strategy.
-- [x] Preserve legacy snapshot decoder only if needed for migration.
-- [x] Codec round-trip tests.
-- [x] Version mismatch tests.
-- [x] Deterministic encoding tests.
-- [x] No USE classes in Bridge contract.
-- [x] No live JaCaMo objects over wire.
-
----
-
-# 5. JCM official adapter — J01–J11
-
-## J01 Project
-
-- [x] Official `JaCaMoProject` is source authority.
-- [x] Project identity/name initializes target `MModel`.
-- [x] Preserve project/source digest.
-- [x] Do not create fake Project domain object unless explicitly required.
-
-## J02 Agent declaration
-
-- [x] Preserve name/source/options/classes/host/instances when exact.
-- [x] Keep distinct from Jason `AgentProgram`.
-- [x] Declare `MClass Agent`.
-- [x] Materialize Agent declaration object in state.
-
-## J03 Workspace declaration
-
-- [x] Separate declaration from runtime `WorkspaceId`.
-
-## J04 Artifact declaration
-
-- [x] Preserve declaration name and `ClassParameters`.
-- [x] Map to `ArtifactDeclaration`.
-- [x] Never treat as live `Artifact`.
-
-## J05 Organization deployment
-
-- [x] Keep distinct from Moise `OS`.
-
-## J06 Group deployment
-
-- [x] Keep distinct from Moise `Group`.
-
-## J07 Scheme deployment
-
-- [x] Keep distinct from Moise `Scheme`.
-
-## J08 Institution deployment
-
-- [x] Preserve only API-proven fields.
-- [x] Keep opaque fields opaque.
-
-## J09 Raw role tuple
-
-- [x] Preserve `(organization, group, role, ordinal)`.
-- [x] No eager Agent–Role link.
-- [x] X04 performs exact resolution.
-
-## J10 Raw focus tuple
-
-- [x] Preserve `(artifact, workspace, namespace, ordinal)`.
-- [x] Remove eager semantic resolution.
-- [x] X06 performs exact resolution.
-
-## J11 `uses` provenance
-
-- [x] Add `OfficialImportGraphCollector`.
-- [x] Use official/generated lexer/token support only for provenance.
-- [x] Collect canonical path/order/digest.
-- [x] Do not create semantic declarations.
-- [x] Unresolved path → `UNRESOLVED_PROVENANCE`.
-
-## JCM tests
-
-- [x] J09 exact tuple.
-- [x] J10 exact tuple.
-- [x] No eager cross-framework links.
-- [x] J11 provenance only.
-- [x] No custom parser fallback.
-
----
-
-# 6. Jason static mapping — A01–A11, A16–A22
-
-## A01 AgentProgram
-
-- [x] Source: official `jason.asSemantics.Agent`.
-- [x] Preserve source URI/id/digest.
-- [x] `MClass AgentProgram`.
-- [x] Separate from J02 Agent declaration.
-
-## A02 PlanLibrary
-
-- [x] Source: `agent.getPL()`.
-- [x] `MClass PlanLibrary`.
-- [x] Empty library valid.
-- [x] Do not synthesize null library.
-
-## A03 Plan
-
-- [x] Source: ordered `PlanLibrary.getPlans()`.
-- [x] Stable identity = library + ordinal + canonical digest.
-- [x] Preserve label/context and only fields proven by Jason 3.3.2.
-- [x] Do not implement speculative fields.
-
-## A04 Trigger
-
-- [x] Preserve operator enum.
-- [x] Preserve type enum.
-- [x] Preserve literal.
-- [x] Do not infer Signal.
-
-## A05 PlanBodyElement
-
-- [x] Walk body by `getBody()` / `getBodyNext()`.
-- [x] Preserve every audited `BodyType`.
-- [x] Preserve term and ordinal.
-- [x] Detect cycle/broken chain.
-- [x] Unknown enum → fail closed.
-
-## A06 External Action
-
-- [x] `BodyType.action`.
-- [x] Action kind EXTERNAL.
-- [x] Operation binding only X01.
-
-## A07 Internal Action
-
-- [x] `BodyType.internalAction`.
-- [x] Action kind INTERNAL.
-- [x] Never map directly to CArtAgO operation.
-
-## A08 Belief
-
-- [x] Preserve literal/provenance.
-- [x] Property relation only X02.
-
-## A09 AgentGoal
-
-- [x] Preserve exact goal semantics.
-- [x] Organizational binding only X07.
-
-## A10 BeliefRule
-
-- [x] Preserve only if supported by exact source/API.
-
-## A11 Source provenance
-
-- [x] Use `SourceInfo`.
-- [x] Keep as provenance/trace.
-- [x] Preserve exact local/nested/dependency-JAR include sources through native object/value trace, export and Mapping Inspector (2026-09-30 regression evidence below).
-
-## A16 AgentProgram–PlanLibrary
-
-- [x] Native composition.
-
-## A17 ordered PlanLibrary–Plan
-
-- [x] Native relation.
-- [x] Preserve order.
-- [x] Use `A17PlanOrderEntry` infrastructure if required.
-
-## A18 Plan–Trigger
-
-- [x] Native composition.
-
-## A19 ordered Plan–PlanBodyElement
-
-- [x] Native relation.
-- [x] Preserve order.
-- [x] Use `A19BodyOrderEntry` infrastructure if required.
-
-## A20 PlanBodyElement.next
-
-- [x] Self association.
-- [x] Must agree with A19 order.
-
-## A21 AgentProgram–Belief
-
-- [x] Bind initial beliefs to AgentProgram.
-
-## A22 AgentProgram–AgentGoal
-
-- [x] Bind initial goals to AgentProgram.
-
-## Jason enums
-
-- [x] Trigger operator → `EnumType`.
-- [x] Trigger type → `EnumType`.
-- [x] `BodyType` → `EnumType`.
-- [x] ActionKind → `EnumType`.
-- [x] Unknown enum member → compatibility failure.
-
----
-
-# 7. Jason runtime — A12–A15
-
-## A12 ActionExec
-
-- [x] Runtime-only event/state projection.
-- [x] Preserve result/failure evidence.
-
-## A13 Intention
-
-- [x] Optional runtime concept only if verification requires it.
-
-## A14 Runtime Event
-
-- [x] Distinguish from source Trigger.
-
-## A15 TransitionSystem evidence
-
-- [x] Runtime controller evidence only by default.
-
-**A12–A15 evidence — 2026-09-29:** PASS for the bounded native Jason runtime evidence scope. `BridgeAgArch` emits typed `ACTION_EXECUTION` events and preserves result, failure reason/message, correlation, and exact `Intention` identity evidence; `JasonSnapshotSource` captures `INTENTION`, `RUNTIME_EVENT`, and `TRANSITION_SYSTEM` facts from the official Jason `Circumstance`/`TransitionSystem` APIs. `CodeGroundedRuntimeRuleRegistry` assigns distinct native evidence rules, and `NativeRuntimeProjector` keeps all four concepts evidence-only without creating static `Intention`, `RuntimeEvent`, or `TransitionSystem` classes. `CodeGroundedPhase7Test` passed `4/4`, including no-state-pollution/rule-ID assertions; `OfficialAdapterTest` passed `7/7`, including official `ActionExec` failure evidence. A13 is intentionally evidence-only because no native OCL constraint requires an `Intention` model class.
-
----
-
-# 8. CArtAgO mapping — C01–C20
-
-Authority legend:
-
-```text
-S = static/type metadata
-D = descriptor
-I = initialized runtime object
-R = runtime snapshot/event
-P = optional source/bytecode provenance
-```
-
-## C01 Environment [I]
-- [x] Initialized `CartagoEnvironment`.
-
-## C02 Workspace [D+I]
-- [x] `WorkspaceDescriptor` + `WorkspaceId`.
-
-## C03 ArtifactType [S]
-- [x] Exact concrete `Class<? extends Artifact>`/classloader identity.
-- [x] No simple-name matching.
-
-## C04 Artifact [I+R]
-- [x] `ArtifactId` runtime identity.
-- [x] `ArtifactInfo` enriches snapshot.
-
-## C05 Operation [D]
-- [x] `OpDescriptor`.
-- [x] No method-name inference.
-
-## C06 native MOperation [S+D; P optional]
-- [x] Exact backing method/signature required. PASS for the exact-reflection subset: `BackingJavaOperation` is preserved and a native `MOperation` is emitted only when declaring class, method, parameter/return types, arity, and varargs are verified by reflection; non-exact operations remain structural. Evidence: `NativeMOperationProjectionTest` 2/2.
-- [x] Dynamic operation without exact method stays structural `Operation`.
-
-## C07 Guard [D; P optional]
-- [x] Descriptor exact binding.
-- [x] No guard semantics from name.
-
-## C08 Live ObservableProperty [I]
-- [ ] Require actual `ObsProperty`. `UNAVAILABLE_BY_API`: the supported CArtAgO boundary exposes snapshots/percepts, not a live `ObsProperty` identity; C08 therefore remains explicitly unavailable.
-- [x] Missing API exposure → `UNAVAILABLE`.
-- [x] Never replace with C09.
-
-## C09 Property snapshot [R]
-- [x] `ArtifactObsProperty`/percept snapshot.
-- [x] Separate from live property identity.
-
-## C10 ArtifactInfo [R]
-- [x] Runtime snapshot record.
-
-## C11 Signal [R; P optional]
-- [x] Runtime signal/percept event is authority.
-- [x] No fake `@SIGNAL`.
-
-## C12 AgentId [I+R]
-- [x] Keep opaque identity.
-
-## C13 Environment–Workspace [I+D]
-- [x] Exact topology.
-
-## C14 Workspace–Artifact [I+R]
-- [x] Exact workspace identity.
-
-## C15 Artifact–ArtifactType [I+S]
-- [x] Exact class/runtime correlation only.
-
-## C16 Artifact–Operation [D+R]
-- [x] Exact descriptor ownership.
-
-## C17 Artifact–ObservableProperty [R; I if C08 exists]
-- [x] Snapshot ownership exact.
-- [x] Live relation only with C08.
-
-## C18 Operation–Guard [D]
-- [x] Exact descriptor binding.
-
-## C19 Workspace–Agent [R]
-- [x] Scoped runtime inventory/join-quit evidence.
-
-## C20 Agent–Artifact focus [R]
-- [x] Exact focus/unfocus event.
-- [x] J10 config is not runtime evidence.
-
-## CArtAgO negative tests
-
-- [x] No simple-name resolution.
-- [x] No design inference from runtime inventory.
-- [x] C08/C09 distinct.
-- [x] No `@SIGNAL` assumption.
-- [x] Unavailable remains unavailable.
-
----
-
-# 9. Moise mapping — M01–M43
-
-## M01 Organization
-- [x] `OS` → `MClass Organization`.
-
-## M02 StructuralSpecification
-- [x] `SS` → explicit `MClass`.
-
-## M03 FunctionalSpecification
-- [x] `FS` → explicit `MClass`.
-
-## M04 NormativeSpecification
-- [x] `NS` → explicit `MClass`.
-
-## M05 Group
-- [x] `Group` → `MClass Group`.
-
-## M06 Role
-- [x] `Role` → `MClass Role`.
-- [x] Preserve abstract flag and super-role references.
-
-## M07 RoleRelation
-- [x] `RoleRel` → `MClass RoleRelation`.
-
-## M08 Link
-- [x] `Link` → `MClass Link`.
-
-## M09 Compatibility
-- [x] `Compatibility` → separate `MClass`.
-
-## M10 Scheme
-- [x] `Scheme` → `MClass Scheme`.
-
-## M11 Mission
-- [x] `Mission` → `MClass Mission`.
-- [x] No universal cardinality attributes.
-
-## M12 OrganizationalGoal
-- [x] `Goal` → `MClass OrganizationalGoal`.
-- [x] Preserve type/arguments/dependencies.
-- [x] Keep `ttf` textual unless stronger semantics proven.
-
-## M13 OrganizationalPlan
-- [x] `Plan` → `MClass OrganizationalPlan`.
-- [x] Preserve operator/order.
-
-## M14 Norm
-- [x] `Norm` → `MClass Norm`.
-- [x] Preserve role/mission/condition/op type/time text.
-- [x] No automatic OCL.
-
-## M15 GroupRoleCardinality
-- [x] Relation object `(group, role, min, max)`.
-
-## M16 SubGroupCardinality
-- [x] Relation object `(parentGroup, subGroup, min, max)`.
-
-## M17 SchemeMissionCardinality
-- [x] Relation object `(scheme, mission, min, max)`.
-
-## M18 Organization–SS
-- [x] composition.
-
-## M19 Organization–FS
-- [x] composition.
-
-## M20 Organization–NS
-- [x] composition.
-
-## M21 SS–Role
-- [x] composition.
-
-## M22 SS–Group
-- [x] composition/root group ownership.
-
-## M23 Group–Subgroup
-- [x] composition; cardinality stays M16.
-
-## M24 Role–superRole
-- [x] self-association.
-- [x] No UML generalization without proof.
-
-## M25–M28 Link/Compatibility endpoints
-- [x] source/target Role relations.
-
-## M29–M32 Cardinality endpoints
-- [x] owner/member relations.
-
-## M33 FS–Scheme
-- [x] composition.
-
-## M34 Scheme–Mission
-- [x] composition.
-
-## M35 Scheme–root Goal
-- [x] exact relation; no duplicate goal identity.
-
-## M36–M37 SchemeMissionCardinality endpoints
-- [x] Scheme and Mission links.
-
-## M38 Mission–Goal
-- [x] exact membership.
-
-## M39 OrganizationalGoal–Plan
-- [x] exact relation.
-
-## M40 OrganizationalPlan–subGoals
-- [x] ordered relation.
-
-## M41 NS–Norm
-- [x] composition.
-
-## M42 Norm–Role
-- [x] association.
-
-## M43 Norm–Mission
-- [x] association.
-
-**M42/M43 regression evidence — 2026-09-30:** `moise.os.ns.Norm.getRole()` and
-`getMission()` return single references (confirmed in the resolved Moise 1.1
-bytecode). The native multiplicities were reversed: each Norm must have 0..1
-Role/Mission, while a Role/Mission can be referenced by 0..* Norms. Corrected
-both endpoints and removed ordering from the scalar ends so `.use` recompile
-preserves the structure. `CodeGroundedPhase5Test` passes 3/3, including shared
-Role/Mission targets and absent references; native state and export hashes pass.
-
-## Moise enums/tests
-
-- [x] Norm operation type enum.
-- [x] Plan operator enum.
-- [x] Cardinality owner context tests.
-- [x] Link/Compatibility distinction tests.
-- [x] Role hierarchy self-association test.
-- [x] Textual time preservation test.
-- [x] Norm does not auto-generate OCL.
-
----
-
-# 10. Cross-dimension rules — X01–X09
-
-All default to unresolved until exact evidence exists.
-
-## X01 Action–Operation
-- [x] Exact dispatch/binding/runtime evidence only.
-
-## X02 Belief–ObservableProperty
-- [x] Exact percept/property provenance only.
-
-## X03 Trigger–Signal
-- [x] Exact signal/percept provenance only.
-
-## X04 Agent–Role
-- [x] Resolve J09 with organization/group context or runtime role-player evidence.
-
-## X05 Agent–Workspace
-- [x] Exact configuration/runtime membership evidence.
-
-## X06 Agent–Artifact focus
-- [x] Resolve J10 or exact runtime C20 evidence.
-
-## X07 AgentGoal–OrganizationalGoal
-- [x] Explicit organization/runtime binding only.
-
-## X08 ArtifactDeclaration–runtime Artifact
-- [x] Exact creation correlation such as `makeArtifact(...) → ArtifactId`.
-
-## X09 JCM/Jason Agent–CArtAgO AgentId
-- [x] Exact join/action/focus observation.
-
-## X tests
-
-- [x] Exact-positive.
-- [x] Same-name-negative.
-- [x] Unresolved state.
-- [x] Runtime restart/incarnation.
-- [x] No cross-context leakage.
-
----
-
-# 11. Code-grounded semantic model in USE plugin
-
-Refactor/replace `JaCaMoSemanticModel`.
-
-Target logical shape:
-
-```text
-JacamoSpecificationModel
-├── ProjectSpec
-├── JasonPrograms
-├── CartagoModel
-├── MoiseSpecifications
-├── SemanticRelations
-├── EvidenceIndex
-└── Diagnostics
-```
-
-Requirements:
-
-- [x] immutable/snapshot-safe where possible;
-- [x] deterministic order;
-- [x] stable semantic IDs;
-- [x] no dependency on V2 vocabulary in native mode;
-- [x] capability/fidelity explicit;
-- [x] unresolved refs explicit;
-- [x] project/spec/runtime separation.
-
-Compatibility projection if needed:
-
-```text
-code-grounded model
-→ explicit legacy V2 projection
-```
-
-- [ ] label representation loss. `OPTIONAL_NOT_REQUIRED`: native mode does not perform a legacy V2 projection; no representation-loss claim is emitted.
-- [x] legacy projection never feeds new authority.
-
----
-
-# 12. Native USE model builder
-
-Build around real USE API, e.g. `UseModelApi`.
-
-Responsibilities:
-
-- [x] create `MModel`;
-- [x] `MClass`;
-- [x] `EnumType`;
-- [x] `MAttribute`;
-- [x] `MOperation`;
-- [x] `MAssociation`;
-- [x] composition;
-- [ ] invariants/pre-postconditions. `OPTIONAL_NOT_REQUIRED`: native class invariants are installed and verified; no approved code-grounded pre/post semantic contract exists for this slice, while the legacy extractor remains boundary-scoped.
-- [x] deterministic declaration order;
-- [x] duplicate/incompatibility diagnostics.
-
-Before `MSystem`:
-
-- [x] all classes/enums declared;
-- [x] associations resolved;
-- [x] multiplicities validated;
-- [x] compositions validated;
-- [x] native constraints compile;
-- [x] no mandatory unresolved model refs;
-- [x] structural hash available.
-
----
-
-# 13. Native USE state builder
-
-Build around real USE state API, e.g. `UseSystemApi`.
-
-Responsibilities:
-
-- [x] create one `MSystem(model)`;
-- [x] deterministic objects;
-- [x] attributes;
-- [x] links;
-- [x] runtime link/value changes;
-- [x] semanticId → MObject index;
-- [x] trace every mutation;
-- [x] correct undefined handling.
-
-## First-slice state
-
-- [x] AgentProgram objects;
-- [x] PlanLibrary objects;
-- [x] Plan objects;
-- [x] Trigger objects;
-- [x] PlanBodyElement objects;
-- [x] A16 links;
-- [x] A17 order;
-- [x] A18 links;
-- [x] A19 order;
-- [x] A20 next.
-
-## Ordered helper objects
-
-```text
-A17PlanOrderEntry(owner, member, rank)
-A19BodyOrderEntry(owner, member, rank)
-```
-
-- [x] rank starts 0;
-- [x] contiguous;
-- [x] one rank/member/owner;
-- [x] A20 agrees with A19;
-- [x] helpers are infrastructure, not source domain concepts.
-
----
-
-# 14. Mapping trace redesign
-
-Trace schema:
-
-```text
-TraceRecord(
-  ruleId,
-  phase,
-  sourceKind,
-  sourceJavaFQCN,
-  sourceIdentity,
-  targetKind,
-  targetIdentity,
-  evidenceAuthority,
-  fidelity,
-  capabilityStatus,
-  diagnostics
-)
-```
-
-Phases:
-
-```text
-MODEL_DECLARATION
-INSTANCE_MATERIALIZATION
-RUNTIME_MUTATION
-EXPORT
-```
-
-Trace:
-
-- [x] class;
-- [x] enum;
-- [x] attribute;
-- [x] association;
-- [x] operation;
-- [x] object;
-- [x] value;
-- [x] link;
-- [x] order entry;
-- [x] runtime mutation;
-- [x] skipped/unavailable fact;
-- [x] export target.
-
-Index:
-
-- [x] source → target;
-- [x] target → source/rule;
-- [x] runtime aliases;
-- [x] revision/session validation.
-
----
-
-# 15. OCL / constraint migration
-
-## 15.1 Native architecture
-
-```text
-CodeGroundedRuleCatalog
-        ↓
-ConstraintSpec
-        ↓
-CodeGroundedConstraintPlanner
-        ↓
-NativeConstraintInstaller
-        ↓
-UseModelApi native invariant/pre-post API
-        ↓
-MModel
-        ↓
-existing USE Evaluator / verification
-```
-
-## 15.2 Remove V2 coupling from native mode
-
-- [x] `OclGenerator` no longer generates full model in native mode.
-- [x] Native mode does not use `StructuralUseGenerator`.
-- [x] Native mode does not load `jacamo-core-v2.ocl`.
-- [x] Native mode does not load V2 verification profile.
-- [ ] `ConstraintExtractor` consumes typed semantics. `OPTIONAL_NOT_REQUIRED`: this extractor is retained for the explicit legacy V2 compatibility path; native mode uses `NativeConstraintSpec`/`CodeGroundedConstraintPlanner` and does not cross this boundary.
-- [ ] Replace/refactor `VerificationSemanticLayer`. `OPTIONAL_NOT_REQUIRED`: this layer remains legacy V2-only; replacing it would conflate the frozen compatibility authority with `CODE_GROUNDED_NATIVE`.
-- [ ] `CrossDimensionalVerifier` uses rule catalog + trace. `OPTIONAL_NOT_REQUIRED`: the verifier remains a legacy V2 compatibility verifier; native verification uses the native constraint/runtime rule registries and native trace.
-- [x] `RuntimeVerificationEngine` uses injected runtime rule registry.
-
-## 15.3 ConstraintSpec
-
-Every constraint declares:
-
-```text
-requiredRuleIds
-requiredCapabilities
-minimumFidelity
-targetContext
-origin
-migrationStatus
-```
-
-Missing capability:
-
-```text
-SKIPPED_CAPABILITY
-```
-
-## 15.4 First slice constraints
-
-- [x] A17 order consistency.
-- [x] A19 order consistency.
-- [x] A20 next/order consistency.
-- [x] ownership/composition checks where appropriate.
-
-## 15.5 OCL tests
-
-- [x] `NativeConstraintInstallerTest`
-- [x] `NativeUseSessionOclIT`
-- [x] `CodeGroundedOrderInvariantTest`
-- [x] `LegacyV2OclIsolationTest`
-- [x] `ProfileCompatibilityPreflightTest`
-- [x] `NativeUseExportRecompileIT`
-
----
-
-# 16. Direct native target; TextBackend becomes historical/export-only
-
-Target:
-
-```text
-rules
-→ NativeUseModelBuilder
-→ MModel
-```
-
-not:
-
-```text
-rules
-→ .use text
-→ compiler
-→ MModel
-```
-
-Tasks:
-
-- [x] Remove TextBackend from native production authority.
-- [x] Keep TextBackend for regression/history only if useful.
-- [ ] Refactor/replace `DirectUseBackend`. `OPTIONAL_NOT_REQUIRED`: it is retained for explicit legacy V2 regression/history and is not used by the native production authority path.
-- [x] Ensure backend returns the exact `MSystem` intended for Session activation.
-- [x] Eliminate divergent private system ownership.
-
----
-
-# 17. USE Session integration
-
-Mandatory activation flow:
-
-```text
-native MModel finalized
-→ new MSystem(model)
-→ native state materialized
-→ validation/OCL compile
-→ Session.setSystem(system)
-```
-
-Tasks:
-
-- [x] Pass `IPluginAction.getSession()` into Workbench/import flow.
-- [x] Refactor `DefaultJaCaMoFacade` to use same `MSystem`.
-- [x] Facade/session/runtime/verifier share one system.
-- [x] Build off EDT.
-- [x] Activate/UI update on EDT where required.
-- [x] Only call `setSystem()` after all gates pass.
-- [x] Failed import leaves previous system untouched.
-
-GUI checks:
-
-- [x] Model Browser sees model.
-- [x] Class Diagram works.
-- [x] Object Diagram works.
-- [x] OCL dialog/shell uses `session.system()`.
-- [x] invariants use current system.
-- [x] system event bus registered.
-
----
-
-# 18. Workbench → Mapping Inspector
-
-Keep:
-
-- [x] import;
-- [x] Bridge connect/reconnect;
-- [x] status;
-- [x] diagnostics;
-- [x] runtime sync status;
-- [x] mapping trace;
-- [x] fidelity/evidence;
-- [x] export controls if useful.
-
-Main table:
-
-```text
-Rule | Source | Target | Fidelity | Status
-```
-
-Details:
-
-- [x] rule ID;
-- [x] source FQCN;
-- [x] semantic ID;
-- [x] target USE ID;
-- [x] evidence;
-- [x] fidelity;
-- [x] capability;
-- [x] diagnostics;
-- [x] provenance;
-- [ ] runtime identity if relevant. `OPTIONAL_NOT_REQUIRED`: runtime identity is exposed by `NativeRuntimeProjector.runtimeAliases()` and native runtime trace; the static Mapping Inspector contract remains identity/provenance-focused.
-
-Never add:
-
-- [x] second runtime;
-- [x] second OCL engine;
-- [x] substitute class/object diagram;
-- [x] parallel MSystem.
-
-**Section 18 evidence — 2026-09-29:** `JaCaMoWorkbenchPanel` exposes the
-`Export Report...` control and delegates it to the facade; the complete workflow
-test covers the export action together with import, rebuild, OCL, verification,
-and runtime controls.
-
----
-
-# 19. `.use` / `.cmd` export
-
-`.use` is output, not authority.
-
-Flow:
-
-```text
-native MModel
-→ MMPrintVisitor / official USE printer
-→ generated .use
-```
-
-Tasks:
-
-- [x] deterministic export;
-- [x] recompile exported `.use`;
-- [x] structural hash comparison;
-- [x] compare classes/enums/attributes/associations/operations;
-- [x] compare native migrated constraints;
-- [x] report any representation difference.
-
-State:
-
-- [ ] export `.cmd`/SOIL separately if required. `OPTIONAL_NOT_REQUIRED`: no consumer requires a separate command export; native `.use` and separate deterministic state/trace JSON are the defined artifacts.
-- [x] Do not put runtime objects into `.use`.
-
----
-
-# 20. Runtime integration
-
-Pipeline:
-
-```text
-RuntimeSnapshot / RuntimeEvent
-        ↓
-typed native runtime projector (CODE_GROUNDED_NATIVE)
-        ↓
-native rule/evidence gate
-        ↓
-exact BridgeEntityId binding
-        ↓
-NativeRuntimeMutationEngine
-        ↓
-the activated session MSystem.state()
-        ↓
-USE OCL gate
-
-LEGACY_V2 keeps the separate BridgeRuntimeProjector → RuntimeMutationEngine path.
-```
-
-Statuses:
-
-```text
-MATERIALIZED_FAITHFULLY
-EVIDENCE_ONLY
-UNAVAILABLE
-UNKNOWN
-```
-
-Tasks:
-
-- [x] Only faithful facts mutate USE.
-- [x] `NativeRuntimeMutationEngine` targets the current session system in native mode; legacy `RuntimeMutationEngine` remains V2-only.
-- [x] Reject stale model revision/session/generation.
-- [x] No private facade formal state; the native projector owns the pipeline's activated `MSystem` only.
-- [x] Reconnect/resync safely rebuilds state/indices.
-- [x] Runtime events cannot invent undeclared types without explicit model revision protocol.
-- [x] Preserve AgentId/WorkspaceId/ArtifactId/board identities.
-
----
-
-# 21. Verification runtime migration
-
-Keep:
-
-- [x] existing USE evaluator;
-- [x] model-independent parts of `DefaultVerificationService`;
-- [x] report framework;
-- [x] BridgeVerificationGate;
-- [x] completeness/evidence gating.
-
-Refactor:
-
-- [x] code-grounded rule/capability registry;
-- [x] remove static Runtime Mapping V2 loading in native mode;
-- [x] bind constraints to exact native target;
-- [x] report skipped constraints;
-- [x] preserve evidence/fidelity.
-
-No overclaim:
-
-- [x] partial snapshot → non-definitive;
-- [x] evidence-only fact cannot satisfy state requirement;
-- [x] unknown remains unknown.
-
----
-
-# 22. Implementation phases
-
-## Phase 1A — Foundation
-
-Implement:
-
-- [x] typed semantic DTOs;
-- [x] complete 105-rule catalog;
-- [x] fidelity/capability schema;
-- [x] J09 raw tuple;
-- [x] J10 raw tuple;
-- [x] J11 provenance collector;
-- [x] code-grounded semantic model base;
-- [x] mapping trace;
-- [x] native model builder abstraction;
-- [x] native state builder abstraction;
-- [x] atomic mode;
-- [x] OCL decoupling interfaces;
-- [x] rule catalog tests;
-- [x] contract tests.
-
-Gate:
-
-- [x] exactly 105 rules;
-- [x] no duplicate/missing ID;
-- [x] every rule has authority;
-- [x] J10 no eager semantic link;
-- [x] J11 no semantic parser;
-- [x] native mode no Mapping V2;
-- [x] native mode no V2 OCL/profile;
-- [x] build passes;
-- [x] historical tests retained.
-
-**Stop if gate fails.**
-
-**Phase 1A checkpoint evidence — 2026-09-29:** PASS. `main @ 754940969fe65015a6f8a19b1d5612745d4d3e54`; the tracked worktree was intentionally dirty with the pre-existing Phase-1 implementation, and untracked `target/` output was retained. Key classes: `JacamoSemanticSnapshot`, `SemanticContractCodec`, `CodeGroundedRuleCatalog`, `JacamoSpecificationModel`, `CodeGroundedTraceIndex`, `PipelineMode`, `NativeConstraintSpec`/`NativeConstraintInstaller`. The checkpoint tests passed `10/10` contract, `14/14` official-adapter, `12/12` use-core, `1/1` use-gui, and `281/281` use-plugin tests, with zero failures/errors/skips; the catalog test confirmed 105 unique deterministic IDs and exactly 14 implemented Phase-1 rules.
-
-**Phase 1A final-closure evidence — 2026-09-29:** `SemanticContractTest` passes `4/4`, including canonical string/byte/depth bounds; the final full reactor gate passes `496/496` tests with zero failures/errors/skips. No frozen V2/Ecore/golden artifact was modified.
-
----
-
-## Phase 1B — First vertical slice
-
-Implement exactly:
-
-```text
-J01
-A01–A05
-A16–A20
-```
-
-Deliverables:
-
-- [x] `AgentProgram`
-- [x] `PlanLibrary`
-- [x] `Plan`
-- [x] `Trigger`
-- [x] `PlanBodyElement`
-- [x] Jason enums
-- [x] A16–A20 relations
-- [x] A17 order helpers
-- [x] A19 order helpers
-- [x] first-slice objects/links
-- [x] trace
-- [x] native OCL
-- [x] session activation
-- [x] `.use` export
-- [x] export/recompile validation
-
-Hello gate:
-
-- [x] official Jason objects only;
-- [x] all Plans retained;
-- [x] all body nodes retained;
-- [x] exact order;
-- [x] unsupported BodyType not silently ignored;
-- [x] produced system == `action.getSession().system()`;
-- [x] Model Browser sees classes;
-- [x] Object Diagram sees objects/links;
-- [x] OCL evaluates on session system;
-- [x] Mapping Inspector shows rule/source/target/evidence/fidelity;
-- [x] exported `.use` recompiles;
-- [x] no production Mapping V2 dependency.
-
-**Stop and report before Phase 2.**
-
-**Phase 1B evidence — 2026-09-29:** PASS for the Hello native first slice. Key classes: `OfficialProjectAdapter`, `OfficialJasonAdapter`, `OfficialImportGraphCollector`, `NativeUseModelBuilder`, `NativeUseStateBuilder`, `NativeUseSessionActivator`, `NativeUseExporter`, and `JaCaMoWorkbenchPanel`. `CodeGroundedOrderInvariantTest` passes `1/1`, `NativeUseSessionActivationTest` passes `2/2`, `NativeUseExportRecompileIT` passes `1/1`, and final-closure GUI evidence `NativeUseGuiEndToEndIT` passes `1/1`: the real Swing Model Browser, Class Diagram, Object Diagram, OCL dialog, and system event bus all observe the activated native `MSystem`; the two formerly partial Hello GUI boxes are now complete.
-
----
-
-## Phase 2 — Remaining Jason static rules
-
-Implement:
-
-```text
-A06–A11
-A21–A22
-```
-
-- [x] actions;
-- [x] beliefs;
-- [x] goals;
-- [x] belief rules;
-- [x] provenance;
-- [x] initial-belief/goal relations;
-- [x] tests and native state.
-
-Gate:
-
-- [x] no Agent/AgentProgram collapse;
-- [x] no Action→Operation guessing;
-- [x] no Belief→Property guessing;
-- [x] all supported source elements retained.
-
-**Phase 2 evidence — 2026-09-29:** PASS for A06–A11 and A21–A22. Official Jason API evidence is exercised by `OfficialJasonAdapter`: `Agent.getInitialBels()` is split into `Literal` beliefs and official `Rule` objects, `Agent.getInitialGoals()` is retained as exact achievement goals, and `PlanBody.BodyType.action/internalAction` becomes typed `ActionSemantic` with no operation binding. Native classes/attributes and A21/A22 ordered associations are built by `NativeUseModelBuilder`/`NativeUseStateBuilder`; all source links use semantic IDs, never display names. Focused Phase 2 `CodeGroundedPhase2Test` passed `2/2`, adapter `OfficialJasonAdapterTest` passed `5/5`, and focused reactor verify passed `14/14` unit plus `2/2` integration tests, including native `.use` recompile and OCL on the same system. Full reactor unit gate passed with contract `10/10`, official adapters `15/15`, use-core `12/12`, use-gui `1/1`, and use-plugin `283/283`; zero failures/errors/skips. No CArtAgO/Moise/cross-framework/runtime Phase 3+ work was started.
-
----
-
-## Phase 3 — JCM deployment
-
-Implement:
-
-```text
-J02–J10
-J11 full tests
-```
-
-- [x] deployment classes/objects;
-- [x] raw references;
-- [x] provenance.
-
-Gate:
-
-- [x] declaration/spec/runtime distinct;
-- [x] ArtifactDeclaration ≠ Artifact;
-- [x] J09/J10 unresolved until X;
-- [x] import provenance deterministic.
-
-**Phase 3 evidence — 2026-09-29:** PASS for J02–J11 static deployment scope. `OfficialProjectAdapter` retains official JaCaMo declaration DTOs and generated-token import provenance; `NativeUseModelBuilder` declares typed `Agent`, `WorkspaceDeclaration`, `ArtifactDeclaration`, `OrganizationDeployment`, `GroupDeployment`, `SchemeDeployment`, and `InstitutionDeployment` classes; `NativeUseStateBuilder` materializes only those declarations and keeps J09/J10 as raw trace records (`UNRESOLVED_UNTIL_X04`/`UNRESOLVED_UNTIL_X06`). During the Phase 4 schema audit, the JCM target was corrected to `WorkspaceDeclaration` so the CArtAgO runtime `Workspace` class remains distinct; the Phase 3 fixture still creates zero live `Artifact` objects. `ArtifactDeclaration` remains distinct from the reserved CArtAgO `Artifact` runtime class, with no declaration-name runtime link fabricated. `CodeGroundedPhase3Test` passed `2/2`; the focused reactor verify passed `11/11` unit plus `2/2` integration tests; the full reactor unit gate passed contract `10/10`, official adapters `15/15`, use-core `12/12`, use-gui `1/1`, and use-plugin `285/285`, with zero failures/errors/skips. No CArtAgO/Moise/cross-framework/runtime phase was started at that checkpoint.
-
----
-
-## Phase 4 — CArtAgO
-
-Implement:
-
-```text
-C01–C20
-```
-
-Gate:
-
-- [x] authority matrix followed;
-- [x] no simple-name matching;
-- [x] C08 unavailable remains unavailable;
-- [x] C09 distinct;
-- [x] exact operation ownership;
-- [x] ArtifactId-based runtime identity;
-- [x] dynamic limitations explicit.
-
-**Phase 4 evidence — 2026-09-29:** PASS for the available CArtAgO contract slice: `OfficialCartagoAdapter` reads only official `CartagoEnvironment`, `WorkspaceDescriptor`/`WorkspaceId`, controller inventories, `ArtifactId`, `ArtifactInfo`, `OpDescriptor`, `ArtifactObsProperty`, `ArtifactOpMethod`, `IArtifactGuard`, and opaque `AgentId` values; no simple-name join or method-name inference is used. `NativeUseModelBuilder`/`NativeUseStateBuilder` materialize exact C01–C05, C07, C09–C20 classes/links in the same `MSystem`, preserve `ArtifactId` UUID/workspace identity, keep C09 snapshots separate from the C08 live-property class, and retain focus/unfocus as exact event evidence. C08 is fail-closed as `UNAVAILABLE` because the audited controller API does not expose a live `ObsProperty`; non-empty live-property input is rejected rather than converted to C09. C06 remains PARTIAL: exact reflective backing signature is preserved as `BackingJavaOperation`, and `NativeUseModelBuilder` emits a concrete native `MOperation` only after exact declaring-class, method, parameter/return, arity, and varargs checks; dynamic or non-exact operations remain structural. `CodeGroundedPhase4Test` passed `3/3`; `NativeMOperationProjectionTest` passed `2/2` for positive and negative reflection evidence; the focused native regression set passed `12/12`. The catalog still reports C06 capability-gated/partial and C08 unavailable.
-
----
-
-## Phase 5 — Moise
-
-Implement:
-
-```text
-M01–M43
-```
-
-Gate:
-
-- [x] no cardinality flattening;
-- [x] SS/FS/NS explicit;
-- [x] Link/Compatibility distinct;
-- [x] role hierarchy not forced to UML generalization;
-- [x] no Norm→OCL;
-- [x] time text preserved.
-
-**Phase 5 evidence — 2026-09-29:** PASS for M01–M43. `OfficialMoiseAdapter` loads the official `OS` graph through `OS.loadOSFromURI` and emits typed immutable Moise DTOs with exact semantic IDs; `NativeUseModelBuilder` declares the native Moise classes, enums, relation-scoped cardinality objects, composition/endpoints, and role self-association; `NativeUseStateBuilder` materializes them into the same `MSystem` without Norm-to-OCL translation. `CodeGroundedPhase5Test` passed `2/2` with the official Hello OS and a synthetic official-DTO graph covering role inheritance, Link vs Compatibility, all cardinality tuples, ordered plan goals, enum values, and textual norm time; focused catalog/native gates passed `10/10`, adapter evidence passed `6/6`, and native export/recompile plus session/OCL passed. The full reactor gate passed `290/290` tests with zero failures/errors/skips. The M22 multiplicity direction was corrected and reverified with a subgroup fixture. No V2/Ecore/golden files were changed.
-
----
-
-## Phase 6 — Cross-framework
-
-Implement:
-
-```text
-X01–X09
-```
-
-Gate:
-
-- [x] zero fuzzy bindings;
-- [x] unresolved remains unresolved;
-- [x] context retained;
-- [x] exact bindings survive runtime/export.
-
-**Phase 6 evidence — 2026-09-29:** PASS for X01–X09. `CrossSemanticContract` now exposes nine typed exact-binding records that lower to immutable, context-bearing bindings; `NativeUseModelBuilder` declares the X associations and an `ExactBindingEvidence` class; `NativeUseStateBuilder` resolves only exact semantic IDs, validates endpoint classes, preserves context, and leaves J09/J10 unresolved without evidence. `CodeGroundedPhase6Test` passed `3/3`: all nine positive bindings survived one `MSystem` materialization and export/recompile, same-name candidates stayed unlinked, unresolved J09/J10 remained diagnostic, restart/incarnation identity selected only the exact target, and a wrong endpoint failed closed. Contract/catalog tests passed `6/6`; Phase 2–6/native regression passed `20/20`. No fuzzy matching, V2/Ecore/golden edits, or second `MSystem` were introduced.
-
----
-
-## Phase 7 — Runtime native synchronization
-
-- [x] Jason runtime projection;
-- [x] CArtAgO runtime projection;
-- [x] Moise board snapshots;
-- [x] NPL evidence;
-- [x] runtime rule registry;
-- [x] same-session mutations;
-- [x] reconnect/resync;
-- [x] stale event rejection;
-- [x] runtime OCL gates.
-
-Gate:
-
-- [x] every mutation targets current session state;
-- [x] no parallel/private state;
-- [x] stale events rejected;
-- [x] evidence-only cannot mutate;
-- [x] resync deterministic.
-
-**Phase 7 evidence — 2026-09-29:** PASS for the bounded native runtime synchronization slice. `NativeRuntimeProjector`, `NativeRuntimeMutationEngine`, `CodeGroundedRuntimeRuleRegistry`, and `NativeRuntimeTraceRecord` are native-only and do not call the V2 projector/mapping. Faithful Jason `Agent.host` and CArtAgO `Artifact.name` updates, exact relation insert/delete, and attribute unset mutate the pipeline `MSystem`; `NativeRuntimeFacadeIntegrationTest` proves a buffered event is applied after `Session.setSystem` preparation and the facade/session retain the same system. Moise group-board and NPL norm facts are retained as evidence-only and do not mutate formal state. Snapshot resync resets the same system to its baseline, stale replay/session/generation/model-revision events reject closed, undeclared mutation kinds reject closed, and the OCL gate runs after each faithful mutation. Focused Phase 7 tests passed `4/4`; the full reactor passed `297/297` with zero failures/errors/skips. PARTIAL: Jason A12–A15 action/intention/TransitionSystem semantics and `RuntimeVerificationEngine` rule-registry migration remain unchecked; the current native runtime scope is typed attribute/link projection plus evidence-only facts.
-
----
-
-## Phase 8 — Production authority switch
-
-- [x] `CODE_GROUNDED_NATIVE` becomes production authority.
-- [x] `LEGACY_V2` becomes explicit compatibility/shadow mode only.
-- [x] No automatic fallback to legacy.
-- [x] Update defaults.
-- [x] Update packaging exclusions.
-- [x] Verify historical parsers/connectors not shipped as authority.
-
-Gate:
-
-- [x] native supported scope complete;
-- [x] no legacy calls from native path;
-- [x] release/package tests pass.
-
-**Phase 8 evidence — 2026-09-29:** PASS for the production-authority, bounded native runtime scope, and explicit verification-rule boundary. The implicit `DefaultJaCaMoFacade` constructors, `DefaultJaCaMoFacade.INSTANCE`, `forSession`, and the Workbench action select `CODE_GROUNDED_NATIVE`; `LEGACY_V2` is reachable only through an explicit `PipelineMode.LEGACY_V2` constructor argument. `ProductionAuthorityPhase8Test` passed `3/3`, `LegacyV2OclIsolationTest` passed `2/2`, and `RuntimeVerificationEngineTest` passed `20/20` including injected-rule selection. `CodeGroundedPhase7Test` passed `4/4` and `OfficialAdapterTest` passed `7/7` for A12–A15 evidence. The post-change full reactor gate passed `302/302` unit tests plus `7/7` integration/release tests with zero failures/errors/skips. `LegacyAuthorityPackagingIT`, `GuiPluginStagingIT`, and `ReleasePackageIT` proved native runtime classes are packaged, historical parsers/connectors and JaCaMo-side adapters are excluded from the plugin JAR, the staged GUI JAR is byte-identical, Bridge libraries are present, and the release checksum matches. Native supported scope is complete for the explicitly implemented faithful attribute/link mutations and typed evidence-only runtime concepts; unsupported semantics remain fail-closed and no V2 runtime mapping is called by native code.
-
----
-
-## Phase 9 — Case-study acceptance
-
-### Hello World
-
-- [x] JCM declarations;
-- [x] Jason program;
-- [x] plan/trigger/body;
-- [x] workspace/artifact declarations;
-- [x] Moise OS;
-- [x] native session activation;
-- [x] OCL;
-- [x] export;
-- [x] supported runtime.
-
-### Auction
-
-- [ ] dynamic scheme evidence. `NO_LIVE_EVIDENCE`: no live Auction organization/scheme session was captured for this final closure.
-- [ ] artifact type. `NO_LIVE_EVIDENCE`: no live Auction artifact declaration/creation evidence was captured.
-- [ ] operations. `NO_LIVE_EVIDENCE`: no live Auction operation evidence was captured.
-- [ ] properties. `NO_LIVE_EVIDENCE`: no live Auction property evidence was captured.
-- [ ] exact action-operation link only when proven. `NO_LIVE_EVIDENCE`: the available evidence does not prove the live action-operation link.
-- [x] organization;
-- [x] no unsupported deadline claim;
-- [x] native runtime/session.
-
-### House Building
-
-- [x] `.jcm` not treated as complete specification;
-- [x] dynamic artifacts/org/schemes handled;
-- [x] role inheritance/cardinality;
-- [x] sequence/parallel plan;
-- [ ] supported runtime. `NO_LIVE_EVIDENCE`: no live House runtime session was captured; the bounded static/native scope remains supported.
-- [x] missing facts remain unavailable.
-
-Gate:
-
-- [x] no case-specific branches;
-- [x] all claims evidence-backed;
-- [x] limitations documented.
-
-**Phase 9 evidence — 2026-09-29:** PASS for the explicitly bounded native acceptance scope. `CodeGroundedPhase9Test` runs Hello World, the official Auction example, and House Building through the same `OfficialProjectAdapter` → `CodeGroundedNativePipeline` path; `Phase9CaseStudyAcceptanceTest` adds `3/3` evidence tests for one `Session`/`MSystem`, native verification, export validity, static dimension retention, no fabricated live artifacts, Auction official organization/scheme/OS facts, and House Building's separate official OS/cardinality/sequence/parallel evidence. Hello's JCM/Jason/plan-body/workspace/artifact/Moise/OCL/export/runtime claims are covered by the Phase 2–8 tests plus the native session/export integration tests. Auction organization and native session are PASS; Norm facts remain data and are not promoted to OCL. House Building's `.jcm` is explicitly shown incomplete: dynamic organization/artifact facts remain unavailable until an official runtime/OS snapshot is supplied, while role inheritance/cardinality and sequence/parallel plan facts are copied only from the official OS object graph. The following remain intentionally unchecked: live Auction CArtAgO artifact type/operation/property capture, exact action-operation binding for that live artifact, and House live runtime, because no native live evidence exists for those claims. No case-specific production branch, fuzzy mapping, deadline inference, or unsupported runtime claim was added. Focused Phase 9 gate passed `3/3`; no frozen V2/Ecore/golden file was changed.
-
----
-
-# 23. Mapping Inspector completion
-
-- [x] show all 105 IDs;
-- [x] filter J/A/C/M/X;
-- [x] filter APPLIED/UNRESOLVED/UNAVAILABLE/UNSUPPORTED;
-- [x] source FQCN;
-- [x] target USE ID;
-- [x] fidelity;
-- [x] evidence;
-- [x] diagnostics;
-- [x] runtime status;
-- [ ] optional navigate-to-target. `OPTIONAL_NOT_REQUIRED`: the current inspector contract requires inspection and source-location evidence, not target navigation.
-- [x] inspection only.
-
-**Section 23 evidence — 2026-09-29:** PASS for the required inspector surface. `JaCaMoWorkbenchPanel` renders the facade trace without semantic work in Swing, exposes all five dimensions and the required `APPLIED`/`UNRESOLVED`/`UNAVAILABLE`/`UNSUPPORTED` status filters, and shows source FQCN, semantic/source identity, USE target identity, fidelity, evidence authority, capability status, and diagnostics in the detail pane. `JaCaMoWorkbenchPanelTest` passed `13/13`, including a 105-row catalog display, exact filter coverage, detail evidence fields, runtime/authority status refresh, and a source-location action. Optional navigate-to-target remains unchecked because no target-navigation API is required by the current UI contract.
-
----
-
-# 24. Export/reproducibility
-
-- [x] deterministic `.use`;
-- [ ] optional `.cmd`. `OPTIONAL_NOT_REQUIRED`: native `.use`, state JSON, and trace JSON are the defined deterministic artifacts; no `.cmd` consumer is required.
-- [x] source project digest;
-- [x] rule catalog version;
-- [x] contract version;
-- [x] JaCaMo/Jason/CArtAgO/Moise versions;
-- [x] USE version;
-- [x] structural hash;
-- [x] trace export;
-- [x] verification report;
-- [x] round-trip validation.
-
-**Section 24 evidence — 2026-09-29:** PASS for the native artifacts that are implemented and tested. `NativeUseExporter` serializes the native `MModel` with USE's official `MMPrintVisitor`, recompiles it with `USECompiler`, and checks structural-hash/signature equality; `CodeGroundedTraceExporter` now includes the filtered `NativeComponentVersionManifest` for JaCaMo/Jason/CArtAgO/Moise plus USE/plugin versions, and `CodeGroundedExportTest` passes `3/3` with component-version and trace-metrics assertions. `NativeUseStateExporter` writes a separate deterministic state JSON from the one native `MSystem`; the optional `.cmd` artifact remains explicitly unchecked.
-
----
-
-# 25. Packaging/release
-
-## Build
-
-- [x] full reactor;
-- [x] JDK 21;
-- [x] plugin JAR contains native path;
-- [x] JaCaMo-side adapter separated as designed;
-- [x] no stale committed plugin JAR.
-
-## Plugin
-
-- [x] actions load;
-- [x] Workbench receives Session;
-- [x] status action works/consolidated.
-
-## Packaging gates
-
-- [x] obsolete semantic parsers not production authority;
-- [x] new rule catalog/builders packaged;
-- [x] release ZIP contains required Bridge libs;
-- [x] staged GUI plugin equals current build;
-- [x] checksums recorded.
-
-**Section 25 evidence — 2026-09-29:** PASS. `mvn -B -pl use-plugin -am verify` completed the full reactor on Java 21 with `315/315` unit tests and `7/7` integration/release tests, all with zero failures/errors/skips. The build produced the plugin JAR, release ZIP, and SHA-256 sidecar; `LegacyAuthorityPackagingIT` verifies the native facade/runtime/rule catalog/model/state/trace classes are in the JAR while obsolete parser/connector classes and JaCaMo-side adapter classes are absent. `JaCaMoPluginTest (5/5)` verifies plugin discovery, status command, both actions, Session binding, and facade status. `GuiPluginStagingIT` verifies byte identity between the current production JAR and GUI staging; `ReleasePackageContractTest`/`ReleasePackageIT (3/3)` verify Bridge libraries, manifest inventory, isolated loading, pinned USE discovery, and checksum equality.
-
----
-
-# 26. Shadow comparison/regression
-
-Compare:
-
-```text
-code-grounded result
-vs
-legacy V2 result
-```
-
-Classify:
-
-```text
-INTENTIONAL_CORRECTION
-LEGACY_LIMITATION
-REPRESENTATION_LOSS
-ADAPTER_BUG
-UNSUPPORTED_FACT
-```
-
-- [x] legacy never decides new semantics;
-- [x] no name-based reconciliation;
-- [x] retain diff evidence.
-
-**Section 26 evidence — 2026-09-29:** PASS. `ShadowSemanticComparator` indexes facts by canonical identity plus provenance digest, rejects duplicate facts, requires an explicit classification, and produces a deterministic fingerprint/register; it never reconciles by display name. `HelloShadowComparisonTest` retains the Hello shadow register, while `ShadowSemanticComparatorTest (1/1)`, `NativeSemanticAdapterTest (3/3)`, `DefaultBridgeAuthorityTest (5/5)`, `ProductionAuthorityPhase8Test (3/3)`, and `LegacyV2OclIsolationTest (2/2)` pass. Native implicit facade entry points remain `CODE_GROUNDED_NATIVE`; V2 compatibility is explicit only.
-
----
-
-# 27. Performance/safety
-
-- [x] bounded semantic snapshots;
-- [x] bounded event queues;
-- [x] no network/build on Swing EDT;
-- [x] atomic activation;
-- [x] old session survives failure;
-- [x] no listener leaks;
-- [x] deterministic model creation;
-- [x] large plan/body tests;
-- [x] trace size monitored.
-
-**Section 27 evidence — 2026-09-29:** PASS. In addition to the existing runtime/session evidence, `CanonicalJson` enforces maximum bytes/string/depth and `SemanticContractTest` passes `4/4` for canonical round-trip and bound rejection. `CodeGroundedTraceIndex.Metrics` and `CodeGroundedTraceExporter` expose deterministic record/phase/target counts, a warning threshold, and threshold-exceeded status; `CodeGroundedExportTest` asserts those metrics and source deduplication.
-
----
-
-# 28. Documentation migration
-
-Update only after corresponding code gate passes:
-
-- [x] architecture README;
-- [x] setup/run;
-- [x] Bridge config;
-- [x] mapping docs;
-- [x] USE session behavior;
-- [x] Mapping Inspector;
-- [x] runtime limits;
-- [x] export docs;
-- [x] compatibility mode;
-- [x] case-study evidence;
-- [x] known limitations;
-- [x] migration report.
-
-**Section 28 evidence — 2026-09-29:** PASS. Added `CODE-GROUNDED-NATIVE-README.md` for architecture, setup/run, Bridge configuration, mapping/inspector behavior, USE session ownership, runtime limits, exports, and compatibility mode; added `CODE-GROUNDED-NATIVE-MIGRATION-REPORT.md` for phase gates, call graph, case-study evidence, limitations, and rollback/audit scope. The documents explicitly preserve the frozen V2/Ecore/golden boundary and distinguish supported subsets from unavailable/live claims.
-
-**Documentation consolidation — 2026-09-30:** the migration report and pre-implementation design/spec documents were retired after their current operational guidance, semantic rules, and implementation evidence were consolidated into this task, `CODE-GROUNDED-NATIVE-README.md`, and `JACAMO-USE-CONCEPT-MAPPING-RULES.md`. The Section 28 entry above is historical evidence of work completed then, not a claim that the retired report remains present.
-
-No separate historical audit/report documents are maintained in `docs/agent`; dated implementation and audit evidence remains in this task.
-
----
-
-# 29. Legacy cleanup criteria
-
-Candidate historical-only components include:
-
-```text
-JcmSemanticParser
-custom JCM semantic lexer/discovery
-JasonSourceParser
-CartagoSourceExtractor
-MoiseXmlParser
-legacy resolver
-legacy in-process connectors
-CompositeRuntimeConnector
-```
-
-Do not remove until:
-
-- [ ] no production caller. `APPROVAL_GATED`: explicit legacy V2 compatibility callers remain and cleanup requires an approved migration/deletion decision.
-- [x] release excludes them;
-- [x] native case-study gates pass;
-- [x] regression value assessed;
-- [x] historical evidence retained;
-- [x] explicit cleanup approval. The 2026-09-30 repository-cleanup request authorizes deletion of
-  unreferenced obsolete artifacts; legacy compatibility code with explicit callers remains blocked.
-
-V2 becomes historical-only when:
-
-- [x] native static mapping default;
-- [x] native OCL default;
-- [x] native runtime mapping default;
-- [x] no native-mode V2 load;
-- [x] release audit proves isolation.
-
-**Section 29 evidence — 2026-09-29:** PASS for historical classification and release isolation, but at that time cleanup was intentionally not authorized. Native implicit facade, native OCL installation, and native runtime projector are the default path; `ProductionAuthorityPhase8Test` and `LegacyV2OclIsolationTest` prove no native-mode V2 load. `LegacyAuthorityPackagingIT`/`GuiPluginStagingIT` prove the candidate parser/connector classes are absent from the shipped plugin JAR, while shadow/frozen regression tests preserve their audit value. Legacy classes still have explicit compatibility/test callers, so “no production caller” remained unchecked at that checkpoint; no deletion was performed then.
-
-**Cleanup audit evidence — 2026-09-30:** the cleanup request supplied explicit approval. Caller/reference audit classified the obsolete launcher/task/layout, the old architecture-realignment and phase/archive/report trees, V1 release evidence, and unreferenced V1/V2 audit tools as `DELETE_OBSOLETE`; the generic `use-plugin/tools/jacamo-bridge.ps1` is now the only launcher documented by active workflow docs. The focused post-cleanup gate passed `57/57`, and the full reactor `mvn -B -pl use-plugin -am verify` passed `505/505` tests (`497` unit/component + `8` integration/release) with zero failures/errors/skips. The three immutable `v2-final` bundle files remain because `phase44` freeze documents reference them. The old parser/mapping/materialization/runtime/verification classes and frozen V1/V2 resources remain `BLOCKED_BY_ACTIVE_DEPENDENCY` because `DefaultJaCaMoFacade` still exposes an explicit `LEGACY_V2` compatibility constructor and historical/freeze tests call those APIs. No frozen Ecore, Mapping, OCL, profile, runtime mapping, golden, or freeze-manifest file was changed.
-
----
-
-# 30. Required test suite
-
-## Rule catalog
-- [x] count 105
-- [x] duplicates
-- [x] missing authority/status
-
-## Contract
-- [x] encode/decode
-- [x] version mismatch
-- [x] deterministic
-- [x] fidelity/capability preservation
-
-## Native model
-- [x] classes
-- [x] enums
-- [x] attributes
-- [x] operations
-- [x] associations
-- [x] compositions
-- [x] multiplicities
-- [x] deterministic order
-
-## Native state
-- [x] objects
-- [x] values
-- [x] links
-- [x] removal/update
-- [x] undefined
-- [x] collisions
-- [x] ordered helpers
-
-## Session
-- [x] setSystem
-- [x] previous system survives failed import
-- [x] GUI refresh
-- [x] evaluator current system
-
-## OCL
-- [x] native install
-- [x] capability gate
-- [x] no V2 load
-- [x] runtime same mode
-
-## Jason
-- [x] all audited BodyTypes
-- [x] plan order
-- [x] body order
-- [x] trigger enums
-- [x] source/runtime distinction
-
-## CArtAgO
-- [x] descriptor authority
-- [x] ArtifactId identity
-- [x] C08/C09 distinction
-- [x] no simple-name binding
-- [x] unavailable live property
-
-## Moise
-- [x] SS/FS/NS
-- [x] Link/Compatibility
-- [x] M15/M16/M17 tuples
-- [x] ordered plans
-- [x] norm/time preservation
-
-## X rules
-- [x] positive exact evidence
-- [x] same-name negative
-- [x] unresolved
-- [x] restart identity
-
-## Export
-- [x] deterministic `.use`
-- [x] recompile
-- [x] structural equivalence
-- [x] state export if supported
-
-## Packaging
-- [x] discovery
-- [x] staging
-- [x] no stale binary
-- [x] classpath separation
-- [x] historical parser exclusion
-
-**Section 30 evidence — 2026-09-29:** PASS for the implemented test suite. `CodeGroundedNegativeTest` rejects duplicate semantic identity before native state materialization; `CodeGroundedPhase6Test` proves same-name facts remain unresolved without exact evidence; `JaCaMoWorkbenchPanelTest` covers runtime/project refresh; `CodeGroundedExportTest (2/2)` covers separate state export; and the packaging/discovery/staging/classpath/historical-exclusion items are covered by `JaCaMoPluginTest (5/5)`, `LegacyAuthorityPackagingIT`, `GuiPluginStagingIT`, `ReleasePackageContractTest`, and `ReleasePackageIT (3/3)`. `NativeMOperationProjectionTest (2/2)` proves exact reflection creates the concrete artifact subtype and `MOperation`, while a non-exact method remains structural; the focused native regression set passed `12/12`; the post-checkpoint full reactor passed contract `11/11`, official adapters `17/17`, use-core `12/12`, use-gui `1/1`, use-plugin `315/315`, and integration/release `7/7`, with zero failures/errors/skips.
-
----
-
-# 31. Required report after every phase
-
-Each phase report must include:
-
-1. Git diff summary.
-2. Files/classes added/changed.
-3. Rule IDs implemented/changed.
-4. Exact production call graph after phase.
-5. Tests executed + exact results.
-6. Acceptance evidence.
-7. Remaining `UNKNOWN` / `UNAVAILABLE`.
-8. Legacy code still present and production callers.
-9. Plan-vs-code discrepancies.
-10. Risks/new technical debt.
-11. Rollback point.
-12. Recommendation for next phase.
-
-**Do not continue when a mandatory gate fails.**
-
----
-
-# 32. Final definition of done
-
-- [x] Official JaCaMo/Jason/CArtAgO/Moise objects are semantic authority.
-- [x] All 105 rules exist with authority/fidelity/capability metadata.
-- [x] Supported rules are implemented/tested.
-- [x] Unsupported/unavailable rules fail closed.
-- [x] Native semantic model no longer depends on V2 vocabulary.
-- [x] Native `MModel` built through USE API.
-- [x] Native `MSystemState` materialized through USE API.
-- [x] One `MSystem` shared by facade/session/runtime/verifier.
-- [x] `Session.setSystem(system)` activates result in existing USE.
-- [x] Existing USE Model Browser/Class Diagram/Object Diagram see the model/state.
-- [x] Existing USE OCL runs against same session system.
-- [x] Native verification has no hidden V2 dependency.
-- [x] Runtime updates mutate current session state only.
-- [x] Mapping Inspector is explanatory only.
-- [x] `.use` exported from native `MModel`.
-- [x] exported `.use` recompiles.
-- [x] state export is separate.
-- [x] Hello supported scope passes.
-- [x] Auction supported scope passes.
-- [x] House Building supported scope passes.
-- [x] no production fuzzy mapping.
-- [x] no case-study hard coding.
-- [x] no automatic Norm→OCL.
-- [x] no relation-scoped cardinality loss.
-- [x] release package contains only intended production authority path.
-- [x] historical artifacts remain reproducible and labeled.
-
-**Section 32 evidence — 2026-09-29:** PASS for the native implementation and bounded case-study/export/release claims listed above. `NativeUseGuiEndToEndIT` 1/1 now provides real Swing evidence for the Model Browser, Class Diagram, Object Diagram, OCL dialog, and event bus against the single activated `MSystem`. The final unfiltered `mvn -B -pl use-plugin -am verify` reactor passes contract `12/12`, official adapters `17/17`, use-core `12/12` plus `OCLExpressionIT 1/1`, use-gui `1/1` plus `ShellIT 129/129`, and use-plugin `316/316` plus `8/8` integration/release tests: `496/496` total, zero failures/errors/skips. Package, shade, assembly, staging, checksum, and `ReleasePackageIT 3/3` all pass. Remaining unchecked task items are documented `UNAVAILABLE_BY_API`, `NO_LIVE_EVIDENCE`, `OPTIONAL_NOT_REQUIRED`, or `APPROVAL_GATED` limitations, not silently promoted to completion.
-
-**Final closure evidence — 2026-09-29:** Additional closure work is backed by `CodeGroundedExportTest 3/3` (component manifest, source metadata, class/enum/attribute/value trace and bounded export metrics), `CodeGroundedPhase7Test 4/4` (runtime aliases), `NativeMOperationProjectionTest 2/2` (exact reflection only), `SemanticContractTest 4/4`, and the real Swing `NativeUseGuiEndToEndIT 1/1`. The 20 remaining `[ ]` items are intentionally retained: C08 is `UNAVAILABLE_BY_API`; legacy extractor/verifier/backend replacement and cleanup are `OPTIONAL_NOT_REQUIRED` or `APPROVAL_GATED`; optional artifacts/navigation are `OPTIONAL_NOT_REQUIRED`; Auction/House live native claims are `NO_LIVE_EVIDENCE`. The live Auction integration test remains legacy-V2 bounded evidence and therefore is not promoted to native case-study evidence. No frozen V2/Ecore/golden file was changed.
-
----
-
-# 33. Final architecture
-
-```text
-                    JaCaMo
-                      │
-      official Java/API semantic objects
-                      │
-                      ▼
-          JaCaMo-side typed adapters
-                      │
-                      ▼
-          neutral semantic contract
-                      │
-                      ▼
-        JacamoSpecificationModel
-                      │
-        J/A/C/M/X mapping rule catalog
-                      │
-          ┌───────────┴───────────┐
-          ▼                       ▼
-  NativeUseModelBuilder   NativeUseStateBuilder
-          │                       │
-          ▼                       ▼
-        MModel  ───────────────► MSystem
-                                  │
-                                  ▼
-                             MSystemState
-                                  │
-                                  ▼
-                         Session.setSystem(...)
-                                  │
-                   ┌──────────────┼──────────────┐
-                   ▼              ▼              ▼
-             USE GUI          USE OCL      Verification
-                   │
-                   ▼
-          optional export .use/.cmd
-
-Mapping Inspector
-    └── source → rule → target → evidence → fidelity/status
-        (inspection only; no second runtime)
-```
-
-# 34. Execution order
-
-**Jason include trace and interactive lifetime regression — 2026-09-30:**
-
-- [x] Resolve each parsed Plan's exact `SourceInfo` file/resource URI, SHA-256 and line range; nested includes, same-basename includes and package JARs are tested. `JasonSourceEvidence` performs no filename search or remote fetch. The official parser receives an absolute root URL via its stream API; root stream ownership is retained. `CodeGroundedTraceCollector`, value traces, schema `1.2.0` export, facade rows and Mapping Inspector retain this evidence instead of attributing every record to the root ASL/JCM.
-- [x] Keep an interactive producer alive until the explicit stop file following USE exit. `TimeoutSeconds` still bounds Bridge startup/GUI import and headless lifetime; timeout/failure exits are nonzero. The displayed Workbench refreshes cached readiness automatically and stops showing stale LIVE after subscription failure. No new runtime/resync loop is introduced.
-
-Focused tests PASS `31/31`: `OfficialJasonAdapterTest (8)`,
-`LiveJaCaMoLauncherLifetimeTest (2)`, `GenericLauncherScriptTest (1)`,
-`CodeGroundedExportTest (3)`, `NativeTraceSourceTest (1)`, and
-`JaCaMoWorkbenchPanelTest (16)`. Local include assertions execute in a separate
-JVM because the official Jason 3.3.2 `Include.process` retains its input handles
-on Windows; all source/digest/span assertions still execute against the real parser.
-Full unfiltered `mvn -B -pl use-plugin -am verify` PASS `514/514`:
-contract `12`, adapters `23`, core `12 + 1 IT`, GUI `1 + 129 IT`, plugin
-`328 + 8 IT`; zero failures/errors/skips. Counts are taken from this run's
-log, not stale XML files retained from older suites. Package, checksum,
-GUI staging, release and native Swing/OCL integration gates PASS.
-
-Actual Writing Paper static-to-native trace audit PASS: `66` Plans / `130`
-body nodes retained, with `14` local Plans and `52` imported Plans
-(`common-cartago: 18`, `common-moise: 24`, `org-obedient: 10`). Evidence:
-`use-plugin/target/source-lifetime/writing-paper-trace.json` and
-`native-trace-audit.log`. Headless live import/verification/resync/export PASS:
-`use-plugin/target/source-lifetime/headless-evidence/20260930-170754`.
-Packaged GUI auto-import READY: `gui-evidence/20260930-170743/gui-ready.json`
-under the same evidence root; `27` classes / `336` objects / `430` links.
-With startup timeout `15s`, the producer remained alive at age `230s`.
-An authenticated late consumer import/resync PASS reused the GUI's exact
-session `0e807748-cd36-4264-b2a4-b9e92f0fab41`, not merely an open TCP port:
-`gui-live-after-deadline/summary.json`. Ending only the identity-checked test
-GUI process triggered launcher stop-file cleanup, exit `0`, and listener
-shutdown; see `gui-lifetime-evidence.json`. This is supported live evidence
-with explicit `PARTIAL` completeness, not a claim of complete runtime semantics.
-The original JCM SHA-256 remains
-`ce9754dcc822fb6624d88e03487fe22316b5196e7b24504f6c642f0848e11ba4`.
-Single `MSystem` and `CODE_GROUNDED_NATIVE` are retained. No frozen
-V2/Ecore/golden or pre-existing unavailable/optional/approval checkbox changed.
-
-**Writing Paper launcher regression — 2026-09-30:** PASS for the supported
-native scope. `jacamo-bridge.ps1` accepts absent Java output only when a
-successful Gradle build explicitly reports `compileJava NO-SOURCE`; it adds
-only existing build output directories to the producer classpath. Executing
-the actual PowerShell class-output gate passes 3/3: NO-SOURCE, existing output,
-and missing-output rejection. Focused Maven tests pass 4/4. Full unfiltered
-`mvn -B -pl use-plugin -am verify` passes 506/506 (contract 12, adapters 18,
-core 12 + 1 integration, GUI 1 + 129 integration, plugin 325 + 8
-integration/release), zero failures/errors/skips, including package, checksum,
-GUI staging, and release tests. Headless evidence is
-`use-plugin/target/jacamo-bridge-evidence-writing-paper-final/20260930-153546`:
-27 classes, 336 objects, 430 links, valid structure/invariants/export.
-Packaged GUI evidence is
-`use-plugin/target/jacamo-bridge-evidence-writing-paper-gui-final/20260930-154056/gui-ready.json`:
-automatic import reports READY, 27 classes, 41 associations, 336 objects,
-430 links, Bridge LIVE with explicit PARTIAL completeness. This is evidence
-of session activation, not a claim of all runtime semantics being materialized.
-The existing single `MSystem` and `CODE_GROUNDED_NATIVE` path are retained;
-no frozen V2/Ecore/golden file changed. Existing unavailable/optional/approval
-checkboxes are unchanged by this regression fix.
-
-```text
-Phase 1A  Foundation / typed contract / 105-rule catalog / native APIs / OCL separation
-    ↓
-Phase 1B  J01 + A01–A05 + A16–A20 / Hello native USE vertical slice
-    ↓
-Phase 2   Remaining Jason static rules
-    ↓
-Phase 3   JCM deployment rules
-    ↓
-Phase 4   CArtAgO C01–C20
-    ↓
-Phase 5   Moise M01–M43
-    ↓
-Phase 6   Cross-dimension X01–X09
-    ↓
-Phase 7   Runtime synchronization into current USE session
-    ↓
-Phase 8   Production authority switch / V2 isolation
-    ↓
-Phase 9   Hello → Auction → House acceptance
-    ↓
-Packaging / docs / cleanup / final release audit
-```
-
-**Do not skip gates. Do not guess semantics. Do not create a parallel USE runtime.**
+# TASK — Generic Step-by-Step Replay
+
+## Goal
+
+Ưu tiên: ỔN ĐỊNH → ĐƠN GIẢN → DETERMINISTIC → tính năng.
+
+Recorded runtime bundle → Stop/Disconnect live observation → Open Step Replay
+→ Reset / Previous / Next → isolated replay MSystem
+→ normal USE Object Diagram → existing USE OCL evaluation → deterministic parity.
+
+Status: DONE — tất cả 27 MANDATORY checkboxes có evidence PASS ngày 2026-10-02.
+Không commit/push. Checklist chỉ tick khi có code + test/evidence thật.
+
+### MANDATORY / boundaries
+
+Reset / Previous / Next; isolated replay MModel/MSystem; normal Object Diagram
+refresh; existing USE OCL; deterministic state/result parity; generic proof bằng
+synthetic journal + Hello + Auction; không duplicate/orphan/listener leak.
+Chỉ một selected replay system trong Session, không live writer chạy song song.
+Không fuzzy identity, case/artifact/property/OCL hardcoding, fake live event,
+V2 fallback hoặc sửa case semantics/frozen Ecore/V2/goldens.
+Giữ OBSERVED_SUPPORTED_PROJECTION_ONLY, C08 unavailable và C09 representation thật.
+
+### Code foundation đã kiểm tra
+
+- RuntimeEventJournal + NativeRuntimeReplay đã có bundle/hash-chain validation,
+  baseline SOIL, exact identity index và native applyEntry dispatch.
+- NativeRuntimeProjector/MutationEngine/RuntimeVerificationCoordinator đã xử lý
+  mutation, version, OCL/result hashes và AtomicStateChangedEvent; reuse nguyên semantics.
+- USECompiler, ShellCommandCompiler, ASSLCompiler, Evaluator, MSystem/Session và
+  normal USE views đã có. ExternalOclConstraintService chỉ là adapter hiện có.
+- Checkpoint gần nhất chỉ có SOIL/version/hash, thiếu protocol context; phase này
+  luôn reconstruct baseline, không checkpoint seek/cache.
+- disconnectRuntime() ghi COVERAGE/STALE, không stop producer. Existing Hello/Auction
+  tests export valid bundle trước disconnect; bundle sau coverage loss không complete.
+  Session swap đóng các view; Object Diagram giữ system cố định; phải reopen/detach đúng.
+
+Thực hiện sections 1–7 theo thứ tự, tests section 8 đi cùng mỗi gate, section 9 cuối.
+Mandatory gate fail thì dừng; OPTIONAL/FUTURE không block DONE.
+
+## 1. Reuse current journal/replay foundation
+
+- [x] Revalidate HEAD/diff; mở rộng NativeRuntimeReplay thành retained replay context
+  có open/close và cursor. Dùng chung validator/identity-index/applyEntry với batch
+  replay; không engine replay, mutation hoặc OCL thứ hai.
+- [x] Open immutable recorded bundle, validate toàn bộ files/schema/hash-chain/
+  payload/ordinal/stateVersion/stateHash/resultHash bằng existing recorded replay.
+  Corrupt, thiếu baseline, hash mismatch, GAP hoặc report không complete: reject
+  trước Session activation; không repair/partial navigation.
+
+Evidence gate 1: NativeRuntimeReplay.Bundle/Cursor reuse compiler, exact index và
+applyEntry; private immutable copy. NativeStepReplayTest (2), NativeRuntimeReplayTest
+(2), NativeRuntimeReanalysisTest (3): 7/7 PASS, 0 failures/errors/skips (fresh Maven
+test 2026-10-02 09:45 +07). Missing baseline/hash corruption/STALE reject navigation.
+
+## 2. Generic Step index
+
+- [x] Step 0 = baseline; mỗi committed EVENT/SNAPSHOT thực sự đổi reconstructed
+  stateHash tạo một Step cho cả atomic transaction. Snapshot là observed transition,
+  không suy ra các mutation trung gian. No-op MATERIALIZED không thành Step.
+- [x] Không Step cho ACK/log/network/evidence-only/duplicate/profile metadata/
+  manual verify. Vẫn dispatch non-Step journal records đúng ordinal để giữ
+  ledger/watermark/profile/version/result parity; không lọc mất causal records.
+- [x] Index nhỏ: stepIndex, transitionOrdinal/endOrdinal, recorded stateVersion,
+  event/source, stateHash. EndOrdinal gồm trailing non-Step records trước next
+  transition/cuối bundle; Step ≠ stateVersion. Hiển thị latest formal result,
+  không dùng last evidence-only observation thay OCL result.
+
+Evidence gate 2: NativeRuntimeReplay.Step index; retainedCursorSharesBatchValidationAndPreservesNonStepProfileAndNoopVersions
+PASS: baseline/atomic snapshot/B/A = 4 index entries; trailing PROFILE/manual/no-op/
+same-state resync retained, duplicate idempotent; every endOrdinal reconstructed
+with exact recorded version/state/result hashes. Formal selection uses coordinator.latest.
+
+## 3. Simple replay controller
+
+- [x] Reset: reconstruct baseline và forward tới endOrdinal của Step 0.
+- [x] Previous: reconstruct baseline rồi forward tới Step trước; không inverse
+  mutation, USE undo hoặc chỉnh original system.
+- [x] Next: forward context hiện tại đến endOrdinal của Step kế tiếp bằng dispatch
+  hiện có; boundary 0/last và recording baseline-only đúng, không count tăng sai.
+- [x] Một navigation operation tại một thời điểm; disable buttons khi busy.
+  Chỉ activate candidate hoàn chỉnh/parity PASS; error giữ state hợp lệ trước đó,
+  báo diagnostic, không publish half-state hoặc worker result đã hết hạn.
+
+Gate 3 controller evidence: NativeStepReplayTest 5/5 PASS; five repeated Reset/
+Next/Next/Previous/Next sequences, first/last boundaries, invalid reopen/failed
+baseline reconstruction preserves selection, overlap + close-during-open cancels
+candidate. NativeStepReplayGuiIT also PASS: disabled rapid second click, normal views,
+stable listener counts and isolated Session through repeated reconstruction/reopen.
+
+## 4. Baseline reconstruction
+
+- [x] Reuse USECompiler(model.use) → NativeUseSoilExporter/ShellCommandCompiler
+  (baseline.cmd) → exact semanticId index → native forward replay; model/objects
+  riêng. Giữ original engine baseline cho snapshot resetToBaseline về sau.
+- [x] Assert original stateVersion/stateHash/resultHash tại từng record/endOrdinal;
+  reconstruct lại protocol/profile từ journal, không restore riêng SOIL checkpoint
+  hoặc sửa hash/version để khớp. Không cache mutable historical MSystemState.
+
+Evidence gate 4: NativeRuntimeReplay.Bundle.reconstruct/atStep + Cursor dispatch;
+exact semanticEvidence/resultHash/SOIL equality versus retained full forward at
+each selected Step; original model/system unchanged. Fresh focused gate 25/25 PASS,
+0 failures/errors/skips (2026-10-02 09:54 +07), includes OCL/coordinator/re-analysis.
+
+## 5. Replay isolation
+
+- [x] Chỉ Enter Replay sau khi live delivery/subscription và in-flight writer đã
+  dừng/settle; disable Start/Connect/Resync khi replay. Chốt bundle bất biến tại
+  consistent export boundary TRƯỚC terminal disconnect coverage marker như flow
+  hiện có, rồi disconnect và validate trước Open; không xoá GAP/STALE đã ghi.
+  Nếu chỉ Disconnect, ghi đúng “stop observation”, không claim producer đã stop.
+- [x] Session.setSystem(replaySystem) trên EDT sau validation; một selected replay
+  system, không Bridge nối vào replay, không share original MModel/MObject.
+  Close/reconstruct dọn replay-owned context/listeners/files; không mutate original
+  system/bundle. Không Return Live/reconnect tự động trong phase này.
+
+## 6. USE GUI refresh
+
+- [x] Runtime tab chỉ cần Open recording, Step: N/Total (baseline 0),
+  StateVersion, Event, Source và [Reset] [Previous] [Next]; lỗi/coverage vẫn rõ.
+  Không timeline editor, live context routing hoặc gọi paging là semantic Step.
+- [x] Reuse normal Object Diagram/Model Browser/Class Invariant/OCL dialog.
+  Forward dùng AtomicStateChangedEvent; Reset/Previous reconstruct rồi Session swap:
+  detach old listeners và reopen normal views, refresh đúng object/link/attribute.
+  Không custom diagram; không yêu cầu giữ layout/selection phức tạp.
+- [x] IO/compile/reconstruct orchestration trên worker, existing coordinator/EDT
+  boundary cho writes/views; live timer không ghi đè replay Verification.
+  Chặn manual SOIL/diagram edits/reset/undo/redo/flag edits phá parity trong replay;
+  normal OCL query/evaluation vẫn dùng selected replay state.
+
+Evidence gates 5–6: DefaultJaCaMoFacade offline admission + delivery settle barrier;
+ReplayStepFacadeTest rejects connected/STALE open, preserves disconnect evidence and
+routes reads/exports to selected replay. NativeStepReplayGuiIT verifies actual normal
+diagram membership/deletion, Model Browser, OCL dialog, invariant/Verification outcomes,
+disabled rapid clicks, stable listeners and no old-system GUI subscribers. MainWindow
+unregisters old bus; EvalOCLDialog/ViewFrame detach; ClassInvariantView revokes completed
+worker callbacks before checkpoint result installation (SKIPPED cannot become vacuous PASS).
+Fresh GUI/foundation gate: 29/29 PASS, 0 failures/errors/skips, 2026-10-02 10:20 +07.
+
+## 7. Reuse existing USE OCL
+
+- [x] Dùng recorded native invariants + PROFILE source/flags/timeline;
+  ExternalOclConstraintService → USE ASSLCompiler/Evaluator và coordinator hiện có.
+  Không viết checker/verification engine mới, không duplicate OCL semantics.
+- [x] Sau mỗi Step, normal views và Verification hiển thị kết quả existing USE
+  evaluation của current replay state. Giữ PASS/FAIL/ERROR/SKIPPED, coverage và
+  profile attribution; FAIL không rollback. Đủ journal không nâng INCOMPLETE
+  capability thành complete JaCaMo; C08 không vacuous PASS, replay không LIVE.
+
+## 8. Generic tests
+
+- [x] Synthetic parameterized journal: exact IDs/names/property values khác nhau;
+  create/delete/update/unset/link, atomic batch, no-op/duplicate/evidence/profile,
+  baseline-only và first/last boundaries; không dùng fixture làm live evidence.
+- [x] Bắt buộc Reset → Next → Next → Previous → Next. So cùng objects/attributes,
+  links, stateHash, recorded version và OCL outcomes/resultHash với full forward
+  replay ở cùng Step; repeated Reset/Previous/Next không count drift.
+- [x] Hello original tutorial + Auction original JCM: reuse
+  HelloWorldSemanticInventoryIT/ManagedAuctionWorkbenchIT để record; stop/disconnect
+  trước Step replay. Cùng controller, real recorded events/OCL, không sửa source/
+  profile để manufacture transition; artifacts/evidence chỉ phía USE.
+- [x] Repeated navigation/close/reopen: 0 duplicate identity, 0 orphan link,
+  no listener leak/old-system callback, original system/bundle unchanged.
+  GUI test kiểm normal diagram membership/deletion và OCL/Verification actual state.
+- [x] Negative controls: corrupt/missing/hash/GAP/STALE/incompatible payload,
+  failed reconstruction, rapid clicks/close while busy; fail closed, Session cũ
+  không bị thay bởi candidate lỗi. INCOMPLETE nhưng intact supported projection
+  giữ nguyên capability/SKIPPED, không bị coi là corrupt chỉ vì coverage label.
+
+Evidence gates 7–8 (synthetic/GUI): NativeGenericStepReplayTest 11/11 PASS,
+three identity/value variants, 9 semantic transitions each, attribute set/unset,
+link insert/delete, create/delete + multi-property atomic batch. No-op/duplicate/
+evidence/manual/profile preserve ordinal and version; disabled/negated PROFILE retained.
+INCOMPLETE intact projection remains navigable with original SKIPPED. Hash/chain/GAP/
+schema/scope/truncated/incompatible payload reject before activation; forced Next
+parity error restores prior valid state and publishes 0 half-state notifications,
+requires reconstruction before retry. Combined fresh focused gate: 62/62 PASS,
+0 failures/errors/skips, 2026-10-02 10:30 +07. At that gate Hello/Auction recordings
+were pending; the completed fresh case-study evidence follows.
+
+Fresh completed gate 8: focused 67/67 PASS, 0 failures/errors/skips, Maven finished
+2026-10-02 11:14:35 +07 (`use-plugin/target/step-final-focused.log`). Same
+StepReplayProof exercises real normal Object Diagram/Model Browser/invariant/OCL
+views, Reset/Next/Next/Previous/Next, every recorded semantic Step and reopen:
+
+| Recording under `use-plugin/target` | Status | Steps | Records |
+| --- | --- | ---: | ---: |
+| `hello-world-object-audit/AUTO-1790913834292` | PASS | 130 | 780 |
+| `hello-world-object-audit/FULL-1790914043324` | PASS | 56 | 459 |
+| `workbench-acceptance/auction-1790914268918` | PASS | 171 | 1134 |
+
+Each proof compares stateVersion, SOIL, state/result hashes and native OCL outcomes
+with full forward replay. No duplicate identities/orphan links/listener drift;
+original state/recording/source unchanged. Counts differ between recordings by
+observed interval, not inferred AUTO/FULL runtime semantics. Auction uses unchanged
+auction_demo.ocl and a real producer PASS → FAIL → PASS transition.
+Regression fixes: propagate the actual EDT activation error and restore prior
+Session; clean constructor-failure Object Diagram subscribers/sort listener/view
+count; test setup restores USE diagram properties and selects the exact owned OCL
+dialog. New activation-failure and failed-diagram regressions PASS without weakening
+any state/parity/source/API assertions. At that focused gate full reactor/release
+was pending; the completed final evidence is in section 9.
+
+Final ownership review: the first full verify completed PASS at 11:32 +07, but
+subsequent GUI/Session admission hardening required a new final verify. One parent
+USE window reuses its existing Workbench dialog; an empty/foreign facade cannot
+open replay over a Session it does not own or replace another facade's read-only
+replay. Dedicated GUI close/reopen and facade ownership regressions PASS;
+fresh focused gate 65/65, 0 failures/errors/skips, finished 2026-10-02 11:34:23 +07
+(`use-plugin/target/step-owner-focused.log`). The ownership-hardened full verify
+completed PASS as detailed below (`use-plugin/target/step-final-owner-reactor.log`).
+
+## 9. Final acceptance
+
+- [x] Focused new Step tests + existing recorded replay/runtime/OCL/Session/GUI
+  regressions PASS; fresh reports có từng test mới, không chỉ suite cũ.
+- [x] Synthetic + Hello + Auction chứng minh Reset/Previous/Next, isolated Session,
+  normal USE diagram/OCL, deterministic parity và no duplicate/orphan/leak.
+- [x] Full reactor verify + package/release/staging/installed replay và native
+  export/OCL/Session regressions PASS; ghi commands/counts/failures/errors/skips.
+- [x] Review diff/call graph/checkbox và update usage/evidence theo code thực tế.
+  DONE khi mọi MANDATORY gate PASS; không đòi OPTIONAL/FUTURE được implement.
+
+### Final gate — ownership-hardened production code
+
+Commands from USE root:
+
+~~~powershell
+mvn -B -pl use-plugin -am "-Dtest=ExternalOclConstraintServiceTest,NativeGenericStepReplayTest,NativeRuntimeReanalysisTest,NativeRuntimeReplayTest,NativeStepReplayGuiIT,NativeStepReplayTest,NativeUseGuiEndToEndIT,RuntimeVerificationCoordinatorTest,ReplayStepFacadeTest,JaCaMoWorkbenchPanelTest" "-Dsurefire.failIfNoSpecifiedTests=false" "-Djava.awt.headless=false" test
+mvn -B "-Djava.awt.headless=false" verify
+~~~
+
+Focused: 65/65 PASS, 0 failures/errors/skips, finished 11:34:23 +07.
+Full reactor: BUILD SUCCESS, 612/612 reported tests across 140 fresh XML suites,
+0 failures/errors/skips; finished 2026-10-02 11:50:12 +07. Reports counted only
+when written after this final run started; stale focused/earlier XML excluded.
+
+| Module | Unit | Integration | Status |
+| --- | ---: | ---: | --- |
+| jacamo-bridge-contract | 15 | 0 | PASS |
+| jacamo-bridge-jacamo | 27 | 0 | PASS |
+| use-core | 12 | 1 | PASS |
+| use-gui | 1 | 129 | PASS |
+| use-plugin | 411 | 16 | PASS |
+
+Package/release: ReleasePackageIT 3/3, LegacyAuthorityPackagingIT 1/1,
+NativeRuntimePackagedReplayIT 1/1, GuiPluginStagingIT 1/1 PASS (6/6 included in
+full totals). Installed child JVM loads production plugin without Maven/JaCaMo
+classpath and proves recorded + Step replay, Reset/Next/Next/Previous/Next,
+hash parity, read-only reset rejection and closed Session. Distribution ZIPs,
+release checksum and byte-identical plugin/GUI staging confirmed; staged SHA-256
+`a6706356df29f060e6c792b259aeb880a13396ec17580b415586a63153afc9d9`.
+
+Final real recorded GUI evidence under `use-plugin/target`:
+
+| Evidence directory | Steps | Records | Final stateVersion | Status |
+| --- | ---: | ---: | ---: | --- |
+| `hello-world-object-audit/AUTO-1790915981608` | 130 | 780 | 132 | PASS |
+| `hello-world-object-audit/FULL-1790916149836` | 74 | 584 | 76 | PASS |
+| `workbench-acceptance/auction-1790916388338` | 173 | 1138 | 174 | PASS |
+
+All three `step-replay-proof.json` reports validate every selected Step against
+the shared full forward dispatcher: identical SOIL/version/stateHash/resultHash/
+OCL outcomes; 0 duplicate identities, 0 orphan links, stable listener counts,
+unchanged original state/bundle/source. NativeStepReplayGuiIT 3/3 also proves
+normal USE diagram/browser/invariant/OCL views, failed constructor cleanup and
+single Workbench owner with clean close/reopen. Auction keeps the authored OCL
+and records true producer ACK and PASS → FAIL → PASS; terminal disconnect STALE
+remains in the original journal, never silently cleared to achieve parity.
+
+Final logs: `step-owner-focused.log`, `step-final-owner-reactor.log`. README usage,
+call graph and all checkboxes reviewed against current implementation. Git diff
+checked with `core.whitespace=cr-at-eol`; no frozen Ecore/V2/golden or case-source
+changes. USE main still at `fa819ab06b0549c12d1a1a7f8ffcb7522857e0f2`; 26 modified
+files + 6 new implementation/test files remain uncommitted (including the user's
+replacement task plan). JaCaMo retains only its pre-existing `examples/auction.zip`;
+no generated source-tree junk. No commit/push; awaiting user approval.
+
+Scope remains OBSERVED_SUPPORTED_PROJECTION_ONLY. C08 stays unavailable and
+INCOMPLETE/SKIPPED capabilities stay explicit. All OPTIONAL/FUTURE items below
+remain unimplemented as requested, and do not block this phase's DONE.
+
+Acceptance:
+Any supported recorded case study → Stop runtime/Disconnect observation
+→ Open Step Replay → Reset / Previous / Next → correct isolated MSystemState
+→ normal USE Object Diagram → existing USE OCL → deterministic parity
+→ no duplicate / orphan / listener leak.
+
+Commands từ USE root (test mới phải được tạo; không skip acceptance):
+~~~powershell
+mvn -B -pl use-plugin -am "-Dtest=*StepReplay*Test,*ReplayStep*Test,NativeRuntimeReplayTest,RuntimeVerificationCoordinatorTest,ExternalOclConstraintServiceTest,NativeRuntimeFacadeIntegrationTest,JaCaMoWorkbenchPanelTest" "-Dsurefire.failIfNoSpecifiedTests=false" test
+mvn -B verify
+~~~
+Full verify phải thực sự chạy Step GUI IT mới, Hello/Auction, release/staging/
+installed replay và native export/Session/OCL suites; package-only không đủ.
+Không lấy log/XML lịch sử làm PASS và không weaken assertions.
+
+## OPTIONAL / FUTURE — không block DONE phase đầu
+
+- Concurrent Live + Replay; Return Live without disconnect; complex dual-context routing.
+- Fast checkpoint seek, random-seek optimization, advanced caching.
+- Partial GAP/prefix navigation (future); repair/suy diễn missing state luôn bị cấm.
+- Go to Step chỉ khi reuse cùng seek primitive rất đơn giản, sau mandatory gate.
+- Autoplay, breakpoint, speed control, timeline editor, advanced layout retention.
+- Current external OCL re-analysis trong Step UI: có batch foundation sẵn,
+  giữ API/regression hiện có; profile override/new-result timeline không mandatory.

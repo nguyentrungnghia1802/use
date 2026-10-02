@@ -166,8 +166,27 @@ public final class MSystem {
 	 * Resets the system to its initial state.
 	 */
 	public void reset() {
+		assertUserMutationAllowed();
 		init();
 	}
+
+    private volatile boolean readOnly;
+    private final ThreadLocal<Integer> authorizedMutationDepth = ThreadLocal.withInitial(() -> 0);
+
+    /** Recorded states remain queryable; user edits would invalidate recorded parity. */
+    public boolean isReadOnly() { return readOnly; }
+    public void setReadOnly(boolean value) { readOnly = value; }
+    public void assertUserMutationAllowed() {
+        if (readOnly && authorizedMutationDepth.get() == 0)
+            throw new IllegalStateException("RECORDED_STATE_READ_ONLY: use replay navigation");
+    }
+    /** Trusted native writer scope, not user undo or a historical inverse operation. */
+    public <T> T authorizedMutation(java.util.concurrent.Callable<T> action) throws Exception {
+        int previous = authorizedMutationDepth.get();
+        authorizedMutationDepth.set(previous + 1);
+        try { return action.call(); }
+        finally { if (previous == 0) authorizedMutationDepth.remove(); else authorizedMutationDepth.set(previous); }
+    }
 
 	/**
 	 * Returns the current system state.
@@ -364,6 +383,7 @@ public final class MSystem {
 	 * @param negated State if invariant is negated. May be {@code null} for no change.
 	 */
 	public void setClassInvariantFlags(MClassInvariant inv, Boolean active, Boolean negated) {
+		assertUserMutationAllowed();
 		if (active != null){
 			inv.setActive(active);
 			fireClassInvariantChangeEvent(inv, active ? InvariantStateChange.ACTIVATED : InvariantStateChange.DEACTIVATED);
@@ -1267,6 +1287,7 @@ public final class MSystem {
 	 */
 	public StatementEvaluationResult execute(MStatement statement, boolean undoOnFailure, boolean storeResult, boolean notifyUpdateStateListeners)
 			throws MSystemException {
+		assertUserMutationAllowed();
 
 		fRedoStack.clear();
 
@@ -1337,6 +1358,7 @@ public final class MSystem {
 	 * @throws MSystemException
 	 */
 	public StatementEvaluationResult undoLastStatement() throws MSystemException {
+		assertUserMutationAllowed();
 
 		if (fStatementEvaluationResults.isEmpty()) {
 			throw new MSystemException("nothing to undo");
@@ -1364,6 +1386,7 @@ public final class MSystem {
 	 * @throws MSystemException
 	 */
 	public StatementEvaluationResult redoStatement() throws MSystemException {
+		assertUserMutationAllowed();
 
 		if (fRedoStack.isEmpty()) {
 			throw new MSystemException("nothing to redo");

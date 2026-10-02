@@ -270,6 +270,58 @@ are not reconstructed automatically; a replay hash mismatch is an error, not
 fuzzy repair. Component-version manifest, USE-version field, and production
 trace-size telemetry remain optional outside this runtime export contract.
 
+### Generic Step replay (current `task.md`)
+
+1. While observation is consistent, **Export replay...** to a separate empty directory.
+2. **Disconnect observation**. This does not semantically stop the JaCaMo producer;
+   it records observation loss/STALE in the original journal. Do not export that
+   terminal marker as a complete recording or remove it to pass validation.
+3. Runtime tab → **Open recording...** → select the pre-disconnect bundle.
+4. Use **Reset / Previous / Next**. The tab shows `Step N/Total`, StateVersion,
+   Event and Source. Step 0 is the baseline; Total excludes the baseline.
+
+The entire immutable private copy is validated before Session activation. Only
+an EVENT/SNAPSHOT that changes native state hash is a semantic Step; one snapshot
+is one observed atomic transition, not inferred intermediate states. No-op,
+duplicate, evidence-only, profile and manual-verification records are not Steps,
+but causal records through the Step's inclusive end ordinal are still dispatched.
+Step number is therefore not stateVersion. Latest formal outcomes are distinct
+from evidence-only observations, and incomplete API capability remains incomplete.
+
+```text
+Runtime controls → JaCaMoFacade → NativeReplayStepController
+→ NativeRuntimeReplay.Bundle/Cursor → shared applyEntry
+→ NativeRuntimeProjector / MutationEngine / RuntimeVerificationCoordinator
+→ existing USE ASSLCompiler / Evaluator
+→ Session + AtomicStateChangedEvent → normal USE views
+```
+
+Next forwards the retained context. Reset/Previous compile the original model,
+reconstruct original baseline SOIL and dispatch forward to the requested previous
+boundary, then swap Session on EDT and reopen standard Object Diagram/Class
+Invariant views. There is no inverse mutation, USE undo, checkpoint seek cache,
+custom diagram, second replay engine or second OCL evaluator.
+
+Replay has one selected isolated read-only MModel/MSystem, no live subscription
+or writer. Native exports and normal OCL queries use that selected system. User
+SOIL, diagram edits, reset/undo/redo and invariant flag edits are blocked; OCL
+FAIL is an observed result, not permission to rollback a violating recorded state.
+Corrupt/missing/hash/GAP/STALE/incompatible recordings reject before selection.
+Failed Next keeps the prior valid state and requires Reset/Previous reconstruction;
+its unselected local range is not presented as committed formal history. Original
+recording and original observation-loss evidence are never rewritten.
+
+Opening the Workbench menu again reuses its existing dialog/owner. Open recording
+requires either that owner's current workspace (already disconnected) or an empty
+Session; an unrelated facade cannot settle foreign live delivery. Another facade
+cannot replace the selected read-only replay via Import/Start/Profile controls.
+
+No concurrent Live+Replay, automatic Return Live, autoplay, random seek/cache or
+current-profile Step re-analysis UI is implemented in this phase. Existing batch
+recorded replay and batch re-analysis APIs remain available; re-analysis UI is
+disabled during Step replay. Close the Workbench to end its replay-owned context.
+Reset/Previous prioritize correctness over historical layout/selection retention.
+
 ## Compatibility and release
 
 The native facade is the implicit production authority. V2 resources are
@@ -286,6 +338,19 @@ consistent.
 
 ## Evidence commands
 
+Current Step replay focused gate (including the same generic GUI driver for both
+original Hello World projections and original Auction):
+
+```powershell
+mvn -B -pl use-plugin -am `
+  "-Dtest=ExternalOclConstraintServiceTest,NativeGenericStepReplayTest,NativeRuntimeReanalysisTest,NativeRuntimeReplayTest,NativeStepReplayGuiIT,NativeStepReplayTest,NativeUseGuiEndToEndIT,RuntimeVerificationCoordinatorTest,ReplayStepFacadeTest,JaCaMoWorkbenchPanelTest,HelloWorldSemanticInventoryIT,ManagedAuctionWorkbenchIT" `
+  "-Dsurefire.failIfNoSpecifiedTests=false" "-Djava.awt.headless=false" test
+mvn -B "-Djava.awt.headless=false" verify
+```
+
+Full verify is required after production changes; focused `test` alone does not
+exercise installed-release replay or distribution/staging acceptance.
+
 Focused Workbench/native/runtime checks (unit tests and actual GUI/live ITs):
 
 ```powershell
@@ -298,7 +363,7 @@ mvn -B -pl use-plugin -am `
 ```
 
 The acceptance scope and dated evidence are recorded in
-`task_workbench_ocl_runtime.md`, `task_runtime_verification.md` and the earlier `task.md`; the active
+`task_workbench_ocl_runtime.md`, `task_runtime_verification.md` and the current Step replay `task.md`; the active
 mapping contract is in `JACAMO-USE-CONCEPT-MAPPING-RULES.md`. Unchecked task
 items remain open where implementation, API availability, or live evidence is
 missing; they are not implied to pass by this README.

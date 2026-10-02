@@ -106,13 +106,20 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private String selectedSource;
     private boolean autoImportStarted;
     private int backgroundOperations;
+    private long viewEpoch;
+    private final Map<String, JButton> actionButtons = new LinkedHashMap<>();
+    private final JLabel replayStep = named(new JLabel("Not open"), "step-replay-index");
+    private final JLabel replayVersion = named(new JLabel("-"), "step-replay-state-version");
+    private final JLabel replayEvent = named(new JLabel("-"), "step-replay-event");
+    private final JLabel replaySource = named(new JLabel("-"), "step-replay-source");
     private final JLabel workflowState = named(new JLabel("NOT_IMPORTED"), "workflow-state");
     private final JButton startRuntime = named(new JButton("Start Runtime"), "start-runtime");
     private final JButton loadProfile = named(new JButton("Load OCL..."), "load-profile");
     // Refresh only cached facade status, never start a second runtime or a network resync.
     private final javax.swing.Timer runtimeStatusTimer = new javax.swing.Timer(1000, event -> {
-        if (backgroundOperations == 0) refreshRuntime();
+        refreshRuntimeIfIdle();
     });
+    private void refreshRuntimeIfIdle() { if (backgroundOperations == 0 && !facade.stepReplayBusy()) refreshRuntime(); }
 
     @Override public void addNotify() {
         super.addNotify();
@@ -121,6 +128,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
 
     @Override public void removeNotify() {
         runtimeStatusTimer.stop();
+        viewEpoch++;
         super.removeNotify();
     }
 
@@ -178,6 +186,16 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
 
     public void startRuntime() {
         executeBackground("Runtime start failed", facade::startRuntime, this::refreshRuntime);
+    }
+
+    public void openStepReplay(Path bundle) {
+        executeBackground("Step replay open failed", () -> facade.openStepReplay(bundle), this::replayChanged);
+    }
+
+    private void replayChanged() {
+        persistedHistory = false;
+        refreshRuntime();
+        setStatus("RECORDED_REPLAY: observation disconnected; state is read-only; not LIVE");
     }
 
     public void exportVerificationReport(Path destination) {
@@ -366,6 +384,22 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     }
 
     private JPanel runtimePanel() {
+        JPanel replay = new JPanel(new BorderLayout());
+        JPanel replayValues = new JPanel(new GridLayout(0, 2, 8, 4));
+        addField(replayValues, "Step (0 = baseline)", replayStep);
+        addField(replayValues, "StateVersion", replayVersion);
+        addField(replayValues, "Event", replayEvent);
+        addField(replayValues, "Source", replaySource);
+        replay.add(replayValues, BorderLayout.CENTER);
+        JPanel navigation = new JPanel(new FlowLayout(FlowLayout.LEADING));
+        navigation.add(button("Open recording...", "step-replay-open", () -> {
+            Path bundle = chooseReplayBundle("Open immutable recording after Export then Disconnect observation");
+            if (bundle != null) openStepReplay(bundle);
+        }));
+        navigation.add(button("Reset", "step-replay-reset", () -> executeBackground("Replay Reset failed", facade::resetStepReplay, this::replayChanged)));
+        navigation.add(button("Previous", "step-replay-previous", () -> executeBackground("Replay Previous failed", facade::previousStepReplay, this::replayChanged)));
+        navigation.add(button("Next", "step-replay-next", () -> executeBackground("Replay Next failed", facade::nextStepReplay, this::replayChanged)));
+        replay.add(navigation, BorderLayout.SOUTH);
         JPanel values = new JPanel(new GridLayout(0, 2, 8, 4));
         addField(values, "Semantic authority", semanticAuthority);
         addField(values, "Workflow (not Bridge readiness)", workflowState);
@@ -406,7 +440,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         JPanel controls = new JPanel(new FlowLayout(FlowLayout.LEADING));
         controls.add(button("Connect", "runtime-connect", () -> executeBackground("Runtime connect failed",
                 facade::connectRuntime, this::refreshRuntime)));
-        controls.add(button("Disconnect", "runtime-disconnect", () -> executeBackground("Runtime disconnect failed",
+        controls.add(button("Disconnect observation", "runtime-disconnect", () -> executeBackground("Runtime disconnect failed",
                 facade::disconnectRuntime, this::refreshRuntime)));
         controls.add(button("Reconnect", "runtime-reconnect", () -> executeBackground("Runtime reconnect failed",
                 facade::connectRuntime, this::refreshRuntime)));
@@ -417,6 +451,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
             facade.cancelRuntimeStartup(); refreshRuntime();
         }));
         JPanel panel = new JPanel(new BorderLayout());
+        panel.add(replay, BorderLayout.NORTH);
         var split=new JSplitPane(JSplitPane.VERTICAL_SPLIT,new JScrollPane(values),history);
         split.setResizeWeight(0.40); panel.add(split, BorderLayout.CENTER);
         panel.add(controls, BorderLayout.SOUTH);
@@ -682,12 +717,14 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         }
         setStatus(title.replace(" failed", "") + "...");
         backgroundOperations++;
+        long ticket = viewEpoch;
         refreshWorkflowControls();
         new javax.swing.SwingWorker<Void,Void>() {
             @Override protected Void doInBackground() { operation.run(); return null; }
             @Override protected void done() {
-                try { get(); afterSuccess.run(); }
+                try { get(); if (ticket == viewEpoch) afterSuccess.run(); }
                 catch (Exception error) {
+                    if (ticket != viewEpoch) return;
                     Throwable cause = error instanceof java.util.concurrent.ExecutionException && error.getCause() != null
                             ? error.getCause() : error;
                     String message = title + ": " + cause.getMessage();
@@ -695,7 +732,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
                     refreshDiagnostics();
                     errorPresenter.accept(message);
                 }
-                finally { backgroundOperations--; refreshWorkflowControls(); }
+                finally { backgroundOperations--; if (ticket == viewEpoch) refreshWorkflowControls(); }
             }
         }.execute();
     }
@@ -740,15 +777,32 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
                 + " | shown records=" + historyPage.entries().size() + " | disk records=" + historyPage.persistedEntries()
                 + " | memory retained from ordinal=" + historyPage.retainedFromOrdinal()
                 + " | " + (historyPage.gap() ? "PERSISTENCE GAP: " + historyPage.diagnostic() : "disk persistence intact")
+                + (historyPage.diagnostic().isBlank() ? "" : " | " + historyPage.diagnostic())
                 + " | first visible result per interval is retained; evidence-only is not an OCL re-check"));
     }
 
     private void refreshWorkflowControls() {
         var workflow = facade.workflowStatus();
+        var replay = facade.stepReplayStatus();
+        boolean busy = backgroundOperations != 0 || facade.stepReplayBusy();
+        boolean active = replay != null;
         workflowState.setText(displayMessage(workflow.state() + " | " + workflow.diagnostic()
                 + " | bootstrap=" + workflow.bootstrapAt() + " | started=" + workflow.startedAt()));
-        startRuntime.setEnabled(backgroundOperations == 0 && workflow.startAvailable());
-        loadProfile.setEnabled(backgroundOperations == 0 && facade.projectSummary() != null);
+        startRuntime.setEnabled(!busy && !active && workflow.startAvailable());
+        loadProfile.setEnabled(!busy && !active && facade.projectSummary() != null);
+        actionButtons.forEach((name, button) -> button.setEnabled(!busy));
+        for (String name : List.of("import-project", "rebuild-project", "run-verification", "export-replay",
+                "reanalyze-replay", "runtime-connect", "runtime-reconnect", "runtime-resync", "runtime-disconnect", "cancel-runtime-start")) {
+            JButton button = actionButtons.get(name);
+            if (button != null) button.setEnabled(!busy && !active);
+        }
+        actionButtons.get("step-replay-reset").setEnabled(!busy && active);
+        actionButtons.get("step-replay-previous").setEnabled(!busy && active && replay.step() > 0);
+        actionButtons.get("step-replay-next").setEnabled(!busy && active && replay.step() < replay.total() && !replay.reconstructionRequired());
+        replayStep.setText(active ? replay.step() + "/" + replay.total() : "Not open");
+        replayVersion.setText(active ? Long.toString(replay.stateVersion()) : "-");
+        replayEvent.setText(active ? displayMessage(replay.event()) : "-");
+        replaySource.setText(active ? displayMessage(replay.source()) : "-");
     }
 
     private void setStatus(String message) { status.setText(displayMessage(message)); }
@@ -806,8 +860,9 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         return panel;
     }
     private static void addField(JPanel panel, String label, JLabel value) { panel.add(new JLabel(label)); panel.add(value); }
-    private static JButton button(String text, String name, Runnable action) {
+    private JButton button(String text, String name, Runnable action) {
         JButton button = named(new JButton(text), name);
+        actionButtons.put(name, button);
         button.addActionListener(event -> action.run());
         return button;
     }
