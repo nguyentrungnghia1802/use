@@ -178,8 +178,11 @@ public final class NativeUseStateBuilder {
                         provenance.status() == org.jacamo.bridge.contract.CapabilityStatus.COMPLETE
                                 ? List.of() : List.of(provenance.status().name()));
             }
-            for (var organization : semantic.moiseOrganizations())
-                materializeMoise(api, schema, semanticObjects, objectNames, trace, catalog, organization);
+            if (schema.profile().mode() == NativeProjectionMode.FULL)
+                for (var organization : semantic.moiseOrganizations())
+                    materializeMoise(api, schema, semanticObjects, objectNames, trace, catalog, organization);
+            // AUTO consumes the same complete supported semantic graph as schema/policy/trace.
+            // Static definitions are not OE instances, role adoptions, or mission commitments.
             for (var environment : semantic.cartagoEnvironments()) {
                 MObject environmentObject = object(api, semanticObjects, objectNames, "Environment",
                         environment.metadata(), environment.environmentId());
@@ -781,14 +784,14 @@ public final class NativeUseStateBuilder {
         Map<String, MObject> roleObjects = new LinkedHashMap<>();
         for (var role : structural.roles()) {
             MObject roleObject = object(api, semanticObjects, objectNames, "Role", role.metadata(), role.roleId());
-            roleObjects.put(role.roleId(), roleObject);
+            roleObjects.put(role.metadata().semanticId(), roleObject);
             text(api, roleObject, "roleId", role.roleId());
             bool(api, roleObject, "isAbstract", role.abstractRole());
             trace.add(catalog.require("M06"), TracePhase.INSTANCE_MATERIALIZATION, role.metadata(),
                     "MObject", roleObject.name(), List.of());
         }
         for (var role : structural.roles()) {
-            MObject roleObject = roleObjects.get(role.roleId());
+            MObject roleObject = roleObjects.get(role.metadata().semanticId());
             for (String superRoleId : role.superRoleSemanticIds()) {
                 MObject superRoleObject = roleObjects.get(superRoleId);
                 if (superRoleObject == null) {
@@ -796,12 +799,12 @@ public final class NativeUseStateBuilder {
                 }
                 link(api, schema, "M24RoleSuperRole", roleObject, superRoleObject);
                 trace.add(catalog.require("M24"), TracePhase.INSTANCE_MATERIALIZATION, role.metadata(),
-                        "MLink", linkIdentity("M24", role.roleId(), superRoleId), List.of());
+                        "MLink", linkIdentity("M24", role.metadata().semanticId(), superRoleId), List.of());
             }
         }
         for (var group : structural.groups()) {
             MObject groupObject = object(api, semanticObjects, objectNames, "Group", group.metadata(), group.groupId());
-            groupObjects.put(group.groupId(), groupObject);
+            groupObjects.put(group.metadata().semanticId(), groupObject);
             text(api, groupObject, "groupId", group.groupId());
             text(api, groupObject, "parentGroupSemanticId", group.parentGroupSemanticId());
             trace.add(catalog.require("M05"), TracePhase.INSTANCE_MATERIALIZATION, group.metadata(),
@@ -810,7 +813,7 @@ public final class NativeUseStateBuilder {
                 link(api, schema, "M23GroupSubgroup", required(semanticObjects, group.parentGroupSemanticId(),
                         "M23_PARENT_GROUP_OBJECT"), groupObject);
                 trace.add(catalog.require("M23"), TracePhase.INSTANCE_MATERIALIZATION, group.metadata(),
-                        "MLink", linkIdentity("M23", group.parentGroupSemanticId(), group.groupId()), List.of());
+                        "MLink", linkIdentity("M23", group.parentGroupSemanticId(), group.metadata().semanticId()), List.of());
             }
         }
         if (!structural.rootGroupSemanticId().isBlank()) {
@@ -820,9 +823,9 @@ public final class NativeUseStateBuilder {
                     "MLink", linkIdentity("M22", structural.metadata().semanticId(), structural.rootGroupSemanticId()), List.of());
         }
         for (var role : structural.roles()) {
-            link(api, schema, "M21SSRole", structuralObject, roleObjects.get(role.roleId()));
+            link(api, schema, "M21SSRole", structuralObject, roleObjects.get(role.metadata().semanticId()));
             trace.add(catalog.require("M21"), TracePhase.INSTANCE_MATERIALIZATION, role.metadata(),
-                    "MLink", linkIdentity("M21", structural.metadata().semanticId(), role.roleId()), List.of());
+                    "MLink", linkIdentity("M21", structural.metadata().semanticId(), role.metadata().semanticId()), List.of());
         }
         for (var relation : structural.roleRelations()) {
             relations.put(relation.relationId(), relation);
@@ -917,7 +920,7 @@ public final class NativeUseStateBuilder {
         Map<String, MObject> schemeObjects = new LinkedHashMap<>();
         for (var scheme : functional.schemes()) {
             MObject schemeObject = object(api, semanticObjects, objectNames, "Scheme", scheme.metadata(), scheme.schemeId());
-            schemeObjects.put(scheme.schemeId(), schemeObject);
+            schemeObjects.put(scheme.metadata().semanticId(), schemeObject);
             text(api, schemeObject, "schemeId", scheme.schemeId());
             text(api, schemeObject, "functionalSpecificationSemanticId", scheme.functionalSpecificationSemanticId());
             text(api, schemeObject, "rootGoalSemanticId", scheme.rootGoalSemanticId());
@@ -935,7 +938,7 @@ public final class NativeUseStateBuilder {
                 trace.add(catalog.require("M11"), TracePhase.INSTANCE_MATERIALIZATION, mission.metadata(),
                         "MObject", missionObject.name(), List.of());
                 trace.add(catalog.require("M34"), TracePhase.INSTANCE_MATERIALIZATION, mission.metadata(),
-                        "MLink", linkIdentity("M34", scheme.schemeId(), mission.missionId()), List.of());
+                        "MLink", linkIdentity("M34", scheme.metadata().semanticId(), mission.metadata().semanticId()), List.of());
             }
             for (var goal : scheme.goals()) {
                 MObject goalObject = object(api, semanticObjects, objectNames, "OrganizationalGoal", goal.metadata(), goal.goalId());
@@ -954,12 +957,12 @@ public final class NativeUseStateBuilder {
                         "MObject", goalObject.name(), List.of());
             }
             for (var mission : scheme.missions()) {
-                MObject missionObject = required(semanticObjects, mission.missionId(), "M38_MISSION_OBJECT");
+                MObject missionObject = required(semanticObjects, mission.metadata().semanticId(), "M38_MISSION_OBJECT");
                 for (String goalId : mission.goalSemanticIds()) {
                     link(api, schema, "M38MissionGoal", missionObject,
                             required(semanticObjects, goalId, "M38_GOAL_OBJECT"));
                     trace.add(catalog.require("M38"), TracePhase.INSTANCE_MATERIALIZATION, mission.metadata(),
-                            "MLink", linkIdentity("M38", mission.missionId(), goalId), List.of());
+                            "MLink", linkIdentity("M38", mission.metadata().semanticId(), goalId), List.of());
                 }
             }
             for (var plan : scheme.plans()) {
@@ -986,7 +989,7 @@ public final class NativeUseStateBuilder {
                 link(api, schema, "M35SchemeRootGoal", schemeObject,
                         required(semanticObjects, scheme.rootGoalSemanticId(), "M35_ROOT_GOAL_OBJECT"));
                 trace.add(catalog.require("M35"), TracePhase.INSTANCE_MATERIALIZATION, scheme.metadata(),
-                        "MLink", linkIdentity("M35", scheme.schemeId(), scheme.rootGoalSemanticId()), List.of());
+                        "MLink", linkIdentity("M35", scheme.metadata().semanticId(), scheme.rootGoalSemanticId()), List.of());
             }
         }
         for (var cardinality : functional.schemeMissionCardinalities()) {
@@ -1020,18 +1023,18 @@ public final class NativeUseStateBuilder {
             trace.add(catalog.require("M14"), TracePhase.INSTANCE_MATERIALIZATION, norm.metadata(),
                     "MObject", normObject.name(), List.of("NORM_RETAINED_AS_DATA_NO_OCL"));
             trace.add(catalog.require("M41"), TracePhase.INSTANCE_MATERIALIZATION, norm.metadata(),
-                    "MLink", linkIdentity("M41", normative.metadata().semanticId(), norm.normId()), List.of());
+                    "MLink", linkIdentity("M41", normative.metadata().semanticId(), norm.metadata().semanticId()), List.of());
             if (!norm.roleSemanticId().isBlank()) {
                 link(api, schema, "M42NormRole", normObject,
                         required(semanticObjects, norm.roleSemanticId(), "M42_ROLE_OBJECT"));
                 trace.add(catalog.require("M42"), TracePhase.INSTANCE_MATERIALIZATION, norm.metadata(),
-                        "MLink", linkIdentity("M42", norm.normId(), norm.roleSemanticId()), List.of());
+                        "MLink", linkIdentity("M42", norm.metadata().semanticId(), norm.roleSemanticId()), List.of());
             }
             if (!norm.missionSemanticId().isBlank()) {
                 link(api, schema, "M43NormMission", normObject,
                         required(semanticObjects, norm.missionSemanticId(), "M43_MISSION_OBJECT"));
                 trace.add(catalog.require("M43"), TracePhase.INSTANCE_MATERIALIZATION, norm.metadata(),
-                        "MLink", linkIdentity("M43", norm.normId(), norm.missionSemanticId()), List.of());
+                        "MLink", linkIdentity("M43", norm.metadata().semanticId(), norm.missionSemanticId()), List.of());
             }
         }
     }

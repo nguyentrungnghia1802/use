@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<organisational-specification id="factory" os-version="1.1" xmlns="http://moise.sourceforge.net/os">
+  <structural-specification>
+    <role-definitions>
+      <role id="base"/>
+      <role id="worker"><extends role="base"/></role>
+      <role id="same-name"/>
+      <role id="same_name"/>
+      <role id="Agent"/>
+    </role-definitions>
+    <group-specification id="team">
+      <roles><role id="base" min="1" max="1"/><role id="worker" min="0" max="2"/></roles>
+      <links><link from="base" to="worker" type="communication" scope="intra-group"/></links>
+      <subgroups>
+        <group-specification id="leaf">
+          <roles><role id="base" min="0" max="3"/></roles>
+        </group-specification>
+      </subgroups>
+      <formation-constraints><compatibility from="base" to="worker" scope="intra-group" bi-dir="true"/></formation-constraints>
+    </group-specification>
+  </structural-specification>
+  <functional-specification>
+    <scheme id="s1">
+      <goal id="start"><plan operator="choice"><goal id="finish"/></plan></goal>
+      <mission id="m1" min="1" max="2"><goal id="finish"/></mission>
+    </scheme>
+    <scheme id="s2">
+      <goal id="start"><plan operator="parallel"><goal id="finish"/></plan></goal>
+      <mission id="m2" min="0" max="3"><goal id="finish"/></mission>
+    </scheme>
+  </functional-specification>
+  <normative-specification>
+    <norm id="n1" type="permission" role="base" mission="m1" condition="ready(S)" time-constraint="10 minutes"/>
+  </normative-specification>
+</organisational-specification>

@@ -61,6 +61,7 @@ public final class OfficialProjectAdapter {
         var typedInstitutions=new ArrayList<InstitutionDeploymentSemantic>();var rawRoles=new ArrayList<AgentRoleTupleSemantic>();
         var rawFocus=new ArrayList<AgentFocusTupleSemantic>();var programs=new ArrayList<AgentProgramSemantic>();
         var typedMoiseOrganizations=new ArrayList<OrganizationSemantic>();
+        var moiseSpecificationsByIdentity=new java.util.LinkedHashMap<String,OrganizationSemantic>();
 
         for(AgentParameters base:project.getAgents().stream().sorted(Comparator.comparing(AgentParameters::getAgName)).toList()){
             JaCaMoAgentParameters agent=(JaCaMoAgentParameters)base;
@@ -153,10 +154,14 @@ public final class OfficialProjectAdapter {
             Path path=resolveProjectPath(root,orgSource);if(!Files.exists(path))path=root.resolve("src/org").resolve(orgSource).normalize();
             if(!Files.exists(path)){unresolved.add(new UnresolvedFact("organisation-source",org.getName(),CapabilityStatus.UNAVAILABLE,
                     "OS source does not exist: "+orgSource,List.of(sourceEvidence)));continue;}
-             var result=moise.load(root,path,projectKey);organisations.addAll(result.facts());
-             typedMoiseOrganizations.add(result.organization());
-             roleCards.addAll(result.groupRoleCardinalities());
-            subgroupCards.addAll(result.parentSubGroupCardinalities());
+            var result=moise.load(root,path,projectKey);
+            var previous=moiseSpecificationsByIdentity.putIfAbsent(result.organization().metadata().semanticId(),result.organization());
+            if(previous!=null&&!previous.equals(result.organization()))
+                throw new IllegalArgumentException("MOISE_OS_SPECIFICATION_ID_CONFLICT:"+result.organization().metadata().semanticId());
+            if(previous==null){
+                organisations.addAll(result.facts()); typedMoiseOrganizations.add(result.organization());
+                roleCards.addAll(result.groupRoleCardinalities()); subgroupCards.addAll(result.parentSubGroupCardinalities());
+            }
         }
         project.getInstitutions().stream().sorted(Comparator.comparing(value->value.getName())).forEach(institution->{
             var institutionId=id("jacamo","organisation","institution-deployment",projectKey,institution.getName());

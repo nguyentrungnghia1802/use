@@ -16,13 +16,16 @@ public final class NativeUseStructure {
         model.enumTypes().forEach(type -> rows.add("enum|" + type.name() + "|" + String.join(",", type.getLiterals())));
         model.classes().forEach(cls -> {
             rows.add("class|" + cls.name() + "|" + cls.isAbstract());
+            cls.parents().forEach(parent -> rows.add("generalization|" + cls.name() + "|" + parent.name()));
+            annotations(rows, "class|" + cls.name(), cls);
             cls.attributes().forEach(attribute -> rows.add("attribute|" + cls.name() + "|" + attribute.name()
-                    + "|" + attribute.type()));
+                    + "|" + attribute.type() + "|derived=" + attribute.getDeriveExpression()));
             cls.operations().forEach(operation -> rows.add("operation|" + cls.name() + "|" + operation.name()
                     + "|" + operation.signature()));
         });
         model.associations().forEach(association -> {
             rows.add("association|" + association.name());
+            annotations(rows, "association|" + association.name(), association);
             for (int index = 0; index < association.associationEnds().size(); index++) {
                 var end = association.associationEnds().get(index);
                 rows.add("associationEnd|" + association.name() + "|" + index + "|" + end.cls().name() + "|"
@@ -33,6 +36,11 @@ public final class NativeUseStructure {
                 + invariant.name() + "|" + invariant.bodyExpression()));
         rows.sort(String::compareTo);
         return List.copyOf(rows);
+    }
+
+    private static void annotations(List<String> rows, String identity, org.tzi.use.uml.mm.Annotatable element) {
+        element.getAllAnnotations().forEach((name, value) -> value.getValues().forEach((key, text) ->
+                rows.add("annotation|" + identity + "|" + name + "|" + key + "|" + text)));
     }
 
     public static String sha256(MModel model) {

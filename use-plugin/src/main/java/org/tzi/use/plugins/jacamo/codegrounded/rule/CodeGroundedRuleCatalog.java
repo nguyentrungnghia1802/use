@@ -16,7 +16,7 @@ import org.jacamo.bridge.contract.semantic.Fidelity;
  */
 public final class CodeGroundedRuleCatalog {
     /** Version of the code-grounded rule contract exported with native evidence. */
-    public static final String VERSION = "1.0.0";
+    public static final String VERSION = "1.1.0";
 
     private static final Set<String> FIRST_SLICE = Set.of(
             "J01", "J02", "J03", "J04", "J05", "J06", "J07", "J08", "J09", "J10", "J11",
@@ -118,21 +118,34 @@ public final class CodeGroundedRuleCatalog {
                         "moise.os.ns.Norm.getRole", "moise.os.ns.Norm.getMission"
                 },
                 new String[] {
-                        "MClass Organization", "MClass StructuralSpecification", "MClass FunctionalSpecification",
-                        "MClass NormativeSpecification", "MClass Group", "MClass Role", "MClass RoleRelation",
-                        "MClass Link", "MClass Compatibility", "MClass Scheme", "MClass Mission",
-                        "MClass OrganizationalGoal", "MClass OrganizationalPlan", "MClass Norm",
-                        "MClass GroupRoleCardinality", "MClass SubGroupCardinality", "MClass SchemeMissionCardinality",
-                        "MAssociation M18OrganizationSS", "MAssociation M19OrganizationFS", "MAssociation M20OrganizationNS",
-                        "MAssociation M21SSRole", "MAssociation M22SSGroup", "MAssociation M23GroupSubgroup",
-                        "MAssociation M24RoleSuperRole", "MAssociation M25LinkSource", "MAssociation M26LinkTarget",
-                        "MAssociation M27CompatibilitySource", "MAssociation M28CompatibilityTarget",
-                        "MAssociation M29CardinalityOwner", "MAssociation M30CardinalityMember",
-                        "MAssociation M31SubgroupCardinalityOwner", "MAssociation M32SubgroupCardinalityMember",
-                        "MAssociation M33FSScheme", "MAssociation M34SchemeMission", "MAssociation M35SchemeRootGoal",
-                        "MAssociation M36SchemeCardinality", "MAssociation M37MissionCardinality",
-                        "MAssociation M38MissionGoal", "MAssociation M39GoalPlan", "MAssociation M40PlanSubGoals",
-                        "MAssociation M41NSNorm", "MAssociation M42NormRole", "MAssociation M43NormMission"
+                        "MClass <OS.id> (domain schema; FULL: Organization inspection)",
+                        "Trace SS container (FULL: StructuralSpecification inspection)",
+                        "Trace FS container (FULL: FunctionalSpecification inspection)",
+                        "Trace NS container (FULL: NormativeSpecification inspection)",
+                        "MClass <Group.id> (group-instance type; FULL: Group inspection)",
+                        "MClass <Role.id> (role-enactment type; FULL: Role inspection)",
+                        "Trace role-relation policy (FULL: RoleRelation inspection)",
+                        "Trace link policy (FULL: Link inspection)", "Trace compatibility policy (FULL: Compatibility inspection)",
+                        "MClass <Scheme.id> (scheme-instance type; FULL: Scheme inspection)",
+                        "MClass <Scheme.id>_<Mission.id> (commitment type; FULL: Mission inspection)",
+                        "MClass <Scheme.id>_<Goal.id> (goal-state type; FULL: OrganizationalGoal inspection)",
+                        "MAttribute planOperator/planSuccessRate + Trace ordered plan policy (FULL: OrganizationalPlan inspection)",
+                        "Trace norm policy, exact Role/Mission endpoints; temporal/deontic OCL unavailable (FULL: Norm inspection)",
+                        "MClassInvariant per Group-Role cardinality (FULL: GroupRoleCardinality inspection)",
+                        "MAssociation + MClassInvariant per parent-subgroup cardinality (FULL: SubGroupCardinality inspection)",
+                        "MClassInvariant per Scheme-Mission cardinality (FULL: SchemeMissionCardinality inspection)",
+                        "Trace OS-SS container", "Trace OS-FS container", "Trace OS-NS container", "Trace SS-role type membership",
+                        "MAssociation organization-group instances", "MAssociation typed parent-subgroup composition",
+                        "MGeneralization role entailment (not Agent inheritance)",
+                        "Trace link-source role", "Trace link-target role", "Trace compatibility-source role", "Trace compatibility-target role",
+                        "MAssociation GroupInstance-RoleEnactment", "MClassInvariant declared/exact role types",
+                        "Trace subgroup cardinality owner", "Trace subgroup cardinality member",
+                        "MAssociation organization-scheme composition", "MAssociation scheme-commitment composition",
+                        "MAssociation scheme-goal composition + Trace root-goal identity",
+                        "Trace scheme cardinality owner", "MClassInvariant declared mission types",
+                        "MAssociation commitment-goal (same scheme)", "MAttribute target-goal plan operator + Trace plan identity",
+                        "MAssociation typed subgoal edges + ordinal/operator annotations",
+                        "Trace NS-norm policy membership", "Trace norm-role type endpoint", "Trace norm-mission type endpoint"
                 });
         addFamily(rules, 'X', RuleDimension.CROSS, EvidenceAuthority.EXPLICIT_BINDING,
                 new String[] {
@@ -145,7 +158,7 @@ public final class CodeGroundedRuleCatalog {
                 },
                 new String[] {
                         "MAssociation X01ActionOperation", "MAssociation X02BeliefProperty",
-                        "MAssociation X03TriggerSignal", "MAssociation X04AgentRole",
+                        "MAssociation X03TriggerSignal", "MAssociation Agent-role enactment (FULL: X04AgentRole inspection)",
                         "MAssociation X05AgentWorkspace", "MAssociation X06AgentArtifactFocus",
                         "MAssociation X07AgentGoalOrganizationalGoal", "MAssociation X08DeclarationArtifact",
                         "MAssociation X09AgentIdentity"

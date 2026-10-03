@@ -16,6 +16,13 @@ import org.tzi.use.plugins.jacamo.semantic.MetamodelKind;
 class NativeSemanticAdapterTest {
     private static Path hello(){return Path.of("src/test/resources/canonical-cases/hello-world/helloworld.jcm").toAbsolutePath().normalize();}
 
+    @Test void officialRelativeAndHierarchicalFileUrisResolveToTheSameExactOs() {
+        Path root=hello().getParent(), source=root.resolve("src/org/o1.xml");
+        assertEquals(source,NativeSemanticAdapter.exactOsPath(root,"file:src/org/o1.xml"));
+        assertEquals(source,NativeSemanticAdapter.exactOsPath(root,source.toUri().toString()));
+        assertEquals(source,NativeSemanticAdapter.exactOsPath(root,"o1.xml"));
+    }
+
     @Test void officialHelloSnapshotBuildsNativeIrAndUseModelWithoutLegacyParser() throws Exception {
         Path jcm=hello(); var snapshot=new OfficialProjectAdapter().adapt(new OfficialProjectLoader().load(jcm),jcm);
         var adapted=new NativeSemanticAdapter().adapt(snapshot,jcm.getParent(),"helloworld"); var semantic=adapted.model();

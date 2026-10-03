@@ -7,7 +7,9 @@ import java.util.List;
  *
  * <p>The three specifications are explicit containers. Cardinality records keep both
  * endpoints because the official API scopes cardinality to a pair, not to a Role,
- * Group, or Mission in isolation.</p>
+ * Group, or Mission in isolation. Descriptive roleId/groupId/schemeId/missionId/goalId/normId
+ * fields are the official local ids. All references and deduplication use metadata.semanticId
+ * (and the explicitly named semantic-id fields), never those display/local ids.</p>
  */
 public final class MoiseSemanticContract {
     private MoiseSemanticContract() { }

@@ -61,9 +61,13 @@ public final class NativeProjectionProfile {
                 "AgentProgram", "Trigger", "Action", "Belief", "AgentGoal", "BeliefRule", "Signal", "Guard",
                 "Operation");
         for (String concept : concepts) statuses.put(concept, statusFor(concept));
-        conceptStatuses = Collections.unmodifiableMap(statuses);
         LinkedHashMap<String, String> selectedRationales = new LinkedHashMap<>();
+        for (String concept : MoiseDomainProjection.INSPECTION_RULES.keySet().stream().sorted().toList()) {
+            statuses.put(concept, statusFor(concept));
+            selectedRationales.put(concept, "Moise definition graph is FULL inspection data; AUTO specializes it into domain schema/policies, not static enactment objects");
+        }
         concepts.forEach(concept -> selectedRationales.put(concept, RATIONALES.get(concept)));
+        conceptStatuses = Collections.unmodifiableMap(statuses);
         rationales = Collections.unmodifiableMap(selectedRationales);
     }
 
@@ -78,6 +82,7 @@ public final class NativeProjectionProfile {
         if ("SourceImportProvenance".equals(concept) || "RuntimeEvidenceHistory".equals(concept)
                 || "SnapshotOnlyHelpers".equals(concept)) return NativeProjectionStatus.EVIDENCE_ONLY;
         if (mode == NativeProjectionMode.FULL) return NativeProjectionStatus.MATERIALIZED;
+        if (MoiseDomainProjection.INSPECTION_RULES.containsKey(concept)) return NativeProjectionStatus.EVIDENCE_ONLY;
         if (AUTO_EVIDENCE_ONLY_CLASSES.contains(concept)) return NativeProjectionStatus.EVIDENCE_ONLY;
         if (AUTO_PROFILE_EXCLUDED_CLASSES.contains(concept)) return NativeProjectionStatus.PROFILE_EXCLUDED;
         return NativeProjectionStatus.MATERIALIZED;
@@ -105,6 +110,9 @@ public final class NativeProjectionProfile {
     public Set<String> evidenceOnlyClasses() {
         LinkedHashSet<String> result = new LinkedHashSet<>();
         AUTO_EVIDENCE_ONLY_CLASSES.forEach(value -> {
+            if (statusFor(value) == NativeProjectionStatus.EVIDENCE_ONLY) result.add(value);
+        });
+        MoiseDomainProjection.INSPECTION_RULES.keySet().forEach(value -> {
             if (statusFor(value) == NativeProjectionStatus.EVIDENCE_ONLY) result.add(value);
         });
         return Collections.unmodifiableSet(result);

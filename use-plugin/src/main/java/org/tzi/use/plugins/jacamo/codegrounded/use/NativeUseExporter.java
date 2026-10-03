@@ -30,8 +30,7 @@ public final class NativeUseExporter {
         List<String> original = NativeUseStructure.signature(model);
         List<String> roundTrip = NativeUseStructure.signature(recompiled);
         if (!original.equals(roundTrip))
-            throw new IllegalStateException("NATIVE_USE_EXPORT_STRUCTURE_MISMATCH: original=" + original
-                    + " roundTrip=" + roundTrip + " onlyOriginal=" + difference(original, roundTrip)
+            throw new IllegalStateException("NATIVE_USE_EXPORT_STRUCTURE_MISMATCH: onlyOriginal=" + difference(original, roundTrip)
                     + " onlyRoundTrip=" + difference(roundTrip, original));
         return new Result(text, recompiled, NativeUseStructure.sha256(model),
                 NativeUseStructure.sha256(recompiled), diagnostics.toString());

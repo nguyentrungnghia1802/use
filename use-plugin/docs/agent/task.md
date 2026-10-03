@@ -1,1950 +1,1232 @@
-# TASK — Code-Grounded JaCaMo → Native USE Transformation
+# TASK — Refactor JaCaMo → USE Domain / Runtime-State Projection
 
-**Project:** USE Extension for JaCaMo Design-Time and Runtime Verification using UML/OCL
-**Repository:** `D:\_CODE_BANK\Project_\08_Thesis\use`
-**Primary target:** transform official JaCaMo/Jason/CArtAgO/Moise semantics into native USE `MModel` + `MSystemState`, activate them in the existing USE session, and use existing USE GUI/OCL/verification.
-**Status:** implementation master plan from A→Z.
-**Execution rule:** implement phase-by-phase; do not skip gates; keep repository buildable; fail closed when semantics/evidence are unavailable.
+## 0. Mục tiêu
+
+Refactor transformation JaCaMo → USE theo đúng kiến trúc sau:
+
+> **JaCaMo chịu trách nhiệm execution. USE chỉ nhận domain/runtime state cần thiết để verification bằng OCL/invariants.**
+
+Không copy 1:1 metamodel, Java classes, parser objects, runtime bookkeeping objects hoặc internal execution structures của JaCaMo sang USE.
+
+Target USE model phải là một **domain-specific semantic projection**, gọn, dễ đọc, giữ đúng identity/relation/state cần kiểm chứng.
 
 ---
 
-# 0. Source of truth and non-negotiable rules
+# 1. Phạm vi task
 
-## 0.1 Source priority
+## 1.1. Làm trong task này
 
-Use this authority order:
+- Refactor Class Model / Object Model / Association / Attribute / Link được sinh từ:
+  - JCM
+  - Moise structural specification
+  - CArtAgO Artifact runtime/type information
+  - Agent declarations / agent program identity
+- Giữ trace source → target.
+- Giữ runtime object identity và relation cần thiết.
+- Loại bỏ các class kỹ thuật/internal không cần cho state verification.
+- Chuẩn bị boundary rõ ràng để Goal Model được làm riêng sau.
+- Norm không được sinh thành class/object; phải đi về OCL layer.
+- Chạy regression + case-study acceptance tests.
 
-1. actual production source code and exact resolved dependency APIs/bytecode;
-2. executable tests and runtime evidence;
-3. current Bridge semantic contract;
-4. `JACAMO-USE-CONCEPT-MAPPING-RULES.md`;
-5. `CODE-GROUNDED-NATIVE-README.md` for current operational behavior;
-6. old Ecore / Mapping V2 / historical docs only as compatibility evidence.
+## 1.2. KHÔNG làm trong task này
 
-If code and documents disagree:
+- Không chuyển Jason `Plan`, `Trigger`, `PlanBody`, `PlanLibrary`, `Action`, `Intention`, `Option`, `ActionExec` thành USE class.
+- Không chuyển CArtAgO `@OPERATION` thành USE `MOperation`.
+- Không copy Java helper/private implementation fields nếu chúng không phải public runtime state cần verify.
+- Không đưa Scheme / Goal / Mission vào USE Class Model.
+- Không xây Goal View hoàn chỉnh trong task này.
+- Không sửa JaCaMo/Jason/CArtAgO/Moise core.
+- Không hardcode theo Auction, Hello World, House Building hoặc bất kỳ case study cụ thể nào.
 
-- do not silently rewrite semantics;
-- record the discrepancy;
-- keep code/API evidence;
-- update the plan/ADR explicitly.
+---
 
-## 0.2 Final production architecture
+# 2. Nguyên tắc bắt buộc
+
+## 2.1. Semantic projection, không phải metamodel copy
+
+Sai:
 
 ```text
-JaCaMo official objects/APIs
-(.jcm / Jason / CArtAgO / Moise)
+Moise Organization → class Organization
+Moise Role         → class Role
+Moise Norm         → class Norm
+
+Jason Plan         → class Plan
+Jason PlanLibrary  → class PlanLibrary
+
+CArtAgO ObsPropertySnapshot → class ObservablePropertySnapshot
+```
+
+Đúng:
+
+```text
+source semantic/domain element
         ↓
-official/code-grounded semantic adapters
+chọn representation phù hợp cho verification
         ↓
-typed neutral semantic contract
-        ↓
-JacamoSpecificationModel / semantic DTO layer
-        ↓
-Jxx / Axx / Cxx / Mxx / Xxx rules
-        ↓
-native USE MModel
-        ↓
-native USE MSystemState
-        ↓
-Session.setSystem(...)
-        ↓
-existing USE GUI / OCL / invariants / verification
-        ↓
-optional export .use / .cmd
+USE Class / Attribute / Association / Object / Link / OCL
 ```
 
-## 0.3 Forbidden shortcuts
+## 2.2. Chỉ tạo `MClass` cho domain/runtime classifier thực sự cần tồn tại như một type
 
-- [x] Do not patch/fork JaCaMo core unless a proven blocker requires it.
-- [x] Do not use custom JCM/ASL/Moise parsing as production semantic authority when official APIs already expose the facts.
-- [x] Do not use old Ecore or Mapping V2 as semantic authority in `CODE_GROUNDED_NATIVE`.
-- [x] Do not fuzzy-map by names.
-- [x] Do not infer `Action → Operation` from name equality.
-- [x] Do not infer `Belief → ObservableProperty` from literal/property name equality.
-- [x] Do not infer `AgentGoal → OrganizationalGoal` from literal/id equality.
-- [x] Do not equate JCM agent name, Jason runtime identity, CArtAgO `AgentId`, and Moise agent identity without exact evidence.
-- [x] Do not equate artifact declaration name and runtime `ArtifactId`.
-- [x] Do not auto-translate Moise Norms into OCL.
-- [x] Do not hard-code Hello World, Auction, House Building, or any case-study name in production mapping.
-- [x] Do not create a second model/runtime UI that replaces USE.
-- [x] Do not silently drop unsupported semantic facts.
-- [x] Do not silently mix legacy V2 OCL/mapping with code-grounded native model mode.
-- [x] Do not modify frozen historical Ecore/mapping/golden artifacts in place.
+Một Java object/class tồn tại ở JaCaMo KHÔNG phải lý do đủ để sinh một USE class.
 
----
+Mỗi class target phải trả lời được:
 
-# 1. Repository baseline and protection
+> Class này đại diện cho domain/runtime concept nào cần hiển thị hoặc kiểm chứng trong USE?
 
-## 1.1 Baseline
+Nếu không trả lời được rõ ràng → không sinh class.
 
-- [x] Record Git branch and HEAD.
-- [ ] Confirm tracked working tree is clean before implementation. `APPROVAL_GATED`: this historical pre-implementation gate was not true at the start; the post-cleanup checkpoint is clean, but that cannot be counted retroactively.
-- [x] Record existing untracked/generated `target/` directories without deleting user state.
-- [x] Run existing Bridge/adapter/facade/workbench tests.
-- [x] Run current module build.
-- [x] Run current release/package workflow.
-- [x] Record baseline failures separately from new regressions.
-- [x] Store baseline summary in implementation report.
+## 2.3. Phân biệt Type và Runtime Object
 
-## 1.2 Frozen/historical artifacts
-
-Keep immutable unless explicitly versioned:
-
-- [x] frozen Ecore V2;
-- [x] Mapping V2 / V2.2;
-- [x] Runtime Mapping V2;
-- [x] frozen OCL;
-- [x] golden outputs;
-- [x] freeze manifests;
-- [x] historical audit evidence.
-
-## 1.3 Pipeline modes
-
-Introduce/confirm exactly two atomic modes:
+Ví dụ:
 
 ```text
-LEGACY_V2
-CODE_GROUNDED_NATIVE
+organisation specification id="auction"
+→ USE class auction : organisation
+
+JCM:
+organisation aorg : auction-os.xml
+→ USE object aorg : auction
 ```
 
-- [x] One import/session uses exactly one mode.
-- [x] `CODE_GROUNDED_NATIVE` must not call Mapping V2.
-- [x] `CODE_GROUNDED_NATIVE` must not load V2 OCL/profile JSON.
-- [x] Runtime verification uses the same mode as static model construction.
-- [x] Add tests rejecting mixed-mode execution.
-
----
-
-# 2. Rule catalog foundation — all 105 rules
-
-Required counts:
+Không tạo thêm:
 
 ```text
-J01–J11 = 11
-A01–A22 = 22
-C01–C20 = 20
-M01–M43 = 43
-X01–X09 =  9
-----------------
-Total    = 105
+AuctionOrganizationInstance
 ```
 
-Every rule exposes:
+Tương tự:
 
 ```text
-ruleId
-dimension
-sourceAuthority
-sourceKind/FQCN
-targetUseKind
-fidelity
-capabilityStatus
-implementationStatus
-diagnosticPolicy
+group-specification id="auctionGroup"
+→ class auctionGroup : group
+
+JCM:
+group agrp : auctionGroup
+→ object agrp : auctionGroup
 ```
 
-Allowed statuses:
+Không tạo:
 
 ```text
-IMPLEMENTED
-PLANNED_CAPABILITY_GATED
-UNAVAILABLE_IN_AUDITED_API
-EXPLICITLY_UNSUPPORTED
+AuctionGroupInstance
 ```
-
-Tasks:
-
-- [x] Implement code-level catalog.
-- [x] Add `CodeGroundedRuleCatalogTest`.
-- [x] Fail build on missing IDs.
-- [x] Fail build on duplicates.
-- [x] Fail build if authority is missing.
-- [x] Fail build if target/fidelity policy is missing.
-- [x] Keep catalog deterministic.
 
 ---
 
-# 3. Common semantic/evidence infrastructure
+# 3. Mapping Contract — JCM
 
-## 3.1 Evidence model
+## 3.1. MAS
 
-Preserve/extend evidence so every fact can carry:
+JCM:
 
 ```text
-authority
-sourcePath/sourceUri
-sourceDigest
-sourceFQCN
-sourceSemanticId
-runtimeIdentity
-line/source span
-snapshot generation/session
-fidelity
-capability
-diagnostics
+mas X {
+    ...
+}
 ```
 
-## 3.2 Semantic identity
-
-- [x] Stable semantic IDs.
-- [x] Semantic IDs independent from display/object names.
-- [x] Runtime IDs remain opaque when required.
-- [x] Version IDs if contract schema changes.
-- [x] Add stale identity/model revision detection.
-
-## 3.3 USE object naming
-
-Deterministic naming:
+Mapping:
 
 ```text
-<kind>_<safe-human-part>_<hash8(source-id)>
+X → USE model/system/root name
 ```
 
-- [x] Never resolve semantic links by MObject name.
-- [x] Add collision tests.
-
----
-
-# 4. Typed Bridge semantic contract
-
-Target logical package:
+KHÔNG tạo:
 
 ```text
-org.jacamo.bridge.contract.semantic
+class MAS
+class XMas
 ```
 
-Exact names may follow repository conventions.
+MAS chỉ là root/container của model.
 
-## 4.1 JCM DTOs
+## 3.2. Agent program/type
 
-- [x] `ProjectSemantic`
-- [x] `AgentDeclarationSemantic`
-- [x] `WorkspaceDeclarationSemantic`
-- [x] `ArtifactDeclarationSemantic`
-- [x] `OrganizationDeploymentSemantic`
-- [x] `GroupDeploymentSemantic`
-- [x] `SchemeDeploymentSemantic`
-- [x] `InstitutionDeploymentSemantic`
-- [x] `AgentRoleTupleSemantic`
-- [x] `AgentFocusTupleSemantic`
-- [x] import/uses provenance
-
-## 4.2 Jason DTOs
-
-- [x] `AgentProgramSemantic`
-- [x] `PlanLibrarySemantic`
-- [x] `PlanSemantic`
-- [x] `TriggerSemantic`
-- [x] `PlanBodyElementSemantic`
-- [x] `ActionSemantic`
-- [x] `BeliefSemantic`
-- [x] `AgentGoalSemantic`
-- [x] `BeliefRuleSemantic`
-- [x] `SourceEvidence`
-- [x] supported runtime DTOs
-
-## 4.3 CArtAgO DTOs
-
-- [x] `EnvironmentSemantic`
-- [x] `WorkspaceSemantic`
-- [x] `ArtifactTypeSemantic`
-- [x] `ArtifactSemantic`
-- [x] `OperationDescriptorSemantic`
-- [x] `BackingJavaOperationSemantic`
-- [x] `GuardSemantic`
-- [x] `LiveObservablePropertySemantic`
-- [x] `ObservablePropertySnapshotSemantic`
-- [x] `ArtifactInfoSemantic`
-- [x] `SignalSemantic`
-- [x] `CartagoAgentIdentitySemantic`
-- [x] `FocusSemantic`
-
-## 4.4 Moise DTOs
-
-- [x] `OrganizationSemantic`
-- [x] `StructuralSpecificationSemantic`
-- [x] `FunctionalSpecificationSemantic`
-- [x] `NormativeSpecificationSemantic`
-- [x] `GroupSemantic`
-- [x] `RoleSemantic`
-- [x] `RoleRelationSemantic`
-- [x] `LinkSemantic`
-- [x] `CompatibilitySemantic`
-- [x] `SchemeSemantic`
-- [x] `MissionSemantic`
-- [x] `OrganizationalGoalSemantic`
-- [x] `OrganizationalPlanSemantic`
-- [x] `NormSemantic`
-- [x] `GroupRoleCardinalitySemantic`
-- [x] `SubGroupCardinalitySemantic`
-- [x] `SchemeMissionCardinalitySemantic`
-
-## 4.5 Cross-dimension evidence DTOs
-
-- [x] Add typed exact-binding/evidence records for X rules.
-
-## 4.6 Contract compatibility
-
-- [x] Define schema version strategy.
-- [x] Preserve legacy snapshot decoder only if needed for migration.
-- [x] Codec round-trip tests.
-- [x] Version mismatch tests.
-- [x] Deterministic encoding tests.
-- [x] No USE classes in Bridge contract.
-- [x] No live JaCaMo objects over wire.
-
----
-
-# 5. JCM official adapter — J01–J11
-
-## J01 Project
-
-- [x] Official `JaCaMoProject` is source authority.
-- [x] Project identity/name initializes target `MModel`.
-- [x] Preserve project/source digest.
-- [x] Do not create fake Project domain object unless explicitly required.
-
-## J02 Agent declaration
-
-- [x] Preserve name/source/options/classes/host/instances when exact.
-- [x] Keep distinct from Jason `AgentProgram`.
-- [x] Declare `MClass Agent`.
-- [x] Materialize Agent declaration object in state.
-
-## J03 Workspace declaration
-
-- [x] Separate declaration from runtime `WorkspaceId`.
-
-## J04 Artifact declaration
-
-- [x] Preserve declaration name and `ClassParameters`.
-- [x] Map to `ArtifactDeclaration`.
-- [x] Never treat as live `Artifact`.
-
-## J05 Organization deployment
-
-- [x] Keep distinct from Moise `OS`.
-
-## J06 Group deployment
-
-- [x] Keep distinct from Moise `Group`.
-
-## J07 Scheme deployment
-
-- [x] Keep distinct from Moise `Scheme`.
-
-## J08 Institution deployment
-
-- [x] Preserve only API-proven fields.
-- [x] Keep opaque fields opaque.
-
-## J09 Raw role tuple
-
-- [x] Preserve `(organization, group, role, ordinal)`.
-- [x] No eager Agent–Role link.
-- [x] X04 performs exact resolution.
-
-## J10 Raw focus tuple
-
-- [x] Preserve `(artifact, workspace, namespace, ordinal)`.
-- [x] Remove eager semantic resolution.
-- [x] X06 performs exact resolution.
-
-## J11 `uses` provenance
-
-- [x] Add `OfficialImportGraphCollector`.
-- [x] Use official/generated lexer/token support only for provenance.
-- [x] Collect canonical path/order/digest.
-- [x] Do not create semantic declarations.
-- [x] Unresolved path → `UNRESOLVED_PROVENANCE`.
-
-## JCM tests
-
-- [x] J09 exact tuple.
-- [x] J10 exact tuple.
-- [x] No eager cross-framework links.
-- [x] J11 provenance only.
-- [x] No custom parser fallback.
-
----
-
-# 6. Jason static mapping — A01–A11, A16–A22
-
-## A01 AgentProgram
-
-- [x] Source: official `jason.asSemantics.Agent`.
-- [x] Preserve source URI/id/digest.
-- [x] `MClass AgentProgram`.
-- [x] Separate from J02 Agent declaration.
-
-## A02 PlanLibrary
-
-- [x] Source: `agent.getPL()`.
-- [x] `MClass PlanLibrary`.
-- [x] Empty library valid.
-- [x] Do not synthesize null library.
-
-## A03 Plan
-
-- [x] Source: ordered `PlanLibrary.getPlans()`.
-- [x] Stable identity = library + ordinal + canonical digest.
-- [x] Preserve label/context and only fields proven by Jason 3.3.2.
-- [x] Do not implement speculative fields.
-
-## A04 Trigger
-
-- [x] Preserve operator enum.
-- [x] Preserve type enum.
-- [x] Preserve literal.
-- [x] Do not infer Signal.
-
-## A05 PlanBodyElement
-
-- [x] Walk body by `getBody()` / `getBodyNext()`.
-- [x] Preserve every audited `BodyType`.
-- [x] Preserve term and ordinal.
-- [x] Detect cycle/broken chain.
-- [x] Unknown enum → fail closed.
-
-## A06 External Action
-
-- [x] `BodyType.action`.
-- [x] Action kind EXTERNAL.
-- [x] Operation binding only X01.
-
-## A07 Internal Action
-
-- [x] `BodyType.internalAction`.
-- [x] Action kind INTERNAL.
-- [x] Never map directly to CArtAgO operation.
-
-## A08 Belief
-
-- [x] Preserve literal/provenance.
-- [x] Property relation only X02.
-
-## A09 AgentGoal
-
-- [x] Preserve exact goal semantics.
-- [x] Organizational binding only X07.
-
-## A10 BeliefRule
-
-- [x] Preserve only if supported by exact source/API.
-
-## A11 Source provenance
-
-- [x] Use `SourceInfo`.
-- [x] Keep as provenance/trace.
-- [x] Preserve exact local/nested/dependency-JAR include sources through native object/value trace, export and Mapping Inspector (2026-09-30 regression evidence below).
-
-## A16 AgentProgram–PlanLibrary
-
-- [x] Native composition.
-
-## A17 ordered PlanLibrary–Plan
-
-- [x] Native relation.
-- [x] Preserve order.
-- [x] Use `A17PlanOrderEntry` infrastructure if required.
-
-## A18 Plan–Trigger
-
-- [x] Native composition.
-
-## A19 ordered Plan–PlanBodyElement
-
-- [x] Native relation.
-- [x] Preserve order.
-- [x] Use `A19BodyOrderEntry` infrastructure if required.
-
-## A20 PlanBodyElement.next
-
-- [x] Self association.
-- [x] Must agree with A19 order.
-
-## A21 AgentProgram–Belief
-
-- [x] Bind initial beliefs to AgentProgram.
-
-## A22 AgentProgram–AgentGoal
-
-- [x] Bind initial goals to AgentProgram.
-
-## Jason enums
-
-- [x] Trigger operator → `EnumType`.
-- [x] Trigger type → `EnumType`.
-- [x] `BodyType` → `EnumType`.
-- [x] ActionKind → `EnumType`.
-- [x] Unknown enum member → compatibility failure.
-
----
-
-# 7. Jason runtime — A12–A15
-
-## A12 ActionExec
-
-- [x] Runtime-only event/state projection.
-- [x] Preserve result/failure evidence.
-
-## A13 Intention
-
-- [x] Optional runtime concept only if verification requires it.
-
-## A14 Runtime Event
-
-- [x] Distinguish from source Trigger.
-
-## A15 TransitionSystem evidence
-
-- [x] Runtime controller evidence only by default.
-
-**A12–A15 evidence — 2026-09-29:** PASS for the bounded native Jason runtime evidence scope. `BridgeAgArch` emits typed `ACTION_EXECUTION` events and preserves result, failure reason/message, correlation, and exact `Intention` identity evidence; `JasonSnapshotSource` captures `INTENTION`, `RUNTIME_EVENT`, and `TRANSITION_SYSTEM` facts from the official Jason `Circumstance`/`TransitionSystem` APIs. `CodeGroundedRuntimeRuleRegistry` assigns distinct native evidence rules, and `NativeRuntimeProjector` keeps all four concepts evidence-only without creating static `Intention`, `RuntimeEvent`, or `TransitionSystem` classes. `CodeGroundedPhase7Test` passed `4/4`, including no-state-pollution/rule-ID assertions; `OfficialAdapterTest` passed `7/7`, including official `ActionExec` failure evidence. A13 is intentionally evidence-only because no native OCL constraint requires an `Intention` model class.
-
----
-
-# 8. CArtAgO mapping — C01–C20
-
-Authority legend:
+JCM:
 
 ```text
-S = static/type metadata
-D = descriptor
-I = initialized runtime object
-R = runtime snapshot/event
-P = optional source/bytecode provenance
+agent bob : auction_capabilities.asl
+agent alice : auction_capabilities.asl
 ```
 
-## C01 Environment [I]
-- [x] Initialized `CartagoEnvironment`.
-
-## C02 Workspace [D+I]
-- [x] `WorkspaceDescriptor` + `WorkspaceId`.
-
-## C03 ArtifactType [S]
-- [x] Exact concrete `Class<? extends Artifact>`/classloader identity.
-- [x] No simple-name matching.
-
-## C04 Artifact [I+R]
-- [x] `ArtifactId` runtime identity.
-- [x] `ArtifactInfo` enriches snapshot.
-
-## C05 Operation [D]
-- [x] `OpDescriptor`.
-- [x] No method-name inference.
-
-## C06 native MOperation [S+D; P optional]
-- [x] Exact backing method/signature required. PASS for the exact-reflection subset: `BackingJavaOperation` is preserved and a native `MOperation` is emitted only when declaring class, method, parameter/return types, arity, and varargs are verified by reflection; non-exact operations remain structural. Evidence: `NativeMOperationProjectionTest` 2/2.
-- [x] Dynamic operation without exact method stays structural `Operation`.
-
-## C07 Guard [D; P optional]
-- [x] Descriptor exact binding.
-- [x] No guard semantics from name.
-
-## C08 Live ObservableProperty [I]
-- [ ] Require actual `ObsProperty`. `UNAVAILABLE_BY_API`: the supported CArtAgO boundary exposes snapshots/percepts, not a live `ObsProperty` identity; C08 therefore remains explicitly unavailable.
-- [x] Missing API exposure → `UNAVAILABLE`.
-- [x] Never replace with C09.
-
-## C09 Property snapshot [R]
-- [x] `ArtifactObsProperty`/percept snapshot.
-- [x] Separate from live property identity.
-
-## C10 ArtifactInfo [R]
-- [x] Runtime snapshot record.
-
-## C11 Signal [R; P optional]
-- [x] Runtime signal/percept event is authority.
-- [x] No fake `@SIGNAL`.
-
-## C12 AgentId [I+R]
-- [x] Keep opaque identity.
-
-## C13 Environment–Workspace [I+D]
-- [x] Exact topology.
-
-## C14 Workspace–Artifact [I+R]
-- [x] Exact workspace identity.
-
-## C15 Artifact–ArtifactType [I+S]
-- [x] Exact class/runtime correlation only.
-
-## C16 Artifact–Operation [D+R]
-- [x] Exact descriptor ownership.
-
-## C17 Artifact–ObservableProperty [R; I if C08 exists]
-- [x] Snapshot ownership exact.
-- [x] Live relation only with C08.
-
-## C18 Operation–Guard [D]
-- [x] Exact descriptor binding.
-
-## C19 Workspace–Agent [R]
-- [x] Scoped runtime inventory/join-quit evidence.
-
-## C20 Agent–Artifact focus [R]
-- [x] Exact focus/unfocus event.
-- [x] J10 config is not runtime evidence.
-
-## CArtAgO negative tests
-
-- [x] No simple-name resolution.
-- [x] No design inference from runtime inventory.
-- [x] C08/C09 distinct.
-- [x] No `@SIGNAL` assumption.
-- [x] Unavailable remains unavailable.
-
----
-
-# 9. Moise mapping — M01–M43
-
-## M01 Organization
-- [x] `OS` → `MClass Organization`.
-
-## M02 StructuralSpecification
-- [x] `SS` → explicit `MClass`.
-
-## M03 FunctionalSpecification
-- [x] `FS` → explicit `MClass`.
-
-## M04 NormativeSpecification
-- [x] `NS` → explicit `MClass`.
-
-## M05 Group
-- [x] `Group` → `MClass Group`.
-
-## M06 Role
-- [x] `Role` → `MClass Role`.
-- [x] Preserve abstract flag and super-role references.
-
-## M07 RoleRelation
-- [x] `RoleRel` → `MClass RoleRelation`.
-
-## M08 Link
-- [x] `Link` → `MClass Link`.
-
-## M09 Compatibility
-- [x] `Compatibility` → separate `MClass`.
-
-## M10 Scheme
-- [x] `Scheme` → `MClass Scheme`.
-
-## M11 Mission
-- [x] `Mission` → `MClass Mission`.
-- [x] No universal cardinality attributes.
-
-## M12 OrganizationalGoal
-- [x] `Goal` → `MClass OrganizationalGoal`.
-- [x] Preserve type/arguments/dependencies.
-- [x] Keep `ttf` textual unless stronger semantics proven.
-
-## M13 OrganizationalPlan
-- [x] `Plan` → `MClass OrganizationalPlan`.
-- [x] Preserve operator/order.
-
-## M14 Norm
-- [x] `Norm` → `MClass Norm`.
-- [x] Preserve role/mission/condition/op type/time text.
-- [x] No automatic OCL.
-
-## M15 GroupRoleCardinality
-- [x] Relation object `(group, role, min, max)`.
-
-## M16 SubGroupCardinality
-- [x] Relation object `(parentGroup, subGroup, min, max)`.
-
-## M17 SchemeMissionCardinality
-- [x] Relation object `(scheme, mission, min, max)`.
-
-## M18 Organization–SS
-- [x] composition.
-
-## M19 Organization–FS
-- [x] composition.
-
-## M20 Organization–NS
-- [x] composition.
-
-## M21 SS–Role
-- [x] composition.
-
-## M22 SS–Group
-- [x] composition/root group ownership.
-
-## M23 Group–Subgroup
-- [x] composition; cardinality stays M16.
-
-## M24 Role–superRole
-- [x] self-association.
-- [x] No UML generalization without proof.
-
-## M25–M28 Link/Compatibility endpoints
-- [x] source/target Role relations.
-
-## M29–M32 Cardinality endpoints
-- [x] owner/member relations.
-
-## M33 FS–Scheme
-- [x] composition.
-
-## M34 Scheme–Mission
-- [x] composition.
-
-## M35 Scheme–root Goal
-- [x] exact relation; no duplicate goal identity.
-
-## M36–M37 SchemeMissionCardinality endpoints
-- [x] Scheme and Mission links.
-
-## M38 Mission–Goal
-- [x] exact membership.
-
-## M39 OrganizationalGoal–Plan
-- [x] exact relation.
-
-## M40 OrganizationalPlan–subGoals
-- [x] ordered relation.
-
-## M41 NS–Norm
-- [x] composition.
-
-## M42 Norm–Role
-- [x] association.
-
-## M43 Norm–Mission
-- [x] association.
-
-**M42/M43 regression evidence — 2026-09-30:** `moise.os.ns.Norm.getRole()` and
-`getMission()` return single references (confirmed in the resolved Moise 1.1
-bytecode). The native multiplicities were reversed: each Norm must have 0..1
-Role/Mission, while a Role/Mission can be referenced by 0..* Norms. Corrected
-both endpoints and removed ordering from the scalar ends so `.use` recompile
-preserves the structure. `CodeGroundedPhase5Test` passes 3/3, including shared
-Role/Mission targets and absent references; native state and export hashes pass.
-
-## Moise enums/tests
-
-- [x] Norm operation type enum.
-- [x] Plan operator enum.
-- [x] Cardinality owner context tests.
-- [x] Link/Compatibility distinction tests.
-- [x] Role hierarchy self-association test.
-- [x] Textual time preservation test.
-- [x] Norm does not auto-generate OCL.
-
----
-
-# 10. Cross-dimension rules — X01–X09
-
-All default to unresolved until exact evidence exists.
-
-## X01 Action–Operation
-- [x] Exact dispatch/binding/runtime evidence only.
-
-## X02 Belief–ObservableProperty
-- [x] Exact percept/property provenance only.
-
-## X03 Trigger–Signal
-- [x] Exact signal/percept provenance only.
-
-## X04 Agent–Role
-- [x] Resolve J09 with organization/group context or runtime role-player evidence.
-
-## X05 Agent–Workspace
-- [x] Exact configuration/runtime membership evidence.
-
-## X06 Agent–Artifact focus
-- [x] Resolve J10 or exact runtime C20 evidence.
-
-## X07 AgentGoal–OrganizationalGoal
-- [x] Explicit organization/runtime binding only.
-
-## X08 ArtifactDeclaration–runtime Artifact
-- [x] Exact creation correlation such as `makeArtifact(...) → ArtifactId`.
-
-## X09 JCM/Jason Agent–CArtAgO AgentId
-- [x] Exact join/action/focus observation.
-
-## X tests
-
-- [x] Exact-positive.
-- [x] Same-name-negative.
-- [x] Unresolved state.
-- [x] Runtime restart/incarnation.
-- [x] No cross-context leakage.
-
----
-
-# 11. Code-grounded semantic model in USE plugin
-
-Refactor/replace `JaCaMoSemanticModel`.
-
-Target logical shape:
+Mapping tổng quát:
 
 ```text
-JacamoSpecificationModel
-├── ProjectSpec
-├── JasonPrograms
-├── CartagoModel
-├── MoiseSpecifications
-├── SemanticRelations
-├── EvidenceIndex
-└── Diagnostics
+<asl source basename> → USE class <basename> : agent
 ```
 
-Requirements:
-
-- [x] immutable/snapshot-safe where possible;
-- [x] deterministic order;
-- [x] stable semantic IDs;
-- [x] no dependency on V2 vocabulary in native mode;
-- [x] capability/fidelity explicit;
-- [x] unresolved refs explicit;
-- [x] project/spec/runtime separation.
-
-Compatibility projection if needed:
+Ví dụ:
 
 ```text
-code-grounded model
-→ explicit legacy V2 projection
+auction_capabilities.asl
+→ class auction_capabilities : agent
 ```
 
-- [ ] label representation loss. `OPTIONAL_NOT_REQUIRED`: native mode does not perform a legacy V2 projection; no representation-loss claim is emitted.
-- [x] legacy projection never feeds new authority.
-
----
-
-# 12. Native USE model builder
-
-Build around real USE API, e.g. `UseModelApi`.
-
-Responsibilities:
-
-- [x] create `MModel`;
-- [x] `MClass`;
-- [x] `EnumType`;
-- [x] `MAttribute`;
-- [x] `MOperation`;
-- [x] `MAssociation`;
-- [x] composition;
-- [ ] invariants/pre-postconditions. `OPTIONAL_NOT_REQUIRED`: native class invariants are installed and verified; no approved code-grounded pre/post semantic contract exists for this slice, while the legacy extractor remains boundary-scoped.
-- [x] deterministic declaration order;
-- [x] duplicate/incompatibility diagnostics.
-
-Before `MSystem`:
-
-- [x] all classes/enums declared;
-- [x] associations resolved;
-- [x] multiplicities validated;
-- [x] compositions validated;
-- [x] native constraints compile;
-- [x] no mandatory unresolved model refs;
-- [x] structural hash available.
-
----
-
-# 13. Native USE state builder
-
-Build around real USE state API, e.g. `UseSystemApi`.
-
-Responsibilities:
-
-- [x] create one `MSystem(model)`;
-- [x] deterministic objects;
-- [x] attributes;
-- [x] links;
-- [x] runtime link/value changes;
-- [x] semanticId → MObject index;
-- [x] trace every mutation;
-- [x] correct undefined handling.
-
-## First-slice state
-
-- [x] AgentProgram objects;
-- [x] PlanLibrary objects;
-- [x] Plan objects;
-- [x] Trigger objects;
-- [x] PlanBodyElement objects;
-- [x] A16 links;
-- [x] A17 order;
-- [x] A18 links;
-- [x] A19 order;
-- [x] A20 next.
-
-## Ordered helper objects
+Runtime declarations:
 
 ```text
-A17PlanOrderEntry(owner, member, rank)
-A19BodyOrderEntry(owner, member, rank)
+bob   → object bob   : auction_capabilities
+alice → object alice : auction_capabilities
 ```
 
-- [x] rank starts 0;
-- [x] contiguous;
-- [x] one rank/member/owner;
-- [x] A20 agrees with A19;
-- [x] helpers are infrastructure, not source domain concepts.
+Nếu nhiều agents dùng cùng một `.asl`, tất cả phải là instances của cùng một agent-program class.
 
----
+KHÔNG tạo class riêng cho từng agent declaration.
 
-# 14. Mapping trace redesign
-
-Trace schema:
+Sai:
 
 ```text
-TraceRecord(
-  ruleId,
-  phase,
-  sourceKind,
-  sourceJavaFQCN,
-  sourceIdentity,
-  targetKind,
-  targetIdentity,
-  evidenceAuthority,
-  fidelity,
-  capabilityStatus,
-  diagnostics
-)
+class Bob
+class Alice
 ```
 
-Phases:
+Đúng:
 
 ```text
-MODEL_DECLARATION
-INSTANCE_MATERIALIZATION
-RUNTIME_MUTATION
-EXPORT
+class auction_capabilities : agent
+
+bob   : auction_capabilities
+alice : auction_capabilities
 ```
 
-Trace:
+## 3.3. Nội dung `.asl`
 
-- [x] class;
-- [x] enum;
-- [x] attribute;
-- [x] association;
-- [x] operation;
-- [x] object;
-- [x] value;
-- [x] link;
-- [x] order entry;
-- [x] runtime mutation;
-- [x] skipped/unavailable fact;
-- [x] export target.
+Nội dung AgentSpeak bên trong `.asl` KHÔNG sinh USE Class Model elements.
 
-Index:
-
-- [x] source → target;
-- [x] target → source/rule;
-- [x] runtime aliases;
-- [x] revision/session validation.
-
----
-
-# 15. OCL / constraint migration
-
-## 15.1 Native architecture
+Không tạo:
 
 ```text
-CodeGroundedRuleCatalog
-        ↓
-ConstraintSpec
-        ↓
-CodeGroundedConstraintPlanner
-        ↓
-NativeConstraintInstaller
-        ↓
-UseModelApi native invariant/pre-post API
-        ↓
-MModel
-        ↓
-existing USE Evaluator / verification
+Plan
+PlanLibrary
+Trigger
+PlanBodyElement
+Action
+Event
+Intention
+Option
+ActionExec
 ```
 
-## 15.2 Remove V2 coupling from native mode
+Jason vẫn parse và execute `.asl`.
 
-- [x] `OclGenerator` no longer generates full model in native mode.
-- [x] Native mode does not use `StructuralUseGenerator`.
-- [x] Native mode does not load `jacamo-core-v2.ocl`.
-- [x] Native mode does not load V2 verification profile.
-- [ ] `ConstraintExtractor` consumes typed semantics. `OPTIONAL_NOT_REQUIRED`: this extractor is retained for the explicit legacy V2 compatibility path; native mode uses `NativeConstraintSpec`/`CodeGroundedConstraintPlanner` and does not cross this boundary.
-- [ ] Replace/refactor `VerificationSemanticLayer`. `OPTIONAL_NOT_REQUIRED`: this layer remains legacy V2-only; replacing it would conflate the frozen compatibility authority with `CODE_GROUNDED_NATIVE`.
-- [ ] `CrossDimensionalVerifier` uses rule catalog + trace. `OPTIONAL_NOT_REQUIRED`: the verifier remains a legacy V2 compatibility verifier; native verification uses the native constraint/runtime rule registries and native trace.
-- [x] `RuntimeVerificationEngine` uses injected runtime rule registry.
+USE chỉ nhận runtime/domain state khi state đó cần verification.
 
-## 15.3 ConstraintSpec
+Nếu sau này cần Goal Model hoặc agent-program verification, làm bằng task riêng.
 
-Every constraint declares:
+---
+
+# 4. Mapping Contract — Moise Structural Specification
+
+## 4.1. Organisation
+
+Moise:
+
+```xml
+<organisational-specification id="X">
+```
+
+Mapping:
 
 ```text
-requiredRuleIds
-requiredCapabilities
-minimumFidelity
-targetContext
-origin
-migrationStatus
+class X : organisation
 ```
 
-Missing capability:
+Ví dụ:
+
+```xml
+<organisational-specification id="auction">
+```
+
+→
 
 ```text
-SKIPPED_CAPABILITY
+class auction : organisation
 ```
 
-## 15.4 First slice constraints
+`organisation` là semantic kind/tag của target class.
 
-- [x] A17 order consistency.
-- [x] A19 order consistency.
-- [x] A20 next/order consistency.
-- [x] ownership/composition checks where appropriate.
+Không được tạo generic class `Organization` rồi tạo object `auction` chỉ vì source metamodel có class `OS`.
 
-## 15.5 OCL tests
+## 4.2. Role definitions
 
-- [x] `NativeConstraintInstallerTest`
-- [x] `NativeUseSessionOclIT`
-- [x] `CodeGroundedOrderInvariantTest`
-- [x] `LegacyV2OclIsolationTest`
-- [x] `ProfileCompatibilityPreflightTest`
-- [x] `NativeUseExportRecompileIT`
+Moise:
 
----
+```xml
+<role id="R"/>
+```
 
-# 16. Direct native target; TextBackend becomes historical/export-only
-
-Target:
+Mapping:
 
 ```text
-rules
-→ NativeUseModelBuilder
-→ MModel
+class R : role
 ```
 
-not:
+Ví dụ:
+
+```xml
+<role id="auctioneer"/>
+<role id="participant"/>
+```
+
+→
 
 ```text
-rules
-→ .use text
-→ compiler
-→ MModel
+class auctioneer : role
+class participant : role
 ```
 
-Tasks:
+Không tạo generic class `Role`.
 
-- [x] Remove TextBackend from native production authority.
-- [x] Keep TextBackend for regression/history only if useful.
-- [ ] Refactor/replace `DirectUseBackend`. `OPTIONAL_NOT_REQUIRED`: it is retained for explicit legacy V2 regression/history and is not used by the native production authority path.
-- [x] Ensure backend returns the exact `MSystem` intended for Session activation.
-- [x] Eliminate divergent private system ownership.
+Không tạo class kỹ thuật kiểu `AuctionRoleEnactment`.
 
----
+## 4.3. Group specification
 
-# 17. USE Session integration
+Moise:
 
-Mandatory activation flow:
+```xml
+<group-specification id="G">
+```
+
+Mapping:
 
 ```text
-native MModel finalized
-→ new MSystem(model)
-→ native state materialized
-→ validation/OCL compile
-→ Session.setSystem(system)
+class G : group
 ```
 
-Tasks:
+Ví dụ:
 
-- [x] Pass `IPluginAction.getSession()` into Workbench/import flow.
-- [x] Refactor `DefaultJaCaMoFacade` to use same `MSystem`.
-- [x] Facade/session/runtime/verifier share one system.
-- [x] Build off EDT.
-- [x] Activate/UI update on EDT where required.
-- [x] Only call `setSystem()` after all gates pass.
-- [x] Failed import leaves previous system untouched.
+```xml
+<group-specification id="auctionGroup">
+```
 
-GUI checks:
-
-- [x] Model Browser sees model.
-- [x] Class Diagram works.
-- [x] Object Diagram works.
-- [x] OCL dialog/shell uses `session.system()`.
-- [x] invariants use current system.
-- [x] system event bus registered.
-
----
-
-# 18. Workbench → Mapping Inspector
-
-Keep:
-
-- [x] import;
-- [x] Bridge connect/reconnect;
-- [x] status;
-- [x] diagnostics;
-- [x] runtime sync status;
-- [x] mapping trace;
-- [x] fidelity/evidence;
-- [x] export controls if useful.
-
-Main table:
+→
 
 ```text
-Rule | Source | Target | Fidelity | Status
+class auctionGroup : group
 ```
 
-Details:
+Không tạo `GroupInstance` class riêng.
 
-- [x] rule ID;
-- [x] source FQCN;
-- [x] semantic ID;
-- [x] target USE ID;
-- [x] evidence;
-- [x] fidelity;
-- [x] capability;
-- [x] diagnostics;
-- [x] provenance;
-- [ ] runtime identity if relevant. `OPTIONAL_NOT_REQUIRED`: runtime identity is exposed by `NativeRuntimeProjector.runtimeAliases()` and native runtime trace; the static Mapping Inspector contract remains identity/provenance-focused.
-
-Never add:
-
-- [x] second runtime;
-- [x] second OCL engine;
-- [x] substitute class/object diagram;
-- [x] parallel MSystem.
-
-**Section 18 evidence — 2026-09-29:** `JaCaMoWorkbenchPanel` exposes the
-`Export Report...` control and delegates it to the facade; the complete workflow
-test covers the export action together with import, rebuild, OCL, verification,
-and runtime controls.
-
----
-
-# 19. `.use` / `.cmd` export
-
-`.use` is output, not authority.
-
-Flow:
+Runtime JCM instance:
 
 ```text
-native MModel
-→ MMPrintVisitor / official USE printer
-→ generated .use
+group agrp : auctionGroup
 ```
 
-Tasks:
-
-- [x] deterministic export;
-- [x] recompile exported `.use`;
-- [x] structural hash comparison;
-- [x] compare classes/enums/attributes/associations/operations;
-- [x] compare native migrated constraints;
-- [x] report any representation difference.
-
-State:
-
-- [ ] export `.cmd`/SOIL separately if required. `OPTIONAL_NOT_REQUIRED`: no consumer requires a separate command export; native `.use` and separate deterministic state/trace JSON are the defined artifacts.
-- [x] Do not put runtime objects into `.use`.
-
----
-
-# 20. Runtime integration
-
-Pipeline:
+→
 
 ```text
-RuntimeSnapshot / RuntimeEvent
-        ↓
-typed native runtime projector (CODE_GROUNDED_NATIVE)
-        ↓
-native rule/evidence gate
-        ↓
-exact BridgeEntityId binding
-        ↓
-NativeRuntimeMutationEngine
-        ↓
-the activated session MSystem.state()
-        ↓
-USE OCL gate
-
-LEGACY_V2 keeps the separate BridgeRuntimeProjector → RuntimeMutationEngine path.
+agrp : auctionGroup
 ```
 
-Statuses:
+## 4.4. Group–Role relation + cardinality
+
+Ví dụ:
+
+```xml
+<group-specification id="auctionGroup">
+  <roles>
+    <role id="auctioneer"  min="1" max="1"/>
+    <role id="participant" min="0" max="300"/>
+  </roles>
+</group-specification>
+```
+
+Hai `role` ở đây là references tới role definitions đã có.
+
+KHÔNG tạo thêm classes.
+
+Phải giữ relation:
 
 ```text
-MATERIALIZED_FAITHFULLY
-EVIDENCE_ONLY
-UNAVAILABLE
-UNKNOWN
+auctionGroup ↔ auctioneer
+auctionGroup ↔ participant
 ```
 
-Tasks:
-
-- [x] Only faithful facts mutate USE.
-- [x] `NativeRuntimeMutationEngine` targets the current session system in native mode; legacy `RuntimeMutationEngine` remains V2-only.
-- [x] Reject stale model revision/session/generation.
-- [x] No private facade formal state; the native projector owns the pipeline's activated `MSystem` only.
-- [x] Reconnect/resync safely rebuilds state/indices.
-- [x] Runtime events cannot invent undeclared types without explicit model revision protocol.
-- [x] Preserve AgentId/WorkspaceId/ArtifactId/board identities.
-
----
-
-# 21. Verification runtime migration
-
-Keep:
-
-- [x] existing USE evaluator;
-- [x] model-independent parts of `DefaultVerificationService`;
-- [x] report framework;
-- [x] BridgeVerificationGate;
-- [x] completeness/evidence gating.
-
-Refactor:
-
-- [x] code-grounded rule/capability registry;
-- [x] remove static Runtime Mapping V2 loading in native mode;
-- [x] bind constraints to exact native target;
-- [x] report skipped constraints;
-- [x] preserve evidence/fidelity.
-
-No overclaim:
-
-- [x] partial snapshot → non-definitive;
-- [x] evidence-only fact cannot satisfy state requirement;
-- [x] unknown remains unknown.
-
----
-
-# 22. Implementation phases
-
-## Phase 1A — Foundation
-
-Implement:
-
-- [x] typed semantic DTOs;
-- [x] complete 105-rule catalog;
-- [x] fidelity/capability schema;
-- [x] J09 raw tuple;
-- [x] J10 raw tuple;
-- [x] J11 provenance collector;
-- [x] code-grounded semantic model base;
-- [x] mapping trace;
-- [x] native model builder abstraction;
-- [x] native state builder abstraction;
-- [x] atomic mode;
-- [x] OCL decoupling interfaces;
-- [x] rule catalog tests;
-- [x] contract tests.
-
-Gate:
-
-- [x] exactly 105 rules;
-- [x] no duplicate/missing ID;
-- [x] every rule has authority;
-- [x] J10 no eager semantic link;
-- [x] J11 no semantic parser;
-- [x] native mode no Mapping V2;
-- [x] native mode no V2 OCL/profile;
-- [x] build passes;
-- [x] historical tests retained.
-
-**Stop if gate fails.**
-
-**Phase 1A checkpoint evidence — 2026-09-29:** PASS. `main @ 754940969fe65015a6f8a19b1d5612745d4d3e54`; the tracked worktree was intentionally dirty with the pre-existing Phase-1 implementation, and untracked `target/` output was retained. Key classes: `JacamoSemanticSnapshot`, `SemanticContractCodec`, `CodeGroundedRuleCatalog`, `JacamoSpecificationModel`, `CodeGroundedTraceIndex`, `PipelineMode`, `NativeConstraintSpec`/`NativeConstraintInstaller`. The checkpoint tests passed `10/10` contract, `14/14` official-adapter, `12/12` use-core, `1/1` use-gui, and `281/281` use-plugin tests, with zero failures/errors/skips; the catalog test confirmed 105 unique deterministic IDs and exactly 14 implemented Phase-1 rules.
-
-**Phase 1A final-closure evidence — 2026-09-29:** `SemanticContractTest` passes `4/4`, including canonical string/byte/depth bounds; the final full reactor gate passes `496/496` tests with zero failures/errors/skips. No frozen V2/Ecore/golden artifact was modified.
-
----
-
-## Phase 1B — First vertical slice
-
-Implement exactly:
+và giữ cardinality:
 
 ```text
-J01
-A01–A05
-A16–A20
+auctioneer  : 1..1
+participant : 0..300
 ```
 
-Deliverables:
+Representation target:
 
-- [x] `AgentProgram`
-- [x] `PlanLibrary`
-- [x] `Plan`
-- [x] `Trigger`
-- [x] `PlanBodyElement`
-- [x] Jason enums
-- [x] A16–A20 relations
-- [x] A17 order helpers
-- [x] A19 order helpers
-- [x] first-slice objects/links
-- [x] trace
-- [x] native OCL
-- [x] session activation
-- [x] `.use` export
-- [x] export/recompile validation
-
-Hello gate:
-
-- [x] official Jason objects only;
-- [x] all Plans retained;
-- [x] all body nodes retained;
-- [x] exact order;
-- [x] unsupported BodyType not silently ignored;
-- [x] produced system == `action.getSession().system()`;
-- [x] Model Browser sees classes;
-- [x] Object Diagram sees objects/links;
-- [x] OCL evaluates on session system;
-- [x] Mapping Inspector shows rule/source/target/evidence/fidelity;
-- [x] exported `.use` recompiles;
-- [x] no production Mapping V2 dependency.
-
-**Stop and report before Phase 2.**
-
-**Phase 1B evidence — 2026-09-29:** PASS for the Hello native first slice. Key classes: `OfficialProjectAdapter`, `OfficialJasonAdapter`, `OfficialImportGraphCollector`, `NativeUseModelBuilder`, `NativeUseStateBuilder`, `NativeUseSessionActivator`, `NativeUseExporter`, and `JaCaMoWorkbenchPanel`. `CodeGroundedOrderInvariantTest` passes `1/1`, `NativeUseSessionActivationTest` passes `2/2`, `NativeUseExportRecompileIT` passes `1/1`, and final-closure GUI evidence `NativeUseGuiEndToEndIT` passes `1/1`: the real Swing Model Browser, Class Diagram, Object Diagram, OCL dialog, and system event bus all observe the activated native `MSystem`; the two formerly partial Hello GUI boxes are now complete.
+- `MAssociation` / association ends / multiplicity;
+- nếu USE API cần OCL bổ sung để biểu diễn bound đặc biệt thì thêm invariant tương ứng;
+- không reify relation thành class trừ khi USE bắt buộc về kỹ thuật và có lý do rõ ràng. Nếu buộc phải reify nội bộ, class đó KHÔNG được xuất hiện như domain class trong Class Browser.
 
 ---
 
-## Phase 2 — Remaining Jason static rules
+# 5. Mapping Contract — JCM Organisation Runtime
 
-Implement:
+Ví dụ tổng quát:
 
 ```text
-A06–A11
-A21–A22
+organisation aorg : auction-os.xml {
+    group agrp : auctionGroup {
+        players:
+            bob   auctioneer
+            alice participant
+    }
+}
 ```
 
-- [x] actions;
-- [x] beliefs;
-- [x] goals;
-- [x] belief rules;
-- [x] provenance;
-- [x] initial-belief/goal relations;
-- [x] tests and native state.
+Phải resolve `auction-os.xml` → organisational-specification id.
 
-Gate:
-
-- [x] no Agent/AgentProgram collapse;
-- [x] no Action→Operation guessing;
-- [x] no Belief→Property guessing;
-- [x] all supported source elements retained.
-
-**Phase 2 evidence — 2026-09-29:** PASS for A06–A11 and A21–A22. Official Jason API evidence is exercised by `OfficialJasonAdapter`: `Agent.getInitialBels()` is split into `Literal` beliefs and official `Rule` objects, `Agent.getInitialGoals()` is retained as exact achievement goals, and `PlanBody.BodyType.action/internalAction` becomes typed `ActionSemantic` with no operation binding. Native classes/attributes and A21/A22 ordered associations are built by `NativeUseModelBuilder`/`NativeUseStateBuilder`; all source links use semantic IDs, never display names. Focused Phase 2 `CodeGroundedPhase2Test` passed `2/2`, adapter `OfficialJasonAdapterTest` passed `5/5`, and focused reactor verify passed `14/14` unit plus `2/2` integration tests, including native `.use` recompile and OCL on the same system. Full reactor unit gate passed with contract `10/10`, official adapters `15/15`, use-core `12/12`, use-gui `1/1`, and use-plugin `283/283`; zero failures/errors/skips. No CArtAgO/Moise/cross-framework/runtime Phase 3+ work was started.
-
----
-
-## Phase 3 — JCM deployment
-
-Implement:
+Nếu XML có:
 
 ```text
-J02–J10
-J11 full tests
+id="auction"
 ```
 
-- [x] deployment classes/objects;
-- [x] raw references;
-- [x] provenance.
-
-Gate:
-
-- [x] declaration/spec/runtime distinct;
-- [x] ArtifactDeclaration ≠ Artifact;
-- [x] J09/J10 unresolved until X;
-- [x] import provenance deterministic.
-
-**Phase 3 evidence — 2026-09-29:** PASS for J02–J11 static deployment scope. `OfficialProjectAdapter` retains official JaCaMo declaration DTOs and generated-token import provenance; `NativeUseModelBuilder` declares typed `Agent`, `WorkspaceDeclaration`, `ArtifactDeclaration`, `OrganizationDeployment`, `GroupDeployment`, `SchemeDeployment`, and `InstitutionDeployment` classes; `NativeUseStateBuilder` materializes only those declarations and keeps J09/J10 as raw trace records (`UNRESOLVED_UNTIL_X04`/`UNRESOLVED_UNTIL_X06`). During the Phase 4 schema audit, the JCM target was corrected to `WorkspaceDeclaration` so the CArtAgO runtime `Workspace` class remains distinct; the Phase 3 fixture still creates zero live `Artifact` objects. `ArtifactDeclaration` remains distinct from the reserved CArtAgO `Artifact` runtime class, with no declaration-name runtime link fabricated. `CodeGroundedPhase3Test` passed `2/2`; the focused reactor verify passed `11/11` unit plus `2/2` integration tests; the full reactor unit gate passed contract `10/10`, official adapters `15/15`, use-core `12/12`, use-gui `1/1`, and use-plugin `285/285`, with zero failures/errors/skips. No CArtAgO/Moise/cross-framework/runtime phase was started at that checkpoint.
-
----
-
-## Phase 4 — CArtAgO
-
-Implement:
+thì:
 
 ```text
-C01–C20
+aorg : auction
+agrp : auctionGroup
 ```
 
-Gate:
-
-- [x] authority matrix followed;
-- [x] no simple-name matching;
-- [x] C08 unavailable remains unavailable;
-- [x] C09 distinct;
-- [x] exact operation ownership;
-- [x] ArtifactId-based runtime identity;
-- [x] dynamic limitations explicit.
-
-**Phase 4 evidence — 2026-09-29:** PASS for the available CArtAgO contract slice: `OfficialCartagoAdapter` reads only official `CartagoEnvironment`, `WorkspaceDescriptor`/`WorkspaceId`, controller inventories, `ArtifactId`, `ArtifactInfo`, `OpDescriptor`, `ArtifactObsProperty`, `ArtifactOpMethod`, `IArtifactGuard`, and opaque `AgentId` values; no simple-name join or method-name inference is used. `NativeUseModelBuilder`/`NativeUseStateBuilder` materialize exact C01–C05, C07, C09–C20 classes/links in the same `MSystem`, preserve `ArtifactId` UUID/workspace identity, keep C09 snapshots separate from the C08 live-property class, and retain focus/unfocus as exact event evidence. C08 is fail-closed as `UNAVAILABLE` because the audited controller API does not expose a live `ObsProperty`; non-empty live-property input is rejected rather than converted to C09. C06 remains PARTIAL: exact reflective backing signature is preserved as `BackingJavaOperation`, and `NativeUseModelBuilder` emits a concrete native `MOperation` only after exact declaring-class, method, parameter/return, arity, and varargs checks; dynamic or non-exact operations remain structural. `CodeGroundedPhase4Test` passed `3/3`; `NativeMOperationProjectionTest` passed `2/2` for positive and negative reflection evidence; the focused native regression set passed `12/12`. The catalog still reports C06 capability-gated/partial and C08 unavailable.
-
----
-
-## Phase 5 — Moise
-
-Implement:
+Không tạo:
 
 ```text
-M01–M43
+AuctionOrganizationInstance
+AuctionGroupInstance
 ```
 
-Gate:
+## 5.1. Player–Role runtime relation
 
-- [x] no cardinality flattening;
-- [x] SS/FS/NS explicit;
-- [x] Link/Compatibility distinct;
-- [x] role hierarchy not forced to UML generalization;
-- [x] no Norm→OCL;
-- [x] time text preserved.
-
-**Phase 5 evidence — 2026-09-29:** PASS for M01–M43. `OfficialMoiseAdapter` loads the official `OS` graph through `OS.loadOSFromURI` and emits typed immutable Moise DTOs with exact semantic IDs; `NativeUseModelBuilder` declares the native Moise classes, enums, relation-scoped cardinality objects, composition/endpoints, and role self-association; `NativeUseStateBuilder` materializes them into the same `MSystem` without Norm-to-OCL translation. `CodeGroundedPhase5Test` passed `2/2` with the official Hello OS and a synthetic official-DTO graph covering role inheritance, Link vs Compatibility, all cardinality tuples, ordered plan goals, enum values, and textual norm time; focused catalog/native gates passed `10/10`, adapter evidence passed `6/6`, and native export/recompile plus session/OCL passed. The full reactor gate passed `290/290` tests with zero failures/errors/skips. The M22 multiplicity direction was corrected and reverified with a subgroup fixture. No V2/Ecore/golden files were changed.
-
----
-
-## Phase 6 — Cross-framework
-
-Implement:
+JCM:
 
 ```text
-X01–X09
+players:
+    bob   auctioneer
+    alice participant
 ```
 
-Gate:
-
-- [x] zero fuzzy bindings;
-- [x] unresolved remains unresolved;
-- [x] context retained;
-- [x] exact bindings survive runtime/export.
-
-**Phase 6 evidence — 2026-09-29:** PASS for X01–X09. `CrossSemanticContract` now exposes nine typed exact-binding records that lower to immutable, context-bearing bindings; `NativeUseModelBuilder` declares the X associations and an `ExactBindingEvidence` class; `NativeUseStateBuilder` resolves only exact semantic IDs, validates endpoint classes, preserves context, and leaves J09/J10 unresolved without evidence. `CodeGroundedPhase6Test` passed `3/3`: all nine positive bindings survived one `MSystem` materialization and export/recompile, same-name candidates stayed unlinked, unresolved J09/J10 remained diagnostic, restart/incarnation identity selected only the exact target, and a wrong endpoint failed closed. Contract/catalog tests passed `6/6`; Phase 2–6/native regression passed `20/20`. No fuzzy matching, V2/Ecore/golden edits, or second `MSystem` were introduced.
-
----
-
-## Phase 7 — Runtime native synchronization
-
-- [x] Jason runtime projection;
-- [x] CArtAgO runtime projection;
-- [x] Moise board snapshots;
-- [x] NPL evidence;
-- [x] runtime rule registry;
-- [x] same-session mutations;
-- [x] reconnect/resync;
-- [x] stale event rejection;
-- [x] runtime OCL gates.
-
-Gate:
-
-- [x] every mutation targets current session state;
-- [x] no parallel/private state;
-- [x] stale events rejected;
-- [x] evidence-only cannot mutate;
-- [x] resync deterministic.
-
-**Phase 7 evidence — 2026-09-29:** PASS for the bounded native runtime synchronization slice. `NativeRuntimeProjector`, `NativeRuntimeMutationEngine`, `CodeGroundedRuntimeRuleRegistry`, and `NativeRuntimeTraceRecord` are native-only and do not call the V2 projector/mapping. Faithful Jason `Agent.host` and CArtAgO `Artifact.name` updates, exact relation insert/delete, and attribute unset mutate the pipeline `MSystem`; `NativeRuntimeFacadeIntegrationTest` proves a buffered event is applied after `Session.setSystem` preparation and the facade/session retain the same system. Moise group-board and NPL norm facts are retained as evidence-only and do not mutate formal state. Snapshot resync resets the same system to its baseline, stale replay/session/generation/model-revision events reject closed, undeclared mutation kinds reject closed, and the OCL gate runs after each faithful mutation. Focused Phase 7 tests passed `4/4`; the full reactor passed `297/297` with zero failures/errors/skips. PARTIAL: Jason A12–A15 action/intention/TransitionSystem semantics and `RuntimeVerificationEngine` rule-registry migration remain unchecked; the current native runtime scope is typed attribute/link projection plus evidence-only facts.
-
----
-
-## Phase 8 — Production authority switch
-
-- [x] `CODE_GROUNDED_NATIVE` becomes production authority.
-- [x] `LEGACY_V2` becomes explicit compatibility/shadow mode only.
-- [x] No automatic fallback to legacy.
-- [x] Update defaults.
-- [x] Update packaging exclusions.
-- [x] Verify historical parsers/connectors not shipped as authority.
-
-Gate:
-
-- [x] native supported scope complete;
-- [x] no legacy calls from native path;
-- [x] release/package tests pass.
-
-**Phase 8 evidence — 2026-09-29:** PASS for the production-authority, bounded native runtime scope, and explicit verification-rule boundary. The implicit `DefaultJaCaMoFacade` constructors, `DefaultJaCaMoFacade.INSTANCE`, `forSession`, and the Workbench action select `CODE_GROUNDED_NATIVE`; `LEGACY_V2` is reachable only through an explicit `PipelineMode.LEGACY_V2` constructor argument. `ProductionAuthorityPhase8Test` passed `3/3`, `LegacyV2OclIsolationTest` passed `2/2`, and `RuntimeVerificationEngineTest` passed `20/20` including injected-rule selection. `CodeGroundedPhase7Test` passed `4/4` and `OfficialAdapterTest` passed `7/7` for A12–A15 evidence. The post-change full reactor gate passed `302/302` unit tests plus `7/7` integration/release tests with zero failures/errors/skips. `LegacyAuthorityPackagingIT`, `GuiPluginStagingIT`, and `ReleasePackageIT` proved native runtime classes are packaged, historical parsers/connectors and JaCaMo-side adapters are excluded from the plugin JAR, the staged GUI JAR is byte-identical, Bridge libraries are present, and the release checksum matches. Native supported scope is complete for the explicitly implemented faithful attribute/link mutations and typed evidence-only runtime concepts; unsupported semantics remain fail-closed and no V2 runtime mapping is called by native code.
-
----
-
-## Phase 9 — Case-study acceptance
-
-### Hello World
-
-- [x] JCM declarations;
-- [x] Jason program;
-- [x] plan/trigger/body;
-- [x] workspace/artifact declarations;
-- [x] Moise OS;
-- [x] native session activation;
-- [x] OCL;
-- [x] export;
-- [x] supported runtime.
-
-### Auction
-
-- [ ] dynamic scheme evidence. `NO_LIVE_EVIDENCE`: no live Auction organization/scheme session was captured for this final closure.
-- [ ] artifact type. `NO_LIVE_EVIDENCE`: no live Auction artifact declaration/creation evidence was captured.
-- [ ] operations. `NO_LIVE_EVIDENCE`: no live Auction operation evidence was captured.
-- [ ] properties. `NO_LIVE_EVIDENCE`: no live Auction property evidence was captured.
-- [ ] exact action-operation link only when proven. `NO_LIVE_EVIDENCE`: the available evidence does not prove the live action-operation link.
-- [x] organization;
-- [x] no unsupported deadline claim;
-- [x] native runtime/session.
-
-### House Building
-
-- [x] `.jcm` not treated as complete specification;
-- [x] dynamic artifacts/org/schemes handled;
-- [x] role inheritance/cardinality;
-- [x] sequence/parallel plan;
-- [ ] supported runtime. `NO_LIVE_EVIDENCE`: no live House runtime session was captured; the bounded static/native scope remains supported.
-- [x] missing facts remain unavailable.
-
-Gate:
-
-- [x] no case-specific branches;
-- [x] all claims evidence-backed;
-- [x] limitations documented.
-
-**Phase 9 evidence — 2026-09-29:** PASS for the explicitly bounded native acceptance scope. `CodeGroundedPhase9Test` runs Hello World, the official Auction example, and House Building through the same `OfficialProjectAdapter` → `CodeGroundedNativePipeline` path; `Phase9CaseStudyAcceptanceTest` adds `3/3` evidence tests for one `Session`/`MSystem`, native verification, export validity, static dimension retention, no fabricated live artifacts, Auction official organization/scheme/OS facts, and House Building's separate official OS/cardinality/sequence/parallel evidence. Hello's JCM/Jason/plan-body/workspace/artifact/Moise/OCL/export/runtime claims are covered by the Phase 2–8 tests plus the native session/export integration tests. Auction organization and native session are PASS; Norm facts remain data and are not promoted to OCL. House Building's `.jcm` is explicitly shown incomplete: dynamic organization/artifact facts remain unavailable until an official runtime/OS snapshot is supplied, while role inheritance/cardinality and sequence/parallel plan facts are copied only from the official OS object graph. The following remain intentionally unchecked: live Auction CArtAgO artifact type/operation/property capture, exact action-operation binding for that live artifact, and House live runtime, because no native live evidence exists for those claims. No case-specific production branch, fuzzy mapping, deadline inference, or unsupported runtime claim was added. Focused Phase 9 gate passed `3/3`; no frozen V2/Ecore/golden file was changed.
-
----
-
-# 23. Mapping Inspector completion
-
-- [x] show all 105 IDs;
-- [x] filter J/A/C/M/X;
-- [x] filter APPLIED/UNRESOLVED/UNAVAILABLE/UNSUPPORTED;
-- [x] source FQCN;
-- [x] target USE ID;
-- [x] fidelity;
-- [x] evidence;
-- [x] diagnostics;
-- [x] runtime status;
-- [ ] optional navigate-to-target. `OPTIONAL_NOT_REQUIRED`: the current inspector contract requires inspection and source-location evidence, not target navigation.
-- [x] inspection only.
-
-**Section 23 evidence — 2026-09-29:** PASS for the required inspector surface. `JaCaMoWorkbenchPanel` renders the facade trace without semantic work in Swing, exposes all five dimensions and the required `APPLIED`/`UNRESOLVED`/`UNAVAILABLE`/`UNSUPPORTED` status filters, and shows source FQCN, semantic/source identity, USE target identity, fidelity, evidence authority, capability status, and diagnostics in the detail pane. `JaCaMoWorkbenchPanelTest` passed `13/13`, including a 105-row catalog display, exact filter coverage, detail evidence fields, runtime/authority status refresh, and a source-location action. Optional navigate-to-target remains unchecked because no target-navigation API is required by the current UI contract.
-
----
-
-# 24. Export/reproducibility
-
-- [x] deterministic `.use`;
-- [ ] optional `.cmd`. `OPTIONAL_NOT_REQUIRED`: native `.use`, state JSON, and trace JSON are the defined deterministic artifacts; no `.cmd` consumer is required.
-- [x] source project digest;
-- [x] rule catalog version;
-- [x] contract version;
-- [x] JaCaMo/Jason/CArtAgO/Moise versions;
-- [x] USE version;
-- [x] structural hash;
-- [x] trace export;
-- [x] verification report;
-- [x] round-trip validation.
-
-**Section 24 evidence — 2026-09-29:** PASS for the native artifacts that are implemented and tested. `NativeUseExporter` serializes the native `MModel` with USE's official `MMPrintVisitor`, recompiles it with `USECompiler`, and checks structural-hash/signature equality; `CodeGroundedTraceExporter` now includes the filtered `NativeComponentVersionManifest` for JaCaMo/Jason/CArtAgO/Moise plus USE/plugin versions, and `CodeGroundedExportTest` passes `3/3` with component-version and trace-metrics assertions. `NativeUseStateExporter` writes a separate deterministic state JSON from the one native `MSystem`; the optional `.cmd` artifact remains explicitly unchecked.
-
----
-
-# 25. Packaging/release
-
-## Build
-
-- [x] full reactor;
-- [x] JDK 21;
-- [x] plugin JAR contains native path;
-- [x] JaCaMo-side adapter separated as designed;
-- [x] no stale committed plugin JAR.
-
-## Plugin
-
-- [x] actions load;
-- [x] Workbench receives Session;
-- [x] status action works/consolidated.
-
-## Packaging gates
-
-- [x] obsolete semantic parsers not production authority;
-- [x] new rule catalog/builders packaged;
-- [x] release ZIP contains required Bridge libs;
-- [x] staged GUI plugin equals current build;
-- [x] checksums recorded.
-
-**Section 25 evidence — 2026-09-29:** PASS. `mvn -B -pl use-plugin -am verify` completed the full reactor on Java 21 with `315/315` unit tests and `7/7` integration/release tests, all with zero failures/errors/skips. The build produced the plugin JAR, release ZIP, and SHA-256 sidecar; `LegacyAuthorityPackagingIT` verifies the native facade/runtime/rule catalog/model/state/trace classes are in the JAR while obsolete parser/connector classes and JaCaMo-side adapter classes are absent. `JaCaMoPluginTest (5/5)` verifies plugin discovery, status command, both actions, Session binding, and facade status. `GuiPluginStagingIT` verifies byte identity between the current production JAR and GUI staging; `ReleasePackageContractTest`/`ReleasePackageIT (3/3)` verify Bridge libraries, manifest inventory, isolated loading, pinned USE discovery, and checksum equality.
-
----
-
-# 26. Shadow comparison/regression
-
-Compare:
+Phải giữ runtime semantics:
 
 ```text
-code-grounded result
-vs
-legacy V2 result
+bob enacts auctioneer in agrp
+alice enacts participant in agrp
 ```
 
-Classify:
+Không tạo class:
 
 ```text
-INTENTIONAL_CORRECTION
-LEGACY_LIMITATION
-REPRESENTATION_LOSS
-ADAPTER_BUG
-UNSUPPORTED_FACT
+AuctionRoleEnactment
 ```
 
-- [x] legacy never decides new semantics;
-- [x] no name-based reconciliation;
-- [x] retain diff evidence.
+Representation target phải là association/link/runtime relation.
 
-**Section 26 evidence — 2026-09-29:** PASS. `ShadowSemanticComparator` indexes facts by canonical identity plus provenance digest, rejects duplicate facts, requires an explicit classification, and produces a deterministic fingerprint/register; it never reconciles by display name. `HelloShadowComparisonTest` retains the Hello shadow register, while `ShadowSemanticComparatorTest (1/1)`, `NativeSemanticAdapterTest (3/3)`, `DefaultBridgeAuthorityTest (5/5)`, `ProductionAuthorityPhase8Test (3/3)`, and `LegacyV2OclIsolationTest (2/2)` pass. Native implicit facade entry points remain `CODE_GROUNDED_NATIVE`; V2 compatibility is explicit only.
+Nếu cần role-instance object để multiplicity/runtime links đúng với USE, được phép tạo object thuộc role class, nhưng KHÔNG tạo một MClass trung gian `RoleEnactment`.
 
----
-
-# 27. Performance/safety
-
-- [x] bounded semantic snapshots;
-- [x] bounded event queues;
-- [x] no network/build on Swing EDT;
-- [x] atomic activation;
-- [x] old session survives failure;
-- [x] no listener leaks;
-- [x] deterministic model creation;
-- [x] large plan/body tests;
-- [x] trace size monitored.
-
-**Section 27 evidence — 2026-09-29:** PASS. In addition to the existing runtime/session evidence, `CanonicalJson` enforces maximum bytes/string/depth and `SemanticContractTest` passes `4/4` for canonical round-trip and bound rejection. `CodeGroundedTraceIndex.Metrics` and `CodeGroundedTraceExporter` expose deterministic record/phase/target counts, a warning threshold, and threshold-exceeded status; `CodeGroundedExportTest` asserts those metrics and source deduplication.
-
----
-
-# 28. Documentation migration
-
-Update only after corresponding code gate passes:
-
-- [x] architecture README;
-- [x] setup/run;
-- [x] Bridge config;
-- [x] mapping docs;
-- [x] USE session behavior;
-- [x] Mapping Inspector;
-- [x] runtime limits;
-- [x] export docs;
-- [x] compatibility mode;
-- [x] case-study evidence;
-- [x] known limitations;
-- [x] migration report.
-
-**Section 28 evidence — 2026-09-29:** PASS. Added `CODE-GROUNDED-NATIVE-README.md` for architecture, setup/run, Bridge configuration, mapping/inspector behavior, USE session ownership, runtime limits, exports, and compatibility mode; added `CODE-GROUNDED-NATIVE-MIGRATION-REPORT.md` for phase gates, call graph, case-study evidence, limitations, and rollback/audit scope. The documents explicitly preserve the frozen V2/Ecore/golden boundary and distinguish supported subsets from unavailable/live claims.
-
-**Documentation consolidation — 2026-09-30:** the migration report and pre-implementation design/spec documents were retired after their current operational guidance, semantic rules, and implementation evidence were consolidated into this task, `CODE-GROUNDED-NATIVE-README.md`, and `JACAMO-USE-CONCEPT-MAPPING-RULES.md`. The Section 28 entry above is historical evidence of work completed then, not a claim that the retired report remains present.
-
-No separate historical audit/report documents are maintained in `docs/agent`; dated implementation and audit evidence remains in this task.
-
----
-
-# 29. Legacy cleanup criteria
-
-Candidate historical-only components include:
+Ví dụ hợp lệ:
 
 ```text
-JcmSemanticParser
-custom JCM semantic lexer/discovery
-JasonSourceParser
-CartagoSourceExtractor
-MoiseXmlParser
-legacy resolver
-legacy in-process connectors
-CompositeRuntimeConnector
+bobRole   : auctioneer
+aliceRole : participant
+
+bob   --enacts--> bobRole
+alice --enacts--> aliceRole
+
+agrp --containsRole--> bobRole
+agrp --containsRole--> aliceRole
 ```
 
-Do not remove until:
+Hoặc representation tương đương nếu USE model hiện tại cho phép relation trực tiếp mà vẫn giữ đúng cardinality/context.
 
-- [ ] no production caller. `APPROVAL_GATED`: explicit legacy V2 compatibility callers remain and cleanup requires an approved migration/deletion decision.
-- [x] release excludes them;
-- [x] native case-study gates pass;
-- [x] regression value assessed;
-- [x] historical evidence retained;
-- [x] explicit cleanup approval. The 2026-09-30 repository-cleanup request authorizes deletion of
-  unreferenced obsolete artifacts; legacy compatibility code with explicit callers remains blocked.
+Yêu cầu quan trọng:
 
-V2 becomes historical-only when:
-
-- [x] native static mapping default;
-- [x] native OCL default;
-- [x] native runtime mapping default;
-- [x] no native-mode V2 load;
-- [x] release audit proves isolation.
-
-**Section 29 evidence — 2026-09-29:** PASS for historical classification and release isolation, but at that time cleanup was intentionally not authorized. Native implicit facade, native OCL installation, and native runtime projector are the default path; `ProductionAuthorityPhase8Test` and `LegacyV2OclIsolationTest` prove no native-mode V2 load. `LegacyAuthorityPackagingIT`/`GuiPluginStagingIT` prove the candidate parser/connector classes are absent from the shipped plugin JAR, while shadow/frozen regression tests preserve their audit value. Legacy classes still have explicit compatibility/test callers, so “no production caller” remained unchecked at that checkpoint; no deletion was performed then.
-
-**Cleanup audit evidence — 2026-09-30:** the cleanup request supplied explicit approval. Caller/reference audit classified the obsolete launcher/task/layout, the old architecture-realignment and phase/archive/report trees, V1 release evidence, and unreferenced V1/V2 audit tools as `DELETE_OBSOLETE`; the generic `use-plugin/tools/jacamo-bridge.ps1` is now the only launcher documented by active workflow docs. The focused post-cleanup gate passed `57/57`, and the full reactor `mvn -B -pl use-plugin -am verify` passed `505/505` tests (`497` unit/component + `8` integration/release) with zero failures/errors/skips. The three immutable `v2-final` bundle files remain because `phase44` freeze documents reference them. The old parser/mapping/materialization/runtime/verification classes and frozen V1/V2 resources remain `BLOCKED_BY_ACTIVE_DEPENDENCY` because `DefaultJaCaMoFacade` still exposes an explicit `LEGACY_V2` compatibility constructor and historical/freeze tests call those APIs. No frozen Ecore, Mapping, OCL, profile, runtime mapping, golden, or freeze-manifest file was changed.
+- phải giữ context của group;
+- không chỉ match role bằng tên global;
+- không fuzzy match;
+- không tạo dangling links;
+- không làm mất multiplicity semantics.
 
 ---
 
-# 30. Required test suite
+# 6. Mapping Contract — Moise Functional Specification
 
-## Rule catalog
-- [x] count 105
-- [x] duplicates
-- [x] missing authority/status
+Functional specification gồm:
 
-## Contract
-- [x] encode/decode
-- [x] version mismatch
-- [x] deterministic
-- [x] fidelity/capability preservation
+- Scheme
+- Goal
+- Goal arguments
+- plan/decomposition operator
+- ttf
+- Mission
+- Mission–Goal relation
 
-## Native model
-- [x] classes
-- [x] enums
-- [x] attributes
-- [x] operations
-- [x] associations
-- [x] compositions
-- [x] multiplicities
-- [x] deterministic order
+Ví dụ:
 
-## Native state
-- [x] objects
-- [x] values
-- [x] links
-- [x] removal/update
-- [x] undefined
-- [x] collisions
-- [x] ordered helpers
+```xml
+<scheme id="doAuction">
+  <goal id="auction">
+    <argument id="Id"/>
+    <argument id="Service"/>
+    <plan operator="sequence">
+      <goal id="start"/>
+      <goal id="bid" ttf="10 seconds"/>
+      <goal id="decide" ttf="1 hour"/>
+    </plan>
+  </goal>
 
-## Session
-- [x] setSystem
-- [x] previous system survives failed import
-- [x] GUI refresh
-- [x] evaluator current system
+  <mission id="mAuctioneer">
+    <goal id="start"/>
+    <goal id="decide"/>
+  </mission>
+</scheme>
+```
 
-## OCL
-- [x] native install
-- [x] capability gate
-- [x] no V2 load
-- [x] runtime same mode
+## Quyết định bắt buộc
 
-## Jason
-- [x] all audited BodyTypes
-- [x] plan order
-- [x] body order
-- [x] trigger enums
-- [x] source/runtime distinction
+KHÔNG đưa các phần tử này vào USE Class Model hiện tại.
 
-## CArtAgO
-- [x] descriptor authority
-- [x] ArtifactId identity
-- [x] C08/C09 distinction
-- [x] no simple-name binding
-- [x] unavailable live property
-
-## Moise
-- [x] SS/FS/NS
-- [x] Link/Compatibility
-- [x] M15/M16/M17 tuples
-- [x] ordered plans
-- [x] norm/time preservation
-
-## X rules
-- [x] positive exact evidence
-- [x] same-name negative
-- [x] unresolved
-- [x] restart identity
-
-## Export
-- [x] deterministic `.use`
-- [x] recompile
-- [x] structural equivalence
-- [x] state export if supported
-
-## Packaging
-- [x] discovery
-- [x] staging
-- [x] no stale binary
-- [x] classpath separation
-- [x] historical parser exclusion
-
-**Section 30 evidence — 2026-09-29:** PASS for the implemented test suite. `CodeGroundedNegativeTest` rejects duplicate semantic identity before native state materialization; `CodeGroundedPhase6Test` proves same-name facts remain unresolved without exact evidence; `JaCaMoWorkbenchPanelTest` covers runtime/project refresh; `CodeGroundedExportTest (2/2)` covers separate state export; and the packaging/discovery/staging/classpath/historical-exclusion items are covered by `JaCaMoPluginTest (5/5)`, `LegacyAuthorityPackagingIT`, `GuiPluginStagingIT`, `ReleasePackageContractTest`, and `ReleasePackageIT (3/3)`. `NativeMOperationProjectionTest (2/2)` proves exact reflection creates the concrete artifact subtype and `MOperation`, while a non-exact method remains structural; the focused native regression set passed `12/12`; the post-checkpoint full reactor passed contract `11/11`, official adapters `17/17`, use-core `12/12`, use-gui `1/1`, use-plugin `315/315`, and integration/release `7/7`, with zero failures/errors/skips.
-
----
-
-# 31. Required report after every phase
-
-Each phase report must include:
-
-1. Git diff summary.
-2. Files/classes added/changed.
-3. Rule IDs implemented/changed.
-4. Exact production call graph after phase.
-5. Tests executed + exact results.
-6. Acceptance evidence.
-7. Remaining `UNKNOWN` / `UNAVAILABLE`.
-8. Legacy code still present and production callers.
-9. Plan-vs-code discrepancies.
-10. Risks/new technical debt.
-11. Rollback point.
-12. Recommendation for next phase.
-
-**Do not continue when a mandatory gate fails.**
-
----
-
-# 32. Final definition of done
-
-- [x] Official JaCaMo/Jason/CArtAgO/Moise objects are semantic authority.
-- [x] All 105 rules exist with authority/fidelity/capability metadata.
-- [x] Supported rules are implemented/tested.
-- [x] Unsupported/unavailable rules fail closed.
-- [x] Native semantic model no longer depends on V2 vocabulary.
-- [x] Native `MModel` built through USE API.
-- [x] Native `MSystemState` materialized through USE API.
-- [x] One `MSystem` shared by facade/session/runtime/verifier.
-- [x] `Session.setSystem(system)` activates result in existing USE.
-- [x] Existing USE Model Browser/Class Diagram/Object Diagram see the model/state.
-- [x] Existing USE OCL runs against same session system.
-- [x] Native verification has no hidden V2 dependency.
-- [x] Runtime updates mutate current session state only.
-- [x] Mapping Inspector is explanatory only.
-- [x] `.use` exported from native `MModel`.
-- [x] exported `.use` recompiles.
-- [x] state export is separate.
-- [x] Hello supported scope passes.
-- [x] Auction supported scope passes.
-- [x] House Building supported scope passes.
-- [x] no production fuzzy mapping.
-- [x] no case-study hard coding.
-- [x] no automatic Norm→OCL.
-- [x] no relation-scoped cardinality loss.
-- [x] release package contains only intended production authority path.
-- [x] historical artifacts remain reproducible and labeled.
-
-**Section 32 evidence — 2026-09-29:** PASS for the native implementation and bounded case-study/export/release claims listed above. `NativeUseGuiEndToEndIT` 1/1 now provides real Swing evidence for the Model Browser, Class Diagram, Object Diagram, OCL dialog, and event bus against the single activated `MSystem`. The final unfiltered `mvn -B -pl use-plugin -am verify` reactor passes contract `12/12`, official adapters `17/17`, use-core `12/12` plus `OCLExpressionIT 1/1`, use-gui `1/1` plus `ShellIT 129/129`, and use-plugin `316/316` plus `8/8` integration/release tests: `496/496` total, zero failures/errors/skips. Package, shade, assembly, staging, checksum, and `ReleasePackageIT 3/3` all pass. Remaining unchecked task items are documented `UNAVAILABLE_BY_API`, `NO_LIVE_EVIDENCE`, `OPTIONAL_NOT_REQUIRED`, or `APPROVAL_GATED` limitations, not silently promoted to completion.
-
-**Final closure evidence — 2026-09-29:** Additional closure work is backed by `CodeGroundedExportTest 3/3` (component manifest, source metadata, class/enum/attribute/value trace and bounded export metrics), `CodeGroundedPhase7Test 4/4` (runtime aliases), `NativeMOperationProjectionTest 2/2` (exact reflection only), `SemanticContractTest 4/4`, and the real Swing `NativeUseGuiEndToEndIT 1/1`. The 20 remaining `[ ]` items are intentionally retained: C08 is `UNAVAILABLE_BY_API`; legacy extractor/verifier/backend replacement and cleanup are `OPTIONAL_NOT_REQUIRED` or `APPROVAL_GATED`; optional artifacts/navigation are `OPTIONAL_NOT_REQUIRED`; Auction/House live native claims are `NO_LIVE_EVIDENCE`. The live Auction integration test remains legacy-V2 bounded evidence and therefore is not promoted to native case-study evidence. No frozen V2/Ecore/golden file was changed.
-
----
-
-# 33. Final architecture
+Không được sinh:
 
 ```text
-                    JaCaMo
-                      │
-      official Java/API semantic objects
-                      │
-                      ▼
-          JaCaMo-side typed adapters
-                      │
-                      ▼
-          neutral semantic contract
-                      │
-                      ▼
-        JacamoSpecificationModel
-                      │
-        J/A/C/M/X mapping rule catalog
-                      │
-          ┌───────────┴───────────┐
-          ▼                       ▼
-  NativeUseModelBuilder   NativeUseStateBuilder
-          │                       │
-          ▼                       ▼
-        MModel  ───────────────► MSystem
-                                  │
-                                  ▼
-                             MSystemState
-                                  │
-                                  ▼
-                         Session.setSystem(...)
-                                  │
-                   ┌──────────────┼──────────────┐
-                   ▼              ▼              ▼
-             USE GUI          USE OCL      Verification
-                   │
-                   ▼
-          optional export .use/.cmd
-
-Mapping Inspector
-    └── source → rule → target → evidence → fidelity/status
-        (inspection only; no second runtime)
+DoAuction
+DoAuctionAuction
+DoAuctionStart
+DoAuctionBid
+DoAuctionDecide
+DoAuctionMAuctioneer
+DoAuctionMParticipant
+AuctionSchemeInstance
+AuctionMissionCommitment
 ```
 
-# 34. Execution order
+Không biến Goal thành enum trong task này.
 
-**Jason include trace and interactive lifetime regression — 2026-09-30:**
+Phải giữ source semantics trong semantic layer/trace đủ để Goal Model task sau có thể sử dụng.
 
-- [x] Resolve each parsed Plan's exact `SourceInfo` file/resource URI, SHA-256 and line range; nested includes, same-basename includes and package JARs are tested. `JasonSourceEvidence` performs no filename search or remote fetch. The official parser receives an absolute root URL via its stream API; root stream ownership is retained. `CodeGroundedTraceCollector`, value traces, schema `1.2.0` export, facade rows and Mapping Inspector retain this evidence instead of attributing every record to the root ASL/JCM.
-- [x] Keep an interactive producer alive until the explicit stop file following USE exit. `TimeoutSeconds` still bounds Bridge startup/GUI import and headless lifetime; timeout/failure exits are nonzero. The displayed Workbench refreshes cached readiness automatically and stops showing stale LIVE after subscription failure. No new runtime/resync loop is introduced.
-
-Focused tests PASS `31/31`: `OfficialJasonAdapterTest (8)`,
-`LiveJaCaMoLauncherLifetimeTest (2)`, `GenericLauncherScriptTest (1)`,
-`CodeGroundedExportTest (3)`, `NativeTraceSourceTest (1)`, and
-`JaCaMoWorkbenchPanelTest (16)`. Local include assertions execute in a separate
-JVM because the official Jason 3.3.2 `Include.process` retains its input handles
-on Windows; all source/digest/span assertions still execute against the real parser.
-Full unfiltered `mvn -B -pl use-plugin -am verify` PASS `514/514`:
-contract `12`, adapters `23`, core `12 + 1 IT`, GUI `1 + 129 IT`, plugin
-`328 + 8 IT`; zero failures/errors/skips. Counts are taken from this run's
-log, not stale XML files retained from older suites. Package, checksum,
-GUI staging, release and native Swing/OCL integration gates PASS.
-
-Actual Writing Paper static-to-native trace audit PASS: `66` Plans / `130`
-body nodes retained, with `14` local Plans and `52` imported Plans
-(`common-cartago: 18`, `common-moise: 24`, `org-obedient: 10`). Evidence:
-`use-plugin/target/source-lifetime/writing-paper-trace.json` and
-`native-trace-audit.log`. Headless live import/verification/resync/export PASS:
-`use-plugin/target/source-lifetime/headless-evidence/20260930-170754`.
-Packaged GUI auto-import READY: `gui-evidence/20260930-170743/gui-ready.json`
-under the same evidence root; `27` classes / `336` objects / `430` links.
-With startup timeout `15s`, the producer remained alive at age `230s`.
-An authenticated late consumer import/resync PASS reused the GUI's exact
-session `0e807748-cd36-4264-b2a4-b9e92f0fab41`, not merely an open TCP port:
-`gui-live-after-deadline/summary.json`. Ending only the identity-checked test
-GUI process triggered launcher stop-file cleanup, exit `0`, and listener
-shutdown; see `gui-lifetime-evidence.json`. This is supported live evidence
-with explicit `PARTIAL` completeness, not a claim of complete runtime semantics.
-The original JCM SHA-256 remains
-`ce9754dcc822fb6624d88e03487fe22316b5196e7b24504f6c642f0848e11ba4`.
-Single `MSystem` and `CODE_GROUNDED_NATIVE` are retained. No frozen
-V2/Ecore/golden or pre-existing unavailable/optional/approval checkbox changed.
-
-**Writing Paper launcher regression — 2026-09-30:** PASS for the supported
-native scope. `jacamo-bridge.ps1` accepts absent Java output only when a
-successful Gradle build explicitly reports `compileJava NO-SOURCE`; it adds
-only existing build output directories to the producer classpath. Executing
-the actual PowerShell class-output gate passes 3/3: NO-SOURCE, existing output,
-and missing-output rejection. Focused Maven tests pass 4/4. Full unfiltered
-`mvn -B -pl use-plugin -am verify` passes 506/506 (contract 12, adapters 18,
-core 12 + 1 integration, GUI 1 + 129 integration, plugin 325 + 8
-integration/release), zero failures/errors/skips, including package, checksum,
-GUI staging, and release tests. Headless evidence is
-`use-plugin/target/jacamo-bridge-evidence-writing-paper-final/20260930-153546`:
-27 classes, 336 objects, 430 links, valid structure/invariants/export.
-Packaged GUI evidence is
-`use-plugin/target/jacamo-bridge-evidence-writing-paper-gui-final/20260930-154056/gui-ready.json`:
-automatic import reports READY, 27 classes, 41 associations, 336 objects,
-430 links, Bridge LIVE with explicit PARTIAL completeness. This is evidence
-of session activation, not a claim of all runtime semantics being materialized.
-The existing single `MSystem` and `CODE_GROUNDED_NATIVE` path are retained;
-no frozen V2/Ecore/golden file changed. Existing unavailable/optional/approval
-checkboxes are unchanged by this regression fix.
+Goal Model task sau sẽ chịu trách nhiệm biểu diễn:
 
 ```text
-Phase 1A  Foundation / typed contract / 105-rule catalog / native APIs / OCL separation
-    ↓
-Phase 1B  J01 + A01–A05 + A16–A20 / Hello native USE vertical slice
-    ↓
-Phase 2   Remaining Jason static rules
-    ↓
-Phase 3   JCM deployment rules
-    ↓
-Phase 4   CArtAgO C01–C20
-    ↓
-Phase 5   Moise M01–M43
-    ↓
-Phase 6   Cross-dimension X01–X09
-    ↓
-Phase 7   Runtime synchronization into current USE session
-    ↓
-Phase 8   Production authority switch / V2 isolation
-    ↓
-Phase 9   Hello → Auction → House acceptance
-    ↓
-Packaging / docs / cleanup / final release audit
+scheme
+goal
+goal decomposition
+sequence / parallel / choice / ...
+goal arguments
+ttf
+mission
+mission-goal relations
+runtime goal/mission state
 ```
 
-**Do not skip gates. Do not guess semantics. Do not create a parallel USE runtime.**
+Class Browser trong task hiện tại không được chứa các Goal/Scheme/Mission classes.
+
+---
+
+# 7. Mapping Contract — Norms
+
+Moise:
+
+```xml
+<norm id="n1"
+      type="obligation"
+      role="auctioneer"
+      mission="mAuctioneer"/>
+```
+
+## Quyết định bắt buộc
+
+Norm KHÔNG trở thành:
+
+```text
+class Norm
+class n1
+object n1 : Norm
+```
+
+Norm thuộc OCL/constraint layer.
+
+Target intention:
+
+```text
+Norm → OCL constraint
+```
+
+Tuy nhiên:
+
+- không invent nghĩa của `obligation`;
+- không tạo OCL giả nếu target runtime/goal state cần thiết chưa tồn tại;
+- phải giữ norm source + references trong semantic/trace layer;
+- khi OCL có thể biểu diễn chính xác trên target model thì generate;
+- nếu Goal Model chưa được implement và norm cần Mission state, đánh dấu rõ là `PENDING_GOAL_MODEL_OCL`, KHÔNG thay bằng Norm class.
+
+Acceptance tối thiểu của task hiện tại:
+
+- không có `Norm`/`N1`/`N2` trong Classes;
+- normative information không bị mất;
+- có explicit target/hook/status cho OCL generation.
+
+---
+
+# 8. Mapping Contract — CArtAgO Artifact
+
+## 8.1. Artifact subclass
+
+Java:
+
+```java
+public class X extends Artifact
+```
+
+Mapping:
+
+```text
+class X : artifact
+```
+
+Ví dụ:
+
+```java
+public class AuctionArtifact extends Artifact
+```
+
+→
+
+```text
+class AuctionArtifact : artifact
+```
+
+Không cần generic `ArtifactType` class trong domain target.
+
+Nếu cần base metadata nội bộ thì giữ ngoài exposed domain Class Model.
+
+## 8.2. Observable properties
+
+Ví dụ:
+
+```java
+defineObsProperty("running", false);
+defineObsProperty("task", "no_task");
+defineObsProperty("best_bid", Double.MAX_VALUE);
+defineObsProperty("winner", ...);
+```
+
+Mapping:
+
+```text
+running  → attribute
+task     → attribute
+best_bid → attribute
+winner   → attribute
+```
+
+Runtime:
+
+```text
+artifact instance
+→ MObject
+
+observable property current value
+→ attribute value
+```
+
+Không tạo:
+
+```text
+ObservablePropertySnapshot
+```
+
+như một domain class.
+
+Snapshot/transport DTO có thể tồn tại nội bộ trong plugin nhưng không được materialize thành exposed USE MClass.
+
+## 8.3. Artifact operations
+
+Không map:
+
+```text
+@OPERATION start(...)
+@OPERATION stop()
+@OPERATION bid(...)
+```
+
+sang `MOperation` trong task này.
+
+JaCaMo/CArtAgO chịu trách nhiệm execution.
+
+USE chỉ nhận state sau execution.
+
+## 8.4. Private/helper implementation state
+
+Ví dụ:
+
+```java
+String currentWinner;
+```
+
+không tự động map thành USE attribute nếu nó chỉ là implementation detail.
+
+Ưu tiên runtime/public semantic state như observable property:
+
+```text
+winner
+```
+
+Chỉ map private/helper field khi có explicit requirement/evidence rằng field đó là state cần verification.
+
+---
+
+# 9. Những class hiện tại phải audit và loại khỏi exposed Class Model
+
+Nếu còn được sinh bởi current transformer, phải xử lý:
+
+```text
+Plan
+PlanBodyElement
+PlanLibrary
+ArtifactType
+ObservablePropertySnapshot
+CartagoAgentIdentity
+AuctionGroupInstance
+AuctionRoleEnactment
+AuctionMissionCommitment
+AuctionSchemeInstance
+DoAuction
+DoAuctionAuction
+DoAuctionBid
+DoAuctionDecide
+DoAuctionMAuctioneer
+DoAuctionMParticipant
+DoAuctionStart
+```
+
+Các tên Auction ở trên chỉ là ví dụ từ acceptance case.
+
+Phải loại bỏ bằng rule tổng quát, không bằng `if (name.equals("Auction..."))`.
+
+Ví dụ:
+
+```text
+Scheme → không project Class Model
+Goal → không project Class Model
+Mission → không project Class Model
+RoleEnactment wrapper → relation/link
+GroupInstance wrapper → runtime object of group class
+ObsPropertySnapshot wrapper → attribute value
+Plan structures → không project
+```
+
+---
+
+# 10. `Agent`, `Artifact`, `Workspace`, `Environment`, `Soc`
+
+Không được mặc định giữ các generic framework classes chỉ vì chúng tồn tại trong semantic DTO/metamodel cũ.
+
+## 10.1. Agent
+
+Preferred target:
+
+```text
+<asl basename> : agent
+```
+
+Không bắt buộc exposed generic `Agent` class nếu semantic kind/tag đã đủ.
+
+Nếu current USE implementation cần một base `Agent` để support inheritance/type checks, được giữ ONLY khi:
+
+- nó có chức năng rõ ràng trong target model;
+- không làm Class Browser trở lại framework-centric;
+- concrete agent program classes vẫn là phần người dùng nhìn thấy.
+
+Nếu không cần → bỏ generic `Agent`.
+
+## 10.2. Artifact
+
+Tương tự:
+
+```text
+AuctionArtifact : artifact
+```
+
+Không bắt buộc exposed generic `Artifact` class.
+
+Chỉ giữ generic base nếu target USE type system thực sự cần.
+
+## 10.3. Workspace
+
+Chỉ giữ `Workspace` nếu runtime verification hiện tại cần quan hệ:
+
+```text
+agent → workspace
+artifact → workspace
+```
+
+Nếu workspace chỉ là technical container và không có invariant/query nào dùng nó, không cần expose như domain class.
+
+Không được quyết định chỉ dựa trên việc CArtAgO có Java class `Workspace`.
+
+## 10.4. Environment / Soc
+
+Không expose `Environment` hoặc `Soc` nếu chúng chỉ là generic container của old metamodel.
+
+Giữ semantic information nếu cần trong internal layer, nhưng không sinh exposed MClass nếu không có target verification meaning.
+
+---
+
+# 11. Association Transformation — bắt buộc 2-pass
+
+## Pass 1 — Elements
+
+Tạo target elements và trace:
+
+```text
+source element
+→ target USE element
+```
+
+Trace phải dùng stable semantic identity, không dùng fuzzy name matching.
+
+Ví dụ:
+
+```text
+Moise OS auction                → MClass auction
+Moise Role auctioneer           → MClass auctioneer
+Moise Group auctionGroup        → MClass auctionGroup
+JCM agent-program source        → MClass auction_capabilities
+JCM agent declaration bob       → MObject bob
+JCM organisation instance aorg  → MObject aorg
+JCM group instance agrp         → MObject agrp
+Artifact type AuctionArtifact   → MClass AuctionArtifact
+runtime artifact a1             → MObject a1
+```
+
+## Pass 2 — Relations
+
+Mỗi source relation phải được phân loại explicit thành một trong:
+
+```text
+PRESERVE_AS_ASSOCIATION
+PRESERVE_AS_LINK
+FLATTEN
+CONVERT_TO_ATTRIBUTE
+CONVERT_TO_OCL
+DEFER_TO_GOAL_MODEL
+IGNORE_NOT_NEEDED
+```
+
+Không copy relation mù quáng.
+
+Không tạo association khi endpoint target không tồn tại.
+
+Không tạo fake class chỉ để giữ association cũ.
+
+---
+
+# 12. Runtime synchronization
+
+Runtime sync phải update:
+
+- MObject creation/removal nếu supported;
+- attribute values;
+- links;
+- role enactment/player relations;
+- organisation/group runtime instances;
+- artifact observable state.
+
+Không cần sync:
+
+- Plan stack;
+- PlanLibrary;
+- Trigger;
+- operation descriptors;
+- Java reflection metadata;
+- internal Jason execution stack;
+- source parser objects.
+
+---
+
+# 13. Expected Auction acceptance model
+
+Auction chỉ là acceptance example, KHÔNG phải hardcoded design.
+
+Với các source:
+
+```text
+auction-os.xml
+auction.jcm
+auction_capabilities.asl
+AuctionArtifact.java
+```
+
+Expected exposed USE Classes phải gần với:
+
+```text
+auction               : organisation
+auctionGroup          : group
+auctioneer            : role
+participant           : role
+auction_capabilities  : agent
+AuctionArtifact       : artifact
+```
+
+Có thể có thêm generic base class ONLY nếu thực sự cần cho USE typing, nhưng không được xuất hiện hàng loạt framework/internal classes.
+
+Expected runtime objects phải có khả năng biểu diễn:
+
+```text
+aorg       : auction
+agrp       : auctionGroup
+
+bob        : auction_capabilities
+alice      : auction_capabilities
+maria      : auction_capabilities
+francois   : auction_capabilities
+giacomo    : auction_capabilities
+
+a1/a2/...  : AuctionArtifact
+```
+
+và các relation:
+
+```text
+aorg ↔ agrp
+agrp ↔ role enactments / players
+bob ↔ auctioneer
+alice/maria/francois/giacomo ↔ participant
+
+artifact ↔ workspace only if workspace is kept
+```
+
+Artifact state:
+
+```text
+running
+task
+best_bid
+winner
+```
+
+phải được biểu diễn bằng attributes/values, không bằng snapshot classes.
+
+---
+
+# 14. Expected Auction classes that MUST NOT exist
+
+Sau refactor, Auction acceptance test phải fail nếu exposed Class Model có các class sau:
+
+```text
+Plan
+PlanLibrary
+PlanBodyElement
+Trigger
+
+ObservablePropertySnapshot
+CartagoAgentIdentity
+ArtifactType
+
+AuctionGroupInstance
+AuctionRoleEnactment
+AuctionMissionCommitment
+AuctionSchemeInstance
+
+DoAuction
+DoAuctionAuction
+DoAuctionStart
+DoAuctionBid
+DoAuctionDecide
+DoAuctionMAuctioneer
+DoAuctionMParticipant
+
+Norm
+```
+
+Nếu internal DTO có tên tương tự nhưng KHÔNG materialize thành USE MClass thì được phép.
+
+---
+
+# 15. Generalization / naming / identity rules
+
+## 15.1. Naming
+
+Tên target domain classes lấy từ semantic IDs/source identities:
+
+```text
+organisation id
+role id
+group id
+ASL source basename
+Artifact Java simple class name
+```
+
+Không thêm prefix case-study kiểu:
+
+```text
+AuctionRoleEnactment
+DoAuctionBid
+```
+
+chỉ để tránh collision.
+
+Collision phải được giải quyết bằng semantic identity/namespace/trace, không bằng việc biến internal path thành domain class name.
+
+## 15.2. Semantic kind
+
+Mỗi target class phải giữ được kind tối thiểu:
+
+```text
+organisation
+role
+group
+agent
+artifact
+```
+
+Có thể implement bằng:
+
+- annotation/stereotype-like metadata trong plugin;
+- trace metadata;
+- internal target descriptor;
+- mechanism khác phù hợp với USE API.
+
+Không bắt buộc literal syntax `class X : role` nếu USE không hỗ trợ cú pháp đó.
+
+Nhưng GUI/trace/debug phải có cách xác định:
+
+```text
+X đại diện cho semantic kind gì?
+```
+
+---
+
+# 16. Tests bắt buộc
+
+## 16.1. Unit tests
+
+Phải có tests cho generic rules:
+
+- OS id → organisation class
+- role id → role class
+- group id → group class
+- group-role cardinality preservation
+- JCM organisation declaration → object of resolved organisation class
+- JCM group declaration → object of resolved group class
+- ASL basename → agent class
+- agent declaration → MObject of agent-program class
+- Artifact subclass → artifact class
+- ObsProperty → attribute/value
+- no Plan MClass
+- no Goal/Scheme/Mission MClass
+- no Norm MClass
+- no RoleEnactment wrapper MClass
+- no GroupInstance wrapper MClass
+- no ObsPropertySnapshot MClass
+
+## 16.2. Auction acceptance test
+
+Assert exact/near-exact exposed classes expected from Section 13.
+
+Assert forbidden classes from Section 14 are absent.
+
+Assert:
+
+```text
+aorg : auction
+agrp : auctionGroup
+bob/alice/... : auction_capabilities
+```
+
+Assert group-role cardinalities preserved.
+
+Assert player-role runtime links preserved.
+
+Assert artifact properties appear as values/attributes.
+
+## 16.3. Generic regression
+
+Run existing Hello World and House Building cases.
+
+Purpose:
+
+- prove transformer is generic;
+- no case-specific name logic;
+- dynamic creation paths do not crash;
+- unsupported Goal Model pieces are deferred, not converted into fake classes.
+
+House Building is especially important because organisation/artifacts may be created dynamically rather than fully declared in `.jcm`.
+
+---
+
+# 17. Fail-closed rules
+
+Transformation phải fail hoặc emit explicit diagnostic khi:
+
+- organisation source file resolve được nhưng không có usable OS id;
+- group references unknown group specification;
+- role assignment references unknown role;
+- association endpoint không có valid target mapping;
+- runtime object cannot be typed safely;
+- name collision cannot be resolved with semantic identity;
+- norm OCL cannot be generated because required Goal Model state is absent.
+
+Không được:
+
+- đoán bằng string similarity;
+- chọn class gần tên nhất;
+- silently drop required relation;
+- tạo generic fallback class để “cho chạy được”;
+- hardcode case-study names.
+
+---
+
+# 18. Implementation procedure checklist
+
+## Phase A — Preflight
+
+- [ ] `git status`
+- [ ] xác định branch hiện tại
+- [ ] đọc current transformation pipeline
+- [ ] đọc current native USE builder/state builder
+- [ ] tìm tất cả nơi tạo `MClass`
+- [ ] tìm tất cả nơi tạo `MAssociation`
+- [ ] tìm tất cả nơi tạo `MObject`
+- [ ] tìm tất cả nơi materialize Jason Plan classes
+- [ ] tìm tất cả nơi materialize Moise Goal/Scheme/Mission classes
+- [ ] tìm tất cả nơi materialize runtime wrapper classes
+- [ ] ghi lại current Auction Class Browser output
+
+## Phase B — Target projection model
+
+- [ ] implement semantic kinds: organisation / role / group / agent / artifact
+- [ ] implement stable source→target trace
+- [ ] remove 1:1 Java/metamodel class materialization assumption
+- [ ] ensure target class creation is rule-based, not DTO-class-based
+
+## Phase C — JCM
+
+- [ ] MAS → model name only
+- [ ] ASL basename → agent class
+- [ ] JCM agent declaration → MObject
+- [ ] organisation instance resolve XML OS id → MObject of organisation class
+- [ ] group instance → MObject of group class
+- [ ] player-role relation preserved
+
+## Phase D — Moise structural
+
+- [ ] OS id → organisation class
+- [ ] role definitions → role classes
+- [ ] group definitions → group classes
+- [ ] group-role references reuse existing role classes
+- [ ] multiplicity preserved
+- [ ] no generic Organization/Role/Group copy classes unless technically required as hidden/internal bases
+
+## Phase E — Functional boundary
+
+- [ ] remove Scheme classes from exposed Class Model
+- [ ] remove Goal classes from exposed Class Model
+- [ ] remove Mission classes from exposed Class Model
+- [ ] retain functional semantics in source/semantic layer for future Goal Model
+- [ ] mark related target transformation as `DEFER_TO_GOAL_MODEL`
+
+## Phase F — Norm boundary
+
+- [ ] remove Norm classes/objects
+- [ ] retain Norm source references
+- [ ] route Norm toward OCL layer
+- [ ] if OCL cannot yet be expressed faithfully, mark `PENDING_GOAL_MODEL_OCL`
+- [ ] no invented OCL semantics
+
+## Phase G — CArtAgO
+
+- [ ] Artifact subclass → artifact class
+- [ ] runtime artifact → MObject
+- [ ] ObsProperty → attribute/value
+- [ ] remove exposed `ArtifactType`
+- [ ] remove exposed `ObservablePropertySnapshot`
+- [ ] do not map `@OPERATION` to MOperation
+- [ ] do not map private helper fields by default
+
+## Phase H — Runtime relation cleanup
+
+- [ ] remove exposed `RoleEnactment` classes
+- [ ] remove exposed `GroupInstance` classes
+- [ ] remove exposed `SchemeInstance` classes from Class Model
+- [ ] remove exposed `MissionCommitment` classes from Class Model
+- [ ] rewrite required runtime semantics to links/objects/attributes
+- [ ] no dangling associations
+
+## Phase I — Jason cleanup
+
+- [ ] remove exposed `Plan`
+- [ ] remove exposed `PlanLibrary`
+- [ ] remove exposed `PlanBodyElement`
+- [ ] remove exposed `Trigger`
+- [ ] remove action/execution internals from target Class Model
+- [ ] preserve only runtime state actually needed
+
+## Phase J — Tests
+
+- [ ] focused unit tests PASS
+- [ ] Auction acceptance PASS
+- [ ] Hello World regression PASS
+- [ ] House Building regression PASS
+- [ ] full relevant reactor/module tests PASS
+- [ ] package/build PASS
+
+## Phase K — Manual USE GUI acceptance
+
+- [ ] import/synchronize Auction
+- [ ] Model Browser shows only intended domain/runtime classes
+- [ ] no forbidden internal classes
+- [ ] Class Diagram can open
+- [ ] Object Diagram shows runtime objects
+- [ ] artifact observable values visible in state
+- [ ] player/role/group relations visible
+- [ ] OCL/invariant engine still runs on same active MSystem
+
+---
+
+# 19. Definition of Done
+
+Task chỉ được DONE khi tất cả điều sau đúng:
+
+- [ ] USE target no longer mirrors JaCaMo internal metamodel/object graph.
+- [ ] Exposed Class Model is domain/runtime oriented.
+- [ ] Auction Class Browser is reduced to intended semantic classes.
+- [ ] Plan/PlanLibrary/PlanBody are absent from Class Model.
+- [ ] Scheme/Goal/Mission are absent from Class Model and deferred to Goal Model.
+- [ ] Norm is absent from Class Model and routed to OCL.
+- [ ] Artifact observable properties are attributes/values, not snapshot classes.
+- [ ] JCM organisation/group declarations create objects of specification-derived classes.
+- [ ] Agent declarations create objects of ASL-program classes.
+- [ ] Player-role/group relations are preserved without RoleEnactment MClass.
+- [ ] Group-role cardinalities are preserved.
+- [ ] Traceability remains available.
+- [ ] No case-study hardcoding.
+- [ ] No fuzzy/name-only formal mapping.
+- [ ] Runtime synchronization still uses one active USE MSystem.
+- [ ] Relevant automated tests pass.
+- [ ] Manual USE GUI smoke test passes.
+
+---
+
+# 20. Required final report from coding agent
+
+Sau khi hoàn thành, báo cáo ngắn gọn nhưng phải có evidence:
+
+```text
+1. Root cause of old over-modeling
+2. New generic mapping rules
+3. Exact production files changed
+4. Exact tests added/updated
+5. Auction exposed classes BEFORE
+6. Auction exposed classes AFTER
+7. Auction runtime objects/links AFTER
+8. Forbidden classes confirmed absent
+9. Hello World result
+10. House Building result
+11. Full test/build result
+12. Remaining deferred work:
+    - Goal Model/View
+    - faithful Norm → OCL dependent on Goal/runtime state
+    - any unsupported runtime relation
+```
+
+Không claim DONE nếu chưa có executable/test evidence.

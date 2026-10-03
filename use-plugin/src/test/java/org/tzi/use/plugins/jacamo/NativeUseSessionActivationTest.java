@@ -24,13 +24,12 @@ class NativeUseSessionActivationTest {
             Session session = new Session();
             try (var facade = BridgeFacadeTestSupport.nativeFacade(project, session, () -> false)) {
                 var summary = facade.importProject(project);
-                var moiseClasses = new org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalog().rules().stream()
-                        .filter(rule -> rule.ruleId().startsWith("M") && rule.targetUseKind().startsWith("MClass "))
-                        .map(rule -> rule.targetUseKind().substring("MClass ".length())).collect(java.util.stream.Collectors.toSet());
-                long representedMoise = session.system().state().allObjects().stream()
-                        .filter(object -> moiseClasses.contains(object.cls().name())).count();
-                assertTrue(representedMoise > 0);
-                assertEquals(representedMoise, summary.dimensionCounts().get("MOISE"));
+                assertTrue(summary.dimensionCounts().get("MOISE") > 0, "typed source records, not enactment objects");
+                assertTrue(session.system().model().classes().stream().anyMatch(cls -> "DOMAIN_SCHEMA".equals(
+                        cls.getAnnotationValue("MoiseProjection", "representation"))));
+                assertFalse(session.system().state().allObjects().stream().anyMatch(object ->
+                        object.cls().getAnnotation("MoiseProjection") != null),
+                        "static import must not fabricate Moise runtime enactments");
                 assertEquals((long) source.exactBindings().size(), summary.dimensionCounts().get("CROSS"));
                 assertEquals("NATIVE_CURRENT", summary.mappingStatus());
                 assertSame(session.system(), facade.materializedSystem());
@@ -63,8 +62,8 @@ class NativeUseSessionActivationTest {
             assertSame(resynchronized, session.system());
             assertNull(session.system().model().getClass("AgentProgram"),
                     "AUTO projection keeps AgentProgram as evidence-only; FULL remains the audit profile");
-            assertNotNull(session.system().model().getClass("Organization"),
-                    "Phase 5 Moise classes are part of the native session schema");
+            assertNull(session.system().model().getClass("Organization"), "AUTO is domain-specific, not a metamodel inspector");
+            assertNotNull(session.system().model().getClass("O1"), "the official OS id specializes the schema");
         }
     }
 

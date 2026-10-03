@@ -786,7 +786,8 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                         org.tzi.use.plugins.jacamo.verification.ConstraintKind.INV,
                         org.tzi.use.plugins.jacamo.verification.ConstraintOrigin.CORE, jcmFile,
                         new org.tzi.use.plugins.jacamo.project.SourceSpan(jcmFile, 1, 1, 1, 1),
-                        nativeConstraintDependencies(invariant.name()), invariant.isActive(),
+                        pipeline.model().constraints().stream().filter(spec -> spec.name().equals(invariant.name()))
+                                .findFirst().orElseThrow().requiredRuleIds(), invariant.isActive(),
                         invariant.bodyExpression().toString())).toList());
         pipeline.model().skippedConstraints().forEach(spec -> constraints.add(
                 new org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor(
@@ -840,15 +841,6 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                         "generation", Long.toString(runtime.generation()), "modelRevision", runtime.modelRevision(),
                         "constraintSetHash", runtime.constraintSetHash(), "coverage", runtime.coverage(), "freshness", runtime.freshness(),
                         "eventId", runtime.eventId()));
-    }
-
-    private List<String> nativeConstraintDependencies(String name) {
-        return switch (name) {
-            case "A17OrderConsistent" -> List.of("A17");
-            case "A19OrderConsistent" -> List.of("A19");
-            case "A20NextAgreesWithA19" -> List.of("A19", "A20");
-            default -> List.of();
-        };
     }
 
     private String sha256(String value) {

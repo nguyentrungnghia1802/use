@@ -60,6 +60,13 @@ public final class NativeProjectionAudit {
     }
 
     private static String classReason(String name, NativeUseModelBuilder.Result schema) {
+        var cls = schema.model().getClass(name);
+        String representation = cls.getAnnotationValue(MoiseDomainProjection.ANNOTATION, "representation");
+        if (schema.moiseProjection().classNames().containsValue(name)
+                && "DOMAIN_SCHEMA".equals(representation)) return "DOMAIN_SCHEMA:official-owner-scoped-Moise-element";
+        if ("SUPPORTING_ENACTMENT_IDENTITY".equals(representation))
+            return "SUPPORTING_IDENTITY:role-adoption-or-mission-commitment-not-a-definition-object";
+        if ("SPECIFICATION_INSPECTION".equals(representation)) return "FULL_INSPECTION:static-definition-not-runtime-enactment";
         if (schema.nativeArtifactTypeClassNames().containsValue(name)) return "RUNTIME_MUTATION_TARGET:artifact-subtype";
         if (OCL_CLASSES.contains(name)) return "OCL_TARGET:code-grounded-constraint";
         if (RUNTIME_CLASSES.contains(name)) return "RUNTIME_MUTATION_TARGET:faithful-event";

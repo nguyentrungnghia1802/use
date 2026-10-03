@@ -13,13 +13,18 @@ import org.tzi.use.plugins.jacamo.codegrounded.constraint.NativeConstraintInstal
 import org.tzi.use.plugins.jacamo.codegrounded.constraint.NativeConstraintSpec;
 
 class NativeConstraintInstallerTest {
-    @Test void installsOnlyFirstSliceNativeConstraintsThroughTheModelApi() throws Exception {
+    @Test void installsJasonOrderAndMoiseFormationConstraintsThroughTheModelApi() throws Exception {
         var result = CodeGroundedTestFixtures.helloPipeline();
         assertEquals(Set.of("A17OrderConsistent", "A19OrderConsistent", "A20NextAgreesWithA19"),
-                result.model().model().classInvariants().stream().map(value -> value.name()).collect(Collectors.toSet()));
+                result.model().model().classInvariants().stream().filter(value -> value.name().startsWith("A"))
+                        .map(value -> value.name()).collect(Collectors.toSet()));
         assertEquals(Set.of("Plan", "PlanLibrary"), result.model().model().classInvariants().stream()
-                .map(value -> value.cls().name()).collect(Collectors.toSet()));
-        assertTrue(result.model().constraints().stream().allMatch(value -> "CODE_GROUNDED".equals(value.origin())));
+                .filter(value -> value.name().startsWith("A")).map(value -> value.cls().name()).collect(Collectors.toSet()));
+        assertEquals(3 + result.model().moiseProjection().constraints().size(), result.model().model().classInvariants().size());
+        assertFalse(result.model().moiseProjection().constraints().isEmpty());
+        assertTrue(result.model().constraints().stream().allMatch(value -> value.requiredRuleIds().stream().anyMatch(rule -> rule.startsWith("M"))
+                ? "OFFICIAL_MOISE_FORMATION_SCHEMA".equals(value.origin()) : "CODE_GROUNDED".equals(value.origin())));
+        assertTrue(result.model().constraints().stream().noneMatch(value -> value.requiredRuleIds().contains("M14")));
         assertEquals(Set.of("C08LiveObservablePropertyAvailable"), result.model().skippedConstraints().stream()
                 .map(value -> value.name()).collect(Collectors.toSet()));
     }

@@ -48,7 +48,7 @@ import org.jacamo.bridge.contract.semantic.MoiseSemanticContract.StructuralSpeci
 import org.jacamo.bridge.contract.semantic.MoiseSemanticContract.SubGroupCardinalitySemantic;
 import org.jacamo.bridge.contract.semantic.SemanticMetadata;
 
-/** Official Moise object-graph adapter; normative facts remain facts, never generated OCL. */
+/** Official Moise object-graph adapter; normative policies are not Boolean OCL invariants. */
 public final class OfficialMoiseAdapter {
     public record Result(List<ModelFact> facts, List<RelationCardinality> groupRoleCardinalities,
                          List<RelationCardinality> parentSubGroupCardinalities,
@@ -60,10 +60,11 @@ public final class OfficialMoiseAdapter {
         }
     }
 
-    /** Loads one OS through the official loader and copies the complete static object graph. */
+    /** Loads one OS through the official loader and copies the supported static object graph. */
     public Result load(Path projectRoot, Path osFile, String projectKey) throws Exception {
         Path exact = osFile.toAbsolutePath().normalize();
         OS os = OS.loadOSFromURI(exact.toUri().toString());
+        if (os == null) throw new IllegalArgumentException("MOISE_OFFICIAL_OS_LOAD_FAILED:" + exact);
         var evidence = AdapterEvidence.file("moise-os", projectRoot, exact,
                 "OS.loadOSFromURI official graph");
         String osId = required(os.getId(), "MOISE_OS_ID_UNAVAILABLE");
@@ -103,13 +104,13 @@ public final class OfficialMoiseAdapter {
         var roleDtos = new ArrayList<RoleSemantic>();
         for (Role role : sorted(os.getSS().getRolesDef(), Comparator.comparing(Role::getId))) {
             String id = rolesByObject.get(role);
-            roleDtos.add(new RoleSemantic(metadata(id, "MOISE_ROLE", Role.class.getName(), evidence), id,
+            roleDtos.add(new RoleSemantic(metadata(id, "MOISE_ROLE", Role.class.getName(), evidence), role.getId(),
                     role.isAbstract(), role.getSuperRoles().stream().sorted(Comparator.comparing(Role::getId))
                             .map(rolesByObject::get).toList()));
-            facts.add(new ModelFact("role", id(projectKey, "role", role.getId()),
-                    Map.of("abstract", Boolean.toString(role.isAbstract())),
+            facts.add(new ModelFact("role", id(projectKey, "role", id),
+                    Map.of("roleId", role.getId(), "abstract", Boolean.toString(role.isAbstract())),
                     Map.of("superRoles", role.getSuperRoles().stream().sorted(Comparator.comparing(Role::getId))
-                            .map(value -> id(projectKey, "role", value.getId())).toList()),
+                            .map(value -> id(projectKey, "role", rolesByObject.get(value))).toList()),
                     CapabilityStatus.COMPLETE, List.of(evidence)));
         }
 
@@ -128,9 +129,9 @@ public final class OfficialMoiseAdapter {
             String parentId = groupsByObject.get(group.getSuperGroup());
             if (parentId == null) parentId = "";
             groupDtos.add(new GroupSemantic(metadata(groupSemanticId, "MOISE_GROUP", Group.class.getName(), evidence),
-                    groupSemanticId, parentId, groupRoles, childIds));
-            facts.add(new ModelFact("group", id(projectKey, "group", group.getFullId()), Map.of(),
-                    parentId.isBlank() ? Map.of() : Map.of("parent", List.of(id(projectKey, "group", group.getSuperGroup().getFullId()))),
+                    group.getId(), parentId, groupRoles, childIds));
+            facts.add(new ModelFact("group", id(projectKey, "group", groupSemanticId), Map.of("groupId", group.getId()),
+                    parentId.isBlank() ? Map.of() : Map.of("parent", List.of(id(projectKey, "group", parentId))),
                     CapabilityStatus.COMPLETE, List.of(evidence)));
 
             for (Role role : sorted(group.getRoles().getAll(), Comparator.comparing(Role::getId))) {
@@ -140,7 +141,7 @@ public final class OfficialMoiseAdapter {
                         metadata(relationId, "MOISE_GROUP_ROLE_CARDINALITY", Cardinality.class.getName(), evidence),
                         groupSemanticId, rolesByObject.get(role), cardinality.getMin(), cardinality.getMax()));
                 var relation = new BridgeRelationId("group-role-cardinality",
-                        List.of(id(projectKey, "group", group.getFullId()), id(projectKey, "role", role.getId())),
+                        List.of(id(projectKey, "group", groupSemanticId), id(projectKey, "role", rolesByObject.get(role))),
                         evidence.evidenceId(), "model");
                 roleCards.add(new RelationCardinality(relation, relation.endpoints().get(0), relation.endpoints().get(1),
                         cardinality.getMin(), cardinality.getMax(), List.of(evidence)));
@@ -152,7 +153,7 @@ public final class OfficialMoiseAdapter {
                         metadata(relationId, "MOISE_SUBGROUP_CARDINALITY", Cardinality.class.getName(), evidence),
                         groupSemanticId, groupsByObject.get(child), cardinality.getMin(), cardinality.getMax()));
                 var relation = new BridgeRelationId("parent-subgroup-cardinality",
-                        List.of(id(projectKey, "group", group.getFullId()), id(projectKey, "group", child.getFullId())),
+                        List.of(id(projectKey, "group", groupSemanticId), id(projectKey, "group", groupsByObject.get(child))),
                         evidence.evidenceId(), "model");
                 subgroupCards.add(new RelationCardinality(relation, relation.endpoints().get(0), relation.endpoints().get(1),
                         cardinality.getMin(), cardinality.getMax(), List.of(evidence)));
@@ -192,7 +193,7 @@ public final class OfficialMoiseAdapter {
             for (Mission mission : missions) {
                 String missionSemanticId = missionsByObject.get(mission);
                 missionDtos.add(new MissionSemantic(metadata(missionSemanticId, "MOISE_MISSION",
-                                Mission.class.getName(), evidence), missionSemanticId, schemeSemanticId,
+                                Mission.class.getName(), evidence), mission.getId(), schemeSemanticId,
                         sorted(mission.getGoals(), Comparator.comparing(Goal::getId)).stream()
                                 .map(goalsByObject::get).toList()));
                 Cardinality cardinality = scheme.getMissionCardinality(mission);
@@ -215,7 +216,7 @@ public final class OfficialMoiseAdapter {
             for (Goal goal : goals) {
                 String goalSemanticId = goalsByObject.get(goal);
                 goalDtos.add(new OrganizationalGoalSemantic(metadata(goalSemanticId, "MOISE_GOAL",
-                        Goal.class.getName(), evidence), goalSemanticId, schemeSemanticId, enumName(goal.getType()),
+                        Goal.class.getName(), evidence), goal.getId(), schemeSemanticId, enumName(goal.getType()),
                         text(goal.getDescription()), canonical(goal.getArguments()), goal.getMinAgToSatisfy(),
                         text(goal.getTTF()), text(goal.getLocation()), (goal.getDependencies() == null ? List.<Goal>of()
                                 : goal.getDependencies()).stream()
@@ -224,36 +225,36 @@ public final class OfficialMoiseAdapter {
             }
             String rootGoalId = scheme.getRoot() == null ? "" : goalsByObject.get(scheme.getRoot());
             schemes.add(new SchemeSemantic(metadata(schemeSemanticId, "MOISE_SCHEME", Scheme.class.getName(), evidence),
-                    schemeSemanticId, functionalId, rootGoalId, missionDtos, goalDtos, planDtos));
+                    scheme.getId(), functionalId, rootGoalId, missionDtos, goalDtos, planDtos));
 
             var schemeReferences = new java.util.LinkedHashMap<String, List<BridgeEntityId>>();
             if (!rootGoalId.isBlank()) schemeReferences.put("rootGoal", List.of(id(projectKey,
-                    "organisational-goal", scheme.getRoot().getId())));
+                    "organisational-goal", rootGoalId)));
             schemeReferences.put("missions", missions.stream().map(mission -> id(projectKey, "mission",
-                    mission.getId())).toList());
-            facts.add(new ModelFact("scheme", id(projectKey, "scheme", scheme.getId()), Map.of(),
+                    missionsByObject.get(mission))).toList());
+            facts.add(new ModelFact("scheme", id(projectKey, "scheme", schemeSemanticId), Map.of("schemeId", scheme.getId()),
                     schemeReferences, CapabilityStatus.COMPLETE, List.of(evidence)));
             for (Mission mission : missions) facts.add(new ModelFact("mission",
-                    id(projectKey, "mission", mission.getId()), Map.of(), Map.of("scheme", List.of(id(projectKey,
-                            "scheme", scheme.getId())), "goals", mission.getGoals().stream()
+                    id(projectKey, "mission", missionsByObject.get(mission)), Map.of("missionId", mission.getId()), Map.of("scheme", List.of(id(projectKey,
+                            "scheme", schemeSemanticId)), "goals", mission.getGoals().stream()
                             .sorted(Comparator.comparing(Goal::getId)).map(goal -> id(projectKey, "organisational-goal",
-                                    goal.getId())).toList()), CapabilityStatus.COMPLETE, List.of(evidence)));
+                                    goalsByObject.get(goal))).toList()), CapabilityStatus.COMPLETE, List.of(evidence)));
             for (Goal goal : goals) {
                 var goalReferences = new java.util.LinkedHashMap<String, List<BridgeEntityId>>();
-                goalReferences.put("scheme", List.of(id(projectKey, "scheme", scheme.getId())));
-                if (goal.getPlan() != null) goalReferences.put("plan", List.of(legacyPlanId(projectKey,
-                        goal.getPlan())));
+                goalReferences.put("scheme", List.of(id(projectKey, "scheme", schemeSemanticId)));
+                if (goal.getPlan() != null) goalReferences.put("plan", List.of(id(projectKey,
+                        "organisational-plan", plansByObject.get(goal.getPlan()))));
                 facts.add(new ModelFact("organisational-goal",
-                        id(projectKey, "organisational-goal", goal.getId()), Map.of("description", text(goal.getDescription()),
+                        id(projectKey, "organisational-goal", goalsByObject.get(goal)), Map.of("goalId", goal.getId(), "description", text(goal.getDescription()),
                                 "type", enumName(goal.getType()), "minAgents", Integer.toString(goal.getMinAgToSatisfy()),
                                 "ttf", text(goal.getTTF())), goalReferences,
                         CapabilityStatus.COMPLETE, List.of(evidence)));
             }
             for (Plan plan : plans) facts.add(new ModelFact("organisational-plan", id(projectKey, "organisational-plan",
                     plansByObject.get(plan)), Map.of("operator", enumName(plan.getOp()), "ast", plan.toString()),
-                    Map.of("scheme", List.of(id(projectKey, "scheme", scheme.getId())), "targetGoal", List.of(id(projectKey,
-                            "organisational-goal", plan.getTargetGoal().getId())), "subGoals", plan.getSubGoals().stream()
-                            .map(goal -> id(projectKey, "organisational-goal", goal.getId())).toList()),
+                    Map.of("scheme", List.of(id(projectKey, "scheme", schemeSemanticId)), "targetGoal", List.of(id(projectKey,
+                            "organisational-goal", goalsByObject.get(plan.getTargetGoal()))), "subGoals", plan.getSubGoals().stream()
+                            .map(goal -> id(projectKey, "organisational-goal", goalsByObject.get(goal))).toList()),
                     CapabilityStatus.COMPLETE, List.of(evidence)));
         }
 
@@ -264,15 +265,15 @@ public final class OfficialMoiseAdapter {
             String roleSemanticId = rolesByObject.get(norm.getRole());
             String missionSemanticId = missionsByObject.get(norm.getMission());
             norms.add(new NormSemantic(metadata(normSemanticId, "MOISE_NORM", Norm.class.getName(), evidence),
-                    normSemanticId, normativeId, roleSemanticId, missionSemanticId, enumName(norm.getType()),
+                    norm.getId(), normativeId, roleSemanticId, missionSemanticId, enumName(norm.getType()),
                     text(norm.getCondition()), norm.getTimeConstraint() == null ? "" : text(norm.getTimeConstraint().getTC())));
             var normReferences = new java.util.LinkedHashMap<String, List<BridgeEntityId>>();
             if (norm.getRole() != null) normReferences.put("role", List.of(id(projectKey, "role",
-                    norm.getRole().getId())));
+                    roleSemanticId)));
             if (norm.getMission() != null) normReferences.put("mission", List.of(id(projectKey, "mission",
-                    norm.getMission().getId())));
-            facts.add(new ModelFact("norm", id(projectKey, "norm", norm.getId()),
-                    Map.of("type", enumName(norm.getType()), "condition", text(norm.getCondition()), "timeConstraint",
+                    missionSemanticId)));
+            facts.add(new ModelFact("norm", id(projectKey, "norm", normSemanticId),
+                    Map.of("normId", norm.getId(), "type", enumName(norm.getType()), "condition", text(norm.getCondition()), "timeConstraint",
                             norm.getTimeConstraint() == null ? "" : text(norm.getTimeConstraint().getTC())),
                     normReferences, CapabilityStatus.COMPLETE, List.of(evidence)));
         }
@@ -343,11 +344,6 @@ public final class OfficialMoiseAdapter {
     private static String planId(String schemeId, Plan plan, int ordinal) {
         String exact = AdapterEvidence.digest(stablePlanKey(plan).getBytes(StandardCharsets.UTF_8)).substring(0, 24);
         return schemeId + ":plan:" + exact + ":" + ordinal;
-    }
-
-    private BridgeEntityId legacyPlanId(String projectKey, Plan plan) {
-        return id(projectKey, "organisational-plan", AdapterEvidence.digest(
-                plan.toString().getBytes(StandardCharsets.UTF_8)).substring(0, 16));
     }
 
     private static String planSemanticId(Plan plan, IdentityHashMap<Plan, String> plans) {

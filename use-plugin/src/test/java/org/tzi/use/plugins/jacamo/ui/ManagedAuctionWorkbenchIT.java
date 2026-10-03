@@ -25,16 +25,20 @@ import org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeHistoryPage;
 
 /** Separate official producer JVM + real USE GUI/Session + unmodified maintained Auction profile. */
 class ManagedAuctionWorkbenchIT {
-    private String oldHeight, oldWidth;
+    private String oldHeight, oldWidth, oldProjection;
     @org.junit.jupiter.api.BeforeEach void configureUseDiagramDefaults() {
         oldHeight=System.getProperty("use.gui.view.classdiagram.class.minheight");
         oldWidth=System.getProperty("use.gui.view.classdiagram.class.minwidth");
+        oldProjection=System.getProperty(org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.PROPERTY);
+        // This unchanged profile queries static Moise definition objects, not domain enactments.
+        System.setProperty(org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.PROPERTY,"FULL");
         System.setProperty("use.gui.view.classdiagram.class.minheight","40");
         System.setProperty("use.gui.view.classdiagram.class.minwidth","140");
     }
     @org.junit.jupiter.api.AfterEach void restoreUseDiagramDefaults() {
         restoreProperty("use.gui.view.classdiagram.class.minheight",oldHeight);
         restoreProperty("use.gui.view.classdiagram.class.minwidth",oldWidth);
+        restoreProperty(org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.PROPERTY,oldProjection);
     }
     private static void restoreProperty(String key,String value) {
         if(value==null) System.clearProperty(key); else System.setProperty(key,value);

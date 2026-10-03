@@ -18,7 +18,8 @@ import org.tzi.use.api.UseSystemApi;
 class CodeGroundedPhase5Test {
     @Test
     void officialHelloMoiseGraphIsTypedAndMaterialized() throws Exception {
-        var result = CodeGroundedTestFixtures.helloPipeline();
+        var result = new CodeGroundedNativePipeline().build(CodeGroundedTestFixtures.helloSnapshot(),
+                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
         var organizations = result.source().snapshot().moiseOrganizations();
 
         assertEquals(1, organizations.size());
@@ -53,7 +54,8 @@ class CodeGroundedPhase5Test {
     @Test
     void nativeMoisePreservesRelationContextOrderingTextAndNoNormOcl() throws Exception {
         var base = CodeGroundedTestFixtures.helloSnapshot();
-        var result = new CodeGroundedNativePipeline().build(withMoise(base, syntheticOrganization()));
+        var result = new CodeGroundedNativePipeline().build(withMoise(base, syntheticOrganization()),
+                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
         var model = result.model().model();
         var system = result.state().system();
 
@@ -130,7 +132,8 @@ class CodeGroundedPhase5Test {
         var organization = new MoiseSemanticContract.OrganizationSemantic(original.metadata(), original.name(),
                 original.sourceUri(), original.structuralSpecification(), original.functionalSpecification(), normative);
         var result = new CodeGroundedNativePipeline().build(
-                withMoise(CodeGroundedTestFixtures.helloSnapshot(), organization));
+                withMoise(CodeGroundedTestFixtures.helloSnapshot(), organization),
+                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
 
         assertEquals(3, objects(result.state().system(), "Norm"));
         assertEquals(2, links(result.state().system(), "M42NormRole"));

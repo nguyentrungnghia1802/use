@@ -30,6 +30,7 @@ import org.tzi.use.plugins.jacamo.codegrounded.trace.CodeGroundedTraceRecord;
 import org.tzi.use.plugins.jacamo.codegrounded.trace.TracePhase;
 import org.tzi.use.uml.mm.MAggregationKind;
 import org.tzi.use.uml.mm.MModel;
+import org.tzi.use.uml.mm.MElementAnnotation;
 
 /** Builds the Phase-1B schema directly through {@link UseModelApi}; no .use text participates in authority. */
 public final class NativeUseModelBuilder {
@@ -216,6 +217,7 @@ public final class NativeUseModelBuilder {
                 api.createAttribute("A17PlanOrderEntry", "rank", "Integer");
             if (profile.materializesClass("A19BodyOrderEntry"))
                 api.createAttribute("A19BodyOrderEntry", "rank", "Integer");
+            if (profile.materializesClass("Organization")) {
             api.createAttribute("Organization", "name", "String");
             api.createAttribute("Organization", "sourceUri", "String");
             api.createAttribute("StructuralSpecification", "organizationSemanticId", "String");
@@ -281,6 +283,7 @@ public final class NativeUseModelBuilder {
             api.createAttribute("SchemeMissionCardinality", "missionSemanticId", "String");
             api.createAttribute("SchemeMissionCardinality", "minCardinality", "Integer");
             api.createAttribute("SchemeMissionCardinality", "maxCardinality", "Integer");
+            }
             if (profile.materializesClass("ExactBindingEvidence")) {
                 api.createAttribute("ExactBindingEvidence", "ruleId", "String");
                 api.createAttribute("ExactBindingEvidence", "sourceIds", "String");
@@ -335,6 +338,7 @@ public final class NativeUseModelBuilder {
                     "CartagoAgentIdentity", "agents", "*", false, true);
             association(api, "C20AgentArtifactFocus", "CartagoAgentIdentity", "agent", "0..*", MAggregationKind.NONE,
                     "Artifact", "focusedArtifacts", "*", false, true);
+            if (profile.materializesClass("Organization")) {
             association(api, "M18OrganizationSS", "Organization", "m18StructuralSpecification", "1",
                     MAggregationKind.COMPOSITION, "StructuralSpecification", "m18Organization", "1", false, false);
             association(api, "M19OrganizationFS", "Organization", "m19FunctionalSpecification", "1",
@@ -393,6 +397,7 @@ public final class NativeUseModelBuilder {
                     "Role", "m42Norms", "0..1", false, false);
             association(api, "M43NormMission", "Norm", "m43Mission", "0..*", MAggregationKind.NONE,
                     "Mission", "m43Norms", "0..1", false, false);
+            }
             if (profile.materializesClass("Action") && profile.materializesClass("Operation"))
                 association(api, "X01ActionOperation", "Action", "x01Operation", "0..1",
                         MAggregationKind.NONE, "Operation", "x01Actions", "0..*", false, true);
@@ -403,6 +408,7 @@ public final class NativeUseModelBuilder {
             if (profile.materializesClass("Trigger") && profile.materializesClass("Signal"))
                 association(api, "X03TriggerSignal", "Trigger", "x03Signal", "0..1",
                         MAggregationKind.NONE, "Signal", "x03Triggers", "0..*", false, true);
+            if (profile.materializesClass("Role"))
             association(api, "X04AgentRole", "Agent", "x04Roles", "0..*",
                     MAggregationKind.NONE, "Role", "x04Agents", "0..*", false, true);
             association(api, "X05AgentWorkspace", "Agent", "x05Workspaces", "0..*",
@@ -422,14 +428,22 @@ public final class NativeUseModelBuilder {
                 api.createOperation(projection.ownerUseClass(), projection.descriptor().name(),
                         projection.parameters(), projection.returnType());
 
-            List<NativeConstraintSpec> constraints = new CodeGroundedConstraintPlanner().plan(catalog, profile);
+            var moise = MoiseDomainProjection.install(api, source.snapshot().moiseOrganizations(), trace);
+            // FULL retains the old object-graph inspector as explicitly tagged supporting data.
+            MoiseDomainProjection.INSPECTION_RULES.forEach((name, rule) -> {
+                if (api.getModel().getClass(name) != null)
+                    api.getModel().getClass(name).addAnnotation(new MElementAnnotation(MoiseDomainProjection.ANNOTATION,
+                            new java.util.TreeMap<>(Map.of("ruleId", rule, "representation", "SPECIFICATION_INSPECTION"))));
+            });
+            List<NativeConstraintSpec> constraints = new ArrayList<>(new CodeGroundedConstraintPlanner().plan(catalog, profile));
+            constraints.addAll(moise.constraints());
             NativeConstraintInstaller.InstallationResult installation =
                     new NativeConstraintInstaller().installWithReport(api, constraints);
             MModel model = api.getModel();
             modelTraces(trace, catalog, source, operationPlan, model, profile);
             return new Result(model, trace.index(), constraints, installation.skipped(),
                     operationPlan.artifactTypeClassNames(), operationPlan.operationDescriptorIds(),
-                    NativeUseStructure.sha256(model), profile);
+                    NativeUseStructure.sha256(model), profile, moise);
         } catch (UseApiException error) {
             throw new IllegalStateException("NATIVE_USE_MODEL_BUILD_FAILED: " + error.getMessage(), error);
         }
@@ -452,7 +466,7 @@ public final class NativeUseModelBuilder {
                 "X01", "X02", "X03", "X04", "X05", "X06", "X07", "X08", "X09")) {
             CodeGroundedRule rule = catalog.require(id);
             trace.add(new CodeGroundedTraceRecord(id, TracePhase.MODEL_DECLARATION, rule.sourceKindFqcn(),
-                    rule.sourceKindFqcn(), "schema:" + id, targetKind(rule.targetUseKind()),
+                    rule.sourceKindFqcn(), "schema:" + id, id.startsWith("M") ? "MappingPolicy" : targetKind(rule.targetUseKind()),
                     declarationIdentity(rule.targetUseKind()), rule.sourceAuthority(), rule.fidelity(),
                     rule.capabilityStatus(), List.of()));
         }
@@ -461,6 +475,8 @@ public final class NativeUseModelBuilder {
                     "MOperation", projection.ownerUseClass() + "::" + projection.descriptor().name(),
                     List.of("EXACT_REFLECTION_SIGNATURE", "NATIVE_OPERATION_PROJECTED"));
         model.classes().stream().sorted(Comparator.comparing(value -> value.name())).forEach(cls -> {
+            if (cls.isAnnotated() && !cls.getAnnotationValue(MoiseDomainProjection.ANNOTATION, "runtimeSource").isEmpty())
+                return; // Real Moise source identities were traced by the specialization, not schema placeholders.
             CodeGroundedRule rule = declarationRule(catalog, cls.name(), operationPlan);
             trace.add(declarationRecord(rule, "MClass", "class:" + cls.name(),
                     operationPlan.artifactTypeClassNames().containsValue(cls.name())
@@ -509,7 +525,11 @@ public final class NativeUseModelBuilder {
             case "Guard" -> catalog.require("C07");
             case "Operation" -> catalog.require("C05");
             case "SourceImportProvenance", "RuntimeEvidenceHistory", "SnapshotOnlyHelpers" -> catalog.require("J11");
-            default -> throw new IllegalStateException("NATIVE_PROJECTION_RULE_MISSING:" + concept);
+            default -> {
+                String moiseRule = MoiseDomainProjection.INSPECTION_RULES.get(concept);
+                if (moiseRule == null) throw new IllegalStateException("NATIVE_PROJECTION_RULE_MISSING:" + concept);
+                yield catalog.require(moiseRule);
+            }
         };
     }
 
@@ -523,6 +543,8 @@ public final class NativeUseModelBuilder {
     private static CodeGroundedRule declarationRule(CodeGroundedRuleCatalog catalog, String className,
                                                       NativeOperationPlan operationPlan) {
         if (operationPlan.artifactTypeClassNames().containsValue(className)) return catalog.require("C03");
+        if (MoiseDomainProjection.INSPECTION_RULES.containsKey(className))
+            return catalog.require(MoiseDomainProjection.INSPECTION_RULES.get(className));
         String special = switch (className) {
             case "A17PlanOrderEntry" -> "A17";
             case "A19BodyOrderEntry" -> "A19";
@@ -712,13 +734,14 @@ public final class NativeUseModelBuilder {
     public record Result(MModel model, CodeGroundedTraceIndex trace, List<NativeConstraintSpec> constraints,
                          List<NativeConstraintSpec> skippedConstraints, Map<String, String> nativeArtifactTypeClassNames,
                          Set<String> nativeOperationDescriptorIds, String structuralHash,
-                         NativeProjectionProfile profile) {
+                         NativeProjectionProfile profile, MoiseDomainProjection.Result moiseProjection) {
         public Result {
             constraints = List.copyOf(constraints);
             skippedConstraints = List.copyOf(skippedConstraints);
             nativeArtifactTypeClassNames = Collections.unmodifiableMap(new LinkedHashMap<>(nativeArtifactTypeClassNames));
             nativeOperationDescriptorIds = Collections.unmodifiableSet(new LinkedHashSet<>(nativeOperationDescriptorIds));
             profile = java.util.Objects.requireNonNull(profile, "profile");
+            moiseProjection = java.util.Objects.requireNonNull(moiseProjection, "moiseProjection");
         }
     }
 }

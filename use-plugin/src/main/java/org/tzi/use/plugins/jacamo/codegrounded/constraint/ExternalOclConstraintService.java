@@ -175,6 +175,9 @@ public final class ExternalOclConstraintService {
             var dependencies = registration(invariant, "", "", "");
             String skip = !invariant.isActive() ? "CONSTRAINT_DISABLED" : coverageLost ? "COVERAGE_LOST"
                     : dependencies.requiredClasses().contains("LiveObservableProperty") ? "C08_UNAVAILABLE_BY_API"
+                    : dependencies.requiredClasses().stream().anyMatch(cls -> "EVIDENCE_ONLY".equals(system.model()
+                            .getClass(cls).getAnnotationValue(org.tzi.use.plugins.jacamo.codegrounded.use.MoiseDomainProjection.ANNOTATION,
+                                    "runtimeProjection"))) ? "MOISE_DOMAIN_RUNTIME_EVIDENCE_ONLY"
                     : owned.containsKey(invariant.qualifiedName()) && dependencies.requiredSources().stream()
                             .anyMatch(source -> sources.get(source) != Completeness.COMPLETE)
                             ? "REQUIRED_RUNTIME_SOURCE_INCOMPLETE:" + dependencies.requiredSources() : "";
@@ -209,7 +212,7 @@ public final class ExternalOclConstraintService {
         return List.copyOf(outcomes);
     }
 
-    private static RegisteredConstraint registration(MClassInvariant invariant, String file, String hash, String revision) {
+    private RegisteredConstraint registration(MClassInvariant invariant, String file, String hash, String revision) {
         CoverageCalculationVisitor visitor = new CoverageCalculationVisitor(true) {
             // Complete the existing USE visitor's intentionally empty cast/tuple hooks.
             // Dependencies come from compiler AST objects, never names parsed from OCL text.
@@ -232,6 +235,12 @@ public final class ExternalOclConstraintService {
                 association.associatedClasses().forEach(cls -> classes.add(cls.name())));
         Set<String> rules = new TreeSet<>(), sources = new TreeSet<>();
         for (String cls : classes) {
+            var modelClass = system.model().getClass(cls);
+            if (modelClass != null && "moise".equals(modelClass.getAnnotationValue(
+                    org.tzi.use.plugins.jacamo.codegrounded.use.MoiseDomainProjection.ANNOTATION, "runtimeSource"))) {
+                rules.add(modelClass.getAnnotationValue(org.tzi.use.plugins.jacamo.codegrounded.use.MoiseDomainProjection.ANNOTATION, "ruleId"));
+                sources.add("moise");
+            }
             String rule = RUNTIME_RULES.get(cls);
             if (rule != null) { rules.add(rule); sources.add(rule.startsWith("C") ? "cartago" : "jason"); }
         }

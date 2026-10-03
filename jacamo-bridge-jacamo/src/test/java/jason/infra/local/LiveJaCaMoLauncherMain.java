@@ -83,12 +83,14 @@ public final class LiveJaCaMoLauncherMain {
              * is made deterministic and process-local.
              */
             @Override protected InputStream getDefaultLogProperties() {
-                return new ByteArrayInputStream(("handlers=java.util.logging.ConsoleHandler\n"
-                        + ".level=INFO\n").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                return new ByteArrayInputStream(launchLogProperties(headless)
+                        .getBytes(java.nio.charset.StandardCharsets.UTF_8));
             }
             @Override public synchronized void setupLogger(String ignoredProjectLoggingFile) {
-                // A project log.properties can redirect stderr into an unrelated Swing console.
-                // Preserve case sources; deterministic launch diagnostics belong to this process.
+                // Keep headless runs process-local and deterministic.  Interactive runs use the
+                // official JaCaMo MAS console handler so the shared launcher exposes the same
+                // native runtime window for every case study, even when the project has no
+                // logging.properties file.  No project source is modified or interpreted here.
                 try (InputStream configuration = getDefaultLogProperties()) {
                     java.util.logging.LogManager.getLogManager().readConfiguration(configuration);
                 } catch (java.io.IOException failure) { throw new IllegalStateException("LAUNCH_LOG_CONFIGURATION_FAILED", failure); }
@@ -178,6 +180,23 @@ public final class LiveJaCaMoLauncherMain {
                 System.exit(stoppedNormally ? 0 : 1);
             }
         }
+    }
+
+    static String launchLogProperties(boolean headless) {
+        if (headless) {
+            return "handlers=java.util.logging.ConsoleHandler\n"
+                    + ".level=INFO\n";
+        }
+        return "handlers=jason.runtime.MASConsoleLogHandler\n"
+                + ".level=INFO\n"
+                + "jason.runtime.MASConsoleLogHandler.level=ALL\n"
+                + "jason.runtime.MASConsoleLogHandler.formatter=jason.runtime.MASConsoleLogFormatter\n"
+                + "jason.runtime.MASConsoleLogHandler.tabbed=true\n"
+                + "jason.runtime.MASConsoleLogHandler.colors=false\n"
+                + "java.level=OFF\n"
+                + "javax.level=OFF\n"
+                + "sun.level=OFF\n"
+                + "jade.level=OFF\n";
     }
 
     static void awaitStopFile(Path stop, long lifetimeSeconds) throws Exception {

@@ -20,14 +20,16 @@ class AuctionExternalOclProfileTest {
     @Test void auditedProfileCompilesAgainstActualOfficialAuctionNativeSchema() throws Exception {
         var entry = Path.of("..", "..", "jacamo", "examples", "auction", "auction.jcm").toAbsolutePath().normalize();
         var snapshot = new OfficialProjectAdapter().adapt(new OfficialProjectLoader().load(entry), entry);
-        var system = new CodeGroundedNativePipeline().build(snapshot).state().system();
+        // The existing profile checks specification objects, so its explicit contract is FULL inspection.
+        var system = new CodeGroundedNativePipeline().build(snapshot,
+                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL).state().system();
         assertEquals(5, system.state().objectsOfClass(system.model().getClass("Agent")).size());
         var roles = system.state().objectsOfClass(system.model().getClass("Role"));
         System.out.println("AUCTION_NATIVE_ROLES=" + roles.stream().map(role -> role.state(system.state()).attributeValue("roleId")
                 + ":abstract=" + role.state(system.state()).attributeValue("isAbstract")).sorted().toList());
         assertEquals(3, roles.size(), "Official Moise retains its implicit abstract soc Role as well as the two declared Roles");
         assertTrue(roles.stream().anyMatch(role -> role.state(system.state()).attributeValue("roleId").toString()
-                .equals("'moise:organization:auction:auction:role:soc'")
+                .equals("'soc'")
                 && role.state(system.state()).attributeValue("isAbstract").toString().equals("true")));
         assertEquals(1, system.state().objectsOfClass(system.model().getClass("Group")).size());
         assertEquals(1, system.state().objectsOfClass(system.model().getClass("Scheme")).size());
@@ -52,7 +54,8 @@ class AuctionExternalOclProfileTest {
     @Test void incompleteSourcesCannotPassRuntimeDependentChecksEvenWithEmptyPropertyClass() throws Exception {
         var entry = Path.of("..", "..", "jacamo", "examples", "auction", "auction.jcm").toAbsolutePath().normalize();
         var snapshot = new OfficialProjectAdapter().adapt(new OfficialProjectLoader().load(entry), entry);
-        var service = new ExternalOclConstraintService(new CodeGroundedNativePipeline().build(snapshot).state().system());
+        var service = new ExternalOclConstraintService(new CodeGroundedNativePipeline().build(snapshot,
+                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL).state().system());
         service.install(PROFILE, snapshot.modelRevision());
         var outcomes = service.evaluate(Map.of(), false).stream()
                 .filter(outcome -> outcome.constraintId().startsWith("EXTERNAL:")).toList();
@@ -68,7 +71,8 @@ class AuctionExternalOclProfileTest {
     @Test void runtimePolicyUsesCompiledArtifactTypeAndPropertyAssociationsWithCartagoCoverage() throws Exception {
         var entry = Path.of("..", "..", "jacamo", "examples", "auction", "auction.jcm").toAbsolutePath().normalize();
         var snapshot = new OfficialProjectAdapter().adapt(new OfficialProjectLoader().load(entry), entry);
-        var service = new ExternalOclConstraintService(new CodeGroundedNativePipeline().build(snapshot).state().system());
+        var service = new ExternalOclConstraintService(new CodeGroundedNativePipeline().build(snapshot,
+                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL).state().system());
         var profile = service.install(PROFILE, snapshot.modelRevision());
         var runtimePolicy = profile.constraints().stream().filter(constraint -> constraint.constraintId()
                 .equals("Artifact::DEMO_RUNTIME_NoRunningAuction")).findFirst().orElseThrow();

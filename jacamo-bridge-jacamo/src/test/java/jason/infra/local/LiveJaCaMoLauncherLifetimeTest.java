@@ -10,6 +10,18 @@ import org.junit.jupiter.api.io.TempDir;
 
 class LiveJaCaMoLauncherLifetimeTest {
     @TempDir Path temporary;
+
+    @Test void interactiveLauncherUsesOfficialMasConsoleAndHeadlessKeepsConsoleHandler() {
+        String interactive = LiveJaCaMoLauncherMain.launchLogProperties(false);
+        assertTrue(interactive.contains("handlers=jason.runtime.MASConsoleLogHandler"));
+        assertTrue(interactive.contains("MASConsoleLogFormatter"));
+        assertFalse(interactive.contains("handlers=java.util.logging.ConsoleHandler"));
+
+        String headless = LiveJaCaMoLauncherMain.launchLogProperties(true);
+        assertTrue(headless.contains("handlers=java.util.logging.ConsoleHandler"));
+        assertFalse(headless.contains("MASConsoleLogHandler"));
+    }
+
     @Test void onlyAuditedLocalPlatformsHaveControlledStartAuthority() {
         assertDoesNotThrow(() -> LiveJaCaMoLauncherMain.validateControlledPlatforms(java.util.List.of(
                 "jacamo.platform.Cartago", "jacamo.platform.Moise", "jacamo.platform.Sai", "org.jacamo.bridge.adapter.JaCaMoBridgePlatform")));

@@ -48,6 +48,7 @@ public final class NativeUseSoilExporter {
             List<MAttribute> attributes = object.cls().allAttributes().stream()
                     .sorted(Comparator.comparing(MAttribute::name)).toList();
             for (MAttribute attribute : attributes) {
+                if (attribute.isDerived()) continue; // The model owns constants/derivations; SOIL must not assign them.
                 var value = object.state(system.state()).attributeValue(attribute);
                 if (value.isUndefined()) continue;
                 commands.add(attributeCommand(object, attribute, value));

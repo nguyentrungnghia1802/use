@@ -38,6 +38,16 @@ class CodeGroundedPhase7Test {
     private static final long GENERATION = 7L;
     private static final String REVISION = "phase7-revision";
 
+    private static void assertFaithfulPartialOclGate(NativeRuntimeProjector projector) {
+        assertFalse(projector.lastOclGate().passed(), "evidence-only Moise runtime cannot be counted as a formal PASS");
+        var outcomes = projector.coordinator().latest().outcomes();
+        assertTrue(outcomes.stream().anyMatch(o -> o.outcome() == org.tzi.use.plugins.jacamo.verification.VerificationOutcome.PASS));
+        assertTrue(outcomes.stream().anyMatch(o -> o.outcome() == org.tzi.use.plugins.jacamo.verification.VerificationOutcome.SKIPPED
+                && "MOISE_DOMAIN_RUNTIME_EVIDENCE_ONLY".equals(o.diagnostic())));
+        assertTrue(outcomes.stream().allMatch(o -> o.outcome() == org.tzi.use.plugins.jacamo.verification.VerificationOutcome.PASS
+                || o.outcome() == org.tzi.use.plugins.jacamo.verification.VerificationOutcome.SKIPPED), outcomes.toString());
+    }
+
     @Test
     void authoritativeCartagoResyncMustNotResurrectArtifactsFromTheBootstrapModel() throws Exception {
         var result = new CodeGroundedNativePipeline().build(withEnvironment(CodeGroundedTestFixtures.helloSnapshot()));
@@ -120,7 +130,7 @@ class CodeGroundedPhase7Test {
         assertSame(system, projector.system());
         assertEquals("runtime-host", ((StringValue) agent.state(system.state())
                 .attributeValue(agent.cls().attribute("host", true))).value());
-        assertTrue(projector.lastOclGate().passed());
+        assertFaithfulPartialOclGate(projector);
         assertTrue(projector.trace().stream().anyMatch(trace -> trace.ruleId().equals("R-JASON-AGENT-ATTRIBUTE")
                 && trace.outcome().equals(NativeRuntimeMutationEngine.Status.MATERIALIZED.name())));
         var alias = projector.runtimeAliases().get(runtimeAgent.canonical());
@@ -157,7 +167,7 @@ class CodeGroundedPhase7Test {
         assertEquals(2, projector.evidence().size());
         assertTrue(projector.trace().stream().allMatch(trace -> trace.outcome()
                 .equals(NativeRuntimeMutationEngine.Status.EVIDENCE_ONLY.name())));
-        assertTrue(projector.lastOclGate().passed());
+        assertFaithfulPartialOclGate(projector);
 
         assertTrue(projector.apply(event("artifact-name", 1, RuntimeEventKind.CHANGED, RuntimeFactKind.ARTIFACT,
                 runtimeArtifact, binding(runtimeArtifact, staticArtifact, "cartago-artifact-binding"),
@@ -252,7 +262,7 @@ class CodeGroundedPhase7Test {
         assertEquals(1, system.state().linksOfAssociation(system.model()
                 .getAssociation("C19WorkspaceAgent")).size());
         assertEquals(4, projector.runtimeAliases().size());
-        assertTrue(projector.lastOclGate().passed());
+        assertFaithfulPartialOclGate(projector);
 
         projector.applySnapshot(snapshot("cartago-empty", List.of(), Map.of("cartago", 2L)));
         assertEquals(baselineObjects, system.state().numObjects(), "authoritative resync removes stale runtime objects");
@@ -301,7 +311,7 @@ class CodeGroundedPhase7Test {
         assertSame(identity.system(), projector.system());
         projector.applySnapshot(resync);
         assertEquals(resyncedDigest, digest(result.state().system()));
-        assertTrue(projector.lastOclGate().passed());
+        assertFaithfulPartialOclGate(projector);
     }
 
     @Test

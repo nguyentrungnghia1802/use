@@ -63,13 +63,46 @@ public final class NativeSemanticAdapter {
         addSynthetic(drafts,environmentBridge,registry.require("Environment"),projectId,projectId,anchorProv,snapshot.modelRevision());
         addSynthetic(drafts,organisationBridge,registry.require("Organization"),projectId,projectId,anchorProv,snapshot.modelRevision());
         List<SemanticElement> elements=new ArrayList<>();
-        for(Draft draft:drafts.values())elements.add(new SemanticElement(draft.id(),draft.kind(),draft.name(),draft.provenance(),draft.attributes(),references(draft,drafts,facts,snapshot.groupRoleCardinalities(),environmentBridge,organisationBridge,diagnostics),draft.sourceFacts()));
+        List<ModelFact> compatibilityFacts=compatibilityRoleRelations(snapshot,projectRoot,facts);
+        for(Draft draft:drafts.values())elements.add(new SemanticElement(draft.id(),draft.kind(),draft.name(),draft.provenance(),draft.attributes(),references(draft,drafts,compatibilityFacts,snapshot.groupRoleCardinalities(),environmentBridge,organisationBridge,diagnostics),draft.sourceFacts()));
         var declaration=new ProjectDeclaration(projectId,anchorProv,Map.of("bridgeModelRevision",new AttributeValue.Text(snapshot.modelRevision()),"bridgeAuthority",new AttributeValue.Text(snapshot.projectionProvenance().getOrDefault("authority","unknown"))));
         var model=new JaCaMoSemanticModel(root,declaration,registry,elements,new ArrayList<>(sourceByPath.values()),diagnostics);
         var identities=new TreeMap<String,SemanticId>();drafts.forEach((canonical,draft)->identities.put(canonical,draft.id()));
         return new Result(model,snapshot.modelRevision(),snapshot.groupRoleCardinalities(),snapshot.parentSubGroupCardinalities(),snapshot.unresolvedFacts(),Map.copyOf(identities));
     }
 
+    /** Historical V2 only: resolve the declared OS URI, then the exact API role id inside that OS.
+     * Never assume a globally unique role name or mutate the raw official tuple contract. */
+    private List<ModelFact> compatibilityRoleRelations(ModelSnapshot snapshot,Path root,List<ModelFact> facts){
+        var result=new ArrayList<>(facts);
+        var semantic=snapshot.semanticContract();
+        if(semantic==null)return result;
+        for(ModelFact tuple:facts){
+            if(!tuple.factKind().equals("role-tuple")||tuple.completeness()!=CapabilityStatus.COMPLETE)continue;
+            var deployments=semantic.organizationDeployments().stream()
+                    .filter(d->d.name().equals(tuple.attributes().get("organization"))).toList();
+            if(deployments.size()!=1)continue;
+            Path source=exactOsPath(root,deployments.get(0).source());
+            var organizations=semantic.moiseOrganizations().stream()
+                    .filter(o->exactOsPath(root,o.sourceUri()).equals(source)).toList();
+            if(organizations.size()!=1)continue;
+            var roles=organizations.get(0).structuralSpecification().roles().stream()
+                    .filter(r->r.roleId().equals(tuple.attributes().get("role"))).toList();
+            if(roles.size()!=1)continue;
+            var role=new BridgeEntityId("moise","organisation","role",tuple.id().scope(),roles.get(0).metadata().semanticId(),"model");
+            String agent=tuple.attributes().get("agent");
+            if(agent!=null&&facts.stream().anyMatch(f->f.id().equals(role)))result.add(new ModelFact("player-role",tuple.id(),tuple.attributes(),
+                    Map.of("agent",List.of(BridgeEntityId.parse(agent)),"role",List.of(role)),CapabilityStatus.COMPLETE,tuple.evidence()));
+        }
+        return List.copyOf(result);
+    }
+    static Path exactOsPath(Path root,String source){
+        URI uri=source.startsWith("file:")?URI.create(source):null;
+        Path path=uri==null?Path.of(source):uri.isOpaque()?Path.of(uri.getSchemeSpecificPart()):Path.of(uri);
+        if(path.isAbsolute())return path.normalize();
+        Path direct=root.resolve(path).toAbsolutePath().normalize();
+        return java.nio.file.Files.exists(direct)?direct:root.resolve("src/org").resolve(path).toAbsolutePath().normalize();
+    }
     private void addSynthetic(Map<String,Draft> drafts,BridgeEntityId bridge,MetamodelKind kind,String name,String project,List<SourceProvenance> provenance,String revision){
         var source=Map.<String,AttributeValue>of("bridgeCanonicalId",new AttributeValue.Text(bridge.canonical()),"bridgeModelRevision",new AttributeValue.Text(revision),"bridgeCompleteness",new AttributeValue.Text(CapabilityStatus.COMPLETE.name()));
         drafts.put(bridge.canonical(),new Draft(new ModelFact(kind==MetamodelKind.Environment?"environment":"organization",bridge,Map.of(),Map.of(),CapabilityStatus.COMPLETE,List.of()),semanticId(project,kind,bridge),kind,name,Map.of(),source,provenance));
@@ -123,8 +156,6 @@ public final class NativeSemanticAdapter {
         String direct=tuple.attributes().get(end);
         if(end.equals("agent"))return direct==null||!index.containsKey(direct)?java.util.stream.Stream.empty():java.util.stream.Stream.of(direct);
         String scope=tuple.id().scope();
-        if(tuple.factKind().equals("role-tuple")&&end.equals("role")&&direct!=null&&!direct.isBlank())
-            return exactPresent(index,new BridgeEntityId("moise","organisation","role",scope,direct,"model"));
         if(tuple.factKind().equals("focus-tuple")&&end.equals("artifact")){
             String workspace=tuple.attributes().get("workspace");
             if(workspace==null||workspace.isBlank()||direct==null||direct.isBlank())return java.util.stream.Stream.empty();
@@ -164,13 +195,13 @@ public final class NativeSemanticAdapter {
         else if(kind==MetamodelKind.AGoal){putTextAs(out,"literal",fact,"ast");putEnum(out,"type",fact,"type","AGoalType",registry);}
         else if(kind==MetamodelKind.Workspace)out.put("name",new AttributeValue.Text(local));
         else if(kind==MetamodelKind.Artifact){out.put("name",new AttributeValue.Text(last(local)));putTextAs(out,"type",fact,"configuredClass");}
-        else if(kind==MetamodelKind.Role){out.put("id",new AttributeValue.Text(local));putBoolAs(out,"isAbstract",fact,"abstract");}
-        else if(kind==MetamodelKind.Group)out.put("id",new AttributeValue.Text(local));
-        else if(kind==MetamodelKind.Scheme)out.put("id",new AttributeValue.Text(local));
-        else if(kind==MetamodelKind.Mission)out.put("id",new AttributeValue.Text(local));
-        else if(kind==MetamodelKind.OGoal){out.put("id",new AttributeValue.Text(local));putText(out,"description",fact,"description");putEnum(out,"type",fact,"type","GoalType",registry);putTextAs(out,"minAgentsToSatisfy",fact,"minAgents");putTextAs(out,"timeToFulfill",fact,"ttf");}
+        else if(kind==MetamodelKind.Role){out.put("id",new AttributeValue.Text(fact.attributes().getOrDefault("roleId",local)));putBoolAs(out,"isAbstract",fact,"abstract");}
+        else if(kind==MetamodelKind.Group)out.put("id",new AttributeValue.Text(fact.attributes().getOrDefault("groupId",local)));
+        else if(kind==MetamodelKind.Scheme)out.put("id",new AttributeValue.Text(fact.attributes().getOrDefault("schemeId",local)));
+        else if(kind==MetamodelKind.Mission)out.put("id",new AttributeValue.Text(fact.attributes().getOrDefault("missionId",local)));
+        else if(kind==MetamodelKind.OGoal){out.put("id",new AttributeValue.Text(fact.attributes().getOrDefault("goalId",local)));putText(out,"description",fact,"description");putEnum(out,"type",fact,"type","GoalType",registry);putTextAs(out,"minAgentsToSatisfy",fact,"minAgents");putTextAs(out,"timeToFulfill",fact,"ttf");}
         else if(kind==MetamodelKind.OPlan)putEnum(out,"operator",fact,"operator","OPlanOperator",registry);
-        else if(kind==MetamodelKind.Norm){out.put("id",new AttributeValue.Text(local));putEnum(out,"type",fact,"type","NormType",registry);putText(out,"condition",fact,"condition");putText(out,"timeConstraint",fact,"timeConstraint");}
+        else if(kind==MetamodelKind.Norm){out.put("id",new AttributeValue.Text(fact.attributes().getOrDefault("normId",local)));putEnum(out,"type",fact,"type","NormType",registry);putText(out,"condition",fact,"condition");putText(out,"timeConstraint",fact,"timeConstraint");}
         return Map.copyOf(out);}
     private Map<String,AttributeValue> sourceFacts(ModelFact fact){var out=new LinkedHashMap<String,AttributeValue>();out.put("bridgeCanonicalId",new AttributeValue.Text(fact.id().canonical()));out.put("bridgeCompleteness",new AttributeValue.Text(fact.completeness().name()));fact.attributes().forEach((k,v)->out.put("bridge:"+k,new AttributeValue.Text(v)));return Map.copyOf(out);}
     private MetamodelKind kind(String fact,SemanticKindRegistry registry){String name=switch(fact){case "agent-declaration"->"Agent";case "plan"->"Plan";case "event"->"Event";case "action"->"Action";case "belief"->"Belief";case "goal"->"AGoal";case "workspace-declaration"->"Workspace";case "artifact-declaration"->"Artifact";case "role"->"Role";case "group"->"Group";case "scheme"->"Scheme";case "mission"->"Mission";case "organisational-goal"->"OGoal";case "organisational-plan"->"OPlan";case "norm"->"Norm";default->null;};return name==null?null:registry.require(name);}
