@@ -44,6 +44,7 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
     private Map<String, Completeness> sources = Map.of();
     private boolean coverageLost;
     private VerificationSnapshot.ProfileInterval profileInterval;
+    private java.util.ArrayList<Object> deferredNotifications;
     public VerificationSnapshot verificationSnapshot() {
         return read(() -> {
             var profile = constraints.profile();
@@ -72,6 +73,10 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
         this.directory = directory.toAbsolutePath().normalize();
         this.cleanupOnClose = cleanupOnClose;
         constraints = new ExternalOclConstraintService(engine.system());
+        constraints.notifications(event -> {
+            if (deferredNotifications != null) deferredNotifications.add(event);
+            else system().getEventBus().post(event);
+        });
         journal = new RuntimeEventJournal(this.directory, tail, bytes);
         checkpoints = new RuntimeCheckpointStore(this.directory.resolve("checkpoints"));
         Thread hook = null;
@@ -130,9 +135,15 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
     public List<RuntimeVerificationResult> history() { return journal.history(); }
 
     public <T> T read(Callable<T> action) {
-        if (SwingUtilities.isEventDispatchThread()) return call(action);
+        if (SwingUtilities.isEventDispatchThread()) {
+            if(closed.get())throw new IllegalStateException("RUNTIME_COORDINATOR_CLOSED");
+            return call(action);
+        }
         int depth = backlog.incrementAndGet(); highWatermark = Math.max(highWatermark, depth);
-        FutureTask<T> future = new FutureTask<>(action);
+        FutureTask<T> future = new FutureTask<>(() -> {
+            if(closed.get())throw new IllegalStateException("RUNTIME_COORDINATOR_CLOSED");
+            return action.call();
+        });
         try {
             SwingUtilities.invokeAndWait(future);
             return future.get();
@@ -147,6 +158,35 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
     private static <T> T call(Callable<T> action) {
         try { return action.call(); } catch (RuntimeException error) { throw error; }
         catch (Exception error) { throw new IllegalStateException(error); }
+    }
+
+    /** A whole cursor range is one visible update. Savepoints are transient failure rollback only. */
+    public <T> T replayBatch(Callable<T> action) {
+        return read(() -> system().authorizedMutation(() -> {
+            if (deferredNotifications != null) throw new IllegalStateException("REPLAY_NAVIGATION_NESTED");
+            var image=engine.savepoint(); var profile=constraints.savepoint();
+            var beforeObjects=Set.copyOf(system().state().allObjects());
+            var beforeLinks=Set.copyOf(system().state().allLinks());
+            var oldLatest=latest; var oldObservation=lastObservation; var oldInterval=profileInterval;
+            long oldVersion=stateVersion, oldCount=verificationCount, oldGeneration=generation;
+            String oldSession=sessionId, oldRevision=modelRevision;
+            var oldSources=sources; boolean oldLost=coverageLost;
+            deferredNotifications=new java.util.ArrayList<>();
+            try {
+                T result=action.call();
+                var notifications=deferredNotifications; deferredNotifications=null;
+                notifications.forEach(system().getEventBus()::post);
+                publish(beforeObjects,beforeLinks);
+                return result;
+            } catch (Exception error) {
+                engine.rollback(image); constraints.restore(profile);
+                latest=oldLatest; lastObservation=oldObservation; profileInterval=oldInterval;
+                stateVersion=oldVersion; verificationCount=oldCount; generation=oldGeneration;
+                sessionId=oldSession; modelRevision=oldRevision; sources=oldSources; coverageLost=oldLost;
+                // The failed cursor must be reconstructed; never reuse its advanced protocol/journal.
+                throw error;
+            } finally { deferredNotifications=null; }
+        }));
     }
 
     public <T> T transaction(String kind, String eventId, String sourceId, long sequence, Instant observed,
@@ -275,6 +315,7 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
         return result;
     }
     private void publish(Set<MObject> beforeObjects, Set<MLink> beforeLinks) {
+        if (deferredNotifications != null) return;
         StateDifference difference = new StateDifference();
         Set<MObject> afterObjects = Set.copyOf(system().state().allObjects());
         Set<MLink> afterLinks = Set.copyOf(system().state().allLinks());
@@ -289,4 +330,7 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
         system().getEventBus().post(new AtomicStateChangedEvent(difference, evaluations));
     }
     private void publishCurrent() { publish(Set.copyOf(system().state().allObjects()), Set.copyOf(system().state().allLinks())); }
+
+    /** Seed newly reopened normal USE views with this context's existing native formal result. */
+    public void refreshViews() { read(() -> { publishCurrent(); return null; }); }
 }

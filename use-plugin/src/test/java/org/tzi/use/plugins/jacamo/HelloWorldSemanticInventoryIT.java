@@ -39,6 +39,20 @@ import org.tzi.use.uml.sys.events.AtomicStateChangedEvent;
  * Complete per-object/per-link evidence is persisted, not just a GUI total.
  */
 class HelloWorldSemanticInventoryIT {
+    private String oldHeight, oldWidth;
+    @org.junit.jupiter.api.BeforeEach void configureUseDiagramDefaults() {
+        oldHeight=System.getProperty("use.gui.view.classdiagram.class.minheight");
+        oldWidth=System.getProperty("use.gui.view.classdiagram.class.minwidth");
+        System.setProperty("use.gui.view.classdiagram.class.minheight","40");
+        System.setProperty("use.gui.view.classdiagram.class.minwidth","140");
+    }
+    @org.junit.jupiter.api.AfterEach void restoreUseDiagramDefaults() {
+        restoreProperty("use.gui.view.classdiagram.class.minheight",oldHeight);
+        restoreProperty("use.gui.view.classdiagram.class.minwidth",oldWidth);
+    }
+    private static void restoreProperty(String key,String value) {
+        if(value==null)System.clearProperty(key);else System.setProperty(key,value);
+    }
     @Test void originalHelloWorldAutoInventory() throws Exception { audit(NativeProjectionMode.AUTO); }
     @Test void originalHelloWorldFullInventory() throws Exception { audit(NativeProjectionMode.FULL); }
 
@@ -145,10 +159,21 @@ class HelloWorldSemanticInventoryIT {
                     report.put("sourceUnchanged",originalHashes.equals(allHashes(original.getParent())));
                     write(evidence.resolve("summary.json"),report);
                     assertTrue(originalHashes.equals(allHashes(original.getParent())));
+                    // Inventory is complete; the old count view must not observe the separately selected replay.
+                    inventory.detachCountView();
+                    producer.close(); // Recording was frozen before the observation-disconnect marker.
+                    org.tzi.use.gui.main.MainWindow.setJavaFxCall(true);
+                    var window=org.tzi.use.plugins.jacamo.codegrounded.StepReplayProof.onEdt(()->org.tzi.use.gui.main.MainWindow.create(session,org.tzi.use.runtime.impl.PluginRuntime.getInstance()));
+                    try {
+                        org.tzi.use.plugins.jacamo.codegrounded.StepReplayProof.run(facade,session,window,completeBundle,evidence);
+                        report.put("stepReplayComplete",true);write(evidence.resolve("summary.json"),report);
+                    } finally {
+                        org.tzi.use.plugins.jacamo.codegrounded.StepReplayProof.onEdt(()->{window.dispose();org.tzi.use.gui.main.MainWindow.setJavaFxCall(false);return null;});
+                    }
                     System.out.println("HELLO_WORLD_SEMANTIC_INVENTORY_PASS projection="+mode+" evidence="+evidence);
                 } finally {
                     system.getEventBus().unregister(inventory);
-                    inventory.projector().coordinator().read(()->{inventory.countView.detachModel();return null;});
+                    inventory.detachCountView();
                 }
             }
             write(evidence.resolve("source-hashes-after.json"),allHashes(original.getParent()));
@@ -275,6 +300,8 @@ class HelloWorldSemanticInventoryIT {
         final RecordingTransportFactory recording;
         final List<Map<String,Object>> timeline=new ArrayList<>();
         final org.tzi.use.gui.views.ObjectCountView countView;
+        boolean countDetached;
+        void detachCountView(){projector().coordinator().read(()->{if(!countDetached){countDetached=true;countView.detachModel();}return null;});}
         Inventory(DefaultJaCaMoFacade facade,CodeGroundedNativePipeline.Result pipeline,Map<String,Map<String,Object>> semantic,Path directory,RecordingTransportFactory recording) {
             this.facade=facade;this.pipeline=pipeline;this.semantic=semantic;this.directory=directory;this.recording=recording;
             pipeline.state().semanticObjectIndex().forEach((id,object)->{firstVersions.put(id,0L);namesToIds.put(object.name(),id);});

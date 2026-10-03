@@ -140,6 +140,10 @@ class ManagedAuctionWorkbenchIT {
                     report.put("liveUnchangedByReanalysis",true);report.put("sameActiveSystem",true);
                     report.put("journalEntries",recorded.size());report.put("recordedReplay",replay.complete());report.put("reanalysis",analysis.complete());
                     Files.write(evidence.resolve("gui-acceptance.json"),CanonicalJson.encode(report));
+                    org.tzi.use.plugins.jacamo.codegrounded.StepReplayProof.run(facade,session,window,bundle,evidence);
+                    report.put("stepReplayComplete",true);
+                    assertTrue(producer.sourceUnchanged());
+                    Files.write(evidence.resolve("gui-acceptance.json"),CanonicalJson.encode(report));
                 } finally {
                     onEdt(()->{window.getObjectDiagrams().forEach(view->view.detachModel());workbench.dispose();window.dispose();MainWindow.setJavaFxCall(false);return null;});
                 }

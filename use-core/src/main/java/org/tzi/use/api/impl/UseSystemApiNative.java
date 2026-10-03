@@ -62,6 +62,7 @@ public class UseSystemApiNative extends UseSystemApi {
 	@Override
 	public MObject createObjectEx(MClass objectClass, String objectName)
 			throws UseApiException {
+		system.assertUserMutationAllowed();
 		try {
 			return system.state().createObject(objectClass, objectName);
 		} catch (MSystemException e) {
@@ -74,6 +75,7 @@ public class UseSystemApiNative extends UseSystemApi {
 	@Override
 	public void setAttributeValueEx(MObject object, MAttribute attribute,
 			Value value) throws UseApiException {
+		system.assertUserMutationAllowed();
 		try {
 			object.state(system.state()).setAttributeValue(attribute, value);
         } catch (IllegalArgumentException e) {
@@ -85,6 +87,7 @@ public class UseSystemApiNative extends UseSystemApi {
 	public MLink createLinkEx(MAssociation association,
 			MObject[] connectedObjects, Value[][] qualifierValues)
 			throws UseApiException {
+		system.assertUserMutationAllowed();
 		MLink newLink;
 		List<List<Value>> qualifierValuesList = getQualifierValuesAsList(qualifierValues);
 		
@@ -103,6 +106,7 @@ public class UseSystemApiNative extends UseSystemApi {
 			String newObjectName, MObject[] connectedObjects,
 			Value[][] qualifierValues) throws UseApiException {
 		
+		system.assertUserMutationAllowed();
 		MLinkObject linkObject;
 		List<List<Value>> qualifierValuesList = getQualifierValuesAsList(qualifierValues);
 		
@@ -119,6 +123,7 @@ public class UseSystemApiNative extends UseSystemApi {
 
 	@Override
 	public void deleteObjectEx(MObject object) throws UseApiException {
+		system.assertUserMutationAllowed();
 		system.state().deleteObject(object);
 	}
 
@@ -126,6 +131,7 @@ public class UseSystemApiNative extends UseSystemApi {
 	public void deleteLinkEx(MAssociation association,
 			MObject[] connectedObjects, Value[][] qualifierValues)
 			throws UseApiException {
+		system.assertUserMutationAllowed();
 		List<List<Value>> qualifierValuesList = getQualifierValuesAsList(qualifierValues);
 		
 		try {
@@ -137,6 +143,7 @@ public class UseSystemApiNative extends UseSystemApi {
 
 	@Override
 	public void deleteLinkEx(MLink link) throws UseApiException {
+		system.assertUserMutationAllowed();
 		
 		List<List<Value>> qualifiers = new ArrayList<List<Value>>();
 		MAssociation association = link.association();

@@ -19,7 +19,7 @@ class NativeRuntimePackagedReplayIT {
     @Test void installedReleaseReplaysNativeOclHistoryWithoutMavenOrJaCaMoClasspath() throws Exception {
         Path root = Path.of(".").toRealPath();
         var pipeline = CodeGroundedTestFixtures.helloPipeline();
-        var projector = new NativeRuntimeProjector(pipeline, SESSION, 1, REVISION);
+        try (var projector = new NativeRuntimeProjector(pipeline, SESSION, 1, REVISION)) {
         projector.applySnapshot(snapshot("initial", 0));
         projector.coordinator().loadProfileSource("constraints.ocl", RuntimeVerificationCoordinatorTest.PROFILE);
         projector.apply(delta("B", 1, "B"));
@@ -50,5 +50,7 @@ class NativeRuntimePackagedReplayIT {
         String diagnostic = Files.readString(output);
         assertEquals(0, process.exitValue(), diagnostic);
         assertTrue(diagnostic.contains("ISOLATED_NATIVE_RUNTIME_REPLAY_PASS"), diagnostic);
+        assertTrue(diagnostic.contains("ISOLATED_NATIVE_STEP_REPLAY_PASS"), diagnostic);
+        }
     }
 }

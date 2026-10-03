@@ -99,7 +99,7 @@ public class ObjectPropertiesView extends JPanel implements View {
                 return fValues[row];
         }
         public boolean isCellEditable(int row, int col) {
-            return col == 1 && !fAttributes.get(row).isDerived();
+            return !fSystem.isReadOnly() && col == 1 && !fAttributes.get(row).isDerived();
         }
 
         public void setValueAt(Object value, int row, int col) {
@@ -173,6 +173,7 @@ public class ObjectPropertiesView extends JPanel implements View {
 
         // create buttons
         fBtnApply = new JButton("Apply");
+        fBtnApply.setEnabled(!fSystem.isReadOnly());
         fBtnApply.setMnemonic('A');
         fBtnApply.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {

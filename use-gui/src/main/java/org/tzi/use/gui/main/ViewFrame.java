@@ -35,6 +35,7 @@ import java.awt.print.PageFormat;
 @SuppressWarnings("serial")
 public class ViewFrame extends JInternalFrame {
     private View fView;
+    private boolean detached;
 
     public ViewFrame(String title, View view, String iconFilename) {
         super(title, true, true, true, true);
@@ -43,7 +44,7 @@ public class ViewFrame extends JInternalFrame {
     }
 
     void close() {
-        fView.detachModel();
+        if (!detached) { detached = true; fView.detachModel(); }
     }
 
     boolean isPrintable() {

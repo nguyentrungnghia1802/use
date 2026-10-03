@@ -101,6 +101,10 @@ public class MainWindow extends JFrame {
     static final String AUTO_PLUGIN_ACTION_PROPERTY = "use.plugin.auto-action-id";
 
     private final Session fSession;
+    private ChangeListener sessionListener;
+    private Session.EvaluatedStatementListener statementListener;
+    private MSystem observedSystem;
+    private boolean disposed;
 
     private final StatusBar fStatusBar;
 
@@ -570,32 +574,29 @@ public class MainWindow extends JFrame {
         sessionChanged();
 
         // the session may be changed from the shell
-        fSession.addChangeListener(new ChangeListener() {
+        sessionListener = new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        sessionChanged();
-                    }
-                });
+                if (SwingUtilities.isEventDispatchThread()) sessionChanged();
+                else SwingUtilities.invokeLater(() -> { if (!disposed) sessionChanged(); });
             }
-        });
+        };
+        fSession.addChangeListener(sessionListener);
 
         /**
          * for soil statements
          */
-        fSession.addEvaluatedStatementListener(
-                new Session.EvaluatedStatementListener(){
+        statementListener = new Session.EvaluatedStatementListener(){
                     @Override
                     public void evaluatedStatement(EvaluatedStatement event) {
                         SwingUtilities.invokeLater(new Runnable(){
                             @Override
                             public void run() {
-                                setUndoRedoButtons();
+                                if (!disposed) setUndoRedoButtons();
                             }
                         });
-                    }});
+                    }};
+        fSession.addEvaluatedStatementListener(statementListener);
     }
 
     public void createSequenceDiagram(VisibleDataManager visibleDataManger) {
@@ -708,6 +709,20 @@ public class MainWindow extends JFrame {
         setVisible(false);
         dispose();
         Shell.getInstance().exit();
+    }
+
+    @Override public void dispose() {
+        if (!disposed) {
+            disposed = true;
+            if (sessionListener != null) fSession.removeChangeListener(sessionListener);
+            if (statementListener != null) fSession.removeEvaluatedStatementListener(statementListener);
+            closeAllViews();
+            if (observedSystem != null) observedSystem.getEventBus().unregister(this);
+            observedSystem = null;
+            ModelBrowserSorting.getInstance().removeSortChangeListener(fModelBrowser);
+            if (fInstance == this) fInstance = null;
+        }
+        super.dispose();
     }
 
     /**
@@ -872,12 +887,16 @@ public class MainWindow extends JFrame {
      * Set application state for new system. The system parameter may be null.
      */
     void sessionChanged() {
+        if (disposed) return;
         boolean on = fSession.hasSystem();
-        fActionStateCreateObject.setEnabled(on);
+        boolean editable = on && !fSession.system().isReadOnly();
+        fActionFileOpenSpec.setEnabled(!on || editable);
+        fActionFileReload.setEnabled((!on || editable) && !Options.getRecentFiles().isEmpty());
+        fActionStateCreateObject.setEnabled(editable);
         fActionStateCheckStructure.setEnabled(on);
-        fActionDetermineStates.setEnabled(on);
-        fActionCheckStateInvariants.setEnabled(on);
-        fActionStateReset.setEnabled(on);
+        fActionDetermineStates.setEnabled(editable);
+        fActionCheckStateInvariants.setEnabled(editable);
+        fActionStateReset.setEnabled(editable);
         fActionViewCreateObjectCount.setEnabled(on);
         fActionViewCreateObjectCount.setEnabled(on);
         fActionViewCreateLinkCount.setEnabled(on);
@@ -902,6 +921,8 @@ public class MainWindow extends JFrame {
         }
         setUndoRedoButtons();
         closeAllViews();
+        if (observedSystem != null) observedSystem.getEventBus().unregister(this);
+        observedSystem = null;
         statemachineMenu.removeAll();
         createStateMachineMenuEntries(statemachineMenu);
 
@@ -909,7 +930,13 @@ public class MainWindow extends JFrame {
             MSystem system = fSession.system();
             fModelBrowser.setModel(system.model());
             system.getEventBus().register(this);
+            observedSystem = system;
             setTitle("USE: " + new File(system.model().filename()).getName());
+            if (system.isReadOnly()) {
+                // Reopen standard views after baseline reconstruction; no historical layout cache.
+                createObjectDiagram(false);
+                fActionViewCreateClassInvariant.actionPerformed(null);
+            }
         } else {
             fModelBrowser.setModel(null);
             fActionFileSaveScript.setEnabled(false);
@@ -926,7 +953,7 @@ public class MainWindow extends JFrame {
         int count = allframes.length;
         for (int i = 0; i < count; i++) {
             ViewFrame f = (ViewFrame) allframes[i];
-            fDesk.getDesktopManager().closeFrame(f);
+            f.dispose();
         }
         // reset start position for new frames
         fViewFrameX = 0;
@@ -934,7 +961,7 @@ public class MainWindow extends JFrame {
     }
 
     private void setUndoRedoButtons() {
-        if(!fSession.hasSystem()){
+        if(!fSession.hasSystem() || fSession.system().isReadOnly()){
             disableUndo();
             disableRedo();
             return;
@@ -1878,6 +1905,11 @@ public class MainWindow extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            createObjectDiagram(true);
+        }
+    }
+
+    private void createObjectDiagram(boolean askLargeState) {
             NewObjectDiagramView odv = new NewObjectDiagramView(MainWindow.this, fSession.system());
             ViewFrame f = new ViewFrame("Object diagram", odv, "ObjectDiagram.gif");
 
@@ -1903,7 +1935,7 @@ public class MainWindow extends JFrame {
             int OBJECTS_LARGE_SYSTEM = 100;
 
             // Many objects. Ask user if all objects should be hidden
-            if (fSession.system().state().allObjects().size() > OBJECTS_LARGE_SYSTEM) {
+            if (askLargeState && fSession.system().state().allObjects().size() > OBJECTS_LARGE_SYSTEM) {
 
                 int option = JOptionPane.showConfirmDialog(new JPanel(),
                         "The current system state contains more then " + OBJECTS_LARGE_SYSTEM + " instances." +
@@ -1920,7 +1952,6 @@ public class MainWindow extends JFrame {
             c.add(odv, BorderLayout.CENTER);
             addNewViewFrame(f);
             objectDiagrams.add(odv);
-        }
     }
 
     /**

@@ -29,5 +29,29 @@ public final class NativeRuntimeReplaySmokeMain {
                 || !args[4].equals(reportClass.getMethod("finalResultHash").invoke(report)))
             throw new AssertionError("Installed replay state/result hashes differ from live native checkpoints");
         System.out.println("ISOLATED_NATIVE_RUNTIME_REPLAY_PASS");
+        var session=new org.tzi.use.main.Session();
+        Class<?> controllerClass=loader.loadClass("org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController");
+        Object controller=controllerClass.getConstructor(org.tzi.use.main.Session.class).newInstance(session);
+        try {
+            controllerClass.getMethod("open",Path.class).invoke(controller,Path.of(args[2]));
+            controllerClass.getMethod("reset").invoke(controller);
+            controllerClass.getMethod("next").invoke(controller);controllerClass.getMethod("next").invoke(controller);
+            var forward=session.system();controllerClass.getMethod("previous").invoke(controller);
+            if(forward==session.system())throw new AssertionError("Previous did not reconstruct");
+            controllerClass.getMethod("next").invoke(controller);
+            while(true) {
+                Object status=controllerClass.getMethod("status").invoke(controller);Class<?> type=status.getClass();
+                if(type.getMethod("step").invoke(status).equals(type.getMethod("total").invoke(status)))break;
+                controllerClass.getMethod("next").invoke(controller);
+            }
+            Object snapshot=controllerClass.getMethod("verificationSnapshot").invoke(controller);
+            Object result=snapshot.getClass().getMethod("result").invoke(snapshot);
+            if(!args[3].equals(result.getClass().getMethod("stateHash").invoke(result))
+                    ||!args[4].equals(result.getClass().getMethod("resultHash").invoke(result)))throw new AssertionError("Installed Step parity mismatch");
+            if(!session.system().isReadOnly())throw new AssertionError("Recorded system is not read-only");
+            try{session.reset();throw new AssertionError("Manual reset was allowed");}catch(IllegalStateException expected){}
+        } finally {controllerClass.getMethod("close").invoke(controller);}
+        if(session.hasSystem())throw new AssertionError("Replay Session was not cleaned up");
+        System.out.println("ISOLATED_NATIVE_STEP_REPLAY_PASS");
     }
 }

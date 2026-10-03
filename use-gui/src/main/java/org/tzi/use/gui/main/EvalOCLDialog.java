@@ -53,6 +53,7 @@ import java.io.StringWriter;
  */
 @SuppressWarnings("serial")
 class EvalOCLDialog extends JDialog {
+    private final Session session;
     private MSystem fSystem;
 
     private final JTextArea fTextIn;
@@ -77,6 +78,7 @@ class EvalOCLDialog extends JDialog {
     
     EvalOCLDialog(final Session session, JFrame parent) {
         super(parent, "Evaluate OCL expression");
+        this.session = session;
     	fSystem = getSystem(session);
         session.addChangeListener(sessionChangeListener);
         
@@ -246,6 +248,11 @@ class EvalOCLDialog extends JDialog {
 	private void closeDialog() {
         setVisible(false);
         dispose();
+    }
+
+    @Override public void dispose() {
+        session.removeChangeListener(sessionChangeListener);
+        super.dispose();
     }
 
     private boolean evaluate(String in, boolean evalTree) {

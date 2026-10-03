@@ -541,7 +541,7 @@ public class ModelBrowser extends JPanel
     }
     
     public void removeSelectionChangedListener(SelectionChangedListener l) {
-        listenerList.remove(SelectionChangedListener.class, l);
+        fListenerList.remove(SelectionChangedListener.class, l);
     }
 
     public interface SelectionChangedListener extends EventListener {

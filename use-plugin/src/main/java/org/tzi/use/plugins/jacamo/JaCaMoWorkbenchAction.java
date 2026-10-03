@@ -12,6 +12,8 @@ import org.tzi.use.runtime.gui.IPluginActionDelegate;
 
 /** Opens the facade-backed JaCaMo workbench from USE. */
 public final class JaCaMoWorkbenchAction implements IPluginActionDelegate {
+    // One main USE window owns one Session/workspace. A second dialog must not create a second live facade.
+    private static final java.util.Map<MainWindow,JDialog> dialogs = new java.util.HashMap<>();
     private final JaCaMoFacade facade;
     private final BiConsumer<MainWindow, JaCaMoFacade> launcher;
 
@@ -35,11 +37,21 @@ public final class JaCaMoWorkbenchAction implements IPluginActionDelegate {
     @Override public boolean shouldBeEnabled(IPluginAction action) { return true; }
 
     private static void openDialog(MainWindow parent, JaCaMoFacade facade) {
+        JDialog existing = dialogs.get(parent);
+        if (existing != null && existing.isDisplayable()) {
+            existing.setVisible(true);
+            existing.toFront();
+            return;
+        }
         JDialog dialog = new JDialog(parent, "USE JaCaMo Workbench", false);
+        dialogs.put(parent, dialog);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.addWindowListener(new WindowAdapter() {
             @Override public void windowClosing(java.awt.event.WindowEvent event) { closeFacade(facade); }
-            @Override public void windowClosed(java.awt.event.WindowEvent event) { closeFacade(facade); }
+            @Override public void windowClosed(java.awt.event.WindowEvent event) {
+                if (dialogs.get(parent) == dialog) dialogs.remove(parent);
+                closeFacade(facade);
+            }
         });
         dialog.setLayout(new BorderLayout());
         dialog.add(new JaCaMoWorkbenchPanel(facade), BorderLayout.CENTER);

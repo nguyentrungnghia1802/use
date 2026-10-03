@@ -36,6 +36,46 @@ import org.tzi.use.plugins.jacamo.verification.VerificationReport;
 import org.tzi.use.plugins.jacamo.verification.VerificationResult;
 
 class JaCaMoWorkbenchPanelTest {
+    @Test void stepControlsDisableRapidClicksAndDisplayFacadeStepNotHistoryPaging() throws Exception {
+        var started=new java.util.concurrent.CountDownLatch(1);var release=new java.util.concurrent.CountDownLatch(1);
+        var state=new java.util.concurrent.atomic.AtomicReference<org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController.Status>();
+        var calls=new java.util.concurrent.atomic.AtomicInteger();var errors=new java.util.concurrent.CopyOnWriteArrayList<String>();
+        JaCaMoFacade facade=new JaCaMoFacade() {
+            public String status(){return "unit presentation only";}
+            public void openStepReplay(Path path){started.countDown();try{assertTrue(release.await(5,java.util.concurrent.TimeUnit.SECONDS));}catch(InterruptedException error){throw new RuntimeException(error);}
+                state.set(new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController.Status(0,2,7,"baseline","recording",false,false));}
+            public void nextStepReplay(){calls.incrementAndGet();state.set(new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController.Status(1,2,11,"atomic mutation","exact-source",false,false));}
+            public org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController.Status stepReplayStatus(){return state.get();}
+        };
+        var panel=new JaCaMoWorkbenchPanel(facade,errors::add);
+        javax.swing.SwingUtilities.invokeAndWait(()->{panel.openStepReplay(Path.of("recording"));assertFalse(button(panel,"step-replay-open").isEnabled());
+            assertFalse(button(panel,"step-replay-reset").isEnabled());button(panel,"step-replay-next").doClick();});
+        assertTrue(started.await(5,java.util.concurrent.TimeUnit.SECONDS));assertEquals(0,calls.get());release.countDown();
+        awaitButton(panel,"step-replay-next");
+        javax.swing.SwingUtilities.invokeAndWait(()->{assertEquals("0/2",label(panel,"step-replay-index").getText());assertEquals("7",label(panel,"step-replay-state-version").getText());
+            assertFalse(button(panel,"step-replay-previous").isEnabled());assertFalse(button(panel,"runtime-connect").isEnabled());
+            button(panel,"step-replay-next").doClick();button(panel,"step-replay-next").doClick();});
+        awaitButton(panel,"step-replay-previous");assertEquals(1,calls.get());assertTrue(errors.isEmpty());
+        javax.swing.SwingUtilities.invokeAndWait(()->{assertEquals("1/2",label(panel,"step-replay-index").getText());assertEquals("11",label(panel,"step-replay-state-version").getText());
+            assertTrue(label(panel,"step-replay-source").getText().contains("exact-source"));});
+    }
+    @Test void detachedPanelDoesNotPublishLateWorkerErrorOrRefreshRemovedViews() throws Exception {
+        var started=new java.util.concurrent.CountDownLatch(1);var release=new java.util.concurrent.CountDownLatch(1);var ended=new java.util.concurrent.CountDownLatch(1);
+        var errors=new java.util.concurrent.CopyOnWriteArrayList<String>();
+        JaCaMoFacade facade=new JaCaMoFacade() {
+            public String status(){return "unit cancellation presentation";}
+            public void openStepReplay(Path path){started.countDown();try{release.await(5,java.util.concurrent.TimeUnit.SECONDS);}catch(InterruptedException ignored){}finally{ended.countDown();}throw new IllegalStateException("cancelled");}
+        };
+        var panel=new JaCaMoWorkbenchPanel(facade,errors::add);
+        javax.swing.SwingUtilities.invokeAndWait(()->panel.openStepReplay(Path.of("recording")));
+        assertTrue(started.await(5,java.util.concurrent.TimeUnit.SECONDS));
+        javax.swing.SwingUtilities.invokeAndWait(panel::removeNotify);release.countDown();assertTrue(ended.await(5,java.util.concurrent.TimeUnit.SECONDS));
+        Thread.sleep(100);javax.swing.SwingUtilities.invokeAndWait(()->{});assertTrue(errors.isEmpty(),errors.toString());
+    }
+    private static void awaitButton(JaCaMoWorkbenchPanel panel,String name)throws Exception {
+        long deadline=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(10);var enabled=new java.util.concurrent.atomic.AtomicBoolean();
+        while(System.nanoTime()<deadline){javax.swing.SwingUtilities.invokeAndWait(()->enabled.set(button(panel,name).isEnabled()));if(enabled.get())return;Thread.sleep(20);}throw new AssertionError(name);
+    }
     @Test void changedConstraintSetCannotLeaveOldVerificationCountsOrRowsVisible() throws Exception {
         var current=new java.util.concurrent.atomic.AtomicReference<>(new org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult(
                 "session",1,"revision",1,"event","cartago",1,Instant.EPOCH,Instant.EPOCH,Instant.EPOCH,"checkpoint",

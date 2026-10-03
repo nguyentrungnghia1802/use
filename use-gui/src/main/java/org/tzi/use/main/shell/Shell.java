@@ -349,6 +349,15 @@ public final class Shell implements Runnable, PPCHandler {
 			return;
 		}
 
+        if (fSession.hasSystem() && fSession.system().isReadOnly()
+                && (line.startsWith("!") || java.util.Set.of("reset", "undo", "redo").contains(line)
+                    || java.util.List.of("open ", "reopen", "read ", "readq ", "constraints -load",
+                        "constraints -unload", "constraints -flags", "gen load", "gen unload",
+                        "gen flags", "gen start", "gen result").stream().anyMatch(line::startsWith))) {
+            Log.error("RECORDED_STATE_READ_ONLY: use replay navigation; OCL queries remain available.");
+            return;
+        }
+
 		if (fStepMode) {
 			Log.println("[step mode: `return' continues, "
 					+ "`escape' followed by `return' exits step mode.]");

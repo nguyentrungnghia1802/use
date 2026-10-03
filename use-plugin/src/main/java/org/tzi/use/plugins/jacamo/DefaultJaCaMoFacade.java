@@ -95,6 +95,9 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     private volatile List<Diagnostic> lastDiagnostics = List.of();
     private volatile long lastFullCheckNanos;
     private final ManagedRuntimeWorkflow workflow = new ManagedRuntimeWorkflow();
+    private volatile org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController stepReplay;
+    private volatile boolean closed;
+    private volatile boolean replayOpening;
 
     public DefaultJaCaMoFacade(Path checkout) {
         this(checkout, SemanticAuthority.configured(System.getProperty("use.jacamo.authority")),
@@ -155,6 +158,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public synchronized ProjectSummary importProject(Path jcmFile) {
+        requireNotReplaying();
         if (jcmFile == null || !jcmFile.getFileName().toString().toLowerCase().endsWith(".jcm")) {
             workflow.importFailed("IMPORT_JCM_REQUIRED");
             throw new IllegalArgumentException("IMPORT_JCM_REQUIRED");
@@ -169,6 +173,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public WorkflowStatus workflowStatus() {
+        if (stepReplayStatus()!=null) return new WorkflowStatus("REPLAY",false,false,"","RECORDED_OFFLINE; OBSERVATION_DISCONNECTED","","");
         var state=workflow.status();
         if(state.startAvailable()) {
             var current=nativeWorkspace; var accepted=authorityStatus();
@@ -182,12 +187,15 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         return state;
     }
     @Override public org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot verificationSnapshot() {
+        var replay=stepReplay;
+        if(replay!=null && replay.active())return replay.verificationSnapshot();
         var current = nativeWorkspace;
         return current == null || current.runtimeProjector == null
                 ? org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot.empty()
                 : current.runtimeProjector.coordinator().verificationSnapshot();
     }
     @Override public void startRuntime() {
+        requireNotReplaying();
         requireNativeWorkspace();
         var state=workflowStatus();
         if(!state.startAvailable()) throw new IllegalStateException("START_RUNTIME_UNAVAILABLE:"+state.diagnostic());
@@ -214,6 +222,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         return nativeState != null ? nativeState.traces : legacyState == null ? List.of() : legacyState.traces;
     }
     @Override public List<org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor> constraints() {
+        if(stepReplayStatus()!=null)return List.of(); // recorded outcomes/profile carry their own attribution
         var nativeState = nativeWorkspace; var legacyState = workspace;
         if (nativeState == null) return legacyState == null ? List.of() : legacyState.registry.descriptors();
         List<org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor> descriptors = new ArrayList<>(nativeState.constraints);
@@ -234,6 +243,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public synchronized VerificationReport runFullVerification() {
+        requireNotReplaying();
         requireWorkspace();
         if (nativeWorkspace != null) return runNativeVerification(nativeWorkspace);
         long started = System.nanoTime();
@@ -244,6 +254,15 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public VerificationReport latestVerification() {
+        if(stepReplayStatus()!=null) {
+            var result=verificationSnapshot().result();
+            if(result==null)return null;
+            var values=result.outcomes().stream().map(value->new org.tzi.use.plugins.jacamo.verification.VerificationResult(
+                    value.constraintId(),value.outcome(),value.contextClass(),value.diagnostic(),value.expression(),List.of(),null,List.of())).toList();
+            return new VerificationReport("1.0.0",result.resultHash(),result.verifiedAt(),"RECORDED_REPLAY",true,values,
+                    Map.of("stateHash",result.stateHash(),"stateVersion",Long.toString(verificationSnapshot().currentVersion()),
+                            "scope","OBSERVED_SUPPORTED_PROJECTION_ONLY","coverage",result.coverage(),"freshness",result.freshness()));
+        }
         var nativeState = nativeWorkspace; var legacyState = workspace; var runtime = runtimeVerification;
         if (nativeState != null && nativeState.runtimeProjector != null) {
             var result = nativeState.runtimeProjector.coordinator().verificationSnapshot().result();
@@ -256,6 +275,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public synchronized void loadVerificationProfile(Path profile) {
+        requireNotReplaying();
         requireWorkspace();
         if (nativeWorkspace != null) {
             if (profile == null) throw new IllegalArgumentException("OCL_USER_PROFILE_IO");
@@ -306,27 +326,78 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public synchronized void exportNativeUse(Path destination) {
+        var replay=stepReplay;
+        if(replay!=null&&replay.active()) { replay.read(system->new NativeUseExporter().export(system.model(),destination)); return; }
         requireNativeWorkspace();
         nativeWorkspace.runtimeProjector.coordinator().read(() -> new NativeUseExporter().export(nativeWorkspace.pipeline.model().model(), destination));
     }
 
     @Override public synchronized void exportNativeSoil(Path destination) {
+        var replay=stepReplay;
+        if(replay!=null&&replay.active()) { replay.read(system->new NativeUseSoilExporter().export(system,destination)); return; }
         requireNativeWorkspace();
         nativeWorkspace.runtimeProjector.coordinator().read(() -> new NativeUseSoilExporter().export(nativeWorkspace.pipeline.state().system(), destination));
     }
 
     @Override public RuntimeVerificationResult runtimeVerificationResult() {
+        if(stepReplayStatus()!=null)return verificationSnapshot().result();
         var nativeState = nativeWorkspace;
         return nativeState == null || nativeState.runtimeProjector == null ? null : nativeState.runtimeProjector.coordinator().verificationSnapshot().result();
     }
     @Override public List<RuntimeVerificationResult> runtimeVerificationHistory() {
+        var replay=stepReplay;
+        if(replay!=null && replay.active())return replay.historyTail().entries().stream().map(value->value.result()).toList();
         var nativeState = nativeWorkspace;
         return nativeState == null || nativeState.runtimeProjector == null ? List.of() : nativeState.runtimeProjector.coordinator().history();
     }
     @Override public synchronized void exportRuntimeReplay(Path directory) {
+        requireNotReplaying();
         requireNativeWorkspace();
         new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReplay().exportBundle(
                 nativeWorkspace.runtimeProjector, nativeWorkspace.pipeline.export().useText(), directory);
+    }
+
+    @Override public void openStepReplay(Path recording) {
+        if(javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("REPLAY_REQUIRES_WORKER");
+        org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController controller;
+        Runnable settleDelivery;
+        synchronized(this) {
+            if(closed)throw new IllegalStateException("WORKBENCH_CLOSED");
+            if(session==null)throw new IllegalStateException("REPLAY_SESSION_REQUIRED");
+            if(bridgeClient!=null)throw new IllegalStateException("REPLAY_REQUIRES_OBSERVATION_DISCONNECT: Export replay before Disconnect (stop observation, not producer)");
+            MSystem owned=stepReplay!=null && stepReplay.active() ? stepReplay.system()
+                    : nativeWorkspace==null ? null : nativeWorkspace.pipeline.state().system();
+            if(session.hasSystem() && session.system()!=owned)
+                throw new IllegalStateException("REPLAY_SESSION_WORKSPACE_NOT_OWNED: import in this Workbench or use an empty Session; foreign live delivery cannot be settled here");
+            if(replayOpening)throw new IllegalStateException("REPLAY_NAVIGATION_BUSY");
+            if(stepReplay==null)stepReplay=new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController(session);
+            controller=stepReplay;
+            settleDelivery=nativeWorkspace==null ? () -> { } : nativeWorkspace.stopRuntimeDelivery;
+            replayOpening=true;
+        }
+        // No facade monitor across worker/EDT barriers. A failed candidate never replaces Session.
+        try {
+            // Disconnect may have run on EDT, where waiting would deadlock an in-flight native writer.
+            // Open is a worker boundary: settle that writer before constructing/selecting replay.
+            settleDelivery.run();
+            controller.open(recording);
+        } finally {replayOpening=false;}
+    }
+    @Override public void resetStepReplay(){requireReplay().reset();}
+    @Override public void previousStepReplay(){requireReplay().previous();}
+    @Override public void nextStepReplay(){requireReplay().next();}
+    @Override public org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController.Status stepReplayStatus(){
+        var replay=stepReplay;return replay==null?null:replay.status();
+    }
+    @Override public boolean stepReplayBusy(){var replay=stepReplay;return replayOpening||(replay!=null&&replay.busy());}
+    private org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController requireReplay(){
+        var replay=stepReplay;if(replay==null)throw new IllegalStateException("REPLAY_NOT_OPEN");return replay;
+    }
+    private void requireNotReplaying(){
+        if(closed)throw new IllegalStateException("WORKBENCH_CLOSED");
+        var replay=stepReplay;if(replayOpening||(replay!=null&&(replay.active()||replay.busy()))
+                || (session!=null && session.hasSystem() && session.system().isReadOnly()))
+            throw new IllegalStateException("RECORDED_REPLAY_READ_ONLY: close Workbench to end replay; no automatic Return Live");
     }
 
     static Exception cleanupTemporaryReport(Path temporary, Exception primary) {
@@ -346,11 +417,13 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public synchronized void connectRuntime() {
+        requireNotReplaying();
         requireWorkspace();
         synchronizeBridge(entry, userProfile);
     }
 
     @Override public synchronized void disconnectRuntime() {
+        if(stepReplayStatus()!=null)return; // already offline; do not modify the original recording/system
         // Disconnect is observation loss, not producer stop or permission to discard its evidence/profile.
         var current=nativeWorkspace;
         if(current!=null && current.runtimeProjector!=null) {
@@ -363,11 +436,18 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public synchronized void resyncRuntime() {
+        requireNotReplaying();
         requireWorkspace();
         synchronizeBridge(entry, userProfile);
     }
 
     @Override public RuntimeStatus runtimeStatus() {
+        var replay=stepReplay;
+        if(replay!=null&&replay.active()) {
+            var result=replay.verificationSnapshot().result();var state=replay.status();
+            return new RuntimeStatus(MirrorState.REPLAY,0,0,0,0,0,0,null,state.event(),0,state.stateVersion(),
+                    result==null?0:(int)result.count(VerificationOutcome.FAIL));
+        }
         var mirror = bridgeMirror; var nativeState = nativeWorkspace; var runtime = runtimeVerification; var accepted = bridgeAccepted;
         BridgeClientState state = mirror == null ? BridgeClientState.DISCONNECTED : mirror.state();
         MirrorState mirrorState = switch (state) {
@@ -398,6 +478,12 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public AuthorityStatus authorityStatus() {
+        var replay=stepReplay;
+        if(replay!=null&&replay.active()) {
+            var result=replay.verificationSnapshot().result();
+            return new AuthorityStatus(SemanticAuthority.BRIDGE,BridgeClientState.DISCONNECTED,Map.of(),result.coverage(),
+                    result.modelRevision(),result.sessionId(),result.generation(),"","RECORDED_REPLAY; NOT LIVE; OBSERVED_SUPPORTED_PROJECTION_ONLY");
+        }
         BridgeConnectionConfig configuration = configuredBridge;
         var mirror = bridgeMirror; var client = bridgeClient; var accepted = bridgeAccepted;
         String endpoint = configuration == null ? "" : configuration.displayEndpoint();
@@ -415,6 +501,8 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public FormalStateStatus formalStateStatus() {
+        var replay=stepReplay;
+        if(replay!=null&&replay.active())return replay.read(this::readFormalStateStatus);
         var nativeState = nativeWorkspace;
         if (nativeState != null && nativeState.runtimeProjector != null)
             return nativeState.runtimeProjector.coordinator().read(() -> readFormalStateStatus(nativeState.pipeline.state().system()));
@@ -475,6 +563,8 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public synchronized void close() {
+        if(closed)return;closed=true;
+        if(stepReplay!=null)stepReplay.close();
         if (!workflow.status().state().equals("LIVE")) workflow.cancel();
         closeNativeRuntimeArtifacts();
         closeBridgeClient();
@@ -482,11 +572,13 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         bridgeAccepted = null;
     }
     @Override public org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeHistoryPage runtimeHistoryTail() {
+        var replay=stepReplay;if(replay!=null&&replay.active())return replay.historyTail();
         var current = nativeWorkspace;
         return current == null || current.runtimeProjector == null ? org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeHistoryPage.empty()
                 : current.runtimeProjector.coordinator().journal().tailPage(128);
     }
     @Override public org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeHistoryPage runtimeHistoryPage(long offset, int limit) {
+        var replay=stepReplay;if(replay!=null&&replay.active())return replay.historyPage(offset,limit);
         var current = nativeWorkspace;
         if (current == null || current.runtimeProjector == null) throw new IllegalStateException("PROJECT_NOT_IMPORTED");
         return current.runtimeProjector.coordinator().journal().page(offset, limit);
@@ -539,6 +631,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     private ProjectSummary synchronizeBridge(Path selectedJcm, Path verificationProfile) {
+        requireNotReplaying();
         BridgeConnectionConfig configuration = configuredBridge == null ? bridgeConfigurationSource.get() : configuredBridge;
         configuredBridge = configuration;
         BridgeMirrorStateMachine candidateMirror = new BridgeMirrorStateMachine(8_192);
@@ -624,7 +717,12 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 var failure = nativeCoverageFailure.get();
                 if (failure != null) nativeProjector.coordinator().coverageGap(failure.event(), failure.diagnostic());
                 next.runtimeProjector = nativeProjector;
-                next.stopRuntimeDelivery = () -> deliveryActive.set(false);
+                next.stopRuntimeDelivery = () -> {
+                    deliveryActive.set(false);
+                    // A worker entering replay waits for an already-admitted delivery to settle.
+                    // UI shutdown must not deadlock behind a delivery waiting for this same EDT.
+                    if(!javax.swing.SwingUtilities.isEventDispatchThread())synchronized(pending){ }
+                };
                 if (!compatibleResync && session != null) new NativeUseSessionActivator().activate(session, next.pipeline);
                 if (!compatibleResync && previous != null && previous.runtimeProjector != null)
                     previous.runtimeProjector.close();
@@ -851,6 +949,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     private MSystem currentSystem() {
+        var replay=stepReplay;if(replay!=null&&replay.active())return replay.system();
         var nativeState = nativeWorkspace; var legacyState = workspace;
         if (nativeState != null) return nativeState.pipeline.state().system();
         return legacyState == null ? null : legacyState.direct.system();

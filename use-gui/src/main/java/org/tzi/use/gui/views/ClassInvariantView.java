@@ -103,6 +103,7 @@ public class ClassInvariantView extends JPanel implements View {
     private JProgressBar fProgressBar;
 
     private MSystem fSystem;
+    private boolean detached;
     private MModel fModel;
     
     private MClassInvariant[] fClassInvariants = new MClassInvariant[0];
@@ -229,6 +230,7 @@ public class ClassInvariantView extends JPanel implements View {
         
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
+            if (fSystem.isReadOnly()) return false;
         	columnIndex = calcColumnByOptions(columnIndex);
         	if(showFlags){
         		return (columnIndex == 2 || columnIndex == 3);
@@ -460,14 +462,14 @@ public class ClassInvariantView extends JPanel implements View {
 
     @Subscribe
     public void onClassInvariantLoading(ClassInvariantsLoadedEvent ev){
-        if (ev.isEvaluationDeferred()) { if (worker != null) worker.cancel(false); init(); return; }
+        if (ev.isEvaluationDeferred()) { invalidateWorker(); init(); return; }
     	init();
     	update();
     }
     
    	@Subscribe
     public void onClassInvariantUnloading(ClassInvariantsUnloadedEvent ev){
-        if (ev.isEvaluationDeferred()) { if (worker != null) worker.cancel(false); init(); return; }
+        if (ev.isEvaluationDeferred()) { invalidateWorker(); init(); return; }
    		init();
    		update();
    	}
@@ -484,7 +486,7 @@ public class ClassInvariantView extends JPanel implements View {
     @Subscribe
     public void onSystemStateChanged(SystemStateChangedEvent e) {
         if (e instanceof org.tzi.use.uml.sys.events.AtomicStateChangedEvent atomic && !atomic.getInvariantEvaluations().isEmpty()) {
-            if (worker != null && !worker.isDone()) worker.cancel(false);
+            invalidateWorker();
             init();
             int failed = 0, errors = 0, skipped = 0;
             for (int i = 0; i < fClassInvariants.length; i++) {
@@ -581,13 +583,21 @@ public class ClassInvariantView extends JPanel implements View {
      */
     @Override
 	public void detachModel() {
+        if (detached) return;
+        detached = true;
         fSystem.getEventBus().unregister(this);
-        if(!worker.isDone()){
-        	worker.cancel(false);
-        }
+        invalidateWorker();
         executor.shutdown();
     }
     
+    private void invalidateWorker() {
+        // A completed worker may still have process/done callbacks queued on EDT.
+        // Revoke its identity as well as cancellation, so it cannot overwrite native checkpoint results.
+        InvWorker previous = worker;
+        worker = null;
+        if (previous != null) previous.cancel(false);
+    }
+
     private class InvWorker extends SwingWorker<Void,Integer> {
 
     	private String labelText;
