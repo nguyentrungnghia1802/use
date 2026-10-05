@@ -15,64 +15,31 @@ import org.jacamo.bridge.contract.semantic.SemanticMetadata;
 import org.junit.jupiter.api.Test;
 
 class CodeGroundedPhase3Test {
-    @Test void nativePhase3MaterializesJcmDeclarationsAndRetainsRawReferences() throws Exception {
-        var base = CodeGroundedTestFixtures.helloSnapshot();
-        var snapshot = withSyntheticInstitutionAndImport(base);
-        var result = new CodeGroundedNativePipeline().build(snapshot,
-                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
-        var system = result.state().system();
-
-        assertEquals(snapshot.semanticContract().agentDeclarations().size(),
-                system.state().objectsOfClass(system.model().getClass("Agent")).size());
-        assertEquals(snapshot.semanticContract().workspaceDeclarations().size(),
-                system.state().objectsOfClass(system.model().getClass("WorkspaceDeclaration")).size());
-        assertEquals(snapshot.semanticContract().artifactDeclarations().size(),
-                system.state().objectsOfClass(system.model().getClass("ArtifactDeclaration")).size());
-        assertEquals(snapshot.semanticContract().organizationDeployments().size(),
-                system.state().objectsOfClass(system.model().getClass("OrganizationDeployment")).size());
-        assertEquals(snapshot.semanticContract().groupDeployments().size(),
-                system.state().objectsOfClass(system.model().getClass("GroupDeployment")).size());
-        assertEquals(snapshot.semanticContract().schemeDeployments().size(),
-                system.state().objectsOfClass(system.model().getClass("SchemeDeployment")).size());
-        assertEquals(snapshot.semanticContract().institutionDeployments().size(),
-                system.state().objectsOfClass(system.model().getClass("InstitutionDeployment")).size());
-
-        assertNotNull(system.model().getClass("Artifact"), "the native schema reserves a distinct CArtAgO runtime class");
-        assertEquals(0, system.state().objectsOfClass(system.model().getClass("Artifact")).size(),
-                "JCM declarations must not fabricate live CArtAgO artifacts");
-        assertTrue(result.trace().records().stream().anyMatch(value -> value.ruleId().equals("J09")
-                && value.targetKind().equals("RAW_ROLE_TUPLE")));
-        assertTrue(result.trace().records().stream().anyMatch(value -> value.ruleId().equals("J10")
-                && value.targetKind().equals("RAW_FOCUS_TUPLE")));
-        assertTrue(result.trace().records().stream().anyMatch(value -> value.ruleId().equals("J11")
-                && value.targetKind().equals("IMPORT_PROVENANCE")));
-        assertFalse(result.trace().records().stream().anyMatch(value ->
-                (value.ruleId().equals("J09") || value.ruleId().equals("J10"))
-                        && value.targetKind().equals("MLink")));
-
-        String query = "Agent.allInstances->size() = " + snapshot.semanticContract().agentDeclarations().size()
-                + " and WorkspaceDeclaration.allInstances->size() = " + snapshot.semanticContract().workspaceDeclarations().size()
-                + " and ArtifactDeclaration.allInstances->size() = "
-                + snapshot.semanticContract().artifactDeclarations().size();
-        assertEquals("true", org.tzi.use.api.UseSystemApi.create(system, false).evaluate(query).toString());
-        assertTrue(result.state().structureValid());
-        assertTrue(result.state().invariantsValid());
-        assertEquals(result.model().structuralHash(), result.export().recompiledStructuralHash());
+    @Test void jcmDeclarationsCreateDomainObjectsAndKeepOtherSourceReferences() throws Exception {
+        var snapshot=withSyntheticInstitutionAndImport(CodeGroundedTestFixtures.helloSnapshot());
+        var result=new CodeGroundedNativePipeline().build(snapshot,org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
+        var system=result.state().system();
+        assertEquals(snapshot.semanticContract().agentDeclarations().size(),system.state().allObjects().stream()
+            .filter(o -> org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.kind(o.cls()).equals("agent-program")).count());
+        for(var deployment:snapshot.semanticContract().organizationDeployments())
+            assertEquals("organisation",org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.kind(result.state().semanticObjectIndex().get(deployment.metadata().semanticId()).cls()));
+        for(var deployment:snapshot.semanticContract().groupDeployments())
+            assertEquals("group",org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.kind(result.state().semanticObjectIndex().get(deployment.metadata().semanticId()).cls()));
+        for(String name:List.of("WorkspaceDeclaration","ArtifactDeclaration","OrganizationDeployment","GroupDeployment","SchemeDeployment","InstitutionDeployment","Soc"))
+            assertNull(system.model().getClass(name));
+        assertEquals(snapshot.semanticContract(),result.source().snapshot());
+        for(String rule:List.of("J08","J09","J10","J11")) assertTrue(result.trace().records().stream().anyMatch(r -> r.ruleId().equals(rule)),rule);
+        assertEquals("true",org.tzi.use.api.UseSystemApi.create(system,false).evaluate("Agent.allInstances()->size() = "+snapshot.semanticContract().agentDeclarations().size()).toString());
+        assertTrue(result.state().structureValid()); assertEquals(result.model().structuralHash(),result.export().recompiledStructuralHash());
     }
-
-    @Test void phase3SchemaContainsAllDeploymentTypesWithoutRuntimeCollapse() throws Exception {
-        var result = new CodeGroundedNativePipeline().build(CodeGroundedTestFixtures.helloSnapshot(),
-                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
-        for (String className : List.of("Agent", "WorkspaceDeclaration", "ArtifactDeclaration", "OrganizationDeployment",
-                "GroupDeployment", "SchemeDeployment", "InstitutionDeployment"))
-            assertNotNull(result.model().model().getClass(className), className);
-        assertNotNull(result.model().model().getClass("Artifact"));
-        assertEquals(0, result.state().system().state()
-                .objectsOfClass(result.model().model().getClass("Artifact")).size());
-        for (String ruleId : List.of("J02", "J03", "J04", "J05", "J06", "J07", "J08", "J09", "J10", "J11"))
-            assertTrue(result.trace().records().stream().anyMatch(value -> value.ruleId().equals(ruleId)), ruleId);
+    @Test void oneBaseAgentOwnsConcreteProgramTypesAndNoDeclarationWrappers() throws Exception {
+        var result=CodeGroundedTestFixtures.helloPipeline();
+        assertNotNull(result.model().model().getClass("Agent"));
+        for(var cls:result.model().model().classes()) if(org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.kind(cls).equals("agent-program"))
+            assertTrue(cls.parents().contains(result.model().model().getClass("Agent")));
+        assertEquals(1,result.model().model().classes().stream().filter(c -> c.name().equals("Agent")).count());
+        assertFalse(result.state().system().state().allObjects().stream().anyMatch(o -> o.cls().name().equals("Agent")));
     }
-
     private static ModelSnapshot withSyntheticInstitutionAndImport(ModelSnapshot base) {
         var contract = base.semanticContract();
         var source = contract.project().metadata();

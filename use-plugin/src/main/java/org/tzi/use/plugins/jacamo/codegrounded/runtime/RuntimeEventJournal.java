@@ -61,6 +61,7 @@ public final class RuntimeEventJournal {
             Files.writeString(path, new String(CanonicalJson.encode(marker), StandardCharsets.UTF_8) + "\n", StandardOpenOption.APPEND);
         } catch (java.io.IOException ignored) { /* In-memory gap remains visible; export is explicitly rejected. */ }
     }
+    synchronized void markGap(String reason) {if(!gap)fail(reason);}
     public synchronized void remember(RuntimeVerificationResult result) {
         add(new RuntimeHistoryPage.Entry(ordinal, gap ? "GAP" : "NOT_PERSISTED", interval, result, false));
     }

@@ -14,6 +14,8 @@ public interface SnapshotSource extends AutoCloseable {
     SourceWatermark watermark();
     String topologyFingerprint() throws Exception;
     List<RuntimeFact> capture() throws Exception;
+    /** Publish changed supported observations for APIs with no lifecycle listener. */
+    default void poll() throws Exception { }
     Completeness completeness();
     @Override void close() throws Exception;
 }

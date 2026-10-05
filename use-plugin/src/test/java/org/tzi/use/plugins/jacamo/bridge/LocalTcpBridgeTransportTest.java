@@ -21,6 +21,34 @@ class LocalTcpBridgeTransportTest {
     private static final byte[] SECRET="0123456789abcdef0123456789abcdef".getBytes(java.nio.charset.StandardCharsets.US_ASCII);
     private static final String DISTRIBUTION="1".repeat(64);
 
+    @Test void versionedControlBodyIsAuthenticatedAndExactResponseIdentityIsValidated() throws Exception {
+        var f=fixture(Path.of("src/test/resources/canonical-cases/hello-world/helloworld.jcm").toAbsolutePath().normalize(),"control-session");
+        var commands=new java.util.concurrent.atomic.AtomicInteger();
+        try(var server=new LocalTcpBridgeServer(InetAddress.getLoopbackAddress(),0,SECRET,4*1024*1024,32,16L*1024*1024,
+                ()->ContractCodec.encode(f.handshake()),()->ContractCodec.encode(f.modelEnvelope()),()->ContractCodec.encode(f.runtimeEnvelope()),
+                ()->ContractCodec.encode(f.gapEnvelope()),request->{
+                    if(!f.handshake.sessionId().equals(request.sessionId()))throw new IllegalArgumentException("CONTROL_RUNTIME_IDENTITY_STALE");commands.incrementAndGet();
+                    var status=new RuntimeControlContract.Status(RuntimeControlContract.VERSION,request.sessionId(),request.generation(),request.modelRevision(),true,
+                            RuntimeControlContract.State.PAUSED,request.requestId(),Set.of("a#one","b#two"),Set.of("a#one","b#two"),Set.of(),"",Instant.now());
+                    return ContractCodec.encode(ContractEnvelope.create("1.1.0",MessageType.CONTROL_STATUS,"fixture-control",f.handshake.distribution(),f.handshake.projectKey(),
+                            request.modelRevision(),request.sessionId(),request.generation(),"control-status",Instant.now(),List.of(),Completeness.COMPLETE,Map.of(),List.of(),status.payload()));
+                })) {
+            server.start();
+            var req=new RuntimeControlContract.Request(RuntimeControlContract.VERSION,f.handshake.sessionId(),1,f.handshake.modelRevision(),"pause-command",RuntimeControlContract.Action.PAUSE,"HARD failure");
+            try(var wrong=new LocalTcpBridgeTransport(InetAddress.getLoopbackAddress(),server.port(),"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx".getBytes(),4*1024*1024,2000)) {
+                assertThrows(BridgeProtocolException.class,()->wrong.control(req));assertEquals(0,commands.get());
+            }
+            var mirror=new BridgeMirrorStateMachine(32);
+            try(var client=new BridgeClient(new LocalTcpBridgeTransport(InetAddress.getLoopbackAddress(),server.port(),SECRET,4*1024*1024,2000),mirror,DISTRIBUTION,Set.of("official.model"),8)) {
+                client.synchronize();var response=client.control(req);
+                assertEquals(RuntimeControlContract.State.PAUSED,response.state());assertEquals(response.requiredAgents(),response.acknowledgedAgents());
+                assertEquals(1,commands.get());
+                assertThrows(BridgeProtocolException.class,()->client.control(new RuntimeControlContract.Request(RuntimeControlContract.VERSION,"foreign-session",1,
+                        f.handshake.modelRevision(),"foreign-pause",RuntimeControlContract.Action.PAUSE,"invalid owner")));
+            }
+        }
+    }
+
     @Test void productionTransportRunsAllCanonicalModelsWithBufferedEventAndAck() throws Exception {
         Path examples=Path.of("..","..","JaCaMo","examples").toAbsolutePath().normalize();
         for(Path jcm:List.of(Path.of("src/test/resources/canonical-cases/hello-world/helloworld.jcm").toAbsolutePath().normalize(),
@@ -111,6 +139,17 @@ class LocalTcpBridgeTransportTest {
         try(var server=server(f,()->serverRef.get().publish(f.event.sourceId()+":"+f.event.sourceSequence(),ContractCodec.encode(f.eventEnvelope())))){serverRef.set(server);server.start();var mirror=new BridgeMirrorStateMachine(32);var projected=new java.util.concurrent.atomic.AtomicInteger();
             try(var client=new BridgeClient(new LocalTcpBridgeTransport(InetAddress.getLoopbackAddress(),server.port(),SECRET,4*1024*1024,1000),mirror,DISTRIBUTION,Set.of("official.model","runtime.snapshot"),8,event->projected.incrementAndGet())){
                 client.synchronize();assertEquals(BridgeClientState.LIVE,mirror.state());assertEquals(0,projected.get());assertEquals(false,mirror.facts().values().iterator().next().values().get("active"));
+                // A queued producer callback may arrive only AFTER synchronize returns.
+                assertFalse(client.receive(ContractCodec.encode(f.eventEnvelope())));
+                assertTrue(client.snapshotCoveredEvents()>0);assertEquals(0,projected.get());
+                assertEquals(BridgeClientState.LIVE,mirror.state());
+                var next=new RuntimeEvent("post-cut",base.event.sessionId(),base.event.generation(),base.event.modelRevision(),
+                        base.event.subsystem(),source,2,Instant.EPOCH,RuntimeEventKind.CHANGED,RuntimeFactKind.AGENT,
+                        ProjectionStatus.MATERIALIZED_FAITHFULLY,base.event.entityId(),null,"corr","",Map.of(),Map.of("active",true),
+                        new SourceWatermark(source,2),Completeness.COMPLETE,List.of());
+                var frame=envelope(MessageType.RUNTIME_EVENT,f.handshake.distribution(),next.modelRevision(),next.sessionId(),next.generation(),f.handshake.capabilities(),ContractPayloads.event(next));
+                assertTrue(client.receive(ContractCodec.encode(frame)));assertEquals(1,projected.get());
+                assertFalse(client.receive(ContractCodec.encode(frame)));assertEquals(1,projected.get());
             }
         }
     }

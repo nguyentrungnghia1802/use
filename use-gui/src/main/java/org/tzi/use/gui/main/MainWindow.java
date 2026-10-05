@@ -802,6 +802,8 @@ public class MainWindow extends JFrame {
 
     @Subscribe
     public void onSystemChanged(SystemStateChangedEvent e) {
+        if (fModelBrowser.refreshSchema())
+            getClassDiagrams().forEach(ClassDiagramView::refreshSchema);
         if (Options.getCheckStateInvariants()) {
             fLogWriter.println("Checking state invariants.");
             fSession.system().state().checkStateInvariants(fLogWriter);

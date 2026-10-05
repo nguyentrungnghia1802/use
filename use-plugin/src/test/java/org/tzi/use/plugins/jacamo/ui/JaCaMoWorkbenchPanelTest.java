@@ -174,9 +174,8 @@ class JaCaMoWorkbenchPanelTest {
         panel.importProject(Path.of("auction.jcm"));
 
         assertEquals("auction", label(panel, "project-id").getText());
-        assertEquals("V2 | sha256=" + "a".repeat(64), label(panel, "metamodel-baseline").getText());
-        assertEquals("JaCaMo-agentmetamodel-v2__to__USE-v2.2 | schema=2.2.0 | FROZEN"
-                + " | sha256=" + "b".repeat(64), label(panel, "mapping-status").getText());
+        assertEquals("V2", label(panel, "metamodel-baseline").getText());
+        assertEquals("JaCaMo-agentmetamodel-v2__to__USE-v2.2 | schema=2.2.0 | FROZEN", label(panel, "mapping-status").getText());
         assertTrue(label(panel, "dimension-counts").getText().contains("AGENT=4"));
         assertEquals(1, table(panel, "sources-table").getRowCount());
         assertEquals(1, table(panel, "trace-table").getRowCount());
@@ -386,34 +385,11 @@ class JaCaMoWorkbenchPanelTest {
     }
 
     @Test
-    void bindingPanelNeverPreselectsAndPersistsOnlyTheExplicitCandidate() {
-        RecordingFacade facade = new RecordingFacade();
-        BindingResolutionPanel panel = new BindingResolutionPanel(facade);
-        Path destination = Path.of("binding.json");
-        JaCaMoFacade.BindingRequest request = new JaCaMoFacade.BindingRequest("source", "buyer", "ExternalAction",
-                Path.of("buyer.asl"), "abc", List.of(
-                new JaCaMoFacade.BindingCandidate("target-a", "AuctionA", "Operation", Path.of("A.java")),
-                new JaCaMoFacade.BindingCandidate("target-b", "AuctionB", "Operation", Path.of("B.java"))));
-
-        panel.showRequest(destination, request);
-
-        JTable candidates = table(panel, "binding-candidates-table");
-        assertEquals(-1, candidates.getSelectedRow(), "ambiguous bindings must never be auto-selected");
-        assertFalse(button(panel, "binding-persist").isEnabled());
-        assertThrows(IllegalStateException.class, () -> panel.persistSelection("manual evidence"));
-        candidates.setRowSelectionInterval(1, 1);
-        assertTrue(button(panel, "binding-persist").isEnabled());
-        panel.persistSelection("manual evidence");
-        assertEquals("target-b", facade.persistedTarget);
-        assertEquals("manual evidence", facade.persistedReason);
-    }
-
-    @Test
     void workbenchProvidesAllPhaseTwelveViews() {
         JTabbedPane tabs = component(new JaCaMoWorkbenchPanel(new RecordingFacade()), "workbench-tabs", JTabbedPane.class);
         List<String> titles = new ArrayList<>();
         for (int index = 0; index < tabs.getTabCount(); index++) titles.add(tabs.getTitleAt(index));
-        assertEquals(List.of("Project", "Mapping Inspector", "Mapping Rules", "Verification", "Runtime"), titles);
+        assertEquals(List.of("Project", "Verification", "Goal View", "Trace / Source", "Diagnostics"), titles);
     }
 
     @Test void mappingRulesAreAvailableBeforeImportAndUseExactCatalogNotProjectTrace() {
@@ -551,8 +527,6 @@ class JaCaMoWorkbenchPanelTest {
         private Path exportedReport;
         private Path exportedUse;
         private Path exportedSoil;
-        private String persistedTarget;
-        private String persistedReason;
         private RuntimeException importFailure;
         private final java.util.concurrent.CountDownLatch importedLatch = new java.util.concurrent.CountDownLatch(1);
         private boolean importedOnEdt;
@@ -602,10 +576,5 @@ class JaCaMoWorkbenchPanelTest {
         @Override public void connectRuntime() { connects++; }
         @Override public void disconnectRuntime() { disconnects++; }
         @Override public void resyncRuntime() { resyncs++; }
-        @Override public void persistBinding(Path destination, BindingRequest request, String selectedTargetId,
-                                             String reason) {
-            persistedTarget = selectedTargetId;
-            persistedReason = reason;
-        }
     }
 }

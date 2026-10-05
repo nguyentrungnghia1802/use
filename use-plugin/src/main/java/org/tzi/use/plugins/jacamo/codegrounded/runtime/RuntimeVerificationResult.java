@@ -25,9 +25,14 @@ public record RuntimeVerificationResult(String sessionId, long generation, Strin
         map.put("sourceSequence", sourceSequence); map.put("checkpointId", checkpointId);
         map.put("constraintSetHash", constraintSetHash); map.put("stateHash", stateHash);
         map.put("coverage", coverage); map.put("freshness", freshness); map.put("diagnostic", diagnostic);
-        map.put("outcomes", outcomes.stream().map(item -> Map.of("constraintId", item.constraintId(),
-                "contextClass", item.contextClass(), "outcome", item.outcome().name(), "diagnostic", item.diagnostic(),
-                "expression", item.expression())).toList());
+        map.put("outcomes", outcomes.stream().map(item -> {
+            var value=new LinkedHashMap<String,Object>();
+            value.put("constraintId",item.constraintId());value.put("contextClass",item.contextClass());
+            value.put("outcome",item.outcome().name());value.put("diagnostic",item.diagnostic());value.put("expression",item.expression());
+            // Preserve historical result hashes when no exact object context was available.
+            if(!item.contextObject().isBlank())value.put("contextObject",item.contextObject());
+            return Map.copyOf(value);
+        }).toList());
         return Map.copyOf(map);
     }
     public String resultHash() { return ExternalOclConstraintService.sha256(CanonicalJson.encode(semanticEvidence())); }
@@ -41,7 +46,8 @@ public record RuntimeVerificationResult(String sessionId, long generation, Strin
         List<ExternalOclConstraintService.Outcome> outcomes = ((List<?>)value.get("outcomes")).stream().map(raw -> {
             var item = CanonicalJson.object(raw);
             return new ExternalOclConstraintService.Outcome((String)item.get("constraintId"), (String)item.get("contextClass"),
-                    VerificationOutcome.valueOf((String)item.get("outcome")), (String)item.get("diagnostic"), (String)item.get("expression"));
+                    VerificationOutcome.valueOf((String)item.get("outcome")), (String)item.get("diagnostic"), (String)item.get("expression"),
+                    (String)item.getOrDefault("contextObject",""));
         }).toList();
         var result = new RuntimeVerificationResult((String)value.get("sessionId"), ((Number)value.get("generation")).longValue(),
                 (String)value.get("modelRevision"), ((Number)value.get("stateVersion")).longValue(), (String)value.get("eventId"),

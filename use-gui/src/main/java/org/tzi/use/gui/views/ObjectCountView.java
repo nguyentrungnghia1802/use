@@ -57,6 +57,13 @@ public class ObjectCountView extends BarChartView implements View {
     }
 
     private void update() {
+        var classes = fSystem.model().getClassesIncludingImports().toArray(new MClass[0]);
+        Arrays.sort(classes);
+        if (!Arrays.equals(fClasses, classes)) {
+            fClasses = classes;
+            setNames(fClasses);
+            fValues = new int[fClasses.length];
+        }
         MSystemState systemState = fSystem.state();
         for (int i = 0; i < fClasses.length; i++) {
             fValues[i] = systemState.objectsOfClass(fClasses[i]).size();

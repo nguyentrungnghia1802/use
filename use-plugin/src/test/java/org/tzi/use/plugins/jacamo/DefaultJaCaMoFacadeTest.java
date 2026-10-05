@@ -23,10 +23,9 @@ class DefaultJaCaMoFacadeTest {
             JaCaMoFacade.ProjectSummary summary = facade.importProject(auction());
 
             assertEquals("auction", summary.projectId());
-            assertEquals("FROZEN", summary.mappingStatus());
+            assertEquals("NATIVE_CURRENT", summary.mappingStatus());
             assertTrue(summary.structureValid());
-            assertEquals(new org.tzi.use.plugins.jacamo.mapping.MappingLoader().loadCanonical(Path.of(".")).classes().size(),
-                    summary.generatedClasses(), "official Bridge path must not add a parser-derived synthetic class");
+            assertEquals(facade.materializedSystem().model().classes().size(), summary.generatedClasses());
             assertTrue(summary.generatedObjects() > 10);
             assertFalse(facade.sources().isEmpty());
             assertFalse(facade.traces().isEmpty());
@@ -48,7 +47,7 @@ class DefaultJaCaMoFacadeTest {
         try (DefaultJaCaMoFacade facade = BridgeFacadeTestSupport.facade(auction(), stagedGuiRoot)) {
             JaCaMoFacade.ProjectSummary summary = facade.importProject(auction());
 
-            assertEquals("FROZEN", summary.mappingStatus());
+            assertEquals("NATIVE_CURRENT", summary.mappingStatus());
             assertTrue(summary.structureValid());
             assertTrue(summary.generatedClasses() > 0);
             assertTrue(summary.generatedObjects() > 0);
@@ -65,24 +64,6 @@ class DefaultJaCaMoFacadeTest {
             assertEquals(MirrorState.STALE, facade.runtimeStatus().state());
             facade.connectRuntime();
             assertEquals(MirrorState.LIVE, facade.runtimeStatus().state());
-        }
-    }
-
-    @Test
-    void bindingPersistenceRejectsAnyTargetOutsideTheExactCandidateSet() {
-        try (DefaultJaCaMoFacade facade = bridgeAuction()) {
-            facade.importProject(auction());
-            String source = "jacamo:auction:AGENT:ExternalAction:buyer:bid";
-            String target = "jacamo:auction:ENVIRONMENT:Operation:auction:bid";
-            JaCaMoFacade.BindingRequest request = new JaCaMoFacade.BindingRequest(source, "buyer", "ExternalAction",
-                    Path.of("buyer.asl"), "a".repeat(64), List.of(new JaCaMoFacade.BindingCandidate(target, "auction",
-                    "Operation", Path.of("AuctionArtifact.java"))));
-
-            assertThrows(IllegalArgumentException.class, () -> facade.persistBinding(
-                    temporary.resolve("invalid.json"), request, target + "-fuzzy", "manual"));
-            Path output = temporary.resolve("binding.json");
-            facade.persistBinding(output, request, target, "manual exact selection");
-            assertTrue(Files.isRegularFile(output));
         }
     }
 
@@ -106,32 +87,6 @@ class DefaultJaCaMoFacadeTest {
         assertFalse(imported.diagnostics().isEmpty());
         assertTrue(imported.diagnostics().stream().allMatch(value -> value.code() != null
                     && value.phase() != null && !value.remediation().isBlank()));
-    }
-
-    @Test
-    void repeatedExplicitBindingsPreserveEarlierExactSelections() throws Exception {
-        try (DefaultJaCaMoFacade facade = bridgeAuction()) {
-            facade.importProject(auction());
-            Path output = temporary.resolve("binding.json");
-            String hash = "b".repeat(64);
-            String sourceA = "jacamo:auction:AGENT:ExternalAction:buyer:bid";
-            String targetA = "jacamo:auction:ENVIRONMENT:Operation:auction:bid";
-            String sourceB = "jacamo:auction:AGENT:ExternalAction:seller:close";
-            String targetB = "jacamo:auction:ENVIRONMENT:Operation:auction:close";
-            JaCaMoFacade.BindingRequest first = new JaCaMoFacade.BindingRequest(sourceA, "buyer", "ExternalAction",
-                    Path.of("buyer.asl"), hash, List.of(new JaCaMoFacade.BindingCandidate(targetA, "auction",
-                    "Operation", Path.of("AuctionArtifact.java"))));
-            JaCaMoFacade.BindingRequest second = new JaCaMoFacade.BindingRequest(sourceB, "seller", "ExternalAction",
-                    Path.of("seller.asl"), hash, List.of(new JaCaMoFacade.BindingCandidate(targetB, "auction",
-                    "Operation", Path.of("AuctionArtifact.java"))));
-
-            facade.persistBinding(output, first, targetA, "first exact choice");
-            facade.persistBinding(output, second, targetB, "second exact choice");
-
-            String json = Files.readString(output);
-            assertTrue(json.contains(targetA));
-            assertTrue(json.contains(targetB));
-        }
     }
 
     @Test
@@ -204,7 +159,7 @@ class DefaultJaCaMoFacadeTest {
             assertTrue(metrics.fullCheckNanos() > 0);
             assertTrue(metrics.usedMemoryBytes() > 0);
             assertTrue(metrics.usedMemoryBytes() <= Runtime.getRuntime().maxMemory());
-            assertEquals(0, metrics.runtimeLastLatencyNanos());
+            assertTrue(metrics.runtimeLastLatencyNanos() > 0);
         }
     }
 

@@ -66,6 +66,7 @@ public final class OfficialCartagoAdapter {
         List<GuardSemantic> guards = new ArrayList<>();
         List<ObservablePropertySnapshotSemantic> properties = new ArrayList<>();
         List<ArtifactInfoSemantic> infos = new ArrayList<>();
+        List<FocusSemantic> focuses = new ArrayList<>();
         Map<String, String> agentIds = new LinkedHashMap<>();
         Map<String, String> artifactIds = new LinkedHashMap<>();
         Map<String, ArtifactTypeSemantic> artifactTypes = new LinkedHashMap<>();
@@ -102,6 +103,13 @@ public final class OfficialCartagoAdapter {
                 artifacts.add(new ArtifactSemantic(metadata(artifactSemanticId, "CARTAGO_ARTIFACT", ArtifactId.class.getName(),
                         evidence, CapabilityStatus.COMPLETE, Fidelity.EXACT, List.of()), artifact.getName(),
                         String.valueOf(artifact.getId()), typeId, semanticId, creator));
+                for (var observer : safe(info.getObservers())) {
+                    String observerId=agentIds.get(agentKey(observer.getAgentId()));
+                    if(observerId==null) throw new IllegalStateException("CARTAGO_OBSERVER_AGENT_NOT_IN_CUT");
+                    focuses.add(new FocusSemantic(metadata("cartago:focus:"+artifactSemanticId+":"+observerId,
+                            "CARTAGO_FOCUS_OBSERVATION", cartago.ArtifactObserver.class.getName(), evidence,
+                            CapabilityStatus.COMPLETE,Fidelity.EXACT,List.of()),observerId,artifactSemanticId,true,0));
+                }
                 List<String> operationIds = new ArrayList<>();
                 List<String> propertyIds = new ArrayList<>();
                 for (OpDescriptor descriptorValue : safe(info.getOperations())) {
@@ -149,7 +157,7 @@ public final class OfficialCartagoAdapter {
         guards.sort(Comparator.comparing(value -> value.metadata().semanticId()));
         properties.sort(Comparator.comparing(value -> value.metadata().semanticId()));
         infos.sort(Comparator.comparing(value -> value.metadata().semanticId()));
-        List<FocusSemantic> focuses = List.of();
+        focuses.sort(Comparator.comparing(value -> value.metadata().semanticId()));
         List<LiveObservablePropertySemantic> liveProperties = List.of();
         List<SignalSemantic> signals = List.of();
         return new EnvironmentSemantic(environmentMetadata, text(environment.getName()), environmentId,
@@ -164,12 +172,27 @@ public final class OfficialCartagoAdapter {
             Class<?> type = Class.forName(javaClassName, false, Thread.currentThread().getContextClassLoader());
             String loader = type.getProtectionDomain().getCodeSource() == null ? type.getClassLoader().toString()
                     : String.valueOf(type.getProtectionDomain().getCodeSource().getLocation());
-            return new ArtifactTypeSemantic(metadata(id, "CARTAGO_ARTIFACT_TYPE", javaClassName, evidence,
-                    CapabilityStatus.COMPLETE, Fidelity.EXACT, List.of()), javaClassName, loader);
+            String origin=typeOrigin(javaClassName);
+            return new ArtifactTypeSemantic(metadata(id, origin.equals("PLATFORM")
+                    ? "CARTAGO_PLATFORM_ARTIFACT_TYPE" : "CARTAGO_ARTIFACT_TYPE", javaClassName, evidence,
+                    origin.equals("UNAVAILABLE") ? CapabilityStatus.PARTIAL : CapabilityStatus.COMPLETE, Fidelity.EXACT,
+                    origin.equals("UNAVAILABLE") ? List.of("ARTIFACT_TYPE_PROVIDER_UNAVAILABLE") : List.of()), javaClassName, loader);
         } catch (Exception error) {
             return new ArtifactTypeSemantic(metadata(id, "CARTAGO_ARTIFACT_TYPE", javaClassName, evidence,
                     CapabilityStatus.PARTIAL, Fidelity.EXACT, List.of("ARTIFACT_TYPE_CLASS_NOT_LOADABLE")), javaClassName, "");
         }
+    }
+
+    /** Same defining provider as the official CArtAgO base means platform-owned Java implementation. */
+    static String typeOrigin(String fqcn) {
+        try {
+            Class<?> type = Class.forName(fqcn, false, Thread.currentThread().getContextClassLoader());
+            var provider = type.getProtectionDomain().getCodeSource();
+            var platform = cartago.Artifact.class.getProtectionDomain().getCodeSource();
+            if (provider == null || platform == null || provider.getLocation() == null || platform.getLocation() == null
+                    || !cartago.Artifact.class.isAssignableFrom(type)) return "UNAVAILABLE";
+            return provider.getLocation().equals(platform.getLocation()) ? "PLATFORM" : "APPLICATION";
+        } catch (ClassNotFoundException | LinkageError unavailable) { return "UNAVAILABLE"; }
     }
 
     private BackingJavaOperationSemantic backing(String operationId, ArtifactOpMethod operation, Evidence evidence) {
@@ -210,7 +233,7 @@ public final class OfficialCartagoAdapter {
     static String artifactId(String environmentId, ArtifactId id) {
         return "cartago:artifact:" + environmentId + ":" + id.getWorkspaceId().getFullName() + ":" + id.getId();
     }
-    private static String operationId(String artifactId, String keyId) { return "cartago:operation:" + artifactId + ":" + keyId; }
+    static String operationId(String artifactId, String keyId) { return "cartago:operation:" + artifactId + ":" + keyId; }
     private static String guardId(String operationId) { return "cartago:guard:" + operationId; }
     static String propertyId(String artifactId, String propertyId) { return "cartago:property:" + artifactId + ":" + propertyId; }
     static String artifactTypeId(String environmentId, String type) { return "cartago:artifact-type:" + environmentId + ":" + type; }

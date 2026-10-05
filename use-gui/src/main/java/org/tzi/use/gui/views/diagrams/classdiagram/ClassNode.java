@@ -49,11 +49,11 @@ public class ClassNode extends ClassifierNode implements SortChangeListener {
     private List<MAttribute> fAttributes;
     private List<MOperation> fOperations;
     
-    private final String[] fAttrValues;
-    private final Color[] fAttrColors;
+    private String[] fAttrValues;
+    private Color[] fAttrColors;
     
-    private final String[] fOprSignatures;
-    private final Color[] fOperationColors;
+    private String[] fOprSignatures;
+    private Color[] fOperationColors;
     
     private Color color = null;
 
@@ -173,6 +173,27 @@ public class ClassNode extends ClassifierNode implements SortChangeListener {
             MOperation opr = fOperations.get( i );
             fOprSignatures[i] = opr.signature();
         }
+    }
+
+    void refreshFeatures() {
+        var attributes = cls().attributes();
+        var operations = cls().operations().stream()
+                .filter(op -> !op.getAnnotationValue("View", "hideInDiagram").equals("true")).toList();
+        boolean attributesChanged = !new java.util.HashSet<>(attributes).equals(new java.util.HashSet<>(fAttributes));
+        boolean operationsChanged = !new java.util.HashSet<>(operations).equals(new java.util.HashSet<>(fOperations));
+        if (!attributesChanged && !operationsChanged) return;
+        if (attributesChanged) {
+            fAttributes = attributes;
+            fAttrValues = new String[attributes.size()];
+            fAttrColors = new Color[attributes.size()];
+        }
+        if (operationsChanged) {
+            fOperations = new ArrayList<>(operations);
+            fOprSignatures = new String[operations.size()];
+            fOperationColors = new Color[operations.size()];
+        }
+        copyDisplayedValues();
+        setSizeIsCalculated(false);
     }
     @Override
     protected void calculateNameRectSize(Graphics2D g, Rectangle2D.Double rect) {

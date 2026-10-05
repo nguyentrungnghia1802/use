@@ -1,194 +1,99 @@
 # Plugin UI and User Workflow
 
-## 0. Source-tree launch preflight
+Current snapshot/Goal workflow, 2026-10-05. Historical screenshots and phase
+reports describe their original revision; they are not the current tab contract.
 
-From the repository root, build before starting the GUI:
+## Build and launch
 
-```powershell
-mvn -B -pl use-plugin -am -DskipTests package
-java -jar .\use-gui\target\use-gui.jar
-```
-
-The package phase copies the newly shaded production JAR to
-`use-gui/lib/plugins/use-jacamo-plugin-1.0.1.jar`. This is a generated, ignored
-runtime artifact; `GuiPluginStagingIT` checks that it is byte-identical to the
-production JAR, contains the neutral contract/Bridge client, excludes the legacy
-authority classes, and excludes JaCaMo-side adapter classes.
-
-For live Bridge use, put all `-Duse.jacamo.bridge.*` options before `-jar`. The GUI
-does not become JaCaMo authority or edit Bridge configuration. To reproduce the
-supported live original Hello cut on Windows/JDK 21, run from the `use` root:
+From the repository root:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\use-plugin\tools\jacamo-bridge.ps1 `
-  -JcmPath ..\jacamo\doc\tutorials\hello-world\code\helloworld\helloworld.jcm `
-  -ObservationSeconds 15 -Headless:$false `
-  -EvidenceDirectory .\use-plugin\target\final-system-acceptance\hello-rerun
-```
-
-The helper copies the original project, compiles project-local Gradle classes in the
-derived copy when needed, injects the official platform entry, derives the runtime
-fingerprint, starts JaCaMo and a classpath-isolated USE consumer, and records
-producer/consumer logs plus `summary.json`. It never edits `jacamo/` or the original
-input. The runtime cut is per-source buffered rather than a globally atomic
-cross-subsystem snapshot; evidence-only facts cannot become USE truth. Final
-Hello/Auction/House evidence is indexed in
-`evidence/final-system-acceptance/README.md` (historical Bridge evidence only).
-
-### Interactive GUI demo
-
-For a live presentation, use the generic launcher's manual GUI mode instead of opening an
-unconfigured USE process:
-
-```powershell
-cd D:\_CODE_BANK\Project_\08_Thesis\use
-powershell -ExecutionPolicy Bypass -File .\use-plugin\tools\jacamo-bridge.ps1 `
-  -JcmPath ..\jacamo\doc\tutorials\hello-world\code\helloworld\helloworld.jcm `
+Set-Location 'D:\_CODE_BANK\Project_\08_Thesis\use'
+mvn -B -pl use-plugin -am '-DskipTests' package
+& '.\use-plugin\tools\jacamo-bridge.ps1' `
+  -JcmPath 'D:\_CODE_BANK\Project_\08_Thesis\jacamo\examples\auction\auction.jcm' `
   -InteractiveGui -Headless:$false -TimeoutSeconds 1800 `
-  -EvidenceDirectory .\use-plugin\target\gui-demo
+  -EvidenceDirectory '.\use-plugin\target\gui-demo' -SkipBuild
 ```
 
-The helper builds a disposable USE install, launches it with the exact Bridge
-endpoint/secret/distribution fingerprint, and passes the derived `.jcm` path to the
-Workbench. The Import chooser therefore opens in the correct temporary folder with
-that file preselected. In the GUI:
+The package phase stages the byte-identical shaded plugin in `use-gui/lib/plugins`.
+The generic helper prepares a derived copy of the selected project and starts the
+separate JaCaMo producer and configured USE GUI. Original sources are unchanged.
+Other projects use the same `-JcmPath` interface. Native JaCaMo windows depend on
+project configuration; `-InteractiveGui` opens USE Workbench. `MODEL_READY` is
+static readiness, not evidence that agents are reasoning or verification is LIVE.
 
-1. open `Plugins > JaCaMo > Open Workbench...`;
-2. click **Import JaCaMo Project...** and click **Open**; the derived `.jcm` is
-   already selected in its temporary folder;
-3. inspect Project, Trace, Diagnostics, Verification, Runtime and Binding;
-4. in Runtime, confirm authority `BRIDGE` and readiness `LIVE`, then click
-   **Reconnect** and **Resync**;
-5. click **Run Full Verification**, then **Export Report...**;
-6. close USE to stop the derived producer and finish the helper.
+## Primary workflow
 
-For Auction use `..\jacamo\examples\auction\auction.jcm` with project key
-`auction`. For House use `..\jacamo\examples\house-building\house-building.jcm`
-with project key `house_building`; state explicitly that the accepted 50-second run
-did not satisfy root goal `house_built`.
+1. Open `Plugins > JaCaMo > Open Workbench...` and import the derived `.jcm`
+   selected by the helper. Selection asserts exact project key/digest against the
+   official Bridge snapshot; USE does not reconstruct JaCaMo from source text.
+2. Inspect Project and the native Model Browser/Class Diagram/Object Diagram.
+   Start Runtime releases the managed startup boundary. It is different from Resume.
+3. Connect/authoritative synchronization enters LIVE. Verification checkpoints run
+   automatically; no manual repeated live check is needed.
+4. Load authored OCL and inspect its compiled constraint/capability policy.
+   All constraints, including native HARD rules, default REPORT_ONLY. Severity
+   alone grants no control authority. Explicitly approved HARD false conditions
+   may pause; ERROR/UNDEFINED/SKIPPED do not gain automatic control authority.
+5. A violation selects Verification and the exact failing Goal. Inspect the retained
+   failing values, previous/last-passing cut, authoritative confirmation, related
+   exact evidence objects and Trace / Source. Open the native Object Diagram from
+   the same active Session if needed.
+6. Explicitly choose **Resume Jason agents** after inspection. Re-enable ACK and
+   authoritative resync must finish before LIVE returns. There is no auto-resume.
 
-## 1. UX goal
+## Five primary tabs
 
-Một người dùng USE phải có thể:
-1. Import JaCaMo Project;
-2. xem extraction/mapping status;
-3. inspect generated model;
-4. load/add OCL;
-5. run offline verification;
-6. connect runtime;
-7. xem live violations;
-8. navigate về source.
+| Tab | Current purpose and source |
+| --- | --- |
+| Project | Imported model, projection compatibility, separate connection/sync lifecycle and runtime startup/connection actions |
+| Verification | Committed checkpoint/result, approved constraint policies, bounded violations, immutable failure/confirmation comparison and control state/Resume |
+| Goal View | Scheme specification versus exact runtime instance, nested goal operator/ordinal, available typed runtime state, mission/agent/group responsibility, violation/source details |
+| Trace / Source | Semantic/runtime identity, USE target, mapping rule, exact available source position and bounded source excerpt |
+| Diagnostics | Connection, identity/projection/capability, OCL and control errors; secondary runtime details, recorded replay and projection-rule inspection |
 
----
+Old Binding resolution and the primary raw Runtime/dashboard tabs were removed.
+Historical parser binding files are not production identity input. Ambiguity fails
+closed with diagnostic evidence; the UI never ranks candidates or guesses targets.
+Debug hashes/events and replay controls are secondary to the verification workflow.
 
-## 2. Main actions
+## Control and evidence semantics
 
-Use `Plugins > JaCaMo > Open Workbench...` to open the workbench. `Plugins >
-JaCaMo > Status` and the `jacamo status` shell command confirm plugin loading.
+Synchronization states remain OFFLINE / MODEL_READY / CONNECTING / SYNCING / LIVE /
+STALE / ERROR. Control states are RUNNING / PAUSE_REQUESTED / PAUSED /
+RESUME_REQUESTED. PAUSED is labeled **Jason agents paused** only after all current
+admitted agent incarnations ACK an official ExecutionControl reasoning boundary.
+This is not atomic whole-platform suspension: already in-flight CArtAgO operations
+and Moise/OrgBoard activity may complete. The console-output Pause API and Swing
+button automation are not used.
 
-Workbench toolbar:
-- `Import JaCaMo Project...`;
-- `Rebuild`;
-- `Load OCL...`;
-- `Run Full Verification`;
-- `Export Report...`.
+The failing cut is frozen before the request. A separate authoritative post-pause
+cut is checked and labeled CONFIRMED, TRANSIENT_NOT_REPRODUCED or
+CONFIRMATION_ERROR. Control failures are separate from OCL FAIL. Missing ACK,
+stale/disconnected state or failed confirmation disables Resume until authoritative
+recovery. Disconnect does not secretly resume the producer.
 
-The Runtime tab contains Connect, Disconnect, Reconnect, Resync, and Refresh.
-The six tabs are Project, Trace, Diagnostics, Verification, Runtime, and Binding.
-The Project tab shows the native code-grounded pipeline version, structural hash,
-rule-catalog version and contract metadata. Exact binding candidates are handled
-in Binding. The source path and line can be copied from the Trace tab.
+Moise 1.1 public `goalState` supports waiting/enabled/satisfied. Impossible is
+unavailable through that API; missing/currently stale evidence is UNKNOWN /
+UNAVAILABLE, not a fabricated state. Last-observed values are explicitly labeled.
+Native source positions are shown only when extraction provided them. Otherwise
+navigation shows file + semantic element + **line unavailable**, never line 1 by
+assumption. CASE-selected extra Goal/Artifact context requires exact identities and
+explicit domain rationale; it creates no inferred domain relation.
 
-The production workbench reads the validated Bridge endpoint configuration from the
-documented `use.jacamo.bridge.*` system properties. The Runtime tab shows semantic
-authority, readiness, negotiated capabilities, completeness, model revision,
-session/generation, endpoint and diagnostics. Selecting a `.jcm` is an exact
-project/digest assertion against the official ModelSnapshot, not a request to parse
-it in USE. `Connect`, `Reconnect` and `Resync` obtain a fresh authoritative cut.
-The UI is not a standalone external `.jcm` launcher and never silently falls back.
+## Replay and lifetime
 
----
+Recorded replay/reanalysis is an explicit detached workflow. Step replay displays
+the selected active replay coordinator's Goal state and recorded verification,
+without live control buttons or original-workspace violations leaking into it.
+Recorded hashes, capability/policy timeline, boundaries and native PRE/POST `@pre`
+are validated. Reanalysis states its changed verification profile explicitly.
 
-## 3. Import wizard
+UI components call facade/services only. Their cached refresh timer does not poll
+JaCaMo semantics. Closing/reopening the Workbench detaches/reuses one facade for the
+Session and never installs duplicate runtime subscriptions. Project replacement
+retires old consumers/callbacks before accepting a new authoritative workspace.
 
-Step:
-1. select the `.jcm` already hosted by the JaCaMo Bridge;
-2. negotiate schema/distribution/capabilities;
-3. validate exact project key and JCM digest;
-4. validate ModelSnapshot and RuntimeSnapshot;
-5. adapt canonical identities into the neutral semantic IR;
-6. show diagnostics and mapping fingerprint compatibility;
-7. generate/load the USE representation and apply faithfully projectable runtime facts.
-
-Do not hide warnings.
-
----
-
-## 4. Views
-
-### Project Overview
-- project;
-- files;
-- dimensions;
-- counts;
-- hashes.
-
-### Mapping/Trace View
-- source semantic element;
-- mapping rule;
-- USE target;
-- resolution status.
-
-### Diagnostics View
-Filter by phase/severity/file.
-
-### Verification View
-- constraint;
-- status;
-- context object;
-- source links.
-
-### Runtime View
-- connection state;
-- queue;
-- last event;
-- sync status;
-- latency.
-
----
-
-## 5. Source navigation
-
-Nếu IDE integration không có:
-- show absolute/relative path;
-- line/column;
-- copy path;
-- open via OS/editor action nếu safe.
-
----
-
-## 6. Binding resolution UX
-
-Khi ambiguous:
-- show exact candidates;
-- show owner/type/source;
-- user chooses;
-- persist explicit `<project-root>/binding.json`.
-
-The current panel can preserve an explicit historical binding request supplied by a
-host workflow. The production Bridge path does not consume parser-era `binding.json`;
-ambiguous official references remain explicit contract diagnostics.
-
-Không auto-select candidate bằng fuzzy ranking.
-
----
-
-## 7. Headless/CLI parity
-
-Core pipeline phải chạy được không cần GUI để:
-- tests;
-- CI;
-- experiment runs;
-- thesis reproducibility.
-
-GUI chỉ gọi service layer.
+Current headful/component/replay and three-case evidence is indexed in
+`docs/agent/task.md`. Archived `evidence/final-system-acceptance` reports are historical.

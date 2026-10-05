@@ -89,6 +89,27 @@ class OfficialJasonAdapterTest {
         runIsolatedParser("package");
     }
 
+    @Test void relativeFileUriIncludesRetainExactProjectProvenance() throws Exception {
+        runIsolatedParser("relative");
+    }
+
+    private void checkRelativeFileIncludes() throws Exception {
+        Path agentDirectory=Files.createDirectories(temporary.resolve("src/agt"));
+        Path included=Files.createDirectories(agentDirectory.resolve("inc")).resolve("common.asl");
+        Path source=agentDirectory.resolve("worker.asl");
+        Files.writeString(included,"shared_fact.\n+!shared <- .print(\"shared\").\n");
+        Files.writeString(source,"{ include(\"inc/common.asl\") }\n+!root <- .print(\"root\").\n");
+        var paths=new jason.runtime.SourcePath(); paths.addPath("src/agt");
+        ((jason.asSyntax.directives.Include)jason.asSyntax.directives.DirectiveProcessor.getDirective("include")).setSourcePath(paths);
+        var program=new OfficialJasonAdapter().adapt(temporary,source,"generic","worker").program();
+        assertEquals(List.of("shared","root"),program.planLibrary().plans().stream().map(p->p.trigger().literal()).toList());
+        var evidence=program.planLibrary().plans().getFirst().metadata().evidence().getFirst();
+        assertEquals("project:/src/agt/inc/common.asl",evidence.sourceUri());
+        assertEquals(AdapterEvidence.digest(Files.readAllBytes(included)),evidence.sourceDigest());
+        assertEquals(evidence.sourceUri(),program.beliefs().getFirst().metadata().evidence().getFirst().sourceUri());
+        assertThrows(java.io.IOException.class,()->new JasonSourceEvidence(temporary).resolve("file:absent/path/common.asl"));
+    }
+
     private void checkPackageIncludes() throws Exception {
         Path jcm = temporary.resolve("fixture.jcm");
         Files.writeString(jcm, "mas fixture { }");
@@ -116,9 +137,11 @@ class OfficialJasonAdapterTest {
     private void runIsolatedParser(String mode) throws Exception {
         // Jason 3.3.2 Include.process opens streams without closing them. Isolate the
         // real parser (and all assertions) so Windows can delete fixtures after JVM exit.
-        var process = new ProcessBuilder(Path.of(System.getProperty("java.home"), "bin", "java").toString(),
+        var command = new ProcessBuilder(Path.of(System.getProperty("java.home"), "bin", "java").toString(),
                 "-Djava.awt.headless=true", "-cp", System.getProperty("java.class.path"),
-                getClass().getName(), mode, temporary.toString()).redirectErrorStream(true).start();
+                getClass().getName(), mode, temporary.toString()).redirectErrorStream(true);
+        if(mode.equals("relative")) command.directory(temporary.toFile());
+        var process=command.start();
         try {
             assertTrue(process.waitFor(30, java.util.concurrent.TimeUnit.SECONDS), "include parser child timeout");
             String output = new String(process.getInputStream().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
@@ -132,6 +155,7 @@ class OfficialJasonAdapterTest {
         probe.temporary = Path.of(args[1]);
         if (args[0].equals("nested")) probe.checkNestedIncludes();
         else if (args[0].equals("package")) probe.checkPackageIncludes();
+        else if (args[0].equals("relative")) probe.checkRelativeFileIncludes();
         else throw new IllegalArgumentException("unknown include probe");
         System.out.println("INCLUDE_PROVENANCE_ASSERTIONS_PASS");
     }

@@ -23,7 +23,7 @@ import org.tzi.use.uml.sys.MSystem;
  * consulted.</p>
  */
 public final class NativeUseStateExporter {
-    public static final String SCHEMA_VERSION = "1.0.0";
+    public static final String SCHEMA_VERSION = "2.0.0";
 
     public String export(MSystem system) {
         return export(system, NativeUseStructure.sha256(system.model()));
@@ -64,6 +64,7 @@ public final class NativeUseStateExporter {
                     Map<String, Object> row = new LinkedHashMap<>();
                     row.put("name", object.name());
                     row.put("class", object.cls().name());
+                    row.put("associationClass",object instanceof org.tzi.use.uml.sys.MLinkObject);
                     Map<String, Object> attributes = new LinkedHashMap<>();
                     object.cls().allAttributes().stream()
                             .sorted(Comparator.comparing(attribute -> attribute.name()))
@@ -84,7 +85,8 @@ public final class NativeUseStateExporter {
         return links.stream().map(link -> {
             Map<String, Object> row = new LinkedHashMap<>();
             row.put("association", link.association().name());
-            row.put("objects", link.linkedObjects().stream().map(MObject::name).sorted().toList());
+            row.put("objects", link.linkedObjects().stream().map(MObject::name).toList());
+            if(link instanceof org.tzi.use.uml.sys.MLinkObject object) row.put("linkObject",object.name());
             return row;
         }).toList();
     }

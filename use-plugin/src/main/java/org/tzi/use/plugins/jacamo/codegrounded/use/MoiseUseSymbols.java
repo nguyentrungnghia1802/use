@@ -45,12 +45,10 @@ final class MoiseUseSymbols {
     }
 
     static String label(String value) {
-        StringBuilder result = new StringBuilder();
-        for (String word : value.split("[^A-Za-z0-9]+")) if (!word.isEmpty())
-            result.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1));
-        if (result.isEmpty()) result.append("Element");
-        if (Character.isDigit(result.charAt(0))) result.insert(0, "Element_");
-        return result.toString();
+        if (value == null || value.isBlank()) throw new IllegalArgumentException("DOMAIN_NAME_REQUIRED");
+        String result = value.replaceAll("[^A-Za-z0-9_]", "_");
+        if (Character.isDigit(result.charAt(0))) result = "Element_" + result;
+        return result;
     }
 
     static String hash(String value) {

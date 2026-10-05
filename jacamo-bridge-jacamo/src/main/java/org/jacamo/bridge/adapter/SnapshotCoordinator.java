@@ -48,20 +48,25 @@ public final class SnapshotCoordinator implements AutoCloseable {
         synchronized (eventLock) {
             if (closed.get()) return;
             if (capturing) {
-                if (!buffered.offer(event)) overflow.set(true);
+                if (!buffered.offer(event) && overflow.compareAndSet(false,true))
+                    liveObserver.accept(new RuntimeEvent("snapshot-buffer-gap:"+event.eventId(),event.sessionId(),event.generation(),
+                            event.modelRevision(),event.subsystem(),event.sourceId(),event.sourceSequence(),event.observedAt(),
+                            org.jacamo.bridge.contract.RuntimeEventKind.GAP,null,null,null,null,event.correlationId(),event.eventId(),
+                            Map.of(),Map.of("diagnostic","SNAPSHOT_CALLBACK_BUFFER_OVERFLOW"),event.watermark(),Completeness.PARTIAL,event.evidence()));
                 return;
             }
             liveObserver.accept(event);
         }
     }
 
-    public Capture capture(String modelRevision, int maxAttempts) throws Exception {
+    public synchronized Capture capture(String modelRevision, int maxAttempts) throws Exception {
         if (closed.get()) throw new IllegalStateException("SNAPSHOT_COORDINATOR_CLOSED");
         for (int attempt = 1; attempt <= maxAttempts; attempt++) {
             synchronized (eventLock) {
                 overflow.set(false);
                 capturing = true;
             }
+            try {
             Instant startTime = Instant.now();
             var start = watermarks(); var topology = topology(); var facts = new ArrayList<RuntimeFact>();
             for (SnapshotSource source : sources) facts.addAll(source.capture());
@@ -71,11 +76,6 @@ public final class SnapshotCoordinator implements AutoCloseable {
                     .map(fact -> fact.id().authority()).distinct()
                     .anyMatch(source -> !java.util.Objects.equals(start.get(source), end.get(source)));
             if (overflow.get() || !topology.equals(afterTopology) || regressed(start, end) || changedAuthoritativeSource) {
-                // Do not discard events observed during a rejected cut.  A
-                // later accepted cut either includes them in its watermark or
-                // replays them after its watermark; dropping them would create
-                // a false per-source sequence gap for a live mirror.
-                synchronized (eventLock) { capturing = false; }
                 continue;
             }
             String fingerprint = digest(CanonicalJson.encode(Map.of("modelRevision", modelRevision,
@@ -87,14 +87,27 @@ public final class SnapshotCoordinator implements AutoCloseable {
             synchronized (eventLock) {
                 replay = buffered.stream().filter(event -> event.sourceSequence() >
                         end.getOrDefault(event.sourceId(), new SourceWatermark(event.sourceId(), 0)).sequence()).toList();
-                for (RuntimeEvent event : replay) liveObserver.accept(event);
-                buffered.clear();
-                capturing = false;
+                publishBuffered();
             }
             return new Capture(snapshot, replay);
+            } finally {
+                // Existing subscribers have older cuts: even callbacks covered by
+                // this snapshot must reach their stream. The capturing client can
+                // discard them only using its own exact snapshot watermarks.
+                synchronized(eventLock) {if(capturing)publishBuffered();}
+            }
         }
-        synchronized (eventLock) { capturing = false; buffered.clear(); }
         throw new ContractException("SNAPSHOT_CUT_NOT_STABLE");
+    }
+
+    /** Called under eventLock; bounded non-blocking transport enqueue only. */
+    private void publishBuffered() {
+        try {for(RuntimeEvent event;(event=buffered.poll())!=null;)liveObserver.accept(event);}
+        finally {buffered.clear();capturing=false;}
+    }
+
+    public void poll() throws Exception {
+        if(!closed.get()) for(var source:sources) source.poll();
     }
 
     private Map<String,SourceWatermark> watermarks() { var map=new TreeMap<String,SourceWatermark>(); for(var source:sources) map.put(source.sourceId(),source.watermark()); return map; }

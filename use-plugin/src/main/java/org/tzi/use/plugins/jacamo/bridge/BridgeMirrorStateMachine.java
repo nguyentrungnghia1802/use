@@ -12,7 +12,9 @@ import org.jacamo.bridge.contract.EventLedger;
 import org.jacamo.bridge.contract.RuntimeEvent;
 import org.jacamo.bridge.contract.RuntimeEventKind;
 import org.jacamo.bridge.contract.RuntimeFact;
+import org.jacamo.bridge.contract.RuntimeFactKind;
 import org.jacamo.bridge.contract.RuntimeSnapshot;
+import org.jacamo.bridge.contract.VerificationBoundary;
 
 /** Transactional, incarnation-aware neutral mirror ahead of frozen runtime mapping. */
 public final class BridgeMirrorStateMachine {
@@ -56,22 +58,38 @@ public final class BridgeMirrorStateMachine {
         long previous=sequences.getOrDefault(event.sourceId(),-1L);
         if(event.sourceSequence()<=previous){
             EventLedger.Result duplicate;
-            try { duplicate=ledger.accept(event,ContractPayloads.event(event)); }
+            try { duplicate=ledger.inspect(event,ContractPayloads.event(event)); }
             catch(ContractException conflict){state=BridgeClientState.RESYNC_REQUIRED;throw new BridgeProtocolException("BRIDGE_EVENT_CONFLICT",conflict);}
             if(duplicate==EventLedger.Result.DUPLICATE)return false;
             state=BridgeClientState.RESYNC_REQUIRED;throw new BridgeProtocolException("BRIDGE_EVENT_SEQUENCE_REWIND");
         }
         if(previous>=0 && event.sourceSequence()!=previous+1){state=BridgeClientState.RESYNC_REQUIRED;throw new BridgeProtocolException("BRIDGE_EVENT_GAP:"+event.sourceId()+":previous="+previous+":current="+event.sourceSequence());}
         EventLedger.Result accepted;
-        try { accepted=ledger.accept(event,ContractPayloads.event(event)); }
+        try { accepted=ledger.inspect(event,ContractPayloads.event(event)); }
         catch(ContractException conflict){state=BridgeClientState.RESYNC_REQUIRED;throw new BridgeProtocolException("BRIDGE_EVENT_CONFLICT",conflict);}
         if(accepted==EventLedger.Result.DUPLICATE)return false;
+        if(event.kind()==RuntimeEventKind.STREAM_BOUNDARY) {
+            try { VerificationBoundary.require(event,sequences); }
+            catch(ContractException invalid) {
+                state=BridgeClientState.RESYNC_REQUIRED;
+                throw new BridgeProtocolException("BRIDGE_BOUNDARY_REJECTED",invalid);
+            }
+            sequences.put(event.sourceId(),event.sourceSequence());
+            ledger.accept(event,ContractPayloads.event(event));
+            return true;
+        }
         if(event.entityId()==null){state=BridgeClientState.RESYNC_REQUIRED;throw new BridgeProtocolException("BRIDGE_EVENT_ENTITY_REQUIRED");}
         String id=event.entityId().canonical();
+        boolean cartagoFocus=event.factKind()==RuntimeFactKind.RELATION_STATE
+                && event.entityId().authority().equals("cartago")
+                && event.entityId().dimension().equals("environment")
+                && event.entityId().kind().equals("focus");
         boolean creation=event.kind()==RuntimeEventKind.CREATED || event.kind()==RuntimeEventKind.ADDED
-                || event.kind()==RuntimeEventKind.JOINED || event.kind()==RuntimeEventKind.COMMITTED;
+                || event.kind()==RuntimeEventKind.JOINED || event.kind()==RuntimeEventKind.COMMITTED
+                || cartagoFocus && event.kind()==RuntimeEventKind.FOCUSED;
         boolean removal=event.kind()==RuntimeEventKind.DISPOSED || event.kind()==RuntimeEventKind.REMOVED
-                || event.kind()==RuntimeEventKind.QUIT || event.kind()==RuntimeEventKind.DECOMMITTED;
+                || event.kind()==RuntimeEventKind.QUIT || event.kind()==RuntimeEventKind.DECOMMITTED
+                || cartagoFocus && event.kind()==RuntimeEventKind.UNFOCUSED;
         RuntimeFact current=facts.get(id);
         if(current==null&&!creation){state=BridgeClientState.RESYNC_REQUIRED;throw new BridgeProtocolException("BRIDGE_UNKNOWN_INCARNATION:"+id);}
         if(removal)facts.remove(id);
@@ -79,7 +97,8 @@ public final class BridgeMirrorStateMachine {
         else facts.put(id,new RuntimeFact(event.entityId(),event.factKind(),event.after(),
                     event.relationId()==null?java.util.List.of():java.util.List.of(event.relationId()),
                     event.projectionStatus(),event.completeness(),event.evidence()));
-        sequences.put(event.sourceId(),event.sourceSequence()); return true;
+        sequences.put(event.sourceId(),event.sourceSequence());
+        ledger.accept(event,ContractPayloads.event(event)); return true;
     }
 
     private void requireRevision(String revision){if(!revision.equals(modelRevision))throw new BridgeProtocolException("BRIDGE_MODEL_REVISION_STALE");}

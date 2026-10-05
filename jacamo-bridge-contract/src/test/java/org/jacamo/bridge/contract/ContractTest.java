@@ -78,6 +78,17 @@ class ContractTest {
         assertEquals(event,ContractPayloads.event(decoded.payload()));
     }
 
+    @Test void publishedEnvelopeSchemaIncludesEverySupportedMessageType() throws Exception {
+        try (var input=ContractTest.class.getResourceAsStream("contract-envelope-v1.schema.json")) {
+            assertNotNull(input);
+            var schema=CanonicalJson.object(CanonicalJson.decode(input.readAllBytes()));
+            var properties=CanonicalJson.object(schema.get("properties"));
+            var messageType=CanonicalJson.object(properties.get("messageType"));
+            assertEquals(java.util.Arrays.stream(MessageType.values()).map(Enum::name).collect(java.util.stream.Collectors.toSet()),
+                    new java.util.HashSet<>((List<?>)messageType.get("enum")));
+        }
+    }
+
     @Test void identityIsReversibleIncarnationAwareAndDisplayCollisionSafe() {
         var composed = new BridgeEntityId("jason", "agent", "live", "prøj", "é/a%b", "s:1");
         var decomposed = new BridgeEntityId("jason", "agent", "live", "prøj", "e\u0301/a%b", "s:1");

@@ -28,7 +28,7 @@ class NativeRuntimeFacadeIntegrationTest {
         Session session=new Session();
         try(var facade=BridgeFacadeTestSupport.nativeFacade(jcm,session,()->false)) {
             facade.importProject(jcm); var system=session.system();
-            var path=directory.resolve("user.ocl");java.nio.file.Files.writeString(path,"context Plan inv Demo: true"); facade.loadVerificationProfile(path);
+            var path=directory.resolve("user.ocl");java.nio.file.Files.writeString(path,"context Agent inv Demo: true"); facade.loadVerificationProfile(path);
             var profile=facade.verificationSnapshot().profile(); int entries=facade.runtimeVerificationHistory().size();
             facade.disconnectRuntime(); assertSame(system,session.system()); assertSame(system,facade.materializedSystem());
             assertEquals(profile,facade.verificationSnapshot().profile());assertTrue(facade.runtimeVerificationHistory().size()>entries);
@@ -37,11 +37,14 @@ class NativeRuntimeFacadeIntegrationTest {
             assertEquals("CURRENT_OBSERVED",facade.runtimeVerificationResult().freshness());
         }
     }
-    @Test void failedProductionResyncCannotLeaveAPassingCachedResult() throws Exception {
+    @Test void failedProductionResyncCannotLeaveAPassingCachedResult(@org.junit.jupiter.api.io.TempDir java.nio.file.Path directory) throws Exception {
         var jcm = java.nio.file.Path.of("src/test/resources/canonical-cases/hello-world/helloworld.jcm").toAbsolutePath();
         var unavailable = new java.util.concurrent.atomic.AtomicBoolean(); Session session = new Session();
         try (var facade = BridgeFacadeTestSupport.nativeFacade(jcm, session, unavailable::get)) {
             facade.importProject(jcm); var system = session.system();
+            var profile = directory.resolve("defined.ocl");
+            java.nio.file.Files.writeString(profile, "context Agent inv Defined: not self.semanticId.oclIsUndefined()");
+            facade.loadVerificationProfile(profile); facade.resyncRuntime();
             assertTrue(facade.runtimeVerificationResult().count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.PASS) > 0);
             unavailable.set(true); assertThrows(RuntimeException.class, facade::resyncRuntime);
             assertSame(system, session.system());
@@ -83,22 +86,31 @@ class NativeRuntimeFacadeIntegrationTest {
         Session session = new Session();
         try (var facade = BridgeFacadeTestSupport.nativeFacade(jcm, session, () -> false)) {
             facade.importProject(jcm); var system = session.system();
-            var profile = directory.resolve("constraints.ocl"); java.nio.file.Files.writeString(profile, "context Plan inv ObservedViolation: false");
+            var profile = directory.resolve("constraints.ocl"); java.nio.file.Files.writeString(profile, "context Agent inv ObservedViolation: false");
             facade.loadVerificationProfile(profile);
+            assertTrue(facade.sourceExcerpt(profile,0).contains("line unavailable"));
+            assertTrue(facade.sourceExcerpt(profile,0).contains("ObservedViolation"));
+            assertTrue(facade.constraints().stream().filter(c->c.id().equals("EXTERNAL:Agent::ObservedViolation")).allMatch(c->c.sourceSpan()==null));
             long version = facade.runtimeVerificationResult().stateVersion();
             String hash = facade.runtimeVerificationResult().constraintSetHash();
-            assertTrue(facade.latestVerification().results().stream().anyMatch(result -> result.constraintId().equals("EXTERNAL:Plan::ObservedViolation")
+            assertTrue(facade.latestVerification().results().stream().anyMatch(result -> result.constraintId().equals("EXTERNAL:Agent::ObservedViolation")
                     && result.outcome() == org.tzi.use.plugins.jacamo.verification.VerificationOutcome.FAIL));
             facade.resyncRuntime();
             assertSame(system, session.system()); assertSame(system, facade.materializedSystem());
             assertTrue(facade.runtimeVerificationResult().stateVersion() > version);
             assertEquals(hash, facade.runtimeVerificationResult().constraintSetHash());
-            assertTrue(facade.constraints().stream().anyMatch(constraint -> constraint.id().equals("EXTERNAL:Plan::ObservedViolation")));
+            assertTrue(facade.constraints().stream().anyMatch(constraint -> constraint.id().equals("EXTERNAL:Agent::ObservedViolation")));
             java.nio.file.Files.writeString(profile, "context Missing inv Broken: true");
             assertThrows(IllegalArgumentException.class, () -> facade.loadVerificationProfile(profile));
             assertEquals(hash, facade.runtimeVerificationResult().constraintSetHash());
+            String excerpt=facade.sourceExcerpt(profile,0);
+            assertTrue(excerpt.contains("ObservedViolation"));
+            assertFalse(excerpt.contains("inv Broken"),"Source navigation must retain the bytes of the accepted interval");
+            assertTrue(excerpt.contains("Accepted OCL source SHA-256"));
             facade.resyncRuntime(); // Rebind the accepted source bytes, not the now-invalid on-disk file.
             assertSame(system, session.system()); assertEquals(hash, facade.runtimeVerificationResult().constraintSetHash());
+            java.nio.file.Files.delete(profile);
+            assertTrue(facade.sourceExcerpt(profile,0).contains("ObservedViolation"));
         }
     }
     @Test
@@ -123,7 +135,7 @@ class NativeRuntimeFacadeIntegrationTest {
             facade.importProject(jcm);
             var system = session.system();
             var agent = system.state().objectByName(system.state().allObjects().stream()
-                    .filter(object -> object.cls().name().equals("Agent")
+                    .filter(object -> "agent-program".equals(object.cls().getAnnotationValue("DomainProjection", "kind"))
                             && object.state(system.state()).attributeValue("semanticId").toString()
                             .equals("'" + agentSemanticId + "'")).findFirst().orElseThrow().name());
             assertEquals("facade-runtime-host", ((StringValue) agent.state(system.state())

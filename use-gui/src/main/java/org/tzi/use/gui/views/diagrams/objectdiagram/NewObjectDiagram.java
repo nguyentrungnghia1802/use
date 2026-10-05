@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -600,6 +601,54 @@ public class NewObjectDiagram extends DiagramViewWithObjectNode implements Highl
 		}
 	}
 
+    /** Rebind recreated native objects; USE object equality compares names alone. */
+    public void refreshObjectBindings(Collection<MObject> currentObjects) {
+        Map<MObject, MObject> replacements = new HashMap<>();
+        Set<MObject> hiddenObjects = new HashSet<>();
+        for (MObject current : currentObjects) {
+            ObjectNode node = visibleData.fObjectToNodeMap.get(current);
+            if (node == null) {
+                node = hiddenData.fObjectToNodeMap.get(current);
+                if (node != null) hiddenObjects.add(current);
+            }
+            if (node != null && node.object() != current) replacements.put(node.object(), current);
+        }
+        if (replacements.isEmpty()) return;
+
+        Set<MLink> represented = representedLinks(visibleData);
+        Set<MLink> hiddenLinks = representedLinks(hiddenData);
+        represented.addAll(hiddenLinks);
+        represented.removeIf(link -> link.linkedObjects().stream().noneMatch(replacements::containsKey)
+                && !(link instanceof MObject object && replacements.containsKey(object)));
+        represented.forEach(link -> {
+            deleteLink(link);
+            // Relative strategies reference the old edge's disposed waypoint.
+            // Keep fixed placement, but let recreated edges bind fresh strategies.
+            PositionStrategy strategy = lastKnownLinkPositions.get(link);
+            if (strategy != null && strategy.isCalculated()) lastKnownLinkPositions.remove(link);
+        });
+        replacements.forEach((previous, current) -> {
+            deleteObject(previous);
+            addObject(current);
+            if (hiddenObjects.contains(current)) hideObject(current);
+        });
+        // Take actual link instances from the same current native state, including
+        // links whose equal endpoints were recreated by authoritative replacement.
+        for (MLink current : fParent.system().state().allLinks()) {
+            if (represented.contains(current)) {
+                addLink(current);
+                if (hiddenLinks.contains(current)) hideLink(current);
+            }
+        }
+    }
+
+    private static Set<MLink> representedLinks(ObjectDiagramData data) {
+        Set<MLink> links = new HashSet<>(data.fBinaryLinkToEdgeMap.keySet());
+        links.addAll(data.fNaryLinkToDiamondNodeMap.keySet());
+        links.addAll(data.fLinkObjectToNodeEdge.keySet());
+        return links;
+    }
+
 	/**
 	 * Adds a link to the diagram.
 	 */
@@ -623,20 +672,30 @@ public class NewObjectDiagram extends DiagramViewWithObjectNode implements Highl
 
 		// object link
 		if (link instanceof MLinkObject) {
+			ObjectNode node1 = visibleData.fObjectToNodeMap.get(obj1);
+			ObjectNode node2 = visibleData.fObjectToNodeMap.get(obj2);
+			ObjectNode linkObjectNode = visibleData.fObjectToNodeMap.get(link);
+			boolean isHidden = node1 == null || node2 == null || linkObjectNode == null;
+			if (node1 == null) node1 = hiddenData.fObjectToNodeMap.get(obj1);
+			if (node2 == null) node2 = hiddenData.fObjectToNodeMap.get(obj2);
+			if (linkObjectNode == null) linkObjectNode = hiddenData.fObjectToNodeMap.get(link);
 			BinaryAssociationClassOrObject e = BinaryAssociationClassOrObject.create(
-					visibleData.fObjectToNodeMap.get(obj1), visibleData.fObjectToNodeMap.get(obj2),
-					linkEnd1, linkEnd2, visibleData.fObjectToNodeMap.get(link), this,
-					link);
+					node1, node2, linkEnd1, linkEnd2, linkObjectNode, this, link);
 
-			if (lastKnownLinkPositions.containsKey(link)) {
+			if (isHidden || lastKnownLinkPositions.containsKey(link)) {
 				e.initialize();
-				visibleData.fObjectToNodeMap.get(link).setStrategy(lastKnownLinkPositions.get(link));
-				lastKnownLinkPositions.remove(link);
-				fGraph.addInitializedEdge(e);
+				PositionStrategy position = lastKnownLinkPositions.remove(link);
+				if (position != null) linkObjectNode.setStrategy(position);
+				if (!isHidden) fGraph.addInitializedEdge(e);
 			} else {
 				fGraph.addEdge(e);
 			}
-			visibleData.fLinkObjectToNodeEdge.put((MLinkObject) link, e);
+			if (isHidden) {
+				hiddenData.fLinkObjectToNodeEdge.put((MLinkObject) link, e);
+				showOrHideObjectNode((MObject) link, false);
+			} else {
+				visibleData.fLinkObjectToNodeEdge.put((MLinkObject) link, e);
+			}
 			fLayouter = null;
 		} else {
 			// binary link

@@ -50,8 +50,8 @@ class CodeGroundedExportTest {
                 .flatMap(List::stream).anyMatch(value -> ((Map<?, ?>) value).get("sourceUri").equals("project:/helloworld.jcm")));
         first.source().programs().forEach(program -> program.planLibrary().plans().forEach(plan -> {
             var traceRows = first.trace().targetsForSource(plan.metadata().semanticId());
-            assertTrue(traceRows.stream().anyMatch(row -> row.targetKind().equals("MObject")));
-            assertTrue(traceRows.stream().filter(row -> row.targetKind().equals("MObject") || row.targetKind().equals("MValue"))
+            assertTrue(traceRows.stream().anyMatch(row -> row.targetKind().equals("SemanticEvidence")));
+            assertTrue(traceRows.stream().filter(row -> row.targetKind().equals("SemanticEvidence"))
                     .allMatch(row -> row.sourceEvidence().equals(plan.metadata().evidence())));
         }));
     }

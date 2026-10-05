@@ -163,6 +163,32 @@ public final class MSystemState {
 	
 	private Object  dirtyLock = new Object();
 	private boolean derivedIsDirty = true;
+
+    /**
+     * Initialize additive stored attributes and ordinary associations in this state.
+     * Existing object states, values, objects and links retain their identity. Callers
+     * must serialize the complete schema extension with their normal state writer.
+     * New derived/union associations or initialized/derived attribute slots require
+     * their own evaluation lifecycle and are rejected before any slots are added.
+     */
+    public void initializeStoredModelExtensions() {
+        fSystem.assertUserMutationAllowed();
+        List<MAssociation> associations = fSystem.model().getAssociationsIncludingImports().stream()
+                .filter(association -> !fLinkSets.containsKey(association)).toList();
+        if (associations.stream().anyMatch(association -> association.isDerived() || association.isUnion())) {
+            throw new IllegalArgumentException("STORED_MODEL_EXTENSION_REQUIRES_ORDINARY_ASSOCIATIONS");
+        }
+        for (MObjectState objectState : fObjectStates.values()) {
+            for (MAttribute attribute : objectState.object().cls().allAttributes()) {
+                if (!objectState.attributeValueMap().containsKey(attribute)
+                        && (attribute.isDerived() || attribute.getInitExpression().isPresent())) {
+                    throw new IllegalArgumentException("STORED_MODEL_EXTENSION_REQUIRES_STORED_ATTRIBUTES");
+                }
+            }
+        }
+        associations.forEach(association -> fLinkSets.put(association, new MLinkSet(association)));
+        fObjectStates.values().forEach(MObjectState::initializeStoredAttributeSlots);
+    }
 	
 	/**
 	 * Invokes updates on the controller for derived

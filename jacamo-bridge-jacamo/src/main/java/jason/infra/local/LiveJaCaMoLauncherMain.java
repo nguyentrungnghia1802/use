@@ -20,6 +20,7 @@ public final class LiveJaCaMoLauncherMain {
     private LiveJaCaMoLauncherMain() { }
 
     public static void main(String[] args) throws Exception {
+        java.io.PrintStream processOut=System.out, processErr=System.err;
         if (args.length < 2) throw new IllegalArgumentException("REAL_JACAMO_ARGS_REQUIRED");
         Path project = Path.of(args[0]).toAbsolutePath().normalize();
         Path stop = Path.of(args[1]).toAbsolutePath().normalize();
@@ -41,7 +42,7 @@ public final class LiveJaCaMoLauncherMain {
             throw new IllegalArgumentException("REAL_JACAMO_PROJECT_MISSING:" + project);
 
         BaseLocalMAS.logger = Logger.getLogger(JaCaMoLauncher.class.getName());
-        JaCaMoLauncher launcher = new JaCaMoLauncher() {
+        JaCaMoLauncher launcher = new org.jacamo.bridge.adapter.BridgeControlledLauncher() {
             /** Official platforms (including Bridge) start before RunLocalMAS calls this hook. */
             @Override protected void startAgs() {
                 if (startupDirectory != null) {
@@ -93,18 +94,32 @@ public final class LiveJaCaMoLauncherMain {
                 // logging.properties file.  No project source is modified or interpreted here.
                 try (InputStream configuration = getDefaultLogProperties()) {
                     java.util.logging.LogManager.getLogManager().readConfiguration(configuration);
+                    if (Boolean.getBoolean("jacamo.launch.captureConsole")) {
+                        // JaCaMo redirects System.err to MASConsoleGUI during init. Retain the
+                        // original subprocess stream so errors remain available as evidence.
+                        var capture=new java.util.logging.StreamHandler(processErr,new java.util.logging.SimpleFormatter()) {
+                            @Override public synchronized void publish(java.util.logging.LogRecord record) {
+                                super.publish(record); flush();
+                            }
+                        };
+                        Logger.getLogger("").addHandler(capture);
+                    }
                 } catch (java.io.IOException failure) { throw new IllegalStateException("LAUNCH_LOG_CONFIGURATION_FAILED", failure); }
             }
         };
         BaseLocalMAS.runner = launcher;
-        RuntimeServicesFactory.set(new JaCaMoRuntimeServices(launcher));
+        RuntimeServicesFactory.set(new org.jacamo.bridge.adapter.BridgeRuntimeServices(launcher));
         boolean created = false;
         JaCaMoBridgePlatform bridge = null;
         boolean stoppedNormally = false;
         try {
             System.out.println("REAL_JACAMO_INIT project=" + project + " headless=" + headless);
             System.out.flush();
-            int status = launcher.init(new String[] { project.toString() });
+            int status;
+            try { status = launcher.init(new String[] { project.toString() }); }
+            finally { if (Boolean.getBoolean("jacamo.launch.captureConsole")) {
+                System.setOut(processOut); System.setErr(processErr);
+            } }
             if (status != 0) throw new IllegalStateException("REAL_JACAMO_INIT_FAILED:" + status);
             // JaCaMo 1.3.1's parser leaves this metadata unset for a direct launcher call.
             // Supplying the already validated source path keeps the official adapters rooted
@@ -187,7 +202,9 @@ public final class LiveJaCaMoLauncherMain {
             return "handlers=java.util.logging.ConsoleHandler\n"
                     + ".level=INFO\n";
         }
-        return "handlers=jason.runtime.MASConsoleLogHandler\n"
+        // Evidence subprocesses can capture bootstrap errors while keeping the native console.
+        String capturedConsole = Boolean.getBoolean("jacamo.launch.captureConsole") ? ",java.util.logging.ConsoleHandler" : "";
+        return "handlers=jason.runtime.MASConsoleLogHandler" + capturedConsole + "\n"
                 + ".level=INFO\n"
                 + "jason.runtime.MASConsoleLogHandler.level=ALL\n"
                 + "jason.runtime.MASConsoleLogHandler.formatter=jason.runtime.MASConsoleLogFormatter\n"

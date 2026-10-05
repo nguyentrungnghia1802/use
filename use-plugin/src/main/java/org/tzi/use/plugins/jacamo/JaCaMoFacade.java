@@ -28,6 +28,20 @@ public interface JaCaMoFacade {
     default void loadVerificationProfile(Path profile) { throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED"); }
     default WorkflowStatus workflowStatus() { return new WorkflowStatus("NOT_IMPORTED", false, false, "", "OBSERVE_ONLY", "", ""); }
     default void startRuntime() { throw new UnsupportedOperationException("START_RUNTIME_UNAVAILABLE:OBSERVE_ONLY"); }
+    default org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeControlService.View runtimeControlState(){return null;}
+    default java.util.concurrent.CompletableFuture<org.jacamo.bridge.contract.RuntimeControlContract.Status> pauseRuntime(String reason){throw new UnsupportedOperationException("CONTROL_UNAVAILABLE");}
+    default java.util.concurrent.CompletableFuture<org.jacamo.bridge.contract.RuntimeControlContract.Status> resumeRuntime(){throw new UnsupportedOperationException("CONTROL_UNAVAILABLE");}
+    default List<org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationViolation> runtimeViolations(){return List.of();}
+    default org.tzi.use.plugins.jacamo.codegrounded.runtime.GoalViewSnapshot goalView(){return org.tzi.use.plugins.jacamo.codegrounded.runtime.GoalViewSnapshot.empty();}
+    default String sourceExcerpt(Path file,int line){return "Source unavailable: "+file+(line>0?":"+line:" (line unavailable)");}
+    default void showObjectDiagram(){throw new UnsupportedOperationException("ACTIVE_USE_GUI_UNAVAILABLE");}
+    default List<org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.RuntimeConstraint> runtimeConstraints(){return List.of();}
+    default void configureRuntimeConstraint(String id,org.tzi.use.plugins.jacamo.codegrounded.constraint.RuntimeConstraintPolicy policy){throw new UnsupportedOperationException("CONTROL_UNAVAILABLE");}
+    default org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot failingSnapshot(){return null;}
+    default org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot confirmationSnapshot(){return null;}
+    default org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot previousFailureSnapshot(){return null;}
+    default org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot lastPassingBeforeFailure(){return null;}
+    default Map<String,Object> runtimePerformanceMetrics(){return Map.of();}
     default void cancelRuntimeStartup() { }
     default void exportVerificationReport(Path destination) { throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED"); }
     default void exportNativeUse(Path destination) { throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED"); }
@@ -68,9 +82,6 @@ public interface JaCaMoFacade {
     default FormalStateStatus formalStateStatus() { return FormalStateStatus.empty(); }
     /** Returns the latest measured pipeline and runtime values; zero means that no measurement is available yet. */
     default PerformanceMetrics performanceMetrics() { return PerformanceMetrics.empty(); }
-    default void persistBinding(Path destination, BindingRequest request, String selectedTargetId, String reason) {
-        throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED");
-    }
 
     record ProjectSummary(Path entry, Path projectRoot, String projectId, int sourceCount,
                           Map<String, Long> dimensionCounts,
@@ -140,9 +151,4 @@ public interface JaCaMoFacade {
                               long runtimeLastLatencyNanos, long usedMemoryBytes) {
         public static PerformanceMetrics empty() { return new PerformanceMetrics(0, 0, 0, 0, 0); }
     }
-    record BindingRequest(String sourceId, String owner, String type, Path sourcePath, String sourceHash,
-                          List<BindingCandidate> candidates) {
-        public BindingRequest { candidates = List.copyOf(candidates); }
-    }
-    record BindingCandidate(String semanticId, String owner, String type, Path sourcePath) { }
 }

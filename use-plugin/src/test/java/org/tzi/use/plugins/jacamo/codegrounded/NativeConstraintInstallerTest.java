@@ -13,20 +13,19 @@ import org.tzi.use.plugins.jacamo.codegrounded.constraint.NativeConstraintInstal
 import org.tzi.use.plugins.jacamo.codegrounded.constraint.NativeConstraintSpec;
 
 class NativeConstraintInstallerTest {
-    @Test void installsJasonOrderAndMoiseFormationConstraintsThroughTheModelApi() throws Exception {
+    @Test void nativeMultiplicityReplacesFormationOclAndNoJasonOrNormInvariantIsInvented() throws Exception {
         var result = CodeGroundedTestFixtures.helloPipeline();
-        assertEquals(Set.of("A17OrderConsistent", "A19OrderConsistent", "A20NextAgreesWithA19"),
-                result.model().model().classInvariants().stream().filter(value -> value.name().startsWith("A"))
-                        .map(value -> value.name()).collect(Collectors.toSet()));
-        assertEquals(Set.of("Plan", "PlanLibrary"), result.model().model().classInvariants().stream()
-                .filter(value -> value.name().startsWith("A")).map(value -> value.cls().name()).collect(Collectors.toSet()));
-        assertEquals(3 + result.model().moiseProjection().constraints().size(), result.model().model().classInvariants().size());
-        assertFalse(result.model().moiseProjection().constraints().isEmpty());
-        assertTrue(result.model().constraints().stream().allMatch(value -> value.requiredRuleIds().stream().anyMatch(rule -> rule.startsWith("M"))
-                ? "OFFICIAL_MOISE_FORMATION_SCHEMA".equals(value.origin()) : "CODE_GROUNDED".equals(value.origin())));
-        assertTrue(result.model().constraints().stream().noneMatch(value -> value.requiredRuleIds().contains("M14")));
-        assertEquals(Set.of("C08LiveObservablePropertyAvailable"), result.model().skippedConstraints().stream()
-                .map(value -> value.name()).collect(Collectors.toSet()));
+        assertEquals(Set.of("GoalDecompositionContext","GoalAcyclic","GoalSequenceOrdinals","MissionGoalContext",
+                "SchemeGoalContext","GoalStateContext","GoalCommittedResponsibility"),
+                result.model().constraints().stream().map(NativeConstraintSpec::name).collect(Collectors.toSet()));
+        assertEquals(7,result.model().model().classInvariants().size());
+        assertTrue(result.model().constraints().stream().allMatch(c->c.origin().startsWith("CORE:GOAL:")),
+                "Generic Goal rules do not imply Jason AST or deontic Norm equivalence");
+        assertTrue(result.model().model().classInvariants().stream().allMatch(i->"REPORT_ONLY".equals(
+                i.getAnnotationValue("RuntimeConstraint","enforcement"))));
+        assertTrue(result.model().model().associations().stream().anyMatch(a -> a.getAnnotation(
+            org.tzi.use.plugins.jacamo.codegrounded.use.MoiseDomainProjection.ROLE_ASSOCIATION)!=null));
+        assertTrue(result.trace().records().stream().anyMatch(t -> t.diagnostics().contains("STATUS=UNSUPPORTED_NORM_TRANSLATION")));
     }
 
     @Test void skippedCapabilityIsReportedAndNeverInstalledAsOcl() throws Exception {

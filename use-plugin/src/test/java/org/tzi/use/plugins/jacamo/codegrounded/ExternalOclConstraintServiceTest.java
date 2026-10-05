@@ -13,11 +13,11 @@ class ExternalOclConstraintServiceTest {
         var system = pipeline.state().system();
         var service = new ExternalOclConstraintService(system);
         var profile = service.installSource("constraints.ocl", "context Agent inv Defined: not self.name.oclIsUndefined()\n"
-                + "context Plan inv Failing: false\ncontext Agent inv Invalid: if true then null else true endif\n", "revision");
+                + "context hello_Agent inv Failing: false\ncontext Agent inv Invalid: if true then null else true endif\n", "revision");
         assertSame(system, service.system()); assertEquals(3, profile.constraints().size());
         var results = service.evaluate(Map.of("jason", Completeness.COMPLETE), false);
         assertEquals(VerificationOutcome.PASS, outcome(results, "EXTERNAL:Agent::Defined"));
-        assertEquals(VerificationOutcome.FAIL, outcome(results, "EXTERNAL:Plan::Failing"));
+        assertEquals(VerificationOutcome.FAIL, outcome(results, "EXTERNAL:hello_Agent::Failing"));
         assertEquals(VerificationOutcome.ERROR, outcome(results, "EXTERNAL:Agent::Invalid"));
         assertEquals(64, profile.sourceHash().length());
         assertEquals("revision", profile.constraints().getFirst().modelRevision());
@@ -61,16 +61,15 @@ class ExternalOclConstraintServiceTest {
                 org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
         var system = pipeline.state().system();
         var service = new ExternalOclConstraintService(system);
-        assertNotNull(system.model().getClass("LiveObservableProperty"));
-        assertTrue(system.state().objectsOfClass(system.model().getClass("LiveObservableProperty")).isEmpty());
-        service.installSource("c08.ocl", "context LiveObservableProperty inv Unavailable: true\n"
-                + "context Agent inv NoLiveProperties: LiveObservableProperty.allInstances()->isEmpty()", "revision");
-        var results = service.evaluate(Map.of("cartago", Completeness.COMPLETE, "jason", Completeness.COMPLETE), false);
-        for (String id : java.util.List.of("EXTERNAL:LiveObservableProperty::Unavailable", "EXTERNAL:Agent::NoLiveProperties")) {
-            assertEquals(VerificationOutcome.SKIPPED, outcome(results, id));
-            assertEquals("C08_UNAVAILABLE_BY_API", results.stream().filter(value -> value.constraintId().equals(id))
-                    .findFirst().orElseThrow().diagnostic());
-        }
+        assertNull(system.model().getClass("LiveObservableProperty"));
+        assertThrows(IllegalArgumentException.class, () -> service.installSource("c08.ocl",
+                "context Agent inv NoLiveProperties: LiveObservableProperty.allInstances()->isEmpty()", "revision"));
+        var outcomes=service.evaluate(Map.of("cartago", Completeness.COMPLETE, "jason", Completeness.COMPLETE), false);
+        assertEquals(7,outcomes.size());
+        assertTrue(outcomes.stream().allMatch(o->o.constraintId().startsWith("NATIVE:")),
+                "The rejected external profile cannot install an invariant over unavailable properties");
+        assertTrue(outcomes.stream().allMatch(o->o.outcome()==VerificationOutcome.PASS
+                || o.outcome()==VerificationOutcome.SKIPPED && o.diagnostic().equals("REQUIRED_CAPABILITY_UNAVAILABLE")));
         assertSame(system, service.system());
     }
 

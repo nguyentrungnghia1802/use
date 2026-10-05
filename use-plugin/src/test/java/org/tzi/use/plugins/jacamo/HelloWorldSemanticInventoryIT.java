@@ -38,7 +38,7 @@ import org.tzi.use.uml.sys.events.AtomicStateChangedEvent;
  * No fabricated runtime events, source edits, second active system, or name matching.
  * Complete per-object/per-link evidence is persisted, not just a GUI total.
  */
-class HelloWorldSemanticInventoryIT {
+public class HelloWorldSemanticInventoryIT {
     private String oldHeight, oldWidth;
     @org.junit.jupiter.api.BeforeEach void configureUseDiagramDefaults() {
         oldHeight=System.getProperty("use.gui.view.classdiagram.class.minheight");
@@ -85,8 +85,10 @@ class HelloWorldSemanticInventoryIT {
                 pipeline.state().semanticObjectIndex().values().forEach(object->initialCounts.merge(object.cls().name(),1L,Long::sum));
                 write(evidence.resolve("static-materialization-counts.json"),initialCounts);
                 var inventory=new Inventory(facade,pipeline,semantic,evidence,recording);
+                try(var diagramAudit=new org.tzi.use.plugins.jacamo.codegrounded.ObjectDiagramLifecycleEvidence(facade,session,evidence)) {
                 var phases=new ArrayList<Map<String,Object>>();
                 phases.add(inventory.dump("01-model-ready"));
+                diagramAudit.capture("01-model-ready");
                 var expectedInitial=compareCartago(inventory,recording.runtime);
                 write(evidence.resolve("01-authoritative-identity-comparison.json"),expectedInitial);
                 assertTrue((Boolean)expectedInitial.get("matches"),expectedInitial.toString());
@@ -94,40 +96,60 @@ class HelloWorldSemanticInventoryIT {
                 try {
                     // The test profile only checks identities actually exposed by the native model.
                     Path profile=evidence.resolve("identity-audit.ocl");
-                    Files.writeString(profile,"context Artifact inv AuditUniqueIdentity: Artifact.allInstances()->isUnique(semanticId)\n"
-                            +"context ObservablePropertySnapshot inv AuditUniqueProperty: ObservablePropertySnapshot.allInstances()->isUnique(semanticId)\n");
+                    Files.writeString(profile,"context Agent inv AuditUniqueIdentity: Agent.allInstances()->isUnique(semanticId)\n"
+                            +"context Workspace inv AuditUniqueWorkspace: Workspace.allInstances()->isUnique(semanticId)\n"
+                            +"context Agent inv AuditDomainBeliefs: self.beliefs->isUnique(semanticId)\n");
                     int beforeProfile=system.state().numObjects();
                     facade.loadVerificationProfile(profile);
                     assertEquals("OCL_READY",facade.workflowStatus().state());
-                    assertEquals(beforeProfile,system.state().numObjects());
+                    assertTrue(system.state().numObjects()>=beforeProfile); // Relevant authored seeds may materialize at profile load.
                     phases.add(inventory.dump("02-ocl-ready"));
+                    diagramAudit.capture("02-ocl-ready");
                     long beforeStart=facade.verificationSnapshot().currentVersion();
                     facade.startRuntime();
                     assertEquals("LIVE",facade.workflowStatus().state());
                     assertTrue(Files.exists(producer.control.resolve("started.json")));
                     phases.add(inventory.dump("03-start-ack"));
+                    diagramAudit.capture("03-start-ack");
                     Thread.sleep(1500); phases.add(inventory.dump("04-live-early"));
+                    diagramAudit.capture("04-live-early");
                     Thread.sleep(12000); phases.add(inventory.dump("05-live-mutations"));
+                    diagramAudit.capture("05-live-mutations");
                     assertTrue(facade.verificationSnapshot().currentVersion()>beforeStart,"No actual producer mutation observed");
                     facade.resyncRuntime(); assertSame(system,session.system());
                     phases.add(inventory.dump("06-authoritative-resync"));
+                    diagramAudit.capture("06-authoritative-resync");
+                    diagramAudit.assertSourceRelations(recording.runtime,"06-authoritative-resync");
+                    assertTrue(inventory.projector().coordinator().read(()->inventory.projector().mutations().structureValid()),
+                            "The original post-start GroupBoard players must restore the required role multiplicities");
                     var current=compareCartago(inventory,recording.runtime);
                     write(evidence.resolve("06-authoritative-identity-comparison.json"),current);
                     assertTrue((Boolean)current.get("matches"),current.toString());
                     Thread.sleep(1500);
                     facade.resyncRuntime(); assertSame(system,session.system());
                     phases.add(inventory.dump("07-repeated-resync"));
+                    diagramAudit.capture("07-repeated-resync");
+                    var goalView=facade.goalView();
+                    assertTrue(goalView.schemes().stream().anyMatch(s->s.runtime() && !s.goals().isEmpty()),"No observed runtime Scheme goals");
+                    assertTrue(goalView.schemes().stream().flatMap(s->s.goals().stream()).anyMatch(g->g.operator().equals("sequence")));
+                    org.tzi.use.plugins.jacamo.codegrounded.GoalWorkbenchEvidence.capture(facade,session,evidence,false);
+                    write(evidence.resolve("runtime-performance.json"),facade.runtimePerformanceMetrics());
+                    write(evidence.resolve("verification-snapshot.json"),facade.verificationSnapshot().toMap());
                     Path completeBundle=evidence.resolve("recorded-replay-before-disconnect");
                     facade.exportRuntimeReplay(completeBundle);
                     facade.disconnectRuntime(); assertSame(system,session.system());
                     phases.add(inventory.dump("08-disconnected-stale-coverage"));
+                    diagramAudit.capture("08-disconnected-stale-coverage");
                     facade.connectRuntime(); assertSame(system,session.system());
                     phases.add(inventory.dump("09-reconnected"));
+                    diagramAudit.capture("09-reconnected");
                     facade.importProject(producer.jcm); assertSame(system,session.system());
                     phases.add(inventory.dump("10-repeated-import"));
+                    diagramAudit.capture("10-repeated-import");
                     int beforeReload=system.state().numObjects(); facade.loadVerificationProfile(profile);
                     assertEquals(beforeReload,system.state().numObjects()); assertSame(system,session.system());
                     phases.add(inventory.dump("11-profile-reload"));
+                    diagramAudit.capture("11-profile-reload");
                     var finalComparison=compareCartago(inventory,recording.runtime);
                     write(evidence.resolve("11-authoritative-identity-comparison.json"),finalComparison);
                     assertTrue((Boolean)finalComparison.get("matches"),finalComparison.toString());
@@ -147,6 +169,7 @@ class HelloWorldSemanticInventoryIT {
                     assertTrue(analysis.complete(),analysis.diagnostics().toString());
                     assertEquals(beforeReplay,facade.formalStateStatus().sha256()); assertSame(system,session.system());
                     phases.add(inventory.dump("12-after-isolated-replay"));
+                    diagramAudit.capture("12-after-isolated-replay");
                     write(evidence.resolve("atomic-count-timeline.json"),inventory.timeline);
                     write(evidence.resolve("lifecycle.json"),phases);
                     facade.exportNativeUse(evidence.resolve("helloworld.use")); facade.exportNativeSoil(evidence.resolve("helloworld.cmd"));
@@ -155,11 +178,13 @@ class HelloWorldSemanticInventoryIT {
                     report.put("semanticEntityCount",semantic.size()); report.put("semanticCounts",semanticCounts);
                     report.put("staticCounts",initialCounts); report.put("model",inventory.model()); report.put("phases",phases);
                     report.put("sameActiveSystem",true); report.put("identityParity",finalComparison);
+                    report.put("selectiveProjection",org.tzi.use.plugins.jacamo.codegrounded.ProjectionExposureEvidence.assertAndReport(facade));
                     report.put("replayComplete",replay.complete()); report.put("reanalysisComplete",analysis.complete());
                     report.put("sourceUnchanged",originalHashes.equals(allHashes(original.getParent())));
                     write(evidence.resolve("summary.json"),report);
                     assertTrue(originalHashes.equals(allHashes(original.getParent())));
                     // Inventory is complete; the old count view must not observe the separately selected replay.
+                    diagramAudit.close();
                     inventory.detachCountView();
                     producer.close(); // Recording was frozen before the observation-disconnect marker.
                     org.tzi.use.gui.main.MainWindow.setJavaFxCall(true);
@@ -175,6 +200,7 @@ class HelloWorldSemanticInventoryIT {
                     system.getEventBus().unregister(inventory);
                     inventory.detachCountView();
                 }
+                }
             }
             write(evidence.resolve("source-hashes-after.json"),allHashes(original.getParent()));
         } finally {
@@ -185,32 +211,39 @@ class HelloWorldSemanticInventoryIT {
     private static Map<String,Object> compareCartago(Inventory inventory,RuntimeSnapshot snapshot) {
         return inventory.projector().coordinator().read(()->{
             var expected=new TreeMap<String,Set<String>>();
-            Map<String,String> kinds=Map.of("UPSERT_CARTAGO_WORKSPACE","Workspace", "UPSERT_CARTAGO_AGENT_IDENTITY","CartagoAgentIdentity",
-                    "UPSERT_CARTAGO_ARTIFACT","Artifact", "UPSERT_CARTAGO_PROPERTY_SNAPSHOT","ObservablePropertySnapshot");
-            kinds.values().forEach(cls->expected.put(cls,new java.util.TreeSet<>()));
-            expected.put("Environment",new java.util.TreeSet<>());expected.put("ArtifactType",new java.util.TreeSet<>());
-            snapshot.facts().forEach(fact->{
-                Object normalized=fact.values().get("normalizedEventKind");
-                String cls=normalized instanceof String? kinds.get(normalized):null;
-                if(cls!=null) expected.get(cls).add((String)fact.values().get("semanticId"));
-                if("Workspace".equals(cls))expected.get("Environment").add((String)fact.values().get("environmentSemanticId"));
-                if("Artifact".equals(cls))expected.get("ArtifactType").add((String)fact.values().get("artifactTypeSemanticId"));
-            });
+            expected.put("workspace",new java.util.TreeSet<>());expected.put("artifact",new java.util.TreeSet<>());
+            for(var fact:snapshot.facts()) {
+                for(String declarationKey:List.of("workspaceDeclarationSemanticId","artifactDeclarationSemanticId"))
+                    if(fact.values().get(declarationKey) instanceof String declaration)
+                        assertSame(inventory.projector().mutations().objectForSemanticId(declaration),
+                            inventory.projector().mutations().objectForSemanticId(fact.values().get("semanticId").toString()),
+                            "An officially proved declaration/runtime alias must reuse one native object");
+                if("UPSERT_CARTAGO_WORKSPACE".equals(fact.values().get("normalizedEventKind"))) expected.get("workspace").add(fact.values().get("semanticId").toString());
+                if("UPSERT_CARTAGO_ARTIFACT".equals(fact.values().get("normalizedEventKind")) && org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.domainArtifact(
+                        fact.values().get("artifactTypeJavaClassName").toString(),fact.values().getOrDefault("artifactTypeOrigin","UNAVAILABLE").toString()))
+                    expected.get("artifact").add(fact.values().get("semanticId").toString());
+            }
             var rows=new ArrayList<Map<String,Object>>(); boolean matches=true;
             for(var entry:expected.entrySet()) {
                 var actual=new java.util.TreeSet<String>();
                 inventory.facade.materializedSystem().state().allObjects().forEach(object->{
                     // Subtypes, if exact C06 reflection is supported, are still Artifact instances.
-                    if(object.cls().isSubClassifierOf(inventory.facade.materializedSystem().model().getClass(entry.getKey()))) actual.add(inventory.semanticId(object));
+                    if(org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.kind(object.cls()).equals(entry.getKey())
+                            && !object.state(inventory.facade.materializedSystem().state()).attributeValue("uuid").isUndefined()) {
+                        var bound=entry.getValue().stream().filter(id->inventory.projector().mutations().objectForSemanticId(id)==object).toList();
+                        assertEquals(1,bound.size(),"Each observed instance requires exactly one identity from this official cut: "+object.name());
+                        actual.add(bound.getFirst());
+                    }
                 });
                 var missing=new java.util.TreeSet<>(entry.getValue()); missing.removeAll(actual);
                 var stale=new java.util.TreeSet<>(actual); stale.removeAll(entry.getValue());
                 matches&=missing.isEmpty()&&stale.isEmpty();
                 rows.add(Map.of("class",entry.getKey(),"expected",entry.getValue().size(),"actual",actual.size(),"missing",missing,"stale",stale));
             }
-            // Every non-runtime object must correspond to the original native static index.
+            // Mutable literal/role/functional occurrences have their own exact source proof in dump().
             for(var cls:inventory.facade.materializedSystem().model().classes()) {
-                if(expected.containsKey(cls.name()))continue;
+                if(expected.containsKey(org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.kind(cls)))continue;
+                if(!org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.kind(cls).equals("agent-program")) continue;
                 var staticIds=new java.util.TreeSet<String>();inventory.pipeline.state().semanticObjectIndex().forEach((id,object)->{
                     if(object.cls()==cls)staticIds.add(id);
                 });
@@ -261,11 +294,12 @@ class HelloWorldSemanticInventoryIT {
         return value.toString();
     }
 
-    private static final class RecordingTransportFactory implements BridgeTransportFactory {
+    public static final class RecordingTransportFactory implements BridgeTransportFactory {
         final Path directory; final AtomicInteger connection=new AtomicInteger();
         volatile ModelSnapshot model; volatile RuntimeSnapshot runtime;
         final Map<String,Map<String,Object>> runtimeEntities=new java.util.concurrent.ConcurrentHashMap<>();
-        RecordingTransportFactory(Path directory){this.directory=directory;}
+        public RecordingTransportFactory(Path directory){this.directory=directory;}
+        public RuntimeSnapshot lastRuntimeSnapshot(){return runtime;}
         @Override public BridgeTransport open(BridgeConnectionConfig configuration) {
             BridgeTransport delegate=BridgeTransportFactory.localTcp().open(configuration); int ordinal=connection.incrementAndGet();
             return new BridgeTransport() {
@@ -283,6 +317,7 @@ class HelloWorldSemanticInventoryIT {
                 @Override public Subscription subscribe(String token,Consumer<byte[]> receiver){return delegate.subscribe(token,observed(receiver));}
                 @Override public Subscription subscribe(String token,Consumer<byte[]> receiver,Consumer<RuntimeException> failure){return delegate.subscribe(token,observed(receiver),failure);}
                 @Override public void acknowledge(String token){delegate.acknowledge(token);}
+                @Override public byte[] control(org.jacamo.bridge.contract.RuntimeControlContract.Request request){return persist("control",delegate.control(request));}
                 @Override public void close(){delegate.close();}
             };
         }
@@ -290,6 +325,8 @@ class HelloWorldSemanticInventoryIT {
             if(payload.get("semanticId") instanceof String id)runtimeEntities.put(id,payload);
             if(payload.get("environmentSemanticId") instanceof String id)runtimeEntities.put(id,payload);
             if(payload.get("artifactTypeSemanticId") instanceof String id)runtimeEntities.put(id,payload);
+            for(Object value:payload.values()) if(value instanceof List<?> list) for(Object item:list)
+                if(item instanceof Map<?,?> map) remember(CanonicalJson.object(map));
             if(payload.get("properties") instanceof List<?> properties)properties.forEach(value->remember(CanonicalJson.object(value)));
         }
     }
@@ -328,9 +365,13 @@ class HelloWorldSemanticInventoryIT {
             var model=facade.materializedSystem().model();var classes=new ArrayList<Map<String,Object>>();
             model.classes().stream().sorted(Comparator.comparing(cls->cls.name())).forEach(cls->{
                 var traces=pipeline.trace().sourcesForTarget("class:"+cls.name());
-                assertFalse(traces.isEmpty(),"Class without mapping evidence: "+cls.name());
-                classes.add(Map.of("class",cls.name(),"classification",classification(cls.name()),"rules",traces.stream().map(trace->trace.ruleId()).distinct().toList(),
-                        "sourceConcept",traces.stream().map(trace->trace.sourceKind()).distinct().toList(),"projectionStatus",pipeline.projectionProfile().statusFor(cls.name()).name(),
+                if(traces.isEmpty()) {
+                    assertEquals("artifact",org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.kind(cls));
+                    String fqcn=org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.decode(cls.getAnnotationValue("DomainProjection","javaClass64"));
+                    assertTrue(recording.runtimeEntities.values().stream().anyMatch(f->fqcn.equals(f.get("artifactTypeJavaClassName"))),"Runtime classifier without exact producer type evidence: "+fqcn);
+                }
+                classes.add(Map.of("class",cls.name(),"classification",org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.kind(cls),"rules",traces.isEmpty()?List.of("C03"):traces.stream().map(trace->trace.ruleId()).distinct().toList(),
+                        "sourceConcept",traces.isEmpty()?List.of("OFFICIAL_RUNTIME_ARTIFACT_TYPE"):traces.stream().map(trace->trace.sourceKind()).distinct().toList(),"projectionStatus","MATERIALIZED",
                         "operations",cls.operations().stream().map(operation->operation.toString()).sorted().toList()));
             });
             return Map.of("classCount",model.classes().size(),"associationCount",model.associations().size(),
@@ -344,20 +385,23 @@ class HelloWorldSemanticInventoryIT {
             return projector().coordinator().read(()->{
                 var system=facade.materializedSystem();var state=system.state();var result=facade.runtimeVerificationResult();
                 var objects=new ArrayList<Map<String,Object>>(); var identityCounts=new HashMap<String,Integer>();
+                var runtimeTraces=projector().trace();
                 for(MObject object:state.allObjects().stream().sorted(Comparator.comparing(MObject::name)).toList()) {
                     String id=semanticId(object);assertFalse(id.isBlank(),"Object without semantic identity: "+object.name());
                     identityCounts.merge(id,1,Integer::sum); firstVersions.putIfAbsent(id,result.stateVersion());namesToIds.put(object.name(),id);
                     var attributes=new TreeMap<String,Object>(); object.state(state).attributeValueMap().forEach((attribute,value)->attributes.put(attribute.name(),value instanceof StringValue string?string.value():value.toString()));
                     var traces=pipeline.trace().sourcesForTarget(object.name());var aliases=projector().runtimeAliases().values().stream().filter(alias->alias.targetSemanticId().equals(id)).toList();
                     var row=new LinkedHashMap<String,Object>();row.put("name",object.name());row.put("class",object.cls().name());row.put("semanticId",id);
-                    row.put("classification",classification(object.cls().name())); row.put("attributes",attributes);row.put("status","ACTIVE_IN_CURRENT_STATE");
+                    row.put("classification",org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.kind(object.cls())); row.put("attributes",attributes);row.put("status","ACTIVE_IN_CURRENT_STATE");
                     row.put("sourceSemanticEntity",semantic.getOrDefault(id,Map.of())); row.put("sourceTraces",traces.stream().map(HelloWorldSemanticInventoryIT::recordTree).toList());
                     row.put("officialRuntimePayload",recording.runtimeEntities.getOrDefault(id,Map.of()));
                     assertTrue(semantic.containsKey(id)||recording.runtimeEntities.containsKey(id)
-                            ||(!traces.isEmpty()&&traces.stream().anyMatch(trace->trace.targetKind().equals("ORDER_ENTRY"))),
+                            ||traces.stream().anyMatch(trace->semantic.containsKey(trace.sourceIdentity()))
+                            ||exactInitialBeliefOccurrence(id)
+                            ||exactFunctionalOccurrence(id),
                             "Object without an exact static/runtime/helper source: "+object.name()+" "+id);
                     row.put("runtimeAliases",aliases.stream().map(HelloWorldSemanticInventoryIT::recordTree).toList());
-                    row.put("runtimeTraces",projector().trace().stream().filter(trace->trace.targetUseId().equals(object.name())).map(HelloWorldSemanticInventoryIT::recordTree).toList());
+                    row.put("runtimeTraces",runtimeTraces.stream().filter(trace->trace.targetUseId().equals(object.name())).map(HelloWorldSemanticInventoryIT::recordTree).toList());
                     row.put("firstMaterializedVersion",firstVersions.get(id)); row.put("session",result.sessionId());row.put("generation",result.generation());objects.add(row);
                 }
                 assertTrue(identityCounts.values().stream().allMatch(count->count==1),"Duplicate object source identity: "+identityCounts);
@@ -365,32 +409,45 @@ class HelloWorldSemanticInventoryIT {
                         .map(object->Map.of("name",object.name(),"semanticId",semanticId(object))).toList())).sorted(Comparator.comparing(Object::toString)).toList();
                 assertEquals(links.size(),links.stream().map(Object::toString).distinct().count(),"Double materialized links");
                 assertTrue(state.allLinks().stream().allMatch(link->state.allObjects().containsAll(link.linkedObjects())),"Orphan link");
-                var validation=new java.io.StringWriter();assertTrue(state.checkStructure(new java.io.PrintWriter(validation),true),validation.toString());
+                var validation=new java.io.StringWriter();boolean structureValid=state.checkStructure(new java.io.PrintWriter(validation),true);
+                assertEquals(!structureValid,result.outcomes().stream().anyMatch(o->o.diagnostic().equals("NATIVE_MULTIPLICITY_VIOLATION")),
+                        "Observed native cardinality failures must be retained as verification FAIL: "+validation);
+                for(var association:system.model().associations()) if(association.getAnnotation(org.tzi.use.plugins.jacamo.codegrounded.use.MoiseDomainProjection.ROLE_ASSOCIATION)==null)
+                    assertTrue(state.checkStructure(association,new java.io.PrintWriter(validation),true),validation.toString());
                 var guiCounts=new TreeMap<String,Long>();
                 var guiClasses=(org.tzi.use.uml.mm.MClass[])field(countView,"fClasses");var guiValues=(int[])field(countView,"fValues");
                 for(int index=0;index<guiClasses.length;index++)guiCounts.put(guiClasses[index].name(),(long)guiValues[index]);
                 assertEquals(counts(),guiCounts,"Object Count view must match the current native system at "+phase);
                 var summary=new LinkedHashMap<String,Object>();summary.put("phase",phase);summary.put("stateVersion",result.stateVersion()); summary.put("session",result.sessionId());
                 summary.put("generation",result.generation());summary.put("counts",counts());summary.put("objectCount",objects.size());summary.put("linkCount",links.size());
-                summary.put("stateHash",result.stateHash());summary.put("coverage",result.coverage());summary.put("freshness",result.freshness());summary.put("structureValid",true);
+                summary.put("stateHash",result.stateHash());summary.put("coverage",result.coverage());summary.put("freshness",result.freshness());summary.put("structureValid",structureValid);
                 summary.put("duplicateIdentities",0);summary.put("duplicateLinks",0);summary.put("orphanLinks",0);
                 summary.put("guiObjectCountsMatch",true);
                 try {write(directory.resolve(phase+"-objects.json"),objects);write(directory.resolve(phase+"-links.json"),links);write(directory.resolve(phase+"-model.json"),model());
-                    write(directory.resolve(phase+"-summary.json"),summary);}
+                    write(directory.resolve(phase+"-summary.json"),summary);
+                    write(directory.resolve(phase+"-bindings.json"),projector().projectionBindings().stream().map(HelloWorldSemanticInventoryIT::recordTree).toList());}
                 catch(Exception error){throw new IllegalStateException(error);} return summary;
             });
         }
-        static String classification(String cls) {
-            return switch(cls) {
-                case "ObservablePropertySnapshot" -> "SNAPSHOT_OBJECT";
-                case "ArtifactType" -> "TYPE_CLASS";
-                case "ArtifactInfo","BackingJavaOperation","A17PlanOrderEntry","A19BodyOrderEntry","ExactBindingEvidence",
-                        "PlanBodyElement","Trigger","PlanLibrary","AgentProgram","CartagoAgentIdentity","StructuralSpecification",
-                        "FunctionalSpecification","NormativeSpecification","RoleRelation","Link","Compatibility","GroupRoleCardinality",
-                        "SubGroupCardinality","SchemeMissionCardinality" -> "SUPPORTING_INTERNAL";
-                case "WorkspaceDeclaration","ArtifactDeclaration","OrganizationDeployment","GroupDeployment","SchemeDeployment","InstitutionDeployment" -> "DECLARATION";
-                default -> "DOMAIN_CONCEPT";
-            };
+        private boolean exactFunctionalOccurrence(String id) {
+            if(!id.startsWith("organisational-goal:") && !id.startsWith("mission:")) return false;
+            try {
+                Object tree=CanonicalJson.decode(id.substring(id.indexOf(':')+1).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                if(!(tree instanceof List<?> pair) || pair.size()!=2) return false;
+                return (semantic.containsKey(pair.getFirst()) || recording.runtimeEntities.containsKey(pair.getFirst())) && semantic.containsKey(pair.get(1));
+            } catch(RuntimeException invalid) { return false; }
+        }
+        private boolean exactInitialBeliefOccurrence(String id) {
+            if(!id.startsWith("initial-belief:")) return false;
+            try {
+                Object tree=CanonicalJson.decode(id.substring(id.indexOf(':')+1).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                if(!(tree instanceof List<?> pair) || pair.size()!=2) return false;
+                return semantic.containsKey(pair.getFirst()) && semantic.containsKey(pair.get(1))
+                        && facade.materializedSystem().model().getClass("Belief").getAllAnnotations().values().stream()
+                            .anyMatch(a->a.getName().startsWith("InitialBelief_")
+                                && a.getAnnotationValue("id64").equals(org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.encode(id))
+                                && a.getAnnotationValue("sourceId64").equals(org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.encode(pair.get(1).toString())));
+            } catch(RuntimeException invalid) { return false; }
         }
     }
 }

@@ -14,7 +14,7 @@ class ReplayStepFacadeTest {
         var session=new Session();
         try(var facade=BridgeFacadeTestSupport.nativeFacade(jcm,session,()->false)) {
             facade.importProject(jcm);var original=session.system();
-            var profile=root.resolve("user.ocl");Files.writeString(profile,"context Plan inv Recorded: true");
+            var profile=root.resolve("user.ocl");Files.writeString(profile,"context Agent inv Recorded: true");
             facade.loadVerificationProfile(profile);
             Path recording=root.resolve("recording");facade.exportRuntimeReplay(recording);
             String bytes=Files.readString(recording.resolve("runtime.jsonl"));
@@ -38,6 +38,9 @@ class ReplayStepFacadeTest {
             assertNotSame(original.model(),session.system().model());assertTrue(session.system().isReadOnly());
             assertEquals("REPLAY",facade.workflowStatus().state());assertFalse(facade.workflowStatus().startAvailable());
             assertEquals(org.tzi.use.plugins.jacamo.runtime.MirrorState.REPLAY,facade.runtimeStatus().state());
+            assertEquals("RECORDED_REPLAY",facade.goalView().synchronization());
+            assertEquals("READ_ONLY",facade.goalView().control());assertNull(facade.runtimeControlState());
+            assertTrue(facade.runtimeViolations().isEmpty());assertNull(facade.failingSnapshot());
             assertEquals(org.tzi.use.plugins.jacamo.bridge.BridgeClientState.DISCONNECTED,facade.authorityStatus().readiness());
             assertThrows(IllegalStateException.class,facade::startRuntime);
             assertThrows(IllegalStateException.class,facade::connectRuntime);

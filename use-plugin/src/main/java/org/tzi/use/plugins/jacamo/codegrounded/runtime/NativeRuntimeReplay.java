@@ -35,14 +35,32 @@ public final class NativeRuntimeReplay {
                 if (contents.findAny().isPresent()) throw new IllegalArgumentException("REPLAY_EXPORT_DIRECTORY_NOT_EMPTY");
             }
             Files.createDirectories(output);
-            Files.writeString(output.resolve("model.use"), coreUseText, StandardCharsets.UTF_8);
+            // Types/properties are needed by the recorded state. Operation descriptors and
+            // loaded profiles must become available at their recorded journal positions;
+            // printing future operations here would change earlier PRE/POST results.
+            var schema=new StringWriter(); var writer=new PrintWriter(schema,true);
+            var external=coordinator.constraints().savepoint().owned().keySet();
+            projector.system().model().processWithVisitor(new org.tzi.use.uml.mm.MMPrintVisitor(writer) {
+                @Override public void visitClassInvariant(org.tzi.use.uml.mm.MClassInvariant invariant) {
+                    if(!external.contains(invariant.qualifiedName())) super.visitClassInvariant(invariant);
+                }
+                @Override public void visitOperation(org.tzi.use.uml.mm.MOperation operation) {
+                    if(coordinator.operationAtBaseline(operation)) super.visitOperation(operation);
+                    else if(!operation.preConditions().isEmpty() || !operation.postConditions().isEmpty())
+                        throw new IllegalStateException("REPLAY_UNRECORDED_OPERATION_CONTRACT:"+operation.qualifiedName());
+                }
+                @Override public void visitPrePostCondition(org.tzi.use.uml.mm.MPrePostCondition condition) {
+                    if(coordinator.operationAtBaseline(condition.operation())) super.visitPrePostCondition(condition);
+                }
+            });
+            writer.flush(); Files.writeString(output.resolve("model.use"),schema.toString(),StandardCharsets.UTF_8);
             Files.copy(coordinator.checkpoints().baseline().commands(), output.resolve("baseline.cmd"));
             var profile = coordinator.constraints().profile();
             Files.writeString(output.resolve("constraints.ocl"), profile == null ? "" : profile.source(), StandardCharsets.UTF_8);
             Files.copy(coordinator.journal().path(), output.resolve("runtime.jsonl"));
             Map<String, Object> hashes = new LinkedHashMap<>();
             for (String file : FILES) hashes.put(file, ExternalOclConstraintService.sha256(Files.readAllBytes(output.resolve(file))));
-            Map<String, Object> manifest = Map.of("schemaVersion", "1.0.0", "files", hashes,
+            Map<String, Object> manifest = Map.of("schemaVersion", "1.1.0", "files", hashes,
                     "entries", coordinator.journal().persistedEntries(), "finalStateHash", coordinator.lastObservation().stateHash(),
                     "finalResultHash", coordinator.lastObservation().resultHash(), "baselineStateHash", coordinator.checkpoints().baseline().stateHash(),
                     "scope", "OBSERVED_SUPPORTED_PROJECTION_ONLY");
@@ -74,7 +92,7 @@ public final class NativeRuntimeReplay {
             Files.copy(root.resolve("manifest.json"), copy.resolve("manifest.json"));
             if (Files.size(copy.resolve("manifest.json")) > 65536) throw new IllegalArgumentException("REPLAY_MANIFEST_TOO_LARGE");
             Map<String, Object> manifest = CanonicalJson.object(CanonicalJson.decode(Files.readAllBytes(copy.resolve("manifest.json"))));
-            if (!"1.0.0".equals(manifest.get("schemaVersion"))) throw new IllegalArgumentException("REPLAY_SCHEMA_UNSUPPORTED");
+            if (!java.util.Set.of("1.0.0","1.1.0").contains(manifest.get("schemaVersion"))) throw new IllegalArgumentException("REPLAY_SCHEMA_UNSUPPORTED");
             if (!"OBSERVED_SUPPORTED_PROJECTION_ONLY".equals(manifest.get("scope"))) throw new IllegalArgumentException("REPLAY_SCOPE_UNSUPPORTED");
             Object entries = manifest.get("entries");
             if (!(entries instanceof Number count) || count.longValue() < 1 || count.longValue() > Integer.MAX_VALUE
@@ -119,7 +137,7 @@ public final class NativeRuntimeReplay {
                 while (cursor.hasNext()) {
                     var record = cursor.dispatchNext();
                     var result = cursor.projector.coordinator().lastObservation();
-                    boolean transition = (record.kind().equals("EVENT") || record.kind().equals("SNAPSHOT"))
+                    boolean transition = java.util.Set.of("EVENT","SNAPSHOT","OPERATION_PRE","OPERATION_POST").contains(record.kind())
                             && !previous.equals(result.stateHash());
                     if (transition) {
                         finishStep(index, cursor.previousResult, record.ordinal()-1);
@@ -289,7 +307,19 @@ public final class NativeRuntimeReplay {
         switch (kind) {
             case "SNAPSHOT" -> projector.applySnapshot(ContractPayloads.runtime(payload), (String)expected.get("sessionId"),
                     ((Number)expected.get("generation")).longValue());
-            case "EVENT" -> projector.apply(ContractPayloads.event(payload));
+            case "EVENT", "OPERATION_PRE", "OPERATION_POST", "STREAM_BOUNDARY" -> projector.apply(ContractPayloads.event(payload));
+            case "CAPABILITIES" -> {
+                Map<String,String> capabilities=new LinkedHashMap<>(),versions=new LinkedHashMap<>();
+                CanonicalJson.object(payload.get("capabilities")).forEach((key,value)->capabilities.put(key,(String)value));
+                CanonicalJson.object(payload.get("sourceVersions")).forEach((key,value)->versions.put(key,(String)value));
+                projector.coordinator().runtimeCapabilities(capabilities,versions);
+            }
+            case "POLICY" -> {
+                if(!recordedProfile){projector.coordinator().manualVerify();break;}
+                projector.coordinator().configurePolicy((String)payload.get("constraintId"),
+                        org.tzi.use.plugins.jacamo.codegrounded.constraint.RuntimeConstraintPolicy.fromMap(CanonicalJson.object(payload.get("policy"))),
+                        (String)payload.get("conditionFingerprint"));
+            }
             case "PROFILE" -> {
                 if (!recordedProfile) { projector.coordinator().manualVerify(); break; }
                 Map<String,Boolean> enabled=new LinkedHashMap<>();

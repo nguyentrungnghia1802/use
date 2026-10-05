@@ -6,6 +6,33 @@
 > Session/OCL/runtime verification`. `CODE_GROUNDED_NATIVE` is the default and
 > does not load V2 mappings, V2 OCL, or legacy text generation.
 
+The exposed policy is `NativeProjectionPolicy` 2.1.0: ten generic semantic bases,
+concrete ASL/Artifact/OS/Group/Scheme subclasses, contextual role association
+classes and native player link objects. Belief instances require project-authored
+provenance, active compiled OCL demand and no authoritative Artifact/organisation
+representation. The complete Jason cut stays internal/trace; profile reload selects
+again from current facts. Platform-owned artifact types are identified by their
+verified Java provider and stay internal. Agent goals and Moise functional state
+remain native verification state; Jason execution internals remain evidence.
+Recorded replay keeps exact hash checks. Reanalysis reports profile-driven Belief
+selection differences and requires parity of every other native object and link.
+Live focus/unfocus and join/quit use exact CArtAgO endpoint identities. Complete
+observer cuts reconcile those links; the implicit platform root and its runtime
+UUID bind one Workspace object. Changed supported Moise board cuts update roles,
+commitments and functional state during live observation, with global polling
+coverage still explicitly PARTIAL. Agent participation reaches Organization via
+its contextual role and Group.
+See [current architecture](docs/project/02-system-architecture.md) and
+[projection refactor evidence](docs/project/projection-refactor-before-after.md).
+
+The current Workbench has Project, Verification, Goal View, Trace / Source and
+Diagnostics. Checkpoints freeze immutable values from the active Session system.
+Explicitly approved HARD false conditions may request Jason ExecutionControl
+pause; all constraints default REPORT_ONLY. All current Jason agents must ACK,
+followed by authoritative resync and violation confirmation. PAUSED means “Jason
+agents paused”; in-flight CArtAgO/Moise work may finish. Explicit Resume needs
+ACK/resync before LIVE. See [current workflow](docs/project/12-plugin-ui-workflow.md).
+
 > **Historical 2026-09-27 executable live-runtime closure:** the production
 > `JaCaMoBridgePlatform` now injects `BridgeAgArch`, owns the official
 > `SnapshotCoordinator` sources, and serves a non-empty authenticated runtime cut.
@@ -15,9 +42,11 @@
 > distribution fingerprint
 > `a8cd26dadf45393fb4c73ffc7fc7a6f309b17a7af3a243a6a17f4712505fd6c9`, and
 > produced `756` runtime facts and `1,095` USE objects in a separate consumer JVM.
-> `BridgeVerificationGate` is now part of the production runtime verification path.
-> This run is retained as the first live Hello closure and is superseded for current
-> three-case acceptance by the 2026-09-28 record above.
+> That historical revision used `BridgeVerificationGate`; this class is now
+> test-only and absent from the current production JAR.
+> This run is retained as the first live Hello closure. Current semantic projection
+> and three-case acceptance are recorded in `docs/agent/task.md` and the projection
+> refactor evidence linked above.
 
 > **Historical compatibility evidence:** frozen V1/V2 Ecore, mapping, OCL and
 > runtime resources remain only for explicit compatibility/regression audits. They
@@ -40,6 +69,12 @@ connector implementations remain historical test evidence and are absent from th
 release JAR.
 
 ## Install
+
+For the managed Windows workflow use `tools/jacamo-bridge.ps1 -InteractiveGui`
+with the desired JCM. It stages the original project, installs the supported
+Bridge-controlled official launcher and leaves original sources unchanged.
+The manual platform-only observation setup below does not by itself establish
+ExecutionControl ownership; unavailable control is explicitly capability-gated.
 
 1. Use JDK 21 and USE 7.5.0.
 2. Extract the plugin archive into the USE installation root. This places the
@@ -72,11 +107,27 @@ installed binary distribution remains a documented manual environment check.
 
 Open `Plugins > JaCaMo > Open Workbench...` and select the same `.jcm` entry hosted
 by the Bridge. Selection is checked by exact JCM digest and project key before the
-official snapshot can materialize a USE model. The Runtime tab exposes authority,
-readiness, negotiated capabilities, completeness, model revision,
-session/generation, redacted endpoint and stale/resync state. Import, Connect,
+official snapshot can materialize a USE model. Project and Verification expose
+readiness, checkpoints, retained violations and separate synchronization/control
+states. The five primary tabs are Project, Verification, Goal View, Trace / Source
+and Diagnostics; raw runtime/replay information is secondary. Import, Connect,
 Reconnect and Resync perform an authoritative Bridge synchronization; the
 workbench never launches or reconstructs a JaCaMo application.
+
+Approved HARD false conditions freeze a VerificationSnapshot before authenticated
+pause. Capability-gated official Jason ExecutionControl requires all current
+agent-incarnation ACKs. PAUSED means **Jason agents paused**; in-flight CArtAgO and
+Moise/OrgBoard activity may finish. A separate authoritative cut classifies
+CONFIRMED / TRANSIENT_NOT_REPRODUCED / CONFIRMATION_ERROR. Explicit Resume waits
+for re-enable ACK and resync before LIVE. User OCL defaults REPORT_ONLY;
+ERROR/UNDEFINED/SKIPPED never automatically pause. No domain repair, console output
+pause, kill fallback or UI-click control is used.
+
+Goal View, native diagrams, OCL and diagnostics share the active Session system.
+Snapshots are immutable diagnostic copies with a configurable bounded eight-cut /
+16 MiB serialized tail and constant bounded failure/comparison pins. Current Moise
+1.1 goal evidence supports waiting/enabled/satisfied; impossible and unavailable
+fields stay explicitly unsupported. Source lines are shown only with real evidence.
 
 Historical `binding.json` and custom parser behavior are retained only in tests.
 Production Bridge identity is exact and never invokes fuzzy/source reconstruction.
@@ -86,7 +137,7 @@ The included `examples/auction` project is the release acceptance fixture. See
 `compatibility.json` for the exact supported scope.
 
 The current onboarding and architecture contract are in
-`docs/agent/CODE-GROUNDED-NATIVE-README.md` and `docs/agent/task.md`.
+`docs/project/02-system-architecture.md` and `docs/agent/task.md`.
 
 ## Reproducible live Bridge evidence
 
@@ -121,6 +172,6 @@ the first hexadecimal field with a SHA-256 digest of the ZIP before installation
 ### Historical V1/V2 compatibility contract
 
 The V1/V2 resources and their exact freeze evidence are retained only because the
-explicit `LEGACY_V2` compatibility API and regression/freeze tests still call them.
+historical test-only compatibility implementation and regression/freeze tests use them.
 They do not define native production semantics. No native caller loads those
 resources implicitly.

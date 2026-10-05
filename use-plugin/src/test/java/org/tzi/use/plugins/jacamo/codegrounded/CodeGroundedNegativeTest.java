@@ -22,7 +22,7 @@ class CodeGroundedNegativeTest {
         assertTrue(error.getMessage().startsWith("DUPLICATE_SEMANTIC_IDENTITY:"));
     }
 
-    @Test void unknownBodyTypeFailsClosedWithoutDroppingTheNode() throws Exception {
+    @Test void unknownBodyTypeRemainsExplicitEvidenceWithoutDroppingTheNode() throws Exception {
         var original = CodeGroundedTestFixtures.helloSnapshot().semanticContract();
         var programs = new ArrayList<>(original.jasonPrograms());
         int programIndex = -1, planIndex = -1;
@@ -45,9 +45,10 @@ class CodeGroundedNegativeTest {
         var source = new JacamoSpecificationModel(copy(original, programs));
         var trace = new CodeGroundedTraceCollector();
         var model = new NativeUseModelBuilder().build(source, trace);
-        var error = assertThrows(IllegalArgumentException.class,
-                () -> new NativeUseStateBuilder().build(source, model, trace));
-        assertTrue(error.getMessage().startsWith("JASON_BODY_TYPE_UNSUPPORTED:"));
+        var state = new NativeUseStateBuilder().build(source, model, trace);
+        assertNull(model.model().getClass("PlanBodyElement"));
+        assertTrue(state.trace().records().stream().anyMatch(r -> r.sourceIdentity().equals(body.metadata().semanticId())
+            && r.diagnostics().contains("JASON_BODY_TYPE_UNSUPPORTED_EVIDENCE_ONLY:futureBodyType")));
     }
 
     private static JacamoSemanticSnapshot copy(JacamoSemanticSnapshot source,

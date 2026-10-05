@@ -52,6 +52,7 @@ import java.util.*;
 public class ModelBrowser extends JPanel 
     implements DragSourceListener, DragGestureListener, ModelBrowserSorting.SortChangeListener {
     private MModel fModel;
+    private java.util.List<String> fSchemaSnapshot = java.util.List.of();
     private JTree fTree;
     private JEditorPane fHtmlPane;
     private ModelBrowserSorting fMbs;
@@ -266,6 +267,7 @@ public class ModelBrowser extends JPanel
      */
     public void setModel(MModel model) {
         fModel = model;
+        fSchemaSnapshot = schemaSnapshot();
 
         // Create the nodes.
         if (fModel != null ) {
@@ -296,6 +298,24 @@ public class ModelBrowser extends JPanel
         // reset HTML pane
         if (fHtmlPane != null )
             fHtmlPane.setText("");
+    }
+
+    /** Refresh declarations discovered in an existing active model, without replacing its system. */
+    public boolean refreshSchema() {
+        if (fSchemaSnapshot.equals(schemaSnapshot())) return false;
+        setModel(fModel);
+        return true;
+    }
+
+    private java.util.List<String> schemaSnapshot() {
+        if (fModel == null) return java.util.List.of();
+        var snapshot = new java.util.ArrayList<String>();
+        for (var cls : fModel.getClassesIncludingImports())
+            snapshot.add("class:" + cls.name() + ":" + cls.attributes() + ":" + cls.operations());
+        for (var association : fModel.getAssociationsIncludingImports())
+            snapshot.add("association:" + association.name() + ":" + association.associationEnds());
+        snapshot.sort(String::compareTo);
+        return java.util.List.copyOf(snapshot);
     }
 
     private void addImportedModels(DefaultMutableTreeNode fTop) {

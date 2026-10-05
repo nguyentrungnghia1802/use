@@ -54,6 +54,7 @@ public class ClassDiagramView extends JPanel
     private final MSystem fSystem;
 
     protected ClassDiagram fClassDiagram;
+    private final java.util.Set<Object> schemaElements = new java.util.HashSet<>();
 
     protected IRuntime pluginRuntime;
 
@@ -67,6 +68,7 @@ public class ClassDiagramView extends JPanel
     }
 
 	public void initDiagram(boolean loadDefaultLayout, ClassDiagramOptions opt) {
+        schemaElements.clear();
 		if (opt == null)
 			fClassDiagram = new ClassDiagram( this, fMainWindow.logWriter());
 		else
@@ -120,24 +122,24 @@ public class ClassDiagramView extends JPanel
         // read Classes
         Collection<MClass> allClasses = fSystem.model().getClassesIncludingImports();
         for (MClass cls : allClasses) {
-            fClassDiagram.addClass( cls );
+            if (schemaElements.add(cls)) fClassDiagram.addClass(cls);
         }
 
         // read data types
         Collection<MDataType> allDataTypes = fSystem.model().getDataTypesIncludingImports();
         for (MDataType dtp : allDataTypes) {
-            fClassDiagram.addDataType(dtp);
+            if (schemaElements.add(dtp)) fClassDiagram.addDataType(dtp);
         }
 
         // read Enumerations
         Collection<EnumType> allEnums = fSystem.model().getEnumTypesIncludingImports();
         for (EnumType enumeration : allEnums) {
-            fClassDiagram.addEnum( enumeration );
+            if (schemaElements.add(enumeration)) fClassDiagram.addEnum(enumeration);
         }
 
         // read signals
         for (MSignal s : fSystem.model().getSignalsIncludingImports()) {
-            fClassDiagram.addSignal( s );
+            if (schemaElements.add(s)) fClassDiagram.addSignal(s);
         }
 
         // read generalizations
@@ -145,16 +147,22 @@ public class ClassDiagramView extends JPanel
         Iterator<MGeneralization> edgeIter = genGraph.edgeIterator();
         while ( edgeIter.hasNext() ) {
             MGeneralization gen = edgeIter.next();
-            fClassDiagram.addGeneralization( gen );
+            if (schemaElements.add(gen)) fClassDiagram.addGeneralization(gen);
         }
 
         // read Associations
         Collection<MAssociation> allAssociations = fSystem.model().getAssociationsIncludingImports();
         for (MAssociation assoc : allAssociations) {
-            fClassDiagram.addAssociation( assoc );
+            if (schemaElements.add(assoc)) fClassDiagram.addAssociation(assoc);
         }
 
         fClassDiagram.initialize();
+    }
+
+    public void refreshSchema() {
+        initState();
+        fClassDiagram.refreshClassFeatures();
+        fClassDiagram.repaint();
     }
 
     @Override

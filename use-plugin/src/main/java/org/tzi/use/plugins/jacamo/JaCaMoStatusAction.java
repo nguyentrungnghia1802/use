@@ -11,7 +11,7 @@ public final class JaCaMoStatusAction implements IPluginActionDelegate {
     private final Consumer<String> showStatus;
 
     public JaCaMoStatusAction() {
-        this(SkeletonJaCaMoFacade.INSTANCE,
+        this(null,
                 message -> JOptionPane.showMessageDialog(null, message, "JaCaMo", JOptionPane.INFORMATION_MESSAGE));
     }
 
@@ -22,7 +22,8 @@ public final class JaCaMoStatusAction implements IPluginActionDelegate {
 
     @Override
     public void performAction(IPluginAction action) {
-        showStatus.accept(facade.status());
+        var service=facade!=null?facade:action!=null && action.getSession()!=null?DefaultJaCaMoFacade.forSession(action.getSession()):DefaultJaCaMoFacade.INSTANCE;
+        showStatus.accept(service.status());
     }
 
     @Override

@@ -25,11 +25,13 @@ class NativeUseSessionActivationTest {
             try (var facade = BridgeFacadeTestSupport.nativeFacade(project, session, () -> false)) {
                 var summary = facade.importProject(project);
                 assertTrue(summary.dimensionCounts().get("MOISE") > 0, "typed source records, not enactment objects");
-                assertTrue(session.system().model().classes().stream().anyMatch(cls -> "DOMAIN_SCHEMA".equals(
-                        cls.getAnnotationValue("MoiseProjection", "representation"))));
-                assertFalse(session.system().state().allObjects().stream().anyMatch(object ->
-                        object.cls().getAnnotation("MoiseProjection") != null),
-                        "static import must not fabricate Moise runtime enactments");
+                assertTrue(session.system().model().classes().stream().anyMatch(cls -> "organisation".equals(
+                        cls.getAnnotationValue("DomainProjection", "kind"))));
+                assertEquals(source.organizationDeployments().size(), session.system().state().allObjects().stream()
+                        .filter(object -> "organisation".equals(object.cls().getAnnotationValue("DomainProjection", "kind"))).count());
+                assertEquals(source.groupDeployments().size(), session.system().state().allObjects().stream()
+                        .filter(object -> "group".equals(object.cls().getAnnotationValue("DomainProjection", "kind"))).count());
+                assertNull(session.system().model().getClass("Role"));
                 assertEquals((long) source.exactBindings().size(), summary.dimensionCounts().get("CROSS"));
                 assertEquals("NATIVE_CURRENT", summary.mappingStatus());
                 assertSame(session.system(), facade.materializedSystem());
@@ -61,9 +63,10 @@ class NativeUseSessionActivationTest {
             assertSame(resynchronized, facade.materializedSystem());
             assertSame(resynchronized, session.system());
             assertNull(session.system().model().getClass("AgentProgram"),
-                    "AUTO projection keeps AgentProgram as evidence-only; FULL remains the audit profile");
-            assertNull(session.system().model().getClass("Organization"), "AUTO is domain-specific, not a metamodel inspector");
-            assertNotNull(session.system().model().getClass("O1"), "the official OS id specializes the schema");
+                    "Both modes preserve source programs without projecting execution structures");
+            assertNotNull(session.system().model().getClass("Organization"));
+            assertTrue(session.system().model().getClass("o1_Organization").parents()
+                    .contains(session.system().model().getClass("Organization")));
         }
     }
 

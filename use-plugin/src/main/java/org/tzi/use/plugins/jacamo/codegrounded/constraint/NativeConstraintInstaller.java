@@ -22,8 +22,13 @@ public final class NativeConstraintInstaller {
                     skipped.add(constraint);
                     continue;
                 }
-                installed.add(api.createInvariant(constraint.name(), constraint.targetContext(),
-                        constraint.oclBody(), false));
+                var invariant=api.createInvariant(constraint.name(), constraint.targetContext(),constraint.oclBody(),false);
+                invariant.addAnnotation(new org.tzi.use.uml.mm.MElementAnnotation("RuntimeConstraint",java.util.Map.of(
+                        "origin",constraint.origin().startsWith("CORE:GOAL:")?"CORE":"TRANSLATED","provenance",constraint.origin(),
+                        "capabilities",String.join(",",constraint.requiredCapabilities()),"severity",constraint.origin().startsWith("CORE:GOAL:")?"HARD":"SOFT",
+                        "enforcement","REPORT_ONLY",
+                        "bodyHash",ExternalOclConstraintService.sha256(invariant.bodyExpression().toString().getBytes(java.nio.charset.StandardCharsets.UTF_8)))));
+                installed.add(invariant);
             }
             return new InstallationResult(installed, skipped);
         } catch (UseApiException error) {

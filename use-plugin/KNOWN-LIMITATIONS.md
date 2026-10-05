@@ -1,5 +1,48 @@
 # Known Limitations
 
+## Current supported subset — 2026-10-05
+
+- One native checkpoint/snapshot/verification production pipeline uses the active
+  Session system. Old RuntimeMirrorService/verifier/connector and LEGACY_V2 paths
+  are test-only; production construction rejects LEGACY_V2. Frozen compatibility
+  files below describe their historical release and are not current runtime inputs.
+- Control requires the plugin-owned supported Jason ExecutionControl scheduler.
+  Every current agent incarnation must ACK. Missing/partial ACK and unsupported
+  controller ownership fail closed. PAUSED means **Jason agents paused** at
+  reasoning boundaries, not atomic suspension of JaCaMo/CArtAgO/Moise.
+- CArtAgO operations and Moise/OrgBoard activity already in flight can finish while
+  agents are paused. Original failure and authoritative post-pause confirmation
+  remain distinct; a changed condition is TRANSIENT_NOT_REPRODUCED. Control and
+  resync errors do not become verified false or success. Explicit Resume is required.
+- Moise 1.1 public goalState gives waiting/enabled/satisfied with typed committed/
+  achieved agents. Impossible is not exposed by this API and is not inferred.
+  Global Moise event completeness is PARTIAL; exact supported facts have a separate
+  versioned capability. Missing/stale board evidence is UNKNOWN/UNAVAILABLE.
+- Sequence invariants verify exact authored structure/zero-based ordinals, not a
+  temporal execution proof. Arbitrary deontic/deadline and Java body equivalence,
+  global liveness, AgentGoal-to-organizational-goal and Goal-to-Artifact guessing
+  remain unsupported. CASE artifact checks require explicit exact evidence/rationale.
+- The public Moise object graph lacks exact XML positions. Trace shows file/element
+  plus line unavailable. Other source positions are shown only when extraction has
+  them; no invented line. Full Jason execution internals stay internal/trace.
+- Snapshot tail/pins, queues, violation records and operation pre-state are bounded.
+  Oversized snapshot or queue/persistence gap fails closed. Serialized byte/timing
+  counters are observational measurements, not per-case JVM heap or controlled
+  total JaCaMo slowdown benchmarks. An isolated fixture additionally measures heap
+  release of historical copies after explicit GC, with active state/latest cut
+  retained; this is not a whole-platform heap estimate. No full platform termination
+  claim follows from a bounded House Building observation window.
+- Recorded replay keeps strict original state/result hashes. Historical exports
+  that incorrectly exposed a later operation descriptor in their baseline schema
+  remain rejected; their recorded results are not rewritten. Current export
+  preserves baseline operation availability and typed descriptor ordering.
+- Current tested versions are Windows/JDK 21, USE 7.5.0, JaCaMo 1.3.1, Jason 3.3.2,
+  CArtAgO 3.1 and Moise 1.1. Current executable/GUI/package gates are in task.md.
+
+All dated sections below are **historical evidence**. Their old supported/deferred
+statements, private engines, binding APIs and object counts apply to that revision;
+they are superseded by the current section and are retained for reproducibility.
+
 ## Final system acceptance boundary (2026-09-28)
 
 - Original Hello, Auction and House have only bounded evidence for the supported

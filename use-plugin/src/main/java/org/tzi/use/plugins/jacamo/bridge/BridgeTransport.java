@@ -7,6 +7,7 @@ public interface BridgeTransport extends AutoCloseable {
     byte[] handshake();
     byte[] modelSnapshot();
     byte[] runtimeSnapshot();
+    default byte[] control(org.jacamo.bridge.contract.RuntimeControlContract.Request request) {throw new BridgeProtocolException("BRIDGE_CONTROL_UNSUPPORTED");}
     Subscription subscribe(String resumeToken, Consumer<byte[]> receiver);
     default Subscription subscribe(String resumeToken, Consumer<byte[]> receiver,
                                    Consumer<RuntimeException> failure) {

@@ -67,6 +67,7 @@ public class ASTAssociationClass extends ASTClass {
         // makes sure we have a unique class name
         ctx.typeTable().add( fName, fAssocClass );
         fClass = fAssocClass;
+        this.genAnnotations(fAssocClass);
         
         return fAssocClass;
     }

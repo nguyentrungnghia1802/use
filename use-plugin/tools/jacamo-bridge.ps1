@@ -188,7 +188,7 @@ try {
             Invoke-MavenBuild @("-B", "-pl", "use-plugin", "-am", "-DskipTests",
                 "-Dmaven.antrun.skip=true", "package")
         } else {
-            Invoke-MavenBuild @("-B", "-pl", "use-plugin", "-am", "-DskipTests", "test-compile")
+            Invoke-MavenBuild @("-B", "-pl", "use-plugin", "-am", "-Dmaven.test.skip=true", "-Dmaven.antrun.skip=true", "package")
         }
         Invoke-MavenBuild @("-B", "-pl", "jacamo-bridge-jacamo", "-am", "dependency:build-classpath",
             "-Dmdep.outputFile=target/jacamo-bridge-classpath.txt", "-Dmdep.includeScope=test")
@@ -202,7 +202,6 @@ try {
     $producerClasspath = [string]::Join([IO.Path]::PathSeparator, @(
         (Join-Path $useRoot "jacamo-bridge-contract\target\classes"),
         (Join-Path $useRoot "jacamo-bridge-jacamo\target\classes"),
-        (Join-Path $useRoot "jacamo-bridge-jacamo\target\test-classes"),
         $bridgeDependencies
     ))
 

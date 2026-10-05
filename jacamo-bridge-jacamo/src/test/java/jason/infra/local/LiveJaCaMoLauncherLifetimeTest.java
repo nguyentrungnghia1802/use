@@ -22,6 +22,17 @@ class LiveJaCaMoLauncherLifetimeTest {
         assertFalse(headless.contains("MASConsoleLogHandler"));
     }
 
+    @Test void evidenceProcessCapturesBootstrapErrorsWithoutReplacingTheNativeConsole() {
+        String old=System.getProperty("jacamo.launch.captureConsole");
+        try {
+            System.setProperty("jacamo.launch.captureConsole","true");
+            assertTrue(LiveJaCaMoLauncherMain.launchLogProperties(false)
+                    .contains("handlers=jason.runtime.MASConsoleLogHandler,java.util.logging.ConsoleHandler"));
+        } finally {
+            if(old==null) System.clearProperty("jacamo.launch.captureConsole"); else System.setProperty("jacamo.launch.captureConsole",old);
+        }
+    }
+
     @Test void onlyAuditedLocalPlatformsHaveControlledStartAuthority() {
         assertDoesNotThrow(() -> LiveJaCaMoLauncherMain.validateControlledPlatforms(java.util.List.of(
                 "jacamo.platform.Cartago", "jacamo.platform.Moise", "jacamo.platform.Sai", "org.jacamo.bridge.adapter.JaCaMoBridgePlatform")));

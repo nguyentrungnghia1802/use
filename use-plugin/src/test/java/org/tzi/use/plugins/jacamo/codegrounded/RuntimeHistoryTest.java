@@ -20,7 +20,7 @@ class RuntimeHistoryTest {
             coordinator.loadProfileSource("same.ocl",RuntimeVerificationCoordinatorTest.PROFILE);
             var page=coordinator.journal().tailPage(128);
             var changed=RuntimeHistoryRows.expand(page,true,false).stream()
-                    .filter(row -> row.outcome().constraintId().equals("EXTERNAL:ObservablePropertySnapshot::NoB")).toList();
+                    .filter(row -> row.outcome().constraintId().equals("EXTERNAL:LiveRuntimePropertyArtifact::NoB")).toList();
             assertEquals(List.of(VerificationOutcome.PASS,VerificationOutcome.FAIL,VerificationOutcome.PASS,VerificationOutcome.PASS),
                     changed.stream().map(row -> row.outcome().outcome()).toList());
             assertTrue(page.entries().stream().map(entry->entry.result().stateVersion()).distinct().count()<page.entries().size());

@@ -4,5 +4,6 @@ package org.tzi.use.plugins.jacamo.codegrounded.use;
 public enum NativeProjectionStatus {
     MATERIALIZED,
     PROFILE_EXCLUDED,
-    EVIDENCE_ONLY
+    EVIDENCE_ONLY,
+    UNSUPPORTED
 }

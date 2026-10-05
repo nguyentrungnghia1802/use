@@ -41,7 +41,7 @@ public final class ManagedProducerTestSupport implements AutoCloseable {
         String cp=String.join(java.io.File.pathSeparator,classes.toString(),
                 Path.of("../jacamo-bridge-contract/target/classes").toAbsolutePath().normalize().toString(),
                 Path.of("../jacamo-bridge-jacamo/target/classes").toAbsolutePath().normalize().toString(),
-                Path.of("../jacamo-bridge-jacamo/target/test-classes").toAbsolutePath().normalize().toString(),System.getProperty("java.class.path"));
+                System.getProperty("java.class.path"));
         String javaCommand=JavaProcessSupport.executable();
         Process fingerprint=new ProcessBuilder(javaCommand,"-cp",cp,"org.jacamo.bridge.adapter.RuntimeDistributionFingerprintMain").start();
         String fingerprintText=new String(fingerprint.getInputStream().readAllBytes(),java.nio.charset.StandardCharsets.UTF_8);
@@ -53,12 +53,12 @@ public final class ManagedProducerTestSupport implements AutoCloseable {
                 +secret.toString().replace('\\','/')+"\", \"jcmFile="+jcm.toString().replace('\\','/')+"\", \"distributionSha256="+distribution+"\")\n";
         Files.writeString(jcm,text.substring(0,end)+platform+text.substring(end));
         configuration=new BridgeConnectionConfig(URI.create("tcp://127.0.0.1:"+port),secret,distribution,Set.of("official.model","runtime.snapshot"),4*1024*1024,20000,8192);
-        producer=new ProcessBuilder(javaCommand,"-cp",cp,"jason.infra.local.LiveJaCaMoLauncherMain",jcm.toString(),stop.toString(),"0","false","","240",control.toString(),"managed-gui-test")
+        producer=new ProcessBuilder(javaCommand,"-Djacamo.launch.captureConsole=true","-cp",cp,"jason.infra.local.LiveJaCaMoLauncherMain",jcm.toString(),stop.toString(),"0","false","","240",control.toString(),"managed-gui-test")
                 .directory(stage.toFile()).redirectOutput(root.resolve("producer.log").toFile()).redirectError(root.resolve("producer.err").toFile()).start();
         long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(60);
         while(!Files.exists(control.resolve("waiting.json"))&&producer.isAlive()&&System.nanoTime()<deadline) Thread.sleep(50);
         if(!Files.exists(control.resolve("waiting.json"))) {
-            close(); throw new IllegalStateException("MANAGED_BOOTSTRAP_FAILED:"+Files.readString(root.resolve("producer.log"))+Files.readString(root.resolve("producer.err")));
+            close(); throw new IllegalStateException("MANAGED_BOOTSTRAP_FAILED:exit="+producer.exitValue()+":"+Files.readString(root.resolve("producer.log"))+Files.readString(root.resolve("producer.err")));
         }
     }
     public void configureWorkflow() {

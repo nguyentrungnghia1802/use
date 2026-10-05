@@ -15,16 +15,20 @@ public final class NativeUseStructure {
         List<String> rows = new ArrayList<>();
         model.enumTypes().forEach(type -> rows.add("enum|" + type.name() + "|" + String.join(",", type.getLiterals())));
         model.classes().forEach(cls -> {
-            rows.add("class|" + cls.name() + "|" + cls.isAbstract());
+            rows.add("class|" + cls.name() + "|" + cls.isAbstract()+"|associationClass="+(cls instanceof org.tzi.use.uml.mm.MAssociationClass));
             cls.parents().forEach(parent -> rows.add("generalization|" + cls.name() + "|" + parent.name()));
             annotations(rows, "class|" + cls.name(), cls);
-            cls.attributes().forEach(attribute -> rows.add("attribute|" + cls.name() + "|" + attribute.name()
-                    + "|" + attribute.type() + "|derived=" + attribute.getDeriveExpression()));
-            cls.operations().forEach(operation -> rows.add("operation|" + cls.name() + "|" + operation.name()
-                    + "|" + operation.signature()));
+            cls.attributes().forEach(attribute -> {
+                rows.add("attribute|" + cls.name() + "|" + attribute.name()+ "|" + attribute.type() + "|derived=" + attribute.getDeriveExpression());
+                annotations(rows,"attribute|"+cls.name()+"|"+attribute.name(),attribute);
+            });
+            cls.operations().forEach(operation -> {
+                rows.add("operation|" + cls.name() + "|" + operation.name()+ "|" + operation.signature());
+                annotations(rows,"operation|"+cls.name()+"|"+operation.name(),operation);
+            });
         });
         model.associations().forEach(association -> {
-            rows.add("association|" + association.name());
+            rows.add("association|" + association.name()+"|associationClass="+(association instanceof org.tzi.use.uml.mm.MAssociationClass));
             annotations(rows, "association|" + association.name(), association);
             for (int index = 0; index < association.associationEnds().size(); index++) {
                 var end = association.associationEnds().get(index);
@@ -32,8 +36,10 @@ public final class NativeUseStructure {
                         + end.name() + "|" + end.multiplicity() + "|" + end.aggregationKind() + "|" + end.isOrdered());
             }
         });
-        model.classInvariants().forEach(invariant -> rows.add("invariant|" + invariant.cls().name() + "|"
-                + invariant.name() + "|" + invariant.bodyExpression()));
+        model.classInvariants().forEach(invariant -> {
+            rows.add("invariant|" + invariant.cls().name() + "|" + invariant.name() + "|" + invariant.bodyExpression());
+            annotations(rows,"invariant|"+invariant.qualifiedName(),invariant);
+        });
         rows.sort(String::compareTo);
         return List.copyOf(rows);
     }

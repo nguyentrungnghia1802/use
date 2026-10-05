@@ -14,9 +14,28 @@ class OfficialMoiseIdentityTest {
         return Path.of("../use-plugin/src/test/resources/jacamo/moise/domain-projection.xml").toAbsolutePath().normalize();
     }
 
+    @Test void liveGraphWithoutAnXmlUriRetainsExactSemanticIdentityAndHonestProvenance() throws Exception {
+        var adapter=new OfficialMoiseAdapter();
+        var expected=adapter.load(fixture().getParent(),fixture(),"generic");
+        var official=OS.loadOSFromURI(fixture().toUri().toString()); official.setURI(null);
+        var captured=adapter.capture(official,fixture().getParent(),"generic");
+        assertEquals(expected.organization().metadata().semanticId(),captured.organization().metadata().semanticId());
+        assertEquals(expected.groupRoleCardinalities().size(),captured.groupRoleCardinalities().size());
+        assertEquals(expected.organization().structuralSpecification().roles().stream().map(r->r.metadata().semanticId()).toList(),
+                captured.organization().structuralSpecification().roles().stream().map(r->r.metadata().semanticId()).toList());
+        assertEquals("moise-live:/generic/factory",captured.organization().sourceUri());
+        var evidence=captured.organization().metadata().evidence().getFirst();
+        assertEquals(captured.organization().sourceUri(),evidence.sourceUri());
+        assertEquals(64,evidence.sourceDigest().length());
+        assertEquals(captured.organization(),adapter.capture(official,fixture().getParent(),"generic").organization());
+    }
+
     @Test void localIdsAreNotCanonicalIdentitiesAndAllNeutralReferencesResolve() throws Exception {
         var result = new OfficialMoiseAdapter().load(fixture().getParent(), fixture(), "generic");
         var org = result.organization(); var official = OS.loadOSFromURI(fixture().toUri().toString());
+        assertTrue(org.metadata().evidence().stream().allMatch(e->e.startLine()==0 && e.endLine()==0));
+        assertTrue(org.functionalSpecification().schemes().stream().flatMap(s->s.goals().stream()).flatMap(g->g.metadata().evidence().stream())
+                .allMatch(e->e.startLine()==0 && e.endLine()==0),"Official object graph has no XML source positions");
         assertEquals(official.getSS().getRolesDef().stream().map(r -> r.getId()).collect(Collectors.toSet()),
                 org.structuralSpecification().roles().stream().map(r -> r.roleId()).collect(Collectors.toSet()));
         assertTrue(org.structuralSpecification().roles().stream().allMatch(r -> !r.roleId().equals(r.metadata().semanticId())));

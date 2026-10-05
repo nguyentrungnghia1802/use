@@ -22,32 +22,17 @@ import org.tzi.use.uml.sys.MSystem;
  * projection trace and are not returned by this audit.</p>
  */
 public final class NativeProjectionAudit {
-    private static final Set<String> OCL_CLASSES = Set.of(
-            "AgentProgram", "PlanLibrary", "Plan", "Trigger", "PlanBodyElement", "Action", "Belief",
-            "AgentGoal", "BeliefRule", "Guard", "Signal", "ObservablePropertySnapshot",
-            "OrganizationalGoal", "OrganizationalPlan");
-    private static final Set<String> RUNTIME_CLASSES = Set.of(
-            "Agent", "Environment", "Workspace", "ArtifactType", "Artifact", "Operation", "CartagoAgentIdentity");
-    private static final Set<String> DOMAIN_CLASSES = Set.of(
-            "Organization", "StructuralSpecification", "FunctionalSpecification", "NormativeSpecification",
-            "Group", "Role", "RoleRelation", "Link", "Compatibility", "Scheme", "Mission", "Norm",
-            "GroupRoleCardinality", "SubGroupCardinality", "SchemeMissionCardinality");
-    private static final Set<String> EVIDENCE_CLASSES = Set.of(
-            "WorkspaceDeclaration", "ArtifactDeclaration", "OrganizationDeployment", "GroupDeployment",
-            "SchemeDeployment", "InstitutionDeployment", "BackingJavaOperation", "ArtifactInfo",
-            "ExactBindingEvidence", "LiveObservableProperty", "A17PlanOrderEntry", "A19BodyOrderEntry");
-
     public Audit audit(NativeUseModelBuilder.Result schema, MSystem system) {
         Objects.requireNonNull(schema, "schema");
         Objects.requireNonNull(system, "system");
         List<Item> classes = schema.model().classes().stream()
                 .sorted(Comparator.comparing(MClass::name))
                 .map(value -> new Item("class", value.name(), classReason(value.name(), schema),
-                        schema.profile().statusFor(value.name()).name()))
+                        "MATERIALIZED"))
                 .toList();
         List<Item> associations = schema.model().associations().stream()
                 .sorted(Comparator.comparing(MAssociation::name))
-                .map(value -> new Item("association", value.name(), associationReason(value.name()), "MATERIALIZED"))
+                .map(value -> new Item("association", value.name(), associationReason(value), "MATERIALIZED"))
                 .toList();
         List<Item> objects = system.state().allObjects().stream()
                 .sorted(Comparator.comparing(MObject::name))
@@ -61,26 +46,19 @@ public final class NativeProjectionAudit {
 
     private static String classReason(String name, NativeUseModelBuilder.Result schema) {
         var cls = schema.model().getClass(name);
-        String representation = cls.getAnnotationValue(MoiseDomainProjection.ANNOTATION, "representation");
-        if (schema.moiseProjection().classNames().containsValue(name)
-                && "DOMAIN_SCHEMA".equals(representation)) return "DOMAIN_SCHEMA:official-owner-scoped-Moise-element";
-        if ("SUPPORTING_ENACTMENT_IDENTITY".equals(representation))
-            return "SUPPORTING_IDENTITY:role-adoption-or-mission-commitment-not-a-definition-object";
-        if ("SPECIFICATION_INSPECTION".equals(representation)) return "FULL_INSPECTION:static-definition-not-runtime-enactment";
-        if (schema.nativeArtifactTypeClassNames().containsValue(name)) return "RUNTIME_MUTATION_TARGET:artifact-subtype";
-        if (OCL_CLASSES.contains(name)) return "OCL_TARGET:code-grounded-constraint";
-        if (RUNTIME_CLASSES.contains(name)) return "RUNTIME_MUTATION_TARGET:faithful-event";
-        if (DOMAIN_CLASSES.contains(name)) return "DOMAIN_RELATION:current-supported-semantics";
-        if (EVIDENCE_CLASSES.contains(name)) return "TRACE_EVIDENCE_OR_PROFILE_BOUNDARY:" + name;
+        String kind=DomainProjection.kind(cls);
+        if(NativeProjectionPolicy.allowsClass(cls))
+            return "DOMAIN_RUNTIME_TYPE:"+kind+":"+DomainProjection.decode(cls.getAnnotationValue(DomainProjection.ANNOTATION,"sourceId64"));
         throw new IllegalStateException("NATIVE_PROJECTION_AUDIT_CLASS_REASON_MISSING:" + name);
     }
 
-    private static String associationReason(String name) {
+    private static String associationReason(MAssociation association) {
+        String name=association.name();
+        if(association.getAnnotation(MoiseDomainProjection.ROLE_ASSOCIATION)!=null)
+            return "CONTEXTUAL_ROLE_RELATION:"+DomainProjection.decode(association.getAnnotationValue(MoiseDomainProjection.ROLE_ASSOCIATION,"identity64"));
+        if(association.getAnnotation("DomainRelation")!=null)
+            return "DOMAIN_RUNTIME_RELATION:"+association.getAnnotationValue("DomainRelation","firstKind")+"->"+association.getAnnotationValue("DomainRelation","secondKind");
         if (name == null || name.isBlank()) throw new IllegalArgumentException("NATIVE_PROJECTION_ASSOCIATION_NAME_REQUIRED");
-        if (name.startsWith("A")) return "OCL_OR_ORDER_RELATION:" + name;
-        if (name.startsWith("C")) return "RUNTIME_RELATION:" + name;
-        if (name.startsWith("M")) return "DOMAIN_RELATION:" + name;
-        if (name.startsWith("X")) return "EXACT_CROSS_DIMENSIONAL_RELATION:" + name;
         throw new IllegalStateException("NATIVE_PROJECTION_AUDIT_ASSOCIATION_REASON_MISSING:" + name);
     }
 

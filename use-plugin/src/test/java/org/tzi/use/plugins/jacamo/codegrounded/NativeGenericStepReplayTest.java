@@ -44,10 +44,10 @@ class NativeGenericStepReplayTest {
                     "normalizedEventKind","SET_ATTRIBUTE","attribute","host","valueType","STRING","value",variant));
             assertTrue(original.apply(noop));assertFalse(original.apply(noop));
             assertTrue(original.apply(event(sessionId,revision,++sequence,RuntimeFactKind.AGENT,runtime,binding,Map.of("normalizedEventKind","UNSET_ATTRIBUTE","attribute","host"))));
-            var link=Map.<String,Object>of("normalizedEventKind","INSERT_LINK","association","X05AgentWorkspace","participantSemanticIds",List.of(agent,workspace));
+            var link=Map.<String,Object>of("normalizedEventKind","INSERT_LINK","association",org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.relation("memberOf","Agent","Workspace"),"participantSemanticIds",List.of(agent,workspace));
             assertTrue(original.apply(event(sessionId,revision,++sequence,RuntimeFactKind.RELATION_STATE,runtime,binding,link)));
             assertTrue(original.apply(event(sessionId,revision,++sequence,RuntimeFactKind.RELATION_STATE,runtime,binding,Map.of(
-                    "normalizedEventKind","DELETE_LINK","association","X05AgentWorkspace","participantSemanticIds",List.of(agent,workspace)))));
+                    "normalizedEventKind","DELETE_LINK","association",org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.relation("memberOf","Agent","Workspace"),"participantSemanticIds",List.of(agent,workspace)))));
             var artifactId=new BridgeEntityId("cartago","environment","artifact","/main","box",variant);
             assertTrue(original.apply(event(sessionId,revision,++sequence,RuntimeFactKind.ARTIFACT,artifactId,null,RuntimeVerificationFixtures.artifact(artifact,variant))));
             var first=property(artifact,"p-"+variant,variant);

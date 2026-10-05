@@ -151,7 +151,7 @@ public final class CartagoSemanticContract {
         }
     }
 
-    /** C20 is evidence from an official focus/unfocus event, not a name join. */
+    /** C20 is an official observer cut or focus/unfocus event, with exact endpoint identities. */
     public record FocusSemantic(SemanticMetadata metadata, String agentSemanticId, String artifactSemanticId,
             boolean focused, long sequence) {
         public FocusSemantic {

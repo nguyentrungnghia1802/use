@@ -76,7 +76,7 @@ public final class OfficialProjectAdapter {
 
             Path source=resolveAgentSource(project,root,agent);
             if(Files.exists(source)){
-                OfficialJasonAdapter.Result parsed=jason.adapt(root,source,projectKey,agent.getAgName());
+                OfficialJasonAdapter.Result parsed=jason.adapt(root,source,projectKey,agent.getAgName(),agent.getOptions(),sourceEvidence);
                 agents.addAll(parsed.facts());programs.add(parsed.program());
             }else unresolved.add(new UnresolvedFact("agent-source",agent.getAgName(),CapabilityStatus.UNAVAILABLE,
                     "official source path is unavailable: "+source,List.of(sourceEvidence)));
@@ -141,7 +141,7 @@ public final class OfficialProjectAdapter {
             typedOrganisations.add(new OrganizationDeploymentSemantic(orgMetadata,org.getName(),text(org.getParameter("source")),
                     text(org.getInstitution()),text(org.getDebugConf())));
             for(JaCaMoGroupParameters group:org.getGroups().stream().sorted(Comparator.comparing(JaCaMoGroupParameters::getName)).toList())
-                collectGroup(projectKey,org.getName(),group,sourceEvidence,typedGroups);
+                collectGroup(projectKey,org.getName(),group,"",sourceEvidence,typedGroups);
             org.getSchemes().stream().sorted(Comparator.comparing(value->value.getName())).forEach(scheme->{
                 var schemeId=id("jacamo","organisation","scheme-deployment",projectKey,org.getName()+"/"+scheme.getName());
                 var schemeMetadata=SemanticEvidence.metadata(schemeId.canonical(),"JACAMO_SCHEME_DEPLOYMENT","jacamo.project.JaCaMoSchemeParameters",
@@ -202,14 +202,23 @@ public final class OfficialProjectAdapter {
                 EvidenceAuthority.OFFICIAL_JACAMO_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,1,1,List.of());
         return new WorkspaceDeclarationSemantic(metadata,name,text(host),debug);
     }
-    private void collectGroup(String project,String organization,JaCaMoGroupParameters group,
+    private void collectGroup(String project,String organization,JaCaMoGroupParameters group,String parentId,
                               org.jacamo.bridge.contract.Evidence evidence,List<GroupDeploymentSemantic> result){
         var groupId=id("jacamo","organisation","group-deployment",project,organization+"/"+group.getName());
         var metadata=SemanticEvidence.metadata(groupId.canonical(),"JACAMO_GROUP_DEPLOYMENT","jacamo.project.JaCaMoGroupParameters",
                 EvidenceAuthority.OFFICIAL_JACAMO_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,evidence,1,1,List.of());
+        if(!parentId.isEmpty()) {
+            var anchors=new ArrayList<>(metadata.evidence());
+            // Preserve official containment through existing provenance; the frozen DTO shape stays unchanged.
+            anchors.add(SemanticEvidence.source(evidence,EvidenceAuthority.OFFICIAL_JACAMO_API,
+                    "jacamo.project.JaCaMoGroupParameters",parentId,1,1,Fidelity.EXACT,CapabilityStatus.COMPLETE,
+                    List.of("JCM_PARENT_GROUP_DECLARATION")));
+            metadata=new org.jacamo.bridge.contract.semantic.SemanticMetadata(metadata.semanticId(),metadata.sourceKind(),
+                    metadata.sourceJavaFqcn(),metadata.evidenceAuthority(),metadata.fidelity(),metadata.capabilityStatus(),anchors,metadata.diagnostics());
+        }
         result.add(new GroupDeploymentSemantic(metadata,organization,group.getName(),text(group.getType()),group.getResponsibleFor()));
         group.getSubGroups().stream().sorted(Comparator.comparing(JaCaMoGroupParameters::getName))
-                .forEach(child->collectGroup(project,organization,child,evidence,result));
+                .forEach(child->collectGroup(project,organization,child,groupId.canonical(),evidence,result));
     }
     private Path resolveAgentSource(JaCaMoProject project,Path root,JaCaMoAgentParameters agent){
         String reference=agent.getSource().isAbsolute()?agent.getSource().toString():agent.getSource().getSchemeSpecificPart();

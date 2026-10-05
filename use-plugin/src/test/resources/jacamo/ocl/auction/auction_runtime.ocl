@@ -1,0 +1,7 @@
+-- Load only after the official runtime has exposed AuctionArtifact and its attributes.
+-- This demo policy fails while an observed auction is running.
+context AuctionArtifact
+inv DEMO_RUNTIME_NoRunningAuction:
+    not self.running.oclIsUndefined() and self.running = false
+inv PASS_ObservableStateDefined:
+    not self.task.oclIsUndefined() and not self.best_bid.oclIsUndefined() and not self.winner.oclIsUndefined()

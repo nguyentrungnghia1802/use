@@ -33,11 +33,38 @@ The release archive contains:
 - native runtime schemas and the supported example fixture;
 - exact release and compatibility metadata.
 
-The archive still carries frozen V1/V2 resources required by the explicit
-`LEGACY_V2` compatibility API and its freeze tests. Those resources are
-historical compatibility inputs, not the authority used by
-`CODE_GROUNDED_NATIVE`; the native branch builds `MModel`/`MSystemState`
+The archive still carries unchanged frozen V1/V2 resources for historical
+reproducibility/freeze tests. The production `LEGACY_V2` constructor is rejected;
+old runtime classes are test-only and packaging asserts their absence. Those
+resources and `compatibility.json`/freeze manifests describe historical releases,
+not current native semantic authority. The native path builds MModel/MSystemState
 directly from the official typed contract.
+
+Current control compatibility is JaCaMo 1.3.1 / Jason 3.3.2 / CArtAgO 3.1 / Moise
+1.1, protocol 1.1.0 and RuntimeControlContract 1.0.0. The production launcher
+installs the supported official ExecutionControl extension before agent creation.
+Foreign controller ownership or unsupported scheduling advertises unavailable
+control; report-only verification does not silently become a successful pause.
+Policy and replay manifest 1.1.0 retain 1.0.0 reading. No new published Git tag is
+implied by an uncommitted local build.
+
+For a no-test GUI build keep test compilation available to the launcher tooling:
+
+```powershell
+Set-Location 'D:\_CODE_BANK\Project_\08_Thesis\use'
+mvn -B -pl use-plugin -am '-DskipTests' package
+mvn -B -pl jacamo-bridge-jacamo -am dependency:build-classpath `
+  '-Dmdep.outputFile=target/jacamo-bridge-classpath.txt' '-Dmdep.includeScope=test'
+& '.\use-plugin\tools\jacamo-bridge.ps1' `
+  -JcmPath 'D:\_CODE_BANK\Project_\08_Thesis\jacamo\examples\auction\auction.jcm' `
+  -EvidenceDirectory '.\use-plugin\target\gui-demo' `
+  -TimeoutSeconds 1800 -InteractiveGui -Headless:$false -SkipBuild
+```
+
+Do not skip the package staging task when using the source-tree GUI: it must load
+the current shaded JAR. `-SkipBuild` requires current producer/consumer artifacts
+and classpath. `-InteractiveGui` opens USE Workbench; native JaCaMo windows depend
+on that project's explicit configuration. Model-ready is not evidence of LIVE.
 
 ## Release gates
 

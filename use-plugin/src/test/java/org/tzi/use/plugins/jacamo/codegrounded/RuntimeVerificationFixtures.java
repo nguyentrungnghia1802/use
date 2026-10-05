@@ -18,8 +18,8 @@ final class RuntimeVerificationFixtures {
     }
     static Map<String, Object> artifact(String semanticId, String uuid) {
         return Map.of("normalizedEventKind", "UPSERT_CARTAGO_ARTIFACT", "semanticId", semanticId,
-                "name", "box", "uuid", uuid, "artifactTypeSemanticId", "cartago:artifact-type:env:cartago.Artifact",
-                "artifactTypeJavaClassName", "cartago.Artifact", "artifactTypeClassLoaderIdentity", "official-loader",
+                "name", "box", "uuid", uuid, "artifactTypeSemanticId", "cartago:artifact-type:env:public-state",
+                "artifactTypeJavaClassName", LiveRuntimePropertyArtifact.class.getName(), "artifactTypeClassLoaderIdentity", "official-loader",
                 "workspaceSemanticId", WORKSPACE, "creatorAgentSemanticId", "");
     }
     static RuntimeSnapshot snapshot(String id, long watermark) {
@@ -40,8 +40,11 @@ final class RuntimeVerificationFixtures {
         return new RuntimeFact(id, kind, payload, List.of(), ProjectionStatus.MATERIALIZED_FAITHFULLY, Completeness.COMPLETE, List.of());
     }
     static RuntimeEvent event(String id, long sequence, RuntimeEventKind kind, BridgeEntityId entity, Map<String, Object> payload) {
+        return event(id, sequence, kind, RuntimeFactKind.ARTIFACT, entity, payload);
+    }
+    static RuntimeEvent event(String id, long sequence, RuntimeEventKind kind, RuntimeFactKind factKind, BridgeEntityId entity, Map<String, Object> payload) {
         return new RuntimeEvent(id, SESSION, 1, REVISION, "cartago", "cartago", sequence, Instant.EPOCH, kind,
-                RuntimeFactKind.ARTIFACT, ProjectionStatus.MATERIALIZED_FAITHFULLY, entity, null, "", "", Map.of(), payload,
+                factKind, ProjectionStatus.MATERIALIZED_FAITHFULLY, entity, null, "", "", Map.of(), payload,
                 new SourceWatermark("cartago", sequence), Completeness.COMPLETE, List.of());
     }
     static RuntimeEvent delta(String id, long sequence, String value) {

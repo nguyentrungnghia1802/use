@@ -103,7 +103,7 @@ See the references at the end of the file.
 Some information about issues related to OCL can be found in the file
 README.OCL.
 
-For the JaCaMo verification plugin developed in this repository, see the [USE JaCaMo Plugin README](use-plugin/README.md) and its active architecture contract in [CODE-GROUNDED-NATIVE-README.md](use-plugin/docs/agent/CODE-GROUNDED-NATIVE-README.md).
+For the JaCaMo verification plugin developed in this repository, see the [USE JaCaMo Plugin README](use-plugin/README.md) and its [current architecture](use-plugin/docs/project/02-system-architecture.md).
 
 Note, that the documentation was automatically translated from LaTex to Markdown 
 and has still many issues. Feel free to submit changes to the documentation.

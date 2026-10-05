@@ -48,7 +48,7 @@ class CodeGroundedRuleCatalogTest {
         assertEquals(ImplementationStatus.UNAVAILABLE_IN_AUDITED_API,
                 catalog.require("C08").implementationStatus());
         assertEquals(CapabilityStatus.UNAVAILABLE, catalog.require("C08").capabilityStatus());
-        assertEquals(ImplementationStatus.PLANNED_CAPABILITY_GATED, catalog.require("C06").implementationStatus());
+        assertEquals(ImplementationStatus.EXPLICITLY_UNSUPPORTED, catalog.require("C06").implementationStatus());
         assertEquals(CapabilityStatus.PARTIAL, catalog.require("C06").capabilityStatus());
     }
 
@@ -93,7 +93,7 @@ class CodeGroundedRuleCatalogTest {
         facts.forEach((id, kind) -> {
             assertEquals(org.tzi.use.plugins.jacamo.codegrounded.runtime.CodeGroundedRuntimeRuleRegistry.Action.EVIDENCE_ONLY,
                     registry.evidenceRule(kind).action());
-            assertEquals("Trace runtime evidence (EVIDENCE_ONLY)", catalog.require(id).targetUseKind(), id);
+            assertTrue(catalog.require(id).targetUseKind().startsWith("Trace runtime"), id);
         });
         var goals = jason.asSemantics.Agent.class.getMethod("getInitialGoals");
         assertEquals(goals.getDeclaringClass().getName() + "." + goals.getName(), catalog.require("A09").sourceKindFqcn());

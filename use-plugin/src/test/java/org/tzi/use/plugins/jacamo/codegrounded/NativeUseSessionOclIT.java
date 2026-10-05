@@ -14,10 +14,10 @@ class NativeUseSessionOclIT {
         assertSame(result.state().system(), session.system());
         assertSame(result.model().model(), session.system().model());
         assertEquals("true", UseSystemApi.create(session.system(), false).evaluate(
-                "PlanLibrary.allInstances->forAll(p | p.plans->isUnique(ordinal) and "
-                        + "p.plans->forAll(e | e.ordinal >= 0 and e.ordinal < p.plans->size()))").toString());
+                "Agent.allInstances()->size() = 5 and Agent.allInstances()->isUnique(semanticId)").toString());
         assertEquals("true", UseSystemApi.create(session.system(), false).evaluate(
-                "Plan.allInstances->forAll(p | p.bodyElements->isUnique(ordinal) and "
-                        + "p.bodyElements->forAll(e | e.ordinal >= 0 and e.ordinal < p.bodyElements->size()))").toString());
+                "team.allInstances()->size() = 1").toString());
+        assertNull(session.system().model().getClass("Plan"));
+        assertNull(session.system().model().getClass("Role"));
     }
 }

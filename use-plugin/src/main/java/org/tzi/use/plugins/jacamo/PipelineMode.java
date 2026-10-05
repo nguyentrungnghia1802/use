@@ -1,7 +1,6 @@
 package org.tzi.use.plugins.jacamo;
 
-/** Atomic authority switch: a build uses either the historical V2 path or the native code-grounded path. */
+/** Identifier retained for existing native callers; there is no alternative production pipeline. */
 public enum PipelineMode {
-    LEGACY_V2,
     CODE_GROUNDED_NATIVE
 }

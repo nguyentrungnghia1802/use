@@ -45,6 +45,10 @@ public final class ConstraintRegistry {
         if (origin == ConstraintOrigin.TRANSLATED) throw new IllegalArgumentException("profile origin cannot be TRANSLATED");
         return new RegisteredProfile(origin, profile);
     }
+    /** Register the actual compiled native model without a source transformation pipeline. */
+    public static ConstraintRegistry nativeModel(MModel model) {
+        return load(model,new OclGenerator.GeneratedOcl("active USE model","",List.of()),List.of());
+    }
 
     public static ConstraintRegistry load(MModel model, OclGenerator.GeneratedOcl generated,
                                           List<RegisteredProfile> profiles) {
@@ -150,7 +154,7 @@ public final class ConstraintRegistry {
         Path path = Path.of("compiled-model");
         return new ConstraintDescriptor("COMPILED:" + invariant.qualifiedName(), invariant.name(),
                 invariant.cls().name(), null, ConstraintKind.INV, ConstraintOrigin.USER, path,
-                new SourceSpan(path, 1, 1, 1, 1), List.of(), invariant.isActive(), invariant.bodyExpression().toString());
+                null, List.of(), invariant.isActive(), invariant.bodyExpression().toString());
     }
 
     private static ConstraintDescriptor fallback(MPrePostCondition condition) {
@@ -158,7 +162,7 @@ public final class ConstraintRegistry {
         ConstraintKind kind = condition.isPre() ? ConstraintKind.PRE : ConstraintKind.POST;
         return new ConstraintDescriptor("COMPILED:" + condition, condition.name(), condition.cls().name(),
                 condition.operation().name(), kind, ConstraintOrigin.USER, path,
-                new SourceSpan(path, 1, 1, 1, 1), List.of(), true, condition.expression().toString());
+                null, List.of(), true, condition.expression().toString());
     }
 
     private static String key(ConstraintDescriptor descriptor) {

@@ -14,12 +14,14 @@ import org.tzi.use.uml.mm.MAttribute;
 import org.tzi.use.uml.ocl.value.StringValue;
 import org.tzi.use.uml.ocl.value.Value;
 import org.tzi.use.uml.sys.MLink;
+import org.tzi.use.uml.sys.MLinkObject;
 import org.tzi.use.uml.sys.MObject;
 import org.tzi.use.uml.sys.MSystem;
 import org.tzi.use.uml.sys.MSystemException;
 import org.tzi.use.uml.sys.soil.MAttributeAssignmentStatement;
 import org.tzi.use.uml.sys.soil.MLinkInsertionStatement;
 import org.tzi.use.uml.sys.soil.MNewObjectStatement;
+import org.tzi.use.uml.sys.soil.MNewLinkObjectStatement;
 import org.tzi.use.uml.sys.soil.MStatement;
 import org.tzi.use.util.StringUtil;
 
@@ -40,7 +42,12 @@ public final class NativeUseSoilExporter {
                 .toList();
         for (MObject object : objects) {
             requireObjectName(object);
+            if (object instanceof MLinkObject) continue;
             commands.add(new MNewObjectStatement(object.cls(), object.name()).getShellCommand());
+        }
+        for (MObject object : objects) if (object instanceof MLinkObject linkObject) {
+            commands.add(new MNewLinkObjectStatement((org.tzi.use.uml.mm.MAssociationClass) linkObject.cls(), linkObject.linkedObjectsAsArray(),
+                    linkObject.getQualifier(), object.name()).getShellCommand());
         }
 
         int attributeAssignments = 0;
@@ -60,6 +67,7 @@ public final class NativeUseSoilExporter {
         links.sort(Comparator.comparing((MLink link) -> link.association().name())
                 .thenComparing(NativeUseSoilExporter::orderedParticipantNames));
         for (MLink link : links) {
+            if (link instanceof MLinkObject) continue; // The native creation above installs the relation and its object together.
             if (link.isVirtual())
                 throw new IllegalStateException("NATIVE_SOIL_VIRTUAL_LINK_UNSUPPORTED: "
                         + link.association().name());

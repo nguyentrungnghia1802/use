@@ -22,9 +22,25 @@ public final class ReleaseIsolatedSmokeMain {
         }
         Object loader = loaderClass.getDeclaredConstructor().newInstance();
         loaderClass.getMethod("loadCanonical", Path.class).invoke(loader, install);
-        Class<?> runtimeLoader = descriptor.getPluginClassLoader()
-                .loadClass("org.tzi.use.plugins.jacamo.runtime.RuntimeMappingLoader");
-        runtimeLoader.getMethod("loadDefault").invoke(runtimeLoader.getDeclaredConstructor().newInstance());
-        System.out.println("ISOLATED_RELEASE_MAPPING_IMPORT_PASS");
+        // Frozen canonical import remains reproducible, but the current runtime
+        // must load its native authority rather than the removed mapping engine.
+        var pluginLoader=descriptor.getPluginClassLoader();
+        Class<?> json=pluginLoader.loadClass("org.jacamo.bridge.contract.CanonicalJson");
+        Object tree=json.getMethod("decode",byte[].class).invoke(null,(Object)java.nio.file.Files.readAllBytes(Path.of(args[2])));
+        Class<?> payloads=pluginLoader.loadClass("org.jacamo.bridge.contract.ContractPayloads");
+        Object model=payloads.getMethod("model",java.util.Map.class).invoke(null,tree);
+        Class<?> pipeline=pluginLoader.loadClass("org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNativePipeline");
+        if(!expectedJar.equals(Path.of(pipeline.getProtectionDomain().getCodeSource().getLocation().toURI()).toRealPath()))
+            throw new AssertionError("Native authority did not come from the installed JAR");
+        Object result=pipeline.getMethod("build",model.getClass()).invoke(pipeline.getDeclaredConstructor().newInstance(),model);
+        Object state=result.getClass().getMethod("state").invoke(result);
+        var system=(org.tzi.use.uml.sys.MSystem)state.getClass().getMethod("system").invoke(state);
+        if(system.model().getClass("Agent")==null || system.state().allObjects().isEmpty())
+            throw new AssertionError("Installed native pipeline failed to build the official model");
+        Class<?> snapshots=pluginLoader.loadClass("org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot");
+        if(!"1.1.0".equals(snapshots.getField("CONTRACT_VERSION").get(null)))
+            throw new AssertionError("Installed snapshot contract is stale");
+        pluginLoader.loadClass("org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeControlService");
+        System.out.println("ISOLATED_RELEASE_NATIVE_IMPORT_PASS objects="+system.state().allObjects().size());
     }
 }

@@ -21,15 +21,14 @@ class LegacyV2OclIsolationTest {
             assertFalse(sources.contains(forbidden), forbidden);
     }
 
-    @Test void facadeNativeBranchReturnsBeforeLegacyV2Projection() throws Exception {
+    @Test void facadeContainsOnlyTheNativeProjection() throws Exception {
         String source = Files.readString(Path.of(
                 "src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java"));
         int synchronizedSnapshot = source.indexOf("BridgeClient.Accepted accepted = candidate.synchronize()");
-        int nativeBranch = source.indexOf("if (pipelineMode == PipelineMode.CODE_GROUNDED_NATIVE)",
-                synchronizedSnapshot);
-        int legacyProjection = source.indexOf("NativeSemanticAdapter.Result adapted", nativeBranch);
-        assertTrue(synchronizedSnapshot >= 0 && nativeBranch > synchronizedSnapshot && legacyProjection > nativeBranch);
-        String branch = source.substring(nativeBranch, legacyProjection);
+        assertTrue(synchronizedSnapshot >= 0);
+        assertFalse(source.contains("NativeSemanticAdapter"));assertFalse(source.contains("BridgeRuntimeProjector"));
+        assertFalse(source.contains("LEGACY_V2"));assertFalse(source.contains("RuntimeVerificationEngine"));
+        String branch = section(source,"private ProjectSummary synchronizeBridge","private void validateBridgeSelection");
         assertTrue(branch.contains("buildNativeSemantic(selectedJcm, accepted.model(), importNanos)"));
         assertTrue(branch.contains("new NativeUseSessionActivator().activate(session, next.pipeline)"));
         assertTrue(branch.contains("return next.summary"));

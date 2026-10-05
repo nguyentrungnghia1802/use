@@ -18,7 +18,48 @@ import org.tzi.use.uml.sys.events.AtomicStateChangedEvent;
 
 class RuntimeVerificationCoordinatorTest {
     @TempDir java.nio.file.Path directory;
-    static final String PROFILE = "context ObservablePropertySnapshot inv NoB: self.values <> '[\"B\"]'";
+    static final String PROFILE = "context LiveRuntimePropertyArtifact inv NoB: self.status <> 'B'";
+    public static final class DiscoveredArtifact extends cartago.Artifact { }
+
+    @Test void discoveredSchemaAndPropertyRetainTheOriginalStateAndExactNativeReferences() throws Exception {
+        var projector = projector();var system = projector.system();var state = system.state();
+        var objects = state.allObjects().stream().collect(java.util.stream.Collectors.toMap(
+                org.tzi.use.uml.sys.MObject::name, object -> object));
+        var objectStates = objects.values().stream().collect(java.util.stream.Collectors.toMap(
+                org.tzi.use.uml.sys.MObject::name, object -> object.state(state)));
+        var links = java.util.Set.copyOf(state.allLinks());
+        var discoveredId = new BridgeEntityId("cartago", "environment", "artifact", "/main", "observed", "uuid-new");
+        var payload = new java.util.LinkedHashMap<>(artifact("cartago:artifact:env:/main:uuid-new", "uuid-new"));
+        payload.put("artifactTypeJavaClassName", DiscoveredArtifact.class.getName());
+        payload.put("artifactTypeSemanticId", "cartago:artifact-type:env:observed");payload.put("name", "observed");
+        assertTrue(projector.apply(event("new-type", 1, RuntimeEventKind.CREATED, discoveredId, payload)));
+        assertSame(state, system.state());
+        objects.forEach((name, object) -> {
+            assertSame(object, state.objectByName(name));assertSame(objectStates.get(name), object.state(state));
+        });
+        links.forEach(link -> assertTrue(state.allLinks().stream().anyMatch(current -> current == link)));
+        var property = new java.util.LinkedHashMap<>(property("true"));
+        property.put("semanticId", "cartago:property:"+ARTIFACT+":running-1");property.put("propertyId", "running-1");
+        property.put("name", "running");property.put("valueTypes", List.of("java.lang.Boolean"));
+        assertTrue(projector.apply(event("new-slot", 2, RuntimeEventKind.CHANGED, ID,
+                Map.of("normalizedEventKind", "APPLY_CARTAGO_PROPERTY_DELTA", "semanticId", ARTIFACT,
+                        "properties", List.of(property), "removedPropertySemanticIds", List.of()))));
+        assertSame(state, system.state());
+        objects.forEach((name, object) -> {
+            assertSame(object, state.objectByName(name));assertSame(objectStates.get(name), object.state(state));
+        });
+        links.forEach(link -> assertTrue(state.allLinks().stream().anyMatch(current -> current == link)));
+        String commands = new NativeUseSoilExporter().export(system).commands();
+        property.put("valueTypes", List.of());
+        assertThrows(RuntimeException.class, () -> projector.apply(event("invalid-slot", 3, RuntimeEventKind.CHANGED, ID,
+                Map.of("normalizedEventKind", "APPLY_CARTAGO_PROPERTY_DELTA", "semanticId", ARTIFACT,
+                        "properties", List.of(property), "removedPropertySemanticIds", List.of()))));
+        assertSame(state, system.state());assertEquals(commands,new NativeUseSoilExporter().export(system).commands());
+        objects.forEach((name, object) -> assertSame(object,state.objectByName(name)));
+        links.forEach(link -> assertTrue(state.allLinks().stream().anyMatch(current -> current == link)));
+        projector.applySnapshot(snapshot("resync-original", 3));assertSame(state,system.state());
+    }
+
     @Test void profileIntervalsKeepActualInstallVersionDespiteTailEvictionAndAtomicInvalidReplacement() throws Exception {
         var projector = projector(); var coordinator = projector.coordinator();
         assertNull(coordinator.verificationSnapshot().profile());
@@ -52,8 +93,8 @@ class RuntimeVerificationCoordinatorTest {
         long checks = coordinator.verificationCount();
         projector.apply(delta("B", 1, "B")); var violation = coordinator.latest();
         assertEquals(VerificationOutcome.FAIL, external(violation));
-        var property = system.state().allObjects().stream().filter(object -> object.cls().name().equals("ObservablePropertySnapshot")).findFirst().orElseThrow();
-        assertEquals("[\"B\"]", ((org.tzi.use.uml.ocl.value.StringValue) property.state(system.state()).attributeValue("values")).value());
+        var property = system.state().allObjects().stream().filter(object -> object.cls().name().equals("LiveRuntimePropertyArtifact")).findFirst().orElseThrow();
+        assertEquals("B", ((org.tzi.use.uml.ocl.value.StringValue) property.state(system.state()).attributeValue("status")).value());
         projector.apply(delta("A", 2, "A"));
         assertEquals(VerificationOutcome.PASS, external(coordinator.latest()));
         assertEquals(violation.stateVersion() + 1, coordinator.latest().stateVersion());
@@ -61,7 +102,7 @@ class RuntimeVerificationCoordinatorTest {
         assertEquals(baseline.stateHash(), coordinator.latest().stateHash());
         assertEquals(checks + 2, coordinator.verificationCount()); assertEquals(2, notifications.get());
         assertTrue(coordinator.history().stream().anyMatch(value -> value.equals(violation)));
-        assertTrue(Files.readString(coordinator.journal().path()).contains("EXTERNAL:ObservablePropertySnapshot::NoB"));
+        assertTrue(Files.readString(coordinator.journal().path()).contains("EXTERNAL:LiveRuntimePropertyArtifact::NoB"));
         assertSame(system, coordinator.constraints().system());
     }
     @Test void malformedBatchRollsBackAllWritesAndMarksCoverageLostWithoutIncrement() throws Exception {
@@ -95,10 +136,10 @@ class RuntimeVerificationCoordinatorTest {
         assertTrue(projector.runtimeAliases().values().stream().allMatch(alias ->
                 projector.system().state().objectByName(alias.targetUseId()) != null),
                 "disposing an artifact must remove aliases for its deleted property snapshots too");
-        assertEquals(objects - 2, projector.system().state().numObjects());
+        assertEquals(objects - 1, projector.system().state().numObjects());
         var id = new BridgeEntityId("cartago", "environment", "artifact", "/main", "box", "uuid-2");
         projector.apply(event("create", 2, RuntimeEventKind.CREATED, id, artifact("cartago:artifact:env:/main:uuid-2", "uuid-2")));
-        assertEquals(objects - 1, projector.system().state().numObjects());
+        assertEquals(objects, projector.system().state().numObjects());
         assertThrows(RuntimeException.class, () -> projector.apply(event("resurrect", 3, RuntimeEventKind.CREATED, ID, artifact(ARTIFACT, "uuid-1"))));
     }
     @Test void duplicateIsIdempotentWhileConflictRewindGapAndStaleIdentitiesCannotPass() throws Exception {
@@ -185,7 +226,7 @@ class RuntimeVerificationCoordinatorTest {
                 new NativeUseSoilExporter().export(coordinator.system()).commands().getBytes(java.nio.charset.StandardCharsets.UTF_8));
     }
     static VerificationOutcome external(RuntimeVerificationResult result) {
-        return result.outcomes().stream().filter(item -> item.constraintId().equals("EXTERNAL:ObservablePropertySnapshot::NoB"))
+        return result.outcomes().stream().filter(item -> item.constraintId().equals("EXTERNAL:LiveRuntimePropertyArtifact::NoB"))
                 .findFirst().orElseThrow().outcome();
     }
 }

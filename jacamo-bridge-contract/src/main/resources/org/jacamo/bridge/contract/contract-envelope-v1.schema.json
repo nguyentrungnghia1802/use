@@ -6,7 +6,7 @@
   "required": ["schemaVersion", "messageType", "bridgeBuild", "distribution", "projectKey", "modelRevision", "sessionId", "generation", "messageId", "producedAt", "capabilities", "completeness", "watermarks", "evidence", "payloadDigest", "payload"],
   "properties": {
     "schemaVersion": { "type": "string", "pattern": "^1\\.[0-9]+\\.[0-9]+$" },
-    "messageType": { "enum": ["HANDSHAKE", "MODEL_SNAPSHOT", "RUNTIME_SNAPSHOT", "RUNTIME_EVENT", "ACK", "GAP"] },
+    "messageType": { "enum": ["HANDSHAKE", "MODEL_SNAPSHOT", "RUNTIME_SNAPSHOT", "RUNTIME_EVENT", "ACK", "GAP", "CONTROL_STATUS"] },
     "bridgeBuild": { "type": "string", "minLength": 1 },
     "distribution": {
       "type": "object",

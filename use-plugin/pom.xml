@@ -192,23 +192,6 @@
                         <exclude>org/tzi/use/plugins/jacamo/project/ProjectGraph*</exclude>
                         <exclude>org/tzi/use/plugins/jacamo/project/ProjectEdge*</exclude>
                         <exclude>org/tzi/use/plugins/jacamo/project/ImportService*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/runtime/JasonRuntimeConnector*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/runtime/JasonRuntimeConnectorRegistry*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/runtime/JasonMonitorAgArch*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/runtime/CartagoRuntimeConnector*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/runtime/CartagoRuntimeAccess*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/runtime/CartagoArtifactBinding*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/runtime/OfficialCartagoRuntimeAccess*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/runtime/MoiseRuntimeConnector*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/runtime/MoiseBoardSnapshotSource*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/runtime/MoiseRuntimeBinding*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/runtime/MoiseNormativeSnapshot*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/runtime/CompositeRuntimeConnector*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/runtime/SyntheticRuntimeConnector*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/runtime/RuntimeConnector*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/runtime/RuntimeMirrorService*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/runtime/RuntimeService*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/runtime/RuntimeSubscription*</exclude>
                     </excludes>
                     <archive>
                         <manifest>

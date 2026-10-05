@@ -48,7 +48,7 @@ class HotfixLifecycleTest {
             unavailable.set(true);
             assertThrows(RuntimeException.class, facade::rebuild);
             assertEquals(summary, facade.projectSummary());
-            assertEquals(MirrorState.LIVE, facade.runtimeStatus().state());
+            assertEquals(MirrorState.STALE, facade.runtimeStatus().state());
         }
     }
 }

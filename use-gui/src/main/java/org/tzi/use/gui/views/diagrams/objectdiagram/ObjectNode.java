@@ -59,7 +59,7 @@ public class ObjectNode extends PlaceableNode implements SortChangeListener, Obj
 	protected AttributedString fLabelA;
 
 	private List<MAttribute> fAttributes;
-	private final String[] fValues;
+	private String[] fValues;
 
 	private List<MStateMachine> fStateMachines;
 	private final String[] fStateValues;
@@ -191,6 +191,13 @@ public class ObjectNode extends PlaceableNode implements SortChangeListener, Obj
 	 * 
 	 */
 	public void updateContent() {
+
+        var attributes = cls().allAttributes();
+        if (!new java.util.HashSet<>(attributes).equals(new java.util.HashSet<>(fAttributes))) {
+            fAttributes = ModelBrowserSorting.getInstance().sortAttributes(attributes);
+            fValues = new String[attributes.size()];
+            setSizeIsCalculated(false);
+        }
 		String value;
 		MObjectState objState = fObject.state(fParent.system().state());
 

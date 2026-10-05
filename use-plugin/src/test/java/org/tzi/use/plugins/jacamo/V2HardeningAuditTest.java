@@ -34,7 +34,7 @@ class V2HardeningAuditTest {
     }
 
     @Test void canonicalV2ResourcesContainNoHistoricalTargetVocabulary() throws Exception {
-        List<Path> active = List.of(
+        List<Path> frozen = List.of(
                 Path.of("Core/Metamodel/version-2/jacamo_v2_complete.ecore"),
                 Path.of("Core/Mapping/version-2/jacamo-use-mapping-v2.json"),
                 Path.of("Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json"),
@@ -42,7 +42,7 @@ class V2HardeningAuditTest {
                 Path.of("src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-v2.schema.json"),
                 Path.of("src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2.ocl"),
                 Path.of("src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json"));
-        for (Path file : active) {
+        for (Path file : frozen) {
             String text = Files.readString(file);
             assertFalse(text.contains("ORDER_V1"), file.toString());
             assertFalse(text.contains("dynamic V1 state slot"), file.toString());
@@ -50,7 +50,9 @@ class V2HardeningAuditTest {
         }
         assertTrue(Files.readString(Path.of("src/main/java/org/tzi/use/plugins/jacamo/mapping/ActiveBaseline.java"))
                 .contains("public static final String VERSION = \"V2\""));
-        assertTrue(Files.readString(Path.of("src/main/java/org/tzi/use/plugins/jacamo/runtime/RuntimeMappingLoader.java"))
+        assertFalse(Files.exists(Path.of("src/main/java/org/tzi/use/plugins/jacamo/runtime/RuntimeMappingLoader.java")),
+                "The frozen runtime mapper has no production execution path");
+        assertTrue(Files.readString(Path.of("src/test/java/org/tzi/use/plugins/jacamo/runtime/RuntimeMappingLoader.java"))
                 .contains("jacamo-use-runtime-mapping-v2.json"));
     }
 
@@ -58,8 +60,7 @@ class V2HardeningAuditTest {
         List<Path> active = List.of(
                 Path.of("README.md"),
                 Path.of("docs/agent/agent.md"),
-                Path.of("docs/agent/CODE-GROUNDED-NATIVE-README.md"),
-                Path.of("docs/agent/JACAMO-USE-CONCEPT-MAPPING-RULES.md"),
+                Path.of("docs/agent/task.md"),
                 Path.of("docs/project/01-vision-scope.md"),
                 Path.of("docs/project/02-system-architecture.md"),
                 Path.of("docs/project/12-plugin-ui-workflow.md"),

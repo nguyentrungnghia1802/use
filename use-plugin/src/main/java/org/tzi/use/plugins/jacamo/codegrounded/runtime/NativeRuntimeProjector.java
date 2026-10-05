@@ -86,11 +86,15 @@ public final class NativeRuntimeProjector implements AutoCloseable {
     public Map<String, RuntimeFact> evidence() { return coordinator.read(() -> Map.copyOf(evidence)); }
     public Map<String, RuntimeAlias> runtimeAliases() { return coordinator.read(() -> Map.copyOf(aliases)); }
     public List<NativeRuntimeTraceRecord> trace() { return coordinator.read(() -> List.copyOf(trace)); }
+    /** Current native targets; separate from the bounded protocol event history. */
+    public List<NativeRuntimeMutationEngine.TargetBinding> projectionBindings() {
+        return coordinator.read(mutations::targetBindings);
+    }
     public NativeRuntimeMutationEngine.OclGate lastOclGate() {
         var latest = coordinator.latest();
         boolean passed = latest != null && !latest.outcomes().isEmpty() && latest.outcomes().stream().allMatch(item ->
                 item.outcome() == VerificationOutcome.PASS);
-        return new NativeRuntimeMutationEngine.OclGate(true, passed, latest == null ? "" : latest.diagnostic());
+        return new NativeRuntimeMutationEngine.OclGate(mutations.structureValid(), passed, latest == null ? "" : latest.diagnostic());
     }
     public ProjectionResult applySnapshot(RuntimeSnapshot snapshot) { return applySnapshot(snapshot, sessionId, generation); }
     public ProjectionResult applySnapshot(RuntimeSnapshot snapshot, String session, long nextGeneration) {
@@ -101,6 +105,7 @@ public final class NativeRuntimeProjector implements AutoCloseable {
                 ContractPayloads.runtime(snapshot), true, () -> {
             requireRevision(snapshot.modelRevision());
             mutations.resetToBaseline();
+            var baseline=mutations.savepoint();
             List<String> materialized = new ArrayList<>(), evidenceOnly = new ArrayList<>(), unavailable = new ArrayList<>();
             List<Map.Entry<RuntimeFact, NativeRuntimeMutationEngine.ApplyResult>> applied = new ArrayList<>();
             for (RuntimeFact fact : snapshot.facts().stream().sorted(Comparator.comparingInt(NativeRuntimeProjector::rank)
@@ -116,8 +121,11 @@ public final class NativeRuntimeProjector implements AutoCloseable {
                 (result.status() == NativeRuntimeMutationEngine.Status.MATERIALIZED ? materialized : evidenceOnly).add(fact.id().canonical());
             }
             mutations.reconcileAuthoritativeCartago(snapshot);
-            if (!mutations.structureValid()) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_SNAPSHOT_STRUCTURE_INVALID");
+            boolean observedMoise=applied.stream().anyMatch(entry -> NativeRuntimeMutationEngine.observedMoiseRelation(entry.getValue().ruleId())
+                && entry.getValue().status()==NativeRuntimeMutationEngine.Status.MATERIALIZED);
+            if (!mutations.structureTransitionValid(baseline,observedMoise)) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_SNAPSHOT_STRUCTURE_INVALID");
             coordinator.acceptedSnapshot(session, nextGeneration, snapshot.modelRevision(), snapshot.sourceCompleteness());
+            coordinator.observedSources(snapshot.facts(),true);
             sessionId = session; generation = nextGeneration;
             sourceWatermarks.clear(); aliases.clear(); evidence.clear(); trace.clear(); ledger = new EventLedger(8192);
             snapshot.facts().forEach(fact -> evidence.put(fact.id().canonical(), fact));
@@ -126,7 +134,7 @@ public final class NativeRuntimeProjector implements AutoCloseable {
             for (var entry : applied) record(entry.getKey().id().canonical() + ":snapshot", entry.getKey().id().authority(),
                     entry.getKey().id().canonical(), entry.getValue(), ordinal++);
             snapshotId = snapshot.snapshotId(); resyncRequired = false;
-            return new RuntimeVerificationCoordinator.Mutation<>(new ProjectionResult(materialized.size(), evidenceOnly, unavailable, List.of()), true);
+            return new RuntimeVerificationCoordinator.Mutation<>(new ProjectionResult(materialized.size(), evidenceOnly, unavailable, List.of()), true,observedMoise);
         });
         } catch (RuntimeException error) { restoreProtocol(before); throw error; }
         });
@@ -139,6 +147,8 @@ public final class NativeRuntimeProjector implements AutoCloseable {
                     throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_AUTHORITATIVE_EVENT_INCOMPLETE");
                 if (event.kind() == RuntimeEventKind.GAP || event.kind() == RuntimeEventKind.MODEL_REVISION_CHANGED)
                     throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_RESYNC_REQUIRED:" + event.kind());
+                if (event.kind() == RuntimeEventKind.STREAM_BOUNDARY)
+                    org.jacamo.bridge.contract.VerificationBoundary.require(event,sourceWatermarks);
                 if (ledger.inspect(event, ContractPayloads.event(event)) == EventLedger.Result.DUPLICATE) return false;
                 if (resyncRequired) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_RESYNC_REQUIRED");
                 long previous = sourceWatermarks.getOrDefault(event.sourceId(), -1L);
@@ -151,18 +161,26 @@ public final class NativeRuntimeProjector implements AutoCloseable {
             }
             ProtocolState before = saveProtocol();
             try {
-            boolean materialized = coordinator.transaction("EVENT", event.eventId(), event.sourceId(), event.sourceSequence(),
-                    event.observedAt(), ContractPayloads.event(event), false, () -> {
+            boolean boundary=event.kind()==RuntimeEventKind.STREAM_BOUNDARY;
+            String kind=boundary?"STREAM_BOUNDARY":coordinator.operationKind(event);
+            boolean materialized = coordinator.transaction(kind, event.eventId(), event.sourceId(), event.sourceSequence(),
+                    event.observedAt(), ContractPayloads.event(event), !kind.equals("EVENT"), () -> {
+                if(boundary) {
+                    sourceWatermarks.put(event.sourceId(),event.sourceSequence());
+                    return new RuntimeVerificationCoordinator.Mutation<>(false,false);
+                }
                 var result = mutations.apply(event.entityId(), event.relationId(), event.factKind(), event.projectionStatus(),
                         event.completeness(), event.after(), false);
+                if(!kind.equals("EVENT")) coordinator.operationCheckpoint(event);
                 if (result.status() == NativeRuntimeMutationEngine.Status.REJECTED) {
                     resyncRequired = true;
                     throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_MUTATION_REJECTED:" + result.diagnostic());
                 }
+                coordinator.observedSource(event);
                 sourceWatermarks.put(event.sourceId(), event.sourceSequence());
                 record(event.eventId(), event.sourceId(), event.entityId() == null ? "event" : event.entityId().canonical(), result, event.sourceSequence());
                 return new RuntimeVerificationCoordinator.Mutation<>(result.status() == NativeRuntimeMutationEngine.Status.MATERIALIZED,
-                        result.status() == NativeRuntimeMutationEngine.Status.MATERIALIZED);
+                        result.status() == NativeRuntimeMutationEngine.Status.MATERIALIZED,NativeRuntimeMutationEngine.observedMoiseRelation(result.ruleId()));
             });
             ledger.accept(event, ContractPayloads.event(event));
             return materialized;
@@ -202,9 +220,15 @@ public final class NativeRuntimeProjector implements AutoCloseable {
         if (!(value instanceof String kind)) return 100;
         return switch (kind) {
             case "UPSERT_CARTAGO_WORKSPACE" -> 10;
+            case "UPSERT_JASON_AGENT_STATE" -> 15;
             case "UPSERT_CARTAGO_AGENT_IDENTITY" -> 20;
             case "UPSERT_CARTAGO_ARTIFACT" -> 30;
             case "UPSERT_CARTAGO_PROPERTY_SNAPSHOT" -> 40;
+            case "UPSERT_CARTAGO_OPERATION" -> 45;
+            case "SET_CARTAGO_FOCUS" -> 50;
+            case "UPSERT_MOISE_GROUP" -> 60;
+            case "UPSERT_MOISE_SCHEME" -> 70;
+            case "UPSERT_MOISE_GROUP_PARENT" -> 80;
             default -> 50;
         };
     }

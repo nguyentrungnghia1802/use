@@ -70,11 +70,16 @@ final class JasonSourceEvidence {
         return result;
     }
 
-    private static Path filePath(String location) {
-        String path = location.substring("file:".length());
-        // JaCaMo's package roots can emit file:C:/... instead of hierarchical file:/C:/....
-        if (!path.startsWith("/")) path = "/" + path;
-        return Path.of(URI.create("file:" + path.replace(" ", "%20"))).toAbsolutePath().normalize();
+    private Path filePath(String location) {
+        URI uri=URI.create(location.replace(" ", "%20"));
+        // SourcePath.fixPath can emit file:src/... when an exact relative file exists.
+        // Preserve that URI's declared path and resolve it against the validated project
+        // root. Prepending '/' would incorrectly turn it into a drive-root path on Windows.
+        if(uri.isOpaque()) {
+            Path declared=Path.of(uri.getSchemeSpecificPart());
+            return (declared.isAbsolute()?declared:projectRoot.resolve(declared)).toAbsolutePath().normalize();
+        }
+        return Path.of(uri).toAbsolutePath().normalize();
     }
 
     private static Evidence evidence(String uri, byte[] content) {

@@ -77,8 +77,9 @@ class NativeStepReplayGuiIT {
         MainWindow.setJavaFxCall(true);
         var window=StepReplayProof.onEdt(()->MainWindow.create(session,PluginRuntime.getInstance()));
         try(var original=new NativeRuntimeProjector(pipeline,SESSION,1,REVISION);var controller=new NativeReplayStepController(session)) {
+            original.applySnapshot(snapshot("initial",0));
             original.coordinator().loadProfileSource("native.ocl",RuntimeVerificationCoordinatorTest.PROFILE);
-            original.applySnapshot(snapshot("initial",0));original.apply(delta("B",1,"B"));original.apply(delta("A",2,"A"));
+            original.apply(delta("B",1,"B"));original.apply(delta("A",2,"A"));
             original.apply(event("dispose",3,org.jacamo.bridge.contract.RuntimeEventKind.DISPOSED,ID,
                     java.util.Map.of("normalizedEventKind","DELETE_CARTAGO_ARTIFACT","semanticId",ARTIFACT)));
             Path bundle=root.resolve("bundle");new NativeRuntimeReplay().exportBundle(original,pipeline.export().useText(),bundle);

@@ -41,18 +41,26 @@ class CodeGroundedPhase7Test {
     private static void assertFaithfulPartialOclGate(NativeRuntimeProjector projector) {
         assertFalse(projector.lastOclGate().passed(), "evidence-only Moise runtime cannot be counted as a formal PASS");
         var outcomes = projector.coordinator().latest().outcomes();
-        assertTrue(outcomes.stream().anyMatch(o -> o.outcome() == org.tzi.use.plugins.jacamo.verification.VerificationOutcome.PASS));
-        assertTrue(outcomes.stream().anyMatch(o -> o.outcome() == org.tzi.use.plugins.jacamo.verification.VerificationOutcome.SKIPPED
-                && "MOISE_DOMAIN_RUNTIME_EVIDENCE_ONLY".equals(o.diagnostic())));
-        assertTrue(outcomes.stream().allMatch(o -> o.outcome() == org.tzi.use.plugins.jacamo.verification.VerificationOutcome.PASS
-                || o.outcome() == org.tzi.use.plugins.jacamo.verification.VerificationOutcome.SKIPPED), outcomes.toString());
+        assertTrue(projector.lastOclGate().structureValid());
+        assertEquals(7,outcomes.size(), "Only the generic structural and capability-gated Goal rules are installed");
+        var runtimeGoals = java.util.Set.of("NATIVE:OrganizationalGoal::GoalStateContext",
+                "NATIVE:OrganizationalGoal::GoalCommittedResponsibility");
+        assertEquals(runtimeGoals,outcomes.stream().filter(o->o.outcome()==
+                org.tzi.use.plugins.jacamo.verification.VerificationOutcome.SKIPPED)
+                .map(o->o.constraintId()).collect(java.util.stream.Collectors.toSet()));
+        for (var outcome : outcomes) {
+            assertTrue(outcome.constraintId().startsWith("NATIVE:"),outcome.toString());
+            if (runtimeGoals.contains(outcome.constraintId()))
+                assertEquals("REQUIRED_CAPABILITY_UNAVAILABLE",outcome.diagnostic());
+            else assertEquals(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.PASS,outcome.outcome(),outcome.toString());
+        }
     }
 
     @Test
     void authoritativeCartagoResyncMustNotResurrectArtifactsFromTheBootstrapModel() throws Exception {
         var result = new CodeGroundedNativePipeline().build(withEnvironment(CodeGroundedTestFixtures.helloSnapshot()));
         var system = result.state().system();
-        assertEquals(1, system.state().objectsOfClass(system.model().getClass("Artifact")).size());
+        assertEquals(1, system.state().objectsOfClass(system.model().getClass("LiveRuntimePropertyArtifact")).size());
         var projector = new NativeRuntimeProjector(result, SESSION, GENERATION, REVISION);
 
         // The bootstrap semantic model contains a live artifact, not a permanent JCM declaration.
@@ -60,10 +68,12 @@ class CodeGroundedPhase7Test {
         projector.applySnapshot(snapshot("disposed-before-resync", List.of(), Map.of("cartago", 2L)));
 
         assertSame(system, projector.system());
-        assertEquals(0, system.state().objectsOfClass(system.model().getClass("Artifact")).size(),
+        assertEquals(0, system.state().objectsOfClass(system.model().getClass("LiveRuntimePropertyArtifact")).size(),
                 "bootstrap runtime instances must not survive an authoritative empty snapshot");
-        assertEquals(0, system.state().objectsOfClass(system.model().getClass("Workspace")).size());
-        assertEquals(0, system.state().objectsOfClass(system.model().getClass("CartagoAgentIdentity")).size());
+        assertEquals(result.source().snapshot().workspaceDeclarations().size(),
+                system.state().objectsOfClass(system.model().getClass("Workspace")).size(),
+                "unobserved JCM declarations remain design-time objects; disposed UUIDs do not");
+        assertNull(system.model().getClass("CartagoAgentIdentity"));
         assertTrue(projector.mutations().structureValid());
         String digest = digest(system);
         projector.applySnapshot(snapshot("disposed-repeated-resync", List.of(), Map.of("cartago", 3L)));
@@ -75,28 +85,11 @@ class CodeGroundedPhase7Test {
         var result = new CodeGroundedNativePipeline().build(withEnvironment(CodeGroundedTestFixtures.helloSnapshot()),
                 org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
         var system = result.state().system();
-        var index = new java.util.LinkedHashMap<>(result.state().semanticObjectIndex());
-        String artifactId = result.source().snapshot().cartagoEnvironments().getFirst().artifacts().getFirst().metadata().semanticId();
-        var api = org.tzi.use.api.UseSystemApi.create(system, false);
-        String operationId = "unit:exact-operation";
-        var operation = api.createObjectEx(system.model().getClass("Operation"), "bootstrap_operation");
-        api.setAttributeValueEx(operation, operation.cls().attribute("semanticId", true), new StringValue(operationId));
-        api.setAttributeValueEx(operation, operation.cls().attribute("artifactSemanticId", true), new StringValue(artifactId));
-        api.createLinkEx(system.model().getAssociation("C16ArtifactOperation"), new org.tzi.use.uml.sys.MObject[]{index.get(artifactId), operation});
-        index.put(operationId, operation);
-        for (String cls : List.of("BackingJavaOperation", "Guard", "ArtifactInfo")) {
-            String id = "unit:exact-" + cls;
-            var object = api.createObjectEx(system.model().getClass(cls), "bootstrap_" + cls);
-            api.setAttributeValueEx(object, object.cls().attribute("semanticId", true), new StringValue(id));
-            String attribute = cls.equals("ArtifactInfo") ? "artifactSemanticId" : "operationDescriptorId";
-            api.setAttributeValueEx(object, object.cls().attribute(attribute, true), new StringValue(cls.equals("ArtifactInfo") ? artifactId : operationId));
-            index.put(id, object);
-        }
-        try (var projector = new NativeRuntimeProjector(system, index, SESSION, GENERATION, REVISION,
-                new org.tzi.use.plugins.jacamo.codegrounded.runtime.CodeGroundedRuntimeRuleRegistry())) {
+        for (String cls : List.of("Operation", "BackingJavaOperation", "Guard", "ArtifactInfo", "ObservablePropertySnapshot"))
+            assertNull(system.model().getClass(cls), cls);
+        try (var projector = new NativeRuntimeProjector(result, SESSION, GENERATION, REVISION)) {
             projector.applySnapshot(snapshot("full-disposed-bootstrap", List.of(), Map.of("cartago", 1L)));
-            for (String cls : List.of("Artifact", "Operation", "BackingJavaOperation", "Guard", "ArtifactInfo"))
-                assertEquals(0, system.state().objectsOfClass(system.model().getClass(cls)).size(), cls);
+            assertTrue(system.state().objectsOfClass(system.model().getClass("LiveRuntimePropertyArtifact")).isEmpty());
             assertTrue(projector.mutations().structureValid());
         }
     }
@@ -108,7 +101,7 @@ class CodeGroundedPhase7Test {
         var incomplete = new RuntimeSnapshot("cartago-unavailable", REVISION, Instant.EPOCH, Instant.EPOCH,
                 Map.of(), Map.of(), 1, List.of(), Map.of("cartago", Completeness.UNAVAILABLE), "unavailable-fingerprint");
         projector.applySnapshot(incomplete);
-        assertEquals(1, result.state().system().state().objectsOfClass(result.state().system().model().getClass("Artifact")).size());
+        assertEquals(1, result.state().system().state().objectsOfClass(result.state().system().model().getClass("LiveRuntimePropertyArtifact")).size());
     }
 
     @Test
@@ -191,17 +184,17 @@ class CodeGroundedPhase7Test {
                 "agent-workspace", "incarnation-1");
         assertTrue(projector.apply(event("agent-workspace", 3, RuntimeEventKind.ADDED, RuntimeFactKind.RELATION_STATE,
                 runtimeRelation, binding(runtimeRelation, staticAgent, "cartago-relation-binding"),
-                Map.of("normalizedEventKind", "INSERT_LINK", "association", "X05AgentWorkspace",
+                Map.of("normalizedEventKind", "INSERT_LINK", "association", org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.relation("memberOf","Agent","Workspace"),
                         "participantSemanticIds", List.of(agentSemanticId, workspaceSemanticId)))));
         assertEquals(1, result.state().system().state()
-                .linksOfAssociation(result.state().system().model().getAssociation("X05AgentWorkspace")).size());
+                .linksOfAssociation(result.state().system().model().getAssociation(org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.relation("memberOf","Agent","Workspace"))).size());
         assertTrue(projector.apply(event("agent-workspace-delete", 4, RuntimeEventKind.REMOVED,
                 RuntimeFactKind.RELATION_STATE, runtimeRelation,
                 binding(runtimeRelation, staticAgent, "cartago-relation-binding"),
-                Map.of("normalizedEventKind", "DELETE_LINK", "association", "X05AgentWorkspace",
+                Map.of("normalizedEventKind", "DELETE_LINK", "association", org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.relation("memberOf","Agent","Workspace"),
                         "participantSemanticIds", List.of(agentSemanticId, workspaceSemanticId)))));
         assertEquals(0, result.state().system().state()
-                .linksOfAssociation(result.state().system().model().getAssociation("X05AgentWorkspace")).size());
+                .linksOfAssociation(result.state().system().model().getAssociation(org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.relation("memberOf","Agent","Workspace"))).size());
     }
 
     @Test
@@ -227,14 +220,15 @@ class CodeGroundedPhase7Test {
                         Map.entry("defaultInfrastructureLayer", "local"))),
                 faithfulFact("agent", RuntimeFactKind.AGENT, Map.ofEntries(
                         Map.entry("normalizedEventKind", "UPSERT_CARTAGO_AGENT_IDENTITY"),
-                        Map.entry("semanticId", agent), Map.entry("globalId", "agent-global"),
-                        Map.entry("localId", 1), Map.entry("name", "worker"), Map.entry("role", "worker"),
+                        Map.entry("semanticId", agent), Map.entry("agentDeclarationSemanticId", result.source().snapshot().agentDeclarations().getFirst().metadata().semanticId()), Map.entry("globalId", "agent-global"),
+                        Map.entry("localId", 1), Map.entry("name", result.source().snapshot().agentDeclarations().getFirst().name()), Map.entry("role", "worker"),
                         Map.entry("workspaceSemanticId", workspace))),
                 faithfulFact("artifact", RuntimeFactKind.ARTIFACT, Map.ofEntries(
                         Map.entry("normalizedEventKind", "UPSERT_CARTAGO_ARTIFACT"),
                         Map.entry("semanticId", artifact), Map.entry("name", "runtimeArtifact"),
                         Map.entry("uuid", "artifact-1"), Map.entry("artifactTypeSemanticId", type),
                         Map.entry("artifactTypeJavaClassName", "example.RuntimeArtifact"),
+                        Map.entry("artifactTypeOrigin", "APPLICATION"),
                         Map.entry("artifactTypeClassLoaderIdentity", "runtime-loader"),
                         Map.entry("workspaceSemanticId", workspace), Map.entry("creatorAgentSemanticId", agent))),
                 faithfulFact("property", RuntimeFactKind.PROPERTY, Map.ofEntries(
@@ -250,17 +244,14 @@ class CodeGroundedPhase7Test {
 
         assertSame(system, projector.system());
         assertEquals(4, projection.materialized());
-        assertEquals(baselineObjects + 6, system.state().numObjects());
-        assertEquals(1, system.state().linksOfAssociation(system.model()
-                .getAssociation("C13EnvironmentWorkspace")).size());
-        assertEquals(1, system.state().linksOfAssociation(system.model()
-                .getAssociation("C14WorkspaceArtifact")).size());
-        assertEquals(1, system.state().linksOfAssociation(system.model()
-                .getAssociation("C15ArtifactType")).size());
-        assertEquals(1, system.state().linksOfAssociation(system.model()
-                .getAssociation("C17ArtifactObservableProperty")).size());
-        assertEquals(1, system.state().linksOfAssociation(system.model()
-                .getAssociation("C19WorkspaceAgent")).size());
+        assertEquals(baselineObjects + 2, system.state().numObjects());
+        assertEquals(1, system.state().linksOfAssociation(system.model().getAssociation(
+                org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.relation("locatedIn", "Workspace", "RuntimeArtifact"))).size());
+        assertEquals(1, system.state().linksOfAssociation(system.model().getAssociation(
+                org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.relation("memberOf", "Agent", "Workspace"))).size());
+        assertEquals("'ready'", system.state().objectByName("runtimeArtifact").state(system.state()).attributeValue("status").toString());
+        assertNull(system.model().getClass("CartagoAgentIdentity"));
+        assertNull(system.model().getClass("ObservablePropertySnapshot"));
         assertEquals(4, projector.runtimeAliases().size());
         assertFaithfulPartialOclGate(projector);
 
@@ -420,7 +411,7 @@ class CodeGroundedPhase7Test {
                 "phase7", "environment-1", "1.0", "default",
                 List.of(new WorkspaceSemantic(meta(workspaceId, "CARTAGO_WORKSPACE"), "/phase7", "phase7",
                         "workspace-1", "", environmentId.canonical(), true, "local", "", "")),
-                List.of(new ArtifactTypeSemantic(meta(typeId, "CARTAGO_ARTIFACT_TYPE"), "phase7.Type", "loader")),
+                List.of(new ArtifactTypeSemantic(meta(typeId, "CARTAGO_ARTIFACT_TYPE"), LiveRuntimePropertyArtifact.class.getName(), "loader")),
                 List.of(new ArtifactSemantic(meta(artifactId, "CARTAGO_ARTIFACT"), "phase7-artifact", "artifact-1",
                         typeId.canonical(), workspaceId.canonical(), "")),
                 List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),

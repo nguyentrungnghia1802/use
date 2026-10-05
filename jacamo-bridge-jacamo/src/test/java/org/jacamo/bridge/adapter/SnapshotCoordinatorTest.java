@@ -32,8 +32,21 @@ class SnapshotCoordinatorTest {
     }
 
     @Test void overflowNeverSilentlyPublishesSnapshot() throws Exception {
-        var source=new FakeSource(true,false); try(var coordinator=new SnapshotCoordinator(List.of(source),1)){
+        var source=new FakeSource(true,false);var stream=new java.util.ArrayList<RuntimeEvent>();
+        try(var coordinator=new SnapshotCoordinator(List.of(source),1,stream::add)){
             assertThrows(ContractException.class,()->coordinator.capture("model-1",2));
+            assertTrue(stream.stream().anyMatch(e->e.kind()==RuntimeEventKind.GAP
+                    && e.after().get("diagnostic").equals("SNAPSHOT_CALLBACK_BUFFER_OVERFLOW")));
+        }
+    }
+
+    @Test void olderLiveSubscriberReceivesEveryCallbackAcrossRejectedAndAcceptedCuts() throws Exception {
+        var source=new FakeSource(false,true);var stream=new java.util.ArrayList<RuntimeEvent>();
+        try(var coordinator=new SnapshotCoordinator(List.of(source),8,stream::add)) {
+            var capture=coordinator.capture("model-1",3);
+            assertEquals(List.of(1L,2L),stream.stream().map(RuntimeEvent::sourceSequence).toList());
+            assertEquals(List.of(2L),capture.replay().stream().map(RuntimeEvent::sourceSequence).toList());
+            assertEquals(1L,capture.snapshot().endWatermarks().get("fake").sequence());
         }
     }
 
@@ -45,6 +58,19 @@ class SnapshotCoordinatorTest {
     @Test void sameTopologyWithMutationDuringCaptureIsNotAnAuthoritativeCut() throws Exception {
         try (var coordinator = new SnapshotCoordinator(List.of(new FakeSource(false, false)), 8)) {
             assertThrows(ContractException.class, () -> coordinator.capture("model-1", 2));
+        }
+    }
+    @Test void explicitBoundaryHasCorrelationAndIsIncludedInAuthoritativeWatermarks() throws Exception {
+        var source=new BridgeCheckpointSource();var events=new java.util.ArrayList<RuntimeEvent>();
+        try(var coordinator=new SnapshotCoordinator(List.of(source),8,events::add)) {
+            var cause=new FakeSource(false,false).event(4);source.boundary(cause);
+            assertEquals(1,events.size());var boundary=events.getFirst();
+            assertEquals(RuntimeEventKind.STREAM_BOUNDARY,boundary.kind());assertEquals(cause.eventId(),boundary.causationId());
+            assertEquals(cause.eventId(),boundary.correlationId());assertEquals(4L,((Number)boundary.after().get("boundarySourceSequence")).longValue());
+            var cut=coordinator.capture("model-1",1).snapshot();
+            assertEquals(1L,cut.endWatermarks().get(source.sourceId()).sequence());
+            assertEquals(Completeness.COMPLETE,cut.sourceCompleteness().get(source.sourceId()));
+            source.boundary(cause);assertEquals(2L,events.getLast().sourceSequence());
         }
     }
 

@@ -1989,6 +1989,11 @@ public class ClassDiagram extends DiagramView
 		}
 	}
 
+    public void refreshClassFeatures() {
+        visibleData.fClassToNodeMap.values().forEach(ClassNode::refreshFeatures);
+        hiddenData.fClassToNodeMap.values().forEach(ClassNode::refreshFeatures);
+    }
+
 	/**
 	 * Check if one association is hidden
 	 *

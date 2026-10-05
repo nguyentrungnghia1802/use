@@ -204,6 +204,13 @@ public final class MObjectState implements MInstanceState {
     public Map<MAttribute, Value> attributeValueMap() {
         return Collections.unmodifiableMap(fAttrSlots);
     }
+
+    /** Add stored slots after a model extension without replacing this object state. */
+    void initializeStoredAttributeSlots() {
+        for (MAttribute attribute : fObject.cls().allAttributes()) {
+            fAttrSlots.putIfAbsent(attribute, UndefinedValue.instance);
+        }
+    }
     
     /**
      * Returns all state machine instances this object state has.

@@ -18,6 +18,18 @@ public final class SemanticContractCodec {
     public static byte[] encode(JacamoSemanticSnapshot snapshot) { return CanonicalJson.encode(toTree(snapshot)); }
     public static JacamoSemanticSnapshot decode(byte[] bytes) { return fromTree(CanonicalJson.decode(bytes)); }
     public static Object toTree(JacamoSemanticSnapshot snapshot) { return encodeValue(snapshot); }
+    public static Object organizationToTree(MoiseSemanticContract.OrganizationSemantic organization) { return encodeValue(organization); }
+    public static Object operationToTree(CartagoSemanticContract.OperationDescriptorSemantic value) { return encodeValue(value); }
+    public static Object backingOperationToTree(CartagoSemanticContract.BackingJavaOperationSemantic value) { return encodeValue(value); }
+    public static CartagoSemanticContract.OperationDescriptorSemantic operationFromTree(Object value) {
+        return (CartagoSemanticContract.OperationDescriptorSemantic)convert(value,CartagoSemanticContract.OperationDescriptorSemantic.class);
+    }
+    public static CartagoSemanticContract.BackingJavaOperationSemantic backingOperationFromTree(Object value) {
+        return (CartagoSemanticContract.BackingJavaOperationSemantic)convert(value,CartagoSemanticContract.BackingJavaOperationSemantic.class);
+    }
+    public static MoiseSemanticContract.OrganizationSemantic organizationFromTree(Object tree) {
+        return (MoiseSemanticContract.OrganizationSemantic) convert(tree, MoiseSemanticContract.OrganizationSemantic.class);
+    }
     public static JacamoSemanticSnapshot fromTree(Object tree) {
         JacamoSemanticSnapshot result = (JacamoSemanticSnapshot) convert(tree, JacamoSemanticSnapshot.class);
         if (!JacamoSemanticSnapshot.CURRENT_VERSION.equals(result.contractVersion()))

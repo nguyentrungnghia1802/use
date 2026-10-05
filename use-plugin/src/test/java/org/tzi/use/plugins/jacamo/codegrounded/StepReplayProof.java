@@ -30,6 +30,7 @@ public final class StepReplayProof {
         Map<String,String> hashes=hashes(recording);
         var expected=new ArrayList<Expected>();
         List<NativeRuntimeReplay.Step> steps;
+        int captureStep;
         try(var bundle=new NativeRuntimeReplay().openBundle(recording);var cursor=bundle.atStep(0)) {
             steps=bundle.steps();
             for(var step:steps) {
@@ -38,6 +39,10 @@ public final class StepReplayProof {
             }
         }
         assertTrue(steps.size()>2,"Acceptance requires at least two real semantic transitions");
+        // The final recorded cut includes the real authoritative resync of all
+        // dimensions. A transient maximum of Jason goal observations could
+        // precede actual role adoption and completed artifact state.
+        captureStep=steps.getLast().stepIndex();
         var errors=new CopyOnWriteArrayList<String>();
         var panel=onEdt(()->panel(facade,errors));
         var frame=onEdt(()->{var value=new JFrame("Generic Step Replay acceptance");value.setContentPane(panel);value.setSize(1500,1000);value.setVisible(true);return value;});
@@ -52,6 +57,7 @@ public final class StepReplayProof {
             assertTrue(errors.isEmpty(),errors.toString());
             assertNotNull(facade.stepReplayStatus(),"Open control released without a selected replay: "+onEdt(()->component(panel,"workbench-status",JLabel.class).getText()));
             assertNotSame(original,session.system(),"Open status="+facade.stepReplayStatus()+" errors="+errors);assertNotSame(original.model(),session.system().model());
+            NativeObjectDiagramEvidence.capture(window,evidence,"object-diagram-before","after declarations / before behavior; recorded baseline step 0");
             onEdt(()->{menu(window.getJMenuBar(),"Evaluate OCL expression...").doClick();return null;});
             dialog[0]=onEdt(()->Arrays.stream(Window.getWindows()).filter(JDialog.class::isInstance).map(JDialog.class::cast)
                     .filter(value->value.isDisplayable()&&value.getOwner()==window&&value.getTitle().equals("Evaluate OCL expression")).findFirst().orElseThrow());
@@ -66,10 +72,14 @@ public final class StepReplayProof {
                 check(panel,facade,session,window,dialog[0],expected,stableListeners,visited);
                 navigate(panel,facade,"step-replay-next",errors);check(panel,facade,session,window,dialog[0],expected,stableListeners,visited);
             }
+            if(captureStep==2) NativeObjectDiagramEvidence.capture(window,evidence,"object-diagram-after","after runtime transition step 2; "+steps.get(2).event());
             while(facade.stepReplayStatus().step()<facade.stepReplayStatus().total()) {
                 navigate(panel,facade,"step-replay-next",errors);
                 check(panel,facade,session,window,dialog[0],expected,stableListeners,visited);
+                if(facade.stepReplayStatus().step()==captureStep) NativeObjectDiagramEvidence.capture(window,evidence,"object-diagram-after",
+                        "after runtime transition step "+captureStep+"; "+steps.get(captureStep).event());
             }
+            assertFalse(Files.readString(evidence.resolve("object-diagram-before.cmd")).equals(Files.readString(evidence.resolve("object-diagram-after.cmd"))),"Two diagrams must represent distinct actual states");
             onEdt(()->{assertFalse(button(panel,"step-replay-next").isEnabled());
                 assertFalse(button(panel,"start-runtime").isEnabled());assertFalse(button(panel,"runtime-connect").isEnabled());
                 assertFalse(button(panel,"runtime-resync").isEnabled());assertFalse(button(panel,"load-profile").isEnabled());return null;});

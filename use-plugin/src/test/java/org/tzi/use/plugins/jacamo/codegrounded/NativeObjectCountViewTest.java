@@ -18,16 +18,16 @@ class NativeObjectCountViewTest {
             var view=new ObjectCountView(system);
             try {
                 var api=UseSystemApi.create(system,false);
-                var artifact=api.createObjectEx(system.model().getClass("Artifact"),"actual_artifact");
-                var helper=api.createObjectEx(system.model().getClass("ObservablePropertySnapshot"),"property_snapshot");
+                var artifact=api.createObjectEx(system.model().getClass("Agent"),"actual_agent");
+                var helper=api.createObjectEx(system.model().getClass("Workspace"),"actual_workspace");
                 var created=new StateDifference();created.addNewObject(artifact);created.addNewObject(helper);
                 system.getEventBus().post(new AtomicStateChangedEvent(created));
-                assertEquals(1,count(view,"Artifact"),"native atomic commit must refresh the count view");
-                assertEquals(1,count(view,"ObservablePropertySnapshot"),"snapshot counts must stay separate from Artifact");
+                assertEquals(1,count(view,"Agent"),"native atomic commit must refresh the count view");
+                assertEquals(1,count(view,"Workspace"),"workspace counts must stay separate from Agent");
                 api.deleteObjectEx(artifact);
                 var deleted=new StateDifference();deleted.addDeletedObject(artifact);
                 system.getEventBus().post(new AtomicStateChangedEvent(deleted));
-                assertEquals(0,count(view,"Artifact"));assertEquals(1,count(view,"ObservablePropertySnapshot"));
+                assertEquals(0,count(view,"Agent"));assertEquals(1,count(view,"Workspace"));
                 return null;
             } finally { view.detachModel(); }
         });

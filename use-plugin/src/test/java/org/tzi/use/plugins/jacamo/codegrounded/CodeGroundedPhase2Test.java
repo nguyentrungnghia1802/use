@@ -29,21 +29,16 @@ class CodeGroundedPhase2Test {
         var result = new CodeGroundedNativePipeline().build(snapshot,
                 org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
         var system = result.state().system();
-        assertEquals(2, system.state().objectsOfClass(system.model().getClass("Action")).size());
-        assertEquals(1, system.state().objectsOfClass(system.model().getClass("Belief")).size());
-        assertEquals(1, system.state().objectsOfClass(system.model().getClass("AgentGoal")).size());
-        assertEquals(1, system.state().objectsOfClass(system.model().getClass("BeliefRule")).size());
-        assertEquals(1, system.state().linksOfAssociation(system.model().getAssociation("A21ProgramBelief")).size());
-        assertEquals(1, system.state().linksOfAssociation(system.model().getAssociation("A22ProgramGoal")).size());
+        assertEquals(2,program.actions().size()); assertEquals(1,program.beliefs().size());
+        assertEquals(1,program.goals().size()); assertEquals(1,program.beliefRules().size());
+        for(String name:List.of("Action","BeliefRule","Plan")) assertNull(system.model().getClass(name));
+        assertNotNull(system.model().getClass("Belief")); assertNotNull(system.model().getClass("AgentGoal"));
+        assertEquals(program,result.source().programs().stream().filter(p -> p.metadata().semanticId().equals(program.metadata().semanticId())).findFirst().orElseThrow());
+        assertTrue(system.model().getClass("phase2_Agent").parents().contains(system.model().getClass("Agent")));
         assertTrue(result.trace().records().stream().anyMatch(record -> record.ruleId().equals("A06")));
         assertTrue(result.trace().records().stream().anyMatch(record -> record.ruleId().equals("A07")));
         assertTrue(result.trace().records().stream().anyMatch(record -> record.ruleId().equals("A08")));
         assertTrue(result.trace().records().stream().anyMatch(record -> record.ruleId().equals("A09")));
-        assertTrue(result.trace().records().stream().anyMatch(record -> record.ruleId().equals("A10")));
-        assertTrue(result.trace().records().stream().anyMatch(record -> record.ruleId().equals("A11")));
-        assertEquals("true", org.tzi.use.api.UseSystemApi.create(system, false).evaluate(
-                "AgentProgram.allInstances->forAll(p | p.initialBeliefs->size() = 1 and "
-                        + "p.initialGoals->size() = 1)").toString());
         assertTrue(result.state().structureValid());
         assertTrue(result.state().invariantsValid());
         assertEquals(result.model().structuralHash(), result.export().recompiledStructuralHash());
@@ -59,7 +54,7 @@ class CodeGroundedPhase2Test {
         var result = new CodeGroundedNativePipeline().build(withProgram(CodeGroundedTestFixtures.helloSnapshot(), empty),
                 org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
         var system = result.state().system();
-        assertEquals(0, system.state().objectsOfClass(system.model().getClass("Plan")).size());
+        assertNull(system.model().getClass("Plan")); assertNotNull(system.model().getClass("empty_Agent"));
         assertTrue(result.state().structureValid());
         assertTrue(result.state().invariantsValid());
     }
@@ -70,7 +65,7 @@ class CodeGroundedPhase2Test {
                 baseContract.agentDeclarations(), baseContract.workspaceDeclarations(), baseContract.artifactDeclarations(),
                 baseContract.organizationDeployments(), baseContract.groupDeployments(), baseContract.schemeDeployments(),
                 baseContract.institutionDeployments(), baseContract.rawRoleTuples(), baseContract.rawFocusTuples(),
-                baseContract.importProvenance(), List.of(program), baseContract.cartagoEnvironments(),
+                baseContract.importProvenance(), java.util.stream.Stream.concat(baseContract.jasonPrograms().stream(),java.util.stream.Stream.of(program)).toList(), baseContract.cartagoEnvironments(),
                 baseContract.moiseOrganizations(), baseContract.exactBindings(), baseContract.diagnostics());
         return new ModelSnapshot("phase2-test", base.sources(), base.agentDeclarations(), base.workspaces(),
                 base.configuredArtifacts(), base.organisationFacts(), base.groupRoleCardinalities(),

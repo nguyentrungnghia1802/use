@@ -41,7 +41,11 @@ or `RESEARCH LIMITATION` in release-facing documents. In particular:
 
 - in-process connector evidence is not an external standalone `.jcm` launcher;
 - preserved Norm structure is not full deontic-to-OCL translation;
-- runtime verification is observation/reporting, not enforcement or control;
+- runtime verification observes domain state; the approved HARD policy may request
+  capability-gated Jason ExecutionControl pause/resume only, after retaining the
+  original failure and with all-agent ACK plus authoritative confirmation;
+- “Jason agents paused” does not mean atomic suspension of CArtAgO/Moise activity
+  or domain repair;
 - Auction fixture coverage is not generic production support;
 - archive equality under one pinned toolchain is not a cross-toolchain guarantee.
 - verification profiles.

@@ -28,6 +28,7 @@ public final class JacamoSpecificationModel {
         this.programs = snapshot.jasonPrograms().stream()
                 .sorted(Comparator.comparing(value -> value.metadata().semanticId())).toList();
         validateUniqueSemanticIdentities();
+        validateReferences();
         this.revision = sha256(SemanticContractCodec.encode(snapshot));
     }
 
@@ -114,6 +115,54 @@ public final class JacamoSpecificationModel {
         if (metadata == null || !identities.add(metadata.semanticId()))
             throw new IllegalArgumentException("DUPLICATE_SEMANTIC_IDENTITY: "
                     + (metadata == null ? "<null>" : metadata.semanticId()));
+    }
+    /** Validate retained source references even when the corresponding concept has no USE class. */
+    private void validateReferences() {
+        java.util.Map<String,Set<String>> categories=new java.util.HashMap<>();
+        categories.put("agent",ids(snapshot.agentDeclarations(),v -> v.metadata()));
+        categories.put("artifact-declaration",ids(snapshot.artifactDeclarations(),v -> v.metadata()));
+        for(var program:programs) {
+            add(categories,"action",ids(program.actions(),v -> v.metadata()));
+            add(categories,"belief",ids(program.beliefs(),v -> v.metadata()));
+            add(categories,"agent-goal",ids(program.goals(),v -> v.metadata()));
+            for(var plan:program.planLibrary().plans()) if(plan.trigger()!=null)
+                add(categories,"trigger",Set.of(plan.trigger().metadata().semanticId()));
+        }
+        for(var org:snapshot.moiseOrganizations()) {
+            add(categories,"role",ids(org.structuralSpecification().roles(),v -> v.metadata()));
+            for(var scheme:org.functionalSpecification().schemes()) add(categories,"organisational-goal",ids(scheme.goals(),v -> v.metadata()));
+        }
+        for(var env:snapshot.cartagoEnvironments()) {
+            var types=ids(env.artifactTypes(),v -> v.metadata()); var workspaces=ids(env.workspaces(),v -> v.metadata());
+            var artifacts=ids(env.artifacts(),v -> v.metadata());
+            for(var artifact:env.artifacts()) {
+                if(!types.contains(artifact.artifactTypeSemanticId())) throw new IllegalArgumentException("C15_TYPE_REFERENCE:"+artifact.artifactTypeSemanticId());
+                if(!workspaces.contains(artifact.workspaceSemanticId())) throw new IllegalArgumentException("C14_WORKSPACE_REFERENCE:"+artifact.workspaceSemanticId());
+            }
+            for(var property:env.propertySnapshots()) if(!artifacts.contains(property.artifactSemanticId()))
+                throw new IllegalArgumentException("C09_PROPERTY_OWNER_REFERENCE:"+property.artifactSemanticId());
+            add(categories,"workspace",workspaces); add(categories,"artifact",artifacts);
+            add(categories,"operation",ids(env.operations(),v -> v.metadata()));
+            add(categories,"property",ids(env.propertySnapshots(),v -> v.metadata()));
+            add(categories,"signal",ids(env.signals(),v -> v.metadata()));
+            add(categories,"cartago-agent",ids(env.agents(),v -> v.metadata()));
+        }
+        java.util.Map<String,List<String>> endpoints=java.util.Map.of("X01",List.of("action","operation"),"X02",List.of("belief","property"),
+            "X03",List.of("trigger","signal"),"X04",List.of("agent","role"),"X05",List.of("agent","workspace"),"X06",List.of("agent","artifact"),
+            "X07",List.of("agent-goal","organisational-goal"),"X08",List.of("artifact-declaration","artifact"),"X09",List.of("agent","cartago-agent"));
+        for(var binding:snapshot.exactBindings()) {
+            var expected=endpoints.get(binding.ruleId());
+            if(!categories.getOrDefault(expected.get(0),Set.of()).containsAll(binding.sourceIds()))
+                throw new IllegalArgumentException("CROSS_SOURCE_CLASS_MISMATCH_"+binding.ruleId());
+            if(!categories.getOrDefault(expected.get(1),Set.of()).containsAll(binding.targetIds()))
+                throw new IllegalArgumentException("CROSS_TARGET_CLASS_MISMATCH_"+binding.ruleId());
+        }
+    }
+    private static <T> Set<String> ids(List<T> values,Function<T,SemanticMetadata> metadata) {
+        return values.stream().map(v -> metadata.apply(v).semanticId()).collect(java.util.stream.Collectors.toSet());
+    }
+    private static void add(java.util.Map<String,Set<String>> categories,String kind,Set<String> ids) {
+        categories.computeIfAbsent(kind,k -> new HashSet<>()).addAll(ids);
     }
 
     private static String sha256(byte[] bytes) {

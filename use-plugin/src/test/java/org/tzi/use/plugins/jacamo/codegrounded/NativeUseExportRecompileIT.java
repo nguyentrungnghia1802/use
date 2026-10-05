@@ -7,9 +7,10 @@ import org.junit.jupiter.api.Test;
 class NativeUseExportRecompileIT {
     @Test void officialPrinterOutputRecompilesToTheSameStructure() throws Exception {
         var result = CodeGroundedTestFixtures.helloPipeline();
-        assertTrue(result.export().useText().startsWith("model helloworld_CodeGrounded"));
+        assertTrue(result.export().useText().startsWith("model helloworld"));
         assertEquals(result.export().originalStructuralHash(), result.export().recompiledStructuralHash());
         assertEquals(result.model().structuralHash(), result.export().originalStructuralHash());
-        assertNotNull(result.export().recompiledModel().getClass("PlanBodyElement"));
+        assertNull(result.export().recompiledModel().getClass("PlanBodyElement"));
+        assertTrue(result.export().recompiledModel().getClass("hello_Agent").parents().contains(result.export().recompiledModel().getClass("Agent")));
     }
 }

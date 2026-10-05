@@ -3,7 +3,7 @@ package org.tzi.use.plugins.jacamo;
 import org.tzi.use.runtime.IPlugin;
 import org.tzi.use.runtime.IPluginRuntime;
 
-/** USE entry point; Phase 1 only registers the plugin. */
+/** USE entry point; semantic work begins through the Session-bound facade. */
 public final class JaCaMoPlugin implements IPlugin {
     @Override
     public String getName() {
@@ -12,6 +12,6 @@ public final class JaCaMoPlugin implements IPlugin {
 
     @Override
     public void run(IPluginRuntime runtime) {
-        // No startup side effects are needed for the skeleton.
+        // Runtime observation/control is explicitly opened by the Workbench.
     }
 }

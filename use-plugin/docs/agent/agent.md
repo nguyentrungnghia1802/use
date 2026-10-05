@@ -9,8 +9,8 @@ You are the implementation agent for the USE JaCaMo Plugin.
 
 For every task, first read:
 
-1. `docs/agent/task.md`
-2. this `docs/agent/agent.md`
+1. this `docs/agent/agent.md`
+2. `docs/agent/task.md`
 3. only the source/tests/docs directly needed for that task
 
 `task.md` defines the current objective, mapping decisions, scope, checklist, acceptance criteria, and definition of done.
@@ -76,6 +76,18 @@ Rules:
 - Keep the active USE `MModel` / `MSystem` / `MSystemState` consistent with the task architecture.
 - Generated/exported artifacts are derived outputs, not semantic authority, unless `task.md` explicitly states otherwise.
 - Preserve unrelated user work.
+
+Runtime control is a narrow verification exception: JaCaMo executes domain
+behavior; USE verifies the same active state. A dedicated RuntimeControlService
+may request pause/resume only, using capability-gated Jason ExecutionControl.
+Adapters must not repair or control Goal/Belief/Artifact/Mission domain state.
+Freeze the failing verification snapshot before requesting pause. PAUSED means
+all current admitted Jason agents acknowledged a reasoning-cycle boundary; it
+does not mean atomic suspension of CArtAgO or Moise/OrgBoard in-flight activity.
+Pause/resume requires per-agent ACKs and authoritative resync. Verification FAIL
+and control failure are separate states. OCL ERROR/UNDEFINED/SKIPPED never gain
+automatic pause authority; only explicitly approved HARD false results may pause.
+No console-output pause API, Swing click automation, kill or thread suspension.
 
 # 5. Git workflow
 

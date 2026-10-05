@@ -161,6 +161,7 @@ public class NewObjectDiagramView extends JPanel
         event.getDeletedLinks().forEach(fObjectDiagram::deleteLink);
         event.getDeletedObjects().forEach(fObjectDiagram::deleteObject);
         event.getNewObjects().forEach(fObjectDiagram::addObject);
+        fObjectDiagram.refreshObjectBindings(event.getModifiedObjects());
         event.getNewLinks().forEach(fObjectDiagram::addLink);
         event.getModifiedObjects().forEach(fObjectDiagram::updateObject);
         fObjectDiagram.invalidateContent(true);

@@ -54,7 +54,7 @@ class LiveCartagoNativeVerificationTest {
             assertSame(system.model(), session.system().model());
             context.doAction(artifact, new Op("set", "B"));
             await(() -> facade.runtimeVerificationHistory().stream().anyMatch(result ->
-                    result.failingConstraints().contains("EXTERNAL:ObservablePropertySnapshot::NoB")));
+                    result.failingConstraints().contains("EXTERNAL:LiveRuntimePropertyArtifact::NoB")));
             assertEquals(VerificationOutcome.FAIL, RuntimeVerificationCoordinatorTest.external(facade.runtimeVerificationResult()));
             JaCaMoWorkbenchPanel[] panel = new JaCaMoWorkbenchPanel[1];
             SwingUtilities.invokeAndWait(() -> panel[0] = new JaCaMoWorkbenchPanel(facade));
@@ -64,7 +64,7 @@ class LiveCartagoNativeVerificationTest {
                 assertTrue(component(panel[0], "runtime-failing-constraints", JLabel.class).getText().contains("NoB"));
                 var table = component(panel[0], "verification-table", JTable.class);
                 assertTrue(java.util.stream.IntStream.range(0, table.getRowCount()).anyMatch(row ->
-                        "EXTERNAL:ObservablePropertySnapshot::NoB".equals(table.getValueAt(row, 0))
+                        "EXTERNAL:LiveRuntimePropertyArtifact::NoB".equals(table.getValueAt(row, 0))
                                 && VerificationOutcome.FAIL.equals(table.getValueAt(row, 2))));
             });
             context.doAction(artifact, new Op("set", "A"));
@@ -89,8 +89,9 @@ class LiveCartagoNativeVerificationTest {
             var creation = transport.observations.stream().filter(event -> event.kind() == RuntimeEventKind.CREATED
                     && event.entityId().incarnation().equals(recreated.getId().toString())).findFirst().orElseThrow();
             assertFalse(((List<?>) creation.after().get("properties")).isEmpty(), "Initial properties must not be omitted");
-            assertTrue(system.state().allObjects().stream().anyMatch(object -> object.cls().name().equals("ObservablePropertySnapshot")
-                    && object.state(system.state()).attributeValue("artifactSemanticId").toString().contains(recreated.getId().toString())));
+            assertTrue(system.state().allObjects().stream().anyMatch(object -> object.cls().name().equals("LiveRuntimePropertyArtifact")
+                    && object.state(system.state()).attributeValue("semanticId").toString().contains(recreated.getId().toString())
+                    && object.state(system.state()).attributeValue("status").toString().equals("'A'")));
             Path bundle = directory.resolve("replay"); facade.exportRuntimeReplay(bundle);
             var replay = new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReplay().replay(bundle);
             assertTrue(replay.complete(), replay.diagnostics().toString());

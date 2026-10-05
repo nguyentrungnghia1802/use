@@ -14,8 +14,8 @@ class NativeStepReplayTest {
     @Test void resetNextNextPreviousNextReconstructsExactStateAndNeverMutatesOriginal() throws Exception {
         var pipeline=CodeGroundedTestFixtures.helloPipeline();
         try(var original=new NativeRuntimeProjector(pipeline,SESSION,1,REVISION)) {
-            original.coordinator().loadProfileSource("before.ocl",RuntimeVerificationCoordinatorTest.PROFILE);
-            original.applySnapshot(snapshot("initial",0)); original.apply(delta("B",1,"B"));
+            original.applySnapshot(snapshot("initial",0));
+            original.coordinator().loadProfileSource("before.ocl",RuntimeVerificationCoordinatorTest.PROFILE); original.apply(delta("B",1,"B"));
             original.apply(delta("A",2,"A"));
             Path recording=root.resolve("navigate");var replay=new NativeRuntimeReplay();
             replay.exportBundle(original,pipeline.export().useText(),recording);
@@ -50,7 +50,7 @@ class NativeStepReplayTest {
                 assertThrows(IllegalStateException.class,system::undoLastStatement);
                 assertThrows(IllegalStateException.class,system::redoStatement);
                 assertThrows(IllegalStateException.class,()->org.tzi.use.api.UseSystemApi.create(system,false).createObject("Agent","manual"));
-                assertThrows(IllegalStateException.class,()->system.setClassInvariantFlags(system.model().classInvariants().iterator().next(),false,null));
+                assertThrows(IllegalStateException.class,()->system.setClassInvariantFlags(original.system().model().classInvariants().iterator().next(),false,null));
                 assertThrows(IllegalStateException.class,()->system.execute(new org.tzi.use.uml.sys.soil.MNewObjectStatement(system.model().getClass("Agent"),"manual")));
                 assertEquals(before,controller.verificationSnapshot());
                 assertEquals(originalCommands,new org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseSoilExporter().export(original.system()).commands());
@@ -142,8 +142,8 @@ class NativeStepReplayTest {
     @Test void retainedCursorSharesBatchValidationAndPreservesNonStepProfileAndNoopVersions() throws Exception {
         var pipeline=CodeGroundedTestFixtures.helloPipeline();
         try (var original=new NativeRuntimeProjector(pipeline,SESSION,1,REVISION)) {
-            original.coordinator().loadProfileSource("before.ocl",RuntimeVerificationCoordinatorTest.PROFILE);
             original.applySnapshot(snapshot("initial",0));
+            original.coordinator().loadProfileSource("before.ocl",RuntimeVerificationCoordinatorTest.PROFILE);
             original.apply(delta("B",1,"B"));
             original.apply(delta("noop",2,"B"));
             assertFalse(original.apply(delta("noop",2,"B")));
@@ -157,7 +157,8 @@ class NativeStepReplayTest {
             try (var bundle=replay.openBundle(recording)) {
                 assertTrue(bundle.report().complete(),bundle.report().toString());
                 assertEquals(4,bundle.steps().size()); // baseline, atomic snapshot, B, A
-                assertEquals(1,bundle.steps().getFirst().endOrdinal()); // PROFILE belongs to baseline
+                assertEquals(0,bundle.steps().getFirst().endOrdinal());
+                assertEquals(2,bundle.steps().get(1).endOrdinal()); // PROFILE follows the schema-discovering snapshot
                 assertTrue(bundle.steps().get(2).recordedStateVersion()>2); // Step is NOT stateVersion
                 for (var step:bundle.steps()) try (var cursor=bundle.atStep(step.stepIndex())) {
                     assertEquals(step.endOrdinal(),cursor.endOrdinal());

@@ -16,10 +16,16 @@ class LegacyAuthorityPackagingIT {
             for (String required : List.of(
                     "org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.class",
                     "org/tzi/use/plugins/jacamo/bridge/BridgeClient.class",
-                    "org/tzi/use/plugins/jacamo/bridge/NativeSemanticAdapter.class",
                     "org/tzi/use/plugins/jacamo/codegrounded/runtime/CodeGroundedRuntimeRuleRegistry.class",
                     "org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.class",
                     "org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeProjector.class",
+                    "org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.class",
+                    "org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeControlService.class",
+                    "org/tzi/use/plugins/jacamo/codegrounded/runtime/VerificationSnapshot.class",
+                    "org/tzi/use/plugins/jacamo/codegrounded/runtime/SnapshotRetention.class",
+                    "org/tzi/use/plugins/jacamo/codegrounded/runtime/GoalViewSnapshot.class",
+                    "org/tzi/use/plugins/jacamo/ui/GoalViewPanel.class",
+                    "org/tzi/use/plugins/jacamo/runtime/MirrorState.class",
                     "org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeTraceRecord.class",
                     "org/tzi/use/plugins/jacamo/codegrounded/rule/CodeGroundedRuleCatalog.class",
                     "org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseModelBuilder.class",
@@ -28,11 +34,17 @@ class LegacyAuthorityPackagingIT {
                     "org/tzi/use/plugins/jacamo/codegrounded/trace/CodeGroundedTraceExporter.class",
                     "org/tzi/use/plugins/jacamo/extraction/OrderEvidenceLoader.class",
                     "org/tzi/use/plugins/jacamo/semantic/JaCaMoSemanticModel.class",
-                    "org/tzi/use/plugins/jacamo/runtime/RuntimeMutationEngine.class",
                     "org/tzi/use/plugins/jacamo/trace/TraceIndex.class")) {
                 assertNotNull(zip.getEntry(required), "required production foundation missing: " + required);
             }
             for (String removed : List.of(
+                    "org/tzi/use/plugins/jacamo/bridge/NativeSemanticAdapter.class",
+                    "org/tzi/use/plugins/jacamo/bridge/BridgeRuntimeProjector.class",
+                    "org/tzi/use/plugins/jacamo/bridge/BridgeVerificationGate.class",
+                    "org/tzi/use/plugins/jacamo/runtime/RuntimeMutationEngine.class",
+                    "org/tzi/use/plugins/jacamo/verification/RuntimeVerificationEngine.class",
+                    "org/tzi/use/plugins/jacamo/SkeletonJaCaMoFacade.class",
+                    "org/tzi/use/plugins/jacamo/ui/BindingResolutionPanel.class",
                     "org/tzi/use/plugins/jacamo/extraction/StaticProjectImporter.class",
                     "org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.class",
                     "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.class",

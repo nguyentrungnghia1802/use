@@ -46,11 +46,17 @@ class ReleasePackageIT {
             }
         }
         Path pluginJar = install.resolve("lib/plugins/use-jacamo-plugin-1.0.1.jar");
+        Path jcm=root.resolve("src/test/resources/canonical-cases/hello-world/helloworld.jcm");
+        var official=new org.jacamo.bridge.adapter.OfficialProjectLoader().load(jcm);
+        var model=new org.jacamo.bridge.adapter.OfficialProjectAdapter().adapt(official,jcm);
+        Path neutralModel=install.resolve("smoke-model.json");
+        Files.write(neutralModel,org.jacamo.bridge.contract.CanonicalJson.encode(
+                org.jacamo.bridge.contract.ContractPayloads.model(model)));
         String javaName = System.getProperty("os.name").startsWith("Windows") ? "java.exe" : "java";
         Path javaExecutable = Path.of(System.getProperty("java.home"), "bin", javaName);
         String classpath = hostJar + java.io.File.pathSeparator + root.resolve("target/test-classes");
         Process process = new ProcessBuilder(javaExecutable.toString(), "-cp", classpath,
-                ReleaseIsolatedSmokeMain.class.getName(), install.toString(), pluginJar.toString())
+                ReleaseIsolatedSmokeMain.class.getName(), install.toString(), pluginJar.toString(),neutralModel.toString())
                 .directory(root.toFile()).redirectErrorStream(true).start();
         boolean finished = process.waitFor(Duration.ofSeconds(30).toMillis(), TimeUnit.MILLISECONDS);
         if (!finished) process.destroyForcibly();

@@ -102,12 +102,21 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private final JLabel bridgeSession = named(new JLabel("-"), "bridge-session-generation");
     private final JLabel bridgeEndpoint = named(new JLabel("-"), "bridge-endpoint");
     private final JLabel bridgeDiagnostic = named(new JLabel("-"), "bridge-diagnostic");
-    private final BindingResolutionPanel bindingPanel;
     private String selectedSource;
     private boolean autoImportStarted;
     private int backgroundOperations;
     private long viewEpoch;
     private final Map<String, JButton> actionButtons = new LinkedHashMap<>();
+    private final JTabbedPane tabs=named(new JTabbedPane(),"workbench-tabs");
+    private final JPanel connectionControls=new JPanel(new FlowLayout(FlowLayout.LEADING));
+    private final JLabel controlState=named(new JLabel("UNAVAILABLE"),"jason-control-state");
+    private final JLabel controlLimitation=named(new JLabel(""),"jason-control-limitation");
+    private final DefaultTableModel violationsModel=readOnlyModel("Constraint","Checkpoint","Failing snapshot","Jason control","Confirmation");
+    private final JTable violations=named(new JTable(violationsModel),"violations-table");
+    private final JTextArea violationDetail=named(new JTextArea(),"violation-detail");
+    private final GoalViewPanel goalPanel=new GoalViewPanel(this::navigateGoalSource);
+    private List<org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationViolation> currentViolations=List.of();
+    private String selectedViolation="";
     private final JLabel replayStep = named(new JLabel("Not open"), "step-replay-index");
     private final JLabel replayVersion = named(new JLabel("-"), "step-replay-state-version");
     private final JLabel replayEvent = named(new JLabel("-"), "step-replay-event");
@@ -141,18 +150,20 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         super(new BorderLayout(8, 8));
         this.facade = java.util.Objects.requireNonNull(facade, "facade");
         this.errorPresenter = java.util.Objects.requireNonNull(errorPresenter, "errorPresenter");
-        this.bindingPanel = new BindingResolutionPanel(facade);
         startRuntime.addActionListener(event -> startRuntime());
         loadProfile.addActionListener(event -> chooseProfile());
         copySource.setEnabled(false);
         copySource.addActionListener(event -> copySelectedSource());
         add(toolbar(), BorderLayout.NORTH);
-        JTabbedPane tabs = named(new JTabbedPane(), "workbench-tabs");
         tabs.addTab("Project", projectPanel());
-        tabs.addTab("Mapping Inspector", tracePanel());
-        tabs.addTab("Mapping Rules", new MappingRulesPanel());
         tabs.addTab("Verification", verificationPanel());
-        tabs.addTab("Runtime", runtimePanel());
+        tabs.addTab("Goal View", goalPanel);
+        tabs.addTab("Trace / Source", tracePanel());
+        var diagnosticTabs=new JTabbedPane();diagnosticTabs.setName("diagnostics-details");
+        diagnosticTabs.addTab("Diagnostics",tablePanel(diagnostics));
+        diagnosticTabs.addTab("Runtime details / recorded replay",runtimePanel());
+        diagnosticTabs.addTab("Projection rules",new MappingRulesPanel());
+        tabs.addTab("Diagnostics",diagnosticTabs);
         add(tabs, BorderLayout.CENTER);
         add(status, BorderLayout.SOUTH);
         refreshRuntime();
@@ -250,14 +261,8 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
                 : authority.sessionId() + " / generation=" + authority.generation());
         bridgeEndpoint.setText(authority.endpoint().isBlank() ? "-" : authority.endpoint());
         bridgeDiagnostic.setText(authority.diagnostic().isBlank() ? "-" : authority.diagnostic());
+        goalPanel.refresh(facade.goalView());refreshControlAndViolations();refreshDiagnostics();
         refreshVerification();
-    }
-
-    public void showBindingRequest(Path destination, JaCaMoFacade.BindingRequest request) {
-        bindingPanel.showRequest(destination, request);
-        if (!java.awt.GraphicsEnvironment.isHeadless())
-            JOptionPane.showMessageDialog(this, bindingPanel, "Explicit binding (legacy compatibility)",
-                    JOptionPane.PLAIN_MESSAGE);
     }
 
     private JPanel toolbar() {
@@ -268,7 +273,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         actions.add(button("Rebuild", "rebuild-project", this::rebuildProject));
         actions.add(loadProfile);
         actions.add(startRuntime);
-        actions.add(button("Run Full Verification", "run-verification", this::runFullVerification));
+        actions.add(button("Verify imported model", "run-verification", this::runFullVerification));
         exports.add(button("Export Report...", "export-report", this::chooseReport));
         exports.add(button("Export .use...", "export-use", this::chooseNativeUse));
         exports.add(button("Export .cmd...", "export-soil", this::chooseNativeSoil));
@@ -292,11 +297,8 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, summary, tablePanel(sources));
         split.setResizeWeight(0.25);
         JPanel panel = new JPanel(new BorderLayout());
-        JSplitPane withDiagnostics = new JSplitPane(JSplitPane.VERTICAL_SPLIT, split, tablePanel(diagnostics));
-        withDiagnostics.setResizeWeight(0.65);
-        panel.add(withDiagnostics, BorderLayout.CENTER);
-        panel.add(new JLabel("Diagnostics: code / severity / message / remediation. Binding is explicit only;"
-                + " persistence does not imply native runtime binding."), BorderLayout.SOUTH);
+        panel.add(split, BorderLayout.CENTER);
+        panel.add(connectionControls,BorderLayout.SOUTH);
         return panel;
     }
 
@@ -321,7 +323,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
                         + "\nSemantic ID: " + selected.semanticId() + "\nTarget: " + selected.targetKind() + " "
                         + selected.targetUseId() + "\nEvidence: " + selected.evidenceAuthority()
                         + selected.sourceEvidence().stream().map(value -> "\nSource URI: " + value.sourceUri()
-                                + "\nSource lines: " + value.startLine() + "-" + value.endLine()
+                                + "\nSource lines: " + (value.startLine()>0?value.startLine()+"-"+value.endLine():"unavailable")
                                 + "\nSource SHA-256: " + value.sourceDigest()).collect(java.util.stream.Collectors.joining())
                         + "\nFidelity: " + selected.projectionRule() + "\nCapability/status: " + selected.status()
                         + (selected.traceDiagnostics().isEmpty() ? "" : "\nDiagnostics: "
@@ -329,11 +331,11 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
                 Path sourcePath = selected.sourcePath();
                 if (sourcePath != null) {
                     selectedSource = sourcePath.toAbsolutePath().normalize().toString();
-                    sourceLocation.setText(selectedSource + ":" + selected.sourceLine());
+                    sourceLocation.setText(selectedSource + (selected.sourceLine()>0?":"+selected.sourceLine():" (line unavailable)"));
                     copySource.setEnabled(true);
                 } else if (!selected.sourceEvidence().isEmpty()) {
                     selectedSource = selected.sourceEvidence().getFirst().sourceUri();
-                    sourceLocation.setText(selectedSource + ":" + selected.sourceLine());
+                    sourceLocation.setText(selectedSource + (selected.sourceLine()>0?":"+selected.sourceLine():" (line unavailable)"));
                     copySource.setEnabled(true);
                 } else {
                     selectedSource = null;
@@ -378,8 +380,29 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         verificationSummary.setLineWrap(true);
         verificationSummary.setWrapStyleWord(true);
         panel.add(new JScrollPane(verificationSummary), BorderLayout.NORTH);
-        panel.add(split, BorderLayout.CENTER);
-        panel.add(verificationBlocked, BorderLayout.SOUTH);
+        violationDetail.setEditable(false);violationDetail.setLineWrap(true);violationDetail.setWrapStyleWord(true);
+        violations.getSelectionModel().addListSelectionListener(event->{int row=violations.getSelectedRow();
+            if(!event.getValueIsAdjusting() && row>=0 && row<currentViolations.size()){selectedViolation=currentViolations.get(row).id();showViolation(currentViolations.get(row));}});
+        var evidence=new JSplitPane(JSplitPane.VERTICAL_SPLIT,new JScrollPane(violations),new JScrollPane(violationDetail));evidence.setResizeWeight(.35);
+        var verificationSplit=new JSplitPane(JSplitPane.VERTICAL_SPLIT,split,evidence);verificationSplit.setResizeWeight(.45);
+        panel.add(verificationSplit, BorderLayout.CENTER);
+        var controls=new JPanel(new GridLayout(0,1));var buttons=new JPanel(new FlowLayout(FlowLayout.LEADING));
+        buttons.add(controlState);buttons.add(button("Resume Jason agents","runtime-resume",()->executeBackground("Resume failed",
+                ()->facade.resumeRuntime().join(),this::refreshRuntime)));
+        buttons.add(button("Goal context","violation-goal",()->{
+            currentViolations.stream().filter(v->v.id().equals(selectedViolation)).findFirst().ifPresent(v->{
+                goalPanel.refresh(facade.goalView());v.involvedObjects().values().stream().filter(o->o.className().equals("OrganizationalGoal"))
+                        .sorted(java.util.Comparator.comparingInt((org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot.ObjectState o)->o.name().equals(v.contextObject())?0:1)
+                                .thenComparing(org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot.ObjectState::name))
+                        .findFirst().ifPresent(o->goalPanel.selectGoal(o.name()));
+            });tabs.setSelectedIndex(2);
+        }));
+        buttons.add(button("USE Object Diagram","violation-object-diagram",()->executeBackground("Object Diagram unavailable",facade::showObjectDiagram,this::refreshRuntime)));
+        buttons.add(button("Open source","violation-source",()->{var selected=currentViolations.stream().filter(v->v.id().equals(selectedViolation)).findFirst().orElse(null);
+            if(selected!=null)selected.traces().stream().filter(s->!s.file().equals("source unavailable") && !s.file().equals("unavailable")).findFirst()
+                    .ifPresent(source->navigateGoalSource(new org.tzi.use.plugins.jacamo.codegrounded.runtime.GoalViewSnapshot.Source(source.file(),source.line(),source.semanticId(),source.mappingRule())));}));
+        buttons.add(button("Approve HARD pause rule","approve-hard-constraint",this::approveSelectedConstraint));
+        controls.add(buttons);controls.add(controlLimitation);controls.add(verificationBlocked);panel.add(controls,BorderLayout.SOUTH);
         return panel;
     }
 
@@ -437,7 +460,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         var detailSplit=new JSplitPane(JSplitPane.VERTICAL_SPLIT,new JScrollPane(runtimeHistory),new JScrollPane(historyDetail));
         detailSplit.setResizeWeight(0.75); history.add(detailSplit, BorderLayout.CENTER);
         history.add(historyRetention, BorderLayout.SOUTH);
-        JPanel controls = new JPanel(new FlowLayout(FlowLayout.LEADING));
+        JPanel controls = connectionControls;
         controls.add(button("Connect", "runtime-connect", () -> executeBackground("Runtime connect failed",
                 facade::connectRuntime, this::refreshRuntime)));
         controls.add(button("Disconnect observation", "runtime-disconnect", () -> executeBackground("Runtime disconnect failed",
@@ -454,7 +477,6 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         panel.add(replay, BorderLayout.NORTH);
         var split=new JSplitPane(JSplitPane.VERTICAL_SPLIT,new JScrollPane(values),history);
         split.setResizeWeight(0.40); panel.add(split, BorderLayout.CENTER);
-        panel.add(controls, BorderLayout.SOUTH);
         return panel;
     }
 
@@ -463,9 +485,9 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         if (summary == null) return;
         projectId.setText(summary.projectId());
         projectRoot.setText(summary.projectRoot().toString());
-        metamodelBaseline.setText(summary.metamodelVersion() + " | sha256=" + summary.metamodelSha256());
+        metamodelBaseline.setText(summary.metamodelVersion());
         mappingStatus.setText(summary.mappingId() + " | schema=" + summary.mappingVersion()
-                + " | " + summary.mappingStatus() + " | sha256=" + summary.mappingSha256());
+                + " | " + summary.mappingStatus());
         generationStatus.setText("classes=" + summary.generatedClasses() + " objects=" + summary.generatedObjects()
                 + " structure=" + (summary.structureValid() ? "PASS" : "FAIL") + " warnings=" + summary.warningCount()
                 + " errors=" + summary.errorCount());
@@ -489,12 +511,10 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         var interval = snapshot.profile();
         var profile = interval == null ? null : interval.profile();
         String loaded = interval == null ? "NOT_LOADED" : Long.toString(interval.loadedVersion());
-        verificationSummary.setText("Profile: " + (profile == null ? "NONE / NOT_LOADED" : profile.sourceFile() + " | sha256=" + profile.sourceHash())
+        verificationSummary.setText("Profile: " + (profile == null ? "NONE / NOT_LOADED" : profile.sourceFile())
                 + "\nLoaded at stateVersion: " + loaded + " | current=" + snapshot.currentVersion()
                 + " | last verified=" + (result == null ? "NOT_RUN" : result.stateVersion())
-                + "\nInterval: " + (interval == null ? "CORE_ONLY" : interval.intervalId())
                 + (result == null ? "\nNOT_RUN (no current formal result)" : "\nSession=" + result.sessionId() + " / generation=" + result.generation()
-                        + " / modelRevision=" + result.modelRevision() + "\nConstraint set=" + result.constraintSetHash()
                         + "\nCoverage=" + result.coverage() + " / freshness=" + result.freshness()
                         + " | PASS=" + result.count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.PASS)
                         + " FAIL=" + result.count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.FAIL)
@@ -505,8 +525,10 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         if (result != null) {
             var external = profile == null ? java.util.Set.<String>of() : profile.constraints().stream()
                     .map(value -> "EXTERNAL:" + value.constraintId()).collect(java.util.stream.Collectors.toSet());
+            var policies=new LinkedHashMap<String,org.tzi.use.plugins.jacamo.codegrounded.constraint.RuntimeConstraintPolicy>();
+            facade.runtimeConstraints().forEach(c->policies.put(c.id(),c.policy()));
             replaceRows(verificationModel, result.outcomes().stream().map(value -> new Object[] {
-                    value.constraintId(), external.contains(value.constraintId()) ? "EXTERNAL/USER" : "SYSTEM/CORE",
+                    value.constraintId(), policies.containsKey(value.constraintId())?policies.get(value.constraintId()).origin()+" / "+policies.get(value.constraintId()).severity()+" / "+policies.get(value.constraintId()).enforcement():external.contains(value.constraintId()) ? "EXTERNAL/USER" : "SYSTEM/CORE",
                     value.outcome(), value.contextClass(), value.diagnostic(), value.expression(),
                     external.contains(value.constraintId()) ? profile.sourceFile() + " | " + profile.sourceHash() : "native registry"
             }).toList());
@@ -803,6 +825,65 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         replayVersion.setText(active ? Long.toString(replay.stateVersion()) : "-");
         replayEvent.setText(active ? displayMessage(replay.event()) : "-");
         replaySource.setText(active ? displayMessage(replay.source()) : "-");
+        var control=facade.runtimeControlState();
+        var cut=facade.verificationSnapshot();
+        boolean synchronizedCut=cut.metadata()!=null && cut.result()!=null && cut.result().freshness().equals("CURRENT_OBSERVED")
+                && cut.metadata().lifecycle()==org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot.SynchronizationState.LIVE;
+        actionButtons.get("runtime-resume").setEnabled(!busy && !active && control!=null && control.capable() && control.connected()
+                && control.state()==org.jacamo.bridge.contract.RuntimeControlContract.State.PAUSED && synchronizedCut && control.diagnostic().isBlank()
+                && control.required().equals(control.acknowledged()));
+        actionButtons.get("approve-hard-constraint").setEnabled(!busy && !active && control!=null && control.capable() && control.connected()
+                && cut.result()!=null && cut.result().freshness().equals("CURRENT_OBSERVED"));
+        actionButtons.get("run-verification").setEnabled(!busy && !active && !workflow.state().equals("LIVE"));
+    }
+
+    private void refreshControlAndViolations() {
+        var control=facade.runtimeControlState();
+        controlState.setText(control==null?"Jason control: UNAVAILABLE":"Jason control: "+control.state()+
+                (control.state()==org.jacamo.bridge.contract.RuntimeControlContract.State.PAUSED?" — Jason agents paused":"")+
+                " | ACK "+control.acknowledged().size()+"/"+control.required().size()+(control.connected()?"":" | DISCONNECTED"));
+        controlLimitation.setText(displayMessage(control==null?"ExecutionControl capability unavailable":control.limitation()+
+                (control.diagnostic().isBlank()?"":" | "+control.diagnostic())));
+        var oldIds=currentViolations.stream().map(org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationViolation::id).collect(java.util.stream.Collectors.toSet());
+        var next=facade.runtimeViolations();boolean added=next.stream().anyMatch(v->!oldIds.contains(v.id()));currentViolations=next;
+        replaceRows(violationsModel,next.stream().map(v->new Object[]{v.constraintId(),v.checkpoint()+" #"+v.boundarySequence(),v.failingSnapshotId(),v.pauseState(),v.confirmation()}).toList());
+        if(added && !next.isEmpty()){var latest=next.getLast();selectedViolation=latest.id();tabs.setSelectedIndex(1);
+            latest.involvedObjects().values().stream().filter(o->o.className().equals("OrganizationalGoal"))
+                    .sorted(java.util.Comparator.comparingInt((org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot.ObjectState o)->o.name().equals(latest.contextObject())?0:1)
+                            .thenComparing(org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot.ObjectState::name))
+                    .findFirst().ifPresent(o->goalPanel.selectGoal(o.name()));}
+        for(int i=0;i<next.size();i++)if(next.get(i).id().equals(selectedViolation)){violations.setRowSelectionInterval(i,i);showViolation(next.get(i));break;}
+    }
+    private void showViolation(org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationViolation violation) {
+        var before=facade.failingSnapshot();var after=facade.confirmationSnapshot();var previous=facade.previousFailureSnapshot();var passing=facade.lastPassingBeforeFailure();
+        boolean originalRetained=before!=null && before.snapshotId().equals(violation.failingSnapshotId()) && before.image()!=null;
+        var detail=new StringBuilder("OCL VIOLATION: ").append(violation.constraintId()).append("\nCheckpoint: ").append(violation.checkpoint()).append(" #").append(violation.boundarySequence())
+                .append("\nOriginal failing snapshot: ").append(violation.failingSnapshotId()).append("\nPost-pause confirmation: ").append(violation.confirmation()).append(" / ").append(violation.confirmationSnapshotId())
+                .append("\nJason control: ").append(violation.pauseState()).append("\nContext: ").append(violation.contextObject()).append("\nExpected: ").append(violation.expected()).append("\nActual condition at failure: ").append(violation.actual().getOrDefault("conditionTruth","unavailable"));
+        violation.involvedObjects().values().forEach(object->{detail.append("\n\n").append(object.name()).append(" : ").append(object.className()).append("\nSemantic: ").append(object.semanticId()).append("\nRuntime identities: ").append(object.exactIdentities()).append("\nFailing values: ").append(object.attributes());
+            if(originalRetained && previous!=null && previous.image()!=null && previous.image().objects().containsKey(object.name()))detail.append("\nPrevious checkpoint values: ").append(previous.image().objects().get(object.name()).attributes());
+            if(originalRetained && passing!=null && passing.image()!=null && passing.image().objects().containsKey(object.name()))detail.append("\nLast passing eligible checks: ").append(passing.snapshotId()).append(" / ").append(passing.image().objects().get(object.name()).attributes());
+            if(after!=null && after.snapshotId().equals(violation.confirmationSnapshotId()) && after.image()!=null && after.image().objects().containsKey(object.name()))detail.append("\nConfirmation values: ").append(after.image().objects().get(object.name()).attributes());});
+        violation.traces().forEach(source->detail.append("\nSource: ").append(source.location()).append(" | ").append(source.semanticId()).append(" | ").append(source.mappingRule()));
+        if(originalRetained)detail.append("\nOriginal snapshot retained: ").append(before.snapshotId());
+        else detail.append("\nFull original snapshot evicted; immutable involved-object evidence retained.");
+        detail.append("\nDiagnostic: ").append(violation.diagnostic());violationDetail.setText(detail.toString());violationDetail.setCaretPosition(0);
+    }
+    private void navigateGoalSource(org.tzi.use.plugins.jacamo.codegrounded.runtime.GoalViewSnapshot.Source source) {
+        tabs.setSelectedIndex(3);selectedSource=source.file();copySource.setEnabled(true);
+        sourceLocation.setText(source.file()+(source.line()>0?":"+source.line():" (line unavailable)"));
+        try {traceDetail.setText(facade.sourceExcerpt(Path.of(source.file()),source.line())+"\nSemantic id: "+source.semanticId()+"\nRule: "+source.rule());}
+        catch(InvalidPathException unavailable){traceDetail.setText("Source unavailable: "+source.file()+" | "+source.semanticId());}
+    }
+    private void approveSelectedConstraint() {
+        int row=verification.getSelectedRow();if(row<0){setStatus("Select a constraint in Verification");return;}
+        String id=String.valueOf(verificationModel.getValueAt(verification.convertRowIndexToModel(row),0));
+        var constraint=facade.runtimeConstraints().stream().filter(c->c.id().equals(id)).findFirst().orElse(null);if(constraint==null)return;
+        if(JOptionPane.showConfirmDialog(this,"Approve HARD PAUSE_ON_FAIL for "+id+"?\nA false result will request all Jason agents to pause at reasoning boundaries.","Constraint enforcement",JOptionPane.OK_CANCEL_OPTION)!=JOptionPane.OK_OPTION)return;
+        var old=constraint.policy();facade.configureRuntimeConstraint(id,new org.tzi.use.plugins.jacamo.codegrounded.constraint.RuntimeConstraintPolicy(old.origin(),
+                org.tzi.use.plugins.jacamo.codegrounded.constraint.RuntimeConstraintPolicy.Severity.HARD,
+                org.tzi.use.plugins.jacamo.codegrounded.constraint.RuntimeConstraintPolicy.Enforcement.PAUSE_ON_FAIL,old.checkpoints(),old.requiredCapabilities(),true,"Explicit Workbench approval",old.exactEvidenceTargets()));
+        setStatus("Approved "+id+" as HARD PAUSE_ON_FAIL");
     }
 
     private void setStatus(String message) { status.setText(displayMessage(message)); }

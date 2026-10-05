@@ -44,14 +44,11 @@ class NativeProjectionLaunchTest {
                 assertNotNull(system);
                 assertSame(system, facade.materializedSystem());
                 assertSame(system, system.state().system());
-                for (String concept : List.of("AgentProgram", "PlanLibrary", "Belief", "AgentGoal", "Trigger", "Action"))
+                for (String concept : List.of("Agent", "hello_Agent", "hf_Agent", "o1_Organization", "team", "Workspace", "AgentGoal", "Belief"))
                     assertNotNull(system.model().getClass(concept), concept);
-                assertFalse(system.state().objectsOfClass(system.model().getClass("AgentProgram")).isEmpty());
-                assertFalse(system.state().objectsOfClass(system.model().getClass("AgentGoal")).isEmpty());
-                for (String association : List.of("A16AgentProgramPlanLibrary", "A21ProgramBelief", "A22ProgramGoal"))
-                    assertNotNull(system.model().getAssociation(association), association);
-                assertFalse(system.state().linksOfAssociation(system.model().getAssociation("A16AgentProgramPlanLibrary")).links().isEmpty());
-                assertFalse(system.state().linksOfAssociation(system.model().getAssociation("A22ProgramGoal")).links().isEmpty());
+                assertEquals(5, system.state().objectsOfClassAndSubClasses(system.model().getClass("Agent")).size());
+                for (String concept : List.of("AgentProgram", "PlanLibrary", "Plan", "Trigger", "Action", "Role"))
+                    assertNull(system.model().getClass(concept), concept);
                 assertTrue(Files.readString(ready).contains("\"projectionMode\":\"FULL\""));
                 assertEquals(facade.formalStateStatus().objectCount(), system.state().numObjects());
                 facade.resyncRuntime();
@@ -63,9 +60,8 @@ class NativeProjectionLaunchTest {
                 Path cmd = directory.resolve("full.cmd");
                 facade.exportNativeUse(use);
                 facade.exportNativeSoil(cmd);
-                assertTrue(Files.readString(use).contains("class AgentProgram"));
-                assertEquals(system.state().objectsOfClass(system.model().getClass("AgentProgram")).size(),
-                        Files.readString(cmd).lines().filter(line -> line.startsWith("!new AgentProgram(")).count());
+                assertTrue(Files.readString(use).contains("class Agent"));
+                assertEquals(5, Files.readString(cmd).lines().filter(line -> line.startsWith("!new hello_Agent(") || line.startsWith("!new hf_Agent(")).count());
             }
         } finally {
             restore(NativeProjectionMode.PROPERTY, previousMode);

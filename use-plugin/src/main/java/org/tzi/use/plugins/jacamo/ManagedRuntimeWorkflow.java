@@ -46,7 +46,7 @@ final class ManagedRuntimeWorkflow {
     JaCaMoFacade.WorkflowStatus status() {
         if (importing) return view("IMPORTING", false, "Import / Session activation in progress", "", "");
         if (directory == null) return view(imported ? "LIVE" : "NOT_IMPORTED", false,
-                "OBSERVE_ONLY: external/autonomous producer; Disconnect does not stop or pause JaCaMo", "", "");
+                "External producer; verification pause/resume requires negotiated ExecutionControl capability. Disconnect does not control JaCaMo.", "", "");
         try {
             if (!error.isBlank()) return view("ERROR", false, error, "", "");
             var waiting = ManagedStartupControl.read(directory, "waiting.json");

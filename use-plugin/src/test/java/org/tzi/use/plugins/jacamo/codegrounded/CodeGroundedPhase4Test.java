@@ -24,84 +24,48 @@ import org.jacamo.bridge.contract.semantic.SemanticMetadata;
 import org.junit.jupiter.api.Test;
 
 class CodeGroundedPhase4Test {
-    @Test
-    void nativePhase4MaterializesTypedCartagoSnapshotWithExactLinksAndUnavailableC08() throws Exception {
-        var base = CodeGroundedTestFixtures.helloSnapshot();
-        var environment = syntheticEnvironment(base.semanticContract().project().metadata());
-        var result = new CodeGroundedNativePipeline().build(withEnvironment(base, environment),
-                org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.FULL);
-        var system = result.state().system();
-
-        assertEquals(1, system.state().objectsOfClass(system.model().getClass("Environment")).size());
-        assertEquals(2, system.state().objectsOfClass(system.model().getClass("Workspace")).size());
-        assertEquals(1, system.state().objectsOfClass(system.model().getClass("ArtifactType")).size());
-        assertEquals(1, system.state().objectsOfClass(system.model().getClass("Artifact")).size());
-        assertEquals(1, system.state().objectsOfClass(system.model().getClass("Operation")).size());
-        assertEquals(1, system.state().objectsOfClass(system.model().getClass("BackingJavaOperation")).size());
-        assertEquals(1, system.state().objectsOfClass(system.model().getClass("Guard")).size());
-        assertEquals(1, system.state().objectsOfClass(system.model().getClass("ObservablePropertySnapshot")).size());
-        assertEquals(1, system.state().objectsOfClass(system.model().getClass("ArtifactInfo")).size());
-        assertEquals(1, system.state().objectsOfClass(system.model().getClass("Signal")).size());
-        assertEquals(1, system.state().objectsOfClass(system.model().getClass("CartagoAgentIdentity")).size());
-        assertEquals(0, system.state().objectsOfClass(system.model().getClass("LiveObservableProperty")).size());
-
-        assertEquals(2, links(system, "C13EnvironmentWorkspace"));
-        assertEquals(1, links(system, "C14WorkspaceArtifact"));
-        assertEquals(1, links(system, "C15ArtifactType"));
-        assertEquals(1, links(system, "C16ArtifactOperation"));
-        assertEquals(1, links(system, "C17ArtifactObservableProperty"));
-        assertEquals(1, links(system, "C18OperationGuard"));
-        assertEquals(1, links(system, "C19WorkspaceAgent"));
-        assertEquals(1, links(system, "C20AgentArtifactFocus"));
-
-        String identityQuery = "Artifact.allInstances->exists(a | a.semanticId = 'phase4:artifact' and "
-                + "a.uuid = 'artifact-uuid' and a.workspaceSemanticId = 'phase4:workspace:root')";
-        assertEquals("true", org.tzi.use.api.UseSystemApi.create(system, false).evaluate(identityQuery).toString());
-        assertTrue(result.trace().records().stream().anyMatch(value -> value.ruleId().equals("C08")
-                && value.targetKind().equals("UNAVAILABLE")
-                && value.diagnostics().contains("C08_UNAVAILABLE_NO_LIVE_OBSPROPERTY_API")));
-        assertTrue(result.trace().records().stream().anyMatch(value -> value.ruleId().equals("C20")
-                && value.targetKind().equals("FOCUS_EVENT")
-                && value.diagnostics().contains("UNFOCUS")));
-        assertTrue(result.state().structureValid());
-        assertTrue(result.state().invariantsValid());
-        assertEquals(result.model().structuralHash(), result.export().recompiledStructuralHash());
+    @Test void observedArtifactStateUsesTypeObjectAttributesAndWorkspaceLink() throws Exception {
+        var base=CodeGroundedTestFixtures.helloSnapshot(); var environment=syntheticEnvironment(base.semanticContract().project().metadata());
+        var result=new CodeGroundedNativePipeline().build(withEnvironment(base,environment));
+        var system=result.state().system(); var artifact=result.state().semanticObjectIndex().get("phase4:artifact");
+        assertEquals("LiveRuntimePropertyArtifact",artifact.cls().name());
+        assertEquals(base.semanticContract().workspaceDeclarations().size()+1,
+                system.state().objectsOfClass(system.model().getClass("Workspace")).size());
+        var rootDeclaration=base.semanticContract().workspaceDeclarations().stream()
+                .filter(w->org.jacamo.bridge.contract.BridgeEntityId.parse(w.metadata().semanticId()).authority().equals("cartago"))
+                .findFirst().orElseThrow();
+        var root=result.state().semanticObjectIndex().get("phase4:workspace:root");
+        assertSame(root,result.state().semanticObjectIndex().get(rootDeclaration.metadata().semanticId()));
+        assertEquals("'w-root'",root.state(system.state()).attributeValue("uuid").toString());
+        assertEquals("'READY'",artifact.state(system.state()).attributeValue("status").toString());
+        assertEquals("'artifact-uuid'",artifact.state(system.state()).attributeValue("uuid").toString());
+        assertEquals(1,links(system,org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.relation("locatedIn","Workspace",artifact.cls().name())));
+        for(String name:List.of("ArtifactType","ObservablePropertySnapshot","Environment","Operation","BackingJavaOperation","Guard","ArtifactInfo","Signal","CartagoAgentIdentity","LiveObservableProperty"))
+            assertNull(system.model().getClass(name),name);
+        assertTrue(artifact.cls().operations().isEmpty()); assertNull(artifact.cls().attribute("currentWinner",true));
+        assertEquals(environment,result.source().snapshot().cartagoEnvironments().get(0));
+        assertTrue(result.state().structureValid()); assertEquals(result.model().structuralHash(),result.export().recompiledStructuralHash());
     }
-
-    @Test
-    void nonEmptyLivePropertyContractFailsClosedInsteadOfBecomingAStaticSnapshot() throws Exception {
-        var base = CodeGroundedTestFixtures.helloSnapshot();
-        var environment = syntheticEnvironment(base.semanticContract().project().metadata());
-        var live = new org.jacamo.bridge.contract.semantic.CartagoSemanticContract.LiveObservablePropertySemantic(
-                metadata("phase4:live", "CARTAGO_LIVE_OBSERVABLE_PROPERTY"), "phase4:artifact", "live", "live",
-                List.of("value"), List.of());
-        var invalid = new EnvironmentSemantic(environment.metadata(), environment.name(), environment.environmentId(),
-                environment.version(), environment.defaultInfrastructureLayer(), environment.workspaces(),
-                environment.artifactTypes(), environment.artifacts(), environment.operations(), environment.backingOperations(),
-                environment.guards(), List.of(live), environment.propertySnapshots(), environment.artifactInfos(),
-                environment.signals(), environment.agents(), environment.focuses());
-        IllegalArgumentException failure = assertThrows(IllegalArgumentException.class,
-                () -> new CodeGroundedNativePipeline().build(withEnvironment(base, invalid)));
-        assertTrue(failure.getMessage().contains("C08_LIVE_PROPERTY_NOT_EXPOSED_BY_AUDITED_API"));
+    @Test void livePropertyInputIsExplicitlyDiagnosedAndNeverConfusedWithObservedValues() throws Exception {
+        var base=CodeGroundedTestFixtures.helloSnapshot(); var environment=syntheticEnvironment(base.semanticContract().project().metadata());
+        var live=new org.jacamo.bridge.contract.semantic.CartagoSemanticContract.LiveObservablePropertySemantic(
+            metadata("phase4:live","CARTAGO_LIVE_OBSERVABLE_PROPERTY"),"phase4:artifact","live","live",List.of("value"),List.of());
+        var input=new EnvironmentSemantic(environment.metadata(),environment.name(),environment.environmentId(),environment.version(),environment.defaultInfrastructureLayer(),
+            environment.workspaces(),environment.artifactTypes(),environment.artifacts(),environment.operations(),environment.backingOperations(),environment.guards(),List.of(live),
+            environment.propertySnapshots(),environment.artifactInfos(),environment.signals(),environment.agents(),environment.focuses());
+        var result=new CodeGroundedNativePipeline().build(withEnvironment(base,input));
+        assertNull(result.model().model().getClass("LiveObservableProperty"));
+        assertTrue(result.trace().records().stream().anyMatch(r -> r.ruleId().equals("C08") && r.targetKind().equals("Diagnostic")));
+        assertEquals(List.of(live),result.source().snapshot().cartagoEnvironments().get(0).liveProperties());
     }
-
-    @Test
-    void artifactTypeAndOperationReferencesRequireExactSemanticIds() throws Exception {
-        var base = CodeGroundedTestFixtures.helloSnapshot();
-        var environment = syntheticEnvironment(base.semanticContract().project().metadata());
-        var mismatchedArtifact = new ArtifactSemantic(metadata("phase4:bad-artifact", "CARTAGO_ARTIFACT"),
-                "artifact", "artifact-uuid", "example.Artifact", "phase4:workspace:root", "phase4:agent");
-        var invalid = new EnvironmentSemantic(environment.metadata(), environment.name(), environment.environmentId(),
-                environment.version(), environment.defaultInfrastructureLayer(), environment.workspaces(),
-                environment.artifactTypes(), List.of(mismatchedArtifact), environment.operations(),
-                environment.backingOperations(), environment.guards(), environment.liveProperties(),
-                environment.propertySnapshots(), environment.artifactInfos(), environment.signals(), environment.agents(),
-                environment.focuses());
-        IllegalArgumentException failure = assertThrows(IllegalArgumentException.class,
-                () -> new CodeGroundedNativePipeline().build(withEnvironment(base, invalid)));
-        assertTrue(failure.getMessage().contains("C15_TYPE_REFERENCE"));
+    @Test void artifactTypeReferenceRequiresExactSemanticIdentity() throws Exception {
+        var base=CodeGroundedTestFixtures.helloSnapshot(); var environment=syntheticEnvironment(base.semanticContract().project().metadata());
+        var bad=new ArtifactSemantic(metadata("phase4:bad-artifact","CARTAGO_ARTIFACT"),"artifact","artifact-uuid","unknown-type","phase4:workspace:root","phase4:agent");
+        var input=new EnvironmentSemantic(environment.metadata(),environment.name(),environment.environmentId(),environment.version(),environment.defaultInfrastructureLayer(),
+            environment.workspaces(),environment.artifactTypes(),List.of(bad),environment.operations(),environment.backingOperations(),environment.guards(),environment.liveProperties(),
+            environment.propertySnapshots(),environment.artifactInfos(),environment.signals(),environment.agents(),environment.focuses());
+        assertTrue(assertThrows(IllegalArgumentException.class,() -> new CodeGroundedNativePipeline().build(withEnvironment(base,input))).getMessage().contains("C15_TYPE_REFERENCE"));
     }
-
     private static int links(org.tzi.use.uml.sys.MSystem system, String name) {
         return system.state().linksOfAssociation(system.model().getAssociation(name)).size();
     }
@@ -139,7 +103,7 @@ class CodeGroundedPhase4Test {
         var operations = List.of(new OperationDescriptorSemantic(metadata(operation, "CARTAGO_OPERATION_DESCRIPTOR"),
                 artifact, "op-key", "operate", 1, true, false, false, false));
         var backing = List.of(new BackingJavaOperationSemantic(metadata("phase4:backing", "CARTAGO_BACKING_JAVA_OPERATION"),
-                operation, "example.Artifact", "operate", List.of("java.lang.String"), "void", false, "loader"));
+                operation, LiveRuntimePropertyArtifact.class.getName(), "operate", List.of("java.lang.String"), "void", false, "loader"));
         var guards = List.of(new GuardSemantic(metadata("phase4:guard", "CARTAGO_GUARD"), operation, "guard", 0,
                 "example.Guard"));
         var properties = List.of(new ObservablePropertySnapshotSemantic(metadata(property, "CARTAGO_OBSERVABLE_PROPERTY_SNAPSHOT"),
@@ -154,7 +118,7 @@ class CodeGroundedPhase4Test {
                 new FocusSemantic(metadata("phase4:focus", "CARTAGO_FOCUS"), agent, artifact, true, 0),
                 new FocusSemantic(metadata("phase4:unfocus", "CARTAGO_UNFOCUS"), agent, artifact, false, 1));
         return new EnvironmentSemantic(metadata(env, "CARTAGO_ENVIRONMENT"), "env", "env-id", "1.0", "default",
-                workspaces, List.of(new ArtifactTypeSemantic(typeMetadata(type), "example.Artifact", "loader")), artifacts,
+                workspaces, List.of(new ArtifactTypeSemantic(typeMetadata(type), LiveRuntimePropertyArtifact.class.getName(), "loader")), artifacts,
                 operations, backing, guards, List.of(), properties, infos, signals, agents, focuses);
     }
 

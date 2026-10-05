@@ -28,10 +28,14 @@ class ProductionAuthorityPhase8Test {
     }
 
     @Test
-    void legacyV2RequiresAnExplicitPipelineMode() {
-        try (var legacy = new DefaultJaCaMoFacade(Path.of("."), SemanticAuthority.BRIDGE,
-                failingConfiguration(), failingTransport(), PipelineMode.LEGACY_V2, null)) {
-            assertEquals(PipelineMode.LEGACY_V2, legacy.pipelineMode());
+    void nativeIsTheOnlyProductionPipelineAndSessionActionsShareItsFacade() {
+        assertEquals(java.util.List.of(PipelineMode.CODE_GROUNDED_NATIVE),java.util.List.of(PipelineMode.values()));
+        Session session=new Session();
+        var facade=DefaultJaCaMoFacade.forSession(session);
+        org.junit.jupiter.api.Assertions.assertSame(facade,DefaultJaCaMoFacade.forSession(session));
+        facade.close();
+        try(var replacement=DefaultJaCaMoFacade.forSession(session)) {
+            org.junit.jupiter.api.Assertions.assertNotSame(facade,replacement);
         }
     }
 

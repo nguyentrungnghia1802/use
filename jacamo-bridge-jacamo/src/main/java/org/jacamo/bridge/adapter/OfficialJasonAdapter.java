@@ -51,6 +51,10 @@ public final class OfficialJasonAdapter {
     }
 
     public Result adapt(Path projectRoot,Path source,String projectKey,String declarationId)throws Exception{
+        return adapt(projectRoot,source,projectKey,declarationId,java.util.Map.of(),null);
+    }
+    public Result adapt(Path projectRoot,Path source,String projectKey,String declarationId,
+            java.util.Map<String,String> declarationOptions,org.jacamo.bridge.contract.Evidence declarationEvidence)throws Exception{
         verifyAuditedBodyTypeSet();
         var evidence=AdapterEvidence.file("jason-parser",projectRoot,source,"Agent.parseAS official Jason AST");
         var parent=new BridgeEntityId("jacamo","agent","declaration",projectKey,declarationId,"model");
@@ -62,6 +66,23 @@ public final class OfficialJasonAdapter {
             var sourceUrl=source.toAbsolutePath().normalize().toUri().toURL();
             agent.setASLSrc(sourceUrl.toString());
             try(var input=sourceUrl.openStream()){agent.parseAS(input,sourceUrl.toString());}
+            var declarationLiterals=java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<Literal,Boolean>());
+            var initialOptions=declarationOptions==null ? java.util.Map.<String,String>of() : declarationOptions;
+            for(String option:List.of("beliefs","goals")) {
+                String text=initialOptions.get(option); if(text==null || text.isBlank()) continue;
+                if(declarationEvidence==null) throw new IllegalArgumentException("JCM_INITIAL_LITERAL_EVIDENCE_REQUIRED");
+                // Same official list parser used by Agent.addInitialBels/GoalsFromProjectInBB.
+                for(var term:jason.asSyntax.ASSyntax.parseList("["+text+"]")) {
+                    if(!(term instanceof Literal parsed)) throw new IllegalArgumentException("JCM_INITIAL_LITERAL_REQUIRED:"+option);
+                    Literal literal=parsed.forceFullLiteralImpl();
+                    if(option.equals("beliefs")) {
+                        // Jason treats non-ground initial project beliefs as rules with a true body.
+                        if(!literal.isGround()) literal=new Rule(literal,Literal.LTrue);
+                        agent.addInitialBel(literal);
+                    } else agent.addInitialGoal(literal);
+                    declarationLiterals.add(literal);
+                }
+            }
             var sourceEvidence=new JasonSourceEvidence(projectRoot);
             var facts=new ArrayList<ModelFact>();int legacyOrdinal=0;
             String programId="jason:agent-program:"+projectKey+":"+declarationId;
@@ -72,7 +93,7 @@ public final class OfficialJasonAdapter {
             var typedRules=new ArrayList<BeliefRuleSemantic>();
             int beliefOrdinal=0;int ruleOrdinal=0;
             for(Literal belief:agent.getInitialBels()){
-                var beliefEvidence=sourceEvidence.of(belief,evidence);
+                var beliefEvidence=declarationLiterals.contains(belief) ? declarationEvidence : sourceEvidence.of(belief,evidence);
                 String literal=canonicalAst(belief.toString());
                 if(belief instanceof Rule rule){
                     String ruleId=programId+":belief-rule:"+ruleOrdinal+":"+AdapterEvidence.digest(
@@ -87,7 +108,9 @@ public final class OfficialJasonAdapter {
                 }else{
                     String beliefId=programId+":belief:"+beliefOrdinal+":"+AdapterEvidence.digest(
                             literal.getBytes(StandardCharsets.UTF_8));
-                    var metadata=SemanticEvidence.metadata(beliefId,"JASON_BELIEF","jason.asSyntax.Literal",
+                    boolean domain = JasonBeliefEvidence.projectSource(beliefEvidence.sourceUri())
+                            && !JasonBeliefEvidence.hidden(belief) && !JasonBeliefEvidence.authoritativeElsewhere(belief);
+                    var metadata=SemanticEvidence.metadata(beliefId,domain ? "JASON_DOMAIN_BELIEF" : "JASON_BELIEF","jason.asSyntax.Literal",
                             EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,beliefEvidence,
                             startLine(belief),endLine(belief),List.of());
                     typedBeliefs.add(new BeliefSemantic(metadata,beliefOrdinal++,literal));
@@ -96,7 +119,7 @@ public final class OfficialJasonAdapter {
             }
             int goalOrdinal=0;
             for(Literal goal:agent.getInitialGoals()){
-                var goalEvidence=sourceEvidence.of(goal,evidence);
+                var goalEvidence=declarationLiterals.contains(goal) ? declarationEvidence : sourceEvidence.of(goal,evidence);
                 String literal=canonicalAst(goal.toString());
                 String goalId=programId+":goal:"+goalOrdinal+":"+AdapterEvidence.digest(
                         literal.getBytes(StandardCharsets.UTF_8));

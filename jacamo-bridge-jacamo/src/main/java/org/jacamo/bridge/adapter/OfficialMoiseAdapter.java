@@ -81,6 +81,37 @@ public final class OfficialMoiseAdapter {
         return new Result(facts, roleCards, subgroupCards, organization);
     }
 
+    /** Copies the live official graph; the OS URI is evidence, never inferred from an ASL string. */
+    public Result capture(OS os, Path projectRoot, String projectKey) throws Exception {
+        boolean sourceUriAvailable=os.getURI()!=null && !os.getURI().isBlank();
+        String uri = sourceUriAvailable ? os.getURI() : new java.net.URI("moise-live",null,
+                "/"+projectKey+"/"+required(os.getId(),"MOISE_OS_ID_UNAVAILABLE"),null).toASCIIString();
+        var document = javax.xml.parsers.DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        document.appendChild(os.getAsDOM(document));
+        var xml = new java.io.StringWriter();
+        javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(
+            new javax.xml.transform.dom.DOMSource(document),new javax.xml.transform.stream.StreamResult(xml));
+        String digest = AdapterEvidence.digest(xml.toString().getBytes(StandardCharsets.UTF_8));
+        org.jacamo.bridge.contract.Evidence evidence = new org.jacamo.bridge.contract.Evidence(
+            "moise-live:"+digest.substring(0,16),"official-moise-live-os",uri,digest,"GroupBoard.getSpec().getSS().getOS() live graph"
+                +(sourceUriAvailable ? "" : "; original XML URI unavailable; evidence is the official live graph"));
+        String sourceUri = uri;
+        try {
+            var parsed = java.net.URI.create(uri);
+            Path file = parsed.getScheme()==null ? projectRoot.resolve(uri).normalize()
+                : "file".equalsIgnoreCase(parsed.getScheme()) ? parsed.isOpaque()
+                    ? projectRoot.resolve(parsed.getSchemeSpecificPart()).normalize() : Path.of(parsed) : null;
+            if (file!=null && java.nio.file.Files.isRegularFile(file)) {
+                sourceUri=file.toAbsolutePath().normalize().toString();
+                evidence=AdapterEvidence.file("moise-os",projectRoot,file,"official live OS graph and source provenance");
+            }
+        } catch (IllegalArgumentException remote) { /* Exact live URI and graph evidence remain available. */ }
+        var facts=new ArrayList<ModelFact>(); var roleCards=new ArrayList<RelationCardinality>(); var subgroupCards=new ArrayList<RelationCardinality>();
+        var organization=copyOrganization(os,"moise:organization:"+projectKey+":"+required(os.getId(),"MOISE_OS_ID_UNAVAILABLE"),
+            sourceUri,projectKey,evidence,facts,roleCards,subgroupCards);
+        return new Result(facts,roleCards,subgroupCards,organization);
+    }
+
     private OrganizationSemantic copyOrganization(OS os, String organizationId, String sourceUri,
                                                    String projectKey, org.jacamo.bridge.contract.Evidence evidence,
                                                    List<ModelFact> facts,
@@ -336,7 +367,7 @@ public final class OfficialMoiseAdapter {
     private static String roleKey(Role role) { return role == null ? "" : text(role.getFullId()) + "|" + text(role.getId()); }
 
     private static String roleId(String organizationId, Role role) { return organizationId + ":role:" + text(role.getId()); }
-    private static String groupId(String organizationId, Group group) { return organizationId + ":group:" + groupSortKey(group); }
+    static String groupId(String organizationId, Group group) { return organizationId + ":group:" + groupSortKey(group); }
     private static String schemeId(String organizationId, Scheme scheme) { return organizationId + ":scheme:" + scheme.getId(); }
     private static String missionId(String schemeId, Mission mission) { return schemeId + ":mission:" + mission.getId(); }
     private static String goalId(String schemeId, Goal goal) { return schemeId + ":goal:" + goal.getId(); }
@@ -357,7 +388,7 @@ public final class OfficialMoiseAdapter {
     private static SemanticMetadata metadata(String id, String kind, String fqcn,
                                              org.jacamo.bridge.contract.Evidence evidence) {
         return SemanticEvidence.metadata(id, kind, fqcn, EvidenceAuthority.OFFICIAL_MOISE_API,
-                Fidelity.EXACT, CapabilityStatus.COMPLETE, evidence, 1, 1, List.of());
+                Fidelity.EXACT, CapabilityStatus.COMPLETE, evidence, 0, 0, List.of("SOURCE_SPAN_UNAVAILABLE_FROM_OFFICIAL_MOISE_API"));
     }
 
     private static String required(String value, String diagnostic) {

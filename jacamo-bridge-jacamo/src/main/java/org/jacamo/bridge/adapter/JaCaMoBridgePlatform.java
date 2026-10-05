@@ -48,13 +48,14 @@ import ora4mas.nopl.SchemeBoard;
 public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
     private static final int MAX_FRAME_BYTES = 4 * 1024 * 1024;
     private static final int EVENT_CAPACITY = 8192;
-    private static final String PLATFORM_SOURCE = "bridge:platform";
     private static final String BRIDGE_ARCH = BridgeAgArch.class.getName();
 
     private final AdapterReadinessRegistry readiness = new AdapterReadinessRegistry();
     private final ArrayBlockingQueue<RuntimeEvent> events = new ArrayBlockingQueue<>(EVENT_CAPACITY);
     private final java.util.concurrent.atomic.AtomicBoolean publicationGap = new java.util.concurrent.atomic.AtomicBoolean();
     private final AtomicLong generations = new AtomicLong();
+    private final AtomicLong transportWatermark = new AtomicLong();
+    private BridgeCheckpointSource checkpointSource;
     private JaCaMoProject project;
     private ModelSnapshot modelSnapshot;
     private String sessionId;
@@ -126,6 +127,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
             Path jcm = resolveProjectFile();
             prepareOfficialProject(jcm);
             modelSnapshot = new OfficialProjectAdapter().adapt(project, jcm);
+            BridgeRuntimeRegistry.configureDeclarations(modelSnapshot.semanticContract());
             long generation = generations.incrementAndGet();
             String projectKey = modelSnapshot.sources().getFirst().id().scope();
             System.setProperty("jacamo.bridge.session", sessionId);
@@ -155,14 +157,15 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
                 .map(value -> value.getName()).collect(java.util.stream.Collectors.toUnmodifiableSet());
         for (String name : declaredOrganisations) {
             sources.add(new MoiseBoardSnapshotSource(name, sessionId, JaCaMoBridgePlatform::officialGroupBoards,
-                    JaCaMoBridgePlatform::officialSchemeBoards));
+                    JaCaMoBridgePlatform::officialSchemeBoards,modelSnapshot.semanticContract(),resolveProjectFile().getParent()));
         }
         // OrgBoard/SchemeBoard instances may be created by agent plans even when the JCM has no static
         // organisation declaration. Keep those official boards in a
         // disjoint dynamic source, and always attach NPL so later-created normative engines are discovered.
         sources.add(new MoiseBoardSnapshotSource(declaredOrganisations, sessionId,
-                JaCaMoBridgePlatform::officialGroupBoards, JaCaMoBridgePlatform::officialSchemeBoards));
+                JaCaMoBridgePlatform::officialGroupBoards, JaCaMoBridgePlatform::officialSchemeBoards,modelSnapshot.semanticContract(),resolveProjectFile().getParent()));
         sources.add(new NplBoardSnapshotSource(sessionId, NormativeBoard::getNormativeBoards));
+        checkpointSource=new BridgeCheckpointSource();sources.add(checkpointSource);
         runtimeCoordinator = new SnapshotCoordinator(sources, EVENT_CAPACITY, this::enqueueEvent);
         readiness.update("runtime", AdapterReadiness.ATTACHED,
                 "SnapshotCoordinator sources=" + sources.stream().map(SnapshotSource::sourceId).toList());
@@ -241,11 +244,10 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
         if (!distribution.distributionDigest().equals(distributionSha256))
             throw new IllegalArgumentException("BRIDGE_DISTRIBUTION_FINGERPRINT_MISMATCH: expected="
                     + distributionSha256 + ", actual=" + distribution.distributionDigest());
-        AtomicLong platformWatermark = new AtomicLong();
         java.util.function.Supplier<byte[]> handshake = () -> {
             RuntimeSnapshot snapshot = captureRuntime();
             return encode(MessageType.HANDSHAKE, projectKey, generation, distribution,
-                    capabilities(snapshot), envelopeCompleteness(snapshot), Map.of("readOnly", true));
+                    capabilities(snapshot), envelopeCompleteness(snapshot), Map.of("readOnly", !controlCapable(),"domainReadOnly",true));
         };
         java.util.function.Supplier<byte[]> model = () -> encode(MessageType.MODEL_SNAPSHOT, projectKey,
                 generation, distribution, capabilities(latestRuntimeSnapshot), Completeness.COMPLETE,
@@ -256,11 +258,11 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
                     capabilities(snapshot), envelopeCompleteness(snapshot), ContractPayloads.runtime(snapshot));
         };
         java.util.function.Supplier<byte[]> gap = () -> {
-            long watermark = platformWatermark.incrementAndGet();
+            long watermark = transportWatermark.incrementAndGet();
             RuntimeEvent event = new RuntimeEvent("gap:" + sessionId + ":" + watermark, sessionId, generation,
-                    modelSnapshot.modelRevision(), "transport", PLATFORM_SOURCE, watermark, Instant.now(),
+                    modelSnapshot.modelRevision(), "transport", "bridge:transport", watermark, Instant.now(),
                     RuntimeEventKind.GAP, null, null, null, null, "", "", Map.of(), Map.of(),
-                    new SourceWatermark(PLATFORM_SOURCE, watermark), Completeness.PARTIAL, List.of());
+                    new SourceWatermark("bridge:transport", watermark), Completeness.PARTIAL, List.of());
             return encode(MessageType.RUNTIME_EVENT, projectKey, generation, distribution,
                     capabilities(latestRuntimeSnapshot), Completeness.PARTIAL, ContractPayloads.event(event));
         };
@@ -268,22 +270,36 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
         // emit more than 1,024 official callbacks while an ACK-heavy consumer catches up; a smaller transport queue
         // manufactured a GAP even though the platform queue still retained the complete ordered stream.
         server = new LocalTcpBridgeServer(InetAddress.getLoopbackAddress(), bridgePort, secret, MAX_FRAME_BYTES,
-                EVENT_CAPACITY, 64L * 1024 * 1024, handshake, model, runtime, gap);
+                EVENT_CAPACITY, 64L * 1024 * 1024, handshake, model, runtime, gap,request->encode(MessageType.CONTROL_STATUS,
+                        projectKey,generation,distribution,capabilities(latestRuntimeSnapshot),Completeness.COMPLETE,control(request).payload()));
         java.util.Arrays.fill(secret, (byte) 0);
         server.start();
         publishing = true;
         publisher = Thread.ofPlatform().daemon().name("jacamo-bridge-publisher").start(() -> {
+            long nextObservation=System.nanoTime()+TimeUnit.SECONDS.toNanos(5);
             while (publishing) {
                 try {
                     if (publicationGap.getAndSet(false)) server.publish("platform:gap", gap.get());
                     RuntimeEvent event = events.poll(500, TimeUnit.MILLISECONDS);
                     if (event != null) server.publish(event.sourceId() + ":" + event.sourceSequence(),
                             encode(MessageType.RUNTIME_EVENT, projectKey, generation, distribution,
-                                    capabilities(latestRuntimeSnapshot), event.completeness(), ContractPayloads.event(event)));
+                            capabilities(latestRuntimeSnapshot), event.completeness(), ContractPayloads.event(event)));
+                    if(event!=null && boundaryTrigger(event)) {
+                        // A real source callback closes this observation batch. Copy supported
+                        // board state now, enqueue its deltas first, then the explicit boundary.
+                        runtimeCoordinator.poll();
+                        checkpointSource.boundary(event);
+                        nextObservation=System.nanoTime()+TimeUnit.SECONDS.toNanos(5);
+                    }
+                    if(System.nanoTime()>=nextObservation) {
+                        // Fallback drift observation only; this timer does not invent a checkpoint.
+                        runtimeCoordinator.poll();
+                        nextObservation=System.nanoTime()+TimeUnit.SECONDS.toNanos(5);
+                    }
                 } catch (InterruptedException interrupted) {
                     Thread.currentThread().interrupt();
                     return;
-                } catch (RuntimeException failure) {
+                } catch (Exception failure) {
                     publicationGap.set(true);
                     readiness.update("transport", AdapterReadiness.FAILED,
                             "event publication failed; resync required");
@@ -291,6 +307,12 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
             }
         });
         readiness.update("transport", AdapterReadiness.READY, "loopback TCP port=" + server.port());
+    }
+
+    private static boolean boundaryTrigger(RuntimeEvent event) {
+        return "jason".equals(event.subsystem()) && event.kind()==RuntimeEventKind.CHANGED
+                || "cartago".equals(event.subsystem()) && (event.kind()==RuntimeEventKind.SUCCEEDED || event.kind()==RuntimeEventKind.FAILED
+                    || event.projectionStatus()==ProjectionStatus.MATERIALIZED_FAITHFULLY);
     }
 
     private RuntimeSnapshot captureRuntime() {
@@ -344,7 +366,20 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
                         List.of(), runtimeReady ? "validated official runtime cut; evidence-only facts remain labelled"
                                 : "runtime authorities are not ready or the cut is incomplete"),
                 new Capability("runtime.events", CapabilityStatus.PARTIAL, List.of(),
-                        "official hooks are bounded and classified; Moise board intermediate deltas remain evidence-only"));
+                        "official hooks are bounded and classified; Moise board intermediate deltas remain evidence-only"),
+                new Capability("runtime.checkpoint.boundary.v1",CapabilityStatus.COMPLETE,List.of(),"source callback plus supported board observation batch"),
+                new Capability(org.jacamo.bridge.contract.RuntimeControlContract.CAPABILITY,controlCapable()?CapabilityStatus.COMPLETE:CapabilityStatus.UNAVAILABLE,
+                        List.of(),org.jacamo.bridge.contract.RuntimeControlContract.LIMITATION));
+    }
+    private boolean controlCapable() {return BridgeRuntimeRegistry.controller().map(BridgeLocalExecutionControl::capable).orElse(false);}
+    public org.jacamo.bridge.contract.RuntimeControlContract.Status control(org.jacamo.bridge.contract.RuntimeControlContract.Request request) {
+        if(!request.sessionId().equals(sessionId) || request.generation()!=generation() || !request.modelRevision().equals(modelSnapshot.modelRevision()))
+            throw new IllegalArgumentException("CONTROL_RUNTIME_IDENTITY_STALE");
+        var controller=BridgeRuntimeRegistry.controller();
+        if(controller.isPresent())return controller.get().request(request,sessionId,generation(),modelSnapshot.modelRevision());
+        if(request.action()!=org.jacamo.bridge.contract.RuntimeControlContract.Action.STATUS)throw new IllegalStateException("CONTROL_EXECUTION_CAPABILITY_UNAVAILABLE");
+        return new org.jacamo.bridge.contract.RuntimeControlContract.Status(org.jacamo.bridge.contract.RuntimeControlContract.VERSION,sessionId,generation(),modelSnapshot.modelRevision(),
+                false,org.jacamo.bridge.contract.RuntimeControlContract.State.RUNNING,"",Set.of(),Set.of(),Set.of(),"CONTROL_EXECUTION_CAPABILITY_UNAVAILABLE",Instant.now());
     }
 
     private Completeness envelopeCompleteness(RuntimeSnapshot snapshot) {
@@ -356,7 +391,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
     private byte[] encode(MessageType type, String projectKey, long generation,
                           DistributionFingerprint distribution, List<Capability> capabilities,
                           Completeness completeness, Map<String, Object> payload) {
-        return ContractCodec.encode(ContractEnvelope.create("1.0.0", type, "jacamo-bridge-1.0.0",
+        return ContractCodec.encode(ContractEnvelope.create("1.1.0", type, "jacamo-bridge-1.1.0",
                 distribution, projectKey, modelSnapshot.modelRevision(), sessionId, generation,
                 type.name() + ":" + UUID.randomUUID(), Instant.now(), capabilities, completeness,
                 Map.of(), List.of(), payload));

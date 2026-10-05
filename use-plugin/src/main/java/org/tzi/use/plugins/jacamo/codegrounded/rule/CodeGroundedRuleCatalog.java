@@ -16,7 +16,7 @@ import org.jacamo.bridge.contract.semantic.Fidelity;
  */
 public final class CodeGroundedRuleCatalog {
     /** Version of the code-grounded rule contract exported with native evidence. */
-    public static final String VERSION = "1.1.0";
+    public static final String VERSION = "2.0.0";
 
     private static final Set<String> FIRST_SLICE = Set.of(
             "J01", "J02", "J03", "J04", "J05", "J06", "J07", "J08", "J09", "J10", "J11",
@@ -54,9 +54,16 @@ public final class CodeGroundedRuleCatalog {
                         "jacamo.project.parser.JaCaMoProjectParserTokenManager"
                 },
                 new String[] {
-                        "MModel", "MClass Agent", "MClass WorkspaceDeclaration", "MClass ArtifactDeclaration",
-                        "MClass OrganizationDeployment", "MClass GroupDeployment", "MClass SchemeDeployment",
-                        "MClass InstitutionDeployment", "Trace raw role tuple", "Trace raw focus tuple",
+                        "MModel",
+                        "MClass Agent + ASL subclass / MObject",
+                        "Workspace MObject with exact declaration/runtime alias",
+                        "Artifact subclass / declaration MObject with exact runtime alias",
+                        "MObject of OS class",
+                        "MObject of group class",
+                        "MObject of concrete Scheme subclass",
+                        "Trace institution declaration",
+                        "MLinkObject Agent-Group via contextual native association class",
+                        "Trace focus tuple / exact focus link",
                         "Trace import provenance"
                 });
         addFamily(rules, 'A', RuleDimension.JASON, EvidenceAuthority.OFFICIAL_JASON_API,
@@ -72,14 +79,28 @@ public final class CodeGroundedRuleCatalog {
                         "jason.asSemantics.Agent.getBB", "jason.asSemantics.Agent.getInitialGoals"
                 },
                 new String[] {
-                        "MClass AgentProgram", "MClass PlanLibrary", "MClass Plan", "MClass Trigger",
-                        "MClass PlanBodyElement", "MClass Action", "MClass Action", "MClass Belief",
-                        "MClass AgentGoal", "MClass BeliefRule", "Trace source provenance", "Trace runtime evidence (EVIDENCE_ONLY)",
-                        "Trace runtime evidence (EVIDENCE_ONLY)", "Trace runtime evidence (EVIDENCE_ONLY)", "Trace runtime evidence (EVIDENCE_ONLY)",
-                        "MAssociation A16AgentProgramPlanLibrary", "MAssociation A17PlanLibraryPlan",
-                        "MAssociation A18PlanTrigger", "MAssociation A19PlanBodyElement",
-                        "MAssociation A20PlanBodyNext", "MAssociation A21ProgramBelief",
-                        "MAssociation A22ProgramGoal"
+                        "MClass ASL basename_Agent extends Agent",
+                        "Trace PlanLibrary",
+                        "Trace Plan",
+                        "Trace Trigger",
+                        "Trace ordered PlanBody",
+                        "Trace action",
+                        "Trace internal action",
+                        "Belief literal MObject",
+                        "AgentGoal literal MObject",
+                        "Trace belief rule",
+                        "Trace source provenance",
+                        "Trace runtime action execution",
+                        "Trace runtime intention",
+                        "Trace runtime event",
+                        "Trace runtime transition system",
+                        "Trace program-library identity",
+                        "Trace ordered plans",
+                        "Trace plan-trigger identity",
+                        "Trace ordered body nodes",
+                        "Trace exact body-next relation",
+                        "MAssociation / MLink Agent-Belief",
+                        "MAssociation / MLink Agent-AgentGoal"
                 });
         addFamily(rules, 'C', RuleDimension.CARTAGO, EvidenceAuthority.OFFICIAL_CARTAGO_API,
                 new String[] {
@@ -92,13 +113,26 @@ public final class CodeGroundedRuleCatalog {
                         "cartago.ICartagoController.getCurrentAgents", "cartago.ICartagoLogger.artifactFocussed"
                 },
                 new String[] {
-                        "MClass Environment", "MClass Workspace", "MClass ArtifactType", "MClass Artifact",
-                        "MClass Operation", "MOperation", "MClass Guard", "MClass LiveObservableProperty",
-                        "MClass ObservablePropertySnapshot", "MClass ArtifactInfo", "MClass Signal", "MClass CartagoAgentIdentity",
-                        "MAssociation C13EnvironmentWorkspace", "MAssociation C14WorkspaceArtifact",
-                        "MAssociation C15ArtifactType", "MAssociation C16ArtifactOperation",
-                        "MAssociation C17ArtifactObservableProperty", "MAssociation C18OperationGuard",
-                        "MAssociation C19WorkspaceAgent", "MAssociation C20AgentArtifactFocus"
+                        "Trace environment root",
+                        "MClass Workspace / MObject",
+                        "MClass concrete Artifact subtype",
+                        "MObject of concrete artifact class",
+                        "Trace operation descriptor",
+                        "MOperation from exact supported Java method signature",
+                        "Trace guard",
+                        "Diagnostic live property unavailable; observed snapshot only",
+                        "MAttribute / value on artifact object",
+                        "Trace artifact information",
+                        "Trace signal",
+                        "Exact alias to agent-program object or diagnostic",
+                        "Trace workspace ownership root",
+                        "MAssociation / MLink Workspace-artifact",
+                        "Concrete artifact classifier binding",
+                        "Trace operation owner",
+                        "MAttribute / value observed property",
+                        "Trace operation guard",
+                        "MAssociation / MLink Agent-Workspace",
+                        "MAssociation / MLink Agent-artifact focus"
                 });
         addFamily(rules, 'M', RuleDimension.MOISE, EvidenceAuthority.OFFICIAL_MOISE_API,
                 new String[] {
@@ -118,34 +152,49 @@ public final class CodeGroundedRuleCatalog {
                         "moise.os.ns.Norm.getRole", "moise.os.ns.Norm.getMission"
                 },
                 new String[] {
-                        "MClass <OS.id> (domain schema; FULL: Organization inspection)",
-                        "Trace SS container (FULL: StructuralSpecification inspection)",
-                        "Trace FS container (FULL: FunctionalSpecification inspection)",
-                        "Trace NS container (FULL: NormativeSpecification inspection)",
-                        "MClass <Group.id> (group-instance type; FULL: Group inspection)",
-                        "MClass <Role.id> (role-enactment type; FULL: Role inspection)",
-                        "Trace role-relation policy (FULL: RoleRelation inspection)",
-                        "Trace link policy (FULL: Link inspection)", "Trace compatibility policy (FULL: Compatibility inspection)",
-                        "MClass <Scheme.id> (scheme-instance type; FULL: Scheme inspection)",
-                        "MClass <Scheme.id>_<Mission.id> (commitment type; FULL: Mission inspection)",
-                        "MClass <Scheme.id>_<Goal.id> (goal-state type; FULL: OrganizationalGoal inspection)",
-                        "MAttribute planOperator/planSuccessRate + Trace ordered plan policy (FULL: OrganizationalPlan inspection)",
-                        "Trace norm policy, exact Role/Mission endpoints; temporal/deontic OCL unavailable (FULL: Norm inspection)",
-                        "MClassInvariant per Group-Role cardinality (FULL: GroupRoleCardinality inspection)",
-                        "MAssociation + MClassInvariant per parent-subgroup cardinality (FULL: SubGroupCardinality inspection)",
-                        "MClassInvariant per Scheme-Mission cardinality (FULL: SchemeMissionCardinality inspection)",
-                        "Trace OS-SS container", "Trace OS-FS container", "Trace OS-NS container", "Trace SS-role type membership",
-                        "MAssociation organization-group instances", "MAssociation typed parent-subgroup composition",
-                        "MGeneralization role entailment (not Agent inheritance)",
-                        "Trace link-source role", "Trace link-target role", "Trace compatibility-source role", "Trace compatibility-target role",
-                        "MAssociation GroupInstance-RoleEnactment", "MClassInvariant declared/exact role types",
-                        "Trace subgroup cardinality owner", "Trace subgroup cardinality member",
-                        "MAssociation organization-scheme composition", "MAssociation scheme-commitment composition",
-                        "MAssociation scheme-goal composition + Trace root-goal identity",
-                        "Trace scheme cardinality owner", "MClassInvariant declared mission types",
-                        "MAssociation commitment-goal (same scheme)", "MAttribute target-goal plan operator + Trace plan identity",
-                        "MAssociation typed subgoal edges + ordinal/operator annotations",
-                        "Trace NS-norm policy membership", "Trace norm-role type endpoint", "Trace norm-mission type endpoint"
+                        "MClass OS id / MObject",
+                        "Trace SS container",
+                        "Flattened functional specification",
+                        "Trace NS container",
+                        "MClass group id / MObject",
+                        "Contextual MAssociationClass definition / inheritance diagnostic",
+                        "Trace role relation with deferred diagnostic",
+                        "Trace link policy with deferred diagnostic",
+                        "Trace compatibility policy with deferred diagnostic",
+                        "Concrete Scheme subclass / MObject",
+                        "Mission MObject",
+                        "OrganizationalGoal MObject",
+                        "Flattened parent operator and exact child ordinal relation",
+                        "Constraint source UNSUPPORTED_NORM_TRANSLATION",
+                        "MAssociationClass Agent-Group with Agent-end min/max",
+                        "MAssociation parent-subgroup with bounds",
+                        "Mission min/max contextual attributes",
+                        "Trace OS-SS",
+                        "Trace OS-FS source membership",
+                        "Trace OS-NS",
+                        "Trace role definition membership",
+                        "MAssociation / MLink organisation-group",
+                        "MAssociation / MLink parent-subgroup",
+                        "Trace role inheritance; deferred diagnostic",
+                        "Trace link-source role",
+                        "Trace link-target role",
+                        "Trace compatibility-source role",
+                        "Trace compatibility-target role",
+                        "MAssociationClass contextual role-in-group",
+                        "Trace permitted group-role membership",
+                        "Trace subgroup cardinality owner",
+                        "Trace subgroup cardinality member",
+                        "MAssociation / MLink organisation-scheme",
+                        "MAssociation / MLink scheme-mission",
+                        "MAssociation / MLink scheme-goal",
+                        "Mission bounds owner trace",
+                        "Mission bounds member trace",
+                        "MAssociation / MLink mission-goal references",
+                        "Parent goal decomposition operator",
+                        "Goal self relation with exact child ordinal",
+                        "Trace NS-norm membership",
+                        "OclGenerationHook norm-role reference",
+                        "OclGenerationHook norm-mission reference"
                 });
         addFamily(rules, 'X', RuleDimension.CROSS, EvidenceAuthority.EXPLICIT_BINDING,
                 new String[] {
@@ -157,11 +206,15 @@ public final class CodeGroundedRuleCatalog {
                         "jacamo.project.JaCaMoAgentParameters+jason.asSemantics.Agent+cartago.AgentId"
                 },
                 new String[] {
-                        "MAssociation X01ActionOperation", "MAssociation X02BeliefProperty",
-                        "MAssociation X03TriggerSignal", "MAssociation Agent-role enactment (FULL: X04AgentRole inspection)",
-                        "MAssociation X05AgentWorkspace", "MAssociation X06AgentArtifactFocus",
-                        "MAssociation X07AgentGoalOrganizationalGoal", "MAssociation X08DeclarationArtifact",
-                        "MAssociation X09AgentIdentity"
+                        "Trace action-operation source evidence",
+                        "Trace belief-property source evidence",
+                        "Trace trigger-signal source evidence",
+                        "MLinkObject Agent-object to Group-object through exact contextual association class",
+                        "MLink Agent-Workspace",
+                        "MLink Agent-artifact focus",
+                        "Trace exact agent-goal organisation-goal source binding",
+                        "Trace declaration-artifact exact provenance",
+                        "Exact agent-runtime alias; no identity object"
                 });
         if (rules.size() != 105) throw new IllegalStateException("CODE_GROUNDED_RULE_COUNT: " + rules.size());
         return List.copyOf(rules);
@@ -204,6 +257,7 @@ public final class CodeGroundedRuleCatalog {
     private static ImplementationStatus implementation(String id) {
         if (FIRST_SLICE.contains(id)) return ImplementationStatus.IMPLEMENTED;
         if (id.equals("C08")) return ImplementationStatus.UNAVAILABLE_IN_AUDITED_API;
+        if (id.equals("C06")) return ImplementationStatus.EXPLICITLY_UNSUPPORTED;
         return ImplementationStatus.PLANNED_CAPABILITY_GATED;
     }
 

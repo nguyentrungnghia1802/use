@@ -76,6 +76,7 @@ public final class JasonSnapshotSource implements SnapshotSource {
                 .forEach(local -> agents.add(local.getAgName() + ":" +
                         BridgeRuntimeRegistry.agentIdentity(local.getAgName()).map(BridgeEntityId::canonical).orElse("unobserved")));
         completeness = agents.stream().allMatch(value -> !value.endsWith(":unobserved"))
+                && runner.getAgs().values().stream().allMatch(local->BridgeRuntimeRegistry.jasonState(local.getAgName()).isPresent())
                 ? Completeness.COMPLETE : Completeness.PARTIAL;
         return AdapterEvidence.digest(String.join("\n", agents).getBytes(java.nio.charset.StandardCharsets.UTF_8));
     }
@@ -117,8 +118,12 @@ public final class JasonSnapshotSource implements SnapshotSource {
                 values.put("observationError", observationFailure.getClass().getSimpleName());
                 allIdentities = false;
             }
-            facts.add(new RuntimeFact(identity, RuntimeFactKind.AGENT, Map.copyOf(values), List.of(),
-                    ProjectionStatus.EVIDENCE_ONLY, Completeness.COMPLETE, List.of()));
+            var observed=BridgeRuntimeRegistry.jasonState(name);
+            if(observed.isEmpty()) allIdentities=false;
+            BridgeRuntimeRegistry.jasonStateError(name).ifPresent(error->values.put("observationError",error));
+            facts.add(new RuntimeFact(identity, RuntimeFactKind.AGENT, observed.orElse(Map.copyOf(values)), List.of(),
+                    observed.isPresent() ? ProjectionStatus.MATERIALIZED_FAITHFULLY : ProjectionStatus.EVIDENCE_ONLY,
+                    observed.isPresent() ? Completeness.COMPLETE : Completeness.PARTIAL, List.of()));
             if (transitionSystem != null)
                 addRuntimeEvidence(facts, name, transitionSystem, local.getCycles());
         }

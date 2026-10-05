@@ -59,7 +59,7 @@ final class BridgeFacadeTestSupport {
                     } catch (Exception error) {
                         throw new IllegalStateException("TEST_OFFICIAL_ADAPTER_FAILED", error);
                     }
-                }, PipelineMode.LEGACY_V2, null);
+                }, PipelineMode.CODE_GROUNDED_NATIVE, null);
     }
 
     static DefaultJaCaMoFacade nativeFacade(Path jcm, Session session,
@@ -100,7 +100,7 @@ final class BridgeFacadeTestSupport {
         RuntimeSnapshot runtime = new RuntimeSnapshot("test-snapshot", model.modelRevision(), Instant.EPOCH,
                 Instant.EPOCH, Map.of(source, new SourceWatermark(source, 0)),
                 Map.of(source, new SourceWatermark(source, 0)), 1, List.of(),
-                Map.of(source, Completeness.COMPLETE), "f".repeat(64));
+                Map.of("jason", Completeness.COMPLETE), "f".repeat(64));
         DistributionFingerprint distribution = new DistributionFingerprint("1.3.1", DISTRIBUTION,
                 Map.of("jason", "3.3.2", "cartago", "3.1", "moise", "1.1", "npl", "0.6.1"));
         List<byte[]> frames = new ArrayList<>(List.of(

@@ -1,4 +1,37 @@
-# Runtime event, trace and identity — Phase 17
+# Runtime event, trace and identity
+
+## Current native contract — 2026-10-05
+
+The current production wire type is the neutral Bridge RuntimeEvent, not the
+test-only Phase 17 DTO below. Session/generation/model revision, per-source
+sequence/watermark, exact BridgeEntityId, semantic aliases, fact type and
+correlation are validated before the same active USE state may change. Unknown,
+ambiguous, stale, duplicate/gapped or retired callbacks never guess a native target.
+Buffered callbacks already covered by exact authoritative snapshot watermarks are
+explicitly acknowledged/counted; gaps and post-cut rewinds still fail closed.
+
+One EDT coordinator owns mutation, verification and immutable diagnostic capture.
+STREAM_BOUNDARY validates observed non-self causation and changes no domain object.
+Native PRE/POST keeps exact Artifact/operation/typed arguments and bounded retained
+pre-state; failed/missing exit is SKIPPED. Explicit control status has its own
+versioned contract and never masquerades as a domain event.
+
+Runtime trace records source/spec and exact current incarnation aliases. Dynamic
+Scheme/Goal/Mission occurrences are qualified by the exact board instance. XML
+positions unavailable through Moise's object API remain unavailable; the mapping
+rule is reported separately from fidelity. Optional CASE evidence identities must
+resolve uniquely in the current cut and include domain rationale; they are not
+additional failing contexts or inferred structural associations.
+
+The journal/tail and snapshot diagnostic history are bounded, with original
+failure/previous/last-passing/confirmation pins. Replay manifest 1.1.0 records the
+capability/policy timeline and native boundary/PRE/POST checkpoints; strict hashes
+and gaps preserve reproducibility. Explicit detached replay has no live control.
+
+## Historical Phase 17 / Phase 36 contract
+
+The following record is retained unchanged for test-only historical engines.
+It is not the current production identity/retention API.
 
 RuntimeEvent V1 remains the only normalized event. Its ten fields and JSON wire
 schema remain compatible. Payloads now own immutable nested maps/lists and reject

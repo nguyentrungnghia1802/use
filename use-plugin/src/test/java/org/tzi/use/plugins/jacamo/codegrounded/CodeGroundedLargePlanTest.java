@@ -31,9 +31,11 @@ class CodeGroundedLargePlanTest {
         var result = new CodeGroundedNativePipeline().build(withProgram(CodeGroundedTestFixtures.helloSnapshot(), program));
         var system = result.state().system();
 
-        assertEquals(bodySize, system.state().objectsOfClass(system.model().getClass("PlanBodyElement")).size());
-        assertEquals(bodySize - 1,
-                system.state().linksOfAssociation(system.model().getAssociation("A20PlanBodyNext")).size());
+        assertEquals(program,result.source().programs().stream().filter(p -> p.metadata().semanticId().equals(program.metadata().semanticId())).findFirst().orElseThrow());
+        assertEquals(bodySize,result.trace().records().stream().filter(r -> r.ruleId().equals("A05")
+            && program.planLibrary().plans().getFirst().body().stream().anyMatch(b -> b.metadata().semanticId().equals(r.sourceIdentity()))).count());
+        assertEquals(bodySize-1,program.planLibrary().plans().getFirst().body().stream().filter(b -> !b.nextSemanticId().isEmpty()).count());
+        assertEquals(null,system.model().getClass("PlanBodyElement"));
         assertTrue(result.state().structureValid());
         assertTrue(result.state().invariantsValid());
         assertEquals(result.model().structuralHash(), result.export().recompiledStructuralHash());
@@ -45,7 +47,7 @@ class CodeGroundedLargePlanTest {
                 contract.agentDeclarations(), contract.workspaceDeclarations(), contract.artifactDeclarations(),
                 contract.organizationDeployments(), contract.groupDeployments(), contract.schemeDeployments(),
                 contract.institutionDeployments(), contract.rawRoleTuples(), contract.rawFocusTuples(),
-                contract.importProvenance(), List.of(program), contract.cartagoEnvironments(),
+                contract.importProvenance(), java.util.stream.Stream.concat(contract.jasonPrograms().stream(),java.util.stream.Stream.of(program)).toList(), contract.cartagoEnvironments(),
                 contract.moiseOrganizations(), contract.exactBindings(), contract.diagnostics());
         return new ModelSnapshot("large-plan-test", base.sources(), base.agentDeclarations(), base.workspaces(),
                 base.configuredArtifacts(), base.organisationFacts(), base.groupRoleCardinalities(),

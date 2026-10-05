@@ -52,9 +52,11 @@ class NativeSemanticAdapterTest {
         for(String forbidden:java.util.List.of("import jacamo.","import jason.","import cartago.","import moise.","import npl."))assertFalse(sources.contains(forbidden),forbidden);
     }
 
-    @Test void adapterStopsAtDtoToSemanticModelBoundary() throws Exception {
+    @Test void historicalTestOnlyAdapterStopsAtDtoToSemanticModelBoundary() throws Exception {
+        assertFalse(java.nio.file.Files.exists(java.nio.file.Path.of(
+                "src/main/java/org/tzi/use/plugins/jacamo/bridge/NativeSemanticAdapter.java")));
         String source=java.nio.file.Files.readString(java.nio.file.Path.of(
-                "src/main/java/org/tzi/use/plugins/jacamo/bridge/NativeSemanticAdapter.java"));
+                "src/test/java/org/tzi/use/plugins/jacamo/bridge/NativeSemanticAdapter.java"));
         assertTrue(source.contains("JaCaMoSemanticModel"));
         assertTrue(source.contains("ModelSnapshot"));
         for(String forbidden:java.util.List.of("org.tzi.use.api.","org.tzi.use.uml.","org.tzi.use.parser.",

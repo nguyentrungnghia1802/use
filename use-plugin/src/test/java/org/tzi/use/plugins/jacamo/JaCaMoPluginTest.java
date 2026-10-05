@@ -76,7 +76,7 @@ class JaCaMoPluginTest {
         } finally {
             System.setOut(original);
         }
-        assertTrue(bytes.toString().contains("JaCaMo plugin ready"));
+        assertTrue(bytes.toString().contains("JaCaMo Bridge DISCONNECTED"));
 
         var actions = descriptor.getPluginModel().getActions();
         assertEquals(2, actions.size(), "status and workbench actions are registered");

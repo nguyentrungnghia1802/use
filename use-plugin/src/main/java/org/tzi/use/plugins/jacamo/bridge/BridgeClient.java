@@ -17,8 +17,8 @@ public final class BridgeClient implements AutoCloseable {
     public record Accepted(ModelSnapshot model, RuntimeSnapshot runtime, String distributionDigest,
                            String projectKey, java.util.List<org.jacamo.bridge.contract.Capability> capabilities,
                            org.jacamo.bridge.contract.Completeness completeness,
-                           String sessionId, long generation, String modelRevision) {
-        public Accepted { capabilities=java.util.List.copyOf(capabilities); }
+                           String sessionId, long generation, String modelRevision,java.util.Map<String,String> sourceVersions) {
+        public Accepted { capabilities=java.util.List.copyOf(capabilities);sourceVersions=java.util.Map.copyOf(sourceVersions); }
     }
     private final BridgeTransport transport; private final BridgeMirrorStateMachine mirror;
     private final String requiredDistribution; private final Set<String> requiredCapabilities;
@@ -28,7 +28,16 @@ public final class BridgeClient implements AutoCloseable {
     private final int maxBufferedEvents; private final ArrayDeque<byte[]> buffered=new ArrayDeque<>();
     private BridgeTransport.Subscription subscription;
     private boolean bootstrapping;
+    private java.util.Map<String,org.jacamo.bridge.contract.SourceWatermark> snapshotWatermarks=java.util.Map.of();
+    private final java.util.concurrent.atomic.AtomicLong snapshotCoveredEvents=new java.util.concurrent.atomic.AtomicLong();
     private String asynchronousFailure;
+    public org.jacamo.bridge.contract.RuntimeControlContract.Status control(org.jacamo.bridge.contract.RuntimeControlContract.Request request) {
+        var response=decode(transport.control(request),MessageType.CONTROL_STATUS);requireSame(response);
+        var status=org.jacamo.bridge.contract.RuntimeControlContract.Status.decode(response.payload());
+        if(!status.sessionId().equals(request.sessionId()) || status.generation()!=request.generation() || !status.modelRevision().equals(request.modelRevision()))
+            throw new BridgeProtocolException("BRIDGE_CONTROL_RESPONSE_IDENTITY_STALE");
+        return status;
+    }
     public BridgeClient(BridgeTransport transport,BridgeMirrorStateMachine mirror,String requiredDistribution,
                         Set<String> requiredCapabilities,int maxBufferedEvents){
         this(transport,mirror,requiredDistribution,requiredCapabilities,maxBufferedEvents,event->{});
@@ -69,12 +78,15 @@ public final class BridgeClient implements AutoCloseable {
         RuntimeSnapshot runtime=ContractPayloads.runtime(runtimeEnvelope.payload()); mirror.replace(runtime);
         synchronized(buffered){
             if(asynchronousFailure!=null)throw fail(asynchronousFailure);
+            snapshotWatermarks=runtime.endWatermarks();
             while(!buffered.isEmpty())applyBufferedEvent(buffered.removeFirst(),runtime);
             bootstrapping=false;
         }
+        var versions=new java.util.TreeMap<String,String>(handshake.distribution().components());
+        versions.put("jacamo",handshake.distribution().jacamoVersion()); versions.put("contract",handshake.schemaVersion());
         return new Accepted(model,runtime,handshake.distribution().distributionDigest(),handshake.projectKey(),
                 handshake.capabilities(),handshake.completeness(),handshake.sessionId(),handshake.generation(),
-                handshake.modelRevision());
+                handshake.modelRevision(),versions);
     }
     private void acceptSubscriptionEvent(byte[] bytes){
         synchronized(buffered){
@@ -99,10 +111,19 @@ public final class BridgeClient implements AutoCloseable {
     }
     public String diagnostic(){synchronized(buffered){return asynchronousFailure==null?"":asynchronousFailure;}}
     public boolean receive(byte[] bytes){synchronized(deliveryLock){return applyEvent(bytes);}}
-    private boolean applyBufferedEvent(byte[] bytes,RuntimeSnapshot snapshot){RuntimeEvent event=decodeEvent(bytes);var covered=snapshot.endWatermarks().get(event.sourceId());if(covered!=null&&event.sourceSequence()<=covered.sequence()){transport.acknowledge(event.sourceId()+":"+event.sourceSequence());return false;}return applyEvent(event);}
+    private boolean applyBufferedEvent(byte[] bytes,RuntimeSnapshot snapshot){return applyEvent(decodeEvent(bytes));}
     private boolean applyEvent(byte[] bytes){return applyEvent(decodeEvent(bytes));}
     private RuntimeEvent decodeEvent(byte[] bytes){ContractEnvelope envelope=decode(bytes,MessageType.RUNTIME_EVENT);requireSame(envelope);return ContractPayloads.event(envelope.payload());}
     private boolean applyEvent(RuntimeEvent event){
+        // Publication queues can deliver pre-cut callbacks after bootstrap ends.
+        // The authoritative watermark, rather than arrival time, proves coverage.
+        var covered=snapshotWatermarks.get(event.sourceId());
+        if(covered!=null && event.sourceSequence()<=covered.sequence()
+                && event.kind()!=org.jacamo.bridge.contract.RuntimeEventKind.GAP
+                && event.kind()!=org.jacamo.bridge.contract.RuntimeEventKind.MODEL_REVISION_CHANGED) {
+            snapshotCoveredEvents.incrementAndGet();
+            transport.acknowledge(event.sourceId()+":"+event.sourceSequence());return false;
+        }
         boolean result;
         try { result=mirror.apply(event); }
         catch(RuntimeException error){throw fail("BRIDGE_EVENT_ORDER_REJECTED",error,event);}
@@ -110,6 +131,7 @@ public final class BridgeClient implements AutoCloseable {
         if(result)try{acceptedEvent.accept(event);}catch(RuntimeException error){throw fail("BRIDGE_EVENT_PROJECTION_REJECTED",error,event);}
         transport.acknowledge(event.sourceId()+":"+event.sourceSequence());return result;
     }
+    public long snapshotCoveredEvents(){return snapshotCoveredEvents.get();}
     private ContractEnvelope decode(byte[] bytes,MessageType expected){try{ContractEnvelope value=ContractCodec.decode(bytes,4*1024*1024,64,256*1024);new ContractValidator().validate(value);if(value.messageType()!=expected)throw fail("BRIDGE_MESSAGE_TYPE:"+value.messageType());return value;}catch(BridgeProtocolException e){throw e;}catch(RuntimeException e){throw fail("BRIDGE_ENVELOPE_REJECTED",e);}}
     private void requireSame(ContractEnvelope value){if(!value.sessionId().equals(mirror.sessionId()))throw fail("BRIDGE_SESSION_STALE");if(value.generation()!=mirror.generation())throw fail("BRIDGE_GENERATION_STALE");if(!value.modelRevision().equals(mirror.modelRevision()))throw fail("BRIDGE_MODEL_REVISION_STALE");}
     private BridgeProtocolException fail(String message){mirror.transition(BridgeClientState.RESYNC_REQUIRED);coverageFailure.accept(null,message);return new BridgeProtocolException(message);}

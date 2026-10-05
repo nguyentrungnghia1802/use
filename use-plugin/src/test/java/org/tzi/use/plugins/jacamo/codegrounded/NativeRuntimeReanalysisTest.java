@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import org.jacamo.bridge.contract.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.tzi.use.plugins.jacamo.codegrounded.runtime.*;
@@ -28,7 +29,7 @@ class NativeRuntimeReanalysisTest {
             assertEquals(coordinator.journal().persistedEntries(),report.checkedEntries());
             var events=report.retainedTail().stream().filter(entry->entry.kind().equals("EVENT")).toList();
             assertEquals(List.of(VerificationOutcome.FAIL,VerificationOutcome.PASS),events.stream().map(entry->entry.result().outcomes().stream()
-                    .filter(value->value.constraintId().equals("EXTERNAL:ObservablePropertySnapshot::NoB")).findFirst().orElseThrow().outcome()).toList());
+                    .filter(value->value.constraintId().equals("EXTERNAL:LiveRuntimePropertyArtifact::NoB")).findFirst().orElseThrow().outcome()).toList());
             assertNotEquals(events.getFirst().originalConstraintSet(),events.getFirst().result().constraintSetHash());
             assertNotEquals(events.getFirst().originalVersion(),events.getFirst().result().stateVersion());
             assertEquals(before,coordinator.verificationSnapshot()); assertEquals(history,coordinator.history());
@@ -63,7 +64,7 @@ class NativeRuntimeReanalysisTest {
             coordinator.loadProfileSource("original.ocl",RuntimeVerificationCoordinatorTest.PROFILE);
             Path bundle=root.resolve("original-flags");
             new NativeRuntimeReplay().exportBundle(projector,pipeline.export().useText(),bundle);
-            String id="ObservablePropertySnapshot::NoB";
+            String id="LiveRuntimePropertyArtifact::NoB";
             var negated=new NativeRuntimeReanalysis().analyze(bundle,"current.ocl",RuntimeVerificationCoordinatorTest.PROFILE,
                     Map.of(id,true),Map.of(id,true),root.resolve("negated"));
             assertTrue(negated.complete(),negated.diagnostics().toString());
@@ -79,8 +80,41 @@ class NativeRuntimeReanalysisTest {
             assertTrue(new NativeRuntimeReplay().replay(negatedBundle).complete());
         }
     }
+    @Test void newBeliefDemandUsesRecordedRawCutsAndKeepsEveryOtherDomainObjectAndLinkIdentical() throws Exception {
+        var pipeline=CodeGroundedTestFixtures.helloPipeline();
+        try(var projector=new NativeRuntimeProjector(pipeline,SESSION,1,REVISION)) {
+            projector.applySnapshot(snapshot("initial",0));
+            var declaration=pipeline.source().snapshot().agentDeclarations().getFirst();
+            var agent=new BridgeEntityId("jason","agent","runtime-agent",pipeline.source().project().name(),declaration.name(),"belief-analysis");
+            var literal=Map.<String,Object>of("semanticId",org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection
+                    .occurrenceId("runtime-belief",agent.canonical(),"ready(a)"),"sourceIdentity","ready(a)","literal","ready(a)",
+                    "predicateIndicator","ready/1","domainAuthored",true,"authoritativeElsewhere",false);
+            var payload=Map.<String,Object>of("normalizedEventKind","UPSERT_JASON_AGENT_STATE","semanticId",agent.canonical(),
+                    "agentDeclarationSemanticId",declaration.metadata().semanticId(),"name",declaration.name(),"beliefs",List.of(literal),"goals",List.of());
+            projector.apply(new RuntimeEvent("authored-cut",SESSION,1,REVISION,"jason","jason",1,java.time.Instant.EPOCH,
+                    RuntimeEventKind.CHANGED,RuntimeFactKind.AGENT,ProjectionStatus.MATERIALIZED_FAITHFULLY,agent,null,"","",Map.of(),payload,
+                    new SourceWatermark("jason",1),Completeness.COMPLETE,List.of()));
+            assertEquals(0,projector.system().state().objectsOfClass(projector.system().model().getClass("Belief")).size());
+            Path bundle=root.resolve("raw-beliefs"), output=root.resolve("selected-beliefs");
+            new NativeRuntimeReplay().exportBundle(projector,pipeline.export().useText(),bundle);
+            var before=projector.coordinator().verificationSnapshot();
+            var report=new NativeRuntimeReanalysis().analyze(bundle,"beliefs.ocl",
+                    "context Agent inv RelevantBeliefs: self.beliefs->isUnique(semanticId)",Map.of(),output);
+            assertTrue(report.complete(),report.diagnostics().toString());
+            assertTrue(report.diagnostics().toString().contains("SELECTIVE_BELIEF_PROJECTION_PER_CURRENT_PROFILE"));
+            assertNotEquals(before.result().stateHash(),report.finalStateHash());
+            var summary=CanonicalJson.object(CanonicalJson.decode(Files.readAllBytes(output.resolve("reanalysis-summary.json"))));
+            assertEquals(false,summary.get("recordedStateParity")); assertEquals(true,summary.get("domainStateParity"));
+            for(String line:Files.readAllLines(output.resolve("reanalysis.jsonl"))) {
+                var row=CanonicalJson.object(CanonicalJson.decode(line.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+                assertEquals(row.get("recordedDomainStateHash"),row.get("analysisDomainStateHash"));
+            }
+            assertEquals(before,projector.coordinator().verificationSnapshot());
+            assertTrue(new NativeRuntimeReplay().replay(bundle).complete());
+        }
+    }
     private static VerificationOutcome externalNoB(RuntimeVerificationResult result) {
-        return result.outcomes().stream().filter(value->value.constraintId().equals("EXTERNAL:ObservablePropertySnapshot::NoB"))
+        return result.outcomes().stream().filter(value->value.constraintId().equals("EXTERNAL:LiveRuntimePropertyArtifact::NoB"))
                 .findFirst().orElseThrow().outcome();
     }
     private void coordinatorGap(NativeRuntimeProjector projector) { projector.coordinator().coverageGap("TEST_SOURCE_GAP"); }

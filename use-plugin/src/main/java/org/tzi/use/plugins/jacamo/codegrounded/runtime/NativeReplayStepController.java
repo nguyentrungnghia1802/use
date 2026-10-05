@@ -27,6 +27,11 @@ public final class NativeReplayStepController implements AutoCloseable {
         var current=selected.get();
         return current==null ? VerificationSnapshot.empty() : current.cursor().projector().coordinator().verificationSnapshot();
     }
+    public GoalViewSnapshot goalView() {
+        var current=selected.get();if(current==null)return GoalViewSnapshot.empty();
+        var view=GoalViewSnapshot.read(current.cursor().projector().coordinator(),List.of(),List.of(),null);
+        return new GoalViewSnapshot(view.schemes(),"RECORDED_REPLAY","READ_ONLY",view.diagnostic());
+    }
     public RuntimeHistoryPage historyTail() {
         var current=selected.get(); return current==null ? RuntimeHistoryPage.empty()
                 : selectedHistory(current,current.cursor().projector().coordinator().journal().tailPage(128));

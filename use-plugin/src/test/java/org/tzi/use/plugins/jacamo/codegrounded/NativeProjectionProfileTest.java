@@ -26,27 +26,25 @@ class NativeProjectionProfileTest {
         System.out.printf("NATIVE_PROJECTION_COUNTS AUTO classes=%d objects=%d FULL classes=%d objects=%d%n",
                 auto.model().model().classes().size(), auto.state().system().state().numObjects(),
                 full.model().model().classes().size(), full.state().system().state().numObjects());
-        assertTrue(auto.model().model().classes().size() < full.model().model().classes().size());
-        assertTrue(auto.state().system().state().numObjects() < full.state().system().state().numObjects());
+        assertEquals(auto.model().structuralHash(),full.model().structuralHash());
+        assertEquals(auto.state().system().state().numObjects(),full.state().system().state().numObjects());
         assertFalse(auto.model().model().classes().stream()
                 .anyMatch(value -> value.name().equals("A17PlanOrderEntry")));
         assertFalse(auto.model().model().classes().stream()
                 .anyMatch(value -> value.name().equals("A19BodyOrderEntry")));
         assertEquals(NativeProjectionStatus.EVIDENCE_ONLY,
                 auto.projectionProfile().conceptStatuses().get("ExactBindingEvidence"));
-        for (String concept : List.of("WorkspaceDeclaration", "ArtifactDeclaration", "OrganizationDeployment",
-                "GroupDeployment", "SchemeDeployment", "InstitutionDeployment", "AgentProgram", "Trigger",
-                "Action", "Belief", "AgentGoal", "BeliefRule", "Signal", "Guard", "Operation"))
+        for (String concept : List.of("InstitutionDeployment", "BeliefRule", "Signal", "Guard"))
             assertEquals(NativeProjectionStatus.EVIDENCE_ONLY,
                     auto.projectionProfile().conceptStatuses().get(concept), concept);
-        assertEquals(NativeProjectionStatus.PROFILE_EXCLUDED,
+        assertEquals(NativeProjectionStatus.EVIDENCE_ONLY,
                 auto.projectionProfile().conceptStatuses().get("A17PlanOrderEntry"));
-        assertTrue(auto.trace().records().stream().anyMatch(value -> value.targetKind().equals("ProjectionStatus")
-                && value.targetIdentity().equals("projection:ExactBindingEvidence")
-                && value.diagnostics().contains("STATUS=EVIDENCE_ONLY")));
-        assertTrue(full.model().model().classes().stream()
+        for(String concept:List.of("Belief","AgentGoal","Operation","Role","Scheme","Mission","WorkspaceDeclaration"))
+            assertEquals(NativeProjectionStatus.MATERIALIZED,auto.projectionProfile().statusFor(concept));
+        assertEquals(NativeProjectionStatus.MATERIALIZED,auto.projectionProfile().statusFor("Agent"));
+        assertFalse(full.model().model().classes().stream()
                 .anyMatch(value -> value.name().equals("A17PlanOrderEntry")));
-        assertTrue(full.model().model().classes().stream()
+        assertFalse(full.model().model().classes().stream()
                 .anyMatch(value -> value.name().equals("A19BodyOrderEntry")));
     }
 }

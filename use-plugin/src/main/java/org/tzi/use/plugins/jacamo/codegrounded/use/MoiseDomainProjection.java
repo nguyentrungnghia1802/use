@@ -1,390 +1,288 @@
 package org.tzi.use.plugins.jacamo.codegrounded.use;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import org.jacamo.bridge.contract.CanonicalJson;
-import org.jacamo.bridge.contract.semantic.Fidelity;
+import java.util.*;
 import org.jacamo.bridge.contract.semantic.MoiseSemanticContract.OrganizationSemantic;
 import org.jacamo.bridge.contract.semantic.SemanticMetadata;
 import org.tzi.use.api.UseApiException;
 import org.tzi.use.api.UseModelApi;
-import org.tzi.use.plugins.jacamo.codegrounded.constraint.ConstraintMigrationStatus;
-import org.tzi.use.plugins.jacamo.codegrounded.constraint.NativeConstraintSpec;
-import org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalog;
+import org.tzi.use.api.UseSystemApi;
+import org.tzi.use.uml.sys.MObject;
+import org.tzi.use.uml.sys.MLinkObject;
+import org.tzi.use.uml.ocl.value.*;
+import org.jacamo.bridge.contract.semantic.MoiseSemanticContract.SchemeSemantic;
+import org.tzi.use.plugins.jacamo.codegrounded.constraint.*;
 import org.tzi.use.plugins.jacamo.codegrounded.trace.CodeGroundedTraceCollector;
-import org.tzi.use.plugins.jacamo.codegrounded.trace.TracePhase;
-import org.tzi.use.uml.mm.MAggregationKind;
 import org.tzi.use.uml.mm.MElementAnnotation;
-import org.tzi.use.uml.mm.MModelElement;
-import org.tzi.use.uml.ocl.expr.ExpConstEnum;
-import org.tzi.use.uml.ocl.expr.ExpConstInteger;
-import org.tzi.use.uml.ocl.expr.ExpConstReal;
-import org.tzi.use.uml.ocl.expr.ExpStdOp;
-import org.tzi.use.uml.ocl.expr.Expression;
+import static org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.RelationDisposition.*;
 
-/**
- * Specializes the supported official OS graph into an organisation-specific enactment schema.
- * Static definitions become types/policies, NOT fake OE/RolePlayer/MissionPlayer instances.
- * The four per-OS abstract supports give role adoption and mission commitment their own identity;
- * they do not turn a role into an Agent or a mission into a Jason goal.
- */
+/** Specification-derived types, contextual association classes and flattened functional state. */
 public final class MoiseDomainProjection {
     public static final String ANNOTATION = "MoiseProjection";
-    public static final Map<String, String> INSPECTION_RULES = Map.ofEntries(
-            Map.entry("Organization", "M01"), Map.entry("StructuralSpecification", "M02"),
-            Map.entry("FunctionalSpecification", "M03"), Map.entry("NormativeSpecification", "M04"),
-            Map.entry("Group", "M05"), Map.entry("Role", "M06"), Map.entry("RoleRelation", "M07"),
-            Map.entry("Link", "M08"), Map.entry("Compatibility", "M09"), Map.entry("Scheme", "M10"),
-            Map.entry("Mission", "M11"), Map.entry("OrganizationalGoal", "M12"),
-            Map.entry("OrganizationalPlan", "M13"), Map.entry("Norm", "M14"),
-            Map.entry("GroupRoleCardinality", "M15"), Map.entry("SubGroupCardinality", "M16"),
-            Map.entry("SchemeMissionCardinality", "M17"));
-
-    public record Result(Map<String, String> classNames, List<NativeConstraintSpec> constraints) {
-        public Result {
-            classNames = Collections.unmodifiableMap(new LinkedHashMap<>(classNames));
-            constraints = List.copyOf(constraints);
-        }
+    public static final Map<String,String> INSPECTION_RULES = Map.ofEntries(
+        Map.entry("Organization","M01"), Map.entry("StructuralSpecification","M02"),
+        Map.entry("FunctionalSpecification","M03"), Map.entry("NormativeSpecification","M04"),
+        Map.entry("Group","M05"), Map.entry("Role","M06"), Map.entry("RoleRelation","M07"),
+        Map.entry("Link","M08"), Map.entry("Compatibility","M09"), Map.entry("Scheme","M10"),
+        Map.entry("Mission","M11"), Map.entry("OrganizationalGoal","M12"), Map.entry("OrganizationalPlan","M13"),
+        Map.entry("Norm","M14"), Map.entry("GroupRoleCardinality","M15"), Map.entry("SubGroupCardinality","M16"),
+        Map.entry("SchemeMissionCardinality","M17"));
+    public record Result(Map<String,String> classNames, List<NativeConstraintSpec> constraints) {
+        public Result { classNames=Collections.unmodifiableMap(new LinkedHashMap<>(classNames)); constraints=List.copyOf(constraints); }
     }
-
-    private final UseModelApi api;
-    private final CodeGroundedTraceCollector trace;
-    private final CodeGroundedRuleCatalog catalog = new CodeGroundedRuleCatalog();
-    private final Map<String, SemanticMetadata> declarations = new LinkedHashMap<>();
-    private final List<NativeConstraintSpec> constraints = new ArrayList<>();
-    private Map<String, String> symbols;
-
-    private MoiseDomainProjection(UseModelApi api, CodeGroundedTraceCollector trace) {
-        this.api = api; this.trace = trace;
+    public static final String ROLE_ASSOCIATION = "RoleInGroup";
+    public static String roleRelationId(String organisation, String group, String role) {
+        return "role-in-group:" + NativeUseModelBuilder.canonicalJson(List.of(organisation, group, role));
     }
-
-    public static Result install(UseModelApi api, List<OrganizationSemantic> organizations,
-                                 CodeGroundedTraceCollector trace) throws UseApiException {
-        return new MoiseDomainProjection(api, trace).install(organizations);
-    }
-
-    private Result install(List<OrganizationSemantic> organizations) throws UseApiException {
-        List<MoiseUseSymbols.Candidate> candidates = new ArrayList<>();
-        for (var org : organizations) {
-            validate(org);
-            candidate(candidates, org.metadata(), "OS", org.name());
-            var ss = org.structuralSpecification();
-            ss.roles().forEach(role -> candidate(candidates, role.metadata(), "Role", role.roleId()));
-            ss.groups().forEach(group -> candidate(candidates, group.metadata(), "Group", group.groupId()));
-            for (var scheme : org.functionalSpecification().schemes()) {
-                candidate(candidates, scheme.metadata(), "Scheme", scheme.schemeId());
-                scheme.missions().forEach(mission -> candidate(candidates, mission.metadata(), "Mission",
-                        scheme.schemeId() + "_" + mission.missionId()));
-                scheme.goals().forEach(goal -> candidate(candidates, goal.metadata(), "Goal",
-                        scheme.schemeId() + "_" + goal.goalId()));
-            }
-            if (!ss.groups().isEmpty()) support(candidates, org, "GroupInstance");
-            if (!ss.roles().isEmpty()) support(candidates, org, "RoleEnactment");
-            if (!org.functionalSpecification().schemes().isEmpty()) support(candidates, org, "SchemeInstance");
-            if (org.functionalSpecification().schemes().stream().anyMatch(s -> !s.missions().isEmpty()))
-                support(candidates, org, "MissionCommitment");
-        }
-        Set<String> reserved = new TreeSet<>(INSPECTION_RULES.keySet());
-        api.getModel().classes().forEach(cls -> reserved.add(cls.name()));
-        api.getModel().enumTypes().forEach(type -> reserved.add(type.name()));
-        symbols = MoiseUseSymbols.allocate(candidates, reserved);
-        for (var org : organizations.stream().sorted(Comparator.comparing(o -> o.metadata().semanticId())).toList())
-            organization(org);
-        for (var entry : declarations.entrySet()) {
-            var cls = api.getModel().getClass(entry.getKey());
-            String rule = cls.getAnnotationValue(ANNOTATION, "ruleId");
-            trace.add(catalog.require(rule), TracePhase.MODEL_DECLARATION, entry.getValue(), "MClass",
-                    "class:" + cls.name(), List.of(cls.getAnnotationValue(ANNOTATION, "representation"),
-                            "NO_STATIC_ENACTMENT_OBJECT", "RUNTIME_MATERIALIZATION_EVIDENCE_ONLY"));
-            cls.attributes().forEach(attribute -> trace.add(catalog.require(rule), TracePhase.MODEL_DECLARATION,
-                    entry.getValue(), "MAttribute", "attribute:" + cls.name() + "." + attribute.name(), List.of()));
-        }
-        Map<String, String> sourceClasses = new LinkedHashMap<>();
-        symbols.forEach((id, name) -> {
-            if (declarations.get(name).semanticId().equals(id)) sourceClasses.put(id, name);
-        });
-        return new Result(sourceClasses, constraints);
-    }
-
-    private void organization(OrganizationSemantic org) throws UseApiException {
-        String os = name(org.metadata().semanticId());
-        createClass(os, org.metadata(), "M01", false, "DOMAIN_SCHEMA");
-        api.createAttribute(os, "semanticId", "String");
-        String groupBase = supportName(org, "GroupInstance"), roleBase = supportName(org, "RoleEnactment");
-        String schemeBase = supportName(org, "SchemeInstance"), missionBase = supportName(org, "MissionCommitment");
-        var ss = org.structuralSpecification(); var fs = org.functionalSpecification(); var ns = org.normativeSpecification();
-        container(ss.metadata(), "M02", os); container(fs.metadata(), "M03", os); container(ns.metadata(), "M04", os);
-        record("M18", org.metadata(), "ContainerPolicyEndpoint", policyIdentity(os, "M02", ss.metadata()), "EXACT_OS_SS_OWNERSHIP");
-        record("M19", org.metadata(), "ContainerPolicyEndpoint", policyIdentity(os, "M03", fs.metadata()), "EXACT_OS_FS_OWNERSHIP");
-        record("M20", org.metadata(), "ContainerPolicyEndpoint", policyIdentity(os, "M04", ns.metadata()), "EXACT_OS_NS_OWNERSHIP");
-        if (groupBase != null) {
-            base(groupBase, org.metadata(), "M05", true);
-            association("M22", ss.metadata(), os, "organization", "1", groupBase, "groups", "*", false);
-        }
-        if (roleBase != null) {
-            base(roleBase, org.metadata(), "M06", false);
-            association("X04", org.metadata(), "Agent", "agent", "1", roleBase,
-                    "roleEnactments_" + MoiseUseSymbols.hash(org.metadata().semanticId()), "*", false);
-            if (groupBase != null) association("M29", ss.metadata(), groupBase, "group", "1", roleBase, "players", "*", true);
-        }
-        if (schemeBase != null) {
-            base(schemeBase, org.metadata(), "M10", true);
-            association("M33", fs.metadata(), os, "organization", "1", schemeBase, "schemes", "*", true);
-        }
-        if (missionBase != null) {
-            base(missionBase, org.metadata(), "M11", false);
-            association("M34", fs.metadata(), schemeBase, "scheme", "1", missionBase, "commitments", "*", true);
-            association("M11", fs.metadata(), "Agent", "agent", "1", missionBase,
-                    "missionCommitments_" + MoiseUseSymbols.hash(org.metadata().semanticId()), "*", false);
-        }
-        for (var role : ss.roles()) createClass(name(role.metadata().semanticId()), role.metadata(), "M06",
-                role.abstractRole(), "DOMAIN_SCHEMA");
-        for (var role : ss.roles()) {
-            String cls = name(role.metadata().semanticId());
-            record("M21", role.metadata(), "TypeMembershipEndpoint", "class:" + cls,
-                    "STRUCTURAL_SPECIFICATION=" + ss.metadata().semanticId());
-            if (role.superRoleSemanticIds().isEmpty()) api.createGeneralization(cls, roleBase);
-            for (String parent : role.superRoleSemanticIds()) {
-                api.createGeneralization(cls, name(parent));
-                record("M24", role.metadata(), "MGeneralization", "generalization:" + cls + "<" + name(parent),
-                        "ROLE_ENTAILMENT_TYPES_NOT_AGENT_INHERITANCE");
-            }
-            if (groupBase != null) constraint("M06", role.metadata(), cls, "UniqueEnactment",
-                    "self.oclIsTypeOf(" + cls + ") implies " + cls + ".allInstances()->select(p | p.oclIsTypeOf("
-                            + cls + ") and p.agent = self.agent and p.group = self.group)->size() = 1");
-        }
-        for (var group : ss.groups()) {
-            String cls = name(group.metadata().semanticId());
-            createClass(cls, group.metadata(), "M05", false, "DOMAIN_SCHEMA");
-            api.createGeneralization(cls, groupBase);
-            if (roleBase != null) constraint("M30", group.metadata(), cls, "DeclaredRoleTypes", "self.players->forAll(p | "
-                    + disjunction("p", group.roleSemanticIds(), true) + ")");
-            // The policy is stored on its owner; no cardinality helper objects exist in AUTO.
-            policy(cls, "M05", group.metadata(), Map.of("localId", group.groupId(),
-                    "parent", group.parentGroupSemanticId(), "roles", group.roleSemanticIds()));
-        }
-        for (var card : ss.groupRoleCardinalities()) {
-            String count = "self.players->select(p | p.oclIsTypeOf(" + name(card.roleId()) + "))->size()";
-            // Pinned GroupInstance.getPlayers(roleId, ...) counts exact roles, NOT entailed subroles.
-            cardinality("M15", card.metadata(), name(card.groupId()), count, card.min(), card.max());
-        }
-        for (var card : ss.subGroupCardinalities()) {
-            String navigation = "subgroups_" + MoiseUseSymbols.hash(card.metadata().semanticId());
-            association("M23", card.metadata(), name(card.parentGroupId()),
-                    "parent_" + MoiseUseSymbols.hash(card.metadata().semanticId()), "1", name(card.subGroupId()),
-                    navigation, upperMultiplicity(card.max()), true);
-            cardinality("M16", card.metadata(), name(card.parentGroupId()), count(navigation, card.max()), card.min(), card.max());
-            record("M31", card.metadata(), "CardinalityOwnerEndpoint", "class:" + name(card.parentGroupId()), "EXACT_PARENT=" + card.parentGroupId());
-            record("M32", card.metadata(), "CardinalityMemberEndpoint", "class:" + name(card.subGroupId()), "EXACT_CHILD=" + card.subGroupId());
-        }
-        for (var relation : ss.roleRelations()) {
-            Map<String, Object> fields = new LinkedHashMap<>();
-            fields.put("kind", relation.relationKind()); fields.put("group", relation.groupSemanticId());
-            fields.put("sourceRole", relation.sourceRoleSemanticId()); fields.put("targetRole", relation.targetRoleSemanticId());
-            fields.put("scope", relation.scope()); fields.put("extendsToSubGroups", relation.extendsToSubGroups());
-            fields.put("bidirectional", relation.bidirectional());
-            policy(os, "M07", relation.metadata(), fields);
-            if (!relation.sourceRoleSemanticId().isEmpty()) name(relation.sourceRoleSemanticId());
-            if (!relation.targetRoleSemanticId().isEmpty()) name(relation.targetRoleSemanticId());
-            name(relation.groupSemanticId());
-        }
-        for (var link : ss.links()) {
-            policy(os, "M08", link.metadata(), Map.of("roleRelation", link.roleRelationSemanticId(), "linkType", link.linkType()));
-            var relation = ss.roleRelations().stream().filter(r -> r.metadata().semanticId().equals(link.roleRelationSemanticId())).findFirst().orElseThrow();
-            policyRoleEndpoint("M25", link.metadata(), relation.sourceRoleSemanticId());
-            policyRoleEndpoint("M26", link.metadata(), relation.targetRoleSemanticId());
-        }
-        for (var compatibility : ss.compatibilities()) {
-            policy(os, "M09", compatibility.metadata(), Map.of("roleRelation", compatibility.roleRelationSemanticId()));
-            var relation = ss.roleRelations().stream().filter(r -> r.metadata().semanticId().equals(compatibility.roleRelationSemanticId())).findFirst().orElseThrow();
-            policyRoleEndpoint("M27", compatibility.metadata(), relation.sourceRoleSemanticId());
-            policyRoleEndpoint("M28", compatibility.metadata(), relation.targetRoleSemanticId());
-        }
-        for (var scheme : fs.schemes()) {
-            String cls = name(scheme.metadata().semanticId());
-            createClass(cls, scheme.metadata(), "M10", false, "DOMAIN_SCHEMA"); api.createGeneralization(cls, schemeBase);
-            policy(cls, "M35", scheme.metadata(), Map.of("localId", scheme.schemeId(), "rootGoal", scheme.rootGoalSemanticId()));
-            for (var goal : scheme.goals()) {
-                if (!goal.schemeSemanticId().equals(scheme.metadata().semanticId())) throw badReference(goal.metadata().semanticId());
-                String goalClass = name(goal.metadata().semanticId());
-                createClass(goalClass, goal.metadata(), "M12", false, "DOMAIN_SCHEMA");
-                api.createAttribute(goalClass, "semanticId", "String"); api.createAttribute(goalClass, "satisfied", "Boolean");
-                if (!NativeUseModelBuilder.MOISE_GOAL_TYPES.contains(goal.goalType()))
-                    throw new IllegalArgumentException("MOISE_GOAL_TYPE_UNSUPPORTED:" + goal.goalType());
-                api.createAttribute(goalClass, "goalType", "MoiseGoalType").setDeriveExpression(
-                        new ExpConstEnum(api.getModel().enumType("MoiseGoalType"), goal.goalType()));
-                api.createAttribute(goalClass, "minAgentsToSatisfy", "Integer").setDeriveExpression(integerConstant(goal.minAgentsToSatisfy()));
-                policy(goalClass, "M12", goal.metadata(), Map.of("localId", goal.goalId(), "description", goal.description(),
-                        "arguments", goal.arguments(), "ttf", goal.ttf(), "location", goal.location(), "dependencies", goal.dependencySemanticIds(),
-                        "plan", goal.planSemanticId(), "inPlan", goal.inPlanSemanticId()));
-                association("M35", goal.metadata(), cls, "scheme", "1", goalClass,
-                        "goal_" + MoiseUseSymbols.hash(goal.metadata().semanticId()), "1", true);
-            }
-            for (var mission : scheme.missions()) {
-                if (!mission.schemeSemanticId().equals(scheme.metadata().semanticId())) throw badReference(mission.metadata().semanticId());
-                String missionClass = name(mission.metadata().semanticId());
-                createClass(missionClass, mission.metadata(), "M11", false, "DOMAIN_SCHEMA"); api.createGeneralization(missionClass, missionBase);
-                constraint("M34", mission.metadata(), missionClass, "SchemeType", "self.scheme.oclIsTypeOf(" + cls + ")");
-                constraint("M11", mission.metadata(), missionClass, "UniqueCommitment", missionClass
-                        + ".allInstances()->select(p | p.agent = self.agent and p.scheme = self.scheme)->size() = 1");
-                for (String goalId : mission.goalSemanticIds()) {
-                    String navigation = "goal_" + MoiseUseSymbols.hash(goalId);
-                    association("M38", mission.metadata(), missionClass,
-                            "commitments_" + MoiseUseSymbols.hash(mission.metadata().semanticId()), "*",
-                            name(goalId), navigation, "1", false);
-                    constraint("M38", mission.metadata(), missionClass, "SameScheme_" + MoiseUseSymbols.hash(goalId),
-                            "self." + navigation + ".scheme = self.scheme");
-                }
-                policy(missionClass, "M11", mission.metadata(), Map.of("localId", mission.missionId(),
-                        "scheme", mission.schemeSemanticId(), "goals", mission.goalSemanticIds()));
-            }
-            if (missionBase != null) constraint("M37", scheme.metadata(), cls, "DeclaredMissionTypes",
-                    "self.commitments->forAll(p | " + disjunction("p", scheme.missions().stream()
-                            .map(m -> m.metadata().semanticId()).toList(), true) + ")");
-            for (var plan : scheme.plans()) {
-                if (!plan.schemeSemanticId().equals(scheme.metadata().semanticId())) throw badReference(plan.metadata().semanticId());
-                String target = name(plan.targetGoalSemanticId());
-                if (!NativeUseModelBuilder.MOISE_PLAN_OPERATORS.contains(plan.operator()))
-                    throw new IllegalArgumentException("MOISE_PLAN_OPERATOR_UNSUPPORTED:" + plan.operator());
-                api.createAttribute(target, "planOperator", "MoisePlanOperator").setDeriveExpression(
-                        new ExpConstEnum(api.getModel().enumType("MoisePlanOperator"), plan.operator()));
-                api.createAttribute(target, "planSuccessRate", "Real").setDeriveExpression(realConstant(plan.successRate()));
-                policy(target, "M13", plan.metadata(), Map.of("operator", plan.operator(), "successRate", plan.successRate(),
-                        "targetGoal", plan.targetGoalSemanticId(), "orderedSubGoals", plan.orderedSubGoalSemanticIds()));
-                record("M39", plan.metadata(), "MAttribute", "attribute:" + target + ".planOperator", "EXACT_TARGET_GOAL=" + plan.targetGoalSemanticId());
-                for (int ordinal = 0; ordinal < plan.orderedSubGoalSemanticIds().size(); ordinal++) {
-                    String childId = plan.orderedSubGoalSemanticIds().get(ordinal);
-                    String navigation = "subgoal_" + ordinal + "_" + MoiseUseSymbols.hash(plan.metadata().semanticId());
-                    var association = association("M40", plan.metadata(), target, "parentGoal_" + ordinal + "_"
-                            + MoiseUseSymbols.hash(plan.metadata().semanticId()), "1", name(childId), navigation, "1", false);
-                    association.addAnnotation(annotation("MoisePlanOrder", Map.of("ordinal", Integer.toString(ordinal), "operator", plan.operator())));
-                    constraint("M40", plan.metadata(), target, "SameScheme_" + ordinal,
-                            "self." + navigation + ".scheme = self.scheme");
-                }
-            }
-            if (!scheme.rootGoalSemanticId().isEmpty()) name(scheme.rootGoalSemanticId());
-            for (var goal : scheme.goals()) for (String dependency : goal.dependencySemanticIds()) {
-                String navigation = "dependency_" + MoiseUseSymbols.hash(dependency);
-                association("M12", goal.metadata(), name(goal.metadata().semanticId()),
-                        "dependents_" + MoiseUseSymbols.hash(goal.metadata().semanticId()), "*", name(dependency), navigation, "1", false);
-            }
-        }
-        for (var card : fs.schemeMissionCardinalities()) {
-            cardinality("M17", card.metadata(), name(card.schemeId()),
-                    "self.commitments->select(p | p.oclIsTypeOf(" + name(card.missionId()) + "))->size()", card.min(), card.max());
-            record("M36", card.metadata(), "CardinalityOwnerEndpoint", "class:" + name(card.schemeId()), "EXACT_SCHEME=" + card.schemeId());
-            record("M37", card.metadata(), "CardinalityMemberEndpoint", "class:" + name(card.missionId()), "EXACT_MISSION=" + card.missionId());
-        }
-        for (var norm : ns.norms()) {
-            Map<String, Object> fields = new LinkedHashMap<>();
-            fields.put("localId", norm.normId()); fields.put("role", norm.roleSemanticId()); fields.put("mission", norm.missionSemanticId());
-            fields.put("roleClass", norm.roleSemanticId().isEmpty() ? "" : name(norm.roleSemanticId()));
-            fields.put("missionClass", norm.missionSemanticId().isEmpty() ? "" : name(norm.missionSemanticId()));
-            fields.put("type", norm.operationType()); fields.put("condition", norm.condition()); fields.put("deadline", norm.timeConstraint());
-            fields.put("normativeSpecification", norm.normativeSpecificationSemanticId());
-            fields.put("verification", "EVIDENCE_ONLY_DEONTIC_TEMPORAL_SEMANTICS_NOT_OCL");
-            policy(os, "M14", norm.metadata(), fields);
-            record("M41", norm.metadata(), "NormPolicyMembership", policyIdentity(os, "M14", norm.metadata()),
-                    "EXACT_NS=" + norm.normativeSpecificationSemanticId());
-            policyRoleEndpoint("M42", norm.metadata(), norm.roleSemanticId());
-            if (!norm.missionSemanticId().isEmpty()) record("M43", norm.metadata(), "NormPolicyMission",
-                    "class:" + name(norm.missionSemanticId()), "EXACT_MISSION=" + norm.missionSemanticId());
-        }
-    }
-
-    private void base(String cls, SemanticMetadata source, String rule, boolean wellFormed) throws UseApiException {
-        createClass(cls, source, rule, true, "SUPPORTING_ENACTMENT_IDENTITY");
-        api.createAttribute(cls, "semanticId", "String");
-        if (wellFormed) api.createAttribute(cls, "wellFormed", "Boolean");
-    }
-
-    private void createClass(String cls, SemanticMetadata source, String rule, boolean abstractType, String representation) throws UseApiException {
-        var target = api.createClass(cls, abstractType); declarations.put(cls, source);
-        target.addAnnotation(annotation(ANNOTATION, Map.of("ruleId", rule, "representation", representation,
-                "semanticId64", encode(source.semanticId()), "runtimeSource", "moise", "runtimeProjection", "EVIDENCE_ONLY")));
-    }
-
-    private org.tzi.use.uml.mm.MAssociation association(String rule, SemanticMetadata source,
-            String firstClass, String firstRole, String firstMultiplicity, String secondClass, String secondRole,
-            String secondMultiplicity, boolean composition) throws UseApiException {
-        String associationName = rule + "_" + MoiseUseSymbols.hash(source.semanticId() + "|" + firstClass + "|" + firstRole + "|" + secondClass + "|" + secondRole);
-        var target = api.createAssociation(associationName, new String[] { firstClass, secondClass },
-                new String[] { firstRole, secondRole }, new String[] { firstMultiplicity, secondMultiplicity },
-                new int[] { composition ? MAggregationKind.COMPOSITION : MAggregationKind.NONE, MAggregationKind.NONE },
-                new boolean[] { false, false }, new String[0][][]);
-        target.addAnnotation(annotation(ANNOTATION, Map.of("ruleId", rule, "semanticId64", encode(source.semanticId()))));
-        record(rule, source, "MAssociation", "association:" + associationName, "DOMAIN_SCHEMA");
-        return target;
-    }
-
-    private void cardinality(String rule, SemanticMetadata source, String context, String count, int min, int max) {
-        if (max != -1 && max != Integer.MAX_VALUE) constraint(rule, source, context, "Maximum", count + " <= " + max);
-        if (min > 0) constraint(rule, source, context, "MinimumWhenWellFormed",
-                "(if self.wellFormed.oclIsUndefined() then false else self.wellFormed endif) implies " + count + " >= " + min);
-        policy(context, rule, source, Map.of("min", min, "max", max, "lowerBoundGuard", "wellFormed"));
-    }
-
-    private void constraint(String rule, SemanticMetadata source, String context, String suffix, String ocl) {
-        String id = rule + "_" + MoiseUseSymbols.hash(source.semanticId()) + "_" + suffix;
-        constraints.add(new NativeConstraintSpec(id, context, ocl, List.of(rule), List.of("moise.runtime.materialized"),
-                Fidelity.EXACT, "OFFICIAL_MOISE_FORMATION_SCHEMA", ConstraintMigrationStatus.NATIVE));
-        record(rule, source, "MClassInvariant", "invariant:" + context + "::" + id, "FORMATION_NOT_NORMATIVE_COMPLIANCE");
-    }
-
-    private void container(SemanticMetadata source, String rule, String os) {
-        policy(os, rule, source, Map.of("representation", "SPECIFICATION_CONTAINER_TRACE_ONLY"));
-    }
-
-    private void policy(String owner, String rule, SemanticMetadata source, Map<String, ?> values) {
-        Map<String, Object> payload = new LinkedHashMap<>(values);
-        payload.put("sourceSemanticId", source.semanticId()); payload.put("sourceDiagnostics", source.diagnostics()); payload.put("rule", rule);
-        // MMPrintVisitor does not escape annotation values. Encoding arbitrary ids/text is lossless
-        // and prevents quotes, backslashes, or multiline conditions from corrupting .use export.
-        String annotation = "MoisePolicy_" + rule + "_" + MoiseUseSymbols.hash(source.semanticId());
-        api.getModel().getClass(owner).addAnnotation(new MElementAnnotation(annotation, Map.of("payload64",
-                Base64.getUrlEncoder().withoutPadding().encodeToString(CanonicalJson.encode(payload)))));
-        record(rule, source, "MElementAnnotation", "class:" + owner + "@" + annotation, "STATIC_POLICY_NOT_RUNTIME_OBJECT");
-    }
-
-    private void record(String rule, SemanticMetadata source, String kind, String identity, String diagnostic) {
-        trace.add(catalog.require(rule), TracePhase.MODEL_DECLARATION, source, kind, identity, List.of(diagnostic));
-    }
-
-    private static MElementAnnotation annotation(String name, Map<String, String> values) {
-        return new MElementAnnotation(name, new java.util.TreeMap<>(values));
-    }
-
-    private void policyRoleEndpoint(String rule, SemanticMetadata source, String roleId) {
-        if (!roleId.isEmpty()) record(rule, source, "PolicyRoleEndpoint", "class:" + name(roleId), "EXACT_ROLE=" + roleId);
-    }
-
-    private static String policyIdentity(String owner, String rule, SemanticMetadata source) {
-        return "class:" + owner + "@MoisePolicy_" + rule + "_" + MoiseUseSymbols.hash(source.semanticId());
-    }
-
-    private String disjunction(String variable, List<String> identities, boolean exact) {
-        return identities.isEmpty() ? "false" : identities.stream().map(id -> variable + (exact ? ".oclIsTypeOf(" : ".oclIsKindOf(")
-                + name(id) + ")").collect(java.util.stream.Collectors.joining(" or "));
-    }
-
-    private String name(String id) {
-        String result = symbols.get(id);
-        if (result == null) throw badReference(id);
+    /** Presentation names are never used to resolve a role relation. */
+    public static org.tzi.use.uml.mm.MAssociationClass roleAssociation(org.tzi.use.uml.mm.MModel model,
+            String organisation, String group, String role) {
+        String identity = DomainProjection.encode(roleRelationId(organisation, group, role));
+        var matches = model.associations().stream()
+            .filter(a -> identity.equals(a.getAnnotationValue(ROLE_ASSOCIATION, "identity64"))).toList();
+        if (matches.size() != 1) throw new IllegalArgumentException("ROLE_IN_GROUP_CONTEXT_UNRESOLVED:" + identity);
+        if (!(matches.get(0) instanceof org.tzi.use.uml.mm.MAssociationClass result))
+            throw new IllegalArgumentException("ROLE_NATIVE_ASSOCIATION_CLASS_REQUIRED:"+identity);
         return result;
     }
+    public static Result install(UseModelApi api, List<OrganizationSemantic> organizations,
+            CodeGroundedTraceCollector trace) throws UseApiException {
+        List<MoiseUseSymbols.Candidate> candidates=new ArrayList<>();
+        candidates(organizations,candidates);
+        Set<String> reserved=new TreeSet<>(); api.getModel().classes().forEach(c->reserved.add(c.name()));
+        return install(api,organizations,trace,MoiseUseSymbols.allocate(candidates,reserved));
+    }
+    static void candidates(List<OrganizationSemantic> organizations, List<MoiseUseSymbols.Candidate> candidates) {
+        for(var org:organizations) {
+            validate(org);
+            candidates.add(new MoiseUseSymbols.Candidate(org.metadata().semanticId(),"organisation",org.name()+"_Organization"));
+            for(var group:org.structuralSpecification().groups())
+                candidates.add(new MoiseUseSymbols.Candidate(group.metadata().semanticId(),"group",group.groupId()));
+            for(var scheme:org.functionalSpecification().schemes())
+                candidates.add(new MoiseUseSymbols.Candidate(scheme.metadata().semanticId(),"scheme",scheme.schemeId()+"_Scheme"));
+        }
+    }
+    static Result install(UseModelApi api,List<OrganizationSemantic> organizations,CodeGroundedTraceCollector trace,
+            Map<String,String> symbols) throws UseApiException {
+        Map<String,String> classes=new LinkedHashMap<>(); List<NativeConstraintSpec> constraints=new ArrayList<>();
+        // Pass 1: all classifiers and their source identity, before any relation.
+        for(var org:organizations) {
+            create(api,trace,classes,symbols,org.metadata(),"organisation","M01",false);
+            for(var role:org.structuralSpecification().roles())
+                DomainProjection.trace(trace,"M06",role.metadata(),"RoleDefinition",role.metadata().semanticId(),
+                    IGNORE_NOT_NEEDED,"SEMANTIC_KIND=role-definition","SOURCE_SEMANTICS_RETAINED",
+                    role.abstractRole() || !role.superRoleSemanticIds().isEmpty()
+                        ? "MOISE_ADVANCED_ROLE_SEMANTICS_DEFERRED:abstract/inheritance" : "NO_EXPOSED_ROLE_CLASS");
+            for(var group:org.structuralSpecification().groups())
+                create(api,trace,classes,symbols,group.metadata(),"group","M05",false);
+            for(var scheme:org.functionalSpecification().schemes())
+                create(api,trace,classes,symbols,scheme.metadata(),"scheme","M10",false);
+        }
+        List<MoiseUseSymbols.Candidate> relations = new ArrayList<>();
+        for (var org : organizations) for (var card : org.structuralSpecification().groupRoleCardinalities()) {
+            var group = org.structuralSpecification().groups().stream().filter(g -> g.metadata().semanticId().equals(card.groupId())).findFirst().orElseThrow();
+            var role = org.structuralSpecification().roles().stream().filter(r -> r.metadata().semanticId().equals(card.roleId())).findFirst().orElseThrow();
+            relations.add(new MoiseUseSymbols.Candidate(roleRelationId(org.metadata().semanticId(), card.groupId(), card.roleId()),
+                "role_in_group", role.roleId()));
+        }
+        Set<String> reservedRelations = new TreeSet<>(); api.getModel().associations().forEach(a -> reservedRelations.add(a.name()));
+        api.getModel().classes().forEach(c -> reservedRelations.add(c.name()));
+        Map<String,String> relationSymbols = MoiseUseSymbols.allocate(relations, reservedRelations);
+        // Pass 2: only relations whose domain endpoints exist.
+        for(var org:organizations) {
+            var ss=org.structuralSpecification(); String os=required(symbols,org.metadata().semanticId());
+            for(var group:ss.groups()) {
+                String cls=required(symbols,group.metadata().semanticId());
+                String association=DomainProjection.relation("containsGroup",os,cls);
+                if (api.getModel().getAssociation(association) == null)
+                    DomainProjection.association(api,association,"Organization","organization","1","Group","groups","*");
+                DomainProjection.trace(trace,"M22",group.metadata(),"MAssociation","association:"+association,PRESERVE_AS_ASSOCIATION);
+            }
+            for(var card:ss.groupRoleCardinalities()) {
+                String group=required(symbols,card.groupId());
+                checkBounds(card.min(),card.max(),card.metadata().semanticId());
+                String identity=roleRelationId(org.metadata().semanticId(),card.groupId(),card.roleId());
+                String association=relationSymbols.get(identity), suffix=DomainProjection.hash(identity);
+                var target=api.createAssociationClass(association,false,"Agent","players_"+suffix,
+                    card.min()+".."+(unlimited(card.max()) ? "*" : card.max()),0,group,"roleGroups_"+suffix,"0..*",0);
+                DomainProjection.annotate(target,"role-association",identity,"");
+                api.createAttribute(association,"semanticId","String");
+                api.createAttribute(association,"agentSemanticId","String");
+                api.createAttribute(association,"groupInstanceId","String");
+                target.addAnnotation(new MElementAnnotation(ANNOTATION,new TreeMap<>(Map.of("ruleId","M15",
+                    "sourceId64",DomainProjection.encode(card.metadata().semanticId()),"min",Integer.toString(card.min()),"max",Integer.toString(card.max()),
+                    "runtimeSource","moise"))));
+                target.addAnnotation(new MElementAnnotation(ROLE_ASSOCIATION,new TreeMap<>(Map.of(
+                    "kind","role-in-group","identity64",DomainProjection.encode(identity),
+                    "organisationId64",DomainProjection.encode(org.metadata().semanticId()),
+                    "groupId64",DomainProjection.encode(card.groupId()),"roleId64",DomainProjection.encode(card.roleId())))));
+                DomainProjection.trace(trace,"M15",card.metadata(),"MAssociationClass","association-class:"+association,
+                    PRESERVE_AS_ASSOCIATION_CLASS,"SEMANTIC_KIND=role-in-group","CONTEXT="+identity,
+                    "BOUNDS_ENFORCED_BY_NATIVE_MULTIPLICITY","min="+card.min(),"max="+card.max());
+                DomainProjection.trace(trace,"M15",card.metadata(),"MClass","class:"+association,PRESERVE_AS_ASSOCIATION_CLASS,"CONTEXT="+identity);
+                DomainProjection.trace(trace,"M15",card.metadata(),"MAssociation","association:"+association,PRESERVE_AS_ASSOCIATION_CLASS,"CONTEXT="+identity);
+            }
+            for(var card:ss.subGroupCardinalities()) {
+                checkBounds(card.min(),card.max(),card.metadata().semanticId());
+                String parent=required(symbols,card.parentGroupId()),child=required(symbols,card.subGroupId());
+                String navigation="subgroups_"+DomainProjection.hash(card.metadata().semanticId());
+                String association=DomainProjection.relation("containsSubgroup",parent,child);
+                DomainProjection.association(api,association,parent,"parent_"+DomainProjection.hash(card.metadata().semanticId()),"0..1",
+                    child,navigation,card.min()+".."+(unlimited(card.max()) ? "*" : card.max()));
+                api.getModel().getAssociation(association).addAnnotation(new MElementAnnotation("SubgroupContext",Map.of(
+                    "sourceId64",DomainProjection.encode(card.metadata().semanticId()),"organisationId64",DomainProjection.encode(org.metadata().semanticId()),
+                    "parentSpecId64",DomainProjection.encode(card.parentGroupId()),"childSpecId64",DomainProjection.encode(card.subGroupId()))));
+                DomainProjection.trace(trace,"M16",card.metadata(),"MAssociation","association:"+association,PRESERVE_AS_ASSOCIATION);
+            }
+            policy(api,trace,os,"M02",ss.metadata(),FLATTEN,Map.of("structuralSpecification",ss));
+            for(var relation:ss.roleRelations()) policy(api,trace,os,"M07",relation.metadata(),IGNORE_NOT_NEEDED,Map.of("relation",relation,"status","MOISE_ADVANCED_ROLE_SEMANTICS_DEFERRED"));
+            for(var link:ss.links()) policy(api,trace,os,"M08",link.metadata(),IGNORE_NOT_NEEDED,Map.of("link",link,"status","MOISE_ADVANCED_ROLE_SEMANTICS_DEFERRED"));
+            for(var compatibility:ss.compatibilities()) policy(api,trace,os,"M09",compatibility.metadata(),IGNORE_NOT_NEEDED,Map.of("compatibility",compatibility,"status","MOISE_ADVANCED_ROLE_SEMANTICS_DEFERRED"));
+            var fs=org.functionalSpecification();
+            DomainProjection.trace(trace,"M03",fs.metadata(),"SemanticEvidence",fs.metadata().semanticId(),FLATTEN);
+            for(var scheme:fs.schemes()) {
+                scheme.goals().forEach(g->DomainProjection.trace(trace,"M12",g.metadata(),"MClass","class:OrganizationalGoal",PRESERVE_AS_CLASS));
+                scheme.missions().forEach(m->DomainProjection.trace(trace,"M11",m.metadata(),"MClass","class:Mission",PRESERVE_AS_CLASS));
+                scheme.plans().forEach(p->DomainProjection.trace(trace,"M13",p.metadata(),"MAssociation",
+                    "association:"+DomainProjection.relation("subGoals","OrganizationalGoal","OrganizationalGoal"),FLATTEN,
+                    "ORDER=EXACT_CHILD_ORDINAL_ATTRIBUTE","OPERATOR="+p.operator()));
+            }
+            fs.schemeMissionCardinalities().forEach(c->DomainProjection.trace(trace,"M17",c.metadata(),"MAttribute","Mission.min,max",CONVERT_TO_ATTRIBUTE));
+            for(var norm:org.normativeSpecification().norms()) {
+                Map<String,Object> fields=new LinkedHashMap<>(); fields.put("norm",norm); fields.put("role",norm.roleSemanticId());
+                fields.put("mission",norm.missionSemanticId()); fields.put("condition",norm.condition()); fields.put("deadline",norm.timeConstraint());
+                fields.put("status","UNSUPPORTED_NORM_TRANSLATION");
+                policy(api,trace,os,"M14",norm.metadata(),CONVERT_TO_OCL,fields);
+            }
+        }
+        return new Result(classes,constraints);
+    }
+    private static void create(UseModelApi api,CodeGroundedTraceCollector trace,Map<String,String> classes,Map<String,String> symbols,
+            SemanticMetadata source,String kind,String rule,boolean abstractType) throws UseApiException {
+        String name=required(symbols,source.semanticId()); var cls=api.createClass(name,abstractType);
+        DomainProjection.annotate(cls,kind,source.semanticId(),"");
+        cls.addAnnotation(new MElementAnnotation(ANNOTATION,new TreeMap<>(Map.of("ruleId",rule,"runtimeSource","moise","runtimeProjection","MATERIALIZED"))));
+        api.createGeneralization(name,switch(kind) { case "organisation" -> "Organization"; case "group" -> "Group"; case "scheme" -> "Scheme"; default -> throw new IllegalArgumentException("MOISE_PROJECTION_KIND_UNSUPPORTED:"+kind); });
+        classes.put(source.semanticId(),name);
+        DomainProjection.trace(trace,rule,source,"MClass","class:"+name,PRESERVE_AS_ASSOCIATION,"SEMANTIC_KIND="+kind);
+    }
+    private static void policy(UseModelApi api,CodeGroundedTraceCollector trace,String owner,String rule,SemanticMetadata source,
+            DomainProjection.RelationDisposition disposition,Map<String,?> values) {
+        Map<String,Object> payload=new LinkedHashMap<>(values); payload.put("sourceSemanticId",source.semanticId());
+        String annotation="MoisePolicy_"+rule+"_"+DomainProjection.hash(source.semanticId());
+        // Arbitrary normative text must not become executable OCL or corrupt USE annotations.
+        String json=NativeUseModelBuilder.canonicalJson(payload);
+        api.getModel().getClass(owner).addAnnotation(new MElementAnnotation(annotation,Map.of("payload64",DomainProjection.encode(json))));
+        DomainProjection.trace(trace,rule,source,disposition==CONVERT_TO_OCL ? "OclGenerationHook" : "SemanticEvidence",
+            "class:"+owner+"@"+annotation,disposition,disposition==CONVERT_TO_OCL ? "STATUS=UNSUPPORTED_NORM_TRANSLATION"
+                : values.containsKey("status") ? values.get("status").toString() : "SOURCE_SEMANTICS_RETAINED");
+    }
+    private static boolean unlimited(int max) { return max==-1 || max==Integer.MAX_VALUE; }
+    private static void checkBounds(int min,int max,String id) {
+        if(min<0 || (!unlimited(max) && max<min)) throw new IllegalArgumentException("MOISE_CARDINALITY_INVALID:"+id);
+    }
+    private static String required(Map<String,String> names,String id) {
+        String name=names.get(id); if(name==null) throw badReference(id); return name;
+    }
+    private static IllegalArgumentException badReference(String id) { return new IllegalArgumentException("MOISE_EXACT_SCHEMA_REFERENCE_MISSING:"+id); }
 
-    private static IllegalArgumentException badReference(String id) { return new IllegalArgumentException("MOISE_EXACT_SCHEMA_REFERENCE_MISSING:" + id); }
-
+    /** A role instance is one native object AND link, identified by exact endpoints and context. */
+    public static MLinkObject linkObject(UseSystemApi api, Map<String,MObject> index,
+            org.tzi.use.uml.mm.MAssociationClass association, MObject agent, MObject group) throws UseApiException {
+        String context=DomainProjection.decode(association.getAnnotationValue(ROLE_ASSOCIATION,"identity64"));
+        String agentId=stringAttribute(api,agent,"semanticId"), groupId=stringAttribute(api,group,"semanticId");
+        String id="role-instance:"+NativeUseModelBuilder.canonicalJson(List.of(context,agentId,groupId));
+        if(index.get(id) instanceof MLinkObject old) return old;
+        MObject[] pair={agent,group};
+        var existing=api.getSystem().state().allLinks().stream().filter(l->l.association()==association && l.linkedObjects().equals(List.of(pair))).toList();
+        if(!existing.isEmpty()) {
+            if(existing.size()!=1 || !(existing.getFirst() instanceof MLinkObject result)) throw badReference(id);
+            index.put(id,result); return result;
+        }
+        var object=api.createLinkObjectEx(association,"role_"+DomainProjection.hash(id),pair);
+        text(api,object,"semanticId",id); text(api,object,"agentSemanticId",agentId); text(api,object,"groupInstanceId",groupId);
+        index.put(id,object); return object;
+    }
+    private static String stringAttribute(UseSystemApi api,MObject object,String name) {
+        var value=object.state(api.getSystem().state()).attributeValue(name);
+        if(!(value instanceof StringValue string) || string.value().isBlank()) throw badReference(object.name()+"."+name);
+        return string.value();
+    }
+    public static String functionalObjectId(String kind,String schemeInstance,String sourceId) {
+        return schemeInstance==null ? sourceId : DomainProjection.occurrenceId(kind,schemeInstance,sourceId);
+    }
+    /** Source definitions and runtime occurrences share the same typed graph projection. */
+    public static void materializeFunctional(UseSystemApi api, Map<String,MObject> index,
+            CodeGroundedTraceCollector trace, OrganizationSemantic org, SchemeSemantic scheme, MObject schemeObject) throws UseApiException {
+        String instance=schemeObject==null ? null : stringAttribute(api,schemeObject,"semanticId");
+        if(schemeObject!=null) {
+            text(api,schemeObject,"specSemanticId",scheme.metadata().semanticId());
+            if(schemeObject.state(api.getSystem().state()).attributeValue("sourceLayer").isUndefined())
+                text(api,schemeObject,"sourceLayer","DECLARATION");
+        }
+        Map<String,MObject> goals=new LinkedHashMap<>(),missions=new LinkedHashMap<>();
+        for(var goal:scheme.goals()) {
+            String id=functionalObjectId("organisational-goal",instance,goal.metadata().semanticId());
+            var object=valueObject(api,index,"OrganizationalGoal",goal.goalId(),id);
+            goals.put(goal.metadata().semanticId(),object);
+            text(api,object,"id",goal.goalId()); text(api,object,"description",goal.description()); text(api,object,"goalType",goal.goalType());
+            text(api,object,"ttf",goal.ttf()); text(api,object,"arguments",goal.arguments());
+            text(api,object,"sourceLayer",instance==null ? "SPECIFICATION" : "INSTANCE_SPECIFICATION");
+            text(api,object,"specSemanticId",goal.metadata().semanticId());text(api,object,"schemeSpecSemanticId",scheme.metadata().semanticId());
+            if(instance!=null)text(api,object,"schemeInstanceIdentity",instance);
+            api.setAttributeValueEx(object,object.cls().attribute("minAgentsToSatisfy",true),IntegerValue.valueOf(goal.minAgentsToSatisfy()));
+            valueTrace(trace,"M12",goal.metadata(),object);
+            if(schemeObject!=null) functionalLink(api,trace,"M35",goal.metadata(),"schemeGoals","Scheme","OrganizationalGoal",schemeObject,object);
+            if(!goal.dependencySemanticIds().isEmpty())
+                DomainProjection.trace(trace,"M12",goal.metadata(),"Diagnostic",id,UNSUPPORTED,"GOAL_DEPENDENCIES_RETAINED_IN_IR:"+goal.dependencySemanticIds());
+        }
+        for(var plan:scheme.plans()) {
+            var parent=goals.get(plan.targetGoalSemanticId()); text(api,parent,"decompositionOperator",plan.operator());
+            for(int ordinal=0;ordinal<plan.orderedSubGoalSemanticIds().size();ordinal++) {
+                var child=goals.get(plan.orderedSubGoalSemanticIds().get(ordinal));
+                api.setAttributeValueEx(child,child.cls().attribute("orderInParent",true),IntegerValue.valueOf(ordinal));
+                functionalLink(api,trace,"M40",plan.metadata(),"subGoals","OrganizationalGoal","OrganizationalGoal",parent,child);
+            }
+            DomainProjection.trace(trace,"M13",plan.metadata(),"AttributeValue",parent.name()+".decompositionOperator",CONVERT_TO_ATTRIBUTE,
+                    "ORDER=EXACT_CHILD_ORDINAL_ATTRIBUTE","OPERATOR="+plan.operator());
+        }
+        for(var mission:scheme.missions()) {
+            String id=functionalObjectId("mission",instance,mission.metadata().semanticId());
+            var object=valueObject(api,index,"Mission",mission.missionId(),id); missions.put(mission.metadata().semanticId(),object);
+            text(api,object,"id",mission.missionId()); text(api,object,"sourceLayer",instance==null ? "SPECIFICATION" : "INSTANCE_SPECIFICATION");
+            text(api,object,"specSemanticId",mission.metadata().semanticId());text(api,object,"schemeSpecSemanticId",scheme.metadata().semanticId());
+            if(instance!=null)text(api,object,"schemeInstanceIdentity",instance);
+            valueTrace(trace,"M11",mission.metadata(),object);
+            var cards=org.functionalSpecification().schemeMissionCardinalities().stream()
+                    .filter(c->c.schemeId().equals(scheme.metadata().semanticId()) && c.missionId().equals(mission.metadata().semanticId())).toList();
+            if(cards.size()!=1) throw badReference(id+":cardinality");
+            var card=cards.getFirst(); checkBounds(card.min(),card.max(),card.metadata().semanticId());
+            api.setAttributeValueEx(object,object.cls().attribute("min",true),IntegerValue.valueOf(card.min()));
+            api.setAttributeValueEx(object,object.cls().attribute("max",true),IntegerValue.valueOf(card.max()));
+            DomainProjection.trace(trace,"M17",card.metadata(),"AttributeValue",object.name()+".min,max",CONVERT_TO_ATTRIBUTE);
+            if(schemeObject!=null) functionalLink(api,trace,"M34",mission.metadata(),"schemeMissions","Scheme","Mission",schemeObject,object);
+            for(String goal:mission.goalSemanticIds()) functionalLink(api,trace,"M38",mission.metadata(),"missionGoals","Mission","OrganizationalGoal",object,goals.get(goal));
+        }
+    }
+    private static MObject valueObject(UseSystemApi api,Map<String,MObject> index,String type,String label,String id) throws UseApiException {
+        var old=index.get(id); if(old!=null) return old;
+        String name=DomainProjection.symbol(label)+"_"+DomainProjection.hash(id);
+        var object=api.createObject(type,name); index.put(id,object); text(api,object,"semanticId",id); text(api,object,"name",label); return object;
+    }
+    private static void text(UseSystemApi api,MObject object,String name,String value) throws UseApiException {
+        api.setAttributeValueEx(object,object.cls().attribute(name,true),new StringValue(value));
+    }
+    private static void functionalLink(UseSystemApi api,CodeGroundedTraceCollector trace,String rule,SemanticMetadata source,
+            String kind,String firstType,String secondType,MObject first,MObject second) throws UseApiException {
+        var association=api.getSystem().model().getAssociation(DomainProjection.relation(kind,firstType,secondType)); MObject[] pair={first,second};
+        if(!api.getSystem().state().hasLinkBetweenObjects(association,pair)) api.createLinkEx(association,pair);
+        DomainProjection.trace(trace,rule,source,"MLink",association.name()+":"+first.name()+"->"+second.name(),PRESERVE_AS_LINK);
+    }
+    private static void valueTrace(CodeGroundedTraceCollector trace,String rule,SemanticMetadata source,MObject object) {
+        DomainProjection.trace(trace,rule,source,"MObject",object.name(),PRESERVE_AS_CLASS);
+        for(var attribute:object.cls().allAttributes()) DomainProjection.trace(trace,rule,source,"MValue","value:"+object.name()+"."+attribute.name(),CONVERT_TO_ATTRIBUTE);
+    }
     /** Typed, owner-scoped foreign keys; a globally present symbol is not sufficient evidence. */
-    private static void validate(OrganizationSemantic org) {
+    public static void validate(OrganizationSemantic org) {
         var ss = org.structuralSpecification(); var fs = org.functionalSpecification(); var ns = org.normativeSpecification();
         String osId = org.metadata().semanticId();
         if (!ss.organizationSemanticId().equals(osId) || !fs.organizationSemanticId().equals(osId)
@@ -404,9 +302,11 @@ public final class MoiseDomainProjection {
         }
         Set<String> tuples = new TreeSet<>();
         for (var card : ss.groupRoleCardinalities()) {
-            if (!groups.containsKey(card.groupId()) || !groups.get(card.groupId()).roleSemanticIds().contains(card.roleId())) throw badReference(card.metadata().semanticId());
+            if (!roles.containsKey(card.roleId()) || !groups.containsKey(card.groupId()) || !groups.get(card.groupId()).roleSemanticIds().contains(card.roleId())) throw badReference(card.metadata().semanticId());
             if (!tuples.add(card.groupId() + "\u0000" + card.roleId())) throw new IllegalArgumentException("MOISE_DUPLICATE_CARDINALITY_TUPLE:" + card.metadata().semanticId());
         }
+        for (var group : ss.groups()) for (String role : group.roleSemanticIds())
+            if (!tuples.contains(group.metadata().semanticId() + "\u0000" + role)) throw badReference(group.metadata().semanticId() + ":" + role);
         tuples.clear();
         for (var card : ss.subGroupCardinalities()) {
             if (!groups.containsKey(card.parentGroupId()) || !groups.get(card.parentGroupId()).subgroupSemanticIds().contains(card.subGroupId())) throw badReference(card.metadata().semanticId());
@@ -421,15 +321,31 @@ public final class MoiseDomainProjection {
             if (!scheme.rootGoalSemanticId().isEmpty() && !goals.contains(scheme.rootGoalSemanticId())) throw badReference(scheme.rootGoalSemanticId());
             var missions = scheme.missions().stream().map(m -> m.metadata().semanticId()).collect(java.util.stream.Collectors.toSet());
             missionsByScheme.put(scheme.metadata().semanticId(), missions); allMissions.addAll(missions);
-            for (var mission : scheme.missions()) for (String goal : mission.goalSemanticIds()) if (!goals.contains(goal)) throw badReference(goal);
+            for (var mission : scheme.missions()) {
+                if(!mission.schemeSemanticId().equals(scheme.metadata().semanticId())) throw badReference(mission.metadata().semanticId());
+                for (String goal : mission.goalSemanticIds()) if (!goals.contains(goal)) throw badReference(goal);
+            }
             for (var goal : scheme.goals()) {
+                if(!goal.schemeSemanticId().equals(scheme.metadata().semanticId())) throw badReference(goal.metadata().semanticId());
                 for (String dependency : goal.dependencySemanticIds()) if (!goals.contains(dependency)) throw badReference(dependency);
                 if (!goal.planSemanticId().isEmpty() && !plans.contains(goal.planSemanticId())) throw badReference(goal.planSemanticId());
                 if (!goal.inPlanSemanticId().isEmpty() && !plans.contains(goal.inPlanSemanticId())) throw badReference(goal.inPlanSemanticId());
             }
             for (var plan : scheme.plans()) {
+                if(!plan.schemeSemanticId().equals(scheme.metadata().semanticId())) throw badReference(plan.metadata().semanticId());
                 if (!goals.contains(plan.targetGoalSemanticId())) throw badReference(plan.targetGoalSemanticId());
                 for (String child : plan.orderedSubGoalSemanticIds()) if (!goals.contains(child)) throw badReference(child);
+            }
+            Map<String,String> parents=new LinkedHashMap<>(); Set<String> targets=new HashSet<>();
+            for(var plan:scheme.plans()) {
+                if(!Set.of("sequence","parallel","choice").contains(plan.operator()) || !targets.add(plan.targetGoalSemanticId()))
+                    throw new IllegalArgumentException("MOISE_DECOMPOSITION_UNSUPPORTED:"+plan.metadata().semanticId());
+                for(String child:plan.orderedSubGoalSemanticIds()) if(parents.putIfAbsent(child,plan.targetGoalSemanticId())!=null)
+                    throw new IllegalArgumentException("MOISE_DECOMPOSITION_MULTIPLE_PARENTS:"+child);
+            }
+            for(String child:parents.keySet()) {
+                Set<String> visited=new HashSet<>(); String current=child;
+                while(current!=null) { if(!visited.add(current)) throw new IllegalArgumentException("MOISE_DECOMPOSITION_CYCLE:"+child); current=parents.get(current); }
             }
         }
         tuples.clear();
@@ -443,30 +359,5 @@ public final class MoiseDomainProjection {
             if (!norm.missionSemanticId().isEmpty() && !allMissions.contains(norm.missionSemanticId())) throw badReference(norm.missionSemanticId());
         }
     }
-    private String supportName(OrganizationSemantic org, String kind) { return symbols.get(supportId(org, kind)); }
-    private static String supportId(OrganizationSemantic org, String kind) { return org.metadata().semanticId() + ":use-support:" + kind; }
-    private static void support(List<MoiseUseSymbols.Candidate> candidates, OrganizationSemantic org, String kind) {
-        candidates.add(new MoiseUseSymbols.Candidate(supportId(org, kind), "Support", org.name() + "_" + kind));
-    }
-    private static void candidate(List<MoiseUseSymbols.Candidate> candidates, SemanticMetadata source, String kind, String label) {
-        candidates.add(new MoiseUseSymbols.Candidate(source.semanticId(), kind, label));
-    }
-    private static String encode(String text) { return Base64.getUrlEncoder().withoutPadding().encodeToString(text.getBytes(StandardCharsets.UTF_8)); }
-    private static String upperMultiplicity(int max) { return max == -1 || max == Integer.MAX_VALUE ? "*" : "0.." + max; }
-    private static String count(String navigation, int max) {
-        return max == 0 || max == 1 ? "(if self." + navigation + ".oclIsUndefined() then 0 else 1 endif)" : "self." + navigation + "->size()";
-    }
 
-    // Match USE's compiler AST for signed literals (Moise -1 means "all agents").
-    // Do not weaken export signatures by ignoring whitespace or string-literal contents.
-    private static Expression integerConstant(int value) {
-        if (value >= 0) return new ExpConstInteger(value);
-        try { return ExpStdOp.create("-", new Expression[] { new ExpConstInteger(-value) }); }
-        catch (org.tzi.use.uml.ocl.expr.ExpInvalidException error) { throw new IllegalArgumentException(error); }
-    }
-    private static Expression realConstant(double value) {
-        if (Double.doubleToRawLongBits(value) >= 0) return new ExpConstReal(value);
-        try { return ExpStdOp.create("-", new Expression[] { new ExpConstReal(-value) }); }
-        catch (org.tzi.use.uml.ocl.expr.ExpInvalidException error) { throw new IllegalArgumentException(error); }
-    }
 }
