@@ -6,7 +6,7 @@ import java.util.Set;
 
 /** Versioned exposed vocabulary; the rich/frozen source contracts are not modified. */
 public final class NativeProjectionPolicy {
-    public static final String VERSION = "2.1.0";
+    public static final String VERSION = "3.0.0";
     public enum Decision {
         EXPOSE_CLASS, EXPOSE_CONCRETE_SUBCLASS, EXPOSE_ASSOCIATION,
         EXPOSE_ASSOCIATION_CLASS, FLATTEN_TO_ATTRIBUTE, FLATTEN_TO_OPERATION,

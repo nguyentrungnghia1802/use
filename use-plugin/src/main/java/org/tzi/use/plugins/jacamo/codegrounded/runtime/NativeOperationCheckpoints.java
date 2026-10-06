@@ -9,7 +9,6 @@ import org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection;
 import org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseModelBuilder;
 import org.tzi.use.plugins.jacamo.verification.*;
 import org.tzi.use.plugins.jacamo.trace.TraceIndex;
-import org.tzi.use.uml.ocl.value.StringValue;
 import org.tzi.use.uml.ocl.value.Value;
 
 /** Correlated @pre evidence on the coordinator's active system, using the existing USE evaluator. */
@@ -49,8 +48,8 @@ final class NativeOperationCheckpoints {
                 Object semantic=event.after().get("artifactSemanticId");
                 var object=semantic instanceof String id?engine.objectForSemanticId(id):null;
                 if(object==null) return skipped("PRE_EXACT_CONTEXT_UNAVAILABLE",event);
-                var uuid=object.state(engine.system().state()).attributeValue("uuid");
-                if(!(uuid instanceof StringValue s) || !s.value().equals(event.entityId().incarnation()))
+                var uuid=engine.metadata(object,"uuid");
+                if(!uuid.equals(event.entityId().incarnation()))
                     return skipped("PRE_ARTIFACT_INCARNATION_MISMATCH",event);
                 Object signature=event.after().get("operationSignature");
                 if(!(signature instanceof List<?>)) return skipped("PRE_EXACT_SIGNATURE_UNAVAILABLE",event);
@@ -81,8 +80,7 @@ final class NativeOperationCheckpoints {
             if(before==null)return skipped("POST_MATCHING_PRE_UNAVAILABLE",event);
             var context=engine.system().state().objectByName(before.check().request().objectName());
             if(context==null)return skipped("POST_CONTEXT_REMOVED",event);
-            if(!(context.state(engine.system().state()).attributeValue("uuid") instanceof StringValue uuid)
-                    || !uuid.value().equals(event.entityId().incarnation()))return skipped("POST_CONTEXT_INCARNATION_CHANGED",event);
+            if(!engine.metadata(context,"uuid").equals(event.entityId().incarnation()))return skipped("POST_CONTEXT_INCARNATION_CHANGED",event);
             features(before.check().request().objectName());
             if(event.kind()!=RuntimeEventKind.SUCCEEDED) {
                 return before.check().operation().postConditions().stream().map(condition->new Outcome("COMPILED:"+condition,condition.cls().name(),

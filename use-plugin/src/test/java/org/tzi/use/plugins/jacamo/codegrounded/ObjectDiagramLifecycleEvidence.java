@@ -50,7 +50,7 @@ public final class ObjectDiagramLifecycleEvidence implements AutoCloseable {
         try {assertSame(state,system.state(),"Runtime replaced the active MSystemState");assertGraph(view.getDiagram());atomicChecks++;
             for(var object:state.allObjects())if(DomainProjection.kind(object.cls()).equals("artifact"))
                 object.state(state).attributeValueMap().forEach((a,v)->{
-                    var values=artifactValues.computeIfAbsent(object.cls().name()+"::"+object.state(state).attributeValue("semanticId")+"::"+a.name(),key->new LinkedHashSet<>());
+                    var values=artifactValues.computeIfAbsent(object.cls().name()+"::"+facade.verificationSnapshot().image().objects().get(object.name()).semanticId()+"::"+a.name(),key->new LinkedHashSet<>());
                     if(values.size()<256)values.add(v.toString());});
         }catch(AssertionError error){if(atomicErrors.size()<16)atomicErrors.add(error.getMessage());}
     }
@@ -130,7 +130,7 @@ public final class ObjectDiagramLifecycleEvidence implements AutoCloseable {
         assertEquals(expected,graphLinks(data),"Filtered native diagram must show every link between visible endpoints");
         boolean attributes=diagram.getOptions().isShowAttributes(),roles=diagram.getOptions().isShowRolenames(),names=diagram.getOptions().isShowAssocNames();
         try {
-            diagram.getOptions().setShowAttributes(false);diagram.getOptions().setShowRolenames(false);diagram.getOptions().setShowAssocNames(false);
+            diagram.getOptions().setShowAttributes(true);diagram.getOptions().setShowRolenames(false);diagram.getOptions().setShowAssocNames(false);
             diagram.invalidateContent(false);var measure=new BufferedImage(2,2,BufferedImage.TYPE_INT_RGB);var probe=measure.createGraphics();
             probe.setClip(0,0,2,2);diagram.drawDiagram(probe);probe.dispose();
             var nodes=data.fObjectToNodeMap.values().stream().sorted(Comparator.comparingInt((org.tzi.use.gui.views.diagrams.objectdiagram.ObjectNode n)->column(n.object()))

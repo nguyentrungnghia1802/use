@@ -31,13 +31,29 @@ native USE MModel + MSystemState
 
 ## Boundaries
 
-The current exposed policy is `NativeProjectionPolicy` 2.1.0. Ten generic bases
+The current exposed policy is `NativeProjectionPolicy` 3.0.0. Ten generic bases
 are installed once: Agent, Belief, AgentGoal, Workspace, Artifact, Organization,
 Group, Scheme, OrganizationalGoal and Mission. Canonical ASL, Java artifact and
 OS/group/scheme specifications generate concrete subclasses. Roles are native
 MAssociationClasses keyed by exact OS/group/role context; player assignments are
 MLinkObjects. Observable properties and supported exact Java operation signatures
 become attributes and operations on concrete Artifact subclasses.
+
+Only semantic-contract domain values and application observable verification state
+become MAttributes. Identity, incarnation UUID/path, specification/source layer,
+provenance and duplicated relation identifiers belong to `NativeObjectBindings`
+and the existing TraceIndex. This index addresses the exact active native objects;
+runtime mutation, rollback, resync and Goal View never read technical MAttributes.
+Agent exposes name; Belief/AgentGoal expose literal; Workspace/Artifact/Organization/
+Group expose name. Scheme retains name/arguments; Mission retains id/name/min/max;
+OrganizationalGoal retains its authored goal fields and runtimeState. Contextual
+role association classes retain their endpoints/multiplicities and have no attributes.
+Application observables named semanticId or uuid remain valid domain features:
+exposure uses producer provenance/category, not a name blacklist. Their values
+cannot overwrite the internal identity or operation incarnation binding.
+The current [attribute inventory and migration evidence](../agent/exposed-attribute-audit.md)
+records the complete before/after surface. Removed from exposed USE does not mean
+deleted from the system.
 
 `Belief` remains a class, but its objects are a selective verification surface.
 Official source AST identifies project-authored initial/write predicates; official
@@ -49,6 +65,12 @@ provenance fails the affected verification projection closed. Full raw literals
 stay in Bridge observations and replay journal, including excluded infrastructure.
 
 Recorded replay still checks every original state/result hash.
+Replay manifest 2.0.0 includes an integrity-checked `bindings.json` baseline beside
+model.use/SOIL/OCL/journal. Reconstruction requires this exact alias/provenance map;
+it never derives identities from domain attribute values or bare object names.
+Older manifests are explicitly rejected rather than reconstructed through the
+removed attribute path. VerificationSnapshot 1.2.0 keeps immutable bindingMetadata
+separate from domain attributes, including in the failing cut captured before pause.
 Operation declarations available at the recording baseline are exported with that
 baseline; runtime-discovered descriptors are applied at their exact journal
 positions. Future operations cannot change an earlier unavailable PRE/POST result.
@@ -144,11 +166,12 @@ Scheme/Mission and plain Role-association decisions are superseded.
 8. All-ACK pause requires another authoritative cut and re-check: CONFIRMED,
    TRANSIENT_NOT_REPRODUCED or CONFIRMATION_ERROR. Explicit Resume uses the same
    controller, re-enable ACK and resync before LIVE. USE never repairs JaCaMo state.
-9. Goal View, native Object Diagram, Model Browser, OCL and violation diagnostics
-   share the active Session system. Goal View uses immutable facade DTOs and marks
-   unsupported/currently unavailable goal evidence honestly. Recorded replay is an
-   explicit detached mode; selected replay views read its active coordinator and
-   cannot leak live control or original-workspace diagnostic data.
+9. Native Object Diagram, Model Browser and USE OCL/check views share the active
+   Session system. Workbench presents import, OCL loading, runtime start and the
+   exact projection catalog; its former result, Goal, trace and diagnostic views
+   are retired. Immutable Goal/violation/trace DTOs remain backend evidence.
+   Recorded replay is an explicit core API mode; native replay views read its
+   active coordinator without leaking live control or original-workspace data.
 
 ## Contract and diagnostic scope
 

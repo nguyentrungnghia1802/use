@@ -1,5 +1,6 @@
 package org.tzi.use.plugins.jacamo.codegrounded;
 
+import org.tzi.use.plugins.jacamo.codegrounded.trace.NativeObjectBindings;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 import org.jacamo.bridge.contract.*;
@@ -67,10 +68,8 @@ class GenericFunctionalRuntimeProjectionTest {
         var groupSpec=org.structuralSpecification().groups().getFirst();
         var owner=api.createObject(DomainProjection.classFor(system.model(),"organisation",org.metadata().semanticId()),"genericOrg");
         var group=api.createObject(DomainProjection.classFor(system.model(),"group",groupSpec.metadata().semanticId()),"genericGroup");
-        api.setAttributeValueEx(owner,owner.cls().attribute("semanticId",true),new StringValue("actual:org"));
-        api.setAttributeValueEx(group,group.cls().attribute("semanticId",true),new StringValue("actual:group"));
         api.createLinkEx(system.model().getAssociation(DomainProjection.relation("containsGroup","Organization","Group")),new MObject[]{owner,group});
-        var index=new LinkedHashMap<>(pipeline.state().semanticObjectIndex()); index.put("actual:org",owner); index.put("actual:group",group);
+        var index=new NativeObjectBindings(pipeline.state().semanticObjectIndex()); index.put("actual:org",owner); index.put("actual:group",group);
         var agent=pipeline.source().snapshot().agentDeclarations().getFirst();
         var role=org.structuralSpecification().groupRoleCardinalities().stream().filter(c->c.groupId().equals(groupSpec.metadata().semanticId()) && c.min()>0).findFirst().orElseThrow();
         MoiseDomainProjection.linkObject(api,index,MoiseDomainProjection.roleAssociation(system.model(),org.metadata().semanticId(),groupSpec.metadata().semanticId(),role.roleId()),index.get(agent.metadata().semanticId()),group);
@@ -83,22 +82,22 @@ class GenericFunctionalRuntimeProjectionTest {
         values.put("commitments",List.of(Map.of("agentSemanticId",agent.metadata().semanticId(),"missionSemanticId",mission.metadata().semanticId())));
         values.put("goalStates",source.goals().stream().map(g->Map.of("goalSemanticId",g.metadata().semanticId(),"state","NOT_SATISFIED")).toList());
         assertEquals(NativeRuntimeMutationEngine.Status.MATERIALIZED,apply(engine,identity,RuntimeFactKind.SCHEME_BOARD,values).status());
-        var instance=find(system,identity.canonical());
+        var instance=engine.objectForSemanticId(identity.canonical());
         assertTrue(instance.cls().parents().contains(system.model().getClass("Scheme"))); assertTrue(link(system,"responsibleFor","Group","Scheme",group,instance));
-        var commitment=find(system,MoiseDomainProjection.functionalObjectId("mission",identity.canonical(),mission.metadata().semanticId()));
+        var commitment=engine.objectForSemanticId(MoiseDomainProjection.functionalObjectId("mission",identity.canonical(),mission.metadata().semanticId()));
         assertTrue(link(system,"committedTo","Agent","Mission",index.get(agent.metadata().semanticId()),commitment));
         int count=system.state().numObjects(); values.put("commitments",List.of()); values.put("responsibleGroupSemanticIds",List.of());
         values.put("goalStates",source.goals().stream().map(g->Map.of("goalSemanticId",g.metadata().semanticId(),"state","SATISFIED")).toList());
         assertEquals(NativeRuntimeMutationEngine.Status.MATERIALIZED,apply(engine,identity,RuntimeFactKind.SCHEME_BOARD,values).status());
-        assertEquals(count,system.state().numObjects()); assertSame(instance,find(system,identity.canonical()));
+        assertEquals(count,system.state().numObjects()); assertSame(instance,engine.objectForSemanticId(identity.canonical()));
         assertFalse(link(system,"responsibleFor","Group","Scheme",group,instance)); assertFalse(link(system,"committedTo","Agent","Mission",index.get(agent.metadata().semanticId()),commitment));
-        assertEquals(new StringValue("SATISFIED"),find(system,MoiseDomainProjection.functionalObjectId("organisational-goal",identity.canonical(),source.goals().getFirst().metadata().semanticId())).state(system.state()).attributeValue("runtimeState"));
+        assertEquals(new StringValue("SATISFIED"),engine.objectForSemanticId(MoiseDomainProjection.functionalObjectId("organisational-goal",identity.canonical(),source.goals().getFirst().metadata().semanticId())).state(system.state()).attributeValue("runtimeState"));
         values.put("goalObservationVersion","1.0.0");values.put("schemeArguments",Map.of("g",Map.of("amount","23")));
         values.put("goalStates",source.goals().stream().map(g->Map.of("goalSemanticId",g.metadata().semanticId(),"state","ENABLED",
                 "committedAgentSemanticIds",List.of(agent.metadata().semanticId()),"achievedAgentSemanticIds",List.of(agent.metadata().semanticId()),
                 "arguments",Map.of("amount","23"))).toList());
         assertEquals(NativeRuntimeMutationEngine.Status.MATERIALIZED,apply(engine,identity,RuntimeFactKind.SCHEME_BOARD,values).status());
-        var observedGoal=find(system,MoiseDomainProjection.functionalObjectId("organisational-goal",identity.canonical(),source.goals().getFirst().metadata().semanticId()));
+        var observedGoal=engine.objectForSemanticId(MoiseDomainProjection.functionalObjectId("organisational-goal",identity.canonical(),source.goals().getFirst().metadata().semanticId()));
         assertEquals(new StringValue("ENABLED"),observedGoal.state(system.state()).attributeValue("runtimeState"));
         assertTrue(link(system,"goalCommitment","Agent","OrganizationalGoal",index.get(agent.metadata().semanticId()),observedGoal));
         assertTrue(link(system,"goalAchievement","Agent","OrganizationalGoal",index.get(agent.metadata().semanticId()),observedGoal));
@@ -138,9 +137,6 @@ class GenericFunctionalRuntimeProjectionTest {
     }
     private static Map<String,Object> literal(String kind,BridgeEntityId agent,String source,String text) {
         return Map.of("semanticId",DomainProjection.occurrenceId(kind,agent.canonical(),source),"sourceIdentity",source,"literal",text);
-    }
-    private static MObject find(MSystem system,String id) {
-        return system.state().allObjects().stream().filter(o->new StringValue(id).equals(o.state(system.state()).attributeValue("semanticId"))).findFirst().orElseThrow();
     }
     private static boolean link(MSystem system,String kind,String first,String second,MObject one,MObject two) {
         return system.state().hasLinkBetweenObjects(system.model().getAssociation(DomainProjection.relation(kind,first,second)),new MObject[]{one,two});

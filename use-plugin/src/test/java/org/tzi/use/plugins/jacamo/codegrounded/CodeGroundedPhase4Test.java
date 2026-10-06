@@ -36,9 +36,9 @@ class CodeGroundedPhase4Test {
                 .findFirst().orElseThrow();
         var root=result.state().semanticObjectIndex().get("phase4:workspace:root");
         assertSame(root,result.state().semanticObjectIndex().get(rootDeclaration.metadata().semanticId()));
-        assertEquals("'w-root'",root.state(system.state()).attributeValue("uuid").toString());
+        assertEquals("w-root",result.state().semanticObjectIndex().metadata(root,"uuid"));
         assertEquals("'READY'",artifact.state(system.state()).attributeValue("status").toString());
-        assertEquals("'artifact-uuid'",artifact.state(system.state()).attributeValue("uuid").toString());
+        assertEquals("artifact-uuid",result.state().semanticObjectIndex().metadata(artifact,"uuid"));
         assertEquals(1,links(system,org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.relation("locatedIn","Workspace",artifact.cls().name())));
         for(String name:List.of("ArtifactType","ObservablePropertySnapshot","Environment","Operation","BackingJavaOperation","Guard","ArtifactInfo","Signal","CartagoAgentIdentity","LiveObservableProperty"))
             assertNull(system.model().getClass(name),name);

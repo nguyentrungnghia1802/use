@@ -8,7 +8,7 @@ executable evidence and final gate status are recorded in `docs/agent/task.md`.
 JaCaMo remains the execution engine; USE remains the verification mirror.
 One checkpoint/snapshot verification pipeline uses the active USE Session
 MSystem/MSystemState. Import, Object Diagram, Model Browser, formal OCL,
-Goal View and violation diagnostics must refer to this same active state.
+Goal/violation evidence and native USE views must refer to this same active state.
 Existing exact projection/trace and transactional local USE rollback are reused.
 There is no rollback of JaCaMo execution, kill, automatic repair, forced goal
 achievement, belief correction or mission/artifact domain mutation.
@@ -91,9 +91,14 @@ frozen V2 Ecore/Mapping to make the feature run.
 Reuse NativeRuntimeProjector/MutationEngine, RuntimeVerificationCoordinator,
 ExternalOclConstraintService, snapshot coordinator and recording infrastructure.
 Consumers now use typed checkpoint retention, dependency routing, violations and
-Goal View. The active LEGACY_V2 branch is rejected and obsolete connector/verifier
+immutable Goal evidence. The active LEGACY_V2 branch is rejected and obsolete connector/verifier
 classes are test-only after replacement tests passed. Explicit offline
 replay/reanalysis remains isolated and may not become a second live verifier.
+
+The 2026-10-06 Workbench simplification removes its Verification, Goal, Trace and
+Diagnostics views and their exclusive handlers. This does not remove the control,
+snapshot, trace, OCL or replay APIs. Workbench exposes no custom result/check UI;
+users inspect and check the active model with native USE facilities.
 
 Current baseline remains intact: 205 tests PASS including actual Auction GUI
 runtime/same-system/resync/replay. Control API audit and adapter regressions PASS.
@@ -111,15 +116,19 @@ creates domain relations/classes nor authorizes extra runtime mutation. The actu
 compiled false context is always distinct from additional evidence endpoints.
 Policies participate in the recorded timeline and approval fingerprint/hash.
 
-Replay manifest 1.1.0 persists capabilities, policies and explicit boundaries and
-native operation checkpoints. Both policy and replay readers retain 1.0.0 input
-support. Frozen V2 metamodel/mapping bytes and their historical manifests are
-unchanged. Observational performance counters do not alter event order/control.
+Replay manifest 2.0.0 persists capabilities, policies, explicit boundaries and
+native operation checkpoints, with a hashed internal bindings baseline. Policy
+retains its 1.0.0 input support; earlier replay schemas are rejected explicitly
+after technical attributes were removed. Frozen V2 metamodel/mapping bytes and
+their historical manifests are unchanged. Observational performance counters
+do not alter event order/control.
 
-VerificationSnapshot 1.1.0 separates the seven synchronization states from the
+VerificationSnapshot 1.2.0 separates the seven synchronization states from the
 four RuntimeControlContract states, retained independently in cut evidence.
 An authoritative paused cut is synchronized LIVE with control PAUSED; resume
 revalidation/resync is SYNCING until it succeeds. Neither synchronization enum
-contains PAUSED/PAUSING/RESUMING. The current contract is introduced in this task;
-the earlier 1.0.0 intermediate export is historical evidence. Runtime result and
-recorded domain-state hashes keep their existing compatibility.
+contains PAUSED/PAUSING/RESUMING. Immutable per-object bindingMetadata is separate
+from exposed attributes and supplies specification/source identity to violation
+tracing from the failing cut. Earlier 1.0.0/1.1.0 snapshot exports are historical
+evidence. Hash algorithms are unchanged; projection 3.0.0 records its own native
+domain surface and does not claim replay compatibility with older model schemas.

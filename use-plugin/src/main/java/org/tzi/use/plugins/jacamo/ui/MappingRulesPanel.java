@@ -14,18 +14,17 @@ final class MappingRulesPanel extends JPanel {
     MappingRulesPanel() {
         super(new BorderLayout(4, 4));
         var rules = new CodeGroundedRuleCatalog().rules();
-        var model = new DefaultTableModel(new String[]{"Rule", "JaCaMo → USE"}, 0) {
+        var model = new DefaultTableModel(new String[]{"Rule", "JaCaMo Concept", "USE Concept"}, 0) {
             @Override public boolean isCellEditable(int row, int column) { return false; }
         };
-        rules.forEach(rule -> model.addRow(new Object[]{rule.ruleId(), rule.sourceKindFqcn()
-                + " → " + rule.targetUseKind() + " [" + rule.fidelity() + "; "
-                + rule.implementationStatus() + "]"}));
+        rules.forEach(rule -> model.addRow(new Object[]{rule.ruleId(), rule.sourceKindFqcn(), rule.targetUseKind()}));
         JTable table = new JTable(model) {
             @Override public String getToolTipText(MouseEvent event) {
                 int row = rowAtPoint(event.getPoint());
                 if (row < 0) return null;
                 var rule = rules.get(convertRowIndexToModel(row));
-                return rule.sourceAuthority() + " | capability=" + rule.capabilityStatus()
+                return rule.sourceAuthority() + " | fidelity=" + rule.fidelity()
+                        + " | implementation=" + rule.implementationStatus() + " | capability=" + rule.capabilityStatus()
                         + " | " + rule.diagnosticPolicy();
             }
         };

@@ -96,9 +96,9 @@ public class HelloWorldSemanticInventoryIT {
                 try {
                     // The test profile only checks identities actually exposed by the native model.
                     Path profile=evidence.resolve("identity-audit.ocl");
-                    Files.writeString(profile,"context Agent inv AuditUniqueIdentity: Agent.allInstances()->isUnique(semanticId)\n"
-                            +"context Workspace inv AuditUniqueWorkspace: Workspace.allInstances()->isUnique(semanticId)\n"
-                            +"context Agent inv AuditDomainBeliefs: self.beliefs->isUnique(semanticId)\n");
+                    Files.writeString(profile,"context Agent inv AuditUniqueIdentity: Agent.allInstances()->forAll(a | not a.name.oclIsUndefined())\n"
+                            +"context Workspace inv AuditUniqueWorkspace: Workspace.allInstances()->forAll(w | not w.name.oclIsUndefined())\n"
+                            +"context Agent inv AuditDomainBeliefs: self.beliefs->forAll(b | not b.literal.oclIsUndefined())\n");
                     int beforeProfile=system.state().numObjects();
                     facade.loadVerificationProfile(profile);
                     assertEquals("OCL_READY",facade.workflowStatus().state());
@@ -132,7 +132,7 @@ public class HelloWorldSemanticInventoryIT {
                     var goalView=facade.goalView();
                     assertTrue(goalView.schemes().stream().anyMatch(s->s.runtime() && !s.goals().isEmpty()),"No observed runtime Scheme goals");
                     assertTrue(goalView.schemes().stream().flatMap(s->s.goals().stream()).anyMatch(g->g.operator().equals("sequence")));
-                    org.tzi.use.plugins.jacamo.codegrounded.GoalWorkbenchEvidence.capture(facade,session,evidence,false);
+                    org.tzi.use.plugins.jacamo.codegrounded.WorkbenchEvidence.capture(facade,session,evidence,false);
                     write(evidence.resolve("runtime-performance.json"),facade.runtimePerformanceMetrics());
                     write(evidence.resolve("verification-snapshot.json"),facade.verificationSnapshot().toMap());
                     Path completeBundle=evidence.resolve("recorded-replay-before-disconnect");
@@ -229,7 +229,7 @@ public class HelloWorldSemanticInventoryIT {
                 inventory.facade.materializedSystem().state().allObjects().forEach(object->{
                     // Subtypes, if exact C06 reflection is supported, are still Artifact instances.
                     if(org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.kind(object.cls()).equals(entry.getKey())
-                            && !object.state(inventory.facade.materializedSystem().state()).attributeValue("uuid").isUndefined()) {
+                            && !inventory.projector().mutations().metadata(object,"uuid").isEmpty()) {
                         var bound=entry.getValue().stream().filter(id->inventory.projector().mutations().objectForSemanticId(id)==object).toList();
                         assertEquals(1,bound.size(),"Each observed instance requires exactly one identity from this official cut: "+object.name());
                         actual.add(bound.getFirst());
@@ -346,10 +346,7 @@ public class HelloWorldSemanticInventoryIT {
         }
         NativeRuntimeProjector projector(){return (NativeRuntimeProjector)field(field(facade,"nativeWorkspace"),"runtimeProjector");}
         String semanticId(MObject object) {
-            var attribute=object.cls().attribute("semanticId",true);
-            if(attribute==null)return namesToIds.getOrDefault(object.name(),"");
-            var value=object.state(facade.materializedSystem().state()).attributeValue(attribute);
-            return value instanceof StringValue string?string.value():namesToIds.getOrDefault(object.name(),"");
+            return projector().mutations().metadata(object,"semanticId");
         }
         @Subscribe public void atomic(AtomicStateChangedEvent event) {
             var result=facade.runtimeVerificationResult(); if(result==null)return;

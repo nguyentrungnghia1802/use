@@ -34,8 +34,8 @@ class HouseBuildingDomainProjectionIT {
                 assertEquals(0,projector.coordinator().read(()->model.classes().stream()
                         .filter(c->List.of("organisation","group").contains(DomainProjection.kind(c))).count()));
                 Path profile=evidence.resolve("identities.ocl");
-                Files.writeString(profile,"context Agent inv StableIdentity: Agent.allInstances()->isUnique(semanticId)\n"
-                        +"context Agent inv DomainBeliefs: self.beliefs->isUnique(semanticId)\n");
+                Files.writeString(profile,"context Agent inv StableIdentity: Agent.allInstances()->forAll(a | not a.name.oclIsUndefined())\n"
+                        +"context Agent inv DomainBeliefs: self.beliefs->forAll(b | not b.literal.oclIsUndefined())\n");
                 facade.loadVerificationProfile(profile); facade.startRuntime();
                 diagramAudit.capture("02-start-ack");
                 assertEquals("LIVE",facade.workflowStatus().state());
@@ -66,7 +66,7 @@ class HouseBuildingDomainProjectionIT {
                 var operators=goalView.schemes().stream().flatMap(s->s.goals().stream()).map(g->g.operator()).collect(java.util.stream.Collectors.toSet());
                 assertTrue(operators.contains("sequence"),operators.toString());assertTrue(operators.contains("parallel"),operators.toString());
                 assertTrue(goalView.schemes().stream().flatMap(s->s.goals().stream()).anyMatch(g->!g.children().isEmpty() && !g.parent().isBlank()),"Nested decomposition missing");
-                org.tzi.use.plugins.jacamo.codegrounded.GoalWorkbenchEvidence.capture(facade,session,evidence,false);
+                org.tzi.use.plugins.jacamo.codegrounded.WorkbenchEvidence.capture(facade,session,evidence,false);
                 Files.write(evidence.resolve("runtime-performance.json"),CanonicalJson.encode(facade.runtimePerformanceMetrics()));
                 Files.write(evidence.resolve("verification-snapshot.json"),CanonicalJson.encode(facade.verificationSnapshot().toMap()));
                 var authoritativeCut=recording.runtime;
@@ -93,8 +93,7 @@ class HouseBuildingDomainProjectionIT {
                 assertEquals(recording.model.semanticContract().agentDeclarations().stream().mapToInt(a->a.instances()).sum(),agents.size(),
                         "Each actual agent instance must have its own object; declarations are not runtime templates");
                 assertNull(state.objectByName("companyC")); assertNull(state.objectByName("companyD"));
-                assertEquals(agents.size(),agents.stream().map(o->((StringValue)o.state(state)
-                        .attributeValue(model.getClass("Agent").attribute("semanticId",false))).value()).distinct().count());
+                assertEquals(agents.size(),agents.stream().map(o->facade.verificationSnapshot().image().objects().get(o.name()).semanticId()).distinct().count());
                 assertNull(model.getClass("Agent").attribute("role",true));
                 var groups=state.allObjects().stream().filter(o->DomainProjection.kind(o.cls()).equals("group")).toList();
                 assertFalse(groups.isEmpty());

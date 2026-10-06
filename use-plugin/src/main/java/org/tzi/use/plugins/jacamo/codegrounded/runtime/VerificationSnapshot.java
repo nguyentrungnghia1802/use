@@ -11,7 +11,7 @@ import org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintS
 /** One consistent read of a committed workspace. Profile interval survives history-tail eviction. */
 public record VerificationSnapshot(long currentVersion, RuntimeVerificationResult result, ProfileInterval profile,
                                    Metadata metadata, StateImage image) {
-    public static final String CONTRACT_VERSION="1.1.0";
+    public static final String CONTRACT_VERSION="1.2.0";
     public enum SynchronizationState { OFFLINE, MODEL_READY, CONNECTING, SYNCING, LIVE, STALE, ERROR }
     public record Metadata(String snapshotId,long boundarySequence,Instant capturedAt,long generation,
                            CheckpointType checkpoint,Set<String> correlations,SynchronizationState lifecycle,
@@ -26,8 +26,8 @@ public record VerificationSnapshot(long currentVersion, RuntimeVerificationResul
         }
     }
     public record ObjectState(String name,String className,String semanticId,List<String> exactIdentities,
-                              Map<String,String> attributes,Map<String,String> valueTypes) {
-        public ObjectState {exactIdentities=List.copyOf(exactIdentities);attributes=Map.copyOf(attributes);valueTypes=Map.copyOf(valueTypes);}
+                              Map<String,String> attributes,Map<String,String> valueTypes,Map<String,String> bindingMetadata) {
+        public ObjectState {exactIdentities=List.copyOf(exactIdentities);attributes=Map.copyOf(attributes);valueTypes=Map.copyOf(valueTypes);bindingMetadata=Map.copyOf(bindingMetadata);}
     }
     public record LinkState(String association,List<String> participants,List<List<String>> qualifiers) {
         public LinkState {participants=List.copyOf(participants);qualifiers=qualifiers.stream().map(List::copyOf).toList();}
@@ -38,7 +38,7 @@ public record VerificationSnapshot(long currentVersion, RuntimeVerificationResul
         public Map<String,Object> toMap() {
             return Map.of("objects",objects.values().stream().sorted(java.util.Comparator.comparing(ObjectState::name)).map(o->Map.of(
                     "name",o.name(),"className",o.className(),"semanticId",o.semanticId(),"exactIdentities",o.exactIdentities(),
-                    "attributes",o.attributes(),"valueTypes",o.valueTypes())).toList(),"links",links.stream().map(l->Map.of(
+                    "attributes",o.attributes(),"valueTypes",o.valueTypes(),"bindingMetadata",o.bindingMetadata())).toList(),"links",links.stream().map(l->Map.of(
                     "association",l.association(),"participants",l.participants(),"qualifiers",l.qualifiers())).toList(),"soil",soil);
         }
     }

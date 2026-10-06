@@ -1,5 +1,6 @@
 package org.tzi.use.plugins.jacamo.codegrounded.runtime;
 
+import org.tzi.use.plugins.jacamo.codegrounded.trace.NativeObjectBindings;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -65,7 +66,7 @@ public final class NativeRuntimeMutationEngine {
     private record LinkImage(String association, List<String> objectNames, MLink original) { }
     private record ObjectImage(String className, Map<String, Value> attributes, MObject original) { }
     public record StateImage(Map<String, ObjectImage> objects, List<LinkImage> links,
-                             Map<String, String> semanticNames, java.util.Set<String> tombstones, Map<String, PropertyBinding> properties,
+                             NativeObjectBindings bindings, java.util.Set<String> tombstones, Map<String, PropertyBinding> properties,
                              java.util.Set<String> ignoredArtifacts, java.util.Set<String> observedRoleViolations,
                              Map<String, Map<String,Object>> jasonCuts) { }
 
@@ -75,21 +76,24 @@ public final class NativeRuntimeMutationEngine {
     private final Map<String,Map<String,Object>> jasonCuts = new LinkedHashMap<>();
     private final MSystem system;
     private final UseSystemApi api;
-    private final Map<String, MObject> semanticObjectIndex;
+    private final NativeObjectBindings semanticObjectIndex;
     private final CodeGroundedRuntimeRuleRegistry registry;
     private final StateImage baseline;
     private final java.util.Set<String> tombstones = new java.util.HashSet<>();
 
-    public NativeRuntimeMutationEngine(MSystem system, Map<String, MObject> semanticObjectIndex,
+    public NativeRuntimeMutationEngine(MSystem system, NativeObjectBindings semanticObjectIndex,
                                        CodeGroundedRuntimeRuleRegistry registry) {
         this.system = Objects.requireNonNull(system, "system");
         this.api = UseSystemApi.create(system, false);
-        this.semanticObjectIndex = new LinkedHashMap<>(semanticObjectIndex);
+        this.semanticObjectIndex = new NativeObjectBindings(semanticObjectIndex);
         this.registry = Objects.requireNonNull(registry, "registry");
         this.baseline = capture();
     }
 
     public MSystem system() { return system; }
+    public synchronized Map<String,String> objectMetadata(MObject object) { return semanticObjectIndex.metadata(object); }
+    public synchronized String metadata(MObject object,String key) { return semanticObjectIndex.metadata(object,key); }
+    public synchronized Map<String,Object> baselineBindings() { return baseline.bindings().toMap(); }
     public record TargetBinding(String sourceIdentity,String targetIdentity,String kind,List<String> context) { }
     /** Read-only binding inventory of the very same active native model and state. */
     public synchronized List<TargetBinding> targetBindings() {
@@ -117,16 +121,16 @@ public final class NativeRuntimeMutationEngine {
             result.add(new TargetBinding(source,"association:"+association.name(),"MAssociation",List.of("ENDPOINTS="+association.associationEnds().stream().map(e->e.cls().name()+"["+e.multiplicity()+"]").toList())));
         }
         for(var object:system.state().allObjects()) {
-            String source=attribute(object,"semanticId");
+            String source=semanticObjectIndex.metadata(object,"semanticId");
             var aliases=semanticObjectIndex.entrySet().stream().filter(e->e.getValue()==object).map(Map.Entry::getKey).sorted().toList();
             if(aliases.isEmpty()) throw new NativeRuntimeProtocolException("NATIVE_OBJECT_SOURCE_BINDING_MISSING:"+object.name());
-            var context=List.of("SOURCE_BINDINGS="+NativeUseModelBuilder.canonicalJson(aliases));
+            var context=List.of("SOURCE_BINDINGS="+NativeUseModelBuilder.canonicalJson(aliases),"METADATA="+NativeUseModelBuilder.canonicalJson(semanticObjectIndex.metadata(object)));
             result.add(new TargetBinding(source,object.name(),object instanceof org.tzi.use.uml.sys.MLinkObject ? "MLinkObject" : "MObject",context));
             for(var attribute:object.cls().allAttributes()) result.add(new TargetBinding(source,"value:"+object.name()+"."+attribute.name(),"MValue",context));
         }
         for(var link:system.state().allLinks()) {
-            var identities=link.linkedObjects().stream().map(o->attribute(o,"semanticId")).toList();
-            String source=link instanceof MObject object ? attribute(object,"semanticId")
+            var identities=link.linkedObjects().stream().map(semanticObjectIndex::identity).toList();
+            String source=link instanceof MObject object ? semanticObjectIndex.metadata(object,"semanticId")
                 : "relation-binding:"+NativeUseModelBuilder.canonicalJson(List.of(link.association().name(),identities));
             result.add(new TargetBinding(source,"link:"+link.association().name()+":"+link.linkedObjects().stream().map(MObject::name).toList(),"MLink",List.of("ORDERED_ENDPOINT_IDENTITIES="+NativeUseModelBuilder.canonicalJson(identities))));
         }
@@ -193,7 +197,7 @@ public final class NativeRuntimeMutationEngine {
         try {
             List<String> obsolete = semanticObjectIndex.entrySet().stream()
                 .filter(e -> java.util.Set.of("artifact", "workspace").contains(DomainProjection.kind(e.getValue().cls()))
-                    && !e.getValue().state(system.state()).attributeValue("uuid").isUndefined()
+                    && !semanticObjectIndex.metadata(e.getValue(),"uuid").isEmpty()
                     && semanticObjectIndex.entrySet().stream().noneMatch(alias->alias.getValue()==e.getValue() && retained.contains(alias.getKey())))
                 .map(Map.Entry::getKey).toList();
             for (String id : obsolete) if (semanticObjectIndex.containsKey(id)) delete(id);
@@ -416,11 +420,12 @@ public final class NativeRuntimeMutationEngine {
             workspace=requiredObject(declaration);
             if(!workspace.cls().name().equals("Workspace") || !attribute(workspace,"name").equals(required(payload,"name")))
                 throw new NativeRuntimeProtocolException("WORKSPACE_DECLARATION_BINDING_MISMATCH");
-            var uuid=workspace.state(system.state()).attributeValue("uuid");
-            if(!uuid.isUndefined() && !uuid.equals(new StringValue(required(payload,"uuid")))) throw new NativeRuntimeProtocolException("WORKSPACE_DECLARATION_INCARNATION_REDIRECT");
+            var uuid=semanticObjectIndex.metadata(workspace,"uuid");
+            if(!uuid.isEmpty() && !uuid.equals(required(payload,"uuid"))) throw new NativeRuntimeProtocolException("WORKSPACE_DECLARATION_INCARNATION_REDIRECT");
             semanticObjectIndex.put(semanticId,workspace);
         } else workspace=upsertObject(semanticId,"Workspace",required(payload,"name"));
-        for(String field:List.of("name","fullName","uuid","environmentSemanticId")) setText(workspace,field,required(payload,field));
+        setText(workspace,"name",required(payload,"name"));
+        for(String field:List.of("fullName","uuid","environmentSemanticId")) semanticObjectIndex.metadata(workspace,field,required(payload,field));
         return new BoundTarget(semanticId,workspace);
     }
 
@@ -462,8 +467,8 @@ public final class NativeRuntimeMutationEngine {
         var owner=upsertObject(required(payload,"organisationSemanticId"),DomainProjection.classFor(system.model(),"organisation",os),required(payload,"organisationName"));
         setText(owner,"name",required(payload,"organisationName"));
         var scheme=upsertObject(id,DomainProjection.classFor(system.model(),"scheme",spec),required(payload,"name")); setText(scheme,"name",required(payload,"name"));
-        setText(scheme,"specSemanticId",spec);setText(scheme,"runtimeIdentity",required(payload,"runtimeIdentity"));setText(scheme,"sourceLayer","RUNTIME");
-        setText(scheme,"goalStateEvidence",goalObservation?"OFFICIAL_SCHEME_BOARD_OBSERVABLE_V1":"SATISFACTION_ONLY");
+        semanticObjectIndex.metadata(scheme,"specSemanticId",spec);semanticObjectIndex.metadata(scheme,"runtimeIdentity",required(payload,"runtimeIdentity"));semanticObjectIndex.metadata(scheme,"sourceLayer","RUNTIME");
+        semanticObjectIndex.metadata(scheme,"goalStateEvidence",goalObservation?"OFFICIAL_SCHEME_BOARD_OBSERVABLE_V1":"SATISFACTION_ONLY");
         if(goalObservation)setText(scheme,"arguments",NativeUseModelBuilder.canonicalJson(requiredValue(payload,"schemeArguments")));
         ensureLink(DomainProjection.relation("containsScheme","Organization","Scheme"),owner,scheme);
         MoiseDomainProjection.materializeFunctional(api,semanticObjectIndex,new org.tzi.use.plugins.jacamo.codegrounded.trace.CodeGroundedTraceCollector(),definition,source,scheme);
@@ -477,7 +482,7 @@ public final class NativeRuntimeMutationEngine {
             requiredObject(MoiseDomainProjection.functionalObjectId("mission",id,required(commitment,"missionSemanticId"))));
         for(var goal:goalStates) {
             var object=requiredObject(MoiseDomainProjection.functionalObjectId("organisational-goal",id,required(goal,"goalSemanticId")));
-            setText(object,"runtimeState",required(goal,"state"));setText(object,"stateEvidence",goalObservation?"OFFICIAL_SCHEME_BOARD_OBSERVABLE_V1":"SATISFACTION_ONLY");
+            setText(object,"runtimeState",required(goal,"state"));semanticObjectIndex.metadata(object,"stateEvidence",goalObservation?"OFFICIAL_SCHEME_BOARD_OBSERVABLE_V1":"SATISFACTION_ONLY");
             if(goalObservation) {
                 setText(object,"arguments",NativeUseModelBuilder.canonicalJson(requiredValue(goal,"arguments")));
                 for(var pair:Map.of("goalCommitment","committedAgentSemanticIds","goalAchievement","achievedAgentSemanticIds").entrySet()) {
@@ -526,7 +531,7 @@ public final class NativeRuntimeMutationEngine {
             agent=requiredObject(declaration);
         } else {
             agent=upsertObject(runtime,binding.getKey().name(),name); setText(agent,"name",name);
-            setText(agent,"sourceUri",DomainProjection.decode(metadata.getAnnotationValue("sourceUri64"))); setText(agent,"host",DomainProjection.decode(metadata.getAnnotationValue("host64")));
+            semanticObjectIndex.metadata(agent,"sourceUri",DomainProjection.decode(metadata.getAnnotationValue("sourceUri64"))); semanticObjectIndex.metadata(agent,"host",DomainProjection.decode(metadata.getAnnotationValue("host64")));
         }
         semanticObjectIndex.put(runtime,agent);
         // A declaration may bind successive runtime incarnations to the same native agent.
@@ -575,14 +580,14 @@ public final class NativeRuntimeMutationEngine {
         java.util.Set<String> retained=values.stream().map(v->required(v,"semanticId")).collect(java.util.stream.Collectors.toSet());
         for(var link:new ArrayList<>(system.state().allLinks())) if(link.association()==association && link.linkedObjects().getFirst()==agent) {
             var object=link.linkedObjects().get(1);
-            if(!retained.contains(attribute(object,"semanticId"))) {
-                String id=attribute(object,"semanticId"); delete(id);
+            if(!retained.contains(semanticObjectIndex.metadata(object,"semanticId"))) {
+                String id=semanticObjectIndex.metadata(object,"semanticId"); delete(id);
                 tombstones.remove(id); // Literal observations may leave and re-enter a completed cycle cut.
             }
         }
         for(var literal:values) {
             var object=upsertObject(required(literal,"semanticId"),type,(type.equals("Belief") ? "belief_" : "goal_")+DomainProjection.hash(required(literal,"semanticId")));
-            setText(object,"literal",required(literal,"literal")); setText(object,"sourceLayer",literal.getOrDefault("sourceLayer","RUNTIME").toString()); ensureLink(association.name(),agent,object);
+            setText(object,"literal",required(literal,"literal")); semanticObjectIndex.metadata(object,"sourceLayer",literal.getOrDefault("sourceLayer","RUNTIME").toString()); ensureLink(association.name(),agent,object);
         }
     }
 
@@ -603,8 +608,8 @@ public final class NativeRuntimeMutationEngine {
                     throw new NativeRuntimeProtocolException("AGENT_RUNTIME_INSTANCE_BINDING_MISMATCH");
                 expected=upsertObject(runtime.canonical(),binding.getKey().name(),name);
                 setText(expected,"name",name);
-                setText(expected,"sourceUri",DomainProjection.decode(metadata.getAnnotationValue("sourceUri64")));
-                setText(expected,"host",DomainProjection.decode(metadata.getAnnotationValue("host64")));
+                semanticObjectIndex.metadata(expected,"sourceUri",DomainProjection.decode(metadata.getAnnotationValue("sourceUri64")));
+                semanticObjectIndex.metadata(expected,"host",DomainProjection.decode(metadata.getAnnotationValue("host64")));
             } else {
                 expected=requiredObject(declaration);
                 if(!attribute(expected,"name").equals(required(payload,"name")))
@@ -649,7 +654,7 @@ public final class NativeRuntimeMutationEngine {
                     && link.linkedObjects().equals(List.of(agent,workspace))) deleteLink(link);
             else if(link.association().name().equals(DomainProjection.relation("focuses","Agent","Artifact"))
                     && link.linkedObjects().getFirst()==agent
-                    && attribute(link.linkedObjects().get(1),"workspaceSemanticId").equals(required(payload,"workspaceSemanticId"))) deleteLink(link);
+                    && semanticObjectIndex.metadata(link.linkedObjects().get(1),"workspaceSemanticId").equals(required(payload,"workspaceSemanticId"))) deleteLink(link);
         }
         semanticObjectIndex.remove(id);
         return new BoundTarget(id,agent);
@@ -679,7 +684,10 @@ public final class NativeRuntimeMutationEngine {
     }
 
     private BoundTarget upsertArtifact(Map<String,Object> payload) throws UseApiException {
-        requireStableIdentity(payload,"name","uuid","workspaceSemanticId");
+        requireStableIdentity(payload,"uuid","workspaceSemanticId");
+        var previous=semanticObjectIndex.get(required(payload,"semanticId"));
+        if(previous!=null && !attribute(previous,"name").equals(required(payload,"name")))
+            throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_INCARNATION_REDIRECT:name");
         String id=required(payload,"semanticId"),fqcn=required(payload,"artifactTypeJavaClassName");
         String origin=textOrNull(payload,"artifactTypeOrigin");
         if(origin==null) {
@@ -713,13 +721,14 @@ public final class NativeRuntimeMutationEngine {
             artifact=requiredObject(declaration);
             if(!artifact.cls().name().equals(type) || !attribute(artifact,"name").equals(required(payload,"name")))
                 throw new NativeRuntimeProtocolException("ARTIFACT_DECLARATION_BINDING_MISMATCH");
-            var uuid=artifact.state(system.state()).attributeValue("uuid");
-            if(!uuid.isUndefined() && !uuid.equals(new StringValue(required(payload,"uuid")))) throw new NativeRuntimeProtocolException("ARTIFACT_DECLARATION_INCARNATION_REDIRECT");
+            var uuid=semanticObjectIndex.metadata(artifact,"uuid");
+            if(!uuid.isEmpty() && !uuid.equals(required(payload,"uuid"))) throw new NativeRuntimeProtocolException("ARTIFACT_DECLARATION_INCARNATION_REDIRECT");
             semanticObjectIndex.put(id,artifact);
         } else artifact=upsertObject(id,type,required(payload,"name"));
         if(declaration!=null) semanticObjectIndex.put(declaration,artifact);
-        for(String field:List.of("name","uuid","workspaceSemanticId","artifactTypeSemanticId")) setText(artifact,field,required(payload,field));
-        setText(artifact,"creatorAgentSemanticId",requiredTextAllowEmpty(payload,"creatorAgentSemanticId"));
+        setText(artifact,"name",required(payload,"name"));
+        for(String field:List.of("uuid","workspaceSemanticId","artifactTypeSemanticId")) semanticObjectIndex.metadata(artifact,field,required(payload,field));
+        semanticObjectIndex.metadata(artifact,"creatorAgentSemanticId",requiredTextAllowEmpty(payload,"creatorAgentSemanticId"));
         ensureLink(DomainProjection.relation("locatedIn","Workspace",type),workspace,artifact);
         if(payload.containsKey("properties")) propertyDelta(id,Map.of("properties",payload.get("properties"),"removedPropertySemanticIds",List.of()));
         return new BoundTarget(id,artifact);
@@ -774,7 +783,7 @@ public final class NativeRuntimeMutationEngine {
         MObject existing = semanticObjectIndex.get(required(payload, "semanticId"));
         if (existing == null) return;
         for (String attribute : attributes)
-            if (!new StringValue(required(payload, attribute)).equals(existing.state(system.state()).attributeValue(attribute)))
+            if (!required(payload, attribute).equals(semanticObjectIndex.metadata(existing,attribute)))
                 throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_INCARNATION_REDIRECT:" + attribute);
     }
 
@@ -815,19 +824,19 @@ public final class NativeRuntimeMutationEngine {
                 local = required(payload, "fullName"); incarnation = required(payload, "uuid");
             }
             case UPSERT_CARTAGO_AGENT_IDENTITY, DELETE_CARTAGO_AGENT_IDENTITY -> {
-                kind="agent"; scope=attribute(requiredObject(required(payload,"workspaceSemanticId")),"fullName");
+                kind="agent"; scope=semanticObjectIndex.metadata(requiredObject(required(payload,"workspaceSemanticId")),"fullName");
                 local=required(payload,"globalId"); incarnation=Long.toString(requiredInteger(payload,"localId"));
             }
             case UPSERT_CARTAGO_ARTIFACT -> {
-                kind = "artifact"; scope = attribute(requiredObject(required(payload, "workspaceSemanticId")), "fullName");
+                kind = "artifact"; scope = semanticObjectIndex.metadata(requiredObject(required(payload, "workspaceSemanticId")), "fullName");
                 local = required(payload, "name"); incarnation = required(payload, "uuid");
             }
             case APPLY_CARTAGO_PROPERTY_DELTA, DELETE_CARTAGO_ARTIFACT -> {
                 String semanticId = required(payload, "semanticId");
                 if (ignoredArtifacts.contains(semanticId)) return;
                 var artifact = requiredObject(semanticId);
-                kind = "artifact"; scope = attribute(requiredObject(attribute(artifact, "workspaceSemanticId")), "fullName");
-                local = attribute(artifact, "name"); incarnation = attribute(artifact, "uuid");
+                kind = "artifact"; scope = semanticObjectIndex.metadata(requiredObject(semanticObjectIndex.metadata(artifact,"workspaceSemanticId")), "fullName");
+                local = attribute(artifact, "name"); incarnation = semanticObjectIndex.metadata(artifact,"uuid");
             }
             case UPSERT_CARTAGO_PROPERTY_SNAPSHOT -> {
                 kind = "observable-property-snapshot"; scope = required(payload, "artifactSemanticId");
@@ -854,7 +863,7 @@ public final class NativeRuntimeMutationEngine {
     private void delete(String id) throws UseApiException {
         MObject object=requiredObject(id); api.deleteObjectEx(object);
         List<String> aliases=semanticObjectIndex.entrySet().stream().filter(e->e.getValue()==object).map(Map.Entry::getKey).toList();
-        aliases.forEach(semanticObjectIndex::remove); aliases.forEach(jasonCuts::remove); tombstones.addAll(aliases);
+        semanticObjectIndex.forget(object); aliases.forEach(jasonCuts::remove); tombstones.addAll(aliases);
         properties.entrySet().removeIf(e->aliases.contains(e.getValue().owner()));
     }
     private static List<String> stringList(Map<String, Object> payload, String key) {
@@ -878,7 +887,6 @@ public final class NativeRuntimeMutationEngine {
         MObject byName = system.state().objectByName(objectName);
         if (byName != null) objectName += "_" + DomainProjection.hash(semanticId);
         MObject object = api.createObjectEx(cls, objectName);
-        setText(object, "semanticId", semanticId);
         semanticObjectIndex.put(semanticId, object);
         return object;
     }
@@ -899,7 +907,7 @@ public final class NativeRuntimeMutationEngine {
     }
     private void deleteLink(MLink link) throws UseApiException {
         api.deleteLinkEx(link);
-        if(link instanceof MObject object) semanticObjectIndex.entrySet().removeIf(e->e.getValue()==object);
+        if(link instanceof MObject object) semanticObjectIndex.forget(object);
     }
 
     private void setText(MObject object, String name, String value) throws UseApiException {
@@ -946,6 +954,7 @@ public final class NativeRuntimeMutationEngine {
         MAssociation association = system.model().getAssociation(associationName);
         if (association == null) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_ASSOCIATION_MISSING:" + associationName);
         MObject[] connected = objects.toArray(MObject[]::new);
+        if(insert && connected.length==2) validateFunctionalContext(associationName,connected[0],connected[1]);
         boolean present = system.state().hasLinkBetweenObjects(association, connected);
         if (insert && !present) {
             if(association instanceof org.tzi.use.uml.mm.MAssociationClass role) {
@@ -956,6 +965,20 @@ public final class NativeRuntimeMutationEngine {
         }
         if (!insert && present) for(var existing:new ArrayList<>(system.state().allLinks()))
             if(existing.association()==association && existing.linkedObjects().equals(objects)) deleteLink(existing);
+    }
+
+    /** Binding consistency belongs to projection, not to OCL comparisons of technical String attributes. */
+    private void validateFunctionalContext(String association,MObject first,MObject second) {
+        boolean owned=association.equals(DomainProjection.relation("schemeGoals","Scheme","OrganizationalGoal"))
+                || association.equals(DomainProjection.relation("schemeMissions","Scheme","Mission"));
+        boolean peers=association.equals(DomainProjection.relation("subGoals","OrganizationalGoal","OrganizationalGoal"))
+                || association.equals(DomainProjection.relation("missionGoals","Mission","OrganizationalGoal"));
+        if(!owned && !peers)return;
+        String specification=semanticObjectIndex.metadata(first,owned?"specSemanticId":"schemeSpecSemanticId");
+        String instance=owned?semanticObjectIndex.identity(first):semanticObjectIndex.metadata(first,"schemeInstanceIdentity");
+        if(specification.isBlank() || !specification.equals(semanticObjectIndex.metadata(second,"schemeSpecSemanticId"))
+                || !instance.equals(semanticObjectIndex.metadata(second,"schemeInstanceIdentity")))
+            throw new NativeRuntimeProtocolException("MOISE_FUNCTIONAL_BINDING_CONTEXT_MISMATCH:"+association);
     }
 
     private StateImage capture() {
@@ -971,12 +994,10 @@ public final class NativeRuntimeMutationEngine {
                         .thenComparing(link -> link.linkedObjects().stream().map(MObject::name).toList().toString()))
                 .map(link -> new LinkImage(link.association().name(),
                         link.linkedObjects().stream().map(MObject::name).toList(), link)).toList();
-        Map<String, String> names = new LinkedHashMap<>();
-        semanticObjectIndex.forEach((id, object) -> names.put(id, object.name()));
         var roleViolations=system.model().associations().stream().filter(a->a.getAnnotation(MoiseDomainProjection.ROLE_ASSOCIATION)!=null
             && !system.state().checkStructure(a,new java.io.PrintWriter(new java.io.StringWriter()),true))
             .map(MAssociation::name).collect(java.util.stream.Collectors.toSet());
-        return new StateImage(Map.copyOf(attributes), links, Map.copyOf(names), java.util.Set.copyOf(tombstones), Map.copyOf(properties),
+        return new StateImage(Map.copyOf(attributes), links, new NativeObjectBindings(semanticObjectIndex), java.util.Set.copyOf(tombstones), Map.copyOf(properties),
             java.util.Set.copyOf(ignoredArtifacts),java.util.Set.copyOf(roleViolations),Map.copyOf(jasonCuts));
     }
 
@@ -996,8 +1017,7 @@ public final class NativeRuntimeMutationEngine {
                 for (var attributeEntry : objectEntry.getValue().attributes().entrySet())
                     api.setAttributeValueEx(object, object.cls().attribute(attributeEntry.getKey(), true), attributeEntry.getValue());
             }
-            semanticObjectIndex.clear();
-            image.semanticNames().forEach((id, name) -> semanticObjectIndex.put(id, system.state().objectByName(name)));
+            semanticObjectIndex.restore(image.bindings());
             tombstones.clear(); tombstones.addAll(image.tombstones());
             properties.clear(); properties.putAll(image.properties());
             ignoredArtifacts.clear(); ignoredArtifacts.addAll(image.ignoredArtifacts());

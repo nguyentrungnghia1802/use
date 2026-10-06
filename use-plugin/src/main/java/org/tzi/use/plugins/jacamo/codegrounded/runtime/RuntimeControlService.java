@@ -89,12 +89,7 @@ public final class RuntimeControlService implements AutoCloseable {
                 String context=!outcome.contextObject().isBlank()?outcome.contextObject():failingContexts.stream().sorted().findFirst().orElse("");
                 var sourceTrace=new ArrayList<VerificationViolation.SourceTrace>();
                 for(var object:involved.values()) {
-                    var nativeObject=coordinator.system().state().objectByName(object.name());
-                    String specification="";
-                    if(nativeObject!=null && nativeObject.cls().attribute("specSemanticId",true)!=null
-                            && nativeObject.state(coordinator.system().state()).attributeValue("specSemanticId") instanceof org.tzi.use.uml.ocl.value.StringValue spec)
-                        specification=spec.value();
-                    String exactSpec=specification;
+                    String exactSpec=object.bindingMetadata().getOrDefault("specSemanticId", "");
                     var matches=traces.get().stream().filter(t->t.targetUseId().equals(object.name()) || t.targetUseId().equals(object.className())
                             || exactSpec.isBlank() && t.targetUseId().equals("class:"+object.className()) || t.targetUseId().startsWith("value:"+object.name()+".")
                             || t.semanticId().equals(object.semanticId()) || !exactSpec.isBlank() && t.semanticId().equals(exactSpec)).toList();

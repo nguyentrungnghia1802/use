@@ -26,7 +26,7 @@ class AuctionPauseResumeIT {
                 var system=session.system();
                 try(var diagramAudit=new org.tzi.use.plugins.jacamo.codegrounded.ObjectDiagramLifecycleEvidence(facade,session,evidence)) {
                 diagramAudit.capture("01-model-ready");
-                Path pass=evidence.resolve("pass.ocl");Files.writeString(pass,"context Agent inv Identity: Agent.allInstances()->isUnique(semanticId)\n");
+                Path pass=evidence.resolve("pass.ocl");Files.writeString(pass,"context Agent inv Identity: Agent.allInstances()->forAll(a | not a.name.oclIsUndefined())\n");
                 facade.loadVerificationProfile(pass);facade.startRuntime();
                 diagramAudit.capture("02-start-ack");
                 await(()->facade.runtimeControlState()!=null && facade.runtimeControlState().capable(),40,facade);
@@ -69,8 +69,8 @@ class AuctionPauseResumeIT {
                 selectedGoal.missions().forEach(m->targets.put(cut.image().objects().get(m.object()).semanticId(),"Exact Mission->Goal membership in this Scheme instance"));
                 java.util.stream.Stream.concat(selectedGoal.committedAgents().stream(),selectedGoal.achievedAgents().stream()).forEach(a->
                         targets.put(cut.image().objects().get(a.object()).semanticId(),"Typed committed/achieved agent evidence for this Goal; not inferred achievement responsibility"));
-                String correct="self.semanticId = '"+selectedGoal.semanticId()+"' implies AuctionArtifact.allInstances()->one(a | a.semanticId = '"+selectedArtifact.semanticId()+"' and not a.running)";
-                Files.writeString(pass,"context Agent inv Identity: Agent.allInstances()->isUnique(semanticId)\ncontext OrganizationalGoal inv DecideArtifact: "+correct+"\n");
+                String correct="self.id = '"+selectedGoal.id()+"' and self.goalScheme.name = '"+selectedScheme.name()+"' implies AuctionArtifact.allInstances()->one(a | a.name = '"+argumentId+"' and not a.running)";
+                Files.writeString(pass,"context Agent inv Identity: Agent.allInstances()->forAll(a | not a.name.oclIsUndefined())\ncontext OrganizationalGoal inv DecideArtifact: "+correct+"\n");
                 facade.loadVerificationProfile(pass);assertTrue(facade.runFullVerification().results().stream().noneMatch(o->o.outcome()==VerificationOutcome.FAIL));
                 // Deliberately false CASE policy. It changes the verification specification only,
                 // never any Jason Goal/Belief, CArtAgO property or Moise mission/goal state.
@@ -105,7 +105,7 @@ class AuctionPauseResumeIT {
                 Files.write(evidence.resolve("confirmation.json"),CanonicalJson.encode(confirmation.toMap()));
                 diagramAudit.capture("05-paused-confirmed");
                 diagramAudit.assertSourceRelations(recording.runtime,"05-paused-confirmed");
-                org.tzi.use.plugins.jacamo.codegrounded.GoalWorkbenchEvidence.capture(facade,session,evidence,true);
+                org.tzi.use.plugins.jacamo.codegrounded.WorkbenchEvidence.capture(facade,session,evidence,true);
                 Files.write(evidence.resolve("goals.json"),CanonicalJson.encode(facade.goalView().schemes().stream().map(s->Map.of(
                         "object",s.object(),"instance",s.runtimeIdentity(),"spec",s.specId(),"runtime",s.runtime(),"arguments",s.arguments(),
                         "goals",s.goals().stream().map(g->Map.of("object",g.object(),"id",g.id(),"state",g.state(),"evidence",g.evidence(),

@@ -1,5 +1,6 @@
 package org.tzi.use.plugins.jacamo.codegrounded.runtime;
 
+import org.tzi.use.plugins.jacamo.codegrounded.trace.NativeObjectBindings;
 import java.io.ByteArrayInputStream;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
@@ -18,14 +19,13 @@ import org.tzi.use.parser.use.USECompiler;
 import org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService;
 import org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseSoilExporter;
 import org.tzi.use.uml.mm.ModelFactory;
-import org.tzi.use.uml.ocl.value.StringValue;
 import org.tzi.use.uml.sys.MObject;
 
 /** One recorded dispatcher for batch validation and retained offline cursors. Never feeds a Bridge. */
 public final class NativeRuntimeReplay {
     public record ReplayReport(boolean complete, int checkedEntries, String finalStateHash, String finalResultHash,
                                List<String> diagnostics) { public ReplayReport { diagnostics = List.copyOf(diagnostics); } }
-    static final List<String> FILES = List.of("model.use", "baseline.cmd", "constraints.ocl", "runtime.jsonl");
+    static final List<String> FILES = List.of("model.use", "baseline.cmd", "constraints.ocl", "runtime.jsonl", "bindings.json");
     public void exportBundle(NativeRuntimeProjector projector, String coreUseText, Path directory) {
         projector.coordinator().read(() -> {
             var coordinator = projector.coordinator();
@@ -55,12 +55,13 @@ public final class NativeRuntimeReplay {
             });
             writer.flush(); Files.writeString(output.resolve("model.use"),schema.toString(),StandardCharsets.UTF_8);
             Files.copy(coordinator.checkpoints().baseline().commands(), output.resolve("baseline.cmd"));
+            Files.write(output.resolve("bindings.json"),CanonicalJson.encode(projector.mutations().baselineBindings()));
             var profile = coordinator.constraints().profile();
             Files.writeString(output.resolve("constraints.ocl"), profile == null ? "" : profile.source(), StandardCharsets.UTF_8);
             Files.copy(coordinator.journal().path(), output.resolve("runtime.jsonl"));
             Map<String, Object> hashes = new LinkedHashMap<>();
             for (String file : FILES) hashes.put(file, ExternalOclConstraintService.sha256(Files.readAllBytes(output.resolve(file))));
-            Map<String, Object> manifest = Map.of("schemaVersion", "1.1.0", "files", hashes,
+            Map<String, Object> manifest = Map.of("schemaVersion", "2.0.0", "files", hashes,
                     "entries", coordinator.journal().persistedEntries(), "finalStateHash", coordinator.lastObservation().stateHash(),
                     "finalResultHash", coordinator.lastObservation().resultHash(), "baselineStateHash", coordinator.checkpoints().baseline().stateHash(),
                     "scope", "OBSERVED_SUPPORTED_PROJECTION_ONLY");
@@ -92,7 +93,7 @@ public final class NativeRuntimeReplay {
             Files.copy(root.resolve("manifest.json"), copy.resolve("manifest.json"));
             if (Files.size(copy.resolve("manifest.json")) > 65536) throw new IllegalArgumentException("REPLAY_MANIFEST_TOO_LARGE");
             Map<String, Object> manifest = CanonicalJson.object(CanonicalJson.decode(Files.readAllBytes(copy.resolve("manifest.json"))));
-            if (!java.util.Set.of("1.0.0","1.1.0").contains(manifest.get("schemaVersion"))) throw new IllegalArgumentException("REPLAY_SCHEMA_UNSUPPORTED");
+            if (!"2.0.0".equals(manifest.get("schemaVersion"))) throw new IllegalArgumentException("REPLAY_SCHEMA_UNSUPPORTED");
             if (!"OBSERVED_SUPPORTED_PROJECTION_ONLY".equals(manifest.get("scope"))) throw new IllegalArgumentException("REPLAY_SCOPE_UNSUPPORTED");
             Object entries = manifest.get("entries");
             if (!(entries instanceof Number count) || count.longValue() < 1 || count.longValue() > Integer.MAX_VALUE
@@ -169,13 +170,7 @@ public final class NativeRuntimeReplay {
                     "model.use", root.resolve("model.use").toUri(), new PrintWriter(diagnostics, true), new ModelFactory());
             if (model == null || !diagnostics.toString().isBlank()) throw new IllegalArgumentException("REPLAY_MODEL_COMPILE_REJECTED:" + diagnostics);
             var system = new NativeUseSoilExporter().replay(model, Files.readString(root.resolve("baseline.cmd")));
-            Map<String, MObject> index = new LinkedHashMap<>();
-            for (MObject object : system.state().allObjects()) {
-                var attribute = object.cls().attribute("semanticId", true);
-                if (attribute != null && object.state(system.state()).attributeValue(attribute) instanceof StringValue identity
-                        && index.putIfAbsent(identity.value(), object) != null)
-                    throw new IllegalArgumentException("REPLAY_DUPLICATE_SEMANTIC_ID");
-            }
+            var index = NativeObjectBindings.fromMap(system,CanonicalJson.object(CanonicalJson.decode(Files.readAllBytes(root.resolve("bindings.json")))));
             var cursor = new Cursor(this, system, index);
             try { cursor.dispatchNext(); return cursor; }
             catch (Exception error) { cursor.close(); throw error; }
@@ -194,14 +189,14 @@ public final class NativeRuntimeReplay {
     public static final class Cursor implements AutoCloseable {
         private final Bundle bundle;
         private final org.tzi.use.uml.sys.MSystem system;
-        private final Map<String,MObject> index;
+        private final NativeObjectBindings index;
         private final BufferedReader reader;
         private NativeRuntimeProjector projector;
         private String nextLine, chain="", lastProfile="";
         private long ordinal;
         private boolean stale, closed, failed;
         private RuntimeVerificationResult previousResult;
-        private Cursor(Bundle bundle, org.tzi.use.uml.sys.MSystem system, Map<String,MObject> index) throws Exception {
+        private Cursor(Bundle bundle, org.tzi.use.uml.sys.MSystem system, NativeObjectBindings index) throws Exception {
             this.bundle=bundle; this.system=system; this.index=index;
             reader=Files.newBufferedReader(bundle.root.resolve("runtime.jsonl"),StandardCharsets.UTF_8);
             nextLine=reader.readLine();

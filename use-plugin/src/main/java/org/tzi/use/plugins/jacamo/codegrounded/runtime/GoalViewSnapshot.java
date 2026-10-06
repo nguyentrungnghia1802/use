@@ -46,24 +46,24 @@ public record GoalViewSnapshot(List<Scheme> schemes,String synchronization,Strin
             groups.put(null,specificationGoals);
             for(var entry:groups.entrySet()) {
                 var scheme=entry.getKey();var bySpec=new TreeMap<String,List<MObject>>();
-                entry.getValue().forEach(g->bySpec.computeIfAbsent(text(g,state,"schemeSpecSemanticId"),unused->new ArrayList<>()).add(g));
-                if(scheme!=null && bySpec.isEmpty())bySpec.put(text(scheme,state,"specSemanticId"),List.of());
+                entry.getValue().forEach(g->bySpec.computeIfAbsent(coordinator.objectMetadata(g,"schemeSpecSemanticId"),unused->new ArrayList<>()).add(g));
+                if(scheme!=null && bySpec.isEmpty())bySpec.put(coordinator.objectMetadata(scheme,"specSemanticId"),List.of());
                 for(var scope:bySpec.entrySet()) {
                     var goals=new ArrayList<Goal>();
                     for(var goal:scope.getValue().stream().sorted(Comparator.comparing(MObject::name)).toList()) {
-                        String identity=text(goal,state,"semanticId");
+                        String identity=coordinator.objectMetadata(goal,"semanticId");
                         var missionObjects=related(system,"missionGoals","Mission","OrganizationalGoal",goal,1);
                         var missions=missionObjects.stream().map(m->new Mission(m.name(),text(m,state,"id"),
                                 related(system,"committedTo","Agent","Mission",m,1).stream().map(a->agent(system,a,aliases)).toList())).toList();
-                        var source=traces.stream().filter(t->t.semanticId().equals(identity) || t.semanticId().equals(text(goal,state,"specSemanticId"))
+                        var source=traces.stream().filter(t->t.semanticId().equals(identity) || t.semanticId().equals(coordinator.objectMetadata(goal,"specSemanticId"))
                                 || t.targetUseId().equals(goal.name())).map(t->new Source(t.sourcePath()==null?"unavailable":t.sourcePath().toString(),t.sourceLine(),t.semanticId(),t.mappingRule())).distinct().toList();
                         var relevant=violations.stream().filter(v->v.involvedObjects().containsKey(goal.name()) || (scheme!=null && v.involvedObjects().containsKey(scheme.name()))
                                 || missionObjects.stream().anyMatch(m->v.involvedObjects().containsKey(m.name()))).toList();
                         var parents=related(system,"subGoals","OrganizationalGoal","OrganizationalGoal",goal,1);
                         var children=related(system,"subGoals","OrganizationalGoal","OrganizationalGoal",goal,0).stream()
                                 .sorted(Comparator.comparingInt(g->{Integer ordinal=integer(g,state,"orderInParent");return ordinal==null?Integer.MAX_VALUE:ordinal;})).map(MObject::name).toList();
-                        String evidence=text(goal,state,"stateEvidence"),runtimeState=text(goal,state,"runtimeState");
-                        boolean stateAvailable=scheme!=null && coordinator.goalStateAvailable(text(scheme,state,"runtimeIdentity"));
+                        String evidence=coordinator.objectMetadata(goal,"stateEvidence"),runtimeState=text(goal,state,"runtimeState");
+                        boolean stateAvailable=scheme!=null && coordinator.goalStateAvailable(coordinator.objectMetadata(scheme,"runtimeIdentity"));
                         var applicable=latest==null?List.<org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.Outcome>of():
                                 latest.outcomes().stream().filter(o->o.contextClass().equals(goal.cls().name()) && (o.contextObject().isBlank() || o.contextObject().equals(goal.name()))).toList();
                         String verification=latest!=null && latest.freshness().equals("STALE")?"STALE":applicable.isEmpty()?"NOT_RUN":
@@ -71,7 +71,7 @@ public record GoalViewSnapshot(List<Scheme> schemes,String synchronization,Strin
                                 applicable.stream().anyMatch(o->o.outcome()==org.tzi.use.plugins.jacamo.verification.VerificationOutcome.FAIL && failingContexts.getOrDefault(o.constraintId(),Set.of()).isEmpty())?"CONTEXT_UNCONFIRMED":
                                 applicable.stream().anyMatch(o->o.outcome()==org.tzi.use.plugins.jacamo.verification.VerificationOutcome.ERROR)?"ERROR":
                                 applicable.stream().anyMatch(o->o.outcome()==org.tzi.use.plugins.jacamo.verification.VerificationOutcome.SKIPPED)?"SKIPPED":"PASS";
-                        goals.add(new Goal(goal.name(),identity,text(goal,state,"specSemanticId"),text(goal,state,"id"),
+                        goals.add(new Goal(goal.name(),identity,coordinator.objectMetadata(goal,"specSemanticId"),text(goal,state,"id"),
                                 !stateAvailable || runtimeState.isBlank()?"UNKNOWN / UNAVAILABLE":runtimeState,
                                 !stateAvailable?"UNAVAILABLE"+(runtimeState.isBlank()?"":"; last observed "+runtimeState+" via "+evidence):evidence.isBlank()?"UNAVAILABLE":evidence,
                                 text(goal,state,"decompositionOperator"),integer(goal,state,"orderInParent"),parents.isEmpty()?"":parents.getFirst().name(),children,missions,
@@ -79,9 +79,9 @@ public record GoalViewSnapshot(List<Scheme> schemes,String synchronization,Strin
                                 related(system,"goalAchievement","Agent","OrganizationalGoal",goal,1).stream().map(a->agent(system,a,aliases)).toList(),source,relevant,verification));
                     }
                     result.add(new Scheme(scheme==null?"":scheme.name(),scheme==null?"Specification goals":text(scheme,state,"name"),
-                            scheme==null?"":text(scheme,state,"semanticId"),scope.getKey(),scheme==null?"":text(scheme,state,"runtimeIdentity"),
-                            scheme!=null && text(scheme,state,"sourceLayer").equals("RUNTIME"),scheme==null?"":text(scheme,state,"arguments"),
-                            scheme==null?List.of():related(system,"responsibleFor","Group","Scheme",scheme,1).stream().map(g->g.name()+" ["+text(g,state,"semanticId")+"]").toList(),goals));
+                            scheme==null?"":coordinator.objectMetadata(scheme,"semanticId"),scope.getKey(),scheme==null?"":coordinator.objectMetadata(scheme,"runtimeIdentity"),
+                            scheme!=null && coordinator.objectMetadata(scheme,"sourceLayer").equals("RUNTIME"),scheme==null?"":text(scheme,state,"arguments"),
+                            scheme==null?List.of():related(system,"responsibleFor","Group","Scheme",scheme,1).stream().map(g->g.name()+" ["+coordinator.objectMetadata(g,"semanticId")+"]").toList(),goals));
                 }
             }
             var cut=coordinator.verificationSnapshot();

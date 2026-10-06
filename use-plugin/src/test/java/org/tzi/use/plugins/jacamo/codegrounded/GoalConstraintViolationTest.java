@@ -36,7 +36,7 @@ class GoalConstraintViolationTest {
             var responsibility="NATIVE:OrganizationalGoal::GoalCommittedResponsibility";var occurrence=children.getFirst();
             var agent=state.allObjects().stream().filter(o->DomainProjection.kind(o.cls()).equals("agent-program")).findFirst().orElseThrow();
             coordinator.read(()->{
-                api.setAttributeValueEx(occurrence,occurrence.cls().attribute("stateEvidence",true),new StringValue("OFFICIAL_SCHEME_BOARD_OBSERVABLE_V1"));
+                api.setAttributeValueEx(occurrence,occurrence.cls().attribute("runtimeState",true),new StringValue("WAITING"));
                 api.createLink(DomainProjection.relation("goalCommitment","Agent","OrganizationalGoal"),new String[]{agent.name(),occurrence.name()});return null;
             });
             coordinator.manualVerify();var broken=coordinator.latest().outcomes().stream().filter(o->o.constraintId().equals(responsibility)).findFirst().orElseThrow();

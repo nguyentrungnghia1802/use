@@ -43,7 +43,7 @@ class NativeRuntimeFacadeIntegrationTest {
         try (var facade = BridgeFacadeTestSupport.nativeFacade(jcm, session, unavailable::get)) {
             facade.importProject(jcm); var system = session.system();
             var profile = directory.resolve("defined.ocl");
-            java.nio.file.Files.writeString(profile, "context Agent inv Defined: not self.semanticId.oclIsUndefined()");
+            java.nio.file.Files.writeString(profile, "context Agent inv Defined: not self.name.oclIsUndefined()");
             facade.loadVerificationProfile(profile); facade.resyncRuntime();
             assertTrue(facade.runtimeVerificationResult().count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.PASS) > 0);
             unavailable.set(true); assertThrows(RuntimeException.class, facade::resyncRuntime);
@@ -127,8 +127,8 @@ class NativeRuntimeFacadeIntegrationTest {
         RuntimeEvent event = new RuntimeEvent("phase7-facade-event", "test-session", 1, model.modelRevision(),
                 "jason", "jason", 1, Instant.EPOCH, RuntimeEventKind.ADDED, RuntimeFactKind.AGENT,
                 ProjectionStatus.MATERIALIZED_FAITHFULLY, runtimeAgent, binding, "", "", Map.of(),
-                Map.of("normalizedEventKind", "SET_ATTRIBUTE", "attribute", "host", "valueType", "STRING",
-                        "value", "facade-runtime-host"), new SourceWatermark("jason", 1),
+                Map.of("normalizedEventKind", "SET_ATTRIBUTE", "attribute", "name", "valueType", "STRING",
+                        "value", "facade-runtime-name"), new SourceWatermark("jason", 1),
                 Completeness.COMPLETE, List.of());
         Session session = new Session();
         try (var facade = BridgeFacadeTestSupport.nativeFacadeWithEvents(jcm, session, () -> false, List.of(event))) {
@@ -136,10 +136,10 @@ class NativeRuntimeFacadeIntegrationTest {
             var system = session.system();
             var agent = system.state().objectByName(system.state().allObjects().stream()
                     .filter(object -> "agent-program".equals(object.cls().getAnnotationValue("DomainProjection", "kind"))
-                            && object.state(system.state()).attributeValue("semanticId").toString()
-                            .equals("'" + agentSemanticId + "'")).findFirst().orElseThrow().name());
-            assertEquals("facade-runtime-host", ((StringValue) agent.state(system.state())
-                    .attributeValue(agent.cls().attribute("host", true))).value());
+                            && facade.verificationSnapshot().image().objects().get(object.name()).semanticId()
+                            .equals(agentSemanticId)).findFirst().orElseThrow().name());
+            assertEquals("facade-runtime-name", ((StringValue) agent.state(system.state())
+                    .attributeValue(agent.cls().attribute("name", true))).value());
             assertSame(system, facade.materializedSystem());
             assertSame(system, session.system());
             assertEquals(1, facade.runtimeStatus().processed());

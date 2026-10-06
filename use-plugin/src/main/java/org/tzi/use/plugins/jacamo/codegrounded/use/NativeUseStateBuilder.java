@@ -1,5 +1,6 @@
 package org.tzi.use.plugins.jacamo.codegrounded.use;
 
+import org.tzi.use.plugins.jacamo.codegrounded.trace.NativeObjectBindings;
 import java.io.*;
 import java.util.*;
 import org.jacamo.bridge.contract.semantic.SemanticMetadata;
@@ -17,7 +18,7 @@ public final class NativeUseStateBuilder {
         var trace=new CodeGroundedTraceCollector(); schema.trace().records().forEach(trace::add); return build(source,schema,trace);
     }
     public Result build(JacamoSpecificationModel source,NativeUseModelBuilder.Result schema,CodeGroundedTraceCollector trace) {
-        var system=new MSystem(schema.model()); var api=UseSystemApi.create(system,false); Map<String,MObject> objects=new LinkedHashMap<>();
+        var system=new MSystem(schema.model()); var api=UseSystemApi.create(system,false); NativeObjectBindings objects=new NativeObjectBindings();
         var snapshot=source.snapshot();
         try {
             // Pass 1: objects and exact source identity.
@@ -32,8 +33,8 @@ public final class NativeUseStateBuilder {
                 var program=programs.get(0);
                 String cls=DomainProjection.classFor(schema.model(),"agent-program",DomainProjection.programId(program.sourceUri(),program.sourceDigest()));
                 MObject object=create(api,objects,cls,agent.name(),agent.metadata().semanticId());
-                text(api,object,"sourceUri",program.sourceUri()); text(api,object,"host",agent.host());
-                instanceTrace(trace,"J02",agent.metadata(),object);
+                objects.metadata(object,"sourceUri",program.sourceUri()); objects.metadata(object,"host",agent.host());
+                instanceTrace(objects,trace,"J02",agent.metadata(),object);
                 for(var belief:program.beliefs()) {
                     DomainProjection.trace(trace,"A08",belief.metadata(),"SemanticEvidence",belief.metadata().semanticId(),IGNORE_NOT_NEEDED,
                         "BELIEF_REQUIRES_DOMAIN_PROVENANCE_AND_ACTIVE_OCL_DEMAND");
@@ -41,9 +42,9 @@ public final class NativeUseStateBuilder {
                 for(var goal:program.goals()) {
                     String id=DomainProjection.occurrenceId("initial-goal",agent.metadata().semanticId(),goal.metadata().semanticId());
                     var value=create(api,objects,"AgentGoal","goal_"+DomainProjection.hash(id),id);
-                    text(api,value,"literal",goal.literal()); text(api,value,"sourceLayer","INITIAL");
+                    text(api,value,"literal",goal.literal()); objects.metadata(value,"sourceLayer","INITIAL");
                     link(api,DomainProjection.relation("hasGoal","Agent","AgentGoal"),object,value);
-                    instanceTrace(trace,"A09",goal.metadata(),value);
+                    instanceTrace(objects,trace,"A09",goal.metadata(),value);
                     DomainProjection.trace(trace,"A22",goal.metadata(),"MLink",object.name()+"->"+value.name(),PRESERVE_AS_LINK);
                 }
             }
@@ -51,7 +52,7 @@ public final class NativeUseStateBuilder {
             for(var deployment:snapshot.organizationDeployments()) {
                 var org=DomainProjection.organization(snapshot,deployment); String cls=DomainProjection.classFor(schema.model(),"organisation",org.metadata().semanticId());
                 var object=create(api,objects,cls,deployment.name(),deployment.metadata().semanticId());
-                deploymentOs.put(deployment.name(),org.metadata().semanticId()); instanceTrace(trace,"J05",deployment.metadata(),object);
+                deploymentOs.put(deployment.name(),org.metadata().semanticId()); instanceTrace(objects,trace,"J05",deployment.metadata(),object);
             }
             Map<String,String> groupTypes=new LinkedHashMap<>();
             for(var deployment:snapshot.groupDeployments()) {
@@ -62,7 +63,7 @@ public final class NativeUseStateBuilder {
                 if(groups.size()!=1) throw new IllegalArgumentException("GROUP_SPECIFICATION_UNRESOLVED:"+deployment.metadata().semanticId());
                 String cls=DomainProjection.classFor(schema.model(),"group",groups.get(0).metadata().semanticId());
                 var object=create(api,objects,cls,deployment.name(),deployment.metadata().semanticId());
-                groupTypes.put(deployment.metadata().semanticId(),groups.get(0).metadata().semanticId()); instanceTrace(trace,"J06",deployment.metadata(),object);
+                groupTypes.put(deployment.metadata().semanticId(),groups.get(0).metadata().semanticId()); instanceTrace(objects,trace,"J06",deployment.metadata(),object);
             }
             Set<String> deployedSchemes=new HashSet<>();
             for(var deployment:snapshot.schemeDeployments()) {
@@ -72,7 +73,7 @@ public final class NativeUseStateBuilder {
                 if(matches.size()!=1) throw new IllegalArgumentException("SCHEME_SPECIFICATION_UNRESOLVED:"+deployment.metadata().semanticId());
                 var specification=matches.getFirst();
                 String cls=DomainProjection.classFor(schema.model(),"scheme",specification.metadata().semanticId());
-                var object=create(api,objects,cls,deployment.name(),deployment.metadata().semanticId()); instanceTrace(trace,"J07",deployment.metadata(),object);
+                var object=create(api,objects,cls,deployment.name(),deployment.metadata().semanticId()); instanceTrace(objects,trace,"J07",deployment.metadata(),object);
                 link(api,DomainProjection.relation("containsScheme","Organization","Scheme"),required(objects,snapshot.organizationDeployments().stream()
                     .filter(o->o.name().equals(deployment.organization())).findFirst().orElseThrow().metadata().semanticId()),object);
                 DomainProjection.trace(trace,"M33",specification.metadata(),"MLink",object.name()+":organisation",PRESERVE_AS_LINK);
@@ -83,7 +84,7 @@ public final class NativeUseStateBuilder {
                 if(!deployedSchemes.contains(scheme.metadata().semanticId())) MoiseDomainProjection.materializeFunctional(api,objects,trace,org,scheme,null);
             for(var declaration:snapshot.workspaceDeclarations()) {
                 var object=create(api,objects,"Workspace",declaration.name(),declaration.metadata().semanticId());
-                text(api,object,"fullName",declaration.name()); instanceTrace(trace,"J03",declaration.metadata(),object);
+                objects.metadata(object,"fullName",declaration.name()); instanceTrace(objects,trace,"J03",declaration.metadata(),object);
             }
             for(var declaration:snapshot.artifactDeclarations()) {
                 String cls;
@@ -91,10 +92,10 @@ public final class NativeUseStateBuilder {
                 catch(IllegalArgumentException unavailable) { continue; } // The type diagnostic already records missing evidence.
                 var workspaces=snapshot.workspaceDeclarations().stream().filter(w->w.name().equals(declaration.workspace())).toList();
                 if(workspaces.size()!=1) throw new IllegalArgumentException("ARTIFACT_DECLARATION_WORKSPACE_UNRESOLVED:"+declaration.metadata().semanticId());
-                var object=create(api,objects,cls,declaration.name(),declaration.metadata().semanticId()); instanceTrace(trace,"J04",declaration.metadata(),object);
+                var object=create(api,objects,cls,declaration.name(),declaration.metadata().semanticId()); instanceTrace(objects,trace,"J04",declaration.metadata(),object);
                 var workspace=required(objects,workspaces.getFirst().metadata().semanticId());
-                text(api,object,"workspaceSemanticId",workspaces.getFirst().metadata().semanticId());
-                text(api,object,"artifactTypeSemanticId",DomainProjection.artifactId(declaration.javaClass()));
+                objects.metadata(object,"workspaceSemanticId",workspaces.getFirst().metadata().semanticId());
+                objects.metadata(object,"artifactTypeSemanticId",DomainProjection.artifactId(declaration.javaClass()));
                 link(api,DomainProjection.relation("locatedIn","Workspace","Artifact"),workspace,object);
                 DomainProjection.trace(trace,"J04",declaration.metadata(),"MLink",workspace.name()+"->"+object.name(),PRESERVE_AS_LINK);
             }
@@ -107,8 +108,8 @@ public final class NativeUseStateBuilder {
                     var object=roots.isEmpty() ? create(api,objects,"Workspace",workspace.name(),workspace.metadata().semanticId())
                             : required(objects,roots.getFirst().metadata().semanticId());
                     objects.put(workspace.metadata().semanticId(),object);
-                    text(api,object,"uuid",workspace.uuid()); text(api,object,"fullName",workspace.fullName()); text(api,object,"environmentSemanticId",workspace.environmentSemanticId());
-                    instanceTrace(trace,"C02",workspace.metadata(),object);
+                    objects.metadata(object,"uuid",workspace.uuid()); objects.metadata(object,"fullName",workspace.fullName()); objects.metadata(object,"environmentSemanticId",workspace.environmentSemanticId());
+                    instanceTrace(objects,trace,"C02",workspace.metadata(),object);
                 }
                 for(var artifact:environment.artifacts()) {
                     String cls=schema.nativeArtifactTypeClassNames().get(artifact.artifactTypeSemanticId());
@@ -118,9 +119,9 @@ public final class NativeUseStateBuilder {
                         throw new IllegalArgumentException("ARTIFACT_TYPE_UNRESOLVED:"+artifact.artifactTypeSemanticId());
                     }
                     var object=create(api,objects,cls,artifact.name(),artifact.metadata().semanticId());
-                    text(api,object,"uuid",artifact.uuid()); text(api,object,"workspaceSemanticId",artifact.workspaceSemanticId());
-                    text(api,object,"artifactTypeSemanticId",artifact.artifactTypeSemanticId()); text(api,object,"creatorAgentSemanticId",artifact.creatorAgentSemanticId());
-                    instanceTrace(trace,"C04",artifact.metadata(),object);
+                    objects.metadata(object,"uuid",artifact.uuid()); objects.metadata(object,"workspaceSemanticId",artifact.workspaceSemanticId());
+                    objects.metadata(object,"artifactTypeSemanticId",artifact.artifactTypeSemanticId()); objects.metadata(object,"creatorAgentSemanticId",artifact.creatorAgentSemanticId());
+                    instanceTrace(objects,trace,"C04",artifact.metadata(),object);
                 }
                 for(var property:environment.propertySnapshots()) {
                     var artifact=objects.get(property.artifactSemanticId()); if(artifact==null) continue;
@@ -173,7 +174,7 @@ public final class NativeUseStateBuilder {
                 var agent=required(objects,tuple.agentDeclarationId());
                 var relation=MoiseDomainProjection.roleAssociation(schema.model(),os,specification.metadata().semanticId(),roleId);
                 var roleObject=MoiseDomainProjection.linkObject(api,objects,relation,agent,group);
-                instanceTrace(trace,"X04",tuple.metadata(),roleObject);
+                instanceTrace(objects,trace,"X04",tuple.metadata(),roleObject);
                 trace.add(new org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalog().require("X04"),
                     TracePhase.INSTANCE_MATERIALIZATION,tuple.metadata(),"MLink",relation.name()+":"+agent.name()+"->"+group.name(),
                     List.of("DISPOSITION=PRESERVE_AS_LINK","SEMANTIC_KIND=player-role-assignment",
@@ -222,12 +223,12 @@ public final class NativeUseStateBuilder {
             return new Result(system,objects,trace.index(),structure,invariants,validation.toString(),schema.profile());
         } catch(UseApiException error) { throw new IllegalStateException("NATIVE_USE_STATE_BUILD_FAILED:"+error.getMessage(),error); }
     }
-    private static MObject create(UseSystemApi api,Map<String,MObject> objects,String cls,String human,String id) throws UseApiException {
+    private static MObject create(UseSystemApi api,NativeObjectBindings objects,String cls,String human,String id) throws UseApiException {
         if(objects.containsKey(id)) throw new IllegalArgumentException("RUNTIME_IDENTITY_DUPLICATED:"+id);
         String name=objectName(cls,human,id);
         if(api.getSystem().state().objectByName(name)!=null) name=name+"_"+DomainProjection.hash(id);
         var object=api.createObject(cls,name); objects.put(id,object);
-        text(api,object,"semanticId",id);
+        objects.metadata(object,"semanticId",id);
         if(object.cls().attribute("name",true)!=null) text(api,object,"name",human);
         return object;
     }
@@ -242,15 +243,16 @@ public final class NativeUseStateBuilder {
         if(target==null) throw new IllegalArgumentException("DOMAIN_ASSOCIATION_UNRESOLVED:"+association);
         MObject[] pair={one,two}; if(!api.getSystem().state().hasLinkBetweenObjects(target,pair)) api.createLinkEx(target,pair);
     }
-    private static void instanceTrace(CodeGroundedTraceCollector trace,String rule,SemanticMetadata source,MObject object) {
+    private static void instanceTrace(NativeObjectBindings objects,CodeGroundedTraceCollector trace,String rule,SemanticMetadata source,MObject object) {
+        objects.source(object,source,rule);
         trace.add(new org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalog().require(rule),TracePhase.INSTANCE_MATERIALIZATION,
             source,"MObject",object.name(),List.of("SEMANTIC_KIND="+DomainProjection.kind(object.cls())));
         for(var attribute:object.cls().allAttributes()) trace.add(new org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalog().require(rule),
             TracePhase.INSTANCE_MATERIALIZATION,source,"MValue","value:"+object.name()+"."+attribute.name(),List.of("DISPOSITION=CONVERT_TO_ATTRIBUTE"));
     }
     public static String objectName(String kind,String human,String semanticId) { return DomainProjection.symbol(human==null || human.isBlank() ? kind : human); }
-    public record Result(MSystem system,Map<String,MObject> semanticObjectIndex,CodeGroundedTraceIndex trace,boolean structureValid,
+    public record Result(MSystem system,NativeObjectBindings semanticObjectIndex,CodeGroundedTraceIndex trace,boolean structureValid,
         boolean invariantsValid,String validationOutput,NativeProjectionProfile profile) {
-        public Result { semanticObjectIndex=Collections.unmodifiableMap(new LinkedHashMap<>(semanticObjectIndex)); }
+        public Result { semanticObjectIndex=new NativeObjectBindings(semanticObjectIndex); }
     }
 }

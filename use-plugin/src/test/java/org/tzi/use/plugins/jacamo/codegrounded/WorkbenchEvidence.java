@@ -9,7 +9,7 @@ import org.tzi.use.plugins.jacamo.JaCaMoFacade;
 import org.tzi.use.plugins.jacamo.ui.JaCaMoWorkbenchPanel;
 
 /** Real native Swing views on the active Session; controls still go through the facade. */
-public final class GoalWorkbenchEvidence {
+public final class WorkbenchEvidence {
     public static void capture(JaCaMoFacade facade,Session session,Path evidence,boolean paused) throws Exception {
         String oldHeight=System.getProperty("use.gui.view.classdiagram.class.minheight");
         String oldWidth=System.getProperty("use.gui.view.classdiagram.class.minwidth");
@@ -17,24 +17,20 @@ public final class GoalWorkbenchEvidence {
         System.setProperty("use.gui.view.classdiagram.class.minwidth","140");
         MainWindow.setJavaFxCall(true);
         var window=StepReplayProof.onEdt(()->MainWindow.create(session,org.tzi.use.runtime.impl.PluginRuntime.getInstance()));
-        var frame=StepReplayProof.onEdt(()->new JFrame("Runtime Goal verification acceptance"));
+        var frame=StepReplayProof.onEdt(()->new JFrame("Simplified Workbench acceptance"));
         try {
             StepReplayProof.onEdt(()->{
                 var panel=new JaCaMoWorkbenchPanel(facade);frame.setContentPane(panel);frame.setSize(1550,1100);frame.setVisible(true);panel.refreshRuntime();
                 var tabs=StepReplayProof.component(panel,"workbench-tabs",JTabbedPane.class);
-                if(paused) {
-                    assertTrue(StepReplayProof.component(panel,"jason-control-state",JLabel.class).getText().contains("Jason agents paused"));
-                    assertTrue(StepReplayProof.button(panel,"runtime-resume").isEnabled());
-                    tabs.setSelectedIndex(1);image(frame,evidence.resolve("verification-paused.png"));
-                    var tree=StepReplayProof.component(panel,"goal-tree",JTree.class);assertNotNull(tree.getSelectionPath());
-                    assertTrue(StepReplayProof.component(panel,"goal-detail",JTextArea.class).getText().contains("decide"));
-                }
-                tabs.setSelectedIndex(2);image(frame,evidence.resolve("goal-view.png"));
+                assertEquals(1,tabs.getTabCount());assertEquals("Projection Rules",tabs.getTitleAt(0));
+                var rules=StepReplayProof.component(panel,"mapping-rules-table",JTable.class);assertEquals(3,rules.getColumnCount());
+                if(paused)assertEquals(org.jacamo.bridge.contract.RuntimeControlContract.State.PAUSED,facade.runtimeControlState().state());
+                image(frame,evidence.resolve("workbench.png"));
                 facade.showObjectDiagram();assertSame(session.system(),window.getObjectDiagrams().getFirst().system());
                 assertTrue(window.getObjectDiagrams().getFirst().getDiagram().getVisibleData().fObjectToNodeMap.keySet().containsAll(session.system().state().allObjects()));
                 return null;
             });
-            NativeObjectDiagramEvidence.capture(window,evidence,"native-object-diagram",paused?"Jason agents paused; active native USE state":"Observed Goal state on the active native USE system");
+            NativeObjectDiagramEvidence.capture(window,evidence,"native-object-diagram",paused?"Jason agents paused; active native USE state":"Observed domain state on the active native USE system");
         } finally {StepReplayProof.onEdt(()->{window.getObjectDiagrams().forEach(view->view.detachModel());frame.dispose();window.dispose();MainWindow.setJavaFxCall(false);return null;});
             restore("use.gui.view.classdiagram.class.minheight",oldHeight);restore("use.gui.view.classdiagram.class.minwidth",oldWidth);}
     }

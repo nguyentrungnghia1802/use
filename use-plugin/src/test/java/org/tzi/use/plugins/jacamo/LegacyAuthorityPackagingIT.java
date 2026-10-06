@@ -24,7 +24,8 @@ class LegacyAuthorityPackagingIT {
                     "org/tzi/use/plugins/jacamo/codegrounded/runtime/VerificationSnapshot.class",
                     "org/tzi/use/plugins/jacamo/codegrounded/runtime/SnapshotRetention.class",
                     "org/tzi/use/plugins/jacamo/codegrounded/runtime/GoalViewSnapshot.class",
-                    "org/tzi/use/plugins/jacamo/ui/GoalViewPanel.class",
+                    "org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel.class",
+                    "org/tzi/use/plugins/jacamo/ui/MappingRulesPanel.class",
                     "org/tzi/use/plugins/jacamo/runtime/MirrorState.class",
                     "org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeTraceRecord.class",
                     "org/tzi/use/plugins/jacamo/codegrounded/rule/CodeGroundedRuleCatalog.class",
@@ -38,6 +39,8 @@ class LegacyAuthorityPackagingIT {
                 assertNotNull(zip.getEntry(required), "required production foundation missing: " + required);
             }
             for (String removed : List.of(
+                    "org/tzi/use/plugins/jacamo/ui/GoalViewPanel.class",
+                    "org/tzi/use/plugins/jacamo/ui/RuntimeHistoryRows.class",
                     "org/tzi/use/plugins/jacamo/bridge/NativeSemanticAdapter.class",
                     "org/tzi/use/plugins/jacamo/bridge/BridgeRuntimeProjector.class",
                     "org/tzi/use/plugins/jacamo/bridge/BridgeVerificationGate.class",

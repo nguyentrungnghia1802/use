@@ -50,9 +50,7 @@ public final class StepReplayProof {
         int[] stableListeners={-1,-1,-1,-1};
         var visited=new ArrayList<Map<String,Object>>();
         try {
-            onEdt(()->{assertEquals(0,field(panel,"backgroundOperations"),"Unexpected pending operation before Open");
-                panel.openStepReplay(recording);assertFalse(button(panel,"step-replay-open").isEnabled());
-                assertFalse(button(panel,"step-replay-next").isEnabled()); return null;});
+            facade.openStepReplay(recording);
             awaitReady(panel,facade,errors);
             assertTrue(errors.isEmpty(),errors.toString());
             assertNotNull(facade.stepReplayStatus(),"Open control released without a selected replay: "+onEdt(()->component(panel,"workbench-status",JLabel.class).getText()));
@@ -62,33 +60,34 @@ public final class StepReplayProof {
             dialog[0]=onEdt(()->Arrays.stream(Window.getWindows()).filter(JDialog.class::isInstance).map(JDialog.class::cast)
                     .filter(value->value.isDisplayable()&&value.getOwner()==window&&value.getTitle().equals("Evaluate OCL expression")).findFirst().orElseThrow());
             for(int cycle=0;cycle<3;cycle++) {
-                navigate(panel,facade,"step-replay-reset",errors);check(panel,facade,session,window,dialog[0],expected,stableListeners,visited);
-                navigate(panel,facade,"step-replay-next",errors);check(panel,facade,session,window,dialog[0],expected,stableListeners,visited);
+                navigate(panel,facade,"reset",errors);check(panel,facade,session,window,dialog[0],expected,stableListeners,visited);
+                navigate(panel,facade,"next",errors);check(panel,facade,session,window,dialog[0],expected,stableListeners,visited);
                 MSystem forward=session.system();
-                navigate(panel,facade,"step-replay-next",errors);assertSame(forward,session.system());
+                navigate(panel,facade,"next",errors);assertSame(forward,session.system());
                 check(panel,facade,session,window,dialog[0],expected,stableListeners,visited);
-                navigate(panel,facade,"step-replay-previous",errors);assertNotSame(forward,session.system());
+                navigate(panel,facade,"previous",errors);assertNotSame(forward,session.system());
                 assertFalse(hasGuiSubscribers(forward),"Old system must not retain USE GUI callbacks");
                 check(panel,facade,session,window,dialog[0],expected,stableListeners,visited);
-                navigate(panel,facade,"step-replay-next",errors);check(panel,facade,session,window,dialog[0],expected,stableListeners,visited);
+                navigate(panel,facade,"next",errors);check(panel,facade,session,window,dialog[0],expected,stableListeners,visited);
             }
             if(captureStep==2) NativeObjectDiagramEvidence.capture(window,evidence,"object-diagram-after","after runtime transition step 2; "+steps.get(2).event());
             while(facade.stepReplayStatus().step()<facade.stepReplayStatus().total()) {
-                navigate(panel,facade,"step-replay-next",errors);
+                navigate(panel,facade,"next",errors);
                 check(panel,facade,session,window,dialog[0],expected,stableListeners,visited);
                 if(facade.stepReplayStatus().step()==captureStep) NativeObjectDiagramEvidence.capture(window,evidence,"object-diagram-after",
                         "after runtime transition step "+captureStep+"; "+steps.get(captureStep).event());
             }
             assertFalse(Files.readString(evidence.resolve("object-diagram-before.cmd")).equals(Files.readString(evidence.resolve("object-diagram-after.cmd"))),"Two diagrams must represent distinct actual states");
-            onEdt(()->{assertFalse(button(panel,"step-replay-next").isEnabled());
-                assertFalse(button(panel,"start-runtime").isEnabled());assertFalse(button(panel,"runtime-connect").isEnabled());
-                assertFalse(button(panel,"runtime-resync").isEnabled());assertFalse(button(panel,"load-profile").isEnabled());return null;});
+            onEdt(()->{panel.refreshRuntime();
+                assertFalse(button(panel,"import-project").isEnabled());
+                assertFalse(button(panel,"start-runtime").isEnabled());
+                assertFalse(button(panel,"load-profile").isEnabled());return null;});
             assertEquals(hashes,hashes(recording));
             assertEquals(originalSoil,new NativeUseSoilExporter().export(original).commands());
             assertFalse(hasGuiSubscribers(original));
             // Reopen uses a new isolated context, with no accumulated listener or object count.
             MSystem last=session.system();
-            onEdt(()->{panel.openStepReplay(recording);return null;});awaitReady(panel,facade,errors);
+            facade.openStepReplay(recording);awaitReady(panel,facade,errors);
             assertNotSame(last,session.system());assertFalse(hasGuiSubscribers(last));
             check(panel,facade,session,window,dialog[0],expected,stableListeners,visited);
             assertTrue(errors.isEmpty(),errors.toString());
@@ -113,7 +112,7 @@ public final class StepReplayProof {
             assertEquals(target.soil(),new NativeUseSoilExporter().export(system).commands());
             assertEquals(target.result().semanticEvidence(),result.result().semanticEvidence());
             assertEquals(target.result().resultHash(),result.result().resultHash());
-            assertEquals(state.numObjects(),state.allObjects().stream().map(object->object.state(state).attributeValue("semanticId")).distinct().count());
+            assertEquals(state.numObjects(),result.image().objects().values().stream().map(org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot.ObjectState::semanticId).distinct().count());
             assertEquals(state.allLinks().size(),state.allLinks().stream().map(Object::toString).distinct().count());
             assertTrue(state.allLinks().stream().allMatch(link->state.allObjects().containsAll(link.linkedObjects())));
             assertEquals(1,window.getObjectDiagrams().size());var diagram=window.getObjectDiagrams().getFirst();assertSame(system,diagram.system());
@@ -123,11 +122,6 @@ public final class StepReplayProof {
             var root=(javax.swing.tree.DefaultMutableTreeNode)tree.getModel().getRoot();
             var browser=Collections.list(root.depthFirstEnumeration()).stream().map(node->((javax.swing.tree.DefaultMutableTreeNode)node).getUserObject()).toList();
             assertTrue(system.model().classes().stream().allMatch(browser::contains));
-            panel.refreshRuntime();var table=component(panel,"verification-table",JTable.class);
-            assertEquals(result.result().outcomes().size(),table.getRowCount());
-            for(int row=0;row<table.getRowCount();row++) {
-                var outcome=result.result().outcomes().get(row);assertEquals(outcome.constraintId(),table.getValueAt(row,0));assertEquals(outcome.outcome(),table.getValueAt(row,2));
-            }
             var invariants=components(window,org.tzi.use.gui.views.ClassInvariantView.class);
             assertEquals(1,invariants.size());
             var invariantTable=components(invariants.getFirst(),JTable.class).getFirst();
@@ -153,18 +147,23 @@ public final class StepReplayProof {
                     "stateHash",result.result().stateHash(),"resultHash",result.result().resultHash()));return null;
         });
     }
-    public static void navigate(JaCaMoWorkbenchPanel panel,JaCaMoFacade facade,String name,List<String> errors)throws Exception {
-        onEdt(()->{var control=button(panel,name);assertTrue(control.isEnabled(),name);control.doClick();
-            assertFalse(button(panel,"step-replay-reset").isEnabled());assertFalse(button(panel,"step-replay-next").isEnabled());
-            // Rapid second click is disabled before SwingWorker scheduling; one operation only.
-            button(panel,"step-replay-next").doClick();return null;});awaitReady(panel,facade,errors);
+    private static void navigate(JaCaMoWorkbenchPanel panel,JaCaMoFacade facade,String action,List<String> errors)throws Exception {
+        // Replay remains a core API regression. Its retired Workbench controls are not recreated here.
+        switch(action) {
+            case "reset" -> facade.resetStepReplay();
+            case "previous" -> facade.previousStepReplay();
+            case "next" -> facade.nextStepReplay();
+            default -> throw new IllegalArgumentException(action);
+        }
+        awaitReady(panel,facade,errors);
     }
     public static void awaitReady(JaCaMoWorkbenchPanel panel,JaCaMoFacade facade,List<String> errors)throws Exception {
         long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(120);
         while(System.nanoTime()<deadline&&errors.isEmpty()) {
-            if(onEdt(()->!facade.stepReplayBusy()&&button(panel,"step-replay-open").isEnabled()))return;
+            if(!facade.stepReplayBusy()){onEdt(()->{panel.refreshRuntime();return null;});return;}
             Thread.sleep(20);
-        }fail("Step operation did not complete: "+errors);
+        }
+        fail("Step operation did not complete: "+errors);
     }
     public static JaCaMoWorkbenchPanel panel(JaCaMoFacade facade,List<String> errors)throws Exception {
         var ctor=JaCaMoWorkbenchPanel.class.getDeclaredConstructor(JaCaMoFacade.class,java.util.function.Consumer.class);ctor.setAccessible(true);

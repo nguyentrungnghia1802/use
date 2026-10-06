@@ -78,7 +78,7 @@ class NativeOperationCheckpointTest {
             assertEquals(p.coordinator().latest(),RuntimeVerificationResult.fromMap(p.coordinator().latest().toMap()));
             var violation=service.violations().stream().filter(v->v.constraintId().contains("ValueRequired")).findFirst().orElseThrow();
             assertEquals(artifact.name(),violation.contextObject());
-            assertEquals("'uuid-1'",violation.involvedObjects().get(artifact.name()).attributes().get("uuid"));
+            assertEquals("uuid-1",violation.involvedObjects().get(artifact.name()).bindingMetadata().get("uuid"));
             assertTrue(violation.traces().stream().allMatch(t->t.line()==0));
             assertTrue(p.coordinator().constraints().runtimeRegistry().stream().filter(c->c.id().contains("ValueRequired")).allMatch(c->c.policy().enforcement()==
                     org.tzi.use.plugins.jacamo.codegrounded.constraint.RuntimeConstraintPolicy.Enforcement.REPORT_ONLY));

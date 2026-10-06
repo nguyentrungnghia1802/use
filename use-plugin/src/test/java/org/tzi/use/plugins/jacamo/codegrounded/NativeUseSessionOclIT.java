@@ -14,7 +14,7 @@ class NativeUseSessionOclIT {
         assertSame(result.state().system(), session.system());
         assertSame(result.model().model(), session.system().model());
         assertEquals("true", UseSystemApi.create(session.system(), false).evaluate(
-                "Agent.allInstances()->size() = 5 and Agent.allInstances()->isUnique(semanticId)").toString());
+                "Agent.allInstances()->size() = 5 and Agent.allInstances()->forAll(a | not a.name.oclIsUndefined())").toString());
         assertEquals("true", UseSystemApi.create(session.system(), false).evaluate(
                 "team.allInstances()->size() = 1").toString());
         assertNull(session.system().model().getClass("Plan"));

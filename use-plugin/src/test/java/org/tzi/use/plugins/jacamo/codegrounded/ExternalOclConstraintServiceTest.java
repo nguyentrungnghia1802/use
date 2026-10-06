@@ -65,7 +65,7 @@ class ExternalOclConstraintServiceTest {
         assertThrows(IllegalArgumentException.class, () -> service.installSource("c08.ocl",
                 "context Agent inv NoLiveProperties: LiveObservableProperty.allInstances()->isEmpty()", "revision"));
         var outcomes=service.evaluate(Map.of("cartago", Completeness.COMPLETE, "jason", Completeness.COMPLETE), false);
-        assertEquals(7,outcomes.size());
+        assertEquals(6,outcomes.size());
         assertTrue(outcomes.stream().allMatch(o->o.constraintId().startsWith("NATIVE:")),
                 "The rejected external profile cannot install an invariant over unavailable properties");
         assertTrue(outcomes.stream().allMatch(o->o.outcome()==VerificationOutcome.PASS

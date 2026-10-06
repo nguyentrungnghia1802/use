@@ -1,5 +1,6 @@
 package org.tzi.use.plugins.jacamo.codegrounded.runtime;
 
+import org.tzi.use.plugins.jacamo.codegrounded.trace.NativeObjectBindings;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -10,7 +11,6 @@ import org.jacamo.bridge.contract.*;
 import org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNativePipeline;
 import org.tzi.use.plugins.jacamo.codegrounded.trace.TracePhase;
 import org.tzi.use.plugins.jacamo.verification.VerificationOutcome;
-import org.tzi.use.uml.sys.MObject;
 import org.tzi.use.uml.sys.MSystem;
 
 /** Exact typed identities only. All runtime state and verification pass through the single writer. */
@@ -61,11 +61,11 @@ public final class NativeRuntimeProjector implements AutoCloseable {
         this(pipeline.state().system(), pipeline.state().semanticObjectIndex(), session, generation, revision, registry,
                 runtimeDirectory);
     }
-    public NativeRuntimeProjector(MSystem system, Map<String, MObject> index, String session, long generation,
+    public NativeRuntimeProjector(MSystem system, NativeObjectBindings index, String session, long generation,
             String revision, CodeGroundedRuntimeRuleRegistry registry) {
         this(system, index, session, generation, revision, registry, null);
     }
-    public NativeRuntimeProjector(MSystem system, Map<String, MObject> index, String session, long generation,
+    public NativeRuntimeProjector(MSystem system, NativeObjectBindings index, String session, long generation,
             String revision, CodeGroundedRuntimeRuleRegistry registry, Path runtimeDirectory) {
         if (session == null || session.isBlank() || revision == null || revision.isBlank() || generation < 0)
             throw new IllegalArgumentException("NATIVE_RUNTIME_IDENTITY_REQUIRED");

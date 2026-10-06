@@ -265,7 +265,23 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         return result.stream().distinct().toList();
     }
     @Override public List<TraceRow> traces() {
-        var nativeState = nativeWorkspace;return nativeState == null ? List.of() : nativeState.traces;
+        var nativeState = nativeWorkspace;
+        if(nativeState==null)return List.of();
+        var cut=verificationSnapshot();
+        if(cut.image()==null)return nativeState.traces;
+        var sources=new java.util.HashMap<String,TraceRow>();
+        nativeState.traces.forEach(row->sources.putIfAbsent(row.semanticId(),row));
+        var rows=new ArrayList<>(nativeState.traces);
+        for(var object:cut.image().objects().values().stream().sorted(java.util.Comparator.comparing(org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot.ObjectState::name)).toList()) {
+            var source=sources.get(object.bindingMetadata().getOrDefault("specSemanticId",object.semanticId()));
+            var context=List.of("SOURCE_BINDINGS="+org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseModelBuilder.canonicalJson(object.exactIdentities()),
+                    "METADATA="+org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseModelBuilder.canonicalJson(object.bindingMetadata()));
+            rows.add(new TraceRow(object.semanticId(),source==null?object.className():source.sourceKind(),object.name(),"MObjectBinding",
+                    source==null?"EXACT_OBJECT_BINDING":source.mappingRule(),"INTERNAL_BINDING","COMPLETE",
+                    source==null?null:source.sourcePath(),source==null?0:source.sourceLine(),"runtime",
+                    "EXACT_NATIVE_BINDING",context,source==null?List.of():source.sourceEvidence()));
+        }
+        return List.copyOf(rows);
     }
     @Override public List<org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor> constraints() {
         if(stepReplayStatus()!=null)return List.of(); // recorded outcomes/profile carry their own attribution

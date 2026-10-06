@@ -12,9 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.SwingUtilities;
 import org.jacamo.bridge.adapter.CartagoSnapshotSource;
 import org.jacamo.bridge.adapter.SnapshotCoordinator;
 import org.jacamo.bridge.contract.*;
@@ -25,12 +22,11 @@ import org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade;
 import org.tzi.use.plugins.jacamo.PipelineMode;
 import org.tzi.use.plugins.jacamo.SemanticAuthority;
 import org.tzi.use.plugins.jacamo.bridge.*;
-import org.tzi.use.plugins.jacamo.ui.JaCaMoWorkbenchPanel;
 import org.tzi.use.plugins.jacamo.verification.VerificationOutcome;
 
 class LiveCartagoNativeVerificationTest {
     @TempDir Path directory;
-    @Test void officialLoggerBridgeFacadeOclHistoryWorkbenchAndReplayObserveTransientViolation() throws Exception {
+    @Test void officialLoggerBridgeFacadeNativeOclHistoryAndReplayObserveTransientViolation() throws Exception {
         var environment = CartagoEnvironment.getInstance(); environment.init();
         String suffix = java.util.UUID.randomUUID().toString().replace("-", "");
         String name = "observed" + suffix;
@@ -56,16 +52,10 @@ class LiveCartagoNativeVerificationTest {
             await(() -> facade.runtimeVerificationHistory().stream().anyMatch(result ->
                     result.failingConstraints().contains("EXTERNAL:LiveRuntimePropertyArtifact::NoB")));
             assertEquals(VerificationOutcome.FAIL, RuntimeVerificationCoordinatorTest.external(facade.runtimeVerificationResult()));
-            JaCaMoWorkbenchPanel[] panel = new JaCaMoWorkbenchPanel[1];
-            SwingUtilities.invokeAndWait(() -> panel[0] = new JaCaMoWorkbenchPanel(facade));
-            SwingUtilities.invokeAndWait(() -> {
-                panel[0].refreshRuntime();
-                assertTrue(component(panel[0], "runtime-verification", JLabel.class).getText().contains("FAIL=1"));
-                assertTrue(component(panel[0], "runtime-failing-constraints", JLabel.class).getText().contains("NoB"));
-                var table = component(panel[0], "verification-table", JTable.class);
-                assertTrue(java.util.stream.IntStream.range(0, table.getRowCount()).anyMatch(row ->
-                        "EXTERNAL:LiveRuntimePropertyArtifact::NoB".equals(table.getValueAt(row, 0))
-                                && VerificationOutcome.FAIL.equals(table.getValueAt(row, 2))));
+            StepReplayProof.onEdt(() -> {
+                assertEquals("false", org.tzi.use.api.UseSystemApi.create(system,false).evaluate(
+                        "LiveRuntimePropertyArtifact.allInstances()->forAll(a | a.status <> 'B')").toString());
+                return null;
             });
             context.doAction(artifact, new Op("set", "A"));
             await(() -> RuntimeVerificationCoordinatorTest.external(facade.runtimeVerificationResult()) == VerificationOutcome.PASS);
@@ -90,7 +80,7 @@ class LiveCartagoNativeVerificationTest {
                     && event.entityId().incarnation().equals(recreated.getId().toString())).findFirst().orElseThrow();
             assertFalse(((List<?>) creation.after().get("properties")).isEmpty(), "Initial properties must not be omitted");
             assertTrue(system.state().allObjects().stream().anyMatch(object -> object.cls().name().equals("LiveRuntimePropertyArtifact")
-                    && object.state(system.state()).attributeValue("semanticId").toString().contains(recreated.getId().toString())
+                    && facade.verificationSnapshot().image().objects().get(object.name()).semanticId().contains(recreated.getId().toString())
                     && object.state(system.state()).attributeValue("status").toString().equals("'A'")));
             Path bundle = directory.resolve("replay"); facade.exportRuntimeReplay(bundle);
             var replay = new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReplay().replay(bundle);
@@ -112,15 +102,6 @@ class LiveCartagoNativeVerificationTest {
         long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
         while (!condition.getAsBoolean() && System.nanoTime() < deadline) Thread.sleep(10);
         assertTrue(condition.getAsBoolean(), "Live callback evidence timed out");
-    }
-    private static <T> T component(java.awt.Container container, String name, Class<T> type) {
-        for (java.awt.Component item : container.getComponents()) {
-            if (name.equals(item.getName()) && type.isInstance(item)) return type.cast(item);
-            if (item instanceof java.awt.Container child) {
-                T match = component(child, name, type); if (match != null) return match;
-            }
-        }
-        return null;
     }
     private static void restore(String key, String value) { if (value == null) System.clearProperty(key); else System.setProperty(key, value); }
     /** Real official source and production wire codec/client; deterministic in-process byte transport. */

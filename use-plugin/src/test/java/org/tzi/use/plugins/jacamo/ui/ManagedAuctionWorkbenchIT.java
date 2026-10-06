@@ -162,12 +162,16 @@ class ManagedAuctionWorkbenchIT {
                             org.tzi.use.plugins.jacamo.codegrounded.ProjectionExposureEvidence.assertAndReport(facade))); return null; });
                     recorded=allPages(facade);
                     onEdt(()->{
-                        panel.refreshRuntime(); JTable current=component(panel,"verification-table",JTable.class);
-                        assertEquals(facade.verificationSnapshot().result().outcomes().size(),current.getRowCount());
+                        panel.refreshRuntime(); JTable rules=component(panel,"mapping-rules-table",JTable.class);
+                        assertEquals(3,rules.getColumnCount());
+                        assertEquals(new org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalog().rules().size(),rules.getRowCount());
+                        assertEquals("true",org.tzi.use.api.UseSystemApi.create(system,false).evaluate(
+                                "Agent.allInstances()->forAll(a | not a.name.oclIsUndefined())").toString());
                         assertSame(system,diagram.system());
                         assertTrue(system.state().allObjects().stream().allMatch(diagram.getDiagram().getVisibleData().fObjectToNodeMap::containsKey));
                         assertTrue(system.state().allLinks().stream().allMatch(diagram.getDiagram().getVisibleData()::containsLink));
-                        component(panel,"workbench-tabs",javax.swing.JTabbedPane.class).setSelectedIndex(4);
+                        var tabs=component(panel,"workbench-tabs",javax.swing.JTabbedPane.class);
+                        assertEquals(1,tabs.getTabCount());assertEquals("Projection Rules",tabs.getTitleAt(0));
                         var image=new java.awt.image.BufferedImage(workbench.getWidth(),workbench.getHeight(),java.awt.image.BufferedImage.TYPE_INT_RGB);
                         var graphics=image.createGraphics();workbench.printAll(graphics);graphics.dispose();
                         javax.imageio.ImageIO.write(image,"png",evidence.resolve("workbench.png").toFile());return null;

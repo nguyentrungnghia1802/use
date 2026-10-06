@@ -38,12 +38,12 @@ class NativeGenericStepReplayTest {
             original.coordinator().loadProfileSource("flags-"+variant+".ocl",profile,Map.of("Agent::Disabled",false),Map.of("Agent::Negated",true));
             long sequence=0;
             assertTrue(original.apply(event(sessionId,revision,++sequence,RuntimeFactKind.AGENT,runtime,binding,Map.of(
-                    "normalizedEventKind","SET_ATTRIBUTE","attribute","host","valueType","STRING","value",variant))));
+                    "normalizedEventKind","SET_ATTRIBUTE","attribute","name","valueType","STRING","value",variant))));
             // No-op commits a version, duplicate commits nothing, neither is a semantic Step.
             var noop=event(sessionId,revision,++sequence,RuntimeFactKind.AGENT,runtime,binding,Map.of(
-                    "normalizedEventKind","SET_ATTRIBUTE","attribute","host","valueType","STRING","value",variant));
+                    "normalizedEventKind","SET_ATTRIBUTE","attribute","name","valueType","STRING","value",variant));
             assertTrue(original.apply(noop));assertFalse(original.apply(noop));
-            assertTrue(original.apply(event(sessionId,revision,++sequence,RuntimeFactKind.AGENT,runtime,binding,Map.of("normalizedEventKind","UNSET_ATTRIBUTE","attribute","host"))));
+            assertTrue(original.apply(event(sessionId,revision,++sequence,RuntimeFactKind.AGENT,runtime,binding,Map.of("normalizedEventKind","UNSET_ATTRIBUTE","attribute","name"))));
             var link=Map.<String,Object>of("normalizedEventKind","INSERT_LINK","association",org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.relation("memberOf","Agent","Workspace"),"participantSemanticIds",List.of(agent,workspace));
             assertTrue(original.apply(event(sessionId,revision,++sequence,RuntimeFactKind.RELATION_STATE,runtime,binding,link)));
             assertTrue(original.apply(event(sessionId,revision,++sequence,RuntimeFactKind.RELATION_STATE,runtime,binding,Map.of(
@@ -98,7 +98,7 @@ class NativeGenericStepReplayTest {
         int step=controller.status().step();var current=controller.verificationSnapshot();
         assertEquals(soil.get(step),new NativeUseSoilExporter().export(controller.system()).commands());assertEquals(versions.get(step),current.currentVersion());
         assertEquals(results.get(step).semanticEvidence(),current.result().semanticEvidence());assertEquals(results.get(step).resultHash(),current.result().resultHash());
-        var state=controller.system().state();assertEquals(state.numObjects(),state.allObjects().stream().map(object->object.state(state).attributeValue("semanticId")).distinct().count());
+        var state=controller.system().state();assertEquals(state.numObjects(),current.image().objects().values().stream().map(VerificationSnapshot.ObjectState::semanticId).distinct().count());
         assertTrue(state.allLinks().stream().allMatch(link->state.allObjects().containsAll(link.linkedObjects())));
     }
 

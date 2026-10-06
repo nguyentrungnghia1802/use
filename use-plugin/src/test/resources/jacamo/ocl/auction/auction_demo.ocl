@@ -2,7 +2,7 @@
 -- Load after importing Auction. DEMO_FAIL is deliberately false.
 context Agent
 inv PASS_AuctionHasFiveAgents: Agent.allInstances()->size() = 5
-inv PASS_ProgramIdentity: not self.semanticId.oclIsUndefined()
+inv PASS_ProgramIdentity: not self.name.oclIsUndefined()
 inv DEMO_FAIL_AuctionShouldHaveSixAgents: Agent.allInstances()->size() = 6
 
 context auction_Organization

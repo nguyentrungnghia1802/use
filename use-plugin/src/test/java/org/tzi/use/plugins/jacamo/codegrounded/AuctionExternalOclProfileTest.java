@@ -24,7 +24,7 @@ class AuctionExternalOclProfileTest {
         assertEquals(5,external.size());
         for(var outcome:external) assertEquals(outcome.constraintId().contains("DEMO_FAIL_") ? VerificationOutcome.FAIL : VerificationOutcome.PASS,outcome.outcome(),outcome.toString());
         var nativeGoals=outcomes.stream().filter(o->o.constraintId().startsWith("NATIVE:")).toList();
-        assertEquals(7,nativeGoals.size());
+        assertEquals(6,nativeGoals.size());
         assertTrue(nativeGoals.stream().allMatch(o->o.outcome()==VerificationOutcome.PASS
                 || o.outcome()==VerificationOutcome.SKIPPED && o.diagnostic().equals("REQUIRED_CAPABILITY_UNAVAILABLE")));
         assertEquals(5,system.state().objectsOfClassAndSubClasses(system.model().getClass("Agent")).size());

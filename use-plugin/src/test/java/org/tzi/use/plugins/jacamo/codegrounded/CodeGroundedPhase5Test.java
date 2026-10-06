@@ -38,7 +38,7 @@ class CodeGroundedPhase5Test {
         assertTrue(result.trace().records().stream().anyMatch(r -> r.diagnostics().contains("MOISE_ADVANCED_ROLE_SEMANTICS_DEFERRED")));
         assertEquals(List.of("phase5:goal:one","phase5:goal:two"),org.functionalSpecification().schemes().get(0).plans().get(0).orderedSubGoalSemanticIds());
         assertEquals("within 5 minutes",org.normativeSpecification().norms().get(0).timeConstraint());
-        assertEquals(7,result.model().constraints().size());
+        assertEquals(6,result.model().constraints().size());
         assertTrue(result.model().constraints().stream().allMatch(c->c.origin().startsWith("CORE:GOAL:")),
                 "Authored structure rules must not invent deferred temporal or Norm semantics");
         assertEquals(result.model().structuralHash(),result.export().recompiledStructuralHash());

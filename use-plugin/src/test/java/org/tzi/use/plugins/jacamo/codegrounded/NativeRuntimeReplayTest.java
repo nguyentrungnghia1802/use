@@ -1,5 +1,6 @@
 package org.tzi.use.plugins.jacamo.codegrounded;
 
+import org.tzi.use.plugins.jacamo.codegrounded.trace.NativeObjectBindings;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.tzi.use.plugins.jacamo.codegrounded.RuntimeVerificationFixtures.*;
 import java.nio.file.Files;
@@ -30,7 +31,7 @@ class NativeRuntimeReplayTest {
         assertEquals(coordinator.journal().persistedEntries(), report.checkedEntries());
         assertEquals(coordinator.latest().stateHash(), report.finalStateHash());
         assertEquals(coordinator.latest().resultHash(), report.finalResultHash());
-        assertEquals(5, Files.list(directory).count());
+        try(var files=Files.list(directory)) {assertEquals(6, files.count());}
     }
     @Test void corruptionMissingFileAndGapFailClosed() throws Exception {
         var pipeline = CodeGroundedTestFixtures.helloPipeline();
@@ -87,13 +88,9 @@ class NativeRuntimeReplayTest {
         // unrecorded contracts midway through a timeline is intentionally rejected.
         var fixture=new NativeOperationCheckpointTest();
         org.tzi.use.uml.sys.MSystem system;
-        var index=new LinkedHashMap<String,org.tzi.use.uml.sys.MObject>();
+        NativeObjectBindings index;
         try(var seed=projector()) {
-            fixture.contracts(seed);system=seed.system();
-            for(var object:system.state().allObjects()) {
-                var identity=object.state(system.state()).attributeValue("semanticId");
-                if(identity instanceof org.tzi.use.uml.ocl.value.StringValue value)index.put(value.value(),object);
-            }
+            fixture.contracts(seed);system=seed.system();index=new NativeObjectBindings(seed.mutations().savepoint().bindings());
         }
         try(var p=new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector(system,index,SESSION,1,REVISION,
                 new org.tzi.use.plugins.jacamo.codegrounded.runtime.CodeGroundedRuntimeRuleRegistry())) {

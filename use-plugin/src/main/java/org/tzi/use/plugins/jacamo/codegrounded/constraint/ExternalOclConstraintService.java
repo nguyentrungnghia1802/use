@@ -314,7 +314,7 @@ public final class ExternalOclConstraintService {
                             .getClass(cls).getAnnotationValue(org.tzi.use.plugins.jacamo.codegrounded.use.MoiseDomainProjection.ANNOTATION,
                                     "runtimeProjection"))) ? "MOISE_DOMAIN_RUNTIME_EVIDENCE_ONLY"
                     : dependencyCache.get(invariant.qualifiedName()).features().stream().anyMatch(feature->feature.equals("attribute:OrganizationalGoal.runtimeState")
-                        || feature.equals("attribute:OrganizationalGoal.stateEvidence") || feature.equals("association:"+org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.relation("goalCommitment","Agent","OrganizationalGoal"))
+                        || feature.equals("association:"+org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.relation("goalCommitment","Agent","OrganizationalGoal"))
                         || feature.equals("association:"+org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.relation("goalAchievement","Agent","OrganizationalGoal")))
                         && !"COMPLETE".equals(capabilities.get("runtime.moise.goalState.v1"))?"REQUIRED_CAPABILITY_UNAVAILABLE:runtime.moise.goalState.v1"
                     : owned.containsKey(invariant.qualifiedName()) && dependencies.requiredSources().stream()

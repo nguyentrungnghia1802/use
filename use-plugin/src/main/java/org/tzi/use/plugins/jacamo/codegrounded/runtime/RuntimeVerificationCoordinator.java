@@ -218,6 +218,7 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
         } catch (java.io.IOException ignored) { }
     }
     public MSystem system() { return engine.system(); }
+    public String objectMetadata(MObject object,String key){return read(()->engine.metadata(object,key));}
     public Map<String,List<String>> objectIdentityAliases(){return read(engine::objectIdentityAliases);}
     public ExternalOclConstraintService constraints() { return constraints; }
     public RuntimeEventJournal journal() { return journal; }
@@ -483,10 +484,9 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
                 var value=object.state(system().state()).attributeValue(attribute);
                 values.put(attribute.name(),value.toString());types.put(attribute.name(),value.type().toString());
             }
-            var semantic=object.state(system().state()).attributeValue("semanticId");
-            String identity=semantic instanceof org.tzi.use.uml.ocl.value.StringValue s?s.value():"";
+            String identity=engine.metadata(object,"semanticId");
             objects.put(object.name(),new VerificationSnapshot.ObjectState(object.name(),object.cls().name(),identity,
-                    aliases.getOrDefault(object.name(),List.of()),values,types));
+                    aliases.getOrDefault(object.name(),List.of()),values,types,engine.objectMetadata(object)));
         }
         var links=system().state().allLinks().stream().map(link->new VerificationSnapshot.LinkState(link.association().name(),
                 link.linkedObjects().stream().map(MObject::name).toList(),link.getQualifier().stream()

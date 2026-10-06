@@ -16,9 +16,9 @@ class NativeConstraintInstallerTest {
     @Test void nativeMultiplicityReplacesFormationOclAndNoJasonOrNormInvariantIsInvented() throws Exception {
         var result = CodeGroundedTestFixtures.helloPipeline();
         assertEquals(Set.of("GoalDecompositionContext","GoalAcyclic","GoalSequenceOrdinals","MissionGoalContext",
-                "SchemeGoalContext","GoalStateContext","GoalCommittedResponsibility"),
+                "GoalStateContext","GoalCommittedResponsibility"),
                 result.model().constraints().stream().map(NativeConstraintSpec::name).collect(Collectors.toSet()));
-        assertEquals(7,result.model().model().classInvariants().size());
+        assertEquals(6,result.model().model().classInvariants().size());
         assertTrue(result.model().constraints().stream().allMatch(c->c.origin().startsWith("CORE:GOAL:")),
                 "Generic Goal rules do not imply Jason AST or deontic Norm equivalence");
         assertTrue(result.model().model().classInvariants().stream().allMatch(i->"REPORT_ONLY".equals(

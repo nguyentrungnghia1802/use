@@ -71,24 +71,23 @@ public final class DomainProjection {
             var cls = api.createClass(name, false);
             annotate(cls, NativeProjectionPolicy.BASE_KINDS.get(name), "projection-base:" + name, "");
             cls.addAnnotation(new MElementAnnotation("ProjectionPolicy", Map.of("version", NativeProjectionPolicy.VERSION)));
-            api.createAttribute(name, "semanticId", "String");
-            if (!Set.of("Belief", "AgentGoal").contains(name)) api.createAttribute(name, "name", "String");
+            if (!Set.of("Belief", "AgentGoal").contains(name)) domainAttribute(api,name, "name", "String");
             for (String field : switch (name) {
-                case "Agent" -> List.of("sourceUri", "host");
-                case "Belief", "AgentGoal" -> List.of("literal", "sourceLayer");
-                case "Workspace" -> List.of("fullName", "uuid", "environmentSemanticId");
-                case "Artifact" -> List.of("uuid", "workspaceSemanticId", "artifactTypeSemanticId", "creatorAgentSemanticId");
-                case "Scheme" -> List.of("specSemanticId", "runtimeIdentity", "arguments", "sourceLayer", "goalStateEvidence");
-                case "OrganizationalGoal" -> List.of("id", "description", "goalType", "ttf", "arguments", "decompositionOperator", "runtimeState", "sourceLayer", "stateEvidence", "specSemanticId", "schemeSpecSemanticId", "schemeInstanceIdentity");
-                case "Mission" -> List.of("id", "sourceLayer", "specSemanticId", "schemeSpecSemanticId", "schemeInstanceIdentity");
+                case "Agent", "Workspace", "Artifact" -> List.<String>of();
+                case "Belief", "AgentGoal" -> List.of("literal");
+                case "Scheme" -> List.of("arguments");
+                case "OrganizationalGoal" -> List.of("id", "description", "goalType", "ttf", "arguments", "decompositionOperator");
+                case "Mission" -> List.of("id");
                 default -> List.<String>of();
-            }) api.createAttribute(name, field, "String");
+            }) domainAttribute(api,name, field, "String");
             if (name.equals("OrganizationalGoal")) {
-                api.createAttribute(name, "orderInParent", "Integer");
-                api.createAttribute(name, "minAgentsToSatisfy", "Integer");
+                var runtimeState=api.createAttribute(name,"runtimeState","String");
+                runtimeState.addAnnotation(new MElementAnnotation("ProjectionAttribute",Map.of("category","VERIFICATION_STATE","provenance","official-scheme-observation")));
+                domainAttribute(api,name, "orderInParent", "Integer");
+                domainAttribute(api,name, "minAgentsToSatisfy", "Integer");
             }
             if (name.equals("Mission")) {
-                api.createAttribute(name, "min", "Integer"); api.createAttribute(name, "max", "Integer");
+                domainAttribute(api,name, "min", "Integer"); domainAttribute(api,name, "max", "Integer");
             }
             trace(trace, "J01", owner, "MClass", "class:" + name, RelationDisposition.PRESERVE_AS_CLASS,
                     "POLICY=" + NativeProjectionPolicy.VERSION, "SEMANTIC_KIND=" + kind(cls));
@@ -110,6 +109,12 @@ public final class DomainProjection {
         baseAssociation(api, "subGoals", "OrganizationalGoal", "parentGoal", "0..1", "OrganizationalGoal", "subGoals", "*");
         for(var relation:api.getModel().associations()) if(relation.getAnnotation("DomainRelation")!=null)
             trace(trace,"J01",owner,"MAssociation","association:"+relation.name(),RelationDisposition.PRESERVE_AS_ASSOCIATION,"POLICY="+NativeProjectionPolicy.VERSION);
+    }
+    /** Exposure follows the producer's semantic category; application property names are not a blacklist. */
+    public static org.tzi.use.uml.mm.MAttribute domainAttribute(UseModelApi api,String owner,String name,String type) throws UseApiException {
+        var attribute=api.createAttribute(owner,name,type);
+        attribute.addAnnotation(new MElementAnnotation("ProjectionAttribute",Map.of("category","DOMAIN","provenance","semantic-contract")));
+        return attribute;
     }
     private static void baseAssociation(UseModelApi api, String relation, String first, String firstRole, String firstBounds,
             String second, String secondRole, String secondBounds) throws UseApiException {
@@ -159,6 +164,7 @@ public final class DomainProjection {
         return operation;
     }
     public static void propertyTrace(org.tzi.use.uml.mm.MAttribute attribute,String sourceId) {
+        attribute.addAnnotation(new MElementAnnotation("ProjectionAttribute",Map.of("category","VERIFICATION_STATE","provenance","application-observable")));
         attribute.addAnnotation(new MElementAnnotation("PropertySource_"+hash(sourceId),Map.of("sourceId64",encode(sourceId))));
     }
     private static String operationType(String javaType) {
@@ -221,7 +227,7 @@ public final class DomainProjection {
     }
     public static String propertyName(String name) {
         String symbol = symbol(name);
-        if (!symbol.equals(name) || List.of("semanticId", "name", "uuid", "workspaceSemanticId", "artifactTypeSemanticId", "creatorAgentSemanticId").contains(name))
+        if (!symbol.equals(name) || name.equals("name"))
             symbol = "obs_" + symbol + "_" + hash(name);
         return symbol;
     }

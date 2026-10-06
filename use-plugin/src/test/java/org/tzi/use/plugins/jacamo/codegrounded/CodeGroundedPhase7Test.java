@@ -42,7 +42,7 @@ class CodeGroundedPhase7Test {
         assertFalse(projector.lastOclGate().passed(), "evidence-only Moise runtime cannot be counted as a formal PASS");
         var outcomes = projector.coordinator().latest().outcomes();
         assertTrue(projector.lastOclGate().structureValid());
-        assertEquals(7,outcomes.size(), "Only the generic structural and capability-gated Goal rules are installed");
+        assertEquals(6,outcomes.size(), "Only the generic structural and capability-gated Goal rules are installed");
         var runtimeGoals = java.util.Set.of("NATIVE:OrganizationalGoal::GoalStateContext",
                 "NATIVE:OrganizationalGoal::GoalCommittedResponsibility");
         assertEquals(runtimeGoals,outcomes.stream().filter(o->o.outcome()==
@@ -116,13 +116,13 @@ class CodeGroundedPhase7Test {
         var projector = new NativeRuntimeProjector(result, SESSION, GENERATION, REVISION);
         projector.applySnapshot(snapshot("phase7-initial", List.of(), Map.of("jason", 0L)));
 
-        assertTrue(projector.apply(event("agent-host", 1, RuntimeEventKind.CHANGED, RuntimeFactKind.AGENT,
-                runtimeAgent, binding, Map.of("normalizedEventKind", "SET_ATTRIBUTE", "attribute", "host",
-                        "valueType", "STRING", "value", "runtime-host"))));
+        assertTrue(projector.apply(event("agent-name", 1, RuntimeEventKind.CHANGED, RuntimeFactKind.AGENT,
+                runtimeAgent, binding, Map.of("normalizedEventKind", "SET_ATTRIBUTE", "attribute", "name",
+                        "valueType", "STRING", "value", "runtime-name"))));
         var agent = result.state().semanticObjectIndex().get(agentSemanticId);
         assertSame(system, projector.system());
-        assertEquals("runtime-host", ((StringValue) agent.state(system.state())
-                .attributeValue(agent.cls().attribute("host", true))).value());
+        assertEquals("runtime-name", ((StringValue) agent.state(system.state())
+                .attributeValue(agent.cls().attribute("name", true))).value());
         assertFaithfulPartialOclGate(projector);
         assertTrue(projector.trace().stream().anyMatch(trace -> trace.ruleId().equals("R-JASON-AGENT-ATTRIBUTE")
                 && trace.outcome().equals(NativeRuntimeMutationEngine.Status.MATERIALIZED.name())));
@@ -270,8 +270,8 @@ class CodeGroundedPhase7Test {
                 "francois", "incarnation-1");
         BridgeRelationId binding = binding(runtimeAgent, staticAgent, "jason-agent-binding");
         RuntimeEvent first = event("first", 1, RuntimeEventKind.CHANGED, RuntimeFactKind.AGENT,
-                runtimeAgent, binding, Map.of("normalizedEventKind", "SET_ATTRIBUTE", "attribute", "host",
-                        "valueType", "STRING", "value", "first-host"));
+                runtimeAgent, binding, Map.of("normalizedEventKind", "SET_ATTRIBUTE", "attribute", "name",
+                        "valueType", "STRING", "value", "first-name"));
         projector.apply(first);
         String beforeReplay = digest(result.state().system());
         RuntimeEvent undeclaredRule = event("undeclared-rule", 2, RuntimeEventKind.CHANGED, RuntimeFactKind.AGENT,
@@ -286,14 +286,14 @@ class CodeGroundedPhase7Test {
         RuntimeEvent wrongSession = new RuntimeEvent("wrong-session", "other-session", GENERATION, REVISION,
                 "jason", "jason", 2, Instant.EPOCH, RuntimeEventKind.CHANGED, RuntimeFactKind.AGENT,
                 ProjectionStatus.MATERIALIZED_FAITHFULLY, runtimeAgent, binding, "", "", Map.of(),
-                Map.of("normalizedEventKind", "SET_ATTRIBUTE", "attribute", "host", "valueType", "STRING",
+                Map.of("normalizedEventKind", "SET_ATTRIBUTE", "attribute", "name", "valueType", "STRING",
                         "value", "wrong"), new SourceWatermark("jason", 2), Completeness.COMPLETE, List.of());
         assertThrows(RuntimeException.class, () -> projector.apply(wrongSession));
         assertEquals(beforeReplay, digest(result.state().system()));
 
         RuntimeSnapshot resync = snapshot("phase7-resync", List.of(new RuntimeFact(runtimeAgent, RuntimeFactKind.AGENT,
-                Map.of("normalizedEventKind", "SET_ATTRIBUTE", "attribute", "host", "valueType", "STRING",
-                        "value", "resync-host"), List.of(binding), ProjectionStatus.MATERIALIZED_FAITHFULLY,
+                Map.of("normalizedEventKind", "SET_ATTRIBUTE", "attribute", "name", "valueType", "STRING",
+                        "value", "resync-name"), List.of(binding), ProjectionStatus.MATERIALIZED_FAITHFULLY,
                 Completeness.COMPLETE, List.of())), Map.of("jason", 1L));
         MSystemIdentity identity = new MSystemIdentity(result.state().system());
         projector.applySnapshot(resync);

@@ -45,8 +45,11 @@ Current control compatibility is JaCaMo 1.3.1 / Jason 3.3.2 / CArtAgO 3.1 / Mois
 installs the supported official ExecutionControl extension before agent creation.
 Foreign controller ownership or unsupported scheduling advertises unavailable
 control; report-only verification does not silently become a successful pause.
-Policy and replay manifest 1.1.0 retain 1.0.0 reading. No new published Git tag is
-implied by an uncommitted local build.
+RuntimeConstraintPolicy 1.1.0 retains its 1.0.0 reader. Native projection 3.0.0 uses
+replay manifest 2.0.0 with a hashed `bindings.json` baseline; earlier replay schemas
+are explicitly rejected because their technical-attribute binding path was removed.
+VerificationSnapshot 1.2.0 exports bindingMetadata separately from domain attributes.
+No new published Git tag is implied by an uncommitted local build.
 
 For a no-test GUI build keep test compilation available to the launcher tooling:
 

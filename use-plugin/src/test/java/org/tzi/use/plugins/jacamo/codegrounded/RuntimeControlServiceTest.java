@@ -53,7 +53,7 @@ class RuntimeControlServiceTest {
         while(!condition.getAsBoolean() && System.nanoTime()<until)Thread.sleep(5);assertTrue(condition.getAsBoolean(),"Control condition timeout");}
     @Test void diagnosticEvidenceCannotReplaceTheCompiledFalseContext() throws Exception {
         try(var p=projector()) {
-            p.coordinator().loadProfileSource("context.ocl","context Workspace inv Context: self.semanticId = '"+WORKSPACE+"' implies false");
+            p.coordinator().loadProfileSource("context.ocl","context Workspace inv Context: self.artifacts->notEmpty() implies false");
             p.coordinator().configurePolicy("EXTERNAL:Workspace::Context",new RuntimeConstraintPolicy(ConstraintOrigin.CASE,
                     RuntimeConstraintPolicy.Severity.SOFT,RuntimeConstraintPolicy.Enforcement.REPORT_ONLY,
                     Set.of(CheckpointType.SNAPSHOT),Set.of(),false,"Explicit context diagnostic fixture",

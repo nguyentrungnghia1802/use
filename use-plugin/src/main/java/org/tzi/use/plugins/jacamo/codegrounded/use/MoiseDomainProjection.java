@@ -1,5 +1,6 @@
 package org.tzi.use.plugins.jacamo.codegrounded.use;
 
+import org.tzi.use.plugins.jacamo.codegrounded.trace.NativeObjectBindings;
 import java.util.*;
 import org.jacamo.bridge.contract.semantic.MoiseSemanticContract.OrganizationSemantic;
 import org.jacamo.bridge.contract.semantic.SemanticMetadata;
@@ -105,9 +106,6 @@ public final class MoiseDomainProjection {
                 var target=api.createAssociationClass(association,false,"Agent","players_"+suffix,
                     card.min()+".."+(unlimited(card.max()) ? "*" : card.max()),0,group,"roleGroups_"+suffix,"0..*",0);
                 DomainProjection.annotate(target,"role-association",identity,"");
-                api.createAttribute(association,"semanticId","String");
-                api.createAttribute(association,"agentSemanticId","String");
-                api.createAttribute(association,"groupInstanceId","String");
                 target.addAnnotation(new MElementAnnotation(ANNOTATION,new TreeMap<>(Map.of("ruleId","M15",
                     "sourceId64",DomainProjection.encode(card.metadata().semanticId()),"min",Integer.toString(card.min()),"max",Integer.toString(card.max()),
                     "runtimeSource","moise"))));
@@ -186,10 +184,10 @@ public final class MoiseDomainProjection {
     private static IllegalArgumentException badReference(String id) { return new IllegalArgumentException("MOISE_EXACT_SCHEMA_REFERENCE_MISSING:"+id); }
 
     /** A role instance is one native object AND link, identified by exact endpoints and context. */
-    public static MLinkObject linkObject(UseSystemApi api, Map<String,MObject> index,
+    public static MLinkObject linkObject(UseSystemApi api, NativeObjectBindings index,
             org.tzi.use.uml.mm.MAssociationClass association, MObject agent, MObject group) throws UseApiException {
         String context=DomainProjection.decode(association.getAnnotationValue(ROLE_ASSOCIATION,"identity64"));
-        String agentId=stringAttribute(api,agent,"semanticId"), groupId=stringAttribute(api,group,"semanticId");
+        String agentId=index.identity(agent), groupId=index.identity(group);
         String id="role-instance:"+NativeUseModelBuilder.canonicalJson(List.of(context,agentId,groupId));
         if(index.get(id) instanceof MLinkObject old) return old;
         MObject[] pair={agent,group};
@@ -199,25 +197,20 @@ public final class MoiseDomainProjection {
             index.put(id,result); return result;
         }
         var object=api.createLinkObjectEx(association,"role_"+DomainProjection.hash(id),pair);
-        text(api,object,"semanticId",id); text(api,object,"agentSemanticId",agentId); text(api,object,"groupInstanceId",groupId);
-        index.put(id,object); return object;
-    }
-    private static String stringAttribute(UseSystemApi api,MObject object,String name) {
-        var value=object.state(api.getSystem().state()).attributeValue(name);
-        if(!(value instanceof StringValue string) || string.value().isBlank()) throw badReference(object.name()+"."+name);
-        return string.value();
+        index.put(id,object);
+        index.metadata(object,"agentSemanticId",agentId); index.metadata(object,"groupInstanceId",groupId); return object;
     }
     public static String functionalObjectId(String kind,String schemeInstance,String sourceId) {
         return schemeInstance==null ? sourceId : DomainProjection.occurrenceId(kind,schemeInstance,sourceId);
     }
     /** Source definitions and runtime occurrences share the same typed graph projection. */
-    public static void materializeFunctional(UseSystemApi api, Map<String,MObject> index,
+    public static void materializeFunctional(UseSystemApi api, NativeObjectBindings index,
             CodeGroundedTraceCollector trace, OrganizationSemantic org, SchemeSemantic scheme, MObject schemeObject) throws UseApiException {
-        String instance=schemeObject==null ? null : stringAttribute(api,schemeObject,"semanticId");
+        String instance=schemeObject==null ? null : index.identity(schemeObject);
         if(schemeObject!=null) {
-            text(api,schemeObject,"specSemanticId",scheme.metadata().semanticId());
-            if(schemeObject.state(api.getSystem().state()).attributeValue("sourceLayer").isUndefined())
-                text(api,schemeObject,"sourceLayer","DECLARATION");
+            index.metadata(schemeObject,"specSemanticId",scheme.metadata().semanticId());
+            if(index.metadata(schemeObject,"sourceLayer").isEmpty())
+                index.metadata(schemeObject,"sourceLayer","DECLARATION");
         }
         Map<String,MObject> goals=new LinkedHashMap<>(),missions=new LinkedHashMap<>();
         for(var goal:scheme.goals()) {
@@ -226,11 +219,11 @@ public final class MoiseDomainProjection {
             goals.put(goal.metadata().semanticId(),object);
             text(api,object,"id",goal.goalId()); text(api,object,"description",goal.description()); text(api,object,"goalType",goal.goalType());
             text(api,object,"ttf",goal.ttf()); text(api,object,"arguments",goal.arguments());
-            text(api,object,"sourceLayer",instance==null ? "SPECIFICATION" : "INSTANCE_SPECIFICATION");
-            text(api,object,"specSemanticId",goal.metadata().semanticId());text(api,object,"schemeSpecSemanticId",scheme.metadata().semanticId());
-            if(instance!=null)text(api,object,"schemeInstanceIdentity",instance);
+            index.metadata(object,"sourceLayer",instance==null ? "SPECIFICATION" : "INSTANCE_SPECIFICATION");
+            index.metadata(object,"specSemanticId",goal.metadata().semanticId());index.metadata(object,"schemeSpecSemanticId",scheme.metadata().semanticId());
+            if(instance!=null)index.metadata(object,"schemeInstanceIdentity",instance);
             api.setAttributeValueEx(object,object.cls().attribute("minAgentsToSatisfy",true),IntegerValue.valueOf(goal.minAgentsToSatisfy()));
-            valueTrace(trace,"M12",goal.metadata(),object);
+            valueTrace(index,trace,"M12",goal.metadata(),object);
             if(schemeObject!=null) functionalLink(api,trace,"M35",goal.metadata(),"schemeGoals","Scheme","OrganizationalGoal",schemeObject,object);
             if(!goal.dependencySemanticIds().isEmpty())
                 DomainProjection.trace(trace,"M12",goal.metadata(),"Diagnostic",id,UNSUPPORTED,"GOAL_DEPENDENCIES_RETAINED_IN_IR:"+goal.dependencySemanticIds());
@@ -248,10 +241,10 @@ public final class MoiseDomainProjection {
         for(var mission:scheme.missions()) {
             String id=functionalObjectId("mission",instance,mission.metadata().semanticId());
             var object=valueObject(api,index,"Mission",mission.missionId(),id); missions.put(mission.metadata().semanticId(),object);
-            text(api,object,"id",mission.missionId()); text(api,object,"sourceLayer",instance==null ? "SPECIFICATION" : "INSTANCE_SPECIFICATION");
-            text(api,object,"specSemanticId",mission.metadata().semanticId());text(api,object,"schemeSpecSemanticId",scheme.metadata().semanticId());
-            if(instance!=null)text(api,object,"schemeInstanceIdentity",instance);
-            valueTrace(trace,"M11",mission.metadata(),object);
+            text(api,object,"id",mission.missionId()); index.metadata(object,"sourceLayer",instance==null ? "SPECIFICATION" : "INSTANCE_SPECIFICATION");
+            index.metadata(object,"specSemanticId",mission.metadata().semanticId());index.metadata(object,"schemeSpecSemanticId",scheme.metadata().semanticId());
+            if(instance!=null)index.metadata(object,"schemeInstanceIdentity",instance);
+            valueTrace(index,trace,"M11",mission.metadata(),object);
             var cards=org.functionalSpecification().schemeMissionCardinalities().stream()
                     .filter(c->c.schemeId().equals(scheme.metadata().semanticId()) && c.missionId().equals(mission.metadata().semanticId())).toList();
             if(cards.size()!=1) throw badReference(id+":cardinality");
@@ -263,10 +256,10 @@ public final class MoiseDomainProjection {
             for(String goal:mission.goalSemanticIds()) functionalLink(api,trace,"M38",mission.metadata(),"missionGoals","Mission","OrganizationalGoal",object,goals.get(goal));
         }
     }
-    private static MObject valueObject(UseSystemApi api,Map<String,MObject> index,String type,String label,String id) throws UseApiException {
+    private static MObject valueObject(UseSystemApi api,NativeObjectBindings index,String type,String label,String id) throws UseApiException {
         var old=index.get(id); if(old!=null) return old;
         String name=DomainProjection.symbol(label)+"_"+DomainProjection.hash(id);
-        var object=api.createObject(type,name); index.put(id,object); text(api,object,"semanticId",id); text(api,object,"name",label); return object;
+        var object=api.createObject(type,name); index.put(id,object); index.metadata(object,"semanticId",id); text(api,object,"name",label); return object;
     }
     private static void text(UseSystemApi api,MObject object,String name,String value) throws UseApiException {
         api.setAttributeValueEx(object,object.cls().attribute(name,true),new StringValue(value));
@@ -277,7 +270,8 @@ public final class MoiseDomainProjection {
         if(!api.getSystem().state().hasLinkBetweenObjects(association,pair)) api.createLinkEx(association,pair);
         DomainProjection.trace(trace,rule,source,"MLink",association.name()+":"+first.name()+"->"+second.name(),PRESERVE_AS_LINK);
     }
-    private static void valueTrace(CodeGroundedTraceCollector trace,String rule,SemanticMetadata source,MObject object) {
+    private static void valueTrace(NativeObjectBindings index,CodeGroundedTraceCollector trace,String rule,SemanticMetadata source,MObject object) {
+        index.source(object,source,rule);
         DomainProjection.trace(trace,rule,source,"MObject",object.name(),PRESERVE_AS_CLASS);
         for(var attribute:object.cls().allAttributes()) DomainProjection.trace(trace,rule,source,"MValue","value:"+object.name()+"."+attribute.name(),CONVERT_TO_ATTRIBUTE);
     }

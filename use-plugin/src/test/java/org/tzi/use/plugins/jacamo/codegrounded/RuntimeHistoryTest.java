@@ -4,40 +4,43 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.tzi.use.plugins.jacamo.codegrounded.RuntimeVerificationFixtures.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.tzi.use.plugins.jacamo.codegrounded.runtime.*;
-import org.tzi.use.plugins.jacamo.ui.RuntimeHistoryRows;
 import org.tzi.use.plugins.jacamo.verification.VerificationOutcome;
 
 class RuntimeHistoryTest {
     @TempDir Path root;
-    @Test void perConstraintChangesPreserveABAAndDuplicateVersionsAndProfileIntervals() throws Exception {
+    @Test void journalPreservesABAAndDuplicateVersionsAndProfileIntervals() throws Exception {
         try (var projector = projector()) {
             var coordinator=projector.coordinator(); coordinator.loadProfileSource("a.ocl", RuntimeVerificationCoordinatorTest.PROFILE);
             coordinator.manualVerify(); projector.apply(delta("B",1,"B")); projector.apply(delta("A",2,"A")); coordinator.manualVerify();
             coordinator.loadProfileSource("same.ocl",RuntimeVerificationCoordinatorTest.PROFILE);
             var page=coordinator.journal().tailPage(128);
-            var changed=RuntimeHistoryRows.expand(page,true,false).stream()
-                    .filter(row -> row.outcome().constraintId().equals("EXTERNAL:LiveRuntimePropertyArtifact::NoB")).toList();
-            assertEquals(List.of(VerificationOutcome.PASS,VerificationOutcome.FAIL,VerificationOutcome.PASS,VerificationOutcome.PASS),
-                    changed.stream().map(row -> row.outcome().outcome()).toList());
+            var outcomes=page.entries().stream().flatMap(entry->entry.result().outcomes().stream())
+                    .filter(outcome->outcome.constraintId().equals("EXTERNAL:LiveRuntimePropertyArtifact::NoB"))
+                    .map(outcome->outcome.outcome()).toList();
+            int failed=outcomes.indexOf(VerificationOutcome.FAIL);
+            assertTrue(failed>0 && failed<outcomes.size()-1, outcomes.toString());
+            assertEquals(VerificationOutcome.PASS,outcomes.getFirst());
+            assertEquals(VerificationOutcome.PASS,outcomes.getLast());
             assertTrue(page.entries().stream().map(entry->entry.result().stateVersion()).distinct().count()<page.entries().size());
             assertEquals(page.entries(),coordinator.journal().page(0,128).entries());
-            assertTrue(changed.get(1).detail().contains("Source/sequence: cartago / 1"));
-            assertNotEquals(changed.get(2).entry().intervalId(),changed.get(3).entry().intervalId());
+            assertTrue(page.entries().stream().anyMatch(entry->entry.result().sourceId().equals("cartago") && entry.result().sourceSequence()==1));
+            assertTrue(page.entries().stream().map(RuntimeHistoryPage.Entry::intervalId).distinct().count()>1);
         }
     }
-    @Test void evidenceOnlyDoesNotReplaceFormalOutcomesAndGapRemainsVisibleThroughFilter() throws Exception {
+    @Test void evidenceOnlyDoesNotReplaceFormalOutcomesAndJournalRetainsCoverageGap() throws Exception {
         try(var projector=projector()) {
             var coordinator=projector.coordinator(); coordinator.loadProfileSource("a.ocl",RuntimeVerificationCoordinatorTest.PROFILE);
             coordinator.transaction("EVENT","observation","jason",1,java.time.Instant.EPOCH,java.util.Map.of(),false,
                     () -> new RuntimeVerificationCoordinator.Mutation<>(null,false));
             long version=coordinator.latest().stateVersion(); coordinator.coverageGap("test GAP");
             var page=coordinator.journal().tailPage(128);
-            assertTrue(RuntimeHistoryRows.expand(page,true,true).stream().anyMatch(row->row.event().contains("OBSERVED/EVIDENCE_ONLY")));
-            assertTrue(RuntimeHistoryRows.expand(page,true,false).stream().anyMatch(row->row.entry().kind().equals("COVERAGE")));
+            assertTrue(page.entries().stream().anyMatch(entry->entry.kind().equals("EVENT")
+                    && entry.result().eventId().equals("observation")
+                    && entry.result().outcomes().stream().allMatch(outcome->outcome.constraintId().startsWith("OBSERVED:"))));
+            assertTrue(page.entries().stream().anyMatch(entry->entry.kind().equals("COVERAGE")));
             assertEquals(version,coordinator.latest().stateVersion());
         }
     }

@@ -1,128 +1,186 @@
 package org.tzi.use.plugins.jacamo.ui;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import static org.junit.jupiter.api.Assertions.*;
 import java.awt.Component;
 import java.awt.Container;
-import java.net.URI;
-import java.nio.file.Path;
+import java.awt.event.MouseEvent;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.tzi.use.plugins.jacamo.JaCaMoFacade;
-import org.tzi.use.plugins.jacamo.SemanticAuthority;
-import org.tzi.use.plugins.jacamo.bridge.BridgeClientState;
 import org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalog;
-import org.tzi.use.plugins.jacamo.diagnostics.Diagnostic;
+import org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController;
 import org.tzi.use.plugins.jacamo.runtime.MirrorState;
-import org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor;
-import org.tzi.use.plugins.jacamo.verification.VerificationOutcome;
-import org.tzi.use.plugins.jacamo.verification.VerificationReport;
-import org.tzi.use.plugins.jacamo.verification.VerificationResult;
 
 class JaCaMoWorkbenchPanelTest {
-    @Test void stepControlsDisableRapidClicksAndDisplayFacadeStepNotHistoryPaging() throws Exception {
-        var started=new java.util.concurrent.CountDownLatch(1);var release=new java.util.concurrent.CountDownLatch(1);
-        var state=new java.util.concurrent.atomic.AtomicReference<org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController.Status>();
-        var calls=new java.util.concurrent.atomic.AtomicInteger();var errors=new java.util.concurrent.CopyOnWriteArrayList<String>();
-        JaCaMoFacade facade=new JaCaMoFacade() {
-            public String status(){return "unit presentation only";}
-            public void openStepReplay(Path path){started.countDown();try{assertTrue(release.await(5,java.util.concurrent.TimeUnit.SECONDS));}catch(InterruptedException error){throw new RuntimeException(error);}
-                state.set(new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController.Status(0,2,7,"baseline","recording",false,false));}
-            public void nextStepReplay(){calls.incrementAndGet();state.set(new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController.Status(1,2,11,"atomic mutation","exact-source",false,false));}
-            public org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController.Status stepReplayStatus(){return state.get();}
-        };
-        var panel=new JaCaMoWorkbenchPanel(facade,errors::add);
-        javax.swing.SwingUtilities.invokeAndWait(()->{panel.openStepReplay(Path.of("recording"));assertFalse(button(panel,"step-replay-open").isEnabled());
-            assertFalse(button(panel,"step-replay-reset").isEnabled());button(panel,"step-replay-next").doClick();});
-        assertTrue(started.await(5,java.util.concurrent.TimeUnit.SECONDS));assertEquals(0,calls.get());release.countDown();
-        awaitButton(panel,"step-replay-next");
-        javax.swing.SwingUtilities.invokeAndWait(()->{assertEquals("0/2",label(panel,"step-replay-index").getText());assertEquals("7",label(panel,"step-replay-state-version").getText());
-            assertFalse(button(panel,"step-replay-previous").isEnabled());assertFalse(button(panel,"runtime-connect").isEnabled());
-            button(panel,"step-replay-next").doClick();button(panel,"step-replay-next").doClick();});
-        awaitButton(panel,"step-replay-previous");assertEquals(1,calls.get());assertTrue(errors.isEmpty());
-        javax.swing.SwingUtilities.invokeAndWait(()->{assertEquals("1/2",label(panel,"step-replay-index").getText());assertEquals("11",label(panel,"step-replay-state-version").getText());
-            assertTrue(label(panel,"step-replay-source").getText().contains("exact-source"));});
+    @Test void simplifiedWorkbenchContainsOnlyProjectionRulesAndRetainedActions() throws Exception {
+        SwingUtilities.invokeAndWait(() -> {
+            var panel = new JaCaMoWorkbenchPanel(new RecordingFacade());
+            var tabs = component(panel, "workbench-tabs", JTabbedPane.class);
+            assertEquals(1, tabs.getTabCount());
+            assertEquals("Projection Rules", tabs.getTitleAt(0));
+            assertEquals(List.of("Import JaCaMo Project...", "Load OCL...", "Start Runtime",
+                    "Export .use...", "Export .cmd..."),
+                    components(panel, JButton.class).stream().filter(b -> b.getName() != null).map(JButton::getText).toList());
+            assertEquals(1, components(panel, JTable.class).size());
+        });
+        var handlers = Arrays.stream(JaCaMoWorkbenchPanel.class.getDeclaredMethods()).map(java.lang.reflect.Method::getName).toList();
+        for (String removed : List.of("rebuildProject", "runFullVerification", "exportVerificationReport",
+                "openStepReplay", "recordedReplay", "reanalyzeReplay", "loadHistoryPage", "refreshVerification",
+                "refreshDiagnostics", "navigateGoalSource", "approveSelectedConstraint")) assertFalse(handlers.contains(removed), removed);
     }
-    @Test void detachedPanelDoesNotPublishLateWorkerErrorOrRefreshRemovedViews() throws Exception {
-        var started=new java.util.concurrent.CountDownLatch(1);var release=new java.util.concurrent.CountDownLatch(1);var ended=new java.util.concurrent.CountDownLatch(1);
-        var errors=new java.util.concurrent.CopyOnWriteArrayList<String>();
-        JaCaMoFacade facade=new JaCaMoFacade() {
-            public String status(){return "unit cancellation presentation";}
-            public void openStepReplay(Path path){started.countDown();try{release.await(5,java.util.concurrent.TimeUnit.SECONDS);}catch(InterruptedException ignored){}finally{ended.countDown();}throw new IllegalStateException("cancelled");}
-        };
-        var panel=new JaCaMoWorkbenchPanel(facade,errors::add);
-        javax.swing.SwingUtilities.invokeAndWait(()->panel.openStepReplay(Path.of("recording")));
-        assertTrue(started.await(5,java.util.concurrent.TimeUnit.SECONDS));
-        javax.swing.SwingUtilities.invokeAndWait(panel::removeNotify);release.countDown();assertTrue(ended.await(5,java.util.concurrent.TimeUnit.SECONDS));
-        Thread.sleep(100);javax.swing.SwingUtilities.invokeAndWait(()->{});assertTrue(errors.isEmpty(),errors.toString());
-    }
-    private static void awaitButton(JaCaMoWorkbenchPanel panel,String name)throws Exception {
-        long deadline=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(10);var enabled=new java.util.concurrent.atomic.AtomicBoolean();
-        while(System.nanoTime()<deadline){javax.swing.SwingUtilities.invokeAndWait(()->enabled.set(button(panel,name).isEnabled()));if(enabled.get())return;Thread.sleep(20);}throw new AssertionError(name);
-    }
-    @Test void changedConstraintSetCannotLeaveOldVerificationCountsOrRowsVisible() throws Exception {
-        var current=new java.util.concurrent.atomic.AtomicReference<>(new org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult(
-                "session",1,"revision",1,"event","cartago",1,Instant.EPOCH,Instant.EPOCH,Instant.EPOCH,"checkpoint",
-                "a".repeat(64),"b".repeat(64),List.of(new org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.Outcome(
-                        "NATIVE:Plan::Core","Plan",VerificationOutcome.PASS,"true","true")),0,"COMPLETE_OBSERVED","CURRENT_OBSERVED",""));
-        JaCaMoFacade facade=new JaCaMoFacade() {
-            public String status(){return "";}
-            public org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult runtimeVerificationResult(){return current.get();}
-            public org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot verificationSnapshot(){
-                return new org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot(1,current.get(),null);
+
+    @Test void projectionRulesKeepEveryExactCatalogMappingInThreeReadOnlyColumns() throws Exception {
+        SwingUtilities.invokeAndWait(() -> {
+            var panel = new JaCaMoWorkbenchPanel(new RecordingFacade());
+            var table = component(panel, "mapping-rules-table", JTable.class);
+            var rules = new CodeGroundedRuleCatalog().rules();
+            assertEquals(List.of("Rule", "JaCaMo Concept", "USE Concept"),
+                    java.util.stream.IntStream.range(0, table.getColumnCount()).mapToObj(table::getColumnName).toList());
+            assertEquals(rules.size(), table.getRowCount());
+            for (int row = 0; row < rules.size(); row++) {
+                var rule = rules.get(row);
+                assertEquals(rule.ruleId(), table.getValueAt(row, 0));
+                assertEquals(rule.sourceKindFqcn(), table.getValueAt(row, 1));
+                assertEquals(rule.targetUseKind(), table.getValueAt(row, 2));
+                for (int col = 0; col < 3; col++) assertFalse(table.isCellEditable(row, col));
+                var event = new MouseEvent(table, MouseEvent.MOUSE_MOVED, 0, 0, 5,
+                        table.getRowHeight() * row + 1, 0, false);
+                var detail = table.getToolTipText(event);
+                assertTrue(detail.contains(rule.fidelity().name()));
+                assertTrue(detail.contains(rule.implementationStatus().name()));
+                assertTrue(detail.contains(rule.capabilityStatus().name()));
+                assertTrue(detail.contains(rule.diagnosticPolicy()));
             }
-        };
-        javax.swing.SwingUtilities.invokeAndWait(()->{
-            var panel=new JaCaMoWorkbenchPanel(facade);
-            assertTrue(component(panel,"runtime-verification",JLabel.class).getText().contains("PASS=1"));
-            assertEquals(1,table(panel,"verification-table").getRowCount());
-            current.set(null);panel.refreshRuntime();
-            assertTrue(component(panel,"runtime-verification",JLabel.class).getText().startsWith("NOT_RUN"));
-            assertEquals(0,table(panel,"verification-table").getRowCount());
-            assertTrue(component(panel,"verification-summary",JTextArea.class).getText().contains("NOT_RUN"));
         });
     }
-    @Test void currentVerificationCountsRowsAndLateLoadMetadataUseTheSameImmutableResult() {
-        var profile = new org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.Profile(
-                "actual.ocl", "a".repeat(64), "", "revision", List.of(new org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.RegisteredConstraint(
-                        "Plan::Demo", "Plan", "actual.ocl", "a".repeat(64), "revision", true, java.util.Set.of("Plan"), java.util.Set.of(), java.util.Set.of())));
-        var outcomes = List.of(new org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.Outcome("EXTERNAL:Plan::Demo", "Plan", VerificationOutcome.FAIL, "violation", "false"),
-                new org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.Outcome("NATIVE:Plan::Core", "Plan", VerificationOutcome.PASS, "", "true"));
-        var result = new org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult("s", 2, "revision", 9, "event", "cartago", 42, Instant.EPOCH,
-                Instant.EPOCH, Instant.EPOCH, "checkpoint", "b".repeat(64), "c".repeat(64), outcomes, 1, "INCOMPLETE", "CURRENT_OBSERVED", "");
-        var snapshot = new org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot(9, result,
-                new org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot.ProfileInterval(7, "interval", Instant.EPOCH, "s", 2, "revision", profile));
-        JaCaMoFacade facade = new JaCaMoFacade() {
-            public String status() { return ""; }
-            public org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot verificationSnapshot() { return snapshot; }
-        };
+
+    @Test void retainedWorkflowDelegatesImportOclAndStartInOrderWithoutCheckingInSwing() throws Exception {
+        var facade = new RecordingFacade();
         var panel = new JaCaMoWorkbenchPanel(facade);
-        var table = table(panel, "verification-table");
-        assertEquals(2, table.getRowCount());
-        assertEquals("EXTERNAL:Plan::Demo", table.getValueAt(0, 0)); assertEquals("EXTERNAL/USER", table.getValueAt(0, 1));
-        assertEquals(VerificationOutcome.FAIL, table.getValueAt(0, 2));
-        String summary = component(panel, "verification-summary", JTextArea.class).getText();
-        assertTrue(summary.contains("Loaded at stateVersion: 7"));
-        assertTrue(summary.contains("PASS=1 FAIL=1 ERROR=0 SKIPPED=0"));
-        assertTrue(summary.contains("NOT verified LIVE states before V7"));
-        assertTrue(summary.contains("generation=2"));
+        panel.importProject(Path.of("project.jcm"));
+        panel.loadVerificationProfile(Path.of("case.ocl"));
+        panel.startRuntime();
+        panel.exportNativeUse(Path.of("native.use"));
+        panel.exportNativeSoil(Path.of("native.cmd"));
+        assertEquals(List.of("import", "load", "start"), facade.calls);
+        assertEquals(Path.of("project.jcm").toAbsolutePath().normalize(), facade.imported);
+        assertEquals(Path.of("case.ocl"), facade.loadedProfile);
+        assertEquals(Path.of("native.use"), facade.exportedUse);
+        assertEquals(Path.of("native.cmd"), facade.exportedSoil);
+        assertEquals("LIVE", label(panel, "runtime-state").getText());
+        assertTrue(label(panel, "workflow-state").getText().contains("LIVE"));
+        assertFalse(button(panel, "start-runtime").isEnabled());
+        String source = Files.readString(Path.of("src/main/java/org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel.java"));
+        for (String semanticType : List.of("MappingLoader", "TransformationPlanner", "InstancePlanner",
+                "OclGenerator", "RuntimeMutationEngine", "DirectUseBackend", "VerificationReport"))
+            assertFalse(source.contains(semanticType), semanticType + " must stay behind JaCaMoFacade");
     }
+
+    @Test void interactiveImportBuildsOffEdtAndPublishesUiOnEdt() throws Exception {
+        var facade = new RecordingFacade();
+        var panel = new JaCaMoWorkbenchPanel(facade, ignored -> { });
+        var published = new CountDownLatch(1);
+        var publishedOnEdt = new AtomicBoolean();
+        SwingUtilities.invokeAndWait(() -> {
+            label(panel, "workbench-status").addPropertyChangeListener("text", event -> {
+                if (event.getNewValue().toString().contains("Imported")) {
+                    publishedOnEdt.set(SwingUtilities.isEventDispatchThread());
+                    published.countDown();
+                }
+            });
+            panel.importProject(Path.of("project.jcm"));
+        });
+        assertTrue(facade.importedLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(published.await(5, TimeUnit.SECONDS));
+        assertFalse(facade.importedOnEdt);
+        assertTrue(publishedOnEdt.get());
+        awaitButton(panel, "load-profile");
+    }
+
+    @Test void detachedPanelDoesNotPublishLateImportError() throws Exception {
+        var started = new CountDownLatch(1); var release = new CountDownLatch(1); var ended = new CountDownLatch(1);
+        var errors = new java.util.concurrent.CopyOnWriteArrayList<String>();
+        JaCaMoFacade facade = new JaCaMoFacade() {
+            public String status() { return "unit cancellation presentation"; }
+            public ProjectSummary importProject(Path path) {
+                started.countDown();
+                try { assertTrue(release.await(5, TimeUnit.SECONDS)); }
+                catch (InterruptedException error) { throw new IllegalStateException(error); }
+                finally { ended.countDown(); }
+                throw new IllegalStateException("cancelled");
+            }
+        };
+        var panel = new JaCaMoWorkbenchPanel(facade, errors::add);
+        SwingUtilities.invokeAndWait(() -> panel.importProject(Path.of("project.jcm")));
+        assertTrue(started.await(5, TimeUnit.SECONDS));
+        SwingUtilities.invokeAndWait(panel::removeNotify);
+        release.countDown(); assertTrue(ended.await(5, TimeUnit.SECONDS));
+        Thread.sleep(100); SwingUtilities.invokeAndWait(() -> { });
+        assertTrue(errors.isEmpty(), errors.toString());
+    }
+
+    @Test void displayedRuntimeStatusUpdatesFromCachedFacadeWithoutAConnectOrResyncAction() throws Exception {
+        var facade = new RecordingFacade();
+        var panel = new JaCaMoWorkbenchPanel(facade);
+        SwingUtilities.invokeAndWait(() -> {
+            facade.runtime = runtime(MirrorState.LIVE); panel.refreshRuntime(); panel.addNotify();
+            assertEquals("LIVE", label(panel, "runtime-state").getText());
+            facade.runtime = runtime(MirrorState.STALE);
+        });
+        var refreshed = new AtomicBoolean();
+        try {
+            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+            while (!refreshed.get() && System.nanoTime() < deadline) {
+                SwingUtilities.invokeAndWait(() -> refreshed.set(label(panel, "runtime-state").getText().equals("STALE")));
+                Thread.sleep(25);
+            }
+            assertTrue(refreshed.get(), "cached LIVE label must update without a manual Refresh click");
+        } finally { SwingUtilities.invokeAndWait(panel::removeNotify); }
+    }
+
+    @Test void externallyOpenedReplayStillBlocksImportOclAndStart() throws Exception {
+        var active = new AtomicBoolean(true);
+        JaCaMoFacade facade = new JaCaMoFacade() {
+            public String status() { return "read-only replay"; }
+            public ProjectSummary projectSummary() { return new RecordingFacade().projectSummary(); }
+            public WorkflowStatus workflowStatus() { return new WorkflowStatus("MODEL_READY", true, true, "run", "", "", ""); }
+            public NativeReplayStepController.Status stepReplayStatus() {
+                return active.get() ? new NativeReplayStepController.Status(0, 2, 7, "baseline", "recording", false, false) : null;
+            }
+        };
+        SwingUtilities.invokeAndWait(() -> {
+            var panel = new JaCaMoWorkbenchPanel(facade);
+            for (String name : List.of("import-project", "load-profile", "start-runtime")) assertFalse(button(panel, name).isEnabled());
+            active.set(false); panel.refreshRuntime();
+            for (String name : List.of("import-project", "load-profile", "start-runtime")) assertTrue(button(panel, name).isEnabled());
+        });
+    }
+
+    @Test void failedImportStillShowsItsErrorWithoutADiagnosticsTab() {
+        var facade = new RecordingFacade(); facade.importFailure = new IllegalArgumentException("IMPORT_FAILED");
+        var errors = new ArrayList<String>();
+        var panel = new JaCaMoWorkbenchPanel(facade, errors::add);
+        panel.importProject(Path.of("broken.jcm"));
+        assertEquals(List.of("Import failed: IMPORT_FAILED"), errors);
+        assertTrue(label(panel, "workbench-status").getText().contains("IMPORT_FAILED"));
+    }
+
     @Test void loadOclRequiresImportAndBusyOperationCannotPublishAnOverlappingProfile() throws Exception {
         var entered = new java.util.concurrent.CountDownLatch(1);
         var release = new java.util.concurrent.CountDownLatch(1);
@@ -150,6 +208,7 @@ class JaCaMoWorkbenchPanelTest {
         while (!button(panel, "load-profile").isEnabled() && System.nanoTime() < deadline) Thread.sleep(20);
         assertTrue(button(panel, "load-profile").isEnabled());
     }
+
     @Test
     void projectChooserStartsAtAndSelectsTheDerivedJcmHint(@TempDir Path temporaryDirectory) throws Exception {
         Path derivedJcm = temporaryDirectory.resolve("helloworld.jcm");
@@ -164,50 +223,6 @@ class JaCaMoWorkbenchPanelTest {
             assertEquals(derivedJcm.toAbsolutePath().normalize(),
                     chooser.getSelectedFile().toPath().toAbsolutePath().normalize());
         });
-    }
-
-    @Test
-    void importRefreshesOverviewTraceDiagnosticsAndVerificationFromFacade() {
-        RecordingFacade facade = new RecordingFacade();
-        JaCaMoWorkbenchPanel panel = new JaCaMoWorkbenchPanel(facade, ignored -> { });
-
-        panel.importProject(Path.of("auction.jcm"));
-
-        assertEquals("auction", label(panel, "project-id").getText());
-        assertEquals("V2", label(panel, "metamodel-baseline").getText());
-        assertEquals("JaCaMo-agentmetamodel-v2__to__USE-v2.2 | schema=2.2.0 | FROZEN", label(panel, "mapping-status").getText());
-        assertTrue(label(panel, "dimension-counts").getText().contains("AGENT=4"));
-        assertEquals(1, table(panel, "sources-table").getRowCount());
-        assertEquals(1, table(panel, "trace-table").getRowCount());
-        assertEquals(List.of("Rule", "Source", "Target", "Fidelity", "Status"),
-                java.util.stream.IntStream.range(0, table(panel, "trace-table").getColumnCount())
-                        .mapToObj(index -> table(panel, "trace-table").getColumnName(index)).toList());
-        assertEquals(1, table(panel, "diagnostics-table").getRowCount());
-        assertEquals(1, table(panel, "verification-table").getRowCount());
-        assertEquals(Path.of("auction.jcm").toAbsolutePath().normalize(), facade.imported);
-    }
-
-    @Test
-    void interactiveImportBuildsOffEdtAndPublishesUiOnEdt() throws Exception {
-        RecordingFacade facade = new RecordingFacade();
-        JaCaMoWorkbenchPanel panel = new JaCaMoWorkbenchPanel(facade, ignored -> { });
-        var labelPublished = new java.util.concurrent.CountDownLatch(1);
-        var publishedOnEdt = new java.util.concurrent.atomic.AtomicBoolean();
-        javax.swing.SwingUtilities.invokeAndWait(() -> {
-            label(panel, "project-id").addPropertyChangeListener("text", event -> {
-                if ("auction".equals(event.getNewValue())) {
-                    publishedOnEdt.set(javax.swing.SwingUtilities.isEventDispatchThread());
-                    labelPublished.countDown();
-                }
-            });
-            panel.importProject(Path.of("auction.jcm"));
-        });
-        assertTrue(facade.importedLatch.await(5, java.util.concurrent.TimeUnit.SECONDS));
-        assertTrue(labelPublished.await(5, java.util.concurrent.TimeUnit.SECONDS));
-        assertFalse(facade.importedOnEdt);
-        assertTrue(publishedOnEdt.get());
-        javax.swing.SwingUtilities.invokeAndWait(() ->
-                assertEquals("auction", label(panel, "project-id").getText()));
     }
 
     @Test
@@ -238,195 +253,6 @@ class JaCaMoWorkbenchPanelTest {
     }
 
     @Test
-    void traceFiltersAreExactAndFidelityRemainsVisible() {
-        RecordingFacade facade = new RecordingFacade();
-        facade.traces = List.of(
-                new JaCaMoFacade.TraceRow("agent-id", "Goal", "object:g", "OBJECT", "M001", "VP006",
-                        "PROJECTED", Path.of("agent.asl"), 7, "AGENT"),
-                new JaCaMoFacade.TraceRow("env-id", "Artifact", "object:a", "OBJECT", "M002", "VP001",
-                        "RESOLVED", Path.of("Auction.java"), 9, "ENVIRONMENT"));
-        JaCaMoWorkbenchPanel panel = new JaCaMoWorkbenchPanel(facade);
-        panel.importProject(Path.of("auction.jcm"));
-
-        combo(panel, "trace-dimension-filter").setSelectedItem("AGENT");
-        combo(panel, "trace-status-filter").setSelectedItem("PROJECTED");
-
-        JTable table = table(panel, "trace-table");
-        assertEquals(1, table.getRowCount());
-        assertEquals("VP006", table.getValueAt(0, 3));
-        table.setRowSelectionInterval(0, 0);
-        assertTrue(label(panel, "source-location").getText().endsWith("agent.asl:7"));
-        assertTrue(button(panel, "copy-source").isEnabled());
-    }
-
-    @Test
-    void mappingInspectorShowsJarSourceWithoutPretendingItIsTheAgentOrJcmFile() {
-        RecordingFacade facade = new RecordingFacade();
-        String uri = "jar:file:/C:/dependency.jar!/templates/included.asl";
-        var evidence = new org.jacamo.bridge.contract.semantic.SourceEvidence(
-                org.jacamo.bridge.contract.semantic.EvidenceAuthority.OFFICIAL_JASON_API, uri, "a".repeat(64),
-                "jason.asSyntax.Plan", "plan", 7, 11, "", "", 0,
-                org.jacamo.bridge.contract.semantic.Fidelity.EXACT,
-                org.jacamo.bridge.contract.CapabilityStatus.COMPLETE, List.of());
-        facade.traces = List.of(new JaCaMoFacade.TraceRow("plan", "jason.asSyntax.Plan", "object:p", "MObject",
-                "A03", "EXACT", "COMPLETE", null, 7, "A", "OFFICIAL_JASON_API", List.of(), List.of(evidence)));
-        JaCaMoWorkbenchPanel panel = new JaCaMoWorkbenchPanel(facade);
-        panel.importProject(Path.of("fixture.jcm"));
-        table(panel, "trace-table").setRowSelectionInterval(0, 0);
-        assertEquals(uri + ":7", label(panel, "source-location").getText());
-        assertTrue(button(panel, "copy-source").isEnabled());
-        String detail = textArea(panel, "mapping-detail").getText();
-        assertTrue(detail.contains(uri));
-        assertTrue(detail.contains("Source lines: 7-11"));
-        assertTrue(detail.contains("a".repeat(64)));
-    }
-
-    @Test
-    void mappingInspectorShowsAllCatalogRulesAndRequiredStatusFilters() {
-        RecordingFacade facade = new RecordingFacade();
-        facade.traces = new CodeGroundedRuleCatalog().rules().stream().map(rule -> new JaCaMoFacade.TraceRow(
-                rule.ruleId(), rule.sourceKindFqcn(), "association:" + rule.ruleId(), "ASSOCIATION",
-                rule.ruleId(), rule.fidelity().name(), rule.capabilityStatus().name(),
-                Path.of("mapping.java"), 1, rule.dimension().name(), rule.sourceAuthority().name(),
-                List.of(rule.diagnosticPolicy()))).toList();
-        JaCaMoWorkbenchPanel panel = new JaCaMoWorkbenchPanel(facade);
-        panel.importProject(Path.of("auction.jcm"));
-
-        assertEquals(105, table(panel, "trace-table").getRowCount());
-        for (String value : List.of("J", "A", "C", "M", "X"))
-            assertTrue(comboContains(combo(panel, "trace-dimension-filter"), value), value);
-        for (String value : List.of("APPLIED", "UNRESOLVED", "UNAVAILABLE", "UNSUPPORTED"))
-            assertTrue(comboContains(combo(panel, "trace-status-filter"), value), value);
-    }
-
-    @Test
-    void mappingInspectorDetailShowsFqcnTargetEvidenceFidelityAndDiagnostics() {
-        RecordingFacade facade = new RecordingFacade();
-        facade.traces = List.of(new JaCaMoFacade.TraceRow("agent-id", "jason.asSemantics.Agent",
-                "object:agent_1", "OBJECT", "A06", "EXACT", "APPLIED", Path.of("agent.asl"), 7,
-                "A", "OFFICIAL_JASON_API", List.of("UNRESOLVED_UNTIL_X")));
-        JaCaMoWorkbenchPanel panel = new JaCaMoWorkbenchPanel(facade);
-        panel.importProject(Path.of("auction.jcm"));
-        table(panel, "trace-table").setRowSelectionInterval(0, 0);
-        String detail = textArea(panel, "mapping-detail").getText();
-        assertTrue(detail.contains("jason.asSemantics.Agent"));
-        assertTrue(detail.contains("object:agent_1"));
-        assertTrue(detail.contains("OFFICIAL_JASON_API"));
-        assertTrue(detail.contains("EXACT"));
-        assertTrue(detail.contains("UNRESOLVED_UNTIL_X"));
-    }
-
-    @Test
-    void displayedWorkbenchAutomaticallyStopsClaimingLiveAfterSubscriptionFailure() throws Exception {
-        RecordingFacade facade = new RecordingFacade();
-        JaCaMoWorkbenchPanel panel = new JaCaMoWorkbenchPanel(facade);
-        javax.swing.SwingUtilities.invokeAndWait(() -> {
-            facade.authority = new JaCaMoFacade.AuthorityStatus(SemanticAuthority.BRIDGE, BridgeClientState.LIVE,
-                    Map.of(), "PARTIAL", "model", "session", 1, "tcp://127.0.0.1:1", "");
-            panel.refreshRuntime();
-            assertEquals("LIVE", label(panel, "bridge-readiness").getText());
-            panel.addNotify();
-            facade.authority = new JaCaMoFacade.AuthorityStatus(SemanticAuthority.BRIDGE, BridgeClientState.RESYNC_REQUIRED,
-                    Map.of(), "PARTIAL", "model", "session", 1, "tcp://127.0.0.1:1", "BRIDGE_SUBSCRIPTION_FAILED");
-        });
-        var refreshed = new java.util.concurrent.atomic.AtomicBoolean();
-        try {
-            long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(5);
-            while (!refreshed.get() && System.nanoTime() < deadline) {
-                javax.swing.SwingUtilities.invokeAndWait(() -> refreshed.set(
-                        label(panel, "bridge-readiness").getText().equals("RESYNC_REQUIRED")
-                        && label(panel, "bridge-diagnostic").getText().contains("BRIDGE_SUBSCRIPTION_FAILED")));
-                Thread.sleep(25);
-            }
-            assertTrue(refreshed.get(), "cached LIVE label must update without a manual Refresh click");
-        } finally { javax.swing.SwingUtilities.invokeAndWait(panel::removeNotify); }
-    }
-
-    @Test
-    void runtimeRefreshReadsChangingFacadeStatusAndControlsCallTheFacade() {
-        RecordingFacade facade = new RecordingFacade();
-        JaCaMoWorkbenchPanel panel = new JaCaMoWorkbenchPanel(facade);
-        panel.importProject(Path.of("auction.jcm"));
-        facade.runtime = new JaCaMoFacade.RuntimeStatus(MirrorState.LIVE, 3, 5, 8, 1, 2, 0,
-                Instant.parse("2026-09-15T09:00:00Z"), "event-8", 42, 11, 2);
-        facade.authority = new JaCaMoFacade.AuthorityStatus(SemanticAuthority.BRIDGE, BridgeClientState.LIVE,
-                Map.of("official.model", "COMPLETE", "runtime.snapshot", "COMPLETE"), "COMPLETE",
-                "model-9", "session-9", 9, "tcp://127.0.0.1:6553", "");
-        facade.latest = VerificationReport.offline("runtime-event-8", true,
-                List.of(new VerificationResult("C-LIVE", VerificationOutcome.FAIL, "object",
-                        "live violation", "context C inv: false", List.of("source"), null, List.of())));
-
-        panel.refreshRuntime();
-        button(panel, "runtime-disconnect").doClick();
-        button(panel, "runtime-resync").doClick();
-
-        assertEquals("LIVE", label(panel, "runtime-state").getText());
-        assertEquals("3", label(panel, "runtime-queue-depth").getText());
-        assertEquals("event-8", label(panel, "runtime-last-event").getText());
-        assertEquals("BRIDGE", label(panel, "semantic-authority").getText());
-        assertEquals("LIVE", label(panel, "bridge-readiness").getText());
-        assertEquals("COMPLETE", label(panel, "bridge-completeness").getText());
-        assertEquals("model-9", label(panel, "bridge-model-revision").getText());
-        assertEquals("session-9 / generation=9", label(panel, "bridge-session-generation").getText());
-        assertEquals("tcp://127.0.0.1:6553", label(panel, "bridge-endpoint").getText());
-        assertEquals(VerificationOutcome.FAIL, table(panel, "verification-table").getValueAt(0, 2));
-        assertEquals(1, facade.disconnects);
-        assertEquals(1, facade.resyncs);
-    }
-
-    @Test
-    void verificationSourceTraceNavigatesToTheExactFacadeTraceLocation() {
-        JaCaMoWorkbenchPanel panel = new JaCaMoWorkbenchPanel(new RecordingFacade());
-        panel.importProject(Path.of("auction.jcm"));
-
-        JTable results = table(panel, "verification-table");
-        assertEquals(1, results.getRowCount());
-        assertTrue(String.valueOf(results.getValueAt(0, 6)).endsWith("agent.asl:7"));
-    }
-
-    @Test
-    void workbenchProvidesAllPhaseTwelveViews() {
-        JTabbedPane tabs = component(new JaCaMoWorkbenchPanel(new RecordingFacade()), "workbench-tabs", JTabbedPane.class);
-        List<String> titles = new ArrayList<>();
-        for (int index = 0; index < tabs.getTabCount(); index++) titles.add(tabs.getTitleAt(index));
-        assertEquals(List.of("Project", "Verification", "Goal View", "Trace / Source", "Diagnostics"), titles);
-    }
-
-    @Test void mappingRulesAreAvailableBeforeImportAndUseExactCatalogNotProjectTrace() {
-        var panel = new JaCaMoWorkbenchPanel(new RecordingFacade());
-        var table = table(panel, "mapping-rules-table");
-        var rules = new CodeGroundedRuleCatalog().rules();
-        assertEquals(2, table.getColumnCount());
-        assertEquals("Rule", table.getColumnName(0));
-        assertEquals("JaCaMo → USE", table.getColumnName(1));
-        assertEquals(rules.size(), table.getRowCount());
-        for (int row = 0; row < rules.size(); row++) {
-            var rule = rules.get(row);
-            assertEquals(rule.ruleId(), table.getValueAt(row, 0));
-            assertTrue(table.getValueAt(row, 1).toString().contains(rule.sourceKindFqcn()));
-            assertTrue(table.getValueAt(row, 1).toString().contains(rule.targetUseKind()));
-            assertTrue(table.getValueAt(row, 1).toString().contains(rule.implementationStatus().name()));
-            assertFalse(table.isCellEditable(row, 0));
-        }
-        assertEquals(1, table(panel, "diagnostics-table").getRowCount());
-        var history=table(panel,"runtime-verification-history");
-        assertEquals(List.of("StateVersion","Event","Constraint","Result","Time"),
-                java.util.stream.IntStream.range(0,history.getColumnCount()).mapToObj(history::getColumnName).toList());
-    }
-
-    @Test
-    void failedImportStillRefreshesServiceDiagnostics() {
-        RecordingFacade facade = new RecordingFacade();
-        facade.importFailure = new IllegalArgumentException("IMPORT_FAILED");
-        JaCaMoWorkbenchPanel panel = new JaCaMoWorkbenchPanel(facade, ignored -> { });
-
-        panel.importProject(Path.of("broken.jcm"));
-
-        assertEquals(1, table(panel, "diagnostics-table").getRowCount());
-        assertTrue(label(panel, "workbench-status").getText().contains("IMPORT_FAILED"));
-    }
-
-    @Test
     void longErrorMessagesAreWrappedForStatusAndDialogPresentation() {
         String longError = "BRIDGE_TCP_REQUEST_FAILED:" + "x".repeat(160);
         RecordingFacade facade = new RecordingFacade();
@@ -442,139 +268,64 @@ class JaCaMoWorkbenchPanelTest {
         assertTrue(label(panel, "workbench-status").getText().contains("<br>"));
     }
 
-    @Test
-    void completeWorkflowDelegatesToFacadeAndKeepsSemanticPipelineOutOfSwing() throws Exception {
-        RecordingFacade facade = new RecordingFacade();
-        JaCaMoWorkbenchPanel panel = new JaCaMoWorkbenchPanel(facade);
-        panel.importProject(Path.of("auction.jcm"));
-
-        panel.rebuildProject();
-        panel.loadVerificationProfile(Path.of("case.ocl"));
-        panel.runFullVerification();
-        panel.exportVerificationReport(Path.of("report.json"));
-        panel.exportNativeUse(Path.of("native.use"));
-        panel.exportNativeSoil(Path.of("native.cmd"));
-        assertTrue(button(panel, "export-use").isEnabled());
-        assertTrue(button(panel, "export-soil").isEnabled());
-        button(panel, "runtime-connect").doClick();
-        button(panel, "runtime-disconnect").doClick();
-        button(panel, "runtime-reconnect").doClick();
-        button(panel, "runtime-resync").doClick();
-
-        assertEquals(1, facade.rebuilds);
-        assertEquals(Path.of("case.ocl"), facade.loadedProfile);
-        assertEquals(1, facade.fullChecks);
-        assertEquals(Path.of("report.json"), facade.exportedReport);
-        assertEquals(Path.of("native.use"), facade.exportedUse);
-        assertEquals(Path.of("native.cmd"), facade.exportedSoil);
-        assertEquals(2, facade.connects);
-        assertEquals(1, facade.disconnects);
-        assertEquals(1, facade.resyncs);
-
-        String source = Files.readString(Path.of("src/main/java/org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel.java"));
-        for (String semanticType : List.of("MappingLoader", "TransformationPlanner", "InstancePlanner",
-                "OclGenerator", "RuntimeMutationEngine", "DirectUseBackend")) {
-            assertFalse(source.contains(semanticType), semanticType + " must stay behind JaCaMoFacade");
+    private static JaCaMoFacade.RuntimeStatus runtime(MirrorState state) {
+        return new JaCaMoFacade.RuntimeStatus(state, 0, 0, 0, 0, 0, 0, Instant.EPOCH, "", 0, 0, 0);
+    }
+    private static void awaitButton(JaCaMoWorkbenchPanel panel, String name) throws Exception {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10); var enabled = new AtomicBoolean();
+        while (System.nanoTime() < deadline) {
+            SwingUtilities.invokeAndWait(() -> enabled.set(button(panel, name).isEnabled()));
+            if (enabled.get()) return;
+            Thread.sleep(20);
         }
+        fail(name);
     }
-
-    private static JTable table(Container root, String name) { return component(root, name, JTable.class); }
     private static JLabel label(Container root, String name) { return component(root, name, JLabel.class); }
-    private static JTextArea textArea(Container root, String name) { return component(root, name, JTextArea.class); }
     private static JButton button(Container root, String name) { return component(root, name, JButton.class); }
-    @SuppressWarnings("unchecked")
-    private static JComboBox<String> combo(Container root, String name) {
-        return component(root, name, JComboBox.class);
+    private static <T extends Component> T component(Container root, String name, Class<T> type) {
+        return components(root, type).stream().filter(c -> name.equals(c.getName())).findFirst().orElseThrow(() -> new AssertionError(name));
     }
-    private static boolean comboContains(JComboBox<String> combo, String value) {
-        for (int index = 0; index < combo.getItemCount(); index++)
-            if (value.equals(combo.getItemAt(index))) return true;
-        return false;
+    private static <T extends Component> List<T> components(Container root, Class<T> type) {
+        var result = new ArrayList<T>();
+        for (Component child : root.getComponents()) {
+            if (type.isInstance(child)) result.add(type.cast(child));
+            if (child instanceof Container nested) result.addAll(components(nested, type));
+        }
+        return result;
     }
     private static void restoreProperty(String key, String previous) {
-        if (previous == null) System.clearProperty(key);
-        else System.setProperty(key, previous);
+        if (previous == null) System.clearProperty(key); else System.setProperty(key, previous);
     }
-    private static <T extends Component> T component(Container root, String name, Class<T> type) {
-        for (Component child : root.getComponents()) {
-            if (name.equals(child.getName()) && type.isInstance(child)) return type.cast(child);
-            if (child instanceof Container nested) {
-                T match = componentOrNull(nested, name, type);
-                if (match != null) return match;
-            }
-        }
-        throw new AssertionError("Component not found: " + name);
-    }
-    private static <T extends Component> T componentOrNull(Container root, String name, Class<T> type) {
-        for (Component child : root.getComponents()) {
-            if (name.equals(child.getName()) && type.isInstance(child)) return type.cast(child);
-            if (child instanceof Container nested) {
-                T match = componentOrNull(nested, name, type);
-                if (match != null) return match;
-            }
-        }
-        return null;
-    }
-
     private static final class RecordingFacade implements JaCaMoFacade {
-        private Path imported;
-        private int disconnects;
-        private int resyncs;
-        private int rebuilds;
-        private int fullChecks;
-        private int connects;
-        private Path loadedProfile;
-        private Path exportedReport;
-        private Path exportedUse;
-        private Path exportedSoil;
+        private Path imported, loadedProfile, exportedUse, exportedSoil;
         private RuntimeException importFailure;
-        private final java.util.concurrent.CountDownLatch importedLatch = new java.util.concurrent.CountDownLatch(1);
+        private final CountDownLatch importedLatch = new CountDownLatch(1);
         private boolean importedOnEdt;
-        private List<TraceRow> traces = List.of(new TraceRow("source", "Goal", "object:g", "OBJECT", "M001",
-                "VP006", "PROJECTED", Path.of("agent.asl"), 7, "AGENT"));
+        private final List<String> calls = new ArrayList<>();
         private RuntimeStatus runtime = RuntimeStatus.offline();
-        private AuthorityStatus authority = AuthorityStatus.offline();
-        private VerificationReport latest = VerificationReport.offline("run", true,
-                List.of(new VerificationResult("C1", VerificationOutcome.PASS, "object", "holds",
-                        "context C inv: true", List.of("source"), null, List.of())));
-
-        @Override public String status() { return "ready"; }
-        @Override public ProjectSummary importProject(Path jcmFile) {
-            imported = jcmFile.toAbsolutePath().normalize();
-            importedOnEdt = javax.swing.SwingUtilities.isEventDispatchThread();
+        private String workflow = "NOT_IMPORTED";
+        public String status() { return "ready"; }
+        public ProjectSummary importProject(Path jcmFile) {
+            imported = jcmFile.toAbsolutePath().normalize(); importedOnEdt = SwingUtilities.isEventDispatchThread();
             importedLatch.countDown();
             if (importFailure != null) throw importFailure;
-            return projectSummary();
+            calls.add("import"); workflow = "MODEL_READY"; return projectSummary();
         }
-        @Override public ProjectSummary projectSummary() {
-            return new ProjectSummary(Path.of("auction.jcm"), Path.of("."), "auction", 1,
-                    Map.of("AGENT", 4L), "V2", "a".repeat(64),
-                    "JaCaMo-agentmetamodel-v2__to__USE-v2.2", "2.2.0", "b".repeat(64),
-                    "FROZEN", 60, 20, true, 1, 0);
+        public ProjectSummary projectSummary() {
+            return new ProjectSummary(Path.of("project.jcm"), Path.of("."), "project", 1,
+                    Map.of("AGENT", 4L), "V2", "a".repeat(64), "mapping", "2.2.0", "b".repeat(64), "FROZEN", 60, 20, true, 1, 0);
         }
-        @Override public List<SourceRow> sources() {
-            return List.of(new SourceRow(Path.of("auction.jcm"), "JCM", 100, "abc"));
+        public WorkflowStatus workflowStatus() {
+            return new WorkflowStatus(workflow, workflow.equals("MODEL_READY") || workflow.equals("OCL_READY"), true, "run", "", "", "");
         }
-        @Override public List<Diagnostic> diagnostics() {
-            return List.of(new Diagnostic("WARN", org.tzi.use.plugins.jacamo.diagnostics.Severity.WARNING,
-                    org.tzi.use.plugins.jacamo.diagnostics.Phase.RESOLUTION, null, null, null,
-                    "warning", "evidence", "fix source"));
-        }
-        @Override public List<TraceRow> traces() { return traces; }
-        @Override public List<ConstraintDescriptor> constraints() { return List.of(); }
-        @Override public VerificationReport latestVerification() {
-            return latest;
-        }
-        @Override public RuntimeStatus runtimeStatus() { return runtime; }
-        @Override public AuthorityStatus authorityStatus() { return authority; }
-        @Override public ProjectSummary rebuild() { rebuilds++; return projectSummary(); }
-        @Override public void loadVerificationProfile(Path profile) { loadedProfile = profile; }
-        @Override public VerificationReport runFullVerification() { fullChecks++; return latestVerification(); }
-        @Override public void exportVerificationReport(Path destination) { exportedReport = destination; }
-        @Override public void exportNativeUse(Path destination) { exportedUse = destination; }
-        @Override public void exportNativeSoil(Path destination) { exportedSoil = destination; }
-        @Override public void connectRuntime() { connects++; }
-        @Override public void disconnectRuntime() { disconnects++; }
-        @Override public void resyncRuntime() { resyncs++; }
+        public void loadVerificationProfile(Path profile) { loadedProfile = profile; calls.add("load"); workflow = "OCL_READY"; }
+        public void startRuntime() { calls.add("start"); workflow = "LIVE"; runtime = runtime(MirrorState.LIVE); }
+        public RuntimeStatus runtimeStatus() { return runtime; }
+        public void exportNativeUse(Path destination) { exportedUse = destination; }
+        public void exportNativeSoil(Path destination) { exportedSoil = destination; }
+        public List<SourceRow> sources() { throw new AssertionError("removed Project UI must not load source rows"); }
+        public List<TraceRow> traces() { throw new AssertionError("removed Trace UI must not load trace rows"); }
+        public org.tzi.use.plugins.jacamo.codegrounded.runtime.GoalViewSnapshot goalView() { throw new AssertionError("removed Goal UI must not query the tree"); }
+        public org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot verificationSnapshot() { throw new AssertionError("native USE owns checking; Workbench must not build result views"); }
     }
 }

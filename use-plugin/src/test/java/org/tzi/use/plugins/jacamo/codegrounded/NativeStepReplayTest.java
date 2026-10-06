@@ -65,8 +65,8 @@ class NativeStepReplayTest {
         assertEquals(expected.get(step).resultHash(),actual.resultHash());
         assertEquals(commands.get(step),new org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseSoilExporter().export(controller.system()).commands());
         assertTrue(controller.system().state().allLinks().stream().allMatch(link->controller.system().state().allObjects().containsAll(link.linkedObjects())));
-        assertEquals(controller.system().state().numObjects(),controller.system().state().allObjects().stream()
-                .map(object->object.state(controller.system().state()).attributeValue("semanticId")).distinct().count());
+        assertEquals(controller.system().state().numObjects(),controller.verificationSnapshot().image().objects().values().stream()
+                .map(VerificationSnapshot.ObjectState::semanticId).distinct().count());
     }
 
     @Test void invalidReopenOrFailedReconstructionPreservesTheSelectedValidSystem() throws Exception {

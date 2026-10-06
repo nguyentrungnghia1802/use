@@ -99,7 +99,7 @@ class NativeRuntimeReanalysisTest {
             new NativeRuntimeReplay().exportBundle(projector,pipeline.export().useText(),bundle);
             var before=projector.coordinator().verificationSnapshot();
             var report=new NativeRuntimeReanalysis().analyze(bundle,"beliefs.ocl",
-                    "context Agent inv RelevantBeliefs: self.beliefs->isUnique(semanticId)",Map.of(),output);
+                    "context Agent inv RelevantBeliefs: self.beliefs->forAll(b | not b.literal.oclIsUndefined())",Map.of(),output);
             assertTrue(report.complete(),report.diagnostics().toString());
             assertTrue(report.diagnostics().toString().contains("SELECTIVE_BELIEF_PROJECTION_PER_CURRENT_PROFILE"));
             assertNotEquals(before.result().stateHash(),report.finalStateHash());

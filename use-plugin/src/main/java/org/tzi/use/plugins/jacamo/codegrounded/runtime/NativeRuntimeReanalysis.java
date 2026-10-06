@@ -1,5 +1,6 @@
 package org.tzi.use.plugins.jacamo.codegrounded.runtime;
 
+import org.tzi.use.plugins.jacamo.codegrounded.trace.NativeObjectBindings;
 import java.io.ByteArrayInputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -17,8 +18,6 @@ import org.tzi.use.parser.use.USECompiler;
 import org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService;
 import org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseSoilExporter;
 import org.tzi.use.uml.mm.ModelFactory;
-import org.tzi.use.uml.ocl.value.StringValue;
-import org.tzi.use.uml.sys.MObject;
 
 /** Retrospective evaluation, not recorded parity and never a live runtime authority. */
 public final class NativeRuntimeReanalysis {
@@ -65,12 +64,7 @@ public final class NativeRuntimeReanalysis {
                     "model.use",snapshot.resolve("model.use").toUri(),new PrintWriter(errors,true),new ModelFactory());
             if(model==null || !errors.toString().isBlank()) throw new IllegalArgumentException("REANALYSIS_MODEL_INVALID:"+errors);
             var system=new NativeUseSoilExporter().replay(model,Files.readString(snapshot.resolve("baseline.cmd")));
-            Map<String,MObject> index=new LinkedHashMap<>();
-            for(var object:system.state().allObjects()) {
-                var attribute=object.cls().attribute("semanticId",true);
-                if(attribute!=null && object.state(system.state()).attributeValue(attribute) instanceof StringValue identity
-                        && index.putIfAbsent(identity.value(),object)!=null) throw new IllegalArgumentException("REANALYSIS_DUPLICATE_ID");
-            }
+            var index=NativeObjectBindings.fromMap(system,CanonicalJson.object(CanonicalJson.decode(Files.readAllBytes(snapshot.resolve("bindings.json")))));
             boolean outputReady=false;
             try(var reader=Files.newBufferedReader(snapshot.resolve("runtime.jsonl"),StandardCharsets.UTF_8)) {
                 String line;

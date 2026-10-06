@@ -8,7 +8,7 @@ import org.tzi.use.plugins.jacamo.codegrounded.runtime.*;
 import org.tzi.use.plugins.jacamo.codegrounded.use.*;
 
 class SelectiveVerificationProjectionTest {
-    private static final String PROFILE="context Agent inv DomainBeliefs: self.beliefs->isUnique(semanticId)";
+    private static final String PROFILE="context Agent inv DomainBeliefs: self.beliefs->forAll(b | not b.literal.oclIsUndefined())";
 
     @Test void onlyDemandedAuthoredNonduplicatedFactsExposeAndRemovalDoesNotResurrectOnReload() throws Exception {
         var pipeline=CodeGroundedTestFixtures.helloPipeline();
@@ -27,7 +27,7 @@ class SelectiveVerificationProjectionTest {
             assertEquals(0,beliefCount(system));
             coordinator.loadProfileSource("domain.ocl",PROFILE);
             assertEquals(1,system.state().allObjects().stream().filter(o->o.cls().name().equals("Belief")
-                    && o.state(system.state()).attributeValue("sourceLayer").toString().equals("'RUNTIME'")).count());
+                    && engine.metadata(o,"sourceLayer").equals("RUNTIME")).count());
             assertNotNull(engine.objectForSemanticId(domain.get("semanticId").toString()));
             assertNull(engine.objectForSemanticId(internal.get("semanticId").toString()));
             assertNull(engine.objectForSemanticId(duplicated.get("semanticId").toString()));
@@ -38,7 +38,7 @@ class SelectiveVerificationProjectionTest {
             assertNull(engine.objectForSemanticId(domain.get("semanticId").toString()));
             values.put("beliefs",List.of(domain,internal)); apply(engine,id,values);
             assertNotNull(engine.objectForSemanticId(domain.get("semanticId").toString()));
-            coordinator.loadProfileSource("identity.ocl","context Agent inv Identity: Agent.allInstances()->isUnique(semanticId)");
+            coordinator.loadProfileSource("identity.ocl","context Agent inv Identity: Agent.allInstances()->forAll(a | not a.name.oclIsUndefined())");
             assertEquals(0,beliefCount(system));
             coordinator.loadProfileSource("domain.ocl",PROFILE);
             assertNotNull(engine.objectForSemanticId(domain.get("semanticId").toString()));

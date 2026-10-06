@@ -1,6 +1,18 @@
 # Runtime inventory — snapshot verification migration
 
-## Current disposition after migration — 2026-10-05
+## Current disposition after migration — 2026-10-06
+
+Attribute cleanup uses native projection 3.0.0 and `NativeObjectBindings` for
+exact aliases/provenance. Snapshot 1.2.0 and replay 2.0.0 preserve metadata outside
+MAttributes. Current attribute inventory and acceptance evidence are in
+[exposed-attribute-audit.md](exposed-attribute-audit.md) and task.md section 11.
+References to section 23 below describe the preceding completed task revision.
+
+Workbench UI is simplified on 2026-10-06: the independent Projection Rules tab
+contains Rule / JaCaMo Concept / USE Concept. Import, Load OCL and Start Runtime
+keep their existing facade calls. GoalViewPanel and RuntimeHistoryRows are removed;
+the snapshot, journal, Goal DTO, trace, OCL/control and replay infrastructure below
+is retained. Earlier UI evidence describes the earlier revision.
 
 | Path | Final disposition and consumer |
 | --- | --- |

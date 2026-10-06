@@ -111,7 +111,7 @@ class GenericAgentProjectionTest {
     private static org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeMutationEngine demandBeliefs(CodeGroundedNativePipeline.Result pipeline) {
         var system=pipeline.state().system();
         new org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService(system).installSource(
-                "beliefs.ocl","context Agent inv BeliefIdentity: self.beliefs->isUnique(semanticId)",pipeline.source().revision());
+                "beliefs.ocl","context Agent inv BeliefIdentity: self.beliefs->forAll(b | not b.literal.oclIsUndefined())",pipeline.source().revision());
         var engine=new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeMutationEngine(system,pipeline.state().semanticObjectIndex(),
                 new org.tzi.use.plugins.jacamo.codegrounded.runtime.CodeGroundedRuntimeRuleRegistry());
         engine.refreshBeliefProjection(); return engine;

@@ -38,7 +38,7 @@ public final class ReleaseIsolatedSmokeMain {
         if(system.model().getClass("Agent")==null || system.state().allObjects().isEmpty())
             throw new AssertionError("Installed native pipeline failed to build the official model");
         Class<?> snapshots=pluginLoader.loadClass("org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot");
-        if(!"1.1.0".equals(snapshots.getField("CONTRACT_VERSION").get(null)))
+        if(!"1.2.0".equals(snapshots.getField("CONTRACT_VERSION").get(null)))
             throw new AssertionError("Installed snapshot contract is stale");
         pluginLoader.loadClass("org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeControlService");
         System.out.println("ISOLATED_RELEASE_NATIVE_IMPORT_PASS objects="+system.state().allObjects().size());

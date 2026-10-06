@@ -166,7 +166,7 @@ class DomainRuntimeProjectionTest {
             var agentBinding=new BridgeRelationId("runtime-model-binding",List.of(observedAgent,exactAgent),"exact-declaration","session:agent");
             var update=new RuntimeEvent("unrelated-agent-state", "session",1,snapshot.modelRevision(),"jason","jason",0,java.time.Instant.now(),
                 RuntimeEventKind.CHANGED,RuntimeFactKind.AGENT,ProjectionStatus.MATERIALIZED_FAITHFULLY,observedAgent,agentBinding,"","",Map.of(),
-                Map.of("normalizedEventKind","SET_ATTRIBUTE","attribute","host","valueType","STRING","value","observed-host"),
+                Map.of("normalizedEventKind","SET_ATTRIBUTE","attribute","name","valueType","STRING","value","observed-host"),
                 new SourceWatermark("jason",0),Completeness.COMPLETE,List.of());
             assertTrue(projector.apply(update),"An existing observed role violation must not block unrelated runtime state");
             assertEquals("CURRENT_OBSERVED",projector.coordinator().latest().freshness());
@@ -214,7 +214,7 @@ class DomainRuntimeProjectionTest {
                 payload.put("agentRuntimeSemanticId",runtime.canonical());
                 assertTrue(projector.apply(RuntimeVerificationFixtures.event("instance-"+i,i+1,RuntimeEventKind.CREATED,RuntimeFactKind.AGENT,cartago,payload)));
                 var object=projector.system().state().objectByName(name); assertNotNull(object); assertEquals("shared_Agent",object.cls().name());
-                assertEquals(runtime.canonical(),((org.tzi.use.uml.ocl.value.StringValue)object.state(projector.system().state()).attributeValue("semanticId")).value());
+                assertEquals(runtime.canonical(),projector.mutations().metadata(object,"semanticId"));
                 if(i==1) {
                     Path bundle=directory.resolve("replay"); var replay=new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReplay();
                     replay.exportBundle(projector,pipeline.export().useText(),bundle);
@@ -225,7 +225,7 @@ class DomainRuntimeProjectionTest {
                     assertEquals("STALE",projector.coordinator().latest().freshness());
                 }
             }
-            assertEquals("true",org.tzi.use.api.UseSystemApi.create(projector.system(),false).evaluate("Agent.allInstances()->size() = 2 and Agent.allInstances()->isUnique(semanticId)").toString());
+            assertEquals("true",org.tzi.use.api.UseSystemApi.create(projector.system(),false).evaluate("Agent.allInstances()->size() = 2 and Agent.allInstances()->forAll(a | not a.name.oclIsUndefined())").toString());
         }
     }
     private static RuntimeEvent moiseEvent(String event,long sequence,BridgeEntityId id,RuntimeFactKind kind,Map<String,Object> payload,String revision) {
