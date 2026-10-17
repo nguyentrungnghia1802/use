@@ -1,5 +1,13 @@
 # USE JaCaMo Plugin 1.0.1
 
+JaCaMo runs in its own JVM. The USE plugin connects through an authenticated
+loopback TCP Bridge using an endpoint, a secret file and the exact runtime
+distribution fingerprint. Import reads the official model/runtime snapshots.
+For projects launched with managed startup, Start Runtime releases reasoning
+in the existing JaCaMo process after USE has activated the model. Pause Jason
+and Resume Jason send acknowledged control requests through the same Bridge.
+Disconnect closes observation; manage the JaCaMo process with its launcher.
+
 > **Current production authority:** the active path is
 > `official JaCaMo/Jason/CArtAgO/Moise objects → typed Bridge semantic contract →
 > JacamoSpecificationModel → J/A/C/M/X rules → native USE MModel/MSystemState →
@@ -64,9 +72,10 @@ path is the authority in this checkout. Historical release manifests remain
 evidence and must not be reported as a current published tag.
 
 This release makes official JaCaMo objects, exported through the neutral Bridge,
-the only production semantic authority for USE 7.5.0. Custom parser and in-process
-connector implementations remain historical test evidence and are absent from the
-release JAR.
+the only production semantic authority for USE 7.5.0. Historical custom parser
+and connector implementations remain test evidence and are absent from the
+release JAR. The official JaCaMo framework executes in the producer process;
+the plugin consumes the neutral TCP Bridge and projects it through native USE APIs.
 
 ## Install
 

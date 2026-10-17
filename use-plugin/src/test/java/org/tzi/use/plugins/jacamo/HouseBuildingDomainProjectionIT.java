@@ -19,7 +19,7 @@ class HouseBuildingDomainProjectionIT {
     @Test void originalHouseBuildingDiscoversDynamicDomainStateOnTheSameSystem() throws Exception {
         Path evidence=Path.of("target/house-domain-live",Long.toString(System.currentTimeMillis())).toAbsolutePath();
         Path original=Path.of("../../jacamo/examples/house-building/house-building.jcm");
-        try(var producer=new ManagedProducerTestSupport(original,evidence)) {
+        try(var producer=new ManagedProducerTestSupport(original,evidence,true)) {
             producer.configureWorkflow(); Session session=new Session();
             var recording=new HelloWorldSemanticInventoryIT.RecordingTransportFactory(evidence);
             try(var facade=new DefaultJaCaMoFacade(Path.of("."),SemanticAuthority.BRIDGE,

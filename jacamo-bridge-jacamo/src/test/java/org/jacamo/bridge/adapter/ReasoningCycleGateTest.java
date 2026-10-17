@@ -6,6 +6,13 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class ReasoningCycleGateTest {
+    @Test void completedDynamicAdmissionClearsOnlyTheTransientRunningCapabilityError() {
+        var gate=new ReasoningCycleGate();gate.admit("a",true);
+        gate.unavailable("PARTIAL_AGENT_CONSTRUCTION");gate.available();
+        assertEquals(RUNNING,gate.state());assertEquals("",gate.diagnostic());
+        gate.grant("a",0,gate.epoch());gate.pause("pause");gate.timeout();
+        String timeout=gate.diagnostic();gate.available();assertEquals(timeout,gate.diagnostic());
+    }
     @Test void allAgentAckTimeoutAndResumeAreSeparateTransitions() {
         var gate=new ReasoningCycleGate();gate.admit("a#1",true);gate.admit("b#1",true);
         assertTrue(gate.grant("a#1",0,0));assertTrue(gate.grant("b#1",0,0));gate.pause("p");

@@ -81,6 +81,16 @@ class SemanticContractTest {
                 "[[[true]]]".getBytes(java.nio.charset.StandardCharsets.UTF_8), 32, 1, 32));
     }
 
+    @Test void structuredMultiAgentCutsCanExceedFourMiBWithinTheBoundedCodec() {
+        var payload=Map.of("observations",java.util.stream.IntStream.range(0,6)
+                .mapToObj(i->"x".repeat(900_000)).toList());
+        byte[] encoded=org.jacamo.bridge.contract.CanonicalJson.encode(payload);
+        assertTrue(encoded.length>4*1024*1024);
+        assertEquals(payload,org.jacamo.bridge.contract.CanonicalJson.decode(encoded));
+        assertThrows(ContractException.class,()->org.jacamo.bridge.contract.CanonicalJson.decode(
+                encoded,4*1024*1024,64,1024*1024));
+    }
+
     private static JacamoSemanticSnapshot sample() {
         var evidence = new SourceEvidence(EvidenceAuthority.OFFICIAL_JACAMO_API, "project:/hello.jcm",
                 "a".repeat(64), "jacamo.project.JaCaMoProject", "jcm:project:hello", 1, 7, "", "session-1", 1,

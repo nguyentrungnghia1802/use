@@ -23,7 +23,7 @@ import org.tzi.use.plugins.jacamo.ManagedProducerTestSupport;
 import org.tzi.use.plugins.jacamo.verification.VerificationOutcome;
 import org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeHistoryPage;
 
-/** Separate official producer JVM + real USE GUI/Session + unmodified maintained Auction profile. */
+/** Separate official producer JVM + real USE GUI/Session + frozen upstream Auction/profile. */
 class ManagedAuctionWorkbenchIT {
     private String oldHeight, oldWidth, oldProjection;
     @org.junit.jupiter.api.BeforeEach void configureUseDiagramDefaults() {
@@ -46,7 +46,7 @@ class ManagedAuctionWorkbenchIT {
     @Test void managedOriginalAuctionKeepsCurrentUiRelationsAndRecordedReanalysisOnTheSameSession() throws Exception {
         assertFalse(java.awt.GraphicsEnvironment.isHeadless());
         Path evidence=Path.of("target/workbench-acceptance", "auction-"+System.currentTimeMillis()).toAbsolutePath();
-        Path original=Path.of("../../jacamo/examples/auction/auction.jcm");
+        Path original=Path.of("src/test/resources/acceptance/auction-original/auction.jcm");
         Path profile=Path.of("src/test/resources/jacamo/ocl/auction/auction_demo.ocl").toAbsolutePath();
         String profileHash=org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.sha256(Files.readAllBytes(profile));
         var errors=new java.util.concurrent.CopyOnWriteArrayList<String>();
@@ -92,6 +92,7 @@ class ManagedAuctionWorkbenchIT {
                     });
                     var diagram=onEdt(()->window.getObjectDiagrams().getFirst());
                     assertSame(system,diagram.system());
+                    awaitEnabled(panel,"start-runtime",30,errors);
                     onEdt(()->{component(panel,"start-runtime",javax.swing.JButton.class).doClick();return null;});
                     await(()->facade.workflowStatus().state().equals("LIVE"),30,errors);
                     assertTrue(Files.exists(producer.control.resolve("started.json")));

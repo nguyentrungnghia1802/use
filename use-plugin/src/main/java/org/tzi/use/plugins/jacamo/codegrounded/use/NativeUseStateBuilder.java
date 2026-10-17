@@ -19,6 +19,9 @@ public final class NativeUseStateBuilder {
     }
     public Result build(JacamoSpecificationModel source,NativeUseModelBuilder.Result schema,CodeGroundedTraceCollector trace) {
         var system=new MSystem(schema.model()); var api=UseSystemApi.create(system,false); NativeObjectBindings objects=new NativeObjectBindings();
+        if (org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.active(schema.model()))
+            return new Result(system, objects, trace.index(), true, true,
+                    "CSL schema ready; runtime population requires authoritative observations", schema.profile());
         var snapshot=source.snapshot();
         try {
             // Pass 1: objects and exact source identity.

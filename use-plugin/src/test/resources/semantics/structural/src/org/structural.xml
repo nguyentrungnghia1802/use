@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<organisational-specification id="structure" os-version="1.1" xmlns="http://moise.sourceforge.net/os">
+ <structural-specification>
+  <role-definitions><role id="base"/><role id="worker"><extends role="base"/></role><role id="auditor"/></role-definitions>
+  <group-specification id="team">
+   <roles><role id="worker" min="0" max="2"/><role id="auditor" min="0" max="2"/></roles>
+   <subgroups><group-specification id="subteam"><roles><role id="worker" min="0" max="2"/></roles></group-specification></subgroups>
+  </group-specification>
+ </structural-specification>
+ <functional-specification/><normative-specification/>
+</organisational-specification>

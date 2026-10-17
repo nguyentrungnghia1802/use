@@ -24,13 +24,16 @@ class LegacyV2OclIsolationTest {
     @Test void facadeContainsOnlyTheNativeProjection() throws Exception {
         String source = Files.readString(Path.of(
                 "src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java"));
-        int synchronizedSnapshot = source.indexOf("BridgeClient.Accepted accepted = candidate.synchronize()");
+        int synchronizedSnapshot = source.indexOf("BridgeClient.Accepted accepted = candidate.synchronize(");
         assertTrue(synchronizedSnapshot >= 0);
         assertFalse(source.contains("NativeSemanticAdapter"));assertFalse(source.contains("BridgeRuntimeProjector"));
         assertFalse(source.contains("LEGACY_V2"));assertFalse(source.contains("RuntimeVerificationEngine"));
         String branch = section(source,"private ProjectSummary synchronizeBridge","private void validateBridgeSelection");
+        assertTrue(branch.contains("candidate.synchronize(() ->"),"The native resync must fence the previous writer before copying its cut");
+        assertTrue(branch.contains("previous.stopRuntimeDelivery.run()"));
         assertTrue(branch.contains("buildNativeSemantic(selectedJcm, accepted.model(), importNanos)"));
-        assertTrue(branch.contains("new NativeUseSessionActivator().activate(session, next.pipeline)"));
+        assertTrue(branch.contains("new NativeUseSessionActivator().activate(session, next.pipeline,"));
+        assertTrue(branch.contains("sessionChanges.get()==sessionEpoch"),"Activation must still own the USE Session on the EDT");
         assertTrue(branch.contains("return next.summary"));
         assertForbiddenAbsent(branch);
 

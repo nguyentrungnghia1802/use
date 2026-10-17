@@ -38,9 +38,16 @@ public final class SnapshotCoordinator implements AutoCloseable {
     public SnapshotCoordinator(List<SnapshotSource> sources, int eventCapacity,
                                Consumer<RuntimeEvent> liveObserver) throws Exception {
         this.sources = List.copyOf(sources);
+        if(this.sources.stream().map(SnapshotSource::sourceId).distinct().count()!=this.sources.size())throw new IllegalArgumentException("SNAPSHOT_DUPLICATE_SOURCE_SCOPE");
         this.buffered = new ArrayBlockingQueue<>(eventCapacity);
         this.liveObserver = java.util.Objects.requireNonNull(liveObserver);
-        for (SnapshotSource source : this.sources) source.attach(this::observe);
+        var attached=new ArrayList<SnapshotSource>();
+        try {
+            for (SnapshotSource source : this.sources) { attached.add(source);source.attach(this::observe); }
+        } catch(Exception failure) {
+            for(int i=attached.size()-1;i>=0;i--)try{attached.get(i).close();}catch(Exception cleanup){failure.addSuppressed(cleanup);}
+            throw failure;
+        }
     }
 
     private void observe(RuntimeEvent event) {
@@ -61,6 +68,8 @@ public final class SnapshotCoordinator implements AutoCloseable {
 
     public synchronized Capture capture(String modelRevision, int maxAttempts) throws Exception {
         if (closed.get()) throw new IllegalStateException("SNAPSHOT_COORDINATOR_CLOSED");
+        if(maxAttempts<1)throw new IllegalArgumentException("SNAPSHOT_ATTEMPTS_MUST_BE_POSITIVE");
+        var retryDiagnostics=new ArrayList<String>();
         for (int attempt = 1; attempt <= maxAttempts; attempt++) {
             synchronized (eventLock) {
                 overflow.set(false);
@@ -68,21 +77,25 @@ public final class SnapshotCoordinator implements AutoCloseable {
             }
             try {
             Instant startTime = Instant.now();
-            var start = watermarks(); var topology = topology(); var facts = new ArrayList<RuntimeFact>();
-            for (SnapshotSource source : sources) facts.addAll(source.capture());
-            var end = watermarks(); var afterTopology = topology(); Instant endTime = Instant.now();
-            boolean changedAuthoritativeSource = facts.stream()
-                    .filter(fact -> fact.projectionStatus() == org.jacamo.bridge.contract.ProjectionStatus.MATERIALIZED_FAITHFULLY)
-                    .map(fact -> fact.id().authority()).distinct()
-                    .anyMatch(source -> !java.util.Objects.equals(start.get(source), end.get(source)));
-            if (overflow.get() || !topology.equals(afterTopology) || regressed(start, end) || changedAuthoritativeSource) {
+            var start=new TreeMap<String,SourceWatermark>();var end=new TreeMap<String,SourceWatermark>();var topology=topology();var facts=new ArrayList<RuntimeFact>();
+            var authoritativeSources=new java.util.HashSet<String>();
+            for (SnapshotSource source : sources) {var local=source.captureCut();start.put(source.sourceId(),local.start());var cut=local.facts();end.put(source.sourceId(),local.end());facts.addAll(cut);if(cut.stream().anyMatch(f->f.projectionStatus()==org.jacamo.bridge.contract.ProjectionStatus.MATERIALIZED_FAITHFULLY || f.kind()==org.jacamo.bridge.contract.RuntimeFactKind.NORM_INSTANCE && f.completeness()==Completeness.COMPLETE && "NPL_OBSERVATION/1.0".equals(f.values().get("observationVersion"))))authoritativeSources.add(source.sourceId());}
+            var afterTopology = topology(); Instant endTime = Instant.now();
+            // Fact authority (moise) is not the selected source scope (moise:org).
+            var mutatingSources=authoritativeSources.stream().filter(source->!java.util.Objects.equals(start.get(source),end.get(source))).sorted().toList();
+            boolean changedAuthoritativeSource = !mutatingSources.isEmpty();
+
+            boolean duplicateIdentity=facts.stream().map(fact->fact.id().canonical()).distinct().count()!=facts.size();
+            if (overflow.get() || duplicateIdentity || !topology.equals(afterTopology) || regressed(start, end) || changedAuthoritativeSource) {
+                retryDiagnostics.add("attempt="+attempt+":overflow="+overflow.get()+":topologyChanged="+!topology.equals(afterTopology)+":watermarkRegressed="+regressed(start,end)+":authoritativeMutation="+mutatingSources);
                 continue;
             }
             String fingerprint = digest(CanonicalJson.encode(Map.of("modelRevision", modelRevision,
                     "facts", facts.stream().map(fact -> Map.of("id", fact.id().canonical(), "kind", fact.kind().name(), "values", fact.values(), "projection", fact.projectionStatus().name())).toList())));
             var completeness = new TreeMap<String, Completeness>(); sources.forEach(source -> completeness.put(source.sourceId(), source.completeness()));
+            var captureEvidence=new TreeMap<String,Object>();captureEvidence.putAll(Map.of("version","1.0","topologyStart",topology,"topologyEnd",afterTopology,"cutPolicy","PER_SOURCE_WATERMARK_AND_TOPOLOGY_VALIDATED","causality","NO_WALL_CLOCK_TOTAL_ORDER","rejectedAttempts",attempt-1,"retryDiagnostics",List.copyOf(retryDiagnostics),"sourceCutPolicy","LOCAL_CAPTURE_INTERVAL","globalAtomicity","UNSUPPORTED"));var sourceEvidence=new TreeMap<String,Object>();for(var selected:sources)if(!selected.captureMetadata().isEmpty())sourceEvidence.put(selected.sourceId(),selected.captureMetadata());if(!sourceEvidence.isEmpty())captureEvidence.put("sourceEvidence",sourceEvidence);
             var snapshot = new RuntimeSnapshot("snapshot:" + fingerprint, modelRevision, startTime, endTime, start, end,
-                    attempt, facts, completeness, fingerprint);
+                    attempt, facts, completeness, fingerprint,captureEvidence);
             List<RuntimeEvent> replay;
             synchronized (eventLock) {
                 replay = buffered.stream().filter(event -> event.sourceSequence() >
@@ -90,6 +103,9 @@ public final class SnapshotCoordinator implements AutoCloseable {
                 publishBuffered();
             }
             return new Capture(snapshot, replay);
+            } catch(Exception unavailable) {
+                retryDiagnostics.add("attempt="+attempt+":"+unavailable.getClass().getSimpleName()+":"+unavailable.getMessage());
+                if(attempt==maxAttempts)throw new ContractException("SNAPSHOT_CUT_NOT_STABLE:"+retryDiagnostics,unavailable);
             } finally {
                 // Existing subscribers have older cuts: even callbacks covered by
                 // this snapshot must reach their stream. The capturing client can
@@ -97,7 +113,7 @@ public final class SnapshotCoordinator implements AutoCloseable {
                 synchronized(eventLock) {if(capturing)publishBuffered();}
             }
         }
-        throw new ContractException("SNAPSHOT_CUT_NOT_STABLE");
+        throw new ContractException("SNAPSHOT_CUT_NOT_STABLE:"+retryDiagnostics);
     }
 
     /** Called under eventLock; bounded non-blocking transport enqueue only. */

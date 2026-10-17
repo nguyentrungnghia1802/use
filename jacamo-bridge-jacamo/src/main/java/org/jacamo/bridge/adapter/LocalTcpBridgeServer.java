@@ -74,7 +74,11 @@ public final class LocalTcpBridgeServer implements AutoCloseable {
             case "HANDSHAKE"->write(socket,handshake.get());case "MODEL_SNAPSHOT"->write(socket,model.get());case "RUNTIME_SNAPSHOT"->write(socket,runtime.get());
             case "CONTROL"->write(socket,control.apply(org.jacamo.bridge.contract.RuntimeControlContract.Request.decode(CanonicalJson.object(request.get("control")))));
             case "ACK"->{lastAcknowledgement=resume;acknowledgements.incrementAndGet();write(socket,new byte[]{'O','K'});}case "SUBSCRIBE"->subscribe(socket,resume);default->throw new IllegalArgumentException("BRIDGE_OPERATION_REJECTED");}}
-        catch(Exception ignored){/* Authentication/protocol details are intentionally not reflected to peers. */}finally{clients.remove(socket);}}
+        catch(Exception failure){
+            // Diagnostics stay local; authentication/protocol details are never reflected to peers.
+            java.util.logging.Logger.getLogger(LocalTcpBridgeServer.class.getName())
+                    .log(java.util.logging.Level.FINE,"Bridge client request ended",failure);
+        }finally{clients.remove(socket);}}
     private void subscribe(Socket socket,String resume)throws Exception{var subscriber=new Subscriber(socket);subscribers.add(subscriber);try{
         DataOutputStream ready = new DataOutputStream(socket.getOutputStream());
         ready.writeInt(SUBSCRIPTION_READY.length);

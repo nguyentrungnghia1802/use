@@ -12,14 +12,14 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /** USE symbols are presentation, never identity or a lookup heuristic. */
-final class MoiseUseSymbols {
-    record Candidate(String semanticId, String kind, String label) { }
+public final class MoiseUseSymbols {
+    public record Candidate(String semanticId, String kind, String label) { }
     private static final Set<String> BUILTIN_TYPES = Set.of(
             "String", "Integer", "Real", "Boolean", "OclAny", "OclVoid", "UnlimitedNatural");
 
     private MoiseUseSymbols() { }
 
-    static Map<String, String> allocate(List<Candidate> candidates, Set<String> reserved) {
+    public static Map<String, String> allocate(List<Candidate> candidates, Set<String> reserved) {
         Map<String, List<Candidate>> byLabel = new LinkedHashMap<>();
         Set<String> identities = new TreeSet<>();
         for (var candidate : candidates.stream().sorted(Comparator.comparing(Candidate::semanticId)).toList()) {

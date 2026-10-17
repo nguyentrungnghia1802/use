@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<organisational-specification id="monitor" os-version="1.1" xmlns="http://moise.sourceforge.net/os">
+  <structural-specification>
+    <role-definitions><role id="worker"/></role-definitions>
+    <group-specification id="team"><roles><role id="worker" min="0" max="2"/></roles></group-specification>
+  </structural-specification>
+  <functional-specification/>
+  <normative-specification/>
+</organisational-specification>

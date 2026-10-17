@@ -21,9 +21,16 @@ class RuntimeControlServiceTest {
         final AtomicInteger pauses=new AtomicInteger(),resumes=new AtomicInteger(),resyncs=new AtomicInteger();
         volatile boolean ack=true,owned=true,connected=true,restore=true,failResync=false,failControl=false;
         volatile State state=State.RUNNING;volatile String requestId="";
+        volatile CountDownLatch resyncEntered,resyncRelease;
+        volatile CountDownLatch controlEntered,controlRelease;
         Port(org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector p){projector=p;}
         @Override public Status control(Request r){
             assertNotNull(projector.coordinator().snapshots().failure(),"Failing cut must exist before ANY control request");
+            if(r.action()==Action.STATUS && controlEntered!=null) {
+                controlEntered.countDown();while(controlRelease.getCount()>0)try{controlRelease.await(100,TimeUnit.MILLISECONDS);}
+                catch(InterruptedException ignored){ /* controlled blocking API fixture */ }
+            }
+
             if(!connected)throw new IllegalStateException("disconnect");if(failControl)throw new IllegalStateException("API throws");
             if(r.action()==Action.PAUSE){pauses.incrementAndGet();state=State.PAUSE_REQUESTED;requestId=r.requestId();}
             if(r.action()==Action.RESUME){resumes.incrementAndGet();state=State.RESUME_REQUESTED;requestId=r.requestId();}
@@ -32,7 +39,12 @@ class RuntimeControlServiceTest {
             return new Status(RuntimeControlContract.VERSION,SESSION,1,REVISION,true,state,requestId,AGENTS,
                     ack?AGENTS:Set.of("agent#one"),Set.of(),"",Instant.now());
         }
+
         @Override public VerificationSnapshot authoritativeResync(){resyncs.incrementAndGet();if(failResync)throw new IllegalStateException("snapshot unavailable");
+            if(state==State.PAUSED && resyncEntered!=null) {
+                resyncEntered.countDown();try{if(!resyncRelease.await(5,TimeUnit.SECONDS))throw new IllegalStateException("resync test deadline");}
+                catch(InterruptedException error){Thread.currentThread().interrupt();throw new IllegalStateException(error);}
+            }
             if(restore)projector.applySnapshot(snapshot("authoritative-confirmation",projector.sourceWatermarks().get("cartago")));
             else projector.coordinator().manualVerify();
             return projector.coordinator().verificationSnapshot();}
@@ -203,6 +215,33 @@ class RuntimeControlServiceTest {
                 assertEquals(VerificationViolation.Confirmation.CONFIRMED,service.violations().getFirst().confirmation());
                 assertNotNull(p.coordinator().snapshots().failure());
             }
+        }
+    }
+
+    @Test void closeCompletesQueuedControlFuturesEvenWhenTheRunningApiHasNotReturned() throws Exception {
+        try(var p=projector()) {
+            var port=new Port(p);port.controlEntered=new CountDownLatch(1);port.controlRelease=new CountDownLatch(1);
+            try(var service=service(p,port,3000)) {
+                String owner=p.mutations().objectForSemanticId(ARTIFACT).cls().name();
+                p.coordinator().loadProfileSource("soft.ocl","context "+owner+" inv False: false");p.coordinator().manualVerify();
+                var running=service.refresh();assertTrue(port.controlEntered.await(2,TimeUnit.SECONDS));
+                var queued=service.requestPause("queued behind status");assertFalse(queued.isDone());
+                service.close();assertTrue(running.isCompletedExceptionally());assertTrue(queued.isCompletedExceptionally());
+                port.controlRelease.countDown();service.awaitClosed();assertEquals(0,port.pauses.get());
+            }finally{port.controlRelease.countDown();}
+        }
+    }
+    @Test void resumeDuringPauseResyncIsQueuedAndDeduplicatedInsteadOfReturningPauseStatus() throws Exception {
+        try(var p=projector()) {
+            var port=new Port(p);port.resyncEntered=new CountDownLatch(1);port.resyncRelease=new CountDownLatch(1);
+            try(var service=service(p,port,3000)) {
+                setup(p,service);p.apply(delta("hard-failure",1,"B"));
+                assertTrue(port.resyncEntered.await(2,TimeUnit.SECONDS));assertEquals(State.PAUSED,service.state().state());
+                var paused=service.requestPause("duplicate");var resumed=service.requestResume();
+                assertNotSame(paused,resumed);assertSame(resumed,service.requestResume());assertFalse(resumed.isDone());
+                port.resyncRelease.countDown();assertEquals(State.RUNNING,resumed.get(5,TimeUnit.SECONDS).state());
+                assertEquals(1,port.pauses.get());assertEquals(1,port.resumes.get());assertEquals(2,port.resyncs.get());
+            }finally{port.resyncRelease.countDown();}
         }
     }
 }

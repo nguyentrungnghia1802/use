@@ -18,7 +18,8 @@ import org.jacamo.bridge.contract.VerificationBoundary;
 
 /** Transactional, incarnation-aware neutral mirror ahead of frozen runtime mapping. */
 public final class BridgeMirrorStateMachine {
-    private final EventLedger ledger;
+    private EventLedger ledger;
+    private final int idempotencyCapacity;
     private final Map<String, RuntimeFact> facts = new TreeMap<>();
     private final Map<String, Long> sequences = new TreeMap<>();
     private String sessionId;
@@ -27,24 +28,33 @@ public final class BridgeMirrorStateMachine {
     private String snapshotId;
     private BridgeClientState state = BridgeClientState.DISCONNECTED;
 
-    public BridgeMirrorStateMachine(int idempotencyCapacity) { ledger = new EventLedger(idempotencyCapacity); }
+    public BridgeMirrorStateMachine(int idempotencyCapacity) { this.idempotencyCapacity=idempotencyCapacity; ledger = new EventLedger(idempotencyCapacity); }
     public synchronized BridgeClientState state() { return state; }
     synchronized void transition(BridgeClientState next) { state = next; }
 
     public synchronized void acceptIdentity(String session, long nextGeneration, String revision) {
         if (session == null || session.isBlank() || revision == null || revision.isBlank() || nextGeneration < 0)
             throw new BridgeProtocolException("BRIDGE_IDENTITY_INVALID");
+        if (session.equals(sessionId) && nextGeneration < generation) { state=BridgeClientState.RESYNC_REQUIRED; throw new BridgeProtocolException("BRIDGE_GENERATION_STALE"); }
+        if (!session.equals(sessionId) || generation!=nextGeneration || !revision.equals(modelRevision)) {
+            facts.clear(); sequences.clear(); snapshotId=null; ledger=new EventLedger(idempotencyCapacity); state=BridgeClientState.SNAPSHOT_SYNC;
+        }
         sessionId=session; generation=nextGeneration; modelRevision=revision;
     }
 
     public synchronized void replace(RuntimeSnapshot snapshot) {
-        requireRevision(snapshot.modelRevision());
+        try { requireRevision(snapshot.modelRevision()); org.jacamo.bridge.contract.SnapshotAdmission.require(snapshot,sequences); }
+        catch(RuntimeException invalid) { state=BridgeClientState.RESYNC_REQUIRED; throw new BridgeProtocolException("BRIDGE_SNAPSHOT_REJECTED:"+invalid.getMessage(),invalid); }
         Map<String, RuntimeFact> replacement = new TreeMap<>();
         for (RuntimeFact fact : snapshot.facts()) {
-            if (replacement.put(fact.id().canonical(), fact) != null)
+            if (replacement.put(fact.id().canonical(), fact) != null) {
+                state=BridgeClientState.RESYNC_REQUIRED;
                 throw new BridgeProtocolException("BRIDGE_SNAPSHOT_DUPLICATE_ID:" + fact.id().canonical());
+            }
         }
-        var replacementSequences = new TreeMap<String,Long>();
+        // Absence is evidence only for an authoritative complete source scope.
+        facts.forEach((id,fact)->{if(!completeScope(snapshot,fact))replacement.putIfAbsent(id,fact);});
+        var replacementSequences = new TreeMap<String,Long>(sequences);
         snapshot.endWatermarks().forEach((key,value)->replacementSequences.put(key,value.sequence()));
         facts.clear(); facts.putAll(replacement); sequences.clear(); sequences.putAll(replacementSequences);
         snapshotId=snapshot.snapshotId(); state=BridgeClientState.LIVE;
@@ -84,14 +94,27 @@ public final class BridgeMirrorStateMachine {
                 && event.entityId().authority().equals("cartago")
                 && event.entityId().dimension().equals("environment")
                 && event.entityId().kind().equals("focus");
-        boolean creation=event.kind()==RuntimeEventKind.CREATED || event.kind()==RuntimeEventKind.ADDED
+        boolean norm=event.factKind()==RuntimeFactKind.NORM_INSTANCE && event.subsystem().equals("npl") && event.sourceId().equals("npl") && event.entityId().authority().equals("npl")
+                && event.entityId().dimension().equals("organisation") && event.entityId().kind().equals("norm-instance");
+        if(event.kind().name().startsWith("NORM_") && !norm) {state=BridgeClientState.RESYNC_REQUIRED;throw new BridgeProtocolException("BRIDGE_NORM_LIFECYCLE_IDENTITY_INVALID");}
+        boolean creation=norm && event.kind()==RuntimeEventKind.NORM_ACTIVATED || event.kind()==RuntimeEventKind.CREATED || event.kind()==RuntimeEventKind.ADDED
                 || event.kind()==RuntimeEventKind.JOINED || event.kind()==RuntimeEventKind.COMMITTED
                 || cartagoFocus && event.kind()==RuntimeEventKind.FOCUSED;
         boolean removal=event.kind()==RuntimeEventKind.DISPOSED || event.kind()==RuntimeEventKind.REMOVED
                 || event.kind()==RuntimeEventKind.QUIT || event.kind()==RuntimeEventKind.DECOMMITTED
                 || cartagoFocus && event.kind()==RuntimeEventKind.UNFOCUSED;
         RuntimeFact current=facts.get(id);
-        if(current==null&&!creation){state=BridgeClientState.RESYNC_REQUIRED;throw new BridgeProtocolException("BRIDGE_UNKNOWN_INCARNATION:"+id);}
+        // Official NPL listeners may first observe a terminal norm state: boards
+        // are discovered after their interpreter has already created that norm.
+        // This is an evidence observation, never a fabricated domain creation.
+        boolean normativeObservation=norm
+                && event.projectionStatus()==org.jacamo.bridge.contract.ProjectionStatus.EVIDENCE_ONLY
+                && "NPL_OBSERVATION/1.0".equals(event.after().get("observationVersion"))
+                && "BOUND_PUBLIC_CREATED_ANNOTATION".equals(event.after().get("activationIdentityStatus"))
+                && !java.util.Objects.toString(event.after().get("activationKey"),"").isBlank()
+                && java.util.Set.of(RuntimeEventKind.NORM_ACTIVATED,RuntimeEventKind.NORM_FULFILLED,
+                    RuntimeEventKind.NORM_UNFULFILLED,RuntimeEventKind.NORM_INACTIVATED).contains(event.kind());
+        if(current==null&&!creation&&!normativeObservation){state=BridgeClientState.RESYNC_REQUIRED;throw new BridgeProtocolException("BRIDGE_UNKNOWN_INCARNATION:"+id);}
         if(removal)facts.remove(id);
         else if(current!=null)facts.put(id,new RuntimeFact(current.id(),event.factKind(),event.after(),current.relations(),event.projectionStatus(),event.completeness(),event.evidence()));
         else facts.put(id,new RuntimeFact(event.entityId(),event.factKind(),event.after(),
@@ -101,6 +124,12 @@ public final class BridgeMirrorStateMachine {
         ledger.accept(event,ContractPayloads.event(event)); return true;
     }
 
+    private boolean completeScope(RuntimeSnapshot snapshot,RuntimeFact fact) {
+        var completeness=snapshot.sourceCompleteness();
+        String authority=fact.id().authority();
+        if(authority.equals("moise"))return completeness.get("moise:"+fact.id().scope())==org.jacamo.bridge.contract.Completeness.COMPLETE;
+        return completeness.get(authority)==org.jacamo.bridge.contract.Completeness.COMPLETE;
+    }
     private void requireRevision(String revision){if(!revision.equals(modelRevision))throw new BridgeProtocolException("BRIDGE_MODEL_REVISION_STALE");}
     private void requireIdentity(String session,long candidateGeneration,String revision){
         if(!session.equals(sessionId))throw new BridgeProtocolException("BRIDGE_SESSION_STALE");

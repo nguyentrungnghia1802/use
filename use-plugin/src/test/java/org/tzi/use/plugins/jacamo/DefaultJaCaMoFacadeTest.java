@@ -18,6 +18,21 @@ class DefaultJaCaMoFacadeTest {
     @TempDir Path temporary;
 
     @Test
+    void defaultFacadeRequiresAnExternalTcpEndpointBeforeImport() {
+        String key = org.tzi.use.plugins.jacamo.bridge.BridgeConnectionConfig.ENDPOINT_PROPERTY;
+        String previous = System.getProperty(key);
+        System.clearProperty(key);
+        try (DefaultJaCaMoFacade facade = new DefaultJaCaMoFacade(Path.of("."))) {
+            var failure = assertThrows(IllegalStateException.class, () -> facade.importProject(auction()));
+            assertEquals("BRIDGE_CONFIGURATION_REQUIRED:" + key, failure.getMessage());
+            assertFalse(facade.workflowStatus().startAvailable());
+        } finally {
+            if (previous == null) System.clearProperty(key);
+            else System.setProperty(key, previous);
+        }
+    }
+
+    @Test
     void originalAuctionBridgeImportExposesPipelineSummaryTraceDiagnosticsAndVerification() {
         try (DefaultJaCaMoFacade facade = bridgeAuction()) {
             JaCaMoFacade.ProjectSummary summary = facade.importProject(auction());

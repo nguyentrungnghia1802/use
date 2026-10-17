@@ -408,7 +408,8 @@ public class HelloWorldSemanticInventoryIT {
                 assertTrue(state.allLinks().stream().allMatch(link->state.allObjects().containsAll(link.linkedObjects())),"Orphan link");
                 var validation=new java.io.StringWriter();boolean structureValid=state.checkStructure(new java.io.PrintWriter(validation),true);
                 assertEquals(!structureValid,result.outcomes().stream().anyMatch(o->o.diagnostic().equals("NATIVE_MULTIPLICITY_VIOLATION")),
-                        "Observed native cardinality failures must be retained as verification FAIL: "+validation);
+                        "Observed native cardinality failures must be retained as verification FAIL: "+validation
+                                +"; freshness="+result.freshness()+"; diagnostic="+result.diagnostic()+"; outcomes="+result.outcomes());
                 for(var association:system.model().associations()) if(association.getAnnotation(org.tzi.use.plugins.jacamo.codegrounded.use.MoiseDomainProjection.ROLE_ASSOCIATION)==null)
                     assertTrue(state.checkStructure(association,new java.io.PrintWriter(validation),true),validation.toString());
                 var guiCounts=new TreeMap<String,Long>();

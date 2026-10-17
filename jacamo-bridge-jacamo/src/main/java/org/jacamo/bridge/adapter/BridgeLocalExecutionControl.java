@@ -128,4 +128,9 @@ public final class BridgeLocalExecutionControl extends LocalExecutionControl {
         synchronized(this) {rejectCapability("CONTROL_RUNTIME_STOPPED");}
         signals.shutdownNow();executor.shutdownNow();super.stop();
     }
+    public boolean awaitStopped(java.time.Duration timeout) throws InterruptedException {
+        long until=System.nanoTime()+timeout.toNanos();
+        return signals.awaitTermination(timeout.toNanos(),TimeUnit.NANOSECONDS) &&
+            executor.awaitTermination(Math.max(0,until-System.nanoTime()),TimeUnit.NANOSECONDS);
+    }
 }

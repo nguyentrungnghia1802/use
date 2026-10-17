@@ -10,7 +10,7 @@ import java.util.TreeMap;
 
 /** Small dependency-free canonical JSON codec with duplicate-key, size and depth guards. */
 public final class CanonicalJson {
-    public static final int DEFAULT_MAX_BYTES = 4 * 1024 * 1024;
+    public static final int DEFAULT_MAX_BYTES = 16 * 1024 * 1024;
     public static final int DEFAULT_MAX_DEPTH = 64;
     public static final int DEFAULT_MAX_STRING = 1024 * 1024;
 

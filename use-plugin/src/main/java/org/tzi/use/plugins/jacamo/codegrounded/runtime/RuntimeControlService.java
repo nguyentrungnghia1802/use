@@ -38,6 +38,9 @@ public final class RuntimeControlService implements AutoCloseable {
     private final int historyLimit=64;
     private volatile View view;
     private CompletableFuture<Status> command;
+    private Action commandAction,deferredAction;
+    private CompletableFuture<Status> deferred;
+    private final Set<CompletableFuture<?>> pendingTasks=ConcurrentHashMap.newKeySet();
     private String activePauseViolation="";
     private final Set<String> pauseCohort=new LinkedHashSet<>();
     private final DistinctViolationPolicy distinctPolicy;
@@ -149,37 +152,54 @@ public final class RuntimeControlService implements AutoCloseable {
     }
     public CompletableFuture<Status> requestPause(String reason) {
         ensureActive();
-        synchronized(this) {if(command!=null && !command.isDone())return command;
+        synchronized(this) {var pending=pendingCommand(Action.PAUSE,reason);if(pending!=null)return pending;
             if(view.state()==State.PAUSED)return CompletableFuture.completedFuture(null);}
         // Never wait for the EDT while holding the diagnostic/control monitor.
         requireSynchronizedCut();
         synchronized(this) {
-            ensureActive();if(command!=null && !command.isDone())return command;
+            ensureActive();var pending=pendingCommand(Action.PAUSE,reason);if(pending!=null)return pending;
             if(view.state()==State.PAUSED)return CompletableFuture.completedFuture(null);
             view=new View(State.PAUSE_REQUESTED,view.capable(),view.connected(),false,view.required(),view.acknowledged(),"",view.limitation());
-            command=CompletableFuture.supplyAsync(()->execute(Action.PAUSE,reason),worker);return command;
+            commandAction=Action.PAUSE;command=track(CompletableFuture.supplyAsync(()->execute(Action.PAUSE,reason),worker));return command;
         }
     }
     public CompletableFuture<Status> requestResume() {
-        ensureActive();synchronized(this) {if(command!=null && !command.isDone())return command;
+        ensureActive();synchronized(this) {var pending=pendingCommand(Action.RESUME,"USER_RESUME");if(pending!=null)return pending;
             if(view.state()==State.RUNNING)return CompletableFuture.completedFuture(null);
             if(view.state()!=State.PAUSED)throw new IllegalStateException("CONTROL_PAUSE_NOT_CONFIRMED");}
         requireSynchronizedCut();
         synchronized(this) {
-            ensureActive();if(command!=null && !command.isDone())return command;
+            ensureActive();var pending=pendingCommand(Action.RESUME,"USER_RESUME");if(pending!=null)return pending;
             if(view.state()==State.RUNNING)return CompletableFuture.completedFuture(null);
             if(view.state()!=State.PAUSED)throw new IllegalStateException("CONTROL_PAUSE_NOT_CONFIRMED");
             if(!view.diagnostic().isBlank())throw new IllegalStateException("CONTROL_RESYNC_REQUIRED:"+view.diagnostic());
             view=new View(State.RESUME_REQUESTED,view.capable(),view.connected(),false,view.required(),view.acknowledged(),"",view.limitation());
-            command=CompletableFuture.supplyAsync(()->execute(Action.RESUME,"USER_RESUME"),worker);return command;
+            commandAction=Action.RESUME;command=track(CompletableFuture.supplyAsync(()->execute(Action.RESUME,"USER_RESUME"),worker));return command;
         }
     }
-    public CompletableFuture<Status> refresh() {return CompletableFuture.supplyAsync(()->{
+    /** Called under this monitor; opposite commands wait for the full ACK/resync transaction. */
+    private CompletableFuture<Status> pendingCommand(Action action,String reason) {
+        if(command==null || command.isDone())return null;
+        if(commandAction==action)return command;
+        if(deferred!=null && !deferred.isDone() && deferredAction==action)return deferred;
+        deferredAction=action;
+        // Never execute a continuation inline under the monitor: admission reads
+        // an EDT-owned snapshot and could otherwise deadlock its notification.
+        deferred=track(command.thenComposeAsync(status->action==Action.PAUSE?requestPause(reason):requestResume()));
+        return deferred;
+    }
+    private <T> CompletableFuture<T> track(CompletableFuture<T> task) {
+        pendingTasks.add(task);task.whenComplete((result,failure)->pendingTasks.remove(task));
+        if(closed.get())task.completeExceptionally(new CancellationException("CONTROL_SERVICE_CLOSED"));
+        return task;
+    }
+    public CompletableFuture<Status> refresh() {return track(CompletableFuture.supplyAsync(()->{
         ensureOwnership();var status=port.control(request(Action.STATUS,UUID.randomUUID().toString(),"CONTROL_REFRESH"));
+        ensureOwnership();
         accept(status,status.state()==State.RUNNING && port.liveAvailable());
         coordinator.controlState(status.state());
         return status;
-    },worker);}
+    },worker));}
     private Status execute(Action action,String reason) {
         String requestId=UUID.randomUUID().toString();
         try {
@@ -254,5 +274,17 @@ public final class RuntimeControlService implements AutoCloseable {
         view=new View(before.state(),before.capable(),true,!before.capable() && before.state()==State.RUNNING,
                 before.required(),before.acknowledged(),before.capable()?before.diagnostic():"CONTROL_CAPABILITY_UNAVAILABLE",before.limitation());
     }
-    @Override public void close(){if(!closed.compareAndSet(false,true))return;worker.shutdownNow();}
+    @Override public void close(){
+        if(!closed.compareAndSet(false,true))return;
+        worker.shutdownNow();
+        // shutdownNow removes queued tasks without completing their futures.
+        // Release UI/background callers as well as the executor itself.
+        for(var task:List.copyOf(pendingTasks))task.completeExceptionally(new CancellationException("CONTROL_SERVICE_CLOSED"));
+    }
+    public void awaitClosed() {
+        if(javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("CONTROL_AWAIT_ON_EDT");
+        close();
+        try {if(!worker.awaitTermination(20,TimeUnit.SECONDS))throw new IllegalStateException("CONTROL_WORKER_NOT_TERMINATED");}
+        catch(InterruptedException e){Thread.currentThread().interrupt();throw new IllegalStateException("CONTROL_CLOSE_INTERRUPTED",e);}
+    }
 }

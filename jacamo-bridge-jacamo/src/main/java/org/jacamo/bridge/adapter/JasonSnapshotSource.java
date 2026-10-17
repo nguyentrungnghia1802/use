@@ -81,6 +81,14 @@ public final class JasonSnapshotSource implements SnapshotSource {
         return AdapterEvidence.digest(String.join("\n", agents).getBytes(java.nio.charset.StandardCharsets.UTF_8));
     }
 
+    @Override public LocalCut captureCut() {
+        synchronized(BridgeRuntimeRegistry.JASON_PUBLICATION_LOCK) {
+            synchronized(this) {var start=watermark();var facts=capture();return new LocalCut(start,watermark(),facts);}
+        }
+    }
+    @Override public Map<String,Object> captureMetadata(){return Map.of("cutAuthority","LAST_PUBLISHED_CYCLE_CACHE_AND_SOURCE_SEQUENCE_UNDER_PUBLICATION_LOCK","liveInterpreterEvidence","EVIDENCE_ONLY","globalAtomicity","UNSUPPORTED",
+            "structuredJasonObservation",BridgeRuntimeRegistry.structuredJasonObservation());}
+
     @Override public List<RuntimeFact> capture() {
         BaseLocalMAS runner = BaseLocalMAS.getRunner();
         if (runner == null) {

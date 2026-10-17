@@ -74,6 +74,22 @@ class SnapshotCoordinatorTest {
         }
     }
 
+    @Test void scopedMoiseWatermarkCannotBeLookedUpUsingUnscopedFactAuthority()throws Exception {
+        var sequence=new AtomicLong();var source=new SnapshotSource() {
+            public String sourceId(){return "moise:org";}public void attach(Consumer<RuntimeEvent> observer){}public SourceWatermark watermark(){return new SourceWatermark(sourceId(),sequence.get());}public String topologyFingerprint(){return "same-board-uuid";}
+            public List<RuntimeFact> capture(){sequence.incrementAndGet();return List.of(new RuntimeFact(new BridgeEntityId("moise","organisation","group-board","org","team","board-uuid"),RuntimeFactKind.GROUP_BOARD,Map.of(),List.of(),ProjectionStatus.MATERIALIZED_FAITHFULLY,Completeness.COMPLETE,List.of()));}public Completeness completeness(){return Completeness.PARTIAL;}public void close(){}
+        };
+        try(var coordinator=new SnapshotCoordinator(List.of(source),8)){assertThrows(ContractException.class,()->coordinator.capture("revision",2));}
+    }
+    @Test void acceptedCutExportsImmutableTopologyAndOldEmptyExtensionKeepsItsWireShape()throws Exception {
+        var source=new FakeSource(false,true);try(var coordinator=new SnapshotCoordinator(List.of(source),8)) {var cut=coordinator.capture("model",3).snapshot();assertEquals("1.0",cut.captureMetadata().get("version"));assertEquals(cut.captureMetadata().get("topologyStart"),cut.captureMetadata().get("topologyEnd"));var restored=org.jacamo.bridge.contract.ContractPayloads.runtime(org.jacamo.bridge.contract.ContractPayloads.runtime(cut));assertEquals(cut,restored);assertThrows(UnsupportedOperationException.class,()->((Map)cut.captureMetadata().get("topologyStart")).clear());var old=new org.jacamo.bridge.contract.RuntimeSnapshot("old","model",Instant.EPOCH,Instant.EPOCH,Map.of(),Map.of(),1,List.of(),Map.of(),"hash");assertFalse(org.jacamo.bridge.contract.ContractPayloads.runtime(old).containsKey("captureMetadata"));}
+    }
+    @Test void laterSourceActivityDoesNotInvalidateAnEarlierLocalCutAndIsReplayedAfterItsOwnWatermark()throws Exception {
+        var sequence=new AtomicLong();var listener=new java.util.concurrent.atomic.AtomicReference<Consumer<RuntimeEvent>>();var id=new BridgeEntityId("first","agent","runtime","p","a","i");
+        var first=new SnapshotSource(){public String sourceId(){return "first";}public void attach(Consumer<RuntimeEvent> o){listener.set(o);}public SourceWatermark watermark(){return new SourceWatermark(sourceId(),sequence.get());}public String topologyFingerprint(){return "same";}public List<RuntimeFact> capture(){return List.of(new RuntimeFact(id,RuntimeFactKind.AGENT,Map.of("value",0),List.of(),ProjectionStatus.MATERIALIZED_FAITHFULLY,Completeness.COMPLETE,List.of()));}public Completeness completeness(){return Completeness.COMPLETE;}public void close(){}};
+        var second=new SnapshotSource(){public String sourceId(){return "second";}public void attach(Consumer<RuntimeEvent> o){}public SourceWatermark watermark(){return new SourceWatermark(sourceId(),0);}public String topologyFingerprint(){return "same";}public List<RuntimeFact> capture(){long seq=sequence.incrementAndGet();listener.get().accept(new RuntimeEvent("after-first","s",1,"model","first","first",seq,Instant.EPOCH,RuntimeEventKind.CHANGED,RuntimeFactKind.AGENT,ProjectionStatus.MATERIALIZED_FAITHFULLY,id,null,"","",Map.of(),Map.of("value",1),new SourceWatermark("first",seq),Completeness.COMPLETE,List.of()));return List.of();}public Completeness completeness(){return Completeness.COMPLETE;}public void close(){}};
+        try(var coordinator=new SnapshotCoordinator(List.of(first,second),8)){var cut=coordinator.capture("model",1);assertEquals(0L,cut.snapshot().endWatermarks().get("first").sequence());assertEquals(1,cut.replay().size());assertEquals("first",cut.replay().getFirst().sourceId());assertEquals("LOCAL_CAPTURE_INTERVAL",cut.snapshot().captureMetadata().get("sourceCutPolicy"));assertEquals("UNSUPPORTED",cut.snapshot().captureMetadata().get("globalAtomicity"));}
+    }
     private static final class FakeSource implements SnapshotSource {
         private final boolean overflow;private final boolean mutateOnce;private final AtomicLong sequence=new AtomicLong();private final AtomicBoolean closed=new AtomicBoolean();private Consumer<RuntimeEvent> observer;private int topologyCalls;private int captures;
         FakeSource(boolean overflow,boolean mutateOnce){this.overflow=overflow;this.mutateOnce=mutateOnce;}

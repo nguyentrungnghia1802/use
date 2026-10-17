@@ -1,0 +1,8 @@
+mas csl_structural {
+    agent a : a.asl
+    workspace main {
+        artifact counter: org.tzi.use.plugins.jacamo.semantics.CslCounterArtifact
+    }
+    organisation org: structural.xml {
+    }
+}

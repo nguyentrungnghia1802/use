@@ -22,6 +22,8 @@ public final class NativeRuntimeProjector implements AutoCloseable {
     }
     private final NativeRuntimeMutationEngine mutations;
     private final RuntimeVerificationCoordinator coordinator;
+    private final java.util.concurrent.atomic.AtomicBoolean deliveryRevoked=new java.util.concurrent.atomic.AtomicBoolean();
+    public void revokeDelivery(){deliveryRevoked.set(true);}
     private String sessionId, modelRevision, snapshotId = "";
     private long generation;
     private boolean resyncRequired;
@@ -74,7 +76,7 @@ public final class NativeRuntimeProjector implements AutoCloseable {
         coordinator = runtimeDirectory == null
                 ? new RuntimeVerificationCoordinator(mutations, session, generation, revision)
                 : new RuntimeVerificationCoordinator(mutations, session, generation, revision, runtimeDirectory,
-                        512, 64L * 1024 * 1024, true);
+                        512, RuntimeVerificationCoordinator.defaultJournalMaxBytes(), true);
     }
     @Override public void close() { coordinator.close(); }
     public MSystem system() { return mutations.system(); }
@@ -96,16 +98,24 @@ public final class NativeRuntimeProjector implements AutoCloseable {
                 item.outcome() == VerificationOutcome.PASS);
         return new NativeRuntimeMutationEngine.OclGate(mutations.structureValid(), passed, latest == null ? "" : latest.diagnostic());
     }
-    public ProjectionResult applySnapshot(RuntimeSnapshot snapshot) { return applySnapshot(snapshot, sessionId, generation); }
+    public ProjectionResult applySnapshot(RuntimeSnapshot snapshot) { return coordinator.read(()->applySnapshot(snapshot, sessionId, generation)); }
     public ProjectionResult applySnapshot(RuntimeSnapshot snapshot, String session, long nextGeneration) {
         return coordinator.read(() -> {
+        if(deliveryRevoked.get())throw new IllegalStateException("NATIVE_RUNTIME_OWNER_REVOKED");
         ProtocolState before = saveProtocol();
         try {
         return coordinator.transaction("SNAPSHOT", snapshot.snapshotId(), "snapshot", 0, snapshot.captureEndedAt(),
-                ContractPayloads.runtime(snapshot), true, () -> {
+                snapshotPayload(snapshot,session,nextGeneration), true, () -> {
             requireRevision(snapshot.modelRevision());
-            mutations.resetToBaseline();
+            if (session == null || session.isBlank() || nextGeneration < 0 || sessionId.equals(session) && nextGeneration < generation)
+                throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_SNAPSHOT_IDENTITY_STALE");
+            boolean sameEpoch=sessionId.equals(session) && generation==nextGeneration;
+            try { SnapshotAdmission.require(snapshot,sameEpoch?sourceWatermarks:Map.of()); }
+            catch(ContractException invalid) {throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_SNAPSHOT_CUT_REJECTED:"+invalid.getMessage(),invalid);}
+            if(snapshot.facts().stream().map(f->f.id().canonical()).distinct().count()!=snapshot.facts().size())throw new NativeRuntimeProtocolException("SNAPSHOT_FACT_ID_COLLISION");
+            if(!mutations.cslProfile() || !sessionId.equals(session) || generation!=nextGeneration)mutations.resetToBaseline();
             var baseline=mutations.savepoint();
+            mutations.prepareSnapshot(snapshot);
             List<String> materialized = new ArrayList<>(), evidenceOnly = new ArrayList<>(), unavailable = new ArrayList<>();
             List<Map.Entry<RuntimeFact, NativeRuntimeMutationEngine.ApplyResult>> applied = new ArrayList<>();
             for (RuntimeFact fact : snapshot.facts().stream().sorted(Comparator.comparingInt(NativeRuntimeProjector::rank)
@@ -126,8 +136,10 @@ public final class NativeRuntimeProjector implements AutoCloseable {
             if (!mutations.structureTransitionValid(baseline,observedMoise)) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_SNAPSHOT_STRUCTURE_INVALID");
             coordinator.acceptedSnapshot(session, nextGeneration, snapshot.modelRevision(), snapshot.sourceCompleteness());
             coordinator.observedSources(snapshot.facts(),true);
+            coordinator.observedSemanticSnapshot(snapshot,session,nextGeneration);
             sessionId = session; generation = nextGeneration;
-            sourceWatermarks.clear(); aliases.clear(); evidence.clear(); trace.clear(); ledger = new EventLedger(8192);
+            if (!sameEpoch) { sourceWatermarks.clear(); ledger = new EventLedger(8192); }
+            aliases.clear(); evidence.clear(); trace.clear();
             snapshot.facts().forEach(fact -> evidence.put(fact.id().canonical(), fact));
             snapshot.endWatermarks().forEach((source, watermark) -> sourceWatermarks.put(source, watermark.sequence()));
             int ordinal = 0;
@@ -141,6 +153,7 @@ public final class NativeRuntimeProjector implements AutoCloseable {
     }
     public boolean apply(RuntimeEvent event) {
         return coordinator.read(() -> {
+            if(deliveryRevoked.get())return false;
             try {
                 requireIdentity(event);
                 if (event.projectionStatus() == ProjectionStatus.MATERIALIZED_FAITHFULLY && event.completeness() != Completeness.COMPLETE)
@@ -171,7 +184,7 @@ public final class NativeRuntimeProjector implements AutoCloseable {
                 }
                 var result = mutations.apply(event.entityId(), event.relationId(), event.factKind(), event.projectionStatus(),
                         event.completeness(), event.after(), false);
-                if(!kind.equals("EVENT")) coordinator.operationCheckpoint(event);
+                if(!kind.equals("EVENT") || event.subsystem().equals("cartago")) coordinator.operationCheckpoint(event);
                 if (result.status() == NativeRuntimeMutationEngine.Status.REJECTED) {
                     resyncRequired = true;
                     throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_MUTATION_REJECTED:" + result.diagnostic());
@@ -186,6 +199,11 @@ public final class NativeRuntimeProjector implements AutoCloseable {
             return materialized;
             } catch (RuntimeException error) { restoreProtocol(before); throw error; }
         });
+    }
+    private Map<String,Object> snapshotPayload(RuntimeSnapshot snapshot,String session,long nextGeneration) {
+        var payload=new LinkedHashMap<>(ContractPayloads.runtime(snapshot));
+        payload.put("admissionEpoch",Map.of("sessionId",java.util.Objects.toString(session,""),"generation",nextGeneration));
+        return payload;
     }
     private void record(String eventId, String source, String identity, NativeRuntimeMutationEngine.ApplyResult result, long sequence) {
         if (result.status() == NativeRuntimeMutationEngine.Status.MATERIALIZED) {

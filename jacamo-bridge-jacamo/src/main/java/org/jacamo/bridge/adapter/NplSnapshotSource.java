@@ -35,6 +35,6 @@ public final class NplSnapshotSource implements SnapshotSource, NormativeListene
     @Override public void fulfilled(NormInstance value){emit(value,RuntimeEventKind.NORM_FULFILLED);}
     @Override public void unfulfilled(NormInstance value){emit(value,RuntimeEventKind.NORM_UNFULFILLED);}
     @Override public void inactive(NormInstance value){emit(value,RuntimeEventKind.NORM_INACTIVATED);}
-    private BridgeEntityId id(NormInstance value){String stable=AdapterEvidence.digest((value.getNorm()+"|"+value.getAg()+"|"+value.getUnifier()).getBytes()).substring(0,24);return new BridgeEntityId("npl","organisation","norm-instance",scope,stable,sessionId);}
+    private BridgeEntityId id(NormInstance value){return new BridgeEntityId("npl","organisation","norm-instance",scope,value.getNorm().getId() + ":" + value.getAg() + ":" + value.getUnifierAsTerm(),sessionId);}
     private void emit(NormInstance value,RuntimeEventKind kind){Consumer<RuntimeEvent> sink=observer;if(sink==null)return;long seq=sequence.incrementAndGet();sink.accept(new RuntimeEvent(sessionId+":"+sourceId()+":"+seq,sessionId,generation,System.getProperty("jacamo.bridge.modelRevision","unnegotiated"),"npl",sourceId(),seq,Instant.now(),kind,org.jacamo.bridge.contract.RuntimeFactKind.NORM_INSTANCE,org.jacamo.bridge.contract.ProjectionStatus.EVIDENCE_ONLY,id(value),null,"","",Map.of(),Map.of("state",String.valueOf(value.getState()),"norm",value.toString()),new SourceWatermark(sourceId(),seq),Completeness.COMPLETE,List.of()));}
 }

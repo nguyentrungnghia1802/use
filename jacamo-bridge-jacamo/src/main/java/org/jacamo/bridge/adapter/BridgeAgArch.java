@@ -20,7 +20,7 @@ import org.jacamo.bridge.contract.SourceWatermark;
 /** Official Jason architecture hook; it observes and always delegates normal behavior. */
 public final class BridgeAgArch extends AgArch {
     private static final long serialVersionUID = 1L;
-    private transient Consumer<RuntimeEvent> observer;
+    private transient volatile Consumer<RuntimeEvent> observer;
     private transient AtomicLong sequence;
     private String sessionId;
     private String incarnation;
@@ -44,6 +44,11 @@ public final class BridgeAgArch extends AgArch {
                 System.getProperty("jacamo.bridge.projectKey", "unnegotiated"), getAgName(), incarnation);
         Object parameters=getTS()==null ? null : getTS().getSettings().getUserParameters().get(jason.runtime.Settings.PROJECT_PARAMETER);
         String declaration=parameters instanceof jacamo.project.JaCaMoAgentParameters source ? source.getAgName() : null;
+        // A cloned architecture inherits PROJECT_PARAMETER. That implicit source
+        // setting cannot bind a different single agent to the original declaration.
+        // Explicit adapter-boundary registrations retain their supplied binding.
+        if(parameters instanceof jacamo.project.JaCaMoAgentParameters source
+                && source.getNbInstances()==1 && !getAgName().equals(source.getAgName()))declaration=null;
         BridgeRuntimeRegistry.registerAgent(getAgName(), runtimeIdentity,declaration);
         for(AgArch arch=getFirstAgArch();arch!=null;arch=arch.getNextAgArch())
             if(arch instanceof jason.infra.local.LocalAgArch local) BridgeRuntimeRegistry.registerArchitecture(getAgName(),local);
@@ -81,16 +86,24 @@ public final class BridgeAgArch extends AgArch {
             }
             values.put("goals",List.copyOf(goals.values()));
             values.put("goalCoverage","OBSERVED_CIRCUMSTANCE_EVENTS_AND_INTENTION_TRIGGERS");
-            BridgeRuntimeRegistry.publishJasonState(getAgName(),values);
-            if(!values.equals(previousState)) {
-                emit(RuntimeEventKind.CHANGED,RuntimeFactKind.AGENT,previousState,values,""); previousState=Map.copyOf(values);
+            if(BridgeRuntimeRegistry.structuredJasonObservation()) {
+                values.put("mentalObservation",JasonCycleObservation.mental(getTS().getAg(),runtimeIdentity.canonical(),getCycleNumber()));
+                values.put("executionObservation",JasonCycleObservation.execution(getTS(),runtimeIdentity.canonical(),getCycleNumber(),this::occurrenceToken));
+            }
+            synchronized(BridgeRuntimeRegistry.JASON_PUBLICATION_LOCK) {
+                BridgeRuntimeRegistry.publishJasonState(getAgName(),values);
+                if(!values.equals(previousState)) {
+                    emit(RuntimeEventKind.CHANGED,RuntimeFactKind.AGENT,previousState,values,""); previousState=Map.copyOf(values);
+                }
             }
         } catch(RuntimeException incompleteCut) {
             String diagnostic="JASON_CYCLE_OBSERVATION_INCOMPLETE:"+incompleteCut.getClass().getSimpleName();
-            BridgeRuntimeRegistry.invalidateJasonState(getAgName(),diagnostic);
-            previousState=Map.of();
-            emit(RuntimeEventKind.CHANGED,RuntimeFactKind.AGENT,Map.of(),Map.of(
-                "normalizedEventKind","JASON_CYCLE_OBSERVATION_INCOMPLETE","diagnostic",diagnostic),"");
+            synchronized(BridgeRuntimeRegistry.JASON_PUBLICATION_LOCK) {
+                BridgeRuntimeRegistry.invalidateJasonState(getAgName(),diagnostic);
+                previousState=Map.of();
+                emit(RuntimeEventKind.CHANGED,RuntimeFactKind.AGENT,Map.of(),Map.of(
+                    "normalizedEventKind","JASON_CYCLE_OBSERVATION_INCOMPLETE","diagnostic",diagnostic),"");
+            }
         }
     }
     private Map<String,Object> literal(String kind,String source,String value,String origin) {
@@ -115,6 +128,10 @@ public final class BridgeAgArch extends AgArch {
         String token=goalTokens.computeIfAbsent(new WeakIdentityKey(source,retiredGoals),
                 k->"goal-observation:"+incarnation+":"+(++nextGoalToken));
         var item=literal("runtime-goal",token,value,origin); goals.put(item.get("semanticId").toString(),item);
+    }
+    private String occurrenceToken(Object source) {
+        java.lang.ref.Reference<?> retired;while((retired=retiredGoals.poll())!=null)goalTokens.remove(retired);
+        return goalTokens.computeIfAbsent(new WeakIdentityKey(source,retiredGoals),k->"goal-observation:"+incarnation+":"+(++nextGoalToken));
     }
     /** Trigger equality is structural; occurrence identity must use the actual trigger object. */
     private static final class WeakIdentityKey extends java.lang.ref.WeakReference<Object> {
@@ -177,12 +194,13 @@ public final class BridgeAgArch extends AgArch {
 
     private void emit(RuntimeEventKind kind, RuntimeFactKind factKind,
                        Map<String,Object> before, Map<String,Object> after, String correlation) {
+        var target=observer;if(target==null)return;
         long current = sequence.incrementAndGet();
         String projectKey = System.getProperty("jacamo.bridge.projectKey", "unnegotiated");
         var id = runtimeIdentity == null
                 ? new BridgeEntityId("jason", "agent", "runtime-agent", projectKey, getAgName(), incarnation)
                 : runtimeIdentity;
-        observer.accept(new RuntimeEvent(sessionId + ":jason:" + incarnation + ":" + current, sessionId, generation,
+        target.accept(new RuntimeEvent(sessionId + ":jason:" + incarnation + ":" + current, sessionId, generation,
                 System.getProperty("jacamo.bridge.modelRevision", "unnegotiated"), "jason", "jason:" + incarnation,
                 current, Instant.now(), kind, factKind,
                 "UPSERT_JASON_AGENT_STATE".equals(after.get("normalizedEventKind")) ? org.jacamo.bridge.contract.ProjectionStatus.MATERIALIZED_FAITHFULLY

@@ -139,12 +139,14 @@ public final class MoiseSemanticContract {
     }
 
     public record MissionSemantic(SemanticMetadata metadata, String missionId, String schemeSemanticId,
-            List<String> goalSemanticIds) {
+            List<String> goalSemanticIds, List<String> preferredMissionSemanticIds) {
+        public MissionSemantic(SemanticMetadata metadata,String missionId,String schemeSemanticId,List<String> goalSemanticIds) {this(metadata,missionId,schemeSemanticId,goalSemanticIds,List.of());}
         public MissionSemantic {
             metadata = SemanticSupport.required(metadata, "metadata");
             missionId = SemanticSupport.required(missionId, "missionId");
             schemeSemanticId = SemanticSupport.required(schemeSemanticId, "schemeSemanticId");
             goalSemanticIds = List.copyOf(goalSemanticIds == null ? List.of() : goalSemanticIds);
+            preferredMissionSemanticIds = List.copyOf(preferredMissionSemanticIds == null ? List.of() : preferredMissionSemanticIds);
         }
     }
 

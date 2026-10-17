@@ -13,7 +13,7 @@ class AuctionExternalOclProfileTest {
     static final Path PROFILE=Path.of("src/test/resources/jacamo/ocl/auction/auction_demo.ocl").toAbsolutePath();
     static final Path RUNTIME_PROFILE=Path.of("src/test/resources/jacamo/ocl/auction/auction_runtime.ocl").toAbsolutePath();
     @Test void auditedProfileCompilesAgainstActualOfficialAuctionNativeSchema() throws Exception {
-        var snapshot=DomainRuntimeProjectionTest.load(Path.of("../../jacamo/examples/auction/auction.jcm"));
+        var snapshot=DomainRuntimeProjectionTest.load(org.tzi.use.plugins.jacamo.evidence.CanonicalReferenceFixture.auction());
         var pipeline=new CodeGroundedNativePipeline().build(snapshot); var system=pipeline.state().system();
         var service=new ExternalOclConstraintService(system); var profile=service.install(PROFILE,snapshot.modelRevision());
         assertEquals(5,profile.constraints().size()); assertSame(system,service.system());

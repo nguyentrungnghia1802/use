@@ -36,9 +36,13 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private final JLabel workflowState = named(new JLabel("NOT_IMPORTED"), "workflow-state");
     private final JLabel runtimeState = named(new JLabel("OFFLINE"), "runtime-state");
     private final JButton startRuntime = named(new JButton("Start Runtime"), "start-runtime");
+    private final JButton pauseRuntime = named(new JButton("Pause Jason"), "pause-runtime");
+    private final JButton resumeRuntime = named(new JButton("Resume Jason"), "resume-runtime");
     private final JButton loadProfile = named(new JButton("Load OCL..."), "load-profile");
     private final Map<String, JButton> actionButtons = new LinkedHashMap<>();
     private boolean autoImportStarted;
+    private final JTabbedPane tabs=named(new JTabbedPane(),"workbench-tabs");
+    private SemanticEvidencePanel semanticEvidence;
     private int backgroundOperations;
     private long viewEpoch;
     // Refresh only cached facade status, never start a second runtime or a network resync.
@@ -68,9 +72,12 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         this.facade = java.util.Objects.requireNonNull(facade, "facade");
         this.errorPresenter = java.util.Objects.requireNonNull(errorPresenter, "errorPresenter");
         startRuntime.addActionListener(event -> startRuntime());
+        startRuntime.setToolTipText("Release reasoning in the separately launched JaCaMo process after model import");
+        pauseRuntime.setToolTipText("Pause Jason at reasoning boundaries; CArtAgO/Moise operations may continue");
+        pauseRuntime.addActionListener(event -> executeBackground("Pause failed", () -> facade.pauseRuntime("Workbench manual pause").join(),this::refreshRuntime));
+        resumeRuntime.addActionListener(event -> executeBackground("Resume failed", () -> facade.resumeRuntime().join(),this::refreshRuntime));
         loadProfile.addActionListener(event -> chooseProfile());
         add(toolbar(), BorderLayout.NORTH);
-        JTabbedPane tabs = named(new JTabbedPane(), "workbench-tabs");
         tabs.addTab("Projection Rules", new MappingRulesPanel());
         add(tabs, BorderLayout.CENTER);
         add(status, BorderLayout.SOUTH);
@@ -108,6 +115,11 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     public void refreshRuntime() {
         refreshWorkflowControls();
         runtimeState.setText(facade.runtimeStatus().state().name());
+        var result=facade.runtimeVerificationResult();
+        if(result!=null && result.semantic()!=null) {
+            if(semanticEvidence==null){semanticEvidence=new SemanticEvidencePanel();tabs.addTab("Semantic verification",semanticEvidence);}
+            semanticEvidence.refresh(result);
+        } else if(semanticEvidence!=null) {tabs.remove(semanticEvidence);semanticEvidence=null;}
     }
 
     private JPanel toolbar() {
@@ -116,6 +128,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         actions.add(button("Import JaCaMo Project...", "import-project", this::chooseProject));
         actions.add(loadProfile);
         actions.add(startRuntime);
+        actions.add(pauseRuntime);actions.add(resumeRuntime);
         JPanel exports = new JPanel(new FlowLayout(FlowLayout.LEADING));
         exports.add(button("Export .use...", "export-use", this::chooseNativeUse));
         exports.add(button("Export .cmd...", "export-soil", this::chooseNativeSoil));
@@ -270,6 +283,11 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         boolean replayActive = facade.stepReplayStatus() != null;
         workflowState.setText(displayMessage(workflow.state() + " | " + workflow.diagnostic()));
         startRuntime.setEnabled(!busy && !replayActive && workflow.startAvailable());
+        var control=facade.runtimeControlState();
+        pauseRuntime.setEnabled(!busy && !replayActive && control!=null && control.capable() && control.liveReady() && control.state().name().equals("RUNNING")
+                && java.util.Set.of("RUNNING","LIVE").contains(workflow.state()));
+        resumeRuntime.setEnabled(!busy && !replayActive && control!=null && control.capable() && control.state().name().equals("PAUSED")
+                && java.util.Set.of("RUNNING","LIVE").contains(workflow.state()));
         loadProfile.setEnabled(!busy && !replayActive && facade.projectSummary() != null);
         actionButtons.forEach((name, button) -> button.setEnabled(!busy));
         actionButtons.get("import-project").setEnabled(!busy && !replayActive);

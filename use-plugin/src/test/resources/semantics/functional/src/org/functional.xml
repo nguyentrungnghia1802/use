@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<organisational-specification id="functional" os-version="1.1" xmlns="http://moise.sourceforge.net/os">
+ <structural-specification><role-definitions><role id="worker"/></role-definitions><group-specification id="team"><roles><role id="worker" min="0" max="3"/></roles></group-specification></structural-specification>
+ <functional-specification><scheme id="service"><goal id="root"><plan operator="sequence"><goal id="g1" type="performance"><argument id="item"/></goal><goal id="g2" type="achievement" ttf="10 minutes"/></plan></goal><mission id="work" min="1" max="2"><goal id="g1"/><goal id="g2"/></mission></scheme></functional-specification>
+ <normative-specification><norm id="work_permission" type="permission" role="worker" mission="work"/></normative-specification>
+</organisational-specification>

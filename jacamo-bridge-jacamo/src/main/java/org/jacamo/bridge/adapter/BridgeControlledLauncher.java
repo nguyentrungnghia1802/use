@@ -16,6 +16,9 @@ public class BridgeControlledLauncher extends JaCaMoLauncher {
     }
     @Override public void addAg(LocalAgArch agent) {
         super.addAg(agent);
+        admitAddedAgent(agent);
+    }
+    protected void admitAddedAgent(LocalAgArch agent) {
         if(control instanceof BridgeLocalExecutionControl execution)execution.admit(agent);
     }
     @Override public LocalAgArch delAg(String name) {

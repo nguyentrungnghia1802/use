@@ -154,6 +154,7 @@ public final class LiveJaCaMoLauncherMain {
             throw error;
         } finally {
             if (created) {
+                if (bridge != null) System.out.println("REAL_JACAMO_BRIDGE_FINAL_READINESS " + bridge.readiness().snapshot());
                 System.out.println("REAL_JACAMO_BRIDGE_STOP_REQUESTED");
                 System.out.flush();
                 // The official launcher performs agent shutdown on a worker.

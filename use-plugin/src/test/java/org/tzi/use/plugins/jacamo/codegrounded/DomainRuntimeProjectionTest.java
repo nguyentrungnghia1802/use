@@ -15,7 +15,7 @@ class DomainRuntimeProjectionTest {
         return new OfficialProjectAdapter().adapt(new OfficialProjectLoader().load(entry),entry);
     }
     @Test void auctionStructuralTypesDeclarationsAndCardinality() throws Exception {
-        var result=new CodeGroundedNativePipeline().build(load(Path.of("../../jacamo/examples/auction/auction.jcm")));
+        var result=new CodeGroundedNativePipeline().build(load(org.tzi.use.plugins.jacamo.evidence.CanonicalReferenceFixture.auction()));
         var model=result.model().model(); var state=result.state().system().state();
         var expected=new HashSet<>(NativeProjectionPolicy.BASE_CLASSES);
         expected.addAll(Set.of("auction_Organization","auctionGroup","auction_capabilities_Agent","doAuction_Scheme","auctioneer","participant"));

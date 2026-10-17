@@ -42,7 +42,8 @@ public final class ContractPayloads {
         map.put("startWatermarks", watermarkMap(snapshot.startWatermarks())); map.put("endWatermarks", watermarkMap(snapshot.endWatermarks()));
         map.put("validationAttempts", snapshot.validationAttempts()); map.put("facts", snapshot.facts().stream().map(ContractPayloads::runtimeFact).toList());
         var complete = new TreeMap<String, Object>(); snapshot.sourceCompleteness().forEach((key, value) -> complete.put(key, value.name()));
-        map.put("sourceCompleteness", complete); map.put("stateFingerprint", snapshot.stateFingerprint()); return map;
+        map.put("sourceCompleteness", complete); map.put("stateFingerprint", snapshot.stateFingerprint());
+        if(!snapshot.captureMetadata().isEmpty())map.put("captureMetadata",snapshot.captureMetadata());return map;
     }
 
     public static RuntimeSnapshot runtime(Map<String, Object> map) {
@@ -51,7 +52,7 @@ public final class ContractPayloads {
         var complete = new TreeMap<String, Completeness>(); object(map.get("sourceCompleteness")).forEach((key, value) -> complete.put(key, enumeration(Completeness.class, value)));
         return new RuntimeSnapshot(text(map, "snapshotId"), text(map, "modelRevision"), Instant.parse(text(map, "captureStartedAt")),
                 Instant.parse(text(map, "captureEndedAt")), watermarks(map, "startWatermarks"), watermarks(map, "endWatermarks"),
-                integer(map, "validationAttempts"), facts, complete, text(map, "stateFingerprint"));
+                integer(map, "validationAttempts"), facts, complete, text(map, "stateFingerprint"),map.containsKey("captureMetadata")?object(map.get("captureMetadata")):Map.of());
     }
 
     public static Map<String, Object> event(RuntimeEvent event) {

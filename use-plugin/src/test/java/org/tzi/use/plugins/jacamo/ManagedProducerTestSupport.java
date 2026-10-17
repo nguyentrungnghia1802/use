@@ -19,6 +19,9 @@ public final class ManagedProducerTestSupport implements AutoCloseable {
     private final Process producer;
     private final Map<String,String> originalHashes;
     public ManagedProducerTestSupport(Path originalJcm,Path evidence) throws Exception {
+        this(originalJcm,evidence,false);
+    }
+    public ManagedProducerTestSupport(Path originalJcm,Path evidence,boolean structuredJasonObservation) throws Exception {
         root=evidence.toAbsolutePath().normalize(); Files.createDirectories(root);
         original=originalJcm.toAbsolutePath().normalize(); originalHashes=sourceHashes(original.getParent());
         Path stage=Files.createDirectory(root.resolve("staging"));
@@ -52,8 +55,12 @@ public final class ManagedProducerTestSupport implements AutoCloseable {
         String platform="\n platform: org.jacamo.bridge.adapter.JaCaMoBridgePlatform(\"port="+port+"\", \"secretFile="
                 +secret.toString().replace('\\','/')+"\", \"jcmFile="+jcm.toString().replace('\\','/')+"\", \"distributionSha256="+distribution+"\")\n";
         Files.writeString(jcm,text.substring(0,end)+platform+text.substring(end));
-        configuration=new BridgeConnectionConfig(URI.create("tcp://127.0.0.1:"+port),secret,distribution,Set.of("official.model","runtime.snapshot"),4*1024*1024,20000,8192);
-        producer=new ProcessBuilder(javaCommand,"-Djacamo.launch.captureConsole=true","-cp",cp,"jason.infra.local.LiveJaCaMoLauncherMain",jcm.toString(),stop.toString(),"0","false","","240",control.toString(),"managed-gui-test")
+        configuration=new BridgeConnectionConfig(URI.create("tcp://127.0.0.1:"+port),secret,distribution,Set.of("official.model","runtime.snapshot"),org.jacamo.bridge.contract.CanonicalJson.DEFAULT_MAX_BYTES,20000,8192);
+        Path transportLogging=root.resolve("transport-logging.properties");
+        Files.writeString(transportLogging,"handlers=java.util.logging.ConsoleHandler\n.level=INFO\njava.util.logging.ConsoleHandler.level=FINE\norg.jacamo.bridge.adapter.LocalTcpBridgeServer.level=FINE\n");
+        producer=new ProcessBuilder(javaCommand,"-Djava.util.logging.config.file="+transportLogging,
+                "-Djacamo.bridge.structured-observation="+structuredJasonObservation,
+                "-Djacamo.launch.captureConsole=true","-cp",cp,"jason.infra.local.LiveJaCaMoLauncherMain",jcm.toString(),stop.toString(),"0","false","","240",control.toString(),"managed-gui-test")
                 .directory(stage.toFile()).redirectOutput(root.resolve("producer.log").toFile()).redirectError(root.resolve("producer.err").toFile()).start();
         long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(60);
         while(!Files.exists(control.resolve("waiting.json"))&&producer.isAlive()&&System.nanoTime()<deadline) Thread.sleep(50);

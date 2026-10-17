@@ -19,7 +19,7 @@ final class AuctionDomainFixture implements AutoCloseable {
     private final CartagoSnapshotSource source;
     private long sequence;
     AuctionDomainFixture() throws Exception {
-        this(Path.of("../../jacamo/examples/auction/auction.jcm"),"src/env/auction_env/AuctionArtifact.java","auction_env.AuctionArtifact");
+        this(org.tzi.use.plugins.jacamo.evidence.CanonicalReferenceFixture.auction(),"src/env/auction_env/AuctionArtifact.java","auction_env.AuctionArtifact");
     }
     AuctionDomainFixture(Path entry,String artifactSource,String artifactClass,Object... arguments) throws Exception {
         entry=entry.toAbsolutePath().normalize();

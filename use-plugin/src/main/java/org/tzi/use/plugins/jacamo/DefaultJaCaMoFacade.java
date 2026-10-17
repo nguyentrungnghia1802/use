@@ -58,6 +58,11 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     private final Supplier<BridgeConnectionConfig> bridgeConfigurationSource;
     private final BridgeTransportFactory bridgeTransportFactory;
     private volatile BridgeConnectionConfig configuredBridge;
+    private volatile MSystem activatingSystem;
+    private final java.util.concurrent.atomic.AtomicBoolean ownedActivationEvent=new java.util.concurrent.atomic.AtomicBoolean();
+    private final AtomicLong sessionChanges=new AtomicLong();
+    private volatile boolean sessionOwnershipLost;
+    private org.tzi.use.main.ChangeListener sessionListener;
     private volatile BridgeClient bridgeClient;
     private volatile BridgeMirrorStateMachine bridgeMirror;
     private volatile BridgeClient.Accepted bridgeAccepted;
@@ -86,6 +91,23 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 PipelineMode.CODE_GROUNDED_NATIVE, session);
     }
 
+    private void observeSessionOwnership() {
+        if(session!=null) {
+            sessionListener=event -> {
+                boolean owned=session.system()==activatingSystem && ownedActivationEvent.compareAndSet(true,false);
+                if(!owned) {
+                    sessionChanges.incrementAndGet();
+                    sessionOwnershipLost=true;
+                    var current=nativeWorkspace;
+                    if(current!=null && current.runtimeProjector!=null)current.runtimeProjector.revokeDelivery();
+                    if(current!=null && current.control!=null)current.control.close();
+                    bridgeDiagnostic="USE_SESSION_CHANGED";
+                }
+            };
+            session.addChangeListener(sessionListener);
+        }
+    }
+
     public DefaultJaCaMoFacade(Path checkout, SemanticAuthority authority,
                                Supplier<BridgeConnectionConfig> bridgeConfigurationSource,
                                BridgeTransportFactory bridgeTransportFactory) {
@@ -110,6 +132,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         // Freeze the launch selection for this facade, including subsequent rebuilds/resyncs.
         this.projectionMode = NativeProjectionMode.configured(System.getProperty(NativeProjectionMode.PROPERTY));
         this.session = session;
+        observeSessionOwnership();
     }
 
     public static synchronized DefaultJaCaMoFacade forSession(Session session) {
@@ -149,6 +172,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
 
     @Override public WorkflowStatus workflowStatus() {
         if (stepReplayStatus()!=null) return new WorkflowStatus("REPLAY",false,false,"","RECORDED_OFFLINE; OBSERVATION_DISCONNECTED","","");
+
         var state=workflow.status();
         if(state.startAvailable()) {
             var current=nativeWorkspace; var accepted=authorityStatus();
@@ -592,8 +616,9 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 runtimeStatus.lastLatencyNanos(), jvm.totalMemory() - jvm.freeMemory());
     }
 
-    @Override public synchronized void close() {
+    @Override public void close() {
         if(closed)return;closed=true;
+        if(session!=null && sessionListener!=null)session.removeChangeListener(sessionListener);
         if(stepReplay!=null)stepReplay.close();
         if (!workflow.status().state().equals("LIVE")) workflow.cancel();
         closeNativeRuntimeArtifacts();
@@ -631,6 +656,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
 
     private ProjectSummary synchronizeBridge(Path selectedJcm, Path verificationProfile) {
         requireNotReplaying();
+        long sessionEpoch=sessionChanges.get();
         BridgeConnectionConfig configuration = configuredBridge == null ? bridgeConfigurationSource.get() : configuredBridge;
         configuredBridge = configuration;
         BridgeMirrorStateMachine candidateMirror = new BridgeMirrorStateMachine(8_192);
@@ -640,6 +666,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         AtomicReference<BridgeClient.CoverageFailure> nativeCoverageFailure = new AtomicReference<>();
         java.util.concurrent.atomic.AtomicBoolean deliveryActive = new java.util.concurrent.atomic.AtomicBoolean(true);
         BridgeClient candidate = null;
+        NativeWorkspace previous = nativeWorkspace;
         try {
             candidate = new BridgeClient(bridgeTransportFactory.open(configuration), candidateMirror,
                     configuration.distributionSha256(), configuration.requiredCapabilities(),
@@ -666,11 +693,14 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                         });
                     });
             long importStarted = System.nanoTime();
-            BridgeClient.Accepted accepted = candidate.synchronize();
+            BridgeClient.Accepted accepted = candidate.synchronize(() -> {
+                // The replacement stream is already buffering. Settle the old writer before capturing
+                // a cut, so that it cannot advance beyond that cut while the candidate is built.
+                if (previous != null) previous.stopRuntimeDelivery.run();
+            });
             validateBridgeSelection(selectedJcm, accepted);
             long importNanos = System.nanoTime() - importStarted;
-            NativeWorkspace previous = nativeWorkspace;
-            boolean compatibleResync = previous != null && previous.runtimeProjector != null && bridgeAccepted != null
+            boolean compatibleResync = !sessionOwnershipLost && previous != null && previous.runtimeProjector != null && bridgeAccepted != null
                     && bridgeAccepted.modelRevision().equals(accepted.modelRevision());
             boolean sameOwner=compatibleResync && bridgeAccepted.sessionId().equals(accepted.sessionId())
                     && bridgeAccepted.generation()==accepted.generation();
@@ -685,7 +715,6 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                     java.util.stream.Collectors.toMap(org.jacamo.bridge.contract.Capability::name,c->c.status().name())),accepted.sourceVersions());
             if (!compatibleResync && savedProfile != null)
                 nativeProjector.coordinator().loadSavedProfile(savedProfile);
-            if (previous != null) previous.stopRuntimeDelivery.run();
             if(compatibleResync && !sameOwner && previous.control!=null){previous.control.close();previous.control=null;}
             BridgeClient previousClient = bridgeClient;
             if (previousClient != null) previousClient.close();
@@ -706,10 +735,16 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 // UI shutdown must not deadlock behind a delivery waiting for this same EDT.
                 if(!javax.swing.SwingUtilities.isEventDispatchThread())synchronized(pending){ }
             };
-            if (!compatibleResync && session != null) new NativeUseSessionActivator().activate(session, next.pipeline);
+            if (!compatibleResync && session != null) {
+                activatingSystem=next.pipeline.state().system();ownedActivationEvent.set(true);
+                try { new NativeUseSessionActivator().activate(session, next.pipeline,()->!closed && sessionChanges.get()==sessionEpoch); }
+                finally { ownedActivationEvent.set(false);activatingSystem=null; }
+            }
+            if(closed || sessionChanges.get()!=sessionEpoch)throw new IllegalStateException("NATIVE_SESSION_OWNER_CHANGED_DURING_IMPORT");
             if (!compatibleResync && previous != null && previous.runtimeProjector != null)
                 {if(previous.control!=null)previous.control.close();previous.runtimeProjector.close();}
             nativeWorkspace = next;
+            sessionOwnershipLost=false;
             entry = selectedJcm;
             bridgeClient = candidate;
             bridgeMirror = candidateMirror;
@@ -777,6 +812,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             }
             @Override public boolean ownsRuntime(String sessionId,long generation,String revision){
                 var actual=bridgeAccepted;return !closed && nativeWorkspace==owner && actual!=null && actual.sessionId().equals(sessionId)
+                        && (session==null || session.system()==owner.pipeline.state().system())
                         && actual.generation()==generation && actual.modelRevision().equals(revision);
             }
             @Override public boolean liveAvailable(){var mirror=bridgeMirror;return bridgeClient!=null && mirror!=null && mirror.state()==BridgeClientState.LIVE
@@ -836,7 +872,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         ProjectSummary summary = new ProjectSummary(jcmFile, jcmFile.getParent(), pipeline.source().project().name(),
                 snapshot.sources().size(), counts, "CODE_GROUNDED_NATIVE-1.0.0",
                 pipeline.model().structuralHash(), "CodeGroundedRuleCatalog", CodeGroundedRuleCatalog.VERSION, catalogHash,
-                "NATIVE_CURRENT", system.model().classes().size(), system.state().numObjects(),
+                pipeline.binding().profileId(), system.model().classes().size(), system.state().numObjects(),
                 pipeline.state().structureValid(), 0, 0);
         List<SourceRow> sources;
         try {
@@ -853,8 +889,10 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                         org.tzi.use.plugins.jacamo.verification.ConstraintKind.INV,
                         org.tzi.use.plugins.jacamo.verification.ConstraintOrigin.CORE, jcmFile,
                         null,
-                        pipeline.model().constraints().stream().filter(spec -> spec.name().equals(invariant.name()))
-                                .findFirst().orElseThrow().requiredRuleIds(), invariant.isActive(),
+                        org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.active(system.model())
+                                ? List.of() // CSL/observer invariants have their own authored bindings, not native catalog rule IDs.
+                                : pipeline.model().constraints().stream().filter(spec -> spec.name().equals(invariant.name()))
+                                        .findFirst().orElseThrow().requiredRuleIds(), invariant.isActive(),
                         invariant.bodyExpression().toString())).toList());
         pipeline.model().skippedConstraints().forEach(spec -> constraints.add(
                 new org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor(

@@ -62,7 +62,10 @@ public final class BridgeClient implements AutoCloseable {
         this.coverageFailure=java.util.Objects.requireNonNull(coverageFailure);
         if(maxBufferedEvents<1)throw new IllegalArgumentException("maxBufferedEvents");this.maxBufferedEvents=maxBufferedEvents;
     }
-    public synchronized Accepted synchronize(){
+    public synchronized Accepted synchronize(){return synchronize(()->{});}
+    /** Run the handoff fence after the new subscription is ready, before copying its replacement cut. */
+    public synchronized Accepted synchronize(Runnable beforeSnapshot){
+        java.util.Objects.requireNonNull(beforeSnapshot);
         mirror.transition(BridgeClientState.NEGOTIATING); ContractEnvelope handshake=decode(transport.handshake(),MessageType.HANDSHAKE);
         if(!requiredDistribution.equals(handshake.distribution().distributionDigest()))throw fail("BRIDGE_DISTRIBUTION_UNSUPPORTED");
         var capabilities=handshake.capabilities().stream().filter(c->c.status()==org.jacamo.bridge.contract.CapabilityStatus.COMPLETE).map(c->c.name()).collect(java.util.stream.Collectors.toSet());
@@ -74,6 +77,7 @@ public final class BridgeClient implements AutoCloseable {
             buffered.clear(); asynchronousFailure=null; bootstrapping=true;
             subscription=transport.subscribe("",this::acceptSubscriptionEvent,this::acceptSubscriptionFailure);
         }
+        beforeSnapshot.run();
         mirror.transition(BridgeClientState.SNAPSHOT_SYNC); ContractEnvelope runtimeEnvelope=decode(transport.runtimeSnapshot(),MessageType.RUNTIME_SNAPSHOT); requireSame(runtimeEnvelope);
         RuntimeSnapshot runtime=ContractPayloads.runtime(runtimeEnvelope.payload()); mirror.replace(runtime);
         synchronized(buffered){
@@ -132,7 +136,7 @@ public final class BridgeClient implements AutoCloseable {
         transport.acknowledge(event.sourceId()+":"+event.sourceSequence());return result;
     }
     public long snapshotCoveredEvents(){return snapshotCoveredEvents.get();}
-    private ContractEnvelope decode(byte[] bytes,MessageType expected){try{ContractEnvelope value=ContractCodec.decode(bytes,4*1024*1024,64,256*1024);new ContractValidator().validate(value);if(value.messageType()!=expected)throw fail("BRIDGE_MESSAGE_TYPE:"+value.messageType());return value;}catch(BridgeProtocolException e){throw e;}catch(RuntimeException e){throw fail("BRIDGE_ENVELOPE_REJECTED",e);}}
+    private ContractEnvelope decode(byte[] bytes,MessageType expected){try{ContractEnvelope value=ContractCodec.decode(bytes,org.jacamo.bridge.contract.CanonicalJson.DEFAULT_MAX_BYTES,64,256*1024);new ContractValidator().validate(value);if(value.messageType()!=expected)throw fail("BRIDGE_MESSAGE_TYPE:"+value.messageType());return value;}catch(BridgeProtocolException e){throw e;}catch(RuntimeException e){throw fail("BRIDGE_ENVELOPE_REJECTED",e);}}
     private void requireSame(ContractEnvelope value){if(!value.sessionId().equals(mirror.sessionId()))throw fail("BRIDGE_SESSION_STALE");if(value.generation()!=mirror.generation())throw fail("BRIDGE_GENERATION_STALE");if(!value.modelRevision().equals(mirror.modelRevision()))throw fail("BRIDGE_MODEL_REVISION_STALE");}
     private BridgeProtocolException fail(String message){mirror.transition(BridgeClientState.RESYNC_REQUIRED);coverageFailure.accept(null,message);return new BridgeProtocolException(message);}
     private BridgeProtocolException fail(String message,Throwable cause){return fail(message,cause,null);}

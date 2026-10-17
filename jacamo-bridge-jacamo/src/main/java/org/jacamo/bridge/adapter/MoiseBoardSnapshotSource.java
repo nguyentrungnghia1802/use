@@ -82,14 +82,10 @@ public final class MoiseBoardSnapshotSource implements SnapshotSource {
 
     @Override public SourceWatermark watermark() { return new SourceWatermark(sourceId(), sequence.get()); }
 
-    @Override public String topologyFingerprint() {
+    @Override public String topologyFingerprint() throws Exception {
         var values = new TreeSet<String>();
-        groups.get().stream().filter(java.util.Objects::nonNull)
-                .filter(board -> acceptsOrganisation(board.getOEId()))
-                .forEach(board -> values.add("g:" + board.getOEId() + ":" + board.getArtId()));
-        schemes.get().stream().filter(java.util.Objects::nonNull)
-                .filter(board -> acceptsOrganisation(board.getOEId()))
-                .forEach(board -> values.add("s:" + board.getOEId() + ":" + board.getArtId()));
+        for(var board:groups.get())if(board!=null && acceptsOrganisation(board.getOEId()))values.add("g:"+board.getOEId()+":"+board.getArtId()+":"+MoiseBoardArtifactObservation.capture(board).getId().getId());
+        for(var board:schemes.get())if(board!=null && acceptsOrganisation(board.getOEId()))values.add("s:"+board.getOEId()+":"+board.getArtId()+":"+MoiseBoardArtifactObservation.capture(board).getId().getId());
         return AdapterEvidence.digest(String.join("\n", values).getBytes());
     }
 
@@ -110,9 +106,12 @@ public final class MoiseBoardSnapshotSource implements SnapshotSource {
                 Map.of("spec",board.getSpec().getId(),"wellFormed",board.isWellFormed(),"diagnostic","MOISE_PROJECT_BINDING_UNAVAILABLE"),
                 List.of(),ProjectionStatus.EVIDENCE_ONLY,Completeness.COMPLETE,List.of()));
             else try {
+                var observedArtifact=MoiseBoardArtifactObservation.capture(board);
+                boardId=id(scope,"group-board",state.getId(),observedArtifact.getId().getId().toString());
                 var definition=new OfficialMoiseAdapter().capture(board.getSpec().getSS().getOS(),projectRoot,project.project().name()).organization();
                 var values=new java.util.LinkedHashMap<String,Object>();
                 values.put("normalizedEventKind","UPSERT_MOISE_GROUP"); values.put("runtimeIdentity",boardId.canonical());
+                values.put("boardArtifactIdentity",observedArtifact.getId().getId().toString());values.put("continuity","POLLING_ONLY_SOURCE_LIFETIME_UNPROVEN");
                 values.put("organisationDefinition",org.jacamo.bridge.contract.semantic.SemanticContractCodec.organizationToTree(definition));
                 values.put("organisationSpecSemanticId",definition.metadata().semanticId());
                 values.put("groupSpecSemanticId",OfficialMoiseAdapter.groupId(definition.metadata().semanticId(),board.getSpec()));
@@ -138,7 +137,7 @@ public final class MoiseBoardSnapshotSource implements SnapshotSource {
                     && p.getGrpState()!=null && p.getGrpState().clone().getSubgroup(state.getId())!=null).toList();
                 if(parentBoards.size()>1 || parentBoards.isEmpty() && !"root".equals(state.getParentGroup()))
                     throw new IllegalStateException("MOISE_PARENT_BOARD_UNRESOLVED:"+state.getParentGroup());
-                var parentIdentity=id(scope,"group-parent",state.getId(),board.getArtId());
+                var parentIdentity=id(scope,"group-parent",state.getId(),observedArtifact.getId().getId().toString());
                 var parentValues=new java.util.LinkedHashMap<String,Object>();
                 parentValues.put("normalizedEventKind","UPSERT_MOISE_GROUP_PARENT"); parentValues.put("runtimeIdentity",parentIdentity.canonical());
                 parentValues.put("semanticId",values.get("semanticId")); parentValues.put("groupSpecSemanticId",values.get("groupSpecSemanticId"));
@@ -151,9 +150,10 @@ public final class MoiseBoardSnapshotSource implements SnapshotSource {
                 facts.add(new RuntimeFact(boardId,RuntimeFactKind.GROUP_BOARD,Map.of("spec",board.getSpec().getId(),
                     "diagnostic",unavailable.getClass().getSimpleName()+":"+unavailable.getMessage()),List.of(),ProjectionStatus.EVIDENCE_ONLY,Completeness.PARTIAL,List.of()));
             }
+            String groupIncarnation=boardId.canonical();
             state.getPlayers().forEach(player -> facts.add(new RuntimeFact(
                     id(scope, "role-player", player.getAg() + "/" + player.getTarget() + "/" + state.getId(),
-                            board.getArtId()), RuntimeFactKind.ROLE_PLAYER,
+                            groupIncarnation), RuntimeFactKind.ROLE_PLAYER,
                     Map.of("agent", player.getAg(), "role", player.getTarget(), "group", state.getId()),
                     List.of(), ProjectionStatus.EVIDENCE_ONLY, Completeness.COMPLETE, List.of())));
         }
@@ -192,7 +192,7 @@ public final class MoiseBoardSnapshotSource implements SnapshotSource {
                     if(exact.size()!=1) throw new IllegalStateException("MOISE_RESPONSIBLE_GROUP_UNRESOLVED:"+groupName);
                     var groupDeclarations=project.groupDeployments().stream().filter(g->g.organization().equals(scope) && g.name().equals(groupName)).toList();
                     if(groupDeclarations.size()>1) throw new IllegalStateException("MOISE_GROUP_DECLARATION_CONFLICT");
-                    responsibility.add(groupDeclarations.isEmpty() ? id(scope,"group-board",groupName,exact.getFirst().getArtId()).canonical() : groupDeclarations.getFirst().metadata().semanticId());
+                    responsibility.add(groupDeclarations.isEmpty() ? id(scope,"group-board",groupName,MoiseBoardArtifactObservation.capture(exact.getFirst()).getId().getId().toString()).canonical() : groupDeclarations.getFirst().metadata().semanticId());
                 }
                 values.put("responsibleGroupSemanticIds",responsibility.stream().sorted().toList());
                 var commitments=new ArrayList<Map<String,Object>>();
@@ -206,7 +206,7 @@ public final class MoiseBoardSnapshotSource implements SnapshotSource {
                 var goalStates=new ArrayList<Map<String,Object>>();
                 values.put("goalObservationVersion","1.0.0");
                 values.put("schemeArguments",observed.arguments());
-                values.put("boardArtifactIdentity",observed.artifact().getId().toString());
+                values.put("boardArtifactIdentity",observed.artifact().getId().toString());values.put("continuity","POLLING_ONLY_SOURCE_LIFETIME_UNPROVEN");
                 for(var goal:board.getSpec().getGoals()) {
                     var goals=spec.getFirst().goals().stream().filter(g->g.goalId().equals(goal.getId())).toList();
                     if(goals.size()!=1) throw new IllegalStateException("MOISE_GOAL_STATE_UNRESOLVED:"+goal.getId());
@@ -251,11 +251,11 @@ public final class MoiseBoardSnapshotSource implements SnapshotSource {
     }
 
     @Override public Completeness completeness() { return Completeness.PARTIAL; }
-    private String groupSemanticId(GroupBoard board) {
+    private String groupSemanticId(GroupBoard board) throws Exception {
         var declarations=project.groupDeployments().stream().filter(g->g.organization().equals(board.getOEId()) && g.name().equals(board.getArtId())).toList();
         if(declarations.size()>1 || !declarations.isEmpty() && !declarations.getFirst().type().equals(board.getSpec().getId()))
             throw new IllegalStateException("MOISE_PARENT_GROUP_DECLARATION_CONFLICT");
-        return declarations.isEmpty() ? id(board.getOEId(),"group-board",board.getArtId(),board.getArtId()).canonical() : declarations.getFirst().metadata().semanticId();
+        return declarations.isEmpty() ? id(board.getOEId(),"group-board",board.getArtId(),MoiseBoardArtifactObservation.capture(board).getId().getId().toString()).canonical() : declarations.getFirst().metadata().semanticId();
     }
     @Override public synchronized void poll() {
         if(observer==null) return;

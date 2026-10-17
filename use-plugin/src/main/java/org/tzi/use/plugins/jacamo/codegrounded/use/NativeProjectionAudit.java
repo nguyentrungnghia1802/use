@@ -46,6 +46,14 @@ public final class NativeProjectionAudit {
 
     private static String classReason(String name, NativeUseModelBuilder.Result schema) {
         var cls = schema.model().getClass(name);
+        if (org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.active(schema.model())) {
+            String category = cls.getAnnotationValue("CslClassifier", "kind");
+            if (!Set.of("OBSERVER_HELPER","ENTITY","ROLE","ORG_CONTEXT").contains(category)
+                    || cls.getAnnotationValue("CslClassifier","sourceId64").isBlank())
+                throw new IllegalStateException("CSL_PROJECTION_AUDIT_CLASS_REASON_MISSING:" + name);
+            return "CSL_PROFILE_TYPE:" + category + ":" +
+                    DomainProjection.decode(cls.getAnnotationValue("CslClassifier","sourceId64"));
+        }
         String kind=DomainProjection.kind(cls);
         if(NativeProjectionPolicy.allowsClass(cls))
             return "DOMAIN_RUNTIME_TYPE:"+kind+":"+DomainProjection.decode(cls.getAnnotationValue(DomainProjection.ANNOTATION,"sourceId64"));
@@ -54,6 +62,8 @@ public final class NativeProjectionAudit {
 
     private static String associationReason(MAssociation association) {
         String name=association.name();
+        if (Set.of("DOMAIN","RUNTIME_ENACTMENT","RUNTIME_CONTEXT","FUNCTIONAL_OBSERVER","MENTAL_OBSERVER").contains(association.getAnnotationValue("CslAssociation","kind")))
+            return "CSL_PROFILE_RELATION:" + association.getAnnotationValue("CslAssociation","kind");
         if(association.getAnnotation(MoiseDomainProjection.ROLE_ASSOCIATION)!=null)
             return "CONTEXTUAL_ROLE_RELATION:"+DomainProjection.decode(association.getAnnotationValue(MoiseDomainProjection.ROLE_ASSOCIATION,"identity64"));
         if(association.getAnnotation("DomainRelation")!=null)

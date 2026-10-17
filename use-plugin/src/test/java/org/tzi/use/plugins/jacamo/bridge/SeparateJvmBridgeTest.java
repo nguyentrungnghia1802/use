@@ -51,7 +51,8 @@ class SeparateJvmBridgeTest {
 
     @Test void realHelloWorldProductionBridgeCrossesSeparateJvmsWithNonEmptyRuntimeSnapshot() throws Exception {
         Path source = Path.of("src/test/resources/canonical-cases/hello-world").toAbsolutePath().normalize();
-        Path project = Files.createTempDirectory("jacamo-real-hello-");
+        Files.createDirectories(Path.of("target"));
+        Path project = Files.createTempDirectory(Path.of("target"),"jacamo-real-hello-").toAbsolutePath();
         copyTree(source, project);
         Path jcm = project.resolve("helloworld.jcm");
         Path secretFile = project.resolve("bridge-secret.hex");
@@ -91,6 +92,7 @@ class SeparateJvmBridgeTest {
             Files.writeString(stop, "stop");
             if (!producer.waitFor(20, TimeUnit.SECONDS)) producer.destroyForcibly();
             producerOutput = producerOutputFuture.get(5, TimeUnit.SECONDS);
+            Files.createDirectories(Path.of("target/bridge-live-diagnostics"));Files.writeString(Path.of("target/bridge-live-diagnostics/separate-jvm-producer.log"),producerOutput);
             assertTrue(producerOutput.contains("REAL_JACAMO_BRIDGE_READY"), producerOutput);
             assertEquals(0, producer.exitValue(), producerOutput);
         }

@@ -53,7 +53,7 @@ public record BridgeConnectionConfig(URI endpoint, Path secretFile, String distr
             if (!capability.isEmpty()) capabilities.add(capability);
         }
         return new BridgeConnectionConfig(URI.create(endpoint), Path.of(secret), distribution, capabilities,
-                4 * 1024 * 1024, 5_000, 1_024);
+                org.jacamo.bridge.contract.CanonicalJson.DEFAULT_MAX_BYTES, 5_000, 1_024);
     }
 
     byte[] readSecret() {

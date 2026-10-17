@@ -88,5 +88,8 @@ class ReleasePackageContractTest {
             assertTrue(declared.add(target), () -> "duplicate archive path: " + target);
         }
         assertEquals(REQUIRED_ENTRIES, declared);
+        assertTrue(manifest.path("packageTrees").isMissingNode());
+        assertEquals("authenticated-loopback-tcp",manifest.path("runtimeArchitecture").path("transport").asText());
+        assertEquals("independent-jacamo-jvm",manifest.path("runtimeArchitecture").path("producer").asText());
     }
 }

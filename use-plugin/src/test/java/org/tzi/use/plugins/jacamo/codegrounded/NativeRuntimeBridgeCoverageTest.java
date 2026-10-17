@@ -46,7 +46,11 @@ class NativeRuntimeBridgeCoverageTest {
             assertEquals("bridge-3", projector.coordinator().latest().eventId());
             assertEquals("cartago", projector.coordinator().latest().sourceId());
             assertEquals(3, projector.coordinator().latest().sourceSequence());
-            projector.applySnapshot(transport.snapshot);
+            // A recovery cut must cover the accepted source prefix, even after a rejected gap.
+            var base=transport.snapshot;var watermarks=Map.of("cartago",new SourceWatermark("cartago",3));
+            projector.applySnapshot(new RuntimeSnapshot("recovery-3",base.modelRevision(),base.captureStartedAt(),
+                    base.captureEndedAt(),watermarks,watermarks,base.validationAttempts(),base.facts(),
+                    base.sourceCompleteness(),base.stateFingerprint()));
             assertTrue(projector.coordinator().latest().count(VerificationOutcome.PASS) > 0);
             transport.failure.accept(new BridgeProtocolException("TEST_SUBSCRIPTION_LOST"));
             assertEquals(0, projector.coordinator().latest().count(VerificationOutcome.PASS));

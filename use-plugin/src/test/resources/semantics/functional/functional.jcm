@@ -1,0 +1,4 @@
+mas functional_monitor {
+ agent a : a.asl
+ organisation org: functional.xml { }
+}

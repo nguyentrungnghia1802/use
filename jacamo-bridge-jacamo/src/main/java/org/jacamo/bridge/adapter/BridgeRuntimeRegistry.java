@@ -26,6 +26,9 @@ public final class BridgeRuntimeRegistry {
     private static final ConcurrentMap<String,String> JASON_STATE_ERRORS=new ConcurrentHashMap<>();
     private static volatile org.jacamo.bridge.contract.semantic.JacamoSemanticSnapshot projectDeclarations;
     private BridgeRuntimeRegistry() { }
+    static boolean structuredJasonObservation() {
+        return Boolean.parseBoolean(System.getProperty("jacamo.bridge.structured-observation","true"));
+    }
     public static AutoCloseable attach(Consumer<RuntimeEvent> observer) {
         Objects.requireNonNull(observer);
         if (!ACTIVE.compareAndSet(null, observer)) throw new IllegalStateException("BRIDGE_OBSERVER_ALREADY_ATTACHED");
@@ -66,6 +69,7 @@ public final class BridgeRuntimeRegistry {
         project.agentDeclarations().forEach(a -> { DECLARATIONS.put(a.name(),a.metadata().semanticId()); DECLARATION_INSTANCES.put(a.name(),a.instances()); });
     }
     static Optional<org.jacamo.bridge.contract.semantic.JacamoSemanticSnapshot> projectDeclarations() { return Optional.ofNullable(projectDeclarations); }
+    static final Object JASON_PUBLICATION_LOCK=new Object();
     static void publishJasonState(String name,java.util.Map<String,Object> values) {
         JASON_STATES.put(name,java.util.Map.copyOf(values)); JASON_STATE_ERRORS.remove(name);
     }

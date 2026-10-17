@@ -35,6 +35,7 @@ class JaCaMoWorkbenchPanelTest {
             assertEquals(1, tabs.getTabCount());
             assertEquals("Projection Rules", tabs.getTitleAt(0));
             assertEquals(List.of("Import JaCaMo Project...", "Load OCL...", "Start Runtime",
+                    "Pause Jason", "Resume Jason",
                     "Export .use...", "Export .cmd..."),
                     components(panel, JButton.class).stream().filter(b -> b.getName() != null).map(JButton::getText).toList());
             assertEquals(1, components(panel, JTable.class).size());

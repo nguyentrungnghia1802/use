@@ -210,6 +210,8 @@ public final class OfficialMoiseAdapter {
         var schemes = new ArrayList<SchemeSemantic>();
         var schemeMissionCardinalityDtos = new ArrayList<SchemeMissionCardinalitySemantic>();
         FS fs = os.getFS();
+        // Preferences may point into another scheme; allocate all exact mission identities first.
+        for(Scheme scope:fs.getSchemes())for(Mission mission:scope.getMissions())missionsByObject.put(mission,missionId(schemeId(organizationId,scope),mission));
         for (Scheme scheme : sorted(fs.getSchemes(), Comparator.comparing(Scheme::getId))) {
             String schemeSemanticId = schemeId(organizationId, scheme);
             List<Mission> missions = sorted(scheme.getMissions(), Comparator.comparing(Mission::getId));
@@ -226,7 +228,7 @@ public final class OfficialMoiseAdapter {
                 missionDtos.add(new MissionSemantic(metadata(missionSemanticId, "MOISE_MISSION",
                                 Mission.class.getName(), evidence), mission.getId(), schemeSemanticId,
                         sorted(mission.getGoals(), Comparator.comparing(Goal::getId)).stream()
-                                .map(goalsByObject::get).toList()));
+                                .map(goalsByObject::get).toList(),sorted(mission.getPreferables(),Comparator.comparing(Mission::getId)).stream().map(m->{var id=missionsByObject.get(m);if(id==null)throw new IllegalStateException("MOISE_MISSION_PREFERENCE_UNRESOLVED");return id;}).toList()));
                 Cardinality cardinality = scheme.getMissionCardinality(mission);
                 String cardinalityId = schemeSemanticId + ":mission-cardinality:" + missionSemanticId;
                 schemeMissionCardinalityDtos.add(new SchemeMissionCardinalitySemantic(

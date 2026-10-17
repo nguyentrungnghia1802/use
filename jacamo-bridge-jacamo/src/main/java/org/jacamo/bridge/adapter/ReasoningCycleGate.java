@@ -79,7 +79,10 @@ final class ReasoningCycleGate {
     private void completePause() {
         if(capabilityValid && state==State.PAUSE_REQUESTED && !required.isEmpty() && acknowledged.containsAll(required)) {state=State.PAUSED; diagnostic="";}
     }
-    synchronized void available() {capabilityValid=true;completePause();}
+    synchronized void available() {
+        if(!capabilityValid && state==State.RUNNING)diagnostic="";
+        capabilityValid=true;completePause();
+    }
     synchronized State state() {return state;}
     synchronized long epoch() {return epoch;}
     synchronized String requestId() {return requestId;}

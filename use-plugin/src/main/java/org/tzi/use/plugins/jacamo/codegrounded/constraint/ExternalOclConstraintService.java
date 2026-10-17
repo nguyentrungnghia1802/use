@@ -371,8 +371,22 @@ public final class ExternalOclConstraintService {
         dependencyHash=hash;
     }
 
-    private static CoverageCalculationVisitor dependencyVisitor() {
-        return new CoverageCalculationVisitor(true) {
+    public static DependencyVisitor dependencyVisitor() {return new DependencyVisitor();}
+    public static final class DependencyVisitor extends CoverageCalculationVisitor {
+        public record AttributeRead(org.tzi.use.uml.mm.MAttribute attribute,boolean directSelf){}
+        private final java.util.List<AttributeRead> reads=new java.util.ArrayList<>();
+        public java.util.List<AttributeRead> attributeReads(){return java.util.List.copyOf(reads);}
+        @Override public void visitAttrOp(org.tzi.use.uml.ocl.expr.ExpAttrOp expression) {
+            reads.add(new AttributeRead(expression.attr(),expression.objExp() instanceof org.tzi.use.uml.ocl.expr.ExpVariable variable && variable.getVarname().equals("self")));
+            super.visitAttrOp(expression);
+        }
+        private final Set<org.tzi.use.uml.mm.MClassifier> populations=new java.util.HashSet<>();
+        private DependencyVisitor(){super(true);}
+        public Set<org.tzi.use.uml.mm.MClassifier> populationTypes(){return Set.copyOf(populations);}
+        @Override public void visitAllInstances(org.tzi.use.uml.ocl.expr.ExpAllInstances expression) {
+            if(expression.getSourceType() instanceof org.tzi.use.uml.mm.MClassifier type)populations.add(type);
+            super.visitAllInstances(expression);
+        }
             // Complete the existing USE visitor's intentionally empty cast/tuple hooks.
             // Dependencies come from compiler AST objects, never names parsed from OCL text.
             @Override public void visitAsType(org.tzi.use.uml.ocl.expr.ExpAsType expression) {
@@ -385,7 +399,6 @@ public final class ExternalOclConstraintService {
             @Override public void visitObjRef(org.tzi.use.uml.ocl.expr.ExpObjRef expression) {
                 if (expression.type() instanceof org.tzi.use.uml.mm.MClass cls) addClassCoverage(cls);
             }
-        };
     }
     public static Set<String> requiredClasses(MClassInvariant invariant) {
         CoverageCalculationVisitor visitor = dependencyVisitor();

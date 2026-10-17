@@ -166,5 +166,11 @@
     "runtimeSchema": "3.0.0",
     "freezeManifest": "release/v2-freeze-manifest.json",
     "freeze": true
+  },
+  "runtimeArchitecture": {
+    "transport": "authenticated-loopback-tcp",
+    "producer": "independent-jacamo-jvm",
+    "consumer": "use-plugin",
+    "npl": "original-0.6.1"
   }
 }

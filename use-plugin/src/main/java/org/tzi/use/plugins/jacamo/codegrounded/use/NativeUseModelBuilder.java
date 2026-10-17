@@ -13,6 +13,13 @@ import static org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.Relat
 
 /** Two-pass semantic projection into the single native USE model. DTO classes are never classifiers. */
 public final class NativeUseModelBuilder {
+    public Result buildCsl(JacamoSpecificationModel source, CodeGroundedTraceCollector trace, NativeProjectionMode mode,
+            org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration config) {
+        var binding = org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.compile(source, config, trace);
+        return new Result(binding.model(), trace.index(), List.of(), List.of(), Map.of(), Set.of(),
+                NativeUseStructure.sha256(binding.model()), NativeProjectionProfile.forMode(mode),
+                new MoiseDomainProjection.Result(Map.of(), List.of()));
+    }
     // Source enums remain usable by semantic validators; they are not USE enumerations.
     public static final List<String> BODY_TYPES=List.of("none","action","internalAction","achieve","test","addBel","addBelNewFocus","addBelBegin","addBelEnd","delBel","delBelNewFocus","delAddBel","achieveNF","constraint");
     public static final List<String> TRIGGER_OPERATORS=List.of("add","del","goalState");

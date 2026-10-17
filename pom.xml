@@ -23,6 +23,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencyManagement><dependencies>
+        <dependency><groupId>io.github.jason-lang</groupId><artifactId>jason-interpreter</artifactId><version>3.3.2</version></dependency>
+        <dependency><groupId>org.jacamo</groupId><artifactId>cartago</artifactId><version>3.1</version></dependency>
+        <dependency><groupId>org.jacamo</groupId><artifactId>jaca</artifactId><version>3.1</version></dependency>
+        <dependency><groupId>org.jacamo</groupId><artifactId>moise</artifactId><version>1.1</version></dependency>
+        <dependency><groupId>org.jacamo</groupId><artifactId>npl</artifactId><version>0.6.1</version></dependency>
+    </dependencies></dependencyManagement>
+
     <build>
         <pluginManagement>
             <plugins>

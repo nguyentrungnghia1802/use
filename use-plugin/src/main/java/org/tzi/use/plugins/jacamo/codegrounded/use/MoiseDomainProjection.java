@@ -342,6 +342,7 @@ public final class MoiseDomainProjection {
                 while(current!=null) { if(!visited.add(current)) throw new IllegalArgumentException("MOISE_DECOMPOSITION_CYCLE:"+child); current=parents.get(current); }
             }
         }
+        for(var scheme:fs.schemes())for(var mission:scheme.missions())for(String preferred:mission.preferredMissionSemanticIds())if(!allMissions.contains(preferred))throw badReference(preferred);
         tuples.clear();
         for (var card : fs.schemeMissionCardinalities()) {
             if (!missionsByScheme.containsKey(card.schemeId()) || !missionsByScheme.get(card.schemeId()).contains(card.missionId())) throw badReference(card.metadata().semanticId());

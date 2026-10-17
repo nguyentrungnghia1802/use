@@ -1,0 +1,11 @@
+mas csl_monitor {
+    agent a : a.asl
+    workspace main {
+        artifact counter: org.tzi.use.plugins.jacamo.semantics.CslCounterArtifact
+    }
+    organisation org: monitor.xml {
+        group team: team {
+            players: a worker
+        }
+    }
+}

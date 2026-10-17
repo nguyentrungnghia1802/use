@@ -35,7 +35,7 @@ class CanonicalCasesBridgePipelineTest {
         Path examples = Path.of("..", "..", "JaCaMo", "examples").toAbsolutePath().normalize();
         for (Case value : List.of(
                 new Case("hello", hello, "c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101"),
-                new Case("auction", examples.resolve("auction/auction.jcm"), "c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb"),
+                new Case("auction", org.tzi.use.plugins.jacamo.evidence.CanonicalReferenceFixture.auction(), "c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb"),
                 new Case("house-building", examples.resolve("house-building/house-building.jcm"), "c14ae6299b0d2e0034d7daaa233b9bf1b94a7b337aa39477ec865c52ca5fef08"))) {
             run(value);
         }

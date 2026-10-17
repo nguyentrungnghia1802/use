@@ -79,6 +79,7 @@ public final class NativeRuntimeMutationEngine {
     private final NativeObjectBindings semanticObjectIndex;
     private final CodeGroundedRuntimeRuleRegistry registry;
     private final StateImage baseline;
+    private final org.tzi.use.plugins.jacamo.semantics.runtime.SemanticObservationMapper cslMapper;
     private final java.util.Set<String> tombstones = new java.util.HashSet<>();
 
     public NativeRuntimeMutationEngine(MSystem system, NativeObjectBindings semanticObjectIndex,
@@ -87,10 +88,13 @@ public final class NativeRuntimeMutationEngine {
         this.api = UseSystemApi.create(system, false);
         this.semanticObjectIndex = new NativeObjectBindings(semanticObjectIndex);
         this.registry = Objects.requireNonNull(registry, "registry");
+        this.cslMapper = org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.active(system.model())
+            ? new org.tzi.use.plugins.jacamo.semantics.runtime.SemanticObservationMapper(org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.configuration(system.model())) : null;
         this.baseline = capture();
     }
 
     public MSystem system() { return system; }
+    public boolean cslProfile() { return cslMapper != null; }
     public synchronized Map<String,String> objectMetadata(MObject object) { return semanticObjectIndex.metadata(object); }
     public synchronized String metadata(MObject object,String key) { return semanticObjectIndex.metadata(object,key); }
     public synchronized Map<String,Object> baselineBindings() { return baseline.bindings().toMap(); }
@@ -181,7 +185,27 @@ public final class NativeRuntimeMutationEngine {
      * Reconcile them against a COMPLETE authoritative snapshot after applying its upserts.
      * An unavailable/partial source cannot prove absence and must not cause deletions.
      */
+    /** A COMPLETE replacement cut proves which property occurrences ceased to exist before slot upserts. */
+    public synchronized void prepareSnapshot(RuntimeSnapshot snapshot) {
+        if(!cslProfile() || snapshot.sourceCompleteness().get("cartago")!=Completeness.COMPLETE)return;
+        var observed=new java.util.HashSet<String>();
+        for(var fact:snapshot.facts())if(fact.id().authority().equals("cartago")) {
+            if(fact.completeness()!=Completeness.COMPLETE || fact.projectionStatus()!=ProjectionStatus.MATERIALIZED_FAITHFULLY)return;
+            if("UPSERT_CARTAGO_PROPERTY_SNAPSHOT".equals(fact.values().get("normalizedEventKind")))observed.add(required(fact.values(),"semanticId"));
+        }
+        try {
+            for(var object:new ArrayList<>(system.state().allObjects()))for(var attribute:object.cls().allAttributes()) {
+                String previous=metadata(object,"propertySlot:"+attribute.name());
+                if(!previous.isBlank() && !observed.contains(previous))cslMapper.removeProperty(cslPort(),object,previous);
+            }
+        } catch(UseApiException error){throw new NativeRuntimeProtocolException("CSL_SNAPSHOT_PROPERTY_RECONCILIATION_FAILED",error);}
+    }
     public synchronized void reconcileAuthoritativeCartago(RuntimeSnapshot snapshot) {
+        if(cslProfile()) {
+            if(snapshot.sourceCompleteness().get("cartago")==Completeness.COMPLETE)reconcileCslCartago(snapshot);
+            try {reconcileCslJason(snapshot);}catch(UseApiException error){throw new NativeRuntimeProtocolException("CSL_JASON_RECONCILIATION_FAILED",error);}
+            return;
+        }
         if (snapshot.sourceCompleteness().get("cartago") != Completeness.COMPLETE) return;
         java.util.Set<String> retained = new java.util.HashSet<>();
         for (var fact : snapshot.facts()) {
@@ -216,6 +240,12 @@ public final class NativeRuntimeMutationEngine {
             Map<String, Object> payload, boolean validateStructure) {
         String identity = runtimeIdentity == null ? "<missing>" : runtimeIdentity.canonical();
         String normalized = textOrNull(payload, "normalizedEventKind");
+        if(cslProfile() && factKind==RuntimeFactKind.NORM_INSTANCE && "NPL_OBSERVATION/1.0".equals(payload.get("observationVersion"))) {
+            if(completeness!=Completeness.COMPLETE || !"BOUND_PUBLIC_CREATED_ANNOTATION".equals(payload.get("activationIdentityStatus")))return ApplyResult.evidence("CSL-NPL-OBSERVER-V1",identity,"UNSUPPORTED:"+payload.get("activationIdentityStatus"));
+            var image=capture();try {var mapped=cslMapper.apply(cslPort(),runtimeIdentity,"OBSERVE_NPL_NORM_V1",payload);return new ApplyResult(Status.MATERIALIZED,"CSL-NPL-OBSERVER-V1",mapped.identity(),mapped.object().name(),mapped.diagnostic());}
+            catch(org.tzi.use.plugins.jacamo.semantics.runtime.SemanticObservationMapper.UnsupportedObservation unsupported){rollback(image);return ApplyResult.evidence("CSL-NPL-OBSERVER-V1",identity,unsupported.getMessage());}
+            catch(RuntimeException|UseApiException invalid){rollback(image);return ApplyResult.rejected("CSL-NPL-OBSERVER-V1",invalid.getClass().getSimpleName()+":"+invalid.getMessage());}
+        }
         CodeGroundedRuntimeRuleRegistry.Rule rule = normalized == null ? null : registry.select(factKind, normalized);
         if (rule == null) rule = registry.evidenceRule(factKind);
         if (rule != null && rule.action() == CodeGroundedRuntimeRuleRegistry.Action.EVIDENCE_ONLY)
@@ -231,6 +261,15 @@ public final class NativeRuntimeMutationEngine {
         StateImage before = capture();
         try {
             validatePayloadIdentity(rule.action(), runtimeIdentity, payload);
+            if(cslProfile() && java.util.Set.of(CodeGroundedRuntimeRuleRegistry.Action.APPLY_CARTAGO_PROPERTY_DELTA,CodeGroundedRuntimeRuleRegistry.Action.DELETE_CARTAGO_ARTIFACT).contains(rule.action())
+                    && ignoredArtifacts.contains(required(payload,"semanticId"))
+                    && !(rule.action()==CodeGroundedRuntimeRuleRegistry.Action.DELETE_CARTAGO_ARTIFACT && system.state().allObjects().stream().anyMatch(o->runtimeIdentity.incarnation().equals(metadata(o,"boardArtifactIdentity")))))throw new EvidenceOnly("UNSUPPORTED:DOMAIN_TYPE_NOT_REGISTERED");
+            if(cslProfile() && !java.util.Set.of(CodeGroundedRuntimeRuleRegistry.Action.ATTRIBUTE_SET, CodeGroundedRuntimeRuleRegistry.Action.ATTRIBUTE_UNSET,
+                    CodeGroundedRuntimeRuleRegistry.Action.LINK_INSERT,CodeGroundedRuntimeRuleRegistry.Action.LINK_DELETE).contains(rule.action())) {
+                var mapped=cslMapper.apply(cslPort(),runtimeIdentity,normalized,payload);
+                if(validateStructure && !structureTransitionValid(before,false))throw new NativeRuntimeProtocolException("CSL_RUNTIME_STRUCTURE_INVALID");
+                return new ApplyResult(Status.MATERIALIZED,rule.id(),mapped.identity(),mapped.object().name(),mapped.diagnostic());
+            }
             BoundTarget target;
             switch (rule.action()) {
                 case UPSERT_CARTAGO_WORKSPACE -> target = upsertWorkspace(payload);
@@ -274,6 +313,10 @@ public final class NativeRuntimeMutationEngine {
             }
             return new ApplyResult(Status.MATERIALIZED, rule.id(), target.semanticId(), target.object().name(),
                     observedMoiseRelation(rule.id()) ? "NATIVE_CONTEXTUAL_ROLE_LINKS_APPLIED:"+target.object().name() : "NATIVE_RUNTIME_MUTATION_APPLIED");
+        } catch (org.tzi.use.plugins.jacamo.semantics.runtime.SemanticObservationMapper.UnsupportedObservation unsupported) {
+            restore(before);
+            if("UPSERT_CARTAGO_ARTIFACT".equals(normalized))ignoredArtifacts.add(required(payload,"semanticId"));
+            return ApplyResult.evidence(rule.id(),identity,"UNSUPPORTED:"+unsupported.getMessage());
         } catch (EvidenceOnly deferred) {
             var policyIgnored=java.util.Set.copyOf(ignoredArtifacts);
             restore(before);
@@ -553,6 +596,7 @@ public final class NativeRuntimeMutationEngine {
 
     /** Re-select from current authoritative cuts when a valid OCL profile is installed/replaced. */
     public synchronized void refreshBeliefProjection() {
+        if(cslProfile())return;
         var before=capture();
         try {
             java.util.Set<MObject> observed=new java.util.HashSet<>();
@@ -836,7 +880,7 @@ public final class NativeRuntimeMutationEngine {
                 if (ignoredArtifacts.contains(semanticId)) return;
                 var artifact = requiredObject(semanticId);
                 kind = "artifact"; scope = semanticObjectIndex.metadata(requiredObject(semanticObjectIndex.metadata(artifact,"workspaceSemanticId")), "fullName");
-                local = attribute(artifact, "name"); incarnation = semanticObjectIndex.metadata(artifact,"uuid");
+                local = cslProfile()?semanticObjectIndex.metadata(artifact,"name"):attribute(artifact, "name"); incarnation = semanticObjectIndex.metadata(artifact,"uuid");
             }
             case UPSERT_CARTAGO_PROPERTY_SNAPSHOT -> {
                 kind = "observable-property-snapshot"; scope = required(payload, "artifactSemanticId");
@@ -859,6 +903,56 @@ public final class NativeRuntimeMutationEngine {
             throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_TYPED_IDENTITY_MISMATCH:" + kind);
     }
 
+    private org.tzi.use.plugins.jacamo.semantics.runtime.SemanticObservationMapper.Port cslPort() {
+        return new org.tzi.use.plugins.jacamo.semantics.runtime.SemanticObservationMapper.Port() {
+            public MObject find(String id) {return semanticObjectIndex.get(id);}
+            public MObject upsert(String id,String type,String label) throws UseApiException {return upsertObject(id,type,label);}
+            public void alias(String id,MObject object) {
+                var previous=semanticObjectIndex.get(id);if(previous!=null && previous!=object)throw new NativeRuntimeProtocolException("CSL_ALIAS_COLLISION:"+id);
+                semanticObjectIndex.put(id,object);
+            }
+            public String metadata(MObject object,String key) {return semanticObjectIndex.metadata(object,key);}
+            public void metadata(MObject object,String key,String value) {semanticObjectIndex.metadata(object,key,value);}
+            public java.util.Collection<MObject> objects() {return java.util.List.copyOf(system.state().allObjects());}
+            public void value(MObject object,String name,Value value) throws UseApiException {api.setAttributeValueEx(object,requiredAttribute(object,name),value);}
+            public void connect(String name,MObject first,MObject second) throws UseApiException {ensureLink(name,first,second);}
+            public void delete(String id) throws UseApiException {NativeRuntimeMutationEngine.this.delete(id);}
+            public void disconnect(String name,MObject first,MObject second) throws UseApiException {
+                for(var link:new ArrayList<>(system.state().allLinks()))if(link.association().name().equals(name)
+                    && (first==null || link.linkedObjects().get(0)==first) && (second==null || link.linkedObjects().get(1)==second))deleteLink(link);
+            }
+        };
+    }
+    private void reconcileCslCartago(RuntimeSnapshot snapshot) {
+        var retained=new java.util.HashSet<String>();var slots=new java.util.HashSet<String>();
+        for(var fact:snapshot.facts()) if(fact.id().authority().equals("cartago")) {
+            if(fact.completeness()!=Completeness.COMPLETE || fact.projectionStatus()!=ProjectionStatus.MATERIALIZED_FAITHFULLY)return;
+            Object id=fact.values().get("semanticId");if(id instanceof String identity)retained.add(identity);
+            if("UPSERT_CARTAGO_PROPERTY_SNAPSHOT".equals(fact.values().get("normalizedEventKind")))slots.add(required(fact.values(),"semanticId"));
+        }
+        try {
+            for(var object:new ArrayList<>(system.state().allObjects())) {
+                if(!"cartago".equals(metadata(object,"authority")))continue;
+                boolean owned=object.cls().name().equals("WorkspaceObservation") || object.cls().allParents().stream().anyMatch(c->c.name().equals("DomainEntity"));
+                if(owned && !retained.contains(metadata(object,"semanticId"))) {delete(metadata(object,"semanticId"));continue;}
+                for(var attribute:object.cls().allAttributes()) {
+                    String id=metadata(object,"propertySlot:"+attribute.name());
+                    if(!id.isBlank() && !slots.contains(id))cslMapper.removeProperty(cslPort(),object,id);
+                }
+            }
+        } catch(UseApiException error) {throw new NativeRuntimeProtocolException("CSL_AUTHORITATIVE_RECONCILIATION_FAILED",error);}
+    }
+    private void reconcileCslJason(RuntimeSnapshot snapshot) throws UseApiException {
+        if(snapshot.sourceCompleteness().get("jason")!=Completeness.COMPLETE)return;
+        var retained=new java.util.HashSet<String>();
+        for(var fact:snapshot.facts())if(fact.id().authority().equals("jason") && fact.kind()==RuntimeFactKind.AGENT) {
+            if(fact.completeness()!=Completeness.COMPLETE || fact.projectionStatus()!=ProjectionStatus.MATERIALIZED_FAITHFULLY || !"UPSERT_JASON_AGENT_STATE".equals(fact.values().get("normalizedEventKind")))return;
+            retained.add(fact.id().canonical());
+        }
+        for(var agent:new ArrayList<>(system.state().allObjects()))if(agent.cls().name().equals("AtomicAgent") && !metadata(agent,"jasonScope").isBlank() && !retained.contains(metadata(agent,"semanticId"))) {
+            String id=metadata(agent,"semanticId");for(var dependent:new ArrayList<>(system.state().allObjects()))if(id.equals(metadata(dependent,"mentalAgent")) || id.equals(metadata(dependent,"rolePlayer")) || id.equals(metadata(dependent,"commitmentPlayer")))delete(metadata(dependent,"semanticId"));delete(id);
+        }
+    }
     private void deleteArtifact(String id) throws UseApiException { delete(id); }
     private void delete(String id) throws UseApiException {
         MObject object=requiredObject(id); api.deleteObjectEx(object);
@@ -883,7 +977,7 @@ public final class NativeRuntimeMutationEngine {
         }
         var cls = system.model().getClass(className);
         if (cls == null) throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_CLASS_MISSING:" + className);
-        String objectName = NativeUseStateBuilder.objectName(className, human, semanticId);
+        String objectName = cslProfile()?className+"_"+DomainProjection.hash(semanticId):NativeUseStateBuilder.objectName(className, human, semanticId);
         MObject byName = system.state().objectByName(objectName);
         if (byName != null) objectName += "_" + DomainProjection.hash(semanticId);
         MObject object = api.createObjectEx(cls, objectName);

@@ -49,8 +49,12 @@ public final class SemanticContractCodec {
         if (value.getClass().isRecord()) {
             var result = new LinkedHashMap<String,Object>();
             try {
-                for (RecordComponent component : value.getClass().getRecordComponents())
-                    result.put(component.getName(), encodeValue(component.getAccessor().invoke(value)));
+                for (RecordComponent component : value.getClass().getRecordComponents()) {
+                    Object field=component.getAccessor().invoke(value);
+                    // Additive mission-preference supplement: omit empty to retain the original 1.0 wire/hash.
+                    if(value instanceof MoiseSemanticContract.MissionSemantic && component.getName().equals("preferredMissionSemanticIds") && ((List<?>)field).isEmpty())continue;
+                    result.put(component.getName(), encodeValue(field));
+                }
                 return result;
             } catch (ReflectiveOperationException error) { throw new ContractException("semantic encode failed", error); }
         }
@@ -90,6 +94,9 @@ public final class SemanticContractCodec {
 
     private static Object convertRecord(Object value, Class<?> type) {
         if (!(value instanceof Map<?,?> input)) throw new ContractException(type.getSimpleName()+" object required");
+        if(type==MoiseSemanticContract.MissionSemantic.class && !input.containsKey("preferredMissionSemanticIds")) {
+            var supplemented=new LinkedHashMap<Object,Object>(input);supplemented.put("preferredMissionSemanticIds",List.of());input=supplemented;
+        }
         RecordComponent[] components=type.getRecordComponents();
         var names=java.util.Arrays.stream(components).map(RecordComponent::getName).collect(java.util.stream.Collectors.toSet());
         if (!names.equals(input.keySet())) throw new ContractException(type.getSimpleName()+" keys mismatch");

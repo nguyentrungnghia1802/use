@@ -8,7 +8,8 @@ public record RuntimeSnapshot(String snapshotId, String modelRevision, Instant c
                               Instant captureEndedAt, Map<String, SourceWatermark> startWatermarks,
                               Map<String, SourceWatermark> endWatermarks, int validationAttempts,
                               List<RuntimeFact> facts, Map<String, Completeness> sourceCompleteness,
-                              String stateFingerprint) {
+                              String stateFingerprint, Map<String,Object> captureMetadata) {
+    public RuntimeSnapshot(String snapshotId,String modelRevision,Instant captureStartedAt,Instant captureEndedAt,Map<String,SourceWatermark> startWatermarks,Map<String,SourceWatermark> endWatermarks,int validationAttempts,List<RuntimeFact> facts,Map<String,Completeness> sourceCompleteness,String stateFingerprint) {this(snapshotId,modelRevision,captureStartedAt,captureEndedAt,startWatermarks,endWatermarks,validationAttempts,facts,sourceCompleteness,stateFingerprint,Map.of());}
     public RuntimeSnapshot {
         snapshotId = ContractSupport.required(snapshotId, "snapshotId");
         modelRevision = ContractSupport.required(modelRevision, "modelRevision");
@@ -20,5 +21,6 @@ public record RuntimeSnapshot(String snapshotId, String modelRevision, Instant c
         facts = ContractSupport.list(facts);
         sourceCompleteness = ContractSupport.map(sourceCompleteness);
         stateFingerprint = ContractSupport.required(stateFingerprint, "stateFingerprint");
+        captureMetadata=ContractSupport.canonicalObject(captureMetadata==null?Map.of():captureMetadata);
     }
 }

@@ -240,6 +240,10 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
         return value;
     }
 
+    @Override public Map<String,Object> captureMetadata() {
+        return Map.of("operationLifecycleCoverage","PARTIAL","suspendResumeObservation","UNSUPPORTED_CARTAGO_3_1_AWAIT_NO_LOGGER_HOOKS",
+                "invocationBoundary","ICARTAGOLOGGER_OBSERVED_PREFIX","globalAtomicity","UNSUPPORTED");
+    }
     @Override public synchronized Completeness completeness() {
         return pendingCreations.isEmpty() ? completeness : Completeness.PARTIAL;
     }
@@ -319,6 +323,9 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
         if(sink==null) return;
         long next = sequence.incrementAndGet();
         String correlation = values.get("opId") instanceof String value ? value : "";
+        if(!correlation.isBlank()) {
+            values=new LinkedHashMap<>(values);values.put("invocationBoundary",Map.of("version","1.0","authority","ICARTAGOLOGGER_OBSERVED_PREFIX","sourceId",sourceId(),"artifactUuid",id.incarnation(),"previousWatermark",next-1,"globalAtomicity","UNSUPPORTED"));
+        }
         sink.accept(new RuntimeEvent(sessionId + ":cartago:" + next, sessionId, generation,
                 System.getProperty("jacamo.bridge.modelRevision", "unnegotiated"), "cartago", sourceId(), next,
                 Instant.now(), kind, factKind,
@@ -372,8 +379,14 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
     }
     private Map<String,Object> operationPayload(ArtifactId artifact,OpId id,Op op,String phase) {
         var payload=new java.util.LinkedHashMap<String,Object>();
+        payload.put("operationLifecycleCoverage","PARTIAL");payload.put("suspendResumeObservation","UNSUPPORTED_CARTAGO_3_1_AWAIT_NO_LOGGER_HOOKS");
         payload.put("phase",phase);payload.put("operation",op.getName());payload.put("opId",id.toString());
         payload.put("artifactSemanticId",OfficialCartagoAdapter.artifactId(environment.getId().toString(),artifact));
+        AgentId performer=id.getAgentBodyId();
+        if(performer!=null && artifact.equals(id.getArtifactId())) {
+            payload.put("performerSemanticId",OfficialCartagoAdapter.agentId(environment.getId().toString(),performer));
+            payload.put("performerAuthority","CARTAGO_OPID_AGENT_BODY_ID");
+        } else payload.put("performerDiagnostic","EXACT_OPERATION_PERFORMER_UNAVAILABLE");
         payload.put("argumentValues",Arrays.stream(op.getParamValues()).map(v->v==null?"":v.toString()).toList());
         payload.put("argumentTypes",Arrays.stream(op.getParamValues()).map(v->v==null?"NULL":v.getClass().getName()).toList());
         try {

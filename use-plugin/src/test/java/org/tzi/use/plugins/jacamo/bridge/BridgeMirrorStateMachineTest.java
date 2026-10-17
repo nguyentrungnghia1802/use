@@ -63,7 +63,7 @@ class BridgeMirrorStateMachineTest {
 
     @Test void transactionalReplacementDropsOldIncarnationAndChangesFingerprint() {
         var mirror=live();String before=mirror.fingerprint();var replacement=fact(id("inc-2"),true);
-        mirror.replace(new RuntimeSnapshot("snapshot-2","revision",Instant.EPOCH,Instant.EPOCH,Map.of("source",new SourceWatermark("source",4)),Map.of("source",new SourceWatermark("source",4)),1,List.of(replacement),Map.of("source",Completeness.COMPLETE),"f".repeat(64)));
+        mirror.replace(new RuntimeSnapshot("snapshot-2","revision",Instant.EPOCH,Instant.EPOCH,Map.of("source",new SourceWatermark("source",4)),Map.of("source",new SourceWatermark("source",4)),1,List.of(replacement),Map.of("jason",Completeness.COMPLETE),"f".repeat(64)));
         assertFalse(mirror.facts().containsKey(id("inc-1").canonical()));assertTrue(mirror.facts().containsKey(id("inc-2").canonical()));assertNotEquals(before,mirror.fingerprint());
     }
 
@@ -87,6 +87,52 @@ class BridgeMirrorStateMachineTest {
         assertEquals(BridgeClientState.RESYNC_REQUIRED,invalid.state());
     }
 
+    @Test void staleAndMissingSourceSnapshotsCannotReplaceAcceptedFacts() {
+        var mirror=live();mirror.apply(event("new","session",2,"revision",1,RuntimeEventKind.CHANGED,id("inc-1"),Map.of("active",false)));
+        var facts=mirror.facts();assertThrows(BridgeProtocolException.class,()->mirror.replace(new RuntimeSnapshot("old","revision",Instant.EPOCH,Instant.EPOCH,Map.of("source",new SourceWatermark("source",0)),Map.of("source",new SourceWatermark("source",0)),1,List.of(),Map.of("jason",Completeness.COMPLETE),"old")));assertEquals(facts,mirror.facts());assertEquals(BridgeClientState.RESYNC_REQUIRED,mirror.state());
+        assertThrows(BridgeProtocolException.class,()->mirror.replace(new RuntimeSnapshot("missing","revision",Instant.EPOCH,Instant.EPOCH,Map.of(),Map.of(),1,List.of(),Map.of(),"missing")));assertEquals(facts,mirror.facts());
+    }
+    @Test void partialReplacementPreservesLastKnownFactsAndNewEpochClearsTheLedger() {
+        var mirror=live();var fact=mirror.facts().get(id("inc-1").canonical());
+        mirror.replace(new RuntimeSnapshot("partial","revision",Instant.EPOCH,Instant.EPOCH,Map.of("source",new SourceWatermark("source",0)),Map.of("source",new SourceWatermark("source",0)),1,List.of(),Map.of("jason",Completeness.PARTIAL),"partial"));assertEquals(fact,mirror.facts().get(id("inc-1").canonical()));
+        var e=event("id-reused","session",2,"revision",1,RuntimeEventKind.CREATED,id("inc-2"),Map.of());mirror.apply(e);
+        mirror.acceptIdentity("session",3,"revision");mirror.replace(new RuntimeSnapshot("new-run","revision",Instant.EPOCH,Instant.EPOCH,Map.of("source",new SourceWatermark("source",0)),Map.of("source",new SourceWatermark("source",0)),1,List.of(),Map.of("jason",Completeness.COMPLETE),"new"));
+        assertTrue(mirror.apply(event("id-reused","session",3,"revision",1,RuntimeEventKind.CREATED,id("inc-2"),Map.of())));
+        assertThrows(BridgeProtocolException.class,()->mirror.acceptIdentity("session",2,"revision"));
+    }
+    @Test void missingAuthorityCoverageCannotRetireItsLastKnownFacts() {
+        var mirror=live();
+        var known=mirror.facts();
+        var waters=Map.of("source",new SourceWatermark("source",0));
+        mirror.replace(new RuntimeSnapshot("missing-jason","revision",Instant.EPOCH,Instant.EPOCH,
+                waters,waters,1,List.of(),Map.of("cartago",Completeness.COMPLETE),"missing-jason"));
+        assertEquals(known,mirror.facts(),"Cartago completeness says nothing about an absent Jason player");
+        mirror.replace(new RuntimeSnapshot("complete-jason","revision",Instant.EPOCH,Instant.EPOCH,
+                waters,waters,1,List.of(),Map.of("jason",Completeness.COMPLETE),"complete-jason"));
+        assertTrue(mirror.facts().isEmpty(),"Only the matching complete authority may certify absence");
+    }
+
+    private RuntimeEvent norm(long seq,RuntimeEventKind kind,BridgeEntityId norm) {
+        return new RuntimeEvent("norm:"+seq,"session",2,"revision","npl","npl",seq,Instant.EPOCH,kind,RuntimeFactKind.NORM_INSTANCE,ProjectionStatus.EVIDENCE_ONLY,norm,null,"","",Map.of(),Map.of("state",kind==RuntimeEventKind.NORM_ACTIVATED?"ACTIVE":kind==RuntimeEventKind.NORM_FULFILLED?"FULFILLED":"INACTIVE"),new SourceWatermark("npl",seq),Completeness.COMPLETE,List.of());
+    }
+    @Test void authoritativeNewNormActivationAndTerminalUpdatesStayInTheLiveStream() {
+        var mirror=live();var id=new BridgeEntityId("npl","organisation","norm-instance","board","norm","activation");var activated=norm(1,RuntimeEventKind.NORM_ACTIVATED,id);
+        assertTrue(mirror.apply(activated));assertFalse(mirror.apply(activated));assertTrue(mirror.apply(norm(2,RuntimeEventKind.NORM_FULFILLED,id)));assertEquals("FULFILLED",mirror.facts().get(id.canonical()).values().get("state"));assertTrue(mirror.apply(norm(3,RuntimeEventKind.NORM_INACTIVATED,id)));assertEquals(BridgeClientState.LIVE,mirror.state());
+        var unknown=live();assertThrows(BridgeProtocolException.class,()->unknown.apply(norm(1,RuntimeEventKind.NORM_FULFILLED,id)));
+        var wrong=live();assertThrows(BridgeProtocolException.class,()->wrong.apply(norm(1,RuntimeEventKind.NORM_ACTIVATED,id("wrong-kind"))));
+    }
+    @Test void lateDiscoveredNormAcceptsTerminalObservationWithBoundPublicCreationEvidence() {
+        var mirror=live();
+        var id=new BridgeEntityId("npl","organisation","norm-instance","board","activation-key","session:board-uuid");
+        var terminal=new RuntimeEvent("late-terminal","session",2,"revision","npl","npl",1,Instant.EPOCH,
+                RuntimeEventKind.NORM_FULFILLED,RuntimeFactKind.NORM_INSTANCE,ProjectionStatus.EVIDENCE_ONLY,
+                id,null,"","",Map.of(),Map.of("state","FULFILLED","observationVersion","NPL_OBSERVATION/1.0",
+                    "activationIdentityStatus","BOUND_PUBLIC_CREATED_ANNOTATION","activationKey","activation-key"),
+                new SourceWatermark("npl",1),Completeness.COMPLETE,List.of());
+        assertTrue(mirror.apply(terminal));
+        assertEquals("FULFILLED",mirror.facts().get(id.canonical()).values().get("state"));
+        assertEquals(BridgeClientState.LIVE,mirror.state());
+    }
     private RuntimeEvent focusEvent(String eventId,long sequence,RuntimeEventKind kind,BridgeEntityId id,boolean focused) {
         return new RuntimeEvent(eventId,"session",2,"revision","cartago","source",sequence,Instant.EPOCH,kind,
                 RuntimeFactKind.RELATION_STATE,ProjectionStatus.MATERIALIZED_FAITHFULLY,id,null,"corr","",Map.of(),
@@ -95,7 +141,7 @@ class BridgeMirrorStateMachineTest {
                 new SourceWatermark("source",sequence),Completeness.COMPLETE,List.of());
     }
 
-    private BridgeMirrorStateMachine live(){var mirror=new BridgeMirrorStateMachine(16);mirror.acceptIdentity("session",2,"revision");mirror.replace(new RuntimeSnapshot("snapshot","revision",Instant.EPOCH,Instant.EPOCH,Map.of("source",new SourceWatermark("source",0)),Map.of("source",new SourceWatermark("source",0)),1,List.of(fact(id("inc-1"),true)),Map.of("source",Completeness.COMPLETE),"f".repeat(64)));return mirror;}
+    private BridgeMirrorStateMachine live(){var mirror=new BridgeMirrorStateMachine(16);mirror.acceptIdentity("session",2,"revision");mirror.replace(new RuntimeSnapshot("snapshot","revision",Instant.EPOCH,Instant.EPOCH,Map.of("source",new SourceWatermark("source",0)),Map.of("source",new SourceWatermark("source",0)),1,List.of(fact(id("inc-1"),true)),Map.of("jason",Completeness.COMPLETE),"f".repeat(64)));return mirror;}
     private RuntimeFact fact(BridgeEntityId id,boolean active){return new RuntimeFact(id,RuntimeFactKind.AGENT,Map.of("active",active),List.of(),ProjectionStatus.MATERIALIZED_FAITHFULLY,Completeness.COMPLETE,List.of());}
     private BridgeEntityId id(String incarnation){return new BridgeEntityId("jason","agent","runtime-agent","project","alice",incarnation);}
     private RuntimeEvent event(String eventId,String session,long generation,String revision,long sequence,RuntimeEventKind kind,BridgeEntityId id,Map<String,Object> after){return new RuntimeEvent(eventId,session,generation,revision,"jason","source",sequence,Instant.EPOCH,kind,kind==RuntimeEventKind.GAP?null:RuntimeFactKind.AGENT,kind==RuntimeEventKind.GAP?null:ProjectionStatus.MATERIALIZED_FAITHFULLY,id,null,"corr","",Map.of(),after,new SourceWatermark("source",sequence),Completeness.COMPLETE,List.of());}

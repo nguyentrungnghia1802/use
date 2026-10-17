@@ -46,13 +46,14 @@ import ora4mas.nopl.SchemeBoard;
 
 /** Official JaCaMo Platform insertion point and authenticated loopback Bridge host. */
 public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
-    private static final int MAX_FRAME_BYTES = 4 * 1024 * 1024;
+    private static final int MAX_FRAME_BYTES = org.jacamo.bridge.contract.CanonicalJson.DEFAULT_MAX_BYTES;
     private static final int EVENT_CAPACITY = 8192;
     private static final String BRIDGE_ARCH = BridgeAgArch.class.getName();
 
     private final AdapterReadinessRegistry readiness = new AdapterReadinessRegistry();
     private final ArrayBlockingQueue<RuntimeEvent> events = new ArrayBlockingQueue<>(EVENT_CAPACITY);
     private final java.util.concurrent.atomic.AtomicBoolean publicationGap = new java.util.concurrent.atomic.AtomicBoolean();
+    private volatile String publicationFailure="TRANSPORT_SUBSCRIBER_OVERFLOW_OR_UNKNOWN_RESUME_TOKEN";
     private final AtomicLong generations = new AtomicLong();
     private final AtomicLong transportWatermark = new AtomicLong();
     private BridgeCheckpointSource checkpointSource;
@@ -159,11 +160,10 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
             sources.add(new MoiseBoardSnapshotSource(name, sessionId, JaCaMoBridgePlatform::officialGroupBoards,
                     JaCaMoBridgePlatform::officialSchemeBoards,modelSnapshot.semanticContract(),resolveProjectFile().getParent()));
         }
-        // OrgBoard/SchemeBoard instances may be created by agent plans even when the JCM has no static
-        // organisation declaration. Keep those official boards in a
-        // disjoint dynamic source, and always attach NPL so later-created normative engines are discovered.
+        // Agent plans may create boards without a static organisation declaration.
         sources.add(new MoiseBoardSnapshotSource(declaredOrganisations, sessionId,
-                JaCaMoBridgePlatform::officialGroupBoards, JaCaMoBridgePlatform::officialSchemeBoards,modelSnapshot.semanticContract(),resolveProjectFile().getParent()));
+                JaCaMoBridgePlatform::officialGroupBoards, JaCaMoBridgePlatform::officialSchemeBoards,
+                modelSnapshot.semanticContract(),resolveProjectFile().getParent()));
         sources.add(new NplBoardSnapshotSource(sessionId, NormativeBoard::getNormativeBoards));
         checkpointSource=new BridgeCheckpointSource();sources.add(checkpointSource);
         runtimeCoordinator = new SnapshotCoordinator(sources, EVENT_CAPACITY, this::enqueueEvent);
@@ -231,7 +231,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
 
     private void enqueueEvent(RuntimeEvent event) {
         if (!events.offer(event)) {
-            publicationGap.set(true);
+            publicationFailure="PLATFORM_EVENT_QUEUE_OVERFLOW";publicationGap.set(true);
             readiness.update("events", AdapterReadiness.FAILED,
                     "bounded event queue overflow; resync required");
         }
@@ -261,7 +261,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
             long watermark = transportWatermark.incrementAndGet();
             RuntimeEvent event = new RuntimeEvent("gap:" + sessionId + ":" + watermark, sessionId, generation,
                     modelSnapshot.modelRevision(), "transport", "bridge:transport", watermark, Instant.now(),
-                    RuntimeEventKind.GAP, null, null, null, null, "", "", Map.of(), Map.of(),
+                    RuntimeEventKind.GAP, null, null, null, null, "", "", Map.of(), Map.of("diagnostic",publicationFailure),
                     new SourceWatermark("bridge:transport", watermark), Completeness.PARTIAL, List.of());
             return encode(MessageType.RUNTIME_EVENT, projectKey, generation, distribution,
                     capabilities(latestRuntimeSnapshot), Completeness.PARTIAL, ContractPayloads.event(event));
@@ -281,14 +281,21 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
                 try {
                     if (publicationGap.getAndSet(false)) server.publish("platform:gap", gap.get());
                     RuntimeEvent event = events.poll(500, TimeUnit.MILLISECONDS);
-                    if (event != null) server.publish(event.sourceId() + ":" + event.sourceSequence(),
-                            encode(MessageType.RUNTIME_EVENT, projectKey, generation, distribution,
-                            capabilities(latestRuntimeSnapshot), event.completeness(), ContractPayloads.event(event)));
-                    if(event!=null && boundaryTrigger(event)) {
-                        // A real source callback closes this observation batch. Copy supported
-                        // board state now, enqueue its deltas first, then the explicit boundary.
+                    RuntimeEvent cause = null;
+                    long batchDeadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(50);
+                    for (int count = 0; event != null && count < 32; count++) {
+                        server.publish(event.sourceId() + ":" + event.sourceSequence(),
+                                encode(MessageType.RUNTIME_EVENT, projectKey, generation, distribution,
+                                        capabilities(latestRuntimeSnapshot), event.completeness(), ContractPayloads.event(event)));
+                        if (boundaryTrigger(event)) cause = event;
+                        if (count == 31 || System.nanoTime() >= batchDeadline) break;
+                        event = events.poll();
+                    }
+                    if(cause!=null) {
+                        // Preserve every callback, but observe boards once per bounded batch,
+                        // after real source callbacks. A timer alone never creates a checkpoint.
                         runtimeCoordinator.poll();
-                        checkpointSource.boundary(event);
+                        checkpointSource.boundary(cause);
                         nextObservation=System.nanoTime()+TimeUnit.SECONDS.toNanos(5);
                     }
                     if(System.nanoTime()>=nextObservation) {
@@ -300,9 +307,10 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
                     Thread.currentThread().interrupt();
                     return;
                 } catch (Exception failure) {
+                    publicationFailure="EVENT_PUBLICATION_FAILED:"+failure.getClass().getSimpleName()+":"+failure.getMessage();
                     publicationGap.set(true);
                     readiness.update("transport", AdapterReadiness.FAILED,
-                            "event publication failed; resync required");
+                            publicationFailure+"; resync required");
                 }
             }
         });
@@ -317,6 +325,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
 
     private RuntimeSnapshot captureRuntime() {
         RuntimeSnapshot last = latestRuntimeSnapshot;
+        Exception lastFailure = null;
         long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(12);
         while (System.nanoTime() < deadline) {
             try {
@@ -330,15 +339,20 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
                                 + "; sourceCompleteness=" + last.sourceCompleteness());
                 if (usable) return last;
             } catch (RuntimeException failure) {
+                lastFailure = failure;
                 readiness.update("runtime", AdapterReadiness.PARTIAL,
                         failure.getClass().getSimpleName() + ": " + failure.getMessage());
             } catch (Exception failure) {
+                lastFailure = failure;
                 readiness.update("runtime", AdapterReadiness.PARTIAL,
                         failure.getClass().getSimpleName() + ": " + failure.getMessage());
             }
             try { Thread.sleep(50); }
             catch (InterruptedException interrupted) { Thread.currentThread().interrupt(); break; }
         }
+        // An older cut can predate this subscriber and its replay buffer. Returning
+        // it as a fresh snapshot silently manufactures a gap at the first event.
+        if (lastFailure != null) throw new IllegalStateException("BRIDGE_FRESH_RUNTIME_CUT_UNAVAILABLE", lastFailure);
         if (last != null) return last;
         RuntimeSnapshot unavailable = unavailableRuntimeSnapshot();
         latestRuntimeSnapshot = unavailable;
@@ -361,16 +375,16 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
         boolean runtimeReady = snapshot != null && !snapshot.facts().isEmpty()
                 && snapshot.sourceCompleteness().values().stream().noneMatch(value -> value == Completeness.UNAVAILABLE);
         return List.of(
+                new Capability("cartago.invocation.suspend-resume.v1",CapabilityStatus.UNAVAILABLE,List.of(),"CARTAGO_3_1_AWAIT_NO_LOGGER_HOOKS; invocation intervals remain observed shared-state prefixes"),
                 new Capability("official.model", CapabilityStatus.COMPLETE, List.of(), ""),
                 new Capability("runtime.snapshot", runtimeReady ? CapabilityStatus.COMPLETE : CapabilityStatus.PARTIAL,
-                        List.of(), runtimeReady ? "validated official runtime cut; evidence-only facts remain labelled"
-                                : "runtime authorities are not ready or the cut is incomplete"),
-                new Capability("runtime.events", CapabilityStatus.PARTIAL, List.of(),
-                        "official hooks are bounded and classified; Moise board intermediate deltas remain evidence-only"),
-                new Capability("runtime.checkpoint.boundary.v1",CapabilityStatus.COMPLETE,List.of(),"source callback plus supported board observation batch"),
+                        List.of(), "source completeness remains explicit"),
+                new Capability("runtime.events", CapabilityStatus.PARTIAL, List.of(), "bounded official hooks; intermediate board changes may be evidence-only"),
+                new Capability("runtime.checkpoint.boundary.v1",CapabilityStatus.COMPLETE,List.of(),"supported source callback batch"),
                 new Capability(org.jacamo.bridge.contract.RuntimeControlContract.CAPABILITY,controlCapable()?CapabilityStatus.COMPLETE:CapabilityStatus.UNAVAILABLE,
                         List.of(),org.jacamo.bridge.contract.RuntimeControlContract.LIMITATION));
     }
+
     private boolean controlCapable() {return BridgeRuntimeRegistry.controller().map(BridgeLocalExecutionControl::capable).orElse(false);}
     public org.jacamo.bridge.contract.RuntimeControlContract.Status control(org.jacamo.bridge.contract.RuntimeControlContract.Request request) {
         if(!request.sessionId().equals(sessionId) || request.generation()!=generation() || !request.modelRevision().equals(modelSnapshot.modelRevision()))

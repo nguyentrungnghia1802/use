@@ -13,8 +13,15 @@ public record RuntimeVerificationResult(String sessionId, long generation, Strin
         long stateVersion, String eventId, String sourceId, long sourceSequence, Instant observedAt,
         Instant appliedAt, Instant verifiedAt, String checkpointId, String constraintSetHash,
         String stateHash, List<ExternalOclConstraintService.Outcome> outcomes, long durationNanos,
-        String coverage, String freshness, String diagnostic) {
+        String coverage, String freshness, String diagnostic,
+        org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerificationEnvelope semantic) {
     public RuntimeVerificationResult { outcomes = List.copyOf(outcomes); }
+    public RuntimeVerificationResult(String sessionId,long generation,String modelRevision,long stateVersion,String eventId,String sourceId,
+            long sourceSequence,Instant observedAt,Instant appliedAt,Instant verifiedAt,String checkpointId,String constraintSetHash,
+            String stateHash,List<ExternalOclConstraintService.Outcome> outcomes,long durationNanos,String coverage,String freshness,String diagnostic) {
+        this(sessionId,generation,modelRevision,stateVersion,eventId,sourceId,sourceSequence,observedAt,appliedAt,verifiedAt,checkpointId,
+            constraintSetHash,stateHash,outcomes,durationNanos,coverage,freshness,diagnostic,null);
+    }
     public long count(VerificationOutcome outcome) { return outcomes.stream().filter(item -> item.outcome() == outcome).count(); }
     public List<String> failingConstraints() { return outcomes.stream().filter(item -> item.outcome() == VerificationOutcome.FAIL)
             .map(ExternalOclConstraintService.Outcome::constraintId).toList(); }
@@ -33,6 +40,7 @@ public record RuntimeVerificationResult(String sessionId, long generation, Strin
             if(!item.contextObject().isBlank())value.put("contextObject",item.contextObject());
             return Map.copyOf(value);
         }).toList());
+        if(semantic!=null)map.put("semantic",semantic.toMap());
         return Map.copyOf(map);
     }
     public String resultHash() { return ExternalOclConstraintService.sha256(CanonicalJson.encode(semanticEvidence())); }
@@ -54,7 +62,8 @@ public record RuntimeVerificationResult(String sessionId, long generation, Strin
                 (String)value.get("sourceId"), ((Number)value.get("sourceSequence")).longValue(), Instant.parse((String)value.get("observedAt")),
                 Instant.parse((String)value.get("appliedAt")), Instant.parse((String)value.get("verifiedAt")), (String)value.get("checkpointId"),
                 (String)value.get("constraintSetHash"), (String)value.get("stateHash"), outcomes, ((Number)value.get("durationNanos")).longValue(),
-                (String)value.get("coverage"), (String)value.get("freshness"), (String)value.get("diagnostic"));
+                (String)value.get("coverage"), (String)value.get("freshness"), (String)value.get("diagnostic"),
+                value.containsKey("semantic")?org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerificationEnvelope.fromMap(CanonicalJson.object(value.get("semantic"))):null);
         if (!result.resultHash().equals(value.get("resultHash"))) throw new IllegalArgumentException("HISTORY_RESULT_HASH_MISMATCH");
         return result;
     }

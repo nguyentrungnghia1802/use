@@ -53,5 +53,14 @@ public final class NativeRuntimeReplaySmokeMain {
         } finally {controllerClass.getMethod("close").invoke(controller);}
         if(session.hasSystem())throw new AssertionError("Replay Session was not cleaned up");
         System.out.println("ISOLATED_NATIVE_STEP_REPLAY_PASS");
+        if(args.length>5 && args[5].equals("semantic")) {
+            if(replayClass.getResource("/org/tzi/use/plugins/jacamo/semantics/capabilities.json")==null)throw new AssertionError("Semantic capabilities manifest missing from installed plugin");
+            Object opened=replayClass.getMethod("openBundle",Path.class).invoke(replayClass.getDeclaredConstructor().newInstance(),Path.of(args[2]));
+            try {
+                Object mapping=opened.getClass().getMethod("mapping").invoke(opened);
+                if(!((java.util.Optional<?>)mapping).isPresent())throw new AssertionError("Static complement missing");
+            }finally{((AutoCloseable)opened).close();}
+            System.out.println("ISOLATED_SEMANTIC_REPLAY_PASS");
+        }
     }
 }

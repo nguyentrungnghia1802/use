@@ -1,0 +1,87 @@
+{
+  "version": "1.0",
+  "defaultProjection": "NATIVE_CURRENT",
+  "profiles": {
+    "CSL_OBSERVER_V1": {
+      "version": "1.0",
+      "capabilities": [
+        "csl.atomic-player",
+        "csl.context",
+        "csl.enactment",
+        "csl.role-occurrence",
+        "domain.scalar",
+        "istar.achieve",
+        "ocl.invariant",
+        "ocl.invocation-at-pre"
+      ]
+    },
+    "CSL_OBSERVER_V2": {
+      "version": "2.0",
+      "capabilities": [
+        "csl.atomic-player",
+        "csl.context",
+        "csl.enactment",
+        "csl.role-occurrence",
+        "csl.structural-policy",
+        "domain.scalar",
+        "istar.achieve",
+        "istar.and",
+        "istar.dependency",
+        "istar.maintain",
+        "istar.none",
+        "istar.or",
+        "istar.sustain",
+        "istar.task",
+        "jason.execution-observer",
+        "jason.ground-stored-query",
+        "jason.mental-observer",
+        "moise.functional-observer",
+        "npl.reported-lifecycle",
+        "ocl.invariant",
+        "ocl.invocation-at-pre"
+      ]
+    }
+  },
+  "configuration": {
+    "profileProperty": "use.jacamo.semantics.profile",
+    "configurationProperty": "use.jacamo.semantics.config",
+    "format": "CslMonitorConfiguration/1.0",
+    "admission": "EXPLICIT_TYPES_AND_SOURCE_CORRESPONDENCE_REQUIRED"
+  },
+  "boundaries": {
+    "state": "SOURCE_WATERMARKED_OBSERVED_CUT",
+    "transition": "CORRELATED_INVOCATION_INTERVAL",
+    "cartago": "ICARTAGOLOGGER_OBSERVED_PREFIX",
+    "globalMasAtomicity": "UNSUPPORTED",
+    "taskPerformer": "EXACT_OPID_AGENT_BODY_ID_AND_SAME_PRE_ROLE_OCCURRENCE",
+    "cartagoLifecycle": "PARTIAL_START_END_OBSERVATIONS",
+    "nplBinary": "0.6.1_SHA256_956818edfe9aeff7c4fde35bf1dd276cd71e1da62daf77a2a15ab08f87903332"
+  },
+  "formats": {
+    "sourceEcoreHash": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c",
+    "mappingRule": "CSL_MAPPING/1.0",
+    "mappingBundle": "1.0",
+    "detailedEvidence": "1.0",
+    "runtimeReplay": "2.0.0_OPTIONAL_MAPPING_JSON",
+    "normObservation": "NPL_OBSERVATION/1.0"
+  },
+  "extensions": {
+    "exploration": "FINITE_FIXED_POPULATION_V1_EXPLICIT_RELATION_ONLY",
+    "roundtrip": "ECORE_STRUCTURAL_LENS_V1_NORMALIZED_STRUCTURE_ONLY"
+  },
+  "unsupported": [
+    "GENERAL_JASON_LOGICAL_ENTAILMENT",
+    "UNPROVEN_JASON_ACTION_TO_CARTAGO_INVOCATION_CAUSATION",
+    "LOGGER_NONVOID_JAVA_RETURN_VALUE",
+    "GLOBAL_ATOMIC_MAS_SNAPSHOT",
+    "MOISE_SCOPED_DIRECTIONAL_COMPATIBILITY_EQUIVALENCE",
+    "COMPOSITION_DESTRUCTION_SEMANTICS",
+    "FULL_NPL_INDEPENDENT_DEONTIC_DERIVATION_AND_SANCTIONS",
+    "ARBITRARY_JAVA_ASL_SUCCESSOR_SYNTHESIS",
+    "UNBOUNDED_MODEL_CHECKING",
+    "FULL_SEMANTIC_OR_RUNTIME_ROUNDTRIP",
+    "SOURCE_ECORE_PROPERTY_SCALAR_TYPE_AND_VALUE_INVERSE",
+    "CARTAGO_3_1_AWAIT_SUSPEND_RESUME_LOGGER_COVERAGE"
+  ],
+  "acceptance": "REQUIRES_MATCHING_IMPLEMENTATION_REPORT_AND_FRESH_TEST_EVIDENCE"
+}

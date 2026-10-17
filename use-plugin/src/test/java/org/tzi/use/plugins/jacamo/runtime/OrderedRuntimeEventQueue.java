@@ -81,7 +81,16 @@ public final class OrderedRuntimeEventQueue implements AutoCloseable {
     private void run() {
         while (isRunning() || !queue.isEmpty()) {
             RuntimeEvent event;
-            try { event = queue.take(); }
+            try {
+                synchronized(this) {
+                    // Sampling depth after offer is meaningful only if removal
+                    // uses the same monitor. A fast take previously raced the
+                    // high-watermark measurement and could report zero.
+                    while(queue.isEmpty() && running)wait();
+                    if(queue.isEmpty() && !running)break;
+                    event=queue.poll();
+                }
+            }
             catch (InterruptedException exception) {
                 if (!isRunning() && queue.isEmpty()) break;
                 continue;

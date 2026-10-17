@@ -18,9 +18,18 @@ public final class CodeGroundedNativePipeline {
     }
 
     public Result build(ModelSnapshot snapshot, NativeProjectionMode mode) {
+        var profile = org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.configured(
+                System.getProperty(org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.PROPERTY));
+        return build(snapshot, mode, profile == org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.NATIVE_CURRENT
+                ? null : org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration.configured());
+    }
+
+    public Result build(ModelSnapshot snapshot, NativeProjectionMode mode,
+            org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration semantics) {
         JacamoSpecificationModel source = new JacamoSpecificationModel(snapshot.semanticContract());
         CodeGroundedTraceCollector trace = new CodeGroundedTraceCollector();
-        NativeUseModelBuilder.Result model = new NativeUseModelBuilder().build(source, trace, mode);
+        NativeUseModelBuilder.Result model = semantics == null ? new NativeUseModelBuilder().build(source, trace, mode)
+                : new NativeUseModelBuilder().buildCsl(source, trace, mode, semantics);
         NativeUseStateBuilder.Result state = new NativeUseStateBuilder().build(source, model, trace);
         NativeUseExporter.Result export = new NativeUseExporter().export(model.model());
         trace.add(new CodeGroundedTraceRecord("J01", TracePhase.EXPORT,
@@ -34,10 +43,32 @@ public final class CodeGroundedNativePipeline {
         return new Result(source, model, state, export, trace.index(), model.profile());
     }
 
+    public record SemanticBuildResult(Result nativeResult,org.tzi.use.plugins.jacamo.semantics.mapping.MappingBundle bundle) { }
+    /** Both frontends reach this same production builder and one native model/system. */
+    public SemanticBuildResult buildSemanticBundle(ModelSnapshot snapshot,NativeProjectionMode mode,
+            org.tzi.use.plugins.jacamo.semantics.mapping.MappingBundle bundle) {
+        String expected=org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(org.jacamo.bridge.contract.ContractPayloads.model(snapshot));
+        var inputs=bundle.complement().assets().stream().filter(a->a.format().equals("OFFICIAL_MODEL_SNAPSHOT_JSON")).toList();
+        if(inputs.size()!=1 || !inputs.getFirst().sha256().equals(expected))throw new IllegalArgumentException("MAPPING_BUNDLE_SOURCE_SNAPSHOT_MISMATCH");
+        var expectedGraph=new org.tzi.use.plugins.jacamo.semantics.mapping.SourceModelNormalizer().normalize(snapshot);
+        var actualNodes=new java.util.HashMap<String,org.tzi.use.plugins.jacamo.semantics.mapping.NormalizedSourceModel.Node>();bundle.source().nodes().forEach(n->actualNodes.put(n.id(),n));
+        for(var node:expectedGraph.nodes()) {
+            var actual=actualNodes.get(node.id());
+            if(actual==null)throw new IllegalArgumentException("MAPPING_BUNDLE_SOURCE_GRAPH_MISMATCH:"+node.id());
+            String expectedNode=org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.tree(node));
+            String actualNode=org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.tree(actual));
+            if(!expectedNode.equals(actualNode))throw new IllegalArgumentException("MAPPING_BUNDLE_SOURCE_GRAPH_MISMATCH:"+node.id());
+        }
+        var result=build(snapshot,mode,bundle.configuration());
+        org.tzi.use.plugins.jacamo.semantics.evidence.SemanticMappingAttachment.attach(result.model().model(),bundle);
+        var exported=new NativeUseExporter().export(result.model().model());
+        return new SemanticBuildResult(new Result(result.source(),result.model(),result.state(),exported,result.trace(),result.projectionProfile()),bundle);
+    }
     public record Result(JacamoSpecificationModel source, NativeUseModelBuilder.Result model,
                          NativeUseStateBuilder.Result state, NativeUseExporter.Result export,
                          CodeGroundedTraceIndex trace,
                          org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionProfile projectionProfile) {
         public NativeProjectionMode projectionMode() { return projectionProfile.mode(); }
+        public org.tzi.use.plugins.jacamo.semantics.binding.UseProjectionBinding binding(){return org.tzi.use.plugins.jacamo.semantics.binding.UseProjectionBinding.of(model.model());}
     }
 }

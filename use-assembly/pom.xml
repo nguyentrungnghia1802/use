@@ -13,6 +13,7 @@
     <artifactId>use-assembly</artifactId>
 
     <dependencies>
+        <dependency><groupId>org.tzi.use</groupId><artifactId>use-plugin</artifactId><version>1.0.1</version><type>zip</type><classifier>release</classifier><scope>provided</scope><exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions></dependency>
         <dependency>
             <groupId>org.tzi.use</groupId>
             <artifactId>use-gui</artifactId>
@@ -22,6 +23,12 @@
 
     <build>
         <plugins>
+            <plugin><artifactId>maven-dependency-plugin</artifactId><version>3.8.1</version><executions><execution>
+                <id>stage-jacamo-plugin-distribution</id><phase>prepare-package</phase><goals><goal>unpack</goal></goals>
+                <configuration><artifactItems><artifactItem><groupId>org.tzi.use</groupId><artifactId>use-plugin</artifactId><version>1.0.1</version>
+                    <type>zip</type><classifier>release</classifier><outputDirectory>${project.build.directory}/plugin-distribution</outputDirectory><overWrite>true</overWrite>
+                </artifactItem></artifactItems></configuration>
+            </execution></executions></plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.3.0</version>

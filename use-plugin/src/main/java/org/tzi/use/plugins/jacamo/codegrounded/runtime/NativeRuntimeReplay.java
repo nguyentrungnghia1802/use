@@ -59,8 +59,11 @@ public final class NativeRuntimeReplay {
             var profile = coordinator.constraints().profile();
             Files.writeString(output.resolve("constraints.ocl"), profile == null ? "" : profile.source(), StandardCharsets.UTF_8);
             Files.copy(coordinator.journal().path(), output.resolve("runtime.jsonl"));
+            var mapping=org.tzi.use.plugins.jacamo.semantics.evidence.SemanticMappingAttachment.read(projector.system().model());
+            if(mapping.isPresent())Files.write(output.resolve("mapping.json"),new org.tzi.use.plugins.jacamo.semantics.evidence.MappingBundleCodec().encode(mapping.get()));
             Map<String, Object> hashes = new LinkedHashMap<>();
             for (String file : FILES) hashes.put(file, ExternalOclConstraintService.sha256(Files.readAllBytes(output.resolve(file))));
+            if(mapping.isPresent())hashes.put("mapping.json",ExternalOclConstraintService.sha256(Files.readAllBytes(output.resolve("mapping.json"))));
             Map<String, Object> manifest = Map.of("schemaVersion", "2.0.0", "files", hashes,
                     "entries", coordinator.journal().persistedEntries(), "finalStateHash", coordinator.lastObservation().stateHash(),
                     "finalResultHash", coordinator.lastObservation().resultHash(), "baselineStateHash", coordinator.checkpoints().baseline().stateHash(),
@@ -100,8 +103,9 @@ public final class NativeRuntimeReplay {
                     || new java.math.BigDecimal(count.toString()).compareTo(java.math.BigDecimal.valueOf(count.longValue())) != 0)
                 throw new IllegalArgumentException("REPLAY_ENTRY_COUNT_INVALID");
             Map<String, Object> hashes = CanonicalJson.object(manifest.get("files"));
-            if (!hashes.keySet().equals(java.util.Set.copyOf(FILES))) throw new IllegalArgumentException("REPLAY_FILE_CATALOG_INVALID");
-            for (String file : FILES) {
+            var expected=new java.util.HashSet<>(FILES);if(hashes.containsKey("mapping.json"))expected.add("mapping.json");
+            if (!hashes.keySet().equals(expected)) throw new IllegalArgumentException("REPLAY_FILE_CATALOG_INVALID");
+            for (String file : expected) {
                 Path path = root.resolve(file);
                 if (Files.isSymbolicLink(path) || !Files.isRegularFile(path) || Files.size(path) > 64L * 1024 * 1024)
                     throw new IllegalArgumentException("REPLAY_FILE_MISSING_OR_UNSAFE:" + file);
@@ -129,9 +133,16 @@ public final class NativeRuntimeReplay {
         private Bundle(Path root, Map<String,Object> manifest) { this.root=root; this.manifest=manifest; }
         public List<Step> steps() { return steps; }
         public ReplayReport report() { return report; }
+        public java.util.Optional<org.tzi.use.plugins.jacamo.semantics.mapping.MappingBundle> mapping() {
+            if(closed)throw new IllegalStateException("REPLAY_BUNDLE_CLOSED");
+            if(!manifest.containsKey("files") || !CanonicalJson.object(manifest.get("files")).containsKey("mapping.json"))return java.util.Optional.empty();
+            try{return java.util.Optional.of(new org.tzi.use.plugins.jacamo.semantics.evidence.MappingBundleCodec().decode(Files.readAllBytes(root.resolve("mapping.json"))));}catch(java.io.IOException e){throw new IllegalArgumentException("REPLAY_MAPPING_UNREADABLE",e);}
+        }
         private void validate() throws Exception {
             var index = new ArrayList<Step>();
             try (var cursor = reconstruct()) {
+                var staticMapping=mapping();var attached=org.tzi.use.plugins.jacamo.semantics.evidence.SemanticMappingAttachment.read(cursor.projector.system().model());
+                if(!staticMapping.equals(attached))throw new IllegalArgumentException("REPLAY_MAPPING_MODEL_MISMATCH");
                 var baseline=cursor.projector.coordinator().lastObservation();
                 index.add(new Step(0,0,0,baseline.stateVersion(),baseline.eventId(),baseline.sourceId(),baseline.stateHash()));
                 String previous = baseline.stateHash();
@@ -328,7 +339,13 @@ public final class NativeRuntimeReplay {
                     ? ContractPayloads.event(CanonicalJson.object(payload.get("event"))) : null,(String)payload.get("diagnostic"));
             case "REJECTED" -> {
                 boolean rejected=false;
-                try { projector.apply(ContractPayloads.event(payload)); } catch (RuntimeException error) { rejected=true; }
+                try {
+                    if(payload.containsKey("snapshotId")) {
+                        var epoch=payload.containsKey("admissionEpoch")?CanonicalJson.object(payload.get("admissionEpoch")):expected;
+                        projector.applySnapshot(ContractPayloads.runtime(payload),(String)epoch.get("sessionId"),((Number)epoch.get("generation")).longValue());
+                    }
+                    else projector.apply(ContractPayloads.event(payload));
+                } catch (RuntimeException error) { rejected=true; }
                 if (!rejected) throw new IllegalArgumentException("REPLAY_EXPECTED_REJECTION");
             }
             default -> throw new IllegalArgumentException("REPLAY_ENTRY_UNSUPPORTED:" + kind);

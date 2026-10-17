@@ -21,6 +21,20 @@ class RuntimeVerificationCoordinatorTest {
     static final String PROFILE = "context LiveRuntimePropertyArtifact inv NoB: self.status <> 'B'";
     public static final class DiscoveredArtifact extends cartago.Artifact { }
 
+    @Test void configuredJournalBudgetIsBoundedAndDefaultsTo64MiB() {
+        String key="use.jacamo.runtime.journal.maxBytes", previous=System.getProperty(key);
+        try {
+            System.clearProperty(key);
+            assertEquals(64L*1024*1024,RuntimeVerificationCoordinator.defaultJournalMaxBytes());
+            System.setProperty(key,"536870912");
+            assertEquals(512L*1024*1024,RuntimeVerificationCoordinator.defaultJournalMaxBytes());
+            for(String invalid:List.of("0","-1","32767","1073741825","unbounded")) {
+                System.setProperty(key,invalid);
+                assertThrows(IllegalArgumentException.class,RuntimeVerificationCoordinator::defaultJournalMaxBytes);
+            }
+        } finally { if(previous==null)System.clearProperty(key);else System.setProperty(key,previous); }
+    }
+
     @Test void discoveredSchemaAndPropertyRetainTheOriginalStateAndExactNativeReferences() throws Exception {
         var projector = projector();var system = projector.system();var state = system.state();
         var objects = state.allObjects().stream().collect(java.util.stream.Collectors.toMap(

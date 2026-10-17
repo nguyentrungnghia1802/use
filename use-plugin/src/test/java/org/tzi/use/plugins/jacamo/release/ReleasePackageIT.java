@@ -91,11 +91,22 @@ class ReleasePackageIT {
         JsonNode manifest = new ObjectMapper().readTree(root.resolve("release/release-manifest.json").toFile());
         Map<String, JsonNode> declared = new LinkedHashMap<>();
         manifest.path("packageEntries").forEach(entry -> declared.put(entry.path("path").asText(), entry));
+        for(var tree:manifest.path("packageTrees")) {
+            Path source=root.resolve(tree.path("source").asText()).normalize();
+            try(var paths=Files.walk(source)) {for(var file:paths.filter(Files::isRegularFile).toList()) {
+                String relative=source.relativize(file).toString().replace('\\','/');
+                var item=new ObjectMapper().createObjectNode();item.put("source",root.relativize(file).toString());
+                declared.put(tree.path("path").asText()+"/"+relative,item);
+            }}
+        }
 
         try (ZipFile zip = new ZipFile(archive.toFile())) {
             Set<String> actual = new LinkedHashSet<>();
             zip.stream().filter(entry -> !entry.isDirectory()).forEach(entry -> actual.add(entry.getName()));
             assertEquals(declared.keySet(), actual, "archive inventory must exactly match the release manifest");
+            assertTrue(actual.stream().noneMatch(name -> name.matches("runtime/jacamo-[0-9][^/]*/.*")
+                    || name.startsWith("examples/embedded-") || name.contains("launch-embedded")),
+                    "release must contain the external TCP plugin without an engine bundle or local engine launcher");
 
             for (Map.Entry<String, JsonNode> item : declared.entrySet()) {
                 var entry = zip.getEntry(item.getKey());
@@ -171,6 +182,13 @@ class ReleasePackageIT {
             }
             org.junit.jupiter.api.Assertions.assertFalse(jarEntries.contains("org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-draft.json"),
                     "Obsolete draft resource must not survive in release output; run clean package");
+            for (String prefix : java.util.List.of("jacamo/", "jason/", "cartago/", "moise/", "npl/",
+                    "org/jacamo/bridge/embedded/", "org/jacamo/bridge/contract/embedded/",
+                    "org/tzi/use/plugins/jacamo/embedded/"))
+                assertTrue(jarEntries.stream().noneMatch(name -> name.startsWith(prefix)),
+                        () -> "producer-only runtime classes must not ship in the USE plugin: " + prefix);
+            org.junit.jupiter.api.Assertions.assertFalse(jarEntries.contains(
+                    "org/tzi/use/plugins/jacamo/bridge/InMemoryBridgeTransport.class"));
             for (String historicalName : historical.keySet())
                 org.junit.jupiter.api.Assertions.assertFalse(
                         jarEntries.contains("org/tzi/use/plugins/jacamo/" + historicalName),

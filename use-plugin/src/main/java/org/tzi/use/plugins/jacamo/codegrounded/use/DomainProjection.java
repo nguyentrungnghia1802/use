@@ -148,19 +148,43 @@ public final class DomainProjection {
                 && m.getReturnType().getName().equals(backing.returnType()) && m.isAnnotationPresent(cartago.OPERATION.class)).toList();
             if(matches.size()!=1) throw new IllegalArgumentException("CARTAGO_OPERATION_REFLECTION_MISMATCH:"+descriptor.metadata().semanticId());
         } catch(ClassNotFoundException|LinkageError unavailable) { /* The official adapter has already copied the actual Method signature. */ }
-        String[][] parameters=new String[backing.parameterTypes().size()][2];
-        for(int i=0;i<parameters.length;i++) { parameters[i][0]="p"+i; parameters[i][1]=operationType(backing.parameterTypes().get(i)); }
-        String result=backing.returnType().equals("void") ? null : operationType(backing.returnType());
-        String signature=NativeUseModelBuilder.canonicalJson(List.of(backing.declaringClass(),backing.methodName(),backing.parameterTypes(),backing.returnType()));
-        String name=symbol(descriptor.name())+"_"+hash(signature);
+        return installOperation(api,owner,backing.declaringClass(),backing.methodName(),backing.parameterTypes(),backing.returnType(),
+            descriptor.metadata().semanticId(),backing.metadata().semanticId());
+    }
+    /** Authored contract interface validated against the actual declared @OPERATION Method, without inventing a runtime descriptor. */
+    public static org.tzi.use.uml.mm.MOperation declaredOperation(UseModelApi api,String owner,List<Object> signature,String sourceId) throws UseApiException {
+        if(signature.size()!=4 || !(signature.get(0) instanceof String declaring) || !(signature.get(1) instanceof String name)
+                || !(signature.get(2) instanceof List<?> raw) || !(signature.get(3) instanceof String result)
+                || raw.stream().anyMatch(t->!(t instanceof String)))throw new IllegalArgumentException("DECLARED_OPERATION_SIGNATURE_INVALID");
+        var parameters=raw.stream().map(String.class::cast).toList();
+        try {
+            var loader=Thread.currentThread().getContextClassLoader();Class<?> type=Class.forName(declaring,false,loader);
+            String artifactType=decode(api.getModel().getClass(owner).getAnnotationValue(ANNOTATION,"javaClass64"));
+            if(!type.isAssignableFrom(Class.forName(artifactType,false,loader)))throw new IllegalArgumentException("DECLARED_OPERATION_OWNER_MISMATCH");
+            var methods=java.util.Arrays.stream(type.getDeclaredMethods()).filter(m->m.getName().equals(name)
+                && java.util.Arrays.stream(m.getParameterTypes()).map(Class::getName).toList().equals(parameters) && m.getReturnType().getName().equals(result)
+                && m.isAnnotationPresent(cartago.OPERATION.class) && !m.isVarArgs()).toList();
+            if(methods.size()!=1)throw new IllegalArgumentException("DECLARED_OPERATION_METHOD_UNRESOLVED:"+sourceId);
+            var operation=installOperation(api,owner,declaring,name,parameters,result,"declared-interface:"+sourceId,"java-method:"+signature);
+            operation.addAnnotation(new MElementAnnotation("CslInterfaceAuthority",Map.of("kind","REFLECTED_DECLARED_OPERATION","sourceId64",encode(sourceId))));
+            return operation;
+        } catch(ClassNotFoundException|LinkageError unavailable) {throw new IllegalArgumentException("DECLARED_OPERATION_SOURCE_INTERFACE_UNAVAILABLE:"+sourceId,unavailable);}
+    }
+    private static org.tzi.use.uml.mm.MOperation installOperation(UseModelApi api,String owner,String declaringClass,String methodName,
+            List<String> parameterTypes,String returnType,String descriptorId,String backingId) throws UseApiException {
+        String[][] parameters=new String[parameterTypes.size()][2];
+        for(int i=0;i<parameters.length;i++) { parameters[i][0]="p"+i; parameters[i][1]=operationType(parameterTypes.get(i)); }
+        String result=returnType.equals("void") ? null : operationType(returnType);
+        String signature=NativeUseModelBuilder.canonicalJson(List.of(declaringClass,methodName,parameterTypes,returnType));
+        String name=symbol(methodName)+"_"+hash(signature);
         var cls=api.getModel().getClass(owner); var operation=cls.operation(name,false);
         if(operation==null) operation=api.createOperation(owner,name,parameters,result);
         if(!operation.getAnnotationValue("CartagoOperation","signature64").isEmpty()
                 && !operation.getAnnotationValue("CartagoOperation","signature64").equals(encode(signature)))
             throw new IllegalArgumentException("CARTAGO_OPERATION_IDENTITY_COLLISION:"+signature);
-        operation.addAnnotation(new MElementAnnotation("CartagoOperation",Map.of("signature64",encode(signature),"javaName64",encode(descriptor.name()),"policy",NativeProjectionPolicy.VERSION)));
-        operation.addAnnotation(new MElementAnnotation("OperationSource_"+hash(descriptor.metadata().semanticId()),Map.of(
-            "descriptorId64",encode(descriptor.metadata().semanticId()),"backingId64",encode(backing.metadata().semanticId()))));
+        operation.addAnnotation(new MElementAnnotation("CartagoOperation",Map.of("signature64",encode(signature),"javaName64",encode(methodName),"policy",NativeProjectionPolicy.VERSION)));
+        operation.addAnnotation(new MElementAnnotation("OperationSource_"+hash(descriptorId),Map.of(
+            "descriptorId64",encode(descriptorId),"backingId64",encode(backingId))));
         return operation;
     }
     public static void propertyTrace(org.tzi.use.uml.mm.MAttribute attribute,String sourceId) {
