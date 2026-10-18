@@ -1,0 +1,477 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<auctionJacamoToCslRules xmlns="urn:auction:jacamo-to-csl:1" xmlns:os="http://moise.sourceforge.net/os" formatVersion="1.0" caseStudy="Auction" targetMetamodel="CSL-core-v4.0">
+  <profile id="profile-auction" modelName="AuctionState" cslVersion="v4.0" scope="this-source-snapshot" xmlDialect="custom-declarative" use4GoalNativeRuleFormat="false" nativeRuntimeAdapterAvailable="false">
+    <note>This is an Auction-specific transformation specification, not an installed use4Goal importer. The existing .map parser maps iStar actors/elements to BPMN pools/nodes; it is not a JaCaMo-to-CSL XML rule engine.</note>
+    <trace sourceRef="ref-map-parser" locator="class:ConformanceMappingParser;lines:9-54" purpose="Existing mapping format investigated"/>
+    <note>M1 rules create only the finalized CSL declarations and its two role-population invariants. M0 rules specify an adapter contract for observed instances/state. Observer records are outside CSL. Configured instances and initial goals are expectations, not evidence of a live runtime object.</note>
+    <closedTarget orgContexts="2" roles="2" entities="1" attributes="6" declarationContainments="4" invariants="2" associations="0" associationEnds="0" generalizations="0" compatibilities="0"/>
+    <scopeAlias sourceOrganizationInstance="aorg" targetOrgCtx="AuctionOrg" meaning="organizational-model-scope" physicalWorkspaceOwnership="false"/>
+  </profile>
+  <sources checksumAlgorithm="SHA-256" sourceMutationPolicy="read-only">
+    <root id="root-auction" path="C:\Users\NTNghia\OneDrive\Desktop\Thesis\CSL\Case study\auction"/>
+    <root id="root-core" path="C:\Users\NTNghia\OneDrive\Desktop\Thesis\CSL\Core"/>
+    <root id="root-use4goal" path="D:\_CODE_BANK\Project_\08_Thesis\use4Goal" gitHead="6f3e73801239fd8bfb94ca8d04ba531b903c0ac9"/>
+    <file id="src-jcm" rootRef="root-auction" path="auction.jcm" sha256="c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb" purpose="application-configuration"/>
+    <file id="src-os" rootRef="root-auction" path="src/org/auction-os.xml" sha256="d2481d4ee3c45b2cead42f942a3943684e86facee992870356ca4d1e47d16f9a" purpose="organizational-specification"/>
+    <file id="src-asl" rootRef="root-auction" path="src/agt/auction_capabilities.asl" sha256="31679b13210114b211dad862ad86af352cc9003ac9527ea7268e3a1d0f9cfe1b" purpose="agent-behavior"/>
+    <file id="src-artifact" rootRef="root-auction" path="src/env/auction_env/AuctionArtifact.java" sha256="34036fc220274853e39f93682cdb22c350fe6a06739669860f2a66afe606ff4b" purpose="persistent-artifact-state"/>
+    <file id="src-build" rootRef="root-auction" path="build.gradle" sha256="0c81b7f1b57c8f9b427280eb8967e820edaffe329540e4988ddd85e402175b40" purpose="dependency-provenance"/>
+    <file id="target-drawio" rootRef="root-core" path="auction_csl.drawio" sha256="eade0439144e57aa1c3b8ce004a9f211d74bb1ddcb585ad16197f8881d3c4186" purpose="authoritative-M1-target"/>
+    <file id="input-istar" rootRef="root-core" path="auction_istar_final.drawio" sha256="22fa1cfc9a049fa86bf95cc5c4c88399cb17fd764030c37aa569add8a1249715" purpose="intentional-layer"/>
+    <file id="input-ocl" rootRef="root-core" path="auction_constraints_final.ocl" sha256="5a6860619bacaf85f0a721be75777925db0f51592f7bdb4a4c6b5d94314634b4" purpose="verification-contract"/>
+    <file id="ref-ecore" rootRef="root-use4goal" path="docs/model/csl.ecore" sha256="17146c1ad0bd62547695568d938d4a41a933f44d7480440a3f13e9617bff03f7" purpose="CSL-metamodel"/>
+    <file id="ref-grammar" rootRef="root-use4goal" path="goal/src/main/resources/grammars/CSL.g4" sha256="5bca5c44933f2619eeac837279e09a995a293383ebe3795d058d7e5319d3d224" purpose="CSL-syntax"/>
+    <file id="ref-compiler" rootRef="root-use4goal" path="goal/src/main/java/org/vnu/sme/goal/dsl/csl/parser/CslCompiler.java" sha256="706ba4a4562f2176ccd6d9d1c9c5a9ffa65b7d05d2b0cd50783a84d203740966" purpose="native-CSL-compiler"/>
+    <file id="ref-renderer" rootRef="root-use4goal" path="goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslSpecText.java" sha256="59b8f29ee698a97d7041a1d69117b4e01b3a79f3d11cd3c2e0ff28c6ae6a11bc" purpose="canonical-CSL-renderer"/>
+    <file id="ref-backend" rootRef="root-use4goal" path="goal/src/main/java/org/vnu/sme/goal/dsl/csl/mm/CslModel.java" sha256="8da2070c384ed555cbbe5f77426213ef809d420594d11f2e9c2725352c03f227" purpose="runtime-support-boundary"/>
+    <file id="ref-map-parser" rootRef="root-use4goal" path="goal/src/main/java/org/vnu/sme/goal/verify/conformance/mapping/ConformanceMappingParser.java" sha256="d9ec64447d830ad9a074d90c0ba452383b9bbc7b5a517721d43082ce9acab07f" purpose="existing-non-XML-mapping-format"/>
+    <file id="ref-proposal" rootRef="root-use4goal" path="examples/ProposalReview/proposal-review-final.csl" sha256="5bc9a926d82fefd733661deac284d25ee7bd3639088942ed3d0550affb4e6657" purpose="reference-modeling-style"/>
+    <archiveEntry id="ref-org-obedient" archivePath="C:\Users\NTNghia\.gradle\caches\modules-2\files-2.1\org.jacamo\moise\1.1\51d669573a2c60018ecd4e24d1177f21a0a6b6bb\moise-1.1.jar" archiveSha256="2b7d0415c5ec0bcf060a430c7d12753aa02bdf769172922d10ff2909870161a8" entry="asl/org-obedient.asl" sha256="9b63b41bd1f080b5bfb1942d58aa26ebbe01b507347a1635ff09112339a113c9" purpose="goalAchieved-after-success"/>
+    <note>Hashes identify the reviewed inputs. A changed hash requires re-audit before these case-specific rules are accepted; do not silently apply the profile to another Auction variant. Build caches, binaries and log output do not define M1 declarations.</note>
+  </sources>
+  <formatContract>
+    <selectorSemantics xpath="XPath-1.0" regex="Python-re" regexFlags="MULTILINE" regexPreprocess="strip-C-and-line-comments-preserve-quoted-strings" captures="named-regex-groups-or-explicit-XPath-captures" iteration="document-order" countFailure="reject-model-transformation"/>
+    <note>The regex selectors intentionally cover only the pinned simple JCM/ASL/Java fragments, not their general grammars. XPath os prefix is bound to http://moise.sourceforge.net/os. Traces use one-based source lines or Draw.io mxCell IDs.</note>
+    <modelExecution ruleOrder="document-order" mode="foreach-selected-row" interpolation="${captureName}" defaultStringEncoding="OCL-single-quoted-double-apostrophe" onDuplicateTarget="reject" onFailedCondition="reject" unmatchedObservable="reject"/>
+    <operation name="createClassifier" meaning="Emit exactly one named OrgCtx, Role or Entity per selected row; owner denotes M1 declaration containment."/>
+    <operation name="createAttribute" meaning="Emit a scalar property with explicit type/optional/mutable flags; omit absent default literals."/>
+    <operation name="mapObservable" meaning="Match each selected observable to exactly one entry by sourceName and initialExpression; emit that entry as an Auction attribute."/>
+    <operation name="createPopulationInvariant" meaning="Substitute source role id/min/max into the selected OCL template; size is a nonnegative collection size."/>
+    <operation name="upsertInstance" meaning="M0 adapter operation keyed by runtime identity; not an M1 Entity or Association declaration."/>
+    <operation name="assignSnapshot" meaning="Atomically assign actual source values from one coherent snapshot; never simulate operations to fill state."/>
+    <operation name="reconcileRemoval" meaning="Remove only the identified projection after authoritative removal, or a complete authoritative enumeration; silence is not deletion."/>
+    <traceSemantics coverage="all-model-and-runtime-rules" runtimeTraceKey="ruleId + runId + nativeIdentity + sourceRevision" traceStorage="adapter-sidecar-outside-CSL"/>
+    <runtimeSemantics inputVocabulary="normalized-adapter-contract-not-existing-JaCaMo-API" liveSupportStatus="specified-not-implemented" onMissingRequiredState="incomplete-do-not-claim-full-conformance" onUnresolvedBinding="quarantine-do-not-guess" onStaleOrMixedRevision="reject-snapshot"/>
+  </formatContract>
+  <selectors>
+    <select id="sel-org" sourceRef="src-jcm" syntax="regex" expectedCount="1">
+      <pattern>^\s*organisation\s+(?P&lt;instance&gt;\w+)\s*:\s*(?P&lt;spec&gt;[^\s{]+)\s*\{</pattern>
+    </select>
+    <select id="sel-group-config" sourceRef="src-jcm" syntax="regex" expectedCount="1">
+      <pattern>^\s*group\s+(?P&lt;instance&gt;\w+)\s*:\s*(?P&lt;spec&gt;\w+)\s*\{</pattern>
+    </select>
+    <select id="sel-agents" sourceRef="src-jcm" syntax="regex" expectedCount="5">
+      <pattern>^\s*agent\s+(?P&lt;agent&gt;\w+)\s*:\s*(?P&lt;program&gt;[\w./-]+)</pattern>
+    </select>
+    <select id="sel-players" sourceRef="src-jcm" syntax="regex" expectedCount="5">
+      <pattern>^\s*(?:players:\s*)?(?P&lt;agent&gt;\w+)\s+(?P&lt;role&gt;\w+)\s*$</pattern>
+    </select>
+    <select id="sel-requests" sourceRef="src-jcm" syntax="regex" expectedCount="2">
+      <pattern>do_auction\("(?P&lt;auctionId&gt;[^"]+)","(?P&lt;service&gt;[^"]+)"\)</pattern>
+    </select>
+    <select id="sel-os-root" sourceRef="src-os" syntax="xpath" expression="/os:organisational-specification" expectedCount="1">
+      <capture name="id" expression="@id"/>
+    </select>
+    <select id="sel-os-group" sourceRef="src-os" syntax="xpath" expression="/os:organisational-specification/os:structural-specification/os:group-specification" expectedCount="1">
+      <capture name="id" expression="@id"/>
+    </select>
+    <select id="sel-role-definitions" sourceRef="src-os" syntax="xpath" expression="/os:organisational-specification/os:structural-specification/os:role-definitions/os:role" expectedCount="2">
+      <capture name="id" expression="@id"/>
+    </select>
+    <select id="sel-role-bounds" sourceRef="src-os" syntax="xpath" expression="/os:organisational-specification/os:structural-specification/os:group-specification/os:roles/os:role" expectedCount="2">
+      <capture name="id" expression="@id"/>
+      <capture name="min" expression="@min"/>
+      <capture name="max" expression="@max"/>
+    </select>
+    <select id="sel-absent-structure" sourceRef="src-os" syntax="xpath" expression="/os:organisational-specification/os:structural-specification//os:subgroups | /os:organisational-specification/os:structural-specification//os:extends | /os:organisational-specification/os:structural-specification//os:links | /os:organisational-specification/os:structural-specification//os:compatibilities" expectedCount="0"/>
+    <select id="sel-sequence" sourceRef="src-os" syntax="xpath" expression="//os:scheme[@id='doAuction']/os:goal[@id='auction']/os:plan" expectedCount="1">
+      <capture name="operator" expression="@operator"/>
+    </select>
+    <select id="sel-sequence-goals" sourceRef="src-os" syntax="xpath" expression="//os:scheme[@id='doAuction']/os:goal[@id='auction']/os:plan/os:goal" expectedCount="3">
+      <capture name="id" expression="@id"/>
+    </select>
+    <select id="sel-deadlines" sourceRef="src-os" syntax="xpath" expression="//os:scheme[@id='doAuction']/os:goal[@id='auction']/os:plan/os:goal[@ttf]" expectedCount="2">
+      <capture name="goal" expression="@id"/>
+      <capture name="ttf" expression="@ttf"/>
+    </select>
+    <select id="sel-class" sourceRef="src-artifact" syntax="regex" expectedCount="1">
+      <pattern>public\s+class\s+(?P&lt;name&gt;\w+)\s+extends\s+(?P&lt;base&gt;\w+)</pattern>
+    </select>
+    <select id="sel-create" sourceRef="src-asl" syntax="regex" expectedCount="1">
+      <pattern>makeArtifact\(\s*(?P&lt;idVariable&gt;Id),\s*"(?P&lt;className&gt;[^"]+)",\s*\[\s*\],\s*(?P&lt;artifactVariable&gt;ArtId)\s*\)</pattern>
+    </select>
+    <select id="sel-observables" sourceRef="src-artifact" syntax="regex" expectedCount="4">
+      <pattern>defineObsProperty\("(?P&lt;name&gt;[^"]+)",\s*(?P&lt;initial&gt;[^;\r\n]+)\);</pattern>
+    </select>
+    <select id="sel-current-winner" sourceRef="src-artifact" syntax="regex" expectedCount="1">
+      <pattern>^\s*String\s+(?P&lt;name&gt;currentWinner)\s*=\s*"(?P&lt;initial&gt;[^"]*)";</pattern>
+    </select>
+    <select id="sel-current-winner-write" sourceRef="src-artifact" syntax="regex" expectedCount="1">
+      <pattern>^\s*currentWinner\s*=\s*(?P&lt;expression&gt;getCurrentOpAgentId\(\)\.getAgentName\(\));</pattern>
+    </select>
+  </selectors>
+  <modelRules targetVersion="v4.0" targetModel="AuctionState">
+    <rule id="M01" selectRef="sel-org" phase="M1" label="Configured organization to root organizational context">
+      <require selectorRef="sel-org" field="instance" equals="aorg"/>
+      <require selectorRef="sel-org" field="spec" equals="auction-os.xml"/>
+      <require selectorRef="sel-os-root" field="id" equals="auction"/>
+      <createClassifier kind="OrgCtx" name="AuctionOrg" drawioCell="org"/>
+      <note>AuctionOrg is the explicit finalized alias for the organizational scope of aorg. It is not an Entity for an OrganizationBoard or a workspace.</note>
+      <trace sourceRef="src-jcm" locator="lines:21-31" purpose="aorg and nested group configuration"/>
+      <trace sourceRef="target-drawio" locator="page:auction-csl-core;cell:org;attribute:cslSource" purpose="Target name and OrgCtx kind"/>
+      <trace sourceRef="ref-ecore" locator="EClass:OrgCtx" purpose="State-bearing organizational context"/>
+    </rule>
+    <rule id="M02" selectRef="sel-os-group" phase="M1" label="Group specification to nested organizational context">
+      <require selectorRef="sel-os-group" field="id" equals="auctionGroup"/>
+      <require selectorRef="sel-group-config" field="spec" equals="auctionGroup"/>
+      <require selectorRef="sel-group-config" field="instance" equals="agrp"/>
+      <createClassifier kind="OrgCtx" name="${id}" owner="AuctionOrg" membership="orgctx" drawioCell="group"/>
+      <note>agrp is an M0 configured group name. The M1 declaration is auctionGroup; no subgroup or generic OrgCtx association is added.</note>
+      <trace sourceRef="src-os" locator="lines:19-24" purpose="Group specification without subgroups"/>
+      <trace sourceRef="src-jcm" locator="lines:21-27" purpose="Organizational scope for the group instance"/>
+      <trace sourceRef="target-drawio" locator="page:auction-csl-core;cells:group,contains_group" purpose="OrgCtx declaration containment"/>
+    </rule>
+    <rule id="M03" selectRef="sel-role-definitions" phase="M1" label="Role definitions to CSL Roles">
+      <requireSet selectorRef="sel-role-definitions" field="id" values="auctioneer participant"/>
+      <requireSameSet leftSelectorRef="sel-role-definitions" leftField="id" rightSelectorRef="sel-role-bounds" rightField="id"/>
+      <createClassifier kind="Role" name="${id}" owner="auctionGroup" membership="roles" drawioCell="${id}"/>
+      <note>No Role attributes, inheritance, compatibility, Role-to-Role Link or Agent classifier is introduced. A player is an M0 enactment reference.</note>
+      <trace sourceRef="src-os" locator="lines:14-23" purpose="Two explicit roles and their group membership"/>
+      <trace sourceRef="ref-grammar" locator="rules:roleDecl,orgContextItem" purpose="Roles are M1; agents and enactment have no declaration syntax"/>
+      <trace sourceRef="target-drawio" locator="page:auction-csl-core;cells:auctioneer,participant,contains_auctioneer,contains_participant" purpose="Exact role declarations"/>
+    </rule>
+    <rule id="M04" selectRef="sel-role-bounds" phase="M1" label="Role population bounds to domain-state invariants">
+      <populationCase sourceRole="auctioneer" expectedMin="1" expectedMax="1" name="AuctioneerPopulation" context="auctionGroup" oclTemplate="self.${id}-&gt;size() = ${min}"/>
+      <populationCase sourceRole="participant" expectedMin="0" expectedMax="300" name="ParticipantPopulation" context="auctionGroup" oclTemplate="self.${id}-&gt;size() &lt;= ${max}"/>
+      <createPopulationInvariant caseKey="sourceRole" counts="current-distinct-role-enactments-per-group"/>
+      <note>The [1..1] and [0..300] source bounds constrain M0 populations; they are not M1 containment multiplicities. Collection size is inherently &gt;= 0, so the participant lower bound needs no extra conjunct. Do not discard violating snapshots.</note>
+      <trace sourceRef="src-os" locator="lines:21-22" purpose="Role population cardinalities"/>
+      <trace sourceRef="ref-ecore" locator="EClass:OrgCtx;EClass:Invariant" purpose="Declaration containment has no implied population bound"/>
+      <trace sourceRef="target-drawio" locator="attribute:cslSource;invariants:AuctioneerPopulation,ParticipantPopulation" purpose="Exact finalized Phi"/>
+    </rule>
+    <rule id="M05" selectRef="sel-class" phase="M1" label="AuctionArtifact passive state to Auction Entity">
+      <require selectorRef="sel-class" field="name" equals="AuctionArtifact"/>
+      <require selectorRef="sel-class" field="base" equals="Artifact"/>
+      <require selectorRef="sel-create" field="className" equals="auction_env.AuctionArtifact"/>
+      <createClassifier kind="Entity" name="Auction" owner="AuctionOrg" membership="entities" drawioCell="auction"/>
+      <note>One M1 Entity type represents passive AuctionArtifact state. It is not one type per a1/a2, not a generic Artifact hierarchy, and not a claim that the organization physically owns its CArtAgO workspace. Scheme/Id correspondence determines model scope at M0.</note>
+      <trace sourceRef="src-artifact" locator="lines:6-44" purpose="Persistent passive domain state"/>
+      <trace sourceRef="src-asl" locator="lines:5-12,19-25" purpose="Scheme organizational scope and artifact creation by goal argument Id"/>
+      <trace sourceRef="target-drawio" locator="page:auction-csl-core;cells:auction,contains_auction" purpose="Scoped Auction Entity"/>
+    </rule>
+    <rule id="M06" selectRef="sel-create" phase="M1" label="Artifact name to read-only Auction.id declaration">
+      <require selectorRef="sel-create" field="idVariable" equals="Id"/>
+      <require selectorRef="sel-create" field="artifactVariable" equals="ArtId"/>
+      <createAttribute owner="Auction" name="id" type="String" optional="false" mutable="false" drawioCell="attr_id"/>
+      <note>id is the source artifact name bound from auction goal argument Id, not an AuctionArtifact observable or invented Java field. It is local to the run/workspace binding; native identity remains in the external runtime trace key.</note>
+      <trace sourceRef="src-asl" locator="lines:7,20,23,28-29,33-35" purpose="Id argument links the scheme to the named artifact"/>
+      <trace sourceRef="target-drawio" locator="page:auction-csl-core;cell:attr_id" purpose="Required immutable identity attribute"/>
+    </rule>
+    <rule id="M07" selectRef="sel-observables" phase="M1" label="Four observable properties to mutable scalar attributes">
+      <observableCase sourceName="running" initialExpression="false" targetName="running" type="Boolean" optional="false" mutable="true" runtimeConverter="java-boolean" drawioCell="attr_running" defaultLiteral="false"/>
+      <observableCase sourceName="task" initialExpression="&quot;no_task&quot;" targetName="task" type="String" optional="false" mutable="true" runtimeConverter="java-string" drawioCell="attr_task" defaultLiteral="'no_task'"/>
+      <observableCase sourceName="best_bid" initialExpression="Double.MAX_VALUE" targetName="best_bid" type="Real" optional="false" mutable="true" runtimeConverter="finite-binary64-to-real" drawioCell="attr_best_bid" defaultPolicy="omit-from-M1">
+        <runtimeInitialValue sourceExpression="java.lang.Double.MAX_VALUE" javaDoubleRoundTripLexical="1.7976931348623157E308" rawBinary64Hex="7fefffffffffffff" replacementAllowed="false"/>
+      </observableCase>
+      <observableCase sourceName="winner" initialExpression="new Atom(currentWinner)" targetName="winner" type="String" optional="false" mutable="true" runtimeConverter="jason-atom-name" drawioCell="attr_winner" defaultLiteral="'no_winner'">
+        <initializerDependency selectorRef="sel-current-winner" field="initial" equals="no_winner"/>
+      </observableCase>
+      <mapObservable owner="Auction" matchOn="sourceName" verifyInitialExpression="true"/>
+      <note>Only initialization defaults are declared. Existing runtime objects must be read, never reset to defaults. best_bid has no CSL default because the source constant must not be replaced and the current CSL numeric grammar has no exponent literal. winner is an Atom-name String published by stop; it is not an Association to a Participant.</note>
+      <trace sourceRef="src-artifact" locator="lines:10-15,18-44" purpose="Observable definitions and updates"/>
+      <trace sourceRef="ref-grammar" locator="rules:attributeDecl,defaultValue;tokens:REAL,INT" purpose="Scalar attributes and default-literal syntax"/>
+      <trace sourceRef="target-drawio" locator="page:auction-csl-core;cells:attr_running,attr_task,attr_best_bid,attr_winner" purpose="Exact names, types, defaults and mutability"/>
+    </rule>
+    <rule id="M08" selectRef="sel-current-winner" phase="M1" label="Persistent internal candidate field to Auction.currentWinner">
+      <require selectorRef="sel-current-winner" field="name" equals="currentWinner"/>
+      <require selectorRef="sel-current-winner" field="initial" equals="no_winner"/>
+      <require selectorRef="sel-current-winner-write" field="expression" equals="getCurrentOpAgentId().getAgentName()"/>
+      <createAttribute owner="Auction" name="${name}" type="String" optional="false" mutable="true" defaultFrom="initial" defaultEncoding="ocl-string" drawioCell="attr_currentWinner"/>
+      <note>The source already stores this value persistently. It is NOT an observable property. It changes only on a strictly improving bid and is later copied into winner by stop. Unavailable access means an incomplete snapshot, never a guessed value.</note>
+      <trace sourceRef="src-artifact" locator="lines:8,31,39-41" purpose="Stored candidate and winner publication"/>
+      <trace sourceRef="target-drawio" locator="page:auction-csl-core;cell:attr_currentWinner" purpose="Source-backed internal state in the finalized target"/>
+    </rule>
+  </modelRules>
+  <runtimeMapping layer="M0" status="adapter-contract-only">
+    <commonRequirements>
+      <note>All native identities are qualified by a fresh runId; workspaceUid and artifactUid identify the actual workspace and artifact incarnation. Never key an Auction by id/name alone across workspaces, disposal/recreation or MAS restarts. Sidecar keys are not extra CSL attributes.</note>
+      <note>Publish a full snapshot only when role membership, observables and currentWinner have a consistent source cut. Use operation boundaries or source-supported synchronization; notification receipt order and agent belief caches alone are insufficient. Incomplete/currentWinner-unavailable or stale snapshots cannot be accepted as a complete verification state.</note>
+      <note>Take actual runtime membership, including violations of the population invariants. Configuration is only the expected initial fixture; mission commitment is a separate observer fact and must not be substituted for a Role enactment.</note>
+    </commonRequirements>
+    <adapterInputs>
+      <input id="in-org" kind="OrganizationSnapshot" origin="Observed JaCaMo/MOISE organization identity, not a .jcm declaration alone">
+        <field name="runId" type="String" required="true"/>
+        <field name="organizationUid" type="String" required="true"/>
+        <field name="instanceName" type="String" required="true"/>
+        <field name="osId" type="String" required="true"/>
+      </input>
+      <input id="in-group" kind="GroupSnapshot" origin="Observed MOISE group instance and enclosing organization">
+        <field name="runId" type="String" required="true"/>
+        <field name="groupUid" type="String" required="true"/>
+        <field name="organizationUid" type="String" required="true"/>
+        <field name="instanceName" type="String" required="true"/>
+        <field name="specId" type="String" required="true"/>
+      </input>
+      <input id="in-role" kind="RoleEnactmentSnapshot" origin="Actual adopted-role membership; native atomic-agent identity is external M0 player data">
+        <field name="runId" type="String" required="true"/>
+        <field name="groupUid" type="String" required="true"/>
+        <field name="roleName" type="String" required="true"/>
+        <field name="agentUid" type="String" required="true"/>
+        <field name="agentName" type="String" required="true"/>
+      </input>
+      <input id="in-artifact" kind="ArtifactSnapshot" origin="Successful creation or authoritative discovery of an initialized live artifact plus resolved scheme/Id binding">
+        <field name="runId" type="String" required="true"/>
+        <field name="workspaceUid" type="String" required="true"/>
+        <field name="artifactUid" type="String" required="true"/>
+        <field name="artifactName" type="String" required="true"/>
+        <field name="className" type="String" required="true"/>
+        <field name="organizationUid" type="String" required="true"/>
+        <field name="schemeUid" type="String" required="true"/>
+        <field name="auctionId" type="String" required="true"/>
+        <field name="schemeArtifactBindingVerified" type="Boolean" required="true" origin="adapter attestation backed by exact creation/lookup and scheme evidence"/>
+      </input>
+      <input id="in-state" kind="AuctionStateSnapshot" origin="Coherent authoritative CArtAgO values and direct internal-field access for the same artifact incarnation">
+        <field name="runId" type="String" required="true"/>
+        <field name="workspaceUid" type="String" required="true"/>
+        <field name="artifactUid" type="String" required="true"/>
+        <field name="sourceRevision" type="Integer" required="true"/>
+        <field name="sourceCutAccepted" type="Boolean" required="true" origin="adapter attestation; not a Java domain field"/>
+        <field name="internalFieldRead" type="Boolean" required="true" origin="adapter attestation; not a Java domain field"/>
+        <field name="running" type="Boolean" required="true" origin="observable"/>
+        <field name="task" type="String" required="true" origin="observable"/>
+        <field name="best_bid" type="JavaBinary64" required="true" origin="observable"/>
+        <field name="winner" type="JasonAtom" required="true" origin="observable"/>
+        <field name="currentWinner" type="String" required="true" origin="java-field"/>
+      </input>
+      <input id="in-removal" kind="AuthoritativeRemoval" origin="Observed disposal/unplay/group-removal/organization-removal, or absence in a complete authoritative enumeration of that same source scope">
+        <field name="runId" type="String" required="true"/>
+        <field name="objectKind" type="String" required="true"/>
+        <field name="nativeKey" type="String" required="true"/>
+        <field name="sourceRevision" type="String" required="true"/>
+      </input>
+    </adapterInputs>
+    <rules>
+      <rule id="R01" inputRef="in-org" phase="M0" label="Actual organization instance">
+        <when field="instanceName" equals="aorg"/>
+        <when field="osId" equals="auction"/>
+        <upsertInstance targetType="AuctionOrg" keyFields="runId organizationUid"/>
+        <trace sourceRef="src-jcm" locator="line:21" purpose="Expected organization identity and specification"/>
+        <trace sourceRef="src-asl" locator="line:5" purpose="Runtime joined(aorg,OrgWks) confirms organization workspace identity"/>
+        <trace sourceRef="target-drawio" locator="cell:org" purpose="M0 instance of the root OrgCtx, with no added name attribute"/>
+      </rule>
+      <rule id="R02" inputRef="in-group" phase="M0" label="Actual group instance in its organization">
+        <when field="specId" equals="auctionGroup"/>
+        <requireResolvedInstance targetType="AuctionOrg" byFields="runId organizationUid"/>
+        <upsertInstance targetType="auctionGroup" keyFields="runId groupUid" contextType="AuctionOrg" contextKeyFields="runId organizationUid" membership="orgctx"/>
+        <note>agrp is the configured group instance to expect in this pinned case. Extra observations are audited, not generated from an arbitrary multiplicity.</note>
+        <trace sourceRef="src-jcm" locator="lines:21-27" purpose="Configured agrp and its organizational scope"/>
+        <trace sourceRef="target-drawio" locator="cells:group,contains_group" purpose="M1 declaration used for M0 context membership"/>
+      </rule>
+      <rule id="R03" inputRef="in-role" phase="M0" label="Actual role enactments with intrinsic player/context">
+        <whenIn field="roleName" values="auctioneer participant"/>
+        <requireResolvedInstance targetType="auctionGroup" byFields="runId groupUid"/>
+        <upsertInstance targetTypeFrom="roleName" keyFields="runId groupUid agentUid roleName" contextType="auctionGroup" contextKeyFields="runId groupUid" membership="roles" playerFrom="agentUid"/>
+        <note>Use one distinct current role occurrence per actual group/player/role tuple. Player identity and context are intrinsic M0 enactment data, not CSL Agent/plays associations. Do not infer mission commitment from role membership or grant extra compatibility.</note>
+        <trace sourceRef="src-jcm" locator="lines:23-27" purpose="Five configured players; actual membership must still be observed"/>
+        <trace sourceRef="src-os" locator="lines:14-23" purpose="Role definitions and population bounds"/>
+        <trace sourceRef="ref-ecore" locator="EClass:Role;EClass:OrgCtx" purpose="Intrinsic M0 player/context semantics"/>
+      </rule>
+      <rule id="R04" inputRef="in-artifact" phase="M0" label="Live artifact incarnation to one Auction instance">
+        <when field="className" equals="auction_env.AuctionArtifact"/>
+        <whenFieldsEqual left="artifactName" right="auctionId"/>
+        <when field="schemeArtifactBindingVerified" equals="true"/>
+        <requireResolvedInstance targetType="AuctionOrg" byFields="runId organizationUid"/>
+        <requireEvidence fact="schemeUid belongs to organizationUid and its auction.Id equals auctionId; creation/discovery resolves this exact workspaceUid/artifactUid"/>
+        <upsertInstance targetType="Auction" keyFields="runId workspaceUid artifactUid" contextType="AuctionOrg" contextKeyFields="runId organizationUid" membership="entities">
+          <assign target="id" sourceField="artifactName" converter="java-string" write="create-or-identity-check"/>
+        </upsertInstance>
+        <note>a1 and a2 are expected only after makeArtifact succeeds or an authoritative live discovery. Initial do_auction goals do not create entities. The makeArtifact call has no wid(OrgWks) annotation: resolve its actual workspace; never assume it is the organization workspace. The scheme is an observer binding, not a CSL Entity or Association.</note>
+        <trace sourceRef="src-jcm" locator="lines:10-12" purpose="Two requested auction identifiers, not proof of artifact existence"/>
+        <trace sourceRef="src-asl" locator="lines:5-12,19-25,28-35" purpose="Scheme arguments, actual makeArtifact result, focus/lookup identity"/>
+        <trace sourceRef="target-drawio" locator="cells:auction,attr_id,contains_auction" purpose="Auction instance and scalar local identifier"/>
+      </rule>
+      <rule id="R05" inputRef="in-state" phase="M0" label="Coherent runtime attributes; do not replay behavior">
+        <when field="sourceCutAccepted" equals="true"/>
+        <when field="internalFieldRead" equals="true"/>
+        <requireResolvedInstance targetType="Auction" byFields="runId workspaceUid artifactUid"/>
+        <requireEvidence fact="all five values share the same accepted source cut; internal-field access is authorized and available"/>
+        <assignSnapshot targetType="Auction" keyFields="runId workspaceUid artifactUid" atomic="true" missingValuePolicy="incomplete">
+          <assign target="running" sourceField="running" converter="java-boolean"/>
+          <assign target="task" sourceField="task" converter="java-string"/>
+          <assign target="best_bid" sourceField="best_bid" converter="finite-binary64-to-real"/>
+          <assign target="winner" sourceField="winner" converter="jason-atom-name"/>
+          <assign target="currentWinner" sourceField="currentWinner" converter="java-string"/>
+        </assignSnapshot>
+        <note>A successful non-improving bid can leave every projected value unchanged. Failed operations and .fail are not actual bids. Do not derive winner/currentWinner from the minimum price, mission completion, administrative status or notification order. start does not reset best_bid/currentWinner/winner; stop publishes currentWinner, possibly no_winner.</note>
+        <trace sourceRef="src-artifact" locator="lines:8-44" purpose="Exact source storage, mutability, guards and conditional updates"/>
+        <trace sourceRef="input-ocl" locator="contexts:Auction::start,Auction::bid,Auction::stop" purpose="Domain state for the existing operation clauses"/>
+      </rule>
+      <rule id="R06" inputRef="in-removal" phase="M0" label="Reconcile actual disappearance without inventing cascades">
+        <whenIn field="objectKind" values="organization group roleEnactment auctionArtifact"/>
+        <reconcileRemoval targetTypeByKind="organization:AuctionOrg group:auctionGroup roleEnactment:existing-enactment-type auctionArtifact:Auction" identity="same-native-key-as-R01-R04" remove="projection-instance-and-its-context-membership"/>
+        <note>Unknown/unresolved removal keys cannot remove another incarnation. An organization/group disappearance is not evidence that a live CArtAgO artifact was disposed: detach or quarantine unresolved scope and await authoritative artifact evidence. Do not invent domain cascade operations. Historical bid/deadline evidence stays in the observer; an unfulfilled record is not erased by deletion or recovery.</note>
+        <trace sourceRef="ref-ecore" locator="EClass:OrgCtx" purpose="M1 containment is declaration scope, not physical artifact lifecycle ownership"/>
+        <trace sourceRef="src-asl" locator="lines:23-25,53-57" purpose="Runtime-created artifacts and separate recovery evidence"/>
+        <trace sourceRef="target-drawio" locator="attribute:cslSource" purpose="No persisted lifecycle/history helper Entity exists in the target"/>
+      </rule>
+    </rules>
+    <conversions>
+      <converter id="java-boolean" inputType="Boolean" outputType="Boolean" algorithm="identity" onMismatch="incomplete"/>
+      <converter id="java-string" inputType="String" outputType="String" algorithm="preserve-exact-content" onMismatch="incomplete"/>
+      <converter id="jason-atom-name" inputType="JasonAtom" outputType="String" algorithm="extract-Atom-name-without-term-pretty-print-quotes" onMismatch="incomplete" identityResolution="none"/>
+      <converter id="finite-binary64-to-real" inputType="JavaBinary64" outputType="Real" algorithm="preserve-the-finite-source-value-with-binary64-round-trip-or-exact-real-decoding" onMismatch="incomplete" onOverflowOrUnsupportedBackend="incomplete-do-not-clamp" sentinelReplacement="forbidden"/>
+      <note>For binary64 backends, preserve the raw finite Java value and round-trip bits; for mathematical Real backends decode its exact binary value. No finite-domain abstraction has been selected here. Double.MAX_VALUE is finite, not zero or infinity. String values such as no_winner remain scalar literals; no guessed Agent/Role link is resolved.</note>
+    </conversions>
+  </runtimeMapping>
+  <omittedConcepts meaning="no-M1-target-declaration">
+    <omit id="X01" concept="scheme doAuction and missions mAuctioneer/mParticipant" handledBy="iStar-and-observer" reason="Functional allocation is not passive domain structure.">
+      <trace sourceRef="src-os" locator="lines:28-44" purpose="Source/verification boundary"/>
+    </omit>
+    <omit id="X02" concept="auction/start/bid/decide goals; sequence refinement" handledBy="iStar-and-OCL" reason="Intentional goal semantics and temporal order are already in the goal/verification layers.">
+      <trace sourceRef="src-os" locator="lines:29-36" purpose="Source/verification boundary"/>
+    </omit>
+    <omit id="X03" concept="norms n1/n2 and goal obligations/deadlines" handledBy="observer-and-existing-OCL" reason="Deontic trace is not a CSL core Norm/Obligation Entity.">
+      <trace sourceRef="src-os" locator="lines:34-35,49-50" purpose="Source/verification boundary"/>
+    </omit>
+    <omit id="X04" concept="Jason plans, wait/random branch, action invocations, focus/query" handledBy="execution-observer" reason="Execution and temporary events do not create structural associations or shared-state entities.">
+      <trace sourceRef="src-asl" locator="lines:2-61" purpose="Source/verification boundary"/>
+    </omit>
+    <omit id="X05" concept="bid invocation / bidValue / Bid history" handledBy="successful-call-evidence-only" reason="The source stores only best_bid and currentWinner, with no persistent Bid record, history or all bidder/value pairs.">
+      <trace sourceRef="src-artifact" locator="lines:34-44" purpose="Source/verification boundary"/>
+    </omit>
+    <omit id="X06" concept="Service / Task Entity" handledBy="Auction.task:String" reason="The service description is a String argument stored in task, not a referenced domain object.">
+      <trace sourceRef="src-artifact" locator="lines:13,18-23" purpose="Source/verification boundary"/>
+    </omit>
+    <omit id="X07" concept="winner-to-Participant association" handledBy="Auction.winner:String" reason="Only an Atom name is published; no persistent role-instance relationship is stored.">
+      <trace sourceRef="src-artifact" locator="lines:15,31,41" purpose="Source/verification boundary"/>
+    </omit>
+    <omit id="X08" concept="Agent / OrganizationBoard / GroupBoard / SchemeBoard / workspace / runtime-helper Entity" handledBy="intrinsic-M0-or-observer-identity" reason="Runtime infrastructure is not part of the finalized passive domain model.">
+      <trace sourceRef="ref-grammar" locator="lines:3-18" purpose="Source/verification boundary"/>
+    </omit>
+    <omit id="X09" concept="opens-closes / submits / offers / focus / mission-commit associations" handledBy="no-structural-target" reason="Operations and intentions do not imply stored Association/AssociationEnd declarations.">
+      <trace sourceRef="src-asl" locator="lines:6-13,23-38" purpose="Source/verification boundary"/>
+    </omit>
+    <omit id="X10" concept="subgroups, role inheritance, compatibility, role links" handledBy="none" reason="No such relationship is declared in this Auction structural specification.">
+      <trace sourceRef="src-os" locator="lines:12-25" purpose="Source/verification boundary"/>
+    </omit>
+    <omit id="X11" concept="blacklist Entity / blacklisting task" handledBy="none" reason="The source contains only a TODO; the actual recovery is goalSatisfied(bid).">
+      <trace sourceRef="src-asl" locator="lines:53-57" purpose="Source/verification boundary"/>
+    </omit>
+    <omit id="X12" concept="AuctionMonitor / AuctionObligation / step / timestamps / evidence sets as CSL state" handledBy="external-verification-view" reason="These are explicit observer contracts from current iStar/OCL, not Java persistent domain fields.">
+      <trace sourceRef="input-istar" locator="page:auction-semantics;cells:conditions,monitor,deadlines" purpose="Source/verification boundary"/>
+    </omit>
+  </omittedConcepts>
+  <observerSupport layer="outside-CSL" status="required-not-implemented" createsCSLClassifiers="false" createsCSLAssociations="false">
+    <identityBindings>
+      <binding id="bind-run" keyFields="runId schemeUid" domainLookup="auction.Id + actual workspaceUid/artifactUid" source="createScheme result + goalArgument(auction,Id) + successful makeArtifact/lookup/focus result"/>
+      <binding id="bind-invocation" keyFields="runId schemeUid rolePlayerUid goalInvocationUid operationInvocationUid" domainSelf="the resolved Auction instance" roleSelf="the resolved group/player/role occurrence"/>
+      <note>A string id alone is insufficient across contexts/incarnations. The iStar organization Actor Auction is a viewpoint of AuctionOrg, not the passive Auction Entity. Role Actor names Auctioneer/Participant correspond to auctioneer/participant. An operation OCL self is explicitly rebound to Auction through the invocation binding; this is not a total actor-to-Role correspondence or a global self=OrgCtx convention.</note>
+    </identityBindings>
+    <views>
+      <view id="view-monitor" name="AuctionMonitor" keyFields="runId schemeUid" sourceClassExists="false">
+        <field name="now" type="Integer" origin="MOISE-engine-time" unit="millisecond" clock="one-monotonic-run-clock"/>
+        <field name="startSatisfiedAt" type="Integer" origin="MOISE-engine-time" unit="millisecond" clock="one-monotonic-run-clock" absent="-1" capture="first-observed-engine-transition-time"/>
+        <field name="bidEnabledAt" type="Integer" origin="MOISE-engine-time" unit="millisecond" clock="one-monotonic-run-clock" absent="-1" capture="first-observed-engine-transition-time"/>
+        <field name="bidSatisfiedAt" type="Integer" origin="MOISE-engine-time" unit="millisecond" clock="one-monotonic-run-clock" absent="-1" capture="first-observed-engine-transition-time"/>
+        <field name="decideEnabledAt" type="Integer" origin="MOISE-engine-time" unit="millisecond" clock="one-monotonic-run-clock" absent="-1" capture="first-observed-engine-transition-time"/>
+        <field name="decideSatisfiedAt" type="Integer" origin="MOISE-engine-time" unit="millisecond" clock="one-monotonic-run-clock" absent="-1" capture="first-observed-engine-transition-time"/>
+        <field name="bidCommittedBy" type="Set(String)" origin="actual mission commitments to mParticipant in this scheme; freeze at first bid satisfaction" elementIdentity="MOISE-agent-name-bound-to-native-player-in-this-run"/>
+        <field name="bidDoneBy" type="Set(String)" origin="MOISE done(Sch,bid,Ag) evidence" elementIdentity="MOISE-agent-name-bound-to-native-player-in-this-run"/>
+        <field name="actualBidBy" type="Set(String)" origin="successful bound bid operation completion, including a non-improving bid" elementIdentity="MOISE-agent-name-bound-to-native-player-in-this-run"/>
+        <field name="adminBidOverride" type="Boolean" initial="false" origin="observed successful admCommand(goalSatisfied(bid))" capture="latched"/>
+        <note>Enabled/satisfied state comes from MOISE, never an artifact return timestamp. Use engine event times rather than notification receipt times. Before first satisfaction bidCommittedBy follows current mission commitments; after it the set is frozen for this run. Do not replace commitments by all group participant players. Capture a baseline if attaching late; missing earlier evidence is unknown, not empty/false.</note>
+        <trace sourceRef="input-ocl" locator="invariants:SchemeOrder,BidEvidence" purpose="Exact observer fields used by the unchanged OCL"/>
+        <trace sourceRef="input-istar" locator="page:auction-semantics;cell:monitor" purpose="Explicit observer schema/binding"/>
+        <trace sourceRef="src-asl" locator="lines:32-42,53-57" purpose="Actual operation success, failure branch and administrative recovery are distinct"/>
+        <trace sourceRef="ref-org-obedient" locator="lines:13-23" purpose="goalAchieved is called only after successful !Goal"/>
+      </view>
+      <view id="view-obligation" name="AuctionObligation" keyFields="runId schemeUid agentUid obligationActivationUid" sourceClassExists="false">
+        <field name="goal" type="String" allowedValues="bid decide" origin="activated MOISE goal obligation"/>
+        <field name="activatedAt" type="Integer" unit="millisecond" clock="same-as-monitor" origin="MOISE-engine-time"/>
+        <field name="deadlineAt" type="Integer" unit="millisecond" clock="same-as-monitor" origin="MOISE-engine-time"/>
+        <field name="endedAt" type="Integer" unit="millisecond" clock="same-as-monitor" origin="MOISE-engine-time" absent="-1" capture="first-terminal-engine-time-fulfilled-unfulfilled-or-inactive"/>
+        <field name="unfulfilled" type="Boolean" origin="actual oblUnfulfilled event/state" capture="latched-never-reset-by-admin"/>
+        <field name="monitor" type="AuctionMonitor" origin="same-run-same-scheme observer reference" associationInCSL="false"/>
+        <deadline goal="bid" sourceSelectorRef="sel-deadlines" sourceText="10 seconds" durationMs="10000" anchor="this-obligation-activation"/>
+        <deadline goal="decide" sourceSelectorRef="sel-deadlines" sourceText="1 hour" durationMs="3600000" anchor="this-obligation-activation"/>
+        <note>Only bid/decide obligations enter WithinDeadline; its else branch assumes decide. A later commitment gets its own activation/deadline. Pending overtime fails; administrative scheme progress does not repair missed performance. Keep terminal records and failure evidence.</note>
+        <trace sourceRef="src-os" locator="lines:34-35,49-50" purpose="Source deadlines and obligations"/>
+        <trace sourceRef="src-asl" locator="lines:53-57" purpose="Unfulfilled bid is followed by administrative recovery"/>
+        <trace sourceRef="input-ocl" locator="invariant:WithinDeadline" purpose="Uses per-activation engine times and observer monitor navigation"/>
+      </view>
+      <view id="view-step" name="step" keyFields="runId schemeUid rolePlayerUid goalInvocationUid stepInvocationUid" sourceClassExists="false">
+        <field name="enabled" type="Boolean" origin="actual Jason step enabling in the bound invocation"/>
+        <field name="succeeded" type="Boolean" origin="successful bound Jason query/focus/wait/action completion; CArtAgO failure is false"/>
+        <note>Latch Achieve evidence per completed invocation/run as specified by iStar. A post-state satisfying an operation clause is not, by itself, proof that the intended Jason step executed successfully. Do not create a CSL goal-completion flag.</note>
+        <trace sourceRef="input-istar" locator="page:auction-final;cells:A_start_t1,A_decide_t1,P_bid_t1,P_bid_t2" purpose="Existing execution predicates on leaf Tasks"/>
+      </view>
+    </views>
+    <evidenceClassification>
+      <case event="successful-improving-bound-bid" actualBidBy="add-agent" bidDoneBy="only-if-MOISE-done-is-observed" adminBidOverride="unchanged" meaning="May change best_bid/currentWinner; winner is published only by stop."/>
+      <case event="successful-non-improving-bound-bid" actualBidBy="add-agent" bidDoneBy="only-if-MOISE-done-is-observed" adminBidOverride="unchanged" meaning="Valid actual bid even when all CSL state remains unchanged."/>
+      <case event="Jason-fail-branch-or-failed-bid-operation" actualBidBy="no-add" bidDoneBy="no-synthetic-done" adminBidOverride="unchanged" meaning="No successful bid event; do not turn failure into an achieved alternative."/>
+      <case event="successful-goalSatisfied-bid-admin-command" actualBidBy="no-add" bidDoneBy="no-add" adminBidOverride="set-true" meaning="May satisfy the scheme bid state without achieving actual bidding or clearing an expired obligation."/>
+    </evidenceClassification>
+  </observerSupport>
+  <verificationBindings modifiesInputOCL="false" modifiesInputIStar="false">
+    <operationBinding id="V01" cslStateOwner="Auction" sourceOperation="start" oclContext="Auction::start(service : String)" clauses="Idle Opened" stateAttributes="running task" istarTask="A_start_t2" operationDeclarationLayer="external-USE-or-execution-adapter" sourceParameterBinding="ASL start(S) -&gt; service; source Java parameter task" successEvidenceRequired="true">
+      <trace sourceRef="input-ocl" locator="context:Auction::start" purpose="Exact unchanged pre/postconditions; source parameters are explicitly renamed"/>
+      <trace sourceRef="input-istar" locator="page:auction-final;cell:A_start_t2" purpose="Leaf task execution binding"/>
+      <trace sourceRef="src-artifact" locator="lines:18-24" purpose="Source operation"/>
+    </operationBinding>
+    <operationBinding id="V02" cslStateOwner="Auction" sourceOperation="bid" oclContext="Auction::bid(amount : Real)" clauses="RunningForBid" stateAttributes="running" istarTask="P_bid_t2" operationDeclarationLayer="external-USE-or-execution-adapter" sourceParameterBinding="ASL bid(expression) -&gt; amount; source Java parameter bidValue" successEvidenceRequired="true">
+      <trace sourceRef="input-ocl" locator="context:Auction::bid" purpose="Exact unchanged pre/postconditions; source parameters are explicitly renamed"/>
+      <trace sourceRef="input-istar" locator="page:auction-final;cell:P_bid_t2" purpose="Leaf task execution binding"/>
+      <trace sourceRef="src-artifact" locator="lines:34-44" purpose="Source operation"/>
+    </operationBinding>
+    <operationBinding id="V03" cslStateOwner="Auction" sourceOperation="stop" oclContext="Auction::stop()" clauses="RunningForStop Closed" stateAttributes="running" istarTask="A_decide_t2" operationDeclarationLayer="external-USE-or-execution-adapter" sourceParameterBinding="no arguments; source Jason action stop" successEvidenceRequired="true">
+      <trace sourceRef="input-ocl" locator="context:Auction::stop" purpose="Exact unchanged pre/postconditions; source parameters are explicitly renamed"/>
+      <trace sourceRef="input-istar" locator="page:auction-final;cell:A_decide_t2" purpose="Leaf task execution binding"/>
+      <trace sourceRef="src-artifact" locator="lines:26-32" purpose="Source operation"/>
+    </operationBinding>
+    <externalInvariant name="SchemeOrder" observerViewRef="view-monitor" sourceRef="input-ocl" emittedIntoCSL="false"/>
+    <externalInvariant name="BidEvidence" observerViewRef="view-monitor" sourceRef="input-ocl" emittedIntoCSL="false"/>
+    <externalInvariant name="WithinDeadline" observerViewRef="view-obligation" sourceRef="input-ocl" emittedIntoCSL="false"/>
+    <taskBinding istarCell="A_start_t1" requires="Auction existence/id plus external focus and execution evidence" observerViewRef="view-step"/>
+    <taskBinding istarCell="A_decide_t1" requires="Auction id plus external focusing query success" observerViewRef="view-step"/>
+    <taskBinding istarCell="P_bid_t1" requires="Auction existence/id plus external lookup/focus success" observerViewRef="view-step"/>
+    <taskBinding istarCell="P_bid_t2" requires="Auction.running plus external wait/bid completion" observerViewRef="view-step"/>
+    <goalEvaluation istarCells="A_start A_decide P_bid O_start O_bid O_decide O_root D_start D_decide D_bid" method="existing-AND-and-Dependency-propagation" perBidScope="committed-Participant-enactment-in-this-scheme" aggregateBid="all-relevant-committed-agents" adminSatisfiedFlagDefinesActualAchievement="false" emitCSLGoalFlags="false"/>
+    <roleActorBinding istarCell="A_actor" cslRole="auctioneer"/>
+    <roleActorBinding istarCell="P_actor" cslRole="participant"/>
+    <organizationActorBinding istarCell="O_actor" cslContext="AuctionOrg" kind="viewpoint-only" cslRoleCorrespondence="not-supplied" inventCoordinatorRole="false"/>
+    <preState currentOCLUsesAtPre="false" operationPrePostCuts="must-still-be-observed-separately" emitHistoricalCSLAttributes="false"/>
+  </verificationBindings>
+  <validation scope="static-source-and-fixtures; no-live-MAS-claim" status="passed" checksPassed="28" nativeCanonicalSha256="0b27f3024056dc621ea282c0bd7cdb625e16cf6cb7fb34a0214eeb5e2f6a7cbe">
+    <targetOracle sourceRef="target-drawio" page="auction-csl-core" embeddedSourceAttribute="cslSource" equivalence="native-CSL-v4-canonical-model + main-page-semantic-cells" compareDiagramLayout="false"/>
+    <configuredFixture sourceSelectorRefs="sel-agents sel-players sel-requests" organization="aorg" group="agrp" auctioneer="bob" participants="alice maria francois giacomo" requestedAuctions="a1 a2" artifactInstancesBeforeCreation="0"/>
+    <note>The model rules are executed by an independent local validation harness. Generated .csl is compiled with the existing use4Goal compiler and compared with the target diagram embedded cslSource. Runtime tests use fabricated, source-faithful adapter records, not a live JaCaMo execution and not proof that the required observer exists.</note>
+    <check name="XML_NAMESPACE_IDS_REFERENCES_AND_RULE_TRACES" status="passed" detail=""/>
+    <check name="PINNED_SOURCE_HASHES" status="passed" detail="15 files + archive entry"/>
+    <check name="EXECUTE_MODEL_RULES_ON_ACTUAL_AUCTION" status="passed" detail="5 classifiers, 6 attributes, 2 Phi"/>
+    <check name="DRAWIO_SEMANTIC_CELLS_AND_ALL_FOUR_DECLARATION_CONTAINMENTS" status="passed" detail=""/>
+    <check name="NATIVE_CSL_V4_PARSE_AND_SEMANTIC_VALIDATION_OK" status="passed" detail=""/>
+    <check name="NATIVE_CANONICAL_MODEL_EQUALS_CORE_DRAWIO_OK" status="passed" detail=""/>
+    <check name="NATIVE_ROUNDTRIP_OK" status="passed" detail=""/>
+    <check name="V4_LEGACY_RUNTIME_LIMITATION_CONFIRMED" status="passed" detail=""/>
+    <check name="NEGATIVE_EXTRA_OBSERVABLE_REQUIRES_REAUDIT" status="passed" detail=""/>
+    <check name="NEGATIVE_MISSING_CURRENTWINNER_NOT_GUESSED" status="passed" detail=""/>
+    <check name="NEGATIVE_CHANGED_ROLE_BOUND_REQUIRES_REAUDIT" status="passed" detail=""/>
+    <check name="NEGATIVE_DIFFERENT_ORGANIZATION_PROFILE_REJECTED" status="passed" detail=""/>
+    <check name="CONFIGURED_INSTANCE_FIXTURE_EXTRACTED_FROM_JCM" status="passed" detail=""/>
+    <check name="RUNTIME_CONFIG_IS_NOT_ARTIFACT_CREATION_AND_ROLE_ENACTMENT_IS_NOT_AGENT_CLASS" status="passed" detail=""/>
+    <check name="RUNTIME_TWO_CREATED_ARTIFACTS_AND_EXACT_DOUBLE_MAX_INITIAL_STATE" status="passed" detail=""/>
+    <check name="RUNTIME_UNRESOLVED_SCHEME_ARTIFACT_BINDING_REJECTED" status="passed" detail=""/>
+    <check name="RUNTIME_NONOBSERVABLE_FIELD_REQUIRED_FOR_FULL_STATE" status="passed" detail=""/>
+    <check name="RUNTIME_INCOHERENT_STATE_CUT_REJECTED" status="passed" detail=""/>
+    <check name="RUNTIME_IMPROVING_BID_CANDIDATE_IS_DISTINCT_FROM_PUBLISHED_WINNER_AND_OTHER_AUCTION" status="passed" detail=""/>
+    <check name="RUNTIME_NONIMPROVING_BID_REQUIRES_EVENT_AND_DOES_NOT_SYNTHESIZE_DONE" status="passed" detail=""/>
+    <check name="RUNTIME_FAILURE_ADMIN_ACTUAL_BID_AND_UNFULFILLED_RECORD_REMAIN_DISTINCT" status="passed" detail=""/>
+    <check name="RUNTIME_STALE_REVISION_REJECTED" status="passed" detail=""/>
+    <check name="RUNTIME_IDENTITY_ATTRIBUTE_CANNOT_BE_RENAMED" status="passed" detail=""/>
+    <check name="RUNTIME_STOP_PUBLICATION_READ_FROM_SOURCE_SNAPSHOT" status="passed" detail=""/>
+    <check name="RUNTIME_RECREATION_IDENTITY_AND_NO_INVENTED_PHYSICAL_DISPOSAL_CASCADE" status="passed" detail=""/>
+    <check name="ALL_TARGET_AND_ISTAR_CELL_BINDINGS_EXIST" status="passed" detail=""/>
+    <check name="OCL_DOMAIN_EXTERNAL_CONTEXTS_AND_BOTH_SOURCE_DEADLINES_COVERED" status="passed" detail=""/>
+    <check name="PROTECTED_INPUTS_UNCHANGED_AND_REFERENCE_REPOSITORY_STATUS_PRESERVED" status="passed" detail=""/>
+    <nativeCompilerEvidence jarPath="D:\_CODE_BANK\Project_\08_Thesis\use4Goal\goal\target-maven\goal-7.1.1-complete.jar" jarSha256="7bd57f1099300e7cca69b9cf3bb5876a212a3df6f743bbc6dc6817a39ad69ca0" compiler="CslCompiler" semanticComparison="CslSpecText.render(generated) = CslSpecText.render(target.cslSource)" execution="read-only-prebuilt-JAR; no-repository-build"/>
+  </validation>
+  <limitations>
+    <limitation id="L01">This custom XML needs an implementation of the specified adapter/interpreter before production use; use4Goal has no native importer for it.<trace sourceRef="ref-map-parser" locator="class:ConformanceMappingParser" purpose="Explicit boundary, not an extra CSL concept"/></limitation>
+    <limitation id="L02">CSL core v4 parsing/semantic validation is supported; the current legacy runtime/CSL-to-USE backend explicitly rejects v4. These rules do not remove that boundary.<trace sourceRef="ref-backend" locator="method:requireLegacyRuntime" purpose="Explicit boundary, not an extra CSL concept"/></limitation>
+    <limitation id="L03">currentWinner cannot be obtained through the four observable properties. Direct field access or explicit instrumentation and a coherent state cut are required; this task changes no Auction code.<trace sourceRef="src-artifact" locator="lines:8,12-15,41" purpose="Explicit boundary, not an extra CSL concept"/></limitation>
+    <limitation id="L04">The existing OCL also needs operation signatures and the external AuctionMonitor/AuctionObligation verification view. CSL alone cannot compile/evaluate the entire OCL file.<trace sourceRef="input-ocl" locator="all-contexts" purpose="Explicit boundary, not an extra CSL concept"/></limitation>
+    <limitation id="L05">An iStar organization viewpoint is not a CSL Role correspondence. Bind invocation self to Auction explicitly; the current models do not provide a total actor-to-Role mapping for a general conformance theorem.<trace sourceRef="target-drawio" locator="page:auction-csl-verification" purpose="Explicit boundary, not an extra CSL concept"/></limitation>
+    <limitation id="L06">No numeric bounded abstraction, Bid history, Service identity or winner-to-Role identity relation is assumed. Source-faithful projection may need backend support for Double.MAX_VALUE.<trace sourceRef="src-artifact" locator="lines:13-15,31,34-44" purpose="Explicit boundary, not an extra CSL concept"/></limitation>
+  </limitations>
+</auctionJacamoToCslRules>
