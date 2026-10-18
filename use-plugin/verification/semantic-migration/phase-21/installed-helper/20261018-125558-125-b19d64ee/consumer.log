@@ -1,0 +1,3 @@
+Oct 18, 2026 12:56:10 PM org.tzi.use.plugins.jacamo.bridge.JaCaMoBridgeNativeConsumerMain main
+INFO: JACAMO_BRIDGE_NATIVE_OK pipeline=CODE_GROUNDED_NATIVE project=csl_counter projection=AUTO classes=11 objects=11 links=4 resync=true
+

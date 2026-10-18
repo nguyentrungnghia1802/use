@@ -1,0 +1,3978 @@
+[
+  {
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.contract.ContractTest",
+    "module": "jacamo-bridge-contract",
+    "kind": "surefire",
+    "reportSha256": "7b6b8f9480a2eba5baa4982ffbd3ec2a4244579dac085d38b1c6cd3f62302913",
+    "cases": [
+      "publishedEnvelopeSchemaIncludesEverySupportedMessageType",
+      "duplicateEventsAreIdempotentButConflictingPayloadFailsClosed",
+      "rejectsMalformedOversizedDeepUnknownMajorDigestAndContradictoryCapability",
+      "cardinalityIdentityPreservesMultipleContexts",
+      "typedModelRuntimeAndEventPayloadsRoundTrip",
+      "contractSourcesAndRuntimeClasspathArePlatformIndependent",
+      "envelopeCanonicalizationPreservesExplicitNullOptionalFields",
+      "identityIsReversibleIncarnationAwareAndDisplayCollisionSafe",
+      "envelopeRoundTripsCanonicallyAndOrderingDoesNotChangeDigest"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.contract.ManagedStartupControlTest",
+    "module": "jacamo-bridge-contract",
+    "kind": "surefire",
+    "reportSha256": "eba3f501f0d0b7b01d7f7dc50cf6a230e7c698114945da2b63c4f063e226b856",
+    "cases": [
+      "directoryAndOversizedFilesCannotMasqueradeAsControl",
+      "waitsForOwnedRequestAndAcknowledgesExactlyOnce",
+      "staleOwnershipCancelAndTimeoutFailClosed"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.contract.RuntimeControlContractTest",
+    "module": "jacamo-bridge-contract",
+    "kind": "surefire",
+    "reportSha256": "656de924cb607915dff4b7f16126b40708e82a0739dd043f43589e5e3f644796",
+    "cases": [
+      "versionedRoundTripAndStrictOwnershipMetadata",
+      "partialAckAndUnavailableCannotMasqueradeAsPaused"
+    ]
+  },
+  {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.contract.semantic.SemanticContractTest",
+    "module": "jacamo-bridge-contract",
+    "kind": "surefire",
+    "reportSha256": "4f23998cf9931eb69762ada090d180c763e6fea88c9726163f5b9138166340cd",
+    "cases": [
+      "canonicalSemanticEnvelopeRejectsUnboundedInput",
+      "typedCrossEvidenceRecordsProduceOnlyExplicitBindings",
+      "typedContractRoundTripsWithAllEvidenceMetadata",
+      "structuredMultiAgentCutsCanExceedFourMiBWithinTheBoundedCodec",
+      "encodingIsCanonicalAndRejectsVersionOrShapeDrift"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.contract.SnapshotAdmissionTest",
+    "module": "jacamo-bridge-contract",
+    "kind": "surefire",
+    "reportSha256": "445085392b60d82c12426ed77dfaa2b5e9d90452d1f491f1530d393c506c4bfd",
+    "cases": [
+      "staleRegressingMissingAndMislabelledVectorsAreRejected",
+      "equalAndNewerCutsAreValidAndNewEpochHasIndependentPrefixes"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "jason.infra.local.JasonConsolePauseSemanticsTest",
+    "module": "jacamo-bridge-jacamo",
+    "kind": "surefire",
+    "reportSha256": "44290929b74fdb77a7e092501485217c1c56ae4722e4ed438ccc75096d538518",
+    "cases": [
+      "consolePauseBlocksOutputButDoesNotStopSilentAgents",
+      "officialSyncSignalsGateAgentCyclesSeparatelyFromConsolePause"
+    ]
+  },
+  {
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "jason.infra.local.LiveJaCaMoLauncherLifetimeTest",
+    "module": "jacamo-bridge-jacamo",
+    "kind": "surefire",
+    "reportSha256": "12ea2917a31a8de1368c9323b21018969510459a29fd9b4855212d92826c5126",
+    "cases": [
+      "interactiveLauncherUsesOfficialMasConsoleAndHeadlessKeepsConsoleHandler",
+      "boundedLifetimeStillTimesOutAndExistingStopFileCompletes",
+      "evidenceProcessCapturesBootstrapErrorsWithoutReplacingTheNativeConsole",
+      "interactiveLifetimeSurvivesABoundedDeadlineAndStopsOnlyOnStopFile",
+      "onlyAuditedLocalPlatformsHaveControlledStartAuthority",
+      "startupBarrierCannotWaitForeverOrAcceptADirectoryAsReadiness",
+      "startupBarrierWaitsForTheConsumerAndDoesNotStartOnTheStopFile"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.adapter.BridgeExecutionControlTest",
+    "module": "jacamo-bridge-jacamo",
+    "kind": "surefire",
+    "reportSha256": "6f1882158717c36d8dfbeb94ecd4feb70253293b50ffad9073cc6def9121e748",
+    "cases": [
+      "partialTimeoutArrivalDepartureAndReplacementNeverInventAck",
+      "inFlightOrgBoardActivityCompletesWhileJasonAgentsStayPaused",
+      "allRealAgentsAckPauseResumeAndRepeatedRequestsAreIdempotent",
+      "inFlightRealCartagoOperationCompletesWhileJasonAgentsStayPaused"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.adapter.ExplicitMainWorkspaceBindingTest",
+    "module": "jacamo-bridge-jacamo",
+    "kind": "surefire",
+    "reportSha256": "015dd22bfe5b89dfb9e41cc8351916bbb5f5c478f2a4d05a300610eabad54097",
+    "cases": [
+      "explicitMainIsAChildDistinctFromTheImplicitPlatformRoot(Path)"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.adapter.JasonLiteralObservationTest",
+    "module": "jacamo-bridge-jacamo",
+    "kind": "surefire",
+    "reportSha256": "8506151193fe7c12345de55ed1e8520a26522506f85fc6db69c714c1c962a142",
+    "cases": [
+      "provenanceComesFromAuthoredAstAndOfficialAnnotations(Path)",
+      "equalGoalLiteralsKeepDistinctOccurrenceIdentitiesAndIncompleteCutIsExplicit"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.adapter.JasonObservationProfileTest",
+    "module": "jacamo-bridge-jacamo",
+    "kind": "surefire",
+    "reportSha256": "e63208222ab63eae4efa9a040f197cea5174cc4f4ed2b3cfb416289b227bc44c",
+    "cases": [
+      "nativeDeduplicatesUnchangedLiteralsAndCslKeepsEveryCycleCut"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.adapter.JasonStructuredObservationTest",
+    "module": "jacamo-bridge-jacamo",
+    "kind": "surefire",
+    "reportSha256": "ab7dd851c2e0757f31d499b24ff48d8b1b5fc4251a3b8cad1d0e827e90f77a7d",
+    "cases": [
+      "logicalGroundFragmentUsesOfficialAstAndRejectsOpenAnnotatedInternalOrArithmeticQueries",
+      "nestedAndSuspendedIntendedMeansAndEqualTestEventsKeepSeparateOccurrenceTokens",
+      "completeStoredCutPreservesNamespaceNegationAnnotationRulesAndNumericTermIdentity"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.adapter.MoiseBoardSnapshotSourceSelectionTest",
+    "module": "jacamo-bridge-jacamo",
+    "kind": "surefire",
+    "reportSha256": "0d68ee0f76ed83f406f3856e1290bfcf677b6f75f66cb33e3aa699d079c853bf",
+    "cases": [
+      "staticAndDynamicSourcesAreDisjointAndDynamicSourceAcceptsUnseenOrganisations"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.adapter.MoiseGoalObservationTest",
+    "module": "jacamo-bridge-jacamo",
+    "kind": "surefire",
+    "reportSha256": "118fba99967f549278ee728858b9db7d68f63cc788d8db3debfcc276da8e3247",
+    "cases": [
+      "publicObservablePreservesStatesAgentsAndArgumentsWithExactSchemeContext",
+      "pinnedMoiseGoalArgumentsUseDirectJasonTermsNotStringGuesses",
+      "unavailableStateAndMalformedOrDuplicatedEvidenceFailClosed"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.adapter.NplActivationCrosswalkTest",
+    "module": "jacamo-bridge-jacamo",
+    "kind": "surefire",
+    "reportSha256": "d700731b99c09b73d015f4e3102ddbb1ba7863dd19be47dab7149a22d435116b",
+    "cases": [
+      "copiedTerminalInstancesMatchPublicCreatedCrosswalkAndDuplicateCreationIsAmbiguous",
+      "permissionIsAnObservedModalityAndMissingCreationOrStateDeadlineIsExplicit"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.adapter.NplLiveBoardObservationTest",
+    "module": "jacamo-bridge-jacamo",
+    "kind": "surefire",
+    "reportSha256": "f688b804e792940a2091e66837ef71df56c7da04902a3ff0b0a6f579bcf46ec3",
+    "cases": [
+      "realNplListenerAndPublicGettersKeepActivationFulfillmentDeadlineMissAndUnusedPermissionDistinct",
+      "noSelectedBoardIsAnAvailableEmptySelectionWithUnprovenGlobalNormPopulation",
+      "stateDeadlineMaintenanceInactivityAndSameNameBoardReplacementHaveDistinctSourceLifetimes"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.adapter.NplRuntimeProfileTest",
+    "module": "jacamo-bridge-jacamo",
+    "kind": "surefire",
+    "reportSha256": "cb4d1cae0331a06d6083c18903a31d128dd267856b38428cfcb4615171943c4f",
+    "cases": [
+      "actualLoadedBinaryAndObservationVersionAgreeWithThePinnedProfile"
+    ]
+  },
+  {
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.adapter.OfficialAdapterTest",
+    "module": "jacamo-bridge-jacamo",
+    "kind": "surefire",
+    "reportSha256": "b905dbb887433c410bf042551d083a64b97b6d114dd75a59ff56cf92ff6c740e",
+    "cases": [
+      "jasonAnonymousVariableCanonicalizationDoesNotRewriteQuotedOrNamedTerms",
+      "officialJasonActionExecEmitsTypedResultAndFailureEvidence",
+      "pinnedOfficialApiSignaturesExistAndNoCorePatchIsRequired",
+      "platformLifecycleCreatesNewSessionAndStopsCleanly",
+      "originalAuctionAndHouseUseTheSameOfficialProjectAdapter",
+      "canonicalHelloLoadsThroughOfficialMergedProjectJasonAndMoiseObjects",
+      "platformHostsAuthenticatedLoopbackTransportWhenExplicitlyConfigured"
+    ]
+  },
+  {
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.adapter.OfficialCartagoAdapterTest",
+    "module": "jacamo-bridge-jacamo",
+    "kind": "surefire",
+    "reportSha256": "8e826c053c48ba7a2fa89916099916aace7eb2ead7556c0658c133516fd367c9",
+    "cases": [
+      "sharedSnapshotAndLoggerIdentityUsesExactWorkspaceAndIncarnation",
+      "declarationAliasesUseOfficialRootChildrenAndRevalidatedArtifactIdentity(Path)",
+      "officialObserversAndLiveRelationCallbacksRetainBothEndpoints",
+      "initializedEnvironmentUsesOfficialWorkspaceDescriptorIdentityAndClosedLivePropertyBoundary",
+      "implicitRootDeclarationBindsTheOfficialRootRatherThanAChild(Path)",
+      "anOfficialControllerReadDoesNotHoldTheLoggerCallbackMonitor",
+      "loadableTypeWithoutProviderLocationDoesNotClaimCompleteApplicationProvenance"
+    ]
+  },
+  {
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.adapter.OfficialJasonAdapterTest",
+    "module": "jacamo-bridge-jacamo",
+    "kind": "surefire",
+    "reportSha256": "548a20ebca66c45ec2dd3f8aeadff8db571a2e26cc910357ff48646132ca85c7",
+    "cases": [
+      "unresolvedJ11PathRemainsProvenanceOnlyAndExplicitlyUnavailable",
+      "nestedIncludesPreserveExactFilesDigestsSpansAndCompatibilityEvidence",
+      "packageIncludesUseExactJarEntryBytesNotRootAgentEvidence",
+      "officialJasonSnapshotRetainsEveryPlanAndEveryBodyChainNodeInOrder",
+      "phase2UsesOfficialJasonFactsForActionsBeliefsGoalsRulesAndSourceInfo",
+      "sourceResolutionNeverSearchesBasenamesOrFetchesRemoteContent",
+      "relativeFileUriIncludesRetainExactProjectProvenance",
+      "auditedJasonBodyTypeSurfaceIsExact",
+      "j11UsesOfficialLexerOnlyForRecursiveProvenance"
+    ]
+  },
+  {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.adapter.OfficialMoiseIdentityTest",
+    "module": "jacamo-bridge-jacamo",
+    "kind": "surefire",
+    "reportSha256": "83a1a59a6c922f36b9c8fa76eb465246dd19c2b2711ed7b012a4e50e1eb26016",
+    "cases": [
+      "sameRoleNamesInDifferentOsRemainDifferentEntities(Path)",
+      "liveGraphWithoutAnXmlUriRetainsExactSemanticIdentityAndHonestProvenance",
+      "twoDeploymentsReuseOneExactSpecificationWithoutDuplicateFacts(Path)",
+      "conflictingSpecificationsWithTheSameExactIdentityFailClosed(Path)",
+      "localIdsAreNotCanonicalIdentitiesAndAllNeutralReferencesResolve"
+    ]
+  },
+  {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.adapter.ReasoningCycleGateTest",
+    "module": "jacamo-bridge-jacamo",
+    "kind": "surefire",
+    "reportSha256": "63840c2c6207b1187d581844a37f9be21b3ed0c1774e89b9c96c0d7bb3dc4708",
+    "cases": [
+      "initialAdmissionWhilePausedIsHeldAndOldReleasesAreRejected",
+      "newIncarnationMustAckAndDepartingAgentCannotInventAck",
+      "completedDynamicAdmissionClearsOnlyTheTransientRunningCapabilityError",
+      "unprovedAdmissionAndUnavailableCapabilityCannotCompletePause",
+      "allAgentAckTimeoutAndResumeAreSeparateTransitions"
+    ]
+  },
+  {
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.jacamo.bridge.adapter.SnapshotCoordinatorTest",
+    "module": "jacamo-bridge-jacamo",
+    "kind": "surefire",
+    "reportSha256": "10fe251dd56b8c2b6c5d0b0684525f584c09c82e3923ae229fc54663ffcede10",
+    "cases": [
+      "retriesConcurrentTopologyChangeAndReplaysOnlyAfterAcceptedWatermark",
+      "overflowNeverSilentlyPublishesSnapshot",
+      "acceptedCutExportsImmutableTopologyAndOldEmptyExtensionKeepsItsWireShape",
+      "scopedMoiseWatermarkCannotBeLookedUpUsingUnscopedFactAuthority",
+      "laterSourceActivityDoesNotInvalidateAnEarlierLocalCutAndIsReplayedAfterItsOwnWatermark",
+      "sameTopologyWithMutationDuringCaptureIsNotAnAuthoritativeCut",
+      "olderLiveSubscriberReceivesEveryCallbackAcrossRejectedAndAcceptedCuts",
+      "explicitBoundaryHasCorrelationAndIsIncludedInAuthoritativeWatermarks",
+      "sameNameRecreationHasDifferentIncarnationIdentity"
+    ]
+  },
+  {
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.architecture.MavenCyclicDependenciesCoreTest",
+    "module": "use-core",
+    "kind": "surefire",
+    "reportSha256": "75dde0c806f2eb140ad98e47035466fde6999870f791a5be0bb5c02f2d5e87e1",
+    "cases": [
+      "count_cycles_in_main_package",
+      "count_cycles_in_analysis_package",
+      "count_cycles_in_util_package",
+      "count_cycles_in_gen_package",
+      "count_cycles_in_parser_package",
+      "count_cycles_in_api_package",
+      "count_cycles_in_core_with_tests",
+      "count_cycles_in_graph_package",
+      "count_cycles_in_config_package",
+      "count_cycles_in_core_without_tests",
+      "count_cycles_in_uml_package"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.uml.mm.ModelAPITest",
+    "module": "use-core",
+    "kind": "surefire",
+    "reportSha256": "08fcd643d578490054ec2fbc0bdb34c6488a7c761c3f10a42522c9a97f2ebe9f",
+    "cases": [
+      "testConstraintCreation"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.uml.sys.MSystemStateExtensionTest",
+    "module": "use-core",
+    "kind": "surefire",
+    "reportSha256": "2462afe41113df13b27a2d6500e4e7621d620d1d8ae0620e0eb98a2da28021fe",
+    "cases": [
+      "unsupportedSlotsAndReadOnlyMutationAreRejectedBeforeInitialization",
+      "storedExtensionPreservesStateObjectsValuesAndLinks"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.OCLExpressionIT",
+    "module": "use-core",
+    "kind": "failsafe",
+    "reportSha256": "d1ee1268e159b20645a29cc370810cd8886d335f01c212b4446513284fbba8b5",
+    "cases": [
+      "testExpression"
+    ]
+  },
+  {
+    "tests": 23,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.semantic.engine.CslFrontendParityTest",
+    "module": "use-jacamo-semantic-engine",
+    "kind": "surefire",
+    "reportSha256": "c85bd3a76b983b9296f04583313ee277c03bd22201b851be0da91d78371e93b1",
+    "cases": [
+      "canonicalModelPreservesModifiersNestingAndOrderedEnds",
+      "programmaticModelsCannotBypassValidatorOrVersionAdmission",
+      "syntaxOnlyOclIsNotAdvertisedAsNativeDomainTypechecking",
+      "parserAstModelAndValidatorEqualIndependentOriginal(String)[1]",
+      "parserAstModelAndValidatorEqualIndependentOriginal(String)[2]",
+      "parserAstModelAndValidatorEqualIndependentOriginal(String)[3]",
+      "parserAstModelAndValidatorEqualIndependentOriginal(String)[4]",
+      "parserAstModelAndValidatorEqualIndependentOriginal(String)[5]",
+      "parserAstModelAndValidatorEqualIndependentOriginal(String)[6]",
+      "parserAstModelAndValidatorEqualIndependentOriginal(String)[7]",
+      "parserAstModelAndValidatorEqualIndependentOriginal(String)[8]",
+      "parserAstModelAndValidatorEqualIndependentOriginal(String)[9]",
+      "parserAstModelAndValidatorEqualIndependentOriginal(String)[10]",
+      "parserAstModelAndValidatorEqualIndependentOriginal(String)[11]",
+      "parserAstModelAndValidatorEqualIndependentOriginal(String)[12]",
+      "parserAstModelAndValidatorEqualIndependentOriginal(String)[13]",
+      "parserAstModelAndValidatorEqualIndependentOriginal(String)[14]",
+      "parserAstModelAndValidatorEqualIndependentOriginal(String)[15]",
+      "parserAstModelAndValidatorEqualIndependentOriginal(String)[16]",
+      "parserAstModelAndValidatorEqualIndependentOriginal(String)[17]",
+      "parserAstModelAndValidatorEqualIndependentOriginal(String)[18]",
+      "actualUpstreamV4AndLegacyFixturesRetainHashesAndOriginalSemantics",
+      "originalSyntaxDiagnosticsRetainActualSourceLocation"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.semantic.engine.EngineExtractionTest",
+    "module": "use-jacamo-semantic-engine",
+    "kind": "surefire",
+    "reportSha256": "84917c67566a45df21df0aa41dcdf7ceee498e1c3ce421f54ddfeb464e5b8dd5",
+    "cases": [
+      "generatedFrontendAndOriginalRecurrenceLoadWithoutRuntimeStartup",
+      "selectedSourcesAreByteIdenticalToPinnedOriginalArchive",
+      "provenanceRejectsAnUnapprovedPrivateAlgorithmChange",
+      "moduleBoundaryExcludesHostCopiesFrameworksAndUpstreamPluginDescriptor"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.semantic.engine.HostCompatibilityTest",
+    "module": "use-jacamo-semantic-engine",
+    "kind": "surefire",
+    "reportSha256": "4d6a687147d0dd5b10c32a1e402b66ebb018b2a3d4d156e81e870586b4944910",
+    "cases": [
+      "nativeBooleanUndefinedAndAtPreEvaluateOnPinnedStatesOfOneSystem",
+      "originalFrontendUsesTheSameHostModelAndCompilerClasses"
+    ]
+  },
+  {
+    "tests": 29,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.semantic.engine.IStarFrontendParityTest",
+    "module": "use-jacamo-semantic-engine",
+    "kind": "surefire",
+    "reportSha256": "2ec8f8556db6220c0263981d0238fa10035796fff3d756487892b72955bf4526",
+    "cases": [
+      "rejectsUnimplementedSyntaxBeforeOriginalBuilder(String, String)[1]",
+      "rejectsUnimplementedSyntaxBeforeOriginalBuilder(String, String)[2]",
+      "rejectsUnimplementedSyntaxBeforeOriginalBuilder(String, String)[3]",
+      "rejectsUnimplementedSyntaxBeforeOriginalBuilder(String, String)[4]",
+      "rejectsUnimplementedSyntaxBeforeOriginalBuilder(String, String)[5]",
+      "rejectsUnimplementedSyntaxBeforeOriginalBuilder(String, String)[6]",
+      "rejectsUnimplementedSyntaxBeforeOriginalBuilder(String, String)[7]",
+      "rejectsUnimplementedSyntaxBeforeOriginalBuilder(String, String)[8]",
+      "rejectsUnimplementedSyntaxBeforeOriginalBuilder(String, String)[9]",
+      "unicodeSourceSpansAndSyntaxLocationsComeFromActualTokens",
+      "originalAstModelAndValidatorParityInAdmittedIntersection(String)[1]",
+      "originalAstModelAndValidatorParityInAdmittedIntersection(String)[2]",
+      "originalAstModelAndValidatorParityInAdmittedIntersection(String)[3]",
+      "originalAstModelAndValidatorParityInAdmittedIntersection(String)[4]",
+      "originalAstModelAndValidatorParityInAdmittedIntersection(String)[5]",
+      "originalAstModelAndValidatorParityInAdmittedIntersection(String)[6]",
+      "originalAstModelAndValidatorParityInAdmittedIntersection(String)[7]",
+      "originalAstModelAndValidatorParityInAdmittedIntersection(String)[8]",
+      "originalAstModelAndValidatorParityInAdmittedIntersection(String)[9]",
+      "originalAstModelAndValidatorParityInAdmittedIntersection(String)[10]",
+      "originalAstModelAndValidatorParityInAdmittedIntersection(String)[11]",
+      "originalAstModelAndValidatorParityInAdmittedIntersection(String)[12]",
+      "originalAstModelAndValidatorParityInAdmittedIntersection(String)[13]",
+      "originalAstModelAndValidatorParityInAdmittedIntersection(String)[14]",
+      "originalAstModelAndValidatorParityInAdmittedIntersection(String)[15]",
+      "originalAstModelAndValidatorParityInAdmittedIntersection(String)[16]",
+      "mutableOriginalModelHasExplicitOwnerFenceAndApiValidation",
+      "emptyAuthoredContractIsRejectedRatherThanSilentlyRemoved",
+      "activationGraphAndContextResolutionUseOriginalRealModel"
+    ]
+  },
+  {
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.semantic.engine.NativeOclBackendTest",
+    "module": "use-jacamo-semantic-engine",
+    "kind": "surefire",
+    "reportSha256": "2b111d6147ae37b4171a6ac020f4aaea6f802b0299085c3eb86f66d54bb02f6a",
+    "cases": [
+      "booleanTypeGateAndPreContextRejectInvalidProgramsWithoutCachingFailures",
+      "falseUndefinedErrorsAndCoverageRemainDistinctAndNeverCoerceToFalse",
+      "exactArgumentsResultsAndForeignSelfBindingsAreFenced",
+      "compiledInvariantMatchesHostAndPinnedEvaluationCanRunOffTheUiThread",
+      "cacheOwnershipCapacityClearAndCloseRevokeAstReuse",
+      "actualNativeAtPreUsesDistinctPinnedStatesAndDetectsIncorrectIncrement",
+      "navigationCollectionsInheritanceEnumsAndTypedContextBindingsUseHostLanguage"
+    ]
+  },
+  {
+    "tests": 14,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.semantic.engine.OriginalRuntimeSessionTest",
+    "module": "use-jacamo-semantic-engine",
+    "kind": "surefire",
+    "reportSha256": "86af18306daa25a5b1c05e5fe8225db2dcbaa846f7bcb8914a39bf49d613ca9d",
+    "cases": [
+      "callerMutationOfSourceOrInstantiatedDefinitionFailsBeforeHistoryCommit",
+      "episodeSavepointAtomicFailureResetAndOwnerFencesPreventHistoryTransfer",
+      "unknownAndPreOnlyDeferWithoutFalseInputOrLeafHistoryLoss",
+      "topologyRebuildSeedsOnlyExactStableKeysAndEpisodesWithoutChangingOriginalRecords",
+      "unsupportedGraphsCannotEnterSilentCapOrNonrepresentableStatusDomains",
+      "everyThreeStepTaskTupleTraceMatchesOriginalHistoricalFields",
+      "originalEvaluateSignatureRemainsIdenticalWithSharedAndSeparateContexts",
+      "originalAndOrAndSinglePolarityContributionsAreCalledOnDerivedCopies",
+      "castContextAmbiguitySizeAndRecursiveDepthHaveExplicitAdmissionFailures",
+      "everyFourStepBooleanActivationTraceMatchesOriginalAllGoalFields(GoalType)[1]",
+      "everyFourStepBooleanActivationTraceMatchesOriginalAllGoalFields(GoalType)[2]",
+      "everyFourStepBooleanActivationTraceMatchesOriginalAllGoalFields(GoalType)[3]",
+      "everyFourStepBooleanActivationTraceMatchesOriginalAllGoalFields(GoalType)[4]",
+      "contextualSeamMatchesOriginalAndKeepsStandaloneAndBoundOccurrencesDistinct"
+    ]
+  },
+  {
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.semantic.engine.Use75CslBackendTest",
+    "module": "use-jacamo-semantic-engine",
+    "kind": "surefire",
+    "reportSha256": "91c277dc4bec4a36df88a124f601d24c4409ab52c58190741bab23a6024f264b",
+    "cases": [
+      "compatibilityDependsOnExactPlayerAndRuntimeContext",
+      "namedDatatypeDeclarationAndAttributeSurviveNativeRoundTrip",
+      "roleInheritanceUsesOneIdentityAndDefaultsDoNotPopulateObservedState",
+      "compatibilityIsSymmetricMetadataAndAnExplicitM0NativeInvariant",
+      "rejectsInvalidSemanticsReservedNamesAndNativeOclTypeErrorsBeforeRuntimeExists",
+      "originalV4ProposalModelBuildsAllInvariantsAndRoundTripsThroughNativePrinter",
+      "preservesEnumDatatypesModifiersAssociationOrderAndNarySchemaAdmission",
+      "equalAnnotationValuesHavePortableTextWithoutMutatingNativeModels"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.architecture.MavenLayeredArchitectureTest",
+    "module": "use-gui",
+    "kind": "surefire",
+    "reportSha256": "83b7728a425a71bbd179bdeded3d1e1660fabc936da100e30321103d9e35dce6",
+    "cases": [
+      "countCoreDependenciesOnGui"
+    ]
+  },
+  {
+    "tests": 129,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.main.shell.ShellIT",
+    "module": "use-gui",
+    "kind": "failsafe",
+    "reportSha256": "f96b0372cba6b064e2211a038cbbfd253336cc360058cdf65af6b7bf169c7338",
+    "cases": [
+      "evaluateExpressionFiles[1]",
+      "evaluateExpressionFiles[2]",
+      "evaluateExpressionFiles[3]",
+      "evaluateExpressionFiles[4]",
+      "evaluateExpressionFiles[5]",
+      "evaluateExpressionFiles[6]",
+      "evaluateExpressionFiles[7]",
+      "evaluateExpressionFiles[8]",
+      "evaluateExpressionFiles[9]",
+      "evaluateExpressionFiles[10]",
+      "evaluateExpressionFiles[11]",
+      "evaluateExpressionFiles[12]",
+      "evaluateExpressionFiles[13]",
+      "evaluateExpressionFiles[14]",
+      "evaluateExpressionFiles[15]",
+      "evaluateExpressionFiles[16]",
+      "evaluateExpressionFiles[17]",
+      "evaluateExpressionFiles[18]",
+      "evaluateExpressionFiles[19]",
+      "evaluateExpressionFiles[20]",
+      "evaluateExpressionFiles[21]",
+      "evaluateExpressionFiles[22]",
+      "evaluateExpressionFiles[23]",
+      "evaluateExpressionFiles[24]",
+      "evaluateExpressionFiles[25]",
+      "evaluateExpressionFiles[26]",
+      "evaluateExpressionFiles[27]",
+      "evaluateExpressionFiles[28]",
+      "evaluateExpressionFiles[29]",
+      "evaluateExpressionFiles[30]",
+      "evaluateExpressionFiles[31]",
+      "evaluateExpressionFiles[32]",
+      "evaluateExpressionFiles[33]",
+      "evaluateExpressionFiles[34]",
+      "evaluateExpressionFiles[35]",
+      "evaluateExpressionFiles[36]",
+      "evaluateExpressionFiles[37]",
+      "evaluateExpressionFiles[38]",
+      "evaluateExpressionFiles[39]",
+      "evaluateExpressionFiles[40]",
+      "evaluateExpressionFiles[41]",
+      "evaluateExpressionFiles[42]",
+      "evaluateExpressionFiles[43]",
+      "evaluateExpressionFiles[44]",
+      "evaluateExpressionFiles[45]",
+      "evaluateExpressionFiles[46]",
+      "evaluateExpressionFiles[47]",
+      "evaluateExpressionFiles[48]",
+      "evaluateExpressionFiles[49]",
+      "evaluateExpressionFiles[50]",
+      "evaluateExpressionFiles[51]",
+      "evaluateExpressionFiles[52]",
+      "evaluateExpressionFiles[53]",
+      "evaluateExpressionFiles[54]",
+      "evaluateExpressionFiles[55]",
+      "evaluateExpressionFiles[56]",
+      "evaluateExpressionFiles[57]",
+      "evaluateExpressionFiles[58]",
+      "evaluateExpressionFiles[59]",
+      "evaluateExpressionFiles[60]",
+      "evaluateExpressionFiles[61]",
+      "evaluateExpressionFiles[62]",
+      "evaluateExpressionFiles[63]",
+      "evaluateExpressionFiles[64]",
+      "evaluateExpressionFiles[65]",
+      "evaluateExpressionFiles[66]",
+      "evaluateExpressionFiles[67]",
+      "evaluateExpressionFiles[68]",
+      "evaluateExpressionFiles[69]",
+      "evaluateExpressionFiles[70]",
+      "evaluateExpressionFiles[71]",
+      "evaluateExpressionFiles[72]",
+      "evaluateExpressionFiles[73]",
+      "evaluateExpressionFiles[74]",
+      "evaluateExpressionFiles[75]",
+      "evaluateExpressionFiles[76]",
+      "evaluateExpressionFiles[77]",
+      "evaluateExpressionFiles[78]",
+      "evaluateExpressionFiles[79]",
+      "evaluateExpressionFiles[80]",
+      "evaluateExpressionFiles[81]",
+      "evaluateExpressionFiles[82]",
+      "evaluateExpressionFiles[83]",
+      "evaluateExpressionFiles[84]",
+      "evaluateExpressionFiles[85]",
+      "evaluateExpressionFiles[86]",
+      "evaluateExpressionFiles[87]",
+      "evaluateExpressionFiles[88]",
+      "evaluateExpressionFiles[89]",
+      "evaluateExpressionFiles[90]",
+      "evaluateExpressionFiles[91]",
+      "evaluateExpressionFiles[92]",
+      "evaluateExpressionFiles[93]",
+      "evaluateExpressionFiles[94]",
+      "evaluateExpressionFiles[95]",
+      "evaluateExpressionFiles[96]",
+      "evaluateExpressionFiles[97]",
+      "evaluateExpressionFiles[98]",
+      "evaluateExpressionFiles[99]",
+      "evaluateExpressionFiles[100]",
+      "evaluateExpressionFiles[101]",
+      "evaluateExpressionFiles[102]",
+      "evaluateExpressionFiles[103]",
+      "evaluateExpressionFiles[104]",
+      "evaluateExpressionFiles[105]",
+      "evaluateExpressionFiles[106]",
+      "evaluateExpressionFiles[107]",
+      "evaluateExpressionFiles[108]",
+      "evaluateExpressionFiles[109]",
+      "evaluateExpressionFiles[110]",
+      "evaluateExpressionFiles[111]",
+      "evaluateExpressionFiles[112]",
+      "evaluateExpressionFiles[113]",
+      "evaluateExpressionFiles[114]",
+      "evaluateExpressionFiles[115]",
+      "evaluateExpressionFiles[116]",
+      "evaluateExpressionFiles[117]",
+      "evaluateExpressionFiles[118]",
+      "evaluateExpressionFiles[119]",
+      "evaluateExpressionFiles[120]",
+      "evaluateExpressionFiles[121]",
+      "evaluateExpressionFiles[122]",
+      "evaluateExpressionFiles[123]",
+      "evaluateExpressionFiles[124]",
+      "evaluateExpressionFiles[125]",
+      "evaluateExpressionFiles[126]",
+      "evaluateExpressionFiles[127]",
+      "evaluateExpressionFiles[128]",
+      "evaluateExpressionFiles[129]"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.bridge.BridgeConnectionConfigTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "6cc8950764cb7169d352d3781e204504c55c235f1d0c5e89128347a91c4ff8a2",
+    "cases": [
+      "validatesLoopbackEndpointDistributionCapabilitiesAndLimits",
+      "secretMustBeARegularNonSymlinkHexFileAndIsNeverRenderedInStatus"
+    ]
+  },
+  {
+    "tests": 10,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.bridge.BridgeMirrorStateMachineTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "519ec075d6afc8ffee29b34d1c071cc1cbd6926a26a8ae40c8f4160b8980a0a5",
+    "cases": [
+      "transactionalReplacementDropsOldIncarnationAndChangesFingerprint",
+      "exactCartagoFocusHasItsOwnCreationRemovalAndReappearanceLifecycle",
+      "callbackBoundaryAdvancesTheStreamWithoutInventingADomainObject",
+      "duplicateIsIdempotentButConflictGapStaleAndUnknownIncarnationQuarantine",
+      "boundaryStillRequiresExactOwnerObservedCausationCorrelationAndOrdering",
+      "lateDiscoveredNormAcceptsTerminalObservationWithBoundPublicCreationEvidence",
+      "authoritativeNewNormActivationAndTerminalUpdatesStayInTheLiveStream",
+      "staleAndMissingSourceSnapshotsCannotReplaceAcceptedFacts",
+      "missingAuthorityCoverageCannotRetireItsLastKnownFacts",
+      "partialReplacementPreservesLastKnownFactsAndNewEpochClearsTheLedger"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.bridge.BridgeRuntimeProjectorTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "94cd50df32a4864aab71b90d9b6b9991418f4ffb83c138d3ffa5b3b33f6241f5",
+    "cases": [
+      "exactRuntimeBindingInitializesAndMutatesUseStateWhileEvidenceOnlyStaysOut"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.bridge.BridgeVerificationGateTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "ecd2f71de4b6eb5107e4a3d7b3655bafaf9523a2afb9a314849a4f25b76db441",
+    "cases": [
+      "staleMirrorAndIncompleteOperationCorrelationCannotReachOcl",
+      "admitsOnlyCompleteFaithfulRequiredFacts",
+      "evidenceOnlyIsInconclusiveAndUnavailableOrMissingIsNotEvaluated"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.bridge.CanonicalCasesBridgePipelineTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "d97902f4a738ea04f51426618b2308fdbc6caa966ee42a7e70da9b88cb9f05f7",
+    "cases": [
+      "helloAuctionAndHouseUseOneOfficialGenericPipeline",
+      "officialHelloPassesCoreAndAuthoredHelloOcl"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.bridge.CanonicalEvidenceTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "c22f1a653374c9372d412f4c5b4f375b50471af66bd51efce1a91d1c1200b928",
+    "cases": [
+      "writeDeterministicCanonicalAcceptanceMetrics"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.bridge.HelloShadowComparisonTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "9c3ee53cdbe5b535943f6fc03c7cdfae5410b43716a5046c9ef3feea09a6bd46",
+    "cases": [
+      "officialLegacyBridgeV2AndUseDifferencesAreExhaustivelyClassified"
+    ]
+  },
+  {
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.bridge.LocalTcpBridgeTransportTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "f84f9c77210c0faec9f95d51a193bd2ce2796912cf8fc678454761567e8a5c63",
+    "cases": [
+      "versionedControlBodyIsAuthenticatedAndExactResponseIdentityIsValidated",
+      "productionTransportRunsAllCanonicalModelsWithBufferedEventAndAck",
+      "bootstrapDropsOnlyBufferedEventsAlreadyCoveredByTheAcceptedSnapshotCut",
+      "unsupportedSchemaIsRejectedBeforeMaterialization",
+      "cumulativeAcknowledgementsAreBatchedDuringBurstsAndFlushedOnClose",
+      "idleAuthenticatedSubscriptionDoesNotBecomeAFalseNetworkPartition",
+      "authUnknownResumeAndRemoteConfigurationFailClosed",
+      "networkPartitionMarksAcceptedMirrorForResync",
+      "concurrentSubscriptionsAndReconnectsCannotStarveSnapshotRequests"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.bridge.NativeOclLaunchEvidenceTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "d27fe18e00634fe1edd53927d97f33f4e2e7084874f8858dffd94e1b1174b4a3",
+    "cases": [
+      "consumerKeepsOldArgumentsAndAcceptsOnlyExplicitExistingOclProfile",
+      "summaryCountsOnlyMutationsAndPreservesFailuresCoverageAndOutcomeChanges",
+      "journalGapIsNeverReportedAsSuccessfulRuntimeEvidence"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.bridge.NativeSemanticAdapterTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "aa04ea747338364e3f17ebd67d297d4440a898c112f590ca827315bec4869052",
+    "cases": [
+      "officialRelativeAndHierarchicalFileUrisResolveToTheSameExactOs",
+      "useBridgeProductionSourcesDoNotImportPlatformRuntimePackages",
+      "historicalTestOnlyAdapterStopsAtDtoToSemanticModelBoundary",
+      "officialHelloSnapshotBuildsNativeIrAndUseModelWithoutLegacyParser"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.bridge.SeparateJvmBridgeTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "935045c1f0a68844f463f67dc621a274539f5cfa89c099cf63a229b3b566d614",
+    "cases": [
+      "modelSnapshotRuntimeSnapshotAndEventCrossTwoIndependentJvms",
+      "selectedProductionTcpTransportCrossesSeparateJvmsForAllCanonicalCases",
+      "realHelloWorldProductionBridgeCrossesSeparateJvmsWithNonEmptyRuntimeSnapshot"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.bridge.ShadowSemanticComparatorTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "0250e95982314d101c803a51f12531300e53b6d71a64d7a7b196bb9bd10f42c7",
+    "cases": [
+      "outputIsDeterministicMutationSensitiveAndRequiresClassification"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.bridge.TransportBenchmarkTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "d5428b43cf1106c024d55ce5f8923b705818418bd8691777d628390a94255453",
+    "cases": [
+      "recordRealisticLocalRoundTripMeasurementsWithoutInventedBudget"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.CanonicalFacadeSessionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "028f008308a36cacd5b72ce4f3d3f26d1624ce9545ae556065321fdbcf07ea6b",
+    "cases": [
+      "canonicalImportRejectsMissingRulesAndEdtBeforeHandoffOrActivation",
+      "sameRulesResyncKeepsHostSystemAndChangedRulesReimportCreatesFreshOwner"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.CanonicalImportSelectionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "629685684146bd519af22139700f2bab3a750425a468374e29afe2bbe1939294",
+    "cases": [
+      "explicitSelectionIsFrozenUntilImportAndFailedSelectionPreservesOwner",
+      "canonicalReplaySwitchRevokesLiveEngineAndRoutesOneReadOnlyOfflineSystem",
+      "missingUnsupportedOrEdtSelectionFailsBeforeHostReplacement"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.CanonicalMonitorLifecycleTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "fd7b2ca3156f558238ed878d161fdfff44a951df4b0417190825c3933e6b1585",
+    "cases": [
+      "sameWatermarkResyncDoesNotAdvanceOriginalHistoryTwice",
+      "simultaneousHostResetAndBackgroundStopRetireOneOwnerWithoutThrowing",
+      "clearingHostSessionIsValidAndTerminatesTheRevokedEngine",
+      "resetRetiresIngressAndWorkerWithoutWaitingForTransportOnEdt"
+    ]
+  },
+  {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.AttributeProjectionCleanupTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "f21379839e4d3acf1e21f9b5ddb3b1cef929a667d6501d0ba3da7b7c2188a575",
+    "cases": [
+      "basesAndAssociationClassesExposeOnlyDomainStateAndRetainExactBindings",
+      "replayUsesHashedBindingSidecarAndRejectsMissingOrRedirectedMetadata",
+      "anExistingArtifactIncarnationCannotBeRedirectedToAnotherName",
+      "foreignFunctionalContextIsRejectedUsingInternalBindingsWithoutTechnicalOcl",
+      "observableNamesCannotShadowBindingMetadataAndSurviveSnapshotRollbackAndResync"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.AuctionExternalOclProfileTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "b54aca69c77444449ad5f3a1bf587d04aacb7c3cad94e961973df75f87044df3",
+    "cases": [
+      "incompleteSourcesCannotPassRuntimeDependentChecks",
+      "originalArtifactProjectsTypedObservableValuesAndStartStopViolationOnSameSystem",
+      "auditedProfileCompilesAgainstActualOfficialAuctionNativeSchema"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CanonicalCslNativePipelineTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "55a760e60f5fb745d0a628d7cc66ddddeec970799d903f81aa155b799a984794",
+    "cases": [
+      "liveAdmissionRejectsMissingTypeCodecAndUnverifiedNaryWriter",
+      "originalCanonicalModelUsesExistingStateBuilderExporterAndSessionActivation"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CheckpointRoutingTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "a4097d04538e362eceb308d8a611649f665cdf560934e0fb5ab045cf158861a6",
+    "cases": [
+      "explicitBoundaryRechecksAllAndCannotGuessCorrelation",
+      "onlyApprovedHardConstraintCanPauseAndChangedExpressionRevokesApproval",
+      "nativeHardSeverityDoesNotGrantPauseAuthorityWithoutExplicitApproval",
+      "compilerDependenciesSelectChangedFeatureAndUnknownFeatureFallsBack"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedDeterminismTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "24de4b024b134f8933687e760cbfdc636cd65bc78a3dd9bdc0e3f1e1e8979f42",
+    "cases": [
+      "repeatedNativeBuildHasIdenticalSchemaExportNamesAndTrace"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedExportTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "da1a950f06df319e2b9f85c659cf195e6a99683cbd93f4a87d610ad49dde31dd",
+    "cases": [
+      "exportersWriteOnlyTheirDeclaredJsonArtifacts",
+      "traceCoversEveryNativeDeclarationAndMaterializedAttributeValue",
+      "nativeStateAndTraceExportsAreDeterministicAndSelfDescribing"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedIdentitySafetyTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "0158a59b8f625c53f86b49cf6bbd3c1c424a5d256b509a9243cff3f0fbbb49e1",
+    "cases": [
+      "invalidIdentityComponentsCannotCollapseToAnImplicitNameKey",
+      "runtimeIdentityIsOpaqueAndDelimiterSafe"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedLargePlanTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "89dbdeaba479825d14f4925e92f5b13d54c9031bb03ce09becc3ef4840342f22",
+    "cases": [
+      "nativeBuilderRetainsA_largeOfficialJasonBodyAndItsOrder"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNegativeTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "5a208c1d137746d16174e915a653e153617579c7510543b4668d8fbbf706ab39",
+    "cases": [
+      "duplicateSemanticIdentityFailsBeforeUseMaterialization",
+      "unknownBodyTypeRemainsExplicitEvidenceWithoutDroppingTheNode"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedOrderInvariantTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "19e62837fa851f74e618ee983c1ab4fe7d873e6f96c5c8a64987d464d5f2f7c9",
+    "cases": [
+      "helloRetainsEveryPlanBodyNodeAndExactA17A19A20Order"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase2Test",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "b8cf98b560824039af52f82817cb59af566a12e184662fc58772f3eee2426820",
+    "cases": [
+      "emptyPlanLibraryIsAValidOfficialJasonSnapshot",
+      "nativePhase2MaterializesJasonFactsAndA21A22OnTheSameSystem"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase3Test",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "843f7126d4981a127317f19bdcd89cd0c41d3fcd090a69bbb977920c626a30b6",
+    "cases": [
+      "oneBaseAgentOwnsConcreteProgramTypesAndNoDeclarationWrappers",
+      "jcmDeclarationsCreateDomainObjectsAndKeepOtherSourceReferences"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase4Test",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "fff8f04854cd58f61d88622f6a43db895d846865515dceaa9756e7b647d598ac",
+    "cases": [
+      "artifactTypeReferenceRequiresExactSemanticIdentity",
+      "observedArtifactStateUsesTypeObjectAttributesAndWorkspaceLink",
+      "livePropertyInputIsExplicitlyDiagnosedAndNeverConfusedWithObservedValues"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase5Test",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "f9f00bb75eaf80653d15851733b31bdb20ea298bc548700c6edc5f9541ae7aaa",
+    "cases": [
+      "sourceHierarchyRelationsOrderingAndTimeTextAreRetainedWithDeferredDiagnostics",
+      "sharedAndOptionalNormReferencesStaySourceOnlyWithIndependentOclHooks",
+      "officialMoiseGraphRetainsFunctionalNormSemanticsWithOnlyDomainTypes"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase6Test",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "16bbbb6a13ac696b4269dc5e14105d51cff00f1783977093bdff169c774918c8",
+    "cases": [
+      "wrongRetainedSourceEndpointFailsClosedEvenWithoutExecutionClasses",
+      "bindingsProjectSupportedDomainRelationsAndKeepExecutionGoalEvidence",
+      "namesDoNotBindCartagoIdentityAndExplicitIncarnationDoesNotLeak"
+    ]
+  },
+  {
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase7Test",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "f439fa0fd2b8f19ac968348fe22e79b6f41d644481bee04d994fb5138963d0d5",
+    "cases": [
+      "staleSessionAndReplayEventsAreRejectedAndResyncRestoresTheSameSystemDeterministically",
+      "jasonA12ToA15RemainTypedRuntimeEvidenceWithoutStaticModelPollution",
+      "fullBootstrapSnapshotHelpersAreRemovedWithTheirDisposedArtifact",
+      "cartagoArtifactMutationUsesExactBindingAndMoiseNplRemainEvidenceOnly",
+      "unavailableCartagoSnapshotMustNotPretendAbsenceOrDeleteBootstrapObjects",
+      "exactCartagoSnapshotMaterializesRuntimeObjectsInThePipelineSystem",
+      "faithfulJasonMutationAndRelationUseThePipelineSystem",
+      "authoritativeCartagoResyncMustNotResurrectArtifactsFromTheBootstrapModel"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase9Test",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "5aa09c427960e5acadc3154b19844227b7b22641bb8affb13cce4504c0d6a803",
+    "cases": [
+      "canonicalCasesBuildThroughTheNativePipeline"
+    ]
+  },
+  {
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.DomainRuntimeProjectionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "64eeb49e405292c439112d6058c829df2d42bda73ae0dfe835ed97d85ad3243f",
+    "cases": [
+      "helloAndDynamicHouseDoNotInventUnobservedClassifiers",
+      "runtimeHouseGroupAdoptionRemovalAndViolationUseExactContextInSameSystem",
+      "multipleAgentInstancesRequireExactRuntimeBindingsAndKeepDistinctIdentity",
+      "auctionStructuralTypesDeclarationsAndCardinality",
+      "originalHouseArtifactCreatedDynamicallySupportsIntegerToDoubleUpdates",
+      "invalidTypedIdentityCannotRedirectArtifact",
+      "dynamicArtifactPropertiesRemovalAndResyncUseSameSystem",
+      "bothModesRespectFunctionalNormAndJasonBoundary"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.ExternalOclConstraintServiceTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "8d82ea51b5298fe6d473aa112ddfd84763e4bdb6bd806e197b00601a0d8984db",
+    "cases": [
+      "fullProjectionDoesNotTurnUnavailableLivePropertiesIntoVacuousPass",
+      "validMultiContextCompilesIntoCurrentModelAndEvaluatesIndividually",
+      "resyncRebindsExactProfileAndUnavailableProjectionCannotPass",
+      "rejectedProfilesLeaveAllOriginalInvariantsAndProfileIntact"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.GenericAgentProjectionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "980642d879f823167d8528a392ec5475d9c040440dacba04958a43d8c68b318c",
+    "cases": [
+      "canonicalProgramTypesAndSimultaneousLiteralOccurrencesHaveExactOwners",
+      "onePolicyRejectsUnknownConceptsAndNeverReintroducesExecutionClasses",
+      "jcmInitialLiteralsUseOfficialJasonParserAndKeepDeclarationEvidence(Path)",
+      "productionProjectionHasNoCaseSelectors"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.GenericFunctionalRuntimeProjectionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "fecb1301a39a4c1c2bdecb7e150c7aae8dcfe622c21d7d6e8c28763a2843a9cf",
+    "cases": [
+      "runtimeLiteralCutsSupportMultipleGoalsRemovalReappearanceAndAtomicForeignBindingRejection",
+      "sourceGoalsKeepOperatorsOrdinalsMissionReferencesAndNoExecutionStatus",
+      "dynamicSchemesKeepResponsibilityCommitmentsAndAuthoritativeGoalStateOnSameSystem"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.GenericSubgroupProjectionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "bd9062dee97db4ff94fcacdd8e6b30387a70e840e09ea4db713dc552f3d29090",
+    "cases": [
+      "runtimeParentRemovalReattachmentAndForeignOwnerFailClosed",
+      "shuffledSnapshotCreatesDynamicGroupBeforeItsParentRelationAndResyncIsIdempotent",
+      "officialJcmContainmentBecomesExactSubgroupLinkAndSurvivesReplay"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.GoalConstraintViolationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "1a445179b8b4a2516bc266455af59d9793f3f0c8b1ba1782e35dd40de6ec7225",
+    "cases": [
+      "representedSequenceOrdinalsAndCurrentResponsibilityFailOnExactContexts"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.GoalViewSnapshotTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "866fa5d219183c30799dd20b199737f6987303a0be9cfc5c0d9f29c1ce3de87e",
+    "cases": [
+      "sameSpecInTwoInstancesUsesDistinctActiveObjectsAndReadingViewDoesNotMutateState"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.LegacyV2OclIsolationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "b23e336697c51c451aa7a7fc3b052e96387f1f5afa1ea9c6b4f85e48145e38dc",
+    "cases": [
+      "facadeContainsOnlyTheNativeProjection",
+      "nativeAuthorityHasNoProductionDependencyOnMappingV2OrV2Profiles"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.LiveCartagoNativeVerificationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "a409de131502e0a9eb54ef41810ffbc13580a9510f8b557b61eee9e04bd5e2f3",
+    "cases": [
+      "officialLoggerBridgeFacadeNativeOclHistoryAndReplayObserveTransientViolation"
+    ]
+  },
+  {
+    "tests": 10,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.MoiseDomainProjectionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "d008976c33bb2855254f35a11d20cd38974be81f32e16331e6ce8efec3aa5927",
+    "cases": [
+      "contextualIdentityDoesNotCollideAcrossGroupsOrOrganisations(Path)",
+      "originalHelloProducesDomainSchema",
+      "incompleteRuntimeSourceDoesNotGiveVacuousExternalPass",
+      "originalAuctionProducesDomainSchema",
+      "sourcePoliciesAndDirectLinksSurviveNativeExportReplay",
+      "crossSchemeGoalReferenceFailsClosed",
+      "originalHouseOsWorksWithoutGuessingDynamicJcmOrganisation",
+      "nativeMultiplicityCountsDirectPlayersAndAllowsSameAgentInDifferentGroups",
+      "foreignSchemeOwnerOfMissionGoalOrPlanFailsClosed",
+      "normAndFunctionalSourceSurviveWithoutInventedClassOrOcl(Path)"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeArtifactDeclarationBindingTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "efa10dc9bd60dc454b70d65389016496b0dff652dfd572b49a59bd2f777e07e3",
+    "cases": [
+      "unavailableColdTypeBindsLateWithoutDuplicateObjectsAndRecompilesExactly",
+      "unprovedOrMismatchedDeclarationsFailClosedBeforeCreatingClasses"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeConstraintInstallerTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "96fb6e264624c5f40a48e8cd462dd3a7e67653232a82d62023f2519764cceeac",
+    "cases": [
+      "nativeMultiplicityReplacesFormationOclAndNoJasonOrNormInvariantIsInvented",
+      "skippedCapabilityIsReportedAndNeverInstalledAsOcl"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeEnvironmentRelationsTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "fb9480851dd7b90411845ba7d806b714edeedf355ae94be6486b309cf6b04347",
+    "cases": [
+      "liveFocusQuitAndCompleteResyncPreserveOneAgentAndExactLinks",
+      "wrongFocusEndpointIdentityRollsBackWithoutInferringMembership"
+    ]
+  },
+  {
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeGenericStepReplayTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "aed4a87fdcd01eefee024bbff98371c69c5f23685d333cf3f4648ce8c4403d14",
+    "cases": [
+      "corruptAndIncompatibleControlsCannotReplaceSession(String)[1]",
+      "corruptAndIncompatibleControlsCannotReplaceSession(String)[2]",
+      "corruptAndIncompatibleControlsCannotReplaceSession(String)[3]",
+      "corruptAndIncompatibleControlsCannotReplaceSession(String)[4]",
+      "corruptAndIncompatibleControlsCannotReplaceSession(String)[5]",
+      "corruptAndIncompatibleControlsCannotReplaceSession(String)[6]",
+      "corruptAndIncompatibleControlsCannotReplaceSession(String)[7]",
+      "exactVariantsCreateDeleteAttributesUnsetLinksAtomicPropertyBatchAndNonSteps(String)[1]",
+      "exactVariantsCreateDeleteAttributesUnsetLinksAtomicPropertyBatchAndNonSteps(String)[2]",
+      "exactVariantsCreateDeleteAttributesUnsetLinksAtomicPropertyBatchAndNonSteps(String)[3]",
+      "parityFailureDuringNextRestoresValidStateAndPublishesNoHalfState"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeMOperationProjectionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "d6c9db9ecab6b8a49f34e87aa2099e8d694650bc7fcdabddc8b336a251d0fd80",
+    "cases": [
+      "exactReflectionSignatureBecomesNativeOperationOnConcreteArtifact",
+      "parameterReturnAndOverloadIdentityAreExactAndUnknownTypeFailsClosed",
+      "nonExactReflectionSignatureCannotCreateAnOperationOrSuppressArtifactState",
+      "exactFocusAndJoinBindingsAreIndependentManyToManyRelations"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeObjectCountViewTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "14fc6c5283ac94ef6834b4af8657891646d5abf1c4831772cc69d64c979c3d81",
+    "cases": [
+      "objectCountRefreshesOnAtomicCreateAndDeleteWithoutAggregatingOtherClasses"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeObjectDiagramBindingTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "7286e147f3d4269aee40f429b31c28e72b7ccdc854c5e3924bd6a62c99ba3cfb",
+    "cases": [
+      "hiddenAssociationClassRecreationAndInsertionKeepCurrentBindings",
+      "recreatedObjectsRebindNativeNodesAndLinksIncludingHiddenObjects",
+      "acceptedPropertyABAMutationsAndRemovalUpdateNativePaintedValues"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeOperationCheckpointTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "890a9276a13169bff56b19ba5763560c98bb9eaeddfb31f2dc66b9069fddedfa",
+    "cases": [
+      "falsePreIsReportOnlyAndFailedOperationSkipsPost",
+      "exactPrePostCorrelationPreservesAtPreOnSameActiveSystem"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeProjectionAuditTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "1726d863bff88053207dc7572b53a8322323a109290c0617a2caaef0d84dc1d2",
+    "cases": [
+      "everyAutoClassAssociationAndObjectHasAnExplicitDependencyReason"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeProjectionProfileTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "bd99bb13bf72c3c81237bc5b02a6bd8caabea7f1da12821f3ce39cb667ebe41b",
+    "cases": [
+      "autoReducesSchemaAndStateWhileFullRemainsAvailable"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeRoleAssociationSupportTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "d52909cc59cff7aacd80be77d19254a49ac88dfc6dbad7fd50b21ebdad703c25",
+    "cases": [
+      "nativeAssociationClassKeepsBothClassAndAssociationSemantics"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeBridgeCoverageTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "bd1af4c19acd52f2c32cfdb6cdf0c2731fdcaf256facedb6aa12fe84f531c264",
+    "cases": [
+      "mirrorRejectionAndSubscriptionFailureReachNativeCoverageInsteadOfLeavingCachedPass",
+      "actualBootstrapBufferOverflowInvalidatesPreviouslyPassingNativeResults"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeReanalysisTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "aa325ea2ae6b24b584cbaa704617ca520e690d1ffe2c7068704265cb00a413e3",
+    "cases": [
+      "lateProfileReconstructsEarlierABAWithNewResultsAndCannotMutateLiveHistoryOrBundle",
+      "newBeliefDemandUsesRecordedRawCutsAndKeepsEveryOtherDomainObjectAndLinkIdentical",
+      "currentNegatedAndDisabledFlagsAreReanalyzedWithoutChangingRecordedProfile",
+      "corruptionGapMissingBaselineInvalidProfileAndOriginalOutputAreRejected"
+    ]
+  },
+  {
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeReplayTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "9102c8c8df0cf5f3836a5508159cfb4cc263634b56ab46bee457262bc9df0ac9",
+    "cases": [
+      "runtimeOperationDiscoveryDoesNotBecomeAvailableBeforeItsRecordedDescriptor(boolean)[1]",
+      "runtimeOperationDiscoveryDoesNotBecomeAvailableBeforeItsRecordedDescriptor(boolean)[2]",
+      "exportedUseSoilOclAndJournalReplaySameVersionsStatesAndResults",
+      "capabilityApprovalAndExactBoundaryTimelineReplayWithoutControlCalls",
+      "unrecordedOperationContractsAddedAfterBaselineFailClosedAtExport",
+      "actualNativeOperationPrePostAndAtPreReplayOnTheProductionProjector",
+      "corruptionMissingFileAndGapFailClosed"
+    ]
+  },
+  {
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeStepReplayTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "01e3c0d435932043781ff9de11cc2bd1b8921a361032cb818ed420cd0ba78766",
+    "cases": [
+      "invalidReopenOrFailedReconstructionPreservesTheSelectedValidSystem",
+      "retainedCursorSharesBatchValidationAndPreservesNonStepProfileAndNoopVersions",
+      "baselineOnlyAndStaleMissingOrCorruptRecordingsFailClosed",
+      "overlappingNavigationAndCloseDuringOpenCannotActivateAStaleWorker",
+      "edtActivationFailureKeepsOriginalSessionAndReportsTheRealCause",
+      "resetNextNextPreviousNextReconstructsExactStateAndNeverMutatesOriginal"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeUseSoilExporterTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "57f20e8eb60079247a14fa435d6079e76b4b76f3f6262cee38b9506ecb500f50",
+    "cases": [
+      "separateUseAndCmdArtifactsRoundTripWithOfficialCompilers(Path)",
+      "helloNativeStateExportsAndReplaysWithoutEvidenceObjects"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.PausedResyncSnapshotTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "c57f5d17d8f59a9ae187c21392c8a910bb722842140246a6dc9335763b8563e0",
+    "cases": [
+      "authoritativePostRequestCutCannotOverwriteTheFailingState"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.ProfileCompatibilityPreflightTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "b122d58beb3532b4aee3c386e69d0603d323cc6afbeba86448fdc192d2be98cb",
+    "cases": [
+      "nativePhaseRejectsExternalV2ProfileBeforeChangingTheActivatedSystem"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.ReconnectSnapshotTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "439e51b6022615a630bdb0ada70790b311b8a4a1dad036d4cc297d42f0846a86",
+    "cases": [
+      "sameProducerResyncPreservesPinsButNewGenerationResetsDiagnosticHistory"
+    ]
+  },
+  {
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalogTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "0b3c5f69b19cebb1b2af834dc2da5b9c21db64f4664a52d1ab495f4a40ad0dcb",
+    "cases": [
+      "phase6ClosurePinsAllCrossRulesAndKeepsUnavailableRulesExplicit",
+      "auditedMetadataUsesSnapshotAndOfficialGuardCardinalityAndSignalTypes",
+      "everyRuleCarriesAuthorityTargetFidelityCapabilityAndDiagnosticPolicy",
+      "catalogIsCompleteUniqueAndDeterministic",
+      "relationMetadataNamesActualOfficialApisAndNativeOperationsRemainConditional",
+      "runtimeEvidenceIsNotAdvertisedAsMaterializedJasonState"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.runtime.CanonicalNativeFaultMatrixTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "28d1ebb38ad211dc365b1121b1987e05fc02e71f499f7584350ee1ad8f34e954",
+    "cases": [
+      "checkpointAndSnapshotPersistenceFailuresKeepNativeFactsAndNeverPublishCurrentSuccess",
+      "rollbackFailureQuarantinesTheOwnerAndPreventsSubsequentMutation",
+      "aViewFailureDoesNotRetryOrRollBackTheOriginalEngineBoundary",
+      "failuresBeforeCommitRestoreNativeBindingsHistoryAndFrozenCuts"
+    ]
+  },
+  {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.runtime.CanonicalOperationCheckpointsTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "b65a8ebbda048e48d54fb33bf3cd2c39d8bd37171ca802d1caf23ba970c02d2c",
+    "cases": [
+      "requiredCanonicalPropertyCoverageBlocksUndefinedEqualityPass",
+      "reusedCheckpointCapturesActualPreAndSeparatesInvocationConformanceFromTaskHistory",
+      "realDeclaredReturnTypeIsCompiledButMissingProducerResultNeverSynthesized",
+      "mappedNativeParametersUseExactDescriptorAndCompletionCannotChangeArguments",
+      "missingPreWrongIncarnationAndOverlapPreserveExactInterval"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeInvocationSemanticsTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "d72ef3166abf2d66ebe755d39132034ca4325d45608553f86f8b72c5d9170a92",
+    "cases": [
+      "sourceFailureDuplicateCapacityTimeoutAndMissingBoundaryNeverProducePostPass",
+      "unsupportedArgumentTypeIsNotAnEvaluatorError",
+      "overlappingInvocationsKeepTheirOwnPreStateAndSuspendResumeNeverOverwriteIt",
+      "wrongIncarnationSignatureAndCompletionArgumentsCannotBorrowAMatchingPre"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeSemanticFailureTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "326fbb8c46156658bab06e4b998143bcccc98f1fa46a44f4b6b5eadba93c128a",
+    "cases": [
+      "unexpectedSemanticEvaluationErrorPublishesTypedStaleEvidenceInsteadOfKeepingAnOldPass",
+      "failingViewObserverCannotRollBackAlreadyCommittedNativeStateOrCorruptItsResult",
+      "lostJournalPreservesSevenValuedEvidenceButCannotKeepCurrentPass"
+    ]
+  },
+  {
+    "tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.RuntimeControlServiceTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "78a4268bea254b138743e22fdb2319a334b898f160f59389de544ac26c58ad50",
+    "cases": [
+      "failingCutPrecedesAllAckConfirmationAndResumeResyncAndStormIsDeduplicated",
+      "partialAckTimeoutDoesNotBecomePausedAndSyncFailureIsConfirmationError",
+      "resumeDuringPauseResyncIsQueuedAndDeduplicatedInsteadOfReturningPauseStatus",
+      "stalePausedObservationCannotResumeUntilAuthoritativeRecovery",
+      "reportOnlyFailureAndItsPreviousCutAreInspectableAcrossLiveTailEviction",
+      "closeCompletesQueuedControlFuturesEvenWhenTheRunningApiHasNotReturned",
+      "domainEvaluationErrorIsNotEligibleFailAndReplacedOwnerCannotReceiveCommands",
+      "distinctSimultaneousHardViolationsHaveOnePauseAndAnExplicitConfirmationPolicy",
+      "unchangedFalseIsConfirmedAndDisconnectedPausedDoesNotResumeProducer",
+      "unavailableControlReportsErrorWithoutPauseAndThrowingPauseCannotBecomePaused",
+      "diagnosticEvidenceCannotReplaceTheCompiledFalseContext",
+      "disconnectAndRuntimeReplacementDuringAckFailClosedAndResumeErrorKeepsOriginalConfirmation"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.RuntimeHistoryTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "dd713dcfb160c68e8a347f862fb7f22621f2d2c738782226caefd8b286930401",
+    "cases": [
+      "journalPreservesABAAndDuplicateVersionsAndProfileIntervals",
+      "memoryEvictionIsNotDiskLossAndPersistedPagesValidateIntegrityOffEdt",
+      "evidenceOnlyDoesNotReplaceFormalOutcomesAndJournalRetainsCoverageGap"
+    ]
+  },
+  {
+    "tests": 13,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.RuntimeVerificationCoordinatorTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "56d00267cd764b0d7bb15ffbed8e5b00cbce57ff1c52819b3713ef9c27f7b85a",
+    "cases": [
+      "configuredJournalBudgetIsBoundedAndDefaultsTo64MiB",
+      "persistedOverflowAndBoundedHistoryAreExplicitlyStale",
+      "resyncKeepsProfileAndSameSystemAndRecoversCoverage",
+      "artifactDisposeRecreateUsesDifferentUuidAndRejectsResurrectedIncarnation",
+      "propertyABACommitsViolatingStateAndKeepsImmutableHistoryWithOneCheckAndNotification",
+      "duplicateIsIdempotentWhileConflictRewindGapAndStaleIdentitiesCannotPass",
+      "evidenceOnlyObservationHasNoStateVersionOrOclEvaluation",
+      "ephemeralRuntimeDirectoryIsRemovedOnExplicitClose",
+      "profileIntervalsKeepActualInstallVersionDespiteTailEvictionAndAtomicInvalidReplacement",
+      "concurrentVerifyAndExportObserveOnlyCommittedState",
+      "discoveredSchemaAndPropertyRetainTheOriginalStateAndExactNativeReferences",
+      "typedIdentityMismatchCannotRedirectAnArtifactMutation",
+      "malformedBatchRollsBackAllWritesAndMarksCoverageLostWithoutIncrement"
+    ]
+  },
+  {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.SelectiveVerificationProjectionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "1cd436445f142c5ea565d6b55cefa688c1d5745fca4fc5d4b1d9406b979c8906",
+    "cases": [
+      "demandedAuthoredBeliefWithInfrastructureLikeNameIsNotBlacklisted",
+      "onlyDemandedAuthoredNonduplicatedFactsExposeAndRemovalDoesNotResurrectOnReload",
+      "recordedProviderProofKeepsKnownArtifactsAvailableWithoutProducerClasses",
+      "missingProvenanceFailsClosedAndProfileInstallRollsBack",
+      "sameProviderInfrastructureIsExcludedWhileApplicationTypesWithIdenticalSimpleNamesRemainEligible"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.SnapshotRetentionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "d7ffb7f548c54f7890e351bc7a815b10d5fbc8fe72f453cc60893d35ff21d31d",
+    "cases": [
+      "pinsFailurePreviousAndConfirmationAcrossTailEviction"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.VerificationSnapshotContractTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "670f82c1e0a051a2843ab77d2b4720590c6eb0b4e0b9ac56cd47ac81b98b0e59",
+    "cases": [
+      "oversizedDiagnosticCutCannotLeaveARecordedPassingVerification",
+      "immutableProjectedCutHasExactIdentityRelationsAndCheckpointMetadata"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.CompatibilityManifestTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "1b3e7b35e54fdc2a9d5e9b04adba7b1abf41a0dbc5642325e01793cc2e86b4d6",
+    "cases": [
+      "manifestPinsEveryFrozenV2ResourceByExactHash",
+      "manifestSeparatesBuildRequirementsFromAppendOnlyHostEvidence"
+    ]
+  },
+  {
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "e8c745d484ecfe6df5754ee71cb4c7c45e32354b3d5824119cd2f41e63dfe6a0",
+    "cases": [
+      "distinctV2OwnersWithJavaHashCollisionsKeepDistinctConstraintIdentities",
+      "nestedUnknownAndTypeErrorsNeverBecomeExactBooleanExpressions",
+      "obsoleteV1OclContextFailsAgainstActiveV2WithContextDiagnostic",
+      "unapprovedLossyAndSoundSubsetNeverEmitButRemainInManifest",
+      "impureGuardArithmeticAndSignatureMismatchPreserveUnsupportedSource",
+      "guardParameterNamesAreNotSilentlyReboundAndSharedGuardIdsAreDistinct"
+    ]
+  },
+  {
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.constraint.ConstraintOclTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "bd9bea9676ec0a05a2b5cab507f8167e5eb72a737c2f123ad5c9a9e3329901f3",
+    "cases": [
+      "multipleContractsUnderOneAuthoredOperationContextKeepCaseProvenance",
+      "profileFingerprintAndContentAreIndependentOfCheckoutLineEndings",
+      "operationContractIsInsertedOnlyInItsBoundOwner",
+      "auctionGuardCoreCaseAndExplicitPostconditionCompileAndEvaluatePositiveNegative",
+      "caseLoaderRejectsPathEscape",
+      "caseLoaderRejectsSymlinkThatResolvesOutsideProject",
+      "expressionSubsetCoversLogicalComparisonArithmeticPropertyCollectionAndUnsupportedCall"
+    ]
+  },
+  {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.DefaultBridgeAuthorityTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "b161bc6d83b90ea6ffdd4b23762694bcc151827322170ebc347914554b908812",
+    "cases": [
+      "officialBridgeSnapshotIsTheFacadeAuthorityAndExposesNegotiatedState",
+      "missingBridgeConfigurationFailsClearlyWithoutLegacyFallback",
+      "distributionMismatchIsFailClosedAndCanBeUpgradedWithExplicitConfiguration",
+      "defaultAuthoritySelectionIsBridgeAndRetiredLegacyFlagFailsClearly",
+      "selectedProjectMustMatchTheAuthoritativeBridgeSnapshot"
+    ]
+  },
+  {
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "e60098f5f1909479dd378c2d6688c474158883906a3604e0ecb16f534ac3b7e1",
+    "cases": [
+      "exportRejectsUnsupportedDestinationsInsteadOfGuessingAFormat",
+      "defaultFacadeRequiresAnExternalTcpEndpointBeforeImport",
+      "failedImportPreservesActionableDiagnosticsFromTheRealImporter",
+      "reportExportSupportsMarkdownDestinations",
+      "runtimeDashboardStatusComesFromTheAuthoritativeBridge",
+      "auctionPerformanceMetricsAreMeasuredWithoutFlakyWallClockThresholds",
+      "reportCleanupFailureIsAttachedToThePrimaryExportFailure",
+      "reportExportRejectsLinkedDirectoryDestinations",
+      "originalAuctionBridgeImportExposesPipelineSummaryTraceDiagnosticsAndVerification",
+      "reportExportUsesTheRealLatestVerification",
+      "packagedGuiRootUsesClasspathBaselineDuringBridgeImport"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.evidence.EvidenceNormalizerTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "5b17b89e3e673d8ee87948f0deb22f6f169a50173ba5c2c049976d6698239f66",
+    "cases": [
+      "makesAPlainTextProjectPathPortableWithoutTouchingOtherBackslashes",
+      "normalizesOnlyTheExactProjectPathWithoutChangingJsonEscapeSemantics"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.evidence.EvidenceSourceCommitTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "f0aee9217342d176daded5aa681a0e14e5a03e6447969c598d488c767d841f1e",
+    "cases": [
+      "refusesToPinACommitWhenAnEvidenceInputDiffersFromThatCommit"
+    ]
+  },
+  {
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.extraction.StaticProjectImporterTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "5111f76ed41269d852344563e3064581ca44d174da657e61fab7c9a84d2ab023",
+    "cases": [
+      "malformedSourcesRecoverWithLocatedDiagnostics",
+      "partialProjectRetainsValidAgentSourceWithoutInventingMissingSourceContents",
+      "extractionIsDeterministic",
+      "duplicateOperationNamesStayAmbiguousAcrossArtifacts",
+      "unsupportedJasonAndDynamicJavaArePreservedAsDiagnostics",
+      "xmlBooleansAreValidatedWhileV2CardinalitiesRetainTheirStringDatatype",
+      "resolverNeverUsesSimilarNames",
+      "staticImportNeverInitializesProjectSourceOrClasspathClasses",
+      "auctionProducesCoherentThreeDimensionModel"
+    ]
+  },
+  {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.extraction.V2ExtractionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "45db49dca2b815dd1b30f36eb8a75bbe53ed3d918db5df86bf3cfc7b91cbb713",
+    "cases": [
+      "sameFunctorWithDistinctLiteralsHasDistinctStableIdsAndExactSpans",
+      "counterTeamUsesOnlyActiveKindsAndExactEnums",
+      "independentInverseOrderCannotBeInventedFromTwoJoinDeclarations",
+      "explicitlyNestedGoalPlanPreservesContainmentAndRejectsExternalEntities",
+      "sharedGroupSpecificationProducesOwnerQualifiedOccurrencesAndExactXmlSpans"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.GoldenPipelineTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "dd85fdd4e495f392c1ee37160f855157f95dca39cd18943e88077782c51438e9",
+    "cases": [
+      "auctionArtifactsMatchReviewedGoldenDigests"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.HotfixBindingTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "b460a42c72858f64d392785fe8670363eeee0d58f5112a7615286cbe3fd7a09b",
+    "cases": [
+      "productionImportUsesValidBindingAndRejectsInvalidOrStaleBindings"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "27473fa4777fcf7621453c92fbe44124687a4845c4d8e8fd0a318f0e8d7397ff",
+    "cases": [
+      "liveWorkspaceReplacementKeepsBridgeAndFullVerificationTogether(String)[1]",
+      "liveWorkspaceReplacementKeepsBridgeAndFullVerificationTogether(String)[2]",
+      "liveWorkspaceReplacementKeepsBridgeAndFullVerificationTogether(String)[3]",
+      "failedBridgeRebuildLeavesTheLiveWorkspaceIntact"
+    ]
+  },
+  {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.JaCaMoPluginTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "b0919a205faf2e0eaa93055bd57566327616d42980df5c3e2729d5f6915e34fe",
+    "cases": [
+      "useDiscoversJarAndRegistersStatusCommand",
+      "defaultWorkbenchActionBindsNativeFacadeToPluginActionSession",
+      "menuActionGetsStatusFromFacadeWithoutAUseModel",
+      "workbenchActionLaunchesTheInjectedFacadeWithoutAUseModel",
+      "manifestNamesLoadablePlugin"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.launcher.GenericLauncherScriptTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "1d92fe2f1a2cf0110aaadb7ff1afc3946b222636bd5ed01c39ab078272d41481",
+    "cases": [
+      "launcherIsGenericAndUsesNativeProductionConsumer"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.launcher.MavenCiWorkflowTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "9ef2e1f237de1ec17e5d1c2929c63d4d37cf306ce372853c6e2603e40344afbf",
+    "cases": [
+      "realReleaseFilesAreRequiredAndFailureEvidenceIsAlwaysUploaded",
+      "mavenFailureIsNotHiddenAndGuiTestsHaveTheirRequiredInputs",
+      "frozenResourcesDeclareTheirExactCheckoutByteFormat"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.ManagedBootstrapTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "c2abd82e137e6dd106a40b4ccae13e48433463f7f0541171e490409b7cb67b12",
+    "cases": [
+      "officialLocalProducerCanImportBeforeStartAndReleaseOnce"
+    ]
+  },
+  {
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.ManagedRuntimeWorkflowTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "b478b4c2e621f109887b7215f9bf1c9b1141bd25c23efdc184828d89f65b5249",
+    "cases": [
+      "missingSessionAndWrongProjectCannotReleaseAgents",
+      "producerReplacementReturnsToModelReadyAndUsesANewStartupAck",
+      "expiredWaitingAndWorkbenchCloseCannotReleaseReasoning",
+      "invalidFacadeImportAndCloseCancelAnUnstartedOwnedProducer",
+      "importFailureCancelsWhileProducerDeadAndAutonomousAreUnavailable",
+      "deadProducerAndTimeoutCannotBecomeLive",
+      "modelOclStartRequireRealAckAndCannotStartTwiceOrReturnFromLiveOnLateProfile"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.mapping.ActiveBaselineTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "5b149536d8727e09e6338df6c0505c71de1888d2ad583da4eaba714c64b6d8cd",
+    "cases": [
+      "missingOrStaleV2NeverFallsBackToHistoricalInputs",
+      "stagedGuiRootUsesImmutablePackagedBaseline",
+      "syntheticSubclassChangeRequiresReconciliationThenUsesGenericConsumers",
+      "filesystemAndPackagedSelectionsHaveIdenticalContractsAndFingerprints"
+    ]
+  },
+  {
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.mapping.HistoricalMappingLoaderTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "01f43e85d6fc412b41e60e602ab3579e3f13ff3c81ec3ec4402df92036afbfc9",
+    "cases": [
+      "historicalMappingPassesSchemaFingerprintAndEcoreIdentityValidation",
+      "alteredMappingTargetsAreBlockedByTheFrozenMappingFingerprint",
+      "mappingDigestMustCoverTheSnapshotUsedForReturnedSemantics",
+      "invalidSchemaAndFingerprintBlockLoading",
+      "ecoreIdentityValidationUsesTheSameSnapshotAsItsDigest",
+      "invalidMappingSchemaTakesPrecedenceOverMissingDownstreamInputs",
+      "oneManifestSnapshotAuthorizesBothMappingAndEcore"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "90c9fcb48845d1c8e6c2eff775b62de0bec617bfc364ad2266a5fbc2277b24e7",
+    "cases": [
+      "namingEscapesReservedWordsAndResolvesCollisionsDeterministically",
+      "auctionPlanIsDeterministicAndGeneratedUseCompiles",
+      "artifactTypeCollisionsAreStableAndUnsupportedPropertyStaysStructural"
+    ]
+  },
+  {
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.mapping.OrderProjectionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "385d4da2cc2bd0c4f31c5db16120c8532d9e3919131005428d5b5c36c1bcdc3e",
+    "cases": [
+      "v2LoaderDerivesAllOrdersAndFullFrozenTargetCompiles",
+      "existingRuntimeQueueLifecycleReconnectAndDriftUseIndependentOrderBinding",
+      "cyclicIndependentOrdersHaveTextDirectParityAndDeterministicOutput",
+      "tracedOrderOnlyMutationAndAuthoritativeReconnectPreserveMembershipAndBothOrders",
+      "compositionKeepsOwnershipWhileProjectionCarriesSequence",
+      "nonOppositeOrderedAndUnorderedMembershipRemainIndependent",
+      "sourceOrderCannotBeMissingDuplicatedOrInferredFromMembership",
+      "workingLoaderRejectsStaleOrSemanticallyChangedOrderContract"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.mapping.V2EcoreAuditTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "8800dde880252e7befdf03b9e2319f31674c99237713d9b475adaa397316e571",
+    "cases": [
+      "duplicateInheritanceAndOppositeMutationControls",
+      "nativeEcoreValidationAndWorkingManifest",
+      "unsafeEntityIsRejectedBeforeLoading",
+      "malformedUnknownClassifierAndDatatypeAreRejected"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.mapping.V2MappingAuditTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "d18bb2c5ea385c01744da4afea5d22c314f0441d9cd08353bcbb424b335bd3e7",
+    "cases": [
+      "malformedSchemaFingerprintSourceAndTypeMutationsAreRejected",
+      "conditionalProjectionFixtureCompilesOnlyWithExplicitTypedFacts",
+      "compileRejectsUnknownTypesAndReservedRoles",
+      "suppliedMappingHasExactSourcesAndCompilesInUse"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.mapping.V2OppositeOrderingAuditTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "4c16d42625ed4fd29404860f6126f52c7533393ad6660bfadfd0c7fa3ecfd237",
+    "cases": [
+      "independentOppositeOrderCounterexampleAndRepresentableControl"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "13281f3f7327ef4b39e080ffc5c54f4479bed44ee00a2cf87b7fea7cbff66aff",
+    "cases": [
+      "auctionPlanMaterializesEveryElementValueAndResolvedLinkDeterministically",
+      "textAndDirectBackendsShareOneVerificationPlanAndPassInitialValidation"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.materialization.V2MaterializationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "77ef43a73f055ac06cbe31602eaed4896e964b3a9dce519f445a168f6a5e926a",
+    "cases": [
+      "repeatedArtifactTypesShareDeclarationsButRetainInstanceProjectionTraces",
+      "v2CoreChecksOperationKindWithoutMakingOptionalOperationRequired",
+      "bothProjectsHaveActualSoilDirectParityAndExactDefaults",
+      "missingRequiredValueIsDiagnosedAndOnlyExplicitDefaultsAreMaterialized"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.MultiCaseV2PipelineTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "fbeac2520dc70b9cc986b7fea8a42a4a81c8bf25d4bb5865c4dbff08f3657182",
+    "cases": [
+      "activeProductionResourcesContainNoCaseDispatchOrCaseRuntimeIdentity",
+      "sameProductionPipelineAcceptsBothCases(String, Path, Path, String)[1]",
+      "sameProductionPipelineAcceptsBothCases(String, Path, Path, String)[2]"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.NativeProjectionLaunchTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "cda35c87242212505f378157907438c392faf2b9601f044613376785607b13f9",
+    "cases": [
+      "invalidLaunchConfigurationDoesNotTouchTheActiveSession",
+      "configurationDefaultsToAutoAndRejectsUnsupportedModes",
+      "fullLaunchActivatesAndExportsTheSameNativeSystemInWorkbench(Path)"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.NativeResyncHandoffRegressionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "b112d3237ee482969b28e39f3d41dc063a95aba8cd16cb99fe265f3cb98a67f4",
+    "cases": [
+      "oldSubscriptionCannotAdvanceTheProjectorPastTheReplacementCut"
+    ]
+  },
+  {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.NativeRuntimeFacadeIntegrationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "a62654f673f59d7c4377d2e2b684f937485af22a2647e4927d6092dd2a69dde2",
+    "cases": [
+      "externalProfileAndStateVersionSurviveProductionResyncOnTheSameSession(Path)",
+      "disconnectKeepsSameSystemProfileAndHistoryButMarksStaleUntilResync(Path)",
+      "failedProductionResyncCannotLeaveAPassingCachedResult(Path)",
+      "uiReadsCannotDeadlockBehindTheWriterMonitorBeforeItsEdtBarrier(Path)",
+      "bufferedFaithfulEventMutatesTheActivatedSessionSystem"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.NativeTraceSourceTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "5c0d20611a412ea20e308802eb3983bc20642731b7dcaa5af8fa93216e29da23",
+    "cases": [
+      "nativeFacadeResolvesOnlyRealLocalSourcesAndPreservesJarUris"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.NativeUseSessionActivationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "16dd8b78057e916be9419aa5a592dbed9691801bf04e7563182659d864ec5613",
+    "cases": [
+      "projectSummaryCountsOfficialMoiseRecordsAndOnlyProvidedExactBindings",
+      "failedNativeImportLeavesThePreviousSessionSystemUntouched",
+      "facadeActivatesTheExactValidatedNativeSystem",
+      "facadeExportsTheCurrentNativeModelAndActiveStateOnly(Path)"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.ocl.OclProfileOrderingTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "0039e87c348d629ff3905a45d69bcb3810e5cb8ac867c490d2bdfd5b5eede837",
+    "cases": [
+      "profileSourceKindIsExplicitAndNeverInferredFromTheFilename",
+      "authoredThenCoreOrderIsStableForWindowsAndUnixPathsAndInputOrder"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.Phase43PerformanceEvidenceTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "f214fe4509e1eb663c5689383cda1eb9e233d8ef022b79fc99afba3a5cb58e7e",
+    "cases": [
+      "recordsObservedPipelineAndRuntimeMeasurementsWithoutSemanticShortcuts"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.Phase9CaseStudyAcceptanceTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "c1a23ad74a3323aa633664568fdfa6a2ba2aa75bebb67dd2f98e606db6eff214",
+    "cases": [
+      "officialSnapshotsRetainCaseBoundariesAndUnavailableDynamicFacts",
+      "canonicalCasesActivateOneNativeSessionAndVerificationSystem"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.PreMigrationBaselineTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "ee44b7cc6c3f6d538733cf162b08e95ea667d94cc36b9675b9859c9011905be3",
+    "cases": [
+      "counterHistoricalStaticBaseline",
+      "auctionHistoricalStaticBaseline"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.ProductionAuthorityPhase8Test",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "be5d544cd0dfefb2a9752c3f6f190198a2d29be41eff2e6daa50c15553310e0c",
+    "cases": [
+      "nativeFailureIsFailClosedAndDoesNotCreateACompatibilityWorkspace",
+      "allImplicitFacadeEntryPointsUseNativeAuthority",
+      "nativeIsTheOnlyProductionPipelineAndSessionActionsShareItsFacade"
+    ]
+  },
+  {
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.project.JcmProjectLoaderTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "8a162dcc73821e730f99219768d91fe76e8af466d0d856b46139e5a198b649fd",
+    "cases": [
+      "malformedSourcePathDirectiveIsDiagnosed",
+      "invalidEntryReturnsActionableDiagnostic",
+      "discoversMinimalProjectAndIncludesWithStableGraph",
+      "invalidClasspathArchiveProducesALocatedDiagnostic",
+      "includeCycleReportsSourceLocation",
+      "includeTraversalOutsideRootIsRejected",
+      "missingAndAmbiguousAgentSourceAreReportedWithoutChoosing",
+      "explicitlyConfiguredExternalSourcePathIsAllowedButDirectTraversalIsNot",
+      "secondMasDeclarationIsRejectedInsteadOfSilentlyIgnored",
+      "defaultClasspathCannotEscapeThroughALinkedDirectory",
+      "resolvesArtifactClassFromExplicitClasspathWithoutLoadingIt"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.project.ProjectModelTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "6c5e9f3b9cb58634e61e22492ccfa1c581cff40b12804f88df196c28432ff6af",
+    "cases": [
+      "sourceFileHashesExactBytesAndMissingFileFails",
+      "projectRootNormalizesPathAndRejectsBlankIdentity",
+      "sourceSpanAndDiagnosticKeepActionableLocation"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.release.PackagedResourceNamespaceTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "3f9eb9912adc344712d62ad20672742729777ebbeaed11eb5441249aa2bbc890",
+    "cases": [
+      "activeNamespaceContainsV2WhileTargetV1ResourcesAreHistoricalOnly"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "626d813cbfcba6493709856c2201a4092bd72949f0a1b9cf2474c0b988641cec",
+    "cases": [
+      "releaseManifestPinsVersionAndCompletePackageInventory"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.ReplayStepFacadeTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "b762daabbbf21c25f8c5ea0792e4e301c8fb905dddad3ccff7b151c1b730a9f2",
+    "cases": [
+      "freezeBeforeDisconnectThenActivateOnlyOfflineIsolatedSessionAndRouteAllReads"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.runtime.AuctionSourceRuntimeTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "ddf2fd5b82c0da9e67ad8739bc4c1555c9e04c7bcbbf6dd9e42291645fb6c141",
+    "cases": [
+      "compilesAndExecutesTheSameAuctionSourcesImportedByTheEvidencePipeline"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.runtime.CartagoRuntimeConnectorTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "960f6e62c650eeceaea46d22be6a5b5ad2e39a936c17bd38326ccc1a2efcb57b",
+    "cases": [
+      "failedUnregisterRemainsAnExplicitRetryableCleanupFailure",
+      "discoversRealArtifactSnapshotsPropertiesAndStreamsOperationLifecycle"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.runtime.CompositeRuntimeConnectorTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "fdb2a98eac88d75affb4ab4db3c3f6507aba9413a80501bacd42526d1cf861c1",
+    "cases": [
+      "cleanupFailuresDoNotSkipOtherChildrenAndRemainRetryable",
+      "retiredChildCallbackCannotEnterReplacementSubscription",
+      "combinesSnapshotsAndRenumbersChildEventsIntoOneMonotonicStream"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "419ff0e104a432a69f9c8b3cdd3d19c3d8c4e2223c1129b54c6b28d2d32b15c3",
+    "cases": [
+      "secondCaseUsesUnchangedPipelineWithLiveStateFailuresAndResync"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.runtime.HistoricalRuntimeMappingTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "4ef4e3806c832bef33c3a5c49fa7a566e03304dcb8712f71e99f0b4dea6b3801",
+    "cases": [
+      "originalFrozenRuntimeAndTargetBytesRemainVerifiable"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.runtime.JasonRuntimeConnectorTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "50f631488b414b062ea527c7e23f0e312ee628c1fe765b2276f118b806eb9af6",
+    "cases": [
+      "snapshotsBeliefsAndPublishesBeliefGoalActionAndMessageEventsFromOfficialHooks"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "b9f1dd8b0c975587ea7b32b95eec64ebd76408beb6fea3bfb0f9355e9a7e4746",
+    "cases": [
+      "mirrorsRealJasonCartagoAndMoiseAuctionThenReconnectsWithFullResync"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.runtime.MoiseBoardSnapshotSourceTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "7b8427d0404c12e8e45df499419f279794f882534dd5b6fc04cefb187977e6ff",
+    "cases": [
+      "rejectsWrongOwnerAndUninitializedBoard",
+      "readsActualBoardRepresentationWithoutInventingAnOE"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.runtime.MoiseRuntimeConnectorTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "ad9dbc3ee152183025f36e228dde9fa617c03f9244a94d48bb29e49ffffe13d6",
+    "cases": [
+      "snapshotsAndPollsRealMoiseOrganisationEntityState"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeAliasTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "8383e0eeaaddfa7ad5486ce7eed89d2f4a6d66e9e3a621e78dd9a3b3f23f59a5",
+    "cases": [
+      "rebuildDoesNotTransferAliasesAcrossChangedSourceOrRule",
+      "aliasesAreExactAndStaleRecordsCannotBeReused"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeAuthorityTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "4969308cb2274c459bab7106444f18a812bcbdceaffd4ba74af666de7e5e2ddc",
+    "cases": [
+      "rejectsOrganisationFactsClaimedByEnvironmentAuthority"
+    ]
+  },
+  {
+    "tests": 26,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "46cd755ede300c2cd01c5cb0b20aa14b416179f7e498acbf42c78fb03adaa179",
+    "cases": [
+      "backpressureRejectionCannotResurrectAnInFlightOperationCorrelation",
+      "backpressureTombstonesRetireAfterTheAcceptedWatermarkCompletes",
+      "syntheticConnectorMirrorsJsonReplayThenReconnectResyncRepairsDrift",
+      "lateCallbackAfterWorkspaceReplacementBelongsToTheOldObserver",
+      "completionBeforeRejectedTerminalStillInvalidatesTheOlderMutationCorrelation",
+      "observerFailureCannotLeaveMirrorLive",
+      "recordsEventToMirrorLatencyAndQueueSampleWithoutAnSla",
+      "operationAndDiagnosticRetentionIsBoundedWithoutEvictingActiveOperations",
+      "outOfOrderTerminalCannotPoisonANewerAcceptedTerminal",
+      "mirrorReportsOrderingAndShutdownRejectionsAndClosesTimingLifecycle",
+      "unrelatedSemanticTraceCannotAuthorizeCreationAndUnknownPropertyCannotDisappear",
+      "eventCodecValidatesKindPayloadAndRoundTripsOrderingMetadata",
+      "unsubscribeFailureStillDrainsWorkerAndDisconnectsTransport",
+      "staleRejectedTerminalDoesNotInvalidateANewerActiveOperation",
+      "mutationEngineAppliesAllMutationKindsAndQuarantinesUnknownTrace",
+      "lifecycleObserverFailuresCannotRetainLiveTruth",
+      "receivingObserverFailureRequiresDisconnectAndAuthoritativeRecovery",
+      "orderedQueuePreservesSequenceReportsBackpressureAndDrainsOnStop",
+      "terminalCannotCloseAnotherTargetAndLinkReplayIsIdempotent",
+      "initialSynchronizationBuffersConcurrentDeltaAndDetectsLostConnection",
+      "lateClosedStreamTerminalCannotPoisonMutationCorrelation",
+      "backpressureTombstoneCapacityFailsClosedUntilStreamBoundary",
+      "tracedLifecycleRestoresExactObjectAndStrictValuesRejectLossyInput",
+      "mirrorRejectsCallbackDeliveredAfterFailedInitialSynchronization",
+      "snapshotBufferOverflowFailsClosedEvenWhenProducerCatchesCallbackFailure",
+      "useMutationFailureMovesMirrorToErrorAndDoesNotCorruptExistingState"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeIdentityHardeningTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "d5bb1fb136b1a2d4f56e92ed6e662f0c666ce1563d95298ac515eef7975566b1",
+    "cases": [
+      "replacedAgentCannotEmitThroughOldHooks",
+      "eventOwnsNestedPayloadSnapshot"
+    ]
+  },
+  {
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeMappingTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "64323f93771dbaeca7d3d78a431defe60066ee53e283d9bc29b0a09ea113b4f0",
+    "cases": [
+      "conflictsAndUnsafeMutationsFailClosed",
+      "minimalDocumentAndSemanticNegativeControls",
+      "strictSchemaAndMalformedInput",
+      "compatibilityReportIsDerivedAndMachineReadable",
+      "canonicalMappingCoversTaxonomyDeterministically",
+      "structurallyCompatibleActionsCannotInvertSourceEventMeaning",
+      "frozenFingerprintAndLegacyDraftFailClosed"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeMigrationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "dd230948d358e2812b1198ef42ee095859c3c2b66796abb22ca8dbed1dbea9b1",
+    "cases": [
+      "alternateVocabularyUsesSameSnapshotQueueTraceAndMutationMechanics",
+      "alternateAnchorsPreserveAllSourceRulesWithoutChangingPipeline",
+      "exactAdapterRejectsMissingWrongKindStaleAndWrongSemanticIdentity"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeTraceTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "615679947ba44338a1ed9fba38ddde18a2b693465e5ecfa069e75fe1145c7a1d",
+    "cases": [
+      "orderedHistoryRejectsDuplicatesAndRetiredGenerations",
+      "evidenceAndReplayWindowsRetireOldestEntriesDeterministically"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.runtime.V2RuntimeOrderTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "a37995fd072b48c45190c856a0660a415ec0aec7d6b02ff803829fb19029cb03",
+    "cases": [
+      "activeDefaultReordersMaterializedV2PlanAndReconnectRestoresAuthoritativeOrders"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantic.SemanticIdTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "ecb98df0335b7ce73261a0e83670814b5611bd104a625b7ecb46926a47c51298",
+    "cases": [
+      "producesSixPartCanonicalIdentityDeterministically",
+      "rejectsMissingIdentitySegments",
+      "structuralCharactersCannotMergeDistinctIdentities",
+      "differentOwnersDoNotCollideButDuplicateIdentityIsRejected"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantic.SemanticModelTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "9a4e2e216f75996b138d9584ca150a443bdb37c6e91971fac9211588672698d8",
+    "cases": [
+      "immutableIrKeepsExactKindTypedValueUnresolvedReferenceAndProvenance",
+      "rootIndexesSourcesAndAmbiguousSymbolsWithoutChoosingOne",
+      "metamodelKindsMatchCanonicalEcoreAndHaveDimensions"
+    ]
+  },
+  {
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantic.V2SemanticModelTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "053d37c778669b14c7a622b6499b43688e166f4bf6993bdeb8bc18b9dabdf75e",
+    "cases": [
+      "enumerationIsTypedAndParserFactsCannotMasqueradeAsAttributes",
+      "oppositeAliasesHaveIndependentSourceTracesToTheSameMembershipAssociation",
+      "duplicateNamesKeepDistinctIdsAndInvalidTypedFactsAreRejected",
+      "descriptorInventoryAndUnknownKindsDoNotAcceptHistoricalOrFuzzyNames",
+      "typedEnumMaterializesThroughTextAndDirectBackends",
+      "exactResolverNeverBindsOutsideCandidatesOrMatchesAnArbitraryAncestor",
+      "eachDimensionAndCrossDimensionalOrdersSurviveDeterministicExport"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.BoundedExplorerTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "6653a3cb595962f9619957d6fb0797aa04ddda4748f5880354fd5fa854c0924b",
+    "cases": [
+      "cutoffsDeadlockPopulationAndRejectedPostAreNeverSuccess",
+      "finiteOracleClassifiesAllMixedNoneAndUnknownWithoutGeneralMasClaim",
+      "differentTemporalHistoriesAtTheSameDomainStateAreNeverMergedAndActorsInterleave",
+      "missingFrameArbitraryBehaviorAndBackendUndefinedAreExplicit"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalAsyncInvocationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "849f49e4b07401f31bd1281e4a10bbb3616162a5468e9d0f72f418f34359fa65",
+    "cases": [
+      "actualZeroToTwoFailsNativeAtPreWhileOriginalHistoricalTaskRemainsPending",
+      "canonicalOperationPolicyUsesTheSameNamespacedConditionIdsAsWorkerResults",
+      "aBlockedNativeOperationPreconditionDoesNotHoldWriterOrCartagoAction",
+      "ambiguousInvocationContextCannotCreditEveryEnactmentOfOnePerformer"
+    ]
+  },
+  {
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalCslMappingTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "d753344930c3493c0a62ad07183504bb0b03c07e7cfb8ce301e133c3058cd4ab",
+    "cases": [
+      "legacyStructuralIntersectionAndFullSourcePreservationStillHold",
+      "originalRoleInheritanceAndDeclarationOwnersMatchSelectedSourceDefinitions",
+      "abstractRoleMissingParentAndOpaqueOrMismatchedPropertyTypesRejectBeforeHostActivation",
+      "incompleteSourceAndDuplicateTargetSymbolsCannotBecomeCompleteSchemaClaims",
+      "sourceGroupsRolesAndRegisteredArtifactBecomeRealCslM1AndOneEmptyHostSystem",
+      "explicitlyRegisteredEnumViewKeepsEnumTypeAndRequiresItsExactSourceTypeBinding"
+    ]
+  },
+  {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalGoalMappingTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "c3d557d5a25e0f29d0d77ddf5750553996f154edbc4189485af4795eb1d59ff2",
+    "cases": [
+      "independentContextSessionsUseOriginalAndOrDependencyWithoutCrossContextHistory",
+      "actualSourceAndAuthoredAbstractionProduceOriginalModelAndExactDefinitionTemplates",
+      "missingBindingsRootPolicyTaskContractAndTemporalCastingAreUnsupported",
+      "normativeStateAndUnrelatedRefinementCannotStandInForSourceSemantics",
+      "sequenceAsPlainAndAndActiveGoalAsSatisfactionCannotBeAdmitted"
+    ]
+  },
+  {
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalMappingContractTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "68527df8a368871b22499b60ae1ec4e8ff1c4f75b449adff3f0392b18c92c490",
+    "cases": [
+      "snapshotAndAuthoredRulesProduceCanonicalOriginalModelsAndCompleteTrace",
+      "configurationVersionUnknownFieldsAndDuplicateJsonKeysCannotBypassAdmission",
+      "completeSourceFeaturesAndLegacyBundleCompatibilityRemainUnchanged",
+      "profileAndRuleReplacementChangesProgramWithoutChangingOriginalEngine",
+      "originalMutableGoalDefinitionCannotChangeAfterProgramOwnership",
+      "ambiguousBindingsWrongSourceProfileAndAgentEntityCoercionAreRejected",
+      "versionedRulesDiagnosticAndSourceDecisionsRoundTripWithoutLegacyIr"
+    ]
+  },
+  {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalOclContractMappingTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "5b9a17826ab530c181ffd2c5225ed33295ba559b975a1787b17d399ef3669c1d",
+    "cases": [
+      "nativeTypeErrorKeepsAlreadyActiveHostSystem",
+      "canonicalSlotsCompileOnExactNativeOperationAndRealPairState",
+      "aslNplAndNameOnlyOrWrongOverloadNeverBecomeOclContracts",
+      "preAndPostCannotReferToDifferentNativeOperations",
+      "differentlyAuthoredBodyCannotReplaceCanonicalOriginalTaskSlot"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalPublicationOrderTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "5cc5e5ae1521ee04ddf1f21030758070e1350254bab927ac77ebfbe48cf935db",
+    "cases": [
+      "delayedEvaluationDoesNotPublishOverANewerNativeVersion",
+      "alreadyCompletedBootstrapCutDoesNotWaitForANewerBlockedEvaluation",
+      "evidenceOnlyCallbackCannotStrandTheFormalCutAsPermanentlyPending"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalReplayTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "6fe551eecfcaffeba8a2389d4dcef1c59832ed5973a76dccd07d7f624d9d9a2a",
+    "cases": [
+      "programCodecRejectsWrongEngineProfileModelAndSourceWithoutFrameworkSerialization",
+      "originalProgramNativeAtPreAndContextualHistoryRoundTripInVersionedBundle",
+      "realZeroToTwoInvocationFailureReplaysWithoutChangingHistoricalTaskToViolation",
+      "gapAndProducerResetRetainQualityAndResetHistoryWithNoBooleanCoercion"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalRuntimeAdmissionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "8e4f75e74fd03932847e42a68b88b8f729f77e41facef4e171f067e97611e3de",
+    "cases": [
+      "exactCastContainsOriginalActorsAndSelfWithStableThenNewEpisodeOnReenactment",
+      "actualPlayerQuitDisposesIndependentIdentityAndRolesAndCannotRedirectOldIncarnation",
+      "unknownErrorUndefinedPartialAndGapNeverBecomeFalse",
+      "typedPlanIsReadOnlyAndManualEditsCannotCertifyAcceptedWorldState"
+    ]
+  },
+  {
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalRuntimeProjectionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "9ebecdf69a558948c7edbb99fef3dd443bccbe4209ca80115096b2135ad5b012",
+    "cases": [
+      "selectedRoleSubsetKeepsOtherSourceRolesAsEvidenceAndImmutablePolicyPreservesObservedFacts",
+      "actualTypedEnumObservationsUseExactNamedEnumAndNativeMutation",
+      "partialAndInvalidReplacementPreserveObjectsWhileFullMoiseAbsenceRetiresOnlyItsScope",
+      "existingGenericWriterHandlesAuthoritativeNaryTupleCreateDeleteRollbackAndExport",
+      "actualCartagoCounterAndMoiseRolesUseCanonicalBindingsOneStateAndStableIncarnations",
+      "propertyRemovalAndArtifactReplacementRetireOnlyTheirExactIdentity"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalTransactionFailureTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "47aae7900799f352ac9369e1d32ad9740b6b324025ca6947c4b3c81dd66d9f9d",
+    "cases": [
+      "failurePreparingSemanticEvaluationAfterCommitKeepsNativeAndProtocolCutWithTypedError",
+      "rejectedSnapshotDoesNotRebindEngineOrDiscardPreviousFrozenCuts",
+      "manualEnactmentLinkEditCannotBeCertifiedAsAnAcceptedContextCast",
+      "missingJournalCannotCertifyAcceptedFactsOrRemainReplayable"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CartagoAwaitRegressionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "a3cccbecaca6aa124a1554bf77298ed5c146c490e62a739ed78e6b8b92c6e4cb",
+    "cases": [
+      "actualAwaitReportsPartialLifecycleAndKeepsBothInvocationPreStates"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CslNativeBindingTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "9c4c22650ed0decc76f066cc964f0e35c529adb0dea087f64d3a043465845e81",
+    "cases": [
+      "explicitCslBindingUsesOneNativeModelPreservesInvariantsAndNoDeclarationPopulation",
+      "staticDeclaredInterfaceUsesActualOperationMethodWithoutRuntimePopulation"
+    ]
+  },
+  {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CslSchemaTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "8039f5fff3af0121f5aa5c73c685ce052aa31016ef6486b3a2a6f1f7a6aaec5b",
+    "cases": [
+      "cslDoesNotAcceptRuntimeEnactmentAsGenericRoleRoleDomainAssociation",
+      "hostCompilerTwoStatesAndUndefinedRemainDistinct",
+      "strictScalarBindingDoesNotWidenOrTruncateObservations",
+      "typedConfigurationRoundTripAndUnknownFieldsFailClosed",
+      "compositionWholeMultiplicityFollowsCoreV4"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CslStructuralPolicyTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "3578b747afa0e60c198a0c0a69d894742311f983cee00963d2db2cd81ba2d2f0",
+    "cases": [
+      "associationAggregationCompositionKeepObservedDeletionPolicyExplicit",
+      "inheritanceEnactmentCompatibilityAndCardinalitiesUseOneRoleOccurrence",
+      "rejectsNestingCyclesKindsInvalidBoundsAndUnsupportedSourceParentProjection",
+      "nativeEmfM2SeparatesCoreClassifiersFromObserverPlayers"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CslVerticalSliceTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "097178012c6592893d804ac2cab62f4c831007628ad9db0d2fb14c263bfae6d4",
+    "cases": [
+      "realArtifactAndAcceptedGroupBoardFeedSameSystemInvariantTransitionAchieveAndReplay",
+      "acceptedRuntimeEnactmentRetainsAnAuthoredPerContextCardinalityViolation"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.DetailedVerdictTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "253c467e2dee6e0ee984aee78e7930918663503a05fc2d9caff698d72511ab50",
+    "cases": [
+      "portableEvidenceRetainsAllSevenOutcomesAndOriginalWitness"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.EcoreSourceLoaderTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "a8ebeaf84a759c398916246a14266c289744c5aaf3269228254b6f35c40558a1",
+    "cases": [
+      "everyFeatureAndReferenceIsPreservedIncludingExplicitDefaultValues",
+      "malformedMissingRequiredFeaturesUnknownEnumAndExternalReferencesAreRejected",
+      "exactBundledMetamodelHasAllTwentyOneClassesAndSevenEnumerations",
+      "dynamicEnumsAreValuesNotExternalEObjectReferences"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.EngineHostIntegrationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "ef355193be5e79c36c311d401ec2dbfe0a0521602ffaf598260e8b69a748f3be",
+    "cases": [
+      "actualUsePluginLoaderKeepsHostClassIdentityAndLoadsOneOriginalEngine"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.FunctionalLiveBoardTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "ab2b4933723c543f31b30723e5509d331c9c78689fa46dca42d827713fa116b8",
+    "cases": [
+      "inheritedBoardOperationsGiveWaitingEnabledSatisfiedAndExactCommittedDoneAgents",
+      "realPublicSchemeBoardCutCarriesIndependentArgumentsAndUuidIntoSameNativeState"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.FunctionalObservationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "a2efa778dd8df0c1e8b050b94ca22dcff557d46648ab2ea67b2f29ab5ea51813",
+    "cases": [
+      "sameSpecTwoBoardsKeepArgumentsGoalsAndAllocationSeparateAndRequireFreshCut",
+      "malformedIncompleteOrWrongUuidCutIsRejectedAtomically",
+      "commitmentLeaveRejoinProducesNewLifetimeAndAllocationViolationIsRetained"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.JasonAbstractionPolicyTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "0e06d2775e8a07f7da7f8da840502ca0e16c7ddaec66b5d0ce28a6570c308be8",
+    "cases": [
+      "sourceStepNeedsExactProgramPlanBodyContextAndTargetInvocationContract"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.JasonTaskConfigurationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "5f6a16580f309feed2aae885234de361462671e6e6957f10d55b80f96a059e68",
+    "cases": [
+      "productionConfigurationAdmitsExactSelectedStepButReportsMissingRuntimeCausation"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.LiveMasDefectRegressionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "5f6c3258487bd4c4cf0bd4f61a7573c8c678a6846df7651dadae431bb0bfa9c0",
+    "cases": [
+      "actualTwoAgentMasKeepsNplStreamLiveAndAttributesTasksToTheirPerformer"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.MentalStateProjectionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "172d1bab2ad49e4993e844854162a70b64a13e57b2639919db5693b00d47fe7b",
+    "cases": [
+      "changingStoredKnowledgeKeepsWorldStateAndOclQueriesSeparateWithClosedScopeAdmission",
+      "liveArtifactValueAndLaggingMentalPerceptRemainIndependentlyQueryableAfterBeliefRemoval",
+      "malformedOwnerOrCycleObservationCannotPartiallyReplaceExistingMentalState"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.NormativeObservationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "205e0f1ea1b6097f8a9b01ffc08a0f4a2ab60aee3918749c1c95133939e8bdfe",
+    "cases": [
+      "resyncRestoresReportedStateButCannotCertifyLifecycleAcrossAMissingInterval",
+      "incompatibleTerminalTransitionsAmbiguousKeysAndMissingCreationAreExplicit",
+      "reportedLifecycleStaysSeparateFromIndependentDerivationAndIsReplayedWithoutAClock"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.NplDependencyRegressionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "fef4c1ac66508c73b321cb55b5b44268f6aae1c8b5bf201f3fe49a3b51bb11ac",
+    "cases": [
+      "consumerAndLiveLauncherClasspathUsesTheSameAuditedNplAsProducerTests"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.ObservationEnvelopeTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "4a33a7a71528698e04e5dbaa7bf75438c0335d499c0d79074daf5a3de84f09a6",
+    "cases": [
+      "selectedBoardCompletenessDoesNotCertifyGlobalPopulationAndInputTreesCannotMutateEvidence"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.ObserverIdentityLifecycleTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "efb88d6b91591c4405d90635ef0fe3ba21c9bb5c3f60af2d5828a9f445b49a61",
+    "cases": [
+      "multipleConfiguredInstancesKeepDeclarationAsProvenanceInsteadOfAliasingBothAgents",
+      "sameRunDiffBeliefReappearanceRestartPartialOmissionAndCompleteDeletionRespectLifetimes"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.OclSemanticBackendTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "2e574e26bcd2207ebba41f067a5c545fee00a9faacdc586b2c9d8272b7b13fa4",
+    "cases": [
+      "collectionsNavigationAtPreAndTypedResultUsePinnedNativeStates",
+      "compilationCacheTracksModelProfileAndNestedPropertyDependency",
+      "quantifiedNegationUndefinedAndIncompletePopulationUseNativeInvariantMeaning"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.OPlanSemanticsTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "de4868b5ae84b7e5e8b5ca7232c695c1c192654d6b6b3c5ca939652333e66b14",
+    "cases": [
+      "outcomeChoiceAcceptsOneOrBothAndSequenceStillRetainsItsOrder",
+      "invalidOrdinalDuplicateAndCustomOperatorProduceExplicitDecisions",
+      "orderedAndNestedPreconditionsMatchActualMoiseGoalApiForEveryGoal",
+      "sequenceCounterexampleParallelInterleavingsAndMissingCausalityAreDifferent"
+    ]
+  },
+  {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.OriginalEngineSessionIntegrationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "32bffd3e1b38da4e2d461c583b54d665a87b582815c6877bae0974d62fa0c2ab",
+    "cases": [
+      "actualAcceptedCutCallsOriginalMarkingAndPropagationOnOneHostSystem",
+      "realNativeAtPreTaskInputRequiresExactPerformerAndPinnedEnactmentToken",
+      "missingPropertyDefersRawHistoryAndGapIsNotHealedBySameRunResync",
+      "nativeViolationCommitsObservedFactAndExternalOclRemainsInSameResult",
+      "newProducerGenerationResetsHistoryAndCloseFencesCallbacksWithoutBlockingEdt"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.runtime.OriginalEngineFaultMatrixTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "26c4c523044da93ad87742bf08e4c2e3983dfb8ff3989b5f0fa6b51c4b6427ef",
+    "cases": [
+      "topologyConstructionFailureClosesTheStagedContextAndRestoresPreviousTopologyAndHistory",
+      "inputAndPostPropagationFailuresDiscardStagedHistoryWithoutInventingSourceGap"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.RuntimeMetricDistributionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "cd17c6e2a43e6e30e3ae7f365acf4acf878e744d23950eb2d6fb6b7cc831fe5a",
+    "cases": [
+      "recentPercentilesAreExactAndRetentionIsBoundedAfterOneHundredThousandSamples"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.RuntimeOwnerCheckpointTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "236922447b3124cafc87af9346430a1986ef3dd8c376171f01a3f3e8b915c3bb",
+    "cases": [
+      "cutAndCheckpointFromAnotherSessionCannotEnterEvenWithSameNativeSystemAndProducerKey",
+      "savepointRestoresOnlyHistoryAndRejectsForeignOrRevokedOwner",
+      "boundedPinnedCutsNeverWaitOnEdtAndCloseCompletesQueuedControlsAndFencesResults"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticAuthorityRoutingTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "1ecd7d891c89be260c0b832d32a4db4f9910e8ec4c415da5c01889033d429ce7",
+    "cases": [
+      "invalidNativeContractCannotFallBackToLocalSchemaOrSubsetOcl",
+      "documentedNoneAndTaskDifferencesRemainExplicitWithoutChangingLegacyExpectations",
+      "mixedLegacyAndCanonicalAuthorityIsRejectedBeforeEitherMapperIsCreated",
+      "canonicalRouteHasOriginalM1AndOneEngineWhileLegacyRouteStillWorksIndependently"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticBindingTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "8abc3570d329f9bd96ec324b286ffbb227b0308491e264ace106ca245a34fe1d",
+    "cases": [
+      "sameAuthoritativeModelInventoryKeepsObserverKindsAndNaryEndOrderAndExportsExactly",
+      "packagedMetamodelV2ObserverAttributesMatchActualCompiledHelpers"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticCapabilityManifestTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "ef473690acc55c92b62727fd78f38751983044342231367a16350cf6a08d2c80",
+    "cases": [
+      "packagedCapabilitiesMatchActualVersionedProfileAndStateTheirUnsupportedBoundary"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticMappingReplayTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "70e0bc6e568079bd5e0c1a0951fadad6b50eb3e7cf526b3686cb301e12227b09",
+    "cases": [
+      "staticComplementIsBoundToTheNativeModelAndVerifiedInPortableReplay"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticRecordAssetBoundsTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "99888580604c2d4d98e87a60b773a738eab737675fa0ab226ca2af657cf4c4ee",
+    "cases": [
+      "trustedRecordsStillEnforceTotalBytesAndDepthBudgets",
+      "trustedBase64AssetRoundTripsWithoutChangingUntrustedWireStringLimit"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticsProfileTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "27e1e7b74f51e75badda0844de6e5b382d0cb73d825cf99536971045a343254a",
+    "cases": [
+      "importProfileFailsClosedAndDoesNotRedefineAutoFull",
+      "v1CannotAdmitUnimplementedTemporalOrNormativeSemantics",
+      "missingAndUnsupportedEvidenceCannotAppearAsViolationInLegacyView"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticTransformationTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "f6e4c00ec14ddf6a13af8acd0881e7dbbd9541ba9735ae61328e6043c3b4bb84",
+    "cases": [
+      "catalogCoversEverySuppliedClassAndEnumAndEveryOfficialFeatureHasOneDecision",
+      "complementTamperAndMissingFeatureDecisionsCannotBeAdmitted",
+      "supplementedEcoreAndOfficialFrontendsReachTheSameNativeProjectionWithoutInferringEnactment"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SharedStateAcceptanceTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "50d54a0247634f10d0347a3c5db5a819fca87826078b40560d930c9dd7854e81",
+    "cases": [
+      "homonymousRolesInTwoOfficialOrganizationSpecificationsCannotCrossBind",
+      "oneSharedArtifactChangeReevaluatesAllBoundActorsOnTheSameVersion",
+      "duplicatePropertyOccurrenceAndTypeDriftRejectWholeUpdateWithoutReplacingSlot",
+      "sameRoleInTwoContextsIsDistinctAndObservedLeaveReadoptCreatesANewOccurrence"
+    ]
+  },
+  {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SnapshotCoverageRegressionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "c7c2e230d5d623088c2dd5fe6ea25a5a28d26395c284729a1c5f686d06bf3aac",
+    "cases": [
+      "rejectedEpochAndStaleCutAreReproducedByReplayWithoutRewindingState",
+      "staleSnapshotCannotRewindAnAcceptedViolationOrItsWatermark",
+      "everyPopulationAuthorityAndAllOrganizationScopesMustBeComplete",
+      "partialAgentPopulationCannotProveAnIntentionalAllInstancesEquality",
+      "newUnprojectedAgentInvalidatesPopulationProofUntilACompleteResync"
+    ]
+  },
+  {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SourceLensTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "ebf322a8bbdc05c3f47e431cbc3bfae4d765b9ef5a7603f0f221c160e1ed2550",
+    "cases": [
+      "malformedPublicInputsHaveExplicitBoundaryDiagnostics",
+      "andCannotChooseSequenceOrParallelWithoutOperatorAndOutsideEffectsStayUnsupported",
+      "propertyAndOperationInterfaceEditsDoNotInventMissingScalarTypesOrJavaBodies",
+      "getPutPreservesUnchangedBytesAndPutGetNormalizesSelectedStructure",
+      "staleDigestComplementTamperNameCollisionAndAmbiguousOwnershipNeverWriteSource"
+    ]
+  },
+  {
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.TaskPerformerRegressionTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "ee5f3044c675c2f415f0ef1bb242b4b647e2770a680f8ef06d6ad444b7fa2454",
+    "cases": [
+      "incompletePopulationInOperationConditionsNeverBecomesPassingTaskEvidence",
+      "operationOfAOnlyCreditsTheTaskBoundToAAndReplayRetainsAttribution",
+      "incompletePreContextCannotBeRepairedByAFreshContextOnlyAtCompletion",
+      "completionCannotReplaceThePerformerPinnedAtPre",
+      "legacyInvocationWithoutPerformerKeepsOclResultButCannotProveEitherActorTask",
+      "readoptionCannotCreditAnInvocationStartedInTheOldRoleOccurrence"
+    ]
+  },
+  {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.TemporalGoalMonitorTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "76a94162d43114c8793ce9e75369c590e4378cbba79082e9d51accd7dc086782",
+    "cases": [
+      "missingBindingCannotRepairMaintainHistoryAndKnownWitnessSurvivesOnlySameEpisode",
+      "refinementUsesEvaluatedChildrenAndDependencyUsesBoundOccurrence",
+      "independentlyExpectedTemporalTraces",
+      "taskCannotUseHistoricalPreconditionSuccessAndUnknownIsNotFalse",
+      "historyGapReactivationAndIncarnationHaveExplicitSemantics"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.VerificationLoadScenarioTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "11054f247b9f77a3f56a40da846c3ce5e75f7dfea0386e08c4463f8ce8f4725c",
+    "cases": [
+      "twoSourceWritersAreSerializedWithoutDroppingSharedStateUpdatesAndReplayRetainsAcceptedOrder",
+      "boundedLoadMatrixKeepsFullEvaluationAndReplayHashesIdenticalWithAndWithoutBindingCache"
+    ]
+  },
+  {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.trace.TraceBindingTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "2bb592a13be14ce21239250bfb916c241c75e4450ab6623e014773c867389f9f",
+    "cases": [
+      "bindingSchemaPersistsChoiceAndMarksChangedSourceStale",
+      "historicalV1TraceCannotAuthorizeRuntimeAndChangedContractRetiresAliases",
+      "duplicateLocalSymbolsAndOrganisationInstancesRemainAmbiguousWithoutScope",
+      "resolverUsesOnlyExactOrderedStrategiesAndBindingForRealAmbiguity",
+      "auctionTracePersistsDeclarationsObjectsOperationsAndRuntimeIndexes"
+    ]
+  },
+  {
+    "tests": 13,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.ui.JaCaMoWorkbenchPanelTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "083a1766668194be89858adb81f63d47f7ceb92fb0e8d35050b8aa7a0e40f793",
+    "cases": [
+      "oneShotLauncherPropertyAutoImportsTheSingleJcmAndLeavesChooserAsFallback",
+      "interactiveImportBuildsOffEdtAndPublishesUiOnEdt",
+      "nextImportSelectionIsCapturedAndMonitorActionsStayOnWorker",
+      "retainedWorkflowDelegatesImportOclAndStartInOrderWithoutCheckingInSwing",
+      "externallyOpenedReplayStillBlocksImportOclAndStart",
+      "longErrorMessagesAreWrappedForStatusAndDialogPresentation",
+      "projectChooserStartsAtAndSelectsTheDerivedJcmHint(Path)",
+      "simplifiedWorkbenchContainsOnlyProjectionRulesAndRetainedActions",
+      "projectionRulesKeepEveryExactCatalogMappingInThreeReadOnlyColumns",
+      "displayedRuntimeStatusUpdatesFromCachedFacadeWithoutAConnectOrResyncAction",
+      "failedImportStillShowsItsErrorWithoutADiagnosticsTab",
+      "loadOclRequiresImportAndBusyOperationCannotPublishAnOverlappingProfile",
+      "detachedPanelDoesNotPublishLateImportError"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.ui.SemanticEvidencePanelTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "43db1bb3723110a9c20756c14126d2bf0feb1bf78d046c6c05491157d5a082a7",
+    "cases": [
+      "originalRawPendingQualityAndInvocationFailRemainIndependentAndEmptyIsNotPass",
+      "everyDetailedVerdictIsDisplayedWithoutCoercionAndRowsAreReadOnly"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.V2DeterminismTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "97755ab47cbca8d3672d7d8f1857dc163480804619fc37c66dc24c37dba5282a",
+    "cases": [
+      "exactV2InputsProduceIdenticalSemanticAndGeneratedOutputs"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.V2FinalFreezeTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "e675d963cbfb664615021f98e73084a1761c2beb14b061965d608e97afed1313",
+    "cases": [
+      "oneFinalManifestPinsEveryFrozenV2Contract",
+      "mutatedFreezeFingerprintFailsClosedWithoutHistoricalFallback"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.V2HardeningAuditTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "5a70ef17efe03f5393ba6d5aae24e75024792a39115d5004bf31a21fe5172cf2",
+    "cases": [
+      "canonicalV2ResourcesContainNoHistoricalTargetVocabulary",
+      "activeProductionPathHasNoUnresolvedMarkersCaseDispatchOrShellExecution",
+      "activeDocumentationDoesNotPresentV1AsTheCurrentBaseline"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.verification.CrossDimensionalVerifierTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "d1df32b228d13b23831998a42e76731bb91024234b290112a3143b1f8f94c4a7",
+    "cases": [
+      "sourceRelationsRequireExactTargetsAndMissingEvidenceIsExplicit"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "8e542b49ad4ed1f4dd88a9a5f01e536425a4a0af10d08a145e678267e42ddf44",
+    "cases": [
+      "exportersEmitMachineReadableAndHumanReadableOutcomeDetails",
+      "operationCheckKeepsCorrelationAndUsesPreStateForPreAndPostconditions",
+      "registryPreservesTranslatedCoreCaseAndUserOriginsWithDependencies",
+      "fullCheckReportsStructureAndTracedAuctionViolationWithoutCollapsingErrors"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayerTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "ddd739026490148619221b475585b105f7fec5e1e7db217b3581fe02ef2c6f52",
+    "cases": [
+      "historicalProfileIsExplicitAndDoesNotMutateFrozenBaselinePlan",
+      "activeV2ProfilePreservesTheWholePlanAndRejectsCrossBaselineUse"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeHistoryVerifierTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "fdb6c4e4aca208e121d911600275069c977572f4b64d5f4612567ca4d6abf513",
+    "cases": [
+      "terminalCannotCrossStreamAndFinitePrefixIsNotLivenessFailure",
+      "exactOrderCrossTargetDuplicateTerminalAndRetiredGeneration"
+    ]
+  },
+  {
+    "tests": 20,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+    "module": "use-plugin",
+    "kind": "surefire",
+    "reportSha256": "8f0dc09c54b97f03e30f1a64cbe71f6f3490748c6dca4f72e98629c92065c3bb",
+    "cases": [
+      "backpressureTombstonesRetireAfterTheAcceptedWatermarkCompletes",
+      "completionBeforeRejectedTerminalStillInvalidatesTheOlderVerificationCorrelation",
+      "eventDrivenChecksCorrelateViolationAndOperationPrePostUsingCapturedPreState",
+      "rejectedOperationTerminalCannotBeResurrectedByBlockedPreStateCapture",
+      "runtimeRuleRegistryIsInjectedAndSelectedByTheVerifier",
+      "connectorReceiptIsNotBlockedByAnOngoingVerification",
+      "staleMirrorCannotEvaluateCurrentInvariantOrCapturePreState",
+      "lateClosedStreamTerminalCannotPoisonNextStreamPreState",
+      "productionRuntimeVerificationPathPersistsBridgeGateDecisionBeforeOcl",
+      "stateChangeLatencyCoversMutationThroughVerificationResult",
+      "rejectedAndClosedEventsCannotLeaveReusableReceiptTimestamps",
+      "operationReportsUseTheSameReceiptToResultLatencyContract",
+      "backpressureTombstoneCapacityBlocksNewPreStateUntilStreamBoundary",
+      "wrongTerminalCannotConsumeExactPreStateAndExportRetainsAttribution",
+      "dependencyIndexTargetsDeclaredAndGlobalConstraintsAndFallsBackWhenNoDependencyIsKnown",
+      "authoritativeDriftIsDiagnosedAndPeriodicAutoResyncRepairsMirror",
+      "operationCompletionAndReportRetentionAreBounded",
+      "bufferedEventLatencyStartsAtOriginalConnectorReceipt",
+      "targetedInvariantResultIsEquivalentToTheSameConstraintInAFullCheck",
+      "streamCloseDiscardsOperationCorrelationBeforeTheNextStream"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.AuctionPauseResumeIT",
+    "module": "use-plugin",
+    "kind": "failsafe",
+    "reportSha256": "a8214e1f69efe34d34bd049c334527ab95c046eb59d7dbdb314f011a379dd7ac",
+    "cases": [
+      "approvedFalseFreezesCutThenAllFiveAgentsAckAndResumeResynchronizes"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimePackagedReplayIT",
+    "module": "use-plugin",
+    "kind": "failsafe",
+    "reportSha256": "9966c7d65d35b84bc2ad03e85eb1fbf5387e35b126f4a24c76c6b8e54b82f49c",
+    "cases": [
+      "installedReleaseReplaysNativeOclHistoryWithoutMavenOrJaCaMoClasspath"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeStepReplayGuiIT",
+    "module": "use-plugin",
+    "kind": "failsafe",
+    "reportSha256": "9abae09bd5e4263eb4ce85a69ac75463bb61399a542d816eccb37374e866cb5e",
+    "cases": [
+      "duplicateWorkbenchMenuOpenReusesItsOwnerAndCanReopenAfterClose",
+      "failedDiagramActivationDoesNotLeakSortingListenersOrViewCounts",
+      "normalViewsAndOclDialogFollowReadOnlyReplayWithoutListenerOrObjectDrift"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeUseExportRecompileIT",
+    "module": "use-plugin",
+    "kind": "failsafe",
+    "reportSha256": "05029dbbaab4c377b7465a03c6dfdfacac5f4cb07012a27b7ca60e5ed8a0fc66",
+    "cases": [
+      "officialPrinterOutputRecompilesToTheSameStructure"
+    ]
+  },
+  {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeUseGuiEndToEndIT",
+    "module": "use-plugin",
+    "kind": "failsafe",
+    "reportSha256": "83e4372363be9bef6f83920173c7e8dd227ddaf0cb53f5f1b787eba6c74505ce",
+    "cases": [
+      "schemaDiscoveredAfterViewsOpenRefreshesBrowserDiagramAndCounts",
+      "modelBrowserDiagramsOclAndEventBusUseTheActivatedNativeSystem",
+      "auctionBrowserDiagramsAttributesLinksAndOclShareTheRuntimeSystem",
+      "atomicRuntimeCheckpointRefreshesObjectDiagramAndUsesPrecomputedInvariantResults"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeUseSessionOclIT",
+    "module": "use-plugin",
+    "kind": "failsafe",
+    "reportSha256": "3c675034f7f3c7b451f6e609dfba88a2ad5637f852cc49aa05ad64034a394a92",
+    "cases": [
+      "helloUsesTheExactActivatedSystemAndNativeOcl"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.GuiPluginStagingIT",
+    "module": "use-plugin",
+    "kind": "failsafe",
+    "reportSha256": "0900183577d6b2ecf19c9605bd06dff62ae752dfe36ec49b356a727d41ea2c41",
+    "cases": [
+      "developmentGuiLoadsTheCurrentProductionPluginArtifact"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.HelloWorldSemanticInventoryIT",
+    "module": "use-plugin",
+    "kind": "failsafe",
+    "reportSha256": "071dc23fd942804f0c0dbf924dd765547444b38e9c64f5f0bdc591fe3f3063fd",
+    "cases": [
+      "originalHelloWorldAutoInventory",
+      "originalHelloWorldFullInventory"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.HouseBuildingDomainProjectionIT",
+    "module": "use-plugin",
+    "kind": "failsafe",
+    "reportSha256": "4ecbd3bac9e51918c14543548f4e28eeace2ff286a11c963318c60bfeced5747",
+    "cases": [
+      "originalHouseBuildingDiscoversDynamicDomainStateOnTheSameSystem"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.LegacyAuthorityPackagingIT",
+    "module": "use-plugin",
+    "kind": "failsafe",
+    "reportSha256": "404be823ad1f652298d92cd283a4f6f172e0a7d27ec47bab1b105b36c54e9c1f",
+    "cases": [
+      "releaseJarShipsBridgeAuthorityAndOmitsProvenLegacyAuthorities"
+    ]
+  },
+  {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.release.ReleasePackageIT",
+    "module": "use-plugin",
+    "kind": "failsafe",
+    "reportSha256": "3911087cf7d178dcb913a6ae1ac4b73dd82302204d8f3759b380a0f60adff5cc",
+    "cases": [
+      "packagedPluginJarLoadsInPinnedUseRuntime",
+      "installedArchiveImportsCanonicalMappingWithoutMavenTestClasspath",
+      "builtReleaseMatchesManifestAndPublishedChecksum"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticPackagedReplayIT",
+    "module": "use-plugin",
+    "kind": "failsafe",
+    "reportSha256": "37777b37d4ee4e65de877df4128f63d5607c8400a63db6df18b0d9d48739b969",
+    "cases": [
+      "installedReleaseReplaysMappedSevenValuedAndTemporalHistory"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.semantics.Use4GoalPackagedReplayIT",
+    "module": "use-plugin",
+    "kind": "failsafe",
+    "reportSha256": "3572291f6545f6a70e60b63c180a981d1afea26dfc40b3816012549e3166789d",
+    "cases": [
+      "installedCanonicalReplayUsesReleaseEngineAndHostWithoutFrameworkOrTestClasspath"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.ui.ManagedAuctionWorkbenchIT",
+    "module": "use-plugin",
+    "kind": "failsafe",
+    "reportSha256": "4a49747a62984bf30b4750da64671c552a0be93bf12fbec494663d038509c1d5",
+    "cases": [
+      "managedOriginalAuctionKeepsCurrentUiRelationsAndRecordedReanalysisOnTheSameSession"
+    ]
+  },
+  {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.ui.Use4GoalWorkbenchIT",
+    "module": "use-plugin",
+    "kind": "failsafe",
+    "reportSha256": "465d1afe24d53e025b860c6d41db3efd4d95cca1b6bc266403f985512fa36c7f",
+    "cases": [
+      "selectedOriginalEngineAndMonitorControlsKeepNativeViewsResponsive"
+    ]
+  },
+  {
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite": "org.tzi.use.plugins.jacamo.Use4GoalExternalBridgeIT",
+    "module": "use-plugin",
+    "kind": "failsafe",
+    "reportSha256": "86ee06cf7fd0af4441efdf75300aa4deb2ac26fea5dc16cc90bf076c7490d40b",
+    "cases": [
+      "actualProducerRestartResetsRunBindingsAndHistoryWhileUnownedConnectKeepsStartUnavailable",
+      "originalEngineUsesRealExternalMasAndMonitorLifecycleDoesNotOwnProducer"
+    ]
+  }
+]

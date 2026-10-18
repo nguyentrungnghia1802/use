@@ -27,6 +27,7 @@ public final class NativeRuntimeReplay {
                                List<String> diagnostics) { public ReplayReport { diagnostics = List.copyOf(diagnostics); } }
     static final List<String> FILES = List.of("model.use", "baseline.cmd", "constraints.ocl", "runtime.jsonl", "bindings.json");
     public void exportBundle(NativeRuntimeProjector projector, String coreUseText, Path directory) {
+        if(projector.mutations().canonicalMappingConfigured()){CanonicalReplaySupport.export(projector,coreUseText,directory);return;}
         projector.coordinator().read(() -> {
             var coordinator = projector.coordinator();
             if (coordinator.journal().hasGap()) throw new IllegalStateException("REPLAY_EXPORT_INCOMPLETE_JOURNAL:" + coordinator.journal().diagnostic());
@@ -96,14 +97,17 @@ public final class NativeRuntimeReplay {
             Files.copy(root.resolve("manifest.json"), copy.resolve("manifest.json"));
             if (Files.size(copy.resolve("manifest.json")) > 65536) throw new IllegalArgumentException("REPLAY_MANIFEST_TOO_LARGE");
             Map<String, Object> manifest = CanonicalJson.object(CanonicalJson.decode(Files.readAllBytes(copy.resolve("manifest.json"))));
-            if (!"2.0.0".equals(manifest.get("schemaVersion"))) throw new IllegalArgumentException("REPLAY_SCHEMA_UNSUPPORTED");
+            boolean canonical=CanonicalReplaySupport.VERSION.equals(manifest.get("schemaVersion"));
+            if (!canonical&&!"2.0.0".equals(manifest.get("schemaVersion"))) throw new IllegalArgumentException("REPLAY_SCHEMA_UNSUPPORTED");
+            if(canonical&&!"ACCEPTED_NATIVE_BOUNDARIES_AND_EXACT_ENGINE_COMPLETIONS".equals(manifest.get("temporalOrder")))throw new IllegalArgumentException("REPLAY_TEMPORAL_ORDER_UNSUPPORTED");
             if (!"OBSERVED_SUPPORTED_PROJECTION_ONLY".equals(manifest.get("scope"))) throw new IllegalArgumentException("REPLAY_SCOPE_UNSUPPORTED");
             Object entries = manifest.get("entries");
             if (!(entries instanceof Number count) || count.longValue() < 1 || count.longValue() > Integer.MAX_VALUE
                     || new java.math.BigDecimal(count.toString()).compareTo(java.math.BigDecimal.valueOf(count.longValue())) != 0)
                 throw new IllegalArgumentException("REPLAY_ENTRY_COUNT_INVALID");
             Map<String, Object> hashes = CanonicalJson.object(manifest.get("files"));
-            var expected=new java.util.HashSet<>(FILES);if(hashes.containsKey("mapping.json"))expected.add("mapping.json");
+            var expected=new java.util.HashSet<>(FILES);
+            if(canonical)expected.add(CanonicalReplaySupport.PROGRAM);else if(hashes.containsKey("mapping.json"))expected.add("mapping.json");
             if (!hashes.keySet().equals(expected)) throw new IllegalArgumentException("REPLAY_FILE_CATALOG_INVALID");
             for (String file : expected) {
                 Path path = root.resolve(file);
@@ -127,10 +131,16 @@ public final class NativeRuntimeReplay {
     public static final class Bundle implements AutoCloseable {
         private final Path root;
         private final Map<String,Object> manifest;
+        private final org.tzi.use.plugins.jacamo.semantics.evidence.SemanticProgramManifest.Decoded canonical;
         private List<Step> steps;
         private ReplayReport report;
         private boolean closed;
-        private Bundle(Path root, Map<String,Object> manifest) { this.root=root; this.manifest=manifest; }
+        private Bundle(Path root, Map<String,Object> manifest) throws Exception {
+            this.root=root; this.manifest=manifest;
+            canonical=CanonicalReplaySupport.VERSION.equals(manifest.get("schemaVersion"))?new org.tzi.use.plugins.jacamo.semantics.evidence.SemanticProgramManifest().decode(Files.readAllBytes(root.resolve(CanonicalReplaySupport.PROGRAM))):null;
+            if(canonical!=null&&!canonical.program().hash().equals(manifest.get("programHash")))throw new IllegalArgumentException("REPLAY_MANIFEST_PROGRAM_MISMATCH");
+        }
+        public boolean canonical(){return canonical!=null;}
         public List<Step> steps() { return steps; }
         public ReplayReport report() { return report; }
         public java.util.Optional<org.tzi.use.plugins.jacamo.semantics.mapping.MappingBundle> mapping() {
@@ -143,12 +153,12 @@ public final class NativeRuntimeReplay {
             try (var cursor = reconstruct()) {
                 var staticMapping=mapping();var attached=org.tzi.use.plugins.jacamo.semantics.evidence.SemanticMappingAttachment.read(cursor.projector.system().model());
                 if(!staticMapping.equals(attached))throw new IllegalArgumentException("REPLAY_MAPPING_MODEL_MISMATCH");
-                var baseline=cursor.projector.coordinator().lastObservation();
+                var baseline=cursor.formalResult();
                 index.add(new Step(0,0,0,baseline.stateVersion(),baseline.eventId(),baseline.sourceId(),baseline.stateHash()));
                 String previous = baseline.stateHash();
                 while (cursor.hasNext()) {
                     var record = cursor.dispatchNext();
-                    var result = cursor.projector.coordinator().lastObservation();
+                    var result = cursor.formalResult();
                     boolean transition = java.util.Set.of("EVENT","SNAPSHOT","OPERATION_PRE","OPERATION_POST").contains(record.kind())
                             && !previous.equals(result.stateHash());
                     if (transition) {
@@ -160,9 +170,9 @@ public final class NativeRuntimeReplay {
                 }
                 cursor.assertEnd();
                 if (index.isEmpty()) throw new IllegalArgumentException("REPLAY_BASELINE_REQUIRED");
-                finishStep(index, cursor.projector.coordinator().lastObservation(), cursor.ordinal-1);
+                finishStep(index, cursor.formalResult(), cursor.ordinal-1);
                 steps=List.copyOf(index);
-                var last=cursor.projector.coordinator().lastObservation();
+                var last=cursor.observedResult();
                 report=new ReplayReport(!cursor.stale, Math.toIntExact(cursor.ordinal), last.stateHash(), last.resultHash(),
                         List.of(cursor.stale ? "REPLAY_PARTIAL_COVERAGE_GAP" : "OBSERVED_SUPPORTED_PROJECTION_ONLY"));
             }
@@ -176,6 +186,26 @@ public final class NativeRuntimeReplay {
         public Cursor reconstruct() throws Exception {
             requireWorker();
             if (closed) throw new IllegalStateException("REPLAY_BUNDLE_CLOSED");
+            if(canonical!=null) {
+                // Rebuild from the exact portable source/rules with the original
+                // compilers/backend. No legacy M1, parallel state or SOIL oracle.
+                var built=new org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNativePipeline().buildCanonicalProgram(canonical.source(),org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.AUTO,canonical.program());
+                if(!built.nativeResult().export().useText().equals(Files.readString(root.resolve("model.use"))))throw new IllegalArgumentException("REPLAY_CANONICAL_BASELINE_MODEL_MISMATCH");
+                if(!new NativeUseSoilExporter().export(built.nativeResult().state().system()).commands().equals(Files.readString(root.resolve("baseline.cmd"))))throw new IllegalArgumentException("REPLAY_CANONICAL_BASELINE_STATE_MISMATCH");
+                String run;long generation;String revision;
+                try(var input=Files.newBufferedReader(root.resolve("runtime.jsonl"),StandardCharsets.UTF_8)) {
+                    var first=CanonicalJson.object(CanonicalJson.decode(input.readLine().getBytes(StandardCharsets.UTF_8)));
+                    var result=RuntimeVerificationResult.fromMap(CanonicalJson.object(first.get("result")));run=result.sessionId();generation=result.generation();revision=result.modelRevision();
+                }
+                var projector=new NativeRuntimeProjector(built,run,generation,revision);
+                var index=built.nativeResult().state().semanticObjectIndex();
+                if(!org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(projector.mutations().baselineBindings()).equals(org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(CanonicalJson.decode(Files.readAllBytes(root.resolve("bindings.json")))))){
+                    projector.close();throw new IllegalArgumentException("REPLAY_CANONICAL_BASELINE_BINDINGS_MISMATCH");
+                }
+                Cursor cursor=null;
+                try{cursor=new Cursor(this,projector.system(),index,projector);cursor.dispatchNext();return cursor;}
+                catch(Exception error){if(cursor!=null)cursor.close();else projector.close();throw error;}
+            }
             StringWriter diagnostics = new StringWriter();
             var model = USECompiler.compileSpecification(new ByteArrayInputStream(Files.readAllBytes(root.resolve("model.use"))),
                     "model.use", root.resolve("model.use").toUri(), new PrintWriter(diagnostics, true), new ModelFactory());
@@ -207,12 +237,39 @@ public final class NativeRuntimeReplay {
         private long ordinal;
         private boolean stale, closed, failed;
         private RuntimeVerificationResult previousResult;
+        private RuntimeVerificationResult recordedLast,recordedFormal;
+        private final Map<String,RuntimeVerificationResult> completed=new LinkedHashMap<>();
+        private long completionBytes;
+        private final java.util.ArrayDeque<RuntimeHistoryPage.Entry> recordedTail=new java.util.ArrayDeque<>();
         private Cursor(Bundle bundle, org.tzi.use.uml.sys.MSystem system, NativeObjectBindings index) throws Exception {
+            this(bundle,system,index,null);
+        }
+        private Cursor(Bundle bundle,org.tzi.use.uml.sys.MSystem system,NativeObjectBindings index,NativeRuntimeProjector canonical) throws Exception {
             this.bundle=bundle; this.system=system; this.index=index;
+            projector=canonical;
             reader=Files.newBufferedReader(bundle.root.resolve("runtime.jsonl"),StandardCharsets.UTF_8);
             nextLine=reader.readLine();
         }
         public NativeRuntimeProjector projector() { return projector; }
+        RuntimeVerificationResult observedResult(){return bundle.canonical()?recordedLast:projector.coordinator().lastObservation();}
+        RuntimeVerificationResult formalResult(){return bundle.canonical()?recordedFormal:projector.coordinator().lastObservation();}
+        public VerificationSnapshot verificationSnapshot(){
+            var snapshot=projector.coordinator().verificationSnapshot();
+            if(!bundle.canonical())return snapshot;
+            if(recordedFormal==null||recordedFormal.stateVersion()!=snapshot.currentVersion()||!recordedFormal.stateHash().equals(snapshot.result().stateHash()))throw new IllegalStateException("REPLAY_SELECTED_FORMAL_CUT_UNAVAILABLE");
+            return new VerificationSnapshot(snapshot.currentVersion(),recordedFormal,snapshot.profile(),snapshot.metadata(),snapshot.image());
+        }
+        public RuntimeHistoryPage recordedTail(){synchronized(recordedTail){return new RuntimeHistoryPage(List.copyOf(recordedTail).stream().skip(Math.max(0,recordedTail.size()-128)).toList(),ordinal,ordinal,recordedTail.isEmpty()?ordinal:recordedTail.getFirst().ordinal(),false,"RECORDED_OFFLINE",false);}}
+        public RuntimeHistoryPage recordedPage(long offset,int limit) {
+            requireWorker();if(offset<0||limit<1||limit>128)throw new IllegalArgumentException("REPLAY_HISTORY_RANGE_INVALID");
+            long end=ordinal;var page=new ArrayList<RuntimeHistoryPage.Entry>();long position=0;String previous="";
+            try(var input=Files.newBufferedReader(bundle.root.resolve("runtime.jsonl"),StandardCharsets.UTF_8)) {
+                while(position<end&&position<offset+limit){var line=input.readLine();var record=parse(line,position,previous);previous=record.hash();
+                    if(position>=offset){var body=CanonicalJson.object(CanonicalJson.decode(line.getBytes(StandardCharsets.UTF_8)));page.add(new RuntimeHistoryPage.Entry(position,record.kind(),(String)body.getOrDefault("verificationInterval","CORE_ONLY"),RuntimeVerificationResult.fromMap(record.expected()),true));}position++;
+                }
+            }catch(java.io.IOException error){throw new IllegalArgumentException("REPLAY_HISTORY_READ_FAILED",error);}
+            return new RuntimeHistoryPage(page,Math.min(Math.max(offset,position),end),end,0,false,"RECORDED_OFFLINE",true);
+        }
         public boolean failed() { return failed; }
         public long endOrdinal() { return ordinal-1; }
         private boolean hasNext() { return nextLine!=null; }
@@ -235,6 +292,7 @@ public final class NativeRuntimeReplay {
             nextLine=reader.readLine(); return record;
         }
         private void dispatch(Entry record) {
+            if(bundle.canonical()){dispatchCanonical(record);return;}
             var expected=record.expected(); var payload=record.payload(); String kind=record.kind();
             previousResult=projector==null ? null : projector.coordinator().lastObservation();
             if (projector==null) {
@@ -254,6 +312,36 @@ public final class NativeRuntimeReplay {
             if ("PROFILE".equals(kind)) lastProfile=(String)payload.get("source");
             ordinal++; chain=record.hash();
         }
+        private void dispatchCanonical(Entry record) {
+            var c=projector.coordinator();previousResult=recordedFormal;var expected=RuntimeVerificationResult.fromMap(record.expected());
+            RuntimeVerificationResult actual;
+            if(ordinal==0) {
+                if(!record.kind().equals("BASELINE")||expected.stateVersion()!=0)throw new IllegalArgumentException("REPLAY_BASELINE_REQUIRED");
+                actual=c.read(()->c.journal().history().stream().filter(r->r.eventId().equals("baseline")).findFirst().orElseThrow());
+                if(!actual.stateHash().equals(bundle.manifest.get("baselineStateHash")))throw new IllegalArgumentException("REPLAY_BASELINE_HASH_MISMATCH");
+            } else if(record.kind().equals("ENGINE_RESULT")) {
+                String boundary=(String)record.payload().get("boundary");actual=completed.remove(boundary);
+                if(actual==null)throw new IllegalArgumentException("REPLAY_ENGINE_COMPLETION_WITHOUT_ACCEPTED_CUT:"+ordinal);
+                completionBytes-=CanonicalJson.encode(actual.toMap()).length;
+                if(!actual.semantic().boundary().equals(boundary)||!actual.stateHash().equals(record.payload().get("stateHash"))||actual.stateVersion()!=((Number)record.payload().get("stateVersion")).longValue())throw new IllegalArgumentException("REPLAY_ENGINE_COMPLETION_IDENTITY_MISMATCH");
+            } else actual=c.read(()->{applyEntry(projector,record.kind(),record.payload(),record.expected(),true);return c.lastObservation();});
+            if(!actual.resultHash().equals(expected.resultHash())||!actual.stateHash().equals(expected.stateHash())||actual.stateVersion()!=expected.stateVersion())throw new IllegalArgumentException("REPLAY_STATE_OR_RESULT_MISMATCH:"+ordinal+":"+record.kind());
+            recordedLast=expected;
+            if(!record.kind().equals("ENGINE_RESULT")) {
+                // Preserve recorded publication order even though the offline lane
+                // settles eagerly. A future completion is not yet visible in UI.
+                var formal=c.read(c::latest);
+                if(formal!=null&&formal.semantic()!=null&&formal.semantic().boundary().equals(actual.semantic().boundary()))recordedFormal=expected;
+                var done=c.awaitEvaluation(actual,30000);
+                if(completed.put(done.semantic().boundary(),done)!=null)throw new IllegalArgumentException("REPLAY_ENGINE_BOUNDARY_DUPLICATED");
+                completionBytes+=CanonicalJson.encode(done.toMap()).length;
+                if(completed.size()>1024||completionBytes>16L*1024*1024)throw new IllegalArgumentException("REPLAY_COMPLETION_RETENTION_EXCEEDED");
+            } else if(recordedFormal!=null&&recordedFormal.semantic().boundary().equals(actual.semantic().boundary()))recordedFormal=expected;
+            if(c.journal().hasGap())throw new IllegalArgumentException("REPLAY_LOCAL_PERSISTENCE_GAP");
+            stale|="STALE".equals(expected.freshness());if(record.kind().equals("PROFILE"))lastProfile=(String)record.payload().get("source");
+            synchronized(recordedTail){if(recordedTail.size()==512)recordedTail.removeFirst();recordedTail.addLast(new RuntimeHistoryPage.Entry(ordinal,record.kind(),"RECORDED_OFFLINE",expected,true));}
+            ordinal++;chain=record.hash();
+        }
         public void forward(long endOrdinal) throws Exception {
             forward(endOrdinal, () -> { });
         }
@@ -272,7 +360,10 @@ public final class NativeRuntimeReplay {
                 }
                 boolean end=!hasNext();
                 String finalProfile=end ? Files.readString(bundle.root.resolve("constraints.ocl")) : null;
-                projector.coordinator().replayBatch(() -> {
+                if(bundle.canonical()) {
+                    if(system.isReadOnly())throw new IllegalStateException("CANONICAL_STEP_REQUIRES_RECONSTRUCTION");
+                    admission.run();for(var record:pending)dispatch(record);if(end)assertEnd(finalProfile);admission.run();committedSelection.run();
+                } else projector.coordinator().replayBatch(() -> {
                     admission.run();
                     for (var record:pending) dispatch(record);
                     if (end) assertEnd(finalProfile);
@@ -286,12 +377,13 @@ public final class NativeRuntimeReplay {
             assertEnd(Files.readString(bundle.root.resolve("constraints.ocl")));
         }
         private void assertEnd(String profile) {
-            var last=projector==null ? null : projector.coordinator().lastObservation();
+            var last=projector==null ? null : observedResult();
             if (last==null || ordinal!=((Number)bundle.manifest.get("entries")).longValue()
                     || !last.stateHash().equals(bundle.manifest.get("finalStateHash"))
                     || !last.resultHash().equals(bundle.manifest.get("finalResultHash"))
                     || !lastProfile.equals(profile))
                 throw new IllegalArgumentException("REPLAY_TRUNCATED_OR_PROFILE_MISMATCH");
+            if(bundle.canonical()&&!completed.isEmpty())throw new IllegalArgumentException("REPLAY_UNCOMPLETED_ENGINE_BOUNDARY");
         }
         @Override public void close() {
             if (closed) return; closed=true;

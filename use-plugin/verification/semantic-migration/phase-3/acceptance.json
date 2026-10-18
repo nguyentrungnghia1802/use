@@ -1,0 +1,14 @@
+{
+  "phase": 3,
+  "status": "DONE",
+  "focusedTests": 6,
+  "engineTests": 5,
+  "pluginLoaderTests": 1,
+  "originalCorePatches": [],
+  "hostUse": "7.5.0",
+  "antlr3Provided": "3.5.3",
+  "antlr4Runtime": "4.9.3",
+  "hostJarBundled": false,
+  "fullExistingPluginRegression": "phase-2 reactor: 693 existing tests, existing production Java unchanged; new additions are neutral library APIs and linkage tests only",
+  "nativeUndefinedFinding": "USE SPECIAL equality can return true for undefined = undefined; strict predicate p > 0 produces undefined; independent coverage gate required"
+}

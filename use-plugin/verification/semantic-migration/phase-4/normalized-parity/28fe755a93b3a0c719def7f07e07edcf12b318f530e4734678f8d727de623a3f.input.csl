@@ -1,0 +1,1 @@
+csl v4.0 Nary { entity A; entity B; role R; association Triple { A [*] role a; B [0..1] role b; R [*] role r; } }

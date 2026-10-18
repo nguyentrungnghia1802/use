@@ -8,6 +8,24 @@ import org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration;
 /** Explicit projection specification plus source adapters; no source condition is presumed to be OCL. */
 public final class SemanticTransformationService {
     private final MappingRuleCatalog catalog=new MappingRuleCatalog();
+    /** Same lossless source/feature complement used by legacy bundles, without a local CSL IR. */
+    public TraceComplement preserveCanonical(ModelSnapshot input,NormalizedSourceModel source,SemanticBindingIndex bindings) {
+        String expected=SemanticJson.hash(ContractPayloads.model(input));
+        if(!source.sourceHash().equals(expected))throw new IllegalArgumentException("MAPPING_SOURCE_HASH_MISMATCH");
+        var decisions=new ArrayList<TraceComplement.Decision>();
+        for(var node:source.nodes())for(var entry:node.features().entrySet()) {
+            var rule=node.concept().equals("Supplement")?null:catalog.require(node.concept());
+            var targets=entry.getKey().equals("metadata")?bindings.source(node.id()).stream().map(b->b.kind()+":"+b.targetId()).toList():List.<String>of();
+            String reason=targets.isEmpty()?"SOURCE_FEATURE_RETAINED_IN_TRACE_COMPLEMENT":"EXPLICIT_CANONICAL_DECLARATION_BINDING; OTHER_METADATA_RETAINED";
+            if(node.concept().equals("Norm"))reason="NORM_LIFECYCLE_NOT_AN_INVARIANT";
+            if(node.concept().equals("Plan")&&entry.getKey().equals("context"))reason="SOURCE_CONDITION_LANGUAGE_AND_QUERY_SEMANTICS_NOT_AUTOMATICALLY_OCL";
+            if(node.concept().equals("OGoal")&&entry.getKey().equals("type"))reason="SOURCE_GOAL_TYPE_PRESERVED; NO_TEMPORAL_ENUM_CAST";
+            decisions.add(new TraceComplement.Decision(node.id(),entry.getKey(),rule==null?"SUPPLEMENT":rule.id(),targets.isEmpty()?MappingRuleCatalog.Disposition.TRACE_ONLY:MappingRuleCatalog.Disposition.PARTIAL,
+                    targets,reason,entry.getValue().value(),entry.getValue().origin()));
+        }
+        return new TraceComplement("1.0",MappingRuleCatalog.VERSION,source.sourceHash(),source.metamodelHash(),
+                List.of(TraceComplement.Asset.of("official-model","OFFICIAL_MODEL_SNAPSHOT_JSON",CanonicalJson.encode(ContractPayloads.model(input)))),decisions);
+    }
     public MappingBundle fromOfficial(ModelSnapshot input,CslMonitorConfiguration configuration) {
         var source=new SourceModelNormalizer().normalize(input);
         return bundle(source,configuration,List.of(TraceComplement.Asset.of("official-model","OFFICIAL_MODEL_SNAPSHOT_JSON",CanonicalJson.encode(ContractPayloads.model(input)))),Map.of());

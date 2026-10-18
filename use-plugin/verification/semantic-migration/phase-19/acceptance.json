@@ -1,0 +1,133 @@
+{
+  "phase": 19,
+  "status": "DONE",
+  "command": "mvn -pl use-plugin -am test -Dtest=SemanticAuthorityRoutingTest,EngineExtractionTest,OriginalRuntimeSessionTest,SemanticsProfileTest,TemporalGoalMonitorTest,BoundedExplorerTest,MappingTransformationTest,CanonicalMappingContractTest,CslVerticalSliceTest,CslStructuralPolicyTest,CslNativeBindingTest,SemanticMappingReplayTest,CanonicalReplayTest,ReplayStepFacadeTest,CanonicalImportSelectionTest -Dsurefire.failIfNoSpecifiedTests=false",
+  "log": "acceptance-r2.log",
+  "tests": 61,
+  "suites": [
+    {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.semantic.engine.EngineExtractionTest"
+    },
+    {
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.semantic.engine.OriginalRuntimeSessionTest"
+    },
+    {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.CanonicalImportSelectionTest"
+    },
+    {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.ReplayStepFacadeTest"
+    },
+    {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.semantics.BoundedExplorerTest"
+    },
+    {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalMappingContractTest"
+    },
+    {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalReplayTest"
+    },
+    {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.semantics.CslNativeBindingTest"
+    },
+    {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.semantics.CslStructuralPolicyTest"
+    },
+    {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.semantics.CslVerticalSliceTest"
+    },
+    {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticAuthorityRoutingTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticMappingReplayTest"
+    },
+    {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticsProfileTest"
+    },
+    {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.semantics.TemporalGoalMonitorTest"
+    }
+  ],
+  "baseline": "mixed-authority-baseline-r1.log: 4 tests,1 failure: mixed annotation/program accepted; fixed before any mapper/cache is created",
+  "callerInventory": "legacy-callers.json",
+  "callerFiles": 31,
+  "ledger": "../../../../docs/project/semantic-compatibility-routing.md",
+  "decisions": {
+    "default": "NATIVE_CURRENT",
+    "oldSemanticSource": "KEEP/RETIRE_LATER, no deletion",
+    "originalProfile": "one canonical original M1 and recurrence authority; no native/type/capability error fallback",
+    "physicalRetirement": "not required by DoD; separate reviewed proof needed",
+    "defaultSwitch": "not promoted; explicit profile selection preserves backward compatibility"
+  },
+  "verified": [
+    "Mixed old/new model rejected even if program argument is absent",
+    "Canonical projector uses original owner and has null local verifier, same native MSystem",
+    "Legacy CSL_OBSERVER_V2 independently import/verify still works",
+    "Real invalid native OCL contract fails without fallback",
+    "NONE/local-vs-original and historical Task/invocation differences asserted separately",
+    "Original source/core parity/module boundary, old explorer/roundtrip, new/old replay all pass"
+  ]
+}

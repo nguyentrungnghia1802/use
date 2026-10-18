@@ -1,0 +1,92 @@
+{
+  "phase": 16,
+  "status": "DONE",
+  "focused": {
+    "log": "replay-parity-r17.log",
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "regression": {
+    "log": "full-regression-r16.log",
+    "tests": 854,
+    "failures": 0,
+    "errors": 1,
+    "skipped": 0,
+    "correctedError": "ReplayStepFacadeTest passes in r17; r16 is retained as a failing full run, NOT reported as full green. Final clean/full regression still required in Phases20-22."
+  },
+  "live": [
+    "live-r17-evidence.json",
+    "restart-r17-evidence.json"
+  ],
+  "verified": [
+    "Distinct USE/JaCaMo PIDs; authenticated TCP; original Java engine within USE",
+    "Real two configured agents, CArtAgO operations, MOISE role/mission observations, native @pre and negative invariant",
+    "Same admitted recording direct feed vs TCP: native state hash, full occurrence keys/history/raw status and native outcomes equal",
+    "Managed ACK and unowned external connect; real Jason PAUSE/RESUME ACK + completed canonical cut",
+    "Monitor Stop/Restart three cycles; old owner terminated, cache/pins zero, exactly one engine and subscription thread on restart",
+    "Producer replacement with distinct UUID/PID resets histories and incarnation bindings; same-source host MSystem reuse",
+    "Stop monitor preserves host/manual native OCL and producer; .stopMAS exits only JaCaMo",
+    "Session-reset/background-Stop race fenced on same EDT installation/retirement boundary",
+    "Legacy replay selection settles delivery off EDT and retains disconnected evidence"
+  ],
+  "negativeSuitesFromR16": [
+    "SnapshotAdmissionTest",
+    "BridgeMirrorStateMachineTest",
+    "LocalTcpBridgeTransportTest",
+    "DefaultBridgeAuthorityTest",
+    "CanonicalRuntimeAdmissionTest",
+    "NativeResyncHandoffRegressionTest",
+    "ManagedRuntimeWorkflowTest"
+  ],
+  "sourceFixes": [
+    "Same watermark/state resync does not double-advance original history",
+    "Revoked host Session stops consumer worker and ingress",
+    "Explicit JCM main is not implicit root; Cartago producer artifact alias fixed using exact workspace declaration",
+    "Managed startup resets completed start state per owner; stale start does not cancel replacement owner",
+    "Canonical control waits exact boundary completion off EDT; confirmation uses completed snapshot",
+    "PAUSED reconnect refreshes actual STATUS without implicit resume",
+    "Concurrent Session reset/background Stop retirement is serialized with workspace publication on EDT",
+    "Nonblocking delivery revocation separated from worker settlement; owned replay is not foreign Session replacement"
+  ],
+  "protectedInputs": [
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal\\META-INF\\MANIFEST.MF",
+      "sha256": "D5E7A93551B6A93BBD29F576C8A34683F433C39C3781924C29C71CB6854E9BFD",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal\\goal\\src\\main\\resources\\examples\\Classroom\\classroom.soil",
+      "sha256": "10D4D9ACC89E42C6B7FE7A821B5A42B8404173155E12E0412DE352E652585001",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal\\goal\\src\\main\\resources\\examples\\Classroom\\classroom.use",
+      "sha256": "BB857FCE61A9A8A11E207AE13DC198387242AF7D3C759205090C831D2A81AAA1",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\auction\\auction.jcm",
+      "sha256": "1B7FD99E1CEEA67381B2957908BD41D3387AA7B4B98FADC26ABF588FCEE98E2A",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\auction\\.jcm-deps.gradle",
+      "sha256": "3B7706DE71F0362C2FD5E1DA6A90F1D918F4EF1426B5DADBD6CA67A38EB3F050",
+      "unchanged": true
+    },
+    {
+      "path": "C:\\Users\\NTNghia\\OneDrive\\Desktop\\report.md",
+      "sha256": "E8F3A60B11C52B73136EA2BBAEDC92F40F9B70FF1C670D1BF70D1D49A43AE7DC",
+      "unchanged": true
+    }
+  ],
+  "remainingReleaseGates": [
+    "UI and live heartbeat Phase17",
+    "Canonical replay Phase18",
+    "Full A-V Phase20",
+    "Packaged live and production quota Phase21",
+    "Final clean/full Phase22"
+  ]
+}

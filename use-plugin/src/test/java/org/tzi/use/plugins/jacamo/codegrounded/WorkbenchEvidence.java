@@ -22,7 +22,9 @@ public final class WorkbenchEvidence {
             StepReplayProof.onEdt(()->{
                 var panel=new JaCaMoWorkbenchPanel(facade);frame.setContentPane(panel);frame.setSize(1550,1100);frame.setVisible(true);panel.refreshRuntime();
                 var tabs=StepReplayProof.component(panel,"workbench-tabs",JTabbedPane.class);
-                assertEquals(1,tabs.getTabCount());assertEquals("Projection Rules",tabs.getTitleAt(0));
+                assertNotNull(facade.importSelection(),"Real Workbench exposes the import-profile selector");
+                assertEquals(2,tabs.getTabCount());assertEquals("Projection Rules",tabs.getTitleAt(0));
+                assertEquals("Program / trace",tabs.getTitleAt(1));
                 var rules=StepReplayProof.component(panel,"mapping-rules-table",JTable.class);assertEquals(3,rules.getColumnCount());
                 if(paused)assertEquals(org.jacamo.bridge.contract.RuntimeControlContract.State.PAUSED,facade.runtimeControlState().state());
                 image(frame,evidence.resolve("workbench.png"));

@@ -13,6 +13,23 @@ import org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseStateBuilder;
 
 /** Atomic Phase-1A/1B native build. No historical mapping/profile service is reachable from this class. */
 public final class CodeGroundedNativePipeline {
+    public record CanonicalBuildResult(Result nativeResult,org.tzi.use.plugins.jacamo.semantics.mapping.SemanticProgram program,
+            org.tzi.use.semantic.engine.use75.Use75ModelBinding binding,org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoOclContractMapping.Result contracts) { }
+    /** Explicit canonical profile route, additive to all existing native/legacy routes. */
+    public CanonicalBuildResult buildCanonicalProgram(ModelSnapshot snapshot,NativeProjectionMode mode,
+            org.tzi.use.plugins.jacamo.semantics.mapping.SemanticProgram program) {
+        program.assertUnchanged();program.requireSourceHash(org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(org.jacamo.bridge.contract.ContractPayloads.model(snapshot)));
+        var source=new JacamoSpecificationModel(snapshot.semanticContract());var trace=new CodeGroundedTraceCollector();
+        var binding=new org.tzi.use.semantic.engine.use75.Use75CslModelBackend().compile(program.cslModel(),org.tzi.use.semantic.engine.use75.M0ExtensionSpec.observedPlayers());
+        new org.tzi.use.plugins.jacamo.semantics.mapping.CanonicalUseBindingAdapter().install(program,binding,trace);
+        var contracts=new org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoOclContractMapping().install(snapshot,program,binding);
+        boolean tupleWriter="EXPLICIT_RUNTIME_MODEL_BINDING".equals(program.rules().options().get("associationTupleAuthority"))&&!program.rules().options().getOrDefault("associationTupleSourceId","").isBlank();
+        if(tupleWriter)binding.model().addAnnotation(new org.tzi.use.uml.mm.MElementAnnotation("CanonicalTupleAuthority",java.util.Map.of("authority","EXPLICIT_RUNTIME_MODEL_BINDING","sourceId",program.rules().options().get("associationTupleSourceId"))));
+        var model=new NativeUseModelBuilder().buildCsl(binding,trace,mode,tupleWriter);var state=new NativeUseStateBuilder().build(source,model,trace);
+        var export=new NativeUseExporter().export(model.model());
+        if(state.system().model()!=model.model()||!export.originalStructuralHash().equals(export.recompiledStructuralHash()))throw new IllegalStateException("CANONICAL_NATIVE_BUILD_IDENTITY_OR_EXPORT_DIVERGED");
+        return new CanonicalBuildResult(new Result(source,model,state,export,trace.index(),model.profile()),program,binding,contracts);
+    }
     public Result build(ModelSnapshot snapshot) {
         return build(snapshot, NativeProjectionMode.AUTO);
     }
@@ -20,6 +37,7 @@ public final class CodeGroundedNativePipeline {
     public Result build(ModelSnapshot snapshot, NativeProjectionMode mode) {
         var profile = org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.configured(
                 System.getProperty(org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.PROPERTY));
+        if(profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.USE4GOAL_OBSERVED_V1)throw new IllegalArgumentException("CANONICAL_PROFILE_REQUIRES_BUILD_CANONICAL_PROGRAM");
         return build(snapshot, mode, profile == org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.NATIVE_CURRENT
                 ? null : org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration.configured());
     }

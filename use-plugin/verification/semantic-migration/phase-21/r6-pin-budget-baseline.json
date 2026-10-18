@@ -1,0 +1,76 @@
+{
+  "status": "REPRODUCED",
+  "quotaPins": 8,
+  "quotaBytes": 16777216,
+  "observations": [
+    {
+      "case": "installed-counter-1-17029851960551938754",
+      "bytes": 11424722,
+      "sha256": "fc1656c34d677a07faca5a90bd673865e3181ec7935a27930b841df9468aea6b",
+      "errors": [
+        {
+          "ordinal": 557,
+          "kind": "ENGINE_RESULT",
+          "diagnostic": "SEMANTIC_EVALUATION_FAILED:IllegalStateException:ENGINE_PIN_CAPACITY_EXHAUSTED"
+        },
+        {
+          "ordinal": 559,
+          "kind": "ENGINE_RESULT",
+          "diagnostic": "SEMANTIC_EVALUATION_FAILED:IllegalStateException:ENGINE_PIN_CAPACITY_EXHAUSTED"
+        },
+        {
+          "ordinal": 561,
+          "kind": "ENGINE_RESULT",
+          "diagnostic": "SEMANTIC_EVALUATION_FAILED:IllegalStateException:ENGINE_PIN_CAPACITY_EXHAUSTED"
+        },
+        {
+          "ordinal": 563,
+          "kind": "ENGINE_RESULT",
+          "diagnostic": "SEMANTIC_EVALUATION_FAILED:IllegalStateException:ENGINE_PIN_CAPACITY_EXHAUSTED"
+        },
+        {
+          "ordinal": 565,
+          "kind": "ENGINE_RESULT",
+          "diagnostic": "SEMANTIC_EVALUATION_FAILED:IllegalStateException:ENGINE_PIN_CAPACITY_EXHAUSTED"
+        }
+      ]
+    },
+    {
+      "case": "installed-counter-2-12333377210150707371",
+      "bytes": 6384206,
+      "sha256": "810bdf244aba137d81e36ca3a4a350676e822d7526bbbd8e20d2f2e76600517c",
+      "errors": [
+        {
+          "ordinal": 597,
+          "kind": "ENGINE_RESULT",
+          "diagnostic": "SEMANTIC_EVALUATION_FAILED:IllegalStateException:ENGINE_PIN_CAPACITY_EXHAUSTED"
+        },
+        {
+          "ordinal": 599,
+          "kind": "ENGINE_RESULT",
+          "diagnostic": "SEMANTIC_EVALUATION_FAILED:IllegalStateException:ENGINE_PIN_CAPACITY_EXHAUSTED"
+        },
+        {
+          "ordinal": 601,
+          "kind": "ENGINE_RESULT",
+          "diagnostic": "SEMANTIC_EVALUATION_FAILED:IllegalStateException:ENGINE_PIN_CAPACITY_EXHAUSTED"
+        },
+        {
+          "ordinal": 603,
+          "kind": "ENGINE_RESULT",
+          "diagnostic": "SEMANTIC_EVALUATION_FAILED:IllegalStateException:ENGINE_PIN_CAPACITY_EXHAUSTED"
+        },
+        {
+          "ordinal": 605,
+          "kind": "ENGINE_RESULT",
+          "diagnostic": "SEMANTIC_EVALUATION_FAILED:IllegalStateException:ENGINE_PIN_CAPACITY_EXHAUSTED"
+        },
+        {
+          "ordinal": 607,
+          "kind": "ENGINE_RESULT",
+          "diagnostic": "SEMANTIC_EVALUATION_FAILED:IllegalStateException:ENGINE_PIN_CAPACITY_EXHAUSTED"
+        }
+      ]
+    }
+  ]
+}

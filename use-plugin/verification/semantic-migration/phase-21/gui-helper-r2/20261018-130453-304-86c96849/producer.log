@@ -1,0 +1,13 @@
+REAL_JACAMO_INIT project=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\verification\semantic-migration\phase-21\gui-helper-r2\20261018-130453-304-86c96849\staging-counter\counter.jcm headless=false
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+

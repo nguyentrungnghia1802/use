@@ -1,0 +1,9 @@
+{
+  "status": "REPRODUCED_CAPACITY_FAILURE",
+  "configuration": "FULL default rich Jason trace; no fabricated goal or false downgrade",
+  "evidence": [],
+  "threadDumps": [
+    "r5-producer-threads.txt",
+    "r5-consumer-threads.txt"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "dag": {
+    "jacamo-bridge-contract": [],
+    "jacamo-bridge-jacamo": [
+      "jacamo-bridge-contract"
+    ],
+    "use-assembly": [
+      "use-plugin",
+      "use-gui"
+    ],
+    "use-core": [],
+    "use-jacamo-semantic-engine": [
+      "use-core"
+    ],
+    "use-gui": [
+      "use-core"
+    ],
+    "use-plugin": [
+      "use-jacamo-semantic-engine",
+      "jacamo-bridge-contract",
+      "jacamo-bridge-jacamo",
+      "use-gui"
+    ]
+  },
+  "engineForbiddenEdges": false,
+  "existingProductionJavaModified": false
+}

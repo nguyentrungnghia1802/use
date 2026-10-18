@@ -1,0 +1,15 @@
+{
+  "phase": 1,
+  "status": "DONE",
+  "sourceFiles": 125,
+  "javaSources": 123,
+  "grammarInputs": 2,
+  "generatedJava": 12,
+  "originalOracleChecks": 19,
+  "guardNegativeTests": 6,
+  "upstreamCommit": "6f3e73801239fd8bfb94ca8d04ba531b903c0ac9",
+  "originalArchiveSha256": "6eb6e573194dc1bfd83020e5787933eafa862c9f636cdd549e8546ea74b9e467",
+  "originalBehaviorCorrection": "full binding stack: standalone requested remains UNKNOWN; dependency-bound requested FULFILLED",
+  "productionRouteChanged": false,
+  "lineEndings": "125 working files CRLF vs git LF, normalized content equals pinned HEAD; copy preserves working bytes"
+}

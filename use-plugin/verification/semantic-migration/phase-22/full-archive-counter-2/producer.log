@@ -1,0 +1,273 @@
+REAL_JACAMO_INIT project=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\installed-counter-2-10071668786483902592\staging\counter.jcm headless=true
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+REAL_JACAMO_INIT_OK
+CArtAgO Http Server running on http://192.168.0.103:3273
+Agent mind inspector is running at http://192.168.0.103:3272
+REAL_JACAMO_CREATE_OK platforms=4 agents=2
+Moise Http Server running on http://192.168.0.103:3271
+Oct 18, 2026 1:54:27 PM jacamo.platform.Moise start
+INFO: OrgBoard org created.
+Oct 18, 2026 1:54:27 PM jacamo.platform.Moise start
+INFO: OrgBoard org created.
+Oct 18, 2026 1:54:27 PM jacamo.platform.Moise createScheme
+INFO: scheme created: workflow: work using artifact SchemeBoard
+Oct 18, 2026 1:54:27 PM jacamo.platform.Moise createScheme
+INFO: scheme created: workflow: work using artifact SchemeBoard
+Oct 18, 2026 1:54:27 PM jacamo.platform.Moise createGroup
+INFO: group created: team: team using artifact ora4mas.nopl.GroupBoard
+Oct 18, 2026 1:54:27 PM jacamo.platform.Moise createGroup
+INFO: group created: team: team using artifact ora4mas.nopl.GroupBoard
+Oct 18, 2026 1:54:27 PM jacamo.platform.Cartago start
+INFO: Workspace main created.
+Oct 18, 2026 1:54:27 PM jacamo.platform.Cartago start
+INFO: Workspace main created.
+Oct 18, 2026 1:54:27 PM jacamo.platform.Cartago start
+INFO: artifact counter: demo.counter.Counter() at main created.
+Oct 18, 2026 1:54:27 PM jacamo.platform.Cartago start
+INFO: artifact counter: demo.counter.Counter() at main created.
+REAL_JACAMO_MANAGED_WAIT_START run=installed-counter
+REAL_JACAMO_MANAGED_START_ACK run=installed-counter
+REAL_JACAMO_START_OK
+REAL_JACAMO_BRIDGE_READY port=63484 session=466a21ae-be7c-4d3b-acfc-843a2d61eccd agents=2
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: join workspace /main/main: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: join workspace /main/main: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: join workspace /main/org: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: join workspace /main/org: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focusing on artifact counter (at workspace /main/main) using namespace default
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focusing on artifact counter (at workspace /main/main) using namespace default
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focus on counter: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focus on counter: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focusing on artifact team (at workspace /main/org) using namespace default
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focusing on artifact team (at workspace /main/org) using namespace default
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focus on team: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focus on team: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focusing on artifact org (at workspace /main/org) using namespace default
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focusing on artifact org (at workspace /main/org) using namespace default
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: join workspace /main/main: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: join workspace /main/main: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: join workspace /main/org: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: join workspace /main/org: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focusing on artifact counter (at workspace /main/main) using namespace default
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focusing on artifact counter (at workspace /main/main) using namespace default
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focus on counter: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focus on counter: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focusing on artifact team (at workspace /main/org) using namespace default
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focusing on artifact team (at workspace /main/org) using namespace default
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focus on team: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focus on team: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focusing on artifact org (at workspace /main/org) using namespace default
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focusing on artifact org (at workspace /main/org) using namespace default
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focus on org: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focus on org: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focus on org: done
+Oct 18, 2026 1:54:32 PM jason.stdlib.println execute
+INFO: focus on org: done
+Oct 18, 2026 1:54:46 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:54:46 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob has quit, role reviewer removed by the platform!
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.BaseRuntimeServices.stopMAS(BaseRuntimeServices.java:47)
+	at jason.stdlib.stopMAS.execute(stopMAS.java:74)
+	at jason.asSemantics.TransitionSystem.applyExecInt(TransitionSystem.java:943)
+	at jason.asSemantics.TransitionSystem.applySemanticRuleAct(TransitionSystem.java:221)
+	at jason.asSemantics.TransitionSystem.act(TransitionSystem.java:1734)
+	at jason.infra.local.LocalAgArch.act(LocalAgArch.java:250)
+	at jason.infra.local.LocalAgArch.reasoningCycle(LocalAgArch.java:261)
+	at jason.infra.local.LocalAgArch.run(LocalAgArch.java:271)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:329)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.BaseRuntimeServices.stopMAS(BaseRuntimeServices.java:47)
+	at jason.stdlib.stopMAS.execute(stopMAS.java:74)
+	at jason.asSemantics.TransitionSystem.applyExecInt(TransitionSystem.java:943)
+	at jason.asSemantics.TransitionSystem.applySemanticRuleAct(TransitionSystem.java:221)
+	at jason.asSemantics.TransitionSystem.act(TransitionSystem.java:1734)
+	at jason.infra.local.LocalAgArch.act(LocalAgArch.java:250)
+	at jason.infra.local.LocalAgArch.reasoningCycle(LocalAgArch.java:261)
+	at jason.infra.local.LocalAgArch.run(LocalAgArch.java:271)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:329)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.BaseRuntimeServices.stopMAS(BaseRuntimeServices.java:47)
+	at jason.stdlib.stopMAS.execute(stopMAS.java:74)
+	at jason.asSemantics.TransitionSystem.applyExecInt(TransitionSystem.java:943)
+	at jason.asSemantics.TransitionSystem.applySemanticRuleAct(TransitionSystem.java:221)
+	at jason.asSemantics.TransitionSystem.act(TransitionSystem.java:1734)
+	at jason.infra.local.LocalAgArch.act(LocalAgArch.java:250)
+	at jason.infra.local.LocalAgArch.reasoningCycle(LocalAgArch.java:261)
+	at jason.infra.local.LocalAgArch.run(LocalAgArch.java:271)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:329)
+cartago.ArtifactNotAvailableException
+	at cartago.Workspace.lookupLocalArtifact(Workspace.java:956)
+	at cartago.Workspace.lookupArtifact(Workspace.java:948)
+	at cartago.Workspace.closeSession(Workspace.java:453)
+	at cartago.AgentSession.closeSession(AgentSession.java:206)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.BaseRuntimeServices.stopMAS(BaseRuntimeServices.java:47)
+	at jason.stdlib.stopMAS.execute(stopMAS.java:74)
+	at jason.asSemantics.TransitionSystem.applyExecInt(TransitionSystem.java:943)
+	at jason.asSemantics.TransitionSystem.applySemanticRuleAct(TransitionSystem.java:221)
+	at jason.asSemantics.TransitionSystem.act(TransitionSystem.java:1734)
+	at jason.infra.local.LocalAgArch.act(LocalAgArch.java:250)
+	at jason.infra.local.LocalAgArch.reasoningCycle(LocalAgArch.java:261)
+	at jason.infra.local.LocalAgArch.run(LocalAgArch.java:271)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:329)
+Oct 18, 2026 1:54:46 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: alice has quit, mission m removed by the platform!
+Oct 18, 2026 1:54:46 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: alice has quit, mission m removed by the platform!
+Oct 18, 2026 1:54:46 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice has quit, role worker removed by the platform!
+Oct 18, 2026 1:54:46 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice has quit, role worker removed by the platform!
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.BaseRuntimeServices.stopMAS(BaseRuntimeServices.java:47)
+	at jason.stdlib.stopMAS.execute(stopMAS.java:74)
+	at jason.asSemantics.TransitionSystem.applyExecInt(TransitionSystem.java:943)
+	at jason.asSemantics.TransitionSystem.applySemanticRuleAct(TransitionSystem.java:221)
+	at jason.asSemantics.TransitionSystem.act(TransitionSystem.java:1734)
+	at jason.infra.local.LocalAgArch.act(LocalAgArch.java:250)
+	at jason.infra.local.LocalAgArch.reasoningCycle(LocalAgArch.java:261)
+	at jason.infra.local.LocalAgArch.run(LocalAgArch.java:271)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:329)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.BaseRuntimeServices.stopMAS(BaseRuntimeServices.java:47)
+	at jason.stdlib.stopMAS.execute(stopMAS.java:74)
+	at jason.asSemantics.TransitionSystem.applyExecInt(TransitionSystem.java:943)
+	at jason.asSemantics.TransitionSystem.applySemanticRuleAct(TransitionSystem.java:221)
+	at jason.asSemantics.TransitionSystem.act(TransitionSystem.java:1734)
+	at jason.infra.local.LocalAgArch.act(LocalAgArch.java:250)
+	at jason.infra.local.LocalAgArch.reasoningCycle(LocalAgArch.java:261)
+	at jason.infra.local.LocalAgArch.run(LocalAgArch.java:271)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:329)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.BaseRuntimeServices.stopMAS(BaseRuntimeServices.java:47)
+	at jason.stdlib.stopMAS.execute(stopMAS.java:74)
+	at jason.asSemantics.TransitionSystem.applyExecInt(TransitionSystem.java:943)
+	at jason.asSemantics.TransitionSystem.applySemanticRuleAct(TransitionSystem.java:221)
+	at jason.asSemantics.TransitionSystem.act(TransitionSystem.java:1734)
+	at jason.infra.local.LocalAgArch.act(LocalAgArch.java:250)
+	at jason.infra.local.LocalAgArch.reasoningCycle(LocalAgArch.java:261)
+	at jason.infra.local.LocalAgArch.run(LocalAgArch.java:271)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:329)
+cartago.ArtifactNotAvailableException
+	at cartago.Workspace.lookupLocalArtifact(Workspace.java:956)
+	at cartago.Workspace.lookupArtifact(Workspace.java:948)
+	at cartago.Workspace.closeSession(Workspace.java:453)
+	at cartago.AgentSession.closeSession(AgentSession.java:206)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.BaseRuntimeServices.stopMAS(BaseRuntimeServices.java:47)
+	at jason.stdlib.stopMAS.execute(stopMAS.java:74)
+	at jason.asSemantics.TransitionSystem.applyExecInt(TransitionSystem.java:943)
+	at jason.asSemantics.TransitionSystem.applySemanticRuleAct(TransitionSystem.java:221)
+	at jason.asSemantics.TransitionSystem.act(TransitionSystem.java:1734)
+	at jason.infra.local.LocalAgArch.act(LocalAgArch.java:250)
+	at jason.infra.local.LocalAgArch.reasoningCycle(LocalAgArch.java:261)
+	at jason.infra.local.LocalAgArch.run(LocalAgArch.java:271)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:329)
+java.lang.IllegalStateException: BRIDGE_STOP_FAILED
+	at org.jacamo.bridge.adapter.JaCaMoBridgePlatform.stop(JaCaMoBridgePlatform.java:426)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:322)
+	at jason.infra.local.BaseRuntimeServices.stopMAS(BaseRuntimeServices.java:47)
+	at jason.stdlib.stopMAS.execute(stopMAS.java:74)
+	at jason.asSemantics.TransitionSystem.applyExecInt(TransitionSystem.java:943)
+	at jason.asSemantics.TransitionSystem.applySemanticRuleAct(TransitionSystem.java:221)
+	at jason.asSemantics.TransitionSystem.act(TransitionSystem.java:1734)
+	at jason.infra.local.LocalAgArch.act(LocalAgArch.java:250)
+	at jason.infra.local.LocalAgArch.reasoningCycle(LocalAgArch.java:261)
+	at jason.infra.local.LocalAgArch.run(LocalAgArch.java:271)
+	at java.base/java.lang.VirtualThread.run(VirtualThread.java:329)
+Caused by: java.lang.InterruptedException
+	at java.base/java.lang.Object.wait0(Native Method)
+	at java.base/java.lang.Object.wait(Object.java:366)
+	at java.base/java.lang.Thread.join(Thread.java:2072)
+	at org.jacamo.bridge.adapter.JaCaMoBridgePlatform.close(JaCaMoBridgePlatform.java:451)
+	... 11 more

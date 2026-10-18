@@ -69,10 +69,20 @@ public final class NativeRuntimeProjector implements AutoCloseable {
     }
     public NativeRuntimeProjector(MSystem system, NativeObjectBindings index, String session, long generation,
             String revision, CodeGroundedRuntimeRuleRegistry registry, Path runtimeDirectory) {
+        this(system,index,session,generation,revision,registry,runtimeDirectory,null);
+    }
+    public NativeRuntimeProjector(CodeGroundedNativePipeline.CanonicalBuildResult pipeline,String session,long generation,String revision) {
+        this(pipeline.nativeResult().state().system(),pipeline.nativeResult().state().semanticObjectIndex(),session,generation,revision,new CodeGroundedRuntimeRuleRegistry(),null,pipeline.program());
+    }
+    public NativeRuntimeProjector(CodeGroundedNativePipeline.CanonicalBuildResult pipeline,String session,long generation,String revision,Path directory) {
+        this(pipeline.nativeResult().state().system(),pipeline.nativeResult().state().semanticObjectIndex(),session,generation,revision,new CodeGroundedRuntimeRuleRegistry(),directory,pipeline.program());
+    }
+    private NativeRuntimeProjector(MSystem system,NativeObjectBindings index,String session,long generation,String revision,
+            CodeGroundedRuntimeRuleRegistry registry,Path runtimeDirectory,org.tzi.use.plugins.jacamo.semantics.mapping.SemanticProgram program) {
         if (session == null || session.isBlank() || revision == null || revision.isBlank() || generation < 0)
             throw new IllegalArgumentException("NATIVE_RUNTIME_IDENTITY_REQUIRED");
         this.sessionId = session; this.generation = generation; this.modelRevision = revision;
-        mutations = new NativeRuntimeMutationEngine(system, index, registry);
+        mutations = new NativeRuntimeMutationEngine(system, index, registry,program);
         coordinator = runtimeDirectory == null
                 ? new RuntimeVerificationCoordinator(mutations, session, generation, revision)
                 : new RuntimeVerificationCoordinator(mutations, session, generation, revision, runtimeDirectory,
@@ -103,6 +113,7 @@ public final class NativeRuntimeProjector implements AutoCloseable {
         return coordinator.read(() -> {
         if(deliveryRevoked.get())throw new IllegalStateException("NATIVE_RUNTIME_OWNER_REVOKED");
         ProtocolState before = saveProtocol();
+        long acceptedBefore=coordinator.acceptedBoundaries();
         try {
         return coordinator.transaction("SNAPSHOT", snapshot.snapshotId(), "snapshot", 0, snapshot.captureEndedAt(),
                 snapshotPayload(snapshot,session,nextGeneration), true, () -> {
@@ -110,10 +121,12 @@ public final class NativeRuntimeProjector implements AutoCloseable {
             if (session == null || session.isBlank() || nextGeneration < 0 || sessionId.equals(session) && nextGeneration < generation)
                 throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_SNAPSHOT_IDENTITY_STALE");
             boolean sameEpoch=sessionId.equals(session) && generation==nextGeneration;
+            boolean repeatedCut=mutations.canonicalMappingConfigured()&&!snapshotId.isBlank()&&sameEpoch
+                    &&sourceWatermarks.equals(snapshot.endWatermarks().entrySet().stream().collect(java.util.stream.Collectors.toMap(Map.Entry::getKey,e->e.getValue().sequence())));
             try { SnapshotAdmission.require(snapshot,sameEpoch?sourceWatermarks:Map.of()); }
             catch(ContractException invalid) {throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_SNAPSHOT_CUT_REJECTED:"+invalid.getMessage(),invalid);}
             if(snapshot.facts().stream().map(f->f.id().canonical()).distinct().count()!=snapshot.facts().size())throw new NativeRuntimeProtocolException("SNAPSHOT_FACT_ID_COLLISION");
-            if(!mutations.cslProfile() || !sessionId.equals(session) || generation!=nextGeneration)mutations.resetToBaseline();
+            if(!(mutations.cslProfile()||mutations.canonicalMappingConfigured()) || !sessionId.equals(session) || generation!=nextGeneration)mutations.resetToBaseline();
             var baseline=mutations.savepoint();
             mutations.prepareSnapshot(snapshot);
             List<String> materialized = new ArrayList<>(), evidenceOnly = new ArrayList<>(), unavailable = new ArrayList<>();
@@ -146,9 +159,9 @@ public final class NativeRuntimeProjector implements AutoCloseable {
             for (var entry : applied) record(entry.getKey().id().canonical() + ":snapshot", entry.getKey().id().authority(),
                     entry.getKey().id().canonical(), entry.getValue(), ordinal++);
             snapshotId = snapshot.snapshotId(); resyncRequired = false;
-            return new RuntimeVerificationCoordinator.Mutation<>(new ProjectionResult(materialized.size(), evidenceOnly, unavailable, List.of()), true,observedMoise);
+            return new RuntimeVerificationCoordinator.Mutation<>(new ProjectionResult(materialized.size(), evidenceOnly, unavailable, List.of()), true,observedMoise,repeatedCut);
         });
-        } catch (RuntimeException error) { restoreProtocol(before); throw error; }
+        } catch (RuntimeException error) {if(coordinator.acceptedBoundaries()==acceptedBefore)restoreProtocol(before);else{resyncRequired=true;coordinator.coverageGap("POST_COMMIT_PROTOCOL_FAILURE:"+error.getMessage());}throw error; }
         });
     }
     public boolean apply(RuntimeEvent event) {
@@ -173,6 +186,7 @@ public final class NativeRuntimeProjector implements AutoCloseable {
                 resyncRequired = true; coordinator.coverageGap(event, error.getMessage()); throw error;
             }
             ProtocolState before = saveProtocol();
+            long acceptedBefore=coordinator.acceptedBoundaries();
             try {
             boolean boundary=event.kind()==RuntimeEventKind.STREAM_BOUNDARY;
             String kind=boundary?"STREAM_BOUNDARY":coordinator.operationKind(event);
@@ -197,7 +211,7 @@ public final class NativeRuntimeProjector implements AutoCloseable {
             });
             ledger.accept(event, ContractPayloads.event(event));
             return materialized;
-            } catch (RuntimeException error) { restoreProtocol(before); throw error; }
+            } catch (RuntimeException error) {if(coordinator.acceptedBoundaries()==acceptedBefore)restoreProtocol(before);else{resyncRequired=true;coordinator.coverageGap("POST_COMMIT_PROTOCOL_FAILURE:"+error.getMessage());}throw error; }
         });
     }
     private Map<String,Object> snapshotPayload(RuntimeSnapshot snapshot,String session,long nextGeneration) {

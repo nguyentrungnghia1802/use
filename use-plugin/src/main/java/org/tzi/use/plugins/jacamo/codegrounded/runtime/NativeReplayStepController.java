@@ -25,7 +25,7 @@ public final class NativeReplayStepController implements AutoCloseable {
     public MSystem system() { var current=selected.get(); return current==null ? null : current.cursor().projector().system(); }
     public VerificationSnapshot verificationSnapshot() {
         var current=selected.get();
-        return current==null ? VerificationSnapshot.empty() : current.cursor().projector().coordinator().verificationSnapshot();
+        return current==null ? VerificationSnapshot.empty() : current.cursor().verificationSnapshot();
     }
     public GoalViewSnapshot goalView() {
         var current=selected.get();if(current==null)return GoalViewSnapshot.empty();
@@ -34,10 +34,10 @@ public final class NativeReplayStepController implements AutoCloseable {
     }
     public RuntimeHistoryPage historyTail() {
         var current=selected.get(); return current==null ? RuntimeHistoryPage.empty()
-                : selectedHistory(current,current.cursor().projector().coordinator().journal().tailPage(128));
+                : current.bundle().canonical()?current.cursor().recordedTail():selectedHistory(current,current.cursor().projector().coordinator().journal().tailPage(128));
     }
     public RuntimeHistoryPage historyPage(long offset,int limit) {
-        var current=requireSelected(); return selectedHistory(current,current.cursor().projector().coordinator().journal().page(offset,limit));
+        var current=requireSelected(); return current.bundle().canonical()?current.cursor().recordedPage(offset,limit):selectedHistory(current,current.cursor().projector().coordinator().journal().page(offset,limit));
     }
     private RuntimeHistoryPage selectedHistory(Selection current,RuntimeHistoryPage page) {
         if(!current.cursor().failed())return page;
@@ -86,12 +86,21 @@ public final class NativeReplayStepController implements AutoCloseable {
     public void next() {
         long ticket=begin();
         Selection old=null;
+        NativeRuntimeReplay.Cursor candidate=null;
         try {
             old=requireSelected();
             Selection admitted=old;
             if(old.cursor().failed())throw new IllegalStateException("REPLAY_CURSOR_RECONSTRUCTION_REQUIRED: Reset or Previous");
             if(old.step()==old.bundle().steps().size()-1)return;
             int target=old.step()+1;
+            if(old.bundle().canonical()) {
+                // A canonical evaluation waits on the worker. Reconstruct an
+                // unattached candidate, then select it atomically on EDT; never
+                // mutate a visible read-only state or wait inside replayBatch.
+                candidate=old.bundle().atStep(target);
+                activate(new Selection(old.bundle(),candidate,target),old,old.cursor().projector().system(),ticket);
+                candidate=null;old.cursor().close();return;
+            }
             old.cursor().forward(old.bundle().steps().get(target).endOrdinal(),()->{
                 check(ticket,admitted,admitted.cursor().projector().system());
             },()->selected.set(new Selection(admitted.bundle(),admitted.cursor(),target)));
@@ -102,7 +111,7 @@ public final class NativeReplayStepController implements AutoCloseable {
             catch(Exception cleanup){error.addSuppressed(cleanup);}
             throw failure(error);
         }
-        finally{busy.set(false);}
+        finally{if(candidate!=null)candidate.close();busy.set(false);}
     }
     private void activate(Selection candidate,Selection old,MSystem previous,long ticket)throws Exception {
         onEdt(()->{

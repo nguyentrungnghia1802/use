@@ -1,0 +1,27 @@
+{
+  "phase": 11,
+  "status": "DONE",
+  "focusedPluginTests": 29,
+  "engineTests": 46,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "models": "Original GoalModel compiler factory validator and contextual translator",
+  "sourceFixture": "semantics/original-engine/monitor.jcm: two declared agents, Group/roles, Scheme/Mission, Counter",
+  "sourceSemantics": "Sequence/enabling descriptor retained; explicit OUTCOME_ONLY abstraction",
+  "actorActivation": "AUTHORED_ENACTMENT_INTERVAL",
+  "history": "NO_HISTORY_OR_LIVE_CAST_FROM_DECLARATIONS",
+  "contextTests": "Two separate neutral context sessions, AND/OR/dependency parity with original factory and evaluate",
+  "negative": [
+    "Missing actor/self/contract/root policy",
+    "Active Jason goal not satisfaction",
+    "Norm not state predicate",
+    "MOISE temporal name not cast",
+    "Wrong outcome children or plain sequence AND"
+  ],
+  "liveAcceptance": "NOT_YET_PHASE22",
+  "evidence": [
+    "acceptance-final.log",
+    "goal-mapping.json"
+  ]
+}

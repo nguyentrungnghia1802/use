@@ -1,0 +1,1 @@
+org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result{org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result.errors=[java.lang.String:semantic: dependency 'A.a -> task promise -> Missing.b' has unknown dependee actor 'Missing'], org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result.model=null}

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent><groupId>org.tzi.use</groupId><artifactId>use</artifactId><version>7.5.0</version></parent>
+    <artifactId>use-jacamo-semantic-engine</artifactId>
+    <name>USE semantic engine — selected use4Goal core</name>
+    <properties>
+        <maven.compiler.release>21</maven.compiler.release>
+        <antlr4.version>4.9.3</antlr4.version>
+        <project.build.outputTimestamp>2026-09-18T00:00:00Z</project.build.outputTimestamp>
+    </properties>
+    <dependencies>
+        <dependency><groupId>org.tzi.use</groupId><artifactId>use-core</artifactId><version>${project.parent.version}</version><scope>provided</scope></dependency>
+        <dependency><groupId>org.antlr</groupId><artifactId>antlr4-runtime</artifactId><version>${antlr4.version}</version></dependency>
+        <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>5.8.2</version><scope>test</scope></dependency>
+        <!-- Only the independent pinned-source oracle invokes the generator. -->
+        <dependency><groupId>org.antlr</groupId><artifactId>antlr4</artifactId><version>${antlr4.version}</version><scope>test</scope></dependency>
+    </dependencies>
+    <build><plugins>
+        <plugin>
+            <groupId>org.antlr</groupId><artifactId>antlr4-maven-plugin</artifactId><version>${antlr4.version}</version>
+            <executions><execution><id>generate-selected-original-grammars</id><goals><goal>antlr4</goal></goals>
+                <configuration>
+                    <sourceDirectory>${project.basedir}/src/main/resources/grammars</sourceDirectory>
+                    <includes><include>CSL.g4</include><include>IStar.g4</include></includes>
+                    <visitor>true</visitor><listener>true</listener>
+                </configuration>
+            </execution></executions>
+        </plugin>
+        <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>3.2.5</version></plugin>
+        <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId><version>3.4.2</version></plugin>
+    </plugins></build>
+</project>

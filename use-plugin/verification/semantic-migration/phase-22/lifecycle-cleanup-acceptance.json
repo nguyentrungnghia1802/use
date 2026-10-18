@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "tests": 42,
+  "suites": [
+    {
+      "suite": "org.jacamo.bridge.adapter.JasonObservationProfileTest",
+      "tests": 1
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.bridge.SeparateJvmBridgeTest",
+      "tests": 3
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.CanonicalFacadeSessionTest",
+      "tests": 2
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.CanonicalImportSelectionTest",
+      "tests": 3
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.CanonicalMonitorLifecycleTest",
+      "tests": 4
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.codegrounded.RuntimeVerificationCoordinatorTest",
+      "tests": 14
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest",
+      "tests": 12
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.semantics.RuntimeOwnerCheckpointTest",
+      "tests": 3
+    }
+  ],
+  "baseline": "cleanup-race-focused-baseline.log",
+  "unchangedAssertion": "Background close must settle owned file cleanup before returning",
+  "fix": "Coordinator fileCleanupCompletion plus facade retirement chain for active/replaced/failed-import projectors; waits only outside EDT",
+  "nativeBridgePolicy": "Explicit WORLD for snapshot-only HelloWorld gate, default 1024 bootstrap bound unchanged; FULL trace policy unit still executed"
+}

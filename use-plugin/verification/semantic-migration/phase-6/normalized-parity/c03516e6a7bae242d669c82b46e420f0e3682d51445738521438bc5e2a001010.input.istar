@@ -1,0 +1,1 @@
+istar Invalid { role A { goal a } role B { goal b } depend A.a -> task promise -> Missing.b }

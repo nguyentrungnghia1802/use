@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "scope": "ORIGINAL_SOURCE_ONLY_NOT_PRODUCTION_MIGRATION",
+  "upstreamCommit": "6f3e73801239fd8bfb94ca8d04ba531b903c0ac9",
+  "javaSources": 123,
+  "generatedJavaSources": 12,
+  "hostUseVersion": "7.5.0",
+  "archiveSha256": "6eb6e573194dc1bfd83020e5787933eafa862c9f636cdd549e8546ea74b9e467"
+}

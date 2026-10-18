@@ -19,7 +19,9 @@ class GenericLauncherScriptTest {
         assertTrue(script.contains("[validateset(\"auto\", \"full\")]"));
         assertTrue(script.contains("[string]$projectionmode = \"auto\""));
         assertTrue(script.contains("\"-duse.jacamo.projection.mode=$projectionmode\","));
-        assertTrue(script.contains("-jvmarguments @(\"-duse.jacamo.runtime.root=$runtimedirectory\", \"-duse.jacamo.projection.mode=$projectionmode\")"));
+        assertTrue(script.contains("-jvmarguments (@(\"-duse.jacamo.runtime.root=$runtimedirectory\", \"-duse.jacamo.projection.mode=$projectionmode\") + $semanticjvmarguments)"));
+        assertTrue(script.contains("-duse.jacamo.semantics.profile=$semanticprofile"));
+        assertTrue(script.contains("$guiarguments = $semanticjvmarguments + @("));
         assertTrue(script.contains("jcm_path_required"));
         assertTrue(script.contains("jcm_file_not_found"));
         assertTrue(script.contains("$oclprofilepath"));
@@ -60,6 +62,14 @@ class GenericLauncherScriptTest {
         assertFalse(script.contains("[io.path]::gettemppath()"));
         assertTrue(script.contains("use.jacamo.runtime.root=$runtimedirectory"));
         assertTrue(script.contains("use.gui.default-layout-directory=$layoutdirectory"));
+        assertTrue(script.contains("$runtimeclasspathfile"));
+        assertTrue(script.contains("[validateset(\"auto\", \"world\", \"full\")]"));
+        assertTrue(script.contains("-djacamo.bridge.structured-observation="));
+        assertTrue(script.contains("-jvmarguments $producerobservationarguments"));
+        assertTrue(script.contains("javac_environment_classes_pass"));
+        assertTrue(script.contains("consumer_artifact_missing"));
+        assertTrue(script.contains("use_remains_open"));
+        assertFalse(script.contains("throw \"producer_exited_during_interactive_gui"));
         assertTrue(script.contains("remove-item -literalpath $stagedproject -recurse -force"));
         assertTrue(script.contains("remove-item -literalpath $runevidence -recurse -force"));
         assertTrue(script.contains("bridge-secret.hex"));

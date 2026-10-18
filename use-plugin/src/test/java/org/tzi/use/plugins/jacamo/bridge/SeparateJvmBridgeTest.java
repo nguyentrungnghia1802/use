@@ -88,6 +88,17 @@ class SeparateJvmBridgeTest {
             assertTrue(consumer.contains("REAL_BRIDGE_CONSUMER_OK"), consumer);
             assertTrue(consumer.contains("facts="), consumer);
             assertTrue(consumer.contains("evidenceOnly="), consumer);
+            var runtime = org.jacamo.bridge.contract.ContractPayloads.runtime(
+                    org.jacamo.bridge.contract.CanonicalJson.object(org.jacamo.bridge.contract.CanonicalJson.decode(
+                            Files.readAllBytes(project.resolve("bridge-consumer-evidence/runtime-snapshot-initial.json")))));
+            var sourceEvidence = org.jacamo.bridge.contract.CanonicalJson.object(runtime.captureMetadata().get("sourceEvidence"));
+            assertEquals(false, org.jacamo.bridge.contract.CanonicalJson.object(sourceEvidence.get("jason")).get("structuredJasonObservation"));
+            var agents = runtime.facts().stream().filter(f -> f.kind() == org.jacamo.bridge.contract.RuntimeFactKind.AGENT).toList();
+            assertFalse(agents.isEmpty(), "World observation must still include real Jason agents");
+            for (var agent : agents) {
+                assertFalse(agent.values().containsKey("mentalObservation"));
+                assertFalse(agent.values().containsKey("executionObservation"));
+            }
         } finally {
             Files.writeString(stop, "stop");
             if (!producer.waitFor(20, TimeUnit.SECONDS)) producer.destroyForcibly();
@@ -113,7 +124,9 @@ class SeparateJvmBridgeTest {
     private String exactPlatformClasspath(){String separator=java.io.File.pathSeparator;String base=Arrays.stream(System.getProperty("java.class.path").split(Pattern.quote(separator))).filter(value->!Path.of(value).getFileName().toString().toLowerCase(Locale.ROOT).startsWith("jason-interpreter-")).collect(java.util.stream.Collectors.joining(separator));Path jason=Path.of(System.getProperty("user.home"),".m2","repository","io","github","jason-lang","jason-interpreter","3.3.2","jason-interpreter-3.3.2.jar");assertTrue(Files.isRegularFile(jason),jason.toString());return base+separator+jason+separator+Path.of("..","jacamo-bridge-jacamo","target","test-classes").toAbsolutePath();}
     private String run(String cp,String main,String...args)throws Exception{var command=new java.util.ArrayList<String>();command.add(org.tzi.use.plugins.jacamo.JavaProcessSupport.executable());command.add("-cp");command.add(cp);command.add(main);command.addAll(java.util.List.of(args));Process process=new ProcessBuilder(command).redirectErrorStream(true).start();String output=new String(process.getInputStream().readAllBytes(),StandardCharsets.UTF_8);assertEquals(0,process.waitFor(),output);return output;}
     private Process start(String cp,String main,String...args)throws Exception{var command=new java.util.ArrayList<String>();command.add(org.tzi.use.plugins.jacamo.JavaProcessSupport.executable());command.add("-cp");command.add(cp);command.add(main);command.addAll(java.util.List.of(args));return new ProcessBuilder(command).redirectErrorStream(true).start();}
-    private Process start(String cp,String main,Path workingDirectory,String...args)throws Exception{var command=new java.util.ArrayList<String>();command.add(org.tzi.use.plugins.jacamo.JavaProcessSupport.executable());command.add("-cp");command.add(cp);command.add(main);command.addAll(java.util.List.of(args));return new ProcessBuilder(command).directory(workingDirectory.toFile()).redirectErrorStream(true).start();}
+    // This native snapshot gate observes world/organization facts, not every Jason cycle.
+    // Keep the production bootstrap bound; rich-cycle semantics are covered separately.
+    private Process start(String cp,String main,Path workingDirectory,String...args)throws Exception{var command=new java.util.ArrayList<String>();command.add(org.tzi.use.plugins.jacamo.JavaProcessSupport.executable());command.add("-Djacamo.bridge.structured-observation=false");command.add("-cp");command.add(cp);command.add(main);command.addAll(java.util.List.of(args));return new ProcessBuilder(command).directory(workingDirectory.toFile()).redirectErrorStream(true).start();}
     private CompletableFuture<String> readAsync(Process process) {
         return CompletableFuture.supplyAsync(() -> {
             try {

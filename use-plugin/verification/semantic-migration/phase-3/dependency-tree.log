@@ -1,0 +1,15 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------< org.tzi.use:use-jacamo-semantic-engine >---------------
+[INFO] Building USE semantic engine � selected use4Goal core 7.5.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- dependency:3.7.0:tree (default-cli) @ use-jacamo-semantic-engine ---
+[INFO] Wrote dependency tree to: D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\verification\semantic-migration\phase-3\engine-dependency-tree.txt
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  1.337 s
+[INFO] Finished at: 2026-10-17T19:28:41+07:00
+[INFO] ------------------------------------------------------------------------

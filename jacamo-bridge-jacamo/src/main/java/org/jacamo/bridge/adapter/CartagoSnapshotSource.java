@@ -136,7 +136,7 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
                         if(resolved.getUUID().toString().equals(workspace.uuid()) && resolved.getFullName().equals(workspace.fullName())) {
                             if(values.putIfAbsent("workspaceDeclarationSemanticId",declaration.metadata().semanticId())!=null)
                                 throw new IllegalStateException("CARTAGO_WORKSPACE_DECLARATION_AMBIGUOUS");
-                            declaredWorkspaceIds.put(declaration.name(),workspace.metadata().semanticId());
+                            declaredWorkspaceIds.put(declaration.metadata().semanticId(),workspace.metadata().semanticId());
                         }
                     }
                 }
@@ -175,7 +175,12 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
                         // OfficialCartagoAdapter has already revalidated this UUID
                         // against the controller's ArtifactInfo. Reuse that cut,
                         // including its exact officially resolved workspace identity.
-                        if(artifact.workspaceSemanticId().equals(declaredWorkspaceIds.get(declaration.workspace()))
+                        var workspaceDeclarations=declarations.get().workspaceDeclarations().stream()
+                                .filter(w->w.name().equals(declaration.workspace()))
+                                .filter(w->BridgeEntityId.parse(w.metadata().semanticId()).authority().equals("jacamo")).toList();
+                        if(workspaceDeclarations.size()>1)throw new IllegalStateException("CARTAGO_ARTIFACT_WORKSPACE_DECLARATION_AMBIGUOUS");
+                        String workspaceDeclaration=workspaceDeclarations.isEmpty()?"":workspaceDeclarations.getFirst().metadata().semanticId();
+                        if(artifact.workspaceSemanticId().equals(declaredWorkspaceIds.get(workspaceDeclaration))
                                 && declaration.name().equals(artifact.name()) && declaration.javaClass().equals(type.javaClassName())) {
                             if(values.putIfAbsent("artifactDeclarationSemanticId",declaration.metadata().semanticId())!=null)
                                 throw new IllegalStateException("CARTAGO_ARTIFACT_DECLARATION_AMBIGUOUS");

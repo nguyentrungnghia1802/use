@@ -41,6 +41,10 @@ public final class NativeRuntimeReanalysis {
         try {
             Path original=bundle.toAbsolutePath().normalize(), destination=output.toAbsolutePath().normalize();
             if(Files.isSymbolicLink(original)||!Files.isDirectory(original))throw new IllegalArgumentException("REANALYSIS_BUNDLE_UNSAFE");
+            var manifestFile=original.resolve("manifest.json");
+            if(Files.isSymbolicLink(manifestFile)||!Files.isRegularFile(manifestFile)||Files.size(manifestFile)>65536)throw new IllegalArgumentException("REANALYSIS_MANIFEST_UNSAFE");
+            if(CanonicalReplaySupport.VERSION.equals(CanonicalJson.object(CanonicalJson.decode(Files.readAllBytes(manifestFile))).get("schemaVersion")))
+                throw new IllegalArgumentException("REANALYSIS_CANONICAL_PROFILE_REQUIRES_SEPARATE_VERSIONED_POLICY");
             if (destination.startsWith(original) || Files.isSymbolicLink(destination)) throw new IllegalArgumentException("REANALYSIS_OUTPUT_MUST_BE_SEPARATE");
             if (Files.exists(destination)) try(var entries=Files.list(destination)) {
                 if(entries.findAny().isPresent()) throw new IllegalArgumentException("REANALYSIS_OUTPUT_NOT_EMPTY");

@@ -1,0 +1,14 @@
+[
+  {
+    "input": "use-plugin/verification/semantic-migration/phase-17/acceptance-r5.log",
+    "rejected": "FAILSAFE_NOT_EXECUTED"
+  },
+  {
+    "input": "use-plugin/verification/semantic-migration/phase-0/baseline-verify.log",
+    "rejected": "MATRIX_MISSING:A:CslFrontendParityTest"
+  },
+  {
+    "input": "use-plugin/verification/semantic-migration/phase-20/full-verify-r1.log",
+    "rejected": "REACTOR_NOT_SUCCESSFUL"
+  }
+]

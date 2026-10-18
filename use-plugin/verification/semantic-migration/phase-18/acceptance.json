@@ -1,0 +1,145 @@
+{
+  "phase": 18,
+  "status": "DONE",
+  "focused": {
+    "log": "acceptance-r4.log",
+    "suites": [
+      {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suite": "org.tzi.use.plugins.jacamo.CanonicalImportSelectionTest"
+      },
+      {
+        "tests": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeGenericStepReplayTest"
+      },
+      {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeReplayTest"
+      },
+      {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suite": "org.tzi.use.plugins.jacamo.CompatibilityManifestTest"
+      },
+      {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suite": "org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest"
+      },
+      {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suite": "org.tzi.use.plugins.jacamo.ReplayStepFacadeTest"
+      },
+      {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalReplayTest"
+      },
+      {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticMappingReplayTest"
+      },
+      {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suite": "org.tzi.use.plugins.jacamo.Use4GoalExternalBridgeIT"
+      }
+    ],
+    "tests": 32
+  },
+  "packagedCompatibility": {
+    "log": "packaged-compatibility-r6.log",
+    "suites": [
+      {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimePackagedReplayIT"
+      },
+      {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticPackagedReplayIT"
+      }
+    ]
+  },
+  "baseline": "canonical-replay-baseline-r1.log: canonical export incorrectly schema2.0; fixed via additive schema3.0",
+  "commands": [
+    "mvn -pl use-plugin -am test -Dtest=CanonicalReplayTest,CanonicalImportSelectionTest,Use4GoalExternalBridgeIT,NativeRuntimeReplayTest,NativeGenericStepReplayTest,SemanticMappingReplayTest,ReplayStepFacadeTest,CompatibilityManifestTest,ReleasePackageContractTest -Dsurefire.failIfNoSpecifiedTests=false",
+    "mvn -B -pl use-plugin -am verify -Dtest=NoPhase18UnitRerun -Dsurefire.failIfNoSpecifiedTests=false -Dit.test=NativeRuntimePackagedReplayIT,SemanticPackagedReplayIT -Dit.failIfNoSpecifiedTests=false -DfailIfNoTests=false"
+  ],
+  "liveBundle": "live-r4-canonical-replay/manifest.json",
+  "verified": [
+    "Exact canonical source/rules/profile/model/binding/trace plus executable engine/parser/grammar/backend/native hashes",
+    "Native baseline/bindings and invocation @pre reconstructed, every admitted and engine-completion result hash checked in recorded order",
+    "Real external TCP export -> replay state/result hashes match, original core raw status/quality retained",
+    "Codec tamper/wrong engine/profile/missing PRE/bad baseline fail closed; gap/resync/new-generation replay incomplete status preserved",
+    "Worker step reconstruction/readonly atomic Session selection; canonical live engine revoked on replay switch",
+    "Legacy native/local-profile replay2.0 and installed replay compatibility pass",
+    "Canonical schema3.0 legacy reanalysis rejected explicitly; no implicit semantic downgrade",
+    "Bounded 64MiB export, journal-prefix bytes and deferred completion retention; unavailable/overflow not certified complete"
+  ],
+  "protectedInputs": [
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal\\META-INF\\MANIFEST.MF",
+      "sha256": "D5E7A93551B6A93BBD29F576C8A34683F433C39C3781924C29C71CB6854E9BFD",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal\\goal\\src\\main\\resources\\examples\\Classroom\\classroom.soil",
+      "sha256": "10D4D9ACC89E42C6B7FE7A821B5A42B8404173155E12E0412DE352E652585001",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal\\goal\\src\\main\\resources\\examples\\Classroom\\classroom.use",
+      "sha256": "BB857FCE61A9A8A11E207AE13DC198387242AF7D3C759205090C831D2A81AAA1",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\auction\\auction.jcm",
+      "sha256": "1B7FD99E1CEEA67381B2957908BD41D3387AA7B4B98FADC26ABF588FCEE98E2A",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\auction\\.jcm-deps.gradle",
+      "sha256": "3B7706DE71F0362C2FD5E1DA6A90F1D918F4EF1426B5DADBD6CA67A38EB3F050",
+      "unchanged": true
+    },
+    {
+      "path": "C:\\Users\\NTNghia\\OneDrive\\Desktop\\report.md",
+      "sha256": "E8F3A60B11C52B73136EA2BBAEDC92F40F9B70FF1C670D1BF70D1D49A43AE7DC",
+      "unchanged": true
+    }
+  ],
+  "limitations": [
+    "New-profile final packaged live/full clean gates remain Phases20-22",
+    "Canonical reanalysis under a different policy requires an explicit future versioned policy; current API rejects it"
+  ],
+  "commandCorrection": "packaged-compatibility-r5 failed in reactor use-core because old Failsafe interpreted no selected tests as failure; r6 sets actual old plugin failIfNoTests/it.failIfNoSpecifiedTests; required two packaged ITs executed"
+}

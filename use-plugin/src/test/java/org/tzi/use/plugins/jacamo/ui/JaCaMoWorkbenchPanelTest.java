@@ -28,6 +28,30 @@ import org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepControlle
 import org.tzi.use.plugins.jacamo.runtime.MirrorState;
 
 class JaCaMoWorkbenchPanelTest {
+    @Test void nextImportSelectionIsCapturedAndMonitorActionsStayOnWorker() throws Exception {
+        var selected=new java.util.concurrent.atomic.AtomicReference<JaCaMoFacade.ImportSelection>();var calls=new java.util.concurrent.CopyOnWriteArrayList<String>();
+        var imported=new CountDownLatch(1);var release=new CountDownLatch(1);var restarted=new CountDownLatch(1);var stopped=new CountDownLatch(1);
+        var state=new java.util.concurrent.atomic.AtomicReference<>("NOT_IMPORTED");
+        JaCaMoFacade facade=new JaCaMoFacade(){
+            public String status(){return "test";}
+            public ImportSelection importSelection(){return new ImportSelection("NATIVE_CURRENT",null);}
+            public ProjectSummary projectSummary(){return state.get().equals("NOT_IMPORTED")?null:new RecordingFacade().projectSummary();}
+            public WorkflowStatus workflowStatus(){return new WorkflowStatus(state.get(),false,false,"","","","");}
+            public ProjectSummary importProject(Path path,ImportSelection request){assertFalse(SwingUtilities.isEventDispatchThread());selected.set(request);imported.countDown();try{assertTrue(release.await(5,TimeUnit.SECONDS));}catch(InterruptedException error){throw new IllegalStateException(error);}state.set("LIVE");return projectSummary();}
+            public void stopMonitorSession(){assertFalse(SwingUtilities.isEventDispatchThread());calls.add("stop");state.set("MONITOR_STOPPED");stopped.countDown();}
+            public void restartMonitorSession(){assertFalse(SwingUtilities.isEventDispatchThread());calls.add("restart");state.set("LIVE");restarted.countDown();}
+        };
+        var panel=new JaCaMoWorkbenchPanel(facade,message->fail(message));
+        SwingUtilities.invokeAndWait(()->{
+            component(panel,"engine-profile",javax.swing.JComboBox.class).setSelectedItem("USE4GOAL_OBSERVED_V1");component(panel,"mapping-specification",javax.swing.JTextField.class).setText("mapping.json");
+            assertNull(selected.get());panel.importProject(Path.of("monitor.jcm"));
+            assertFalse(component(panel,"engine-profile",javax.swing.JComboBox.class).isEnabled());
+            component(panel,"mapping-specification",javax.swing.JTextField.class).setText("later.json");
+        });
+        assertTrue(imported.await(5,TimeUnit.SECONDS));assertEquals(Path.of("mapping.json").toAbsolutePath(),selected.get().specification());release.countDown();awaitButton(panel,"stop-monitor");
+        SwingUtilities.invokeAndWait(()->button(panel,"stop-monitor").doClick());assertTrue(stopped.await(5,TimeUnit.SECONDS));awaitButton(panel,"restart-monitor");
+        SwingUtilities.invokeAndWait(()->{assertFalse(button(panel,"stop-monitor").isEnabled());button(panel,"restart-monitor").doClick();});assertTrue(restarted.await(5,TimeUnit.SECONDS));awaitButton(panel,"stop-monitor");assertEquals(List.of("stop","restart"),calls);
+    }
     @Test void simplifiedWorkbenchContainsOnlyProjectionRulesAndRetainedActions() throws Exception {
         SwingUtilities.invokeAndWait(() -> {
             var panel = new JaCaMoWorkbenchPanel(new RecordingFacade());
@@ -36,6 +60,7 @@ class JaCaMoWorkbenchPanelTest {
             assertEquals("Projection Rules", tabs.getTitleAt(0));
             assertEquals(List.of("Import JaCaMo Project...", "Load OCL...", "Start Runtime",
                     "Pause Jason", "Resume Jason",
+                    "Stop monitor", "Restart monitor",
                     "Export .use...", "Export .cmd..."),
                     components(panel, JButton.class).stream().filter(b -> b.getName() != null).map(JButton::getText).toList());
             assertEquals(1, components(panel, JTable.class).size());

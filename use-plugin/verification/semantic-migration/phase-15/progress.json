@@ -1,0 +1,44 @@
+{
+  "phase": 15,
+  "status": "DONE",
+  "fullRun": {
+    "log": "full-regression-r14.log",
+    "tests": 848,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "currentFocused": {
+    "bindingPolicyR5": 27,
+    "transactionR2": 28,
+    "faultMatrixR6": 13,
+    "asyncR3": 17
+  },
+  "ongoing": null,
+  "latestFocused": {
+    "log": "publication-clock-r13.log",
+    "tests": 15,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "verifiedCorrections": [
+    "Compiled-condition references clear after worker termination; cleanup baseline red, full r12 green",
+    "Unique consumer-boundary publication fence replaces wall-clock equality; deterministic fixed-clock tests pass"
+  ],
+  "pending": [
+    "complete full regression gate",
+    "external new-profile live TCP Phase16",
+    "Workbench Stop/Restart/UI Phase17",
+    "canonical replay/packaging Phase18-22"
+  ],
+  "rootCausesVerified": [
+    "Rejected snapshot must commit engine identity only after native validation",
+    "Foreign native invariant context must match exact MModel",
+    "Task pre/post evaluation must use pinned native states on worker",
+    "Canonical enforcement IDs must match actual condition result IDs",
+    "Native enactment links must agree with observed binding metadata",
+    "Ambiguous organizational Task context cannot be credited for every enactment",
+    "TaskMarking with no admitted tuple remains original UNKNOWN, not a fabricated Pending/False"
+  ]
+}

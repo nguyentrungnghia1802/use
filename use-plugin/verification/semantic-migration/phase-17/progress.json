@@ -1,0 +1,31 @@
+{
+  "phase": 17,
+  "status": "DONE",
+  "focusedR1": {
+    "tests": 24,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "liveR2": {
+    "originalEngineWorkbench": "PASS",
+    "evidence": "live-ui-r2-evidence.json",
+    "legacyAuction": "old tab-count assertion must include new accepted Program/trace view; semantic assertions retained"
+  },
+  "liveR3": {
+    "legacyAuction": "PASS including original native relations, OCL, recorded replay, reanalysis and step replay",
+    "originalEngineWorkbench": "FAILED: CANONICAL_INITIAL_CUT_NOT_EVALUATED during live startup; initial cut check used latest after engine drain and raced a newer pending observation"
+  },
+  "ongoing": null,
+  "pending": [],
+  "launcher": "PowerShell parsed; missing/wrong specification rejected before staging",
+  "sourceChanges": [
+    "Explicit import selection freezes accepted specification for resync/restart; no global live switch",
+    "Cached immutable canonical program hashes/diagnostics/trace",
+    "Raw original marking/quality/stack UI separated from invocation results",
+    "Monitor Stop/Restart worker actions and ownership labels",
+    "Native manual verify awaits exact canonical completion off EDT",
+    "Launcher semantic profile/specification arguments additive"
+  ],
+  "acceptance": "acceptance.json"
+}

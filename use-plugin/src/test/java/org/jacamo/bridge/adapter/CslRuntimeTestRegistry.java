@@ -6,7 +6,10 @@ import org.jacamo.bridge.contract.semantic.JacamoSemanticSnapshot;
 /** Adapter-boundary fixture registration. It does not claim a complete running Jason MAS. */
 public final class CslRuntimeTestRegistry {
     public static void quitCartagoActor(cartago.CartagoEnvironment env,String name)throws Exception {
-        for(var id:env.getController("/main").getCurrentAgents())if(name.equals(id.getAgentName()))env.resolveWSP("/main").getWorkspace().quitAgent(id);
+        // One actor can have memberships in the implicit root and JCM children.
+        for(var workspace:new OfficialCartagoAdapter().capture(env).workspaces())
+            for(var id:env.getController(workspace.fullName()).getCurrentAgents())
+                if(name.equals(id.getAgentName()))env.resolveWSP(workspace.fullName()).getWorkspace().quitAgent(id);
     }
     public static AutoCloseable bind(JacamoSemanticSnapshot project,String actualName,String declaration) {
         BridgeRuntimeRegistry.configureDeclarations(project);

@@ -45,7 +45,26 @@ class ReleasePackageContractTest {
             "runtime/runtime-mapping-v2.schema.json",
             "schemas/binding-v1.schema.json",
             "schemas/runtime-event-v1.schema.json",
-            "schemas/trace-v1.schema.json");
+            "schemas/trace-v1.schema.json",
+            "tools/jacamo-bridge.ps1",
+            "docs/use4goal-run.md",
+            "docs/semantic-replay-v3.md",
+            "docs/semantic-compatibility-routing.md",
+            "profiles/use4goal-observed-v1.json",
+            "licenses/ANTLR4-4.9.3.txt",
+            "licenses/use4Goal-GPL-3.0.txt",
+            "provenance/use4goal-provenance.json",
+            "provenance/README.md",
+            "provenance/host-compatibility-patches.md",
+            "provenance/P-USE-PRINT-02.md",
+            "provenance/P-CTX-01.diff",
+            "examples/csl-counter/counter.jcm",
+            "examples/csl-counter/mapping.json",
+            "examples/csl-counter/README.md",
+            "examples/csl-counter/src/agt/alice.asl",
+            "examples/csl-counter/src/agt/bob.asl",
+            "examples/csl-counter/src/env/demo/counter/Counter.java",
+            "examples/csl-counter/src/org/organization.xml");
 
     @Test
     void releaseManifestPinsVersionAndCompletePackageInventory() throws Exception {

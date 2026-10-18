@@ -1,0 +1,40 @@
+{
+  "phase": 0,
+  "status": "DONE",
+  "reactorExitCode": 0,
+  "surefire": {
+    "tests": 693,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "failsafe": {
+    "tests": 151,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "legacy": {
+    "tests": 198,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "originalMarkingChecks": 7,
+  "nativeSyntheticBoundaries": 200,
+  "referenceHashesUnchanged": true,
+  "sourceCorrections": [
+    "CanonicalJson.DEFAULT_MAX_BYTES is 16 MiB at pinned HEAD, not 4 MiB in audit"
+  ],
+  "testOverrides": {
+    "failsafeJournalBytes": 536870912,
+    "productionJournalBytes": 67108864
+  },
+  "commands": [
+    "mvn -B -pl use-plugin -am verify",
+    "java -cp <test classes first plus module path> junit.textui.TestRunner org.tzi.use.AllTests",
+    "javac read-only original marking source to isolated use target; java OriginalMarkingBaseline",
+    "javac and run NativeCoordinatorBaseline"
+  ],
+  "acceptedAt": "2026-10-17T12:05:06.7793577Z"
+}

@@ -1,0 +1,1 @@
+csl v4.0 Bad { entity A; entity B; association X { A [2..1]; B [*]; } }

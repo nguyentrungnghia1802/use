@@ -40,5 +40,24 @@
         <file><source>docs/project/15-build-release-operations.md</source><outputDirectory>docs</outputDirectory><destName>build-release.md</destName></file>
         <file><source>src/main/resources/org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v2.json</source><outputDirectory>runtime</outputDirectory></file>
         <file><source>src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-v2.schema.json</source><outputDirectory>runtime</outputDirectory></file>
+        <file><source>tools/jacamo-bridge.ps1</source><outputDirectory>tools</outputDirectory><destName>jacamo-bridge.ps1</destName></file>
+        <file><source>docs/project/use4goal-run.md</source><outputDirectory>docs</outputDirectory><destName>use4goal-run.md</destName></file>
+        <file><source>docs/project/semantic-replay-v3.md</source><outputDirectory>docs</outputDirectory><destName>semantic-replay-v3.md</destName></file>
+        <file><source>docs/project/semantic-compatibility-routing.md</source><outputDirectory>docs</outputDirectory><destName>semantic-compatibility-routing.md</destName></file>
+        <file><source>docs/project/use4goal-observed-v1.json</source><outputDirectory>profiles</outputDirectory><destName>use4goal-observed-v1.json</destName></file>
+        <file><source>licenses/ANTLR4-4.9.3.txt</source><outputDirectory>licenses</outputDirectory><destName>ANTLR4-4.9.3.txt</destName></file>
+        <file><source>../use-jacamo-semantic-engine/src/main/resources/META-INF/licenses/use4Goal-GPL-3.0.txt</source><outputDirectory>licenses</outputDirectory><destName>use4Goal-GPL-3.0.txt</destName></file>
+        <file><source>../use-jacamo-semantic-engine/src/main/resources/META-INF/use4goal-provenance.json</source><outputDirectory>provenance</outputDirectory><destName>use4goal-provenance.json</destName></file>
+        <file><source>../use-jacamo-semantic-engine/provenance/README.md</source><outputDirectory>provenance</outputDirectory><destName>README.md</destName></file>
+        <file><source>../use-jacamo-semantic-engine/provenance/host-compatibility-patches.md</source><outputDirectory>provenance</outputDirectory><destName>host-compatibility-patches.md</destName></file>
+        <file><source>../use-jacamo-semantic-engine/provenance/P-USE-PRINT-02.md</source><outputDirectory>provenance</outputDirectory><destName>P-USE-PRINT-02.md</destName></file>
+        <file><source>../use-jacamo-semantic-engine/provenance/patches/P-CTX-01.diff</source><outputDirectory>provenance</outputDirectory><destName>P-CTX-01.diff</destName></file>
+        <file><source>examples/csl-counter/counter.jcm</source><outputDirectory>examples/csl-counter</outputDirectory><destName>counter.jcm</destName></file>
+        <file><source>examples/csl-counter/mapping.json</source><outputDirectory>examples/csl-counter</outputDirectory><destName>mapping.json</destName></file>
+        <file><source>examples/csl-counter/README.md</source><outputDirectory>examples/csl-counter</outputDirectory><destName>README.md</destName></file>
+        <file><source>examples/csl-counter/src/agt/alice.asl</source><outputDirectory>examples/csl-counter/src/agt</outputDirectory><destName>alice.asl</destName></file>
+        <file><source>examples/csl-counter/src/agt/bob.asl</source><outputDirectory>examples/csl-counter/src/agt</outputDirectory><destName>bob.asl</destName></file>
+        <file><source>examples/csl-counter/src/env/demo/counter/Counter.java</source><outputDirectory>examples/csl-counter/src/env/demo/counter</outputDirectory><destName>Counter.java</destName></file>
+        <file><source>examples/csl-counter/src/org/organization.xml</source><outputDirectory>examples/csl-counter/src/org</outputDirectory><destName>organization.xml</destName></file>
     </files>
 </assembly>

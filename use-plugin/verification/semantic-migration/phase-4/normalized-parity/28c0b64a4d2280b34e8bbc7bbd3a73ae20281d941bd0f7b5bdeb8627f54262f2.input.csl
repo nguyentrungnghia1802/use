@@ -1,0 +1,1 @@
+csl v4.0 Bad { entity A extends B; entity B extends A; }

@@ -1,0 +1,126 @@
+{
+  "status": "PASS",
+  "phases": [
+    {
+      "phase": 0,
+      "status": "DONE",
+      "completedCheckboxes": 17
+    },
+    {
+      "phase": 1,
+      "status": "DONE",
+      "completedCheckboxes": 18
+    },
+    {
+      "phase": 2,
+      "status": "DONE",
+      "completedCheckboxes": 17
+    },
+    {
+      "phase": 3,
+      "status": "DONE",
+      "completedCheckboxes": 17
+    },
+    {
+      "phase": 4,
+      "status": "DONE",
+      "completedCheckboxes": 17
+    },
+    {
+      "phase": 5,
+      "status": "DONE",
+      "completedCheckboxes": 18
+    },
+    {
+      "phase": 6,
+      "status": "DONE",
+      "completedCheckboxes": 17
+    },
+    {
+      "phase": 7,
+      "status": "DONE",
+      "completedCheckboxes": 22
+    },
+    {
+      "phase": 8,
+      "status": "DONE",
+      "completedCheckboxes": 17
+    },
+    {
+      "phase": 9,
+      "status": "DONE",
+      "completedCheckboxes": 17
+    },
+    {
+      "phase": 10,
+      "status": "DONE",
+      "completedCheckboxes": 18
+    },
+    {
+      "phase": 11,
+      "status": "DONE",
+      "completedCheckboxes": 18
+    },
+    {
+      "phase": 12,
+      "status": "DONE",
+      "completedCheckboxes": 17
+    },
+    {
+      "phase": 13,
+      "status": "DONE",
+      "completedCheckboxes": 19
+    },
+    {
+      "phase": 14,
+      "status": "DONE",
+      "completedCheckboxes": 18
+    },
+    {
+      "phase": 15,
+      "status": "DONE",
+      "completedCheckboxes": 21
+    },
+    {
+      "phase": 16,
+      "status": "DONE",
+      "completedCheckboxes": 20
+    },
+    {
+      "phase": 17,
+      "status": "DONE",
+      "completedCheckboxes": 20
+    },
+    {
+      "phase": 18,
+      "status": "DONE",
+      "completedCheckboxes": 18
+    },
+    {
+      "phase": 19,
+      "status": "DONE",
+      "completedCheckboxes": 18
+    },
+    {
+      "phase": 20,
+      "status": "DONE",
+      "completedCheckboxes": 20
+    },
+    {
+      "phase": 21,
+      "status": "DONE",
+      "completedCheckboxes": 20
+    },
+    {
+      "phase": 22,
+      "status": "DONE",
+      "completedCheckboxes": 20
+    }
+  ],
+  "uncompletedCheckboxes": 0,
+  "definitionOfDone": 17,
+  "productionInputHashesUnchanged": 2035,
+  "artifactHashesUnchanged": 7,
+  "planSha256": "16dc91667f7f3cfd0a54ab11dd605ad452eb3ef9c6d9f74980307a61303427f4",
+  "diffCheck": "PASS (Windows CR at EOL accepted)"
+}

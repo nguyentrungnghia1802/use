@@ -64,6 +64,8 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     private volatile boolean sessionOwnershipLost;
     private org.tzi.use.main.ChangeListener sessionListener;
     private volatile BridgeClient bridgeClient;
+    private final Object runtimeRetirementLock=new Object();
+    private volatile java.util.concurrent.CompletableFuture<Void> retiredIngress=java.util.concurrent.CompletableFuture.completedFuture(null);
     private volatile BridgeMirrorStateMachine bridgeMirror;
     private volatile BridgeClient.Accepted bridgeAccepted;
     private volatile String bridgeDiagnostic = "";
@@ -71,6 +73,8 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     private final AtomicLong bridgeProcessed = new AtomicLong();
     private Path entry;
     private Path userProfile;
+    private volatile ImportSemantics selectedImport;
+    private volatile ImportSelection selectedRequest;
     private volatile NativeWorkspace nativeWorkspace;
     private volatile List<Diagnostic> lastDiagnostics = List.of();
     private volatile long lastFullCheckNanos;
@@ -94,14 +98,20 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     private void observeSessionOwnership() {
         if(session!=null) {
             sessionListener=event -> {
-                boolean owned=session.system()==activatingSystem && ownedActivationEvent.compareAndSet(true,false);
+                // The replay controller has already settled live delivery on its
+                // worker before selecting this offline system. Its own navigation
+                // is not a foreign host replacement; retain the disconnected cut.
+                var replay=stepReplay;
+                if(replay!=null && replay.active() && session.hasSystem() && session.system()==replay.system()) {
+                    var current=nativeWorkspace;
+                    if(current!=null&&current.canonical!=null&&current.runtimeProjector!=null)retireMonitor("RECORDED_REPLAY; LIVE_ENGINE_REVOKED");
+                    return;
+                }
+                boolean owned=session.hasSystem() && session.system()==activatingSystem && ownedActivationEvent.compareAndSet(true,false);
                 if(!owned) {
                     sessionChanges.incrementAndGet();
                     sessionOwnershipLost=true;
-                    var current=nativeWorkspace;
-                    if(current!=null && current.runtimeProjector!=null)current.runtimeProjector.revokeDelivery();
-                    if(current!=null && current.control!=null)current.control.close();
-                    bridgeDiagnostic="USE_SESSION_CHANGED";
+                    retireMonitor("USE_SESSION_CHANGED");
                 }
             };
             session.addChangeListener(sessionListener);
@@ -156,6 +166,20 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public synchronized ProjectSummary importProject(Path jcmFile) {
+        return importUsing(jcmFile,selectedImport==null?ImportSemantics.configured():selectedImport);
+    }
+    @Override public ImportSelection importSelection() {
+        var selected=selectedRequest;if(selected!=null)return selected;
+        var profile=org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.configured(System.getProperty(org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.PROPERTY));
+        String file=System.getProperty(profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.USE4GOAL_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.MappingRuleSet.PROPERTY:org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration.PROPERTY,"").trim();
+        return new ImportSelection(profile.name(),profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.NATIVE_CURRENT||file.isBlank()?null:Path.of(file));
+    }
+    @Override public synchronized ProjectSummary importProject(Path jcmFile,ImportSelection request) {
+        if(javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("SEMANTIC_IMPORT_REQUIRES_BACKGROUND_WORKER");
+        var selection=ImportSemantics.from(java.util.Objects.requireNonNull(request));
+        var summary=importUsing(jcmFile,selection);selectedImport=selection;selectedRequest=request;return summary;
+    }
+    private ProjectSummary importUsing(Path jcmFile,ImportSemantics selection) {
         requireNotReplaying();
         if (jcmFile == null || !jcmFile.getFileName().toString().toLowerCase().endsWith(".jcm")) {
             workflow.importFailed("IMPORT_JCM_REQUIRED");
@@ -164,20 +188,35 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         Path candidate = jcmFile.toAbsolutePath().normalize();
         workflow.importing();
         try {
-            var imported = synchronizeBridge(candidate, null);
+            var imported = synchronizeBridge(candidate, null,selection);
             workflow.imported(candidate, authorityStatus(), session != null && session.system() == currentSystem());
             return imported;
         } catch (RuntimeException failure) { workflow.importFailed(failure.getMessage()); throw failure; }
     }
+    @Override public Map<String,Object> semanticProgramEvidence() {
+        var current=nativeWorkspace;
+        if(current==null)return Map.of("status","NOT_IMPORTED");
+        return current.programEvidence;
+    }
+    private static Map<String,Object> programEvidence(CodeGroundedNativePipeline.CanonicalBuildResult canonical,String legacyProfile) {
+        if(canonical==null)return Map.of("profile",legacyProfile,"status","LEGACY_OR_NATIVE_PROFILE");
+        var program=canonical.program();
+        return Map.of("profile",program.profile().engine().name(),"mapping",program.profile().id()+"/"+program.profile().version(),
+                "rulesVersion",program.rules().version(),"programHash",program.hash(),"sourceHash",program.source().sourceHash(),"cslHash",program.cslHash(),
+                "goalHash",program.goalHash(),"validators","original CSL/iStar; native USE OCL", "diagnostics",org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.tree(program.diagnostics()),
+                "traceBindings",org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.tree(program.bindings().bindings()));
+    }
 
     @Override public WorkflowStatus workflowStatus() {
         if (stepReplayStatus()!=null) return new WorkflowStatus("REPLAY",false,false,"","RECORDED_OFFLINE; OBSERVATION_DISCONNECTED","","");
+        var installed=nativeWorkspace;
+        if(installed!=null&&installed.monitorStopped)return new WorkflowStatus("MONITOR_STOPPED",false,workflow.status().managed(),workflow.status().runId(),bridgeDiagnostic,"","");
 
         var state=workflow.status();
         if(state.startAvailable()) {
             var current=nativeWorkspace; var accepted=authorityStatus();
             var snapshot=verificationSnapshot();
-            if(current==null || session==null || session.system()!=currentSystem()
+            if(current==null || session==null || !session.hasSystem() || session.system()!=currentSystem()
                     || accepted.readiness()!=BridgeClientState.LIVE || !workflow.owns(accepted)
                     || snapshot.result()==null || !snapshot.result().freshness().equals("CURRENT_OBSERVED"))
                 return new WorkflowStatus(state.state(),false,state.managed(),state.runId(),
@@ -189,9 +228,9 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         var replay=stepReplay;
         if(replay!=null && replay.active())return replay.verificationSnapshot();
         var current = nativeWorkspace;
-        return current == null || current.runtimeProjector == null
-                ? org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot.empty()
-                : current.runtimeProjector.coordinator().verificationSnapshot();
+        if(current==null)return org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot.empty();
+        var projector=current.runtimeProjector;
+        return projector==null?current.stoppedSnapshot:projector.coordinator().verificationSnapshot();
     }
     @Override public void startRuntime() {
         requireNotReplaying();
@@ -410,15 +449,14 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public RuntimeVerificationResult runtimeVerificationResult() {
-        if(stepReplayStatus()!=null)return verificationSnapshot().result();
-        var nativeState = nativeWorkspace;
-        return nativeState == null || nativeState.runtimeProjector == null ? null : nativeState.runtimeProjector.coordinator().verificationSnapshot().result();
+        return verificationSnapshot().result();
     }
     @Override public List<RuntimeVerificationResult> runtimeVerificationHistory() {
         var replay=stepReplay;
         if(replay!=null && replay.active())return replay.historyTail().entries().stream().map(value->value.result()).toList();
         var nativeState = nativeWorkspace;
-        return nativeState == null || nativeState.runtimeProjector == null ? List.of() : nativeState.runtimeProjector.coordinator().history();
+        if(nativeState==null)return List.of();var projector=nativeState.runtimeProjector;
+        return projector==null?nativeState.stoppedHistory:projector.coordinator().history();
     }
     @Override public synchronized void exportRuntimeReplay(Path directory) {
         requireNotReplaying();
@@ -510,6 +548,14 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         requireNotReplaying();
         requireWorkspace();
         synchronizeBridge(entry, userProfile);
+    }
+    @Override public void stopMonitorSession() {
+        requireNotReplaying();requireWorkspace();sessionChanges.incrementAndGet();retireMonitor("MONITOR_STOPPED; EXTERNAL_PRODUCER_UNCHANGED");
+        if(!javax.swing.SwingUtilities.isEventDispatchThread())awaitRetiredIngress();
+    }
+    @Override public void restartMonitorSession() {
+        if(javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("MONITOR_RESTART_REQUIRES_BACKGROUND_WORKER");
+        synchronized(this){requireNotReplaying();requireWorkspace();sessionChanges.incrementAndGet();retireMonitor("MONITOR_RESTART");synchronizeBridge(entry,userProfile);}
     }
 
     @Override public RuntimeStatus runtimeStatus() {
@@ -621,8 +667,8 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         if(session!=null && sessionListener!=null)session.removeChangeListener(sessionListener);
         if(stepReplay!=null)stepReplay.close();
         if (!workflow.status().state().equals("LIVE")) workflow.cancel();
-        closeNativeRuntimeArtifacts();
-        closeBridgeClient();
+        retireMonitor("WORKBENCH_CLOSED");
+        if(!javax.swing.SwingUtilities.isEventDispatchThread())awaitRetiredIngress();
         bridgeMirror = null;
         bridgeAccepted = null;
     }
@@ -655,7 +701,12 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     private ProjectSummary synchronizeBridge(Path selectedJcm, Path verificationProfile) {
+        return synchronizeBridge(selectedJcm,verificationProfile,selectedImport==null?ImportSemantics.configured():selectedImport);
+    }
+    private ProjectSummary synchronizeBridge(Path selectedJcm, Path verificationProfile,ImportSemantics selection) {
         requireNotReplaying();
+        if(selection.rules()!=null&&javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("CANONICAL_IMPORT_REQUIRES_BACKGROUND_WORKER");
+        awaitRetiredIngress();
         long sessionEpoch=sessionChanges.get();
         BridgeConnectionConfig configuration = configuredBridge == null ? bridgeConfigurationSource.get() : configuredBridge;
         configuredBridge = configuration;
@@ -680,6 +731,8 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                                     throw new BridgeProtocolException("BRIDGE_FACADE_BUFFER_OVERFLOW");
                                 pending.addLast(event);
                             } else {
+                                awaitCanonicalIngress(projector);
+                                if (!deliveryActive.get()) return;
                                 projector.apply(event);bridgeProcessed.incrementAndGet();
                             }
                         }
@@ -701,15 +754,16 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             validateBridgeSelection(selectedJcm, accepted);
             long importNanos = System.nanoTime() - importStarted;
             boolean compatibleResync = !sessionOwnershipLost && previous != null && previous.runtimeProjector != null && bridgeAccepted != null
-                    && bridgeAccepted.modelRevision().equals(accepted.modelRevision());
+                    && bridgeAccepted.modelRevision().equals(accepted.modelRevision())&&selection.hash().equals(previous.semanticSelectionHash);
             boolean sameOwner=compatibleResync && bridgeAccepted.sessionId().equals(accepted.sessionId())
                     && bridgeAccepted.generation()==accepted.generation();
-            var savedProfile = previous == null || previous.runtimeProjector == null ? null
+            var savedProfile = previous==null?null:previous.runtimeProjector==null?previous.savedProfile
                     : previous.runtimeProjector.coordinator().read(() -> previous.runtimeProjector.coordinator().constraints().profile());
-            NativeWorkspace next = compatibleResync ? previous : buildNativeSemantic(selectedJcm, accepted.model(), importNanos);
+            NativeWorkspace next = compatibleResync ? previous : buildNativeSemantic(selectedJcm, accepted.model(), importNanos,selection);
             NativeRuntimeProjector nativeProjector = compatibleResync ? previous.runtimeProjector
-                    : new NativeRuntimeProjector(next.pipeline, accepted.sessionId(), accepted.generation(),
-                            accepted.modelRevision(), RuntimeVerificationCoordinator.createEphemeralDirectory(runtimeRoot()));
+                    : next.canonical==null?new NativeRuntimeProjector(next.pipeline, accepted.sessionId(), accepted.generation(),
+                            accepted.modelRevision(), RuntimeVerificationCoordinator.createEphemeralDirectory(runtimeRoot()))
+                    : new NativeRuntimeProjector(next.canonical,accepted.sessionId(),accepted.generation(),accepted.modelRevision(),RuntimeVerificationCoordinator.createEphemeralDirectory(runtimeRoot()));
             if (!compatibleResync) newlyCreatedNativeProjector.set(nativeProjector);
             nativeProjector.coordinator().runtimeCapabilities(accepted.capabilities().stream().collect(
                     java.util.stream.Collectors.toMap(org.jacamo.bridge.contract.Capability::name,c->c.status().name())),accepted.sourceVersions());
@@ -718,49 +772,59 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             if(compatibleResync && !sameOwner && previous.control!=null){previous.control.close();previous.control=null;}
             BridgeClient previousClient = bridgeClient;
             if (previousClient != null) previousClient.close();
+            RuntimeVerificationResult initialCut;
+            awaitCanonicalIngress(nativeProjector);
             synchronized (pending) {
                 nativeProjector.applySnapshot(accepted.runtime(), accepted.sessionId(), accepted.generation());
                 nativeProjectorReference.set(nativeProjector);
                 while (!pending.isEmpty()) {
+                    awaitCanonicalIngress(nativeProjector);
                     nativeProjector.apply(pending.removeFirst());
                     bridgeProcessed.incrementAndGet();
                 }
+                var failure = nativeCoverageFailure.get();
+                if (failure != null) nativeProjector.coordinator().coverageGap(failure.event(), failure.diagnostic());
+                // Capture the bootstrap boundary before releasing buffered ingress.
+                // Subsequent live observations may legitimately still be pending.
+                initialCut=nativeProjector.coordinator().read(nativeProjector.coordinator()::lastObservation);
             }
-            var failure = nativeCoverageFailure.get();
-            if (failure != null) nativeProjector.coordinator().coverageGap(failure.event(), failure.diagnostic());
+            if(next.canonical!=null) {
+                var completed=nativeProjector.coordinator().awaitEvaluation(initialCut,30000);
+                if(!"PINNED_NATIVE_CUT".equals(completed.semantic().observation().get("originalEngine") instanceof Map<?,?> core?core.get("evaluated"):null))throw new IllegalStateException("CANONICAL_INITIAL_CUT_NOT_EVALUATED");
+            }
             next.runtimeProjector = nativeProjector;
+            next.revokeRuntimeDelivery = () -> deliveryActive.set(false);
             next.stopRuntimeDelivery = () -> {
                 deliveryActive.set(false);
                 // A worker entering replay waits for an already-admitted delivery to settle.
                 // UI shutdown must not deadlock behind a delivery waiting for this same EDT.
                 if(!javax.swing.SwingUtilities.isEventDispatchThread())synchronized(pending){ }
             };
-            if (!compatibleResync && session != null) {
-                activatingSystem=next.pipeline.state().system();ownedActivationEvent.set(true);
-                try { new NativeUseSessionActivator().activate(session, next.pipeline,()->!closed && sessionChanges.get()==sessionEpoch); }
-                finally { ownedActivationEvent.set(false);activatingSystem=null; }
-            }
-            if(closed || sessionChanges.get()!=sessionEpoch)throw new IllegalStateException("NATIVE_SESSION_OWNER_CHANGED_DURING_IMPORT");
-            if (!compatibleResync && previous != null && previous.runtimeProjector != null)
-                {if(previous.control!=null)previous.control.close();previous.runtimeProjector.close();}
-            nativeWorkspace = next;
-            sessionOwnershipLost=false;
-            entry = selectedJcm;
-            bridgeClient = candidate;
-            bridgeMirror = candidateMirror;
-            bridgeAccepted = accepted;
-            bridgeLastSync = accepted.runtime().captureEndedAt();
-            bridgeDiagnostic = "";
-            if(next.control==null)next.control=createRuntimeControl(next,accepted);
-            next.control.observationConnected();
-            if(next.control.state().capable() && (next.control.state().state()==org.jacamo.bridge.contract.RuntimeControlContract.State.RUNNING || !sameOwner))
-                next.control.refresh().exceptionally(error->{bridgeDiagnostic="CONTROL_STATUS_UNAVAILABLE:"+error.getMessage();return null;});
+            final BridgeClient installedClient=candidate;
+            boolean reconnectingControl=nativeProjector.coordinator().read(()->{
+                if(closed || sessionChanges.get()!=sessionEpoch)throw new IllegalStateException("NATIVE_SESSION_OWNER_CHANGED_DURING_IMPORT");
+                if (!compatibleResync && session != null) {
+                    activatingSystem=next.pipeline.state().system();ownedActivationEvent.set(true);
+                    try { new NativeUseSessionActivator().activate(session, next.pipeline,()->!closed && sessionChanges.get()==sessionEpoch); }
+                    finally { ownedActivationEvent.set(false);activatingSystem=null; }
+                }
+                if(closed || sessionChanges.get()!=sessionEpoch)throw new IllegalStateException("NATIVE_SESSION_OWNER_CHANGED_DURING_IMPORT");
+                if (!compatibleResync && previous != null && previous.runtimeProjector != null)
+                    {if(previous.control!=null)previous.control.close();closeOwnedRuntimeProjector(previous.runtimeProjector);}
+                nativeWorkspace=next;sessionOwnershipLost=false;entry=selectedJcm;bridgeClient=installedClient;
+                bridgeMirror=candidateMirror;bridgeAccepted=accepted;bridgeLastSync=accepted.runtime().captureEndedAt();bridgeDiagnostic="";
+                if(next.control==null)next.control=createRuntimeControl(next,accepted);
+                boolean reconnecting=!next.control.state().connected();next.control.observationConnected();return reconnecting;
+            });
+            var installedControl=next.control;
+            if(installedControl!=null && installedControl.state().capable() && (installedControl.state().state()==org.jacamo.bridge.contract.RuntimeControlContract.State.RUNNING || !sameOwner || reconnectingControl))
+                installedControl.refresh().exceptionally(error->{if(nativeWorkspace==next&&next.control==installedControl&&bridgeClient==installedClient)bridgeDiagnostic="CONTROL_STATUS_UNAVAILABLE:"+error.getMessage();return null;});
             return next.summary;
         } catch (RuntimeException error) {
             deliveryActive.set(false);
             if (candidate != null) candidate.close();
             NativeRuntimeProjector created = newlyCreatedNativeProjector.get();
-            if (created != null && (nativeWorkspace == null || nativeWorkspace.runtimeProjector != created)) created.close();
+            if (created != null && (nativeWorkspace == null || nativeWorkspace.runtimeProjector != created)) closeOwnedRuntimeProjector(created);
             bridgeDiagnostic = error.getMessage() == null ? error.getClass().getSimpleName() : error.getMessage();
             if (nativeWorkspace != null && nativeWorkspace.runtimeProjector != null)
                 nativeWorkspace.runtimeProjector.coordinator().coverageGap("BRIDGE_RESYNC_FAILED:" + bridgeDiagnostic);
@@ -792,13 +856,66 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         }
     }
 
+    /** Revoke callbacks synchronously; potentially slow TCP/file close runs outside the EDT.
+     * A new import waits for this owned retirement before opening another connection. */
+    private void retireMonitor(String reason) {
+        // Session changes are already on the EDT. Background Stop/Close joins
+        // that same short ownership boundary, never a network-close operation.
+        if(!javax.swing.SwingUtilities.isEventDispatchThread()) {
+            try{javax.swing.SwingUtilities.invokeAndWait(()->retireMonitor(reason));}
+            catch(InterruptedException interrupted){Thread.currentThread().interrupt();throw new IllegalStateException("MONITOR_RETIREMENT_INTERRUPTED",interrupted);}
+            catch(java.lang.reflect.InvocationTargetException failure){if(failure.getCause() instanceof RuntimeException runtime)throw runtime;throw new IllegalStateException("MONITOR_RETIREMENT_FAILED",failure.getCause());}
+            return;
+        }
+        var current=nativeWorkspace;
+        if(current!=null&&current.runtimeProjector!=null) {
+            current.revokeRuntimeDelivery.run();var projector=current.runtimeProjector;projector.revokeDelivery();
+            if(current.control!=null){current.control.close();current.control=null;}
+            var cut=projector.coordinator().verificationSnapshot();
+            current.savedProfile=projector.coordinator().read(()->projector.coordinator().constraints().profile());
+            current.stoppedHistory=projector.coordinator().history();current.stoppedSnapshot=stoppedCut(cut,reason);
+            current.latest=current.stoppedSnapshot.result()==null?null:nativeReport(current,current.stoppedSnapshot.result());
+            current.monitorStopped=true;current.runtimeProjector=null;closeOwnedRuntimeProjector(projector);
+        }
+        var connection=bridgeClient;bridgeClient=null;bridgeMirror=null;bridgeDiagnostic=reason;
+        if(connection!=null) {
+            java.util.concurrent.CompletableFuture<Void> previous;
+            var completion=new java.util.concurrent.CompletableFuture<Void>();
+            synchronized(runtimeRetirementLock){previous=retiredIngress;retiredIngress=completion;}
+            Thread.ofPlatform().daemon().name("use-monitor-ingress-cleanup").start(()->{
+                try{try{previous.join();}finally{connection.close();}completion.complete(null);}catch(Throwable error){completion.completeExceptionally(error);}
+            });
+        }
+    }
+    private void closeOwnedRuntimeProjector(NativeRuntimeProjector projector) {
+        projector.close();
+        var files=projector.coordinator().fileCleanupCompletion().toCompletableFuture();
+        // Include replaced and failed-import candidates, even without an active TCP client.
+        // This short lock never waits for the EDT, filesystem or network.
+        synchronized(runtimeRetirementLock){retiredIngress=java.util.concurrent.CompletableFuture.allOf(retiredIngress,files);}
+    }
+    private void awaitRetiredIngress() {
+        var pending=retiredIngress;
+        if(!pending.isDone()&&javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("MONITOR_CLEANUP_REQUIRES_BACKGROUND_WORKER");
+        try{pending.get(45,java.util.concurrent.TimeUnit.SECONDS);}
+        catch(InterruptedException interrupted){Thread.currentThread().interrupt();throw new IllegalStateException("MONITOR_CLEANUP_INTERRUPTED",interrupted);}
+        catch(java.util.concurrent.ExecutionException|java.util.concurrent.TimeoutException error){throw new IllegalStateException("MONITOR_CLEANUP_NOT_COMPLETE",error);}
+    }
+    private static org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot stoppedCut(org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot cut,String reason) {
+        var old=cut.result();if(old==null)return cut;
+        var semantic=old.semantic()==null?null:old.semantic().failClosed(reason);
+        var outcomes=old.outcomes().stream().map(row->new org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.Outcome(row.constraintId(),row.contextClass(),VerificationOutcome.SKIPPED,reason,row.expression(),row.contextObject())).toList();
+        var result=new RuntimeVerificationResult(old.sessionId(),old.generation(),old.modelRevision(),old.stateVersion(),old.eventId(),old.sourceId(),old.sourceSequence(),old.observedAt(),old.appliedAt(),java.time.Instant.now(),old.checkpointId(),old.constraintSetHash(),old.stateHash(),outcomes,old.durationNanos(),"INCOMPLETE","STALE",reason,semantic);
+        return new org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot(cut.currentVersion(),result,cut.profile(),cut.metadata(),cut.image());
+    }
+
     private void closeNativeRuntimeArtifacts() {
         NativeWorkspace current = nativeWorkspace;
         if (current == null) return;
         if(current.control!=null){current.control.close();current.control=null;}
         current.stopRuntimeDelivery.run();
         if (current.runtimeProjector != null) {
-            current.runtimeProjector.close();
+            closeOwnedRuntimeProjector(current.runtimeProjector);
             current.runtimeProjector = null;
         }
     }
@@ -812,7 +929,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             }
             @Override public boolean ownsRuntime(String sessionId,long generation,String revision){
                 var actual=bridgeAccepted;return !closed && nativeWorkspace==owner && actual!=null && actual.sessionId().equals(sessionId)
-                        && (session==null || session.system()==owner.pipeline.state().system())
+                        && (session==null || session.hasSystem() && session.system()==owner.pipeline.state().system())
                         && actual.generation()==generation && actual.modelRevision().equals(revision);
             }
             @Override public boolean liveAvailable(){var mirror=bridgeMirror;return bridgeClient!=null && mirror!=null && mirror.state()==BridgeClientState.LIVE
@@ -824,10 +941,39 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 accepted.sessionId(),accepted.generation(),accepted.modelRevision(),capable,Long.getLong("use.jacamo.control.ackTimeoutMillis",15000L));
     }
 
+    private record ImportSemantics(org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile profile,
+            org.tzi.use.plugins.jacamo.semantics.mapping.MappingRuleSet rules,
+            org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration legacy,String hash) {
+        static ImportSemantics configured() {
+            var profile=org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.configured(System.getProperty(org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.PROPERTY));
+            var rules=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.USE4GOAL_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.MappingRuleSet.configured():null;
+            var legacy=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.CSL_OBSERVER_V1||profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.CSL_OBSERVER_V2?org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration.configured():null;
+            String content=profile.name()+":"+(rules!=null?rules.hash():legacy!=null?java.util.HexFormat.of().formatHex(legacy.bytes()):"");
+            return new ImportSemantics(profile,rules,legacy,org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.sha256(content.getBytes(StandardCharsets.UTF_8)));
+        }
+        static ImportSemantics from(ImportSelection request) {
+            var profile=org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.configured(request.profile());
+            if(profile!=org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.NATIVE_CURRENT&&request.specification()==null)throw new IllegalArgumentException("AUTHORED_SPECIFICATION_FILE_REQUIRED:"+profile);
+            var rules=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.USE4GOAL_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.MappingRuleSet.read(request.specification()):null;
+            org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration legacy=null;
+            if(profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.CSL_OBSERVER_V1||profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.CSL_OBSERVER_V2)try {
+                if(!Files.isRegularFile(request.specification())||Files.size(request.specification())>CanonicalJson.DEFAULT_MAX_BYTES)throw new IllegalArgumentException("CSL_MONITOR_CONFIGURATION_FILE_INVALID");
+                legacy=org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration.parse(Files.readAllBytes(request.specification()));
+                if(legacy.profile()!=profile)throw new IllegalArgumentException("CSL_MONITOR_PROFILE_CONFIGURATION_MISMATCH");
+            } catch(java.io.IOException error){throw new IllegalArgumentException("CSL_MONITOR_CONFIGURATION_READ_FAILED",error);}
+            String content=profile.name()+":"+(rules!=null?rules.hash():legacy!=null?java.util.HexFormat.of().formatHex(legacy.bytes()):"");
+            return new ImportSemantics(profile,rules,legacy,org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.sha256(content.getBytes(StandardCharsets.UTF_8)));
+        }
+    }
     private NativeWorkspace buildNativeSemantic(Path jcmFile, org.jacamo.bridge.contract.ModelSnapshot snapshot,
-                                                long importNanos) {
+                                                long importNanos,ImportSemantics selection) {
         long generationStarted = System.nanoTime();
-        CodeGroundedNativePipeline.Result pipeline = new CodeGroundedNativePipeline().build(snapshot, projectionMode);
+        CodeGroundedNativePipeline.CanonicalBuildResult canonical=null;
+        CodeGroundedNativePipeline.Result pipeline;
+        if(selection.rules()!=null) {
+            var program=new org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoStaticMappingAdapter().map(snapshot,org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoMappingProfile.observedV1(),selection.rules());
+            canonical=new CodeGroundedNativePipeline().buildCanonicalProgram(snapshot,projectionMode,program);pipeline=canonical.nativeResult();
+        }else pipeline=new CodeGroundedNativePipeline().build(snapshot,projectionMode,selection.legacy());
         long generationNanos = System.nanoTime() - generationStarted;
         MSystem system = pipeline.state().system();
         Map<String,Long> counts = new LinkedHashMap<>();
@@ -889,7 +1035,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                         org.tzi.use.plugins.jacamo.verification.ConstraintKind.INV,
                         org.tzi.use.plugins.jacamo.verification.ConstraintOrigin.CORE, jcmFile,
                         null,
-                        org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.active(system.model())
+                        org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.active(system.model())||org.tzi.use.semantic.engine.use75.Use75CslModelBackend.active(system.model())
                                 ? List.of() // CSL/observer invariants have their own authored bindings, not native catalog rule IDs.
                                 : pipeline.model().constraints().stream().filter(spec -> spec.name().equals(invariant.name()))
                                         .findFirst().orElseThrow().requiredRuleIds(), invariant.isActive(),
@@ -903,6 +1049,9 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                         spec.requiredRuleIds(), false, spec.oclBody())));
         NativeWorkspace next = new NativeWorkspace(summary, sources, traces, constraints, pipeline,
                 importNanos, generationNanos);
+        next.canonical=canonical;
+        next.programEvidence=programEvidence(canonical,pipeline.binding().profileId());
+        next.semanticSelectionHash=selection.hash();
         lastDiagnostics = List.of();
         return next;
     }
@@ -927,7 +1076,9 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
 
     private VerificationReport runNativeVerification(NativeWorkspace nativeState) {
         if (nativeState.runtimeProjector == null) throw new IllegalStateException("NATIVE_RUNTIME_COORDINATOR_REQUIRED");
-        var result = nativeState.runtimeProjector.coordinator().manualVerify();
+        var coordinator=nativeState.runtimeProjector.coordinator();
+        if(coordinator.originalEngine()!=null&&javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("CANONICAL_VERIFY_REQUIRES_BACKGROUND_WORKER");
+        var result = coordinator.awaitEvaluation(coordinator.manualVerify(),30000);
         lastFullCheckNanos = result.durationNanos();
         return nativeReport(nativeState, result);
     }
@@ -993,6 +1144,19 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         return current;
     }
 
+    /** Backpressure the external receiver, never USE's writer/EDT or the MAS.
+     * A bounded native cut must finish before this receiver admits another one.
+     * The existing bounded TCP queues still report GAP if a producer outruns it. */
+    static void awaitCanonicalIngress(NativeRuntimeProjector projector) {
+        var coordinator=projector.coordinator();if(coordinator.originalEngine()==null)return;
+        if(javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("CANONICAL_INGRESS_WAIT_ON_EDT");
+        try {
+            coordinator.originalEngineDrained().get(30,java.util.concurrent.TimeUnit.SECONDS);
+            coordinator.read(()->null); // settle already-queued immutable result publication
+        }catch(InterruptedException interrupted){Thread.currentThread().interrupt();throw new IllegalStateException("CANONICAL_INGRESS_INTERRUPTED",interrupted);}
+        catch(java.util.concurrent.ExecutionException|java.util.concurrent.TimeoutException failure){throw new IllegalStateException("CANONICAL_INGRESS_UNAVAILABLE",failure);}
+    }
+
     private Path runtimeRoot() {
         String configured = System.getProperty("use.jacamo.runtime.root", "").trim();
         if (!configured.isBlank()) return Path.of(configured).toAbsolutePath().normalize();
@@ -1005,10 +1169,18 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         private final List<TraceRow> traces;
         private final List<org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor> constraints;
         private final CodeGroundedNativePipeline.Result pipeline;
+        private CodeGroundedNativePipeline.CanonicalBuildResult canonical;
+        private Map<String,Object> programEvidence=Map.of();
+        private String semanticSelectionHash;
         private final long importNanos;
         private final long generationNanos;
-        private NativeRuntimeProjector runtimeProjector;
+        private volatile NativeRuntimeProjector runtimeProjector;
+        private volatile boolean monitorStopped;
+        private volatile org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot stoppedSnapshot=org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot.empty();
+        private volatile List<RuntimeVerificationResult> stoppedHistory=List.of();
+        private org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.Profile savedProfile;
         private org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeControlService control;
+        private Runnable revokeRuntimeDelivery = () -> { };
         private Runnable stopRuntimeDelivery = () -> { };
         private VerificationReport latest;
 

@@ -1,0 +1,1838 @@
+[
+  {
+    "module": "jacamo-bridge-contract",
+    "suite": "org.jacamo.bridge.contract.ContractTest",
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "c15600f3fe52f8f4e48585784c99ea5cc8112cae3baba9914ccd2484e68df2f5"
+  },
+  {
+    "module": "jacamo-bridge-contract",
+    "suite": "org.jacamo.bridge.contract.ManagedStartupControlTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "d5f4af7f87752bce57e94f0185fa6c0cd999e44dbe8a3c3649c9966d79222e00"
+  },
+  {
+    "module": "jacamo-bridge-contract",
+    "suite": "org.jacamo.bridge.contract.RuntimeControlContractTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "576ba8ea0ed4e7554a2ad791e1e028fb68d631495182a500d3f8d58176b3a4ef"
+  },
+  {
+    "module": "jacamo-bridge-contract",
+    "suite": "org.jacamo.bridge.contract.semantic.SemanticContractTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "4f8b5d83fa0ec89738b1f56fc02ec002430aa90efc58aa1c39526c5e9ca264e4"
+  },
+  {
+    "module": "jacamo-bridge-contract",
+    "suite": "org.jacamo.bridge.contract.SnapshotAdmissionTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "2eefb89028bd040f4100c37b326b902451a987eeb463cbdcc84f31a73f78b556"
+  },
+  {
+    "module": "jacamo-bridge-jacamo",
+    "suite": "jason.infra.local.JasonConsolePauseSemanticsTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "2f62218251c3942a348b81c99489d81b2ce947db14d39936ca0eaf681ec84218"
+  },
+  {
+    "module": "jacamo-bridge-jacamo",
+    "suite": "jason.infra.local.LiveJaCaMoLauncherLifetimeTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "65c792405c68f7024f0e7351e62c3782133bffdd1ef76f00c0ace9a7f1025204"
+  },
+  {
+    "module": "jacamo-bridge-jacamo",
+    "suite": "org.jacamo.bridge.adapter.BridgeExecutionControlTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "4ff2223f4534263b5a050281f5f74966c9986074e6114cf5f0ac4492e16ecbce"
+  },
+  {
+    "module": "jacamo-bridge-jacamo",
+    "suite": "org.jacamo.bridge.adapter.JasonLiteralObservationTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "22818e7291768d67616af69909d46c554b288dfdd2af10287240e1ee27a2f41b"
+  },
+  {
+    "module": "jacamo-bridge-jacamo",
+    "suite": "org.jacamo.bridge.adapter.JasonObservationProfileTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "aa986e3be3bfe2f57e7fb77420dd973a069a3660842a8b021766d2f908822f26"
+  },
+  {
+    "module": "jacamo-bridge-jacamo",
+    "suite": "org.jacamo.bridge.adapter.JasonStructuredObservationTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "be49cccb011f91a79bda8c053c9439a5768635a2e0af82ca5230ccaea5fdf1d9"
+  },
+  {
+    "module": "jacamo-bridge-jacamo",
+    "suite": "org.jacamo.bridge.adapter.MoiseBoardSnapshotSourceSelectionTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "ecbe0a72c5025df10a414247e078627724856f6fc6f4a366be2f203247ed3262"
+  },
+  {
+    "module": "jacamo-bridge-jacamo",
+    "suite": "org.jacamo.bridge.adapter.MoiseGoalObservationTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "ec553c68de97ddb7164ba8a8a597d6aefe18d07e2a6fd6eeb368aab39d3b916d"
+  },
+  {
+    "module": "jacamo-bridge-jacamo",
+    "suite": "org.jacamo.bridge.adapter.NplActivationCrosswalkTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "ce13e4d4ef232ab7869498bf85a38df21148eb9d93ee3497609ac97570780dfa"
+  },
+  {
+    "module": "jacamo-bridge-jacamo",
+    "suite": "org.jacamo.bridge.adapter.NplLiveBoardObservationTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "af8d1a02291a7ccbe0ac63016a803f9fecf73eb666f738718d0b5a7741a433d5"
+  },
+  {
+    "module": "jacamo-bridge-jacamo",
+    "suite": "org.jacamo.bridge.adapter.NplRuntimeProfileTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "42b7e8b79ae7da2d5c2e8339b0c44d3d1035993028e1f9ee82178b84354871ab"
+  },
+  {
+    "module": "jacamo-bridge-jacamo",
+    "suite": "org.jacamo.bridge.adapter.OfficialAdapterTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "4e2a42502f94a08b53b059fe073e88065ab92ef8cd419184dfa7661f699db149"
+  },
+  {
+    "module": "jacamo-bridge-jacamo",
+    "suite": "org.jacamo.bridge.adapter.OfficialCartagoAdapterTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "4b6d27dba4d18f7028ee1a9107775963bcc5a884c4f9bb4b36a1fcbd80450e45"
+  },
+  {
+    "module": "jacamo-bridge-jacamo",
+    "suite": "org.jacamo.bridge.adapter.OfficialJasonAdapterTest",
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "f053dd41aeed15f857d6c46ebcc78da5fc036390bf33a6f02f6c3c3e58b7a234"
+  },
+  {
+    "module": "jacamo-bridge-jacamo",
+    "suite": "org.jacamo.bridge.adapter.OfficialMoiseIdentityTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "4d6bc80304e6ea1d00eaaa21dc3d899ed077e6b6668f96a7e8e886c07d051136"
+  },
+  {
+    "module": "jacamo-bridge-jacamo",
+    "suite": "org.jacamo.bridge.adapter.ReasoningCycleGateTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "b8b0c4ba378668845c85de946a8f485c2d5690edf0163f4afdbece1c0695a06f"
+  },
+  {
+    "module": "jacamo-bridge-jacamo",
+    "suite": "org.jacamo.bridge.adapter.SnapshotCoordinatorTest",
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "c060505ec539f99df48b5f79893512e7edaeb16bcc6de0eb214717669388f1ef"
+  },
+  {
+    "module": "use-core",
+    "suite": "org.tzi.use.architecture.MavenCyclicDependenciesCoreTest",
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "540fc0bc68dbb54931e5672911cd17a650714f2475f1b47d745a6650e3a4b1f5"
+  },
+  {
+    "module": "use-core",
+    "suite": "org.tzi.use.uml.mm.ModelAPITest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "8c9f4eae9e0dbd3d2027aa18c8c4bc23a308f9f62df4d2479920db773d435ac6"
+  },
+  {
+    "module": "use-core",
+    "suite": "org.tzi.use.uml.sys.MSystemStateExtensionTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "2e401cae796c78047f2c7211bec7f897bd9d450d9df8a14f6a67641903071478"
+  },
+  {
+    "module": "use-jacamo-semantic-engine",
+    "suite": "org.tzi.use.semantic.engine.CslFrontendParityTest",
+    "tests": 23,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "7e318ff158e9ee911483f2124c15dd40645c858a50e500d60f2cbb7bd7b5e4c2"
+  },
+  {
+    "module": "use-jacamo-semantic-engine",
+    "suite": "org.tzi.use.semantic.engine.EngineExtractionTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "363a1d59b922b3c439b84906ff237303b8a8fc8c50a89070b9bd251dc1d8e886"
+  },
+  {
+    "module": "use-jacamo-semantic-engine",
+    "suite": "org.tzi.use.semantic.engine.HostCompatibilityTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "c98d96e5bc1b139247f8743a0e71f32ec1c13b4e875fdbf4d4b4658d8d2e3d14"
+  },
+  {
+    "module": "use-jacamo-semantic-engine",
+    "suite": "org.tzi.use.semantic.engine.Use75CslBackendTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "bc2ac055d70a42c62bce01fbdc92c0f47824bd70f26917703df5d934a1edd573"
+  },
+  {
+    "module": "use-gui",
+    "suite": "org.tzi.use.architecture.MavenLayeredArchitectureTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "f4819cc8759777f6d75e78b5e8fbe3f486623fd5b6b011752621cdb2384a364e"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.bridge.BridgeConnectionConfigTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "15922fd27f0388c7d0657ad55c2d56500d1e7c61b860bc7013ac4c135a9f7f7d"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.bridge.BridgeMirrorStateMachineTest",
+    "tests": 10,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "0089441a8c9f0ec3913dbdfce5e49482b94f7da4e8086c303ba2f07ad779e922"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.bridge.BridgeRuntimeProjectorTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "2b9c60c26a2ccd6e4f069fad270baed943ab609a6b48fc32f822983a222a37e5"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.bridge.BridgeVerificationGateTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "dd0f7c5a88d06e9db1b678d452be4a8221f03d724cae352a28095d08eae47bc9"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.bridge.CanonicalCasesBridgePipelineTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "24329637121fede6a07306817bf4e31aea8ee273ef697fe5764528d71c3a6df1"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.bridge.CanonicalEvidenceTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "6b2503051fb944d4fb033e83f58dc601ed2c3ddb8ee743a1e97df6d5c18206af"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.bridge.HelloShadowComparisonTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "156db31dede1fb1bcf3e86518e6559d7e8b105055a005d53d5666208e9b1bdf6"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.bridge.LocalTcpBridgeTransportTest",
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "573578a80bf3d8f0c32909e09274502a09c85953ac01605b612b67823f213317"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.bridge.NativeOclLaunchEvidenceTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "976ab500c7714b190be8041682f9dfa9eebcb5b65d36a483ec5cf2d9859cb08d"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.bridge.NativeSemanticAdapterTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "f60573664ff8ebb47662093c5c82379462cd0560255fd434c8b5c5e6d67b307d"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.bridge.SeparateJvmBridgeTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "ae26389f2645923236ba9366ba79a3f4b8b39079ebfa4a5a53b46966229cb233"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.bridge.ShadowSemanticComparatorTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "d663326d4017419040bc8d51ebcc96ddfbf88c27a407fd6a839acb9f0b5e296b"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.bridge.TransportBenchmarkTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "1a62af1a42f802342f3832f3d30ffeae0ba5021f89f09ad667be074517e28f28"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.AttributeProjectionCleanupTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "e114000cba9078e6cdd9a17f413f76c0b3edd9f2562ba7daa2c4fe343f8d2d44"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.AuctionExternalOclProfileTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "18dd45ef11770cddc728a83567079929851e78b64513cd57a340ad606deeb1fc"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CanonicalCslNativePipelineTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "329b464d9e2ac713a0cfee5d2c81777619bd99c0e6bac6ada2ff92bb60843a96"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CheckpointRoutingTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "b5182c1769703d16b705b60b3eb47a245fa81a01aa3594136b78433f8526db72"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedDeterminismTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "56c4b3045d68f7afce0df0f5284753e04ab11cd872473aabc65077006f4c16a7"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedExportTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "f48249106527a475926dcfb1e0c897a225afcad7fd56a83e24a1f710e0a3b650"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedIdentitySafetyTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "94e0bbbd5e632d171801d226f01befed1b2c50841ff3f54afac01220d04d1869"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedLargePlanTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "dae8a1d9f0335b2eaa80c7782eeeef8ef955aa35bbc2ef23a3319f6abd5958a9"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNegativeTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "ccbc04d698a6d7c6a7f22db7a9b9dfb9cece0f37afb701e59fe1c45c30ee43dc"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedOrderInvariantTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "ab59dbe71e19f99d5a978afa540fd071342d1dac239c41469406f5009e1df890"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase2Test",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "275c030356b89e69d178ada59e45f66745ccd6fc4eb28a0daff5b2a45441de3a"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase3Test",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "c394164537bdc78e408aa61ac3c47b4639b7d60dc51d39b899d3f005559d2613"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase4Test",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "959ac306f494c7b0a94ab6824a43342c026d4fd093d165834c8be97d2945293a"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase5Test",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "e16c62fb3140417f659872d66746af34b97451a761ecb99422b1845afa09e9bf"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase6Test",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "287f7e4991020906e0e6f86cf2535260ab6e23f161fdaf99f425c822b738534c"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase7Test",
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "671934746213768623c3c6f01498eb11f0e4e0bd4934ab6cb162104d8dc49e46"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase9Test",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "d559390219365771e4cf6b9992ab11bae00e777237742d9936beb45d994845d1"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.DomainRuntimeProjectionTest",
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "4e24d96a402afb6e23d4ad2f9277c060f15ba5f60b5779ecd6ec1b2e1947b4f3"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.ExternalOclConstraintServiceTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "dc9720240c0ceff7155fb7d2f1c0a212e3a1042d404d806546a2a2db84d11046"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.GenericAgentProjectionTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "2ae094cca2ce0833d286f743d6ae43998c001ffae686d54e762a15602f1f4274"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.GenericFunctionalRuntimeProjectionTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "4861728090a077fcd10b065e20794e8e43509f23e5f4dac19d5c2ec3637e4653"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.GenericSubgroupProjectionTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "a12f584c3bb79697ad69a86a627adba874f0110988f6fd904a4af334c466d52e"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.GoalConstraintViolationTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "dd4f5e359b332868dfb61207cc5344a847fcfdef71e925d622b59bab5f73c51b"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.GoalViewSnapshotTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "c011a828fae437330536725c3b59a9a9cd6208b273d990703489b8d67aec5e42"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.LegacyV2OclIsolationTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "d0872b02eb0d8ff7161a277adad134bcedfc79cc7274117172cbc3b4c0234945"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.LiveCartagoNativeVerificationTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "91bf6ac341d2fed3605b92e1c7f3bbd5f42b6cd2aad4ce779012f7dc8e427e8e"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.MoiseDomainProjectionTest",
+    "tests": 10,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "fca8b4e749539ee6547e29c49f9d1330fd27c14cd1646392b0d187a605ab591f"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeArtifactDeclarationBindingTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "37274934e08243916be1aae3e51bf44b3d32e7240816b47f8a305c9e9cf7f964"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeConstraintInstallerTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "9f17ed204c5f7f2f85e62d9ad82848d2ab3341f78cab853888efa7007da6bdaf"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeEnvironmentRelationsTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "bcb9a100d49a60d9582e1419fbc8cc2965dcd2f06bf3d73c5f76470ef8d12fd0"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeGenericStepReplayTest",
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "310cdccaed231870ee166bf44f4077995b184f060d735de43955a0a4f4eef1df"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeMOperationProjectionTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "95c6226de004d1303390858383e5f817d6675a69bea263e35763d90761bc28da"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeObjectCountViewTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "1e783a3645bbcae47100bde548a765e562930a4829e86a01d5edd91c5027a24c"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeObjectDiagramBindingTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "162f028af166057a10d7af306dcec9d72fa6bb38aa47f010e6bc09d51eba9971"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeOperationCheckpointTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "c23fa5b0933ba6ac6121eb9c831d41341639d4518b7350b19dcfbfb18f9ebd67"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeProjectionAuditTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "f55c98ec01b8ba17685173e957022661fdbdbfb5e6c5c9c0e531541b991fa02f"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeProjectionProfileTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "b4f3698d610340ca32be5a626125da200bf88fc7ca17a038f873b40bd0387182"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeRoleAssociationSupportTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "bdfffb41b0613c724247c0c705eac841afd34cc33ea3bdc6951c3b13bf91909b"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeBridgeCoverageTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "af8fc86d2a1e1e2e2b8130b989bd1e2094408786412c84e992307114f81dddcc"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeReanalysisTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "fd7e0a2873dea5ffdbb8a66e8f755f3f76a7c8de33346edc2f805cd0fe8dfb9f"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeReplayTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "1a61c4e384f2abf98854a33d717ba662ae3bbe7387225633d1540624ad8281ce"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeStepReplayTest",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "c1b7ace5ba60ca268c02daa51bc9cdcd3f7dc614207d56cce6b6a05cd510e25f"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeUseSoilExporterTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "efb31688598919b7c4c7b68647f43a16420f40902e92ea0e43fc12bb98c87e22"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.PausedResyncSnapshotTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "d21f77ee3e62b0a4d5d92fe3edfed84bd1699139d125debd0559febd9061d4bb"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.ProfileCompatibilityPreflightTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "5ee0a1cd4f1dee1159f05ac2e436f4deed92a1a7ea7ff8c6a6a6ec6aada07ffc"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.ReconnectSnapshotTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "3b113a8ad1dad659c75479122e868fc202fa5b446799602a0df4495fdff178d2"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalogTest",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "58e1862ef4ce80ce697aa963a2a460e7708a5dc444501764dc72302d75415352"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeInvocationSemanticsTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "59e17fcc12b5b70e12e168e360bbbf1fc5a17f0207f857f2951361aba0607a52"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeSemanticFailureTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "e8882696304759ff43f379e741788742656df08c02037605abc8a0bb2a05e35b"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.RuntimeControlServiceTest",
+    "tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "d7e5e9dd7cfa105ea0c88636ea41ce14bdd731f66e93bd271ab4b4e2dac38c6c"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.RuntimeHistoryTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "cdd9520be175ad080a8f45eae2ec13510fd9169ae57a37474a390ed00f08b3f8"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.RuntimeVerificationCoordinatorTest",
+    "tests": 13,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "14bf870d6a755f32b4515172bc45c78a44cd161a20d21f5c198d87e7563655ff"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.SelectiveVerificationProjectionTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "be6c12a86f55aa5a50ab62efd00c5a730faa3917494959262600881dacfe71e1"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.SnapshotRetentionTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "0d0f43eb32e730584a7d9cf859b278f023377448d10b6c98055609da15063e6f"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.codegrounded.VerificationSnapshotContractTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "4b8b78ed720ca926c12d6d4fcb8a5680ac9b2fbe6d822ae53601cdc20aaa858b"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.CompatibilityManifestTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "b40137fce3f0b79559112508dabe984d085acd31df57c3973a4180353c1a5f8b"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "a47229b257ab386e33c493e7d3b09b28b57f201d2ad5b8d218958df195c401be"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.constraint.ConstraintOclTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "bdc2efc1283ebb5b8c92c99ac13bb3a503cb63cedb3a17fce576e17ac9cc941c"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.DefaultBridgeAuthorityTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "2cf2eb28b73b8465f86415fc228aa198640acb8f54fd2abc7314a625651b3aab"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest",
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "baf5ad3981a6fce6e0bab8e30feb373d9d24cb780c50c2a724e17e96fdbb004e"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.evidence.EvidenceNormalizerTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "6c981a108667492a72f5d9ec7204a54db9c035a8d07ceeab29389cbeae7769ca"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.evidence.EvidenceSourceCommitTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "e5760c025e446e6b81d0f9544a0298bc2d32c3f0ca89cb774e474b4510f47e3a"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.extraction.StaticProjectImporterTest",
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "bd339406ae9b8424373e6edf1405d48cf80034b8a5f40faec119fba08b4bd039"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.extraction.V2ExtractionTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "bfa02f9b57a506f1339d4b9f1d6a75884f995ff98edebebdaf5eb065401407c8"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.GoldenPipelineTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "626d518f15447e9f0b8d4c7e2865247816776f19f2378d6ca8c96a4fe0636520"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.HotfixBindingTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "28107f60b3d863a657e9e1fb473487fe3e19b2b2ca7fad7014d682be1e6d9df6"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "e08d8689c371d941895f771ecb6d990986141d2f6ba8afeb93e3fc9398c7cad4"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.JaCaMoPluginTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "4432b12f3247be3908129ecd80c5d6b633c86885417bc1360e27a03a3f77fd2c"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.launcher.GenericLauncherScriptTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "53ca6222485024678ed74569958b2de902cd271c43bd49a984d0373bd07f1235"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.launcher.MavenCiWorkflowTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "e331b46ca3e927f9821cee009d8a623e864c83a28022b7b635236b9ed6c975f1"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.ManagedBootstrapTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "995acd1b68505b77752a26bbe1f96bbd55fed3faa9b04826da89c97e534af045"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.ManagedRuntimeWorkflowTest",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "d6642b18769353a0ee45d5dcc3c38086b9b794cd236c634bfeca533640ccd354"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.mapping.ActiveBaselineTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "b349926b511ad7425f5196d3818457831fed604c5d27e8a89066cdaa52f1b03d"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.mapping.HistoricalMappingLoaderTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "6ab458d3bc47369be8b4e2679cd11eaf1aac16c9586d5cd4c7fb662d4bbde83b"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "5f150018ac95c588aaa2445f2561cc753ba4678cf21c6ff6fb987e36700297c3"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.mapping.OrderProjectionTest",
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "a0b932f9bca40c66e5298f22b4c2da4656f08cffaafe002c5e5ccc7d7dddc019"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.mapping.V2EcoreAuditTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "b3676e92dcfa851ae43c326dd4ff84d09ad4e3181fa7b84b2f99e133d9b857ed"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.mapping.V2MappingAuditTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "56a281a18903f6821e4f47e3fd8c00470488b2616703a68d1ab75ac2942fb0da"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.mapping.V2OppositeOrderingAuditTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "b8f26ae7e5233b0359ee9eee7a90bc67c95ae8473e12e46d4263cce01c4865e8"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "17efecc6b22d87ed4ecdcb96e913dcd3be7437478466cd6973d7a713642f05f3"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.materialization.V2MaterializationTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "d7025d242dcf6d86da091f404d3acd3deef6ee2a93fa6e2f082fdb14314c92b8"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.MultiCaseV2PipelineTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "97a50fe9710142677926001b755f270d4d42b175d6731b67fe97ed95d6523a88"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.NativeProjectionLaunchTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "a2e5c0800dc22b72c852dd633259087191c09b1c75e71c1ccdea6d8125b0fbe9"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.NativeResyncHandoffRegressionTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "7a5b0239d0f3461fdbce1d61b04a77d710d52c223a5c3ce6f59dc21463aae6db"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.NativeRuntimeFacadeIntegrationTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "e25c9bb4566aa952264b16ff052dbf313d459e5cb8c66fff8facf7743c8c087e"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.NativeTraceSourceTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "0f25a05cc7da8c2144517acabd682169e23e6ae8c440b01a9bff5fecc24173cd"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.NativeUseSessionActivationTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "c9bc3a52c6b1d5b916cb34cd02b803fc786c0b34370ad1ba26af12da78a5cfde"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.ocl.OclProfileOrderingTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "30128c5d70b1bca83200524994b6edbdb360cbcf87a397e3c85206788d74ab9f"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.Phase43PerformanceEvidenceTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "503d98f675e1c7562453a48c7666066d79879845d2a2a2f512e69a2a39b691e1"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.Phase9CaseStudyAcceptanceTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "c8f78161a11c1cf84e09e4853874b6a4086967ec5ef175c13a17f22807a645ca"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.PreMigrationBaselineTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "6730154cb4f8eeb45372551ad6b505f200f93a8095bbb2b20dcefa00b4431358"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.ProductionAuthorityPhase8Test",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "730704fd24504a974febeedba755f4c108026131d4a54a2c7a231a73cbd6d461"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.project.JcmProjectLoaderTest",
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "6295e07db83e2fe4099b5fc2cf55e7baf053251164c17ce53135e9f00f8d17da"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.project.ProjectModelTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "c5ce408a6fb034360ebf7059eb6733dc27592a68a3ad3ab6ec0c3fe46226f17b"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.release.PackagedResourceNamespaceTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "e01eac4b07fb3ae0603b4251e85131310c16ee1c6d399256b751739d2ab5060b"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "3b452444c6aa658c241e159584e1bd4eaf15088162fec3f6719ddc1b20460323"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.ReplayStepFacadeTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "cb00c5bc483aba61a8dfa66ad7abb4ee34ba91479e3116373c4e9d13125f524c"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.runtime.AuctionSourceRuntimeTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "e53660d426c811866e8b9cbaaff22ad93e058f58674a81b251eead5babe7028b"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.runtime.CartagoRuntimeConnectorTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "ef4aa3ad67a61fd35d1cbcb71bc71fc09f1bf20eb4e11e29993f9db5ed0a5c66"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.runtime.CompositeRuntimeConnectorTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "f907d7344b7a925a58a888d5198f8c86aad0b80b0a1c39f0e28494a83e926567"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "04fc70c8e18c8679969135cbf0f2548d704dbc408aa7bd8af9aaa34f681f46ea"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.runtime.HistoricalRuntimeMappingTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "6fa921466ac200d63d5709f8966b2ffc10db85beccceb27d3b434c401367be87"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.runtime.JasonRuntimeConnectorTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "0c8806bee63a2d06a50d2341407fdb91af40163ce3cb932b4df4714a146e280e"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "97f11866b7dda80ca43cf10dd8d84e47c9d1ca5d77a826d90770d6f9df22ce2d"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.runtime.MoiseBoardSnapshotSourceTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "92ddc124d40189d46cd3b396b9447a697d1955da60341eb627de6ca3513fe33b"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.runtime.MoiseRuntimeConnectorTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "7a85cf121fa5b4826fd63f31fb9aee13e16c30dcb105be6fae38c0da8a6ed054"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeAliasTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "9c1e754deaca1a48b6684140eb51a1eded12ee443dc65cb32c1104a37d983d08"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeAuthorityTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "59faf4444ac8ac7439398cdcabc5a5a4ac532711a14e28bddaec220c63c3192d"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+    "tests": 26,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "2a9c8dccd2365142ef1dd7380463ed82cc1c4c6d8d1fd33a66aad60bd0b9afc3"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeIdentityHardeningTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "ee7cac2b016d29e3a89e6b975fc85b8c08cf5ae85bafe171e67c3810d6d31d35"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeMappingTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "aee7bb101cb995a2cf5e514125c151b373b9d2dec5ab8785599190e9a15b66c9"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeMigrationTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "ffc70961ae636170ad89ffaf7ff0215e59bd0d9e67561a517265871a4aa4b3cf"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.runtime.RuntimeTraceTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "1449bca50bbd0bb15c6c7fd64c10ee1c0752bfa5f4e050b73544234d616cab8d"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.runtime.V2RuntimeOrderTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "1e83ba8e810a8fe4c2bf6cc897ed5ca988f813967e89db2e1ef2c0dde4dc0e8f"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantic.SemanticIdTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "1d4b94d73604172967c5dac8414357179ec8fd4778ca8a2200b02d3d7cbf4d50"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantic.SemanticModelTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "d9db01d33cea9da70047bb1d65cbfe9704083cfaeced0a436dab7d1ab2385358"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantic.V2SemanticModelTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "0ea2dcec475d0ed82417bb33feb8e22b5d8fc9e1564240d3c2ba50f5cc4bec9d"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.BoundedExplorerTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "df376d4888e705b15474aac10d755c27bd0c2f16ecf7653f122bc7ff8f9b55cc"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CartagoAwaitRegressionTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "16d679d7c921a2f26da613b5d15741574b04eaa9cfbf11652dbc1917dde7881a"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CslNativeBindingTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "879ef0b254af2197d1056b403361094266259400bbb328a220c8244f1be117d3"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CslSchemaTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "9aeb3c73482dd01c8898d0a87b0f02fdd37039d13b06cd4a50e9a2933e61a45f"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CslStructuralPolicyTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "e1308d0c1c528b8fcee2e37145b961cb424557e24ae70421528b17f618ebabc1"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.CslVerticalSliceTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "d0068778e29cd5c3242881b0738e364879a8c136fe1904c1281f5249a1028623"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.DetailedVerdictTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "daa1229cc7f4672dbc1e716a7d1b7fbe7878f7563a0f551abcc69a1781746ab3"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.EcoreSourceLoaderTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "e1eef9df296eb3008b0a70e915c7a913bf5e6f81950b7dfa134dc39a1cc39862"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.EngineHostIntegrationTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "b1e88795bb6b271ad1984bc15f340eb0adaebf6f213039bc7ff11c1ae9975d04"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.FunctionalLiveBoardTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "98223ed3735643f9cbfc4ddd1a5c6406a59424964c952e415dbc8a81e28ad534"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.FunctionalObservationTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "7f4e330555d828f3b5b80e93a8af59fccc8614f20f64c8b06024193381059bfb"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.JasonAbstractionPolicyTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "db701ed1c37d229eb9d1809315e8eadc999d0c1ed4bc247119e216943e004cb3"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.JasonTaskConfigurationTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "cb7c253cbddb628edbcd823504152528df35b4a54043758171b88b25c57e2cd1"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.LiveMasDefectRegressionTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "cd137f00a9de636dfbd72226bcb95693c5115e2b1c32c6693bef8de8b8284d15"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.MentalStateProjectionTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "b772a03be0594fb2e6525357e134690a7b24a220393f2d3c4b7b4d30e2cdf682"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.NormativeObservationTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "dc178e9a93b21e6324050ef73c162751f9f1d96111a6794e0abdbee8ca51ece4"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.NplDependencyRegressionTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "87acd813e0121014073742e4eaa7de7e4152576ac8b160b708d61206fe477690"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.ObservationEnvelopeTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "e46367ecdfe400cb6cf96ac55f6730a2dd826d7670ab171462be9cbf629c35e8"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.ObserverIdentityLifecycleTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "1c55b3f8029edca076c0cf746c849fe96b44ca273c15e09a2e78ba4c2963c466"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.OclSemanticBackendTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "ffbe311a10d4ab4261fbc029639807489b78f16037ccc8b87a82de1477651a47"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.OPlanSemanticsTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "d535e7e0b401b2b4cb118c5faa05a8ab0b3c5622151e0a8e3697dd9f5d0a14b0"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.RuntimeMetricDistributionTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "79ef963cd32c1812cef061e7f83f9b77ecb1b24d754d9329d4b4090d0626f5c8"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticBindingTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "478ed2f75b82373066ff4f57eca970076c29e0eb7e68c54805a64b88d5d984d7"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticCapabilityManifestTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "ba66c7922a3ebc0d56b49e1549310b2e235ca73d58aa8706373081f18292a14f"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticMappingReplayTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "1add4921bbac94ff0f22ca835dc2c96736197b5c1516da4053fc6786a6ec728d"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticsProfileTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "16d03ed61c0861933430167263abd9af8ead930c30778c4695aaf529b80ca1db"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticTransformationTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "d3882cdfc82aac3b2e399b2e779a4c8477233ccfa3e39a3ec9f3000930f46947"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SharedStateAcceptanceTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "3d356ff6ffa3ca81fd67b9801742583909f36c4c78d27a4fa9cdb911231b4c2d"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SnapshotCoverageRegressionTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "44fa8c6927252496f8157cd0d62fa179472e68f365198aba87ee2f7f6d8d7ddf"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.SourceLensTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "ab7b7187aedfe770068dbd03d9f261703d704a116288a9adc2cbd3a83828d6d5"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.TaskPerformerRegressionTest",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "a65138ae52ed91cadb3be5fb1aca850c344128552ab15e3ba2e394fc1d596110"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.TemporalGoalMonitorTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "69e5674c9677cc697f0c720808a09932511d7193f21eda1e7355da534f5afad6"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.semantics.VerificationLoadScenarioTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "11b988ff46a532c4ccd254212f4722ee92c674fb93568fe334a377bc7fc86e82"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.trace.TraceBindingTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "1d48022e82e552de1333a6e8ae8d728c8b64291c8042c22e09b190cd08dadbc1"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.ui.JaCaMoWorkbenchPanelTest",
+    "tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "d154f8d86b5126459a79f6320f5ec263b1928b2e725bac0db323c03937b6e8c2"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.ui.SemanticEvidencePanelTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "84fca434825a8496d542577ba4f67ae21c66817a89d099d840091b97b30298e5"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.V2DeterminismTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "b7c045401547d2456a78465117417e852200073aae035b55e23c8619c8281115"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.V2FinalFreezeTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "2e3798d4ec67868be11f574bf944066a4aab78bcde69d8053c6fbbd515f684c2"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.V2HardeningAuditTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "097b378339757d6c415a49d4c2567f50fc5ce807618f5ae638d2721453221848"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.verification.CrossDimensionalVerifierTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "ed0113690fc9235c5810737d78bd157c6ee87c5a540a39607a9b5a031cf1ec5d"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "eb1316c7be560f376105bbaaf0ca045f4c555a8f908c7e513f840d78f58d8f0f"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayerTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "2e754a09bd66574450a05fa02bf2638c13af33d79b16167679ffd1ad081e8ce3"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeHistoryVerifierTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "14be5a63f0284dddb64a59d99f649f5c45e7fbb9617d91783203b41d27fee98a"
+  },
+  {
+    "module": "use-plugin",
+    "suite": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+    "tests": 20,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "7c3702bcc285fa84460b11d08edfaf93ff305fceee39647e4ddc7b20069938ea"
+  }
+]

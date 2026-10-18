@@ -30,6 +30,11 @@
     <dependencies>
         <dependency>
             <groupId>org.tzi.use</groupId>
+            <artifactId>use-jacamo-semantic-engine</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tzi.use</groupId>
             <artifactId>jacamo-bridge-contract</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
@@ -173,6 +178,7 @@
                 <includes>
                     <include>APACHE-2.0.txt</include>
                     <include>SLF4J-MIT.txt</include>
+                    <include>ANTLR4-4.9.3.txt</include>
                 </includes>
             </resource>
         </resources>
@@ -302,6 +308,14 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
+                    <!-- Failsafe executes the shaded project artifact. Its engine
+                         and ANTLR4 are already inside that JAR; re-adding their
+                         reactor dependency JARs creates duplicate engine resources.
+                         Keep the production installation guard strict in tests too. -->
+                    <classpathDependencyExcludes>
+                        <classpathDependencyExclude>org.tzi.use:use-jacamo-semantic-engine</classpathDependencyExclude>
+                        <classpathDependencyExclude>org.antlr:antlr4-runtime</classpathDependencyExclude>
+                    </classpathDependencyExcludes>
                     <!-- Full structured CSL observations in multi-agent acceptance runs.
                          Production keeps the 64 MiB default and the same fail-closed quota. -->
                     <systemPropertyVariables>

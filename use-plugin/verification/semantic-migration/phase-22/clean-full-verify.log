@@ -1,0 +1,1349 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] use                                                                [pom]
+[INFO] JaCaMo Bridge Neutral Contract                                     [jar]
+[INFO] JaCaMo Bridge Official Adapters                                    [jar]
+[INFO] use-core                                                           [jar]
+[INFO] USE semantic engine � selected use4Goal core                       [jar]
+[INFO] use-gui                                                            [jar]
+[INFO] USE JaCaMo Plugin                                                  [jar]
+[INFO] use-assembly                                                       [pom]
+[INFO] 
+[INFO] --------------------------< org.tzi.use:use >---------------------------
+[INFO] Building use 7.5.0                                                 [1/8]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ use ---
+[INFO] 
+[INFO] -----------------< org.tzi.use:jacamo-bridge-contract >-----------------
+[INFO] Building JaCaMo Bridge Neutral Contract 1.0.0-SNAPSHOT             [2/8]
+[INFO]   from jacamo-bridge-contract\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ jacamo-bridge-contract ---
+[INFO] Deleting D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-contract\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ jacamo-bridge-contract ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ jacamo-bridge-contract ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 45 source files with javac [debug target 21] to target\classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ jacamo-bridge-contract ---
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-contract\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ jacamo-bridge-contract ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 6 source files with javac [debug target 21] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ jacamo-bridge-contract ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running org.jacamo.bridge.contract.ContractTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.381 s -- in org.jacamo.bridge.contract.ContractTest
+[INFO] Running org.jacamo.bridge.contract.ManagedStartupControlTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.241 s -- in org.jacamo.bridge.contract.ManagedStartupControlTest
+[INFO] Running org.jacamo.bridge.contract.RuntimeControlContractTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in org.jacamo.bridge.contract.RuntimeControlContractTest
+[INFO] Running org.jacamo.bridge.contract.semantic.SemanticContractTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.111 s -- in org.jacamo.bridge.contract.semantic.SemanticContractTest
+[INFO] Running org.jacamo.bridge.contract.SnapshotAdmissionTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.jacamo.bridge.contract.SnapshotAdmissionTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ jacamo-bridge-contract ---
+[INFO] Building jar: D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-contract\target\jacamo-bridge-contract-1.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ------------------< org.tzi.use:jacamo-bridge-jacamo >------------------
+[INFO] Building JaCaMo Bridge Official Adapters 1.0.0-SNAPSHOT            [3/8]
+[INFO]   from jacamo-bridge-jacamo\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ jacamo-bridge-jacamo ---
+[INFO] Deleting D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-jacamo\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ jacamo-bridge-jacamo ---
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-jacamo\src\main\resources
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ jacamo-bridge-jacamo ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 40 source files with javac [debug target 21] to target\classes
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/JasonSnapshotSource.java: D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-jacamo\src\main\java\org\jacamo\bridge\adapter\JasonSnapshotSource.java uses or overrides a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/JasonSnapshotSource.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ jacamo-bridge-jacamo ---
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-jacamo\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ jacamo-bridge-jacamo ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 21 source files with javac [debug target 21] to target\test-classes
+[INFO] Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ jacamo-bridge-jacamo ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running jason.infra.local.JasonConsolePauseSemanticsTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.847 s -- in jason.infra.local.JasonConsolePauseSemanticsTest
+[INFO] Running jason.infra.local.LiveJaCaMoLauncherLifetimeTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.661 s -- in jason.infra.local.LiveJaCaMoLauncherLifetimeTest
+[INFO] Running org.jacamo.bridge.adapter.BridgeExecutionControlTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 26.55 s -- in org.jacamo.bridge.adapter.BridgeExecutionControlTest
+[INFO] Running org.jacamo.bridge.adapter.DeclaredArtifactTypeProofTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.030 s -- in org.jacamo.bridge.adapter.DeclaredArtifactTypeProofTest
+[INFO] Running org.jacamo.bridge.adapter.ExplicitMainWorkspaceBindingTest
+Configuration of 'jacamoJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/jacamo/1.3.1/jacamo-1.3.1.jar, based on class loader
+Configuration of 'moiseJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/moise/1.1/moise-1.1.jar, based on class loader
+Configuration of 'jasonJar' found at /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar, based on class loader
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.270 s -- in org.jacamo.bridge.adapter.ExplicitMainWorkspaceBindingTest
+[INFO] Running org.jacamo.bridge.adapter.JasonLiteralObservationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.758 s -- in org.jacamo.bridge.adapter.JasonLiteralObservationTest
+[INFO] Running org.jacamo.bridge.adapter.JasonObservationProfileTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.269 s -- in org.jacamo.bridge.adapter.JasonObservationProfileTest
+[INFO] Running org.jacamo.bridge.adapter.JasonStructuredObservationTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.032 s -- in org.jacamo.bridge.adapter.JasonStructuredObservationTest
+[INFO] Running org.jacamo.bridge.adapter.MoiseBoardSnapshotSourceSelectionTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.jacamo.bridge.adapter.MoiseBoardSnapshotSourceSelectionTest
+[INFO] Running org.jacamo.bridge.adapter.MoiseGoalObservationTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in org.jacamo.bridge.adapter.MoiseGoalObservationTest
+[INFO] Running org.jacamo.bridge.adapter.NplActivationCrosswalkTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in org.jacamo.bridge.adapter.NplActivationCrosswalkTest
+[INFO] Running org.jacamo.bridge.adapter.NplLiveBoardObservationTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.176 s -- in org.jacamo.bridge.adapter.NplLiveBoardObservationTest
+[INFO] Running org.jacamo.bridge.adapter.NplRuntimeProfileTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.jacamo.bridge.adapter.NplRuntimeProfileTest
+[INFO] Running org.jacamo.bridge.adapter.OfficialAdapterTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.403 s -- in org.jacamo.bridge.adapter.OfficialAdapterTest
+[INFO] Running org.jacamo.bridge.adapter.OfficialCartagoAdapterTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.460 s -- in org.jacamo.bridge.adapter.OfficialCartagoAdapterTest
+[INFO] Running org.jacamo.bridge.adapter.OfficialJasonAdapterTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.318 s -- in org.jacamo.bridge.adapter.OfficialJasonAdapterTest
+[INFO] Running org.jacamo.bridge.adapter.OfficialMoiseIdentityTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.188 s -- in org.jacamo.bridge.adapter.OfficialMoiseIdentityTest
+[INFO] Running org.jacamo.bridge.adapter.ReasoningCycleGateTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in org.jacamo.bridge.adapter.ReasoningCycleGateTest
+[INFO] Running org.jacamo.bridge.adapter.SnapshotCoordinatorTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.063 s -- in org.jacamo.bridge.adapter.SnapshotCoordinatorTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 74, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ jacamo-bridge-jacamo ---
+[INFO] Building jar: D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-jacamo\target\jacamo-bridge-jacamo-1.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] ------------------------< org.tzi.use:use-core >------------------------
+[INFO] Building use-core 7.5.0                                            [4/8]
+[INFO]   from use-core\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ use-core ---
+[INFO] Deleting D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target
+[INFO] 
+[INFO] --- merge:1.2.0:merge (merge-grammar-files) @ use-core ---
+[INFO] 
+[INFO] --- antlr3:3.5.3:antlr (antlr) @ use-core ---
+[INFO] ANTLR: Processing source directory D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\grammars
+[INFO] 
+[INFO] --- copy-rename:1.0:rename (move-antlr-parser-use) @ use-core ---
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\USELexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\use\USELexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\USEParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\use\USEParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\GeneratorLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\generator\GeneratorLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\GeneratorParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\generator\GeneratorParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\OCLLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\ocl\OCLLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\OCLParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\ocl\OCLParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\ShellCommandLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\shell\ShellCommandLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\ShellCommandParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\shell\ShellCommandParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\SoilLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\soil\SoilLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\SoilParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\soil\SoilParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\TestSuiteLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\testsuite\TestSuiteLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\TestSuiteParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\testsuite\TestSuiteParser.java
+[INFO] 
+[INFO] --- build-helper:3.6.0:add-source (add-antlr3-generated-source) @ use-core ---
+[INFO] Source directory: D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3 added.
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-core ---
+[INFO] Copying 512 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- build-helper:3.6.0:add-test-source (add-test-source) @ use-core ---
+[INFO] Test Source directory: D:\_CODE_BANK\Project_\08_Thesis\use\use-core\src\it\java added.
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-core ---
+[WARNING] *********************************************************************************************************************************************************************************************
+[WARNING] * Required filename-based automodules detected: [antlr-runtime-3.5.3.jar, combinatoricslib-2.3.jar, vtd-xml-2.13.4.jar]. Please don't publish this project to a public artifact repository! *
+[WARNING] *********************************************************************************************************************************************************************************************
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 570 source files with javac [debug target 21 module-path] to target\classes
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-core/src/main/java/org/tzi/use/uml/ocl/type/MessageType.java: Some input files use or override a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-core/src/main/java/org/tzi/use/uml/ocl/type/MessageType.java: Recompile with -Xlint:deprecation for details.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-core/target/generated-sources/antlr3/org/tzi/use/parser/generator/GeneratorParser.java: Some input files use unchecked or unsafe operations.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-core/target/generated-sources/antlr3/org/tzi/use/parser/generator/GeneratorParser.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-core ---
+[INFO] Copying 91 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-core ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 53 source files with javac [debug target 21 module-path] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-core ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+[INFO] Running org.tzi.use.architecture.MavenCyclicDependenciesCoreTest
+Number of cycles in org.tzi.use.main without tests: 0
+Number of cycles in org.tzi.use.main with tests: 0
+Number of cycles in org.tzi.use.analysis without tests: 0
+Number of cycles in org.tzi.use.analysis with tests: 0
+Number of cycles in org.tzi.use.util without tests: 0
+Number of cycles in org.tzi.use.util with tests: 0
+Number of cycles in org.tzi.use.gen without tests: 1
+Number of cycles in org.tzi.use.gen with tests: 1
+Number of cycles in org.tzi.use.parser without tests: 2
+Number of cycles in org.tzi.use.parser with tests: 36
+Number of cycles in org.tzi.use.api without tests: 1
+Number of cycles in org.tzi.use.api with tests: 1
+Cycles in core module with tests : 210
+Number of cycles in org.tzi.use.graph without tests: 0
+Number of cycles in org.tzi.use.graph with tests: 0
+Number of cycles in org.tzi.use.config without tests: 0
+Number of cycles in org.tzi.use.config with tests: 0
+Cycles in core module without tests : 55
+Number of cycles in org.tzi.use.uml without tests: 5
+Number of cycles in org.tzi.use.uml with tests: 5
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.06 s -- in org.tzi.use.architecture.MavenCyclicDependenciesCoreTest
+[INFO] Running org.tzi.use.uml.mm.ModelAPITest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.318 s -- in org.tzi.use.uml.mm.ModelAPITest
+[INFO] Running org.tzi.use.uml.sys.MSystemStateExtensionTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.095 s -- in org.tzi.use.uml.sys.MSystemStateExtensionTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ use-core ---
+[INFO] Building jar: D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\use-core-7.5.0.jar
+[INFO] 
+[INFO] --- failsafe:2.22.2:integration-test (default) @ use-core ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+[INFO] Running org.tzi.use.OCLExpressionIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.111 s - in org.tzi.use.OCLExpressionIT
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- failsafe:2.22.2:verify (default) @ use-core ---
+[INFO] 
+[INFO] ---------------< org.tzi.use:use-jacamo-semantic-engine >---------------
+[INFO] Building USE semantic engine � selected use4Goal core 7.5.0        [5/8]
+[INFO]   from use-jacamo-semantic-engine\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ use-jacamo-semantic-engine ---
+[INFO] Deleting D:\_CODE_BANK\Project_\08_Thesis\use\use-jacamo-semantic-engine\target
+[INFO] 
+[INFO] --- antlr4:4.9.3:antlr4 (generate-selected-original-grammars) @ use-jacamo-semantic-engine ---
+[INFO] ANTLR 4: Processing source directory D:\_CODE_BANK\Project_\08_Thesis\use\use-jacamo-semantic-engine\src\main\resources\grammars
+[INFO] Processing grammar: CSL.g4
+[INFO] Processing grammar: IStar.g4
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-jacamo-semantic-engine ---
+[INFO] Copying 4 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-jacamo-semantic-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 162 source files with javac [debug release 21] to target\classes
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/dsl/csl/mm/CslModel.java: Some input files use or override a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/dsl/csl/mm/CslModel.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-jacamo-semantic-engine ---
+[INFO] Copying 4 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-jacamo-semantic-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 9 source files with javac [debug release 21] to target\test-classes
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-jacamo-semantic-engine/src/test/java/org/tzi/use/semantic/engine/EngineInstallationGuardTest.java: D:\_CODE_BANK\Project_\08_Thesis\use\use-jacamo-semantic-engine\src\test\java\org\tzi\use\semantic\engine\EngineInstallationGuardTest.java uses or overrides a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-jacamo-semantic-engine/src/test/java/org/tzi/use/semantic/engine/EngineInstallationGuardTest.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-jacamo-semantic-engine ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running org.tzi.use.semantic.engine.CslFrontendParityTest
+[INFO] Tests run: 23, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.381 s -- in org.tzi.use.semantic.engine.CslFrontendParityTest
+[INFO] Running org.tzi.use.semantic.engine.EngineExtractionTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.127 s -- in org.tzi.use.semantic.engine.EngineExtractionTest
+[INFO] Running org.tzi.use.semantic.engine.EngineInstallationGuardTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.112 s -- in org.tzi.use.semantic.engine.EngineInstallationGuardTest
+[INFO] Running org.tzi.use.semantic.engine.HostCompatibilityTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.175 s -- in org.tzi.use.semantic.engine.HostCompatibilityTest
+[INFO] Running org.tzi.use.semantic.engine.IStarFrontendParityTest
+[INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.756 s -- in org.tzi.use.semantic.engine.IStarFrontendParityTest
+[INFO] Running org.tzi.use.semantic.engine.NativeOclBackendTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.149 s -- in org.tzi.use.semantic.engine.NativeOclBackendTest
+[INFO] Running org.tzi.use.semantic.engine.OriginalRuntimeSessionTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.921 s -- in org.tzi.use.semantic.engine.OriginalRuntimeSessionTest
+[INFO] Running org.tzi.use.semantic.engine.Use75CslBackendTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.158 s -- in org.tzi.use.semantic.engine.Use75CslBackendTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 90, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.2:jar (default-jar) @ use-jacamo-semantic-engine ---
+[INFO] Building jar: D:\_CODE_BANK\Project_\08_Thesis\use\use-jacamo-semantic-engine\target\use-jacamo-semantic-engine-7.5.0.jar
+[INFO] 
+[INFO] ------------------------< org.tzi.use:use-gui >-------------------------
+[INFO] Building use-gui 7.5.0                                             [6/8]
+[INFO]   from use-gui\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ use-gui ---
+[INFO] Deleting D:\_CODE_BANK\Project_\08_Thesis\use\use-gui\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-gui ---
+[INFO] Copying 56 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- build-helper:1.5:add-test-source (add-test-source) @ use-gui ---
+[INFO] Test Source directory: D:\_CODE_BANK\Project_\08_Thesis\use\use-gui\src\it\java added.
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-gui ---
+[WARNING] ******************************************************************************************************************************************************************************************************************************************
+[WARNING] * Required filename-based automodules detected: [antlr-runtime-3.5.3.jar, combinatoricslib-2.3.jar, annotations-13.0.jar, itextpdf-5.5.13.3.jar, vtd-xml-2.13.4.jar]. Please don't publish this project to a public artifact repository! *
+[WARNING] ******************************************************************************************************************************************************************************************************************************************
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 307 source files with javac [debug target 21 module-path] to target\classes
+[WARNING] /D:/_CODE_BANK/Project_/08_Thesis/use/use-gui/src/main/java/org/tzi/use/gui/views/diagrams/util/MenuScroller.java:[435,15] finalize() in java.lang.Object has been deprecated and marked for removal
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-gui/src/main/java/org/tzi/use/runtime/gui/impl/PluginActionProxy.java: Some input files use or override a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-gui/src/main/java/org/tzi/use/runtime/gui/impl/PluginActionProxy.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- build-helper:1.5:add-test-resource (add-test-resource) @ use-gui ---
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-gui ---
+[INFO] Copying 1 resource from src\test\resources to target\test-classes
+[INFO] Copying 297 resources from src\it\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-gui ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 9 source files with javac [debug target 21 module-path] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-gui ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+[INFO] Running org.tzi.use.architecture.MavenLayeredArchitectureTest
+0
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.90 s -- in org.tzi.use.architecture.MavenLayeredArchitectureTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ use-gui ---
+[INFO] Building jar: D:\_CODE_BANK\Project_\08_Thesis\use\use-gui\target\use-gui-7.5.0.jar
+[INFO] 
+[INFO] --- assembly:3.7.1:single (make-assembly) @ use-gui ---
+[INFO] Building jar: D:\_CODE_BANK\Project_\08_Thesis\use\use-gui\target\use-gui.jar
+[WARNING] Configuration option 'appendAssemblyId' is set to false.
+Instead of attaching the assembly file: D:\_CODE_BANK\Project_\08_Thesis\use\use-gui\target\use-gui.jar, it will become the file for main project artifact.
+NOTE: If multiple descriptors or descriptor-formats are provided for this project, the value of this file will be non-deterministic!
+[WARNING] Replacing pre-existing project main-artifact file: D:\_CODE_BANK\Project_\08_Thesis\use\use-gui\target\use-gui-7.5.0.jar
+with assembly file: D:\_CODE_BANK\Project_\08_Thesis\use\use-gui\target\use-gui.jar
+[INFO] 
+[INFO] --- failsafe:2.22.2:integration-test (default) @ use-gui ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+[INFO] Running org.tzi.use.main.shell.ShellIT
+[INFO] Tests run: 129, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 11.904 s - in org.tzi.use.main.shell.ShellIT
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 129, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- failsafe:2.22.2:verify (default) @ use-gui ---
+[INFO] 
+[INFO] -----------------------< org.tzi.use:use-plugin >-----------------------
+[INFO] Building USE JaCaMo Plugin 1.0.1                                   [7/8]
+[INFO]   from use-plugin\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ use-plugin ---
+[INFO] Deleting D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-plugin ---
+[INFO] Copying 1 resource from src\main\version-manifest to target\classes
+[INFO] Copying 12 resources from src\main\resources to target\classes
+[INFO] Copying 2 resources from src\main\resources\org\tzi\use\plugins\jacamo\ocl to target\classes\org\tzi\use\plugins\jacamo\historical\version-1\ocl
+[INFO] Copying 3 resources from src\main\resources\org\tzi\use\plugins\jacamo\runtime to target\classes\org\tzi\use\plugins\jacamo\historical\version-1\runtime
+[INFO] Copying 1 resource from src\main\resources\org\tzi\use\plugins\jacamo\verification to target\classes\org\tzi\use\plugins\jacamo\historical\version-1\verification
+[INFO] Copying 1 resource from Core\Metamodel\version-1 to target\classes\org\tzi\use\plugins\jacamo\historical\version-1
+[INFO] Copying 3 resources from Core\Mapping\version-1 to target\classes\org\tzi\use\plugins\jacamo\historical\version-1
+[INFO] Copying 1 resource from Core\Metamodel\csl-monitor-v1 to target\classes\org\tzi\use\plugins\jacamo\semantics\metamodel
+[INFO] Copying 1 resource from Core\Metamodel\jacamo-source-v2 to target\classes\org\tzi\use\plugins\jacamo\semantics\metamodel
+[INFO] Copying 1 resource from Core\Metamodel\version-2 to target\classes\org\tzi\use\plugins\jacamo\canonical\version-2
+[INFO] Copying 2 resources from Core\Mapping\version-2 to target\classes\org\tzi\use\plugins\jacamo\canonical\version-2
+[INFO] Copying 2 resources from release to target\classes\org\tzi\use\plugins\jacamo\release
+[INFO] Copying 1 resource from  to target\classes\org\tzi\use\plugins\jacamo\release
+[INFO] Copying 3 resources from licenses to target\classes\org\tzi\use\plugins\jacamo\release\licenses
+[INFO] The encoding used to copy filtered properties files have not been set. This means that the same encoding will be used to copy filtered properties files as when copying other filtered resources. This might not be what you want! Run your build with --debug to see which files might be affected. Read more at https://maven.apache.org/plugins/maven-resources-plugin/examples/filtering-properties-files.html
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-plugin ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 280 source files with javac [debug target 21] to target\classes
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/materialization/DirectUseBackend.java: D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\src\main\java\org\tzi\use\plugins\jacamo\materialization\DirectUseBackend.java uses or overrides a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/materialization/DirectUseBackend.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-plugin ---
+[INFO] Copying 53 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-plugin ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 311 source files with javac [debug target 21] to target\test-classes
+[INFO] Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/mapping/OrderProjectionTest.java: Some input files use or override a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/mapping/OrderProjectionTest.java: Recompile with -Xlint:deprecation for details.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/runtime/RuntimeIdentityHardeningTest.java: Some input files use unchecked or unsafe operations.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/runtime/RuntimeIdentityHardeningTest.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-plugin ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running org.tzi.use.plugins.jacamo.bridge.BridgeConnectionConfigTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.111 s -- in org.tzi.use.plugins.jacamo.bridge.BridgeConnectionConfigTest
+[INFO] Running org.tzi.use.plugins.jacamo.bridge.BridgeMirrorStateMachineTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.096 s -- in org.tzi.use.plugins.jacamo.bridge.BridgeMirrorStateMachineTest
+[INFO] Running org.tzi.use.plugins.jacamo.bridge.BridgeRuntimeProjectorTest
+Configuration of 'jacamoJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/jacamo/1.3.1/jacamo-1.3.1.jar, based on class loader
+Configuration of 'moiseJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/moise/1.1/moise-1.1.jar, based on class loader
+Configuration of 'jasonJar' found at /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar, based on class loader
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.118 s -- in org.tzi.use.plugins.jacamo.bridge.BridgeRuntimeProjectorTest
+[INFO] Running org.tzi.use.plugins.jacamo.bridge.BridgeVerificationGateTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in org.tzi.use.plugins.jacamo.bridge.BridgeVerificationGateTest
+[INFO] Running org.tzi.use.plugins.jacamo.bridge.CanonicalCasesBridgePipelineTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.212 s -- in org.tzi.use.plugins.jacamo.bridge.CanonicalCasesBridgePipelineTest
+[INFO] Running org.tzi.use.plugins.jacamo.bridge.CanonicalEvidenceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.917 s -- in org.tzi.use.plugins.jacamo.bridge.CanonicalEvidenceTest
+[INFO] Running org.tzi.use.plugins.jacamo.bridge.HelloShadowComparisonTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.332 s -- in org.tzi.use.plugins.jacamo.bridge.HelloShadowComparisonTest
+[INFO] Running org.tzi.use.plugins.jacamo.bridge.LocalTcpBridgeTransportTest
+TCP_FIXTURE_MODEL_ENCODING_NANOS=147234800 bytes=1976933
+TCP_FIXTURE_MODEL_ENCODING_NANOS=140655500 bytes=2040337
+TCP_FIXTURE_MODEL_ENCODING_NANOS=155308000 bytes=1828502
+TCP_FIXTURE_MODEL_ENCODING_NANOS=100077600 bytes=1976933
+TCP_FIXTURE_MODEL_ENCODING_NANOS=176544500 bytes=1976932
+TCP_FIXTURE_MODEL_ENCODING_NANOS=162640000 bytes=1976935
+TCP_FIXTURE_MODEL_ENCODING_NANOS=165512800 bytes=1976930
+TCP_FIXTURE_MODEL_ENCODING_NANOS=122088300 bytes=1976934
+TCP_FIXTURE_MODEL_ENCODING_NANOS=92092700 bytes=1976935
+TCP_FIXTURE_MODEL_ENCODING_NANOS=81485300 bytes=1976931
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.14 s -- in org.tzi.use.plugins.jacamo.bridge.LocalTcpBridgeTransportTest
+[INFO] Running org.tzi.use.plugins.jacamo.bridge.NativeOclLaunchEvidenceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.049 s -- in org.tzi.use.plugins.jacamo.bridge.NativeOclLaunchEvidenceTest
+[INFO] Running org.tzi.use.plugins.jacamo.bridge.NativeSemanticAdapterTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.168 s -- in org.tzi.use.plugins.jacamo.bridge.NativeSemanticAdapterTest
+[INFO] Running org.tzi.use.plugins.jacamo.bridge.SeparateJvmBridgeTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 31.95 s -- in org.tzi.use.plugins.jacamo.bridge.SeparateJvmBridgeTest
+[INFO] Running org.tzi.use.plugins.jacamo.bridge.ShadowSemanticComparatorTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in org.tzi.use.plugins.jacamo.bridge.ShadowSemanticComparatorTest
+[INFO] Running org.tzi.use.plugins.jacamo.bridge.TransportBenchmarkTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s -- in org.tzi.use.plugins.jacamo.bridge.TransportBenchmarkTest
+[INFO] Running org.tzi.use.plugins.jacamo.CanonicalFacadeSessionTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.573 s -- in org.tzi.use.plugins.jacamo.CanonicalFacadeSessionTest
+[INFO] Running org.tzi.use.plugins.jacamo.CanonicalImportSelectionTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.163 s -- in org.tzi.use.plugins.jacamo.CanonicalImportSelectionTest
+[INFO] Running org.tzi.use.plugins.jacamo.CanonicalIngressBackpressureTest
+Oct 18, 2026 1:36:52 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice3f2e6ca404864051a309da15931bfa54 has quit, role worker removed by the platform!
+Oct 18, 2026 1:36:52 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob3f2e6ca404864051a309da15931bfa54 has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:36:53 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice36149d2880284ba3b0236c3572f8e0ec has quit, role worker removed by the platform!
+Oct 18, 2026 1:36:53 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob36149d2880284ba3b0236c3572f8e0ec has quit, role reviewer removed by the platform!
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.728 s -- in org.tzi.use.plugins.jacamo.CanonicalIngressBackpressureTest
+[INFO] Running org.tzi.use.plugins.jacamo.CanonicalMonitorLifecycleTest
+Oct 18, 2026 1:36:54 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice0e214b3d88b246b58b290c9c422919bf has quit, role worker removed by the platform!
+Oct 18, 2026 1:36:54 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob0e214b3d88b246b58b290c9c422919bf has quit, role reviewer removed by the platform!
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.450 s -- in org.tzi.use.plugins.jacamo.CanonicalMonitorLifecycleTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.AttributeProjectionCleanupTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.335 s -- in org.tzi.use.plugins.jacamo.codegrounded.AttributeProjectionCleanupTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.AuctionExternalOclProfileTest
+Received bid 42.0 from auctionObserver5a3fa5819cfd47b4af1bce889a30277b for test-task
+DOMAIN_AUCTION_RUNTIME_CLASSES=[Agent, AgentGoal, Artifact, AuctionArtifact, Belief, Group, Mission, Organization, OrganizationalGoal, Scheme, Workspace, auctionGroup, auction_Organization, auction_capabilities_Agent, auctioneer, doAuction_Scheme, participant]
+DOMAIN_AUCTION_RUNTIME_OBJECTS=[a15a3fa5819cfd47b4af1bce889a30277b:AuctionArtifact, agrp:auctionGroup, alice:auction_capabilities_Agent, aorg:auction_Organization, auction_848b2ca6ae5f3b54:OrganizationalGoal, bid_e1a1f0e9b6bdd1ff:OrganizationalGoal, bob:auction_capabilities_Agent, decide_0060f4eb6f0e3826:OrganizationalGoal, francois:auction_capabilities_Agent, giacomo:auction_capabilities_Agent, goal_088395b2076c2ab8:AgentGoal, goal_5643f17544c84f05:AgentGoal, mAuctioneer_ddf1509a8451a4bf:Mission, mParticipant_249f3029c8332a1d:Mission, main:Workspace, main_ec42f0ed178659a0:Workspace, maria:auction_capabilities_Agent, role_1c78822a76354f0a:participant, role_2a9ae827bf021931:participant, role_5a911248c520d051:auctioneer, role_ca8e866ca74be9e7:participant, role_e56d1ae7900c60fd:participant, start_99cf6df703ad21aa:OrganizationalGoal]
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.316 s -- in org.tzi.use.plugins.jacamo.codegrounded.AuctionExternalOclProfileTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.CanonicalCslNativePipelineTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.330 s -- in org.tzi.use.plugins.jacamo.codegrounded.CanonicalCslNativePipelineTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.CheckpointRoutingTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.168 s -- in org.tzi.use.plugins.jacamo.codegrounded.CheckpointRoutingTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedDeterminismTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.393 s -- in org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedDeterminismTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedExportTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.428 s -- in org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedExportTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedIdentitySafetyTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedIdentitySafetyTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedLargePlanTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.350 s -- in org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedLargePlanTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNegativeTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.450 s -- in org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNegativeTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedOrderInvariantTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.288 s -- in org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedOrderInvariantTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase2Test
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.569 s -- in org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase2Test
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase3Test
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.593 s -- in org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase3Test
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase4Test
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.609 s -- in org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase4Test
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase5Test
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.027 s -- in org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase5Test
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase6Test
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.831 s -- in org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase6Test
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase7Test
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.330 s -- in org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase7Test
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase9Test
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.828 s -- in org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase9Test
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.DomainRuntimeProjectionTest
+DOMAIN_AUCTION_CLASSES=[Agent, AgentGoal, Artifact, Belief, Group, Mission, Organization, OrganizationalGoal, Scheme, Workspace, auctionGroup, auction_Organization, auction_capabilities_Agent, auctioneer, doAuction_Scheme, participant]
+DOMAIN_AUCTION_OBJECTS=[agrp:auctionGroup, alice:auction_capabilities_Agent, aorg:auction_Organization, auction_848b2ca6ae5f3b54:OrganizationalGoal, bid_e1a1f0e9b6bdd1ff:OrganizationalGoal, bob:auction_capabilities_Agent, decide_0060f4eb6f0e3826:OrganizationalGoal, francois:auction_capabilities_Agent, giacomo:auction_capabilities_Agent, goal_088395b2076c2ab8:AgentGoal, goal_5643f17544c84f05:AgentGoal, mAuctioneer_ddf1509a8451a4bf:Mission, mParticipant_249f3029c8332a1d:Mission, main:Workspace, maria:auction_capabilities_Agent, role_1c78822a76354f0a:participant, role_2a9ae827bf021931:participant, role_5a911248c520d051:auctioneer, role_ca8e866ca74be9e7:participant, role_e56d1ae7900c60fd:participant, start_99cf6df703ad21aa:OrganizationalGoal]
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.916 s -- in org.tzi.use.plugins.jacamo.codegrounded.DomainRuntimeProjectionTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.ExternalOclConstraintServiceTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.046 s -- in org.tzi.use.plugins.jacamo.codegrounded.ExternalOclConstraintServiceTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.GenericAgentProjectionTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.548 s -- in org.tzi.use.plugins.jacamo.codegrounded.GenericAgentProjectionTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.GenericFunctionalRuntimeProjectionTest
+GOAL_SNAPSHOT_BYTES=41006
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.751 s -- in org.tzi.use.plugins.jacamo.codegrounded.GenericFunctionalRuntimeProjectionTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.GenericSubgroupProjectionTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.359 s -- in org.tzi.use.plugins.jacamo.codegrounded.GenericSubgroupProjectionTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.GoalConstraintViolationTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.227 s -- in org.tzi.use.plugins.jacamo.codegrounded.GoalConstraintViolationTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.GoalViewSnapshotTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.250 s -- in org.tzi.use.plugins.jacamo.codegrounded.GoalViewSnapshotTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.LegacyV2OclIsolationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.048 s -- in org.tzi.use.plugins.jacamo.codegrounded.LegacyV2OclIsolationTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.LiveCartagoNativeVerificationTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.760 s -- in org.tzi.use.plugins.jacamo.codegrounded.LiveCartagoNativeVerificationTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.MoiseDomainProjectionTest
+DOMAIN_CASE=hello-world [Agent, AgentGoal, Artifact, Belief, Group, Mission, Organization, OrganizationalGoal, Scheme, Workspace, hello_Agent, hello_sch_Scheme, hf_Agent, o1_Organization, rc, rl, rs, rv, team]
+DOMAIN_CASE=auction [Agent, AgentGoal, Artifact, Belief, Group, Mission, Organization, OrganizationalGoal, Scheme, Workspace, auctionGroup, auction_Organization, auction_capabilities_Agent, auctioneer, doAuction_Scheme, participant]
+DOMAIN_CASE=house-building [Agent, AgentGoal, Artifact, Belief, Group, Mission, Organization, OrganizationalGoal, Scheme, Workspace, bricklayer, build_house_sch_Scheme, companyA_Agent, companyB_Agent, companyC_Agent, companyD_Agent, companyE_Agent, door_fitter, electrician, giacomo_Agent, house_contruction_Organization, house_group, house_owner, painter, plumber, roofer, site_prep_contractor, window_fitter]
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.748 s -- in org.tzi.use.plugins.jacamo.codegrounded.MoiseDomainProjectionTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeArtifactDeclarationBindingTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.035 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeArtifactDeclarationBindingTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeConstraintInstallerTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.308 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeConstraintInstallerTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeEnvironmentRelationsTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.450 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeEnvironmentRelationsTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeGenericStepReplayTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.741 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeGenericStepReplayTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeMOperationProjectionTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.215 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeMOperationProjectionTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeObjectCountViewTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.385 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeObjectCountViewTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeObjectDiagramBindingTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.870 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeObjectDiagramBindingTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeOperationCheckpointTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.678 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeOperationCheckpointTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeProjectionAuditTest
+NATIVE_PROJECTION_AUDIT mode=AUTO classes=19 associations=19 objects=36 objectClasses=AgentGoal=1, Mission=4, OrganizationalGoal=13, Workspace=6, hello_Agent=4, hello_sch_Scheme=1, hf_Agent=1, o1_Organization=1, rc=1, rl=1, rs=1, rv=1, team=1
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.225 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeProjectionAuditTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeProjectionProfileTest
+NATIVE_PROJECTION_COUNTS AUTO classes=19 objects=36 FULL classes=19 objects=36
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.886 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeProjectionProfileTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeRoleAssociationSupportTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeRoleAssociationSupportTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeBridgeCoverageTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.173 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeBridgeCoverageTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeReanalysisTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.668 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeReanalysisTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeReplayTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.545 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeReplayTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeStepReplayTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.463 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeStepReplayTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeUseSoilExporterTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.621 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeUseSoilExporterTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.PausedResyncSnapshotTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.270 s -- in org.tzi.use.plugins.jacamo.codegrounded.PausedResyncSnapshotTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.ProfileCompatibilityPreflightTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.254 s -- in org.tzi.use.plugins.jacamo.codegrounded.ProfileCompatibilityPreflightTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.ReconnectSnapshotTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.286 s -- in org.tzi.use.plugins.jacamo.codegrounded.ReconnectSnapshotTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalogTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalogTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.runtime.CanonicalNativeFaultMatrixTest
+Oct 18, 2026 1:38:07 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice20d9834d23ec4744902a80a8c1ff389f has quit, role worker removed by the platform!
+Oct 18, 2026 1:38:07 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob20d9834d23ec4744902a80a8c1ff389f has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:38:08 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alicecc59335970ef4fb28311a3fafa32741d has quit, role worker removed by the platform!
+Oct 18, 2026 1:38:08 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bobcc59335970ef4fb28311a3fafa32741d has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:38:09 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice86529c23aa4349e4bb852a8d639f86df has quit, role worker removed by the platform!
+Oct 18, 2026 1:38:09 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob86529c23aa4349e4bb852a8d639f86df has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:38:10 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice856f8af352764bb9a5f358cf16145923 has quit, role worker removed by the platform!
+Oct 18, 2026 1:38:10 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob856f8af352764bb9a5f358cf16145923 has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:38:11 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice78940dfeceda4da996333db1a79d989e has quit, role worker removed by the platform!
+Oct 18, 2026 1:38:11 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob78940dfeceda4da996333db1a79d989e has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:38:12 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice2752c7bbc45b4a89bf715ef3cd5da0fc has quit, role worker removed by the platform!
+Oct 18, 2026 1:38:12 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob2752c7bbc45b4a89bf715ef3cd5da0fc has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:38:13 PM ora4mas.nopl.GroupBoard agKilled
+INFO: aliceceed2a90947e433c96dd855552a47a0d has quit, role worker removed by the platform!
+Oct 18, 2026 1:38:13 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bobceed2a90947e433c96dd855552a47a0d has quit, role reviewer removed by the platform!
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.041 s -- in org.tzi.use.plugins.jacamo.codegrounded.runtime.CanonicalNativeFaultMatrixTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.runtime.CanonicalOperationCheckpointsTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.445 s -- in org.tzi.use.plugins.jacamo.codegrounded.runtime.CanonicalOperationCheckpointsTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeInvocationSemanticsTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.318 s -- in org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeInvocationSemanticsTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeSemanticFailureTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.127 s -- in org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeSemanticFailureTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.RuntimeControlServiceTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.417 s -- in org.tzi.use.plugins.jacamo.codegrounded.RuntimeControlServiceTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.RuntimeHistoryTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.814 s -- in org.tzi.use.plugins.jacamo.codegrounded.RuntimeHistoryTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.RuntimeVerificationCoordinatorTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.090 s -- in org.tzi.use.plugins.jacamo.codegrounded.RuntimeVerificationCoordinatorTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.SelectiveVerificationProjectionTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.144 s -- in org.tzi.use.plugins.jacamo.codegrounded.SelectiveVerificationProjectionTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.SnapshotRetentionTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.336 s -- in org.tzi.use.plugins.jacamo.codegrounded.SnapshotRetentionTest
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.VerificationSnapshotContractTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.671 s -- in org.tzi.use.plugins.jacamo.codegrounded.VerificationSnapshotContractTest
+[INFO] Running org.tzi.use.plugins.jacamo.CompatibilityManifestTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.048 s -- in org.tzi.use.plugins.jacamo.CompatibilityManifestTest
+[INFO] Running org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.575 s -- in org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest
+[INFO] Running org.tzi.use.plugins.jacamo.constraint.ConstraintOclTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.701 s -- in org.tzi.use.plugins.jacamo.constraint.ConstraintOclTest
+[INFO] Running org.tzi.use.plugins.jacamo.DefaultBridgeAuthorityTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.739 s -- in org.tzi.use.plugins.jacamo.DefaultBridgeAuthorityTest
+[INFO] Running org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest
+PHASE13_PERFORMANCE import=132690000ns generation=119835800ns fullCheck=477800ns memory=94210504B maxMemory=4219469824B
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.662 s -- in org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest
+[INFO] Running org.tzi.use.plugins.jacamo.evidence.EvidenceNormalizerTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.033 s -- in org.tzi.use.plugins.jacamo.evidence.EvidenceNormalizerTest
+[INFO] Running org.tzi.use.plugins.jacamo.evidence.EvidenceSourceCommitTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.505 s -- in org.tzi.use.plugins.jacamo.evidence.EvidenceSourceCommitTest
+[INFO] Running org.tzi.use.plugins.jacamo.extraction.StaticProjectImporterTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.657 s -- in org.tzi.use.plugins.jacamo.extraction.StaticProjectImporterTest
+[INFO] Running org.tzi.use.plugins.jacamo.extraction.V2ExtractionTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.531 s -- in org.tzi.use.plugins.jacamo.extraction.V2ExtractionTest
+[INFO] Running org.tzi.use.plugins.jacamo.GoldenPipelineTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.145 s -- in org.tzi.use.plugins.jacamo.GoldenPipelineTest
+[INFO] Running org.tzi.use.plugins.jacamo.HotfixBindingTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.665 s -- in org.tzi.use.plugins.jacamo.HotfixBindingTest
+[INFO] Running org.tzi.use.plugins.jacamo.HotfixLifecycleTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.735 s -- in org.tzi.use.plugins.jacamo.HotfixLifecycleTest
+[INFO] Running org.tzi.use.plugins.jacamo.JaCaMoPluginTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.163 s -- in org.tzi.use.plugins.jacamo.JaCaMoPluginTest
+[INFO] Running org.tzi.use.plugins.jacamo.launcher.GenericLauncherScriptTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.tzi.use.plugins.jacamo.launcher.GenericLauncherScriptTest
+[INFO] Running org.tzi.use.plugins.jacamo.launcher.MavenCiWorkflowTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.032 s -- in org.tzi.use.plugins.jacamo.launcher.MavenCiWorkflowTest
+[INFO] Running org.tzi.use.plugins.jacamo.ManagedBootstrapTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.08 s -- in org.tzi.use.plugins.jacamo.ManagedBootstrapTest
+[INFO] Running org.tzi.use.plugins.jacamo.ManagedRuntimeWorkflowTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.497 s -- in org.tzi.use.plugins.jacamo.ManagedRuntimeWorkflowTest
+[INFO] Running org.tzi.use.plugins.jacamo.mapping.ActiveBaselineTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.205 s -- in org.tzi.use.plugins.jacamo.mapping.ActiveBaselineTest
+[INFO] Running org.tzi.use.plugins.jacamo.mapping.HistoricalMappingLoaderTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.145 s -- in org.tzi.use.plugins.jacamo.mapping.HistoricalMappingLoaderTest
+[INFO] Running org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.629 s -- in org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest
+[INFO] Running org.tzi.use.plugins.jacamo.mapping.OrderProjectionTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.126 s -- in org.tzi.use.plugins.jacamo.mapping.OrderProjectionTest
+[INFO] Running org.tzi.use.plugins.jacamo.mapping.V2EcoreAuditTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.378 s -- in org.tzi.use.plugins.jacamo.mapping.V2EcoreAuditTest
+[INFO] Running org.tzi.use.plugins.jacamo.mapping.V2MappingAuditTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.110 s -- in org.tzi.use.plugins.jacamo.mapping.V2MappingAuditTest
+[INFO] Running org.tzi.use.plugins.jacamo.mapping.V2OppositeOrderingAuditTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.092 s -- in org.tzi.use.plugins.jacamo.mapping.V2OppositeOrderingAuditTest
+[INFO] Running org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.559 s -- in org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest
+[INFO] Running org.tzi.use.plugins.jacamo.materialization.V2MaterializationTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.822 s -- in org.tzi.use.plugins.jacamo.materialization.V2MaterializationTest
+[INFO] Running org.tzi.use.plugins.jacamo.MultiCaseV2PipelineTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.738 s -- in org.tzi.use.plugins.jacamo.MultiCaseV2PipelineTest
+[INFO] Running org.tzi.use.plugins.jacamo.NativeProjectionLaunchTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.667 s -- in org.tzi.use.plugins.jacamo.NativeProjectionLaunchTest
+[INFO] Running org.tzi.use.plugins.jacamo.NativeResyncHandoffRegressionTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.944 s -- in org.tzi.use.plugins.jacamo.NativeResyncHandoffRegressionTest
+[INFO] Running org.tzi.use.plugins.jacamo.NativeRuntimeFacadeIntegrationTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.979 s -- in org.tzi.use.plugins.jacamo.NativeRuntimeFacadeIntegrationTest
+[INFO] Running org.tzi.use.plugins.jacamo.NativeTraceSourceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in org.tzi.use.plugins.jacamo.NativeTraceSourceTest
+[INFO] Running org.tzi.use.plugins.jacamo.NativeUseSessionActivationTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.291 s -- in org.tzi.use.plugins.jacamo.NativeUseSessionActivationTest
+[INFO] Running org.tzi.use.plugins.jacamo.ocl.OclProfileOrderingTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in org.tzi.use.plugins.jacamo.ocl.OclProfileOrderingTest
+[INFO] Running org.tzi.use.plugins.jacamo.Phase43PerformanceEvidenceTest
+PHASE43_PERFORMANCE import=141334300ns validation=5703600ns transformation=1751000ns oclCompile=6433200ns full=664600ns eventToResult=1091800ns highWatermark=1 memory=419143176 resync=1202700ns
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.277 s -- in org.tzi.use.plugins.jacamo.Phase43PerformanceEvidenceTest
+[INFO] Running org.tzi.use.plugins.jacamo.Phase9CaseStudyAcceptanceTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.413 s -- in org.tzi.use.plugins.jacamo.Phase9CaseStudyAcceptanceTest
+[INFO] Running org.tzi.use.plugins.jacamo.PreMigrationBaselineTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in org.tzi.use.plugins.jacamo.PreMigrationBaselineTest
+[INFO] Running org.tzi.use.plugins.jacamo.ProductionAuthorityPhase8Test
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in org.tzi.use.plugins.jacamo.ProductionAuthorityPhase8Test
+[INFO] Running org.tzi.use.plugins.jacamo.project.JcmProjectLoaderTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.239 s -- in org.tzi.use.plugins.jacamo.project.JcmProjectLoaderTest
+[INFO] Running org.tzi.use.plugins.jacamo.project.ProjectModelTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in org.tzi.use.plugins.jacamo.project.ProjectModelTest
+[INFO] Running org.tzi.use.plugins.jacamo.release.PackagedResourceNamespaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.tzi.use.plugins.jacamo.release.PackagedResourceNamespaceTest
+[INFO] Running org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest
+[INFO] Running org.tzi.use.plugins.jacamo.ReplayStepFacadeTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.635 s -- in org.tzi.use.plugins.jacamo.ReplayStepFacadeTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.AuctionSourceRuntimeTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.176 s -- in org.tzi.use.plugins.jacamo.runtime.AuctionSourceRuntimeTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.CartagoRuntimeConnectorTest
+[Basic logger ] At 1792305573312 artifact body_useMonitor82e5b78cbdc948479f558373719615f7 type: cartago.AgentBodyArtifact has been created by useMonitor82e5b78cbdc948479f558373719615f7
+[Basic logger ] At 1792305573312 artifact body_useMonitor82e5b78cbdc948479f558373719615f7 focussed by useMonitor82e5b78cbdc948479f558373719615f7
+[Basic logger ] At 1792305573312 agent useMonitor82e5b78cbdc948479f558373719615f7 joined the workspace.
+[Basic logger ] At 1792305573312 new percept generated about artifact session_useMonitor82e5b78cbdc948479f558373719615f7 added properties: [Lcartago.ArtifactObsProperty;@42293a1c
+[Basic logger ] At 1792305573312 artifact session_useMonitor82e5b78cbdc948479f558373719615f7 type: cartago.AgentSessionArtifact has been created by useMonitor82e5b78cbdc948479f558373719615f7
+[Basic logger ] At 1792305573312 artifact session_useMonitor82e5b78cbdc948479f558373719615f7 focussed by useMonitor82e5b78cbdc948479f558373719615f7
+[Basic logger ] At 1792305573312 operation ( makeArtifact auction82e5b78cbdc948479f558373719615f7 org.tzi.use.plugins.jacamo.runtime.TestAuctionArtifact [Ljava.lang.Object;@68a0f93f cartago.OpFeedbackParam@fe22dda ) requested in artifact workspace by agent useMonitor82e5b78cbdc948479f558373719615f7 
+[Basic logger ] At 1792305573312 operation ( makeArtifact auction82e5b78cbdc948479f558373719615f7 org.tzi.use.plugins.jacamo.runtime.TestAuctionArtifact [Ljava.lang.Object;@68a0f93f cartago.OpFeedbackParam@fe22dda ) started in artifact workspace
+[Basic logger ] At 1792305573312 new percept generated about artifact auction82e5b78cbdc948479f558373719615f7 added properties: [Lcartago.ArtifactObsProperty;@11b32fa0
+[Basic logger ] At 1792305573328 artifact auction82e5b78cbdc948479f558373719615f7 type: org.tzi.use.plugins.jacamo.runtime.TestAuctionArtifact has been created by useMonitor82e5b78cbdc948479f558373719615f7
+[Basic logger ] At 1792305573328 new percept generated about artifact workspace added properties: [Lcartago.ArtifactObsProperty;@5e49c9dd
+[Basic logger ] At 1792305573328 operation ( makeArtifact auction82e5b78cbdc948479f558373719615f7 org.tzi.use.plugins.jacamo.runtime.TestAuctionArtifact [Ljava.lang.Object;@68a0f93f cartago.OpFeedbackParam@fe22dda ) completed in artifact workspace
+[Basic logger ] At 1792305573328 operation ( closeAuction ) requested in artifact auction82e5b78cbdc948479f558373719615f7 by agent useMonitor82e5b78cbdc948479f558373719615f7 
+[Basic logger ] At 1792305573328 operation ( closeAuction ) started in artifact auction82e5b78cbdc948479f558373719615f7
+[Basic logger ] At 1792305573328 new percept generated about artifact auction82e5b78cbdc948479f558373719615f7 changed properties: [Lcartago.ArtifactObsProperty;@71f27d75
+[Basic logger ] At 1792305573328 operation ( closeAuction ) completed in artifact auction82e5b78cbdc948479f558373719615f7
+[Basic logger ] At 1792305573328 operation ( placeBid item1 10 ) requested in artifact auction82e5b78cbdc948479f558373719615f7 by agent useMonitor82e5b78cbdc948479f558373719615f7 
+[Basic logger ] At 1792305573328 operation ( placeBid item1 10 ) started in artifact auction82e5b78cbdc948479f558373719615f7
+[Basic logger ] At 1792305573328 new percept generated about artifact auction82e5b78cbdc948479f558373719615f7 signal: bid(item1,10) 
+[Basic logger ] At 1792305573328 operation ( placeBid item1 10 ) completed in artifact auction82e5b78cbdc948479f558373719615f7
+[Basic logger ] At 1792305573328 operation ( placeBid item1 0 ) requested in artifact auction82e5b78cbdc948479f558373719615f7 by agent useMonitor82e5b78cbdc948479f558373719615f7 
+[Basic logger ] At 1792305573328 operation ( placeBid item1 0 ) started in artifact auction82e5b78cbdc948479f558373719615f7
+[Basic logger ] At 1792305573328 operation ( placeBid item1 0 ) failed in artifact auction82e5b78cbdc948479f558373719615f7 - msg:amount must be positive desc:null
+[Basic logger ] At 1792305573328 operation ( removeOpen ) requested in artifact auction82e5b78cbdc948479f558373719615f7 by agent useMonitor82e5b78cbdc948479f558373719615f7 
+[Basic logger ] At 1792305573328 operation ( removeOpen ) started in artifact auction82e5b78cbdc948479f558373719615f7
+[Basic logger ] At 1792305573328 new percept generated about artifact auction82e5b78cbdc948479f558373719615f7 removed properties: [Lcartago.ArtifactObsProperty;@6a75793e
+[Basic logger ] At 1792305573328 operation ( removeOpen ) completed in artifact auction82e5b78cbdc948479f558373719615f7
+[Basic logger ] At 1792305573328 artifact auction82e5b78cbdc948479f558373719615f7 has been disposed by null
+[Basic logger ] At 1792305573328 operation ( makeArtifact unbound82e5b78cbdc948479f558373719615f7 org.tzi.use.plugins.jacamo.runtime.TestAuctionArtifact [Ljava.lang.Object;@3506ee93 cartago.OpFeedbackParam@5debf20a ) requested in artifact workspace by agent useMonitor82e5b78cbdc948479f558373719615f7 
+[Basic logger ] At 1792305573328 operation ( makeArtifact unbound82e5b78cbdc948479f558373719615f7 org.tzi.use.plugins.jacamo.runtime.TestAuctionArtifact [Ljava.lang.Object;@3506ee93 cartago.OpFeedbackParam@5debf20a ) started in artifact workspace
+[Basic logger ] At 1792305573328 new percept generated about artifact unbound82e5b78cbdc948479f558373719615f7 added properties: [Lcartago.ArtifactObsProperty;@468ad4f2
+[Basic logger ] At 1792305573328 artifact unbound82e5b78cbdc948479f558373719615f7 type: org.tzi.use.plugins.jacamo.runtime.TestAuctionArtifact has been created by useMonitor82e5b78cbdc948479f558373719615f7
+[Basic logger ] At 1792305573328 new percept generated about artifact workspace added properties: [Lcartago.ArtifactObsProperty;@4e7e292d
+[Basic logger ] At 1792305573328 operation ( makeArtifact unbound82e5b78cbdc948479f558373719615f7 org.tzi.use.plugins.jacamo.runtime.TestAuctionArtifact [Ljava.lang.Object;@3506ee93 cartago.OpFeedbackParam@5debf20a ) completed in artifact workspace
+[Basic logger ] At 1792305573328 artifact unbound82e5b78cbdc948479f558373719615f7 has been disposed by null
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.064 s -- in org.tzi.use.plugins.jacamo.runtime.CartagoRuntimeConnectorTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.CompositeRuntimeConnectorTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.111 s -- in org.tzi.use.plugins.jacamo.runtime.CompositeRuntimeConnectorTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest
+Note: Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+PHASE24_COUNTER elapsedNanos=1795105800 events=33
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.793 s -- in org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.HistoricalRuntimeMappingTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.tzi.use.plugins.jacamo.runtime.HistoricalRuntimeMappingTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.JasonRuntimeConnectorTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in org.tzi.use.plugins.jacamo.runtime.JasonRuntimeConnectorTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.985 s -- in org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.MoiseBoardSnapshotSourceTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in org.tzi.use.plugins.jacamo.runtime.MoiseBoardSnapshotSourceTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.MoiseRuntimeConnectorTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in org.tzi.use.plugins.jacamo.runtime.MoiseRuntimeConnectorTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.RuntimeAliasTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.tzi.use.plugins.jacamo.runtime.RuntimeAliasTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.RuntimeAuthorityTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.tzi.use.plugins.jacamo.runtime.RuntimeAuthorityTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest
+PHASE27_RUNTIME eventToMirror=454000ns depth=0 highWatermark=1
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.559 s -- in org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.RuntimeIdentityHardeningTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.tzi.use.plugins.jacamo.runtime.RuntimeIdentityHardeningTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.RuntimeMappingTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.224 s -- in org.tzi.use.plugins.jacamo.runtime.RuntimeMappingTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.RuntimeMigrationTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.031 s -- in org.tzi.use.plugins.jacamo.runtime.RuntimeMigrationTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.RuntimeTraceTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in org.tzi.use.plugins.jacamo.runtime.RuntimeTraceTest
+[INFO] Running org.tzi.use.plugins.jacamo.runtime.V2RuntimeOrderTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.293 s -- in org.tzi.use.plugins.jacamo.runtime.V2RuntimeOrderTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantic.SemanticIdTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in org.tzi.use.plugins.jacamo.semantic.SemanticIdTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantic.SemanticModelTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in org.tzi.use.plugins.jacamo.semantic.SemanticModelTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantic.V2SemanticModelTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.071 s -- in org.tzi.use.plugins.jacamo.semantic.V2SemanticModelTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.BoundedExplorerTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.030 s -- in org.tzi.use.plugins.jacamo.semantics.BoundedExplorerTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.CanonicalAsyncInvocationTest
+Oct 18, 2026 1:39:48 PM ora4mas.nopl.GroupBoard agKilled
+INFO: aliceafd5191eb59645a38f5689be77dadee9 has quit, role worker removed by the platform!
+Oct 18, 2026 1:39:48 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bobafd5191eb59645a38f5689be77dadee9 has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:39:49 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice9b0bca8db9eb47c2a2dacd0abbd616d5 has quit, role worker removed by the platform!
+Oct 18, 2026 1:39:49 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob9b0bca8db9eb47c2a2dacd0abbd616d5 has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:39:50 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alicee7e2f68f4e314f7fab93b95be76d5850 has quit, role worker removed by the platform!
+Oct 18, 2026 1:39:50 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bobe7e2f68f4e314f7fab93b95be76d5850 has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:39:52 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice0e9c1cf622314b0bbc54f052632b9847 has quit, role worker removed by the platform!
+Oct 18, 2026 1:39:52 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice0e9c1cf622314b0bbc54f052632b9847 has quit, role worker removed by the platform!
+Oct 18, 2026 1:39:52 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob0e9c1cf622314b0bbc54f052632b9847 has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:39:52 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob0e9c1cf622314b0bbc54f052632b9847 has quit, role reviewer removed by the platform!
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.825 s -- in org.tzi.use.plugins.jacamo.semantics.CanonicalAsyncInvocationTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.CanonicalCslMappingTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.176 s -- in org.tzi.use.plugins.jacamo.semantics.CanonicalCslMappingTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.CanonicalGoalMappingTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.320 s -- in org.tzi.use.plugins.jacamo.semantics.CanonicalGoalMappingTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.CanonicalMappingContractTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.238 s -- in org.tzi.use.plugins.jacamo.semantics.CanonicalMappingContractTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.CanonicalOclContractMappingTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.863 s -- in org.tzi.use.plugins.jacamo.semantics.CanonicalOclContractMappingTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.CanonicalPublicationOrderTest
+Oct 18, 2026 1:39:55 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice2618239282e8420fb792d764a0afed94 has quit, role worker removed by the platform!
+Oct 18, 2026 1:39:55 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob2618239282e8420fb792d764a0afed94 has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:39:57 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alicef0d904dff06145a285df22298db7d2ed has quit, role worker removed by the platform!
+Oct 18, 2026 1:39:57 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bobf0d904dff06145a285df22298db7d2ed has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:39:58 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice89a456a6f20c4e388c52eff7e2f12ab7 has quit, role worker removed by the platform!
+Oct 18, 2026 1:39:58 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob89a456a6f20c4e388c52eff7e2f12ab7 has quit, role reviewer removed by the platform!
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.743 s -- in org.tzi.use.plugins.jacamo.semantics.CanonicalPublicationOrderTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.CanonicalReplayTest
+Oct 18, 2026 1:40:14 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice231b2ea3d60a435197a03fc33f34c694 has quit, role worker removed by the platform!
+Oct 18, 2026 1:40:14 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob231b2ea3d60a435197a03fc33f34c694 has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:40:20 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alicec2874bcd286e4f65bddc9ef559cc4dcb has quit, role worker removed by the platform!
+Oct 18, 2026 1:40:20 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bobc2874bcd286e4f65bddc9ef559cc4dcb has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:40:27 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice9f98db8bb4c546d7a5c546a982d7bafd has quit, role worker removed by the platform!
+Oct 18, 2026 1:40:27 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob9f98db8bb4c546d7a5c546a982d7bafd has quit, role reviewer removed by the platform!
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 28.67 s -- in org.tzi.use.plugins.jacamo.semantics.CanonicalReplayTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.CanonicalRuntimeAdmissionTest
+Oct 18, 2026 1:40:30 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice2d96dfdbe9f844f69b97a1ac59fd8cdc has quit, role worker removed by the platform!
+Oct 18, 2026 1:40:30 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob2d96dfdbe9f844f69b97a1ac59fd8cdc has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:40:31 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob16db102d517b4b6f9eae82f5eef0bbff has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:40:31 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice16db102d517b4b6f9eae82f5eef0bbff has quit, role worker removed by the platform!
+Oct 18, 2026 1:40:33 PM ora4mas.nopl.GroupBoard agKilled
+INFO: aliceffb4c52b58174fb593a4f2a9a4a836bc has quit, role worker removed by the platform!
+Oct 18, 2026 1:40:33 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bobffb4c52b58174fb593a4f2a9a4a836bc has quit, role reviewer removed by the platform!
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.713 s -- in org.tzi.use.plugins.jacamo.semantics.CanonicalRuntimeAdmissionTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.CanonicalRuntimeProjectionTest
+Oct 18, 2026 1:40:34 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice3739c3fb474f453c8a92e27d92eff6fd has quit, role worker removed by the platform!
+Oct 18, 2026 1:40:34 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob3739c3fb474f453c8a92e27d92eff6fd has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:40:36 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice3d06ec1c814f4f05872040f35a95338d has quit, role worker removed by the platform!
+Oct 18, 2026 1:40:36 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob3d06ec1c814f4f05872040f35a95338d has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:40:38 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alicebc683f83982644d4a51f831f0cc843ca has quit, role worker removed by the platform!
+Oct 18, 2026 1:40:38 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bobbc683f83982644d4a51f831f0cc843ca has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:40:40 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice5684fe1c43b74c46b486e3cefc317a44 has quit, role worker removed by the platform!
+Oct 18, 2026 1:40:40 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob5684fe1c43b74c46b486e3cefc317a44 has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:40:42 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice7d2184b7b29a49bfb232328203545551 has quit, role worker removed by the platform!
+Oct 18, 2026 1:40:42 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob7d2184b7b29a49bfb232328203545551 has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:40:45 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice350ae4cfca4845b3bf810b7256f8a874 has quit, role worker removed by the platform!
+Oct 18, 2026 1:40:45 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob350ae4cfca4845b3bf810b7256f8a874 has quit, role reviewer removed by the platform!
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.35 s -- in org.tzi.use.plugins.jacamo.semantics.CanonicalRuntimeProjectionTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.CanonicalTransactionFailureTest
+Oct 18, 2026 1:40:47 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice5cb55abaffc8474ba5bb5acadb363f3a has quit, role worker removed by the platform!
+Oct 18, 2026 1:40:47 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob5cb55abaffc8474ba5bb5acadb363f3a has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:40:49 PM ora4mas.nopl.GroupBoard agKilled
+INFO: aliceb14809fab6f04a7a8101387546a11fc5 has quit, role worker removed by the platform!
+Oct 18, 2026 1:40:49 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bobb14809fab6f04a7a8101387546a11fc5 has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:40:51 PM ora4mas.nopl.GroupBoard agKilled
+INFO: aliced220f02b767e453d97bb5f4a2e6cbda1 has quit, role worker removed by the platform!
+Oct 18, 2026 1:40:51 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bobd220f02b767e453d97bb5f4a2e6cbda1 has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:40:53 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alicebc505c6d1fca4796a17b41157dc79ecd has quit, role worker removed by the platform!
+Oct 18, 2026 1:40:53 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bobbc505c6d1fca4796a17b41157dc79ecd has quit, role reviewer removed by the platform!
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.018 s -- in org.tzi.use.plugins.jacamo.semantics.CanonicalTransactionFailureTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.CartagoAwaitRegressionTest
+ACTUAL_CARTAGO_OVERLAP_PASS iterations=3 replay=ReplayReport[complete=true, checkedEntries=50, finalStateHash=8ecedfae1975d7aac068aab854eda35a7ae6ce564721b1e8145efa65a7bda9f5, finalResultHash=5d8100ac281e99cedafe0c29de7c94db7383f4cc5f48b096f31822583c5c04c1, diagnostics=[OBSERVED_SUPPORTED_PROJECTION_ONLY]]
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.541 s -- in org.tzi.use.plugins.jacamo.semantics.CartagoAwaitRegressionTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.CslNativeBindingTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.317 s -- in org.tzi.use.plugins.jacamo.semantics.CslNativeBindingTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.CslSchemaTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.tzi.use.plugins.jacamo.semantics.CslSchemaTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.CslStructuralPolicyTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.175 s -- in org.tzi.use.plugins.jacamo.semantics.CslStructuralPolicyTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.CslVerticalSliceTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 22.24 s -- in org.tzi.use.plugins.jacamo.semantics.CslVerticalSliceTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.DetailedVerdictTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.tzi.use.plugins.jacamo.semantics.DetailedVerdictTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.EcoreSourceLoaderTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.191 s -- in org.tzi.use.plugins.jacamo.semantics.EcoreSourceLoaderTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.EngineHostIntegrationTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in org.tzi.use.plugins.jacamo.semantics.EngineHostIntegrationTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.FunctionalLiveBoardTest
+Moise Http Server running on http://192.168.0.103:3271
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.568 s -- in org.tzi.use.plugins.jacamo.semantics.FunctionalLiveBoardTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.FunctionalObservationTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.080 s -- in org.tzi.use.plugins.jacamo.semantics.FunctionalObservationTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.JasonAbstractionPolicyTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.027 s -- in org.tzi.use.plugins.jacamo.semantics.JasonAbstractionPolicyTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.JasonTaskConfigurationTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.052 s -- in org.tzi.use.plugins.jacamo.semantics.JasonTaskConfigurationTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.LiveMasDefectRegressionTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.84 s -- in org.tzi.use.plugins.jacamo.semantics.LiveMasDefectRegressionTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.MentalStateProjectionTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.716 s -- in org.tzi.use.plugins.jacamo.semantics.MentalStateProjectionTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.NormativeObservationTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.422 s -- in org.tzi.use.plugins.jacamo.semantics.NormativeObservationTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.NplDependencyRegressionTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.tzi.use.plugins.jacamo.semantics.NplDependencyRegressionTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.ObservationEnvelopeTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.tzi.use.plugins.jacamo.semantics.ObservationEnvelopeTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.ObserverIdentityLifecycleTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.064 s -- in org.tzi.use.plugins.jacamo.semantics.ObserverIdentityLifecycleTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.OclSemanticBackendTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in org.tzi.use.plugins.jacamo.semantics.OclSemanticBackendTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.OPlanSemanticsTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.137 s -- in org.tzi.use.plugins.jacamo.semantics.OPlanSemanticsTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.OriginalEngineSessionIntegrationTest
+Oct 18, 2026 1:41:48 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice2536ce88c41e4c309a6e088ca94a9a87 has quit, role worker removed by the platform!
+Oct 18, 2026 1:41:48 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob2536ce88c41e4c309a6e088ca94a9a87 has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:41:50 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice168a6a95d70d427c86a7c08c7b1d9d76 has quit, role worker removed by the platform!
+Oct 18, 2026 1:41:50 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob168a6a95d70d427c86a7c08c7b1d9d76 has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:41:54 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alicec4fca0705f784d5fa1127cafac7444bc has quit, role worker removed by the platform!
+Oct 18, 2026 1:41:54 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bobc4fca0705f784d5fa1127cafac7444bc has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:41:57 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice06422270845948d9b6c1a10a06473d57 has quit, role worker removed by the platform!
+Oct 18, 2026 1:41:57 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob06422270845948d9b6c1a10a06473d57 has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:42:01 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alicefbd3dd1de04643b286515babe51ce74b has quit, role worker removed by the platform!
+Oct 18, 2026 1:42:01 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bobfbd3dd1de04643b286515babe51ce74b has quit, role reviewer removed by the platform!
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 16.19 s -- in org.tzi.use.plugins.jacamo.semantics.OriginalEngineSessionIntegrationTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.runtime.OriginalEngineFaultMatrixTest
+Oct 18, 2026 1:42:04 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice410ca8b8a83b4169835da77d0d929bc4 has quit, role worker removed by the platform!
+Oct 18, 2026 1:42:04 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob410ca8b8a83b4169835da77d0d929bc4 has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:42:07 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice080b82220edc45a297d6fd1a5f9aed71 has quit, role worker removed by the platform!
+Oct 18, 2026 1:42:07 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob080b82220edc45a297d6fd1a5f9aed71 has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:42:09 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice1bd8b6042e0141da9592adc570772734 has quit, role worker removed by the platform!
+Oct 18, 2026 1:42:09 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob1bd8b6042e0141da9592adc570772734 has quit, role reviewer removed by the platform!
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.671 s -- in org.tzi.use.plugins.jacamo.semantics.runtime.OriginalEngineFaultMatrixTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.RuntimeMetricDistributionTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in org.tzi.use.plugins.jacamo.semantics.RuntimeMetricDistributionTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.RuntimeOwnerCheckpointTest
+Oct 18, 2026 1:42:12 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alicedf73026e2d5a4da2b60e89d0733c119e has quit, role worker removed by the platform!
+Oct 18, 2026 1:42:12 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bobdf73026e2d5a4da2b60e89d0733c119e has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:42:15 PM ora4mas.nopl.GroupBoard agKilled
+INFO: aliced4a5898904904fb5b20960895dd28bbe has quit, role worker removed by the platform!
+Oct 18, 2026 1:42:15 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bobd4a5898904904fb5b20960895dd28bbe has quit, role reviewer removed by the platform!
+Oct 18, 2026 1:42:17 PM ora4mas.nopl.GroupBoard agKilled
+INFO: aliceeb1c0e4320df4c3bad19b38d80bc359c has quit, role worker removed by the platform!
+Oct 18, 2026 1:42:17 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bobeb1c0e4320df4c3bad19b38d80bc359c has quit, role reviewer removed by the platform!
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.106 s -- in org.tzi.use.plugins.jacamo.semantics.RuntimeOwnerCheckpointTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.SemanticAuthorityRoutingTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.326 s -- in org.tzi.use.plugins.jacamo.semantics.SemanticAuthorityRoutingTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.SemanticBindingTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.060 s -- in org.tzi.use.plugins.jacamo.semantics.SemanticBindingTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.SemanticCapabilityManifestTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.tzi.use.plugins.jacamo.semantics.SemanticCapabilityManifestTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.SemanticMappingReplayTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.274 s -- in org.tzi.use.plugins.jacamo.semantics.SemanticMappingReplayTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.SemanticRecordAssetBoundsTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.182 s -- in org.tzi.use.plugins.jacamo.semantics.SemanticRecordAssetBoundsTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.SemanticsProfileTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s -- in org.tzi.use.plugins.jacamo.semantics.SemanticsProfileTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.SemanticTransformationTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.194 s -- in org.tzi.use.plugins.jacamo.semantics.SemanticTransformationTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.SharedStateAcceptanceTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.316 s -- in org.tzi.use.plugins.jacamo.semantics.SharedStateAcceptanceTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.SnapshotCoverageRegressionTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.371 s -- in org.tzi.use.plugins.jacamo.semantics.SnapshotCoverageRegressionTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.SourceLensTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.435 s -- in org.tzi.use.plugins.jacamo.semantics.SourceLensTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.TaskPerformerRegressionTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.494 s -- in org.tzi.use.plugins.jacamo.semantics.TaskPerformerRegressionTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.TemporalGoalMonitorTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in org.tzi.use.plugins.jacamo.semantics.TemporalGoalMonitorTest
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.VerificationLoadScenarioTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 20.19 s -- in org.tzi.use.plugins.jacamo.semantics.VerificationLoadScenarioTest
+[INFO] Running org.tzi.use.plugins.jacamo.trace.TraceBindingTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.483 s -- in org.tzi.use.plugins.jacamo.trace.TraceBindingTest
+[INFO] Running org.tzi.use.plugins.jacamo.ui.JaCaMoWorkbenchPanelTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.182 s -- in org.tzi.use.plugins.jacamo.ui.JaCaMoWorkbenchPanelTest
+[INFO] Running org.tzi.use.plugins.jacamo.ui.SemanticEvidencePanelTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s -- in org.tzi.use.plugins.jacamo.ui.SemanticEvidencePanelTest
+[INFO] Running org.tzi.use.plugins.jacamo.V2DeterminismTest
+PHASE43_DETERMINISM input=ffb23c9475602b9bd2c0ec9f8fa57635e3691e4ebc6327f14cc8f0dab3d6cb80 output=cb6d0818493f40d0372a333b608a1ab6a85dbd44f28f71b6585c43765a334e24 semanticIds=24 diagnostics=2 decisions=151
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.792 s -- in org.tzi.use.plugins.jacamo.V2DeterminismTest
+[INFO] Running org.tzi.use.plugins.jacamo.V2FinalFreezeTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.124 s -- in org.tzi.use.plugins.jacamo.V2FinalFreezeTest
+[INFO] Running org.tzi.use.plugins.jacamo.V2HardeningAuditTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.170 s -- in org.tzi.use.plugins.jacamo.V2HardeningAuditTest
+[INFO] Running org.tzi.use.plugins.jacamo.verification.CrossDimensionalVerifierTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.323 s -- in org.tzi.use.plugins.jacamo.verification.CrossDimensionalVerifierTest
+[INFO] Running org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.795 s -- in org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest
+[INFO] Running org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayerTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.032 s -- in org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayerTest
+[INFO] Running org.tzi.use.plugins.jacamo.verification.RuntimeHistoryVerifierTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in org.tzi.use.plugins.jacamo.verification.RuntimeHistoryVerifierTest
+[INFO] Running org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest
+PHASE13_RUNTIME eventToResult=813700ns
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.864 s -- in org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 680, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.2:jar (default-jar) @ use-plugin ---
+[INFO] Building jar: D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\use-plugin-1.0.1.jar
+[INFO] 
+[INFO] --- shade:3.6.0:shade (default) @ use-plugin ---
+[INFO] Including org.tzi.use:use-jacamo-semantic-engine:jar:7.5.0 in the shaded jar.
+[INFO] Including org.antlr:antlr4-runtime:jar:4.9.3 in the shaded jar.
+[INFO] Including org.tzi.use:jacamo-bridge-contract:jar:1.0.0-SNAPSHOT in the shaded jar.
+[INFO] Including org.eclipse.emf:org.eclipse.emf.ecore.xmi:jar:2.39.0 in the shaded jar.
+[INFO] Including org.eclipse.emf:org.eclipse.emf.ecore:jar:2.39.0 in the shaded jar.
+[INFO] Including org.eclipse.emf:org.eclipse.emf.common:jar:2.42.0 in the shaded jar.
+[INFO] Including com.networknt:json-schema-validator:jar:2.0.1 in the shaded jar.
+[INFO] Including com.ethlo.time:itu:jar:1.14.0 in the shaded jar.
+[INFO] Including com.fasterxml.jackson.core:jackson-databind:jar:2.18.3 in the shaded jar.
+[INFO] Including com.fasterxml.jackson.core:jackson-annotations:jar:2.18.3 in the shaded jar.
+[INFO] Including com.fasterxml.jackson.core:jackson-core:jar:2.18.3 in the shaded jar.
+[INFO] Including com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:jar:2.18.3 in the shaded jar.
+[INFO] Including org.yaml:snakeyaml:jar:2.3 in the shaded jar.
+[INFO] Including org.slf4j:slf4j-api:jar:2.0.17 in the shaded jar.
+[WARNING] org.eclipse.emf.common-2.42.0.jar, org.eclipse.emf.ecore-2.39.0.jar define 4 overlapping resources: 
+[WARNING]   - about.ini
+[WARNING]   - about.mappings
+[WARNING]   - about.properties
+[WARNING]   - modeling32.png
+[WARNING] org.eclipse.emf.common-2.42.0.jar, org.eclipse.emf.ecore-2.39.0.jar, org.eclipse.emf.ecore.xmi-2.39.0.jar define 2 overlapping resources: 
+[WARNING]   - about.html
+[WARNING]   - plugin.properties
+[WARNING] org.eclipse.emf.ecore-2.39.0.jar, org.eclipse.emf.ecore.xmi-2.39.0.jar define 1 overlapping resource: 
+[WARNING]   - plugin.xml
+[WARNING] maven-shade-plugin has detected that some files are
+[WARNING] present in two or more JARs. When this happens, only one
+[WARNING] single version of the file is copied to the uber jar.
+[WARNING] Usually this is not harmful and you can skip these warnings,
+[WARNING] otherwise try to manually exclude artifacts based on
+[WARNING] mvn dependency:tree -Ddetail=true and the above output.
+[WARNING] See https://maven.apache.org/plugins/maven-shade-plugin/
+[INFO] Replacing original artifact with shaded artifact.
+[INFO] Replacing D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\use-plugin-1.0.1.jar with D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\use-plugin-1.0.1-shaded.jar
+[INFO] 
+[INFO] --- assembly:3.7.1:single (release-package) @ use-plugin ---
+[INFO] Reading assembly descriptor: src/assembly/release.xml
+[INFO] Building zip: D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\use-jacamo-plugin-1.0.1-release.zip
+[INFO] 
+[INFO] --- antrun:3.1.0:run (stage-current-plugin-for-use-gui) @ use-plugin ---
+[INFO] Executing tasks
+[INFO]      [copy] Copying 1 file to D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target
+[INFO]      [copy] Copying 1 file to D:\_CODE_BANK\Project_\08_Thesis\use\use-gui\lib\plugins
+[INFO] Executed tasks
+[INFO] 
+[INFO] --- antrun:3.1.0:run (release-package-checksum) @ use-plugin ---
+[INFO] Executing tasks
+[INFO] Executed tasks
+[INFO] 
+[INFO] --- failsafe:3.2.5:integration-test (default) @ use-plugin ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running org.tzi.use.plugins.jacamo.AuctionPauseResumeIT
+Note: Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+AUCTION_PAUSE_RESUME_PASS=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\runtime-control-acceptance\auction-1792305777193
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 41.52 s -- in org.tzi.use.plugins.jacamo.AuctionPauseResumeIT
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimePackagedReplayIT
+Configuration of 'jacamoJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/jacamo/1.3.1/jacamo-1.3.1.jar, based on class loader
+Configuration of 'moiseJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/moise/1.1/moise-1.1.jar, based on class loader
+Configuration of 'jasonJar' found at /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar, based on class loader
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.538 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimePackagedReplayIT
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeStepReplayGuiIT
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.412 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeStepReplayGuiIT
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeUseExportRecompileIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.286 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeUseExportRecompileIT
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeUseGuiEndToEndIT
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.743 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeUseGuiEndToEndIT
+[INFO] Running org.tzi.use.plugins.jacamo.codegrounded.NativeUseSessionOclIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.298 s -- in org.tzi.use.plugins.jacamo.codegrounded.NativeUseSessionOclIT
+[INFO] Running org.tzi.use.plugins.jacamo.GuiPluginStagingIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.041 s -- in org.tzi.use.plugins.jacamo.GuiPluginStagingIT
+[INFO] Running org.tzi.use.plugins.jacamo.HelloWorldSemanticInventoryIT
+Note: Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+Note: D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\hello-world-object-audit\AUTO-1792305830047\staging\src\env\display\GUIConsole.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+HELLO_WORLD_SEMANTIC_INVENTORY_PASS projection=AUTO evidence=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\hello-world-object-audit\AUTO-1792305830047
+Note: Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+Note: D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\hello-world-object-audit\FULL-1792305943655\staging\src\env\display\GUIConsole.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+HELLO_WORLD_SEMANTIC_INVENTORY_PASS projection=FULL evidence=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\hello-world-object-audit\FULL-1792305943655
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 224.5 s -- in org.tzi.use.plugins.jacamo.HelloWorldSemanticInventoryIT
+[INFO] Running org.tzi.use.plugins.jacamo.HouseBuildingDomainProjectionIT
+Note: Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+Note: D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\house-domain-live\1792306054544\staging\src\env\simulator\House.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+HOUSE_BUILDING_DOMAIN_LIVE_PASS evidence=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\house-domain-live\1792306054544
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 77.66 s -- in org.tzi.use.plugins.jacamo.HouseBuildingDomainProjectionIT
+[INFO] Running org.tzi.use.plugins.jacamo.LegacyAuthorityPackagingIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s -- in org.tzi.use.plugins.jacamo.LegacyAuthorityPackagingIT
+[INFO] Running org.tzi.use.plugins.jacamo.release.ReleasePackageIT
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.322 s -- in org.tzi.use.plugins.jacamo.release.ReleasePackageIT
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.SemanticPackagedReplayIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.274 s -- in org.tzi.use.plugins.jacamo.semantics.SemanticPackagedReplayIT
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.Use4GoalPackagedPluginIT
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 119.8 s -- in org.tzi.use.plugins.jacamo.semantics.Use4GoalPackagedPluginIT
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.Use4GoalPackagedReplayIT
+Oct 18, 2026 1:50:58 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alicecfcffb13e8844b38aa9d91fcc6b19d06 has quit, role worker removed by the platform!
+Oct 18, 2026 1:50:58 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bobcfcffb13e8844b38aa9d91fcc6b19d06 has quit, role reviewer removed by the platform!
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.069 s -- in org.tzi.use.plugins.jacamo.semantics.Use4GoalPackagedReplayIT
+[INFO] Running org.tzi.use.plugins.jacamo.ui.ManagedAuctionWorkbenchIT
+Note: Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 53.72 s -- in org.tzi.use.plugins.jacamo.ui.ManagedAuctionWorkbenchIT
+[INFO] Running org.tzi.use.plugins.jacamo.ui.Use4GoalWorkbenchIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.06 s -- in org.tzi.use.plugins.jacamo.ui.Use4GoalWorkbenchIT
+[INFO] Running org.tzi.use.plugins.jacamo.Use4GoalExternalBridgeIT
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 47.84 s -- in org.tzi.use.plugins.jacamo.Use4GoalExternalBridgeIT
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- failsafe:3.2.5:verify (default) @ use-plugin ---
+[INFO] 
+[INFO] ----------------------< org.tzi.use:use-assembly >----------------------
+[INFO] Building use-assembly 7.5.0                                        [8/8]
+[INFO]   from use-assembly\pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ use-assembly ---
+[INFO] Deleting D:\_CODE_BANK\Project_\08_Thesis\use\use-assembly\target
+[INFO] 
+[INFO] --- dependency:3.8.1:unpack (stage-jacamo-plugin-distribution) @ use-assembly ---
+[INFO] Configured Artifact: org.tzi.use:use-plugin:release:1.0.1:zip
+[INFO] 
+[INFO] --- assembly:3.3.0:single (make-assembly) @ use-assembly ---
+[WARNING]  Parameter 'finalName' is read-only, must not be used in configuration
+[INFO] Reading assembly descriptor: src/assembly/assembly.xml
+[INFO] Building tar: D:\_CODE_BANK\Project_\08_Thesis\use\use-assembly\target\use-7.5.0-use-bin.tar.gz
+[WARNING] Entry: use-7.5.0/examples/Documentation/HowToCheckUMLAndOCLModelsWithUSE/independence_attributesDefined.cmd longer than 100 characters.
+[WARNING] Resulting tar file can only be processed successfully by GNU compatible tar commands
+[WARNING] Entry: use-7.5.0/examples/Documentation/HowToCheckUMLAndOCLModelsWithUSE/independence_attributesDefined.gif longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Documentation/HowToCheckUMLAndOCLModelsWithUSE/independence_attributesDefined.pro longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Documentation/HowToCheckUMLAndOCLModelsWithUSE/independence_nameCapitalThenSmallLetters.cmd longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Documentation/HowToCheckUMLAndOCLModelsWithUSE/independence_nameCapitalThenSmallLetters.gif longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Documentation/HowToCheckUMLAndOCLModelsWithUSE/independence_nameCapitalThenSmallLetters.pro longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Papers/2001/RichtersPhDThesis/EmployeeExtended/SplitCommands/EmployeeExtended0.cmd longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Papers/2001/RichtersPhDThesis/EmployeeExtended/SplitCommands/EmployeeExtended1.cmd longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Papers/2001/RichtersPhDThesis/EmployeeExtended/SplitCommands/EmployeeExtended2.cmd longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Papers/2001/RichtersPhDThesis/EmployeeExtended/SplitCommands/EmployeeExtended3.cmd longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Papers/2001/RichtersPhDThesis/EmployeeExtended/SplitCommands/EmployeeExtended4.cmd longer than 100 characters.
+[WARNING] Entry: use-7.5.0/examples/Papers/2001/RichtersPhDThesis/EmployeeExtended/SplitCommands/EmployeeExtendedRaiseSalary.cmd longer than 100 characters.
+[INFO] Building zip: D:\_CODE_BANK\Project_\08_Thesis\use\use-assembly\target\use-7.5.0-use-bin.zip
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] use 7.5.0 .......................................... SUCCESS [  0.153 s]
+[INFO] JaCaMo Bridge Neutral Contract 1.0.0-SNAPSHOT ...... SUCCESS [  6.477 s]
+[INFO] JaCaMo Bridge Official Adapters 1.0.0-SNAPSHOT ..... SUCCESS [ 46.507 s]
+[INFO] use-core 7.5.0 ..................................... SUCCESS [ 28.719 s]
+[INFO] USE semantic engine � selected use4Goal core 7.5.0 . SUCCESS [ 20.432 s]
+[INFO] use-gui 7.5.0 ...................................... SUCCESS [ 51.371 s]
+[INFO] USE JaCaMo Plugin 1.0.1 ............................ SUCCESS [17:37 min]
+[INFO] use-assembly 7.5.0 ................................. SUCCESS [ 13.177 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  20:24 min
+[INFO] Finished at: 2026-10-18T13:53:19+07:00
+[INFO] ------------------------------------------------------------------------

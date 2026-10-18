@@ -1,0 +1,81 @@
+{
+  "phase": 20,
+  "status": "DONE",
+  "command": "mvn -B -pl use-plugin -am verify",
+  "log": "full-verify-r6.log",
+  "counts": {
+    "unit": 869,
+    "integration": 155,
+    "legacyJUnit3": 198,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "matrix": "matrix-results.json",
+  "suites": "test-suites.json",
+  "originalSourceCheck": "original-source-checks.json",
+  "artifactHashes": {
+    "use-plugin\\target\\use-plugin-1.0.1.jar": "ccd6f5f2a67d1112dd47628e95cd3dba1bea17804244319ff3b076391c50a62d",
+    "use-plugin\\target\\use-jacamo-plugin-1.0.1-v2-frozen.zip": "6c13eb52afa50ccaa7924b5516225350a90ba1bfe2d354b0ec616a3fb8b3f049",
+    "use-gui\\target\\use-gui.jar": "391ac6eb876bee562c5c622e6316bcca825a54c3f61e163b8ed42872726b8b75",
+    "use-jacamo-semantic-engine\\target\\use-jacamo-semantic-engine-7.5.0.jar": "455e5f4f1c829f23f29ae9f029949b7f22a4595fd21e23427c0584d68abf3547"
+  },
+  "protectedInputs": [
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal\\META-INF\\MANIFEST.MF",
+      "sha256": "D5E7A93551B6A93BBD29F576C8A34683F433C39C3781924C29C71CB6854E9BFD",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal\\goal\\src\\main\\resources\\examples\\Classroom\\classroom.soil",
+      "sha256": "10D4D9ACC89E42C6B7FE7A821B5A42B8404173155E12E0412DE352E652585001",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal\\goal\\src\\main\\resources\\examples\\Classroom\\classroom.use",
+      "sha256": "BB857FCE61A9A8A11E207AE13DC198387242AF7D3C759205090C831D2A81AAA1",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\auction\\auction.jcm",
+      "sha256": "1B7FD99E1CEEA67381B2957908BD41D3387AA7B4B98FADC26ABF588FCEE98E2A",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\auction\\.jcm-deps.gradle",
+      "sha256": "3B7706DE71F0362C2FD5E1DA6A90F1D918F4EF1426B5DADBD6CA67A38EB3F050",
+      "unchanged": true
+    },
+    {
+      "path": "C:\\Users\\NTNghia\\OneDrive\\Desktop\\report.md",
+      "sha256": "E8F3A60B11C52B73136EA2BBAEDC92F40F9B70FF1C670D1BF70D1D49A43AE7DC",
+      "unchanged": true
+    }
+  ],
+  "live": {
+    "usePid": 7904,
+    "jacamoPid": 24404,
+    "originalCalls": [
+      "GoalMarking.update",
+      "IStarPropagation.closePending",
+      "IStarPropagation.assignGoalTask:aggregate-only",
+      "GoalModelInstanceTranslator.propagateDependencies",
+      "TaskMarking.update"
+    ],
+    "directFeedParity": true,
+    "monitorCycles": 3,
+    "canonicalReplay": "r6-live-canonical-replay/manifest.json",
+    "uiHeartbeatP95DelayMillis": 24.8516
+  },
+  "findingsResolved": [
+    "R1 pre-UI selection source guard updated to explicit/frozen selection route; no semantic expected result changed",
+    "R2 cross-JVM exact baseline failure: immutable Map.of value iteration salt, fixed P-USE-PRINT-02 sorted copy delegated to host printer; strict equality and all annotations retained",
+    "R4 old shared Workbench helper required one tab; now explicitly checks both correct tabs and preserves native/OCL/control/diagram/replay assertions; focusedR5 all affected live tests pass"
+  ],
+  "nextMandatoryGates": [
+    "Phase21 fresh production Counter from packaged Java source and authentic framework JARs, no test classes",
+    "Phase21 dedicated engine/resource/classloader/duplicate/version and production64MiB quota checks",
+    "Phase21 headless helper CP probe is red: neutral engine missing; deployment remains gated until fixed",
+    "Phase22 clean/full/package/live acceptance and final ownership/protected-source audit"
+  ]
+}

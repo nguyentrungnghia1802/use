@@ -1,0 +1,22 @@
+{
+  "phase": 10,
+  "status": "DONE",
+  "focusedPluginTests": 20,
+  "engineBoundaryTests": 4,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "canonicalM1": "original CslModel",
+  "runtimePopulation": "EMPTY_DECLARATIONS_ONLY",
+  "sameMModelMSystem": "Existing state builder + Session activation",
+  "propertyTyping": "NO_INTEGER_TO_REAL_WIDENING",
+  "abstractRole": "EXPLICIT_CONCRETE_VIEW_DECISION_REQUIRED",
+  "contextualBounds": "TRACE_ONLY_NOT_RUNTIME_COUNT",
+  "enumTyping": "EXACT_NAMED_ENUM_SOURCE_TYPE_BINDING",
+  "evidence": [
+    "acceptance-final.log",
+    "canonical-static.use"
+  ],
+  "sourceTypeProof": "Official complete type or existing DomainProjection class proof; optional pending proof is explicit and runtime admission required",
+  "newRouteDefault": false
+}

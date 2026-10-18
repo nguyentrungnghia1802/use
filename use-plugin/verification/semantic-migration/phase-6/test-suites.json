@@ -1,0 +1,42 @@
+[
+  {
+    "suite": "org.tzi.use.semantic.engine.CslFrontendParityTest",
+    "tests": 23,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "a19ebb3a632c2fd3958f8feaea958a2a1cb9ea8ff1a288796775d900b161ef99"
+  },
+  {
+    "suite": "org.tzi.use.semantic.engine.EngineExtractionTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "ab59c56bdb603536439e9301386a6af2363e9b57fcfdad7f8cf69ce141d3d68d"
+  },
+  {
+    "suite": "org.tzi.use.semantic.engine.HostCompatibilityTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "5b465bcfd797345335602d00e3acfb86ef74c1a0fdedad71c3e3b351955b2574"
+  },
+  {
+    "suite": "org.tzi.use.semantic.engine.IStarFrontendParityTest",
+    "tests": 29,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "4fe4ab3caf57b2734ad5192be828fe59722056992ccc6352a030ef3ff2fdf5ec"
+  },
+  {
+    "suite": "org.tzi.use.semantic.engine.Use75CslBackendTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "900a470d7cbdb34363a3ed0f74912c1c5356632a0aa9f8a6538b4e307bd06dec"
+  }
+]

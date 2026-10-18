@@ -68,7 +68,8 @@ public final class LiveBridgeConsumerMain {
             writeCanonical(options.evidenceDirectory().resolve("runtime-snapshot-initial.json"),
                     ContractPayloads.runtime(initial.runtime()));
             observe(initialMirror, client, options.observationSeconds());
-            requireLive(initialMirror, "REAL_BRIDGE_RUNTIME_NOT_LIVE_AFTER_OBSERVATION");
+            if(initialMirror.state()!=BridgeClientState.LIVE)writeCanonical(options.evidenceDirectory().resolve("consumer-failure.json"),Map.of("state",initialMirror.state().name(),"diagnostic",client.diagnostic(),"events",events.size(),"facts",initialMirror.facts().size()));
+            requireLive(initialMirror, "REAL_BRIDGE_RUNTIME_NOT_LIVE_AFTER_OBSERVATION:"+client.diagnostic());
             observedMirrorFingerprint = initialMirror.fingerprint();
             observedFactCount = initialMirror.facts().size();
         }

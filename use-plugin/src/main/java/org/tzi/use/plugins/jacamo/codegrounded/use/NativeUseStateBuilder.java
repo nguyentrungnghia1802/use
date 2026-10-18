@@ -19,7 +19,8 @@ public final class NativeUseStateBuilder {
     }
     public Result build(JacamoSpecificationModel source,NativeUseModelBuilder.Result schema,CodeGroundedTraceCollector trace) {
         var system=new MSystem(schema.model()); var api=UseSystemApi.create(system,false); NativeObjectBindings objects=new NativeObjectBindings();
-        if (org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.active(schema.model()))
+        if (org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.active(schema.model())
+                || org.tzi.use.semantic.engine.use75.Use75CslModelBackend.active(schema.model()))
             return new Result(system, objects, trace.index(), true, true,
                     "CSL schema ready; runtime population requires authoritative observations", schema.profile());
         var snapshot=source.snapshot();
@@ -93,11 +94,10 @@ public final class NativeUseStateBuilder {
                 String cls;
                 try { cls=DomainProjection.artifactClass(schema.model(),declaration.javaClass()); }
                 catch(IllegalArgumentException unavailable) { continue; } // The type diagnostic already records missing evidence.
-                var workspaces=snapshot.workspaceDeclarations().stream().filter(w->w.name().equals(declaration.workspace())).toList();
-                if(workspaces.size()!=1) throw new IllegalArgumentException("ARTIFACT_DECLARATION_WORKSPACE_UNRESOLVED:"+declaration.metadata().semanticId());
+                String workspaceId=DomainProjection.artifactWorkspace(snapshot,declaration);
                 var object=create(api,objects,cls,declaration.name(),declaration.metadata().semanticId()); instanceTrace(objects,trace,"J04",declaration.metadata(),object);
-                var workspace=required(objects,workspaces.getFirst().metadata().semanticId());
-                objects.metadata(object,"workspaceSemanticId",workspaces.getFirst().metadata().semanticId());
+                var workspace=required(objects,workspaceId);
+                objects.metadata(object,"workspaceSemanticId",workspaceId);
                 objects.metadata(object,"artifactTypeSemanticId",DomainProjection.artifactId(declaration.javaClass()));
                 link(api,DomainProjection.relation("locatedIn","Workspace","Artifact"),workspace,object);
                 DomainProjection.trace(trace,"J04",declaration.metadata(),"MLink",workspace.name()+"->"+object.name(),PRESERVE_AS_LINK);

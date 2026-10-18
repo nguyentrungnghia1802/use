@@ -1,0 +1,23 @@
+[
+  {
+    "name": "org.tzi.use.plugins.jacamo.semantics.CanonicalMappingContractTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "name": "org.tzi.use.plugins.jacamo.semantics.SemanticTransformationTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "name": "org.tzi.use.plugins.jacamo.semantics.SemanticMappingReplayTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+]

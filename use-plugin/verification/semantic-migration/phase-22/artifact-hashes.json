@@ -1,0 +1,30 @@
+{
+  "use-plugin/target/use-plugin-1.0.1.jar": {
+    "bytes": 7925705,
+    "sha256": "7cb164c08943d984c678108abe7baefa9d5340352ae38f94721be1ef6a134a7e"
+  },
+  "use-plugin/target/use-jacamo-plugin-1.0.1-v2-frozen.zip": {
+    "bytes": 7764414,
+    "sha256": "733efef673d1e68938beae402df42488b86366185bbf232f62307db859bc70e7"
+  },
+  "use-gui/target/use-gui.jar": {
+    "bytes": 88120798,
+    "sha256": "a00837c34d85ceeff8564213e7aa56ca057023f016a6384629278200d1cec1c3"
+  },
+  "use-jacamo-semantic-engine/target/use-jacamo-semantic-engine-7.5.0.jar": {
+    "bytes": 516092,
+    "sha256": "8a93a3a85e97e925e86b7d81a9f23910eee29fc5a18f3c556748f0d3fed53070"
+  },
+  "jacamo-bridge-contract/target/jacamo-bridge-contract-1.0.0-SNAPSHOT.jar": {
+    "bytes": 191410,
+    "sha256": "697c01038d171b464139cdb731ada762f9c47c0f8c31d07b204004b2360c8ea9"
+  },
+  "jacamo-bridge-jacamo/target/jacamo-bridge-jacamo-1.0.0-SNAPSHOT.jar": {
+    "bytes": 232828,
+    "sha256": "7749e0b648c1d2ccc45ae89a8c427cf5f1da40f9464465588c2d6a89f56751bb"
+  },
+  "use-assembly/target/use-7.5.0-use-bin.zip": {
+    "bytes": 115760812,
+    "sha256": "71055494f371ff2f7b1f727acd4840208ea835ea84edf20c3860bc3cd7c3ce7f"
+  }
+}

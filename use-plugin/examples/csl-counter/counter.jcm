@@ -1,0 +1,18 @@
+mas csl_counter {
+    agent alice : alice.asl {
+        focus: main.counter
+    }
+    agent bob : bob.asl {
+        focus: main.counter
+    }
+    workspace main {
+        artifact counter: demo.counter.Counter
+    }
+    organisation org: organization.xml {
+        group team: team {
+            players: alice worker, bob reviewer
+            responsible-for: workflow
+        }
+        scheme workflow: work
+    }
+}

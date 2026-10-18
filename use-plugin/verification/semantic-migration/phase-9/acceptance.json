@@ -1,0 +1,21 @@
+{
+  "phase": 9,
+  "status": "DONE",
+  "focusedPluginTests": 11,
+  "engineBoundaryTests": 4,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "canonicalModels": [
+    "org.vnu.sme.goal.dsl.csl.mm.CslModel",
+    "org.vnu.sme.goal.dsl.istar.mm.GoalModel"
+  ],
+  "mappingConfigVersion": "2.0",
+  "legacyBundleVersion": "1.0 unchanged",
+  "mappingOutsideEngine": true,
+  "programOwnsMSystem": false,
+  "profileReplacement": "profile-replacement.json",
+  "sourceNeutralContractResolution": "MappingRuleSet.Contract declaration resolved to OclContractSpec after MModel exists (Phase12)",
+  "evidence": "acceptance-final.log",
+  "negativeSyntaxFix": "CanonicalJson ContractException now wrapped consistently by MappingRuleSet.parse; strict negative test retained"
+}

@@ -1,0 +1,57 @@
+{
+  "phase": 13,
+  "status": "DONE",
+  "fullReactorTests": 821.0,
+  "failures": 0.0,
+  "errors": 0.0,
+  "skipped": 0.0,
+  "pluginTests": 629.0,
+  "focusedTests": 17,
+  "newRuntimeTests": 10,
+  "assetGuardTests": 2,
+  "sourceFixes": [
+    "canonical identity uses accepted metadata",
+    "independent Cartago memberships retire exact aliases",
+    "internal TraceComplement encoding bound separate from default wire guard"
+  ],
+  "nary": "Existing ordered native writer reused; explicit tuple authority required",
+  "runtime": "Actual CArtAgO and MOISE libraries in test; external JaCaMo TCP acceptance still pending",
+  "protectedInputs": [
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal\\META-INF\\MANIFEST.MF",
+      "expected": "D5E7A93551B6A93BBD29F576C8A34683F433C39C3781924C29C71CB6854E9BFD",
+      "actual": "D5E7A93551B6A93BBD29F576C8A34683F433C39C3781924C29C71CB6854E9BFD"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal\\goal\\src\\main\\resources\\examples\\Classroom\\classroom.soil",
+      "expected": "10D4D9ACC89E42C6B7FE7A821B5A42B8404173155E12E0412DE352E652585001",
+      "actual": "10D4D9ACC89E42C6B7FE7A821B5A42B8404173155E12E0412DE352E652585001"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal\\goal\\src\\main\\resources\\examples\\Classroom\\classroom.use",
+      "expected": "BB857FCE61A9A8A11E207AE13DC198387242AF7D3C759205090C831D2A81AAA1",
+      "actual": "BB857FCE61A9A8A11E207AE13DC198387242AF7D3C759205090C831D2A81AAA1"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\auction\\auction.jcm",
+      "expected": "1B7FD99E1CEEA67381B2957908BD41D3387AA7B4B98FADC26ABF588FCEE98E2A",
+      "actual": "1B7FD99E1CEEA67381B2957908BD41D3387AA7B4B98FADC26ABF588FCEE98E2A"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\auction\\.jcm-deps.gradle",
+      "expected": "3B7706DE71F0362C2FD5E1DA6A90F1D918F4EF1426B5DADBD6CA67A38EB3F050",
+      "actual": "3B7706DE71F0362C2FD5E1DA6A90F1D918F4EF1426B5DADBD6CA67A38EB3F050"
+    },
+    {
+      "path": "C:\\Users\\NTNghia\\OneDrive\\Desktop\\report.md",
+      "expected": "E8F3A60B11C52B73136EA2BBAEDC92F40F9B70FF1C670D1BF70D1D49A43AE7DC",
+      "actual": "E8F3A60B11C52B73136EA2BBAEDC92F40F9B70FF1C670D1BF70D1D49A43AE7DC"
+    }
+  ],
+  "evidence": [
+    "full-regression-r2.log",
+    "full-test-suites.json",
+    "canonical-runtime-focused-r7.log",
+    "asset-regression-r2.log"
+  ]
+}

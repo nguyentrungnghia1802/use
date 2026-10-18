@@ -44,6 +44,23 @@ class ManagedRuntimeWorkflowTest {
         assertThrows(IllegalStateException.class, () -> workflow.imported(root.resolve("other.jcm"), authority(), true));
         assertFalse(workflow.status().startAvailable());
     }
+    @Test void producerReplacementReturnsToModelReadyAndUsesANewStartupAck() throws Exception {
+        var workflow=configured(ProcessHandle.current().pid(),10);workflow.imported(root.resolve("p.jcm"),authority(),true);
+        try(var pool=Executors.newSingleThreadExecutor()) {
+            var start=pool.submit(workflow::start);long end=System.nanoTime()+TimeUnit.SECONDS.toNanos(2);
+            while(ManagedStartupControl.read(root,"request.json").isEmpty()&&System.nanoTime()<end)Thread.sleep(10);
+            ManagedStartupControl.acknowledged(root,ManagedStartupControl.read(root,"request.json"));start.get(2,TimeUnit.SECONDS);
+            assertEquals("LIVE",workflow.status().state());
+            for(String file:java.util.List.of("waiting.json","request.json","request.lock","started.json"))java.nio.file.Files.delete(root.resolve(file));
+            ManagedStartupControl.waiting(root,ManagedStartupControl.owner("run",root.resolve("p.jcm"),"replacement",2,"revision",ProcessHandle.current().pid()),10);
+            var next=new JaCaMoFacade.AuthorityStatus(SemanticAuthority.BRIDGE,BridgeClientState.LIVE,java.util.Map.of(),"PARTIAL","revision","replacement",2,"tcp://127.0.0.1:1","");
+            workflow.importing();workflow.imported(root.resolve("p.jcm"),next,true);assertEquals("MODEL_READY",workflow.status().state());assertTrue(workflow.status().startAvailable());
+            var second=pool.submit(workflow::start);end=System.nanoTime()+TimeUnit.SECONDS.toNanos(2);
+            while(ManagedStartupControl.read(root,"request.json").isEmpty()&&System.nanoTime()<end)Thread.sleep(10);
+            ManagedStartupControl.acknowledged(root,ManagedStartupControl.read(root,"request.json"));second.get(2,TimeUnit.SECONDS);
+            assertEquals("replacement",org.jacamo.bridge.contract.CanonicalJson.object(ManagedStartupControl.read(root,"started.json").get("owner")).get("sessionId"));
+        }
+    }
     @Test void importFailureCancelsWhileProducerDeadAndAutonomousAreUnavailable() {
         var workflow = configured(ProcessHandle.current().pid(), 5);
         workflow.importFailed("INVALID_MODEL"); assertEquals("ERROR", workflow.status().state());

@@ -1,0 +1,26 @@
+[
+  {
+    "suite": "org.tzi.use.semantic.engine.CslFrontendParityTest",
+    "tests": 23,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "ebe521fca216124f01e32b34487b31291a1781b6e00eb4970ddd7a568bd4557a"
+  },
+  {
+    "suite": "org.tzi.use.semantic.engine.EngineExtractionTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "36e62d3b5a134ba6b5b6ed4ad17d25e4be6329ac31b6cbea8efba8d9defc2793"
+  },
+  {
+    "suite": "org.tzi.use.semantic.engine.HostCompatibilityTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "b04d91f360c32c6faba9215cb92b3c3724c537a1009a486473402d552e3f00e7"
+  }
+]

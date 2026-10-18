@@ -1,0 +1,103 @@
+{
+  "phase": 21,
+  "status": "DONE",
+  "command": "mvn -B -pl use-assembly -am verify",
+  "log": "full-verify-r9.log",
+  "counts": {
+    "unit": 878,
+    "integration": 159,
+    "legacyJUnit3": 198,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suites": 250
+  },
+  "matrix": "matrix-results.json",
+  "fullArchiveAcceptance": {
+    "checks": 4,
+    "cases": [
+      {
+        "status": "PASS",
+        "producerPid": 21028,
+        "consumerPid": 10792,
+        "replayParity": true,
+        "stopMasUseSurvives": true,
+        "runtimeChildProcesses": 0,
+        "programHash": "a4fae920a4ad376be0358f44cdc45172eeebff0c2c4d51123ffa98fabb7e8f8a",
+        "stateHash": "3382a2e3ade971ce380e493d0b1f531c383aa37ed95c4152f22d59f3d059d6ea",
+        "resultHash": "844f510597a1d57bfadf014a037ad422dd30939c8aff8c0a79d149c759337661",
+        "step": 1
+      },
+      {
+        "status": "PASS",
+        "producerPid": 22336,
+        "consumerPid": 11168,
+        "replayParity": true,
+        "stopMasUseSurvives": true,
+        "runtimeChildProcesses": 0,
+        "programHash": "d0078f03c9d0cc4ce739580c0b6af898ca3b49ead2f47ce732618a538ba6d0df",
+        "stateHash": "439eda3a4d13e27cfa0c5561388bcbd15edb5dee02de907b750f429edec68abc",
+        "resultHash": "4a9cf4961c894341619b60290dab9146a830285233cb059a1308fdd8a9feccb0",
+        "step": 2
+      }
+    ]
+  },
+  "actualLauncherGui": {
+    "run": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\semantic-migration\\phase-21\\gui-helper-r2\\20261018-130453-304-86c96849",
+    "managedStartAcknowledged": true,
+    "startTrigger": "Existing managed-start file protocol; real Workbench Start button separately exercised by installed driver",
+    "guiReady": {
+      "associationCount": 2,
+      "bridgeCompleteness": "PARTIAL",
+      "bridgeReadiness": "LIVE",
+      "classCount": 11,
+      "generation": 1,
+      "linkCount": 0,
+      "modelRevision": "835e35d77de951b03dfd2e7159032193d72d0bbe0b6a57b0cf6f6608d90adc8e",
+      "objectCount": 9,
+      "projectFile": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\semantic-migration\\phase-21\\gui-helper-r2\\20261018-130453-304-86c96849\\staging-counter\\counter.jcm",
+      "projectionMode": "AUTO",
+      "sessionId": "d6c9ff1d-4148-4dce-852c-c793abbed55c",
+      "stateSha256": "920f2171ca9eac66d0d0b436301e04e9fdf527d8f61298b856c38a29c46fe752",
+      "status": "READY"
+    },
+    "producerAlive": false,
+    "producerPid": 12292,
+    "guiPid": 18740,
+    "guiAliveAfterStopMas": true
+  },
+  "productionPolicy": {
+    "profile": "USE4GOAL_OBSERVED_V1",
+    "selection": "EXPLICIT_OPT_IN",
+    "defaultProfile": "NATIVE_CURRENT",
+    "observations": "WORLD",
+    "journalBytes": 67108864,
+    "consumerFrameworkClasses": false
+  },
+  "resolvedDefects": [
+    "Producer supplies non-initializing typed CArtAgO class/method provenance; consumer needs no framework/project classes",
+    "Bounded canonical ingress waits for worker/publication outside EDT instead of exhausting eight state pins",
+    "Failsafe executes one shaded engine and ANTLR4 copy, preserving strict installed duplicate guard",
+    "Windows permits only exact System32/conhost.exe child; no runtime/JVM child"
+  ],
+  "limitations": [
+    "FULL mental-cycle trace has workload-dependent capacity; exhaustion remains explicit GAP",
+    "No arbitrary nonterminating native OCL cancellation claim",
+    "Grammar-only unsupported features reject; no semantics coercion",
+    "Exact replay rejects incompatible binaries and does not reinterpret resource-exhaustion errors"
+  ],
+  "evidenceSha256": {
+    "full-verify-r9.log": "9fb79c77ff7501a76ba9af2430e9707b4cb409e43892ad31c0a8d13fed6f4ad9",
+    "legacy-junit3.log": "af4f2caccc08051453487db75f9bff695b3cf81b94283f80e1b9a573282de4b6",
+    "matrix-results.json": "a460de14de87f65a517f2d0ee7c52f5021db5c64929d207bd91434c868cdd971",
+    "test-suites.json": "ed5ceeee44b7be792aaca9db6b99d830de4c5f2b19da9604c204ff641ad4d99b",
+    "artifact-hashes.json": "98d5f5c05411db0753ec6a0e981d828cfec3c3ec70c4286fe70a81386b6de3e6",
+    "original-source-checks.json": "13eab331ddad3bbdac4117d6c3989cd3e3a591b27eb780a64b78a9f1ae8bbb00",
+    "failsafe-engine-ownership.json": "76f9a27d3b8004b3fa13ff6d1756ad08e56b56005eabdb05ec2f450a8bdb1ad5",
+    "full-archive-live.log": "e0914657164074369a6faa456cccb26db6ccde5eb08b1d7ce5af2043c80776e3",
+    "gui-helper-r2-acceptance.json": "44b044f5a3c229b5d029be2ed7f861c663f20d27856017e669fa7ee5f1340a66",
+    "source-helper.log": "be169f99a5463635ead38a4924bf4ca888322938ad66f7186b8128b2d310e53e",
+    "installed-helper.log": "60705bec574096595d7df5cff5d76857899b8865d65acac8a30cf04c8b926c2b",
+    "runtime-classpath.log": "acdca26f57932b52271b798679ba5a23a382bcfb3929f0c51bf121fa187baff5"
+  }
+}

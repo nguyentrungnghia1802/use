@@ -1,0 +1,25 @@
+[
+  {
+    "check": "PROFILE_JSON_AND_GRAMMAR_HASHES",
+    "result": "PASS",
+    "engineProfile": "USE4GOAL_OBSERVED_V1",
+    "mappingProfile": "JACAMO_MAPPING_V1"
+  },
+  {
+    "check": "NATIVE_COORDINATOR_SYNTHETIC",
+    "result": "PASS",
+    "boundaries": 200,
+    "evidence": "native-baseline-performance.json"
+  },
+  {
+    "check": "LEGACY_JUNIT3",
+    "result": "PASS",
+    "tests": 198,
+    "evidence": "legacy-junit3-resources-first.log",
+    "initialHarnessFailures": [
+      "module path missing from java.class.path",
+      "test resource directory shadowed when module path precedes test classes"
+    ],
+    "expectedResultsChanged": false
+  }
+]

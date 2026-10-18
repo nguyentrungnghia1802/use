@@ -1,0 +1,20 @@
+{
+  "files": 125,
+  "javaSources": 123,
+  "grammarInputs": 2,
+  "closedImports": true,
+  "duplicateFqcn": false,
+  "forbiddenImports": false,
+  "selfTest": {
+    "positive": "PASS",
+    "negativeRejected": [
+      "sourceHash",
+      "duplicateTarget",
+      "duplicateFqcn",
+      "targetEscape",
+      "forbiddenImport",
+      "unclosedImport",
+      "patchApiHash"
+    ]
+  }
+}

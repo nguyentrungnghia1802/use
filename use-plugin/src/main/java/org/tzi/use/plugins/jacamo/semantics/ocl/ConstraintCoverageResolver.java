@@ -25,6 +25,10 @@ public final class ConstraintCoverageResolver {
         if(lost)return "COVERAGE_LOST";
         var visitor=ExternalOclConstraintService.dependencyVisitor();expression.processWithVisitor(visitor);
         var coverage=visitor.getCoverageData();var classes=new HashSet<>(coverage.getCompleteClassCoverage().keySet());
+        if(engine.canonicalMappingConfigured())for(var association:coverage.getAssociationCoverage().keySet())if(association.getAnnotation("OriginalCslAssociation")!=null) {
+            String source=engine.system().model().getAnnotationValue("CanonicalTupleAuthority","sourceId");
+            if(source.isBlank()||sources.get(source)!=Completeness.COMPLETE)return "AUTHORITATIVE_ASSOCIATION_TUPLE_POPULATION_UNPROVEN:"+association.name();
+        }
         coverage.getAttributeCoverage().keySet().forEach(a->classes.add(a.owner()));
         coverage.getAssociationCoverage().keySet().forEach(a->classes.addAll(a.associatedClasses()));
         String population=unavailablePopulations(expression,sources,lost);if(!population.isBlank())return population;
@@ -56,9 +60,20 @@ public final class ConstraintCoverageResolver {
         String reason=unavailable(expression,engine,sources,lost);if(!reason.isBlank())return reason;
         var visitor=ExternalOclConstraintService.dependencyVisitor();expression.processWithVisitor(visitor);
         for(var read:visitor.attributeReads()) {
-            var attribute=read.attribute();if(attribute.getAnnotation("CslAttribute")==null || "true".equals(attribute.getAnnotationValue("CslAttribute","optional")))continue;
+            var attribute=read.attribute();String annotation=attribute.getAnnotation(org.tzi.use.semantic.engine.use75.Use75CslModelBackend.ATTRIBUTE)!=null?org.tzi.use.semantic.engine.use75.Use75CslModelBackend.ATTRIBUTE:"CslAttribute";
+            if(attribute.getAnnotation(annotation)==null)continue;
+            boolean canonical=engine.canonicalMappingConfigured()&&annotation.equals(org.tzi.use.semantic.engine.use75.Use75CslModelBackend.ATTRIBUTE);
+            boolean optional="true".equals(attribute.getAnnotationValue(annotation,"optional"));
+            if(optional&&!canonical)continue;
             var candidates=read.directSelf() && self.cls().isSubClassifierOf(attribute.owner())?List.of(self):engine.system().state().allObjects().stream().filter(o->o.cls().isSubClassifierOf(attribute.owner())).toList();
-            for(var object:candidates)if(engine.metadata(object,"propertySlot:"+attribute.name()).isBlank())return "REQUIRED_PROPERTY_OBSERVATION_UNAVAILABLE:"+attribute.owner().name()+"."+attribute.name()+":"+object.name();
+            for(var object:candidates) {
+                if(engine.metadata(object,"propertySlot:"+attribute.name()).isBlank()) {
+                    if(canonical&&optional&&"true".equals(engine.metadata(object,"propertyAbsent:"+attribute.name())))continue;
+                    return "REQUIRED_PROPERTY_OBSERVATION_UNAVAILABLE:"+attribute.owner().name()+"."+attribute.name()+":"+object.name();
+                }
+                if(canonical&&!org.tzi.use.plugins.jacamo.semantics.runtime.CanonicalObservationMappingBindings.valueHash(object.state(engine.system().state()).attributeValue(attribute)).equals(engine.metadata(object,"observedValueHash:"+attribute.name())))
+                    return "NATIVE_VALUE_DIFFERS_FROM_ACCEPTED_OBSERVATION:"+object.name()+"."+attribute.name();
+            }
         }
         return "";
     }

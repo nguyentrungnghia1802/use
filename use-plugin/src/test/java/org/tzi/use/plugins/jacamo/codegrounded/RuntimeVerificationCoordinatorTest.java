@@ -223,6 +223,20 @@ class RuntimeVerificationCoordinatorTest {
         coordinator.close();
         assertFalse(Files.exists(run));
     }
+    @Test void edtCloseExposesCompletionForOwnedFileCleanup() throws Exception {
+        var pipeline = CodeGroundedTestFixtures.helloPipeline();
+        var engine = new NativeRuntimeMutationEngine(pipeline.state().system(), pipeline.state().semanticObjectIndex(),
+                new CodeGroundedRuntimeRuleRegistry());
+        var run = RuntimeVerificationCoordinator.createEphemeralDirectory(directory.resolve("edt-cleanup"));
+        var coordinator = new RuntimeVerificationCoordinator(engine, SESSION, 1, REVISION, run, 3, 32_768, true);
+        for (int i = 0; i < 2048; i++) Files.createFile(run.resolve("cleanup-" + i));
+        javax.swing.SwingUtilities.invokeAndWait(coordinator::close);
+        javax.swing.SwingUtilities.invokeAndWait(() -> assertTrue(javax.swing.SwingUtilities.isEventDispatchThread()));
+        coordinator.fileCleanupCompletion().toCompletableFuture().get(10, java.util.concurrent.TimeUnit.SECONDS);
+        assertFalse(Files.exists(run));
+        coordinator.close();
+        assertTrue(coordinator.fileCleanupCompletion().toCompletableFuture().isDone());
+    }
     @Test void concurrentVerifyAndExportObserveOnlyCommittedState() throws Exception {
         var projector = projector(); var coordinator = projector.coordinator(); coordinator.loadProfileSource("user.ocl", PROFILE);
         try (var pool = Executors.newFixedThreadPool(3)) {

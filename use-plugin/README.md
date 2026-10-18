@@ -1,5 +1,11 @@
 # USE JaCaMo Plugin 1.0.1
 
+**Chạy CSL/iStar gốc:** [hướng dẫn USE 7.5](docs/project/use4goal-run.md),
+[ví dụ Counter](examples/csl-counter/README.md). Chọn profile
+`USE4GOAL_OBSERVED_V1` và `examples/csl-counter/mapping.json` tại Import.
+Runtime JaCaMo vẫn là process riêng qua TCP. Default native profile và old
+recording readers được giữ để tương thích.
+
 JaCaMo runs in its own JVM. The USE plugin connects through an authenticated
 loopback TCP Bridge using an endpoint, a secret file and the exact runtime
 distribution fingerprint. Import reads the official model/runtime snapshots.
@@ -33,8 +39,14 @@ its contextual role and Group.
 See [current architecture](docs/project/02-system-architecture.md) and
 [projection refactor evidence](docs/project/projection-refactor-before-after.md).
 
-The current Workbench has Project, Verification, Goal View, Trace / Source and
-Diagnostics. Checkpoints freeze immutable values from the active Session system.
+The Workbench retains Import, Load OCL, Start Runtime, Pause/Resume and native
+exports, and adds Stop/Restart **monitor**. Its next-Import selector can opt into
+`USE4GOAL_OBSERVED_V1` with an authored MappingRuleSet 2.0. That path uses the real
+use4Goal CslModel/GoalModel and original iStar marking/propagation with native USE
+7.5 OCL. Program/trace and semantic evidence show original raw status and quality
+separately from invocation conformance. Existing profiles remain available; the
+new profile's final release gates are tracked in `../implementation-plan.md`.
+Checkpoints freeze immutable values from the active Session system.
 Explicitly approved HARD false conditions may request Jason ExecutionControl
 pause; all constraints default REPORT_ONLY. All current Jason agents must ACK,
 followed by authoritative resync and violation confirmation. PAUSED means “Jason

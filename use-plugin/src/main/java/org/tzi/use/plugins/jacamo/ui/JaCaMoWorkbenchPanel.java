@@ -38,7 +38,15 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private final JButton startRuntime = named(new JButton("Start Runtime"), "start-runtime");
     private final JButton pauseRuntime = named(new JButton("Pause Jason"), "pause-runtime");
     private final JButton resumeRuntime = named(new JButton("Resume Jason"), "resume-runtime");
+    private final JButton stopMonitor = named(new JButton("Stop monitor"), "stop-monitor");
+    private final JButton restartMonitor = named(new JButton("Restart monitor"), "restart-monitor");
     private final JButton loadProfile = named(new JButton("Load OCL..."), "load-profile");
+    private final javax.swing.JComboBox<String> engineProfile = named(new javax.swing.JComboBox<>(new String[]{"NATIVE_CURRENT","USE4GOAL_OBSERVED_V1","CSL_OBSERVER_V1","CSL_OBSERVER_V2"}),"engine-profile");
+    private final javax.swing.JTextField mappingFile=named(new javax.swing.JTextField(38),"mapping-specification");
+    private final JLabel programSummary=named(new JLabel("No canonical program imported"),"program-summary");
+    private final javax.swing.JTextArea programTrace=named(new javax.swing.JTextArea(),"program-trace");
+    private final boolean selectable;
+    private Map<String,Object> displayedProgram;
     private final Map<String, JButton> actionButtons = new LinkedHashMap<>();
     private boolean autoImportStarted;
     private final JTabbedPane tabs=named(new JTabbedPane(),"workbench-tabs");
@@ -71,14 +79,20 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         super(new BorderLayout(8, 8));
         this.facade = java.util.Objects.requireNonNull(facade, "facade");
         this.errorPresenter = java.util.Objects.requireNonNull(errorPresenter, "errorPresenter");
+        var selection=facade.importSelection();selectable=selection!=null;
+        if(selectable){engineProfile.setSelectedItem(selection.profile());mappingFile.setText(selection.specification()==null?"":selection.specification().toString());}
         startRuntime.addActionListener(event -> startRuntime());
         startRuntime.setToolTipText("Release reasoning in the separately launched JaCaMo process after model import");
         pauseRuntime.setToolTipText("Pause Jason at reasoning boundaries; CArtAgO/Moise operations may continue");
         pauseRuntime.addActionListener(event -> executeBackground("Pause failed", () -> facade.pauseRuntime("Workbench manual pause").join(),this::refreshRuntime));
         resumeRuntime.addActionListener(event -> executeBackground("Resume failed", () -> facade.resumeRuntime().join(),this::refreshRuntime));
         loadProfile.addActionListener(event -> chooseProfile());
+        stopMonitor.setToolTipText("Close USE observation and semantic history; the external JaCaMo producer keeps running");
+        restartMonitor.setToolTipText("Reconnect this monitor with fresh semantic history; does not restart the producer");
+        stopMonitor.addActionListener(event->stopMonitorSession());restartMonitor.addActionListener(event->restartMonitorSession());
         add(toolbar(), BorderLayout.NORTH);
         tabs.addTab("Projection Rules", new MappingRulesPanel());
+        if(selectable){programTrace.setEditable(false);programTrace.setLineWrap(true);tabs.addTab("Program / trace",new javax.swing.JScrollPane(programTrace));}
         add(tabs, BorderLayout.CENTER);
         add(status, BorderLayout.SOUTH);
         refreshRuntime();
@@ -87,7 +101,12 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
 
     public void importProject(Path jcmFile) {
         Path normalized = java.util.Objects.requireNonNull(jcmFile, "jcmFile").toAbsolutePath().normalize();
-        executeBackground("Import failed", () -> facade.importProject(normalized), () -> {
+        // Capture widget values before leaving the EDT. Parsing/validation belongs
+        // to the background facade call, and selection takes effect only on Import.
+        JaCaMoFacade.ImportSelection selection;
+        try {selection=selectable?new JaCaMoFacade.ImportSelection((String)engineProfile.getSelectedItem(),engineProfile.getSelectedItem().equals("NATIVE_CURRENT")||mappingFile.getText().isBlank()?null:Path.of(mappingFile.getText().trim())):null;}
+        catch(RuntimeException error){setStatus("Import failed: "+error.getMessage());errorPresenter.accept("Import failed: "+error.getMessage());return;}
+        executeBackground("Import failed", () -> {if(selection==null)facade.importProject(normalized);else facade.importProject(normalized,selection);}, () -> {
             refreshRuntime();
             setStatus("Imported " + normalized);
             writeReadyEvidence(normalized);
@@ -101,6 +120,8 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     public void startRuntime() {
         executeBackground("Runtime start failed", facade::startRuntime, this::refreshRuntime);
     }
+    public void stopMonitorSession(){if(backgroundOperations!=0){setStatus("WORKBENCH_BUSY: wait for the current operation");return;}viewEpoch++;executeBackground("Stop monitor failed",facade::stopMonitorSession,this::refreshRuntime);}
+    public void restartMonitorSession(){if(backgroundOperations!=0){setStatus("WORKBENCH_BUSY: wait for the current operation");return;}viewEpoch++;executeBackground("Restart monitor failed",facade::restartMonitorSession,this::refreshRuntime);}
 
     public void exportNativeUse(Path destination) {
         executeBackground(".use export failed", () -> facade.exportNativeUse(destination),
@@ -115,6 +136,12 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     public void refreshRuntime() {
         refreshWorkflowControls();
         runtimeState.setText(facade.runtimeStatus().state().name());
+        var program=facade.semanticProgramEvidence();
+        if(program!=displayedProgram&&!program.equals(displayedProgram)) {
+            displayedProgram=program;
+            programSummary.setText(displayMessage(program.getOrDefault("profile","No program")+" | "+program.getOrDefault("mapping","")+" | "+program.getOrDefault("programHash",program.getOrDefault("status",""))));
+            if(selectable){String text=new String(CanonicalJson.encode(program),java.nio.charset.StandardCharsets.UTF_8);programTrace.setText(text.length()>131072?text.substring(0,131072)+"\nDISPLAY TRUNCATED; full trace is available through the facade":text);programTrace.setCaretPosition(0);}
+        }
         var result=facade.runtimeVerificationResult();
         if(result!=null && result.semantic()!=null) {
             if(semanticEvidence==null){semanticEvidence=new SemanticEvidencePanel();tabs.addTab("Semantic verification",semanticEvidence);}
@@ -129,6 +156,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         actions.add(loadProfile);
         actions.add(startRuntime);
         actions.add(pauseRuntime);actions.add(resumeRuntime);
+        actions.add(stopMonitor);actions.add(restartMonitor);
         JPanel exports = new JPanel(new FlowLayout(FlowLayout.LEADING));
         exports.add(button("Export .use...", "export-use", this::chooseNativeUse));
         exports.add(button("Export .cmd...", "export-soil", this::chooseNativeSoil));
@@ -137,6 +165,10 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         exports.add(new JLabel("Runtime:"));
         exports.add(runtimeState);
         toolbar.add(actions);
+        if(selectable) {
+            var selection=new JPanel(new FlowLayout(FlowLayout.LEADING));selection.add(new JLabel("On next Import:"));selection.add(engineProfile);selection.add(mappingFile);
+            selection.add(button("Mapping/spec...","choose-mapping",()->{var chooser=new JFileChooser();chooser.setFileFilter(new FileNameExtensionFilter("Authored mapping/config (*.json)","json"));if(chooser.showOpenDialog(this)==JFileChooser.APPROVE_OPTION)mappingFile.setText(chooser.getSelectedFile().toPath().toString());}));toolbar.add(selection);toolbar.add(programSummary);
+        }
         toolbar.add(exports);
         return toolbar;
     }
@@ -282,15 +314,21 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         boolean busy = backgroundOperations != 0 || facade.stepReplayBusy();
         boolean replayActive = facade.stepReplayStatus() != null;
         workflowState.setText(displayMessage(workflow.state() + " | " + workflow.diagnostic()));
+        workflowState.setToolTipText(workflow.managed()?"Managed launcher run "+workflow.runId()+"; only Start Runtime releases its startup ACK":"External producer is not owned by this monitor; manage its process with its launcher");
         startRuntime.setEnabled(!busy && !replayActive && workflow.startAvailable());
         var control=facade.runtimeControlState();
         pauseRuntime.setEnabled(!busy && !replayActive && control!=null && control.capable() && control.liveReady() && control.state().name().equals("RUNNING")
                 && java.util.Set.of("RUNNING","LIVE").contains(workflow.state()));
         resumeRuntime.setEnabled(!busy && !replayActive && control!=null && control.capable() && control.state().name().equals("PAUSED")
                 && java.util.Set.of("RUNNING","LIVE").contains(workflow.state()));
-        loadProfile.setEnabled(!busy && !replayActive && facade.projectSummary() != null);
+        loadProfile.setEnabled(!busy && !replayActive && facade.projectSummary() != null&&!workflow.state().equals("MONITOR_STOPPED"));
+        boolean imported=facade.projectSummary()!=null;
+        stopMonitor.setEnabled(!busy&&!replayActive&&imported&&!workflow.state().equals("MONITOR_STOPPED"));
+        restartMonitor.setEnabled(!busy&&!replayActive&&imported);
+        engineProfile.setEnabled(!busy&&!replayActive);mappingFile.setEnabled(!busy&&!replayActive);
         actionButtons.forEach((name, button) -> button.setEnabled(!busy));
         actionButtons.get("import-project").setEnabled(!busy && !replayActive);
+        if(selectable)actionButtons.get("choose-mapping").setEnabled(!busy&&!replayActive);
     }
 
     private void setStatus(String message) { status.setText(displayMessage(message)); }

@@ -17,6 +17,13 @@ public interface JaCaMoFacade {
     String status();
 
     default ProjectSummary importProject(Path jcmFile) { throw new UnsupportedOperationException("IMPORT_NOT_CONFIGURED"); }
+    /** Selection is input to Import; changing a widget never changes a live owner. */
+    default ImportSelection importSelection() { return null; }
+    default ProjectSummary importProject(Path jcmFile, ImportSelection selection) {
+        if(selection!=null)throw new UnsupportedOperationException("SEMANTIC_SELECTION_NOT_CONFIGURED");
+        return importProject(jcmFile);
+    }
+    default Map<String,Object> semanticProgramEvidence() { return Map.of(); }
     default ProjectSummary rebuild() { throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED"); }
     default ProjectSummary projectSummary() { return null; }
     default List<SourceRow> sources() { return List.of(); }
@@ -52,6 +59,9 @@ public interface JaCaMoFacade {
     default void connectRuntime() { throw new UnsupportedOperationException("RUNTIME_NOT_CONFIGURED"); }
     default void disconnectRuntime() { throw new UnsupportedOperationException("RUNTIME_NOT_CONFIGURED"); }
     default void resyncRuntime() { throw new UnsupportedOperationException("RUNTIME_NOT_CONFIGURED"); }
+    /** Consumer observation/engine ownership only. Never sends a producer STOP/RESTART command. */
+    default void stopMonitorSession() { throw new UnsupportedOperationException("MONITOR_NOT_CONFIGURED"); }
+    default void restartMonitorSession() { throw new UnsupportedOperationException("MONITOR_NOT_CONFIGURED"); }
     default RuntimeStatus runtimeStatus() { return RuntimeStatus.offline(); }
     default org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult runtimeVerificationResult() { return null; }
     default org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot verificationSnapshot() {
@@ -94,6 +104,13 @@ public interface JaCaMoFacade {
     record SourceRow(Path path, String kind, long bytes, String sha256) { }
     record WorkflowStatus(String state, boolean startAvailable, boolean managed, String runId,
                           String diagnostic, String bootstrapAt, String startedAt) { }
+    record ImportSelection(String profile,Path specification) {
+        public ImportSelection {
+            profile=org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.configured(profile).name();
+            if(specification!=null)specification=specification.toAbsolutePath().normalize();
+            if(profile.equals("NATIVE_CURRENT")&&specification!=null)throw new IllegalArgumentException("NATIVE_PROFILE_HAS_NO_AUTHORED_SPECIFICATION");
+        }
+    }
     record TraceRow(String semanticId, String sourceKind, String targetUseId, String targetKind,
                     String mappingRule, String projectionRule, String status, Path sourcePath,
                     int sourceLine, String dimension, String evidenceAuthority, List<String> traceDiagnostics,

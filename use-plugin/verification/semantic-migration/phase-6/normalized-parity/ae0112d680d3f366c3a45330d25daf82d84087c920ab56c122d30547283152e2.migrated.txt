@@ -1,0 +1,3 @@
+false
+null
+[semantic: refinement 'b > or a' in actor 'B' references parent 'a' owned by actor 'A' — a refinement must stay within a single actor (use 'depend' to cross actors)]

@@ -1,0 +1,19 @@
+...F..................Warning: Iteration over a non-ordered collection. Order of the result might not be as expected. (for x in Set{1,2,3}do ... end)
+Warning: Iteration over a non-ordered collection. Order of the result might not be as expected. (for x in Set{1,2,3}do ... end)
+....................
+.........................................
+.........................................
+.....................................Warning: Iteration over a non-ordered collection. Order of the result might not be as expected. (for x in Set{0}do ... end)
+Warning: Iteration over a non-ordered collection. Order of the result might not be as expected. (for x in Set{0}do ... end)
+....
+..................................
+Time: 0.918
+There was 1 failure:
+1) testSpecification(org.tzi.use.parser.USECompilerTest)junit.framework.AssertionFailedError: make sure that all test files can be found  (or update expected number if you have added test files) expected:<49> but was:<0>
+	at org.tzi.use.parser.USECompilerTest.getFilesMatchingSuffix(USECompilerTest.java:297)
+	at org.tzi.use.parser.USECompilerTest.testSpecification(USECompilerTest.java:113)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+
+FAILURES!!!
+Tests run: 198,  Failures: 1,  Errors: 0
+

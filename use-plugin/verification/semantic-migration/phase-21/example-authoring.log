@@ -1,0 +1,26 @@
+Configuration of 'jacamoJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/jacamo/1.3.1/jacamo-1.3.1.jar, based on class loader
+Configuration of 'moiseJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/moise/1.1/moise-1.1.jar, based on class loader
+Configuration of 'jasonJar' found at /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar, based on class loader
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+Exception in thread "main" jacamo.project.parser.ParseException: Encountered " "}" "} "" at line 2, column 51.
+Was expecting one of:
+    <EOL> ...
+    "," ...
+    "::" ...
+    
+	at jacamo.project.parser.JaCaMoProjectParser.generateParseException(JaCaMoProjectParser.java:4024)
+	at jacamo.project.parser.JaCaMoProjectParser.jj_consume_token(JaCaMoProjectParser.java:3889)
+	at jacamo.project.parser.JaCaMoProjectParser.agent(JaCaMoProjectParser.java:869)
+	at jacamo.project.parser.JaCaMoProjectParser.parse(JaCaMoProjectParser.java:137)
+	at org.jacamo.bridge.adapter.OfficialProjectLoader.load(OfficialProjectLoader.java:21)
+	at org.tzi.use.plugins.jacamo.semantics.WriteCounterExampleMappingMain.main(WriteCounterExampleMappingMain.java:13)

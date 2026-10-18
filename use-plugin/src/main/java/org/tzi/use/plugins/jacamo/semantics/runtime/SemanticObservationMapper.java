@@ -14,6 +14,7 @@ public final class SemanticObservationMapper {
         MObject find(String id);
         MObject upsert(String id, String type, String label) throws UseApiException;
         void alias(String id, MObject object);
+        default void unalias(String id) {throw new UnsupportedOperationException("UNALIAS_NOT_IMPLEMENTED");}
         String metadata(MObject object, String key);
         void metadata(MObject object, String key, String value);
         Collection<MObject> objects();
@@ -21,14 +22,16 @@ public final class SemanticObservationMapper {
         void connect(String association, MObject first, MObject second) throws UseApiException;
         void delete(String id) throws UseApiException;
         void disconnect(String association,MObject first,MObject second) throws UseApiException;
+        default Value currentValue(MObject object,String attribute){return null;}
     }
     public record Result(String identity, MObject object, String diagnostic) { }
     public static final class UnsupportedObservation extends RuntimeException {
         public UnsupportedObservation(String reason) { super(reason); }
     }
-    private final CslSchema schema;
+    private final ObservationMappingBindings bindings;
     private final boolean functional;
-    public SemanticObservationMapper(org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration config) { this.schema=config.schema();this.functional=config.profile()==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.CSL_OBSERVER_V2; }
+    public SemanticObservationMapper(org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration config) {this(new LegacyObservationMappingBindings(config));}
+    public SemanticObservationMapper(ObservationMappingBindings bindings){this.bindings=Objects.requireNonNull(bindings);this.functional=bindings.functionalObservers();}
     public Result apply(Port port, BridgeEntityId runtime, String kind, Map<String,Object> data) throws UseApiException {
         return switch(kind) {
             case "UPSERT_CARTAGO_WORKSPACE" -> {
@@ -38,6 +41,19 @@ public final class SemanticObservationMapper {
                 yield new Result(id,object,"CSL_WORKSPACE_OBSERVER");
             }
             case "UPSERT_CARTAGO_AGENT_IDENTITY", "UPSERT_JASON_AGENT_STATE" -> agent(port,runtime,kind,data);
+            case "DELETE_CARTAGO_AGENT_IDENTITY" -> {
+                if(!bindings.canonical())throw new UnsupportedObservation("CSL_OBSERVATION_NOT_IN_PROFILE:"+kind);
+                var object=required(port,text(data,"semanticId"));String primary=port.metadata(object,"semanticId");
+                var memberships=memberships(port,object);memberships.remove(runtime.canonical());
+                port.metadata(object,"cartagoMemberships",NativeUseModelBuilder.canonicalJson(memberships));
+                if(!primary.equals(runtime.canonical()))port.unalias(runtime.canonical());
+                if(!primary.equals(text(data,"semanticId")))port.unalias(text(data,"semanticId"));
+                if(memberships.isEmpty()&&port.metadata(object,"jasonScope").isBlank()) {
+                    for(var dependent:List.copyOf(port.objects()))if(primary.equals(port.metadata(dependent,"rolePlayer")))port.delete(port.metadata(dependent,"semanticId"));
+                    port.delete(primary);
+                }
+                yield new Result(primary,object,"CANONICAL_CARTAGO_MEMBERSHIP_RETIRED");
+            }
             case "UPSERT_CARTAGO_ARTIFACT" -> artifact(port,runtime,data);
             case "UPSERT_CARTAGO_PROPERTY_SNAPSHOT" -> property(port,data);
             case "APPLY_CARTAGO_PROPERTY_DELTA" -> {
@@ -68,7 +84,7 @@ public final class SemanticObservationMapper {
             }
             case "UPSERT_MOISE_GROUP" -> group(port,runtime,data);
             case "UPSERT_MOISE_GROUP_PARENT" -> {
-                if(schema.policy().nesting().isEmpty())throw new UnsupportedObservation("CSL_OBSERVATION_NOT_IN_PROFILE:"+kind);
+                if(!bindings.hasNesting())throw new UnsupportedObservation("CSL_OBSERVATION_NOT_IN_PROFILE:"+kind);
                 yield parent(port,data);
             }
             default -> throw new UnsupportedObservation("CSL_OBSERVATION_NOT_IN_PROFILE:"+kind);
@@ -85,6 +101,7 @@ public final class SemanticObservationMapper {
         var object=port.upsert(primary,"AtomicAgent",text(data,"name"));
         if(jason)port.metadata(object,"jasonScope",runtime.scope());
         port.alias(runtime.canonical(),object);
+        if(bindings.canonical()&&!jason) {var members=memberships(port,object);members.add(runtime.canonical());port.metadata(object,"cartagoMemberships",NativeUseModelBuilder.canonicalJson(members));}
         if(data.get("semanticId") instanceof String id && !id.isBlank())port.alias(id,object);
         if(data.get("agentDeclarationSemanticId") instanceof String declaration && !declaration.isBlank()) {
             var rows=(List<?>)CanonicalJson.decode(DomainProjection.decode(object.cls().model().getAnnotationValue("CslAgentDeclarations","payload64")).getBytes(java.nio.charset.StandardCharsets.UTF_8));
@@ -105,8 +122,8 @@ public final class SemanticObservationMapper {
     }
     private Result artifact(Port port,BridgeEntityId runtime,Map<String,Object> data) throws UseApiException {
         String id=text(data,"semanticId"),type=text(data,"artifactTypeSemanticId");
-        var candidates=schema.classifiers().stream().filter(c->c.kind()==CslSchema.Kind.ENTITY &&
-                (c.sourceId().equals(type) || c.sourceId().equals(DomainProjection.artifactId(text(data,"artifactTypeJavaClassName"))))).toList();
+        var candidates=bindings.types().stream().filter(c->c.kind()==ObservationMappingBindings.Kind.ENTITY &&
+                (c.sourceId().equals(type) || c.sourceId().equals(DomainProjection.artifactId(text(data,"artifactTypeJavaClassName"))) || c.javaClass().equals(text(data,"artifactTypeJavaClassName")))).toList();
         if(candidates.size()!=1)throw new UnsupportedObservation(candidates.isEmpty()?"DOMAIN_TYPE_NOT_REGISTERED:"+type:"DOMAIN_TYPE_BINDING_AMBIGUOUS:"+type);
         String workspace=text(data,"workspaceSemanticId"),name=text(data,"name"),uuid=text(data,"uuid");
         // A faithfully observed artifact at the same workspace/name with a new UUID proves replacement.
@@ -126,13 +143,15 @@ public final class SemanticObservationMapper {
         if(object==null)throw new UnsupportedObservation("PROPERTY_OWNER_NOT_IN_DOMAIN_PROFILE:"+owner);
         // Keep every unbound raw slot as evidence, without turning it into an Entity or guessed String attribute.
         port.metadata(object,"propertyEvidence:"+id,NativeUseModelBuilder.canonicalJson(data));
-        var attributes=object.cls().allAttributes().stream().filter(a->sourceName.equals(DomainProjection.decode(a.getAnnotationValue("CslAttribute","sourceName64")))).toList();
+        var attributes=bindings.properties(object,sourceName);
         if(attributes.isEmpty()) {port.metadata(object,"propertyDecision:"+id,"UNSUPPORTED:UNBOUND_DOMAIN_PROPERTY");return new Result(owner,object,"UNSUPPORTED:UNBOUND_DOMAIN_PROPERTY:"+sourceName);}
         if(attributes.size()!=1)throw new IllegalArgumentException("PROPERTY_BINDING_AMBIGUOUS:"+sourceName);
         var attribute=attributes.getFirst(); String key="propertySlot:"+attribute.name();
         String previous=port.metadata(object,key);
         if(!previous.isBlank() && !previous.equals(id))throw new IllegalArgumentException("DUPLICATE_PROPERTY_NAME_REQUIRES_OCCURRENCE_BINDING:"+sourceName);
-        var value=ScalarValueCodec.decode(attribute.type().toString(),list(data,"values"),list(data,"valueTypes"));
+        var value=bindings.decode(object,attribute,list(data,"values"),list(data,"valueTypes"));
+        var previousValue=port.currentValue(object,attribute.name());
+        bindings.propertyWritten(port,object,attribute,previousValue,value);
         port.value(object,attribute.name(),value); port.metadata(object,key,id);
         port.metadata(object,"propertyDecision:"+id,"MAPPED:"+attribute.name());
         return new Result(owner,object,"CSL_TYPED_PROPERTY_OBSERVED:"+attribute.name());
@@ -140,6 +159,7 @@ public final class SemanticObservationMapper {
     public void removeProperty(Port port,MObject object,String id) throws UseApiException {
         for(var attribute:object.cls().allAttributes()) if(id.equals(port.metadata(object,"propertySlot:"+attribute.name()))) {
             port.value(object,attribute.name(),UndefinedValue.instance);port.metadata(object,"propertySlot:"+attribute.name(),"");
+            if(bindings.canonical()){port.metadata(object,"observedValueHash:"+attribute.name(),"");port.metadata(object,"propertyAbsent:"+attribute.name(),"true");}
         }
         port.metadata(object,"propertyDecision:"+id,"REMOVED_AUTHORITATIVELY");
     }
@@ -150,7 +170,7 @@ public final class SemanticObservationMapper {
         if(!definition.metadata().semanticId().equals(text(data,"organisationSpecSemanticId")))throw new IllegalArgumentException("CSL_OS_IDENTITY_MISMATCH");
         var groupDefinition=definition.structuralSpecification().groups().stream().filter(g->g.metadata().semanticId().equals(source)).findFirst()
             .orElseThrow(()->new IllegalArgumentException("CSL_GROUP_DEFINITION_UNRESOLVED"));
-        var contextType=registered(CslSchema.Kind.ORG_CONTEXT,source);
+        var contextType=registered(ObservationMappingBindings.Kind.ORG_CONTEXT,source);
         String id=runtime.canonical();
         if(data.get("boardArtifactIdentity") instanceof String uuid) {
             if(!runtime.incarnation().endsWith(":"+uuid))throw new IllegalArgumentException("CSL_GROUP_BOARD_UUID_MISMATCH");
@@ -161,9 +181,14 @@ public final class SemanticObservationMapper {
         var context=port.upsert(id,contextType.symbol(),text(data,"name"));
         port.alias(text(data,"semanticId"),context); copy(port,context,data,"name","organisationName","organisationSpecSemanticId","groupSpecSemanticId","boardArtifactIdentity","continuity");
         port.metadata(context,"authority","moise");port.metadata(context,"incarnation",runtime.incarnation());
-        var accepted=new LinkedHashMap<String,Map.Entry<MObject,CslSchema.Classifier>>();
+        var accepted=new LinkedHashMap<String,Map.Entry<MObject,ObservationMappingBindings.Type>>();
         for(Object raw:list(data,"players")) {
-            var player=map(raw); var role=registered(CslSchema.Kind.ROLE,text(player,"roleSemanticId"));
+            var player=map(raw);String roleSource=text(player,"roleSemanticId");
+            if(bindings.canonical()&&bindings.types().stream().noneMatch(t->t.kind()==ObservationMappingBindings.Kind.ROLE&&t.sourceId().equals(roleSource))) {
+                if(!groupDefinition.roleSemanticIds().contains(roleSource))throw new IllegalArgumentException("CSL_ROLE_NOT_DECLARED_IN_CONTEXT");
+                port.metadata(context,"unmappedRoleEvidence:"+roleSource,NativeUseModelBuilder.canonicalJson(player));continue;
+            }
+            var role=registered(ObservationMappingBindings.Kind.ROLE,roleSource);
             if(!groupDefinition.roleSemanticIds().contains(role.sourceId()))throw new IllegalArgumentException("CSL_ROLE_NOT_DECLARED_IN_CONTEXT");
             String playerId=player.containsKey("agentSemanticId")?text(player,"agentSemanticId"):text(player,"agentDeclarationSemanticId");
             var actor=required(port,playerId);
@@ -183,6 +208,7 @@ public final class SemanticObservationMapper {
                 occurrence=port.upsert(roleId,entry.getValue().getValue().symbol(),"enactment");
                 port.metadata(occurrence,"roleTuple",entry.getKey());port.metadata(occurrence,"roleContext",id);
                 port.metadata(occurrence,"roleTypeId",entry.getValue().getValue().id());
+                if(bindings.canonical())port.metadata(occurrence,"roleSourceId",entry.getValue().getValue().sourceId());
                 port.metadata(occurrence,"rolePlayer",port.metadata(entry.getValue().getKey(),"semanticId"));
                 port.metadata(occurrence,"authority","moise");
             }
@@ -191,12 +217,17 @@ public final class SemanticObservationMapper {
         port.metadata(context,"lastGroupCut",org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.sha256(CanonicalJson.encode(data)));
         return new Result(id,context,"CSL_ACCEPTED_ENACTMENTS_OBSERVED");
     }
+    private static TreeSet<String> memberships(Port port,MObject object) {
+        String text=port.metadata(object,"cartagoMemberships");var result=new TreeSet<String>();
+        if(!text.isBlank())for(Object value:(List<?>)CanonicalJson.decode(text.getBytes(java.nio.charset.StandardCharsets.UTF_8)))result.add((String)value);
+        return result;
+    }
     private Result parent(Port port,Map<String,Object> data)throws UseApiException {
         var child=required(port,text(data,"semanticId"));String parentId=Objects.toString(data.get("parentSemanticId"),"");
         MObject parent=parentId.isBlank()?null:required(port,parentId);
         if(parent!=null) {
             String childType=text(data,"groupSpecSemanticId"),parentType=text(data,"parentSpecSemanticId");
-            boolean declared=schema.policy().nesting().stream().anyMatch(n->schema.classifier(n.childContext()).sourceId().equals(childType) && schema.classifier(n.parentContext()).sourceId().equals(parentType));
+            boolean declared=bindings.nestingRegistered(childType,parentType);
             if(!declared)throw new UnsupportedObservation("CSL_NESTED_CONTEXT_DECLARATION_NOT_REGISTERED");
             String childIdentity=port.metadata(child,"semanticId");var seen=new HashSet<String>();
             for(MObject at=parent;at!=null;) {
@@ -208,8 +239,8 @@ public final class SemanticObservationMapper {
         port.metadata(child,"parentContextIdentity",parent==null?"":port.metadata(parent,"semanticId"));
         return new Result(port.metadata(child,"semanticId"),child,"CSL_CONTEXT_PARENT_OBSERVED");
     }
-    private CslSchema.Classifier registered(CslSchema.Kind kind,String source) {
-        return schema.classifiers().stream().filter(c->c.kind()==kind && c.sourceId().equals(source)).findFirst()
+    private ObservationMappingBindings.Type registered(ObservationMappingBindings.Kind kind,String source) {
+        return bindings.types().stream().filter(c->c.kind()==kind && c.sourceId().equals(source)).findFirst()
                 .orElseThrow(()->new UnsupportedObservation("CSL_SOURCE_TYPE_NOT_REGISTERED:"+kind+":"+source));
     }
     private static String nonempty(String text) {return text.isBlank()?null:text;}

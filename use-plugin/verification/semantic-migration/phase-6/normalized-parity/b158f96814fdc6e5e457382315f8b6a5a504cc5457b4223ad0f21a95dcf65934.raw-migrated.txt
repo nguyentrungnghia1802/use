@@ -1,0 +1,1 @@
+org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result{org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result.errors=[java.lang.String:semantic: refinement cycle detected involving element 'a'], org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result.model=null}

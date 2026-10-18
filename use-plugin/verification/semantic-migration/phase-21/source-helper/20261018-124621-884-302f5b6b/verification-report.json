@@ -1,0 +1,83 @@
+{
+  "schemaVersion" : "1.0.0",
+  "runId" : "7d067e37f7abf5cc08dd8e8f44ae9ef2850bada496ec5050dee5e08928f99e85",
+  "timestamp" : "2026-10-18T05:46:34.785218700Z",
+  "mode" : "RUNTIME_NATIVE",
+  "structureValid" : true,
+  "fingerprints" : {
+    "constraintSetHash" : "9789dfd5a2bc54113adc4a20883709d97f177ac9ce6f738bdc6b915dc7d2d516",
+    "coverage" : "INCOMPLETE",
+    "eventId" : "manual",
+    "freshness" : "CURRENT_OBSERVED",
+    "generation" : "1",
+    "modelRevision" : "7c31f0315b7b751f7cc77876c2568cd46af2644295c1a311f8fb3f8051f12bd7",
+    "nativeModelSha256" : "63313506b10aa46d70b1c811f437b53680957677ecffbb6ef6fa65f29bca3f5b",
+    "sessionId" : "72fee9cb-c246-4200-b107-f8731d94e07c",
+    "stateHash" : "786b860dabe0cb5fd0a76fa8c3baf9cb0e741f30cc3ce482dd255e42e9135fb1",
+    "stateVersion" : "22"
+  },
+  "results" : [ {
+    "constraintId" : "NATIVE:Counter::Nonnegative",
+    "outcome" : "FAIL",
+    "contextObject" : null,
+    "explanation" : "false",
+    "oclSource" : "(self.p >= 0)",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "NATIVE:OrgContext::CslV4RoleCompatibility",
+    "outcome" : "SKIPPED",
+    "contextObject" : null,
+    "explanation" : "REQUIRED_ORGANIZATIONAL_POPULATION_UNPROVEN",
+    "oclSource" : "self.roles->forAll(r1 : RoleOccurrence, r2 : RoleOccurrence | (((((((((r1 = r2) or (r1.player <> r2.player)) or (r1.oclIsKindOf(R_reviewer) and r2.oclIsKindOf(R_reviewer))) or (r1.oclIsKindOf(R_reviewer) and r2.oclIsKindOf(R_soc))) or (r1.oclIsKindOf(R_soc) and r2.oclIsKindOf(R_reviewer))) or (r1.oclIsKindOf(R_soc) and r2.oclIsKindOf(R_soc))) or (r1.oclIsKindOf(R_soc) and r2.oclIsKindOf(R_worker))) or (r1.oclIsKindOf(R_worker) and r2.oclIsKindOf(R_soc))) or (r1.oclIsKindOf(R_worker) and r2.oclIsKindOf(R_worker))))",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "ORIGINAL:CONDITION:beid:v1:moise/organisation/group-board/org/team/72fee9cb-c246-4200-b107-f8731d94e07c%3A85818655-990d-4bb2-a9cf-5695daaf1d01:left__cast_93daadeadc7ade3268531908be6eebd56701363477eeb1d95fff084544a648c1",
+    "outcome" : "FAIL",
+    "contextObject" : "counter",
+    "explanation" : "",
+    "oclSource" : "self.p >= 1",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "ORIGINAL:CONDITION:beid:v1:moise/organisation/group-board/org/team/72fee9cb-c246-4200-b107-f8731d94e07c%3A85818655-990d-4bb2-a9cf-5695daaf1d01:right__cast_93daadeadc7ade3268531908be6eebd56701363477eeb1d95fff084544a648c1",
+    "outcome" : "FAIL",
+    "contextObject" : "counter",
+    "explanation" : "",
+    "oclSource" : "self.p >= 2",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "ORIGINAL:CONDITION:beid:v1:moise/organisation/group-board/org/team/72fee9cb-c246-4200-b107-f8731d94e07c%3A85818655-990d-4bb2-a9cf-5695daaf1d01:opt1__cast_93daadeadc7ade3268531908be6eebd56701363477eeb1d95fff084544a648c1",
+    "outcome" : "FAIL",
+    "contextObject" : "counter",
+    "explanation" : "",
+    "oclSource" : "self.p >= 1",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "ORIGINAL:CONDITION:beid:v1:moise/organisation/group-board/org/team/72fee9cb-c246-4200-b107-f8731d94e07c%3A85818655-990d-4bb2-a9cf-5695daaf1d01:opt2__cast_93daadeadc7ade3268531908be6eebd56701363477eeb1d95fff084544a648c1",
+    "outcome" : "FAIL",
+    "contextObject" : "counter",
+    "explanation" : "",
+    "oclSource" : "self.p >= 2",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "ORIGINAL:CONDITION:beid:v1:moise/organisation/group-board/org/team/72fee9cb-c246-4200-b107-f8731d94e07c%3A85818655-990d-4bb2-a9cf-5695daaf1d01:supplied__cast_595422c1a947ec7c79aef52cd89b8577b0cc7e192ce6726d332e1b8a86577a80__cast_93daadeadc7ade3268531908be6eebd56701363477eeb1d95fff084544a648c1",
+    "outcome" : "FAIL",
+    "contextObject" : "counter",
+    "explanation" : "",
+    "oclSource" : "self.p >= 1",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  } ]
+}

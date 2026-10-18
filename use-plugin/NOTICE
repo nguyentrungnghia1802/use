@@ -1,7 +1,9 @@
-USE JaCaMo Plugin 1.0.0
+USE JaCaMo Plugin 1.0.1
 
-This package is distributed with the USE project under GNU GPL version 2; see
-LICENSE. The package does not redistribute Jason, CArtAgO or Moise binaries.
+The USE host is licensed under GNU GPL version 2 or later; see LICENSE and
+the original source headers. The selected use4Goal engine sources retain
+their GNU GPL version 3 license; see licenses/use4Goal-GPL-3.0.txt.
+The package does not redistribute Jason, CArtAgO or Moise binaries.
 Those optional runtime dependencies retain their respective upstream licenses and
 must be supplied separately by the user.
 
@@ -14,3 +16,20 @@ SLF4J API 2.0.17 under its MIT license. The corresponding license texts are
 in licenses/APACHE-2.0.txt and licenses/SLF4J-MIT.txt. Jackson and its
 FastDoubleParser third-party notices and license texts remain in the JAR's
 META-INF resources.
+
+The opt-in USE4GOAL_OBSERVED_V1 profile embeds selected original CSL/iStar
+sources from use4Goal, upstream commit
+6f3e73801239fd8bfb94ca8d04ba531b903c0ac9. Original package names, copyright
+headers, source hashes and upstream paths are retained in
+provenance/use4goal-provenance.json (also META-INF/use4goal-provenance.json
+inside the plugin). The original contextual seam patch is P-CTX-01; its
+diff and the separate native USE printer adapter changes are included in
+provenance/. No full legacy goal plugin, legacy CSL runtime backend or
+solver is installed. Corresponding selected source and build inputs are
+in use-jacamo-semantic-engine/ in this repository; see the provenance README.
+
+ANTLR 4.9.3 runtime and parser generator are pinned to the same version.
+The ANTLR Project copyright and BSD-3-Clause license are retained in
+licenses/ANTLR4-4.9.3.txt, copied from the upstream 4.9.3 tag:
+https://raw.githubusercontent.com/antlr/antlr4/4.9.3/LICENSE.txt
+USE's separate ANTLR 3 runtime remains owned by the USE host.

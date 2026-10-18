@@ -1,0 +1,60 @@
+{
+  "capturedAt": "2026-10-17T11:46:14.0989056Z",
+  "repositories": [
+    {
+      "root": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use",
+      "head": "6fdfe5ee584b97a48f961e74e6e218d2c3020210",
+      "branch": "main",
+      "status": [
+        " M implementation-plan.md"
+      ]
+    },
+    {
+      "root": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal",
+      "head": "6f3e73801239fd8bfb94ca8d04ba531b903c0ac9",
+      "branch": "main",
+      "status": [
+        " M goal/src/main/resources/examples/Classroom/classroom.soil",
+        " M goal/src/main/resources/examples/Classroom/classroom.use",
+        "?? META-INF/"
+      ]
+    },
+    {
+      "root": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo",
+      "head": "04fc08df259d94045f6cfc95637d56faa1cb33b2",
+      "branch": "main",
+      "status": [
+        " M examples/auction/.jcm-deps.gradle",
+        " M examples/auction/auction.jcm"
+      ]
+    }
+  ],
+  "protected": [
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal\\META-INF\\MANIFEST.MF",
+      "sha256": "D5E7A93551B6A93BBD29F576C8A34683F433C39C3781924C29C71CB6854E9BFD"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal\\goal\\src\\main\\resources\\examples\\Classroom\\classroom.soil",
+      "sha256": "10D4D9ACC89E42C6B7FE7A821B5A42B8404173155E12E0412DE352E652585001"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal\\goal\\src\\main\\resources\\examples\\Classroom\\classroom.use",
+      "sha256": "BB857FCE61A9A8A11E207AE13DC198387242AF7D3C759205090C831D2A81AAA1"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\auction\\auction.jcm",
+      "sha256": "1B7FD99E1CEEA67381B2957908BD41D3387AA7B4B98FADC26ABF588FCEE98E2A"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\auction\\.jcm-deps.gradle",
+      "sha256": "3B7706DE71F0362C2FD5E1DA6A90F1D918F4EF1426B5DADBD6CA67A38EB3F050"
+    },
+    {
+      "path": "C:\\Users\\NTNghia\\OneDrive\\Desktop\\report.md",
+      "sha256": "E8F3A60B11C52B73136EA2BBAEDC92F40F9B70FF1C670D1BF70D1D49A43AE7DC"
+    }
+  ],
+  "planSha256": "B674C704988E9E5B3FAB716D8D909BA8188F5E10579D366763F33ED36E43AC53",
+  "command": "mvn -B -pl use-plugin -am verify"
+}

@@ -1,0 +1,23 @@
+org.tzi.use:use-jacamo-semantic-engine:jar:7.5.0
++- org.tzi.use:use-core:jar:7.5.0:provided
+|  +- com.google.guava:guava:jar:33.5.0-jre:provided
+|  |  +- com.google.guava:failureaccess:jar:1.0.3:provided
+|  |  +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava:provided
+|  |  +- org.jspecify:jspecify:jar:1.0.0:provided
+|  |  +- com.google.errorprone:error_prone_annotations:jar:2.41.0:provided
+|  |  \- com.google.j2objc:j2objc-annotations:jar:3.1:provided
+|  +- org.eclipse.jdt:org.eclipse.jdt.annotation:jar:2.2.600:provided
+|  +- org.antlr:antlr-runtime:jar:3.5.3:provided
+|  +- jline:jline:jar:2.14.6:provided
+|  +- com.googlecode.combinatoricslib:combinatoricslib:jar:2.3:provided
+|  +- org.jruby:jruby-core:jar:9.3.1.0:provided
+|  \- com.ximpleware:vtd-xml:jar:2.13.4:provided
++- org.antlr:antlr4-runtime:jar:4.9.3:compile
+\- org.junit.jupiter:junit-jupiter:jar:5.8.2:test
+   +- org.junit.jupiter:junit-jupiter-api:jar:5.8.2:test
+   |  +- org.opentest4j:opentest4j:jar:1.2.0:test
+   |  +- org.junit.platform:junit-platform-commons:jar:1.8.2:test
+   |  \- org.apiguardian:apiguardian-api:jar:1.1.2:test
+   +- org.junit.jupiter:junit-jupiter-params:jar:5.8.2:test
+   \- org.junit.jupiter:junit-jupiter-engine:jar:5.8.2:test
+      \- org.junit.platform:junit-platform-engine:jar:1.8.2:test

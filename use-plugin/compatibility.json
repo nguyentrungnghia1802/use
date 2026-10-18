@@ -217,5 +217,15 @@
       "path": "src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json",
       "sha256": "91c85d42080b56754e8c2f5e9d37127e80c1483fdb4d71f2d61df7eab58fcab2"
     }
+  },
+  "semanticReplay": {
+    "legacy": "2.0.0",
+    "originalEngine": "3.0.0",
+    "programManifest": "1.0.0",
+    "mappingRuleSet": "2.0",
+    "engineProfile": "USE4GOAL_OBSERVED_V1",
+    "policy": "EXACT_EXECUTABLE_HASHES_AND_ACCEPTED_CUTS_NO_SILENT_REINTERPRETATION",
+    "legacyReanalysisOfOriginalEngine": "EXPLICITLY_UNSUPPORTED_REQUIRES_SEPARATE_VERSIONED_POLICY",
+    "finalReleaseGate": "REQUIRES_CLEAN_REACTOR_FULL_ARCHIVE_LIVE_AND_PROTECTED_INPUTS"
   }
 }

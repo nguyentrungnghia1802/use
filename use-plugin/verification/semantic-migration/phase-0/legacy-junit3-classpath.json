@@ -1,0 +1,6 @@
+{
+  "exitCode": 1,
+  "finishedAt": "2026-10-17T11:50:21.1237106Z",
+  "command": "java -cp <current module path plus test classpath> junit.textui.TestRunner org.tzi.use.AllTests",
+  "log": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\target\\semantic-migration\\phase-0\\legacy-junit3-classpath.log"
+}

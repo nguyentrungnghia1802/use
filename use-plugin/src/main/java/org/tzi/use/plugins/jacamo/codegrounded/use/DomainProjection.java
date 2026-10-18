@@ -58,6 +58,16 @@ public final class DomainProjection {
         return Path.of(source).toAbsolutePath().normalize().toString();
     }
     public static String artifactId(String fqcn) { return "artifact-class:" + fqcn; }
+    /** JCM artifacts belong to a declared child, even when its name equals the
+     * implicit root. A single old declaration remains readable for old DTOs. */
+    public static String artifactWorkspace(JacamoSemanticSnapshot snapshot,
+            org.jacamo.bridge.contract.semantic.JcmSemanticContract.ArtifactDeclarationSemantic artifact) {
+        var named=snapshot.workspaceDeclarations().stream().filter(w->w.name().equals(artifact.workspace())).toList();
+        var declared=named.stream().filter(w->org.jacamo.bridge.contract.BridgeEntityId.parse(w.metadata().semanticId()).authority().equals("jacamo")).toList();
+        var candidates=declared.isEmpty()?named:declared;
+        if(candidates.size()!=1)throw new IllegalArgumentException("ARTIFACT_DECLARATION_WORKSPACE_UNRESOLVED:"+artifact.metadata().semanticId());
+        return candidates.getFirst().metadata().semanticId();
+    }
     public static String simpleName(String fqcn) { return fqcn.substring(fqcn.lastIndexOf('.') + 1); }
 
     public static void installBases(UseModelApi api, CodeGroundedTraceCollector trace, SemanticMetadata owner) throws UseApiException {
@@ -169,6 +179,23 @@ public final class DomainProjection {
             operation.addAnnotation(new MElementAnnotation("CslInterfaceAuthority",Map.of("kind","REFLECTED_DECLARED_OPERATION","sourceId64",encode(sourceId))));
             return operation;
         } catch(ClassNotFoundException|LinkageError unavailable) {throw new IllegalArgumentException("DECLARED_OPERATION_SOURCE_INTERFACE_UNAVAILABLE:"+sourceId,unavailable);}
+    }
+    /** Exact interface copied by the authenticated producer; no consumer framework classloading. */
+    public static org.tzi.use.uml.mm.MOperation declaredOperation(UseModelApi api,String owner,List<Object> signature,String sourceId,
+            org.jacamo.bridge.contract.semantic.SourceEvidence proof) throws UseApiException {
+        if(signature.size()!=4||!(signature.get(0) instanceof String declaring)||!(signature.get(1) instanceof String name)
+                ||!(signature.get(2) instanceof List<?> raw)||raw.stream().anyMatch(t->!(t instanceof String))||!(signature.get(3) instanceof String result))throw new IllegalArgumentException("DECLARED_OPERATION_SIGNATURE_INVALID");
+        String artifactType=decode(api.getModel().getClass(owner).getAnnotationValue(ANNOTATION,"javaClass64"));
+        String canonical=NativeUseModelBuilder.canonicalJson(signature);
+        if(proof==null||proof.authority()!=org.jacamo.bridge.contract.semantic.EvidenceAuthority.OFFICIAL_CARTAGO_API
+                ||proof.fidelity()!=org.jacamo.bridge.contract.semantic.Fidelity.EXACT||proof.capabilityStatus()!=org.jacamo.bridge.contract.CapabilityStatus.COMPLETE
+                ||!declaring.equals(proof.sourceJavaFqcn())||!proof.sourceDigest().matches("[0-9a-f]{64}")
+                ||!(proof.sourceUri().startsWith("file:")||proof.sourceUri().startsWith("jar:file:"))
+                ||!proof.diagnostics().containsAll(List.of("DECLARED_CARTAGO_ARTIFACT_OPERATION","OWNER:"+artifactType,"SIGNATURE:"+canonical)))
+            throw new IllegalArgumentException("DECLARED_OPERATION_PRODUCER_PROOF_INVALID:"+sourceId);
+        var operation=installOperation(api,owner,declaring,name,raw.stream().map(String.class::cast).toList(),result,"declared-interface:"+sourceId,"java-method:"+signature);
+        operation.addAnnotation(new MElementAnnotation("CslInterfaceAuthority",Map.of("kind","PRODUCER_REFLECTED_DECLARED_OPERATION","sourceId64",encode(sourceId),"bytecodeHash",proof.sourceDigest(),"sourceUri64",encode(proof.sourceUri()))));
+        return operation;
     }
     private static org.tzi.use.uml.mm.MOperation installOperation(UseModelApi api,String owner,String declaringClass,String methodName,
             List<String> parameterTypes,String returnType,String descriptorId,String backingId) throws UseApiException {

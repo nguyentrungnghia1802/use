@@ -1,0 +1,81 @@
+{
+  "phase": 16,
+  "status": "DONE",
+  "ongoing": null,
+  "baseline": {
+    "lifecycle-baseline.log": {
+      "tests": 3,
+      "failures": 3
+    },
+    "lifecycle-r2.log": {
+      "tests": 17,
+      "failures": 1,
+      "verifiedLifecycle": 3,
+      "correction": "Original calls asserted on real admitted event history; repeated source cut must not call recurrence"
+    }
+  },
+  "pending": [],
+  "liveR8": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "evidence": "live-r8-evidence.json"
+  },
+  "sourceCorrection": {
+    "rootCause": "OfficialProjectAdapter merged explicit JCM main with implicit Cartago root; actual Cartago.start creates root child /main/main",
+    "baseline": "explicit-main-baseline-r7.log",
+    "adapterR8": {
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "fixtureCorrection": "Use CartagoBasicContext actual workspace constructor; joinWorkspace operation unsupported in basic root fixture; actor quit must release all memberships"
+  },
+  "latestFocused": {
+    "log": "ownership-acceptance-r15.log",
+    "lifecycle": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0
+    },
+    "controls": {
+      "tests": 12,
+      "failures": 0,
+      "errors": 0
+    },
+    "managed": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0
+    },
+    "live": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0
+    },
+    "remainingRegression": "NATIVE_CURRENT model/state builders still used ambiguous workspace name; fixed by exact JCM workspace declaration with old-DTO single-declaration compatibility"
+  },
+  "verifiedFixes": [
+    "Same watermark/state resync does not double-advance original history",
+    "Revoked host Session stops consumer worker and ingress",
+    "Explicit JCM main is not implicit root; Cartago producer artifact alias fixed using exact workspace declaration",
+    "Managed startup resets completed start state per owner; stale start does not cancel replacement owner",
+    "Canonical control waits exact boundary completion off EDT; confirmation uses completed snapshot",
+    "PAUSED reconnect refreshes actual STATUS without implicit resume",
+    "Concurrent Session reset/background Stop retirement is serialized with workspace publication on EDT"
+  ],
+  "liveEvidence": [
+    "live-r14-evidence.json",
+    "restart-r14-evidence.json"
+  ],
+  "fullR16": {
+    "tests": 854,
+    "failures": 0,
+    "errors": 1,
+    "skipped": 0,
+    "rootCause": "Replay Session selection treated as foreign replacement; retirement called delivery-settling hook on EDT. Separate nonblocking revocation and recognize already-settled owned replay selection."
+  },
+  "acceptance": "acceptance.json"
+}

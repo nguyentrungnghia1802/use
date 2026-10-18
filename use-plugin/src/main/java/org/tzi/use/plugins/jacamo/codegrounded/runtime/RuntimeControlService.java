@@ -151,6 +151,10 @@ public final class RuntimeControlService implements AutoCloseable {
         return Map.copyOf(result);
     }
     public CompletableFuture<Status> requestPause(String reason) {
+        if(coordinator.originalEngine()!=null)return prepareCanonical(Action.PAUSE,reason);
+        return requestPauseAdmitted(reason);
+    }
+    private CompletableFuture<Status> requestPauseAdmitted(String reason) {
         ensureActive();
         synchronized(this) {var pending=pendingCommand(Action.PAUSE,reason);if(pending!=null)return pending;
             if(view.state()==State.PAUSED)return CompletableFuture.completedFuture(null);}
@@ -164,6 +168,10 @@ public final class RuntimeControlService implements AutoCloseable {
         }
     }
     public CompletableFuture<Status> requestResume() {
+        if(coordinator.originalEngine()!=null)return prepareCanonical(Action.RESUME,"USER_RESUME");
+        return requestResumeAdmitted();
+    }
+    private CompletableFuture<Status> requestResumeAdmitted() {
         ensureActive();synchronized(this) {var pending=pendingCommand(Action.RESUME,"USER_RESUME");if(pending!=null)return pending;
             if(view.state()==State.RUNNING)return CompletableFuture.completedFuture(null);
             if(view.state()!=State.PAUSED)throw new IllegalStateException("CONTROL_PAUSE_NOT_CONFIRMED");}
@@ -176,6 +184,26 @@ public final class RuntimeControlService implements AutoCloseable {
             view=new View(State.RESUME_REQUESTED,view.capable(),view.connected(),false,view.required(),view.acknowledged(),"",view.limitation());
             commandAction=Action.RESUME;command=track(CompletableFuture.supplyAsync(()->execute(Action.RESUME,"USER_RESUME"),worker));return command;
         }
+    }
+    private CompletableFuture<Status> prepareCanonical(Action action,String reason) {
+        ensureActive();
+        return track(CompletableFuture.supplyAsync(()->{
+            long deadline=System.nanoTime()+TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
+            while(true) {
+                ensureOwnership();long remaining=TimeUnit.NANOSECONDS.toMillis(deadline-System.nanoTime());
+                if(remaining<1)throw new IllegalStateException("CONTROL_CANONICAL_ADMISSION_TIMEOUT");
+                var cut=coordinator.verificationSnapshot();
+                if(cut.result()!=null&&cut.result().freshness().equals("PENDING_EVALUATION"))coordinator.awaitEvaluation(cut.result(),remaining);
+                // Admission and command registration share the writer barrier. A
+                // new observation cannot replace the evaluated cut between them.
+                CompletableFuture<Status> admitted=coordinator.read(()->{
+                    var current=coordinator.verificationSnapshot();
+                    if(current.result()!=null&&current.result().freshness().equals("PENDING_EVALUATION"))return null;
+                    return action==Action.PAUSE?requestPauseAdmitted(reason):requestResumeAdmitted();
+                });
+                if(admitted!=null)return admitted;
+            }
+        },worker).thenCompose(java.util.function.Function.identity()));
     }
     /** Called under this monitor; opposite commands wait for the full ACK/resync transaction. */
     private CompletableFuture<Status> pendingCommand(Action action,String reason) {
@@ -231,7 +259,8 @@ public final class RuntimeControlService implements AutoCloseable {
                 status=port.control(request(Action.STATUS,requestId,"POST_RESYNC_ACK_REVALIDATION"));
                 if(status.state()!=State.PAUSED || !status.capable())throw new IllegalStateException("CONTROL_PAUSE_COHORT_CHANGED_AFTER_RESYNC");
                 coordinator.controlledLifecycle(VerificationSnapshot.SynchronizationState.LIVE);
-                coordinator.manualVerify();confirmation=coordinator.verificationSnapshot();
+                confirmation=coordinator.completedSnapshot(coordinator.manualVerify(),timeoutMillis);
+                if(confirmation.result()==null||!confirmation.result().freshness().equals("CURRENT_OBSERVED"))throw new IllegalStateException("CONTROL_RESYNC_UNAVAILABLE");
                 if(!activePauseViolation.isBlank()) {
                     coordinator.snapshots().pinConfirmation(confirmation);
                     synchronized(this) {for(String id:pauseCohort) {
@@ -246,7 +275,10 @@ public final class RuntimeControlService implements AutoCloseable {
             } else {
                 status=port.control(request(Action.STATUS,requestId,"POST_RESYNC_ACK_REVALIDATION"));
                 if(status.state()!=State.RUNNING || !status.capable())throw new IllegalStateException("CONTROL_RESUME_COHORT_CHANGED_AFTER_RESYNC");
-                coordinator.controlledLifecycle(VerificationSnapshot.SynchronizationState.LIVE);coordinator.manualVerify();accept(status,true);
+                coordinator.controlledLifecycle(VerificationSnapshot.SynchronizationState.LIVE);
+                var completed=coordinator.completedSnapshot(coordinator.manualVerify(),timeoutMillis);
+                if(completed.result()==null||!completed.result().freshness().equals("CURRENT_OBSERVED"))throw new IllegalStateException("CONTROL_RESYNC_UNAVAILABLE");
+                accept(status,true);
             }
             return status;
         } catch(InterruptedException interrupted) {Thread.currentThread().interrupt();failed("CONTROL_INTERRUPTED",action==Action.PAUSE);throw new CompletionException(interrupted);}

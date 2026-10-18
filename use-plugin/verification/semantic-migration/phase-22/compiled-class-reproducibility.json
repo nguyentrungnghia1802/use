@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "checkedClasses": 1403,
+  "byteIdentical": 1395,
+  "originalCoreUnchanged": true,
+  "changedClasses": [
+    "use-plugin/target/use-plugin-1.0.1.jar!/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade$1.class",
+    "use-plugin/target/use-plugin-1.0.1.jar!/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade$2.class",
+    "use-plugin/target/use-plugin-1.0.1.jar!/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade$3.class",
+    "use-plugin/target/use-plugin-1.0.1.jar!/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade$ImportSemantics.class",
+    "use-plugin/target/use-plugin-1.0.1.jar!/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade$NativeWorkspace.class",
+    "use-plugin/target/use-plugin-1.0.1.jar!/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.class",
+    "use-plugin/target/use-plugin-1.0.1.jar!/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator$MoiseObservation.class",
+    "use-plugin/target/use-plugin-1.0.1.jar!/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.class"
+  ],
+  "reason": "Phase22 owned-file cleanup completion and retirement barrier; changed source files and their nested debug line tables only",
+  "unexpectedChanges": [],
+  "originalCoreClassEntriesAcrossArtifacts": 484,
+  "uniqueOriginalCoreClasses": 242,
+  "artifactOwnership": "Comparison spans dependency module JAR and shaded plugin build artifact; only the shaded plugin is installed"
+}

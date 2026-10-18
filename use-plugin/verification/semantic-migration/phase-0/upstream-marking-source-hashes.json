@@ -1,0 +1,18 @@
+[
+  {
+    "path": "../use4Goal/goal/src/main/java/org/vnu/sme/goal/dsl/istar/mm/GoalType.java",
+    "sha256": "E70B52A7EA55BDB7E1B209C7425E69024BFAE935A2F411A15676C63AA9CD043B"
+  },
+  {
+    "path": "../use4Goal/goal/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/GoalTaskStatus.java",
+    "sha256": "80156A0396095C90A6551CEEDF4EBC47E3D93716B7437A50295A6ED4ECF24DAF"
+  },
+  {
+    "path": "../use4Goal/goal/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/GoalMarking.java",
+    "sha256": "E9DDCC1BFBAFEF0C987BE6C7A017F8CE88C56A16E3C757BC637D1E1246660F48"
+  },
+  {
+    "path": "../use4Goal/goal/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/TaskMarking.java",
+    "sha256": "E5EAE4CD7B10994E5D71C5C7782FF04DE3972352F17F5C5FA0732D39EB9AF07D"
+  }
+]

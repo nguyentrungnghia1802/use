@@ -70,6 +70,25 @@ class DefaultJaCaMoFacadeTest {
     }
 
     @Test
+    void backgroundCloseFinishesOwnedRuntimeDirectoryCleanup() throws Exception {
+        assertFalse(javax.swing.SwingUtilities.isEventDispatchThread());
+        Path stagedGuiRoot = temporary.resolve("background-close");
+        Path run;
+        try (DefaultJaCaMoFacade facade = BridgeFacadeTestSupport.facade(auction(), stagedGuiRoot)) {
+            facade.importProject(auction());
+            Path stores = stagedGuiRoot.resolve("use-plugin/target/jacamo-runtime");
+            try (var paths = Files.list(stores)) {
+                var runs = paths.filter(Files::isDirectory).toList();
+                assertEquals(1, runs.size());
+                run = runs.getFirst();
+            }
+            // Real filesystem work makes the former background-delete/close race observable.
+            for (int i = 0; i < 2048; i++) Files.createFile(run.resolve("cleanup-" + i));
+        }
+        assertFalse(Files.exists(run), "Background close must settle owned file cleanup before returning");
+    }
+
+    @Test
     void runtimeDashboardStatusComesFromTheAuthoritativeBridge() {
         try (DefaultJaCaMoFacade facade = bridgeAuction()) {
             facade.importProject(auction());

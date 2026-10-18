@@ -17,8 +17,15 @@ public final class CanonicalJson {
     private CanonicalJson() { }
 
     public static byte[] encode(Object value) {
+        return encode(value, DEFAULT_MAX_STRING);
+    }
+
+    /** Explicit internal-record limit, e.g. a verified Base64 evidence asset.
+     * Wire callers retain the single-argument default and its original guards. */
+    public static byte[] encode(Object value, int maxString) {
+        if (maxString < 1 || maxString > DEFAULT_MAX_BYTES) throw new ContractException("invalid canonical string limit");
         var out = new StringBuilder();
-        write(value, out, 0, DEFAULT_MAX_DEPTH);
+        write(value, out, 0, DEFAULT_MAX_DEPTH, maxString);
         byte[] bytes = out.toString().getBytes(StandardCharsets.UTF_8);
         if (bytes.length > DEFAULT_MAX_BYTES) throw new ContractException("payload exceeds maximum encoded size");
         return bytes;
@@ -43,10 +50,10 @@ public final class CanonicalJson {
         return (Map<String, Object>) map;
     }
 
-    private static void write(Object value, StringBuilder out, int depth, int maxDepth) {
+    private static void write(Object value, StringBuilder out, int depth, int maxDepth, int maxString) {
         if (depth > maxDepth) throw new ContractException("payload exceeds maximum depth");
         if (value == null) { out.append("null"); return; }
-        if (value instanceof String text) { string(text, out); return; }
+        if (value instanceof String text) { string(text, out, maxString); return; }
         if (value instanceof Boolean || value instanceof Byte || value instanceof Short || value instanceof Integer || value instanceof Long) {
             out.append(value); return;
         }
@@ -54,7 +61,7 @@ public final class CanonicalJson {
             BigDecimal number = new BigDecimal(value.toString()).stripTrailingZeros();
             out.append(number.signum() == 0 ? "0" : number.toPlainString()); return;
         }
-        if (value instanceof Enum<?> item) { string(item.name(), out); return; }
+        if (value instanceof Enum<?> item) { string(item.name(), out, maxString); return; }
         if (value instanceof Map<?, ?> map) {
             out.append('{'); boolean first = true;
             var sorted = new TreeMap<String, Object>();
@@ -64,22 +71,22 @@ public final class CanonicalJson {
             }
             for (var entry : sorted.entrySet()) {
                 if (!first) out.append(','); first = false;
-                string(entry.getKey(), out); out.append(':'); write(entry.getValue(), out, depth + 1, maxDepth);
+                string(entry.getKey(), out, maxString); out.append(':'); write(entry.getValue(), out, depth + 1, maxDepth, maxString);
             }
             out.append('}'); return;
         }
         if (value instanceof Iterable<?> items) {
             out.append('['); boolean first = true;
             for (Object item : items) {
-                if (!first) out.append(','); first = false; write(item, out, depth + 1, maxDepth);
+                if (!first) out.append(','); first = false; write(item, out, depth + 1, maxDepth, maxString);
             }
             out.append(']'); return;
         }
         throw new ContractException("unsupported canonical JSON type: " + value.getClass().getName());
     }
 
-    private static void string(String value, StringBuilder out) {
-        if (value.length() > DEFAULT_MAX_STRING) throw new ContractException("string exceeds maximum length");
+    private static void string(String value, StringBuilder out, int maxString) {
+        if (value.length() > maxString) throw new ContractException("string exceeds maximum length");
         out.append('"');
         for (int i = 0; i < value.length(); i++) {
             char c = value.charAt(i);

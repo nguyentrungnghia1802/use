@@ -1,0 +1,1 @@
+istar LegacyClause { role R { goal g ocl: true; task t ocl: true; } }

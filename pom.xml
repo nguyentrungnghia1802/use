@@ -13,6 +13,7 @@
         <module>jacamo-bridge-jacamo</module>
         <module>use-assembly</module>
         <module>use-core</module>
+        <module>use-jacamo-semantic-engine</module>
         <module>use-gui</module>
         <module>use-plugin</module>
     </modules>

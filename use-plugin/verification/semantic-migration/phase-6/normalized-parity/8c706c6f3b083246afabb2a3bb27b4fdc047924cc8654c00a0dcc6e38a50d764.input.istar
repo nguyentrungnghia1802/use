@@ -1,0 +1,1 @@
+istar Representation { role R { quality q > qualifies g resource r > needed-by t goal g task t } }

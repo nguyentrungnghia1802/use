@@ -11,15 +11,38 @@ param(
     [switch]$SkipBuild,
     [string]$OclProfilePath = "",
     [ValidateSet("AUTO", "FULL")]
-    [string]$ProjectionMode = "AUTO"
+    [string]$ProjectionMode = "AUTO",
+    [ValidateSet("NATIVE_CURRENT", "USE4GOAL_OBSERVED_V1", "CSL_OBSERVER_V1", "CSL_OBSERVER_V2")]
+    [string]$SemanticProfile = "NATIVE_CURRENT",
+    [string]$MappingSpecificationPath = "",
+    [ValidateSet("AUTO", "WORLD", "FULL")]
+    [string]$ObservationProfile = "AUTO",
+    [string]$RuntimeClasspathFile = ""
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 $ProjectionMode = $ProjectionMode.ToUpperInvariant()
+$SemanticProfile = $SemanticProfile.ToUpperInvariant()
+$ObservationProfile = $ObservationProfile.ToUpperInvariant()
+if ($ObservationProfile -eq "AUTO") {
+    # The original observed profile maps world/organisation outcomes, not Jason
+    # mental/execution internals. Keep the rich trace default for old profiles.
+    $ObservationProfile = if ($SemanticProfile -eq "USE4GOAL_OBSERVED_V1") { "WORLD" } else { "FULL" }
+}
+$producerObservationArguments = @("-Djacamo.bridge.structured-observation=$(([bool]($ObservationProfile -eq 'FULL')).ToString().ToLowerInvariant())")
+$semanticJvmArguments = @("-Duse.jacamo.semantics.profile=$SemanticProfile")
+if ($SemanticProfile -ne "NATIVE_CURRENT") {
+    if ([string]::IsNullOrWhiteSpace($MappingSpecificationPath)) { throw "AUTHORED_SPECIFICATION_FILE_REQUIRED:$SemanticProfile" }
+    $semanticSpecification = [IO.Path]::GetFullPath($MappingSpecificationPath)
+    if (-not (Test-Path -LiteralPath $semanticSpecification -PathType Leaf) -or (Get-Item -LiteralPath $semanticSpecification).Length -gt 16777216) { throw "AUTHORED_SPECIFICATION_FILE_INVALID:$semanticSpecification" }
+    $semanticProperty = if ($SemanticProfile -eq "USE4GOAL_OBSERVED_V1") { "use.jacamo.mapping.rules" } else { "use.jacamo.semantics.config" }
+    $semanticJvmArguments += "-D${semanticProperty}=$semanticSpecification"
+} elseif (-not [string]::IsNullOrWhiteSpace($MappingSpecificationPath)) { throw "NATIVE_PROFILE_HAS_NO_AUTHORED_SPECIFICATION" }
 
-$useRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
 $usePluginRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+$installedLayout = Test-Path -LiteralPath (Join-Path $usePluginRoot "bridge\lib\jacamo-bridge-jacamo-1.0.0.jar") -PathType Leaf
+$useRoot = if ($installedLayout) { $usePluginRoot } else { (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path }
 if ([string]::IsNullOrWhiteSpace($JcmPath)) { throw "JCM_PATH_REQUIRED" }
 $sourceJcm = [IO.Path]::GetFullPath($JcmPath)
 if (-not $sourceJcm.ToLowerInvariant().EndsWith(".jcm")) { throw "JCM_EXTENSION_REQUIRED:$sourceJcm" }
@@ -132,7 +155,16 @@ function Start-CapturedJava([string]$ClassPath, [string]$MainClass, [string]$Wor
 
 function Start-InteractiveJava([string]$WorkingDirectory, [string[]]$Arguments) {
     $java = (Get-Command javaw.exe -ErrorAction Stop).Source
-    return Start-Process -FilePath $java -ArgumentList $Arguments -WorkingDirectory $WorkingDirectory -PassThru
+    $info = [Diagnostics.ProcessStartInfo]::new()
+    $info.FileName = $java
+    $info.WorkingDirectory = $WorkingDirectory
+    $info.UseShellExecute = $false
+    $info.CreateNoWindow = $true
+    Set-ProcessStartInfoArguments $info $Arguments
+    $process = [Diagnostics.Process]::new()
+    $process.StartInfo = $info
+    if (-not $process.Start()) { throw "GUI_PROCESS_START_FAILED" }
+    return $process
 }
 
 function Get-CapturedOutput($Captured) {
@@ -159,20 +191,18 @@ function Wait-LoopbackPort([int]$Port, $Captured, [int]$Seconds) {
 }
 
 function Get-FilteredConsumerClasspath([string]$ClasspathFile) {
-    $forbidden = @("jacamo-bridge-jacamo", "jason-interpreter-", "cartago-", "moise-",
-        "npl-", "jacamo-1.3", "jaca-", "intmas-", "sai-")
-    $entries = (Get-Content -Raw -LiteralPath $ClasspathFile).Trim().Split([IO.Path]::PathSeparator)
-    $kept = foreach ($entry in $entries) {
-        $lower = $entry.ToLowerInvariant()
-        if (-not ($forbidden | Where-Object { $lower.Contains($_) })) { $entry }
-    }
+    # Both profiles need the selected engine and its ANTLR4 runtime. Use the
+    # tested shaded artifact and host, without framework/test/source directories.
+    $packagedHost = Join-Path $useRoot "lib\use-gui.jar"
+    $packagedPlugin = Join-Path $useRoot "lib\plugins\use-jacamo-plugin-1.0.1.jar"
+    $consumerHostArtifact = if (Test-Path -LiteralPath $packagedHost -PathType Leaf) { $packagedHost } else { Join-Path $useRoot "use-gui\target\use-gui.jar" }
+    $consumerPluginArtifact = if (Test-Path -LiteralPath $packagedPlugin -PathType Leaf) { $packagedPlugin } else { Join-Path $usePluginRoot "target\use-plugin-1.0.1.jar" }
     $required = @(
-        (Join-Path $useRoot "jacamo-bridge-contract\target\classes"),
-        (Join-Path $useRoot "use-core\target\classes"),
-        (Join-Path $useRoot "use-gui\target\classes"),
-        (Join-Path $usePluginRoot "target\classes")
+        $consumerHostArtifact,
+        $consumerPluginArtifact
     )
-    return [string]::Join([IO.Path]::PathSeparator, @($required + $kept))
+    foreach ($artifact in $required) { if (-not (Test-Path -LiteralPath $artifact -PathType Leaf)) { throw "CONSUMER_ARTIFACT_MISSING:$artifact" } }
+    return [string]::Join([IO.Path]::PathSeparator, $required)
 }
 
 try {
@@ -183,7 +213,7 @@ try {
     if ($MaxBufferedEvents -lt 1) { throw "BUFFER_LIMIT_INVALID" }
     if ($BridgeTimeoutMillis -lt 100) { throw "BRIDGE_TIMEOUT_INVALID" }
 
-    if (-not $SkipBuild) {
+    if (-not $SkipBuild -and -not $installedLayout) {
         if ($InteractiveGui) {
             Invoke-MavenBuild @("-B", "-pl", "use-plugin", "-am", "-DskipTests",
                 "-Dmaven.antrun.skip=true", "package")
@@ -191,17 +221,26 @@ try {
             Invoke-MavenBuild @("-B", "-pl", "use-plugin", "-am", "-Dmaven.test.skip=true", "-Dmaven.antrun.skip=true", "package")
         }
         Invoke-MavenBuild @("-B", "-pl", "jacamo-bridge-jacamo", "-am", "dependency:build-classpath",
-            "-Dmdep.outputFile=target/jacamo-bridge-classpath.txt", "-Dmdep.includeScope=test")
+            "-Dmdep.outputFile=target/jacamo-bridge-classpath.txt", "-Dmdep.includeScope=runtime")
     }
 
-    $bridgeClasspathFile = Join-Path $useRoot "jacamo-bridge-jacamo\target\jacamo-bridge-classpath.txt"
+    $bridgeClasspathFile = if (-not [string]::IsNullOrWhiteSpace($RuntimeClasspathFile)) { [IO.Path]::GetFullPath($RuntimeClasspathFile) } else { Join-Path $useRoot "jacamo-bridge-jacamo\target\jacamo-bridge-classpath.txt" }
     if (-not (Test-Path -LiteralPath $bridgeClasspathFile -PathType Leaf)) {
         throw "BRIDGE_CLASSPATH_MISSING:$bridgeClasspathFile"
     }
     $bridgeDependencies = (Get-Content -Raw -LiteralPath $bridgeClasspathFile).Trim()
+    if ($installedLayout) {
+        # Runtime libraries are user-supplied; release Bridge JARs own the contract/adapters.
+        $bridgeDependencies = [string]::Join([IO.Path]::PathSeparator, @($bridgeDependencies.Split([IO.Path]::PathSeparator) | Where-Object {
+            (Test-Path -LiteralPath $_ -PathType Leaf) -and $_.EndsWith('.jar', [StringComparison]::OrdinalIgnoreCase) -and
+            $_ -notmatch '[\\/]org[\\/]tzi[\\/]use[\\/]' -and $_ -notmatch 'jacamo-bridge-(contract|jacamo)'
+        }))
+    }
+    $contractRuntime = if ($installedLayout) { Join-Path $useRoot "bridge\lib\jacamo-bridge-contract-1.0.0.jar" } else { Join-Path $useRoot "jacamo-bridge-contract\target\classes" }
+    $adapterRuntime = if ($installedLayout) { Join-Path $useRoot "bridge\lib\jacamo-bridge-jacamo-1.0.0.jar" } else { Join-Path $useRoot "jacamo-bridge-jacamo\target\classes" }
     $producerClasspath = [string]::Join([IO.Path]::PathSeparator, @(
-        (Join-Path $useRoot "jacamo-bridge-contract\target\classes"),
-        (Join-Path $useRoot "jacamo-bridge-jacamo\target\classes"),
+        $contractRuntime,
+        $adapterRuntime,
         $bridgeDependencies
     ))
 
@@ -274,6 +313,17 @@ try {
         if (Test-Path -LiteralPath $runtimeProjectClasses -PathType Container) { $runtimeEntries += $runtimeProjectClasses }
         if (Test-Path -LiteralPath $runtimeResources -PathType Container) { $runtimeEntries += $runtimeResources }
         $producerClasspath = [string]::Join([IO.Path]::PathSeparator, @($runtimeEntries + $producerClasspath))
+    } elseif (Test-Path -LiteralPath (Join-Path $stagedProject "src\env") -PathType Container) {
+        $environmentSources = @(Get-ChildItem -LiteralPath (Join-Path $stagedProject "src\env") -Filter '*.java' -File -Recurse | ForEach-Object FullName)
+        if ($environmentSources.Count -gt 0) {
+            $runtimeProjectClasses = Join-Path $stagedProject "build\classes\java\main"
+            New-Item -ItemType Directory -Force -Path $runtimeProjectClasses | Out-Null
+            $javac = Join-Path (Split-Path -Parent (Get-Command java -ErrorAction Stop).Source) "javac.exe"
+            & $javac -proc:none -encoding UTF-8 -cp $producerClasspath -d $runtimeProjectClasses @environmentSources
+            if ($LASTEXITCODE -ne 0) { throw "ENVIRONMENT_JAVA_COMPILE_FAILED:$LASTEXITCODE" }
+            $runtimeProjectBuild = "JAVAC_ENVIRONMENT_CLASSES_PASS"
+            $producerClasspath = [string]::Join([IO.Path]::PathSeparator, @($runtimeProjectClasses, $producerClasspath))
+        }
     }
 
     [byte[]]$secret = New-Object byte[] 32
@@ -302,7 +352,7 @@ try {
     $producerLifetimeSeconds = if ($InteractiveGui) { 0 } else { $TimeoutSeconds }
     $producer = Start-CapturedJava $producerClasspath "jason.infra.local.LiveJaCaMoLauncherMain" $stagedProject @(
         $jcmFile, $stopFile, $producerLifetimeSeconds.ToString(), $producerHeadless.ToString().ToLowerInvariant(),
-        $consumerReadyFile, $TimeoutSeconds.ToString(), $startupControlDirectory, $runId)
+        $consumerReadyFile, $TimeoutSeconds.ToString(), $startupControlDirectory, $runId) -JvmArguments $producerObservationArguments
     Wait-LoopbackPort $port $producer $TimeoutSeconds
 
     if ($InteractiveGui) {
@@ -310,11 +360,11 @@ try {
         $guiRuntime = Join-Path $guiInstall "target"
         $guiPlugins = Join-Path $guiInstall "lib\plugins"
         New-Item -ItemType Directory -Force -Path $guiRuntime, $guiPlugins | Out-Null
-        $useResources = Join-Path $useRoot "use-core\src\main\resources"
+        $useResources = if ($installedLayout) { $useRoot } else { Join-Path $useRoot "use-core\src\main\resources" }
         Copy-Item -LiteralPath (Join-Path $useResources "oclextensions") -Destination $guiInstall -Recurse -Force
         Copy-Item -LiteralPath (Join-Path $useResources "etc") -Destination $guiInstall -Recurse -Force
-        $guiJarSource = Join-Path $useRoot "use-gui\target\use-gui.jar"
-        $pluginJarSource = Join-Path $usePluginRoot "target\use-plugin-1.0.1.jar"
+        $guiJarSource = if ($installedLayout) { Join-Path $useRoot "lib\use-gui.jar" } else { Join-Path $useRoot "use-gui\target\use-gui.jar" }
+        $pluginJarSource = if ($installedLayout) { Join-Path $useRoot "lib\plugins\use-jacamo-plugin-1.0.1.jar" } else { Join-Path $usePluginRoot "target\use-plugin-1.0.1.jar" }
         if (-not (Test-Path -LiteralPath $guiJarSource -PathType Leaf)) { throw "GUI_JAR_MISSING:$guiJarSource" }
         if (-not (Test-Path -LiteralPath $pluginJarSource -PathType Leaf)) { throw "PLUGIN_JAR_MISSING:$pluginJarSource" }
         $guiJar = Join-Path $guiRuntime "use-gui.jar"
@@ -326,7 +376,7 @@ try {
             (Get-FileHash -LiteralPath $guiPlugin -Algorithm SHA256).Hash) {
             throw "GUI_PLUGIN_STAGING_HASH_MISMATCH"
         }
-        $guiArguments = @(
+        $guiArguments = $semanticJvmArguments + @(
             "-Duser.dir=$guiInstall",
             "-Duse.jacamo.runtime.root=$runtimeDirectory",
             "-Duse.jacamo.projection.mode=$ProjectionMode",
@@ -356,15 +406,19 @@ try {
         Write-Host "Close the USE window to stop the derived JaCaMo producer."
         $gui = Start-InteractiveJava $guiInstall $guiArguments
         $guiReadyReported = $false
+        $producerExitReported = $false
         $guiStartupDeadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
         while (-not $gui.HasExited) {
-            if ($producer.Process.HasExited) { throw "PRODUCER_EXITED_DURING_INTERACTIVE_GUI:`n$(Get-CapturedOutput $producer)" }
+            if ($producer.Process.HasExited -and -not $producerExitReported) {
+                Write-Host "JACAMO_PRODUCER_EXITED_USE_REMAINS_OPEN exit=$($producer.Process.ExitCode)"
+                $producerExitReported = $true
+            }
             if (-not $guiReadyReported -and (Test-Path -LiteralPath $guiReadyFile -PathType Leaf)) {
                 Write-Host "INTERACTIVE_GUI_MODEL_READY evidence=$guiReadyFile"
                 Get-Content -Raw -LiteralPath $guiReadyFile | Write-Host
                 $guiReadyReported = $true
             }
-            if (-not $guiReadyReported -and [DateTime]::UtcNow -ge $guiStartupDeadline) {
+            if (-not $guiReadyReported -and -not $producerExitReported -and [DateTime]::UtcNow -ge $guiStartupDeadline) {
                 throw "INTERACTIVE_GUI_IMPORT_TIMEOUT:$guiReadyFile"
             }
             Start-Sleep -Milliseconds 500
@@ -378,6 +432,7 @@ try {
             derivedJcm = $jcmFile
             pipeline = "CODE_GROUNDED_NATIVE"
             projectionMode = $ProjectionMode
+            observationProfile = $ObservationProfile
             distributionSha256 = $distribution
             port = $port
         } | ConvertTo-Json -Depth 4), [Text.UTF8Encoding]::new($false))
@@ -392,7 +447,7 @@ try {
             $port.ToString(), $secretFile, $distribution, $jcmFile, $useRoot, $runEvidence,
             $ObservationSeconds.ToString(), $MaxBufferedEvents.ToString(), $BridgeTimeoutMillis.ToString(),
             $persistEvidence.ToString().ToLowerInvariant(), $externalOcl, $consumerReadyFile) `
-        -JvmArguments @("-Duse.jacamo.runtime.root=$runtimeDirectory", "-Duse.jacamo.projection.mode=$ProjectionMode")
+        -JvmArguments (@("-Duse.jacamo.runtime.root=$runtimeDirectory", "-Duse.jacamo.projection.mode=$ProjectionMode") + $semanticJvmArguments)
     if (-not $consumer.Process.WaitForExit($TimeoutSeconds * 1000)) {
         $consumer.Process.Kill($true)
         throw "CONSUMER_TIMEOUT"
@@ -412,6 +467,7 @@ try {
         classification = "GENERIC_JCM_SUPPORTED_SCOPE_PASS"
         pipeline = "CODE_GROUNDED_NATIVE"
         projectionMode = $ProjectionMode
+        observationProfile = $ObservationProfile
         sourceJcm = $sourceJcm
         sourceJcmSha256 = $sourceDigest
         oclProfile = $externalOcl

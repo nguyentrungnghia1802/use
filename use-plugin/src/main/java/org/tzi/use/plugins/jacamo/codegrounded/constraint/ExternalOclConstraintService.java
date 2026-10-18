@@ -111,7 +111,7 @@ public final class ExternalOclConstraintService {
     private String expressionFingerprint(String id) {
         for(var inv:system.model().classInvariants())if(runtimeId(inv).equals(id))
             return sha256((inv.qualifiedName()+"|"+inv.isNegated()+"|"+inv.isExistential()+"|"+inv.var()+"|"+inv.bodyExpression()).getBytes(StandardCharsets.UTF_8));
-        for(var condition:system.model().prePostConditions())if(("COMPILED:"+condition).equals(id))
+        for(var condition:system.model().prePostConditions())if(conditionId(condition).equals(id))
             return sha256((condition+"|"+condition.isPre()+"|"+condition.operation().paramList()+"|"+condition.expression()).getBytes(StandardCharsets.UTF_8));
         return "";
     }
@@ -130,7 +130,7 @@ public final class ExternalOclConstraintService {
                     external && current!=null?current.sourceFile():"",external && current!=null?current.sourceHash():"",external && current!=null?current.modelRevision():"");
         }).toList());
         for(var condition:system.model().prePostConditions()) {
-            String id="COMPILED:"+condition;
+            String id=conditionId(condition);
             var visitor=dependencyVisitor();condition.expression().processWithVisitor(visitor);
             var features=new TreeSet<String>();features.add("operation:"+condition.cls().name()+"."+condition.operation().name());
             visitor.getCoverageData().getAttributeCoverage().keySet().forEach(a->features.add("attribute:"+a.owner().name()+"."+a.name()));
@@ -292,12 +292,25 @@ public final class ExternalOclConstraintService {
     }
     public List<Outcome> evaluate(Map<String,Completeness> sources,boolean coverageLost,
             org.tzi.use.plugins.jacamo.codegrounded.runtime.CheckpointType checkpoint,Set<String> changedFeatures,Map<String,String> capabilities) {
+        return evaluatePrepared(prepareEvaluation(sources,coverageLost,checkpoint,changedFeatures,capabilities,null,Set.of()),system.state());
+    }
+    public record PreparedInvariant(String id,String context,Expression body,Expression flagged,Expression undefined,String skip,String error) { }
+    public record PreparedEvaluation(org.tzi.use.uml.mm.MModel model,List<PreparedInvariant> invariants) {
+        public PreparedEvaluation {invariants=List.copyOf(invariants);}
+    }
+    /** Capture policy, flags, dependencies and coverage at the writer cut. No live
+     * registry or MSystemState is read by evaluatePrepared on the ordered worker. */
+    public PreparedEvaluation prepareEvaluation(Map<String,Completeness> sources,boolean coverageLost,
+            org.tzi.use.plugins.jacamo.codegrounded.runtime.CheckpointType checkpoint,Set<String> changedFeatures,Map<String,String> capabilities,
+            org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeMutationEngine engine,Set<String> fresh) {
+        if(engine!=null&&engine.canonicalMappingConfigured())for(var invariant:system.model().classInvariants())
+            if(system.model().getClass(invariant.cls().name())!=invariant.cls())throw new IllegalArgumentException("CONSTRAINT_CONTEXT_MODEL_MISMATCH:"+invariant.qualifiedName());
         ensureDependencies();
         var registry=runtimeRegistry();
         var descriptors=registry.stream().map(c->new org.tzi.use.plugins.jacamo.verification.ConstraintDescriptor(c.id(),c.id(),c.context(),"",
                 org.tzi.use.plugins.jacamo.verification.ConstraintKind.INV,c.policy().origin(),null,null,List.copyOf(c.features()),true,"")).toList();
         var selection=new org.tzi.use.plugins.jacamo.verification.ConstraintDependencyIndex(descriptors).select(changedFeatures);
-        List<Outcome> outcomes = new ArrayList<>();
+        List<PreparedInvariant> prepared = new ArrayList<>();
         for (MClassInvariant invariant : system.model().classInvariants().stream()
                 .sorted(Comparator.comparing(MClassInvariant::qualifiedName)).toList()) {
             String id = runtimeId(invariant);
@@ -320,17 +333,36 @@ public final class ExternalOclConstraintService {
                     : owned.containsKey(invariant.qualifiedName()) && dependencies.requiredSources().stream()
                             .anyMatch(source -> sources.get(source) != Completeness.COMPLETE)
                             ? "REQUIRED_RUNTIME_SOURCE_INCOMPLETE:" + dependencies.requiredSources() : "";
-            VerificationOutcome outcome;
-            String diagnostic = skip;
+            if(skip.isBlank()&&engine!=null&&engine.canonicalMappingConfigured()) {
+                var coverage=new org.tzi.use.plugins.jacamo.semantics.ocl.ConstraintCoverageResolver();
+                skip=coverage.unavailable(invariant.bodyExpression(),engine,sources,coverageLost);
+                if(skip.isBlank()&&!coverage.populationComplete(invariant.cls(),sources))skip="REQUIRED_CONTEXT_POPULATION_UNPROVEN:"+invariant.cls().name();
+                if(skip.isBlank())for(var object:system.state().objectsOfClassAndSubClasses(invariant.cls())) {
+                    skip=coverage.unavailableSelf(invariant.bodyExpression(),engine,object,sources,coverageLost,fresh);if(!skip.isBlank())break;
+                }
+            }
+            Expression undefined=null;String error="";
+            if(skip.isBlank())try {
+                var variables=((org.tzi.use.uml.ocl.expr.ExpQuery)invariant.expandedExpression()).getVariableDeclarations();
+                undefined=new ExpExists(variables,new ExpAllInstances(invariant.cls()),ExpStdOp.create("oclIsUndefined",new Expression[]{invariant.bodyExpression()}));
+            }catch(Exception invalid){error=invalid.getClass().getSimpleName()+":"+invalid.getMessage();}
+            prepared.add(new PreparedInvariant(id,invariant.cls().name(),invariant.bodyExpression(),invariant.flaggedExpression(),undefined,skip,error));
+        }
+        return new PreparedEvaluation(system.model(),prepared);
+    }
+    public static List<Outcome> evaluatePrepared(PreparedEvaluation prepared,org.tzi.use.uml.sys.MSystemState state) {
+        if(state.system().model()!=prepared.model())throw new IllegalArgumentException("OCL_PREPARED_STATE_MODEL_MISMATCH");
+        List<Outcome> outcomes=new ArrayList<>();
+        for(var invariant:prepared.invariants()) {
+            VerificationOutcome outcome;String diagnostic=invariant.skip();
+            String skip=invariant.skip();
             if (!skip.isEmpty()) outcome = VerificationOutcome.SKIPPED;
+            else if(!invariant.error().isBlank()){outcome=VerificationOutcome.ERROR;diagnostic=invariant.error();}
             else try {
                 // USE's expanded invariant converts undefined bodies to false. Inspect the
                 // compiled body with USE expressions to retain ERROR versus a genuine violation.
-                var variables = ((org.tzi.use.uml.ocl.expr.ExpQuery) invariant.expandedExpression()).getVariableDeclarations();
-                var invalidBody = new ExpExists(variables, new ExpAllInstances(invariant.cls()),
-                        ExpStdOp.create("oclIsUndefined", new Expression[] { invariant.bodyExpression() }));
-                var undefined = new Evaluator().eval(invalidBody, system.state());
-                var value = new Evaluator().eval(invariant.flaggedExpression(), system.state());
+                var undefined = new Evaluator().eval(invariant.undefined(),state);
+                var value = new Evaluator().eval(invariant.flagged(),state);
                 if (undefined instanceof BooleanValue hasUndefined && hasUndefined.isTrue()) {
                     outcome = VerificationOutcome.ERROR;
                     diagnostic = "USE_OCL_UNDEFINED_BODY";
@@ -345,12 +377,17 @@ public final class ExternalOclConstraintService {
                 outcome = VerificationOutcome.ERROR;
                 diagnostic = error.getClass().getSimpleName() + ":" + error.getMessage();
             }
-            outcomes.add(new Outcome(id, invariant.cls().name(), outcome, diagnostic,
-                    invariant.bodyExpression().toString()));
+            outcomes.add(new Outcome(invariant.id(), invariant.context(), outcome, diagnostic,invariant.body().toString()));
         }
         return List.copyOf(outcomes);
     }
     private String runtimeId(MClassInvariant inv) {return (owned.containsKey(inv.qualifiedName())?"EXTERNAL:":"NATIVE:")+inv.qualifiedName();}
+    private String conditionId(org.tzi.use.uml.mm.MPrePostCondition condition) {
+        if(org.tzi.use.semantic.engine.use75.Use75CslModelBackend.active(system.model())&&"true".equals(condition.getAnnotationValue("CslConstraint","canonical"))) {
+            String id=org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.decode(condition.getAnnotationValue("CslConstraint","id64"));if(!id.isBlank())return id;
+        }
+        return "COMPILED:"+condition;
+    }
     private void ensureDependencies() {
         String hash=constraintSetHash();if(hash.equals(dependencyHash)) return;
         dependencyCache.clear();
@@ -366,7 +403,7 @@ public final class ExternalOclConstraintService {
             dependencyCache.put(invariant.qualifiedName(),new CachedRegistration(registration(invariant,"","",""),Set.copyOf(features)));
         }
         policies.keySet().removeIf(id->system.model().classInvariants().stream().noneMatch(inv->runtimeId(inv).equals(id))
-                && system.model().prePostConditions().stream().noneMatch(c->("COMPILED:"+c).equals(id)));
+                && system.model().prePostConditions().stream().noneMatch(c->conditionId(c).equals(id)));
         approvedExpressions.keySet().retainAll(policies.keySet());
         dependencyHash=hash;
     }

@@ -1,0 +1,1786 @@
+[
+  {
+    "path": "jacamo-bridge-contract\\target\\surefire-reports\\TEST-org.jacamo.bridge.contract.ContractTest.xml",
+    "name": "org.jacamo.bridge.contract.ContractTest",
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-contract\\target\\surefire-reports\\TEST-org.jacamo.bridge.contract.ManagedStartupControlTest.xml",
+    "name": "org.jacamo.bridge.contract.ManagedStartupControlTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-contract\\target\\surefire-reports\\TEST-org.jacamo.bridge.contract.RuntimeControlContractTest.xml",
+    "name": "org.jacamo.bridge.contract.RuntimeControlContractTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-contract\\target\\surefire-reports\\TEST-org.jacamo.bridge.contract.semantic.SemanticContractTest.xml",
+    "name": "org.jacamo.bridge.contract.semantic.SemanticContractTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-contract\\target\\surefire-reports\\TEST-org.jacamo.bridge.contract.SnapshotAdmissionTest.xml",
+    "name": "org.jacamo.bridge.contract.SnapshotAdmissionTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-jacamo\\target\\surefire-reports\\TEST-jason.infra.local.JasonConsolePauseSemanticsTest.xml",
+    "name": "jason.infra.local.JasonConsolePauseSemanticsTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-jacamo\\target\\surefire-reports\\TEST-jason.infra.local.LiveJaCaMoLauncherLifetimeTest.xml",
+    "name": "jason.infra.local.LiveJaCaMoLauncherLifetimeTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-jacamo\\target\\surefire-reports\\TEST-org.jacamo.bridge.adapter.BridgeExecutionControlTest.xml",
+    "name": "org.jacamo.bridge.adapter.BridgeExecutionControlTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-jacamo\\target\\surefire-reports\\TEST-org.jacamo.bridge.adapter.JasonLiteralObservationTest.xml",
+    "name": "org.jacamo.bridge.adapter.JasonLiteralObservationTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-jacamo\\target\\surefire-reports\\TEST-org.jacamo.bridge.adapter.JasonObservationProfileTest.xml",
+    "name": "org.jacamo.bridge.adapter.JasonObservationProfileTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-jacamo\\target\\surefire-reports\\TEST-org.jacamo.bridge.adapter.JasonStructuredObservationTest.xml",
+    "name": "org.jacamo.bridge.adapter.JasonStructuredObservationTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-jacamo\\target\\surefire-reports\\TEST-org.jacamo.bridge.adapter.MoiseBoardSnapshotSourceSelectionTest.xml",
+    "name": "org.jacamo.bridge.adapter.MoiseBoardSnapshotSourceSelectionTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-jacamo\\target\\surefire-reports\\TEST-org.jacamo.bridge.adapter.MoiseGoalObservationTest.xml",
+    "name": "org.jacamo.bridge.adapter.MoiseGoalObservationTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-jacamo\\target\\surefire-reports\\TEST-org.jacamo.bridge.adapter.NplActivationCrosswalkTest.xml",
+    "name": "org.jacamo.bridge.adapter.NplActivationCrosswalkTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-jacamo\\target\\surefire-reports\\TEST-org.jacamo.bridge.adapter.NplLiveBoardObservationTest.xml",
+    "name": "org.jacamo.bridge.adapter.NplLiveBoardObservationTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-jacamo\\target\\surefire-reports\\TEST-org.jacamo.bridge.adapter.NplRuntimeProfileTest.xml",
+    "name": "org.jacamo.bridge.adapter.NplRuntimeProfileTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-jacamo\\target\\surefire-reports\\TEST-org.jacamo.bridge.adapter.OfficialAdapterTest.xml",
+    "name": "org.jacamo.bridge.adapter.OfficialAdapterTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-jacamo\\target\\surefire-reports\\TEST-org.jacamo.bridge.adapter.OfficialCartagoAdapterTest.xml",
+    "name": "org.jacamo.bridge.adapter.OfficialCartagoAdapterTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-jacamo\\target\\surefire-reports\\TEST-org.jacamo.bridge.adapter.OfficialJasonAdapterTest.xml",
+    "name": "org.jacamo.bridge.adapter.OfficialJasonAdapterTest",
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-jacamo\\target\\surefire-reports\\TEST-org.jacamo.bridge.adapter.OfficialMoiseIdentityTest.xml",
+    "name": "org.jacamo.bridge.adapter.OfficialMoiseIdentityTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-jacamo\\target\\surefire-reports\\TEST-org.jacamo.bridge.adapter.ReasoningCycleGateTest.xml",
+    "name": "org.jacamo.bridge.adapter.ReasoningCycleGateTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "jacamo-bridge-jacamo\\target\\surefire-reports\\TEST-org.jacamo.bridge.adapter.SnapshotCoordinatorTest.xml",
+    "name": "org.jacamo.bridge.adapter.SnapshotCoordinatorTest",
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-core\\target\\surefire-reports\\TEST-org.tzi.use.architecture.MavenCyclicDependenciesCoreTest.xml",
+    "name": "org.tzi.use.architecture.MavenCyclicDependenciesCoreTest",
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-core\\target\\surefire-reports\\TEST-org.tzi.use.uml.mm.ModelAPITest.xml",
+    "name": "org.tzi.use.uml.mm.ModelAPITest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-core\\target\\surefire-reports\\TEST-org.tzi.use.uml.sys.MSystemStateExtensionTest.xml",
+    "name": "org.tzi.use.uml.sys.MSystemStateExtensionTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-jacamo-semantic-engine\\target\\surefire-reports\\TEST-org.tzi.use.semantic.engine.CslFrontendParityTest.xml",
+    "name": "org.tzi.use.semantic.engine.CslFrontendParityTest",
+    "tests": 23,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-jacamo-semantic-engine\\target\\surefire-reports\\TEST-org.tzi.use.semantic.engine.EngineExtractionTest.xml",
+    "name": "org.tzi.use.semantic.engine.EngineExtractionTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-jacamo-semantic-engine\\target\\surefire-reports\\TEST-org.tzi.use.semantic.engine.HostCompatibilityTest.xml",
+    "name": "org.tzi.use.semantic.engine.HostCompatibilityTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-jacamo-semantic-engine\\target\\surefire-reports\\TEST-org.tzi.use.semantic.engine.IStarFrontendParityTest.xml",
+    "name": "org.tzi.use.semantic.engine.IStarFrontendParityTest",
+    "tests": 29,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-jacamo-semantic-engine\\target\\surefire-reports\\TEST-org.tzi.use.semantic.engine.NativeOclBackendTest.xml",
+    "name": "org.tzi.use.semantic.engine.NativeOclBackendTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-jacamo-semantic-engine\\target\\surefire-reports\\TEST-org.tzi.use.semantic.engine.OriginalRuntimeSessionTest.xml",
+    "name": "org.tzi.use.semantic.engine.OriginalRuntimeSessionTest",
+    "tests": 14,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-jacamo-semantic-engine\\target\\surefire-reports\\TEST-org.tzi.use.semantic.engine.Use75CslBackendTest.xml",
+    "name": "org.tzi.use.semantic.engine.Use75CslBackendTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-gui\\target\\surefire-reports\\TEST-org.tzi.use.architecture.MavenLayeredArchitectureTest.xml",
+    "name": "org.tzi.use.architecture.MavenLayeredArchitectureTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.bridge.BridgeConnectionConfigTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.bridge.BridgeConnectionConfigTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.bridge.BridgeMirrorStateMachineTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.bridge.BridgeMirrorStateMachineTest",
+    "tests": 10,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.bridge.BridgeRuntimeProjectorTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.bridge.BridgeRuntimeProjectorTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.bridge.BridgeVerificationGateTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.bridge.BridgeVerificationGateTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.bridge.CanonicalCasesBridgePipelineTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.bridge.CanonicalCasesBridgePipelineTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.bridge.CanonicalEvidenceTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.bridge.CanonicalEvidenceTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.bridge.HelloShadowComparisonTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.bridge.HelloShadowComparisonTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.bridge.LocalTcpBridgeTransportTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.bridge.LocalTcpBridgeTransportTest",
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.bridge.NativeOclLaunchEvidenceTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.bridge.NativeOclLaunchEvidenceTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.bridge.NativeSemanticAdapterTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.bridge.NativeSemanticAdapterTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.bridge.SeparateJvmBridgeTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.bridge.SeparateJvmBridgeTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.bridge.ShadowSemanticComparatorTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.bridge.ShadowSemanticComparatorTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.bridge.TransportBenchmarkTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.bridge.TransportBenchmarkTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.CanonicalFacadeSessionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.CanonicalFacadeSessionTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.AttributeProjectionCleanupTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.AttributeProjectionCleanupTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.AuctionExternalOclProfileTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.AuctionExternalOclProfileTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.CanonicalCslNativePipelineTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.CanonicalCslNativePipelineTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.CheckpointRoutingTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.CheckpointRoutingTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedDeterminismTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedDeterminismTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedExportTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedExportTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedIdentitySafetyTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedIdentitySafetyTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedLargePlanTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedLargePlanTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNegativeTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNegativeTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedOrderInvariantTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedOrderInvariantTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase2Test.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase2Test",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase3Test.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase3Test",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase4Test.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase4Test",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase5Test.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase5Test",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase6Test.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase6Test",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase7Test.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase7Test",
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase9Test.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedPhase9Test",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.DomainRuntimeProjectionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.DomainRuntimeProjectionTest",
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.ExternalOclConstraintServiceTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.ExternalOclConstraintServiceTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.GenericAgentProjectionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.GenericAgentProjectionTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.GenericFunctionalRuntimeProjectionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.GenericFunctionalRuntimeProjectionTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.GenericSubgroupProjectionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.GenericSubgroupProjectionTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.GoalConstraintViolationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.GoalConstraintViolationTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.GoalViewSnapshotTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.GoalViewSnapshotTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.LegacyV2OclIsolationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.LegacyV2OclIsolationTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.LiveCartagoNativeVerificationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.LiveCartagoNativeVerificationTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.MoiseDomainProjectionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.MoiseDomainProjectionTest",
+    "tests": 10,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.NativeArtifactDeclarationBindingTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.NativeArtifactDeclarationBindingTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.NativeConstraintInstallerTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.NativeConstraintInstallerTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.NativeEnvironmentRelationsTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.NativeEnvironmentRelationsTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.NativeGenericStepReplayTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.NativeGenericStepReplayTest",
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.NativeMOperationProjectionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.NativeMOperationProjectionTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.NativeObjectCountViewTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.NativeObjectCountViewTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.NativeObjectDiagramBindingTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.NativeObjectDiagramBindingTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.NativeOperationCheckpointTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.NativeOperationCheckpointTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.NativeProjectionAuditTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.NativeProjectionAuditTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.NativeProjectionProfileTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.NativeProjectionProfileTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.NativeRoleAssociationSupportTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.NativeRoleAssociationSupportTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeBridgeCoverageTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeBridgeCoverageTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeReanalysisTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeReanalysisTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeReplayTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimeReplayTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.NativeStepReplayTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.NativeStepReplayTest",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.NativeUseSoilExporterTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.NativeUseSoilExporterTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.PausedResyncSnapshotTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.PausedResyncSnapshotTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.ProfileCompatibilityPreflightTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.ProfileCompatibilityPreflightTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.ReconnectSnapshotTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.ReconnectSnapshotTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalogTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.rule.CodeGroundedRuleCatalogTest",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.runtime.CanonicalNativeFaultMatrixTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.runtime.CanonicalNativeFaultMatrixTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.runtime.CanonicalOperationCheckpointsTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.runtime.CanonicalOperationCheckpointsTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeInvocationSemanticsTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeInvocationSemanticsTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeSemanticFailureTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeSemanticFailureTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.RuntimeControlServiceTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.RuntimeControlServiceTest",
+    "tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.RuntimeHistoryTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.RuntimeHistoryTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.RuntimeVerificationCoordinatorTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.RuntimeVerificationCoordinatorTest",
+    "tests": 13,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.SelectiveVerificationProjectionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.SelectiveVerificationProjectionTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.SnapshotRetentionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.SnapshotRetentionTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.codegrounded.VerificationSnapshotContractTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.codegrounded.VerificationSnapshotContractTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.CompatibilityManifestTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.CompatibilityManifestTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.constraint.ConstraintClosureTest",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.constraint.ConstraintOclTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.constraint.ConstraintOclTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.DefaultBridgeAuthorityTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.DefaultBridgeAuthorityTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.DefaultJaCaMoFacadeTest",
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.evidence.EvidenceNormalizerTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.evidence.EvidenceNormalizerTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.evidence.EvidenceSourceCommitTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.evidence.EvidenceSourceCommitTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.extraction.StaticProjectImporterTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.extraction.StaticProjectImporterTest",
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.extraction.V2ExtractionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.extraction.V2ExtractionTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.GoldenPipelineTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.GoldenPipelineTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.HotfixBindingTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.HotfixBindingTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.HotfixLifecycleTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.HotfixLifecycleTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.JaCaMoPluginTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.JaCaMoPluginTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.launcher.GenericLauncherScriptTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.launcher.GenericLauncherScriptTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.launcher.MavenCiWorkflowTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.launcher.MavenCiWorkflowTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.ManagedBootstrapTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.ManagedBootstrapTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.ManagedRuntimeWorkflowTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.ManagedRuntimeWorkflowTest",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.mapping.ActiveBaselineTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.mapping.ActiveBaselineTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.mapping.HistoricalMappingLoaderTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.mapping.HistoricalMappingLoaderTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.mapping.MappingTransformationTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.mapping.OrderProjectionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.mapping.OrderProjectionTest",
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.mapping.V2EcoreAuditTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.mapping.V2EcoreAuditTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.mapping.V2MappingAuditTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.mapping.V2MappingAuditTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.mapping.V2OppositeOrderingAuditTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.mapping.V2OppositeOrderingAuditTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.materialization.InstanceMaterializationTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.materialization.V2MaterializationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.materialization.V2MaterializationTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.MultiCaseV2PipelineTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.MultiCaseV2PipelineTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.NativeProjectionLaunchTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.NativeProjectionLaunchTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.NativeResyncHandoffRegressionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.NativeResyncHandoffRegressionTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.NativeRuntimeFacadeIntegrationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.NativeRuntimeFacadeIntegrationTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.NativeTraceSourceTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.NativeTraceSourceTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.NativeUseSessionActivationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.NativeUseSessionActivationTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.ocl.OclProfileOrderingTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.ocl.OclProfileOrderingTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.Phase43PerformanceEvidenceTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.Phase43PerformanceEvidenceTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.Phase9CaseStudyAcceptanceTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.Phase9CaseStudyAcceptanceTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.PreMigrationBaselineTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.PreMigrationBaselineTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.ProductionAuthorityPhase8Test.xml",
+    "name": "org.tzi.use.plugins.jacamo.ProductionAuthorityPhase8Test",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.project.JcmProjectLoaderTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.project.JcmProjectLoaderTest",
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.project.ProjectModelTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.project.ProjectModelTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.release.PackagedResourceNamespaceTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.release.PackagedResourceNamespaceTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.release.ReleasePackageContractTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.ReplayStepFacadeTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.ReplayStepFacadeTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.runtime.AuctionSourceRuntimeTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.runtime.AuctionSourceRuntimeTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.runtime.CartagoRuntimeConnectorTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.runtime.CartagoRuntimeConnectorTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.runtime.CompositeRuntimeConnectorTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.runtime.CompositeRuntimeConnectorTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.runtime.CounterTeamIntegrationTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.runtime.HistoricalRuntimeMappingTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.runtime.HistoricalRuntimeMappingTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.runtime.JasonRuntimeConnectorTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.runtime.JasonRuntimeConnectorTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.runtime.LiveJaCaMoAuctionIntegrationTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.runtime.MoiseBoardSnapshotSourceTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.runtime.MoiseBoardSnapshotSourceTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.runtime.MoiseRuntimeConnectorTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.runtime.MoiseRuntimeConnectorTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeAliasTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.runtime.RuntimeAliasTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeAuthorityTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.runtime.RuntimeAuthorityTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.runtime.RuntimeFoundationTest",
+    "tests": 26,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeIdentityHardeningTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.runtime.RuntimeIdentityHardeningTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeMappingTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.runtime.RuntimeMappingTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeMigrationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.runtime.RuntimeMigrationTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.runtime.RuntimeTraceTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.runtime.RuntimeTraceTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.runtime.V2RuntimeOrderTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.runtime.V2RuntimeOrderTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantic.SemanticIdTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantic.SemanticIdTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantic.SemanticModelTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantic.SemanticModelTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantic.V2SemanticModelTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantic.V2SemanticModelTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.BoundedExplorerTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.BoundedExplorerTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.CanonicalAsyncInvocationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.CanonicalAsyncInvocationTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.CanonicalCslMappingTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.CanonicalCslMappingTest",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.CanonicalGoalMappingTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.CanonicalGoalMappingTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.CanonicalMappingContractTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.CanonicalMappingContractTest",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.CanonicalOclContractMappingTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.CanonicalOclContractMappingTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.CanonicalPublicationOrderTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.CanonicalPublicationOrderTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.CanonicalRuntimeAdmissionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.CanonicalRuntimeAdmissionTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.CanonicalRuntimeProjectionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.CanonicalRuntimeProjectionTest",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.CanonicalTransactionFailureTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.CanonicalTransactionFailureTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.CartagoAwaitRegressionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.CartagoAwaitRegressionTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.CslNativeBindingTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.CslNativeBindingTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.CslSchemaTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.CslSchemaTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.CslStructuralPolicyTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.CslStructuralPolicyTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.CslVerticalSliceTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.CslVerticalSliceTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.DetailedVerdictTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.DetailedVerdictTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.EcoreSourceLoaderTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.EcoreSourceLoaderTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.EngineHostIntegrationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.EngineHostIntegrationTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.FunctionalLiveBoardTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.FunctionalLiveBoardTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.FunctionalObservationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.FunctionalObservationTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.JasonAbstractionPolicyTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.JasonAbstractionPolicyTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.JasonTaskConfigurationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.JasonTaskConfigurationTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.LiveMasDefectRegressionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.LiveMasDefectRegressionTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.MentalStateProjectionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.MentalStateProjectionTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.NormativeObservationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.NormativeObservationTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.NplDependencyRegressionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.NplDependencyRegressionTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.ObservationEnvelopeTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.ObservationEnvelopeTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.ObserverIdentityLifecycleTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.ObserverIdentityLifecycleTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.OclSemanticBackendTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.OclSemanticBackendTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.OPlanSemanticsTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.OPlanSemanticsTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.OriginalEngineSessionIntegrationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.OriginalEngineSessionIntegrationTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.runtime.OriginalEngineFaultMatrixTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.runtime.OriginalEngineFaultMatrixTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.RuntimeMetricDistributionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.RuntimeMetricDistributionTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.RuntimeOwnerCheckpointTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.RuntimeOwnerCheckpointTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.SemanticBindingTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.SemanticBindingTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.SemanticCapabilityManifestTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.SemanticCapabilityManifestTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.SemanticMappingReplayTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.SemanticMappingReplayTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.SemanticRecordAssetBoundsTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.SemanticRecordAssetBoundsTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.SemanticsProfileTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.SemanticsProfileTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.SemanticTransformationTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.SemanticTransformationTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.SharedStateAcceptanceTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.SharedStateAcceptanceTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.SnapshotCoverageRegressionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.SnapshotCoverageRegressionTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.SourceLensTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.SourceLensTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.TaskPerformerRegressionTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.TaskPerformerRegressionTest",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.TemporalGoalMonitorTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.TemporalGoalMonitorTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.semantics.VerificationLoadScenarioTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.semantics.VerificationLoadScenarioTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.trace.TraceBindingTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.trace.TraceBindingTest",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.ui.JaCaMoWorkbenchPanelTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.ui.JaCaMoWorkbenchPanelTest",
+    "tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.ui.SemanticEvidencePanelTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.ui.SemanticEvidencePanelTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.V2DeterminismTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.V2DeterminismTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.V2FinalFreezeTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.V2FinalFreezeTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.V2HardeningAuditTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.V2HardeningAuditTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.verification.CrossDimensionalVerifierTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.verification.CrossDimensionalVerifierTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.verification.OfflineVerificationServiceTest",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayerTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.verification.profile.VerificationSemanticLayerTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.verification.RuntimeHistoryVerifierTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.verification.RuntimeHistoryVerifierTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "path": "use-plugin\\target\\surefire-reports\\TEST-org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest.xml",
+    "name": "org.tzi.use.plugins.jacamo.verification.RuntimeVerificationEngineTest",
+    "tests": 20,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+]

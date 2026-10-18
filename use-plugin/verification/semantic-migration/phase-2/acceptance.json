@@ -1,0 +1,20 @@
+{
+  "phase": 2,
+  "status": "DONE",
+  "command": "mvn -B -pl use-plugin -am test",
+  "mavenExit": 0,
+  "surefire": {
+    "tests": 696,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "extractedJava": 123,
+  "generatedJava": 12,
+  "grammarInputs": 2,
+  "engineTests": 3,
+  "oldProfileTestsUnchanged": true,
+  "referenceHashesPreserved": true,
+  "productionProfileEnabled": false,
+  "originalPatchesApplied": []
+}

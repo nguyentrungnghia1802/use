@@ -1,0 +1,5 @@
+{
+  "reason": "Test waited beyond the explicit 90 second managed-start deadline; product correctly retained USE",
+  "guiAliveAfterProducerStartupTimeout": true,
+  "guiPid": 9752
+}

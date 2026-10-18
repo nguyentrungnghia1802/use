@@ -1,0 +1,15 @@
+{
+  "phase": 6,
+  "status": "DONE",
+  "engineTests": 64,
+  "istarFrontendTests": 29,
+  "independentParityFixtures": 16,
+  "matrix": [
+    "D"
+  ],
+  "originalCorePatches": [],
+  "unsupportedSyntax": "parse-tree gate, actual token spans incl Unicode; no regex language parser",
+  "modelOwnership": "OwnedGoalModel hash/index guard over original mutable POJO, not immutable model claim",
+  "nonsemanticOracleNormalization": "Only unordered allowed-child GoalType Set suffix; raw errors retained; no verdict/core source changes",
+  "oldProfileRegression": "Phase5 full 731 test reactor; no existing production Java changes in Phase6"
+}

@@ -1,0 +1,17 @@
+{
+  "phase": 4,
+  "status": "DONE",
+  "engineTests": 28,
+  "frontendTests": 23,
+  "independentPinnedCompilerParityFixtures": 18,
+  "actualUpstreamFixtures": 2,
+  "originalParserAstM1DiagnosticsParity": "PASS",
+  "matrix": [
+    "A",
+    "B",
+    "C"
+  ],
+  "originalCorePatches": [],
+  "generator": "Independent ANTLR4 4.9.3 generation from pinned archive in test-only oracle; original source compiled into child-first test loader",
+  "existingProductionRoute": "UNCHANGED; Phase2 full current regression and source/hash guards apply"
+}

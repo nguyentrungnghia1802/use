@@ -1,0 +1,1 @@
+org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result{org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result.errors=[java.lang.String:semantic: and-refine 'parent' in actor 'R' must have at least 2 children (found 1)], org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result.model=null}

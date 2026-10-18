@@ -1,0 +1,1 @@
+org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result{org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result.errors=[java.lang.String:semantic: element 'g' declares more than one 'condition' OCL contract; each typed contract slot has multiplicity 0..1], org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result.model=null}

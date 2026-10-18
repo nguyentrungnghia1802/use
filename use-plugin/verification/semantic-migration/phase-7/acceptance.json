@@ -1,0 +1,22 @@
+{
+  "phase": 7,
+  "status": "DONE",
+  "engineFullTests": 78,
+  "focusedEngineTests": 17,
+  "focusedLegacyTests": 6,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "originalGoalBoundaryComparisons": 4096,
+  "originalTaskBoundaryComparisons": 1536,
+  "patch": "P-CTX-01",
+  "patchStatus": "APPLIED_VERIFIED",
+  "oldEvaluateParity": "SHARED_AND_SEPARATE_CONTEXTS_ALL_FIELDS",
+  "originalAlgorithmsUnchanged": true,
+  "profileNotes": "use-jacamo-semantic-engine/provenance/runtime-profile-admission.md",
+  "logs": [
+    "runtime-engine-final.log",
+    "compatibility-regression.log"
+  ],
+  "scope": "Neutral session only; live integration remains Phase14-22"
+}

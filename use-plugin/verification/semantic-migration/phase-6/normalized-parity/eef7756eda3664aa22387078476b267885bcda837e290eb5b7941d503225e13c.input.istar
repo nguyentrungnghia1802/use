@@ -1,0 +1,1 @@
+istar Types { agent A { goal achieve : Achieve condition {[ true ]} goal maintain : Maintain condition {[ true ]} goal sustain : Sustain condition {[ true ]} goal none : None condition {[ false ]} task step pre {[ true ]} post {[ true ]} } }

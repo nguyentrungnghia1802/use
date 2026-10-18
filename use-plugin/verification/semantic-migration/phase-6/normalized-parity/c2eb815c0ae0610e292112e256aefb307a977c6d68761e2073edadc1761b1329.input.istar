@@ -1,0 +1,1 @@
+istar DependencyModel { role A { goal requested } role B { goal supplied : Achieve condition {[ true ]} } depend A.requested -> goal promise -> B.supplied }

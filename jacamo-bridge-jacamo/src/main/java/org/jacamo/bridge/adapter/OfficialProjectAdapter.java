@@ -115,12 +115,11 @@ public final class OfficialProjectAdapter {
                 CapabilityStatus.COMPLETE,List.of(sourceEvidence)));
         typedWorkspaces.add(workspace(rootWorkspaceId,rootWorkspace,"",false,sourceEvidence));
         for(var workspace:project.getWorkspaces().stream().sorted(Comparator.comparing(value->value.getName())).toList()){
-            var workspaceId=workspace.getName().equals(rootWorkspace)?rootWorkspaceId:
-                    id("jacamo","environment","workspace-declaration",projectKey,workspace.getName());
-            if(!workspace.getName().equals(rootWorkspace)){
-                workspaces.add(new ModelFact("workspace-declaration",workspaceId,Map.of(),Map.of(),CapabilityStatus.COMPLETE,List.of(sourceEvidence)));
-                typedWorkspaces.add(workspace(workspaceId,workspace.getName(),workspace.getHost(),workspace.hasDebug(),sourceEvidence));
-            }
+            // Cartago.start creates every JCM workspace under the actual root.
+            // An explicit "main" is /main/main, distinct from implicit /main.
+            var workspaceId=id("jacamo","environment","workspace-declaration",projectKey,workspace.getName());
+            workspaces.add(new ModelFact("workspace-declaration",workspaceId,Map.of(),Map.of(),CapabilityStatus.COMPLETE,List.of(sourceEvidence)));
+            typedWorkspaces.add(workspace(workspaceId,workspace.getName(),workspace.getHost(),workspace.hasDebug(),sourceEvidence));
             workspace.getArtifacts().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry->{
                 ClassParameters parameters=entry.getValue();
                 var artifactId=id("jacamo","environment","artifact-declaration",projectKey,workspace.getName()+"/"+entry.getKey());
@@ -128,7 +127,7 @@ public final class OfficialProjectAdapter {
                         Map.of("workspace",List.of(workspaceId)),CapabilityStatus.COMPLETE,List.of(sourceEvidence)));
                 var metadata=SemanticEvidence.metadata(artifactId.canonical(),"JACAMO_ARTIFACT_DECLARATION","jason.mas2j.ClassParameters",
                         EvidenceAuthority.OFFICIAL_JACAMO_API,Fidelity.EXACT,CapabilityStatus.COMPLETE,sourceEvidence,1,1,List.of());
-                typedArtifacts.add(new ArtifactDeclarationSemantic(metadata,entry.getKey(),workspace.getName(),parameters.getClassName(),
+                typedArtifacts.add(new ArtifactDeclarationSemantic(DeclaredArtifactTypeProof.attach(metadata,parameters.getClassName()),entry.getKey(),workspace.getName(),parameters.getClassName(),
                         List.copyOf(parameters.getParameters())));
             });
         }

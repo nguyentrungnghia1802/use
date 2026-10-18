@@ -36,8 +36,13 @@ import org.tzi.use.util.StringUtil;
 public final class NativeUseSoilExporter {
     public Result export(MSystem system) {
         Objects.requireNonNull(system, "system");
+        return exportState(system.state());
+    }
+    /** Same native rendering for a pinned cut; it remains part of the supplied system. */
+    public Result exportState(org.tzi.use.uml.sys.MSystemState state) {
+        Objects.requireNonNull(state,"state");
         List<String> commands = new ArrayList<>();
-        List<MObject> objects = system.state().allObjects().stream()
+        List<MObject> objects = state.allObjects().stream()
                 .sorted(Comparator.comparing(MObject::name))
                 .toList();
         for (MObject object : objects) {
@@ -56,14 +61,14 @@ public final class NativeUseSoilExporter {
                     .sorted(Comparator.comparing(MAttribute::name)).toList();
             for (MAttribute attribute : attributes) {
                 if (attribute.isDerived()) continue; // The model owns constants/derivations; SOIL must not assign them.
-                var value = object.state(system.state()).attributeValue(attribute);
+                var value = object.state(state).attributeValue(attribute);
                 if (value.isUndefined()) continue;
                 commands.add(attributeCommand(object, attribute, value));
                 attributeAssignments++;
             }
         }
 
-        List<MLink> links = new ArrayList<>(system.state().allLinks());
+        List<MLink> links = new ArrayList<>(state.allLinks());
         links.sort(Comparator.comparing((MLink link) -> link.association().name())
                 .thenComparing(NativeUseSoilExporter::orderedParticipantNames));
         for (MLink link : links) {

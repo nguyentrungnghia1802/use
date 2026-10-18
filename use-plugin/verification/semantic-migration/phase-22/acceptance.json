@@ -1,0 +1,288 @@
+{
+  "phase": 22,
+  "status": "DONE",
+  "acceptedOn": "2026-10-18 Asia/Bangkok",
+  "scope": "USE4GOAL_OBSERVED_V1 admitted observed profile",
+  "commands": {
+    "clean": "mvn -B clean verify",
+    "legacy": "java -cp <phase-0 resources-first classpath> junit.textui.TestRunner org.tzi.use.AllTests",
+    "fullArchive": "java -Duse.packaged.hostArchive=<use-7.5.0-use-bin.zip> -cp <current Failsafe classpath> org.tzi.use.plugins.jacamo.semantics.Use4GoalPackagedPluginIT",
+    "matrix": "python -X utf8 use-plugin/tools/semantic-acceptance.py --log <clean-full-verify.log> --legacy-log <legacy-junit3.log> --require-installed-live --output <matrix-results.json>"
+  },
+  "counts": {
+    "surefire": 880,
+    "failsafe": 159,
+    "reactorTotal": 1039,
+    "legacyJUnit3": 198,
+    "suites": 250,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "fullArchiveRepeatedChecks": 4
+  },
+  "matrix": "matrix-results.json",
+  "testSuites": "test-suites.json",
+  "artifactHashes": "artifact-hashes.json",
+  "sourceVerification": "original-source-checks.log",
+  "sourceAndReferenceIntegrity": "protected-inputs.json",
+  "classReproducibility": "compiled-class-reproducibility.json",
+  "definitionOfDone": {
+    "D01": {
+      "status": "DONE",
+      "requirement": "Selected original CSL core, FQCN, provenance, license and recorded patches",
+      "evidence": [
+        "original-source-checks.log",
+        "compiled-class-reproducibility.json",
+        "matrix-results.json"
+      ]
+    },
+    "D02": {
+      "status": "DONE",
+      "requirement": "Real CslModel canonical M1 and original compiler/factory/validator",
+      "evidence": [
+        "matrix-results.json",
+        "full-archive-counter-1/consumer-receipt.json"
+      ]
+    },
+    "D03": {
+      "status": "DONE",
+      "requirement": "Real GoalModel canonical M1 with explicit unsupported syntax admission",
+      "evidence": [
+        "matrix-results.json",
+        "full-archive-counter-1/consumer-receipt.json"
+      ]
+    },
+    "D04": {
+      "status": "DONE",
+      "requirement": "Original Goal/Task/IStar marking and propagation with contextual seam",
+      "evidence": [
+        "matrix-results.json",
+        "full-archive-counter-1/accepted.json",
+        "full-archive-counter-2/accepted.json"
+      ]
+    },
+    "D05": {
+      "status": "DONE",
+      "requirement": "Native USE7.5 OCL, Boolean gates, @pre, bindings, unknown/undefined/error",
+      "evidence": [
+        "matrix-results.json",
+        "test-suites.json",
+        "full-archive-counter-2/consumer-receipt.json"
+      ]
+    },
+    "D06": {
+      "status": "DONE",
+      "requirement": "Versioned replaceable JaCaMo mapping outside engine",
+      "evidence": [
+        "architecture-source-audit.json",
+        "compiled-class-reproducibility.json",
+        "matrix-results.json"
+      ]
+    },
+    "D07": {
+      "status": "DONE",
+      "requirement": "Actual external authenticated TCP producer and installed USE consumer",
+      "evidence": [
+        "full-archive-counter-1/acceptance-receipt.json",
+        "full-archive-counter-2/acceptance-receipt.json",
+        "use4goal-external-bridge.json"
+      ]
+    },
+    "D08": {
+      "status": "DONE",
+      "requirement": "One authoritative Session MSystem and pinned cuts for engine/native OCL",
+      "evidence": [
+        "use4goal-workbench.json",
+        "use4goal-producer-restart.json",
+        "architecture-source-audit.json",
+        "test-suites.json"
+      ]
+    },
+    "D09": {
+      "status": "DONE",
+      "requirement": "Real agents, Counter, roles, GroupBoard and SchemeBoard from shipped XML",
+      "evidence": [
+        "full-archive-counter-1/initialized.json",
+        "full-archive-counter-1/accepted.json",
+        "full-archive-counter-1/producer.log"
+      ]
+    },
+    "D10": {
+      "status": "DONE",
+      "requirement": "All A-V required unit/integration/negative/parity/live/package gates",
+      "evidence": [
+        "matrix-results.json",
+        "test-suites.json",
+        "clean-full-verify.log",
+        "legacy-junit3.log",
+        "full-archive-live.log"
+      ]
+    },
+    "D11": {
+      "status": "DONE",
+      "requirement": "Partial/gap/resync/stale/identity/invocation quality preserved",
+      "evidence": [
+        "matrix-results.json",
+        "test-suites.json",
+        "use4goal-external-bridge.json"
+      ]
+    },
+    "D12": {
+      "status": "DONE",
+      "requirement": "Stop/Start/Reimport/restart cleanup and producer stopMAS host survival",
+      "evidence": [
+        "lifecycle-cleanup-acceptance.json",
+        "use4goal-producer-restart.json",
+        "use4goal-external-bridge.json",
+        "full-archive-counter-1/consumer-receipt.json",
+        "remaining-java-processes.json"
+      ]
+    },
+    "D13": {
+      "status": "DONE",
+      "requirement": "Responsive UI, finite-workload cancellation/cleanup, production quotas",
+      "evidence": [
+        "use4goal-workbench.json",
+        "full-archive-counter-1/consumer-receipt.json",
+        "full-archive-counter-2/consumer-receipt.json",
+        "lifecycle-cleanup-acceptance.json"
+      ]
+    },
+    "D14": {
+      "status": "DONE",
+      "requirement": "Exact canonical replay parity and compatible historical readers",
+      "evidence": [
+        "matrix-results.json",
+        "test-suites.json",
+        "full-archive-counter-1/replay",
+        "full-archive-counter-2/replay"
+      ]
+    },
+    "D15": {
+      "status": "DONE",
+      "requirement": "Fresh full USE7.5 archive, one engine, correct host and resources",
+      "evidence": [
+        "full-archive-live.log",
+        "failsafe-engine-ownership.json",
+        "artifact-hashes.json",
+        "full-archive-counter-1/consumer-receipt.json"
+      ]
+    },
+    "D16": {
+      "status": "DONE",
+      "requirement": "Legacy sources/APIs/readers retained and original route separate",
+      "evidence": [
+        "matrix-results.json",
+        "test-suites.json",
+        "../phase-19/legacy-callers.json",
+        "../../../docs/project/semantic-compatibility-routing.md"
+      ]
+    },
+    "D17": {
+      "status": "DONE",
+      "requirement": "Runnable source/install/build/verify/replay instructions for actual7.5 release",
+      "evidence": [
+        "runtime-classpath.log",
+        "../../../docs/project/use4goal-run.md",
+        "../phase-21/gui-helper-r2-acceptance.json",
+        "full-archive-live.log"
+      ]
+    }
+  },
+  "fullArchiveLive": [
+    {
+      "step": 1,
+      "producerPid": 13456,
+      "consumerPid": 23192,
+      "nativeInvocation": "PASS",
+      "heartbeatP95Millis": 57.2291,
+      "journalBytes": 11661226,
+      "journalLimit": 67108864,
+      "monitorCycles": 2,
+      "originalCalls": [
+        "GoalMarking.update",
+        "GoalModelInstanceTranslator.propagateDependencies",
+        "IStarPropagation.assignGoalTask:aggregate-only",
+        "IStarPropagation.closePending",
+        "TaskMarking.update"
+      ],
+      "runtimeChildProcesses": 0,
+      "replayParity": true,
+      "stopMasUseSurvives": true,
+      "receipt": "full-archive-counter-1/consumer-receipt.json"
+    },
+    {
+      "step": 2,
+      "producerPid": 5780,
+      "consumerPid": 13872,
+      "nativeInvocation": "FAIL",
+      "heartbeatP95Millis": 47.1839,
+      "journalBytes": 11255532,
+      "journalLimit": 67108864,
+      "monitorCycles": 2,
+      "originalCalls": [
+        "GoalMarking.update",
+        "GoalModelInstanceTranslator.propagateDependencies",
+        "IStarPropagation.assignGoalTask:aggregate-only",
+        "IStarPropagation.closePending",
+        "TaskMarking.update"
+      ],
+      "runtimeChildProcesses": 0,
+      "replayParity": true,
+      "stopMasUseSurvives": true,
+      "receipt": "full-archive-counter-2/consumer-receipt.json"
+    }
+  ],
+  "externalRun": {
+    "usePid": 21068,
+    "jacamoPid": 16200,
+    "managedAck": true,
+    "transport": "authenticated TCP",
+    "directFeedParity": true,
+    "monitorCycles": 3,
+    "producerRestart": "use4goal-producer-restart.json"
+  },
+  "releasePolicy": {
+    "default": "NATIVE_CURRENT",
+    "newEngine": "EXPLICIT_OPT_IN",
+    "observations": "WORLD for admitted Counter/world outcome profile; FULL trace remains optional and capacity-dependent",
+    "legacySourcesAndReaders": "RETAINED; no physical semantic deletion",
+    "authoritativeState": "ONE_ACTIVE_HOST_SESSION_MSYSTEM",
+    "committed": false,
+    "pushed": false,
+    "newBranchOrWorktree": false
+  },
+  "limitations": [
+    "Selected supported CSL/iStar observed semantics only; grammar/model gaps rejected explicitly",
+    "Original Task historical marking differs from exact invocation conformance; NONE false remains original PENDING",
+    "Unknown, partial, missing, undefined and unsupported do not become Boolean false or FAIL",
+    "SEQUENCE/PARALLEL remain ordered trace/outcome abstractions, without scheduling equivalence",
+    "FULL per-cycle trace has workload-dependent bounded capacity; overflow remains GAP",
+    "Native Evaluator provides no safe arbitrary force-cancel; finite workload teardown and owner revocation are verified",
+    "Replay requires exact recorded executable hashes and rejects incompatible implementations or unrepeatable resource-exhaustion errors",
+    "Native backend supports n-ary schema; canonical live runtime rejects n-ary links until a separately verified writer/profile extension exists",
+    "Named opaque runtime types require a registered codec; missing codecs reject admission rather than cast to String",
+    "CArtAgO logger does not expose operation return values; live postconditions requiring an unobserved result remain UNSUPPORTED/SKIPPED"
+  ],
+  "requiredTasksRemaining": [],
+  "blockers": [],
+  "globalChecklistEvidence": {
+    "extraction": "125 per-file provenance entries + generator metadata, final original-source checks",
+    "backend": "Use75CslBackendTest / CanonicalCslNativePipelineTest; schema/runtime capability distinction retained",
+    "ocl": "NativeOclBackendTest / CanonicalOperationCheckpointsTest / CanonicalOclContractMappingTest; native result binding versus unobserved producer result distinguished"
+  },
+  "finalPlanValidation": "plan-validation.json",
+  "evidenceSha256": {
+    "clean-full-verify.log": "7105a86d479adba2af5f60e895032019554af07d6bb91aec306ece2229f7516e",
+    "legacy-junit3.log": "dbed4de16c28d0822b7a3a85d6e6a78dd70264e62cc1b272b3d1369eebbe868b",
+    "matrix-results.json": "8c0c49df3b38ada7bcee0d2e20980c82f5ee332f811d61efd8fb1e95028d17a1",
+    "test-suites.json": "2785f937e45a5b4439674772cbc4dcf932252a029cccfb2f560e75eac76967a1",
+    "full-archive-live.log": "e0914657164074369a6faa456cccb26db6ccde5eb08b1d7ce5af2043c80776e3",
+    "artifact-hashes.json": "c35d6a50c9a3c1bc152ecfbf9efa090bd0da612f027716d200e37a3767dab612",
+    "protected-inputs.json": "ccad25488581bb4feff34b8142e479e7c034dee9169f97eaa56eec5aa3cab85c",
+    "compiled-class-reproducibility.json": "94cd7780ac3deac933dd519f574c7e624af5819f1fcd6b0fb679f94a6ce99f6d",
+    "original-source-checks.log": "13eab331ddad3bbdac4117d6c3989cd3e3a591b27eb780a64b78a9f1ae8bbb00",
+    "lifecycle-cleanup-acceptance.json": "105fe177e9029b41ea269f8bbd741c8b4c210f04c888b52d5e4ceca1f468b767",
+    "plan-validation.json": "e44ee44f4964eda9aa40a4e8c71370e230b34a7b6a517ae3a192cb494ba758cb"
+  }
+}

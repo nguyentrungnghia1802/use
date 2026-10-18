@@ -1,0 +1,29 @@
+{
+  "phase": 8,
+  "status": "DONE",
+  "engineTests": 85,
+  "focusedPluginTests": 9,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "backend": "NATIVE_USE_7.5",
+  "oldCompilerApis": "COMPATIBILITY_DELEGATES",
+  "positiveAtPre": "0->1",
+  "negativeAtPre": "0->2",
+  "coverage": "GATED_BEFORE_BOOLEAN_INPUT",
+  "modelOwnership": "EXACT_MMODEL_AND_TYPED_SYMBOLS",
+  "stateOwnership": "BORROWED_PINNED_STATES_SAME_MSYSTEM",
+  "cache": "PROGRAM_PROFILE_MMODEL_SPEC_OWNER_EPOCH_BOUNDED_4096",
+  "tests": [
+    "NativeOclBackendTest",
+    "OclSemanticBackendTest",
+    "NativeOperationCheckpointTest",
+    "NativeInvocationSemanticsTest"
+  ],
+  "logs": [
+    "acceptance-regression.log",
+    "native-ocl-regression.log"
+  ],
+  "fixtureCorrections": "Native grammar uses oclUndefined(Integer) and orgContext symbol; initial errors retained in native-ocl-focused.log",
+  "scope": "Neutral backend plus unchanged invocation/coverage guards; new-profile session wiring Phase14-16"
+}

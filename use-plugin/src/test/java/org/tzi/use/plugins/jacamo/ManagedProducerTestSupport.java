@@ -16,12 +16,17 @@ import org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintS
 public final class ManagedProducerTestSupport implements AutoCloseable {
     public final Path root, original, jcm, control, stop;
     public final BridgeConnectionConfig configuration;
-    private final Process producer;
+    private Process producer;
+    private final java.util.List<String> producerCommand;
     private final Map<String,String> originalHashes;
     public ManagedProducerTestSupport(Path originalJcm,Path evidence) throws Exception {
         this(originalJcm,evidence,false);
     }
     public ManagedProducerTestSupport(Path originalJcm,Path evidence,boolean structuredJasonObservation) throws Exception {
+        this(originalJcm,evidence,structuredJasonObservation,false,Map.of());
+    }
+    /** Same official managed-start hook; headless mode is bounded and test-owned. */
+    public ManagedProducerTestSupport(Path originalJcm,Path evidence,boolean structuredJasonObservation,boolean headless,Map<String,String> vmProperties) throws Exception {
         root=evidence.toAbsolutePath().normalize(); Files.createDirectories(root);
         original=originalJcm.toAbsolutePath().normalize(); originalHashes=sourceHashes(original.getParent());
         Path stage=Files.createDirectory(root.resolve("staging"));
@@ -58,9 +63,12 @@ public final class ManagedProducerTestSupport implements AutoCloseable {
         configuration=new BridgeConnectionConfig(URI.create("tcp://127.0.0.1:"+port),secret,distribution,Set.of("official.model","runtime.snapshot"),org.jacamo.bridge.contract.CanonicalJson.DEFAULT_MAX_BYTES,20000,8192);
         Path transportLogging=root.resolve("transport-logging.properties");
         Files.writeString(transportLogging,"handlers=java.util.logging.ConsoleHandler\n.level=INFO\njava.util.logging.ConsoleHandler.level=FINE\norg.jacamo.bridge.adapter.LocalTcpBridgeServer.level=FINE\n");
-        producer=new ProcessBuilder(javaCommand,"-Djava.util.logging.config.file="+transportLogging,
-                "-Djacamo.bridge.structured-observation="+structuredJasonObservation,
-                "-Djacamo.launch.captureConsole=true","-cp",cp,"jason.infra.local.LiveJaCaMoLauncherMain",jcm.toString(),stop.toString(),"0","false","","240",control.toString(),"managed-gui-test")
+        var command=new java.util.ArrayList<String>(java.util.List.of(javaCommand,"-Djava.util.logging.config.file="+transportLogging,
+                "-Djacamo.bridge.structured-observation="+structuredJasonObservation,"-Djacamo.launch.captureConsole=true"));
+        vmProperties.forEach((key,value)->command.add("-D"+key+"="+value));
+        command.addAll(java.util.List.of("-cp",cp,"jason.infra.local.LiveJaCaMoLauncherMain",jcm.toString(),stop.toString(),headless?"240":"0",Boolean.toString(headless),"","240",control.toString(),"managed-gui-test"));
+        producerCommand=java.util.List.copyOf(command);
+        producer=new ProcessBuilder(producerCommand)
                 .directory(stage.toFile()).redirectOutput(root.resolve("producer.log").toFile()).redirectError(root.resolve("producer.err").toFile()).start();
         long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(60);
         while(!Files.exists(control.resolve("waiting.json"))&&producer.isAlive()&&System.nanoTime()<deadline) Thread.sleep(50);
@@ -73,6 +81,24 @@ public final class ManagedProducerTestSupport implements AutoCloseable {
         System.setProperty(ManagedStartupControl.RUN_PROPERTY,"managed-gui-test");
     }
     public void clearWorkflowProperties() { System.clearProperty(ManagedStartupControl.DIRECTORY_PROPERTY); System.clearProperty(ManagedStartupControl.RUN_PROPERTY); }
+    public long producerPid(){return producer.pid();}
+    public boolean producerAlive(){return producer.isAlive();}
+    public boolean awaitProducerExit(long timeoutSeconds) throws InterruptedException{return producer.waitFor(timeoutSeconds,TimeUnit.SECONDS);}
+    public int producerExitCode(){return producer.exitValue();}
+    /** Restart exactly the staged project and authenticated endpoint owned by this harness. */
+    public void restartProducer() throws Exception {
+        Files.writeString(stop,"restart test-owned process");
+        if(!producer.waitFor(15,TimeUnit.SECONDS))throw new IllegalStateException("TEST_PRODUCER_DID_NOT_STOP");
+        var ownerRoot=root.toRealPath();var controlRoot=control.toRealPath();
+        if(!controlRoot.startsWith(ownerRoot))throw new IllegalStateException("TEST_CONTROL_OUTSIDE_EVIDENCE_ROOT");
+        Files.deleteIfExists(stop);
+        for(String file:java.util.List.of("waiting.json","request.json","request.lock","started.json","cancel.json"))Files.deleteIfExists(controlRoot.resolve(file));
+        producer=new ProcessBuilder(producerCommand).directory(jcm.getParent().toFile())
+                .redirectOutput(root.resolve("producer-restart.log").toFile()).redirectError(root.resolve("producer-restart.err").toFile()).start();
+        long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(60);
+        while(!Files.exists(control.resolve("waiting.json"))&&producer.isAlive()&&System.nanoTime()<deadline)Thread.sleep(25);
+        if(!Files.exists(control.resolve("waiting.json")))throw new IllegalStateException("TEST_RESTART_BOOTSTRAP_FAILED");
+    }
     public static Map<String,String> sourceHashes(Path project) throws Exception {
         var hashes=new java.util.TreeMap<String,String>();
         try(var paths=Files.walk(project)) {

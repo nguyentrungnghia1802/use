@@ -1,0 +1,3 @@
+false
+null
+[semantic: element 't' declares more than one 'pre' OCL contract; each typed contract slot has multiplicity 0..1]

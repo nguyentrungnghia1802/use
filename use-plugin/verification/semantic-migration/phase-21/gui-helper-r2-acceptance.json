@@ -1,0 +1,24 @@
+{
+  "run": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\semantic-migration\\phase-21\\gui-helper-r2\\20261018-130453-304-86c96849",
+  "managedStartAcknowledged": true,
+  "startTrigger": "Existing managed-start file protocol; real Workbench Start button separately exercised by installed driver",
+  "guiReady": {
+    "associationCount": 2,
+    "bridgeCompleteness": "PARTIAL",
+    "bridgeReadiness": "LIVE",
+    "classCount": 11,
+    "generation": 1,
+    "linkCount": 0,
+    "modelRevision": "835e35d77de951b03dfd2e7159032193d72d0bbe0b6a57b0cf6f6608d90adc8e",
+    "objectCount": 9,
+    "projectFile": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\semantic-migration\\phase-21\\gui-helper-r2\\20261018-130453-304-86c96849\\staging-counter\\counter.jcm",
+    "projectionMode": "AUTO",
+    "sessionId": "d6c9ff1d-4148-4dce-852c-c793abbed55c",
+    "stateSha256": "920f2171ca9eac66d0d0b436301e04e9fdf527d8f61298b856c38a29c46fe752",
+    "status": "READY"
+  },
+  "producerAlive": false,
+  "producerPid": 12292,
+  "guiPid": 18740,
+  "guiAliveAfterStopMas": true
+}

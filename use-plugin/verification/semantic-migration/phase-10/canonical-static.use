@@ -1,0 +1,73 @@
+@Use4GoalCslV4(players="true", compatibility="true", version="v4.0", profile="USE4GOAL_OBSERVED_V1")
+@CanonicalSemanticProgram(version="2.0", sourceHash="f36ee5208f635712b579b8f8e3442e85e9be57085e18ab72a36bbf31a5066dec", mappingVersion="1.0", mappingProfile="JACAMO_MAPPING_V1", ruleHash="a3cf1cd85b13e36ce24a2fddcf9eea39ebcc20909cb995a2687104e62d569cc1", cslHash="7073872952ee0eab3fa6f861b1aa92b0595d44e7628e588ac767f018b93e64bb", goalHash="50d5c16dd57f56613028d28faf15949453c6eba630939b496beeec24022e47f6", programHash="214f4566248bea3b0ceb7dd96ed814106c411336070d75cdf948befa9000b6df")
+model CounterDomain
+
+
+@CanonicalSemanticBinding(rule64="TTE4", reason64="QVVUSE9SRURfQ09VTlRFUl9WSUVX", metadata64="eyJqYXZhVHlwZTpwIjoiamF2YS5sYW5nLkludGVnZXIiLCJwcm9wZXJ0eTpwIjoicCJ9", target64="Q291bnRlcg", kind="ENTITY", source64="YXJ0aWZhY3QtY2xhc3M6b3JnLnR6aS51c2UucGx1Z2lucy5qYWNhbW8uc2VtYW50aWNzLkNzbENvdW50ZXJBcnRpZmFjdA")
+@OriginalCslDeclaration(id64="Q291bnRlcg==", kind="ENTITY", owner64="")
+@DomainProjection(javaClass64="b3JnLnR6aS51c2UucGx1Z2lucy5qYWNhbW8uc2VtYW50aWNzLkNzbENvdW50ZXJBcnRpZmFjdA", kind="artifact", sourceId64="YXJ0aWZhY3QtY2xhc3M6b3JnLnR6aS51c2UucGx1Z2lucy5qYWNhbW8uc2VtYW50aWNzLkNzbENvdW50ZXJBcnRpZmFjdA")
+class Counter < DomainEntity
+attributes
+  @OriginalCslAttribute(default64="OTk=", hasDefault="true", mutable="true", optional="false", id64="Q291bnRlcjo6cA==")
+  p : Integer
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOlJvbGVPY2N1cnJlbmNl", kind="M0_EXTENSION")
+abstract class RoleOccurrence
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOlJ1bnRpbWVQbGF5ZXI=", kind="M0_EXTENSION")
+abstract class RuntimePlayer
+end
+
+association Plays between
+  RuntimePlayer[1] role player
+  RoleOccurrence[*] role enactedRoles
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOk9yZ0NvbnRleHQ=", kind="M0_EXTENSION")
+abstract class OrgContext < RuntimePlayer
+end
+
+@CanonicalSemanticBinding(rule64="TTAz", reason64="", metadata64="e30", target64="Ul93b3JrZXI", kind="ROLE", source64="bW9pc2U6b3JnYW5pemF0aW9uOmNzbF9tb25pdG9yOm1vbml0b3I6cm9sZTp3b3JrZXI")
+@OriginalCslDeclaration(id64="Ul93b3JrZXI=", kind="ROLE", owner64="Q190ZWFt")
+@DomainProjection(javaClass64="", kind="csl-role", sourceId64="bW9pc2U6b3JnYW5pemF0aW9uOmNzbF9tb25pdG9yOm1vbml0b3I6cm9sZTp3b3JrZXI")
+class R_worker < R_soc
+end
+
+@CanonicalSemanticBinding(rule64="TTAz", reason64="RVhQTElDSVRfQUJTVFJBQ1RfTU9JU0VfUk9MRV9BU19DT05DUkVURV9ERUNMQVJBVElPTl9PTkxZX1ZJRVc", metadata64="e30", target64="Ul9zb2M", kind="ROLE", source64="bW9pc2U6b3JnYW5pemF0aW9uOmNzbF9tb25pdG9yOm1vbml0b3I6cm9sZTpzb2M")
+@OriginalCslDeclaration(id64="Ul9zb2M=", kind="ROLE", owner64="")
+@DomainProjection(javaClass64="", kind="csl-role", sourceId64="bW9pc2U6b3JnYW5pemF0aW9uOmNzbF9tb25pdG9yOm1vbml0b3I6cm9sZTpzb2M")
+class R_soc < RoleOccurrence
+end
+
+@CanonicalSemanticBinding(rule64="TTAy", reason64="REVDTEFSQVRJT05fT05MWQ", metadata64="e30", target64="Q190ZWFt", kind="ORG_CONTEXT", source64="bW9pc2U6b3JnYW5pemF0aW9uOmNzbF9tb25pdG9yOm1vbml0b3I6Z3JvdXA6dGVhbXx0ZWFt")
+@OriginalCslDeclaration(id64="Q190ZWFt", kind="ORG_CONTEXT", owner64="")
+@DomainProjection(javaClass64="", kind="csl-org_context", sourceId64="bW9pc2U6b3JnYW5pemF0aW9uOmNzbF9tb25pdG9yOm1vbml0b3I6Z3JvdXA6dGVhbXx0ZWFt")
+class C_team < OrgContext
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOldvcmtzcGFjZU9ic2VydmF0aW9u", kind="M0_EXTENSION")
+class WorkspaceObservation
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOkF0b21pY0FnZW50", kind="M0_EXTENSION")
+class AtomicAgent < RuntimePlayer
+end
+
+association InContext between
+  OrgContext[1]
+  RoleOccurrence[*] role roles
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOkRvbWFpbkVudGl0eQ==", kind="M0_EXTENSION")
+abstract class DomainEntity
+end
+
+constraints
+context Counter inv Nonnegative:
+  (self.p >= 0)
+
+context OrgContext inv CslV4RoleCompatibility:
+  self.roles->forAll( r1:RoleOccurrence, r2:RoleOccurrence | ((((((r1 = r2) or (r1.player <> r2.player)) or (r1.oclIsKindOf(R_soc) and r2.oclIsKindOf(R_soc))) or (r1.oclIsKindOf(R_soc) and r2.oclIsKindOf(R_worker))) or (r1.oclIsKindOf(R_worker) and r2.oclIsKindOf(R_soc))) or (r1.oclIsKindOf(R_worker) and r2.oclIsKindOf(R_worker))) )
+

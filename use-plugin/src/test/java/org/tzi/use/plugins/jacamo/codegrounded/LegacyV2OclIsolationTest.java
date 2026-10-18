@@ -31,7 +31,12 @@ class LegacyV2OclIsolationTest {
         String branch = section(source,"private ProjectSummary synchronizeBridge","private void validateBridgeSelection");
         assertTrue(branch.contains("candidate.synchronize(() ->"),"The native resync must fence the previous writer before copying its cut");
         assertTrue(branch.contains("previous.stopRuntimeDelivery.run()"));
-        assertTrue(branch.contains("buildNativeSemantic(selectedJcm, accepted.model(), importNanos)"));
+        assertTrue(branch.contains("selectedImport==null?ImportSemantics.configured():selectedImport"),
+                "Programmatic defaults remain available while an accepted explicit selection stays frozen");
+        assertTrue(branch.contains("Path verificationProfile,ImportSemantics selection)"),
+                "Both routes must pass their frozen selection to the same native handoff");
+        assertTrue(branch.contains("selection.hash().equals(previous.semanticSelectionHash)"),"Resync must keep the same frozen mapping/profile");
+        assertTrue(branch.contains("buildNativeSemantic(selectedJcm, accepted.model(), importNanos,selection)"));
         assertTrue(branch.contains("new NativeUseSessionActivator().activate(session, next.pipeline,"));
         assertTrue(branch.contains("sessionChanges.get()==sessionEpoch"),"Activation must still own the USE Session on the EDT");
         assertTrue(branch.contains("return next.summary"));

@@ -1,0 +1,1 @@
+org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result{org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result.errors=[java.lang.String:semantic: ACHIEVE goal 'a' cannot refine MAINTAIN goal 'parent' via AND — allowed child goal types are [MAINTAIN, NONE]], org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result.model=null}

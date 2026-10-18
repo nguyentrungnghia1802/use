@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "resources": {
+    "org/vnu/sme/goal/dsl/csl/mm/CslModel.class": [
+      "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\target\\use-plugin-1.0.1.jar"
+    ],
+    "org/antlr/v4/runtime/RuntimeMetaData.class": [
+      "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\target\\use-plugin-1.0.1.jar"
+    ]
+  },
+  "reportSha256": "a4a2f656b30e355ed0febf20e36f1d9057eea1753559e7157d4236ab67bc296c"
+}

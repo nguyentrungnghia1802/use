@@ -1,0 +1,1307 @@
+{
+  "profileAuthority": "Versioned routes retained, no deletion/default switch",
+  "tokens": [
+    "CslSchema",
+    "RequirementModel",
+    "TemporalGoalMonitor",
+    "CslSchemaValidator",
+    "CslUseBinding",
+    "CslMonitorConfiguration",
+    "SemanticRuntimeVerifier"
+  ],
+  "callers": [
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/CodeGroundedNativePipeline.java",
+      "action": "KEEP",
+      "currentHash": "4287bdeed0208380d4c73178e466513d4a8253f302d6c1d46af0be1899a28280",
+      "references": [
+        {
+          "line": 42,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "? null : org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration.configured());"
+        },
+        {
+          "line": 46,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration semantics) {"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeOperationCheckpoints.java",
+      "action": "KEEP",
+      "currentHash": "39c09aaac05a6ab320f49cb93d3057942587468cf4f1c1ddee0aef116aa335ad",
+      "references": [
+        {
+          "line": 144,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "for(var node:CslUseBinding.configuration(engine.system().model()).requirements().nodes())"
+        },
+        {
+          "line": 145,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "if(node.kind()==org.tzi.use.plugins.jacamo.semantics.istar.RequirementModel.Kind.TASK && engine.objectForSemanticId(node.binding().playerIdentity())==actor) {"
+        },
+        {
+          "line": 152,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "var rows=new ArrayList<SemanticConstraintResult>();for(var contract:CslUseBinding.configuration(engine.system().model()).schema().contracts()) {"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java",
+      "action": "KEEP",
+      "currentHash": "2b1cd30038973f21043bd1440139e5cb2869b0730af069f21c378f55348670c0",
+      "references": [
+        {
+          "line": 98,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "this.cslMapper = org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.active(system.model())"
+        },
+        {
+          "line": 99,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "? new org.tzi.use.plugins.jacamo.semantics.runtime.SemanticObservationMapper(org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.configuration(system.model())) : null;"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java",
+      "action": "KEEP",
+      "currentHash": "97693c21c71ab8dd2f954fb9a8ccd2f2ef787c1e95f631fccd29b2a52054aa79",
+      "references": [
+        {
+          "line": 104,
+          "tokens": [
+            "SemanticRuntimeVerifier"
+          ],
+          "source": "private final org.tzi.use.plugins.jacamo.semantics.runtime.SemanticRuntimeVerifier semanticVerifier;"
+        },
+        {
+          "line": 188,
+          "tokens": [
+            "SemanticRuntimeVerifier"
+          ],
+          "source": "semanticVerifier=engine.cslProfile()?new org.tzi.use.plugins.jacamo.semantics.runtime.SemanticRuntimeVerifier(engine):null;"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeProjectionAudit.java",
+      "action": "KEEP",
+      "currentHash": "0d45574c6d26b03045a4e3741e11cf844ba9bef5b763b55c50daa4f3d0564c64",
+      "references": [
+        {
+          "line": 49,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "if (org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.active(schema.model())) {"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseModelBuilder.java",
+      "action": "KEEP",
+      "currentHash": "95b18d844396d5cf41bef459d0dce86aa9c960fa1c6d722c7b90702238542de5",
+      "references": [
+        {
+          "line": 31,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration config) {"
+        },
+        {
+          "line": 32,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "var binding = org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.compile(source, config, trace);"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseStateBuilder.java",
+      "action": "KEEP",
+      "currentHash": "2eb4b461b395df8c041b207ce70413d1265c0d72ce82bfed09dbc299ab029f9a",
+      "references": [
+        {
+          "line": 22,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "if (org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.active(schema.model())"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java",
+      "action": "KEEP",
+      "currentHash": "56682495be0aaa2dec0a730809af48d3aafbc08bb06234083acdbdcf80aaefbf",
+      "references": [
+        {
+          "line": 173,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "String file=System.getProperty(profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.USE4GOAL_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.MappingRuleSet.PROPERTY:org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration.PROPERTY,\"\").trim();"
+        },
+        {
+          "line": 932,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration legacy,String hash) {"
+        },
+        {
+          "line": 936,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "var legacy=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.CSL_OBSERVER_V1||profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.CSL_OBSERVER_V2?org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration.configured():null;"
+        },
+        {
+          "line": 944,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration legacy=null;"
+        },
+        {
+          "line": 947,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "legacy=org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration.parse(Files.readAllBytes(request.specification()));"
+        },
+        {
+          "line": 1024,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.active(system.model())||org.tzi.use.semantic.engine.use75.Use75CslModelBackend.active(system.model())"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/binding/ProjectionBindingRegistry.java",
+      "action": "KEEP",
+      "currentHash": "177552fd7441fd4d88e437539aa9bbd9360626bf48c5247ab1ae5ec68e746c50",
+      "references": [
+        {
+          "line": 6,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "import org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding;"
+        },
+        {
+          "line": 20,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": ":CslUseBinding.active(model)?CslUseBinding.configuration(model).profile().name():\"NATIVE_CURRENT\";"
+        },
+        {
+          "line": 23,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "String semanticKind=CslUseBinding.active(model)?c.getAnnotationValue(\"CslClassifier\",\"kind\"):DomainProjection.kind(c);"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/csl/CslSchema.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "5c7442ab7bb0185c5f949282a986b05d610c193a9e1cdcabbf9987fa955e673e",
+      "references": [
+        {
+          "line": 6,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "public record CslSchema(String id, List<Classifier> classifiers, List<Association> associations,"
+        },
+        {
+          "line": 9,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "public CslSchema(String id,List<Classifier> classifiers,List<Association> associations,List<Invariant> invariants,List<OperationContract> contracts) {"
+        },
+        {
+          "line": 19,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "required(id); required(sourceId); CslSchema.symbol(symbol); Objects.requireNonNull(kind);"
+        },
+        {
+          "line": 26,
+          "tokens": [
+            "CslSchemaValidator"
+          ],
+          "source": "public End { required(typeId); symbol(roleName); CslSchemaValidator.multiplicity(multiplicity); }"
+        },
+        {
+          "line": 30,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "required(id); CslSchema.symbol(symbol); ends = List.copyOf(ends);"
+        },
+        {
+          "line": 35,
+          "tokens": [
+            "CslSchemaValidator"
+          ],
+          "source": "if(aggregationKind==2)CslSchemaValidator.compositionMultiplicity(ends.getFirst().multiplicity());"
+        },
+        {
+          "line": 50,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "public CslSchema {"
+        },
+        {
+          "line": 54,
+          "tokens": [
+            "CslSchemaValidator"
+          ],
+          "source": "CslSchemaValidator.validatePolicy(classifiers,policy);"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/csl/CslSchemaValidator.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "9c00073e1d9e19357b773258c8100c939e40e21937b1e7c7eb86103f4b3a0235",
+      "references": [
+        {
+          "line": 5,
+          "tokens": [
+            "CslSchemaValidator"
+          ],
+          "source": "public final class CslSchemaValidator {"
+        },
+        {
+          "line": 6,
+          "tokens": [
+            "CslSchemaValidator"
+          ],
+          "source": "private CslSchemaValidator(){}"
+        },
+        {
+          "line": 7,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "public static void validatePolicy(List<CslSchema.Classifier> classifiers,CslStructuralPolicy policy) {"
+        },
+        {
+          "line": 8,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "var types=new HashMap<String,CslSchema.Classifier>();classifiers.forEach(c->types.put(c.id(),c));"
+        },
+        {
+          "line": 11,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "unique(ids,link.id());require(types,link.parentContext(),CslSchema.Kind.ORG_CONTEXT);require(types,link.childContext(),CslSchema.Kind.ORG_CONTEXT);"
+        },
+        {
+          "line": 20,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "unique(ids,declaration.id());require(types,declaration.contextType(),CslSchema.Kind.ORG_CONTEXT);"
+        },
+        {
+          "line": 21,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "if(!types.containsKey(declaration.memberType()) || types.get(declaration.memberType()).kind()==CslSchema.Kind.ORG_CONTEXT)throw new IllegalArgumentException(\"CSL_DECLARATION_USE_NESTING_FOR_CONTEXT\");"
+        },
+        {
+          "line": 24,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "for(var card:policy.cardinalities()){unique(ids,card.id());require(types,card.contextType(),CslSchema.Kind.ORG_CONTEXT);require(types,card.roleType(),CslSchema.Kind.ROLE);}"
+        },
+        {
+          "line": 27,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "unique(ids,compatibility.id());require(types,compatibility.firstRole(),CslSchema.Kind.ROLE);require(types,compatibility.secondRole(),CslSchema.Kind.ROLE);"
+        },
+        {
+          "line": 32,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "private static void require(Map<String,CslSchema.Classifier> types,String id,CslSchema.Kind kind){if(!types.containsKey(id)||types.get(id).kind()!=kind)throw new IllegalArgumentException(\"CSL_POLICY_CLASSIFIER_KIND_OR_REFERENCE:\"+id);}"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/csl/CslStructuralPolicy.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "50eff62c4031d6277219def642dc8eb1dda553f468f66a9075a582596bf6bc1e",
+      "references": [
+        {
+          "line": 4,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "import static org.tzi.use.plugins.jacamo.semantics.csl.CslSchema.required;"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/csl/CslStructuralPolicyCompiler.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "1e1e937115212f696269d6adce3639e2a8e2d31b95f786b824ef3ad845790881",
+      "references": [
+        {
+          "line": 10,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "public static void install(UseModelApi api,CslSchema schema) throws UseApiException {"
+        },
+        {
+          "line": 26,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "var roles=schema.classifiers().stream().filter(c->c.kind()==CslSchema.Kind.ROLE).toList();"
+        },
+        {
+          "line": 38,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "for(var context:schema.classifiers())if(context.kind()==CslSchema.Kind.ORG_CONTEXT)"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/csl/CslUseBinding.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "bf07ed46c73f8590b22c2a1014ccc221ec147e3f88bbbfa6dc5c2cc8a561cf6a",
+      "references": [
+        {
+          "line": 16,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "public final class CslUseBinding implements UseProjectionBinding {"
+        },
+        {
+          "line": 22,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "private final CslMonitorConfiguration configuration;"
+        },
+        {
+          "line": 23,
+          "tokens": [
+            "CslMonitorConfiguration",
+            "CslUseBinding"
+          ],
+          "source": "private CslUseBinding(MModel model, CslMonitorConfiguration configuration) {"
+        },
+        {
+          "line": 28,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "public CslMonitorConfiguration configuration() { return configuration; }"
+        },
+        {
+          "line": 30,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "public static CslMonitorConfiguration configuration(MModel model) {"
+        },
+        {
+          "line": 32,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "return CslMonitorConfiguration.parse(Base64.getDecoder().decode(model.getAnnotationValue(PROFILE,\"configuration64\")));"
+        },
+        {
+          "line": 35,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "public static String typeName(CslMonitorConfiguration config, String id) { return org.tzi.use.plugins.jacamo.semantics.observer.FunctionalUseBinding.typeId(id) ? org.tzi.use.plugins.jacamo.semantics.observer.FunctionalUseBinding.typeName(id) : org.tzi.use.plugins.jacamo.semantics.observer.MentalUseBinding.typeId(id) ? org.tzi.use.plugins.jacamo.semantics.observer.MentalUseBinding.typeName(id) : config.schema().classifier(id).symbol(); }"
+        },
+        {
+          "line": 37,
+          "tokens": [
+            "CslMonitorConfiguration",
+            "CslUseBinding"
+          ],
+          "source": "public static CslUseBinding compile(JacamoSpecificationModel source, CslMonitorConfiguration config,"
+        },
+        {
+          "line": 42,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "Map<String, CslSchema.Kind> sourceKinds = new HashMap<>();"
+        },
+        {
+          "line": 46,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "metadata.put(r.metadata().semanticId(),r.metadata()); sourceKinds.put(r.metadata().semanticId(),CslSchema.Kind.ROLE);"
+        },
+        {
+          "line": 50,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "metadata.put(g.metadata().semanticId(),g.metadata()); sourceKinds.put(g.metadata().semanticId(),CslSchema.Kind.ORG_CONTEXT);"
+        },
+        {
+          "line": 55,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "javaTypes.put(id,type.javaClassName()); metadata.put(id,type.metadata()); sourceKinds.put(id,CslSchema.Kind.ENTITY);"
+        },
+        {
+          "line": 58,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "javaTypes.put(stable,type.javaClassName()); metadata.put(stable,type.metadata()); sourceKinds.put(stable,CslSchema.Kind.ENTITY);"
+        },
+        {
+          "line": 63,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "sourceKinds.putIfAbsent(stable,CslSchema.Kind.ENTITY);"
+        },
+        {
+          "line": 86,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "DomainProjection.annotate(cls,classifier.kind()==CslSchema.Kind.ENTITY?\"artifact\":\"csl-\"+classifier.kind().name().toLowerCase(Locale.ROOT),"
+        },
+        {
+          "line": 103,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "if(classifier.kind()==CslSchema.Kind.ROLE && !classifier.parentId().isBlank()) {"
+        },
+        {
+          "line": 114,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "ends.stream().map(CslSchema.End::roleName).toArray(String[]::new),"
+        },
+        {
+          "line": 115,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "ends.stream().map(CslSchema.End::multiplicity).toArray(String[]::new),"
+        },
+        {
+          "line": 131,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "var owners = config.schema().classifiers().stream().filter(c->c.kind()==CslSchema.Kind.ENTITY &&"
+        },
+        {
+          "line": 165,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "return new CslUseBinding(api.getModel(),config);"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/evidence/SemanticMappingAttachment.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "f3bd52ea0e22f0c28ea6ca2420cff71accc0bf32e42e690b6eb60c21b8087a73",
+      "references": [
+        {
+          "line": 6,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "import org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding;"
+        },
+        {
+          "line": 13,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "if(!CslUseBinding.active(model) || !Arrays.equals(CslUseBinding.configuration(model).bytes(),bundle.configuration().bytes()))throw new IllegalArgumentException(\"MAPPING_ATTACHMENT_CONFIGURATION_MISMATCH\");"
+        },
+        {
+          "line": 23,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "if(!Arrays.equals(CslUseBinding.configuration(model).bytes(),bundle.configuration().bytes()))throw new IllegalArgumentException(\"MAPPING_ATTACHMENT_CONFIGURATION_MISMATCH\");return Optional.of(bundle);"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/exploration/BoundedExplorer.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "82413811238d1514ebd6ac356717d9368a62e63ec9ca18254e867d1ea6e6d6c8",
+      "references": [
+        {
+          "line": 24,
+          "tokens": [
+            "TemporalGoalMonitor"
+          ],
+          "source": "private record Work(String state,TemporalGoalMonitor.Snapshot history,List<String> path,Map<String,Integer> visits,List<Check> checks,Map<String,SemanticVerdict> tasks){}"
+        },
+        {
+          "line": 29,
+          "tokens": [
+            "TemporalGoalMonitor"
+          ],
+          "source": "final OclEvaluationAdapter evaluator=new OclEvaluationAdapter();final TemporalGoalMonitor monitor;MSystem isolated;UseSystemApi api;"
+        },
+        {
+          "line": 31,
+          "tokens": [
+            "TemporalGoalMonitor"
+          ],
+          "source": "Run(MModel schema,TransitionProfile p,ExplorationBounds b){this.schema=Objects.requireNonNull(schema);this.p=Objects.requireNonNull(p);this.b=Objects.requireNonNull(b);hash=SemanticJson.hash(SemanticJson.tree(p));monitor=new TemporalGoalMonitor(p.requirements());}"
+        },
+        {
+          "line": 44,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "for(var t:p.transitions()){var self=objects.get(t.self());if(self==null)throw new IllegalArgumentException(\"FINITE_TRANSITION_SELF_UNRESOLVED:\"+t.id());edges.put(t.id(),new Edge(SemanticOclCompiler.predicate(schema,self.cls(),t.id()+\":guard\",t.guard()),SemanticOclCompiler.transitionPredicate(schema,self.cls(),t.id()+\":post\",t.post())));for(var task:t.taskOutcomes().keySet())if(p.requirements().nodes().stream().noneMatch(n->n.id().equals(task) && n.kind()==RequirementModel.Kind.TASK))throw new IllegalArgumentException(\"FINITE_TASK_CONTRACT_BINDING_UNRESOLVED:\"+task);}"
+        },
+        {
+          "line": 57,
+          "tokens": [
+            "TemporalGoalMonitor"
+          ],
+          "source": "monitor.restore(w.history());var inputs=new TreeMap<String,TemporalGoalMonitor.Input>();"
+        },
+        {
+          "line": 58,
+          "tokens": [
+            "RequirementModel",
+            "TemporalGoalMonitor"
+          ],
+          "source": "for(var node:p.requirements().nodes()) {var vars=vars(node.binding().selfIdentity());var expr=predicates.get(node.id());var active=evaluator.evaluate(expr.activation(),image,image,vars);var condition=node.kind()==RequirementModel.Kind.TASK?w.tasks().getOrDefault(node.id(),SemanticVerdict.INCONCLUSIVE):expr.condition()==null?SemanticVerdict.INCONCLUSIVE:evaluator.evaluate(expr.condition(),image,image,vars).verdict();inputs.put(node.id(),new TemporalGoalMonitor.Input(active.verdict(),condition,SemanticJson.hash(SemanticJson.tree(node.binding())),\"FINITE_PROFILE_AUTHORED_BINDING\"));}"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/exploration/TransitionProfile.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "dbf50a57132b14754daf91accbb65a4c3e09d56aa8f7b2de389d4f070a074d94",
+      "references": [
+        {
+          "line": 4,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "import org.tzi.use.plugins.jacamo.semantics.istar.RequirementModel;"
+        },
+        {
+          "line": 10,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "List<Transition> transitions,RequirementModel requirements,Set<String> roots,List<String> assumptions) {"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/istar/MoiseRequirementBinder.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "6a0fdcd3eb6936387211b651092e56dab62bb13921b1fa9eff42289c46dbd45b",
+      "references": [
+        {
+          "line": 8,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "public RequirementModel.Node bind(String occurrence,String requirement,RequirementModel.Temporal temporal,"
+        },
+        {
+          "line": 9,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "RequirementModel.Binding actorScope,FunctionalObservation cut,String sourceGoal) {"
+        },
+        {
+          "line": 11,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "var binding=new RequirementModel.Binding(actorScope.actorId(),actorScope.playerIdentity(),actorScope.roleTypeId(),actorScope.contextIdentity(),"
+        },
+        {
+          "line": 13,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "return new RequirementModel.Node(occurrence,requirement,RequirementModel.Kind.GOAL,temporal,binding,\"self.state = 'SATISFIED'\",\"true\",RequirementModel.Refinement.NONE,List.of(),\"\",\"\");"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/istar/OPlanOutcomeMapper.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "25777a680a711b5a06bf44e25b03717f1dfe6d5d79389d8001bbe89c71a880cd",
+      "references": [
+        {
+          "line": 8,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "public RequirementModel.Node bind(ExecutionDescriptor.Plan plan,String id,String requirement,"
+        },
+        {
+          "line": 9,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "RequirementModel.Temporal temporal,RequirementModel.Binding binding,Map<String,String> childOccurrences) {"
+        },
+        {
+          "line": 13,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "return new RequirementModel.Node(id,requirement,RequirementModel.Kind.GOAL,temporal,binding,\"\",\"true\","
+        },
+        {
+          "line": 14,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "plan.operator()==ExecutionDescriptor.Operator.CHOICE?RequirementModel.Refinement.OR:RequirementModel.Refinement.AND,children,\"\",\"\");"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/istar/RequirementBindingResolver.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "271187087d1ce4cdd8e98ad828ed7a9be155898d6dbfe7801383defc042c56d8",
+      "references": [
+        {
+          "line": 7,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "import org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding;"
+        },
+        {
+          "line": 10,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "private final org.tzi.use.uml.mm.MModel boundModel;private final org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration configuration;private final Map<String,org.tzi.use.uml.mm.MClass> cached;"
+        },
+        {
+          "line": 12,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "public RequirementBindingResolver(org.tzi.use.uml.mm.MModel model,org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration config){this(model,config,true);}"
+        },
+        {
+          "line": 13,
+          "tokens": [
+            "CslMonitorConfiguration",
+            "CslUseBinding"
+          ],
+          "source": "public RequirementBindingResolver(org.tzi.use.uml.mm.MModel model,org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration config,boolean cache){boundModel=model;configuration=config;var values=new HashMap<String,org.tzi.use.uml.mm.MClass>();if(cache)for(var cls:config.schema().classifiers())values.put(cls.id(),model.getClass(cls.symbol()));if(cache)for(var node:config.requirements().nodes())values.put(node.binding().selfTypeId(),model.getClass(CslUseBinding.typeName(config,node.binding().selfTypeId())));cached=Map.copyOf(values);}"
+        },
+        {
+          "line": 14,
+          "tokens": [
+            "CslMonitorConfiguration",
+            "CslUseBinding"
+          ],
+          "source": "private org.tzi.use.uml.mm.MClass type(NativeRuntimeMutationEngine engine,String id,org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration config){if(boundModel!=null && boundModel!=engine.system().model())throw new IllegalArgumentException(\"REQUIREMENT_BINDING_MODEL_MISMATCH\");return cached.containsKey(id)?cached.get(id):engine.system().model().getClass(CslUseBinding.typeName(config,id));}"
+        },
+        {
+          "line": 16,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "public Resolved resolve(NativeRuntimeMutationEngine engine,RequirementModel.Binding binding,Set<String> freshContexts) {"
+        },
+        {
+          "line": 20,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "var config=configuration==null?CslUseBinding.configuration(engine.system().model()):configuration;"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/istar/RequirementModel.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "d5f9ff5796c86b4b8392e9244b105a982feb517563285585ff22a7357d5af4f6",
+      "references": [
+        {
+          "line": 4,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "import static org.tzi.use.plugins.jacamo.semantics.csl.CslSchema.required;"
+        },
+        {
+          "line": 8,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "public record RequirementModel(List<Node> nodes) {"
+        },
+        {
+          "line": 40,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "public RequirementModel {"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/istar/TaskBinding.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "23f5efc9ebdf5382fec36298ae5ad78cef6254c125219774035459f0e12ed9a6",
+      "references": [
+        {
+          "line": 4,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "import static org.tzi.use.plugins.jacamo.semantics.csl.CslSchema.required;"
+        },
+        {
+          "line": 7,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "public record TaskBinding(String sourceAgentProgram,String sourcePlan,String sourceBody,String targetContract,RequirementModel.Binding occurrence,java.util.Map<String,Object> contextQuery) {"
+        },
+        {
+          "line": 8,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "public TaskBinding(String sourceAgentProgram,String sourcePlan,String sourceBody,String targetContract,RequirementModel.Binding occurrence){this(sourceAgentProgram,sourcePlan,sourceBody,targetContract,occurrence,java.util.Map.of());}"
+        },
+        {
+          "line": 10,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "public RequirementModel.Node requirement(String id,String requirement) {"
+        },
+        {
+          "line": 11,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "return new RequirementModel.Node(id,requirement,RequirementModel.Kind.TASK,RequirementModel.Temporal.NONE,occurrence,\"\",\"true\",RequirementModel.Refinement.NONE,java.util.List.of(),\"\",targetContract);"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/istar/TemporalGoalMonitor.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "46cfe21e62eba81c204c1322afeaf4afedd5d5b95a3c388cd706c516b59b77f9",
+      "references": [
+        {
+          "line": 9,
+          "tokens": [
+            "TemporalGoalMonitor"
+          ],
+          "source": "public final class TemporalGoalMonitor {"
+        },
+        {
+          "line": 15,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "private final RequirementModel model;"
+        },
+        {
+          "line": 20,
+          "tokens": [
+            "RequirementModel",
+            "TemporalGoalMonitor"
+          ],
+          "source": "public TemporalGoalMonitor(RequirementModel model) {this.model=model;}"
+        },
+        {
+          "line": 27,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "var nodes=new HashMap<String,RequirementModel.Node>();model.nodes().forEach(n->nodes.put(n.id(),n));"
+        },
+        {
+          "line": 32,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "private IntentionalMarking evaluate(RequirementModel.Node node,Map<String,RequirementModel.Node> nodes,Map<String,Input> inputs,"
+        },
+        {
+          "line": 39,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "raw=node.refinement()==RequirementModel.Refinement.AND?and(children.stream().map(IntentionalMarking::evaluated).toList()):or(children.stream().map(IntentionalMarking::evaluated).toList());"
+        },
+        {
+          "line": 66,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "if(node.kind()==RequirementModel.Kind.TASK) {"
+        },
+        {
+          "line": 83,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "if((node.temporal()==RequirementModel.Temporal.MAINTAIN || node.temporal()==RequirementModel.Temporal.SUSTAIN) && gap && evaluated==UNDETERMINED)quality=SemanticVerdict.INCONCLUSIVE;"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/JasonAbstractionPolicy.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "892e2721ab76db0d3585b16c2dbe7038f17a6464e2d22ae14850cdce6e28dc33",
+      "references": [
+        {
+          "line": 6,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "import org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration;"
+        },
+        {
+          "line": 13,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "public Approved admit(AgentProgramSemantic program,TaskBinding binding,Map<String,Object> parsedContext,CslMonitorConfiguration configuration) {"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/MappingBundle.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "e22e8ab6b401c75e883e6bfd236f52637f74daa3aa492f8f50667e7382917c38",
+      "references": [
+        {
+          "line": 5,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "import org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration;"
+        },
+        {
+          "line": 7,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "public record MappingBundle(NormalizedSourceModel source,CslMonitorConfiguration configuration,TraceComplement complement) {"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/OrganizationalMappingRules.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "f8dbff2d276c7a6ec90da5bbce25c5825f3f73c239c80d6840f0787afc5fb076",
+      "references": [
+        {
+          "line": 7,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "import org.tzi.use.plugins.jacamo.semantics.istar.RequirementModel;"
+        },
+        {
+          "line": 12,
+          "tokens": [
+            "CslMonitorConfiguration",
+            "CslSchema"
+          ],
+          "source": "public CslMonitorConfiguration derive(ModelSnapshot input,List<CslSchema.Classifier> domain,"
+        },
+        {
+          "line": 13,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "List<CslSchema.Association> associations,List<CslSchema.Invariant> invariants,"
+        },
+        {
+          "line": 14,
+          "tokens": [
+            "CslSchema",
+            "RequirementModel"
+          ],
+          "source": "List<CslSchema.OperationContract> contracts,RequirementModel requirements) {"
+        },
+        {
+          "line": 15,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "if(domain.stream().anyMatch(c->c.kind()!=CslSchema.Kind.ENTITY))throw new IllegalArgumentException(\"DOMAIN_VIEW_CLASSIFIERS_MUST_BE_ENTITIES\");"
+        },
+        {
+          "line": 17,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "var candidates=new ArrayList<MoiseUseSymbols.Candidate>();var reserved=new HashSet<>(CslUseBinding.HELPERS);domain.forEach(c->reserved.add(c.symbol()));"
+        },
+        {
+          "line": 33,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "for(var group:ss.groups())types.add(new CslSchema.Classifier(group.metadata().semanticId(),group.metadata().semanticId(),symbols.get(group.metadata().semanticId()),CslSchema.Kind.ORG_CONTEXT,\"\",false,List.of()));"
+        },
+        {
+          "line": 34,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "for(var role:ss.roles())if(!excluded.contains(role.metadata().semanticId()))types.add(new CslSchema.Classifier(role.metadata().semanticId(),role.metadata().semanticId(),symbols.get(role.metadata().semanticId()),CslSchema.Kind.ROLE,"
+        },
+        {
+          "line": 49,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "var schema=new CslSchema(\"derived:\"+input.modelRevision(),types,associations,invariants,contracts,new CslStructuralPolicy(nesting,cards,List.of(),false));"
+        },
+        {
+          "line": 50,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "return new CslMonitorConfiguration(\"1.0\",SemanticProjectionProfile.CSL_OBSERVER_V2,schema,requirements,decisions);"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/SemanticTransformationService.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "a3a92aa8e02adb63a56d9a94b7d72ae9242587198b732c5ccbedd4244551ceb2",
+      "references": [
+        {
+          "line": 6,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "import org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration;"
+        },
+        {
+          "line": 29,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "public MappingBundle fromOfficial(ModelSnapshot input,CslMonitorConfiguration configuration) {"
+        },
+        {
+          "line": 34,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "Map<String,String> correspondences,CslMonitorConfiguration configuration) {"
+        },
+        {
+          "line": 53,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "private MappingBundle bundle(NormalizedSourceModel source,CslMonitorConfiguration config,List<TraceComplement.Asset> assets,Map<String,String> correspondences) {"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/profile/CslMonitorConfiguration.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "f320838154cbd1af2d5fcd54f090aa754cfc32432f3dccc8c1ef37010e9fd4c1",
+      "references": [
+        {
+          "line": 9,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "import org.tzi.use.plugins.jacamo.semantics.csl.CslSchema;"
+        },
+        {
+          "line": 10,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "import org.tzi.use.plugins.jacamo.semantics.istar.RequirementModel;"
+        },
+        {
+          "line": 13,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "public record CslMonitorConfiguration(String version, SemanticProjectionProfile profile,"
+        },
+        {
+          "line": 14,
+          "tokens": [
+            "CslSchema",
+            "RequirementModel"
+          ],
+          "source": "CslSchema schema, RequirementModel requirements, List<UnsupportedFeature> decisions,"
+        },
+        {
+          "line": 16,
+          "tokens": [
+            "CslMonitorConfiguration",
+            "CslSchema",
+            "RequirementModel"
+          ],
+          "source": "public CslMonitorConfiguration(String version,SemanticProjectionProfile profile,CslSchema schema,RequirementModel requirements,List<UnsupportedFeature> decisions){this(version,profile,schema,requirements,decisions,List.of());}"
+        },
+        {
+          "line": 19,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "public CslMonitorConfiguration {"
+        },
+        {
+          "line": 28,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "if(!jasonTasks.isEmpty()) {capabilities.require(\"jason.execution-observer\");for(var task:jasonTasks)if(requirements.nodes().stream().noneMatch(n->n.kind()==RequirementModel.Kind.TASK && n.contractId().equals(task.targetContract()) && n.binding().equals(task.occurrence())))throw new IllegalArgumentException(\"JASON_TASK_REQUIREMENT_BINDING_MISSING\");}"
+        },
+        {
+          "line": 34,
+          "tokens": [
+            "CslSchema"
+          ],
+          "source": "if(schema.classifier(requirement.binding().roleTypeId()).kind()!=CslSchema.Kind.ROLE)throw new IllegalArgumentException(\"REQUIREMENT_ROLE_BINDING_TYPE_REQUIRED\");"
+        },
+        {
+          "line": 35,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "if(requirement.kind()==RequirementModel.Kind.TASK && schema.contracts().stream().noneMatch(c->c.id().equals(requirement.contractId())))throw new IllegalArgumentException(\"TASK_CONTRACT_UNRESOLVED:\"+requirement.contractId());"
+        },
+        {
+          "line": 38,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "public static CslMonitorConfiguration parse(byte[] bytes) {"
+        },
+        {
+          "line": 40,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "try { return JSON.readValue(bytes, CslMonitorConfiguration.class); }"
+        },
+        {
+          "line": 47,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "public static CslMonitorConfiguration configured() {"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/LegacyObservationMappingBindings.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "5caffc2fd3b1c837ecf027b4047bb58b03ba47e8d013ac43cb54425ea97bbb81",
+      "references": [
+        {
+          "line": 13,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "private final CslMonitorConfiguration configuration;private final List<Type> types;"
+        },
+        {
+          "line": 14,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "LegacyObservationMappingBindings(CslMonitorConfiguration configuration) {"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/SemanticObservationMapper.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "1fea1414ac9ff6cb7e1fdd33bfd2e89be4aebab46ec4dfc013bcfe6c86ebe65f",
+      "references": [
+        {
+          "line": 33,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "public SemanticObservationMapper(org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration config) {this(new LegacyObservationMappingBindings(config));}"
+        }
+      ]
+    },
+    {
+      "file": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/SemanticRuntimeVerifier.java",
+      "action": "RETIRE_LATER",
+      "currentHash": "a707354bd07306b53eab0c6a85e3e86ffca26f6e57786ec83ee453737887de64",
+      "references": [
+        {
+          "line": 17,
+          "tokens": [
+            "SemanticRuntimeVerifier"
+          ],
+          "source": "public final class SemanticRuntimeVerifier {"
+        },
+        {
+          "line": 19,
+          "tokens": [
+            "CslMonitorConfiguration"
+          ],
+          "source": "private final CslMonitorConfiguration config;"
+        },
+        {
+          "line": 20,
+          "tokens": [
+            "TemporalGoalMonitor"
+          ],
+          "source": "private final TemporalGoalMonitor monitor;"
+        },
+        {
+          "line": 32,
+          "tokens": [
+            "TemporalGoalMonitor"
+          ],
+          "source": "public record Savepoint(TemporalGoalMonitor.Snapshot monitor,Set<String> freshContexts,Map<String,Object> observation,Set<String> normHistoryGaps) { }"
+        },
+        {
+          "line": 33,
+          "tokens": [
+            "SemanticRuntimeVerifier"
+          ],
+          "source": "public SemanticRuntimeVerifier(NativeRuntimeMutationEngine engine) {"
+        },
+        {
+          "line": 34,
+          "tokens": [
+            "CslUseBinding",
+            "TemporalGoalMonitor"
+          ],
+          "source": "this.engine=engine;config=CslUseBinding.configuration(engine.system().model());monitor=new TemporalGoalMonitor(config.requirements());"
+        },
+        {
+          "line": 39,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "var self=engine.system().model().getClass(CslUseBinding.typeName(config,node.binding().selfTypeId()));requirementTypes.put(node.id(),self.name());"
+        },
+        {
+          "line": 45,
+          "tokens": [
+            "TemporalGoalMonitor"
+          ],
+          "source": "rememberNormGap();freshContexts.clear();var inputs=new TreeMap<String,TemporalGoalMonitor.Input>();for(var node:config.requirements().nodes())inputs.put(node.id(),new TemporalGoalMonitor.Input(SemanticVerdict.SKIPPED,SemanticVerdict.SKIPPED,\"\",reason));monitor.evaluate(version,inputs,true);"
+        },
+        {
+          "line": 106,
+          "tokens": [
+            "TemporalGoalMonitor"
+          ],
+          "source": "var inputs=new LinkedHashMap<String,TemporalGoalMonitor.Input>();"
+        },
+        {
+          "line": 111,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "if(node.kind()==RequirementModel.Kind.TASK && config.jasonTasks().stream().anyMatch(t->t.targetContract().equals(node.contractId()) && t.occurrence().equals(node.binding()))) {"
+        },
+        {
+          "line": 113,
+          "tokens": [
+            "RequirementModel"
+          ],
+          "source": "} else if(node.kind()==RequirementModel.Kind.TASK) {"
+        },
+        {
+          "line": 130,
+          "tokens": [
+            "TemporalGoalMonitor"
+          ],
+          "source": "inputs.put(node.id(),new TemporalGoalMonitor.Input(activation.verdict(),condition.verdict(),binding.token(),binding.available()?condition.diagnostic():binding.diagnostic()));"
+        },
+        {
+          "line": 131,
+          "tokens": [
+            "CslUseBinding"
+          ],
+          "source": "results.add(result(\"REQUIREMENT:\"+node.id(),node.kind().name(),bindingCache?requirementTypes.get(node.id()):CslUseBinding.typeName(config,node.binding().selfTypeId()),binding.self(),node.condition(),condition,version,\"\"));"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "phase": 14,
+  "status": "DONE",
+  "focusedFinalTests": 36,
+  "focusedFailures": 0,
+  "focusedErrors": 0,
+  "focusedSkipped": 0,
+  "initialFullReactor": {
+    "tests": 832,
+    "failures": 1,
+    "errors": 1,
+    "skipped": 0,
+    "corrections": [
+      "Session.hasSystem replaces invalid null assumption",
+      "Architecture source guard recognizes explicitly captured ImportSemantics argument; legacy forbidden dependencies unchanged"
+    ]
+  },
+  "consolidated": {
+    "tests": 832,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "scope": "Distinct suites from full-regression.log plus corrected/focused acceptance-r4.log, not a claim of one final all-green full invocation"
+  },
+  "runtime": "Actual CArtAgO/MOISE in test, original Java engine in USE JVM; external JaCaMo TCP new-profile acceptance still pending Phase16",
+  "limitations": [
+    "Native USE Evaluator has no force-cancellation API; close fences results and never joins EDT, finite fixture worker termination tested",
+    "Transaction/persistence fault matrix remains Phase15",
+    "Workbench selection, Stop/Restart actions, completed manual-verification reporting remain Phase17"
+  ],
+  "protectedInputs": [
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal\\META-INF\\MANIFEST.MF",
+      "expected": "D5E7A93551B6A93BBD29F576C8A34683F433C39C3781924C29C71CB6854E9BFD",
+      "actual": "D5E7A93551B6A93BBD29F576C8A34683F433C39C3781924C29C71CB6854E9BFD"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal\\goal\\src\\main\\resources\\examples\\Classroom\\classroom.soil",
+      "expected": "10D4D9ACC89E42C6B7FE7A821B5A42B8404173155E12E0412DE352E652585001",
+      "actual": "10D4D9ACC89E42C6B7FE7A821B5A42B8404173155E12E0412DE352E652585001"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use4Goal\\goal\\src\\main\\resources\\examples\\Classroom\\classroom.use",
+      "expected": "BB857FCE61A9A8A11E207AE13DC198387242AF7D3C759205090C831D2A81AAA1",
+      "actual": "BB857FCE61A9A8A11E207AE13DC198387242AF7D3C759205090C831D2A81AAA1"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\auction\\auction.jcm",
+      "expected": "1B7FD99E1CEEA67381B2957908BD41D3387AA7B4B98FADC26ABF588FCEE98E2A",
+      "actual": "1B7FD99E1CEEA67381B2957908BD41D3387AA7B4B98FADC26ABF588FCEE98E2A"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\auction\\.jcm-deps.gradle",
+      "expected": "3B7706DE71F0362C2FD5E1DA6A90F1D918F4EF1426B5DADBD6CA67A38EB3F050",
+      "actual": "3B7706DE71F0362C2FD5E1DA6A90F1D918F4EF1426B5DADBD6CA67A38EB3F050"
+    },
+    {
+      "path": "C:\\Users\\NTNghia\\OneDrive\\Desktop\\report.md",
+      "expected": "E8F3A60B11C52B73136EA2BBAEDC92F40F9B70FF1C670D1BF70D1D49A43AE7DC",
+      "actual": "E8F3A60B11C52B73136EA2BBAEDC92F40F9B70FF1C670D1BF70D1D49A43AE7DC"
+    }
+  ],
+  "evidence": [
+    "session-lifecycle-r3.log",
+    "full-regression.log",
+    "full-initial-test-suites.json",
+    "acceptance-r4.log",
+    "consolidated-test-suites.json"
+  ]
+}

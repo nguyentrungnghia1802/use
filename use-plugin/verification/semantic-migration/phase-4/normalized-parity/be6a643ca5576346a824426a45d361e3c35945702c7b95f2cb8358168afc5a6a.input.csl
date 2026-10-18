@@ -1,0 +1,1 @@
+csl v4.0 SyntaxOnly { entity A; context A inv LaterTypeError: self.unknown = 1; }

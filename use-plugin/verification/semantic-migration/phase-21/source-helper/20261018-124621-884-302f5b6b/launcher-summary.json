@@ -1,0 +1,21 @@
+{
+  "bridgeTimeoutMillis": 60000,
+  "status": "PASS",
+  "derivedJcm": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\semantic-migration\\phase-21\\source-helper\\20261018-124621-884-302f5b6b\\staging-counter\\counter.jcm",
+  "projectionMode": "AUTO",
+  "runtimeProjectClasses": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\semantic-migration\\phase-21\\source-helper\\20261018-124621-884-302f5b6b\\staging-counter\\build\\classes\\java\\main",
+  "evidence": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\semantic-migration\\phase-21\\source-helper\\20261018-124621-884-302f5b6b\\summary.json",
+  "runtimeProjectBuild": "JAVAC_ENVIRONMENT_CLASSES_PASS",
+  "observationProfile": "WORLD",
+  "sourceJcmSha256": "eaaf3526e5c0c19c46846669c3de61291eb512a4fb756705f0ab691412a57809",
+  "classification": "GENERIC_JCM_SUPPORTED_SCOPE_PASS",
+  "pipeline": "CODE_GROUNDED_NATIVE",
+  "maxBufferedEvents": 1024,
+  "distributionSha256": "e03ea7618dfc729697545627347c2713af4c8033afbe42cd1c006d5c9aecc027",
+  "observationSeconds": 4,
+  "sourceJcm": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\examples\\csl-counter\\counter.jcm",
+  "injectedJcmSha256": "8867589d147e7ae68efa78c0b34d68ca8f34c8cbc7225c43f738cac9684a9a67",
+  "oclProfile": "",
+  "stagedProject": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\semantic-migration\\phase-21\\source-helper\\20261018-124621-884-302f5b6b\\staging-counter",
+  "awaitOclBaselineBeforeAgents": false
+}

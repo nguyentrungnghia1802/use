@@ -1,0 +1,1 @@
+csl v4.0 Bad { entity E; role A; role B; association Invalid { E [*]; A [*]; B [*]; } }

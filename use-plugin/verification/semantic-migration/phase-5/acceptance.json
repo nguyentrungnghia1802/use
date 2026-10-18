@@ -1,0 +1,37 @@
+{
+  "phase": 5,
+  "status": "DONE",
+  "surefire": {
+    "tests": 731,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "engineTests": 35,
+  "pluginTests": 589,
+  "matrix": [
+    "H"
+  ],
+  "originalCorePatches": [],
+  "hostAdapter": "P-USE-PRINT-01 (new visitor wrapper, no host-source change)",
+  "preservedOriginalCore": true,
+  "oneNativeSystemTest": "CanonicalCslNativePipelineTest: exact binding MModel -> existing state builder -> exporter -> host Session same MSystem",
+  "schemaCapabilities": [
+    "Entity",
+    "Role",
+    "OrgCtx",
+    "primitive/enum/named datatypes",
+    "attributes with modifier/default metadata",
+    "same-instance inheritance",
+    "binary/n-ary schema",
+    "native invariants",
+    "declaration ownership",
+    "explicit neutral M0 helpers",
+    "symmetric role compatibility"
+  ],
+  "liveRestrictions": [
+    "Opaque attribute type requires exact runtime codec",
+    "N-ary schema is supported but new live writer not yet verified: reject live admission until Phase13"
+  ],
+  "protectedReferenceHashesAndStatusUnchanged": true
+}

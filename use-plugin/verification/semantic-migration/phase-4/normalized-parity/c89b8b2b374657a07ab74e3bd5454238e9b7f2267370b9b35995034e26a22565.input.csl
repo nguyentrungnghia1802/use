@@ -1,0 +1,1 @@
+csl v4.0 Composition { orgContext C {} entity E; composition Owns { C [1] role owner; E [*] role parts; } }

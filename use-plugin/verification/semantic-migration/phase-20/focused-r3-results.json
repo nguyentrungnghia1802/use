@@ -1,0 +1,61 @@
+{
+  "tests": 24,
+  "suites": [
+    {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.semantic.engine.Use75CslBackendTest"
+    },
+    {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.CanonicalImportSelectionTest"
+    },
+    {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.codegrounded.LegacyV2OclIsolationTest"
+    },
+    {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalReplayTest"
+    },
+    {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticAuthorityRoutingTest"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimePackagedReplayIT"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.semantics.SemanticPackagedReplayIT"
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite": "org.tzi.use.plugins.jacamo.semantics.Use4GoalPackagedReplayIT"
+    }
+  ]
+}

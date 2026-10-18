@@ -1,0 +1,14 @@
+mas original_engine {
+    agent alice : idle.asl
+    agent bob : idle.asl
+    workspace main {
+        artifact counter: org.tzi.use.plugins.jacamo.semantics.CslCounterArtifact
+    }
+    organisation org: organization.xml {
+        group team: team {
+            players: alice worker, bob reviewer
+            responsible-for: workflow
+        }
+        scheme workflow: work
+    }
+}

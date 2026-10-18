@@ -1,0 +1,12 @@
+INTERACTIVE_GUI_READY
+Native USE projection: AUTO
+The JaCaMo Workbench is opening and importing the derived JCM automatically.
+Local agents wait at the official startAgs hook. Optional Load OCL, then click Start Runtime.
+Platforms/environment timers already bootstrap; this delay is not original timing equivalence.
+Derived JCM: D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\verification\semantic-migration\phase-21\gui-helper\20261018-130147-805-b0b5fcba\staging-counter\counter.jcm
+Original source remains unchanged: D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\installed-counter-1-16383060997401176924\install\use-7.5.0\examples\csl-counter\counter.jcm
+Close the USE window to stop the derived JaCaMo producer.
+INTERACTIVE_GUI_MODEL_READY evidence=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\verification\semantic-migration\phase-21\gui-helper\20261018-130147-805-b0b5fcba\gui-ready.json
+{"associationCount":2,"bridgeCompleteness":"PARTIAL","bridgeReadiness":"LIVE","classCount":11,"generation":1,"linkCount":0,"modelRevision":"e236bd117763311303fb10ef3a237a34fcbf110f630ebc7f397d0e49f5a53dee","objectCount":9,"projectFile":"D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\semantic-migration\\phase-21\\gui-helper\\20261018-130147-805-b0b5fcba\\staging-counter\\counter.jcm","projectionMode":"AUTO","sessionId":"64b9c970-8990-4d84-b6e2-37237d29a6aa","stateSha256":"4858fd3a4bf536fcc2add07b86d2c30e0a9dbf5c4569c582778d79bd08584f20","status":"READY"}
+JACAMO_PRODUCER_EXITED_USE_REMAINS_OPEN exit=1
+JACAMO_BRIDGE_GUI_SESSION_COMPLETE evidence=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\verification\semantic-migration\phase-21\gui-helper\20261018-130147-805-b0b5fcba

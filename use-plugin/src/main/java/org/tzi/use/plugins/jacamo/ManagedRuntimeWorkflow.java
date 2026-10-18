@@ -28,6 +28,7 @@ final class ManagedRuntimeWorkflow {
             var selected = ManagedStartupControl.owner(run, project, authority.sessionId(), authority.generation(), authority.modelRevision(), pid);
             ManagedStartupControl.requireOwner(selected, waiting);
             if (!sessionActive) throw new IllegalStateException("STARTUP_SESSION_NOT_ACTIVE");
+            if(!owner.equals(selected))starting=false;
             owner = selected;
         }
         imported = true; importing = false; error = "";
@@ -74,10 +75,12 @@ final class ManagedRuntimeWorkflow {
     synchronized void start() {
         var before = status();
         if (!before.startAvailable()) throw new IllegalStateException("START_RUNTIME_UNAVAILABLE:" + before.diagnostic());
+        var requestedOwner=owner;
         starting = true;
         try {
-            ManagedStartupControl.request(directory, owner);
+            ManagedStartupControl.request(directory, requestedOwner);
             while (true) {
+                if(!owner.equals(requestedOwner))throw new IllegalStateException("STARTUP_OWNER_REPLACED");
                 var current = status();
                 if (current.state().equals("LIVE")) return;
                 if (current.state().equals("ERROR") || current.state().equals("STOPPED"))
@@ -85,9 +88,12 @@ final class ManagedRuntimeWorkflow {
                 Thread.sleep(20);
             }
         } catch (InterruptedException failure) {
-            Thread.currentThread().interrupt(); error = "START_RUNTIME_INTERRUPTED"; cancel();
-            throw new IllegalStateException(error, failure);
-        } catch (RuntimeException failure) { error = failure.getMessage(); cancel(); throw failure; }
+            Thread.currentThread().interrupt();
+            if(owner.equals(requestedOwner)){error = "START_RUNTIME_INTERRUPTED";cancel();}
+            throw new IllegalStateException("START_RUNTIME_INTERRUPTED", failure);
+        } catch (RuntimeException failure) {
+            if(owner.equals(requestedOwner)){error=failure.getMessage();cancel();}throw failure;
+        } finally {if(owner.equals(requestedOwner))starting=false;}
     }
     void cancel() {
         if (directory != null && ManagedStartupControl.read(directory, "started.json").isEmpty())

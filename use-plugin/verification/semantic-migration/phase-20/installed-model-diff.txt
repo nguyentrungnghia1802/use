@@ -1,0 +1,82 @@
+--- Maven model
+
++++ Installed model
+
+@@ -1,6 +1,6 @@
+
+ @CslAgentDeclarations(payload64="W3siaWQiOiJiZWlkOnYxOmphY2Ftby9hZ2VudC9kZWNsYXJhdGlvbi9vcmlnaW5hbF9lbmdpbmUvYWxpY2UvbW9kZWwiLCJpbnN0YW5jZXMiOjF9LHsiaWQiOiJiZWlkOnYxOmphY2Ftby9hZ2VudC9kZWNsYXJhdGlvbi9vcmlnaW5hbF9lbmdpbmUvYm9iL21vZGVsIiwiaW5zdGFuY2VzIjoxfV0")
+-@Use4GoalCslV4(players="true", compatibility="true", version="v4.0", profile="USE4GOAL_OBSERVED_V1")
+-@CanonicalSemanticProgram(version="2.0", sourceHash="1b1d723bcfd60abab2961111c1ab92d69f35f394a5ac8398e802ddae069b694a", mappingVersion="1.0", mappingProfile="JACAMO_MAPPING_V1", ruleHash="9bbf1369372ef5c38c0d16ace1c6bbffdc350a972fbaf5a5b618595912c31009", cslHash="956cbe5fb4bcb20071a895ff7f2a42786a92c9f13a3a9fb8a9c0dbf173b2ae60", goalHash="2311717f8e9aced2546e68c26a31fa407fe2c4cea7cc95ef833f04b7d74fcb9b", programHash="87565d4209edb64cda35f49461874930971c4253665c1e11057bb3e32bbcaf7f")
++@Use4GoalCslV4(compatibility="true", players="true", profile="USE4GOAL_OBSERVED_V1", version="v4.0")
++@CanonicalSemanticProgram(cslHash="956cbe5fb4bcb20071a895ff7f2a42786a92c9f13a3a9fb8a9c0dbf173b2ae60", ruleHash="9bbf1369372ef5c38c0d16ace1c6bbffdc350a972fbaf5a5b618595912c31009", mappingProfile="JACAMO_MAPPING_V1", mappingVersion="1.0", sourceHash="1b1d723bcfd60abab2961111c1ab92d69f35f394a5ac8398e802ddae069b694a", version="2.0", programHash="87565d4209edb64cda35f49461874930971c4253665c1e11057bb3e32bbcaf7f", goalHash="2311717f8e9aced2546e68c26a31fa407fe2c4cea7cc95ef833f04b7d74fcb9b")
+ model CounterDomain
+ 
+ 
+@@ -19,13 +19,13 @@
+
+ abstract class OrgContext < RuntimePlayer
+ end
+ 
+-@CanonicalSemanticBinding(reason64="RVhQTElDSVRfQUJTVFJBQ1RfTU9JU0VfUk9MRV9BU19DT05DUkVURV9ERUNMQVJBVElPTl9PTkxZX1ZJRVc", metadata64="e30", target64="Ul9zb2M", kind="ROLE", source64="bW9pc2U6b3JnYW5pemF0aW9uOm9yaWdpbmFsX2VuZ2luZTpvcmlnaW5hbF9lbmdpbmU6cm9sZTpzb2M", rule64="TTAz")
++@CanonicalSemanticBinding(source64="bW9pc2U6b3JnYW5pemF0aW9uOm9yaWdpbmFsX2VuZ2luZTpvcmlnaW5hbF9lbmdpbmU6cm9sZTpzb2M", kind="ROLE", target64="Ul9zb2M", metadata64="e30", reason64="RVhQTElDSVRfQUJTVFJBQ1RfTU9JU0VfUk9MRV9BU19DT05DUkVURV9ERUNMQVJBVElPTl9PTkxZX1ZJRVc", rule64="TTAz")
+ @OriginalCslDeclaration(id64="Ul9zb2M=", kind="ROLE", owner64="")
+ @DomainProjection(javaClass64="", kind="csl-role", sourceId64="bW9pc2U6b3JnYW5pemF0aW9uOm9yaWdpbmFsX2VuZ2luZTpvcmlnaW5hbF9lbmdpbmU6cm9sZTpzb2M")
+ class R_soc < RoleOccurrence
+ end
+ 
+-@CanonicalSemanticBinding(reason64="", metadata64="e30", target64="Ul9yZXZpZXdlcg", kind="ROLE", source64="bW9pc2U6b3JnYW5pemF0aW9uOm9yaWdpbmFsX2VuZ2luZTpvcmlnaW5hbF9lbmdpbmU6cm9sZTpyZXZpZXdlcg", rule64="TTAz")
++@CanonicalSemanticBinding(source64="bW9pc2U6b3JnYW5pemF0aW9uOm9yaWdpbmFsX2VuZ2luZTpvcmlnaW5hbF9lbmdpbmU6cm9sZTpyZXZpZXdlcg", kind="ROLE", target64="Ul9yZXZpZXdlcg", metadata64="e30", reason64="", rule64="TTAz")
+ @OriginalCslDeclaration(id64="Ul9yZXZpZXdlcg==", kind="ROLE", owner64="Q190ZWFt")
+ @DomainProjection(javaClass64="", kind="csl-role", sourceId64="bW9pc2U6b3JnYW5pemF0aW9uOm9yaWdpbmFsX2VuZ2luZTpvcmlnaW5hbF9lbmdpbmU6cm9sZTpyZXZpZXdlcg")
+ class R_reviewer < R_soc
+@@ -36,15 +36,15 @@
+
+ class WorkspaceObservation
+ end
+ 
+-@CanonicalSemanticBinding(reason64="QVVUSE9SRURfQ09VTlRFUl9WSUVX", metadata64="eyJqYXZhVHlwZTpwIjoiamF2YS5sYW5nLkludGVnZXIiLCJwcm9wZXJ0eTpwIjoicCJ9", target64="Q291bnRlcg", kind="ENTITY", source64="YXJ0aWZhY3QtY2xhc3M6b3JnLnR6aS51c2UucGx1Z2lucy5qYWNhbW8uc2VtYW50aWNzLkNzbENvdW50ZXJBcnRpZmFjdA", rule64="TTE4")
++@CanonicalSemanticBinding(source64="YXJ0aWZhY3QtY2xhc3M6b3JnLnR6aS51c2UucGx1Z2lucy5qYWNhbW8uc2VtYW50aWNzLkNzbENvdW50ZXJBcnRpZmFjdA", kind="ENTITY", target64="Q291bnRlcg", metadata64="eyJqYXZhVHlwZTpwIjoiamF2YS5sYW5nLkludGVnZXIiLCJwcm9wZXJ0eTpwIjoicCJ9", reason64="QVVUSE9SRURfQ09VTlRFUl9WSUVX", rule64="TTE4")
+ @OriginalCslDeclaration(id64="Q291bnRlcg==", kind="ENTITY", owner64="")
+ @DomainProjection(javaClass64="b3JnLnR6aS51c2UucGx1Z2lucy5qYWNhbW8uc2VtYW50aWNzLkNzbENvdW50ZXJBcnRpZmFjdA", kind="artifact", sourceId64="YXJ0aWZhY3QtY2xhc3M6b3JnLnR6aS51c2UucGx1Z2lucy5qYWNhbW8uc2VtYW50aWNzLkNzbENvdW50ZXJBcnRpZmFjdA")
+ class Counter < DomainEntity
+ attributes
+-  @OriginalCslAttribute(default64="OTk=", hasDefault="true", mutable="true", optional="false", id64="Q291bnRlcjo6cA==")
++  @OriginalCslAttribute(mutable="true", hasDefault="true", default64="OTk=", id64="Q291bnRlcjo6cA==", optional="false")
+   p : Integer
+ operations
+-  @CartagoOperation(signature64="WyJvcmcudHppLnVzZS5wbHVnaW5zLmphY2Ftby5zZW1hbnRpY3MuQ3NsQ291bnRlckFydGlmYWN0IiwiaW5jcmVtZW50IixbXSwidm9pZCJd", javaName64="aW5jcmVtZW50", policy="3.0.0")
++  @CartagoOperation(policy="3.0.0", javaName64="aW5jcmVtZW50", signature64="WyJvcmcudHppLnVzZS5wbHVnaW5zLmphY2Ftby5zZW1hbnRpY3MuQ3NsQ291bnRlckFydGlmYWN0IiwiaW5jcmVtZW50IixbXSwidm9pZCJd")
+   @OperationSource_e03c3e7354529546(backingId64="Y2FydGFnbzpiYWNraW5nLW9wZXJhdGlvbjphNGE1ODczYjAxMTExMjc0M2Q1MmY0OGU1ODkxNzkwYjFlNGQyNDhhMWY3OTVjYzZiNDFkNWIzNjJhODY4OWM4", descriptorId64="Y2FydGFnbzpvcGVyYXRpb246Y2FydGFnbzphcnRpZmFjdDo1NGI3ZDdkNi1mY2RkLTQwMjQtODQyYS0wYTgxOGQ2MzMwYTA6L21haW4vbWFpbjplODkyZjUzYy1mODA1LTQ3ZTgtYWNiZi1kOWYwYTMxZGQxZmM6aW5jcmVtZW50LzA")
+   increment_1051ba0bf57999be()
+ end
+@@ -54,13 +54,13 @@
+
+ abstract class RoleOccurrence
+ end
+ 
+-@CanonicalSemanticBinding(reason64="", metadata64="e30", target64="Ul93b3JrZXI", kind="ROLE", source64="bW9pc2U6b3JnYW5pemF0aW9uOm9yaWdpbmFsX2VuZ2luZTpvcmlnaW5hbF9lbmdpbmU6cm9sZTp3b3JrZXI", rule64="TTAz")
++@CanonicalSemanticBinding(source64="bW9pc2U6b3JnYW5pemF0aW9uOm9yaWdpbmFsX2VuZ2luZTpvcmlnaW5hbF9lbmdpbmU6cm9sZTp3b3JrZXI", kind="ROLE", target64="Ul93b3JrZXI", metadata64="e30", reason64="", rule64="TTAz")
+ @OriginalCslDeclaration(id64="Ul93b3JrZXI=", kind="ROLE", owner64="Q190ZWFt")
+ @DomainProjection(javaClass64="", kind="csl-role", sourceId64="bW9pc2U6b3JnYW5pemF0aW9uOm9yaWdpbmFsX2VuZ2luZTpvcmlnaW5hbF9lbmdpbmU6cm9sZTp3b3JrZXI")
+ class R_worker < R_soc
+ end
+ 
+-@CanonicalSemanticBinding(reason64="REVDTEFSQVRJT05fT05MWQ", metadata64="e30", target64="Q190ZWFt", kind="ORG_CONTEXT", source64="bW9pc2U6b3JnYW5pemF0aW9uOm9yaWdpbmFsX2VuZ2luZTpvcmlnaW5hbF9lbmdpbmU6Z3JvdXA6dGVhbXx0ZWFt", rule64="TTAy")
++@CanonicalSemanticBinding(source64="bW9pc2U6b3JnYW5pemF0aW9uOm9yaWdpbmFsX2VuZ2luZTpvcmlnaW5hbF9lbmdpbmU6Z3JvdXA6dGVhbXx0ZWFt", kind="ORG_CONTEXT", target64="Q190ZWFt", metadata64="e30", reason64="REVDTEFSQVRJT05fT05MWQ", rule64="TTAy")
+ @OriginalCslDeclaration(id64="Q190ZWFt", kind="ORG_CONTEXT", owner64="")
+ @DomainProjection(javaClass64="", kind="csl-org_context", sourceId64="bW9pc2U6b3JnYW5pemF0aW9uOm9yaWdpbmFsX2VuZ2luZTpvcmlnaW5hbF9lbmdpbmU6Z3JvdXA6dGVhbXx0ZWFt")
+ class C_team < OrgContext
+@@ -89,10 +89,10 @@
+
+   self.roles->forAll( r1:RoleOccurrence, r2:RoleOccurrence | (((((((((r1 = r2) or (r1.player <> r2.player)) or (r1.oclIsKindOf(R_reviewer) and r2.oclIsKindOf(R_reviewer))) or (r1.oclIsKindOf(R_reviewer) and r2.oclIsKindOf(R_soc))) or (r1.oclIsKindOf(R_soc) and r2.oclIsKindOf(R_reviewer))) or (r1.oclIsKindOf(R_soc) and r2.oclIsKindOf(R_soc))) or (r1.oclIsKindOf(R_soc) and r2.oclIsKindOf(R_worker))) or (r1.oclIsKindOf(R_worker) and r2.oclIsKindOf(R_soc))) or (r1.oclIsKindOf(R_worker) and r2.oclIsKindOf(R_worker))) )
+ 
+ context Counter::increment_1051ba0bf57999be()
+-  @CslConstraint(targetTask64="aW5jcmVtZW50", id64="aW5jcmVtZW50OnBvc3Q", origin64="QVVUSE9SRURfT0NM", bodyHash="7ed06db8d3165c8dd6c7a1022d7ee012c4f29ac801664711765b55488568acc9", contractBase64="aW5jcmVtZW50", canonical="true")
++  @CslConstraint(contractBase64="aW5jcmVtZW50", bodyHash="7ed06db8d3165c8dd6c7a1022d7ee012c4f29ac801664711765b55488568acc9", origin64="QVVUSE9SRURfT0NM", id64="aW5jcmVtZW50OnBvc3Q", targetTask64="aW5jcmVtZW50", canonical="true")
+   post Post_1fa4f1db95d0e079: (self.p = (self.p@pre + 1))
+ 
+ context Counter::increment_1051ba0bf57999be()
+-  @CslConstraint(targetTask64="aW5jcmVtZW50", id64="aW5jcmVtZW50OnByZQ", origin64="QVVUSE9SRURfT0NM", bodyHash="eccf35fb815bf774d7df4d97ef254c01bac969fd43b622125a4fe83b24b11e6a", contractBase64="aW5jcmVtZW50", canonical="true")
++  @CslConstraint(contractBase64="aW5jcmVtZW50", bodyHash="eccf35fb815bf774d7df4d97ef254c01bac969fd43b622125a4fe83b24b11e6a", origin64="QVVUSE9SRURfT0NM", id64="aW5jcmVtZW50OnByZQ", targetTask64="aW5jcmVtZW50", canonical="true")
+   pre Pre_d55cdc4b10ca31ab: (self.p >= 0)
+ 

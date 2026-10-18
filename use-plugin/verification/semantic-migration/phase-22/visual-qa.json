@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "inspected": [
+    "reactor-counter-1/installed-workbench.png",
+    "full-archive-counter-2/installed-workbench.png"
+  ],
+  "verified": [
+    "Original iStar history tab selected",
+    "Separate leaf/propagated raw/quality/history columns",
+    "Step1 Task FULFILLED versus step2 PENDING, with invocation verdict separate",
+    "Full binding stack and distinct contextual dependency occurrences visible"
+  ]
+}

@@ -1,0 +1,2 @@
+Exception in thread "main" java.lang.AssertionError: [IllegalArgumentException:REPLAY_CANONICAL_BASELINE_MODEL_MISMATCH]
+	at org.tzi.use.plugins.jacamo.semantics.PackagedCanonicalReplayMain.main(PackagedCanonicalReplayMain.java:45)

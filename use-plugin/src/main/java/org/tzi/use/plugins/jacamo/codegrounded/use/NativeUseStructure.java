@@ -13,6 +13,13 @@ public final class NativeUseStructure {
 
     public static List<String> signature(MModel model) {
         List<String> rows = new ArrayList<>();
+        if (org.tzi.use.semantic.engine.use75.Use75CslModelBackend.active(model)) {
+            annotations(rows, "model|" + model.name(), model);
+            model.dataTypes().forEach(type -> {
+                rows.add("dataType|" + type.name() + "|" + type.isAbstract());
+                annotations(rows, "dataType|" + type.name(), type);
+            });
+        }
         model.enumTypes().forEach(type -> rows.add("enum|" + type.name() + "|" + String.join(",", type.getLiterals())));
         model.classes().forEach(cls -> {
             rows.add("class|" + cls.name() + "|" + cls.isAbstract()+"|associationClass="+(cls instanceof org.tzi.use.uml.mm.MAssociationClass));

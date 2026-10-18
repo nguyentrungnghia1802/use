@@ -172,7 +172,9 @@ class ManagedAuctionWorkbenchIT {
                         assertTrue(system.state().allObjects().stream().allMatch(diagram.getDiagram().getVisibleData().fObjectToNodeMap::containsKey));
                         assertTrue(system.state().allLinks().stream().allMatch(diagram.getDiagram().getVisibleData()::containsLink));
                         var tabs=component(panel,"workbench-tabs",javax.swing.JTabbedPane.class);
-                        assertEquals(1,tabs.getTabCount());assertEquals("Projection Rules",tabs.getTitleAt(0));
+                        // Phase17 adds read-only accepted program/trace evidence to
+                        // every real facade. Native semantics below remain unchanged.
+                        assertEquals(2,tabs.getTabCount());assertEquals("Projection Rules",tabs.getTitleAt(0));assertEquals("Program / trace",tabs.getTitleAt(1));
                         var image=new java.awt.image.BufferedImage(workbench.getWidth(),workbench.getHeight(),java.awt.image.BufferedImage.TYPE_INT_RGB);
                         var graphics=image.createGraphics();workbench.printAll(graphics);graphics.dispose();
                         javax.imageio.ImageIO.write(image,"png",evidence.resolve("workbench.png").toFile());return null;

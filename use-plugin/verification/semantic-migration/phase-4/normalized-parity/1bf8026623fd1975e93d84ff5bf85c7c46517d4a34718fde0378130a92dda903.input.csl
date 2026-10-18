@@ -1,0 +1,1 @@
+csl v4.0 Bad { enum State { A, B } entity E { s : State default Missing; } }

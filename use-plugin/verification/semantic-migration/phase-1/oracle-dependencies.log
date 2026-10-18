@@ -1,0 +1,29 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------< org.tzi.use.semantic.test:pinned-original-antlr-tool >--------
+[INFO] Building pinned-original-antlr-tool 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] Downloading from central: https://repo.maven.apache.org/maven2/org/antlr/antlr4/4.9.3/antlr4-4.9.3.pom
+[INFO] Downloaded from central: https://repo.maven.apache.org/maven2/org/antlr/antlr4/4.9.3/antlr4-4.9.3.pom (6.2 kB at 16 kB/s)
+[INFO] Downloading from central: https://repo.maven.apache.org/maven2/org/glassfish/javax.json/1.0.4/javax.json-1.0.4.pom
+[INFO] Downloaded from central: https://repo.maven.apache.org/maven2/org/glassfish/javax.json/1.0.4/javax.json-1.0.4.pom (9.2 kB at 140 kB/s)
+[INFO] Downloading from central: https://repo.maven.apache.org/maven2/org/glassfish/json/1.0.4/json-1.0.4.pom
+[INFO] Downloaded from central: https://repo.maven.apache.org/maven2/org/glassfish/json/1.0.4/json-1.0.4.pom (11 kB at 160 kB/s)
+[INFO] Downloading from central: https://repo.maven.apache.org/maven2/com/ibm/icu/icu4j/69.1/icu4j-69.1.pom
+[INFO] Downloaded from central: https://repo.maven.apache.org/maven2/com/ibm/icu/icu4j/69.1/icu4j-69.1.pom (4.9 kB at 41 kB/s)
+[INFO] Downloading from central: https://repo.maven.apache.org/maven2/org/antlr/antlr4/4.9.3/antlr4-4.9.3.jar
+[INFO] Downloaded from central: https://repo.maven.apache.org/maven2/org/antlr/antlr4/4.9.3/antlr4-4.9.3.jar (2.6 MB at 8.4 MB/s)
+[INFO] Downloading from central: https://repo.maven.apache.org/maven2/org/glassfish/javax.json/1.0.4/javax.json-1.0.4.jar
+[INFO] Downloading from central: https://repo.maven.apache.org/maven2/com/ibm/icu/icu4j/69.1/icu4j-69.1.jar
+[INFO] Downloaded from central: https://repo.maven.apache.org/maven2/org/glassfish/javax.json/1.0.4/javax.json-1.0.4.jar (85 kB at 498 kB/s)
+[INFO] Downloaded from central: https://repo.maven.apache.org/maven2/com/ibm/icu/icu4j/69.1/icu4j-69.1.jar (13 MB at 8.0 MB/s)
+[INFO] 
+[INFO] --- dependency:3.7.0:build-classpath (default-cli) @ pinned-original-antlr-tool ---
+[INFO] Wrote classpath file 'D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\semantic-migration\phase-1\antlr-tool-classpath.txt'.
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  4.060 s
+[INFO] Finished at: 2026-10-17T19:10:04+07:00
+[INFO] ------------------------------------------------------------------------

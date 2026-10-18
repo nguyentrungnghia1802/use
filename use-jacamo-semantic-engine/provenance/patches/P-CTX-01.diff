@@ -1,0 +1,43 @@
+--- goal/src/main/java/org/vnu/sme/goal/dsl/iscn/goalmodelinstance/parser/GoalModelInstanceTranslator.java
++++ src/main/java/org/vnu/sme/goal/dsl/iscn/goalmodelinstance/parser/GoalModelInstanceTranslator.java
+@@ -59,6 +59,40 @@
+ 
+     private GoalModelInstanceTranslator() {}
+ 
++    /** P-CTX-01: structured, in-memory topology seam. Existing evaluate behavior is unchanged. */
++    public static GoalModelInstanceTopology topology(GoalModel source, IStarScenarioModel scenario,
++                                                      InstanceContextMatcher contextMatcher) {
++        java.util.Objects.requireNonNull(contextMatcher, "EXPLICIT_CONTEXT_MATCHER_REQUIRED");
++        if (!scenario.statements().isEmpty()) throw new IllegalArgumentException("TOPOLOGY_DOES_NOT_EXECUTE_SCRIPT");
++        if (scenario.instances().isEmpty() && !source.getActors().isEmpty())
++            throw new IllegalArgumentException("EXPLICIT_CAST_REQUIRED");
++        Builder builder = new Builder(source, scenario, contextMatcher);
++        builder.instantiateActors();
++        builder.instantiateIntentionalTrees();
++        builder.instantiateDependencyEndpoints();
++        builder.instantiateContributions();
++        builder.instantiateDependencies();
++        GoalModel instanceModel = builder.buildModel();
++        GoalModelInstance instance = new GoalModelInstance(instanceModel, builder.actorInstanceOf(), builder.elementInstanceOf());
++        Map<String, GoalModelInstanceTopology.OccurrenceBinding> bindings = new LinkedHashMap<>();
++        for (Occurrence occurrence : builder.occurrences.values()) {
++            var stack = occurrence.stack().entries().stream().map(binding ->
++                    new GoalModelInstanceTopology.ActorBinding(binding.actorType(), binding.instanceId())).toList();
++            var binding = new GoalModelInstanceTopology.OccurrenceBinding(occurrence.id(), occurrence.sourceId(),
++                    occurrence.ownerActorId(), stack);
++            if (bindings.putIfAbsent(occurrence.id(), binding) != null)
++                throw new IllegalArgumentException("CONTEXTUAL_OCCURRENCE_ID_COLLISION:" + occurrence.id());
++        }
++        if (bindings.size() != instanceModel.allElements().size())
++            throw new IllegalArgumentException("CONTEXTUAL_TOPOLOGY_ID_COLLISION");
++        return new GoalModelInstanceTopology(instance, bindings, builder.actorLabels(), builder.nodeLabels());
++    }
++
++    /** P-CTX-01: delegates to the existing dependency algorithm; admission owns its bounds. */
++    public static IStarMarking propagateDependencies(GoalModel instanceModel, IStarMarking marking) {
++        return saturateDependencies(instanceModel, marking);
++    }
++
+     public static GoalModelInstanceEvaluation evaluate(GoalModel source, IStarScenarioModel scenario) {
+         return evaluate(source, scenario, (leftType, leftId, rightType, rightId) -> true);
+     }

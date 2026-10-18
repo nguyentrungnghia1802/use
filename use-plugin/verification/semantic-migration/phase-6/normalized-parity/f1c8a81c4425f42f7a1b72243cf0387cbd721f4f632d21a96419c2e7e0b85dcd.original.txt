@@ -1,0 +1,3 @@
+false
+null
+[semantic: element id 'g' is declared more than once (actors 'A' and 'B') — element ids must be unique across the model]

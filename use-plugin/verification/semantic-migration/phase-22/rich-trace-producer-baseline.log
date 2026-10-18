@@ -1,0 +1,680 @@
+REAL_JACAMO_INIT project=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\jacamo-real-hello-1021105747447774473\helloworld.jcm headless=true
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+REAL_JACAMO_INIT_OK
+CArtAgO Http Server running on http://192.168.0.103:3273
+Agent mind inspector is running at http://192.168.0.103:3272
+REAL_JACAMO_CREATE_OK platforms=4 agents=5
+Moise Http Server running on http://192.168.0.103:3271
+Oct 18, 2026 1:18:41 PM jacamo.platform.Moise start
+INFO: OrgBoard hello_org created.
+Oct 18, 2026 1:18:41 PM jacamo.platform.Moise createScheme
+INFO: scheme created: hello_eng: hello_sch using artifact SchemeBoard
+Oct 18, 2026 1:18:41 PM jacamo.platform.Moise createGroup
+INFO: group created: jacamo_team: team using artifact ora4mas.nopl.GroupBoard
+Oct 18, 2026 1:18:41 PM jacamo.platform.Cartago start
+INFO: Workspace jacamo created.
+Oct 18, 2026 1:18:41 PM jacamo.platform.Cartago start
+SEVERE: error creating artifact gui: display.GUIConsole("common") at jacamo
+cartago.UnknownArtifactTemplateException: template: display.GUIConsole
+	at cartago.Workspace.makeArtifact(Workspace.java:847)
+	at cartago.Workspace.makeArtifact(Workspace.java:785)
+	at jacamo.platform.Cartago.start(Cartago.java:84)
+	at jacamo.infra.JaCaMoLauncher.start(JaCaMoLauncher.java:356)
+	at jason.infra.local.LiveJaCaMoLauncherMain.main(LiveJaCaMoLauncherMain.java:139)
+
+Oct 18, 2026 1:18:41 PM jacamo.platform.Cartago start
+INFO: Workspace usa created.
+Oct 18, 2026 1:18:41 PM jacamo.platform.Cartago start
+SEVERE: error creating artifact gui: display.GUIConsole("USA") at usa
+cartago.UnknownArtifactTemplateException: template: display.GUIConsole
+	at cartago.Workspace.makeArtifact(Workspace.java:847)
+	at cartago.Workspace.makeArtifact(Workspace.java:785)
+	at jacamo.platform.Cartago.start(Cartago.java:84)
+	at jacamo.infra.JaCaMoLauncher.start(JaCaMoLauncher.java:356)
+	at jason.infra.local.LiveJaCaMoLauncherMain.main(LiveJaCaMoLauncherMain.java:139)
+
+Oct 18, 2026 1:18:41 PM jacamo.platform.Cartago start
+INFO: Workspace brazil created.
+Oct 18, 2026 1:18:41 PM jacamo.platform.Cartago start
+SEVERE: error creating artifact gui: display.GUIConsole("Brazil") at brazil
+cartago.UnknownArtifactTemplateException: template: display.GUIConsole
+	at cartago.Workspace.makeArtifact(Workspace.java:847)
+	at cartago.Workspace.makeArtifact(Workspace.java:785)
+	at jacamo.platform.Cartago.start(Cartago.java:84)
+	at jacamo.infra.JaCaMoLauncher.start(JaCaMoLauncher.java:356)
+	at jason.infra.local.LiveJaCaMoLauncherMain.main(LiveJaCaMoLauncherMain.java:139)
+
+Oct 18, 2026 1:18:41 PM jacamo.platform.Cartago start
+INFO: Workspace france created.
+Oct 18, 2026 1:18:41 PM jacamo.platform.Cartago start
+SEVERE: error creating artifact gui: display.GUIConsole("France") at france
+cartago.UnknownArtifactTemplateException: template: display.GUIConsole
+	at cartago.Workspace.makeArtifact(Workspace.java:847)
+	at cartago.Workspace.makeArtifact(Workspace.java:785)
+	at jacamo.platform.Cartago.start(Cartago.java:84)
+	at jacamo.infra.JaCaMoLauncher.start(JaCaMoLauncher.java:356)
+	at jason.infra.local.LiveJaCaMoLauncherMain.main(LiveJaCaMoLauncherMain.java:139)
+
+Oct 18, 2026 1:18:41 PM jacamo.platform.Cartago start
+INFO: Workspace italy created.
+Oct 18, 2026 1:18:41 PM jacamo.platform.Cartago start
+SEVERE: error creating artifact gui: display.GUIConsole("Italy") at italy
+cartago.UnknownArtifactTemplateException: template: display.GUIConsole
+	at cartago.Workspace.makeArtifact(Workspace.java:847)
+	at cartago.Workspace.makeArtifact(Workspace.java:785)
+	at jacamo.platform.Cartago.start(Cartago.java:84)
+	at jacamo.infra.JaCaMoLauncher.start(JaCaMoLauncher.java:356)
+	at jason.infra.local.LiveJaCaMoLauncherMain.main(LiveJaCaMoLauncherMain.java:139)
+
+REAL_JACAMO_START_OK
+REAL_JACAMO_BRIDGE_READY port=65240 session=c1755d64-d918-4b21-b843-ee862ddcaa66 agents=5
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: join workspace /main/hello_org: done
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: join workspace /main/italy: done
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: join workspace /main/brazil: done
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: join workspace /main/france: done
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: join workspace /main/hello_org: done
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: join workspace /main/italy: done
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: join workspace /main/usa: done
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: join workspace /main/hello_org: done
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/italy) using namespace default
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: join workspace /main/jacamo: done
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: join workspace /main/hello_org: done
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: join workspace /main/jacamo: done
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: join workspace /main/usa: done
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: join workspace /main/italy: done
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(italy,gui,default) -- try #5
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: join workspace /main/jacamo: done
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/usa) using namespace default
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/italy) using namespace default
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: join workspace /main/jacamo: done
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/brazil) using namespace default
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(usa,gui,default) -- try #5
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(italy,gui,default) -- try #5
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(brazil,gui,default) -- try #5
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/france) using namespace default
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(france,gui,default) -- try #5
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/italy) using namespace default
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(italy,gui,default) -- try #4
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/italy) using namespace default
+Oct 18, 2026 1:18:42 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/usa) using namespace default
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/brazil) using namespace default
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(usa,gui,default) -- try #4
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(italy,gui,default) -- try #4
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/france) using namespace default
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(brazil,gui,default) -- try #4
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(france,gui,default) -- try #4
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/italy) using namespace default
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(italy,gui,default) -- try #3
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/italy) using namespace default
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/brazil) using namespace default
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/usa) using namespace default
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/france) using namespace default
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(brazil,gui,default) -- try #3
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(italy,gui,default) -- try #3
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(usa,gui,default) -- try #3
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(france,gui,default) -- try #3
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/italy) using namespace default
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(italy,gui,default) -- try #2
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/brazil) using namespace default
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(brazil,gui,default) -- try #2
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/italy) using namespace default
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/usa) using namespace default
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/france) using namespace default
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(france,gui,default) -- try #2
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(italy,gui,default) -- try #2
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(usa,gui,default) -- try #2
+Oct 18, 2026 1:18:43 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/italy) using namespace default
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(italy,gui,default) -- try #1
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/brazil) using namespace default
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(brazil,gui,default) -- try #1
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/france) using namespace default
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/italy) using namespace default
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/usa) using namespace default
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(italy,gui,default) -- try #1
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(usa,gui,default) -- try #1
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: Error handling art_env(italy,gui,default) (to join a workspace or focus on an artifact)
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(france,gui,default) -- try #1
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/usa) using namespace default
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: Error handling art_env(brazil,gui,default) (to join a workspace or focus on an artifact)
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(usa,gui,default) -- try #5
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: Error handling art_env(usa,gui,default) (to join a workspace or focus on an artifact)
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #5
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: Error handling art_env(italy,gui,default) (to join a workspace or focus on an artifact)
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: Error handling art_env(france,gui,default) (to join a workspace or focus on an artifact)
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #5
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/italy) using namespace default
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #5
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/usa) using namespace default
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(italy,gui,default) -- try #5
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(usa,gui,default) -- try #4
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #4
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #4
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:44 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/italy) using namespace default
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/usa) using namespace default
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(italy,gui,default) -- try #4
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(usa,gui,default) -- try #3
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #4
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #3
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/usa) using namespace default
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/italy) using namespace default
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #3
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(italy,gui,default) -- try #3
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(usa,gui,default) -- try #2
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #3
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/italy) using namespace default
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/usa) using namespace default
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #2
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #2
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(italy,gui,default) -- try #2
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(usa,gui,default) -- try #1
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #2
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/italy) using namespace default
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: Error handling art_env(usa,gui,default) (to join a workspace or focus on an artifact)
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #1
+Oct 18, 2026 1:18:45 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(italy,gui,default) -- try #1
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #1
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: Error handling art_env(jacamo,gui,default) (to join a workspace or focus on an artifact)
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #1
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: Error handling art_env(italy,gui,default) (to join a workspace or focus on an artifact)
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: focusing on artifact jacamo_team (at workspace /main/hello_org) using namespace default
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: Error handling art_env(jacamo,gui,default) (to join a workspace or focus on an artifact)
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #5
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: focus on jacamo_team: done
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: focusing on artifact hello_org (at workspace /main/hello_org) using namespace default
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: focusing on artifact jacamo_team (at workspace /main/hello_org) using namespace default
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: focus on hello_org: done
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: focus on jacamo_team: done
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: Error handling art_env(jacamo,gui,default) (to join a workspace or focus on an artifact)
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: focusing on artifact hello_org (at workspace /main/hello_org) using namespace default
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: focusing on artifact jacamo_team (at workspace /main/hello_org) using namespace default
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: focus on jacamo_team: done
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: focus on hello_org: done
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #4
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: focusing on artifact hello_org (at workspace /main/hello_org) using namespace default
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: focus on hello_org: done
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:46 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #3
+Oct 18, 2026 1:18:47 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:47 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #2
+Oct 18, 2026 1:18:47 PM jason.stdlib.println execute
+INFO: focusing on artifact gui (at workspace /main/jacamo) using namespace default
+Oct 18, 2026 1:18:47 PM jason.stdlib.println execute
+INFO: waiting a bit to join/focus -- art_env(jacamo,gui,default) -- try #1
+Oct 18, 2026 1:18:47 PM jason.stdlib.println execute
+INFO: Error handling art_env(jacamo,gui,default) (to join a workspace or focus on an artifact)
+Oct 18, 2026 1:18:47 PM jason.stdlib.println execute
+INFO: focusing on artifact jacamo_team (at workspace /main/hello_org) using namespace default
+Oct 18, 2026 1:18:48 PM jason.stdlib.println execute
+INFO: focus on jacamo_team: done
+Oct 18, 2026 1:18:48 PM jason.stdlib.println execute
+INFO: focusing on artifact hello_org (at workspace /main/hello_org) using namespace default
+Oct 18, 2026 1:18:48 PM jason.stdlib.println execute
+INFO: focus on hello_org: done
+The maintenance condition of norm norm2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm norm3 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm norm1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm norm4 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+Oct 18, 2026 1:18:48 PM jason.stdlib.println execute
+INFO: I am obliged to commit to print_special_chars on hello_eng... doing so
+Oct 18, 2026 1:18:48 PM jason.stdlib.println execute
+INFO: I am obliged to commit to print_consonant on hello_eng... doing so
+Oct 18, 2026 1:18:48 PM jason.stdlib.println execute
+INFO: I am obliged to commit to print_l on hello_eng... doing so
+Oct 18, 2026 1:18:48 PM jason.stdlib.println execute
+INFO: I am obliged to commit to print_vowel on hello_eng... doing so
+Oct 18, 2026 1:18:49 PM jason.asSemantics.TransitionSystem generateGoalDeletionFromEvent
+WARNING: No fail event was generated for +!print_h[scheme(hello_eng),source(self)]
+Oct 18, 2026 1:18:49 PM jason.asSemantics.TransitionSystem generateGoalDeletionFromEvent
+WARNING: 
+intention 23: 
+    +!fulfill_obligation(hello_eng,print_h,cobj_8,print_consonant)[source(self)] <- ... !Goal[scheme(Scheme)]; goalAchieved(Goal)[artifact_id(ArtId)] / {Goal=print_h, Scheme=hello_eng, ArtId=cobj_8, Mission=print_consonant}
+    +obligation(giacomo,enabled(hello_eng,print_h),done(hello_eng,print_h,giacomo),"2026-10-18 13:28:49")[artifact_id(cobj_8),artifact_name(hello_eng),norm(ngoal,[["A",giacomo],["S",hello_eng],["D","10 minutes"],["G",print_h],["M",print_consonant],["What",done(hello_eng,print_h,giacomo)]]),percept_type(obs_prop),source(percept),workspace("/main/hello_org",cobj_2)] <- ... !fulfill_obligation(Scheme,Goal,ArtId,Mission) / {Goal=print_h, Scheme=hello_eng, Ag=giacomo, Deadline="2026-10-18 13:28:49", ArtId=cobj_8, Norm=enabled(hello_eng,print_h), Un=[["A",giacomo],["S",hello_eng],["D","10 minutes"],["G",print_h],["M",print_consonant],["What",done(hello_eng,print_h,giacomo)]], Mission=print_consonant, What=done(hello_eng,print_h,giacomo), _76=ngoal}
+
+Oct 18, 2026 1:18:49 PM jason.asSemantics.TransitionSystem applyRelApplPlRule2
+WARNING: Found a goal for which there is no applicable plan: +!print_h[scheme(hello_eng),source(self)]
+REAL_JACAMO_BRIDGE_FINAL_READINESS {agents=State[readiness=READY, detail=BridgeAgArch=org.jacamo.bridge.adapter.BridgeAgArch; injected=5], bridge=State[readiness=CONFIGURED, detail=session=c1755d64-d918-4b21-b843-ee862ddcaa66], events=State[readiness=ATTACHED, detail=bounded observer attached], project=State[readiness=READY, detail=modelRevision=7f34bd80cd1ed38e5c63170555176a370d2cf7529e8b374e734475ea79697e81], runtime=State[readiness=READY, detail=snapshot=snapshot:57ded3e806f25d7d34f8eb80221743def466b7f60ac2e9b8bc3a48c55df42a4a; facts=866; sourceCompleteness={bridge:platform=COMPLETE, jason=COMPLETE, moise:dynamic=PARTIAL, npl=PARTIAL, moise:hello_org=PARTIAL, cartago=COMPLETE}], transport=State[readiness=READY, detail=loopback TCP port=65240]}
+REAL_JACAMO_BRIDGE_STOP_REQUESTED
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.ArtifactNotAvailableException
+	at cartago.Workspace.lookupLocalArtifact(Workspace.java:956)
+	at cartago.Workspace.lookupArtifact(Workspace.java:948)
+	at cartago.Workspace.closeSession(Workspace.java:453)
+	at cartago.AgentSession.closeSession(AgentSession.java:206)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Oct 18, 2026 1:18:51 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: giacomo has quit, mission print_consonant removed by the platform!
+Oct 18, 2026 1:18:51 PM ora4mas.nopl.GroupBoard agKilled
+INFO: giacomo has quit, role rc removed by the platform!
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.ArtifactNotAvailableException
+	at cartago.Workspace.lookupLocalArtifact(Workspace.java:956)
+	at cartago.Workspace.lookupArtifact(Workspace.java:948)
+	at cartago.Workspace.closeSession(Workspace.java:453)
+	at cartago.AgentSession.closeSession(AgentSession.java:206)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Oct 18, 2026 1:18:51 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: alice has quit, mission print_special_chars removed by the platform!
+Oct 18, 2026 1:18:51 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice has quit, role rs removed by the platform!
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.ArtifactNotAvailableException
+	at cartago.Workspace.lookupLocalArtifact(Workspace.java:956)
+	at cartago.Workspace.lookupArtifact(Workspace.java:948)
+	at cartago.Workspace.closeSession(Workspace.java:453)
+	at cartago.AgentSession.closeSession(AgentSession.java:206)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Oct 18, 2026 1:18:51 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: maria has quit, mission print_l removed by the platform!
+Oct 18, 2026 1:18:51 PM ora4mas.nopl.GroupBoard agKilled
+INFO: maria has quit, role rl removed by the platform!
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.ArtifactNotAvailableException
+	at cartago.Workspace.lookupLocalArtifact(Workspace.java:956)
+	at cartago.Workspace.lookupArtifact(Workspace.java:948)
+	at cartago.Workspace.closeSession(Workspace.java:453)
+	at cartago.AgentSession.closeSession(AgentSession.java:206)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Oct 18, 2026 1:18:51 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: francois has quit, mission print_vowel removed by the platform!
+Oct 18, 2026 1:18:51 PM ora4mas.nopl.GroupBoard agKilled
+INFO: francois has quit, role rv removed by the platform!
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.ArtifactNotAvailableException
+	at cartago.Workspace.lookupLocalArtifact(Workspace.java:956)
+	at cartago.Workspace.lookupArtifact(Workspace.java:948)
+	at cartago.Workspace.closeSession(Workspace.java:453)
+	at cartago.AgentSession.closeSession(AgentSession.java:206)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:169)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+REAL_JACAMO_BRIDGE_STOPPED

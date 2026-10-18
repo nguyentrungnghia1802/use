@@ -1,0 +1,26 @@
+[
+  {
+    "suite": "org.tzi.use.semantic.engine.EngineExtractionTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "155cd52108619cb51d45bf274300d46c67a684d2997e964ee7b1b7c80b67ded7"
+  },
+  {
+    "suite": "org.tzi.use.semantic.engine.HostCompatibilityTest",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "25e7b0571b746c7e33edd1e0f37d33e376bec282e75ad791ce819d1cea7d9026"
+  },
+  {
+    "suite": "org.tzi.use.plugins.jacamo.semantics.EngineHostIntegrationTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sha256": "8e2a78707c76312a09db2ea3f34fe27596e93aeb9c2acff5ce50a42f3f12547a"
+  }
+]

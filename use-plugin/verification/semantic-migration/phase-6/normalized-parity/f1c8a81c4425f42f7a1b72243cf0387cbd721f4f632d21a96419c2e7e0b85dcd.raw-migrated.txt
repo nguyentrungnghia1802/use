@@ -1,0 +1,1 @@
+org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result{org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result.errors=[java.lang.String:semantic: element id 'g' is declared more than once (actors 'A' and 'B') — element ids must be unique across the model], org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result.model=null}

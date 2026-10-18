@@ -1,0 +1,15 @@
+Compiled from "Use75CslModelBackend.java"
+public final class org.tzi.use.semantic.engine.use75.Use75CslModelBackend {
+  public static final java.lang.String PROFILE;
+  public static final java.lang.String DECLARATION;
+  public static final java.lang.String ATTRIBUTE;
+  public static final java.lang.String HELPER;
+  public org.tzi.use.semantic.engine.use75.Use75CslModelBackend();
+  public static boolean active(org.tzi.use.uml.mm.MModel);
+  public org.tzi.use.semantic.engine.use75.Use75ModelBinding compile(org.vnu.sme.goal.dsl.csl.mm.CslModel);
+  public org.tzi.use.semantic.engine.use75.Use75ModelBinding compile(org.vnu.sme.goal.dsl.csl.mm.CslModel, org.tzi.use.semantic.engine.use75.M0ExtensionSpec);
+  public static java.lang.String multiplicity(org.vnu.sme.goal.dsl.csl.mm.CslCardinality);
+  public static java.lang.String encode(java.lang.String);
+  public static java.lang.String decode(java.lang.String);
+  static {};
+}

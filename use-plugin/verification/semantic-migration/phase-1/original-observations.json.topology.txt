@@ -1,0 +1,3 @@
+{requested__bob=requested [bob], requested__bob__alice=requested [bob,alice], supplied__bob__alice=supplied [bob,alice]}
+IStarMarking{supplied__bob__alice=FULFILLED, requested__bob=UNKNOWN, requested__bob__alice=FULFILLED}{}
+[requested__bob__alice <- supplied__bob__alice]

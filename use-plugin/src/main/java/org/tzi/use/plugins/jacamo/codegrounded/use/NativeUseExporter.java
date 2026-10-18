@@ -18,7 +18,8 @@ public final class NativeUseExporter {
     public Result export(MModel model) {
         StringWriter buffer = new StringWriter();
         PrintWriter writer = new PrintWriter(buffer, true);
-        model.processWithVisitor(new MMPrintVisitor(writer));
+        model.processWithVisitor(org.tzi.use.semantic.engine.use75.Use75CslModelBackend.active(model)
+                ? new org.tzi.use.semantic.engine.use75.Use75ModelPrinter(writer) : new MMPrintVisitor(writer));
         writer.flush();
         String text = buffer.toString().replace("\r\n", "\n");
         StringWriter diagnostics = new StringWriter();

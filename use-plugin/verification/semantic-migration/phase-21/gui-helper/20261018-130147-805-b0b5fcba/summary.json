@@ -1,0 +1,12 @@
+{
+  "pipeline": "CODE_GROUNDED_NATIVE",
+  "projectionMode": "AUTO",
+  "derivedJcm": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\semantic-migration\\phase-21\\gui-helper\\20261018-130147-805-b0b5fcba\\staging-counter\\counter.jcm",
+  "observationProfile": "WORLD",
+  "classification": "INTERACTIVE_DEMO_ONLY",
+  "sourceJcmSha256": "eaaf3526e5c0c19c46846669c3de61291eb512a4fb756705f0ab691412a57809",
+  "sourceJcm": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\target\\installed-counter-1-16383060997401176924\\install\\use-7.5.0\\examples\\csl-counter\\counter.jcm",
+  "port": 61972,
+  "status": "MANUAL_GUI_SESSION_COMPLETED",
+  "distributionSha256": "7a12e1e3f014ad511f8c3d6b9d0c274d2c3d9e9d41b7f5804b521b99d04ed258"
+}

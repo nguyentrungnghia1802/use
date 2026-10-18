@@ -1,0 +1,1 @@
+csl v4.0 Forward { entity Child extends Parent; entity Parent; }

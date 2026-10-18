@@ -1,0 +1,22 @@
+{
+  "phase": 12,
+  "status": "DONE",
+  "fullReactorTests": 809.0,
+  "pluginTests": 617,
+  "engineTests": 85,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "compiledCanonicalContracts": 8,
+  "nativeAtPre": "0->1 PASS; 0->2 FAIL",
+  "checkpointReuse": "NativeOperationCheckpoints exact prefix correlation incarnation descriptor argument overlap timeout machinery",
+  "returnValue": "Actual reflected int Method + no observed logger result -> UNSUPPORTED/SKIPPED, never synthesized",
+  "taskHistory": "SEPARATE_ORIGINAL_TASK_MARKING_NOT_A_NATIVE_INVOCATION_VERDICT",
+  "sourceCoverage": "OriginalCslAttribute required-slot support added to existing resolver",
+  "evidence": [
+    "full-regression.log",
+    "full-test-suites.json",
+    "canonical-ocl-inventory.json"
+  ],
+  "remaining": "New-profile live mapping/session/coordinator wiring Phase13-22"
+}

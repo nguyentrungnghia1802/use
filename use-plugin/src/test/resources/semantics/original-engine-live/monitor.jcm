@@ -1,0 +1,18 @@
+mas original_engine_live {
+    agent alice : alice.asl {
+        focus: main.counter
+    }
+    agent bob : bob.asl {
+        focus: main.counter
+    }
+    workspace main {
+        artifact counter: org.tzi.use.plugins.jacamo.semantics.LiveRegressionCounterArtifact
+    }
+    organisation org: organization.xml {
+        group team: team {
+            players: alice worker, bob reviewer
+            responsible-for: workflow
+        }
+        scheme workflow: work
+    }
+}

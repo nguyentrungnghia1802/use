@@ -1,0 +1,1 @@
+org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result{org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result.errors=[java.lang.String:semantic: refinement 'b > or a' in actor 'B' references parent 'a' owned by actor 'A' — a refinement must stay within a single actor (use 'depend' to cross actors)], org.vnu.sme.goal.dsl.istar.parser.IStarCompiler$Result.model=null}

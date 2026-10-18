@@ -17,7 +17,7 @@ public record CslMonitorConfiguration(String version, SemanticProjectionProfile 
     public static final String PROPERTY = "use.jacamo.semantics.config";
     private static final ObjectMapper JSON = new ObjectMapper().enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
     public CslMonitorConfiguration {
-        if (!"1.0".equals(version) || profile == null || profile == SemanticProjectionProfile.NATIVE_CURRENT)
+        if (!"1.0".equals(version) || profile == null || (profile != SemanticProjectionProfile.CSL_OBSERVER_V1 && profile != SemanticProjectionProfile.CSL_OBSERVER_V2))
             throw new IllegalArgumentException("CSL_MONITOR_CONFIGURATION_VERSION_OR_PROFILE");
         Objects.requireNonNull(schema); Objects.requireNonNull(requirements);
         decisions = List.copyOf(decisions);

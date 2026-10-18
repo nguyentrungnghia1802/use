@@ -1,0 +1,13 @@
+{
+  "report": "use-plugin\\target\\failsafe-reports\\TEST-org.tzi.use.plugins.jacamo.GuiPluginStagingIT.xml",
+  "reportSha256": "4b8013048cf46a57c50429634aad20e0a731f05ed92dfca5249720223b55e79c",
+  "origins": {
+    "org/antlr/v4/runtime/RuntimeMetaData.class": [
+      "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\target\\use-plugin-1.0.1.jar"
+    ],
+    "org/vnu/sme/goal/dsl/csl/mm/CslModel.class": [
+      "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\target\\use-plugin-1.0.1.jar"
+    ]
+  },
+  "strictGuardUnchanged": true
+}

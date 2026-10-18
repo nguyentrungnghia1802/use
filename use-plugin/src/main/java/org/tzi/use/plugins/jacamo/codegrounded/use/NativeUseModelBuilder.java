@@ -13,6 +13,20 @@ import static org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.Relat
 
 /** Two-pass semantic projection into the single native USE model. DTO classes are never classifiers. */
 public final class NativeUseModelBuilder {
+    /** Accepts the already compiled canonical v4 model; never rebuilds it through the local CSL IR. */
+    public Result buildCsl(org.tzi.use.semantic.engine.use75.Use75ModelBinding binding,
+            CodeGroundedTraceCollector trace, NativeProjectionMode mode) {
+        return buildCsl(binding,trace,mode,false);
+    }
+    public Result buildCsl(org.tzi.use.semantic.engine.use75.Use75ModelBinding binding,
+            CodeGroundedTraceCollector trace,NativeProjectionMode mode,boolean explicitTupleWriter) {
+        if (!binding.extension().players() || !binding.extension().enforceRoleCompatibility())
+            throw new IllegalArgumentException("CSL_OBSERVED_PROFILE_REQUIRES_PLAYER_CONTEXT_POLICY");
+        binding.requireLiveCompatible(new org.tzi.use.semantic.engine.use75.Use75ValueCodec().supportedTypes(binding.cslModel()), explicitTupleWriter);
+        return new Result(binding.model(), trace.index(), List.of(), List.of(), Map.of(), Set.of(),
+                NativeUseStructure.sha256(binding.model()), NativeProjectionProfile.forMode(mode),
+                new MoiseDomainProjection.Result(Map.of(), List.of()));
+    }
     public Result buildCsl(JacamoSpecificationModel source, CodeGroundedTraceCollector trace, NativeProjectionMode mode,
             org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration config) {
         var binding = org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.compile(source, config, trace);
@@ -84,12 +98,11 @@ public final class NativeUseModelBuilder {
             // in USE. An actual producer observation can then bind it without
             // inventing a cold classifier or guessing by display name.
             for(var declaration:snapshot.artifactDeclarations()) {
-                var workspaces=snapshot.workspaceDeclarations().stream().filter(w->w.name().equals(declaration.workspace())).toList();
-                if(workspaces.size()!=1) throw new IllegalArgumentException("ARTIFACT_DECLARATION_WORKSPACE_UNRESOLVED:"+declaration.metadata().semanticId());
+                String workspace=DomainProjection.artifactWorkspace(snapshot,declaration);
                 api.getModel().getClass("Artifact").addAnnotation(new org.tzi.use.uml.mm.MElementAnnotation(
                     "ArtifactDeclaration_"+DomainProjection.hash(declaration.metadata().semanticId()),new TreeMap<>(Map.of(
                         "id64",DomainProjection.encode(declaration.metadata().semanticId()),"name64",DomainProjection.encode(declaration.name()),
-                        "workspace64",DomainProjection.encode(workspaces.getFirst().metadata().semanticId()),"javaClass64",DomainProjection.encode(declaration.javaClass())))));
+                        "workspace64",DomainProjection.encode(workspace),"javaClass64",DomainProjection.encode(declaration.javaClass())))));
             }
             for(String id:metadata.keySet()) {
                 var cls=api.createClass(symbols.get(id),false); String kind=kinds.get(id);

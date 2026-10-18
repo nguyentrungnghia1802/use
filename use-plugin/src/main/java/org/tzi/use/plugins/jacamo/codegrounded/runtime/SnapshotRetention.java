@@ -51,6 +51,28 @@ public final class SnapshotRetention {
     public synchronized VerificationSnapshot passingBeforeFailure() {return passingBeforeFailure;}
     public synchronized VerificationSnapshot confirmation() {return confirmation;}
     public synchronized List<VerificationSnapshot> snapshots() {return List.copyOf(tail);}
+    /** Validate before persistence; this must not publish a provisional success. */
+    public synchronized void validateCompletion(VerificationSnapshot replacement) {
+        if(replacement.metadata()==null||replacement.image()==null||replacement.estimatedBytes()>maxBytes/2)throw new IllegalStateException("VERIFICATION_SNAPSHOT_TOO_LARGE");
+        for(var old:tail)if(old.snapshotId().equals(replacement.snapshotId())&&(old.currentVersion()!=replacement.currentVersion()||old.image()!=replacement.image()||!old.result().stateHash().equals(replacement.result().stateHash())))throw new IllegalArgumentException("ASYNC_SNAPSHOT_CUT_MISMATCH");
+    }
+    /** Replace only the result of the exact frozen cut after ordered worker completion. */
+    public synchronized void complete(VerificationSnapshot replacement) {
+        validateCompletion(replacement);
+        var values=new java.util.ArrayList<VerificationSnapshot>();boolean found=false;
+        for(var old:tail)if(old.snapshotId().equals(replacement.snapshotId())) {
+            bytes+=replacement.estimatedBytes()-old.estimatedBytes();values.add(replacement);found=true;
+        }else values.add(old);
+        if(!found)return;tail.clear();tail.addAll(values);
+        while(tail.size()>capacity||bytes>maxBytes)bytes-=tail.removeFirst().estimatedBytes();
+        if(failure!=null&&failure.snapshotId().equals(replacement.snapshotId()))failure=replacement;
+        if(previousFailure!=null&&previousFailure.snapshotId().equals(replacement.snapshotId()))previousFailure=replacement;
+        if(confirmation!=null&&confirmation.snapshotId().equals(replacement.snapshotId()))confirmation=replacement;
+        if(passingBeforeFailure!=null&&passingBeforeFailure.snapshotId().equals(replacement.snapshotId()))passingBeforeFailure=replacement;
+        if(lastPassing!=null&&lastPassing.snapshotId().equals(replacement.snapshotId()))lastPassing=replacement;
+        if(replacement.result().freshness().equals("CURRENT_OBSERVED")&&!replacement.result().coverage().equals("STATIC_ONLY")&&replacement.result().count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.PASS)>0&&replacement.result().count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.FAIL)==0&&replacement.result().count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.ERROR)==0
+                &&(lastPassing==null||lastPassing.metadata().boundarySequence()<=replacement.metadata().boundarySequence()))lastPassing=replacement;
+    }
     public synchronized long retainedBytes() {return bytes+(previousFailure==null?0:previousFailure.estimatedBytes())
             +(failure==null?0:failure.estimatedBytes())+(confirmation==null?0:confirmation.estimatedBytes())
             +(lastPassing==null?0:lastPassing.estimatedBytes())+(passingBeforeFailure==null?0:passingBeforeFailure.estimatedBytes());}

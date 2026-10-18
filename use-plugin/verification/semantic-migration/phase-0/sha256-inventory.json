@@ -1,0 +1,102 @@
+[
+  {
+    "file": "acceptance.json",
+    "bytes": 1048,
+    "sha256": "5F6B3D35E357E6419E302EC445D6E3BB75D2B3AF0A402A31793A2B74B8DA167C"
+  },
+  {
+    "file": "baseline-inputs.json",
+    "bytes": 2300,
+    "sha256": "A86723FA7F0E34FFCF4858686FAD92C62BC59D5D81244753E4AFFE2DA4D85E9F"
+  },
+  {
+    "file": "baseline-result.json",
+    "bytes": 196,
+    "sha256": "882872379503388C4266ABDDAA87764DB4BFA1804FABDE9CA024CCFCF21CA312"
+  },
+  {
+    "file": "baseline-test-suites.json",
+    "bytes": 70280,
+    "sha256": "F19B4B691229EC0C14B902E03568456C8736EAFC6D88804FB8CF2F5D52B554CC"
+  },
+  {
+    "file": "baseline-verify.log",
+    "bytes": 93228,
+    "sha256": "72FA40D8084B259707C6D8B048C73B1EB480F8673A1CC834B50BF7AF2C647529"
+  },
+  {
+    "file": "focused-checks.json",
+    "bytes": 681,
+    "sha256": "ED9AD13ADA3B033D7F21E63E5A79D8B6853730324D738E95CB20C31413491694"
+  },
+  {
+    "file": "legacy-junit3-classpath.json",
+    "bytes": 317,
+    "sha256": "612986502C6EE40CD8C4B9F14AF94D42BD1C4E46189E41E579C74D453A17E725"
+  },
+  {
+    "file": "legacy-junit3-classpath.log",
+    "bytes": 1313,
+    "sha256": "04B7062CBB2E527C101F95082C77DCF74C252D6BA6679D6ED1395954450A6E91"
+  },
+  {
+    "file": "legacy-junit3-resources-first.json",
+    "bytes": 3649,
+    "sha256": "267CF02EC54431BD3E221A7066C3806234EA1FF50441A99DD354B42A0EA145DC"
+  },
+  {
+    "file": "legacy-junit3-resources-first.log",
+    "bytes": 749,
+    "sha256": "59C6B674288F2825D885309D03EC818698F4B80A27E1A759DACA11F2405AD827"
+  },
+  {
+    "file": "legacy-junit3.json",
+    "bytes": 295,
+    "sha256": "46FE3B06D24724F32808A897FDAD8573732BC41D3658C3BF9199EC1CEFE93D41"
+  },
+  {
+    "file": "legacy-junit3.log",
+    "bytes": 90,
+    "sha256": "37D8D394F520F50A4EDE1CE0B96F3C60E34124F6CB792AC743AAC60828185F95"
+  },
+  {
+    "file": "native-baseline-compile.log",
+    "bytes": 487,
+    "sha256": "21118AED2DFA6F5D73DAAF62776406DD3214CE1A117A700CCE7295801C28A297"
+  },
+  {
+    "file": "native-baseline-performance.json",
+    "bytes": 1729,
+    "sha256": "A7A9EEEAF3024800375F490053CEDAF28A830110930C6DDCEECD1A21B545CF45"
+  },
+  {
+    "file": "native-baseline-run.log",
+    "bytes": 67,
+    "sha256": "1B397336DBA3E9F8901299C617F19783C0E7A0396ECF0F624939879715040D66"
+  },
+  {
+    "file": "NativeCoordinatorBaseline.java",
+    "bytes": 4108,
+    "sha256": "F7B360586ED1BBAC028CDCA3B3937C70C93B75DC6B7AE846AF859D371DD03D6A"
+  },
+  {
+    "file": "OriginalMarkingBaseline.java",
+    "bytes": 2270,
+    "sha256": "22DDD62D59E65601259F661B398A0B611CCC7AD4DF046D9C2A31C3C64E9AE076"
+  },
+  {
+    "file": "upstream-marking-compile.log",
+    "bytes": 0,
+    "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+  },
+  {
+    "file": "upstream-marking-observations.json",
+    "bytes": 245,
+    "sha256": "F9DC4CB74B92BD320B76D5F3755302160C7BF75B2D5620E029A9139D98066592"
+  },
+  {
+    "file": "upstream-marking-source-hashes.json",
+    "bytes": 801,
+    "sha256": "A72016761A556B9EC241029B5638F6C74A333A477DFB859FFF51B190B4D210CB"
+  }
+]

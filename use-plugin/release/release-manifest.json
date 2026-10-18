@@ -22,7 +22,7 @@
   "limitations": [
     "V2 frozen release candidate; no published Git tag or full original Auction standalone equivalence claim.",
     "The derived standalone JaCaMo launcher control is covered; full original Auction plan/deadline equivalence is explicitly unsupported",
-    "Moise runtime evidence uses a programmatic OS/OE subset rather than loading the checked-in XML",
+    "Historical V2 synthetic MOISE evidence used a programmatic OS/OE subset; the original-engine Counter live acceptance loads its shipped organization.xml with actual GroupBoard and SchemeBoard observations",
     "Unsupported semantics remain diagnostic and are not guessed"
   ],
   "packageEntries": [
@@ -156,6 +156,82 @@
     {
       "path": "runtime/runtime-mapping-v2.schema.json",
       "source": "src/main/resources/org/tzi/use/plugins/jacamo/runtime/runtime-mapping-v2.schema.json"
+    },
+    {
+      "source": "tools/jacamo-bridge.ps1",
+      "path": "tools/jacamo-bridge.ps1"
+    },
+    {
+      "source": "docs/project/use4goal-run.md",
+      "path": "docs/use4goal-run.md"
+    },
+    {
+      "source": "docs/project/semantic-replay-v3.md",
+      "path": "docs/semantic-replay-v3.md"
+    },
+    {
+      "source": "docs/project/semantic-compatibility-routing.md",
+      "path": "docs/semantic-compatibility-routing.md"
+    },
+    {
+      "source": "docs/project/use4goal-observed-v1.json",
+      "path": "profiles/use4goal-observed-v1.json"
+    },
+    {
+      "source": "licenses/ANTLR4-4.9.3.txt",
+      "path": "licenses/ANTLR4-4.9.3.txt"
+    },
+    {
+      "source": "../use-jacamo-semantic-engine/src/main/resources/META-INF/licenses/use4Goal-GPL-3.0.txt",
+      "path": "licenses/use4Goal-GPL-3.0.txt"
+    },
+    {
+      "source": "../use-jacamo-semantic-engine/src/main/resources/META-INF/use4goal-provenance.json",
+      "path": "provenance/use4goal-provenance.json"
+    },
+    {
+      "source": "../use-jacamo-semantic-engine/provenance/README.md",
+      "path": "provenance/README.md"
+    },
+    {
+      "source": "../use-jacamo-semantic-engine/provenance/host-compatibility-patches.md",
+      "path": "provenance/host-compatibility-patches.md"
+    },
+    {
+      "source": "../use-jacamo-semantic-engine/provenance/P-USE-PRINT-02.md",
+      "path": "provenance/P-USE-PRINT-02.md"
+    },
+    {
+      "source": "../use-jacamo-semantic-engine/provenance/patches/P-CTX-01.diff",
+      "path": "provenance/P-CTX-01.diff"
+    },
+    {
+      "source": "examples/csl-counter/counter.jcm",
+      "path": "examples/csl-counter/counter.jcm"
+    },
+    {
+      "source": "examples/csl-counter/mapping.json",
+      "path": "examples/csl-counter/mapping.json"
+    },
+    {
+      "source": "examples/csl-counter/README.md",
+      "path": "examples/csl-counter/README.md"
+    },
+    {
+      "source": "examples/csl-counter/src/agt/alice.asl",
+      "path": "examples/csl-counter/src/agt/alice.asl"
+    },
+    {
+      "source": "examples/csl-counter/src/agt/bob.asl",
+      "path": "examples/csl-counter/src/agt/bob.asl"
+    },
+    {
+      "source": "examples/csl-counter/src/env/demo/counter/Counter.java",
+      "path": "examples/csl-counter/src/env/demo/counter/Counter.java"
+    },
+    {
+      "source": "examples/csl-counter/src/org/organization.xml",
+      "path": "examples/csl-counter/src/org/organization.xml"
     }
   ],
   "releaseStatus": "frozen-candidate-not-tagged",
@@ -172,5 +248,29 @@
     "producer": "independent-jacamo-jvm",
     "consumer": "use-plugin",
     "npl": "original-0.6.1"
+  },
+  "semanticReplay": {
+    "legacy": "2.0.0",
+    "originalEngine": "3.0.0",
+    "programManifest": "1.0.0",
+    "mappingRuleSet": "2.0",
+    "engineProfile": "USE4GOAL_OBSERVED_V1",
+    "policy": "EXACT_EXECUTABLE_HASHES_AND_ACCEPTED_CUTS_NO_SILENT_REINTERPRETATION",
+    "legacyReanalysisOfOriginalEngine": "EXPLICITLY_UNSUPPORTED_REQUIRES_SEPARATE_VERSIONED_POLICY",
+    "finalReleaseGate": "REQUIRES_CLEAN_REACTOR_FULL_ARCHIVE_LIVE_AND_PROTECTED_INPUTS"
+  },
+  "originalSemanticEngine": {
+    "selection": "EXPLICIT_OPT_IN",
+    "defaultProfile": "NATIVE_CURRENT",
+    "profile": "USE4GOAL_OBSERVED_V1",
+    "oneShadedEngine": true,
+    "host": "7.5.0",
+    "antlr4": "4.9.3",
+    "upstreamCommit": "6f3e73801239fd8bfb94ca8d04ba531b903c0ac9",
+    "example": "examples/csl-counter/counter.jcm",
+    "instructions": "docs/use4goal-run.md",
+    "productionJournalBytes": 67108864,
+    "observationProfile": "WORLD_BY_DEFAULT_FOR_THIS_OPT_IN_PROFILE",
+    "fullTraceCapacity": "WORKLOAD_DEPENDENT_GAP_REPORTED_ON_EXHAUSTION"
   }
 }

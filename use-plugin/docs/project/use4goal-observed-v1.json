@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0.0",
+  "engineProfile": "USE4GOAL_OBSERVED_V1",
+  "mappingProfile": "JACAMO_MAPPING_V1",
+  "activation": "EXPLICIT_ROOT_DEMAND_AND_ORIGINAL_GRAPH_DESCENDANTS",
+  "deployment": "EXTERNAL_JACAMO_TCP",
+  "authoritativeState": "SINGLE_HOST_SESSION_MSYSTEM",
+  "productionEnabled": true,
+  "defaultSelected": false,
+  "selectionPolicy": "EXPLICIT_OPT_IN_WITH_VALIDATED_MAPPING_SPECIFICATION",
+  "upstream": {
+    "repository": "use4Goal",
+    "commit": "6f3e73801239fd8bfb94ca8d04ba531b903c0ac9",
+    "cslGrammarSha256": "5bca5c44933f2619eeac837279e09a995a293383ebe3795d058d7e5319d3d224",
+    "istarGrammarSha256": "177eabd15e56c644c98bfa4e7a6f2b2e0e18b67bdfe68ac01d872a13ea72d503",
+    "antlrVersion": "4.9.3",
+    "hostUseVersion": "7.5.0",
+    "javaRelease": 21
+  },
+  "policies": {
+    "observationProfile": "AUTO_SELECTS_WORLD_FOR_THIS_PROFILE_FULL_REQUIRES_WORKLOAD_CAPACITY",
+    "missingRequiredValue": "INCOMPLETE_NOT_DEFAULTED",
+    "immutableAttributeChange": "PRESERVE_FACT_REPORT_POLICY_VIOLATION",
+    "opaqueRuntimeTypeWithoutCodec": "UNSUPPORTED",
+    "unknownBooleanInput": "DEFER_UPDATE_PRESERVE_KNOWN_HISTORY_DEGRADE_QUALITY",
+    "contextualOccurrenceIdentity": "FULL_STRUCTURED_BINDING_STACK",
+    "implicitOwnerFallback": "REJECT_IF_BINDING_AMBIGUOUS_OR_CONTEXT_UNPROVEN",
+    "standaloneAndDependencyOccurrences": "DISTINCT_NO_STATUS_BROADCAST",
+    "taskPreWithoutPost": "DEFER_COMPLETE_TUPLE",
+    "taskInvocationContext": "UNIQUE_ELIGIBLE_CONTEXT_AT_PRE_OTHERWISE_DEFER_NO_BROADCAST",
+    "taskInvocationFailure": "SEPARATE_FROM_HISTORICAL_TASK_MARKING",
+    "gapResync": "DO_NOT_CERTIFY_LOST_TEMPORAL_INTERVAL",
+    "producerRestart": "RESET_RUN_BOUND_HISTORY",
+    "monitorRestart": "NEW_HISTORY_START_AFTER_RUN_START",
+    "nativeMutationFailure": "ROLLBACK_STAGED_BOUNDARY",
+    "semanticFailureAfterNativeAccept": "PRESERVE_NATIVE_DISCARD_SEMANTIC_STEP_TAINT_CONTINUITY",
+    "postCommitPersistenceFailure": "DEGRADE_COVERAGE_AND_REPLAY",
+    "unsupportedMandatoryMapping": "REJECT_IMPORT",
+    "optionalUnmappedConcept": "PRESERVE_TRACE_AND_EXPLICIT_UNSUPPORTED_DECISION"
+  },
+  "unsupportedSyntax": [
+    "DECLARED_GOAL_ACTIVATION",
+    "FORALL_REFINEMENT",
+    "PICK_REFINEMENT",
+    "TOP_LEVEL_ACTOR_ASSOCIATION_NOT_BUILT",
+    "UNPRESERVED_DESCRIPTION_OR_CONDITION_LANGUAGE"
+  ],
+  "expectedDifferences": [
+    {"feature": "NONE_FALSE", "original": "PENDING", "local": "VIOLATED"},
+    {"feature": "TASK_HISTORY", "original": "HISTORICAL_PRESEEN_POSTSEEN", "local": "CORRELATED_INVOCATION_VERDICT"},
+    {"feature": "TASK_VIOLATED", "original": "UNREPRESENTABLE", "invocationContract": "FAIL_IS_INDEPENDENT"},
+    {"feature": "SYMBOLIC_NONE_TASK", "originalLive": "BOOLEAN_RECURRENCE", "symbolic": "BOUNDED_BACKEND_SPECIFIC"}
+  ],
+  "bounds": {
+    "productionFrameBytes": 16777216,
+    "productionBootstrapEvents": 1024,
+    "productionProducerEvents": 8192,
+    "productionJournalBytes": 67108864,
+    "productionJournalTailEntries": 512,
+    "nativeHistoryCuts": 8,
+    "nativeHistoryBytes": 16777216,
+    "compiledExpressions": 4096,
+    "engineOccurrences": 4096,
+    "engineDefinitionEdges": 16384,
+    "engineDefinitionDepth": 256,
+    "enginePendingInputs": 1024,
+    "propagationStepLimit": 10000,
+    "exhaustion": "EXPLICIT_UNAVAILABLE_OR_GAP_NO_SILENT_DROP"
+  },
+  "uiAcceptance": {
+    "fixture": "TWO_AGENT_COUNTER_GROUP_ROLE",
+    "heartbeatMillis": 50,
+    "targetP95DelayMillis": 250,
+    "measuredBaseline": "RECORDED_SEPARATELY_NOT_ASSUMED"
+  }
+}

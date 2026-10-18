@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "jarSha256": "28cfe6d2cb0b1cd9f34eab26b196db1a4b78f44b60891175131f370ad7fbf486",
+  "entries": 287,
+  "originalModelOwnedByEngine": true,
+  "hostClassesBundled": false,
+  "antlrRuntimeBundled": false,
+  "testOracleBundled": false,
+  "upstreamPluginDescriptorBundled": false
+}
