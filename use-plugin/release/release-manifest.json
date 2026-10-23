@@ -330,6 +330,10 @@
       "path": "examples/auction-semantic/provenance/licenses/JaCaMo-LGPL-3.0.txt"
     },
     {
+      "source": "examples/auction/auction-mapping.xml",
+      "path": "examples/auction-semantic/auction-mapping.xml"
+    },
+    {
       "source": "../use-jacamo-semantic-engine/provenance/P-IADM-01.md",
       "path": "provenance/P-IADM-01.md"
     },

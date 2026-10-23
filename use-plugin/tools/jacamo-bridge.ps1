@@ -12,9 +12,10 @@ param(
     [string]$OclProfilePath = "",
     [ValidateSet("AUTO", "FULL")]
     [string]$ProjectionMode = "AUTO",
-    [ValidateSet("NATIVE_CURRENT", "USE4GOAL_OBSERVED_V1", "AUCTION_OBSERVED_V1", "CSL_OBSERVER_V1", "CSL_OBSERVER_V2")]
+    [ValidateSet("NATIVE_CURRENT", "JACAMO_DECLARATIVE_XML", "USE4GOAL_OBSERVED_V1", "AUCTION_OBSERVED_V1", "CSL_OBSERVER_V1", "CSL_OBSERVER_V2")]
     [string]$SemanticProfile = "NATIVE_CURRENT",
     [string]$MappingSpecificationPath = "",
+    [string]$AuthoredOclPath = "",
     [ValidateRange(32768, 1073741824)]
     [long]$RuntimeJournalMaxBytes = 67108864,
     [ValidateSet("AUTO", "WORLD", "FULL")]
@@ -52,10 +53,18 @@ if ($SemanticProfile -ne "NATIVE_CURRENT") {
     if ([string]::IsNullOrWhiteSpace($MappingSpecificationPath)) { throw "AUTHORED_SPECIFICATION_FILE_REQUIRED:$SemanticProfile" }
     $semanticSpecification = [IO.Path]::GetFullPath($MappingSpecificationPath)
     if (-not (Test-Path -LiteralPath $semanticSpecification -PathType Leaf) -or (Get-Item -LiteralPath $semanticSpecification).Length -gt 16777216) { throw "AUTHORED_SPECIFICATION_FILE_INVALID:$semanticSpecification" }
-    if ($SemanticProfile -eq "AUCTION_OBSERVED_V1" -and -not $semanticSpecification.EndsWith('.xml', [StringComparison]::OrdinalIgnoreCase)) { throw "AUCTION_XML_SPECIFICATION_REQUIRED:$semanticSpecification" }
-    $semanticProperty = if ($SemanticProfile -eq "AUCTION_OBSERVED_V1") { "use.jacamo.auction.specification" } elseif ($SemanticProfile -eq "USE4GOAL_OBSERVED_V1") { "use.jacamo.mapping.rules" } else { "use.jacamo.semantics.config" }
-    $semanticJvmArguments += "-D${semanticProperty}=$semanticSpecification"
+    if ($SemanticProfile -in @("AUCTION_OBSERVED_V1", "JACAMO_DECLARATIVE_XML") -and -not $semanticSpecification.EndsWith('.xml', [StringComparison]::OrdinalIgnoreCase)) { throw "AUCTION_XML_SPECIFICATION_REQUIRED:$semanticSpecification" }
+    if ($SemanticProfile -eq "JACAMO_DECLARATIVE_XML") {
+        if ([string]::IsNullOrWhiteSpace($AuthoredOclPath)) { throw "AUTHORED_OCL_FILE_REQUIRED:$SemanticProfile" }
+        $authoredOcl = [IO.Path]::GetFullPath($AuthoredOclPath)
+        if (-not (Test-Path -LiteralPath $authoredOcl -PathType Leaf) -or -not $authoredOcl.EndsWith('.ocl', [StringComparison]::OrdinalIgnoreCase)) { throw "AUTHORED_OCL_FILE_INVALID:$authoredOcl" }
+        $semanticJvmArguments += @("-Duse.jacamo.mapping.xml=$semanticSpecification", "-Duse.jacamo.mapping.ocl=$authoredOcl")
+    } else {
+        $semanticProperty = if ($SemanticProfile -eq "AUCTION_OBSERVED_V1") { "use.jacamo.auction.specification" } elseif ($SemanticProfile -eq "USE4GOAL_OBSERVED_V1") { "use.jacamo.mapping.rules" } else { "use.jacamo.semantics.config" }
+        $semanticJvmArguments += "-D${semanticProperty}=$semanticSpecification"
+    }
 } elseif (-not [string]::IsNullOrWhiteSpace($MappingSpecificationPath)) { throw "NATIVE_PROFILE_HAS_NO_AUTHORED_SPECIFICATION" }
+elseif (-not [string]::IsNullOrWhiteSpace($AuthoredOclPath)) { throw "NATIVE_PROFILE_HAS_NO_AUTHORED_OCL" }
 
 $usePluginRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $installedLayout = Test-Path -LiteralPath (Join-Path $usePluginRoot "bridge\lib\jacamo-bridge-jacamo-1.0.0.jar") -PathType Leaf

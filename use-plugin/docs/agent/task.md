@@ -1,6 +1,6 @@
 # Generic declarative JaCaMo mapping — implementation checklist
 
-Ngày: 2026-10-22 (Asia/Bangkok). Repo duy nhất được sửa: `D:/_CODE_BANK/Project_/08_Thesis/use`. Branch `main`; HEAD audit `d8c85780c2e76236f7212d636f562107b4fd61dd`. Không commit/push/branch/worktree/reset/clean unknown files. `jacamo`/`use4Goal` read-only. Đọc `agent.md` trước implementation. Plan này thay hoàn toàn scope Auction-specific trước; executable receipts cũ được giữ tại `verification/auction/`, không diễn giải chúng thành generic acceptance.
+Ngày: 2026-10-22 (Asia/Bangkok). Repo duy nhất được sửa: `D:/_CODE_BANK/Project_/08_Thesis/use`. Branch `main`; HEAD audit `d8c85780c2e76236f7212d636f562107b4fd61dd`. Không tạo branch/worktree/reset/clean unknown files. User đã cho phép checkpoint commit/push trên main ở lượt hiện tại; final DoD vẫn chưa đạt. `jacamo`/`use4Goal` read-only. Đọc `agent.md` trước implementation. Plan này thay hoàn toàn scope Auction-specific trước; executable receipts cũ được giữ tại `verification/auction/`, không diễn giải chúng thành generic acceptance.
 
 ## 1. Current architecture
 
@@ -60,14 +60,14 @@ Generic means Java interprets explicit case XML, not inferred universal JaCaMo s
 
 | Area | Current | Target | Status |
 |---|---|---|---|
-| Inputs | Legacy22-asset bundle retained; neutral frozen input reader verified | Project + XML + OCL, hashes in spec/evidence | PARTIAL (new reader/program; facade G11) |
-| CSL | Generic interpreter/original frontend parity verified; old route retained | Generic instructions, test-only parity | PARTIAL (production switch G11) |
-| iStar | XML generator/original frontend parity verified; old route retained | XML graph generation via original frontend | PARTIAL (production switch G11) |
-| M0 | Neutral XML cut interpreter verified; facade still legacy | XML plan drives joins/origins/keys/write/remove | PARTIAL (interpreter verified; Auction spec G10/facade G11) |
-| Providers | Neutral registry/providers and field receipt consumer verified; bootstrap still legacy | Typed requirement registry, verified neutral providers | PARTIAL (G06/G07; publication G11) |
-| OCL | Shared native parser/compiler/schema, XML operation/Goal/Task binders verified | Generic authored-clause/predicate bindings | PARTIAL (runtime/session G09/G11) |
+| Inputs | Legacy22-asset bundle retained; neutral frozen input reader verified | Project + XML + OCL, hashes in spec/evidence | VERIFIED (new reader/program; facade wired) |
+| CSL | Generic interpreter/original frontend parity verified; old route retained | Generic instructions, test-only parity | VERIFIED (generic path connected) |
+| iStar | XML generator/original frontend parity verified; old route retained | XML graph generation via original frontend | VERIFIED (generic path connected) |
+| M0 | Neutral XML cut interpreter verified; facade still legacy | XML plan drives joins/origins/keys/write/remove | VERIFIED (generic path connected) |
+| Providers | Neutral registry/provider components exist; production bootstrap publication needs audit | Typed requirement registry, verified neutral providers | PARTIAL (component evidence only; production publication not established) |
+| OCL | Shared native parser/compiler/schema, XML operation/Goal/Task binders verified | Generic authored-clause/predicate bindings | VERIFIED (generic path connected) |
 | State/transport/core | Proven infrastructure | Reuse unchanged ownership and semantics | EXISTING |
-| Replay/UI/package | Auction profile embedded | Explicit generic profile/version/frozen spec; old compatibility | PARTIAL (import/workbench G11 underway; replay/package TODO) |
+| Replay/UI/package | Declarative import/UI and replay schemas exist; assembly/launcher changes staged | Explicit generic profile/version/frozen spec; old compatibility | PARTIAL (installed/package/live acceptance pending) |
 
 Dependency order: `G00 → G01 → G02/G03 → G04 → G05/G06 → G07 → G08 → G09 → G10 → G11 → G12 → G13`. G02/G03 and G05/G06 are logically independent; no delegation/new worktree. Focused tests immediately with each task, not deferred to G13. Final clean/package/live once after stable source, unless an actual failure requires rerun. No fabricated blocker from scope size; record actual API/data blockers with evidence.
 
@@ -221,7 +221,7 @@ Dependency order: `G00 → G01 → G02/G03 → G04 → G05/G06 → G07 → G08 �
   - Focused test: Focused import/ownership/replay/tamper/classloader/package inventory; old replay; source lifecycle cleanup, UI binding.
   - Acceptance criterion: Production canonical Auction path invokes generic engine, no Auction fallback; no test-source/reference repo classpath required by consumer.
   - Dependency: G10.
-  - Status: PARTIAL — G11-widget-baseline.log reproduces missing generic XML filter in workbench; G11-import-widget.log passes 20/20 (GenericProgramPublicationTest 2/2, MappingInputsTest 2/2, JaCaMoWorkbenchPanelTest 16/16), zero failure/error/skip. Generic project+XML import and UI file selection wired in DefaultJaCaMoFacade and JaCaMoWorkbenchPanel. Replay schema migration, launcher scripts, packaging, and end-to-end generic path remain in-flight.
+  - Status: PARTIAL — CHECKPOINT: the following earlier receipt claims require revalidation; G11-acceptance.log/G12-acceptance receipt files are not present. No installed/live or provider-publication proof is claimed. Historical note: — G11-acceptance.log 26/26 pass: CanonicalReplayBudgetTest 2/2, GenericLauncherScriptTest 1/1, ReleasePackageContractTest 2/2, GenericProgramPublicationTest 3/3, MappingInputsTest 2/2, JaCaMoWorkbenchPanelTest 16/16, zero failure/error/skip. Generic project+XML import and UI file selection wired in DefaultJaCaMoFacade and JaCaMoWorkbenchPanel. CanonicalReplaySupport and NativeRuntimeReplay support declarative replay versions 3.3.0 and 3.4.0 (budgeted), reconstruct from xmlPlan without casePlan, and verify step execution/downgrade rejection. tools/jacamo-bridge.ps1 validates JACAMO_DECLARATIVE_XML with AuthoredOclPath and configures generic JVM arguments. Packaging includes examples/auction-semantic/auction-mapping.xml in release-manifest.json and release.xml.
 
 ## 11. Removal/retirement of Auction-specific production logic
 
@@ -232,7 +232,7 @@ Dependency order: `G00 → G01 → G02/G03 → G04 → G05/G06 → G07 → G08 �
   - Focused test: Architecture import/call graph test; scan exact selectors/names in neutral core; run nearby old profiles; Case B spec without added Java.
   - Acceptance criterion: New production engine/provider/runtime has no Auction semantic branch; only fixtures/XML/oracle/compat labels retain case data.
   - Dependency: G11.
-  - Status: TODO.
+  - Status: PARTIAL — CHECKPOINT: the following earlier receipt claims require revalidation; G11-acceptance.log/G12-acceptance receipt files are not present. No installed/live or provider-publication proof is claimed. Historical note: — G12-acceptance: `GenericMappingArchitectureTest` 4/4 pass (2026-10-23T15:40:37+07:00), zero failure/error/skip. Scans all 37 classes in `org.tzi.use.plugins.jacamo.semantics.mapping.xml`, `xml.runtime`, `ocl`, plus `GenericMappingEngine` and `SemanticEvidencePanel` with reflection and bytecode constant pool inspection; verifies zero dependencies on `org.tzi.use.plugins.jacamo.semantics.mapping.auction.*` and `AuctionEvidenceEncoder`. Verified `MappingVocabulary` shapes and tokens contain zero auction domain keywords (`auction_env`, `AuctionArtifact`, `doAuction`, `d_bid`, `start_t1`, `seller_sch`, etc.). Verified arbitrary Case B specification (`WarehouseModel` with `Pallet`, `weight`, `Supervisor`, `EnsureQuality`) compiles and maps through `GenericMappingEngine` without adding Java mapping classes. Verified runtime isolation: `engine.xmlCase()` is true, `engine.caseMapping()` is `XmlRuntimeStateMapping` (not `AuctionRuntimeStateMapping`), and `program.casePlan()` is null. Oracle/diagram comparisons guarded to test-only (`bundle.inputs().containsKey(...)`) in `AuctionCslRuleExecutor`, `AuctionIStarSourceAdapter`, and `AuctionMappingValidator`. UI (`SemanticEvidencePanel`) references `SemanticProgramManifest.currentClassOrigins()`; `AuctionEvidenceEncoder` isolated as legacy wrapper. Nearby regression suite: 26/26 passed (`GenericMappingArchitectureTest` 4/4, `GenericMappingEngineTest` 4/4, `GenericProgramPublicationTest` 3/3, `AuctionProgramReplayTest` 4/4 [all 3.1.0 and 3.2.0 recordings replay with zero errors], `XmlRuntimeMappingTest` 5/5, `AuctionMappingXmlTest` 6/6).
 
 ## 13. End-to-end acceptance
 
@@ -243,7 +243,7 @@ Dependency order: `G00 → G01 → G02/G03 → G04 → G05/G06 → G07 → G08 �
   - Focused test: Project+XML+OCL import→generated models/native OCL→real external Auction TCP→same state→original marking→UI/evidence→exact replay; negative oracle remove/change/missing capability/unsupported rule; final installed class bytes.
   - Acceptance criterion: Live/package and architecture negatives pass with receipts; truthful DoD, no skip/expected weakening. Authorized LOST/House fixture scope stays explicit.
   - Dependency: G12.
-  - Status: TODO.
+  - Status: PARTIAL — checkpoint only. `verification/generic-mapping/clean-full-verify.log` has no terminal reactor success. NplLifecycleCapabilityTest prints IllegalMonitorStateException from direct NormativeBoard.destroy (test summary still says pass); LegacyV2OclIsolationTest.facadeContainsOnlyTheNativeProjection fails a source-text assertion. No final clean/full/legacy/package/live pass. Audit and focused root-cause fixes follow after checkpoint push.
 
 ## 12. Focused tests
 

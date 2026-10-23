@@ -23,6 +23,7 @@ class ReleasePackageContractTest {
             String relative=asset.path("path").asText();assertEquals("examples/auction/"+relative,declared.get("examples/auction-semantic/"+relative),relative);
             assertEquals(asset.path("sha256").asText(),java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(Path.of("examples/auction").resolve(relative)))));
         }
+        assertEquals("examples/auction/auction-mapping.xml",declared.get("examples/auction-semantic/auction-mapping.xml"),"The declarative Auction mapping XML must be shipped for generic consumers");
         assertEquals("examples/auction/README.md",declared.get("examples/auction-semantic/README.md"));
         String readme=Files.readString(Path.of("examples/auction/README.md"));
         for(String required:java.util.List.of("AUCTION_OBSERVED_V1","RuntimeJournalMaxBytes","268435456","Import","Original iStar history","INCOMPLETE","auction-semantic"))assertTrue(readme.contains(required),required);
@@ -124,7 +125,7 @@ class ReleasePackageContractTest {
         var required=new LinkedHashSet<>(REQUIRED_ENTRIES);
         var caseManifest=new ObjectMapper().readTree(root.resolve("examples/auction/case-manifest.json").toFile());
         for(var asset:caseManifest.path("assets"))required.add("examples/auction-semantic/"+asset.path("path").asText());
-        required.addAll(Set.of("examples/auction-semantic/case-manifest.json","examples/auction-semantic/README.md","provenance/P-IADM-01.md","provenance/P-IADM-01.diff","provenance/single-owner-context-v1.md"));
+        required.addAll(Set.of("examples/auction-semantic/case-manifest.json","examples/auction-semantic/README.md","examples/auction-semantic/auction-mapping.xml","provenance/P-IADM-01.md","provenance/P-IADM-01.diff","provenance/single-owner-context-v1.md"));
         assertEquals(required, declared);
         assertTrue(manifest.path("packageTrees").isMissingNode());
         assertEquals("authenticated-loopback-tcp",manifest.path("runtimeArchitecture").path("transport").asText());

@@ -27,7 +27,7 @@ public final class AuctionIStarSourceAdapter {
     }
     public Prepared prepare(AuctionCaseBundle bundle) {
         var prepared = prepare(new String(bundle.require("target-istar").bytes(), StandardCharsets.UTF_8), bundle.inputs().get("target-istar").path());
-        var aliases = validateDiagram(prepared, bundle.require("input-istar").bytes());
+        var aliases = bundle.inputs().containsKey("input-istar") ? validateDiagram(prepared, bundle.require("input-istar").bytes()) : Map.<String, String>of();
         return new Prepared(prepared.originalHash(), prepared.executableHash(), prepared.executableSource(), prepared.structureHash(), prepared.descriptions(), aliases);
     }
 

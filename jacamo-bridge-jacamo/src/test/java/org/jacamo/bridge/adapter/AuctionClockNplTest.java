@@ -24,7 +24,7 @@ class AuctionClockNplTest {
             assertEquals(Completeness.UNAVAILABLE,source.completeness());assertTrue(source.capture().isEmpty());assertTrue(source.captureMetadata().toString().contains("NPL_BOARD_CAPTURE_UNAVAILABLE"));
             InitializingBoard.instance.getNormativeEngine().init();assertFalse(source.hasPendingTimedObligations());assertEquals(Completeness.PARTIAL,source.completeness());assertTrue(source.capture().isEmpty());
         } finally {
-            InitializingBoard.instance.getNormativeEngine().stop();env.getController("/main").removeArtifact(artifact.getName());
+            if(InitializingBoard.instance!=null){InitializingBoard.instance.getNormativeEngine().stop();InitializingBoard.instance.destroy();env.getController("/main").removeArtifact(artifact.getName());}
             for(var id:env.getController("/main").getCurrentAgents())if(id.getAgentName().equals(actor.getName()))env.resolveWSP("/main").getWorkspace().quitAgent(id);env.shutdown();
         }
     }
@@ -54,7 +54,7 @@ class AuctionClockNplTest {
             java.nio.file.Files.createDirectories(java.nio.file.Path.of("target/auction-implementation"));
             java.nio.file.Files.write(java.nio.file.Path.of("target/auction-implementation/N04-idle-npl.json"),CanonicalJson.encode(Map.of("scope","ACTUAL_NPL_TEN_SECOND_IDLE_COMPONENT_NOT_E01","events",events.stream().map(ContractPayloads::event).toList(),"snapshot",ContractPayloads.runtime(cut))));
         } finally {
-            NplLiveBoardObservationTest.Board.instance.getNormativeEngine().stop();env.getController("/main").removeArtifact(board.getName());
+            if(NplLiveBoardObservationTest.Board.instance!=null){NplLiveBoardObservationTest.Board.instance.getNormativeEngine().stop();NplLiveBoardObservationTest.Board.instance.destroy();}env.getController("/main").removeArtifact(board.getName());
             for(var id:env.getController("/main").getCurrentAgents())if(id.getAgentName().equals(actor.getName()))env.resolveWSP("/main").getWorkspace().quitAgent(id);env.shutdown();
         }
     }

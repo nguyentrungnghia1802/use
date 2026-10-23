@@ -22,7 +22,7 @@ class AuctionNplSubscriptionTest {
             assertEquals("CREATED_EVENT_OBSERVED",events.getFirst().after().get("history"));assertEquals("COMPLETE",CanonicalJson.object(events.getFirst().after().get("sourceLifecycle")).get("status"));
             source.close();int count=events.size();actor.doAction(id,new Op("addFact","done(sch_a1,bid,alice)"));Thread.sleep(60);assertEquals(count,events.size());assertTrue(source.capture().isEmpty());
         }finally {
-            if(id!=null){NplLiveBoardObservationTest.Board.instance.getNormativeEngine().stop();env.getController(id.getWorkspaceId().getFullName()).removeArtifact(id.getName());}
+            if(id!=null){NplLiveBoardObservationTest.Board.instance.getNormativeEngine().stop();NplLiveBoardObservationTest.Board.instance.destroy();env.getController(id.getWorkspaceId().getFullName()).removeArtifact(id.getName());}
             for(var agent:env.getController("/main").getCurrentAgents())if(agent.getAgentName().equals(actor.getName()))env.resolveWSP("/main").getWorkspace().quitAgent(agent);env.shutdown();
         }
     }

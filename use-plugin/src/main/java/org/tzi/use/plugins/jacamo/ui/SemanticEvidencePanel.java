@@ -35,7 +35,7 @@ public final class SemanticEvidencePanel extends JPanel {
             }
             summary.setText(summary.getText()+" | "+core.getOrDefault("evaluated","UNAVAILABLE")+" | history "+core.getOrDefault("historyQuality","UNAVAILABLE")+" | "+total+" original occurrences"+(total==0?" (no occurrence verdict available)":""));
             coverage.addRow(new Object[]{"Engine provenance",core.getOrDefault("classHashes",java.util.Map.of())});
-            coverage.addRow(new Object[]{"Current consumer class origins (deployment, not recorded source)",org.tzi.use.plugins.jacamo.semantics.evidence.AuctionEvidenceEncoder.currentClassOrigins()});
+            coverage.addRow(new Object[]{"Current consumer class origins (deployment, not recorded source)",org.tzi.use.plugins.jacamo.semantics.evidence.SemanticProgramManifest.currentClassOrigins()});
             coverage.addRow(new Object[]{"Program / state",core.getOrDefault("programHash","")+" / "+result.stateHash()});
         }
         evidence.constraints().stream().limit(DISPLAY_LIMIT).forEach(r->constraints.addRow(new Object[]{r.id(),r.kind(),r.verdict().name(),r.contextClass(),r.contextObject(),r.backendValue(),r.diagnostic(),r.sourceIdentity(),r.expression(),r.witness().toString()}));

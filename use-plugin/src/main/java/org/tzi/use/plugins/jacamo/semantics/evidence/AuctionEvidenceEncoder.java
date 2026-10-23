@@ -38,10 +38,6 @@ public final class AuctionEvidenceEncoder {
     /** Physical origins are deployment evidence, not semantic fingerprints:
      * an offline replay may legitimately run from a different install path. */
     public static Map<String,String> currentClassOrigins() {
-        var result=new TreeMap<String,String>();
-        for(Class<?> type:List.of(org.vnu.sme.goal.verify.conformance.semantics.GoalMarking.class,org.vnu.sme.goal.verify.conformance.semantics.TaskMarking.class,org.vnu.sme.goal.verify.conformance.semantics.IStarMarking.class,org.vnu.sme.goal.verify.conformance.semantics.IStarPropagation.class)) {
-            var source=type.getProtectionDomain().getCodeSource();result.put(type.getName(),source==null?"UNAVAILABLE":source.getLocation().toExternalForm());
-        }
-        return Map.copyOf(result);
+        return SemanticProgramManifest.currentClassOrigins();
     }
 }

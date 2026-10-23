@@ -141,6 +141,13 @@ public final class SemanticProgramManifest {
         for(String path:List.of("/grammars/CSL.g4","/grammars/IStar.g4","/META-INF/use4goal-provenance.json"))hashes.put(path,resource(path));
         return Collections.unmodifiableMap(hashes);
     }
+    public static Map<String,String> currentClassOrigins() {
+        var result=new TreeMap<String,String>();
+        for(Class<?> type:List.of(org.vnu.sme.goal.verify.conformance.semantics.GoalMarking.class,org.vnu.sme.goal.verify.conformance.semantics.TaskMarking.class,org.vnu.sme.goal.verify.conformance.semantics.IStarMarking.class,org.vnu.sme.goal.verify.conformance.semantics.IStarPropagation.class)) {
+            var source=type.getProtectionDomain().getCodeSource();result.put(type.getName(),source==null?"UNAVAILABLE":source.getLocation().toExternalForm());
+        }
+        return Map.copyOf(result);
+    }
     private static String resource(String path) {
         try(var input=SemanticProgramManifest.class.getResourceAsStream(path)) {
             if(input==null)throw new IllegalArgumentException("REPLAY_IMPLEMENTATION_RESOURCE_MISSING:"+path);

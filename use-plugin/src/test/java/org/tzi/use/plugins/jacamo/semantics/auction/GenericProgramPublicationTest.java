@@ -10,6 +10,11 @@ import org.tzi.use.main.Session;
 import org.tzi.use.plugins.jacamo.JaCaMoFacade;
 import org.tzi.use.plugins.jacamo.semantics.mapping.xml.*;
 import org.tzi.use.plugins.jacamo.semantics.evidence.*;
+import org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNativePipeline;
+import org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode;
+import org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector;
+import org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReplay;
+import org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController;
 import static org.junit.jupiter.api.Assertions.*;
 
 /** Portable production input and public import with recorded transport, not live TCP acceptance. */
@@ -41,6 +46,52 @@ class GenericProgramPublicationTest {
                 facade.resyncRuntime();assertSame(system,host.system());assertSame(owner,AuctionImportTest.projector(facade).coordinator().originalEngine());assertEquals(evidence,facade.semanticProgramEvidence());
                 assertThrows(RuntimeException.class,()->facade.importProject(jcm,selection));assertSame(system,host.system());assertSame(owner,AuctionImportTest.projector(facade).coordinator().originalEngine());
                 assertFalse(Files.exists(temp.resolve("auction_csl.csl")));assertFalse(Files.exists(temp.resolve("auction_istar_final.istar")));
+            }
+        }
+    }
+    @Test void declarativeProgramExportsAndReplaysCorrectlyWithStepVerificationAndRejectsDowngrade()throws Exception {
+        try(var fixture=new AuctionLiveFixture()) {
+            var program=new GenericMappingEngine().map(fixture.source,AuctionDeclarativeSpecificationTest.inputs(AuctionDeclarativeSpecificationTest.CASE));
+            var built=new CodeGroundedNativePipeline().buildCanonicalProgram(fixture.source,NativeProjectionMode.AUTO,program);
+            Path runDir=Files.createTempDirectory(temp,"declarative-run-");
+            try(var projector=new NativeRuntimeProjector(built,"declarative-run-001",1,fixture.source.modelRevision(),runDir)) {
+                var coordinator=projector.coordinator();
+                var accepted=coordinator.awaitEvaluation(coordinator.latest(),15000);
+                assertNotNull(accepted);
+                Path recording=temp.resolve("declarative-recording");
+                var replay=new NativeRuntimeReplay();
+                replay.exportBundle(projector,built.nativeResult().export().useText(),recording);
+
+                var manifest=CanonicalJson.object(CanonicalJson.decode(Files.readAllBytes(recording.resolve("manifest.json"))));
+                assertEquals("3.3.0",manifest.get("schemaVersion"));
+                var programManifest=CanonicalJson.object(CanonicalJson.decode(Files.readAllBytes(recording.resolve("program.json"))));
+                assertEquals("1.2.0",programManifest.get("schemaVersion"));
+                assertTrue(programManifest.containsKey("declarative"));
+
+                var report=replay.replay(recording);
+                assertTrue(report.complete(),report.diagnostics().toString());
+                assertEquals(accepted.stateHash(),report.finalStateHash());
+                assertEquals(accepted.resultHash(),report.finalResultHash());
+
+                try(var bundle=replay.openBundle(recording)) {
+                    assertTrue(bundle.canonical());
+                    assertFalse(bundle.steps().isEmpty());
+                }
+
+                var host=new Session();
+                try(var controller=new NativeReplayStepController(host)) {
+                    controller.open(recording);
+                    assertTrue(host.system().isReadOnly());
+                    assertTrue(controller.status().total()>=0);
+                }
+                assertFalse(host.hasSystem());
+
+                for(String invalidVersion:List.of("9.0.0","3.1.0","3.0.0","2.0.0")) {
+                    var downgraded=new TreeMap<>(manifest);
+                    downgraded.put("schemaVersion",invalidVersion);
+                    Files.write(recording.resolve("manifest.json"),CanonicalJson.encode(downgraded));
+                    assertFalse(replay.replay(recording).complete(),"A declarative recording must not be accepted by "+invalidVersion);
+                }
             }
         }
     }

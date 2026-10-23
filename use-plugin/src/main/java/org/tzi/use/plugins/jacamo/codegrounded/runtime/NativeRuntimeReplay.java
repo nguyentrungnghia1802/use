@@ -141,10 +141,12 @@ public final class NativeRuntimeReplay {
             this.root=root; this.manifest=manifest;
             canonical=CanonicalReplaySupport.canonical(manifest.get("schemaVersion"))?new org.tzi.use.plugins.jacamo.semantics.evidence.SemanticProgramManifest().decode(Files.readAllBytes(root.resolve(CanonicalReplaySupport.PROGRAM))):null;
             if(canonical!=null&&caseRecording()!=(canonical.program().casePlan()!=null))throw new IllegalArgumentException("REPLAY_RECORDING_PROGRAM_SCHEMA_MISMATCH");
+            if(canonical!=null&&declarativeRecording()!=(canonical.program().xmlPlan()!=null))throw new IllegalArgumentException("REPLAY_RECORDING_PROGRAM_SCHEMA_MISMATCH");
             if(canonical!=null&&!canonical.program().hash().equals(manifest.get("programHash")))throw new IllegalArgumentException("REPLAY_MANIFEST_PROGRAM_MISMATCH");
         }
         public boolean canonical(){return canonical!=null;}
         private boolean caseRecording(){return CanonicalReplaySupport.caseVersion(manifest.get("schemaVersion"));}
+        private boolean declarativeRecording(){return CanonicalReplaySupport.declarativeVersion(manifest.get("schemaVersion"));}
         public List<Step> steps() { return steps; }
         public ReplayReport report() { return report; }
         public java.util.Optional<org.tzi.use.plugins.jacamo.semantics.mapping.MappingBundle> mapping() {
@@ -164,7 +166,7 @@ public final class NativeRuntimeReplay {
                     var record = cursor.dispatchNext();
                     var result = cursor.formalResult();
                     boolean transition = (java.util.Set.of("EVENT","SNAPSHOT","OPERATION_PRE","OPERATION_POST").contains(record.kind())
-                            && !previous.equals(result.stateHash())) || (caseRecording()&&java.util.Set.of("TASK_PRE","TASK_POST").contains(record.kind()));
+                            && !previous.equals(result.stateHash())) || ((caseRecording()||declarativeRecording())&&java.util.Set.of("TASK_PRE","TASK_POST").contains(record.kind()));
                     if (transition) {
                         finishStep(index, cursor.previousResult, record.ordinal()-1);
                         index.add(new Step(index.size(), record.ordinal(), record.ordinal(), result.stateVersion(),
@@ -201,7 +203,7 @@ public final class NativeRuntimeReplay {
                     var first=CanonicalJson.object(CanonicalJson.decode(input.readLine().getBytes(StandardCharsets.UTF_8)));
                     var result=RuntimeVerificationResult.fromMap(CanonicalJson.object(first.get("result")));run=result.sessionId();generation=result.generation();revision=result.modelRevision();
                 }
-                var projector=caseRecording()?new NativeRuntimeProjector(built,run,generation,revision,null,CanonicalReplaySupport.fileLimit(manifest,"runtime.jsonl")):new NativeRuntimeProjector(built,run,generation,revision);
+                var projector=(caseRecording()||declarativeRecording())?new NativeRuntimeProjector(built,run,generation,revision,null,CanonicalReplaySupport.fileLimit(manifest,"runtime.jsonl")):new NativeRuntimeProjector(built,run,generation,revision);
                 var index=built.nativeResult().state().semanticObjectIndex();
                 if(!org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(projector.mutations().baselineBindings()).equals(org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(CanonicalJson.decode(Files.readAllBytes(root.resolve("bindings.json")))))){
                     projector.close();throw new IllegalArgumentException("REPLAY_CANONICAL_BASELINE_BINDINGS_MISMATCH");
@@ -318,7 +320,7 @@ public final class NativeRuntimeReplay {
         }
         private void dispatchCanonical(Entry record) {
             var c=projector.coordinator();previousResult=recordedFormal;var expected=RuntimeVerificationResult.fromMap(record.expected());
-            if(java.util.Set.of("TASK_PRE","TASK_POST").contains(record.kind())&&!bundle.caseRecording())throw new IllegalArgumentException("REPLAY_ENTRY_UNSUPPORTED:"+record.kind());
+            if(java.util.Set.of("TASK_PRE","TASK_POST").contains(record.kind())&&!(bundle.caseRecording()||bundle.declarativeRecording()))throw new IllegalArgumentException("REPLAY_ENTRY_UNSUPPORTED:"+record.kind());
             RuntimeVerificationResult actual;
             if(ordinal==0) {
                 if(!record.kind().equals("BASELINE")||expected.stateVersion()!=0)throw new IllegalArgumentException("REPLAY_BASELINE_REQUIRED");
@@ -412,7 +414,7 @@ public final class NativeRuntimeReplay {
                     ((Number)expected.get("generation")).longValue());
             case "EVENT", "OPERATION_PRE", "OPERATION_POST", "STREAM_BOUNDARY" -> projector.apply(ContractPayloads.event(payload));
             case "TASK_PRE", "TASK_POST" -> {
-                if(!projector.mutations().auctionCase())throw new IllegalArgumentException("REPLAY_ENTRY_UNSUPPORTED:"+kind);
+                if(!projector.mutations().auctionCase()&&!projector.mutations().xmlCase())throw new IllegalArgumentException("REPLAY_ENTRY_UNSUPPORTED:"+kind);
                 projector.apply(ContractPayloads.event(payload));
             }
             case "CAPABILITIES" -> {

@@ -82,6 +82,11 @@ class GenericLauncherScriptTest {
         assertFalse(script.contains("examples/auction"));
         assertFalse(script.contains("$jcmpath = \"auction"));
         assertTrue(script.contains("\"auction_observed_v1\""));
+        assertTrue(script.contains("\"jacamo_declarative_xml\""));
+        assertTrue(script.contains("$authoredoclpath"));
+        assertTrue(script.contains("authored_ocl_file_required"));
+        assertTrue(script.contains("use.jacamo.mapping.xml"));
+        assertTrue(script.contains("use.jacamo.mapping.ocl"));
         assertTrue(script.contains("use.jacamo.auction.specification"));
         assertFalse(script.contains("house"));
         assertFalse(script.contains("projectkey"));

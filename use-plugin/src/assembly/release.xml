@@ -83,6 +83,7 @@
         <file><source>examples/auction/provenance/use4goal-engine.json</source><outputDirectory>examples/auction-semantic/provenance</outputDirectory><destName>use4goal-engine.json</destName></file>
         <file><source>examples/auction/provenance/licenses/use4Goal-GPL-3.0.txt</source><outputDirectory>examples/auction-semantic/provenance/licenses</outputDirectory><destName>use4Goal-GPL-3.0.txt</destName></file>
         <file><source>examples/auction/provenance/licenses/JaCaMo-LGPL-3.0.txt</source><outputDirectory>examples/auction-semantic/provenance/licenses</outputDirectory><destName>JaCaMo-LGPL-3.0.txt</destName></file>
+        <file><source>examples/auction/auction-mapping.xml</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>auction-mapping.xml</destName></file>
         <file><source>../use-jacamo-semantic-engine/provenance/P-IADM-01.md</source><outputDirectory>provenance</outputDirectory><destName>P-IADM-01.md</destName></file>
         <file><source>../use-jacamo-semantic-engine/provenance/patches/P-IADM-01.diff</source><outputDirectory>provenance</outputDirectory><destName>P-IADM-01.diff</destName></file>
         <file><source>../use-jacamo-semantic-engine/provenance/single-owner-context-v1.md</source><outputDirectory>provenance</outputDirectory><destName>single-owner-context-v1.md</destName></file>

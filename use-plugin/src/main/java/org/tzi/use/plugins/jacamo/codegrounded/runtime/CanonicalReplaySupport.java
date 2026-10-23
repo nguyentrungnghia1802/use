@@ -14,14 +14,18 @@ final class CanonicalReplaySupport {
     static final String VERSION="3.0.0";
     static final String CASE_VERSION="3.1.0";
     static final String BUDGETED_CASE_VERSION="3.2.0";
+    static final String DECLARATIVE_VERSION="3.3.0";
+    static final String BUDGETED_DECLARATIVE_VERSION="3.4.0";
     static final long CASE_ARCHIVE_BYTES=256L*1024*1024;
     static final String PROGRAM="program.json";
     static boolean caseVersion(Object version){return CASE_VERSION.equals(version)||BUDGETED_CASE_VERSION.equals(version);}
-    static boolean canonical(Object version){return VERSION.equals(version)||caseVersion(version);}
-    private static long fileLimit(Object version,String file){return CASE_VERSION.equals(version)&&"runtime.jsonl".equals(file)?CASE_ARCHIVE_BYTES:64L*1024*1024;}
+    static boolean declarativeVersion(Object version){return DECLARATIVE_VERSION.equals(version)||BUDGETED_DECLARATIVE_VERSION.equals(version);}
+    static boolean budgeted(Object version){return BUDGETED_CASE_VERSION.equals(version)||BUDGETED_DECLARATIVE_VERSION.equals(version);}
+    static boolean canonical(Object version){return VERSION.equals(version)||caseVersion(version)||declarativeVersion(version);}
+    private static long fileLimit(Object version,String file){return (CASE_VERSION.equals(version)||DECLARATIVE_VERSION.equals(version))&&"runtime.jsonl".equals(file)?CASE_ARCHIVE_BYTES:64L*1024*1024;}
     static long fileLimit(Map<String,Object> manifest,String file) {
         Object version=manifest.get("schemaVersion"),budget=manifest.get("runtimeByteLimit");
-        if(!BUDGETED_CASE_VERSION.equals(version)) {
+        if(!budgeted(version)) {
             if(manifest.containsKey("runtimeByteLimit"))throw new IllegalArgumentException("REPLAY_BUDGET_SCHEMA_MISMATCH");
             return fileLimit(version,file);
         }
@@ -45,8 +49,9 @@ final class CanonicalReplaySupport {
                     ||!Set.of("PINNED_NATIVE_CUT","ERROR").contains(core.get("evaluated")))
                 throw new IllegalStateException("SEMANTIC_REPLAY_EXPORT_REQUIRES_STABLE_COMPLETED_CUT");
             long budget=coordinator.journal().maxBytes();
-            String version=projector.mutations().auctionCase()?(budget>CASE_ARCHIVE_BYTES?BUDGETED_CASE_VERSION:CASE_VERSION):VERSION;
-            var policy=new TreeMap<String,Object>();policy.put("schemaVersion",version);if(BUDGETED_CASE_VERSION.equals(version))policy.put("runtimeByteLimit",budget);
+            String version=projector.mutations().xmlCase()?(budget>CASE_ARCHIVE_BYTES?BUDGETED_DECLARATIVE_VERSION:DECLARATIVE_VERSION)
+                    :projector.mutations().auctionCase()?(budget>CASE_ARCHIVE_BYTES?BUDGETED_CASE_VERSION:CASE_VERSION):VERSION;
+            var policy=new TreeMap<String,Object>();policy.put("schemaVersion",version);if(budgeted(version))policy.put("runtimeByteLimit",budget);
             if(coordinator.journal().persistedBytes()>fileLimit(policy,"runtime.jsonl"))throw new IllegalStateException("SEMANTIC_REPLAY_ARCHIVE_CAPACITY_EXCEEDED");
             var profile=coordinator.constraints().profile();
             return new Cut(projector.mutations().canonicalProgram(),coordinator.journal().path(),coordinator.checkpoints().baseline().commands(),
@@ -75,7 +80,7 @@ final class CanonicalReplaySupport {
             var manifest=new TreeMap<String,Object>(Map.of("schemaVersion",cut.version(),"files",hashes,"entries",cut.entries(),
                     "finalStateHash",cut.result().stateHash(),"finalResultHash",cut.result().resultHash(),"baselineStateHash",cut.baselineHash(),
                     "scope","OBSERVED_SUPPORTED_PROJECTION_ONLY","temporalOrder","ACCEPTED_NATIVE_BOUNDARIES_AND_EXACT_ENGINE_COMPLETIONS","programHash",cut.program().hash()));
-            if(BUDGETED_CASE_VERSION.equals(cut.version()))manifest.put("runtimeByteLimit",cut.budget());
+            if(budgeted(cut.version()))manifest.put("runtimeByteLimit",cut.budget());
             Files.write(output.resolve("manifest.json"),CanonicalJson.encode(manifest));
         }catch(java.io.IOException error){throw new IllegalStateException("SEMANTIC_REPLAY_EXPORT_IO_FAILED",error);}
     }
