@@ -63,6 +63,10 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
     private AutoCloseable registryHandle;
     private SnapshotCoordinator runtimeCoordinator;
     private JasonSnapshotSource jasonSource;
+    private CartagoSnapshotSource cartagoSource;
+    private NplBoardSnapshotSource nplSource;
+    private AuctionClockObservation sourceClock;
+    private final List<BridgeAgArch> stepArchitectures=new ArrayList<>();
     private volatile RuntimeSnapshot latestRuntimeSnapshot;
     private volatile boolean configured;
     private Integer bridgePort;
@@ -136,6 +140,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
             System.setProperty("jacamo.bridge.modelRevision", modelSnapshot.modelRevision());
             System.setProperty("jacamo.bridge.projectKey", projectKey);
             installRuntimeSources();
+            installStepObservation(jcm.getParent());
             if (bridgePort != null) startServer(generation);
             started = true;
             readiness.update("project", AdapterReadiness.READY,
@@ -152,8 +157,12 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
     private void installRuntimeSources() throws Exception {
         jasonSource = new JasonSnapshotSource(sessionId);
         var sources = new ArrayList<SnapshotSource>();
+        // Register the publication lane before subsystem listeners and before startAgs.
+        var verificationSource=new VerificationObservationSource(sessionId,generation(),modelSnapshot.modelRevision());sources.add(verificationSource);
         sources.add(jasonSource);
-        sources.add(new CartagoSnapshotSource(CartagoEnvironment.getInstance(), configuredWorkspaces(), sessionId));
+        nplSource=new NplBoardSnapshotSource(sessionId, JaCaMoBridgePlatform::officialNormativeBoards);
+        cartagoSource=new CartagoSnapshotSource(CartagoEnvironment.getInstance(),configuredWorkspaces(),sessionId,modelSnapshot,nplSource::artifactCreated);
+        sources.add(cartagoSource);
         Set<String> declaredOrganisations = project.getOrgs().stream()
                 .map(value -> value.getName()).collect(java.util.stream.Collectors.toUnmodifiableSet());
         for (String name : declaredOrganisations) {
@@ -164,11 +173,35 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
         sources.add(new MoiseBoardSnapshotSource(declaredOrganisations, sessionId,
                 JaCaMoBridgePlatform::officialGroupBoards, JaCaMoBridgePlatform::officialSchemeBoards,
                 modelSnapshot.semanticContract(),resolveProjectFile().getParent()));
-        sources.add(new NplBoardSnapshotSource(sessionId, NormativeBoard::getNormativeBoards));
+        // SchemeBoard and GroupBoard extend OrgArt, NOT NormativeBoard.
+        // Its static registry alone therefore misses their actual NPL engines.
+        sources.add(nplSource);
         checkpointSource=new BridgeCheckpointSource();sources.add(checkpointSource);
         runtimeCoordinator = new SnapshotCoordinator(sources, EVENT_CAPACITY, this::enqueueEvent);
+        if(Boolean.getBoolean(AuctionClockObservation.PROPERTY)) {
+            sourceClock=new AuctionClockObservation(sessionId,generation(),modelSnapshot.modelRevision(),observation->verificationSource.publish(observation,"",""));
+            sourceClock.pulse(false);
+        }
         readiness.update("runtime", AdapterReadiness.ATTACHED,
                 "SnapshotCoordinator sources=" + sources.stream().map(SnapshotSource::sourceId).toList());
+    }
+
+    private void installStepObservation(Path root)throws Exception {
+        if(!Boolean.getBoolean(AuctionStepObservation.PROPERTY))return;
+        var runner=jason.infra.local.BaseLocalMAS.getRunner();
+        if(runner==null||runner.getAgs().isEmpty())throw new IllegalStateException("STEP_RUNTIME_AGENTS_UNAVAILABLE");
+        try {
+            for(var local:runner.getAgs().values()) {
+                String name=local.getAgName();String declaration=BridgeRuntimeRegistry.agentDeclarationId(name).orElseThrow(()->new IllegalStateException("STEP_AGENT_DECLARATION_UNAVAILABLE"));
+                var declarations=modelSnapshot.semanticContract().agentDeclarations().stream().filter(a->a.metadata().semanticId().equals(declaration)).toList();
+                if(declarations.size()!=1)throw new IllegalStateException("STEP_AGENT_DECLARATION_AMBIGUOUS");
+                var programs=modelSnapshot.semanticContract().jasonPrograms().stream().filter(p->p.declarationId().equals(declarations.getFirst().name())).toList();
+                if(programs.size()!=1)throw new IllegalStateException("STEP_SOURCE_PROGRAM_AMBIGUOUS");
+                BridgeAgArch selected=null;for(var arch=local.getFirstAgArch();arch!=null;arch=arch.getNextAgArch())if(arch instanceof BridgeAgArch bridge){if(selected!=null)throw new IllegalStateException("STEP_ARCHITECTURE_AMBIGUOUS");selected=bridge;}
+                if(selected==null)throw new IllegalStateException("STEP_ARCHITECTURE_UNAVAILABLE");
+                selected.installStepObservation(programs.getFirst(),root);stepArchitectures.add(selected);
+            }
+        }catch(Exception invalid){for(var arch:stepArchitectures)arch.retireStepObservation();stepArchitectures.clear();throw invalid;}
     }
 
     private List<String> configuredWorkspaces() {
@@ -183,21 +216,12 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
         return officialBoardArtifacts(SchemeBoard.class, SchemeBoard.getSchemeBoards());
     }
 
-    private static <T> Collection<T> officialBoardArtifacts(Class<T> type, Collection<? extends T> registry) {
-        var result = new LinkedHashSet<T>(registry);
-        collectBoardArtifacts(CartagoEnvironment.getInstance().getRootWSP(), type, result);
-        return List.copyOf(result);
+    private static Collection<ora4mas.nopl.OrgArt> officialNormativeBoards() {
+        return officialBoardArtifacts(ora4mas.nopl.OrgArt.class,NormativeBoard.getNormativeBoards());
     }
 
-    private static <T> void collectBoardArtifacts(WorkspaceDescriptor descriptor, Class<T> type, Set<T> result) {
-        if (descriptor == null || descriptor.getWorkspace() == null) return;
-        var workspace = descriptor.getWorkspace();
-        for (String name : workspace.getArtifactList()) {
-            var artifact = workspace.getArtifactDescriptor(name);
-            if (artifact != null && type.isInstance(artifact.getArtifact()))
-                result.add(type.cast(artifact.getArtifact()));
-        }
-        for (WorkspaceDescriptor child : workspace.getChildWSPs()) collectBoardArtifacts(child, type, result);
+    static <T> Collection<T> officialBoardArtifacts(Class<T> type, Collection<? extends T> registry) {
+        return OfficialBoardInventory.collect(CartagoEnvironment.getInstance(),type,registry);
     }
 
     private void receiveRuntimeEvent(RuntimeEvent event) {
@@ -279,6 +303,9 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
             long nextObservation=System.nanoTime()+TimeUnit.SECONDS.toNanos(5);
             while (publishing) {
                 try {
+                    // Source time is evidence on the existing lane. A bounded
+                    // CLOCK callback can cause a cut even when artifacts idle.
+                    var clock=sourceClock;var norms=nplSource;if(clock!=null&&norms!=null)clock.pulse(norms.hasPendingTimedObligations());
                     if (publicationGap.getAndSet(false)) server.publish("platform:gap", gap.get());
                     RuntimeEvent event = events.poll(500, TimeUnit.MILLISECONDS);
                     RuntimeEvent cause = null;
@@ -293,7 +320,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
                     }
                     if(cause!=null) {
                         // Preserve every callback, but observe boards once per bounded batch,
-                        // after real source callbacks. A timer alone never creates a checkpoint.
+                        // after real source callbacks, including qualified CLOCK observations.
                         runtimeCoordinator.poll();
                         checkpointSource.boundary(cause);
                         nextObservation=System.nanoTime()+TimeUnit.SECONDS.toNanos(5);
@@ -308,6 +335,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
                     return;
                 } catch (Exception failure) {
                     publicationFailure="EVENT_PUBLICATION_FAILED:"+failure.getClass().getSimpleName()+":"+failure.getMessage();
+                    java.util.logging.Logger.getLogger(JaCaMoBridgePlatform.class.getName()).log(java.util.logging.Level.WARNING,publicationFailure,failure);
                     publicationGap.set(true);
                     readiness.update("transport", AdapterReadiness.FAILED,
                             publicationFailure+"; resync required");
@@ -318,7 +346,8 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
     }
 
     private static boolean boundaryTrigger(RuntimeEvent event) {
-        return "jason".equals(event.subsystem()) && event.kind()==RuntimeEventKind.CHANGED
+        return org.jacamo.bridge.contract.VerificationObservation.present(event)
+                || "jason".equals(event.subsystem()) && event.kind()==RuntimeEventKind.CHANGED
                 || "cartago".equals(event.subsystem()) && (event.kind()==RuntimeEventKind.SUCCEEDED || event.kind()==RuntimeEventKind.FAILED
                     || event.projectionStatus()==ProjectionStatus.MATERIALIZED_FAITHFULLY);
     }
@@ -374,7 +403,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
     private List<Capability> capabilities(RuntimeSnapshot snapshot) {
         boolean runtimeReady = snapshot != null && !snapshot.facts().isEmpty()
                 && snapshot.sourceCompleteness().values().stream().noneMatch(value -> value == Completeness.UNAVAILABLE);
-        return List.of(
+        var capabilities=new ArrayList<>(List.of(
                 new Capability("cartago.invocation.suspend-resume.v1",CapabilityStatus.UNAVAILABLE,List.of(),"CARTAGO_3_1_AWAIT_NO_LOGGER_HOOKS; invocation intervals remain observed shared-state prefixes"),
                 new Capability("official.model", CapabilityStatus.COMPLETE, List.of(), ""),
                 new Capability("runtime.snapshot", runtimeReady ? CapabilityStatus.COMPLETE : CapabilityStatus.PARTIAL,
@@ -382,7 +411,14 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
                 new Capability("runtime.events", CapabilityStatus.PARTIAL, List.of(), "bounded official hooks; intermediate board changes may be evidence-only"),
                 new Capability("runtime.checkpoint.boundary.v1",CapabilityStatus.COMPLETE,List.of(),"supported source callback batch"),
                 new Capability(org.jacamo.bridge.contract.RuntimeControlContract.CAPABILITY,controlCapable()?CapabilityStatus.COMPLETE:CapabilityStatus.UNAVAILABLE,
-                        List.of(),org.jacamo.bridge.contract.RuntimeControlContract.LIMITATION));
+                        List.of(),org.jacamo.bridge.contract.RuntimeControlContract.LIMITATION)));
+        capabilities.add(org.jacamo.bridge.contract.VerificationObservation.schemaCapability());
+        capabilities.add(new Capability("runtime.observation.npl-lifecycle.v1",CapabilityStatus.COMPLETE,List.of(),"raw official NPL callback copies; source time and global population remain separately qualified"));
+        capabilities.add(new Capability("runtime.observation.artifact-field-cut.v1",cartagoSource!=null&&cartagoSource.fieldProbeAvailable()?CapabilityStatus.COMPLETE:CapabilityStatus.UNAVAILABLE,List.of(),"fixed source-proved Auction field/lock allowlist; per-instance quality remains explicit"));
+        capabilities.add(new Capability("runtime.observation.jason-step.v1",!stepArchitectures.isEmpty()&&stepArchitectures.stream().allMatch(BridgeAgArch::stepCaptureAvailable)?CapabilityStatus.COMPLETE:CapabilityStatus.UNAVAILABLE,List.of(),"opt-in pinned disposable PlanBody markers and public GoalListener; each frame retains exact invocation/scope quality"));
+        capabilities.add(new Capability("runtime.observation.goal-transition.v1",cartagoSource!=null&&cartagoSource.schemeProbeAvailable()?CapabilityStatus.COMPLETE:CapabilityStatus.UNAVAILABLE,List.of(),"opt-in exact SchemeBoard coherent public cuts and correlated admin effect; timestamps are source PUBLICATION time, internal MOISE transition time unavailable"));
+        capabilities.add(new Capability("runtime.observation.clock.v1",sourceClock!=null?CapabilityStatus.COMPLETE:CapabilityStatus.UNAVAILABLE,List.of(),"opt-in same-process pinned NPL wall-clock sampler; monotonicity unproven; per-frame regression/range quality retained"));
+        return List.copyOf(capabilities);
     }
 
     private boolean controlCapable() {return BridgeRuntimeRegistry.controller().map(BridgeLocalExecutionControl::capable).orElse(false);}
@@ -446,6 +482,8 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
         Exception failure = null;
         started = false;
         publishing = false;
+        if(sourceClock!=null){sourceClock.close();sourceClock=null;}
+        for(var arch:stepArchitectures)arch.retireStepObservation();stepArchitectures.clear();
         if (publisher != null) {
             publisher.interrupt();
             try { publisher.join(1000); }
@@ -463,6 +501,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
             catch (Exception error) { if (failure == null) failure = error; else failure.addSuppressed(error); }
             runtimeCoordinator = null;
         }
+        nplSource=null;
         BridgeRuntimeRegistry.clearAgents();
         if (sessionId != null && sessionId.equals(System.getProperty("jacamo.bridge.session"))) {
             System.clearProperty("jacamo.bridge.session");

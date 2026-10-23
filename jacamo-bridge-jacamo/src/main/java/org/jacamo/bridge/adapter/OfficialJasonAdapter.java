@@ -167,6 +167,8 @@ public final class OfficialJasonAdapter {
                                 "jason.asSyntax.PlanBody",EvidenceAuthority.OFFICIAL_JASON_API,Fidelity.EXACT,
                                 CapabilityStatus.COMPLETE,sourceEvidence.of(draft.source(),planEvidence),
                                 draft.line(),endLine(draft.source()),List.of());
+                        if(draft.type().equals("action")&&term instanceof Structure structure)
+                            actionMetadata=DeclaredArtifactTypeProof.attachAction(actionMetadata,structure);
                         typedActions.add(new ActionSemantic(actionMetadata,bodyId,draft.term(),functor,arity,
                                 draft.type().equals("action")?"EXTERNAL":"INTERNAL"));
                     }

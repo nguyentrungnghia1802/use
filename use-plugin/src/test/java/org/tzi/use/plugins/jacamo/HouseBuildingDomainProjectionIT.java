@@ -14,12 +14,12 @@ import org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection;
 import org.tzi.use.plugins.jacamo.codegrounded.use.MoiseDomainProjection;
 import org.tzi.use.uml.ocl.value.StringValue;
 
-/** Original agents create their artifacts/organisation after the managed execution gate. */
+/** Explicit condition-wait fixture; all other original source stays unchanged. */
 class HouseBuildingDomainProjectionIT {
     @Test void originalHouseBuildingDiscoversDynamicDomainStateOnTheSameSystem() throws Exception {
         Path evidence=Path.of("target/house-domain-live",Long.toString(System.currentTimeMillis())).toAbsolutePath();
         Path original=Path.of("../../jacamo/examples/house-building/house-building.jcm");
-        try(var producer=new ManagedProducerTestSupport(original,evidence,true)) {
+        try(var producer=new ManagedProducerTestSupport(original,evidence,true,false,Map.of(),entry->true,stage->HouseBuildingWaitFixture.apply(stage,evidence))) {
             producer.configureWorkflow(); Session session=new Session();
             var recording=new HelloWorldSemanticInventoryIT.RecordingTransportFactory(evidence);
             try(var facade=new DefaultJaCaMoFacade(Path.of("."),SemanticAuthority.BRIDGE,
@@ -129,14 +129,14 @@ class HouseBuildingDomainProjectionIT {
                 assertTrue(state.allLinks().stream().allMatch(link->state.allObjects().containsAll(link.linkedObjects())));
                 assertTrue(producer.sourceUnchanged());
                 Files.write(evidence.resolve("summary.json"),CanonicalJson.encode(Map.ofEntries(
-                        Map.entry("status","PASS"),Map.entry("sameActiveSystem",true),Map.entry("sourceUnchanged",true),Map.entry("reconnectResyncSameCut",true),
+                        Map.entry("status","PASS"),Map.entry("fixtureProfile",HouseBuildingWaitFixture.PROFILE),Map.entry("sameActiveSystem",true),Map.entry("sourceUnchanged",true),Map.entry("reconnectResyncSameCut",true),
                         Map.entry("classes",model.classes().stream().map(c->Map.of("name",c.name(),"kind",DomainProjection.kind(c))).toList()),
                         Map.entry("objects",state.numObjects()),Map.entry("links",state.allLinks().size()),Map.entry("auctionArtifacts",artifacts.size()),
                         Map.entry("directOwnerLinks",ownerLinks.size()),Map.entry("groups",groups.stream().map(o->o.name()).toList()),
                         Map.entry("agents",agents.stream().map(o->o.name()+":"+o.cls().name()).sorted().toList()))));
                 Files.write(evidence.resolve("selective-projection.json"),CanonicalJson.encode(
                         org.tzi.use.plugins.jacamo.codegrounded.ProjectionExposureEvidence.assertAndReport(projector.mutations())));
-                System.out.println("HOUSE_BUILDING_DOMAIN_LIVE_PASS evidence="+evidence);
+                System.out.println("HOUSE_BUILDING_DOMAIN_LIVE_PASS fixture="+HouseBuildingWaitFixture.PROFILE+" evidence="+evidence);
                 }
             }
         }

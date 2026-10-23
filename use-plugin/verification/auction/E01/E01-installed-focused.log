@@ -1,0 +1,16 @@
+Exception in thread "main" org.opentest4j.AssertionFailedError: java.lang.AssertionError: [Runtime start failed: BRIDGE_BUFFER_OVERFLOW]
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.check(InstalledAuctionMain.java:195)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain$Gui.lambda$enabled$9(InstalledAuctionMain.java:174)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.await(InstalledAuctionMain.java:182)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain$Gui.enabled(InstalledAuctionMain.java:174)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.runLive(InstalledAuctionMain.java:84)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.run(InstalledAuctionMain.java:72)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.main(InstalledAuctionMain.java:21)
+ ==> expected: <0> but was: <1>
+	at org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)
+	at org.junit.jupiter.api.AssertionUtils.failNotEqual(AssertionUtils.java:62)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:150)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:559)
+	at org.tzi.use.plugins.jacamo.semantics.AuctionPackagedPluginIT.run(AuctionPackagedPluginIT.java:35)
+	at org.tzi.use.plugins.jacamo.semantics.AuctionPackagedPluginIT.shippedCanonicalAuctionRunsThroughHeadfulWorkbenchNativeAndOriginalEngine(AuctionPackagedPluginIT.java:20)
+	at org.tzi.use.plugins.jacamo.semantics.AuctionPackagedPluginIT.main(AuctionPackagedPluginIT.java:13)

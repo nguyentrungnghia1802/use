@@ -22,7 +22,11 @@ class JasonObservationProfileTest {
                 BridgeRuntimeRegistry.configureDeclarations(project);architecture.init();
                 BridgeRuntimeRegistry.registerAgent(architecture.getAgName(),BridgeRuntimeRegistry.agentIdentity(architecture.getAgName()).orElseThrow(),project.agentDeclarations().getFirst().name());
                 agent.getBB().add(ASSyntax.parseLiteral("ready(1)"));
+                var plan=ASSyntax.parsePlan("+!work <- act.");var intention=new Intention();
+                intention.push(new IntendedMeans(new Option(plan,new Unifier()),plan.getTrigger()));agent.getTS().getC().addRunningIntention(intention);
+                intention.setPlace(Circumstance.IntentionPlace.None);
                 architecture.setCycleNumber(1);architecture.reasoningCycleFinished();
+                assertEquals(Circumstance.IntentionPlace.None,intention.getPlace(),"Cycle hook must not rewrite live intention metadata in either observation profile");
                 long first=events.stream().filter(e->e.kind()==RuntimeEventKind.CHANGED).count();
                 architecture.setCycleNumber(2);architecture.reasoningCycleFinished();
                 assertEquals(first+(structured?1:0),events.stream().filter(e->e.kind()==RuntimeEventKind.CHANGED).count());

@@ -1,0 +1,55 @@
+[
+  {
+    "path": "use-plugin/Core/Metamodel/version-2/jacamo_v2_complete.ecore",
+    "origin": "c7add39f^:use-plugin/Core/Metamodel/version-2/jacamo_v2_complete.ecore",
+    "sha256": "4ae51638a078f0a933982844063993084f17d420694ac8a868d95b9df063c35c",
+    "matchesUnchangedFreeze": true,
+    "matchesPriorBuiltResource": true
+  },
+  {
+    "path": "use-plugin/Core/Mapping/version-2/jacamo-use-mapping-v2.json",
+    "origin": "c7add39f^:use-plugin/Core/Mapping/version-2/jacamo-use-mapping-v2.json",
+    "sha256": "fc03b90cf0729260747bfeffa6a6cd463eefd2259c0c3cd60ed22bd140ec48b1",
+    "matchesUnchangedFreeze": true,
+    "matchesPriorBuiltResource": true
+  },
+  {
+    "path": "use-plugin/Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json",
+    "origin": "c7add39f^:use-plugin/Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json",
+    "sha256": "e9f555ad2e19cbf8382ff4c17d44179d3b47a13d03ee9a58c2b491f99b72c919",
+    "matchesUnchangedFreeze": true,
+    "matchesPriorBuiltResource": true
+  },
+  {
+    "path": "use-plugin/Core/Metamodel/version-1/JaCaMo-Metamodel.ecore",
+    "origin": "c7add39f^:use-plugin/Core/Metamodel/version-1/JaCaMo-Metamodel.ecore",
+    "sha256": "c0aafab786c5ff3fcb468aeaf1b18b62865292e6590ffca2b9b2e962a9067fe7",
+    "matchesUnchangedFreeze": true,
+    "matchesPriorBuiltResource": true,
+    "scope": "POM-declared historical resource and preserved negative/regression inputs; active selection stays V2"
+  },
+  {
+    "path": "use-plugin/Core/Mapping/version-1/jacamo-use-mapping-v1.json",
+    "origin": "c7add39f^:use-plugin/Core/Mapping/version-1/jacamo-use-mapping-v1.json",
+    "sha256": "3279f46cb128a252247c2667cd5ceb9329366162487dbd864950792aa2cd61b8",
+    "matchesUnchangedFreeze": true,
+    "matchesPriorBuiltResource": true,
+    "scope": "POM-declared historical resource and preserved negative/regression inputs; active selection stays V2"
+  },
+  {
+    "path": "use-plugin/Core/Mapping/version-1/jacamo-use-mapping.schema.json",
+    "origin": "c7add39f^:use-plugin/Core/Mapping/version-1/jacamo-use-mapping.schema.json",
+    "sha256": "57fb10f99b0f1f1ef349ae1e980834c029b5a0fcd9fea85eed75fe412f81b84d",
+    "matchesUnchangedFreeze": true,
+    "matchesPriorBuiltResource": true,
+    "scope": "POM-declared historical resource and preserved negative/regression inputs; active selection stays V2"
+  },
+  {
+    "path": "use-plugin/Core/Mapping/version-1/freeze-manifest.json",
+    "origin": "c7add39f^:use-plugin/Core/Mapping/version-1/freeze-manifest.json",
+    "sha256": "209ce6478c3caa3a36b1136f565d28e6f1378525254ff12e0316c7aaedae1ac2",
+    "matchesUnchangedFreeze": true,
+    "matchesPriorBuiltResource": true,
+    "scope": "POM-declared historical resource and preserved negative/regression inputs; active selection stays V2"
+  }
+]

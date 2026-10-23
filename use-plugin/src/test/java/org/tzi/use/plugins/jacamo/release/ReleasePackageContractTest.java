@@ -13,6 +13,21 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class ReleasePackageContractTest {
+    @Test void canonicalAuctionHasItsOwnCompletePinnedInventoryAndKeepsTheLegacyToyPath()throws Exception {
+        var json=new ObjectMapper();var release=json.readTree(Path.of("release/release-manifest.json").toFile());
+        var declared=new java.util.TreeMap<String,String>();for(var entry:release.path("packageEntries"))assertTrue(declared.put(entry.path("path").asText(),entry.path("source").asText())==null);
+        assertEquals("src/test/resources/auction/auction.jcm",declared.get("examples/auction/auction.jcm"),"Preserve the old native toy under its existing compatibility path");
+        assertEquals("examples/auction/case-manifest.json",declared.get("examples/auction-semantic/case-manifest.json"),"The actual canonical Auction must be separately shipped");
+        var manifest=json.readTree(Path.of("examples/auction/case-manifest.json").toFile());assertEquals(22,manifest.path("assets").size());
+        for(var asset:manifest.path("assets")) {
+            String relative=asset.path("path").asText();assertEquals("examples/auction/"+relative,declared.get("examples/auction-semantic/"+relative),relative);
+            assertEquals(asset.path("sha256").asText(),java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(Path.of("examples/auction").resolve(relative)))));
+        }
+        assertEquals("examples/auction/README.md",declared.get("examples/auction-semantic/README.md"));
+        String readme=Files.readString(Path.of("examples/auction/README.md"));
+        for(String required:java.util.List.of("AUCTION_OBSERVED_V1","RuntimeJournalMaxBytes","268435456","Import","Original iStar history","INCOMPLETE","auction-semantic"))assertTrue(readme.contains(required),required);
+        for(String required:java.util.List.of("P-IADM-01.md","P-IADM-01.diff","single-owner-context-v1.md"))assertTrue(declared.containsKey("provenance/"+required),required);
+    }
     private static final Set<String> REQUIRED_ENTRIES = Set.of(
             "CHANGELOG.md",
             "Core/Mapping/version-2/jacamo-use-mapping-v2.json",
@@ -106,7 +121,11 @@ class ReleasePackageContractTest {
             }
             assertTrue(declared.add(target), () -> "duplicate archive path: " + target);
         }
-        assertEquals(REQUIRED_ENTRIES, declared);
+        var required=new LinkedHashSet<>(REQUIRED_ENTRIES);
+        var caseManifest=new ObjectMapper().readTree(root.resolve("examples/auction/case-manifest.json").toFile());
+        for(var asset:caseManifest.path("assets"))required.add("examples/auction-semantic/"+asset.path("path").asText());
+        required.addAll(Set.of("examples/auction-semantic/case-manifest.json","examples/auction-semantic/README.md","provenance/P-IADM-01.md","provenance/P-IADM-01.diff","provenance/single-owner-context-v1.md"));
+        assertEquals(required, declared);
         assertTrue(manifest.path("packageTrees").isMissingNode());
         assertEquals("authenticated-loopback-tcp",manifest.path("runtimeArchitecture").path("transport").asText());
         assertEquals("independent-jacamo-jvm",manifest.path("runtimeArchitecture").path("producer").asText());

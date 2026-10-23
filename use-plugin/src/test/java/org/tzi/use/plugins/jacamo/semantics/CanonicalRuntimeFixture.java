@@ -73,7 +73,7 @@ public final class CanonicalRuntimeFixture implements AutoCloseable {
         try {if(captures!=null)captures.close();if(projector!=null)projector.close();if(aliceBinding!=null)aliceBinding.close();if(bobBinding!=null)bobBinding.close();
             if(artifact!=null)environment.getController(counterWorkspace.getFullName()).removeArtifact("counter");if(board!=null)environment.getController(counterWorkspace.getFullName()).removeArtifact(boardName);
             for(String name:extraBoards)environment.getController(counterWorkspace.getFullName()).removeArtifact(name);
-            if(alice!=null)CslRuntimeTestRegistry.quitCartagoActor(environment,aliceName);if(bob!=null)CslRuntimeTestRegistry.quitCartagoActor(environment,bobName);
+            if(alice!=null)CslRuntimeTestRegistry.closeCartagoContext(alice);if(bob!=null)CslRuntimeTestRegistry.closeCartagoContext(bob);
         } finally {environment.shutdown();restore("jacamo.bridge.modelRevision",previousRevision);restore("jacamo.bridge.generation",previousGeneration);}
     }
     private static void restore(String key,String value){if(value==null)System.clearProperty(key);else System.setProperty(key,value);}

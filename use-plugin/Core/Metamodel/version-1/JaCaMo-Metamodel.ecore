@@ -1,0 +1,1081 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ecore:EPackage xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmi:version="2.0" name="dSML4JaCaMo" nsURI="urn:dsml4jacamo:2024:reconstructed" nsPrefix="dSML4JaCaMo">
+  <eAnnotations source="urn:reconstruction:provenance">
+    <details key="status" value="paper-derived-conservative-reconstruction-not-original-author-artifact"/>
+    <details key="primarySource" value="Bai bao 1.pdf; Figure 1, PDF page 3 / printed page 639"/>
+    <details key="sourceSHA256" value="93f5d1450946869a254919bd79f9636ab123f46575bab0ded3b68499c7d07461"/>
+    <details key="doi" value="10.15439/2024F6157"/>
+    <details key="supportingEvidence" value="Section III, PDF page 2; Section IV / Listing 1, PDF pages 2 and 4"/>
+    <details key="namespacePolicy" value="nsURI and nsPrefix are local reconstruction metadata. Package name inferred from Listing 1 dSML4JaCaMo.Operation."/>
+    <details key="defaultsPolicy" value="Attribute bounds are not printed: Ecore defaults 0..1 retained. Unshown flags retain Ecore defaults; not claimed to be original settings."/>
+    <details key="unresolvedPolicy" value="Three named attributes with clipped types are recorded as annotations, not assigned guessed ETypes. See reconstruction notes."/>
+    <details key="scope" value="Only DSML4JaCaMo 2024; no added concepts, runtime classes, OCL, or semantics."/>
+  </eAnnotations>
+  <eClassifiers xsi:type="ecore:EClass" name="MAS">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="PlatformParamters" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+      <eAnnotations source="urn:reconstruction:decision">
+        <details key="note" value="Exact printed spelling PlatformParamter + wrapped s retained; not normalized to PlatformParameters."/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="agent" eType="#//Agent" lowerBound="1" upperBound="-1" containment="true">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="workspace" eType="#//Workspace" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 14"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="organisation" eType="#//Organisation" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 36"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Organisation">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 lines 37, 40 and inherited sch.id at line 53"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="normativespecification" eType="#//NormativeSpecification" lowerBound="1" containment="true" upperBound="1">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 68"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="structuralspecification" eType="#//StructuralSpecification" lowerBound="1" containment="true" upperBound="1">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 45"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="functionalspecification" eType="#//FunctionalSpecification" lowerBound="1" containment="true" upperBound="1">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 51"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="deploysAgent" eType="#//Agent" lowerBound="1" upperBound="-1" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NormativeSpecification">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="norm" eType="#//Norm" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 69"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="StructuralSpecification">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="group" eType="#//Group" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="role" eType="#//Role" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FunctionalSpecification">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="scheme" eType="#//Scheme" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 52"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Norm" eSuperTypes="#//Organisation">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="timeConstraint" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Nrole" eType="#//Role" lowerBound="1" upperBound="1" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="NMission" eType="#//Mission" lowerBound="1" upperBound="1" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Group" eSuperTypes="#//Organisation">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="min" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="max" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="hasSubGroups" eType="#//Group" upperBound="-1" containment="false" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="RefRole" eType="#//Role" lowerBound="1" upperBound="-1" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="formationconstraints" eType="#//FormationConstraints" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="link" eType="#//Link" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Role" eSuperTypes="#//Organisation">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="min" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="max" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Extendsrole" eType="#//Role" lowerBound="0" upperBound="1" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="players" eType="#//Agent" upperBound="-1" lowerBound="0" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FormationConstraints">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="biDir" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="scope" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral="intra-group">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="to" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="from" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Link">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="biDir" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="scope" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral="intra-group">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="from" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="to" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Scheme" eSuperTypes="#//Organisation">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1. Organisation inheritance also explains Listing 1 sch.id; no duplicate declared id."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="PlanOperator" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="mission" eType="#//Mission" lowerBound="1" upperBound="-1" containment="true">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="SchemeOgoal" eType="#//OGoal" lowerBound="1" containment="true" upperBound="-1">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1 1..*; Listing 1 line 54"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="SchemeOPlan" eType="#//OPlan" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures name="Splan" eType="#//TriggeringEvent" lowerBound="0" upperBound="-1" containment="false" xsi:type="ecore:EReference">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="OPlan">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Sequence" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Parallel" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 58"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="FirstOgoal" eType="#//OGoal" lowerBound="1" upperBound="1" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 59"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures name="Splan" eType="#//TriggeringEvent" lowerBound="0" upperBound="-1" containment="false" xsi:type="ecore:EReference">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="OGoal">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 lines 56 and 60"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isRootGoal" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 55"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="NextOgoal" eType="#//OGoal" upperBound="1" lowerBound="0" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="OGoalToOPlan" eType="#//OPlan" lowerBound="0" upperBound="1" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 57"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures name="OGoalToGoal" eType="#//Goal" lowerBound="0" upperBound="1" containment="false" xsi:type="ecore:EReference">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Mission">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="min" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="max" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ogoal" eType="#//OGoal" lowerBound="1" upperBound="-1" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Mplan" eType="#//TriggeringEvent" upperBound="-1" lowerBound="0" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Workspace">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Path" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Host" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="artifact" eType="#//Artifact" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 15"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="hasSubworkspace" eType="#//Workspace" upperBound="-1" containment="false" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Artifact">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="artifactName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="className" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 lines 16 and 18"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Parameter" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="IDVar" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isInitial" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="port" eType="#//Port" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="obsproperty" eType="#//ObsProperty" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="operation" eType="#//AbsOperation" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 20"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Port">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="linkArtifacts" eType="#//Artifact" upperBound="-1" lowerBound="0" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ObsProperty">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="ParamName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eAnnotations source="urn:reconstruction:unresolved">
+      <details key="visibleAttribute" value="initialValue"/>
+      <details key="evidence" value="Figure 1 class box clips the datatype below the visible attribute name."/>
+      <details key="decision" value="No EAttribute declared: EType and default cannot be established from Section III or Listing 1; do not guess."/>
+      <details key="status" value="known-name-unresolved-type"/>
+    </eAnnotations>
+    <eStructuralFeatures name="obsproperty" eType="#//Belief" lowerBound="0" upperBound="-1" containment="false" xsi:type="ecore:EReference">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+      <eAnnotations source="urn:reconstruction:decision">
+        <details key="evidence" value="Figure 1: long line starts at ObsProperty left edge and ends with an arrow at Belief top; printed role name is obsproperty, multiplicity 0..*. Preserve this direction and name despite the counterintuitive name."/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AbsOperation" abstract="true">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="className" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 22"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="signalExpression" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="awaitExpression" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="await_timeExpression" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="RefObsproperty" eType="#//ObsProperty" upperBound="-1" lowerBound="0" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eAnnotations source="urn:reconstruction:unresolved">
+      <details key="visibleAttribute" value="paramName"/>
+      <details key="evidence" value="Figure 1 class box clips the datatype below the visible attribute name."/>
+      <details key="decision" value="No EAttribute declared: EType and default cannot be established from Section III or Listing 1; do not guess."/>
+      <details key="status" value="known-name-unresolved-type"/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="LinkedOperation" eSuperTypes="#//AbsOperation">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="InternalOperation" eSuperTypes="#//AbsOperation">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GuardOperation" eSuperTypes="#//AbsOperation">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Operation" eSuperTypes="#//AbsOperation">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="guardedBy" eType="#//GuardOperation" lowerBound="0" upperBound="1" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="callsInternal" eType="#//InternalOperation" lowerBound="0" upperBound="1" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Agent">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 4"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="belief" eType="#//Belief" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rule" eType="#//Rule" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="plan" eType="#//Plan" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 6"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="hasGoal" eType="#//Goal" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="joinWorkspace" eType="#//Workspace" upperBound="-1" lowerBound="0" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures name="artifact" eType="#//Artifact" lowerBound="0" upperBound="-1" containment="false" xsi:type="ecore:EReference">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Belief">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isInitial" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="triggeredBy" eType="#//TriggeringEvent" lowerBound="1" upperBound="1" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Rule">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Expression" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Goal">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="triggeredBy" eType="#//TriggeringEvent" lowerBound="1" upperBound="-1" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Context">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Expression" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 7"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="contextRule" eType="#//Rule" upperBound="-1" lowerBound="0" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="contextBelief" eType="#//Belief" upperBound="-1" lowerBound="0" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Plan">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 7"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="asBeliefAddition" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 7 compares to string true"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="asQuery" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isAtomic" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="atomicLabel" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="argID" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isInitial" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="hasBody" eType="#//Body" lowerBound="1" containment="true" upperBound="1">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 lines 8-9"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="hasContext" eType="#//Context" lowerBound="1" containment="true" upperBound="1">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 7"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="hasAction" eType="#//Action" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 9"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="RefArtifact" eType="#//Artifact" upperBound="-1" lowerBound="0" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Body">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="bodyterm" eType="#//BodyTerm" upperBound="-1" containment="true" lowerBound="0">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="firstAction" eType="#//Action" lowerBound="1" upperBound="1" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 lines 8-9"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BodyTerm" abstract="true">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Action" abstract="true" eSuperTypes="#//BodyTerm">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Expression" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Listing 1 line 9"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nextAction" eType="#//Action" lowerBound="0" upperBound="1" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1; Section III action-chain self-reference; Listing 1 lines 8-9 use firstAction and thePlanSeq"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ExternalAction" eSuperTypes="#//Action">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures name="operation" eType="#//AbsOperation" lowerBound="0" upperBound="1" containment="false" xsi:type="ecore:EReference">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="InternalAction" eSuperTypes="#//Action">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MentalNotes" eSuperTypes="#//BodyTerm">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="impliesG" eType="#//Goal" lowerBound="1" upperBound="1" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="impliesB" eType="#//Belief" lowerBound="1" upperBound="1" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Message" eSuperTypes="#//InternalAction">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="content" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isBroadcast" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+      <eAnnotations source="urn:reconstruction:unresolved">
+        <details key="evidence" value="Figure 1 shows isBroadcast : EBoolean = but clips the value."/>
+        <details key="decision" value="No explicit defaultValueLiteral; effective false is the EBoolean intrinsic default, not a recovered author default."/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="messageToagent" eType="#//Agent" upperBound="-1" lowerBound="0" containment="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TriggeringEvent" eSuperTypes="#//Action">
+    <eAnnotations source="urn:reconstruction:provenance">
+      <details key="source" value="Figure 1, PDF page 3; Section III"/>
+      <details key="confidence" value="high"/>
+      <details key="note" value="Class box and any hollow-triangle generalization in Figure 1. The grey line from this class joins InternalAction at the triangle pointing to Action."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isSeparateIntention" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isInitial" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="ttf" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="ds" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deletion" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures name="planoperator" eType="#//OPlan" lowerBound="0" upperBound="1" containment="false" xsi:type="ecore:EReference">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eStructuralFeatures name="triggersPlan" eType="#//Plan" lowerBound="1" upperBound="1" containment="false" xsi:type="ecore:EReference">
+      <eAnnotations source="urn:reconstruction:provenance">
+        <details key="source" value="Figure 1, PDF page 3"/>
+        <details key="confidence" value="high"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+    <eAnnotations source="urn:reconstruction:unresolved">
+      <details key="visibleAttribute" value="addAndDel"/>
+      <details key="evidence" value="Figure 1 class box clips the datatype below the visible attribute name."/>
+      <details key="decision" value="No EAttribute declared: EType and default cannot be established from Section III or Listing 1; do not guess."/>
+      <details key="status" value="known-name-unresolved-type"/>
+    </eAnnotations>
+  </eClassifiers>
+</ecore:EPackage>

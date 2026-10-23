@@ -1,0 +1,100 @@
+{
+  "task": "A04",
+  "scope": "XML_M1_EXECUTION_ORIGINAL_CSL_MODEL_AND_DUAL_ORACLE_PARITY_NOT_NATIVE_RUNTIME",
+  "result": "PASS",
+  "head": "d8c85780c2e76236f7212d636f562107b4fd61dd",
+  "command": "mvn -B -pl use-plugin -am '-Dtest=AuctionCslRuleExecutorTest,AuctionSourceSelectorTest,AuctionMappingXmlTest,AuctionCaseBundleTest,CanonicalMappingContractTest' '-Dsurefire.failIfNoSpecifiedTests=false' test",
+  "suites": [
+    {
+      "suite": "org.tzi.use.plugins.jacamo.semantics.auction.AuctionCslRuleExecutorTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "requiresCompleteOmissionInventoryAndPreservesChangedDocumentationWithoutAVerdict",
+        "doesNotCreateAnAgentBidObserverEntityOrInventABoundedBidDefault",
+        "executesAllEightRulesIntoOriginalCslModelMatchingBothOracles",
+        "rejectsForeignSelectorOwnershipAndDoesNotReadAnOracleInsteadOfExecutingRules"
+      ]
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.semantics.auction.AuctionSourceSelectorTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "ignoresCommentedDeclarationsButPreservesCommentMarkersInsideQuotedValues",
+        "countAndNamespaceFailuresCannotProducePartialSuccessfulTransformation",
+        "executesAllEighteenSelectorsInOrderWithExactCountsAndOfficialSourceAnchors",
+        "rejectsUnrelatedOfficialSnapshotBeforeUsingItsSourceFacts",
+        "requiredValuesAndSetsAreExecutedRatherThanOnlyParsed",
+        "regexWorkIsBoundedWithoutUninterruptibleWorkerThreads"
+      ]
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.semantics.auction.AuctionMappingXmlTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "rejectsExternalEntitiesDoctypeOversizeDepthAndNodeFloods",
+        "loadsAllSectionsAsImmutableLocatedSpecificationNotHistoricalValidationVerdict",
+        "rejectsEmptyReferencesDuplicateFieldsAndUnknownConverters",
+        "rejectsMalformedUnknownNamespaceVersionElementsAttributesAndOperations",
+        "resolvesSourcePinsAndExternalCellsTasksViewsAndClausesAgainstFrozenAssets",
+        "rejectsDuplicateMissingIdsAndReferencesWithSourcePosition"
+      ]
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.semantics.auction.AuctionCaseBundleTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "wrongArchiveEntryOrRuntimeFingerprintIsRejectedByBinaryVerification",
+        "missingOrModifiedInputsDoNotFallBackToDesktopOrReferenceRepositories",
+        "verifiesActualFrameworkBinaryAndPinnedArchiveEntry",
+        "readsPinnedSourcesAndTargetsFromPortableDirectoryOnly",
+        "rejectsUnknownVersionFieldsDuplicateIdsAndEscapingPaths",
+        "freezesRawBytesAndRecordsDerivedSourcesWithoutOverwritingAuthority"
+      ]
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalMappingContractTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "snapshotAndAuthoredRulesProduceCanonicalOriginalModelsAndCompleteTrace",
+        "configurationVersionUnknownFieldsAndDuplicateJsonKeysCannotBypassAdmission",
+        "completeSourceFeaturesAndLegacyBundleCompatibilityRemainUnchanged",
+        "profileAndRuleReplacementChangesProgramWithoutChangingOriginalEngine",
+        "originalMutableGoalDefinitionCannotChangeAfterProgramOwnership",
+        "ambiguousBindingsWrongSourceProfileAndAgentEntityCoercionAreRejected",
+        "versionedRulesDiagnosticAndSourceDecisionsRoundTripWithoutLegacyIr"
+      ]
+    }
+  ],
+  "originalCslFingerprint": "478ce44d3226039d7b5dafe372f0d74e3cca2e04f35d67ac870e7ec66f2bc720",
+  "executedM1Rules": 8,
+  "declarationTraces": 13,
+  "omissionDecisions": 12,
+  "counts": {
+    "orgContexts": 2,
+    "roles": 2,
+    "entities": 1,
+    "attributes": 6,
+    "invariants": 2,
+    "declarationContainments": 4,
+    "associations": 0
+  },
+  "remaining": "C01 native member navigation; I01/I02 real GoalModel admission; R01 type proof; A05 import; runtime/live gates",
+  "manifestSha256": "eaba13042da6d566d0bc29e2cf6b52a6e9a6d6b8d77ddbb1e7a08dbfcbf38ee5",
+  "omissionGate": "Missing required omission reproduced as false acceptance; corrected with bundle-declared required inventory. Unknown syntax rejected; changed explanatory reason preserved without runtime verdict.",
+  "tests": 29.0
+}

@@ -1,0 +1,337 @@
+{
+  "task": "U02",
+  "result": "PASS",
+  "scope": "Existing native/protocol/observer transaction and ordered engine pinned-boundary component; new executable Auction faults, no new production state owner",
+  "head": "d8c85780c2e76236f7212d636f562107b4fd61dd",
+  "finishedAt": "2026-10-20T16:48:07+07:00",
+  "command": "mvn -B -pl use-plugin -am -Dmaven.main.skip=true -Dtest=AuctionNativeTransactionTest,AuctionEngineBoundaryTest,CanonicalNativeFaultMatrixTest,OriginalEngineFaultMatrixTest,CanonicalTransactionFailureTest,AuctionOccurrenceExpansionTest,CanonicalOperationCheckpointsTest,AuctionOperationCheckpointTest,RuntimeOwnerCheckpointTest,CanonicalAsyncInvocationTest,CartagoAwaitRegressionTest -Dsurefire.failIfNoSpecifiedTests=false test",
+  "tests": 37.0,
+  "suites": [
+    {
+      "module": "use-plugin",
+      "suite": "org.tzi.use.plugins.jacamo.codegrounded.runtime.AuctionNativeTransactionTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "rejectedSnapshotRestoresMonitorObligationClockFreezeAliasesWatermarksAndExpansionHistory",
+        "rejectedRealOperationEventRollsBackProtocolAndNativeObserverBindingsTogether",
+        "publicationFailureKeepsActualNativeFactsAndCannotPublishCurrentSuccess"
+      ],
+      "reportSha256": "6add1b90b17394680a10325e81114ab712ffb560379977a0570711a0533f67e3"
+    },
+    {
+      "module": "use-plugin",
+      "suite": "org.tzi.use.plugins.jacamo.codegrounded.runtime.AuctionOperationCheckpointTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "existingCheckpointBindsServiceAndNativeAtPreOnOneSystemWithoutCreditingTaskHistory",
+        "wrongArityTypeOverloadPerformerAndOtherAuctionNeverGainPostSuccess"
+      ],
+      "reportSha256": "9069095570cdf7c02b9abdb79e30fea608f0c7da527942f5549476d2b76464fe"
+    },
+    {
+      "module": "use-plugin",
+      "suite": "org.tzi.use.plugins.jacamo.codegrounded.runtime.CanonicalNativeFaultMatrixTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "checkpointAndSnapshotPersistenceFailuresKeepNativeFactsAndNeverPublishCurrentSuccess",
+        "rollbackFailureQuarantinesTheOwnerAndPreventsSubsequentMutation",
+        "aViewFailureDoesNotRetryOrRollBackTheOriginalEngineBoundary",
+        "failuresBeforeCommitRestoreNativeBindingsHistoryAndFrozenCuts"
+      ],
+      "reportSha256": "ec6fd6ed5322e7173a8af5d48a94bbd36d59ee7e283126eedd0ab5a1100bae37"
+    },
+    {
+      "module": "use-plugin",
+      "suite": "org.tzi.use.plugins.jacamo.codegrounded.runtime.CanonicalOperationCheckpointsTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "requiredCanonicalPropertyCoverageBlocksUndefinedEqualityPass",
+        "reusedCheckpointCapturesActualPreAndSeparatesInvocationConformanceFromTaskHistory",
+        "realDeclaredReturnTypeIsCompiledButMissingProducerResultNeverSynthesized",
+        "mappedNativeParametersUseExactDescriptorAndCompletionCannotChangeArguments",
+        "missingPreWrongIncarnationAndOverlapPreserveExactInterval"
+      ],
+      "reportSha256": "062d54deb0192f46818f2dc9744677c750b155553b97ea9b2c6b33c06745037f"
+    },
+    {
+      "module": "use-plugin",
+      "suite": "org.tzi.use.plugins.jacamo.semantics.auction.AuctionOccurrenceExpansionTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "leaveRejoinHasANewObservedIntervalAndMultipleRelevantRoleContextsAreRejected",
+        "actualLateCommitRebuildsOnlyOneSchemeAndFirstSatisfactionFreezesItsRequiredSet",
+        "productionOwnerUsesTwoExpandedModelsOnTheSameNativeBoundaryAndDoesNotInventStepTruth",
+        "emptyRelevantSetAndMissingCurrentPlayerCannotCertifyAUniversalBid",
+        "actualFourCommittedParticipantsNeedTwoIndependentSchemeCastsRatherThanTheGenericSingleContextCast"
+      ],
+      "reportSha256": "db687bfb17aee12bb6cd9d7adb5def545cb00c16dfee0d6b2a35cbe29cc68a96"
+    },
+    {
+      "module": "use-plugin",
+      "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalAsyncInvocationTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "actualZeroToTwoFailsNativeAtPreWhileOriginalHistoricalTaskRemainsPending",
+        "canonicalOperationPolicyUsesTheSameNamespacedConditionIdsAsWorkerResults",
+        "aBlockedNativeOperationPreconditionDoesNotHoldWriterOrCartagoAction",
+        "ambiguousInvocationContextCannotCreditEveryEnactmentOfOnePerformer"
+      ],
+      "reportSha256": "7535c58249e72759aee7fc45489d885720045d80908c0f8c60385938f02d36ab"
+    },
+    {
+      "module": "use-plugin",
+      "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalTransactionFailureTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "failurePreparingSemanticEvaluationAfterCommitKeepsNativeAndProtocolCutWithTypedError",
+        "rejectedSnapshotDoesNotRebindEngineOrDiscardPreviousFrozenCuts",
+        "manualEnactmentLinkEditCannotBeCertifiedAsAnAcceptedContextCast",
+        "missingJournalCannotCertifyAcceptedFactsOrRemainReplayable"
+      ],
+      "reportSha256": "16cc73ca4b15a8b9e700966b0c7fe5c4ed7e1ff4a06cfa3223dfcdc329882e55"
+    },
+    {
+      "module": "use-plugin",
+      "suite": "org.tzi.use.plugins.jacamo.semantics.CartagoAwaitRegressionTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "actualAwaitReportsPartialLifecycleAndKeepsBothInvocationPreStates"
+      ],
+      "reportSha256": "6559133d46d495e5ed5cb28e2d8bc62b4007d93ea4af5952e7b28222786a804b"
+    },
+    {
+      "module": "use-plugin",
+      "suite": "org.tzi.use.plugins.jacamo.semantics.runtime.AuctionEngineBoundaryTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "slowOldCutIsPinnedAndCloseFencesItsResultWithoutBlockingEdt",
+        "failedMembershipExpansionRestoresThePreviousRevisionWithoutRewindingCommittedNativeFacts",
+        "nativeOclReadsThePinnedAuctionCutAfterTheLiveStateHasAdvanced",
+        "failedPropagationRetainsNativeSourceTruthAndRestoresAllOriginalHistories"
+      ],
+      "reportSha256": "4b0dbf6c6bb2b1c0516a15b40fbd007f7e56524d1df0aeacb93c11afd5333b16"
+    },
+    {
+      "module": "use-plugin",
+      "suite": "org.tzi.use.plugins.jacamo.semantics.runtime.OriginalEngineFaultMatrixTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "topologyConstructionFailureClosesTheStagedContextAndRestoresPreviousTopologyAndHistory",
+        "inputAndPostPropagationFailuresDiscardStagedHistoryWithoutInventingSourceGap"
+      ],
+      "reportSha256": "12a54fea8bcb70ec0a80c4433094b2e3573abe7e88805cec7fe845d9b6ce83f4"
+    },
+    {
+      "module": "use-plugin",
+      "suite": "org.tzi.use.plugins.jacamo.semantics.RuntimeOwnerCheckpointTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "cutAndCheckpointFromAnotherSessionCannotEnterEvenWithSameNativeSystemAndProducerKey",
+        "savepointRestoresOnlyHistoryAndRejectsForeignOrRevokedOwner",
+        "boundedPinnedCutsNeverWaitOnEdtAndCloseCompletesQueuedControlsAndFencesResults"
+      ],
+      "reportSha256": "741ca7c0065b846825d4be2730bee6c065fc352fb33f6293bac0fa9e17da2864"
+    }
+  ],
+  "compiledMainRegression": {
+    "receipt": "verification/auction/I03/acceptance.json",
+    "tests": 400,
+    "suites": 95,
+    "sha256": "d31a8d56215208dfd20f1f855cd09cacdb2cca03bc68fcee912e2af716e279fd",
+    "allRecordedMainSourcesStillMatch": true
+  },
+  "sourceHashes": [
+    {
+      "path": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/AuctionNativeTransactionTest.java",
+      "sha256": "e2a6380a73046bdd79cce76ff6052e873f4d14eb47da16f5d0c96c5599347bfa"
+    },
+    {
+      "path": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/runtime/AuctionEngineBoundaryTest.java",
+      "sha256": "31497056521fd02db26e3cdaf6572f122a7ced6adfccb628ddd924c0faf9c31a"
+    },
+    {
+      "path": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionCastFixture.java",
+      "sha256": "25e8c55b54458a67fb596c7d621918888d5f7e55acc06143911c5ea608c469fe"
+    },
+    {
+      "path": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java",
+      "sha256": "b46ba57e97426ce19d01cd66fbab6ccf8fe8b155b96dbc42f868998938dfd5df"
+    },
+    {
+      "path": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeProjector.java",
+      "sha256": "21144ff6e08a0f731c635b1e30b38e8e202d58d84741900e71f1dbe2df3020bd"
+    },
+    {
+      "path": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java",
+      "sha256": "9aff95882c8a538ad20844ed7b9f2ce0a172e75f2855b002d635cbb27a684c75"
+    },
+    {
+      "path": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/trace/NativeObjectBindings.java",
+      "sha256": "5e4185573130c589ce62e2705941c209f6507d1cbd242db6ec5891f18199547b"
+    },
+    {
+      "path": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/RuntimeEngineSessionOwner.java",
+      "sha256": "88d695ca5c845ba3b7d5c133f74dae2290f7cfccafc676e2f5511c0a9b70e46d"
+    }
+  ],
+  "assets": [
+    {
+      "id": "src-jcm",
+      "path": "auction.jcm",
+      "sha256": "c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb"
+    },
+    {
+      "id": "src-os",
+      "path": "src/org/auction-os.xml",
+      "sha256": "d2481d4ee3c45b2cead42f942a3943684e86facee992870356ca4d1e47d16f9a"
+    },
+    {
+      "id": "src-asl",
+      "path": "src/agt/auction_capabilities.asl",
+      "sha256": "31679b13210114b211dad862ad86af352cc9003ac9527ea7268e3a1d0f9cfe1b"
+    },
+    {
+      "id": "src-artifact",
+      "path": "src/env/auction_env/AuctionArtifact.java",
+      "sha256": "34036fc220274853e39f93682cdb22c350fe6a06739669860f2a66afe606ff4b"
+    },
+    {
+      "id": "src-build",
+      "path": "build.gradle",
+      "sha256": "0c81b7f1b57c8f9b427280eb8967e820edaffe329540e4988ddd85e402175b40"
+    },
+    {
+      "id": "target-drawio",
+      "path": "auction_csl.drawio",
+      "sha256": "eade0439144e57aa1c3b8ce004a9f211d74bb1ddcb585ad16197f8881d3c4186"
+    },
+    {
+      "id": "input-istar",
+      "path": "auction_istar_final.drawio",
+      "sha256": "22fa1cfc9a049fa86bf95cc5c4c88399cb17fd764030c37aa569add8a1249715"
+    },
+    {
+      "id": "input-ocl",
+      "path": "auction_constraints_final.ocl",
+      "sha256": "5a6860619bacaf85f0a721be75777925db0f51592f7bdb4a4c6b5d94314634b4"
+    },
+    {
+      "id": "ref-ecore",
+      "path": "provenance/use4goal/docs/model/csl.ecore",
+      "sha256": "17146c1ad0bd62547695568d938d4a41a933f44d7480440a3f13e9617bff03f7"
+    },
+    {
+      "id": "ref-grammar",
+      "path": "provenance/use4goal/goal/src/main/resources/grammars/CSL.g4",
+      "sha256": "5bca5c44933f2619eeac837279e09a995a293383ebe3795d058d7e5319d3d224"
+    },
+    {
+      "id": "ref-compiler",
+      "path": "provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/parser/CslCompiler.java",
+      "sha256": "706ba4a4562f2176ccd6d9d1c9c5a9ffa65b7d05d2b0cd50783a84d203740966"
+    },
+    {
+      "id": "ref-renderer",
+      "path": "provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslSpecText.java",
+      "sha256": "59b8f29ee698a97d7041a1d69117b4e01b3a79f3d11cd3c2e0ff28c6ae6a11bc"
+    },
+    {
+      "id": "ref-backend",
+      "path": "provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/mm/CslModel.java",
+      "sha256": "8da2070c384ed555cbbe5f77426213ef809d420594d11f2e9c2725352c03f227"
+    },
+    {
+      "id": "ref-map-parser",
+      "path": "provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/verify/conformance/mapping/ConformanceMappingParser.java",
+      "sha256": "d9ec64447d830ad9a074d90c0ba452383b9bbc7b5a517721d43082ce9acab07f"
+    },
+    {
+      "id": "ref-proposal",
+      "path": "provenance/use4goal/examples/ProposalReview/proposal-review-final.csl",
+      "sha256": "5bc9a926d82fefd733661deac284d25ee7bd3639088942ed3d0550affb4e6657"
+    },
+    {
+      "id": "ref-org-obedient",
+      "path": "provenance/moise/asl/org-obedient.asl",
+      "sha256": "9b63b41bd1f080b5bfb1942d58aa26ebbe01b507347a1635ff09112339a113c9"
+    },
+    {
+      "id": "case-rules",
+      "path": "auction_jacamo_to_csl_rules.xml",
+      "sha256": "46979b627e1102ce7368bc1f84ea4954ce0cb920159a164304fe2390b1e48032"
+    },
+    {
+      "id": "target-csl",
+      "path": "auction_csl.csl",
+      "sha256": "c039ad94928fab1791aab91b7b3323507ba1916704b4a60d0ee5cf1824ac1c56"
+    },
+    {
+      "id": "target-istar",
+      "path": "auction_istar_final.istar",
+      "sha256": "7704bb185e05affa78236d0294a96d77bebc88df5d124aac0db05794ceb60931"
+    },
+    {
+      "id": "engine-provenance",
+      "path": "provenance/use4goal-engine.json",
+      "sha256": "1c1e79e3a55cd9ff3dc55f592028211a49834f7b0546d18b637646ae138c90e4"
+    },
+    {
+      "id": "license-use4goal",
+      "path": "provenance/licenses/use4Goal-GPL-3.0.txt",
+      "sha256": "230184f60bae2feaf244f10a8bac053c8ff33a183bcc365b4d8b876d2b7f4809"
+    },
+    {
+      "id": "license-jacamo",
+      "path": "provenance/licenses/JaCaMo-LGPL-3.0.txt",
+      "sha256": "ea7d049c7705dc13afc202dd18e1827f3484f8212fd3fa7b82fc4a0c363432c9"
+    }
+  ],
+  "verified": [
+    "Real source first-satisfaction freeze, NPL terminal/lifecycle, source clock and metadata restore with new helper rollback",
+    "Snapshot and actual operation-event aliases/watermarks/raw evidence roll back together",
+    "Native facts persist after compile/propagation/publication errors; error/gap separate from source truth",
+    "Actual membership execution revision rolls back only on the marking lane",
+    "Native OCL reads the recorded old pin after the same live MSystem advances",
+    "Overlap/native @pre existing contracts and wrong owner/epoch checkpoints remain guarded",
+    "Eight pins and byte/queue limits; slow old cut fenced on close without EDT wait; worker terminates"
+  ],
+  "limitations": [
+    "Component tests use real boards/artifacts plus explicit test-boundary player registration, not final external USE/GUI acceptance",
+    "Real Jason step/OCL inputs and invocation activation remain O03/I04; future derived step stores must reuse this native metadata/protocol transaction",
+    "No claim of complete global observation or supported internal MOISE goal-transition timestamp",
+    "R04 retirement, U03 dependency quality, lifecycle/replay/package and E01/E02 remain open"
+  ]
+}

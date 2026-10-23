@@ -206,6 +206,8 @@ public final class MoiseBoardSnapshotSource implements SnapshotSource {
                 var goalStates=new ArrayList<Map<String,Object>>();
                 values.put("goalObservationVersion","1.0.0");
                 values.put("schemeArguments",observed.arguments());
+                values.put("schemeArgumentObservationVersion","1.0.0");
+                values.put("schemeArgumentTerms",observed.structuredArguments());
                 values.put("boardArtifactIdentity",observed.artifact().getId().toString());values.put("continuity","POLLING_ONLY_SOURCE_LIFETIME_UNPROVEN");
                 for(var goal:board.getSpec().getGoals()) {
                     var goals=spec.getFirst().goals().stream().filter(g->g.goalId().equals(goal.getId())).toList();

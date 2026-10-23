@@ -114,5 +114,7 @@ public final class RuntimeEventJournal {
     public synchronized long persistedEntries() { return ordinal; }
     /** Immutable prefix length captured with persistedEntries on the writer barrier. */
     public synchronized long persistedBytes() { return bytes; }
+    /** Immutable budget captured when this run was created. */
+    public long maxBytes() { return maxBytes; }
     public synchronized long retainedFromVersion() { return history.isEmpty() ? 0 : history.getFirst().result().stateVersion(); }
 }

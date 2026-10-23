@@ -1,0 +1,6 @@
+USE version 7.5.0, Copyright (C) 1999-2025 University of Bremen & University of Applied Sciences Hamburg
+java.lang.AssertionError: Five exact Task players [beid:v1:jason/agent/runtime-agent/auction/alice/677497d0-d220-4a4f-a6c7-f39e06b88298, beid:v1:jason/agent/runtime-agent/auction/bob/acac0071-94c1-43fc-9482-69eeb288c605, beid:v1:jason/agent/runtime-agent/auction/francois/900cae5c-fb1b-4cec-b352-c5fccff292bb, beid:v1:jason/agent/runtime-agent/auction/maria/df42f4a4-4210-4cf9-817a-dc4a64c21ed3]
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.check(InstalledAuctionMain.java:440)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.runLive(InstalledAuctionMain.java:134)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.run(InstalledAuctionMain.java:76)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.main(InstalledAuctionMain.java:22)

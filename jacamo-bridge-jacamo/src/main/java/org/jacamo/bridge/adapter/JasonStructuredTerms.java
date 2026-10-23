@@ -7,6 +7,10 @@ import org.jacamo.bridge.contract.CanonicalJson;
 /** Bounded structured copies of official terms. Raw unsupported syntax is retained, never evaluated. */
 public final class JasonStructuredTerms {
     private JasonStructuredTerms(){}
+    /** Same bounded copy used by literal terms; no parsing/evaluation of consumer strings. */
+    public static Map<String,Object> term(Term value) {
+        return term(Objects.requireNonNull(value),0,new IdentityHashMap<>());
+    }
     public static Map<String,Object> literal(Literal literal) {
         var result=new LinkedHashMap<String,Object>();result.put("raw",literal.toString());result.put("namespace",literal.getNS().getFunctor());result.put("functor",literal.getFunctor());result.put("negative",literal.negated());result.put("rule",literal instanceof Rule);result.put("ground",literal.isGround());
         var terms=new ArrayList<Map<String,Object>>();for(int i=0;i<literal.getArity();i++)terms.add(term(literal.getTerm(i),0,new IdentityHashMap<>()));result.put("terms",List.copyOf(terms));

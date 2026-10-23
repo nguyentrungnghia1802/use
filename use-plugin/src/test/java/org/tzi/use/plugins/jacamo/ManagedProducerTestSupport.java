@@ -27,6 +27,15 @@ public final class ManagedProducerTestSupport implements AutoCloseable {
     }
     /** Same official managed-start hook; headless mode is bounded and test-owned. */
     public ManagedProducerTestSupport(Path originalJcm,Path evidence,boolean structuredJasonObservation,boolean headless,Map<String,String> vmProperties) throws Exception {
+        this(originalJcm,evidence,structuredJasonObservation,headless,vmProperties,entry->true);
+    }
+    /** Optional test classpath selection; production classes and exact official
+     * dependencies are reused rather than launching a second test main. */
+    public ManagedProducerTestSupport(Path originalJcm,Path evidence,boolean structuredJasonObservation,boolean headless,Map<String,String> vmProperties,java.util.function.Predicate<String> classpathEntry) throws Exception {
+        this(originalJcm,evidence,structuredJasonObservation,headless,vmProperties,classpathEntry,stage->{ });
+    }
+    /** Explicit test-owned fixture preparation; default callers keep original bytes. */
+    public ManagedProducerTestSupport(Path originalJcm,Path evidence,boolean structuredJasonObservation,boolean headless,Map<String,String> vmProperties,java.util.function.Predicate<String> classpathEntry,java.util.function.Consumer<Path> fixture) throws Exception {
         root=evidence.toAbsolutePath().normalize(); Files.createDirectories(root);
         original=originalJcm.toAbsolutePath().normalize(); originalHashes=sourceHashes(original.getParent());
         Path stage=Files.createDirectory(root.resolve("staging"));
@@ -36,6 +45,7 @@ public final class ManagedProducerTestSupport implements AutoCloseable {
                 if(Files.isDirectory(input)) Files.createDirectories(output); else Files.copy(input,output);
             }
         }
+        fixture.accept(stage);
         jcm=stage.resolve(original.getFileName()); control=Files.createDirectory(root.resolve("startup-control"));
         stop=root.resolve("stop"); Path secret=root.resolve("secret.hex"); Files.writeString(secret,"56".repeat(32));
         Path classes=Files.createDirectories(stage.resolve("build/classes/java/main"));
@@ -49,7 +59,7 @@ public final class ManagedProducerTestSupport implements AutoCloseable {
         String cp=String.join(java.io.File.pathSeparator,classes.toString(),
                 Path.of("../jacamo-bridge-contract/target/classes").toAbsolutePath().normalize().toString(),
                 Path.of("../jacamo-bridge-jacamo/target/classes").toAbsolutePath().normalize().toString(),
-                System.getProperty("java.class.path"));
+                java.util.Arrays.stream(System.getProperty("java.class.path").split(java.util.regex.Pattern.quote(java.io.File.pathSeparator))).filter(classpathEntry).collect(java.util.stream.Collectors.joining(java.io.File.pathSeparator)));
         String javaCommand=JavaProcessSupport.executable();
         Process fingerprint=new ProcessBuilder(javaCommand,"-cp",cp,"org.jacamo.bridge.adapter.RuntimeDistributionFingerprintMain").start();
         String fingerprintText=new String(fingerprint.getInputStream().readAllBytes(),java.nio.charset.StandardCharsets.UTF_8);
@@ -57,7 +67,7 @@ public final class ManagedProducerTestSupport implements AutoCloseable {
         String distribution=fingerprintText.lines().filter(line->line.startsWith("BRIDGE_RUNTIME_DISTRIBUTION_SHA256=")).findFirst().orElseThrow().split("=",2)[1];
         int port; try(var socket=new ServerSocket(0)) { port=socket.getLocalPort(); }
         String text=Files.readString(jcm); int end=text.lastIndexOf('}');
-        String platform="\n platform: org.jacamo.bridge.adapter.JaCaMoBridgePlatform(\"port="+port+"\", \"secretFile="
+        String platform="    platform: org.jacamo.bridge.adapter.JaCaMoBridgePlatform(\"port="+port+"\", \"secretFile="
                 +secret.toString().replace('\\','/')+"\", \"jcmFile="+jcm.toString().replace('\\','/')+"\", \"distributionSha256="+distribution+"\")\n";
         Files.writeString(jcm,text.substring(0,end)+platform+text.substring(end));
         configuration=new BridgeConnectionConfig(URI.create("tcp://127.0.0.1:"+port),secret,distribution,Set.of("official.model","runtime.snapshot"),org.jacamo.bridge.contract.CanonicalJson.DEFAULT_MAX_BYTES,20000,8192);

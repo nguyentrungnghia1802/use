@@ -104,11 +104,14 @@ public interface JaCaMoFacade {
     record SourceRow(Path path, String kind, long bytes, String sha256) { }
     record WorkflowStatus(String state, boolean startAvailable, boolean managed, String runId,
                           String diagnostic, String bootstrapAt, String startedAt) { }
-    record ImportSelection(String profile,Path specification) {
+    record ImportSelection(String profile,Path specification,Path ocl) {
+        public ImportSelection(String profile,Path specification){this(profile,specification,null);}
         public ImportSelection {
             profile=org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.configured(profile).name();
             if(specification!=null)specification=specification.toAbsolutePath().normalize();
+            if(ocl!=null)ocl=ocl.toAbsolutePath().normalize();
             if(profile.equals("NATIVE_CURRENT")&&specification!=null)throw new IllegalArgumentException("NATIVE_PROFILE_HAS_NO_AUTHORED_SPECIFICATION");
+            if(!profile.equals("JACAMO_DECLARATIVE_XML")&&ocl!=null)throw new IllegalArgumentException("AUTHORED_OCL_SELECTION_REQUIRES_DECLARATIVE_PROFILE");
         }
     }
     record TraceRow(String semanticId, String sourceKind, String targetUseId, String targetKind,

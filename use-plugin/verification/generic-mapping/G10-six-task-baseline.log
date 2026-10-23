@@ -1,0 +1,526 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] use                                                                [pom]
+[INFO] JaCaMo Bridge Neutral Contract                                     [jar]
+[INFO] JaCaMo Bridge Official Adapters                                    [jar]
+[INFO] use-core                                                           [jar]
+[INFO] USE semantic engine � selected use4Goal core                       [jar]
+[INFO] use-gui                                                            [jar]
+[INFO] USE JaCaMo Plugin                                                  [jar]
+[INFO] 
+[INFO] --------------------------< org.tzi.use:use >---------------------------
+[INFO] Building use 7.5.0                                                 [1/7]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] -----------------< org.tzi.use:jacamo-bridge-contract >-----------------
+[INFO] Building JaCaMo Bridge Neutral Contract 1.0.0-SNAPSHOT             [2/7]
+[INFO]   from jacamo-bridge-contract\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ jacamo-bridge-contract ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ jacamo-bridge-contract ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ jacamo-bridge-contract ---
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-contract\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ jacamo-bridge-contract ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ jacamo-bridge-contract ---
+[INFO] 
+[INFO] ------------------< org.tzi.use:jacamo-bridge-jacamo >------------------
+[INFO] Building JaCaMo Bridge Official Adapters 1.0.0-SNAPSHOT            [3/7]
+[INFO]   from jacamo-bridge-jacamo\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ jacamo-bridge-jacamo ---
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-jacamo\src\main\resources
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ jacamo-bridge-jacamo ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ jacamo-bridge-jacamo ---
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-jacamo\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ jacamo-bridge-jacamo ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ jacamo-bridge-jacamo ---
+[INFO] 
+[INFO] ------------------------< org.tzi.use:use-core >------------------------
+[INFO] Building use-core 7.5.0                                            [4/7]
+[INFO]   from use-core\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- merge:1.2.0:merge (merge-grammar-files) @ use-core ---
+[INFO] 
+[INFO] --- antlr3:3.5.3:antlr (antlr) @ use-core ---
+[INFO] ANTLR: Processing source directory D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\grammars
+[INFO] 
+[INFO] --- copy-rename:1.0:rename (move-antlr-parser-use) @ use-core ---
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\USELexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\use\USELexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\USEParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\use\USEParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\GeneratorLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\generator\GeneratorLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\GeneratorParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\generator\GeneratorParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\OCLLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\ocl\OCLLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\OCLParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\ocl\OCLParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\ShellCommandLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\shell\ShellCommandLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\ShellCommandParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\shell\ShellCommandParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\SoilLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\soil\SoilLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\SoilParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\soil\SoilParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\TestSuiteLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\testsuite\TestSuiteLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\TestSuiteParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\testsuite\TestSuiteParser.java
+[INFO] 
+[INFO] --- build-helper:3.6.0:add-source (add-antlr3-generated-source) @ use-core ---
+[INFO] Source directory: D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3 added.
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-core ---
+[INFO] Copying 512 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- build-helper:3.6.0:add-test-source (add-test-source) @ use-core ---
+[INFO] Test Source directory: D:\_CODE_BANK\Project_\08_Thesis\use\use-core\src\it\java added.
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-core ---
+[WARNING] *********************************************************************************************************************************************************************************************
+[WARNING] * Required filename-based automodules detected: [antlr-runtime-3.5.3.jar, combinatoricslib-2.3.jar, vtd-xml-2.13.4.jar]. Please don't publish this project to a public artifact repository! *
+[WARNING] *********************************************************************************************************************************************************************************************
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 570 source files with javac [debug target 21 module-path] to target\classes
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-core/src/main/java/org/tzi/use/uml/ocl/type/MessageType.java: Some input files use or override a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-core/src/main/java/org/tzi/use/uml/ocl/type/MessageType.java: Recompile with -Xlint:deprecation for details.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-core/target/generated-sources/antlr3/org/tzi/use/parser/generator/GeneratorParser.java: Some input files use unchecked or unsafe operations.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-core/target/generated-sources/antlr3/org/tzi/use/parser/generator/GeneratorParser.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-core ---
+[INFO] Copying 91 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-core ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 53 source files with javac [debug target 21 module-path] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-core ---
+[INFO] 
+[INFO] ---------------< org.tzi.use:use-jacamo-semantic-engine >---------------
+[INFO] Building USE semantic engine � selected use4Goal core 7.5.0        [5/7]
+[INFO]   from use-jacamo-semantic-engine\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- antlr4:4.9.3:antlr4 (generate-selected-original-grammars) @ use-jacamo-semantic-engine ---
+[INFO] No grammars to process
+[INFO] ANTLR 4: Processing source directory D:\_CODE_BANK\Project_\08_Thesis\use\use-jacamo-semantic-engine\src\main\resources\grammars
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-jacamo-semantic-engine ---
+[INFO] Copying 4 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-jacamo-semantic-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 165 source files with javac [debug release 21] to target\classes
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/dsl/csl/mm/CslModel.java: Some input files use or override a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/dsl/csl/mm/CslModel.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-jacamo-semantic-engine ---
+[INFO] Copying 4 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-jacamo-semantic-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 11 source files with javac [debug release 21] to target\test-classes
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-jacamo-semantic-engine/src/test/java/org/tzi/use/semantic/engine/EngineInstallationGuardTest.java: D:\_CODE_BANK\Project_\08_Thesis\use\use-jacamo-semantic-engine\src\test\java\org\tzi\use\semantic\engine\EngineInstallationGuardTest.java uses or overrides a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-jacamo-semantic-engine/src/test/java/org/tzi/use/semantic/engine/EngineInstallationGuardTest.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-jacamo-semantic-engine ---
+[INFO] 
+[INFO] ------------------------< org.tzi.use:use-gui >-------------------------
+[INFO] Building use-gui 7.5.0                                             [6/7]
+[INFO]   from use-gui\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-gui ---
+[INFO] Copying 56 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- build-helper:1.5:add-test-source (add-test-source) @ use-gui ---
+[INFO] Test Source directory: D:\_CODE_BANK\Project_\08_Thesis\use\use-gui\src\it\java added.
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-gui ---
+[WARNING] ******************************************************************************************************************************************************************************************************************************************
+[WARNING] * Required filename-based automodules detected: [antlr-runtime-3.5.3.jar, combinatoricslib-2.3.jar, annotations-13.0.jar, itextpdf-5.5.13.3.jar, vtd-xml-2.13.4.jar]. Please don't publish this project to a public artifact repository! *
+[WARNING] ******************************************************************************************************************************************************************************************************************************************
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 307 source files with javac [debug target 21 module-path] to target\classes
+[WARNING] /D:/_CODE_BANK/Project_/08_Thesis/use/use-gui/src/main/java/org/tzi/use/gui/views/diagrams/util/MenuScroller.java:[435,15] finalize() in java.lang.Object has been deprecated and marked for removal
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-gui/src/main/java/org/tzi/use/runtime/gui/impl/PluginActionProxy.java: Some input files use or override a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-gui/src/main/java/org/tzi/use/runtime/gui/impl/PluginActionProxy.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- build-helper:1.5:add-test-resource (add-test-resource) @ use-gui ---
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-gui ---
+[INFO] Copying 1 resource from src\test\resources to target\test-classes
+[INFO] Copying 297 resources from src\it\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-gui ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 9 source files with javac [debug target 21 module-path] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-gui ---
+[INFO] 
+[INFO] -----------------------< org.tzi.use:use-plugin >-----------------------
+[INFO] Building USE JaCaMo Plugin 1.0.1                                   [7/7]
+[INFO]   from use-plugin\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-plugin ---
+[INFO] Copying 1 resource from src\main\version-manifest to target\classes
+[INFO] Copying 13 resources from src\main\resources to target\classes
+[INFO] Copying 2 resources from src\main\resources\org\tzi\use\plugins\jacamo\ocl to target\classes\org\tzi\use\plugins\jacamo\historical\version-1\ocl
+[INFO] Copying 3 resources from src\main\resources\org\tzi\use\plugins\jacamo\runtime to target\classes\org\tzi\use\plugins\jacamo\historical\version-1\runtime
+[INFO] Copying 1 resource from src\main\resources\org\tzi\use\plugins\jacamo\verification to target\classes\org\tzi\use\plugins\jacamo\historical\version-1\verification
+[INFO] Copying 1 resource from Core\Metamodel\version-1 to target\classes\org\tzi\use\plugins\jacamo\historical\version-1
+[INFO] Copying 3 resources from Core\Mapping\version-1 to target\classes\org\tzi\use\plugins\jacamo\historical\version-1
+[INFO] Copying 1 resource from Core\Metamodel\csl-monitor-v1 to target\classes\org\tzi\use\plugins\jacamo\semantics\metamodel
+[INFO] Copying 1 resource from Core\Metamodel\jacamo-source-v2 to target\classes\org\tzi\use\plugins\jacamo\semantics\metamodel
+[INFO] Copying 1 resource from Core\Metamodel\version-2 to target\classes\org\tzi\use\plugins\jacamo\canonical\version-2
+[INFO] Copying 2 resources from Core\Mapping\version-2 to target\classes\org\tzi\use\plugins\jacamo\canonical\version-2
+[INFO] Copying 2 resources from release to target\classes\org\tzi\use\plugins\jacamo\release
+[INFO] Copying 1 resource from  to target\classes\org\tzi\use\plugins\jacamo\release
+[INFO] Copying 3 resources from licenses to target\classes\org\tzi\use\plugins\jacamo\release\licenses
+[INFO] The encoding used to copy filtered properties files have not been set. This means that the same encoding will be used to copy filtered properties files as when copying other filtered resources. This might not be what you want! Run your build with --debug to see which files might be affected. Read more at https://maven.apache.org/plugins/maven-resources-plugin/examples/filtering-properties-files.html
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-plugin ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 357 source files with javac [debug target 21] to target\classes
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/materialization/DirectUseBackend.java: D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\src\main\java\org\tzi\use\plugins\jacamo\materialization\DirectUseBackend.java uses or overrides a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/materialization/DirectUseBackend.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-plugin ---
+[INFO] Copying 57 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-plugin ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 422 source files with javac [debug target 21] to target\test-classes
+[INFO] Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/mapping/OrderProjectionTest.java: Some input files use or override a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/mapping/OrderProjectionTest.java: Recompile with -Xlint:deprecation for details.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/runtime/RuntimeIdentityHardeningTest.java: Some input files use unchecked or unsafe operations.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/runtime/RuntimeIdentityHardeningTest.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-plugin ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.auction.AuctionDeclarativeTasksTest
+Configuration of 'jacamoJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/jacamo/1.3.1/jacamo-1.3.1.jar, based on class loader
+Configuration of 'moiseJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/moise/1.1/moise-1.1.jar, based on class loader
+Configuration of 'jasonJar' found at /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar, based on class loader
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+Oct 23, 2026 1:25:22 PM jason.stdlib.println execute
+INFO: Start scheme sch_nativeSteps for delivery
+Received bid 73.74174253501083 from participant537a9e39372b4912b25545b79feba5cf for delivery
+Oct 23, 2026 1:25:26 PM ora4mas.nopl.GroupBoard agKilled
+INFO: participant537a9e39372b4912b25545b79feba5cf has quit, role participant removed by the platform!
+Oct 23, 2026 1:25:26 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: participant537a9e39372b4912b25545b79feba5cf has quit, mission mParticipant removed by the platform!
+Oct 23, 2026 1:25:26 PM ora4mas.nopl.GroupBoard agKilled
+INFO: auctionBinding61d41184ec684d5892c5215db7e7fa87 has quit, role auctioneer removed by the platform!
+Oct 23, 2026 1:25:26 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: auctionBinding61d41184ec684d5892c5215db7e7fa87 has quit, mission mAuctioneer removed by the platform!
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 11.98 s <<< FAILURE! -- in org.tzi.use.plugins.jacamo.semantics.auction.AuctionDeclarativeTasksTest
+[ERROR] org.tzi.use.plugins.jacamo.semantics.auction.AuctionDeclarativeTasksTest.xmlBindsAllSixOriginalTasksFromActualSourceCallbacksAndDoesNotRebindFrozenPlayers -- Time elapsed: 11.96 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: {aggregateStatus=UNKNOWN, executionElement=A_start_t2_9a170db784f60182db654ce9, expansionKind=SOURCE_ELEMENT, key={bindingStack=[{actorType=Auctioneer_b233bff17078632c56d48937, instanceId=cast_b233bff17078632c56d48937d49b8cb44fbf97776873c76795c3bf353d761138}], episode=8b945cfb2f3d43f13bf861f8d9783e324d723e77a82e38aa8bce5e2b0f2b95e0, sourceElementId=A_start_t2_9a170db784f60182db654ce9}, leafStatus=UNKNOWN, mappingPlanHash=4bf9e196a6c76f662e8cb10ae95a307d3bfbca167cbf799d515001308009ffd6, player=beid:v1:jason/agent/runtime-agent/auction/auctionBinding61d41184ec684d5892c5215db7e7fa87/test-boundary-instance, quality=UNAVAILABLE:ORIGINAL_ENGINE_DEFERRED_INPUT_OR_RESOURCE, role=xml:m0:7fbd5305024451b9ccc48e66e8011b3c484e4c7a15a5d50ebe5ac293603683b2, sourceActor=Auctioneer, sourceElement=A_start_t2, sourceRule=auction-generated-v2, stack=[{actorType=Auctioneer_b233bff17078632c56d48937, instanceId=cast_b233bff17078632c56d48937d49b8cb44fbf97776873c76795c3bf353d761138}], task={postSeen=false, preSeen=false}} boundaries=[[SemanticConstraintResult[id=TASK:A_start_t1:pre:fc10dbd1f92dd4458d59251e19fd437c3f57a8a782784ed212c96c3cae91ded5, kind=TASK_PRE, contextClass=Auction, contextObject=, sourceIdentity=, expression=step.enabled, verdict=PASS, backendValue=true, diagnostic=, stateVersion=3, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, witness={goalInvocation=jason-goal:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, scope=xml-occurrence:b7a41af5d540e74c9b221caaf7ae9a68c7986455517b9c5b1d5f14b86b418ac7, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, stepInvocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, activationFieldsHash=cfe207ff2ab59620417a1263b3c2c1fb9c4f4aaa81829fb771c76a8352874f77, checkpointBinding=7c3bb78bcf0d60dfac086a88d5cb2be58fcf19672641f7a7bd90e468f2028ba2, taskPredicateId=TASK:A_start_t1:pre, sourceActionCorrelation=, programHash=f6fb9ec15cc7d68e944900aaa7d587c5d5c0fcc225e11ada2cc91c1a13c2d81a, targetTaskId=A_start_t1, demandSourceProofs=613f3e0390112501d9d278f308c857e75edc86f659dea8b6edbc50fdc8e929c0, mappingPlanHash=4bf9e196a6c76f662e8cb10ae95a307d3bfbca167cbf799d515001308009ffd6, sourceActionNamespace=JASON_ACTIONEXEC_IDENTITY_NOT_CARTAGO_OPID, postPreCoverage=, demandEpisode=5513abd00a56db61b0939ff47d4dd3034553d9862452a0719331b6badd8db1e0, demandSourceHash=6c2ee3c0502e7cd1703bb91cff4caa512625e0766e4ffb375e2594b536b4a440, role=xml:m0:7fbd5305024451b9ccc48e66e8011b3c484e4c7a15a5d50ebe5ac293603683b2, demandRule=require-A_start_t1, postPreFieldCount=0, stepBindingHash=42d8143ae05bd211398141e7004ee131fb875681acdbc5d2c5c015842fe8152e, phase=ENABLED, rawStepQuality=COMPLETE, roleInterval=72e7b4e643b8fd7e7b361af2a5b2ea56cc0cb1129c009a9080adcaee38868552, player=beid:v1:jason/agent/runtime-agent/auction/auctionBinding61d41184ec684d5892c5215db7e7fa87/test-boundary-instance}]], [SemanticConstraintResult[id=TASK:A_start_t1:pre:fc10dbd1f92dd4458d59251e19fd437c3f57a8a782784ed212c96c3cae91ded5, kind=TASK_PRE, contextClass=Auction, contextObject=, sourceIdentity=, expression=step.enabled, verdict=PASS, backendValue=true, diagnostic=, stateVersion=5, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, witness={goalInvocation=jason-goal:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, scope=xml-occurrence:b7a41af5d540e74c9b221caaf7ae9a68c7986455517b9c5b1d5f14b86b418ac7, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, stepInvocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, activationFieldsHash=cfe207ff2ab59620417a1263b3c2c1fb9c4f4aaa81829fb771c76a8352874f77, checkpointBinding=7c3bb78bcf0d60dfac086a88d5cb2be58fcf19672641f7a7bd90e468f2028ba2, taskPredicateId=TASK:A_start_t1:pre, sourceActionCorrelation=, programHash=f6fb9ec15cc7d68e944900aaa7d587c5d5c0fcc225e11ada2cc91c1a13c2d81a, targetTaskId=A_start_t1, demandSourceProofs=613f3e0390112501d9d278f308c857e75edc86f659dea8b6edbc50fdc8e929c0, mappingPlanHash=4bf9e196a6c76f662e8cb10ae95a307d3bfbca167cbf799d515001308009ffd6, sourceActionNamespace=JASON_ACTIONEXEC_IDENTITY_NOT_CARTAGO_OPID, postPreCoverage=, demandEpisode=5513abd00a56db61b0939ff47d4dd3034553d9862452a0719331b6badd8db1e0, demandSourceHash=6c2ee3c0502e7cd1703bb91cff4caa512625e0766e4ffb375e2594b536b4a440, role=xml:m0:7fbd5305024451b9ccc48e66e8011b3c484e4c7a15a5d50ebe5ac293603683b2, demandRule=require-A_start_t1, postPreFieldCount=0, stepBindingHash=42d8143ae05bd211398141e7004ee131fb875681acdbc5d2c5c015842fe8152e, phase=ENABLED, rawStepQuality=COMPLETE, roleInterval=72e7b4e643b8fd7e7b361af2a5b2ea56cc0cb1129c009a9080adcaee38868552, player=beid:v1:jason/agent/runtime-agent/auction/auctionBinding61d41184ec684d5892c5215db7e7fa87/test-boundary-instance}], SemanticConstraintResult[id=TASK:A_start_t1:post:fc10dbd1f92dd4458d59251e19fd437c3f57a8a782784ed212c96c3cae91ded5, kind=TASK_POST, contextClass=Auction, contextObject=Auction_c6bca7dbae43f27b13ec, sourceIdentity=xml:m0:09fa05dbf0362d141ea84a748b06e94d4dbd07b83d1a5f52e7bdd45b6762c118, expression=step.succeeded, verdict=PASS, backendValue=true, diagnostic=, stateVersion=5, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, witness={mappingPlanHash=4bf9e196a6c76f662e8cb10ae95a307d3bfbca167cbf799d515001308009ffd6, stepBindingHash=19ed414980f069d2639fff7ea44c4bc9d260f570824977c8961b311627db77e7, rawStepQuality=COMPLETE, coverageReason=, fieldWitnesses={}, sourceCompleteness={"cartago":"COMPLETE","jason":"COMPLETE","moise.domain":"COMPLETE","moise:aorg":"PARTIAL","npl":"PARTIAL","observer:verification":"PARTIAL"}, scopeProof=, sourceActionCorrelation=b9bd43ce-3097-49ca-9000-bc50db701b79, scope=xml-occurrence:b7a41af5d540e74c9b221caaf7ae9a68c7986455517b9c5b1d5f14b86b418ac7, demandSourceProofs=8fa6d5af50d548d28e7d3c4fe4a4ee778b286d94b00cfb1f3baf1f3bc3983866, roleInterval=72e7b4e643b8fd7e7b361af2a5b2ea56cc0cb1129c009a9080adcaee38868552, activationFieldsHash=cfe207ff2ab59620417a1263b3c2c1fb9c4f4aaa81829fb771c76a8352874f77, checkpointBinding=7c3bb78bcf0d60dfac086a88d5cb2be58fcf19672641f7a7bd90e468f2028ba2, player=beid:v1:jason/agent/runtime-agent/auction/auctionBinding61d41184ec684d5892c5215db7e7fa87/test-boundary-instance, demandRule=require-A_start_t1, requiredPopulations=[], sourceActionNamespace=JASON_ACTIONEXEC_IDENTITY_NOT_CARTAGO_OPID, taskPredicateId=TASK:A_start_t1:post, matchingPreCoverage=, demandEpisode=5513abd00a56db61b0939ff47d4dd3034553d9862452a0719331b6badd8db1e0, targetTaskId=A_start_t1, programHash=f6fb9ec15cc7d68e944900aaa7d587c5d5c0fcc225e11ada2cc91c1a13c2d81a, observationQuality=COMPLETE_FOR_EXPRESSION, demandSourceHash=6c2ee3c0502e7cd1703bb91cff4caa512625e0766e4ffb375e2594b536b4a440, role=xml:m0:7fbd5305024451b9ccc48e66e8011b3c484e4c7a15a5d50ebe5ac293603683b2, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, matchingPreStateHash=b28435d61b9b44dd58935d7b4aaa11b19f428ce9a8f2fd670e86e4afa3cb7d62, requiredFields=[], phase=SUCCEEDED, stepInvocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, postStateHash=be7c1ce1705cc7fd77157fc979fce7ba55dcb26e25efa8ff53adf8611ce1f5b7, goalInvocation=jason-goal:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1}]], [SemanticConstraintResult[id=TASK:A_start_t2:pre:f1b193e9eb144780eadf11314c9a8e08e6ab1b7c3f42cf5337cf0c6da17765ba, kind=TASK_PRE, contextClass=Auction, contextObject=Auction_c6bca7dbae43f27b13ec, sourceIdentity=xml:m0:09fa05dbf0362d141ea84a748b06e94d4dbd07b83d1a5f52e7bdd45b6762c118, expression=not self.running, verdict=PASS, backendValue=true, diagnostic=, stateVersion=7, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, witness={activationFieldsHash=cfe207ff2ab59620417a1263b3c2c1fb9c4f4aaa81829fb771c76a8352874f77, targetTaskId=A_start_t2, mappingPlanHash=4bf9e196a6c76f662e8cb10ae95a307d3bfbca167cbf799d515001308009ffd6, rawStepQuality=COMPLETE, checkpointBinding=df75c69827d836f089c554d88707be9e9a22bd833f438779f003d98da303e580, role=xml:m0:7fbd5305024451b9ccc48e66e8011b3c484e4c7a15a5d50ebe5ac293603683b2, scope=xml-occurrence:b7a41af5d540e74c9b221caaf7ae9a68c7986455517b9c5b1d5f14b86b418ac7, stepBindingHash=83cee77594a4f5e61f55c09a5f0483ca49d9c9cf18157ad740664566cc0bbe49, stepInvocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, player=beid:v1:jason/agent/runtime-agent/auction/auctionBinding61d41184ec684d5892c5215db7e7fa87/test-boundary-instance, observationQuality=COMPLETE_FOR_EXPRESSION, demandSourceHash=6c2ee3c0502e7cd1703bb91cff4caa512625e0766e4ffb375e2594b536b4a440, postPreCoverage=, sourceActionNamespace=JASON_ACTIONEXEC_IDENTITY_NOT_CARTAGO_OPID, demandRule=require-A_start_t2, fieldWitnesses={"Auction.running":[{"acceptedValueHash":"c9617383498fa441929306f882f6359d9b302f3281be675f453c138364a9db8f","activation":"","artifact":"","identity":"xml:m0:09fa05dbf0362d141ea84a748b06e94d4dbd07b83d1a5f52e7bdd45b6762c118","normSourceHash":"","object":"Auction_c6bca7dbae43f27b13ec","observerCut":"","observerQuality":"","observerValueHash":"","scheme":"","sourceCut":""}]}, demandSourceProofs=9132448aa17858c63d02252fa8a463f4decf0fc8ce16ba52038b540974622a89, sourceActionCorrelation=, goalInvocation=jason-goal:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, phase=ENABLED, programHash=f6fb9ec15cc7d68e944900aaa7d587c5d5c0fcc225e11ada2cc91c1a13c2d81a, scopeProof=, demandEpisode=2145002471ac54a80354173ba49abe64f78fc3f9da27138d11fe24d8f034d51d, requiredPopulations=[], postPreFieldCount=0, taskPredicateId=TASK:A_start_t2:pre, coverageReason=, requiredFields=["Auction.running"], demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, sourceCompleteness={"cartago":"COMPLETE","jason":"COMPLETE","moise.domain":"COMPLETE","moise:aorg":"PARTIAL","npl":"PARTIAL","observer:verification":"PARTIAL"}, roleInterval=72e7b4e643b8fd7e7b361af2a5b2ea56cc0cb1129c009a9080adcaee38868552}]], [SemanticConstraintResult[id=TASK:A_start_t2:pre:f1b193e9eb144780eadf11314c9a8e08e6ab1b7c3f42cf5337cf0c6da17765ba, kind=TASK_PRE, contextClass=Auction, contextObject=Auction_c6bca7dbae43f27b13ec, sourceIdentity=xml:m0:09fa05dbf0362d141ea84a748b06e94d4dbd07b83d1a5f52e7bdd45b6762c118, expression=not self.running, verdict=PASS, backendValue=true, diagnostic=, stateVersion=9, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, witness={activationFieldsHash=cfe207ff2ab59620417a1263b3c2c1fb9c4f4aaa81829fb771c76a8352874f77, targetTaskId=A_start_t2, mappingPlanHash=4bf9e196a6c76f662e8cb10ae95a307d3bfbca167cbf799d515001308009ffd6, rawStepQuality=COMPLETE, checkpointBinding=df75c69827d836f089c554d88707be9e9a22bd833f438779f003d98da303e580, role=xml:m0:7fbd5305024451b9ccc48e66e8011b3c484e4c7a15a5d50ebe5ac293603683b2, scope=xml-occurrence:b7a41af5d540e74c9b221caaf7ae9a68c7986455517b9c5b1d5f14b86b418ac7, stepBindingHash=83cee77594a4f5e61f55c09a5f0483ca49d9c9cf18157ad740664566cc0bbe49, stepInvocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, player=beid:v1:jason/agent/runtime-agent/auction/auctionBinding61d41184ec684d5892c5215db7e7fa87/test-boundary-instance, observationQuality=COMPLETE_FOR_EXPRESSION, demandSourceHash=6c2ee3c0502e7cd1703bb91cff4caa512625e0766e4ffb375e2594b536b4a440, postPreCoverage=, sourceActionNamespace=JASON_ACTIONEXEC_IDENTITY_NOT_CARTAGO_OPID, demandRule=require-A_start_t2, fieldWitnesses={"Auction.running":[{"acceptedValueHash":"c9617383498fa441929306f882f6359d9b302f3281be675f453c138364a9db8f","activation":"","artifact":"","identity":"xml:m0:09fa05dbf0362d141ea84a748b06e94d4dbd07b83d1a5f52e7bdd45b6762c118","normSourceHash":"","object":"Auction_c6bca7dbae43f27b13ec","observerCut":"","observerQuality":"","observerValueHash":"","scheme":"","sourceCut":""}]}, demandSourceProofs=9132448aa17858c63d02252fa8a463f4decf0fc8ce16ba52038b540974622a89, sourceActionCorrelation=, goalInvocation=jason-goal:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, phase=ENABLED, programHash=f6fb9ec15cc7d68e944900aaa7d587c5d5c0fcc225e11ada2cc91c1a13c2d81a, scopeProof=, demandEpisode=2145002471ac54a80354173ba49abe64f78fc3f9da27138d11fe24d8f034d51d, requiredPopulations=[], postPreFieldCount=0, taskPredicateId=TASK:A_start_t2:pre, coverageReason=, requiredFields=["Auction.running"], demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, sourceCompleteness={"cartago":"COMPLETE","jason":"COMPLETE","moise.domain":"COMPLETE","moise:aorg":"PARTIAL","npl":"PARTIAL","observer:verification":"PARTIAL"}, roleInterval=72e7b4e643b8fd7e7b361af2a5b2ea56cc0cb1129c009a9080adcaee38868552}], SemanticConstraintResult[id=TASK:A_start_t2:post:f1b193e9eb144780eadf11314c9a8e08e6ab1b7c3f42cf5337cf0c6da17765ba, kind=TASK_POST, contextClass=Auction, contextObject=Auction_c6bca7dbae43f27b13ec, sourceIdentity=xml:m0:09fa05dbf0362d141ea84a748b06e94d4dbd07b83d1a5f52e7bdd45b6762c118, expression=self.running and self.task = service, verdict=PASS, backendValue=true, diagnostic=, stateVersion=9, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, witness={mappingPlanHash=4bf9e196a6c76f662e8cb10ae95a307d3bfbca167cbf799d515001308009ffd6, stepBindingHash=4bdb649f5c3a3c55dfc234616979f35a86258f9f7523f7bd2f197fbdc2cc6035, rawStepQuality=COMPLETE, coverageReason=, fieldWitnesses={"Auction.running":[{"acceptedValueHash":"bbd8789093636e6d0a7c3bd680465b44be6b331427b494c7c4c2b4d0c30dd24b","activation":"","artifact":"","identity":"xml:m0:09fa05dbf0362d141ea84a748b06e94d4dbd07b83d1a5f52e7bdd45b6762c118","normSourceHash":"","object":"Auction_c6bca7dbae43f27b13ec","observerCut":"","observerQuality":"","observerValueHash":"","scheme":"","sourceCut":""}],"Auction.task":[{"acceptedValueHash":"56a73cc4824375cc897131328862400f7a8c7efcadc9e8418dd5180d3eb3f4b2","activation":"","artifact":"","identity":"xml:m0:09fa05dbf0362d141ea84a748b06e94d4dbd07b83d1a5f52e7bdd45b6762c118","normSourceHash":"","object":"Auction_c6bca7dbae43f27b13ec","observerCut":"","observerQuality":"","observerValueHash":"","scheme":"","sourceCut":""}]}, sourceCompleteness={"cartago":"COMPLETE","jason":"COMPLETE","moise.domain":"COMPLETE","moise:aorg":"PARTIAL","npl":"PARTIAL","observer:verification":"PARTIAL"}, scopeProof=, sourceActionCorrelation=df165275-21d0-48ba-b8e2-52a81e64a9ed, scope=xml-occurrence:b7a41af5d540e74c9b221caaf7ae9a68c7986455517b9c5b1d5f14b86b418ac7, demandSourceProofs=875129da1eeb479b10d1b9712eb7918b943f26b0bb2ad556f43e05deb9287ac3, roleInterval=72e7b4e643b8fd7e7b361af2a5b2ea56cc0cb1129c009a9080adcaee38868552, activationFieldsHash=cfe207ff2ab59620417a1263b3c2c1fb9c4f4aaa81829fb771c76a8352874f77, checkpointBinding=df75c69827d836f089c554d88707be9e9a22bd833f438779f003d98da303e580, player=beid:v1:jason/agent/runtime-agent/auction/auctionBinding61d41184ec684d5892c5215db7e7fa87/test-boundary-instance, demandRule=require-A_start_t2, requiredPopulations=[], sourceActionNamespace=JASON_ACTIONEXEC_IDENTITY_NOT_CARTAGO_OPID, taskPredicateId=TASK:A_start_t2:post, matchingPreCoverage=, demandEpisode=2145002471ac54a80354173ba49abe64f78fc3f9da27138d11fe24d8f034d51d, targetTaskId=A_start_t2, programHash=f6fb9ec15cc7d68e944900aaa7d587c5d5c0fcc225e11ada2cc91c1a13c2d81a, observationQuality=COMPLETE_FOR_EXPRESSION, demandSourceHash=6c2ee3c0502e7cd1703bb91cff4caa512625e0766e4ffb375e2594b536b4a440, role=xml:m0:7fbd5305024451b9ccc48e66e8011b3c484e4c7a15a5d50ebe5ac293603683b2, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, matchingPreStateHash=be7c1ce1705cc7fd77157fc979fce7ba55dcb26e25efa8ff53adf8611ce1f5b7, requiredFields=["Auction.running","Auction.task"], phase=SUCCEEDED, stepInvocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, postStateHash=8cb7aa310f64925a3e2f55fdf6f10b4083e4b66c3f3ec1a2d7fcf2497417253a, goalInvocation=jason-goal:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1}]], [SemanticConstraintResult[id=XML:STEP:jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=DUPLICATE_TASK_ENTRY_INVALIDATED, stateVersion=11, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, witness={targetTaskId=P_bid_t1, sourcePhase=ENABLED}]], [SemanticConstraintResult[id=XML:STEP:jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE, stateVersion=13, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, witness={targetTaskId=P_bid_t1, sourcePhase=SUCCEEDED}]], [SemanticConstraintResult[id=XML:STEP:jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE, stateVersion=15, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, witness={targetTaskId=P_bid_t2, sourcePhase=ENABLED}]], [SemanticConstraintResult[id=XML:STEP:jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE, stateVersion=17, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, witness={targetTaskId=P_bid_t2, sourcePhase=SUCCEEDED}]], [SemanticConstraintResult[id=TASK:A_decide_t1:pre:0f3d8e980bff59a430ea04ae876266ae956bfc27be6c2d83c8a2936a0de34a26, kind=TASK_PRE, contextClass=Auction, contextObject=, sourceIdentity=, expression=step.enabled, verdict=PASS, backendValue=true, diagnostic=, stateVersion=19, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:3, witness={goalInvocation=jason-goal:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, scope=xml-occurrence:b7a41af5d540e74c9b221caaf7ae9a68c7986455517b9c5b1d5f14b86b418ac7, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, stepInvocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:3, activationFieldsHash=09877ac0df44fae58bb306d0f22a4bf8575a00d9387d0d5f9450b4fabc2a3d5b, checkpointBinding=c38ac4c398556c843423c9460cabd4950f4117e26ac248bf9961281aca1359a8, taskPredicateId=TASK:A_decide_t1:pre, sourceActionCorrelation=, programHash=f6fb9ec15cc7d68e944900aaa7d587c5d5c0fcc225e11ada2cc91c1a13c2d81a, targetTaskId=A_decide_t1, demandSourceProofs=49aa16f59a3ad72711ca36c56a10c88b15cbc0d4f1ddf0566a444a6761cd4432, mappingPlanHash=4bf9e196a6c76f662e8cb10ae95a307d3bfbca167cbf799d515001308009ffd6, sourceActionNamespace=JASON_ACTIONEXEC_IDENTITY_NOT_CARTAGO_OPID, postPreCoverage=, demandEpisode=2b2b971cd0e2ae70e881fc0ed34060ee500045d83dd1544cab93ed4952c4c034, demandSourceHash=8b73e577644000e3ccfbf2b581a9b635e753bc2287c53b3cec7e9a10d864f0fb, role=xml:m0:7fbd5305024451b9ccc48e66e8011b3c484e4c7a15a5d50ebe5ac293603683b2, demandRule=require-A_decide_t1, postPreFieldCount=0, stepBindingHash=ec1fc69562c6465a11d3288d92c142e3e221a3366a8d6468f8318fce99229c3d, phase=ENABLED, rawStepQuality=COMPLETE, roleInterval=72e7b4e643b8fd7e7b361af2a5b2ea56cc0cb1129c009a9080adcaee38868552, player=beid:v1:jason/agent/runtime-agent/auction/auctionBinding61d41184ec684d5892c5215db7e7fa87/test-boundary-instance}]], [SemanticConstraintResult[id=XML:STEP:jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:3, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE, stateVersion=21, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:3, witness={targetTaskId=A_decide_t1, sourcePhase=SUCCEEDED}]], [SemanticConstraintResult[id=XML:STEP:jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:4, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE, stateVersion=23, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:4, witness={targetTaskId=A_decide_t2, sourcePhase=ENABLED}]], [SemanticConstraintResult[id=XML:STEP:jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:4, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE, stateVersion=25, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:4, witness={targetTaskId=A_decide_t2, sourcePhase=SUCCEEDED}]]] ==> expected: <FULFILLED> but was: <UNKNOWN>
+	at org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)
+	at org.junit.jupiter.api.AssertionUtils.failNotEqual(AssertionUtils.java:69)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:188)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1163)
+	at org.tzi.use.plugins.jacamo.semantics.auction.AuctionDeclarativeTasksTest.xmlBindsAllSixOriginalTasksFromActualSourceCallbacksAndDoesNotRebindFrozenPlayers(AuctionDeclarativeTasksTest.java:46)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutInvocation.proceed(TimeoutInvocation.java:46)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:140)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:84)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:214)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:210)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:135)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:66)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:107)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:88)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:67)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:52)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:86)
+	at org.junit.platform.launcher.core.DefaultLauncherSession$DelegatingLauncher.execute(DefaultLauncherSession.java:86)
+	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:56)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:184)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:122)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   AuctionDeclarativeTasksTest.xmlBindsAllSixOriginalTasksFromActualSourceCallbacksAndDoesNotRebindFrozenPlayers:46 {aggregateStatus=UNKNOWN, executionElement=A_start_t2_9a170db784f60182db654ce9, expansionKind=SOURCE_ELEMENT, key={bindingStack=[{actorType=Auctioneer_b233bff17078632c56d48937, instanceId=cast_b233bff17078632c56d48937d49b8cb44fbf97776873c76795c3bf353d761138}], episode=8b945cfb2f3d43f13bf861f8d9783e324d723e77a82e38aa8bce5e2b0f2b95e0, sourceElementId=A_start_t2_9a170db784f60182db654ce9}, leafStatus=UNKNOWN, mappingPlanHash=4bf9e196a6c76f662e8cb10ae95a307d3bfbca167cbf799d515001308009ffd6, player=beid:v1:jason/agent/runtime-agent/auction/auctionBinding61d41184ec684d5892c5215db7e7fa87/test-boundary-instance, quality=UNAVAILABLE:ORIGINAL_ENGINE_DEFERRED_INPUT_OR_RESOURCE, role=xml:m0:7fbd5305024451b9ccc48e66e8011b3c484e4c7a15a5d50ebe5ac293603683b2, sourceActor=Auctioneer, sourceElement=A_start_t2, sourceRule=auction-generated-v2, stack=[{actorType=Auctioneer_b233bff17078632c56d48937, instanceId=cast_b233bff17078632c56d48937d49b8cb44fbf97776873c76795c3bf353d761138}], task={postSeen=false, preSeen=false}} boundaries=[[SemanticConstraintResult[id=TASK:A_start_t1:pre:fc10dbd1f92dd4458d59251e19fd437c3f57a8a782784ed212c96c3cae91ded5, kind=TASK_PRE, contextClass=Auction, contextObject=, sourceIdentity=, expression=step.enabled, verdict=PASS, backendValue=true, diagnostic=, stateVersion=3, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, witness={goalInvocation=jason-goal:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, scope=xml-occurrence:b7a41af5d540e74c9b221caaf7ae9a68c7986455517b9c5b1d5f14b86b418ac7, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, stepInvocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, activationFieldsHash=cfe207ff2ab59620417a1263b3c2c1fb9c4f4aaa81829fb771c76a8352874f77, checkpointBinding=7c3bb78bcf0d60dfac086a88d5cb2be58fcf19672641f7a7bd90e468f2028ba2, taskPredicateId=TASK:A_start_t1:pre, sourceActionCorrelation=, programHash=f6fb9ec15cc7d68e944900aaa7d587c5d5c0fcc225e11ada2cc91c1a13c2d81a, targetTaskId=A_start_t1, demandSourceProofs=613f3e0390112501d9d278f308c857e75edc86f659dea8b6edbc50fdc8e929c0, mappingPlanHash=4bf9e196a6c76f662e8cb10ae95a307d3bfbca167cbf799d515001308009ffd6, sourceActionNamespace=JASON_ACTIONEXEC_IDENTITY_NOT_CARTAGO_OPID, postPreCoverage=, demandEpisode=5513abd00a56db61b0939ff47d4dd3034553d9862452a0719331b6badd8db1e0, demandSourceHash=6c2ee3c0502e7cd1703bb91cff4caa512625e0766e4ffb375e2594b536b4a440, role=xml:m0:7fbd5305024451b9ccc48e66e8011b3c484e4c7a15a5d50ebe5ac293603683b2, demandRule=require-A_start_t1, postPreFieldCount=0, stepBindingHash=42d8143ae05bd211398141e7004ee131fb875681acdbc5d2c5c015842fe8152e, phase=ENABLED, rawStepQuality=COMPLETE, roleInterval=72e7b4e643b8fd7e7b361af2a5b2ea56cc0cb1129c009a9080adcaee38868552, player=beid:v1:jason/agent/runtime-agent/auction/auctionBinding61d41184ec684d5892c5215db7e7fa87/test-boundary-instance}]], [SemanticConstraintResult[id=TASK:A_start_t1:pre:fc10dbd1f92dd4458d59251e19fd437c3f57a8a782784ed212c96c3cae91ded5, kind=TASK_PRE, contextClass=Auction, contextObject=, sourceIdentity=, expression=step.enabled, verdict=PASS, backendValue=true, diagnostic=, stateVersion=5, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, witness={goalInvocation=jason-goal:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, scope=xml-occurrence:b7a41af5d540e74c9b221caaf7ae9a68c7986455517b9c5b1d5f14b86b418ac7, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, stepInvocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, activationFieldsHash=cfe207ff2ab59620417a1263b3c2c1fb9c4f4aaa81829fb771c76a8352874f77, checkpointBinding=7c3bb78bcf0d60dfac086a88d5cb2be58fcf19672641f7a7bd90e468f2028ba2, taskPredicateId=TASK:A_start_t1:pre, sourceActionCorrelation=, programHash=f6fb9ec15cc7d68e944900aaa7d587c5d5c0fcc225e11ada2cc91c1a13c2d81a, targetTaskId=A_start_t1, demandSourceProofs=613f3e0390112501d9d278f308c857e75edc86f659dea8b6edbc50fdc8e929c0, mappingPlanHash=4bf9e196a6c76f662e8cb10ae95a307d3bfbca167cbf799d515001308009ffd6, sourceActionNamespace=JASON_ACTIONEXEC_IDENTITY_NOT_CARTAGO_OPID, postPreCoverage=, demandEpisode=5513abd00a56db61b0939ff47d4dd3034553d9862452a0719331b6badd8db1e0, demandSourceHash=6c2ee3c0502e7cd1703bb91cff4caa512625e0766e4ffb375e2594b536b4a440, role=xml:m0:7fbd5305024451b9ccc48e66e8011b3c484e4c7a15a5d50ebe5ac293603683b2, demandRule=require-A_start_t1, postPreFieldCount=0, stepBindingHash=42d8143ae05bd211398141e7004ee131fb875681acdbc5d2c5c015842fe8152e, phase=ENABLED, rawStepQuality=COMPLETE, roleInterval=72e7b4e643b8fd7e7b361af2a5b2ea56cc0cb1129c009a9080adcaee38868552, player=beid:v1:jason/agent/runtime-agent/auction/auctionBinding61d41184ec684d5892c5215db7e7fa87/test-boundary-instance}], SemanticConstraintResult[id=TASK:A_start_t1:post:fc10dbd1f92dd4458d59251e19fd437c3f57a8a782784ed212c96c3cae91ded5, kind=TASK_POST, contextClass=Auction, contextObject=Auction_c6bca7dbae43f27b13ec, sourceIdentity=xml:m0:09fa05dbf0362d141ea84a748b06e94d4dbd07b83d1a5f52e7bdd45b6762c118, expression=step.succeeded, verdict=PASS, backendValue=true, diagnostic=, stateVersion=5, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, witness={mappingPlanHash=4bf9e196a6c76f662e8cb10ae95a307d3bfbca167cbf799d515001308009ffd6, stepBindingHash=19ed414980f069d2639fff7ea44c4bc9d260f570824977c8961b311627db77e7, rawStepQuality=COMPLETE, coverageReason=, fieldWitnesses={}, sourceCompleteness={"cartago":"COMPLETE","jason":"COMPLETE","moise.domain":"COMPLETE","moise:aorg":"PARTIAL","npl":"PARTIAL","observer:verification":"PARTIAL"}, scopeProof=, sourceActionCorrelation=b9bd43ce-3097-49ca-9000-bc50db701b79, scope=xml-occurrence:b7a41af5d540e74c9b221caaf7ae9a68c7986455517b9c5b1d5f14b86b418ac7, demandSourceProofs=8fa6d5af50d548d28e7d3c4fe4a4ee778b286d94b00cfb1f3baf1f3bc3983866, roleInterval=72e7b4e643b8fd7e7b361af2a5b2ea56cc0cb1129c009a9080adcaee38868552, activationFieldsHash=cfe207ff2ab59620417a1263b3c2c1fb9c4f4aaa81829fb771c76a8352874f77, checkpointBinding=7c3bb78bcf0d60dfac086a88d5cb2be58fcf19672641f7a7bd90e468f2028ba2, player=beid:v1:jason/agent/runtime-agent/auction/auctionBinding61d41184ec684d5892c5215db7e7fa87/test-boundary-instance, demandRule=require-A_start_t1, requiredPopulations=[], sourceActionNamespace=JASON_ACTIONEXEC_IDENTITY_NOT_CARTAGO_OPID, taskPredicateId=TASK:A_start_t1:post, matchingPreCoverage=, demandEpisode=5513abd00a56db61b0939ff47d4dd3034553d9862452a0719331b6badd8db1e0, targetTaskId=A_start_t1, programHash=f6fb9ec15cc7d68e944900aaa7d587c5d5c0fcc225e11ada2cc91c1a13c2d81a, observationQuality=COMPLETE_FOR_EXPRESSION, demandSourceHash=6c2ee3c0502e7cd1703bb91cff4caa512625e0766e4ffb375e2594b536b4a440, role=xml:m0:7fbd5305024451b9ccc48e66e8011b3c484e4c7a15a5d50ebe5ac293603683b2, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, matchingPreStateHash=b28435d61b9b44dd58935d7b4aaa11b19f428ce9a8f2fd670e86e4afa3cb7d62, requiredFields=[], phase=SUCCEEDED, stepInvocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, postStateHash=be7c1ce1705cc7fd77157fc979fce7ba55dcb26e25efa8ff53adf8611ce1f5b7, goalInvocation=jason-goal:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1}]], [SemanticConstraintResult[id=TASK:A_start_t2:pre:f1b193e9eb144780eadf11314c9a8e08e6ab1b7c3f42cf5337cf0c6da17765ba, kind=TASK_PRE, contextClass=Auction, contextObject=Auction_c6bca7dbae43f27b13ec, sourceIdentity=xml:m0:09fa05dbf0362d141ea84a748b06e94d4dbd07b83d1a5f52e7bdd45b6762c118, expression=not self.running, verdict=PASS, backendValue=true, diagnostic=, stateVersion=7, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, witness={activationFieldsHash=cfe207ff2ab59620417a1263b3c2c1fb9c4f4aaa81829fb771c76a8352874f77, targetTaskId=A_start_t2, mappingPlanHash=4bf9e196a6c76f662e8cb10ae95a307d3bfbca167cbf799d515001308009ffd6, rawStepQuality=COMPLETE, checkpointBinding=df75c69827d836f089c554d88707be9e9a22bd833f438779f003d98da303e580, role=xml:m0:7fbd5305024451b9ccc48e66e8011b3c484e4c7a15a5d50ebe5ac293603683b2, scope=xml-occurrence:b7a41af5d540e74c9b221caaf7ae9a68c7986455517b9c5b1d5f14b86b418ac7, stepBindingHash=83cee77594a4f5e61f55c09a5f0483ca49d9c9cf18157ad740664566cc0bbe49, stepInvocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, player=beid:v1:jason/agent/runtime-agent/auction/auctionBinding61d41184ec684d5892c5215db7e7fa87/test-boundary-instance, observationQuality=COMPLETE_FOR_EXPRESSION, demandSourceHash=6c2ee3c0502e7cd1703bb91cff4caa512625e0766e4ffb375e2594b536b4a440, postPreCoverage=, sourceActionNamespace=JASON_ACTIONEXEC_IDENTITY_NOT_CARTAGO_OPID, demandRule=require-A_start_t2, fieldWitnesses={"Auction.running":[{"acceptedValueHash":"c9617383498fa441929306f882f6359d9b302f3281be675f453c138364a9db8f","activation":"","artifact":"","identity":"xml:m0:09fa05dbf0362d141ea84a748b06e94d4dbd07b83d1a5f52e7bdd45b6762c118","normSourceHash":"","object":"Auction_c6bca7dbae43f27b13ec","observerCut":"","observerQuality":"","observerValueHash":"","scheme":"","sourceCut":""}]}, demandSourceProofs=9132448aa17858c63d02252fa8a463f4decf0fc8ce16ba52038b540974622a89, sourceActionCorrelation=, goalInvocation=jason-goal:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, phase=ENABLED, programHash=f6fb9ec15cc7d68e944900aaa7d587c5d5c0fcc225e11ada2cc91c1a13c2d81a, scopeProof=, demandEpisode=2145002471ac54a80354173ba49abe64f78fc3f9da27138d11fe24d8f034d51d, requiredPopulations=[], postPreFieldCount=0, taskPredicateId=TASK:A_start_t2:pre, coverageReason=, requiredFields=["Auction.running"], demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, sourceCompleteness={"cartago":"COMPLETE","jason":"COMPLETE","moise.domain":"COMPLETE","moise:aorg":"PARTIAL","npl":"PARTIAL","observer:verification":"PARTIAL"}, roleInterval=72e7b4e643b8fd7e7b361af2a5b2ea56cc0cb1129c009a9080adcaee38868552}]], [SemanticConstraintResult[id=TASK:A_start_t2:pre:f1b193e9eb144780eadf11314c9a8e08e6ab1b7c3f42cf5337cf0c6da17765ba, kind=TASK_PRE, contextClass=Auction, contextObject=Auction_c6bca7dbae43f27b13ec, sourceIdentity=xml:m0:09fa05dbf0362d141ea84a748b06e94d4dbd07b83d1a5f52e7bdd45b6762c118, expression=not self.running, verdict=PASS, backendValue=true, diagnostic=, stateVersion=9, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, witness={activationFieldsHash=cfe207ff2ab59620417a1263b3c2c1fb9c4f4aaa81829fb771c76a8352874f77, targetTaskId=A_start_t2, mappingPlanHash=4bf9e196a6c76f662e8cb10ae95a307d3bfbca167cbf799d515001308009ffd6, rawStepQuality=COMPLETE, checkpointBinding=df75c69827d836f089c554d88707be9e9a22bd833f438779f003d98da303e580, role=xml:m0:7fbd5305024451b9ccc48e66e8011b3c484e4c7a15a5d50ebe5ac293603683b2, scope=xml-occurrence:b7a41af5d540e74c9b221caaf7ae9a68c7986455517b9c5b1d5f14b86b418ac7, stepBindingHash=83cee77594a4f5e61f55c09a5f0483ca49d9c9cf18157ad740664566cc0bbe49, stepInvocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, player=beid:v1:jason/agent/runtime-agent/auction/auctionBinding61d41184ec684d5892c5215db7e7fa87/test-boundary-instance, observationQuality=COMPLETE_FOR_EXPRESSION, demandSourceHash=6c2ee3c0502e7cd1703bb91cff4caa512625e0766e4ffb375e2594b536b4a440, postPreCoverage=, sourceActionNamespace=JASON_ACTIONEXEC_IDENTITY_NOT_CARTAGO_OPID, demandRule=require-A_start_t2, fieldWitnesses={"Auction.running":[{"acceptedValueHash":"c9617383498fa441929306f882f6359d9b302f3281be675f453c138364a9db8f","activation":"","artifact":"","identity":"xml:m0:09fa05dbf0362d141ea84a748b06e94d4dbd07b83d1a5f52e7bdd45b6762c118","normSourceHash":"","object":"Auction_c6bca7dbae43f27b13ec","observerCut":"","observerQuality":"","observerValueHash":"","scheme":"","sourceCut":""}]}, demandSourceProofs=9132448aa17858c63d02252fa8a463f4decf0fc8ce16ba52038b540974622a89, sourceActionCorrelation=, goalInvocation=jason-goal:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, phase=ENABLED, programHash=f6fb9ec15cc7d68e944900aaa7d587c5d5c0fcc225e11ada2cc91c1a13c2d81a, scopeProof=, demandEpisode=2145002471ac54a80354173ba49abe64f78fc3f9da27138d11fe24d8f034d51d, requiredPopulations=[], postPreFieldCount=0, taskPredicateId=TASK:A_start_t2:pre, coverageReason=, requiredFields=["Auction.running"], demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, sourceCompleteness={"cartago":"COMPLETE","jason":"COMPLETE","moise.domain":"COMPLETE","moise:aorg":"PARTIAL","npl":"PARTIAL","observer:verification":"PARTIAL"}, roleInterval=72e7b4e643b8fd7e7b361af2a5b2ea56cc0cb1129c009a9080adcaee38868552}], SemanticConstraintResult[id=TASK:A_start_t2:post:f1b193e9eb144780eadf11314c9a8e08e6ab1b7c3f42cf5337cf0c6da17765ba, kind=TASK_POST, contextClass=Auction, contextObject=Auction_c6bca7dbae43f27b13ec, sourceIdentity=xml:m0:09fa05dbf0362d141ea84a748b06e94d4dbd07b83d1a5f52e7bdd45b6762c118, expression=self.running and self.task = service, verdict=PASS, backendValue=true, diagnostic=, stateVersion=9, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, witness={mappingPlanHash=4bf9e196a6c76f662e8cb10ae95a307d3bfbca167cbf799d515001308009ffd6, stepBindingHash=4bdb649f5c3a3c55dfc234616979f35a86258f9f7523f7bd2f197fbdc2cc6035, rawStepQuality=COMPLETE, coverageReason=, fieldWitnesses={"Auction.running":[{"acceptedValueHash":"bbd8789093636e6d0a7c3bd680465b44be6b331427b494c7c4c2b4d0c30dd24b","activation":"","artifact":"","identity":"xml:m0:09fa05dbf0362d141ea84a748b06e94d4dbd07b83d1a5f52e7bdd45b6762c118","normSourceHash":"","object":"Auction_c6bca7dbae43f27b13ec","observerCut":"","observerQuality":"","observerValueHash":"","scheme":"","sourceCut":""}],"Auction.task":[{"acceptedValueHash":"56a73cc4824375cc897131328862400f7a8c7efcadc9e8418dd5180d3eb3f4b2","activation":"","artifact":"","identity":"xml:m0:09fa05dbf0362d141ea84a748b06e94d4dbd07b83d1a5f52e7bdd45b6762c118","normSourceHash":"","object":"Auction_c6bca7dbae43f27b13ec","observerCut":"","observerQuality":"","observerValueHash":"","scheme":"","sourceCut":""}]}, sourceCompleteness={"cartago":"COMPLETE","jason":"COMPLETE","moise.domain":"COMPLETE","moise:aorg":"PARTIAL","npl":"PARTIAL","observer:verification":"PARTIAL"}, scopeProof=, sourceActionCorrelation=df165275-21d0-48ba-b8e2-52a81e64a9ed, scope=xml-occurrence:b7a41af5d540e74c9b221caaf7ae9a68c7986455517b9c5b1d5f14b86b418ac7, demandSourceProofs=875129da1eeb479b10d1b9712eb7918b943f26b0bb2ad556f43e05deb9287ac3, roleInterval=72e7b4e643b8fd7e7b361af2a5b2ea56cc0cb1129c009a9080adcaee38868552, activationFieldsHash=cfe207ff2ab59620417a1263b3c2c1fb9c4f4aaa81829fb771c76a8352874f77, checkpointBinding=df75c69827d836f089c554d88707be9e9a22bd833f438779f003d98da303e580, player=beid:v1:jason/agent/runtime-agent/auction/auctionBinding61d41184ec684d5892c5215db7e7fa87/test-boundary-instance, demandRule=require-A_start_t2, requiredPopulations=[], sourceActionNamespace=JASON_ACTIONEXEC_IDENTITY_NOT_CARTAGO_OPID, taskPredicateId=TASK:A_start_t2:post, matchingPreCoverage=, demandEpisode=2145002471ac54a80354173ba49abe64f78fc3f9da27138d11fe24d8f034d51d, targetTaskId=A_start_t2, programHash=f6fb9ec15cc7d68e944900aaa7d587c5d5c0fcc225e11ada2cc91c1a13c2d81a, observationQuality=COMPLETE_FOR_EXPRESSION, demandSourceHash=6c2ee3c0502e7cd1703bb91cff4caa512625e0766e4ffb375e2594b536b4a440, role=xml:m0:7fbd5305024451b9ccc48e66e8011b3c484e4c7a15a5d50ebe5ac293603683b2, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, matchingPreStateHash=be7c1ce1705cc7fd77157fc979fce7ba55dcb26e25efa8ff53adf8611ce1f5b7, requiredFields=["Auction.running","Auction.task"], phase=SUCCEEDED, stepInvocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, postStateHash=8cb7aa310f64925a3e2f55fdf6f10b4083e4b66c3f3ec1a2d7fcf2497417253a, goalInvocation=jason-goal:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1}]], [SemanticConstraintResult[id=XML:STEP:jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=DUPLICATE_TASK_ENTRY_INVALIDATED, stateVersion=11, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, witness={targetTaskId=P_bid_t1, sourcePhase=ENABLED}]], [SemanticConstraintResult[id=XML:STEP:jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE, stateVersion=13, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:1, witness={targetTaskId=P_bid_t1, sourcePhase=SUCCEEDED}]], [SemanticConstraintResult[id=XML:STEP:jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE, stateVersion=15, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, witness={targetTaskId=P_bid_t2, sourcePhase=ENABLED}]], [SemanticConstraintResult[id=XML:STEP:jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE, stateVersion=17, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, witness={targetTaskId=P_bid_t2, sourcePhase=SUCCEEDED}]], [SemanticConstraintResult[id=TASK:A_decide_t1:pre:0f3d8e980bff59a430ea04ae876266ae956bfc27be6c2d83c8a2936a0de34a26, kind=TASK_PRE, contextClass=Auction, contextObject=, sourceIdentity=, expression=step.enabled, verdict=PASS, backendValue=true, diagnostic=, stateVersion=19, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:3, witness={goalInvocation=jason-goal:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:2, scope=xml-occurrence:b7a41af5d540e74c9b221caaf7ae9a68c7986455517b9c5b1d5f14b86b418ac7, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, stepInvocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:3, activationFieldsHash=09877ac0df44fae58bb306d0f22a4bf8575a00d9387d0d5f9450b4fabc2a3d5b, checkpointBinding=c38ac4c398556c843423c9460cabd4950f4117e26ac248bf9961281aca1359a8, taskPredicateId=TASK:A_decide_t1:pre, sourceActionCorrelation=, programHash=f6fb9ec15cc7d68e944900aaa7d587c5d5c0fcc225e11ada2cc91c1a13c2d81a, targetTaskId=A_decide_t1, demandSourceProofs=49aa16f59a3ad72711ca36c56a10c88b15cbc0d4f1ddf0566a444a6761cd4432, mappingPlanHash=4bf9e196a6c76f662e8cb10ae95a307d3bfbca167cbf799d515001308009ffd6, sourceActionNamespace=JASON_ACTIONEXEC_IDENTITY_NOT_CARTAGO_OPID, postPreCoverage=, demandEpisode=2b2b971cd0e2ae70e881fc0ed34060ee500045d83dd1544cab93ed4952c4c034, demandSourceHash=8b73e577644000e3ccfbf2b581a9b635e753bc2287c53b3cec7e9a10d864f0fb, role=xml:m0:7fbd5305024451b9ccc48e66e8011b3c484e4c7a15a5d50ebe5ac293603683b2, demandRule=require-A_decide_t1, postPreFieldCount=0, stepBindingHash=ec1fc69562c6465a11d3288d92c142e3e221a3366a8d6468f8318fce99229c3d, phase=ENABLED, rawStepQuality=COMPLETE, roleInterval=72e7b4e643b8fd7e7b361af2a5b2ea56cc0cb1129c009a9080adcaee38868552, player=beid:v1:jason/agent/runtime-agent/auction/auctionBinding61d41184ec684d5892c5215db7e7fa87/test-boundary-instance}]], [SemanticConstraintResult[id=XML:STEP:jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:3, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE, stateVersion=21, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:3, witness={targetTaskId=A_decide_t1, sourcePhase=SUCCEEDED}]], [SemanticConstraintResult[id=XML:STEP:jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:4, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE, stateVersion=23, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:4, witness={targetTaskId=A_decide_t2, sourcePhase=ENABLED}]], [SemanticConstraintResult[id=XML:STEP:jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:4, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE, stateVersion=25, invocation=jason-step:2099ab70-1c5d-4308-9442-f28cf73f677e:test-boundary-instance:4, witness={targetTaskId=A_decide_t2, sourcePhase=SUCCEEDED}]]] ==> expected: <FULFILLED> but was: <UNKNOWN>
+[INFO] 
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] use 7.5.0 .......................................... SUCCESS [  0.000 s]
+[INFO] JaCaMo Bridge Neutral Contract 1.0.0-SNAPSHOT ...... SUCCESS [  0.726 s]
+[INFO] JaCaMo Bridge Official Adapters 1.0.0-SNAPSHOT ..... SUCCESS [  0.598 s]
+[INFO] use-core 7.5.0 ..................................... SUCCESS [ 11.770 s]
+[INFO] USE semantic engine � selected use4Goal core 7.5.0 . SUCCESS [  2.765 s]
+[INFO] use-gui 7.5.0 ...................................... SUCCESS [  7.031 s]
+[INFO] USE JaCaMo Plugin 1.0.1 ............................ FAILURE [ 28.892 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  51.892 s
+[INFO] Finished at: 2026-10-23T13:25:27+07:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.2.5:test (default-test) on project use-plugin: There are test failures.
+[ERROR] 
+[ERROR] Please refer to D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\surefire-reports for the individual test results.
+[ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+[ERROR] 
+[ERROR] After correcting the problems, you can resume the build with the command
+[ERROR]   mvn <args> -rf :use-plugin

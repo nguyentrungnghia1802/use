@@ -66,7 +66,7 @@ class LiveJaCaMoAuctionIntegrationTest {
 
     @Test
     void mirrorsRealJasonCartagoAndMoiseAuctionThenReconnectsWithFullResync() throws Exception {
-        String sourceCommit = EvidenceSourceCommit.verify(Path.of(".."), EvidenceSourceCommit.ACTIVE_V2_INPUTS);
+        String sourceCommit = EvidenceSourceCommit.verifyFrozen(Path.of(".."), EvidenceSourceCommit.ACTIVE_V2_INPUTS);
         Path project = Path.of("src/test/resources/auction").toAbsolutePath().normalize();
         var imported = new StaticProjectImporter().importProject(
                 project.resolve("auction.jcm"));

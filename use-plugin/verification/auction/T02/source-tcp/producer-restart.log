@@ -1,0 +1,24 @@
+REAL_JACAMO_INIT project=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\auction-implementation\T02-facade-live-7833846285924703167\staging\auction.jcm headless=true
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+REAL_JACAMO_INIT_OK
+CArtAgO Http Server running on http://192.168.0.103:3273
+Agent mind inspector is running at http://192.168.0.103:3272
+REAL_JACAMO_CREATE_OK platforms=4 agents=5
+Moise Http Server running on http://192.168.0.103:3271
+REAL_JACAMO_MANAGED_WAIT_START run=managed-gui-test
+REAL_JACAMO_MANAGED_START_ACK run=managed-gui-test
+REAL_JACAMO_START_OK
+REAL_JACAMO_BRIDGE_READY port=54855 session=ec2566c1-5a94-4004-a7ce-4bc0c1eba706 agents=5
+REAL_JACAMO_BRIDGE_FINAL_READINESS {agents=State[readiness=READY, detail=BridgeAgArch=org.jacamo.bridge.adapter.BridgeAgArch; injected=5], bridge=State[readiness=CONFIGURED, detail=session=ec2566c1-5a94-4004-a7ce-4bc0c1eba706], events=State[readiness=ATTACHED, detail=bounded observer attached], project=State[readiness=READY, detail=modelRevision=0c7f2e5e787f5250288a97aa7bd9264d23377fd740167088f9a100973c45ca8a], runtime=State[readiness=READY, detail=snapshot=snapshot:e6fa6ccdc0468ea08ed48e2b3d20e14bc8ffd61465c661c0b6def3e4bebedc72; facts=281; sourceCompleteness={npl=PARTIAL, cartago=COMPLETE, moise:aorg=PARTIAL, observer:verification=PARTIAL, jason=PARTIAL, moise:dynamic=PARTIAL, bridge:platform=COMPLETE}], transport=State[readiness=READY, detail=loopback TCP port=54855]}
+REAL_JACAMO_BRIDGE_STOP_REQUESTED
+REAL_JACAMO_BRIDGE_STOPPED

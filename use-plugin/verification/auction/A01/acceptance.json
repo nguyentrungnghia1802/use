@@ -1,0 +1,49 @@
+{
+  "task": "A01",
+  "scope": "FROZEN_PORTABLE_BUNDLE_API_ONLY_NOT_LIVE_IMPORT",
+  "head": "d8c85780c2e76236f7212d636f562107b4fd61dd",
+  "java": "21.0.5",
+  "command": "mvn -B -pl use-plugin -am '-Dtest=AuctionCaseBundleTest,CanonicalMappingContractTest' '-Dsurefire.failIfNoSpecifiedTests=false' test",
+  "result": "PASS",
+  "suites": [
+    {
+      "suite": "org.tzi.use.plugins.jacamo.semantics.auction.AuctionCaseBundleTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "wrongArchiveEntryOrRuntimeFingerprintIsRejectedByBinaryVerification",
+        "missingOrModifiedInputsDoNotFallBackToDesktopOrReferenceRepositories",
+        "verifiesActualFrameworkBinaryAndPinnedArchiveEntry",
+        "readsPinnedSourcesAndTargetsFromPortableDirectoryOnly",
+        "rejectsUnknownVersionFieldsDuplicateIdsAndEscapingPaths",
+        "freezesRawBytesAndRecordsDerivedSourcesWithoutOverwritingAuthority"
+      ],
+      "reportSha256": "72a02e7060f4c2a4df50966f0673471ca94366fd93dab55fcd307ecd4e5539e6"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalMappingContractTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "snapshotAndAuthoredRulesProduceCanonicalOriginalModelsAndCompleteTrace",
+        "configurationVersionUnknownFieldsAndDuplicateJsonKeysCannotBypassAdmission",
+        "completeSourceFeaturesAndLegacyBundleCompatibilityRemainUnchanged",
+        "profileAndRuleReplacementChangesProgramWithoutChangingOriginalEngine",
+        "originalMutableGoalDefinitionCannotChangeAfterProgramOwnership",
+        "ambiguousBindingsWrongSourceProfileAndAgentEntityCoercionAreRejected",
+        "versionedRulesDiagnosticAndSourceDecisionsRoundTripWithoutLegacyIr"
+      ],
+      "reportSha256": "c7a6d832bdfc8064010673c86ef39e974f2a4350d6ec614e95a9ab41c3327939"
+    }
+  ],
+  "manifestSha256": "40a98dc20cd7076c312f0dcd665683098d37c5e5ee12c9d323be4d673b4507f8",
+  "assetCount": 22,
+  "baselineLogSha256": "86a374fee98e809349b39182261d7394cc8b381c57d3bc40a629298063b08880",
+  "focusedLogSha256": "4edaffbe41f8a017c0c5c402866ebc57f97b4bcddfede75f208b9682ac5daa4f",
+  "remainingIntegration": "A05 import/facade, R01 producer proof, P01 installed packaging and E01 live acceptance remain open",
+  "tests": 13.0
+}

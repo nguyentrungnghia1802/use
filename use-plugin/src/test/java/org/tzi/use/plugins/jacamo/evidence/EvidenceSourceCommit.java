@@ -27,7 +27,28 @@ public final class EvidenceSourceCommit {
     private EvidenceSourceCommit() { }
 
     public static String verify(Path repository, List<String> relativePaths) throws Exception {
-        Process process = new ProcessBuilder("git", "rev-parse", "HEAD")
+        return verifyAt(repository,relativePaths,"HEAD");
+    }
+
+    /** Historical frozen inputs can have been removed from HEAD and restored
+     * byte-for-byte. Pin their actual common ancestor, never mislabel HEAD or
+     * accept a changed working input. The default verify method stays strict. */
+    public static String verifyFrozen(Path repository,List<String> relativePaths)throws Exception {
+        Process history=new ProcessBuilder("git","rev-list","HEAD")
+                .directory(repository.toAbsolutePath().normalize().toFile()).redirectErrorStream(true).start();
+        String commits=new String(history.getInputStream().readAllBytes(),StandardCharsets.UTF_8);
+        if(history.waitFor()!=0)throw new IllegalStateException("EVIDENCE_SOURCE_HISTORY_UNAVAILABLE:"+commits);
+        for(String commit:commits.lines().toList()) {
+            try {return verifyAt(repository,relativePaths,commit);}
+            catch(IllegalStateException missing) {
+                if(!missing.getMessage().startsWith("EVIDENCE_SOURCE_NOT_IN_COMMIT:"))throw missing;
+            }
+        }
+        throw new IllegalStateException("EVIDENCE_FROZEN_SOURCE_COMMIT_UNAVAILABLE");
+    }
+
+    private static String verifyAt(Path repository,List<String> relativePaths,String revision)throws Exception {
+        Process process = new ProcessBuilder("git", "rev-parse", revision)
                 .directory(repository.toAbsolutePath().normalize().toFile()).redirectErrorStream(true).start();
         String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8).strip();
         if (process.waitFor() != 0 || !output.matches("[0-9a-f]{40}"))

@@ -24,6 +24,7 @@ class OfficialAdapterTest {
     private static Path hello() { return Path.of("..", "use-plugin", "src", "test", "resources", "canonical-cases", "hello-world", "helloworld.jcm").toAbsolutePath().normalize(); }
     private static Path original(String name) { return Path.of("..", "..", "JaCaMo", "examples", name, name + ".jcm").toAbsolutePath().normalize(); }
 
+
     @Test void canonicalHelloLoadsThroughOfficialMergedProjectJasonAndMoiseObjects() throws Exception {
         Path jcm=hello(); assertTrue(Files.isRegularFile(jcm));
         assertEquals("c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101",AdapterEvidence.digest(Files.readAllBytes(jcm)));
@@ -55,6 +56,7 @@ class OfficialAdapterTest {
         assertTrue(jacamo.project.JaCaMoProject.class.getProtectionDomain().getCodeSource().getLocation().toString().contains("jacamo-1.3.1.jar"));
         assertNotNull(jacamo.platform.Platform.class.getMethod("setJcmProject",jacamo.project.JaCaMoProject.class));
         assertNotNull(jason.asSemantics.Agent.class.getMethod("parseAS",java.io.File.class));
+        assertNotNull(jason.asSemantics.Circumstance.class.getMethod("getFeedbackActions"));
         assertNotNull(cartago.ICartagoController.class.getMethod("getArtifactInfo",String.class));
         assertNotNull(moise.os.OS.class.getMethod("loadOSFromURI",String.class));
         assertNotNull(npl.NPLInterpreter.class.getMethod("addListener",npl.NormativeListener.class));
@@ -109,6 +111,23 @@ class OfficialAdapterTest {
         var houseOs = new OfficialMoiseAdapter().load(houseRoot, houseRoot.resolve("src/org/house-os.xml"), "house_building");
         assertEquals(13, houseOs.facts().stream().filter(f -> f.factKind().equals("organisational-goal")).count());
         assertFalse(houseOs.groupRoleCardinalities().isEmpty());
+    }
+
+    @Test void cartagoStyleBaseFeedbackKeepsTheSameActionQueueAndEmitsOneMatchingCompletion()throws Exception {
+        var events=new ArrayList<org.jacamo.bridge.contract.RuntimeEvent>();
+        try(var attached=BridgeRuntimeRegistry.attach(events::add)) {
+            var architecture=new BridgeAgArch();var circumstance=new Circumstance();architecture.setTS(new TransitionSystem(new Agent(),circumstance,new Settings(),architecture));architecture.init();
+            try {
+                var action=new ActionExec(ASSyntax.parseLiteral("observed_action"),new Intention());architecture.act(action);action.setResult(true);
+                // This is the exact pinned AgArch.super.actionExecuted path
+                // used by CAgentArch; the observer must never consume feedback.
+                circumstance.addFeedbackAction(action);architecture.perceive();
+                assertEquals(1,circumstance.getFeedbackActions().size());assertSame(action,circumstance.getFeedbackActions().peek());
+                architecture.perceive();assertEquals(1,circumstance.getFeedbackActions().size());
+                var started=events.stream().filter(e->e.kind()==RuntimeEventKind.STARTED).findFirst().orElseThrow();
+                var completed=events.stream().filter(e->e.kind()==RuntimeEventKind.SUCCEEDED).toList();assertEquals(1,completed.size());assertEquals(started.correlationId(),completed.getFirst().correlationId());assertFalse(completed.getFirst().correlationId().isBlank());
+            }finally{architecture.stop();}
+        }
     }
 
     @Test void officialJasonActionExecEmitsTypedResultAndFailureEvidence() throws Exception {

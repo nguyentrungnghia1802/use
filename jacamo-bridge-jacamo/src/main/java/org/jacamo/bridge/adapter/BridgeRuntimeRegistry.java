@@ -40,29 +40,31 @@ public final class BridgeRuntimeRegistry {
         return observer;
     }
 
-    static void registerAgent(String agentName, BridgeEntityId identity) {
+    static synchronized void registerAgent(String agentName, BridgeEntityId identity) {
         AGENT_IDENTITIES.put(Objects.requireNonNull(agentName), Objects.requireNonNull(identity));
     }
 
-    static void registerAgent(String agentName,BridgeEntityId identity,String declarationName) {
+    static synchronized void registerAgent(String agentName,BridgeEntityId identity,String declarationName) {
         registerAgent(agentName,identity);
         if(declarationName!=null && !declarationName.isBlank()) AGENT_DECLARATION_NAMES.put(agentName,declarationName);
     }
 
     static void unregisterAgent(String agentName, BridgeEntityId identity) {
         var control=controller;if(control!=null)control.departed(identity.canonical());
-        AGENT_IDENTITIES.remove(agentName, identity);
-        AGENT_ARCHITECTURES.remove(agentName);
-        AGENT_DECLARATION_NAMES.remove(agentName);
-        JASON_STATES.remove(agentName);
-        JASON_STATE_ERRORS.remove(agentName);
+        synchronized(BridgeRuntimeRegistry.class) {
+            if(!AGENT_IDENTITIES.remove(agentName, identity))return;
+            AGENT_ARCHITECTURES.remove(agentName);
+            AGENT_DECLARATION_NAMES.remove(agentName);
+            JASON_STATES.remove(agentName);
+            JASON_STATE_ERRORS.remove(agentName);
+        }
     }
 
     static Optional<BridgeEntityId> agentIdentity(String agentName) {
         return Optional.ofNullable(AGENT_IDENTITIES.get(agentName));
     }
 
-    static void configureDeclarations(org.jacamo.bridge.contract.semantic.JacamoSemanticSnapshot project) {
+    static synchronized void configureDeclarations(org.jacamo.bridge.contract.semantic.JacamoSemanticSnapshot project) {
         projectDeclarations=project;
         DECLARATIONS.clear();
         DECLARATION_INSTANCES.clear();
@@ -89,7 +91,7 @@ public final class BridgeRuntimeRegistry {
             ? AGENT_IDENTITIES.get(actualAgentName).canonical() : id);
     }
 
-    static void clearAgents() {
+    static synchronized void clearAgents() {
         AGENT_ARCHITECTURES.clear();controller=null;
         AGENT_IDENTITIES.clear();
         DECLARATIONS.clear();

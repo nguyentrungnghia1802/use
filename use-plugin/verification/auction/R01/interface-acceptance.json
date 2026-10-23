@@ -1,0 +1,154 @@
+{
+  "task": "R01",
+  "result": "PARTIAL",
+  "component": "STATIC_INTERFACE_AND_CONSUMER_TYPE_ADMISSION_PASS",
+  "head": "d8c85780c2e76236f7212d636f562107b4fd61dd",
+  "command": "mvn -B -pl use-plugin -am '-Dtest=SourceActionArtifactReferenceTest,SourceActionArtifactTypeProofTest,DeclaredArtifactTypeProofTest,OfficialJasonAdapterTest,CanonicalMappingContractTest,CanonicalOclContractMappingTest,CanonicalCslMappingTest,AuctionSourceSelectorTest,AuctionOclSpecificationTest' '-Dsurefire.failIfNoSpecifiedTests=false' test",
+  "tests": 51.0,
+  "suites": [
+    {
+      "module": "jacamo-bridge-jacamo",
+      "suite": "org.jacamo.bridge.adapter.SourceActionArtifactTypeProofTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "pinnedAuctionSourcePreservesInitializationAndThreeBusinessInterfacesBeforeAnyArtifactExists",
+        "variablesQuotedDocumentationOtherFunctorWrongProviderAndAmbiguousClassResourceAreNotProof",
+        "exactParsedClassLiteralCarriesProofWithoutBecomingADeclarationOrInstance"
+      ]
+    },
+    {
+      "module": "jacamo-bridge-jacamo",
+      "suite": "org.jacamo.bridge.adapter.DeclaredArtifactTypeProofTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "missingNonArtifactPlatformAndUnresolvableClassNeverBecomeApplicationProof",
+        "exactAssignableApplicationClassCarriesByteHashWithoutInitializingIt"
+      ]
+    },
+    {
+      "module": "jacamo-bridge-jacamo",
+      "suite": "org.jacamo.bridge.adapter.OfficialJasonAdapterTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "unresolvedJ11PathRemainsProvenanceOnlyAndExplicitlyUnavailable",
+        "nestedIncludesPreserveExactFilesDigestsSpansAndCompatibilityEvidence",
+        "packageIncludesUseExactJarEntryBytesNotRootAgentEvidence",
+        "officialJasonSnapshotRetainsEveryPlanAndEveryBodyChainNodeInOrder",
+        "phase2UsesOfficialJasonFactsForActionsBeliefsGoalsRulesAndSourceInfo",
+        "sourceResolutionNeverSearchesBasenamesOrFetchesRemoteContent",
+        "relativeFileUriIncludesRetainExactProjectProvenance",
+        "auditedJasonBodyTypeSurfaceIsExact",
+        "j11UsesOfficialLexerOnlyForRecursiveProvenance"
+      ]
+    },
+    {
+      "module": "use-plugin",
+      "suite": "org.tzi.use.plugins.jacamo.semantics.auction.SourceActionArtifactReferenceTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "producerProvedActionReferencesCreateOneTypeAliasWithOnlyActualActionOrigins",
+        "existingEntityAndOperationAdmissionReuseActionProofWithoutConsumerFrameworkLoading",
+        "wrongMethodBytesAndProviderResourceCannotBecomeTypeAuthority",
+        "quotedDocumentationCannotDeclareAnArtifactType",
+        "consumerNeedsNoFrameworkClassLoaderToValidateSourceReferences"
+      ]
+    },
+    {
+      "module": "use-plugin",
+      "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalMappingContractTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "snapshotAndAuthoredRulesProduceCanonicalOriginalModelsAndCompleteTrace",
+        "configurationVersionUnknownFieldsAndDuplicateJsonKeysCannotBypassAdmission",
+        "completeSourceFeaturesAndLegacyBundleCompatibilityRemainUnchanged",
+        "profileAndRuleReplacementChangesProgramWithoutChangingOriginalEngine",
+        "originalMutableGoalDefinitionCannotChangeAfterProgramOwnership",
+        "ambiguousBindingsWrongSourceProfileAndAgentEntityCoercionAreRejected",
+        "versionedRulesDiagnosticAndSourceDecisionsRoundTripWithoutLegacyIr"
+      ]
+    },
+    {
+      "module": "use-plugin",
+      "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalOclContractMappingTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "nativeTypeErrorKeepsAlreadyActiveHostSystem",
+        "canonicalSlotsCompileOnExactNativeOperationAndRealPairState",
+        "aslNplAndNameOnlyOrWrongOverloadNeverBecomeOclContracts",
+        "preAndPostCannotReferToDifferentNativeOperations",
+        "producerReflectedOperationCompilesWithoutApplicationOrCartagoOnConsumerLoader",
+        "differentlyAuthoredBodyCannotReplaceCanonicalOriginalTaskSlot"
+      ]
+    },
+    {
+      "module": "use-plugin",
+      "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalCslMappingTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "legacyStructuralIntersectionAndFullSourcePreservationStillHold",
+        "originalRoleInheritanceAndDeclarationOwnersMatchSelectedSourceDefinitions",
+        "abstractRoleMissingParentAndOpaqueOrMismatchedPropertyTypesRejectBeforeHostActivation",
+        "incompleteSourceAndDuplicateTargetSymbolsCannotBecomeCompleteSchemaClaims",
+        "sourceGroupsRolesAndRegisteredArtifactBecomeRealCslM1AndOneEmptyHostSystem",
+        "explicitlyRegisteredEnumViewKeepsEnumTypeAndRequiresItsExactSourceTypeBinding",
+        "producerClassProofWorksWithoutFrameworkInConsumerLoaderAndMalformedProofRejects"
+      ]
+    },
+    {
+      "module": "use-plugin",
+      "suite": "org.tzi.use.plugins.jacamo.semantics.auction.AuctionSourceSelectorTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "ignoresCommentedDeclarationsButPreservesCommentMarkersInsideQuotedValues",
+        "countAndNamespaceFailuresCannotProducePartialSuccessfulTransformation",
+        "executesAllEighteenSelectorsInOrderWithExactCountsAndOfficialSourceAnchors",
+        "rejectsUnrelatedOfficialSnapshotBeforeUsingItsSourceFacts",
+        "requiredValuesAndSetsAreExecutedRatherThanOnlyParsed",
+        "regexWorkIsBoundedWithoutUninterruptibleWorkerThreads"
+      ]
+    },
+    {
+      "module": "use-plugin",
+      "suite": "org.tzi.use.plugins.jacamo.semantics.auction.AuctionOclSpecificationTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "nativeLexingPreservesCommentAndStringBoundariesAndRejectsUnownedSyntax",
+        "malformedDuplicateUnknownContextNonBooleanAndAliasMismatchCannotPartiallyInstall",
+        "parsesAllEightClausesWithExactRawBodyRangesAndNoInventedBidPost",
+        "foreignSourceHashAndForgedLocatedClauseCannotBypassSpecificationAuthority",
+        "nativeOutcomesKeepMissingPartialUndefinedErrorAndFalseSeparate",
+        "compilesTenAuthoredPredicatesAtomicallyWithOriginalHostCompiler"
+      ]
+    }
+  ],
+  "proof": "Actual parsed makeArtifact class references retain JASON_EXTERNAL_ACTION identity; verified unambiguous file/jar provider and bytes, annotated methods copied without initialization. Consumer validates method/root hashes and provider resource, creates only a type alias, no fake declaration/instance.",
+  "sourceCorrection": "Pinned init() is also @OPERATION; all four reflected methods retained, only three business methods have OCL bindings. Source not changed.",
+  "remaining": "Typed scheme arguments/creation output witness and two real instance crosswalk remain required. Current raw strings cannot justify them. R01 is unchecked; no O02/A05 dependency gate has been bypassed."
+}

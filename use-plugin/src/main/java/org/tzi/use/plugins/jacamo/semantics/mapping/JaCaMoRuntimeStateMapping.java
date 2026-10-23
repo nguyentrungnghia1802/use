@@ -11,6 +11,9 @@ public final class JaCaMoRuntimeStateMapping implements RuntimeStateMapping {
     private final SemanticProgram program;private final CanonicalObservationMappingBindings bindings;private final SemanticObservationMapper mapper;
     public JaCaMoRuntimeStateMapping(SemanticProgram program,MModel model){this.program=program;bindings=new CanonicalObservationMappingBindings(program,model);mapper=new SemanticObservationMapper(bindings);}
     public SemanticMutationPlan plan(SemanticObservationMapper.Port reads,BridgeEntityId runtime,String kind,Completeness completeness,Map<String,Object> payload) {
+        // An XML case requires its own admitted crosswalk. The JSON mapper cannot
+        // manufacture organization scope or scheme/player identity from a class name.
+        if(caseSpecific()&&!caseHelper(kind))throw new SemanticObservationMapper.UnsupportedObservation(program.xmlPlan()!=null?"XML_RUNTIME_RULE_BATCH_REQUIRED":"AUCTION_CASE_RUNTIME_RULE_BATCH_REQUIRED");
         program.assertUnchanged();var properties=new ArrayList<SemanticMutationPlan.PropertyAssignment>();var enactments=new ArrayList<SemanticMutationPlan.EnactmentCandidate>();
         if(kind.equals("UPSERT_CARTAGO_PROPERTY_SNAPSHOT"))property(reads,payload,properties);
         if(kind.equals("APPLY_CARTAGO_PROPERTY_DELTA"))for(Object value:requiredList(payload,"properties"))property(reads,CanonicalJson.object(value),properties);
@@ -33,6 +36,13 @@ public final class JaCaMoRuntimeStateMapping implements RuntimeStateMapping {
     }
     public void removeProperty(SemanticObservationMapper.Port writer,org.tzi.use.uml.sys.MObject object,String property) throws UseApiException {mapper.removeProperty(writer,object,property);}
     public String programHash(){return program.hash();}
+    public boolean caseSpecific(){return program.casePlan()!=null||program.xmlPlan()!=null;}
+    /** Selection belongs to mapping infrastructure, never to the native writer. */
+    public CaseRuntimeMapping caseMapping(MModel model) {
+        if(program.xmlPlan()!=null)return new org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeStateMapping(program,model);
+        return program.casePlan()==null?null:new org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionRuntimeStateMapping(program,model);
+    }
+    public static boolean caseHelper(String kind){return Set.of("UPSERT_CARTAGO_WORKSPACE","UPSERT_CARTAGO_AGENT_IDENTITY","UPSERT_JASON_AGENT_STATE","DELETE_CARTAGO_AGENT_IDENTITY").contains(kind);}
     private void property(SemanticObservationMapper.Port reads,Map<String,Object> data,List<SemanticMutationPlan.PropertyAssignment> assignments) {
         String owner=text(data,"artifactSemanticId");var object=reads.find(owner);
         if(object==null)throw new SemanticObservationMapper.UnsupportedObservation("PROPERTY_OWNER_NOT_IN_DOMAIN_PROFILE:"+owner);

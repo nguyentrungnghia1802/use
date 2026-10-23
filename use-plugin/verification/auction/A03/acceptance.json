@@ -1,0 +1,103 @@
+{
+  "task": "A03",
+  "scope": "PINNED_SOURCE_FRAGMENT_EXTRACTION_AND_OFFICIAL_SNAPSHOT_CROSS_CHECK_NOT_RUNTIME_STATE",
+  "result": "PASS",
+  "head": "d8c85780c2e76236f7212d636f562107b4fd61dd",
+  "command": "mvn -B -pl use-plugin -am '-Dtest=AuctionSourceSelectorTest,AuctionMappingXmlTest,AuctionCaseBundleTest,CanonicalMappingContractTest' '-Dsurefire.failIfNoSpecifiedTests=false' test",
+  "suites": [
+    {
+      "suite": "org.tzi.use.plugins.jacamo.semantics.auction.AuctionSourceSelectorTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "ignoresCommentedDeclarationsButPreservesCommentMarkersInsideQuotedValues",
+        "countAndNamespaceFailuresCannotProducePartialSuccessfulTransformation",
+        "executesAllEighteenSelectorsInOrderWithExactCountsAndOfficialSourceAnchors",
+        "rejectsUnrelatedOfficialSnapshotBeforeUsingItsSourceFacts",
+        "requiredValuesAndSetsAreExecutedRatherThanOnlyParsed",
+        "regexWorkIsBoundedWithoutUninterruptibleWorkerThreads"
+      ],
+      "reportSha256": "2bb24495d79e5b634289921ce56885ccebb1ffecc0faed0b9eab8eb6c57ee383"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.semantics.auction.AuctionMappingXmlTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "rejectsExternalEntitiesDoctypeOversizeDepthAndNodeFloods",
+        "loadsAllSectionsAsImmutableLocatedSpecificationNotHistoricalValidationVerdict",
+        "rejectsEmptyReferencesDuplicateFieldsAndUnknownConverters",
+        "rejectsMalformedUnknownNamespaceVersionElementsAttributesAndOperations",
+        "resolvesSourcePinsAndExternalCellsTasksViewsAndClausesAgainstFrozenAssets",
+        "rejectsDuplicateMissingIdsAndReferencesWithSourcePosition"
+      ],
+      "reportSha256": "093356d69f2ca5528dfc4fa4b273fb0ccb8126f1e5496e3f95e6b205875b7417"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.semantics.auction.AuctionCaseBundleTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "wrongArchiveEntryOrRuntimeFingerprintIsRejectedByBinaryVerification",
+        "missingOrModifiedInputsDoNotFallBackToDesktopOrReferenceRepositories",
+        "verifiesActualFrameworkBinaryAndPinnedArchiveEntry",
+        "readsPinnedSourcesAndTargetsFromPortableDirectoryOnly",
+        "rejectsUnknownVersionFieldsDuplicateIdsAndEscapingPaths",
+        "freezesRawBytesAndRecordsDerivedSourcesWithoutOverwritingAuthority"
+      ],
+      "reportSha256": "a1282700c2f069a88584eebdf028f9335118492908343a03195d928673b01d4b"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalMappingContractTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "snapshotAndAuthoredRulesProduceCanonicalOriginalModelsAndCompleteTrace",
+        "configurationVersionUnknownFieldsAndDuplicateJsonKeysCannotBypassAdmission",
+        "completeSourceFeaturesAndLegacyBundleCompatibilityRemainUnchanged",
+        "profileAndRuleReplacementChangesProgramWithoutChangingOriginalEngine",
+        "originalMutableGoalDefinitionCannotChangeAfterProgramOwnership",
+        "ambiguousBindingsWrongSourceProfileAndAgentEntityCoercionAreRejected",
+        "versionedRulesDiagnosticAndSourceDecisionsRoundTripWithoutLegacyIr"
+      ],
+      "reportSha256": "fc4177201f739a8dbcf28ce6d4f777f2ea33758ba6a429494f15af83416bd4d1"
+    }
+  ],
+  "selectorCounts": [
+    1,
+    1,
+    5,
+    5,
+    2,
+    1,
+    1,
+    2,
+    2,
+    0,
+    1,
+    3,
+    2,
+    1,
+    1,
+    4,
+    1,
+    1
+  ],
+  "selectorCount": 18,
+  "rowCount": 34,
+  "retainedQualifications": [
+    "CONFIGURED_PLAYERS_ARE_NOT_ENACTMENTS",
+    "REQUESTS_ARE_NOT_ARTIFACT_INSTANCES",
+    "RAW_JAVA_FRAGMENT_REQUIRES_R01_BYTECODE_PROOF"
+  ],
+  "remaining": "A04 executes M1; R01 proves actual Artifact provider/bytecode; A05 production import; runtime/live gates remain open",
+  "tests": 25.0
+}

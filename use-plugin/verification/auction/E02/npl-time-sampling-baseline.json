@@ -1,0 +1,120 @@
+{
+  "status": "BASELINE_HARNESS_ASSUMPTION_FAILURE_NOT_ACCEPTANCE",
+  "work": "use-plugin\\target\\installed-auction-live-7405796067984067606",
+  "scope": "ACTUAL_INSTALLED_ACCEPTED_NATIVE_CUT",
+  "rows": [
+    {
+      "player": "alice",
+      "scheme": "beid:v1:moise/organisation/scheme-board/aorg/sch_a2/5957a312-5557-46f2-a51f-c5c22432390e%3Ab3239c7c-7451-436e-836c-fc9f95ae4cfa",
+      "verdict": "FAIL",
+      "sourceNormState": "UNFULFILLED",
+      "rawTimes": {
+        "clock": "npl-system-wall:5957a312-5557-46f2-a51f-c5c22432390e:1",
+        "created": "1792596330288",
+        "deadline": "1792596340288",
+        "ended": "1792596340289"
+      },
+      "rawDeltaMillis": 10000,
+      "nativeDeltaMillis": 10000
+    },
+    {
+      "player": "alice",
+      "scheme": "beid:v1:moise/organisation/scheme-board/aorg/sch_a1/5957a312-5557-46f2-a51f-c5c22432390e%3A73ef9d18-9d65-4493-baff-5782ffb39467",
+      "verdict": "FAIL",
+      "sourceNormState": "UNFULFILLED",
+      "rawTimes": {
+        "clock": "npl-system-wall:5957a312-5557-46f2-a51f-c5c22432390e:1",
+        "created": "1792596330325",
+        "deadline": "1792596340325",
+        "ended": "1792596340325"
+      },
+      "rawDeltaMillis": 10000,
+      "nativeDeltaMillis": 10000
+    },
+    {
+      "player": "giacomo",
+      "scheme": "beid:v1:moise/organisation/scheme-board/aorg/sch_a2/5957a312-5557-46f2-a51f-c5c22432390e%3Ab3239c7c-7451-436e-836c-fc9f95ae4cfa",
+      "verdict": "FAIL",
+      "sourceNormState": "UNFULFILLED",
+      "rawTimes": {
+        "clock": "npl-system-wall:5957a312-5557-46f2-a51f-c5c22432390e:1",
+        "created": "1792596330943",
+        "deadline": "1792596340943",
+        "ended": "1792596340944"
+      },
+      "rawDeltaMillis": 10000,
+      "nativeDeltaMillis": 10000
+    },
+    {
+      "player": "francois",
+      "scheme": "beid:v1:moise/organisation/scheme-board/aorg/sch_a1/5957a312-5557-46f2-a51f-c5c22432390e%3A73ef9d18-9d65-4493-baff-5782ffb39467",
+      "verdict": "FAIL",
+      "sourceNormState": "UNFULFILLED",
+      "rawTimes": {
+        "clock": "npl-system-wall:5957a312-5557-46f2-a51f-c5c22432390e:1",
+        "created": "1792596330327",
+        "deadline": "1792596340327",
+        "ended": "1792596340328"
+      },
+      "rawDeltaMillis": 10000,
+      "nativeDeltaMillis": 10000
+    },
+    {
+      "player": "maria",
+      "scheme": "beid:v1:moise/organisation/scheme-board/aorg/sch_a2/5957a312-5557-46f2-a51f-c5c22432390e%3Ab3239c7c-7451-436e-836c-fc9f95ae4cfa",
+      "verdict": "FAIL",
+      "sourceNormState": "UNFULFILLED",
+      "rawTimes": {
+        "clock": "npl-system-wall:5957a312-5557-46f2-a51f-c5c22432390e:1",
+        "created": "1792596330291",
+        "deadline": "1792596340291",
+        "ended": "1792596340293"
+      },
+      "rawDeltaMillis": 10000,
+      "nativeDeltaMillis": 10000
+    },
+    {
+      "player": "maria",
+      "scheme": "beid:v1:moise/organisation/scheme-board/aorg/sch_a1/5957a312-5557-46f2-a51f-c5c22432390e%3A73ef9d18-9d65-4493-baff-5782ffb39467",
+      "verdict": "FAIL",
+      "sourceNormState": "UNFULFILLED",
+      "rawTimes": {
+        "clock": "npl-system-wall:5957a312-5557-46f2-a51f-c5c22432390e:1",
+        "created": "1792596330327",
+        "deadline": "1792596340327",
+        "ended": "1792596340329"
+      },
+      "rawDeltaMillis": 10000,
+      "nativeDeltaMillis": 10000
+    },
+    {
+      "player": "giacomo",
+      "scheme": "beid:v1:moise/organisation/scheme-board/aorg/sch_a1/5957a312-5557-46f2-a51f-c5c22432390e%3A73ef9d18-9d65-4493-baff-5782ffb39467",
+      "verdict": "FAIL",
+      "sourceNormState": "UNFULFILLED",
+      "rawTimes": {
+        "clock": "npl-system-wall:5957a312-5557-46f2-a51f-c5c22432390e:1",
+        "created": "1792596330833",
+        "deadline": "1792596340834",
+        "ended": "1792596340834"
+      },
+      "rawDeltaMillis": 10001,
+      "nativeDeltaMillis": 10001
+    },
+    {
+      "player": "francois",
+      "scheme": "beid:v1:moise/organisation/scheme-board/aorg/sch_a2/5957a312-5557-46f2-a51f-c5c22432390e%3Ab3239c7c-7451-436e-836c-fc9f95ae4cfa",
+      "verdict": "FAIL",
+      "sourceNormState": "UNFULFILLED",
+      "rawTimes": {
+        "clock": "npl-system-wall:5957a312-5557-46f2-a51f-c5c22432390e:1",
+        "created": "1792596330291",
+        "deadline": "1792596340291",
+        "ended": "1792596340291"
+      },
+      "rawDeltaMillis": 10000,
+      "nativeDeltaMillis": 10000
+    }
+  ],
+  "rootCause": "NPL061 NormInstance.setActive creates created TimeTerm before separately resolving getTimeDeadline; do not normalize raw time or weaken canonical OCL"
+}

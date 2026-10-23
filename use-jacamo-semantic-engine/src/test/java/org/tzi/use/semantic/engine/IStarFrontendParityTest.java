@@ -35,7 +35,8 @@ class IStarFrontendParityTest {
         "istar Invalid { role R { task t pre {[ true ]} pre {[ false ]} } }",
         "istar Invalid { role R { goal parent : Maintain goal a : Achieve > parent goal b : Maintain > parent } }",
         "istar Invalid { role A { goal a } role B { goal b > or a } }",
-        "istar Invalid { role A { goal a } role B { goal b } depend A.a -> task promise -> Missing.b }"
+        "istar Invalid { role A { goal a } role B { goal b } depend A.a -> task promise -> Missing.b }",
+        "istar StrictDerived { role A { goal requested : Achieve } role B { goal supplied : Achieve task one > supplied task two > supplied } depend A.requested -> goal promise -> B.supplied }"
     );}
     @ParameterizedTest @MethodSource("admittedFixtures")
     void originalAstModelAndValidatorParityInAdmittedIntersection(String source) throws Exception {

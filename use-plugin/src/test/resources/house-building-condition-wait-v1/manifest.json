@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0.0",
+  "profile": "HOUSE_BUILDING_CONDITION_WAIT_V1",
+  "upstreamFile": "src/agt/giacomo.asl",
+  "originalSha256": "36cc0e6f1ee6f38a5d0bb1d2f3841a2733f233cb60115e67a789e71b8a072bc8",
+  "fixtureSha256": "d095c2a1cbe1724a068017fae3119f5574b2976dc117c3889e93a360b79c7973",
+  "original": ".wait({+formationStatus(ok)[artifact_id(G)]})",
+  "replacement": ".wait(formationStatus(ok)[artifact_id(G)])",
+  "authorization": "User explicitly approved a versioned fixture in use on 2026-10-22; jacamo stays read-only",
+  "expectedDifference": "Test query fallback waits for an already-true logical condition, not only a future addition event. Domain contracts/agents/artifacts/org XML unchanged. Not byte-identical original HouseBuilding acceptance."
+}

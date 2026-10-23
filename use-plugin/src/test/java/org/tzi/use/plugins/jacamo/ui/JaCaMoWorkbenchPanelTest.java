@@ -28,6 +28,43 @@ import org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepControlle
 import org.tzi.use.plugins.jacamo.runtime.MirrorState;
 
 class JaCaMoWorkbenchPanelTest {
+    @Test void declarativeImportCapturesTheAuthoredOclWithTheXmlOnAWorker()throws Exception {
+        var expected=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",Path.of("examples/auction/auction-mapping.xml"),Path.of("examples/auction/auction_constraints_final.ocl"));
+        var imported=new CountDownLatch(1);var selected=new java.util.concurrent.atomic.AtomicReference<JaCaMoFacade.ImportSelection>();
+        JaCaMoFacade facade=new JaCaMoFacade(){public String status(){return "declarative widget";}public ImportSelection importSelection(){return expected;}public ProjectSummary importProject(Path path,ImportSelection request){assertFalse(SwingUtilities.isEventDispatchThread());selected.set(request);imported.countDown();return null;}};
+        SwingUtilities.invokeAndWait(()->{
+            var panel=new JaCaMoWorkbenchPanel(facade,message->fail(message));
+            assertEquals(expected.ocl().toString(),component(panel,"authored-ocl",javax.swing.JTextField.class).getText());
+            assertTrue(JaCaMoWorkbenchPanel.createMappingChooser(expected.profile(),expected.specification()).getFileFilter().accept(expected.specification().toFile()));panel.importProject(Path.of("examples/auction/auction.jcm"));
+        });
+        assertTrue(imported.await(5,TimeUnit.SECONDS));assertEquals(expected,selected.get());
+    }
+    @Test void mappingChooserMatchesTheExplicitDialectAndNativeHasNoSpecification()throws Exception {
+        SwingUtilities.invokeAndWait(()->{
+            Path xml=Path.of("examples/auction/auction_jacamo_to_csl_rules.xml").toAbsolutePath();
+            var chooser=JaCaMoWorkbenchPanel.createMappingChooser("AUCTION_OBSERVED_V1",xml);
+            assertTrue(chooser.getFileFilter().accept(xml.toFile()));assertFalse(chooser.getFileFilter().accept(Path.of("rules.json").toFile()));assertEquals(xml.toFile(),chooser.getSelectedFile());
+            var json=JaCaMoWorkbenchPanel.createMappingChooser("USE4GOAL_OBSERVED_V1",null);assertTrue(json.getFileFilter().accept(Path.of("rules.json").toFile()));assertFalse(json.getFileFilter().accept(xml.toFile()));
+            var panel=new JaCaMoWorkbenchPanel(new JaCaMoFacade(){public String status(){return "dialect selection";}public ImportSelection importSelection(){return new ImportSelection("NATIVE_CURRENT",null);}},message->fail(message));
+            assertFalse(button(panel,"choose-mapping").isEnabled());component(panel,"engine-profile",javax.swing.JComboBox.class).setSelectedItem("AUCTION_OBSERVED_V1");assertTrue(button(panel,"choose-mapping").isEnabled());
+        });
+    }
+    @Test void acceptedAuctionXmlSelectionMustRemainAuctionWhenTheRealImportWidgetCapturesIt()throws Exception {
+        var expected=new JaCaMoFacade.ImportSelection("AUCTION_OBSERVED_V1",Path.of("examples/auction/auction_jacamo_to_csl_rules.xml"));
+        var selected=new java.util.concurrent.atomic.AtomicReference<JaCaMoFacade.ImportSelection>();var imported=new CountDownLatch(1);
+        JaCaMoFacade facade=new JaCaMoFacade(){
+            public String status(){return "Auction widget route";}
+            public ImportSelection importSelection(){return expected;}
+            public ProjectSummary importProject(Path path,ImportSelection request){assertFalse(SwingUtilities.isEventDispatchThread());selected.set(request);imported.countDown();return null;}
+        };
+        var panel=new java.util.concurrent.atomic.AtomicReference<JaCaMoWorkbenchPanel>();
+        SwingUtilities.invokeAndWait(()->{
+            panel.set(new JaCaMoWorkbenchPanel(facade,message->fail(message)));
+            assertEquals("AUCTION_OBSERVED_V1",component(panel.get(),"engine-profile",javax.swing.JComboBox.class).getSelectedItem(),"A configured case profile cannot silently fall back to Native");
+            panel.get().importProject(Path.of("examples/auction/auction.jcm"));
+        });
+        assertTrue(imported.await(5,TimeUnit.SECONDS));assertEquals(expected,selected.get());
+    }
     @Test void nextImportSelectionIsCapturedAndMonitorActionsStayOnWorker() throws Exception {
         var selected=new java.util.concurrent.atomic.AtomicReference<JaCaMoFacade.ImportSelection>();var calls=new java.util.concurrent.CopyOnWriteArrayList<String>();
         var imported=new CountDownLatch(1);var release=new CountDownLatch(1);var restarted=new CountDownLatch(1);var stopped=new CountDownLatch(1);

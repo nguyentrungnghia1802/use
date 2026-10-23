@@ -37,8 +37,13 @@ public final class SemanticBindingIndex {
             };
             if(!exists)throw new IllegalArgumentException("STATIC_BINDING_TARGET_UNRESOLVED:"+binding.targetId());
             if(binding.kind()==Kind.ENTITY&&!node.concept().equals("Artifact"))throw new IllegalArgumentException("ENTITY_REQUIRES_REGISTERED_ARTIFACT_VIEW:"+node.concept());
+            if(binding.kind()==Kind.ENTITY&&(node.layer()!=NormalizedSourceModel.Layer.MODEL_DEFINITION
+                    ||Set.of("CARTAGO_ARTIFACT","CARTAGO_ARTIFACT_INFO").contains(node.sourceKind())))throw new IllegalArgumentException("ENTITY_REQUIRES_ARTIFACT_TYPE_VIEW:"+node.sourceKind());
             if(binding.kind()==Kind.ROLE&&!node.concept().equals("Role"))throw new IllegalArgumentException("ROLE_SOURCE_KIND_REQUIRED");
-            if(binding.kind()==Kind.ORG_CONTEXT&&!node.concept().equals("Group"))throw new IllegalArgumentException("ORG_CONTEXT_SOURCE_GROUP_REQUIRED");
+            if(binding.kind()==Kind.ORG_CONTEXT&&!node.concept().equals("Group")
+                    && !(node.sourceKind().equals("JACAMO_ORGANIZATION_DEPLOYMENT")
+                        && "ORGANIZATION_DEPLOYMENT_VIEW".equals(binding.metadata().get("contextAbstraction"))
+                        && !binding.abstractionReason().isBlank()))throw new IllegalArgumentException("ORG_CONTEXT_SOURCE_GROUP_OR_EXPLICIT_ORGANIZATION_VIEW_REQUIRED");
             if(Set.of("Belief","AGoal","Plan","OPlan","Norm").contains(node.concept())&&binding.abstractionReason().isBlank())throw new IllegalArgumentException("EXPLICIT_SEMANTIC_ABSTRACTION_REQUIRED:"+node.concept());
         }
     }

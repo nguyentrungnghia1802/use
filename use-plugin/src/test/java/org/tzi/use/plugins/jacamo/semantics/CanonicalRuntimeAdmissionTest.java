@@ -14,6 +14,27 @@ import org.tzi.use.uml.ocl.value.Value;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CanonicalRuntimeAdmissionTest {
+    @Test void alreadyObservedGroupCannotInventAPlayerMissingFromTheAcceptedNativeCut()throws Exception {
+        try(var f=new CanonicalRuntimeFixture()) {
+            f.target.set(null);
+            var group=f.projector.evidence().values().stream().filter(v->v.kind()==RuntimeFactKind.GROUP_BOARD).findFirst().orElseThrow();
+            f.projector.coordinator().read(()->{
+                var method=org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeMutationEngine.class.getDeclaredMethod("cslPort");method.setAccessible(true);
+                var port=(SemanticObservationMapper.Port)method.invoke(f.projector.mutations());
+                String bobSource=f.model.semanticContract().agentDeclarations().stream().filter(a->a.name().equals("bob")).findFirst().orElseThrow().metadata().semanticId();
+                var bob=f.projector.mutations().objectForSemanticId(bobSource);assertNotNull(bob);
+                String primary=port.metadata(bob,"semanticId");port.delete(primary);assertNull(port.find(bobSource));
+                var mapper=new JaCaMoRuntimeStateMapping(f.program,f.projector.system().model());
+                var result=mapper.apply(mapper.plan(port,group.id(),"UPSERT_MOISE_GROUP",Completeness.COMPLETE,group.values()),port);
+                assertEquals("INCOMPLETE",port.metadata(result.object(),"rolePopulationQuality"));
+                assertTrue(port.metadata(result.object(),"unresolvedPlayerEvidence").contains(bobSource));
+                assertNull(port.find(bobSource));assertTrue(port.objects().stream().noneMatch(o->primary.equals(port.metadata(o,"rolePlayer"))));
+                var invariant=f.projector.system().model().classInvariants().stream().filter(i->i.name().equals("CslV4RoleCompatibility")).findFirst().orElseThrow();
+                assertEquals("CANONICAL_ROLE_POPULATION_BINDING_INCOMPLETE",new ConstraintCoverageResolver().unavailableSelf(invariant.bodyExpression(),f.projector.mutations(),result.object(),Map.of("cartago",Completeness.COMPLETE,"moise:org",Completeness.COMPLETE),false));
+                return null;
+            });
+        }
+    }
     @Test void exactCastContainsOriginalActorsAndSelfWithStableThenNewEpisodeOnReenactment() throws Exception {
         try(var f=new CanonicalRuntimeFixture(CslCounterArtifact.class,CanonicalGoalMappingTest::rules)) {
             var adapter=new JaCaMoOccurrenceBindingAdapter();var first=f.projector.coordinator().read(()->adapter.resolve(f.program,f.projector.mutations())).getFirst();

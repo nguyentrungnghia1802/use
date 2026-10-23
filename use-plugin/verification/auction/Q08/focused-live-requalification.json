@@ -1,0 +1,35 @@
+{
+  "scope": "FOCUSED_PLUGIN_ZIP_PLUS_PINNED_HOST_NOT_FINAL_FULL_ARCHIVE",
+  "runs": {
+    "canonical": {
+      "status": "PASS",
+      "scope": "INSTALLED_CANONICAL_AUCTION_LIVE",
+      "producerPid": 19648,
+      "consumerPid": 22444,
+      "receiptSha256": "d6399ffcdf4b8fb216d398e6b7b981ec96bf872ea4feb13f49997bf99f8967fb",
+      "recordingSha256": "a79b35475903ba13321ab87efdbc66d38dc18416782f61bbe89e9a0437913967",
+      "stateHash": "25fe63ffd1db205391a392769fb716279538c9072355aa31100f41423f16e6ac",
+      "resultHash": "22bbacb5b4f012cbe4ca052ca74267fcc88e77d4ab7650c16159de7707c3ead7"
+    },
+    "controlled": {
+      "status": "PASS",
+      "scope": "INSTALLED_CONTROLLED_AUCTION_LIVE",
+      "producerPid": 23044,
+      "consumerPid": 16260,
+      "receiptSha256": "5836ed6a135d472f15c00666ca9fe0e4582eb07f7cca6bdcb76c90f6492cab99",
+      "recordingSha256": "3b1d7cfaf19cc481cc5a14dcdfad25bf2d719248e9b320398d7a48c5b61f8ed3",
+      "stateHash": "808510dec15b7c62f306c7366127acf58104c4b0be6e7d5aaab746e82537d58d",
+      "resultHash": "6194e68abfe7d89c764dd3393d8c0e00f939b08577f14fd9b2593998223e0b86"
+    },
+    "development": {
+      "status": "PASS",
+      "scope": "DEVELOPMENT_CONTROLLED_AUCTION_LIVE",
+      "producerPid": 6864,
+      "consumerPid": 23680,
+      "receiptSha256": "e8654b276176b27aa25e186f5b9f25d753d4acc83096962c24fd460b7081e90f",
+      "recordingSha256": "6c1e98132b2a2d6f0657327e7d447008c03969dd509f531134e775c5826a14b0",
+      "stateHash": "031d36479d20370def8616113ba4cca5b125a4ca348b1f9591800f965586db96",
+      "resultHash": "180e609639c2d50e06ac9314319310f41e8872e4a3927cf5350bb3447fcc052b"
+    }
+  }
+}

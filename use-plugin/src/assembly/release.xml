@@ -59,5 +59,32 @@
         <file><source>examples/csl-counter/src/agt/bob.asl</source><outputDirectory>examples/csl-counter/src/agt</outputDirectory><destName>bob.asl</destName></file>
         <file><source>examples/csl-counter/src/env/demo/counter/Counter.java</source><outputDirectory>examples/csl-counter/src/env/demo/counter</outputDirectory><destName>Counter.java</destName></file>
         <file><source>examples/csl-counter/src/org/organization.xml</source><outputDirectory>examples/csl-counter/src/org</outputDirectory><destName>organization.xml</destName></file>
+        <file><source>examples/auction/case-manifest.json</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>case-manifest.json</destName></file>
+        <file><source>examples/auction/README.md</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>README.md</destName></file>
+        <file><source>examples/auction/auction.jcm</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>auction.jcm</destName></file>
+        <file><source>examples/auction/src/org/auction-os.xml</source><outputDirectory>examples/auction-semantic/src/org</outputDirectory><destName>auction-os.xml</destName></file>
+        <file><source>examples/auction/src/agt/auction_capabilities.asl</source><outputDirectory>examples/auction-semantic/src/agt</outputDirectory><destName>auction_capabilities.asl</destName></file>
+        <file><source>examples/auction/src/env/auction_env/AuctionArtifact.java</source><outputDirectory>examples/auction-semantic/src/env/auction_env</outputDirectory><destName>AuctionArtifact.java</destName></file>
+        <file><source>examples/auction/build.gradle</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>build.gradle</destName></file>
+        <file><source>examples/auction/auction_csl.drawio</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>auction_csl.drawio</destName></file>
+        <file><source>examples/auction/auction_istar_final.drawio</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>auction_istar_final.drawio</destName></file>
+        <file><source>examples/auction/auction_constraints_final.ocl</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>auction_constraints_final.ocl</destName></file>
+        <file><source>examples/auction/provenance/use4goal/docs/model/csl.ecore</source><outputDirectory>examples/auction-semantic/provenance/use4goal/docs/model</outputDirectory><destName>csl.ecore</destName></file>
+        <file><source>examples/auction/provenance/use4goal/goal/src/main/resources/grammars/CSL.g4</source><outputDirectory>examples/auction-semantic/provenance/use4goal/goal/src/main/resources/grammars</outputDirectory><destName>CSL.g4</destName></file>
+        <file><source>examples/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/parser/CslCompiler.java</source><outputDirectory>examples/auction-semantic/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/parser</outputDirectory><destName>CslCompiler.java</destName></file>
+        <file><source>examples/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslSpecText.java</source><outputDirectory>examples/auction-semantic/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/view</outputDirectory><destName>CslSpecText.java</destName></file>
+        <file><source>examples/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/mm/CslModel.java</source><outputDirectory>examples/auction-semantic/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/mm</outputDirectory><destName>CslModel.java</destName></file>
+        <file><source>examples/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/verify/conformance/mapping/ConformanceMappingParser.java</source><outputDirectory>examples/auction-semantic/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/verify/conformance/mapping</outputDirectory><destName>ConformanceMappingParser.java</destName></file>
+        <file><source>examples/auction/provenance/use4goal/examples/ProposalReview/proposal-review-final.csl</source><outputDirectory>examples/auction-semantic/provenance/use4goal/examples/ProposalReview</outputDirectory><destName>proposal-review-final.csl</destName></file>
+        <file><source>examples/auction/provenance/moise/asl/org-obedient.asl</source><outputDirectory>examples/auction-semantic/provenance/moise/asl</outputDirectory><destName>org-obedient.asl</destName></file>
+        <file><source>examples/auction/auction_jacamo_to_csl_rules.xml</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>auction_jacamo_to_csl_rules.xml</destName></file>
+        <file><source>examples/auction/auction_csl.csl</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>auction_csl.csl</destName></file>
+        <file><source>examples/auction/auction_istar_final.istar</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>auction_istar_final.istar</destName></file>
+        <file><source>examples/auction/provenance/use4goal-engine.json</source><outputDirectory>examples/auction-semantic/provenance</outputDirectory><destName>use4goal-engine.json</destName></file>
+        <file><source>examples/auction/provenance/licenses/use4Goal-GPL-3.0.txt</source><outputDirectory>examples/auction-semantic/provenance/licenses</outputDirectory><destName>use4Goal-GPL-3.0.txt</destName></file>
+        <file><source>examples/auction/provenance/licenses/JaCaMo-LGPL-3.0.txt</source><outputDirectory>examples/auction-semantic/provenance/licenses</outputDirectory><destName>JaCaMo-LGPL-3.0.txt</destName></file>
+        <file><source>../use-jacamo-semantic-engine/provenance/P-IADM-01.md</source><outputDirectory>provenance</outputDirectory><destName>P-IADM-01.md</destName></file>
+        <file><source>../use-jacamo-semantic-engine/provenance/patches/P-IADM-01.diff</source><outputDirectory>provenance</outputDirectory><destName>P-IADM-01.diff</destName></file>
+        <file><source>../use-jacamo-semantic-engine/provenance/single-owner-context-v1.md</source><outputDirectory>provenance</outputDirectory><destName>single-owner-context-v1.md</destName></file>
     </files>
 </assembly>

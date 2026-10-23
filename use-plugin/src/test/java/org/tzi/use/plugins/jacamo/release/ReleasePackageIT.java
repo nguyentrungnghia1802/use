@@ -26,6 +26,14 @@ import org.tzi.use.runtime.MainPluginRuntime;
 import org.tzi.use.runtime.impl.PluginRuntime;
 
 class ReleasePackageIT {
+    /** Repeat exact existing release checks without rebuilding a frozen archive. */
+    public static void main(String[] args) throws Exception {
+        var tests = new ReleasePackageIT();
+        tests.builtReleaseMatchesManifestAndPublishedChecksum();
+        tests.packagedPluginJarLoadsInPinnedUseRuntime();
+        tests.installedArchiveImportsCanonicalMappingWithoutMavenTestClasspath();
+        System.out.println("FROZEN_RELEASE_INVENTORY_AND_IMPORT_PASS checks=3");
+    }
     @Test
     void installedArchiveImportsCanonicalMappingWithoutMavenTestClasspath() throws Exception {
         Path root = Path.of(".").toRealPath();

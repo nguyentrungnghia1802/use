@@ -76,7 +76,13 @@ class GenericLauncherScriptTest {
         assertTrue(script.contains("stop.flag"));
         assertFalse(script.contains("live-hello-bridge.ps1"));
         assertFalse(script.contains("helloworld"));
-        assertFalse(script.contains("auction"));
+        // Explicit semantic profiles and pinned opt-in observer switches are
+        // supported. Generic means no project path/name is selected for users.
+        assertFalse(script.contains("examples\\auction"));
+        assertFalse(script.contains("examples/auction"));
+        assertFalse(script.contains("$jcmpath = \"auction"));
+        assertTrue(script.contains("\"auction_observed_v1\""));
+        assertTrue(script.contains("use.jacamo.auction.specification"));
         assertFalse(script.contains("house"));
         assertFalse(script.contains("projectkey"));
         assertFalse(script.contains("casename"));

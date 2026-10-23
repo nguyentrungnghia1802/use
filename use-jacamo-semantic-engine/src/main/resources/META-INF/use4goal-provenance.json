@@ -3066,7 +3066,7 @@
       "gitStatus": "",
       "targetModule": "use-jacamo-semantic-engine",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar/mm/GoalModelValidator.java",
-      "targetSha256": "cc10c79b7d4cd6c67889030c46000e654a88a9ec86b00518a4f02646226501a6",
+      "targetSha256": "9a18fff4c08ef2ee32aeae736d26a82b76d03731ddf134e90fe37a8cda888fd3",
       "fqcn": "org.vnu.sme.goal.dsl.istar.mm.GoalModelValidator",
       "imports": [
         "java.util.ArrayList",
@@ -3078,10 +3078,14 @@
         "java.util.Optional",
         "java.util.Set"
       ],
-      "reuseMode": "ORIGINAL_COPY",
-      "plannedPatchIds": [],
-      "appliedPatchIds": [],
-      "extractionStatus": "ORIGINAL",
+      "reuseMode": "PATCHED_WITH_PROVENANCE",
+      "plannedPatchIds": [
+        "P-IADM-01"
+      ],
+      "appliedPatchIds": [
+        "P-IADM-01"
+      ],
+      "extractionStatus": "PATCHED_WITH_PROVENANCE",
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "IStarFrontend",
@@ -3092,7 +3096,7 @@
         "G",
         "L"
       ],
-      "acceptance": "Byte-identical selected core; admitted-profile behavior equals pinned original",
+      "acceptance": "Strict default parity; opt-in extension is versioned expected difference, not upstream equivalence",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     },
     {
@@ -3518,7 +3522,7 @@
       "gitStatus": "",
       "targetModule": "use-jacamo-semantic-engine",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar/parser/IStarCompiler.java",
-      "targetSha256": "e84aeeccdd857237985b62a26ef8d747bd298c71ed0ca96f064ee22b374928c6",
+      "targetSha256": "f7270e71d565b4df6f81e36b97d92d109957698ca28782ddbfb34b37dfafc69f",
       "fqcn": "org.vnu.sme.goal.dsl.istar.parser.IStarCompiler",
       "imports": [
         "java.io.IOException",
@@ -3536,10 +3540,14 @@
         "org.vnu.sme.goal.dsl.istar.mm.GoalModel",
         "org.vnu.sme.goal.dsl.istar.mm.GoalModelValidator"
       ],
-      "reuseMode": "ORIGINAL_WITH_ADAPTER",
-      "plannedPatchIds": [],
-      "appliedPatchIds": [],
-      "extractionStatus": "ORIGINAL",
+      "reuseMode": "PATCHED_WITH_PROVENANCE",
+      "plannedPatchIds": [
+        "P-IADM-01"
+      ],
+      "appliedPatchIds": [
+        "P-IADM-01"
+      ],
+      "extractionStatus": "PATCHED_WITH_PROVENANCE",
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "IStarFrontend",
@@ -3548,7 +3556,7 @@
       "parityTests": [
         "D"
       ],
-      "acceptance": "Byte-identical selected core; admitted-profile behavior equals pinned original",
+      "acceptance": "Strict default parity; opt-in extension is versioned expected difference, not upstream equivalence",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     },
     {
@@ -4000,6 +4008,24 @@
       ],
       "originalMethodsUnchanged": true,
       "lineEndingsPreserved": true
+    },
+    {
+      "id": "P-IADM-01",
+      "status": "APPLIED_VERIFIED",
+      "patchPath": "provenance/patches/P-IADM-01.diff",
+      "patchSha256": "c87e781ce0f1c2a8a57f8131b0f784951035703a57dcb47c179aa62570edd48b",
+      "newApiFiles": [
+        {
+          "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar/mm/GoalModelValidationPolicy.java",
+          "sha256": "82534e35f190c0ea27507abd6ef05d70caf987e31ff27c4412deb0641a6ab6a0"
+        }
+      ],
+      "strictDefaultPreserved": true,
+      "originalRecurrenceUnchanged": true,
+      "lineEndingsPreserved": true,
+      "profile": "DERIVED_AND_RESOURCE_V1",
+      "validationPolicy": "DERIVED_AND_DEPENDEE_V1",
+      "expectedDifference": "Derived same-owner condition-free Achieve AND parent may be dependee only; external resource/context gates required"
     }
   ],
   "forbiddenProductionDependencies": [

@@ -1,0 +1,8 @@
+{
+  "archiveSha256": "193d91fc92c5310c393e045678e2aaad3f4044e0be4ee425aac26670ea7e6dbf",
+  "runs": {
+    "canonical": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\auction\\Q08\\canonical-live",
+    "controlled": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\auction\\Q08\\controlled-live",
+    "development": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\auction\\Q08\\development-live"
+  }
+}

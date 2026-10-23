@@ -40,4 +40,19 @@ class EvidenceSourceCommitTest {
         if (process.waitFor() != 0) throw new AssertionError(output);
         return output;
     }
+
+    @Test void restoredFrozenInputPinsItsRealAncestorButChangedBytesStillFail()throws Exception {
+        run("init");Path fixture=temporary.resolve("frozen.txt");
+        Files.writeString(fixture,"frozen\n");run("add","frozen.txt");
+        run("-c","user.name=Evidence Test","-c","user.email=evidence@example.invalid","commit","-m","freeze");
+        String origin=run("rev-parse","HEAD");
+        run("rm","frozen.txt");
+        run("-c","user.name=Evidence Test","-c","user.email=evidence@example.invalid","commit","-m","remove");
+        Files.writeString(fixture,"frozen\r\n");
+        assertThrows(IllegalStateException.class,()->EvidenceSourceCommit.verify(temporary,List.of("frozen.txt")));
+        assertEquals(origin,EvidenceSourceCommit.verifyFrozen(temporary,List.of("frozen.txt")));
+        Files.writeString(fixture,"modified\n");
+        assertTrue(assertThrows(IllegalStateException.class,()->EvidenceSourceCommit.verifyFrozen(temporary,List.of("frozen.txt")))
+                .getMessage().contains("EVIDENCE_SOURCE_DIFFERS_FROM_COMMIT"));
+    }
 }

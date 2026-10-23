@@ -14,6 +14,8 @@ public final class EngineInstallationGuard {
     private static final List<String> CLASSES=List.of(
             "org.vnu.sme.goal.dsl.csl.parser.CslCompiler","org.vnu.sme.goal.dsl.csl.mm.CslModel",
             "org.vnu.sme.goal.dsl.istar.parser.IStarCompiler","org.vnu.sme.goal.dsl.istar.mm.GoalModel",
+            "org.vnu.sme.goal.dsl.istar.mm.GoalModelValidator","org.vnu.sme.goal.dsl.istar.mm.GoalModelValidationPolicy",
+            "org.tzi.use.semantic.engine.api.EngineSemanticsProfile","org.tzi.use.semantic.engine.runtime.RuntimeModelAdmission",
             "org.vnu.sme.goal.verify.conformance.semantics.GoalMarking",
             "org.vnu.sme.goal.verify.conformance.semantics.TaskMarking",
             "org.vnu.sme.goal.verify.conformance.semantics.IStarMarking",

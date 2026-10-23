@@ -15,6 +15,7 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModelValidator;
+import org.vnu.sme.goal.dsl.istar.mm.GoalModelValidationPolicy;
 
 /**
  * Compiles i* concrete syntax into the MM. The compiler owns parsing and AST -> MM
@@ -35,6 +36,19 @@ public final class IStarCompiler {
     }
 
     private static Result compileStream(CharStream chars) {
+        // P-IADM-01: existing entry points retain strict upstream validation.
+        return compileStream(chars, GoalModelValidationPolicy.STRICT_ORIGINAL);
+    }
+
+    public static Result compile(String source, GoalModelValidationPolicy policy) {
+        return compileStream(CharStreams.fromString(source), java.util.Objects.requireNonNull(policy));
+    }
+
+    public static Result compile(Path file, GoalModelValidationPolicy policy) throws IOException {
+        return compileStream(CharStreams.fromPath(file), java.util.Objects.requireNonNull(policy));
+    }
+
+    private static Result compileStream(CharStream chars, GoalModelValidationPolicy policy) {
         List<String> errors = new ArrayList<>();
 
         IStarLexer  lexer  = new IStarLexer(chars);
@@ -64,7 +78,7 @@ public final class IStarCompiler {
             return new Result(null, List.of(ex.getMessage()));
         }
 
-        List<String> semErrors = GoalModelValidator.validate(model);
+        List<String> semErrors = GoalModelValidator.validate(model, policy);
         if (!semErrors.isEmpty()) return new Result(null, semErrors);
 
         return new Result(model, Collections.emptyList());

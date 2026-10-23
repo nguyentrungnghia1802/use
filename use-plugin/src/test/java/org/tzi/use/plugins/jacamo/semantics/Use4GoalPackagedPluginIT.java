@@ -93,15 +93,16 @@ class Use4GoalPackagedPluginIT {
         boolean finished=process.waitFor(25,TimeUnit.SECONDS);if(!finished)process.destroyForcibly();String text=Files.readString(log);assertTrue(finished,text);
         if(success){assertEquals(0,process.exitValue(),text);assertTrue(text.contains("INSTALLED_ENGINE_GUARD_PASS"),text);}else{assertNotEquals(0,process.exitValue(),text);assertTrue(text.contains(diagnostic),text);}
     }
-    private static Path install(Path work)throws Exception {
+    static Path install(Path work)throws Exception {
         Path install=Files.createDirectory(work.resolve("install"));String full=System.getProperty("use.packaged.hostArchive","");
         if(!full.isBlank()) {
             extract(Path.of(full),install);try(var children=Files.list(install)){install=children.filter(p->Files.isDirectory(p.resolve("lib"))).findFirst().orElseThrow();}
         } else {extract(Path.of("target/use-jacamo-plugin-1.0.1-v2-frozen.zip"),install);Files.copy(Path.of("../use-gui/target/use-gui.jar"),install.resolve("lib/use-gui.jar"));}
         assertArrayEquals(Files.readAllBytes(Path.of("target/use-plugin-1.0.1.jar")),Files.readAllBytes(install.resolve("lib/plugins/use-jacamo-plugin-1.0.1.jar")),"Stale full distribution plugin");return install;
     }
-    private static Path driver(Path work)throws Exception {
-        Path driver=Files.createDirectory(work.resolve("driver"));String prefix=InstalledEngineMain.class.getSimpleName(),resource=InstalledEngineMain.class.getPackageName().replace('.','/');Path source=Path.of("target/test-classes").resolve(resource);
+    private static Path driver(Path work)throws Exception {return driver(work,InstalledEngineMain.class);}
+    static Path driver(Path work,Class<?> driverType)throws Exception {
+        Path driver=Files.createDirectory(work.resolve("driver"));String prefix=driverType.getSimpleName(),resource=driverType.getPackageName().replace('.','/');Path source=Path.of("target/test-classes").resolve(resource);
         try(var paths=Files.list(source)){for(Path file:paths.filter(p->p.getFileName().toString().startsWith(prefix)&&p.getFileName().toString().endsWith(".class")).toList()){Path target=driver.resolve(resource).resolve(file.getFileName());Files.createDirectories(target.getParent());Files.copy(file,target);}}
         return driver;
     }

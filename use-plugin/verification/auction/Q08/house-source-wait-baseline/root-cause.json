@@ -1,0 +1,140 @@
+{
+  "status": "BLOCKED",
+  "reason": "READ_ONLY_REFERENCE_SOURCE_EDGE_WAIT_STALLED",
+  "source": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\agt\\giacomo.asl",
+  "sourceSha256": "36CC0E6F1EE6F38A5D0BB1D2F3841A2733F233CB60115E67A789E71B8A072BC8",
+  "waitingSourceLine": 118,
+  "execution": {
+    "authority": "AGENT_CYCLE_CIRCUMSTANCE",
+    "complete": true,
+    "cycle": 418,
+    "events": [],
+    "intentions": [
+      {
+        "intentionId": 39,
+        "means": [
+          {
+            "currentStep": ".wait({ +formationStatus(ok)[artifact_id(G)] })",
+            "occurrence": "goal-observation:a861b77e-6024-4951-bc3b-4a11c8c8c552:75",
+            "ordinal": 0,
+            "plan": "@p__14[source(self),url(\"file:src/agt/giacomo.asl\")] +?formationStatus(ok)[artifact_id(G)] <- .wait({ +formationStatus(ok)[artifact_id(G)] }).",
+            "planLabel": "p__14[source(self),url(\"file:src/agt/giacomo.asl\")]",
+            "planLine": 118,
+            "planSource": "file:src/agt/giacomo.asl",
+            "substitution": "{G=cobj_14}",
+            "trigger": {
+              "literal": {
+                "annotationTail": "",
+                "annotations": [
+                  "artifact_id(cobj_14)",
+                  "source(self)"
+                ],
+                "functor": "formationStatus",
+                "ground": true,
+                "key": "{\"functor\":\"formationStatus\",\"namespace\":\"default\",\"negative\":false,\"terms\":[{\"functor\":\"ok\",\"kind\":\"LITERAL\",\"namespace\":\"default\",\"negative\":false,\"terms\":[]}]}",
+                "namespace": "default",
+                "negative": false,
+                "raw": "formationStatus(ok)[artifact_id(cobj_14),source(self)]",
+                "rule": false,
+                "ruleBody": "",
+                "supported": true,
+                "terms": [
+                  {
+                    "ground": true,
+                    "key": {
+                      "functor": "ok",
+                      "kind": "LITERAL",
+                      "namespace": "default",
+                      "negative": false,
+                      "terms": []
+                    },
+                    "raw": "ok",
+                    "supported": true
+                  }
+                ]
+              },
+              "operator": "add",
+              "type": "test"
+            }
+          },
+          {
+            "currentStep": "?formationStatus(ok)[artifact_id(GrArtId)]; addScheme(\"bhsch\")[artifact_id(GrArtId)]; commitMission(\"management_of_house_building\")[artifact_id(SchArtId)]",
+            "occurrence": "goal-observation:a861b77e-6024-4951-bc3b-4a11c8c8c552:66",
+            "ordinal": 1,
+            "plan": "@p__11[source(self),url(\"file:src/agt/giacomo.asl\")] +!execute <- println; println(\"*** Execution Phase ***\"); println; .my_name(Me); createWorkspace(\"ora4mas\"); joinWorkspace(\"ora4mas\",WOrg); makeArtifact(ora4mas,\"ora4mas.nopl.OrgBoard\",[\"src/org/house-os.xml\"],OrgArtId)[wid(WOrg)]; focus(OrgArtId); createGroup(hsh_group,house_group,GrArtId); debug(inspector_gui(on))[artifact_id(GrArtId)]; adoptRole(house_owner)[artifact_id(GrArtId)]; focus(GrArtId); !contract_winners(\"hsh_group\"); makeArtifact(\"housegui\",\"simulator.House\"); createScheme(bhsch,build_house_sch,SchArtId); debug(inspector_gui(on))[artifact_id(SchArtId)]; focus(SchArtId); ?formationStatus(ok)[artifact_id(GrArtId)]; addScheme(\"bhsch\")[artifact_id(GrArtId)]; commitMission(\"management_of_house_building\")[artifact_id(SchArtId)].",
+            "planLabel": "p__11[source(self),url(\"file:src/agt/giacomo.asl\")]",
+            "planLine": 71,
+            "planSource": "file:src/agt/giacomo.asl",
+            "substitution": "{WOrg=cobj_11, OrgArtId=cobj_12, Me=giacomo, SchArtId=cobj_15, GrArtId=cobj_14}",
+            "trigger": {
+              "literal": {
+                "annotationTail": "",
+                "annotations": [
+                  "source(self)"
+                ],
+                "functor": "execute",
+                "ground": true,
+                "key": "{\"functor\":\"execute\",\"namespace\":\"default\",\"negative\":false,\"terms\":[]}",
+                "namespace": "default",
+                "negative": false,
+                "raw": "execute[source(self)]",
+                "rule": false,
+                "ruleBody": "",
+                "supported": true,
+                "terms": []
+              },
+              "operator": "add",
+              "type": "achieve"
+            }
+          },
+          {
+            "currentStep": "!execute",
+            "occurrence": "goal-observation:a861b77e-6024-4951-bc3b-4a11c8c8c552:8",
+            "ordinal": 2,
+            "plan": "@p__3[source(self),url(\"file:src/agt/giacomo.asl\")] +!have_a_house <- !contract; !execute.",
+            "planLabel": "p__3[source(self),url(\"file:src/agt/giacomo.asl\")]",
+            "planLine": 19,
+            "planSource": "file:src/agt/giacomo.asl",
+            "substitution": "{}",
+            "trigger": {
+              "literal": {
+                "annotationTail": "",
+                "annotations": [
+                  "source(self)"
+                ],
+                "functor": "have_a_house",
+                "ground": true,
+                "key": "{\"functor\":\"have_a_house\",\"namespace\":\"default\",\"negative\":false,\"terms\":[]}",
+                "namespace": "default",
+                "negative": false,
+                "raw": "have_a_house[source(self)]",
+                "rule": false,
+                "ruleBody": "",
+                "supported": true,
+                "terms": []
+              },
+              "operator": "add",
+              "type": "achieve"
+            }
+          }
+        ],
+        "place": "PendingIntentions",
+        "state": "waiting",
+        "suspended": false
+      }
+    ],
+    "owner": "beid:v1:jason/agent/runtime-agent/house_building/giacomo/a861b77e-6024-4951-bc3b-4a11c8c8c552",
+    "version": "1.0"
+  },
+  "formationBeliefs": [
+    {
+      "raw": "formationStatus(ok)[artifact_id(cobj_14),artifact_name(hsh_group),percept_type(obs_prop),source(percept),workspace(\"/main/ora4mas\",cobj_11)]"
+    }
+  ],
+  "responsibleGroups": [],
+  "commitments": [],
+  "scope": "Original HouseBuilding stopped before addScheme/commitMission; projection must not fabricate missing relations; Auction four packaged cases pass; final full reactor and downstream frozen package gates remain unaccepted",
+  "observed": "Same official agent-cycle cut: formationStatus(ok) belief present, event queue empty, PendingIntentions waiting at original giacomo.asl:118; scheme responsibleGroupSemanticIds and commitments are empty.",
+  "inference": "Consistent with the original query-to-edge-wait lost-wakeup race. Exact event arrival/registration ordering was not captured; the source stall and absence of addScheme effects are directly observed.",
+  "allowedResolution": "No source repair, scheduling workaround, synthetic event, domain control or relation fabrication in this Auction task. Requires a separately authorized reference-source or explicitly versioned fixture decision before this mandatory regression can be closed."
+}

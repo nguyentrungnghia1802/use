@@ -1,0 +1,30 @@
+REAL_JACAMO_INIT project=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\auction-implementation\N02-live-17880610799625910596\staging\auction.jcm headless=true
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+REAL_JACAMO_INIT_OK
+CArtAgO Http Server running on http://192.168.0.103:3273
+Agent mind inspector is running at http://192.168.0.103:3272
+REAL_JACAMO_CREATE_OK platforms=4 agents=5
+Moise Http Server running on http://192.168.0.103:3271
+REAL_JACAMO_MANAGED_WAIT_START run=managed-gui-test
+REAL_JACAMO_MANAGED_START_ACK run=managed-gui-test
+REAL_JACAMO_START_OK
+REAL_JACAMO_BRIDGE_READY port=56304 session=2064779e-3011-4189-afa4-337567587421 agents=5
+Received bid 27.383903341342798 from alice for flight_ticket(athens,paris,date(18,12,2015))
+Received bid 42.70680433269882 from giacomo for flight_ticket(paris,athens,date(15,12,2015))
+Received bid 100.43153173345718 from maria for flight_ticket(paris,athens,date(15,12,2015))
+Received bid 90.15424492405762 from giacomo for flight_ticket(athens,paris,date(18,12,2015))
+Received bid 41.52264007832749 from francois for flight_ticket(paris,athens,date(15,12,2015))
+Received bid 63.218136799936225 from maria for flight_ticket(athens,paris,date(18,12,2015))
+REAL_JACAMO_BRIDGE_FINAL_READINESS {agents=State[readiness=READY, detail=BridgeAgArch=org.jacamo.bridge.adapter.BridgeAgArch; injected=5], bridge=State[readiness=CONFIGURED, detail=session=2064779e-3011-4189-afa4-337567587421], events=State[readiness=ATTACHED, detail=bounded observer attached], project=State[readiness=READY, detail=modelRevision=7cbc3f1c1943dc8903db8c6df930912b74f8c75b864b1cb47fe7d889e5e57cd3], runtime=State[readiness=READY, detail=snapshot=snapshot:c225e4f71bf68c90deff8c751a9c750e56e064d5d259c9eb0aac1d77f52933f3; facts=281; sourceCompleteness={observer:verification=PARTIAL, jason=PARTIAL, moise:dynamic=PARTIAL, bridge:platform=COMPLETE, npl=PARTIAL, cartago=COMPLETE, moise:aorg=PARTIAL}], transport=State[readiness=READY, detail=loopback TCP port=56304]}
+REAL_JACAMO_BRIDGE_STOP_REQUESTED
+REAL_JACAMO_BRIDGE_STOPPED

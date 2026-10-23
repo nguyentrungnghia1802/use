@@ -166,17 +166,27 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     @Override public synchronized ProjectSummary importProject(Path jcmFile) {
-        return importUsing(jcmFile,selectedImport==null?ImportSemantics.configured():selectedImport);
+        var request=selectedRequest==null?importSelection():selectedRequest;
+        var selection=selectedImport==null?ImportSemantics.configured(jcmFile):selectedImport;
+        var summary=importUsing(jcmFile,selection);
+        // The case owns accepted bundle bytes. Preserve the historical implicit
+        // JSON reimport contract; explicit ImportSelection already freezes it.
+        if(selection.auction()!=null||selection.declarative()!=null){selectedImport=selection;selectedRequest=request;}
+        return summary;
     }
     @Override public ImportSelection importSelection() {
         var selected=selectedRequest;if(selected!=null)return selected;
         var profile=org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.configured(System.getProperty(org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.PROPERTY));
-        String file=System.getProperty(profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.USE4GOAL_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.MappingRuleSet.PROPERTY:org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration.PROPERTY,"").trim();
-        return new ImportSelection(profile.name(),profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.NATIVE_CURRENT||file.isBlank()?null:Path.of(file));
+        String property=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.AUCTION_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionStaticMappingAdapter.PROPERTY
+                :profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.JACAMO_DECLARATIVE_XML?org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.SPECIFICATION_PROPERTY
+                :profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.USE4GOAL_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.MappingRuleSet.PROPERTY:org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration.PROPERTY;
+        String file=System.getProperty(property,"").trim();
+        String ocl=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.JACAMO_DECLARATIVE_XML?System.getProperty(org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.OCL_PROPERTY,"").trim():"";
+        return new ImportSelection(profile.name(),profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.NATIVE_CURRENT||file.isBlank()?null:Path.of(file),ocl.isBlank()?null:Path.of(ocl));
     }
     @Override public synchronized ProjectSummary importProject(Path jcmFile,ImportSelection request) {
         if(javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("SEMANTIC_IMPORT_REQUIRES_BACKGROUND_WORKER");
-        var selection=ImportSemantics.from(java.util.Objects.requireNonNull(request));
+        var selection=ImportSemantics.from(java.util.Objects.requireNonNull(request),jcmFile);
         var summary=importUsing(jcmFile,selection);selectedImport=selection;selectedRequest=request;return summary;
     }
     private ProjectSummary importUsing(Path jcmFile,ImportSemantics selection) {
@@ -201,10 +211,13 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     private static Map<String,Object> programEvidence(CodeGroundedNativePipeline.CanonicalBuildResult canonical,String legacyProfile) {
         if(canonical==null)return Map.of("profile",legacyProfile,"status","LEGACY_OR_NATIVE_PROFILE");
         var program=canonical.program();
-        return Map.of("profile",program.profile().engine().name(),"mapping",program.profile().id()+"/"+program.profile().version(),
+        var evidence=new java.util.TreeMap<String,Object>(Map.of("profile",program.profile().engine().name(),"mapping",program.profile().id()+"/"+program.profile().version(),
                 "rulesVersion",program.rules().version(),"programHash",program.hash(),"sourceHash",program.source().sourceHash(),"cslHash",program.cslHash(),
                 "goalHash",program.goalHash(),"validators","original CSL/iStar; native USE OCL", "diagnostics",org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.tree(program.diagnostics()),
-                "traceBindings",org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.tree(program.bindings().bindings()));
+                "traceBindings",org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.tree(program.bindings().bindings())));
+        if(program.casePlan()!=null)evidence.put("caseProgram",program.casePlan().evidence());
+        if(program.xmlPlan()!=null)evidence.put("declarativeProgram",program.xmlPlan().evidence());
+        return java.util.Collections.unmodifiableMap(evidence);
     }
 
     @Override public WorkflowStatus workflowStatus() {
@@ -237,10 +250,14 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         requireNativeWorkspace();
         var state=workflowStatus();
         if(!state.startAvailable()) throw new IllegalStateException("START_RUNTIME_UNAVAILABLE:"+state.diagnostic());
+        var owner=nativeWorkspace;
         workflow.start();
-        // The startup ACK releases reasoning. Verify its authoritative cut and
-        // refresh control readiness against the now-running owner before LIVE.
-        resyncRuntime();
+        // Import already installed an authenticated, observed native cut and
+        // its subscription. Keep that stream through the startup burst: a new
+        // snapshot handoff can discard the source PRE/terminal prefix or fill
+        // its bounded bootstrap queue while waiting for the old writer.
+        if(nativeWorkspace!=owner)throw new IllegalStateException("START_RUNTIME_OWNER_CHANGED");
+        if(owner.control!=null)owner.control.refresh().join();
     }
     private org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeControlService requireRuntimeControl() {
         requireNotReplaying();var current=nativeWorkspace;
@@ -701,11 +718,11 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     private ProjectSummary synchronizeBridge(Path selectedJcm, Path verificationProfile) {
-        return synchronizeBridge(selectedJcm,verificationProfile,selectedImport==null?ImportSemantics.configured():selectedImport);
+        return synchronizeBridge(selectedJcm,verificationProfile,selectedImport==null?ImportSemantics.configured(selectedJcm):selectedImport);
     }
     private ProjectSummary synchronizeBridge(Path selectedJcm, Path verificationProfile,ImportSemantics selection) {
         requireNotReplaying();
-        if(selection.rules()!=null&&javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("CANONICAL_IMPORT_REQUIRES_BACKGROUND_WORKER");
+        if((selection.rules()!=null||selection.auction()!=null||selection.declarative()!=null)&&javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("CANONICAL_IMPORT_REQUIRES_BACKGROUND_WORKER");
         awaitRetiredIngress();
         long sessionEpoch=sessionChanges.get();
         BridgeConnectionConfig configuration = configuredBridge == null ? bridgeConfigurationSource.get() : configuredBridge;
@@ -714,6 +731,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         ArrayDeque<RuntimeEvent> pending = new ArrayDeque<>();
         AtomicReference<NativeRuntimeProjector> nativeProjectorReference = new AtomicReference<>();
         AtomicReference<NativeRuntimeProjector> newlyCreatedNativeProjector = new AtomicReference<>();
+        AtomicReference<NativeWorkspace> preparedWorkspace = new AtomicReference<>();
         AtomicReference<BridgeClient.CoverageFailure> nativeCoverageFailure = new AtomicReference<>();
         java.util.concurrent.atomic.AtomicBoolean deliveryActive = new java.util.concurrent.atomic.AtomicBoolean(true);
         BridgeClient candidate = null;
@@ -749,17 +767,23 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             BridgeClient.Accepted accepted = candidate.synchronize(() -> {
                 // The replacement stream is already buffering. Settle the old writer before capturing
                 // a cut, so that it cannot advance beyond that cut while the candidate is built.
-                if (previous != null) previous.stopRuntimeDelivery.run();
+                if(previous!=null&&preparedWorkspace.get()==null)previous.stopRuntimeDelivery.run();
+            }, model -> {
+                boolean reuse=!sessionOwnershipLost&&previous!=null&&previous.runtimeProjector!=null&&bridgeAccepted!=null
+                        &&bridgeAccepted.modelRevision().equals(model.modelRevision())&&selection.hash().equals(previous.semanticSelectionHash);
+                if(reuse&&previous.canonical!=null)previous.canonical.program().requireSourceHash(
+                        org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(org.jacamo.bridge.contract.ContractPayloads.model(model)));
+                if(!reuse)preparedWorkspace.set(buildNativeSemantic(selectedJcm,model,System.nanoTime()-importStarted,selection));
             });
             validateBridgeSelection(selectedJcm, accepted);
-            long importNanos = System.nanoTime() - importStarted;
             boolean compatibleResync = !sessionOwnershipLost && previous != null && previous.runtimeProjector != null && bridgeAccepted != null
                     && bridgeAccepted.modelRevision().equals(accepted.modelRevision())&&selection.hash().equals(previous.semanticSelectionHash);
             boolean sameOwner=compatibleResync && bridgeAccepted.sessionId().equals(accepted.sessionId())
                     && bridgeAccepted.generation()==accepted.generation();
             var savedProfile = previous==null?null:previous.runtimeProjector==null?previous.savedProfile
                     : previous.runtimeProjector.coordinator().read(() -> previous.runtimeProjector.coordinator().constraints().profile());
-            NativeWorkspace next = compatibleResync ? previous : buildNativeSemantic(selectedJcm, accepted.model(), importNanos,selection);
+            NativeWorkspace next = compatibleResync ? previous : preparedWorkspace.get();
+            if(next==null)throw new IllegalStateException("NATIVE_STATIC_CANDIDATE_NOT_PREPARED");
             NativeRuntimeProjector nativeProjector = compatibleResync ? previous.runtimeProjector
                     : next.canonical==null?new NativeRuntimeProjector(next.pipeline, accepted.sessionId(), accepted.generation(),
                             accepted.modelRevision(), RuntimeVerificationCoordinator.createEphemeralDirectory(runtimeRoot()))
@@ -771,7 +795,6 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 nativeProjector.coordinator().loadSavedProfile(savedProfile);
             if(compatibleResync && !sameOwner && previous.control!=null){previous.control.close();previous.control=null;}
             BridgeClient previousClient = bridgeClient;
-            if (previousClient != null) previousClient.close();
             RuntimeVerificationResult initialCut;
             awaitCanonicalIngress(nativeProjector);
             synchronized (pending) {
@@ -792,6 +815,8 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 var completed=nativeProjector.coordinator().awaitEvaluation(initialCut,30000);
                 if(!"PINNED_NATIVE_CUT".equals(completed.semantic().observation().get("originalEngine") instanceof Map<?,?> core?core.get("evaluated"):null))throw new IllegalStateException("CANONICAL_INITIAL_CUT_NOT_EVALUATED");
             }
+            if(!compatibleResync&&previous!=null)previous.stopRuntimeDelivery.run();
+            if(previousClient!=null)previousClient.close();
             next.runtimeProjector = nativeProjector;
             next.revokeRuntimeDelivery = () -> deliveryActive.set(false);
             next.stopRuntimeDelivery = () -> {
@@ -943,26 +968,44 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
 
     private record ImportSemantics(org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile profile,
             org.tzi.use.plugins.jacamo.semantics.mapping.MappingRuleSet rules,
-            org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration legacy,String hash) {
-        static ImportSemantics configured() {
+            org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration legacy,
+            org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionStaticMappingAdapter.Selection auction,
+            org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs declarative,String hash) {
+        static ImportSemantics configured(Path jcm) {
             var profile=org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.configured(System.getProperty(org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.PROPERTY));
+            if(profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.JACAMO_DECLARATIVE_XML) {
+                String xml=System.getProperty(org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.SPECIFICATION_PROPERTY,"").trim(),ocl=System.getProperty(org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.OCL_PROPERTY,"").trim();
+                return from(new ImportSelection(profile.name(),xml.isBlank()?null:Path.of(xml),ocl.isBlank()?null:Path.of(ocl)),jcm);
+            }
+            if(profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.AUCTION_OBSERVED_V1) {
+                String path=System.getProperty(org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionStaticMappingAdapter.PROPERTY,"").trim();
+                if(path.isEmpty())throw new IllegalArgumentException("AUCTION_SPECIFICATION_FILE_REQUIRED");
+                return from(new ImportSelection(profile.name(),Path.of(path)),jcm);
+            }
             var rules=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.USE4GOAL_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.MappingRuleSet.configured():null;
             var legacy=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.CSL_OBSERVER_V1||profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.CSL_OBSERVER_V2?org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration.configured():null;
             String content=profile.name()+":"+(rules!=null?rules.hash():legacy!=null?java.util.HexFormat.of().formatHex(legacy.bytes()):"");
-            return new ImportSemantics(profile,rules,legacy,org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.sha256(content.getBytes(StandardCharsets.UTF_8)));
+            return new ImportSemantics(profile,rules,legacy,null,null,org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.sha256(content.getBytes(StandardCharsets.UTF_8)));
         }
-        static ImportSemantics from(ImportSelection request) {
+        static ImportSemantics from(ImportSelection request,Path jcm) {
             var profile=org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.configured(request.profile());
             if(profile!=org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.NATIVE_CURRENT&&request.specification()==null)throw new IllegalArgumentException("AUTHORED_SPECIFICATION_FILE_REQUIRED:"+profile);
+            org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs declarative=null;
+            if(profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.JACAMO_DECLARATIVE_XML) {
+                if(request.ocl()==null)throw new IllegalArgumentException("AUTHORED_OCL_FILE_REQUIRED");
+                declarative=org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.read(jcm,request.specification(),request.ocl());
+            }
             var rules=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.USE4GOAL_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.MappingRuleSet.read(request.specification()):null;
+            var auction=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.AUCTION_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionStaticMappingAdapter.read(request.specification()):null;
             org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration legacy=null;
             if(profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.CSL_OBSERVER_V1||profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.CSL_OBSERVER_V2)try {
                 if(!Files.isRegularFile(request.specification())||Files.size(request.specification())>CanonicalJson.DEFAULT_MAX_BYTES)throw new IllegalArgumentException("CSL_MONITOR_CONFIGURATION_FILE_INVALID");
                 legacy=org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration.parse(Files.readAllBytes(request.specification()));
                 if(legacy.profile()!=profile)throw new IllegalArgumentException("CSL_MONITOR_PROFILE_CONFIGURATION_MISMATCH");
             } catch(java.io.IOException error){throw new IllegalArgumentException("CSL_MONITOR_CONFIGURATION_READ_FAILED",error);}
-            String content=profile.name()+":"+(rules!=null?rules.hash():legacy!=null?java.util.HexFormat.of().formatHex(legacy.bytes()):"");
-            return new ImportSemantics(profile,rules,legacy,org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.sha256(content.getBytes(StandardCharsets.UTF_8)));
+            String content=profile.name()+":"+(auction!=null?auction.hash():rules!=null?rules.hash():legacy!=null?java.util.HexFormat.of().formatHex(legacy.bytes()):"");
+            if(declarative!=null)content+=declarative.xml().sha256()+":"+declarative.ocl().sha256()+":"+org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(declarative.sources().values().stream().map(a->Map.of("id",a.id(),"hash",a.sha256())).toList());
+            return new ImportSemantics(profile,rules,legacy,auction,declarative,org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.sha256(content.getBytes(StandardCharsets.UTF_8)));
         }
     }
     private NativeWorkspace buildNativeSemantic(Path jcmFile, org.jacamo.bridge.contract.ModelSnapshot snapshot,
@@ -970,7 +1013,13 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         long generationStarted = System.nanoTime();
         CodeGroundedNativePipeline.CanonicalBuildResult canonical=null;
         CodeGroundedNativePipeline.Result pipeline;
-        if(selection.rules()!=null) {
+        if(selection.declarative()!=null) {
+            var program=new org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericMappingEngine().map(snapshot,selection.declarative());
+            canonical=new CodeGroundedNativePipeline().buildCanonicalProgram(snapshot,projectionMode,program);pipeline=canonical.nativeResult();
+        }else if(selection.auction()!=null) {
+            var program=new org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionStaticMappingAdapter().map(snapshot,selection.auction(),jcmFile);
+            canonical=new CodeGroundedNativePipeline().buildCanonicalProgram(snapshot,projectionMode,program);pipeline=canonical.nativeResult();
+        }else if(selection.rules()!=null) {
             var program=new org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoStaticMappingAdapter().map(snapshot,org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoMappingProfile.observedV1(),selection.rules());
             canonical=new CodeGroundedNativePipeline().buildCanonicalProgram(snapshot,projectionMode,program);pipeline=canonical.nativeResult();
         }else pipeline=new CodeGroundedNativePipeline().build(snapshot,projectionMode,selection.legacy());

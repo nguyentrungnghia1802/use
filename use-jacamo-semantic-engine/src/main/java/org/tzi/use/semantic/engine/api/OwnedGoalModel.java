@@ -13,7 +13,10 @@ public final class OwnedGoalModel {
     private final GoalModel model;
     private final String hash;
     public OwnedGoalModel(GoalModel model) {
-        var diagnostics=validateDefinition(model,"<owned-goal-model>");
+        this(model,EngineSemanticsProfile.USE4GOAL_OBSERVED_V1);
+    }
+    public OwnedGoalModel(GoalModel model,EngineSemanticsProfile profile) {
+        var diagnostics=validateDefinition(model,"<owned-goal-model>",profile);
         if(!diagnostics.isEmpty())throw new EngineAdmissionException(diagnostics);
         this.model=model;this.hash=fingerprint(model);
     }
@@ -21,9 +24,12 @@ public final class OwnedGoalModel {
     public String hash(){return hash;}
     public void assertUnchanged(){if(!hash.equals(fingerprint(model)))throw new IllegalStateException("CANONICAL_GOAL_MODEL_MUTATED_AFTER_OWNERSHIP");}
     public static List<EngineDiagnostic> validateDefinition(GoalModel model,String name) {
+        return validateDefinition(model,name,EngineSemanticsProfile.USE4GOAL_OBSERVED_V1);
+    }
+    public static List<EngineDiagnostic> validateDefinition(GoalModel model,String name,EngineSemanticsProfile profile) {
         Objects.requireNonNull(model);Objects.requireNonNull(name);
         var diagnostics=new ArrayList<EngineDiagnostic>();
-        GoalModelValidator.validate(model).forEach(error->diagnostics.add(EngineDiagnostic.error(EngineDiagnostic.Stage.MODEL_VALIDATION,"ORIGINAL_ISTAR_VALIDATOR",name,error)));
+        GoalModelValidator.validate(model,Objects.requireNonNull(profile).validationPolicy()).forEach(error->diagnostics.add(EngineDiagnostic.error(EngineDiagnostic.Stage.MODEL_VALIDATION,"ORIGINAL_ISTAR_VALIDATOR",name,error)));
         var actorIds=new HashSet<String>();
         for(var actor:model.getActors()) {
             if(!actorIds.add(actor.name()))diagnostics.add(EngineDiagnostic.error(EngineDiagnostic.Stage.MODEL_VALIDATION,"ISTAR_ACTOR_ID_AMBIGUOUS",name,actor.name()));

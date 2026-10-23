@@ -12,10 +12,34 @@ public final class SemanticProgram {
     private final CslModel csl;private final OwnedGoalModel goals;private final SemanticBindingIndex bindings;private final TraceComplement complement;
     private final List<MappingDiagnostic> diagnostics;private final String cslHash,hash;
     private final GoalRuntimeBindingPlan goalBindings;
+    private final org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionBindingPlan casePlan;
+    private final org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericBindingPlan xmlPlan;
     SemanticProgram(JaCaMoMappingProfile profile,MappingRuleSet rules,NormalizedSourceModel source,CslModel csl,GoalModel goals,
             SemanticBindingIndex bindings,TraceComplement complement,List<MappingDiagnostic> diagnostics,GoalRuntimeBindingPlan goalBindings) {
-        this.profile=profile;this.rules=rules;this.source=source;this.csl=csl;this.goals=new OwnedGoalModel(goals);this.bindings=bindings;this.complement=complement;this.diagnostics=List.copyOf(diagnostics);
+        this(profile,rules,source,csl,goals,bindings,complement,diagnostics,goalBindings,null);
+    }
+    /** Case XML preparation is outside the engine; legacy JSON callers retain the original identity. */
+    public SemanticProgram(JaCaMoMappingProfile profile,MappingRuleSet rules,NormalizedSourceModel source,CslModel csl,GoalModel goals,
+            SemanticBindingIndex bindings,TraceComplement complement,List<MappingDiagnostic> diagnostics,GoalRuntimeBindingPlan goalBindings,
+            org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionBindingPlan casePlan) {
+        this(profile,rules,source,csl,goals,bindings,complement,diagnostics,goalBindings,casePlan,null);
+    }
+    public static SemanticProgram fromXml(JaCaMoMappingProfile profile,MappingRuleSet rules,NormalizedSourceModel source,CslModel csl,GoalModel goals,
+            SemanticBindingIndex bindings,TraceComplement complement,GoalRuntimeBindingPlan goalBindings,
+            org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericBindingPlan xmlPlan) {
+        return new SemanticProgram(profile,rules,source,csl,goals,bindings,complement,List.of(),goalBindings,null,Objects.requireNonNull(xmlPlan));
+    }
+    private SemanticProgram(JaCaMoMappingProfile profile,MappingRuleSet rules,NormalizedSourceModel source,CslModel csl,GoalModel goals,
+            SemanticBindingIndex bindings,TraceComplement complement,List<MappingDiagnostic> diagnostics,GoalRuntimeBindingPlan goalBindings,
+            org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionBindingPlan casePlan,
+            org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericBindingPlan xmlPlan) {
+        this.profile=profile;this.rules=rules;this.source=source;this.csl=csl;this.goals=new OwnedGoalModel(goals,profile.engine());this.bindings=bindings;this.complement=complement;this.diagnostics=List.copyOf(diagnostics);
         this.goalBindings=goalBindings;
+        this.casePlan=casePlan;
+        this.xmlPlan=xmlPlan;
+        if(xmlPlan!=null){xmlPlan.requireOwnership(profile,rules,source,csl,goals,bindings,goalBindings);xmlPlan.requireComplement(complement);}
+        else if(profile.id().equals(org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericBindingPlan.PROFILE_ID))throw new IllegalArgumentException("GENERIC_PROGRAM_PLAN_REQUIRED");
+        if(casePlan!=null)casePlan.requireOwnership(profile,rules,source,csl,goals,bindings,goalBindings);
         MappingBundle.validateComplement(source,complement);bindings.validate(source,csl,goals,rules.contracts());
         cslHash=CslModelFingerprint.of(csl);
         hash=SemanticJson.hash(Map.of("format","SEMANTIC_PROGRAM/2.0","source",source.sourceHash(),"profile",profile.hash(),"rules",rules.hash(),
@@ -25,6 +49,8 @@ public final class SemanticProgram {
     public CslModel cslModel(){return csl;}public GoalModel goalModel(){return goals.model();}public String cslHash(){return cslHash;}public String goalHash(){return goals.hash();}
     public List<MappingRuleSet.Contract> contracts(){return rules.contracts();}public SemanticBindingIndex bindings(){return bindings;}public TraceComplement complement(){return complement;}
     public GoalRuntimeBindingPlan goalBindings(){return goalBindings;}
+    public org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionBindingPlan casePlan(){return casePlan;}
+    public org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericBindingPlan xmlPlan(){return xmlPlan;}
     public List<MappingDiagnostic> diagnostics(){return diagnostics;}public String hash(){return hash;}public void assertUnchanged(){goals.assertUnchanged();if(!cslHash.equals(CslModelFingerprint.of(csl)))throw new IllegalStateException("CANONICAL_CSL_MODEL_MUTATED_AFTER_OWNERSHIP");}
     public void requireSourceHash(String hash){if(!source.sourceHash().equals(hash))throw new IllegalArgumentException("SEMANTIC_PROGRAM_SOURCE_MISMATCH");}
 }

@@ -21,6 +21,16 @@ public final class GoalModelValidator {
     private GoalModelValidator() {}
 
     public static List<String> validate(GoalModel model) {
+        // P-IADM-01: strict public default is preserved.
+        return validate(model, GoalModelValidationPolicy.STRICT_ORIGINAL);
+    }
+
+    public static List<String> validate(GoalModel model, GoalModelValidationPolicy policy) {
+        java.util.Objects.requireNonNull(policy);
+        if (policy != GoalModelValidationPolicy.STRICT_ORIGINAL) {
+            List<String> bounds = validateExtendedGraphBounds(model);
+            if (!bounds.isEmpty()) return bounds;
+        }
         List<String> errors = new ArrayList<>();
         validateElementIdUniqueness(model, errors);
         validateRefinements(model, errors);
@@ -33,10 +43,75 @@ public final class GoalModelValidator {
         validateNeededBy(model, errors);
         validateAssociations(model, errors);
         validateDependencies(model, errors);
-        validateRefinementParentsAreNotDependencyEndpoints(model, errors);
+        if (policy == GoalModelValidationPolicy.STRICT_ORIGINAL)
+            validateRefinementParentsAreNotDependencyEndpoints(model, errors);
+        else validateDerivedAndDependees(model, errors);
         validateOclContracts(model, errors);
         return List.copyOf(errors);
     }
+
+    // P-IADM-01-BEGIN: neutral opt-in admission; original validation stages below are unchanged.
+    private static List<String> validateExtendedGraphBounds(GoalModel model) {
+        if (model.allElements().size() > 4096) return List.of("semantic: extended definition size exceeds4096");
+        Map<String, Set<String>> edges = new LinkedHashMap<>();
+        int count = 0;
+        for (Actor actor : model.getActors()) for (Refinement refinement : actor.refinements()) {
+            for (String child : GoalActivationGraph.children(refinement)) {
+                if (++count > 16384) return List.of("semantic: extended definition edge limit exceeded");
+                edges.computeIfAbsent(refinement.parent(), k -> new LinkedHashSet<>()).add(child);
+            }
+        }
+        for (Dependency dependency : model.getDependencies()) {
+            if (++count > 16384) return List.of("semantic: extended definition edge limit exceeded");
+            if (dependency.dependerElmt() != null && dependency.dependeeElmt() != null)
+                edges.computeIfAbsent(dependency.dependerElmt(), k -> new LinkedHashSet<>()).add(dependency.dependeeElmt());
+        }
+        Map<String, Integer> degree = new LinkedHashMap<>(), depth = new HashMap<>();
+        model.allElements().keySet().forEach(id -> degree.put(id, 0));
+        edges.forEach((parent, children) -> {
+            degree.putIfAbsent(parent, 0);
+            children.forEach(child -> degree.merge(child, 1, Integer::sum));
+        });
+        var queue = new java.util.ArrayDeque<String>();
+        degree.forEach((id, d) -> { if (d == 0) queue.add(id); });
+        int visited = 0;
+        while (!queue.isEmpty()) {
+            String id = queue.remove(); visited++;
+            int value = depth.getOrDefault(id, 1);
+            if (value > 256) return List.of("semantic: extended definition depth exceeds256");
+            for (String child : edges.getOrDefault(id, Set.of())) {
+                depth.merge(child, value + 1, Math::max);
+                if (degree.merge(child, -1, Integer::sum) == 0) queue.add(child);
+            }
+        }
+        return visited == degree.size() ? List.of() : List.of("semantic: extended activation/dependency graph is cyclic");
+    }
+
+    private static void validateDerivedAndDependees(GoalModel model, List<String> errors) {
+        Set<String> parents = new LinkedHashSet<>(), permitted = new LinkedHashSet<>();
+        for (Actor actor : model.getActors()) {
+            Map<String, List<Refinement>> groups = new LinkedHashMap<>();
+            for (Refinement refinement : actor.refinements()) {
+                parents.add(refinement.parent());
+                groups.computeIfAbsent(refinement.parent(), k -> new ArrayList<>()).add(refinement);
+            }
+            groups.forEach((parent, refinements) -> {
+                var element = model.findElement(parent).orElse(null);
+                if (!(element instanceof Goal goal) || !goal.conditions().isEmpty()
+                        || goal.goalType() != GoalType.ACHIEVE || refinements.size() != 1
+                        || !(refinements.getFirst() instanceof AndRefinement and)
+                        || and.children().size() < 2 || !model.ownerOf(parent).orElse("").equals(actor.name())) return;
+                if (and.children().stream().allMatch(child -> model.ownerOf(child).orElse("").equals(actor.name()))) permitted.add(parent);
+            });
+        }
+        Set<String> forbiddenDependees = new LinkedHashSet<>(parents);
+        forbiddenDependees.removeAll(permitted);
+        for (Dependency dependency : model.getDependencies()) {
+            rejectRefinementParentEndpoint(dependency.dependerElmt(), "depender", dependency, parents, errors);
+            rejectRefinementParentEndpoint(dependency.dependeeElmt(), "dependee", dependency, forbiddenDependees, errors);
+        }
+    }
+    // P-IADM-01-END
 
     private static void validateOclContracts(GoalModel model, List<String> errors) {
         for (Actor actor : model.getActors()) {

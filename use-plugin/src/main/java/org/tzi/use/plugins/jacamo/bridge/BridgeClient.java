@@ -65,7 +65,12 @@ public final class BridgeClient implements AutoCloseable {
     public synchronized Accepted synchronize(){return synchronize(()->{});}
     /** Run the handoff fence after the new subscription is ready, before copying its replacement cut. */
     public synchronized Accepted synchronize(Runnable beforeSnapshot){
+        return synchronize(beforeSnapshot,model->{});
+    }
+    /** Static candidate admission happens before fencing the current owner or replacing its native cut. */
+    public synchronized Accepted synchronize(Runnable beforeSnapshot,java.util.function.Consumer<ModelSnapshot> admitModel){
         java.util.Objects.requireNonNull(beforeSnapshot);
+        java.util.Objects.requireNonNull(admitModel);
         mirror.transition(BridgeClientState.NEGOTIATING); ContractEnvelope handshake=decode(transport.handshake(),MessageType.HANDSHAKE);
         if(!requiredDistribution.equals(handshake.distribution().distributionDigest()))throw fail("BRIDGE_DISTRIBUTION_UNSUPPORTED");
         var capabilities=handshake.capabilities().stream().filter(c->c.status()==org.jacamo.bridge.contract.CapabilityStatus.COMPLETE).map(c->c.name()).collect(java.util.stream.Collectors.toSet());
@@ -73,6 +78,7 @@ public final class BridgeClient implements AutoCloseable {
         mirror.acceptIdentity(handshake.sessionId(),handshake.generation(),handshake.modelRevision());
         mirror.transition(BridgeClientState.MODEL_SYNC); ContractEnvelope modelEnvelope=decode(transport.modelSnapshot(),MessageType.MODEL_SNAPSHOT); requireSame(modelEnvelope);
         ModelSnapshot model=ContractPayloads.model(modelEnvelope.payload()); if(!model.modelRevision().equals(modelEnvelope.modelRevision()))throw fail("BRIDGE_MODEL_PAYLOAD_REVISION");
+        admitModel.accept(model);
         synchronized(buffered){
             buffered.clear(); asynchronousFailure=null; bootstrapping=true;
             subscription=transport.subscribe("",this::acceptSubscriptionEvent,this::acceptSubscriptionFailure);

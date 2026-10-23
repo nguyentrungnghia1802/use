@@ -140,3 +140,5 @@ fabric.properties
 **/_default.slt
 
 **/.DS_Store
+*.class
+

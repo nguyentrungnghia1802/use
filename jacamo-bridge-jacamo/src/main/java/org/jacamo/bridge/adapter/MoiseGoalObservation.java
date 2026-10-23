@@ -9,12 +9,20 @@ import ora4mas.nopl.SchemeBoard;
 /** Decode SchemeBoard's public goalState/goalArgument observable contract, not agent beliefs. */
 final class MoiseGoalObservation {
     record Goal(String id,String state,List<String> committed,List<String> achieved) { }
-    record Cut(ArtifactId artifact,List<Goal> goals,Map<String,Map<String,String>> arguments) { }
+    record Cut(ArtifactId artifact,List<Goal> goals,Map<String,Map<String,String>> arguments,
+               Map<String,Map<String,Map<String,Object>>> structuredArguments) {
+        Cut {
+            goals=List.copyOf(goals);
+            var raw=new TreeMap<String,Map<String,String>>();arguments.forEach((k,v)->raw.put(k,Map.copyOf(v)));arguments=Map.copyOf(raw);
+            var typed=new TreeMap<String,Map<String,Map<String,Object>>>();structuredArguments.forEach((k,v)->typed.put(k,Map.copyOf(v)));structuredArguments=Map.copyOf(typed);
+        }
+    }
     static Cut capture(SchemeBoard board) throws Exception {
         return decode(MoiseBoardArtifactObservation.capture(board),board.getArtId());
     }
     static Cut decode(ArtifactInfo info,String scheme) throws Exception {
         var goals=new TreeMap<String,Goal>();var arguments=new TreeMap<String,Map<String,String>>();
+        var structured=new TreeMap<String,Map<String,Map<String,Object>>>();
         for(var property:info.getObsProperties()) {
             if(property.getName().equals("goalState")) {
                 if(property.getValues().length!=5 || !term(property.getValue(0)).equals(ASSyntax.createAtom(scheme)))
@@ -29,12 +37,13 @@ final class MoiseGoalObservation {
                     throw new IllegalStateException("MOISE_GOAL_ARGUMENT_CONTEXT_INVALID");
                 var goal=term(property.getValue(1));var name=term(property.getValue(2));
                 if(!(goal instanceof Atom atom) || !(name instanceof StringTerm string))throw new IllegalStateException("MOISE_GOAL_ARGUMENT_INVALID");
-                String value=term(property.getValue(3)).toString();
+                Term actual=term(property.getValue(3));String value=actual.toString();
                 if(arguments.computeIfAbsent(atom.getFunctor(),unused->new TreeMap<>()).putIfAbsent(string.getString(),value)!=null)
                     throw new IllegalStateException("MOISE_GOAL_ARGUMENT_DUPLICATED");
+                structured.computeIfAbsent(atom.getFunctor(),unused->new TreeMap<>()).put(string.getString(),JasonStructuredTerms.term(actual));
             }
         }
-        return new Cut(info.getId(),List.copyOf(goals.values()),Map.copyOf(arguments));
+        return new Cut(info.getId(),List.copyOf(goals.values()),arguments,structured);
     }
     private static Term term(Object value) throws Exception {
         // Moise 1.1 updateGoalArgsObsProp publishes Jason Terms directly;

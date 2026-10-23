@@ -17,6 +17,20 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.tzi.use.semantic.engine.oracle.PinnedOriginalOracle.*;
 
 class OriginalRuntimeSessionTest {
+    @Test void changedExecutionModelTransfersOnlyIdenticalLeafContractsAndExactEpisodes() {
+        String source="istar Stable { role R { task t pre {[ true ]} post {[ true ]} } }";
+        String expanded="istar Expanded { role R { task t pre {[ true ]} post {[ true ]} task sibling pre {[ false ]} post {[ true ]} } }";
+        String changed="istar Changed { role R { task t pre {[ false ]} post {[ true ]} } }";
+        try(var first=single(source);var next=single(expanded);var wrong=single(changed);var episode=single(expanded)) {
+            String t=id(first,"t");first.step(new EngineInputs(Map.of(),Map.of(t,new EngineInputs.TaskInput("exact-episode",true,true,true)),Map.of()));
+            assertThrows(IllegalArgumentException.class,()->next.seedStableHistory(first.checkpoint(),Map.of(t,"exact-episode")),"Existing whole-definition fence remains strict");
+            next.seedCompatibleLeafHistory(first,Map.of(t,"exact-episode"));assertEquals(first.checkpoint().tasks(),next.checkpoint().tasks());
+            assertTrue(next.checkpoint().goals().isEmpty());assertEquals(0,next.checkpoint().boundary());
+            wrong.seedCompatibleLeafHistory(first,Map.of(t,"exact-episode"));assertTrue(wrong.checkpoint().tasks().isEmpty());
+            episode.seedCompatibleLeafHistory(first,Map.of(t,"another-invocation"));assertTrue(episode.checkpoint().tasks().isEmpty());
+            next.step(EngineInputs.empty());assertThrows(IllegalStateException.class,()->next.seedCompatibleLeafHistory(first,Map.of(t,"exact-episode")));
+        }
+    }
     @Test void topologyRebuildSeedsOnlyExactStableKeysAndEpisodesWithoutChangingOriginalRecords() {
         String source="istar Stable { role R { goal g : Achieve condition {[ true ]} } }";
         try(var first=single(source);var stable=single(source);var changed=single(source)) {

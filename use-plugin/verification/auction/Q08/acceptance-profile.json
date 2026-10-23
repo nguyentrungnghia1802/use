@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0.0",
+  "profile": "AUCTION_ACCEPTANCE_V1",
+  "exceptions": [
+    {
+      "path": "C:\\Users\\NTNghia\\OneDrive\\Desktop\\report.md",
+      "sha256": "E8F3A60B11C52B73136EA2BBAEDC92F40F9B70FF1C670D1BF70D1D49A43AE7DC",
+      "status": "LOST",
+      "reason": "User confirmed original report lost and authorized Auction-only exception on 2026-10-22"
+    }
+  ]
+}

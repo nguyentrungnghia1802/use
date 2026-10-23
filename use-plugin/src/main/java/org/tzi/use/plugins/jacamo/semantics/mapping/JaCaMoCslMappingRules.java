@@ -83,7 +83,8 @@ public final class JaCaMoCslMappingRules {
                         &&e.sourceJavaFqcn().equals(javaClass)&&e.sourceSemanticId().equals(d.metadata().semanticId())
                         &&e.sourceDigest().matches("[0-9a-f]{64}")&&(e.sourceUri().startsWith("file:")||e.sourceUri().startsWith("jar:file:"))
                         &&e.diagnostics().contains("DECLARED_CARTAGO_ARTIFACT_APPLICATION_CLASS")));
-        boolean official=declaredProof||input.semanticContract().cartagoEnvironments().stream().flatMap(e->e.artifactTypes().stream()).anyMatch(t->t.javaClassName().equals(javaClass)&&t.metadata().capabilityStatus()==CapabilityStatus.COMPLETE&&t.metadata().sourceKind().equals("CARTAGO_ARTIFACT_TYPE"));
+        boolean actionProof=SourceArtifactTypeReferences.fromActions(input).stream().anyMatch(r->r.javaClass().equals(javaClass));
+        boolean official=declaredProof||actionProof||input.semanticContract().cartagoEnvironments().stream().flatMap(e->e.artifactTypes().stream()).anyMatch(t->t.javaClassName().equals(javaClass)&&t.metadata().capabilityStatus()==CapabilityStatus.COMPLETE&&t.metadata().sourceKind().equals("CARTAGO_ARTIFACT_TYPE"));
         if(!official&&!DomainProjection.domainArtifact(javaClass)) {
             if(Boolean.parseBoolean(rules.options().getOrDefault("requireArtifactProofAtImport","false")))reject(binding,"ARTIFACT_TYPE_PROOF_REQUIRED",javaClass);
             diagnostics.add(note(binding,"ARTIFACT_TYPE_PROOF_PENDING_RUNTIME","Exact declared Java name retained; no live object may be created without authoritative runtime type proof"));

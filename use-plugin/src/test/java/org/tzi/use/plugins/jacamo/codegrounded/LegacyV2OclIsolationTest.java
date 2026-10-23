@@ -36,7 +36,9 @@ class LegacyV2OclIsolationTest {
         assertTrue(branch.contains("Path verificationProfile,ImportSemantics selection)"),
                 "Both routes must pass their frozen selection to the same native handoff");
         assertTrue(branch.contains("selection.hash().equals(previous.semanticSelectionHash)"),"Resync must keep the same frozen mapping/profile");
-        assertTrue(branch.contains("buildNativeSemantic(selectedJcm, accepted.model(), importNanos,selection)"));
+        assertTrue(branch.contains("preparedWorkspace.set(buildNativeSemantic(selectedJcm,model,"),
+                "Prepare the same native candidate during the accepted-model callback before runtime admission");
+        assertTrue(branch.indexOf("preparedWorkspace.set(buildNativeSemantic") < branch.indexOf("nativeProjector.applySnapshot(accepted.runtime()"));
         assertTrue(branch.contains("new NativeUseSessionActivator().activate(session, next.pipeline,"));
         assertTrue(branch.contains("sessionChanges.get()==sessionEpoch"),"Activation must still own the USE Session on the EDT");
         assertTrue(branch.contains("return next.summary"));

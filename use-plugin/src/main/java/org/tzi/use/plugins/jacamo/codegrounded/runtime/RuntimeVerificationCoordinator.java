@@ -86,6 +86,12 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
         runtimeCapabilities=Map.copyOf(capabilities);
     }
     void observedSource(org.jacamo.bridge.contract.RuntimeEvent event) {
+        if(org.jacamo.bridge.contract.VerificationObservation.present(event)) {
+            // A valid observation proves this subject/callback, not an enumeration
+            // of all subjects or a complete pre-attachment history.
+            var observed=new java.util.TreeMap<>(sources);
+            observed.put(org.jacamo.bridge.contract.VerificationObservation.SOURCE_ID,Completeness.PARTIAL);sources=Map.copyOf(observed);
+        }
         // A source-local lifecycle notice can change the population before its first full data cut.
         // A later complete object update does not prove that the whole source population recovered.
         if (semanticVerifier!=null && event.factKind()==org.jacamo.bridge.contract.RuntimeFactKind.AGENT
@@ -112,8 +118,9 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
     public void snapshotObserver(java.util.function.Consumer<VerificationSnapshot> observer) {read(()->{snapshotObserver=java.util.Objects.requireNonNull(observer);return null;});}
     public void controlledLifecycle(VerificationSnapshot.SynchronizationState state) {read(()->{controlledLifecycle=state;return null;});}
     public void controlState(org.jacamo.bridge.contract.RuntimeControlContract.State state) {read(()->{controlState=state;return null;});}
-    void operationCheckpoint(org.jacamo.bridge.contract.RuntimeEvent event) {operationOutcomes=operations.observe(event,sources,coverageLost,semanticVerifier!=null?semanticVerifier.freshContexts():originalEngine!=null?originalEngine.freshContexts():Set.of());}
-    String operationKind(org.jacamo.bridge.contract.RuntimeEvent event){return operations.eligibleKind(event);}
+    void operationCheckpoint(org.jacamo.bridge.contract.RuntimeEvent event){operationCheckpoint(event,null);}
+    void operationCheckpoint(org.jacamo.bridge.contract.RuntimeEvent event,org.jacamo.bridge.contract.RuntimeSnapshot acceptedPrefix) {operationOutcomes=operations.observe(event,sources,coverageLost,semanticVerifier!=null?semanticVerifier.freshContexts():originalEngine!=null?originalEngine.freshContexts():Set.of());if(originalEngine!=null)originalEngine.taskCheckpoint(event,sources,coverageLost,acceptedPrefix);}
+    String operationKind(org.jacamo.bridge.contract.RuntimeEvent event){if(engine.auctionCase()&&org.jacamo.bridge.contract.VerificationObservation.present(event)){var value=org.jacamo.bridge.contract.VerificationObservation.require(event);if(value.kind()==org.jacamo.bridge.contract.VerificationObservation.Kind.JASON_STEP)return value.data().get("phase").equals("ENABLED")?"TASK_PRE":"TASK_POST";}return operations.eligibleKind(event);}
     private java.util.ArrayList<Object> deferredNotifications;
     public VerificationSnapshot verificationSnapshot() {
         return read(() -> {
@@ -317,7 +324,7 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
         return read(() -> system().authorizedMutation(() -> {
             if (deferredNotifications != null) throw new IllegalStateException("REPLAY_NAVIGATION_NESTED");
             var image=engine.savepoint(); var profile=constraints.savepoint();
-            var semanticImage=semanticVerifier==null?null:semanticVerifier.savepoint();var operationImage=operations.savepoint();
+            var semanticImage=semanticVerifier==null?null:semanticVerifier.savepoint();var operationImage=operations.savepoint();var originalAdmission=originalEngine==null?null:originalEngine.admission();
             var beforeObjects=Set.copyOf(system().state().allObjects());
             var beforeLinks=Set.copyOf(system().state().allLinks());
             var oldLatest=latest; var oldObservation=lastObservation; var oldInterval=profileInterval;
@@ -335,6 +342,7 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
                 return result;
             } catch (Exception error) {
                 engine.rollback(image); constraints.restore(profile);operations.restore(operationImage);
+                if(originalEngine!=null)originalEngine.restoreAdmission(originalAdmission);
                 if(semanticVerifier!=null)semanticVerifier.restore(semanticImage);
                 latest=oldLatest; lastObservation=oldObservation; profileInterval=oldInterval;
                 latestSnapshot=oldSnapshot;snapshots.restore(oldRetention);boundarySequence=oldBoundary;
@@ -353,7 +361,7 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
             if(quarantined)throw new IllegalStateException("NATIVE_RUNTIME_OWNER_QUARANTINED");
             var savepoint = engine.savepoint();
             var semanticImage=semanticVerifier==null?null:semanticVerifier.savepoint();var operationImage=operations.savepoint();
-            var originalFresh=originalEngine==null?Set.<String>of():originalEngine.freshContexts();
+            var originalFresh=originalEngine==null?null:originalEngine.admission();
             var retainedBefore=originalEngine==null?null:snapshots.savepoint();var frozenBefore=latestSnapshot;long boundaryBefore=boundarySequence;
             var profileBefore=originalEngine==null?null:constraints.savepoint();var operationsBefore=operationOutcomes;
             String previousSession = sessionId, previousRevision = modelRevision;
@@ -407,10 +415,13 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
             operations.clear();if(semanticVerifier!=null)semanticVerifier.reset();
         }
         if(coverageLost)operations.clear();
+        operations.retireUnavailableContexts("ACCEPTED_SNAPSHOT");
         // Original owner epoch is committed only after the whole native action validates.
         sessionId = session; generation = nextGeneration; modelRevision = revision;
         sources = Map.copyOf(completeness); coverageLost = journal.hasGap();
     }
+    /** Writer-barrier cut assembly reads the same rollback-owned coverage, never a parallel cache. */
+    Map<String,Completeness> admittedSourceCoverage(){return Map.copyOf(sources);}
     public RuntimeVerificationResult loadProfile(Path path) {
         return read(() -> installProfile(() -> constraints.install(path, modelRevision)));
     }
@@ -580,7 +591,7 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
             Map<String,Object> payload,boolean checkpoint,boolean evidenceOnly,String diagnostic,Instant applied,long started,String commands,String hash,String checkpointId,boolean repeatedSourceCut) {
         String boundary=sessionId+":"+generation+":"+modelRevision+":"+stateVersion+":"+eventId+":consumer:"+(++originalBoundarySequence);
         var prepared=constraints.prepareEvaluation(sources,coverageLost,CheckpointType.journalKind(kind),changedFeatures,runtimeCapabilities,engine,originalEngine.freshContexts());
-        var invocation=operations.drainDetailed();var invocationWork=operations.drainPrepared();var operation=operationOutcomes;operationOutcomes=List.of();
+        var invocation=operations.drainDetailed();var invocationWork=new java.util.ArrayList<>(operations.drainPrepared());invocationWork.addAll(originalEngine.drainTaskPrepared());var operation=operationOutcomes;operationOutcomes=List.of();
         var pending=org.tzi.use.plugins.jacamo.semantics.runtime.SemanticResultAdapter.pending(engine.canonicalProgram(),boundary,"ORDERED_EVALUATION_PENDING");
         var outcomes=new java.util.ArrayList<ExternalOclConstraintService.Outcome>();
         prepared.invariants().forEach(inv->outcomes.add(new ExternalOclConstraintService.Outcome(inv.id(),inv.context(),VerificationOutcome.SKIPPED,"ORDERED_EVALUATION_PENDING",inv.body().toString())));
@@ -594,7 +605,7 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
         lastObservation=result;if(!evidenceOnly||coverageLost){latest=result;latestSnapshot=captured;}
         if(!persisted)return result;
         final RuntimeVerificationResult accepted=result;final VerificationSnapshot frozen=captured;
-        boolean advance=!evidenceOnly&&!coverageLost&&!repeatedSourceCut&&java.util.Set.of("SNAPSHOT","EVENT","OPERATION_POST","STREAM_BOUNDARY").contains(kind);
+        boolean advance=!evidenceOnly&&!coverageLost&&!repeatedSourceCut&&java.util.Set.of("SNAPSHOT","EVENT","OPERATION_POST","TASK_PRE","TASK_POST","STREAM_BOUNDARY").contains(kind);
         try {
             var cut=originalEngine.prepare(stateVersion,boundary,hash,sources,coverageLost,advance,invocation,prepared,invocationWork,commands.getBytes(StandardCharsets.UTF_8).length);
             if(!evidenceOnly)verificationCount++;

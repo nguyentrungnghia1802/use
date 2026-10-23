@@ -156,7 +156,8 @@ public final class JasonSnapshotSource implements SnapshotSource {
         controller.put("agent", agentName);
         controller.put("cycles", cycles);
         controller.put("runningIntentions", circumstance == null ? 0 : circumstance.getNbRunningIntentions());
-        controller.put("allIntentions", circumstance == null ? 0 : count(circumstance.getAllIntentions()));
+        var intentionViews=JasonIntentionViews.capture(circumstance);
+        controller.put("allIntentions", intentionViews.size());
         controller.put("events", circumstance == null || circumstance.getEvents() == null
                 ? 0 : circumstance.getEvents().size());
         controller.put("pendingEvents", circumstance == null || circumstance.getPendingEvents() == null
@@ -177,17 +178,16 @@ public final class JasonSnapshotSource implements SnapshotSource {
 
         if (circumstance == null) return;
         int intentionOrdinal = 0;
-        for (var iterator = circumstance.getAllIntentions(); iterator != null && iterator.hasNext();) {
-            Intention intention = iterator.next();
+        for (var view : intentionViews) {
+            Intention intention = view.intention();
             Map<String, Object> values = new TreeMap<>();
             values.put("runtimeConcept", "Intention");
             values.put("sourceLayer", "RUNTIME");
             values.put("normalizedEventKind", "INTENTION");
             values.put("agent", agentName);
             values.put("intentionId", intention.getId());
-            values.put("state", intention.getStateBasedOnPlace() == null
-                    ? "UNKNOWN" : intention.getStateBasedOnPlace().name());
-            values.put("place", intention.getPlace() == null ? "UNKNOWN" : intention.getPlace().name());
+            values.put("state", view.state().name());
+            values.put("place", view.place().name());
             values.put("term", intention.getAsTerm().toString());
             facts.add(new RuntimeFact(new BridgeEntityId("jason", "agent", "intention",
                             projectKey, agentName, runtimeScope + ":" + intentionOrdinal++),
@@ -224,15 +224,6 @@ public final class JasonSnapshotSource implements SnapshotSource {
                         projectKey, agentName, runtimeScope + ":" + ordinal),
                 RuntimeFactKind.RUNTIME_EVENT, values, List.of(), ProjectionStatus.EVIDENCE_ONLY,
                 Completeness.COMPLETE, List.of()));
-    }
-
-    private static int count(java.util.Iterator<?> iterator) {
-        int count = 0;
-        while (iterator != null && iterator.hasNext()) {
-            iterator.next();
-            count++;
-        }
-        return count;
     }
 
     private static void put(Map<String, Object> values, String key, Object value) {

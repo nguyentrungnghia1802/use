@@ -1,0 +1,66 @@
+{
+  "task": "A02",
+  "scope": "XML_READER_STRUCTURAL_AND_FROZEN_ASSET_BINDING_VALIDATION_NOT_RULE_EXECUTION_OR_LIVE_RUNTIME",
+  "head": "d8c85780c2e76236f7212d636f562107b4fd61dd",
+  "command": "mvn -B -pl use-plugin -am '-Dtest=AuctionMappingXmlTest,AuctionCaseBundleTest,CanonicalMappingContractTest' '-Dsurefire.failIfNoSpecifiedTests=false' test",
+  "result": "PASS",
+  "suites": [
+    {
+      "suite": "org.tzi.use.plugins.jacamo.semantics.auction.AuctionMappingXmlTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "rejectsExternalEntitiesDoctypeOversizeDepthAndNodeFloods",
+        "loadsAllSectionsAsImmutableLocatedSpecificationNotHistoricalValidationVerdict",
+        "rejectsEmptyReferencesDuplicateFieldsAndUnknownConverters",
+        "rejectsMalformedUnknownNamespaceVersionElementsAttributesAndOperations",
+        "resolvesSourcePinsAndExternalCellsTasksViewsAndClausesAgainstFrozenAssets",
+        "rejectsDuplicateMissingIdsAndReferencesWithSourcePosition"
+      ],
+      "reportSha256": "0df0b6f25a7b888a79f227ac0d970925dc3bdfd6637ec570675b08930ed9b9a4"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.semantics.auction.AuctionCaseBundleTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "wrongArchiveEntryOrRuntimeFingerprintIsRejectedByBinaryVerification",
+        "missingOrModifiedInputsDoNotFallBackToDesktopOrReferenceRepositories",
+        "verifiesActualFrameworkBinaryAndPinnedArchiveEntry",
+        "readsPinnedSourcesAndTargetsFromPortableDirectoryOnly",
+        "rejectsUnknownVersionFieldsDuplicateIdsAndEscapingPaths",
+        "freezesRawBytesAndRecordsDerivedSourcesWithoutOverwritingAuthority"
+      ],
+      "reportSha256": "8b6e347ba8a8238609424927f5761c9ec90be7782ddb75f83b12145b32e97082"
+    },
+    {
+      "suite": "org.tzi.use.plugins.jacamo.semantics.CanonicalMappingContractTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "snapshotAndAuthoredRulesProduceCanonicalOriginalModelsAndCompleteTrace",
+        "configurationVersionUnknownFieldsAndDuplicateJsonKeysCannotBypassAdmission",
+        "completeSourceFeaturesAndLegacyBundleCompatibilityRemainUnchanged",
+        "profileAndRuleReplacementChangesProgramWithoutChangingOriginalEngine",
+        "originalMutableGoalDefinitionCannotChangeAfterProgramOwnership",
+        "ambiguousBindingsWrongSourceProfileAndAgentEntityCoercionAreRejected",
+        "versionedRulesDiagnosticAndSourceDecisionsRoundTripWithoutLegacyIr"
+      ],
+      "reportSha256": "c052216994d25065758b6f2e559e25d2b42a0148a1e023536f8df7fa37fbeaa1"
+    }
+  ],
+  "xmlSha256": "46979b627e1102ce7368bc1f84ea4954ce0cb920159a164304fe2390b1e48032",
+  "vocabularySha256": "a4772880406888907f1b335a9544c25e9d09626f35511d9383dc4b787812d569",
+  "rootCausesResolved": [
+    "Legacy transitive JAXP provider did not support accessExternalDTD; use verified JDK21 newDefaultInstance, retaining all security checks",
+    "Vocabulary root #document must not be mistaken for a comment"
+  ],
+  "remaining": "A03 selectors; A04 M1 execution; I01/I02 iStar admission; O01 native OCL; A05 facade import; runtime/live gates",
+  "tests": 19.0
+}

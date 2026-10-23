@@ -1,0 +1,529 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] use                                                                [pom]
+[INFO] JaCaMo Bridge Neutral Contract                                     [jar]
+[INFO] JaCaMo Bridge Official Adapters                                    [jar]
+[INFO] use-core                                                           [jar]
+[INFO] USE semantic engine � selected use4Goal core                       [jar]
+[INFO] use-gui                                                            [jar]
+[INFO] USE JaCaMo Plugin                                                  [jar]
+[INFO] 
+[INFO] --------------------------< org.tzi.use:use >---------------------------
+[INFO] Building use 7.5.0                                                 [1/7]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] -----------------< org.tzi.use:jacamo-bridge-contract >-----------------
+[INFO] Building JaCaMo Bridge Neutral Contract 1.0.0-SNAPSHOT             [2/7]
+[INFO]   from jacamo-bridge-contract\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ jacamo-bridge-contract ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ jacamo-bridge-contract ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ jacamo-bridge-contract ---
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-contract\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ jacamo-bridge-contract ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ jacamo-bridge-contract ---
+[INFO] 
+[INFO] ------------------< org.tzi.use:jacamo-bridge-jacamo >------------------
+[INFO] Building JaCaMo Bridge Official Adapters 1.0.0-SNAPSHOT            [3/7]
+[INFO]   from jacamo-bridge-jacamo\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ jacamo-bridge-jacamo ---
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-jacamo\src\main\resources
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ jacamo-bridge-jacamo ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ jacamo-bridge-jacamo ---
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-jacamo\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ jacamo-bridge-jacamo ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ jacamo-bridge-jacamo ---
+[INFO] 
+[INFO] ------------------------< org.tzi.use:use-core >------------------------
+[INFO] Building use-core 7.5.0                                            [4/7]
+[INFO]   from use-core\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- merge:1.2.0:merge (merge-grammar-files) @ use-core ---
+[INFO] 
+[INFO] --- antlr3:3.5.3:antlr (antlr) @ use-core ---
+[INFO] ANTLR: Processing source directory D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\grammars
+[INFO] 
+[INFO] --- copy-rename:1.0:rename (move-antlr-parser-use) @ use-core ---
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\USELexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\use\USELexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\USEParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\use\USEParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\GeneratorLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\generator\GeneratorLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\GeneratorParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\generator\GeneratorParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\OCLLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\ocl\OCLLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\OCLParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\ocl\OCLParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\ShellCommandLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\shell\ShellCommandLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\ShellCommandParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\shell\ShellCommandParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\SoilLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\soil\SoilLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\SoilParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\soil\SoilParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\TestSuiteLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\testsuite\TestSuiteLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\TestSuiteParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\testsuite\TestSuiteParser.java
+[INFO] 
+[INFO] --- build-helper:3.6.0:add-source (add-antlr3-generated-source) @ use-core ---
+[INFO] Source directory: D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3 added.
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-core ---
+[INFO] Copying 512 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- build-helper:3.6.0:add-test-source (add-test-source) @ use-core ---
+[INFO] Test Source directory: D:\_CODE_BANK\Project_\08_Thesis\use\use-core\src\it\java added.
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-core ---
+[WARNING] *********************************************************************************************************************************************************************************************
+[WARNING] * Required filename-based automodules detected: [antlr-runtime-3.5.3.jar, combinatoricslib-2.3.jar, vtd-xml-2.13.4.jar]. Please don't publish this project to a public artifact repository! *
+[WARNING] *********************************************************************************************************************************************************************************************
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 570 source files with javac [debug target 21 module-path] to target\classes
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-core/src/main/java/org/tzi/use/uml/ocl/type/MessageType.java: Some input files use or override a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-core/src/main/java/org/tzi/use/uml/ocl/type/MessageType.java: Recompile with -Xlint:deprecation for details.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-core/target/generated-sources/antlr3/org/tzi/use/parser/generator/GeneratorParser.java: Some input files use unchecked or unsafe operations.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-core/target/generated-sources/antlr3/org/tzi/use/parser/generator/GeneratorParser.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-core ---
+[INFO] Copying 91 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-core ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 53 source files with javac [debug target 21 module-path] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-core ---
+[INFO] 
+[INFO] ---------------< org.tzi.use:use-jacamo-semantic-engine >---------------
+[INFO] Building USE semantic engine � selected use4Goal core 7.5.0        [5/7]
+[INFO]   from use-jacamo-semantic-engine\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- antlr4:4.9.3:antlr4 (generate-selected-original-grammars) @ use-jacamo-semantic-engine ---
+[INFO] No grammars to process
+[INFO] ANTLR 4: Processing source directory D:\_CODE_BANK\Project_\08_Thesis\use\use-jacamo-semantic-engine\src\main\resources\grammars
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-jacamo-semantic-engine ---
+[INFO] Copying 4 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-jacamo-semantic-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 165 source files with javac [debug release 21] to target\classes
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/dsl/csl/mm/CslModel.java: Some input files use or override a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/dsl/csl/mm/CslModel.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-jacamo-semantic-engine ---
+[INFO] Copying 4 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-jacamo-semantic-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 11 source files with javac [debug release 21] to target\test-classes
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-jacamo-semantic-engine/src/test/java/org/tzi/use/semantic/engine/EngineInstallationGuardTest.java: D:\_CODE_BANK\Project_\08_Thesis\use\use-jacamo-semantic-engine\src\test\java\org\tzi\use\semantic\engine\EngineInstallationGuardTest.java uses or overrides a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-jacamo-semantic-engine/src/test/java/org/tzi/use/semantic/engine/EngineInstallationGuardTest.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-jacamo-semantic-engine ---
+[INFO] 
+[INFO] ------------------------< org.tzi.use:use-gui >-------------------------
+[INFO] Building use-gui 7.5.0                                             [6/7]
+[INFO]   from use-gui\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-gui ---
+[INFO] Copying 56 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- build-helper:1.5:add-test-source (add-test-source) @ use-gui ---
+[INFO] Test Source directory: D:\_CODE_BANK\Project_\08_Thesis\use\use-gui\src\it\java added.
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-gui ---
+[WARNING] ******************************************************************************************************************************************************************************************************************************************
+[WARNING] * Required filename-based automodules detected: [antlr-runtime-3.5.3.jar, combinatoricslib-2.3.jar, annotations-13.0.jar, itextpdf-5.5.13.3.jar, vtd-xml-2.13.4.jar]. Please don't publish this project to a public artifact repository! *
+[WARNING] ******************************************************************************************************************************************************************************************************************************************
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 307 source files with javac [debug target 21 module-path] to target\classes
+[WARNING] /D:/_CODE_BANK/Project_/08_Thesis/use/use-gui/src/main/java/org/tzi/use/gui/views/diagrams/util/MenuScroller.java:[435,15] finalize() in java.lang.Object has been deprecated and marked for removal
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-gui/src/main/java/org/tzi/use/runtime/gui/impl/PluginActionProxy.java: Some input files use or override a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-gui/src/main/java/org/tzi/use/runtime/gui/impl/PluginActionProxy.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- build-helper:1.5:add-test-resource (add-test-resource) @ use-gui ---
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-gui ---
+[INFO] Copying 1 resource from src\test\resources to target\test-classes
+[INFO] Copying 297 resources from src\it\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-gui ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 9 source files with javac [debug target 21 module-path] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-gui ---
+[INFO] 
+[INFO] -----------------------< org.tzi.use:use-plugin >-----------------------
+[INFO] Building USE JaCaMo Plugin 1.0.1                                   [7/7]
+[INFO]   from use-plugin\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-plugin ---
+[INFO] Copying 1 resource from src\main\version-manifest to target\classes
+[INFO] Copying 13 resources from src\main\resources to target\classes
+[INFO] Copying 2 resources from src\main\resources\org\tzi\use\plugins\jacamo\ocl to target\classes\org\tzi\use\plugins\jacamo\historical\version-1\ocl
+[INFO] Copying 3 resources from src\main\resources\org\tzi\use\plugins\jacamo\runtime to target\classes\org\tzi\use\plugins\jacamo\historical\version-1\runtime
+[INFO] Copying 1 resource from src\main\resources\org\tzi\use\plugins\jacamo\verification to target\classes\org\tzi\use\plugins\jacamo\historical\version-1\verification
+[INFO] Copying 1 resource from Core\Metamodel\version-1 to target\classes\org\tzi\use\plugins\jacamo\historical\version-1
+[INFO] Copying 3 resources from Core\Mapping\version-1 to target\classes\org\tzi\use\plugins\jacamo\historical\version-1
+[INFO] Copying 1 resource from Core\Metamodel\csl-monitor-v1 to target\classes\org\tzi\use\plugins\jacamo\semantics\metamodel
+[INFO] Copying 1 resource from Core\Metamodel\jacamo-source-v2 to target\classes\org\tzi\use\plugins\jacamo\semantics\metamodel
+[INFO] Copying 1 resource from Core\Metamodel\version-2 to target\classes\org\tzi\use\plugins\jacamo\canonical\version-2
+[INFO] Copying 2 resources from Core\Mapping\version-2 to target\classes\org\tzi\use\plugins\jacamo\canonical\version-2
+[INFO] Copying 2 resources from release to target\classes\org\tzi\use\plugins\jacamo\release
+[INFO] Copying 1 resource from  to target\classes\org\tzi\use\plugins\jacamo\release
+[INFO] Copying 3 resources from licenses to target\classes\org\tzi\use\plugins\jacamo\release\licenses
+[INFO] The encoding used to copy filtered properties files have not been set. This means that the same encoding will be used to copy filtered properties files as when copying other filtered resources. This might not be what you want! Run your build with --debug to see which files might be affected. Read more at https://maven.apache.org/plugins/maven-resources-plugin/examples/filtering-properties-files.html
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-plugin ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 357 source files with javac [debug target 21] to target\classes
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/materialization/DirectUseBackend.java: D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\src\main\java\org\tzi\use\plugins\jacamo\materialization\DirectUseBackend.java uses or overrides a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/materialization/DirectUseBackend.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-plugin ---
+[INFO] Copying 57 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-plugin ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 422 source files with javac [debug target 21] to target\test-classes
+[INFO] Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/mapping/OrderProjectionTest.java: Some input files use or override a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/mapping/OrderProjectionTest.java: Recompile with -Xlint:deprecation for details.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/runtime/RuntimeIdentityHardeningTest.java: Some input files use unchecked or unsafe operations.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/runtime/RuntimeIdentityHardeningTest.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-plugin ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.auction.AuctionDeclarativeTasksTest
+Configuration of 'jacamoJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/jacamo/1.3.1/jacamo-1.3.1.jar, based on class loader
+Configuration of 'moiseJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/moise/1.1/moise-1.1.jar, based on class loader
+Configuration of 'jasonJar' found at /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar, based on class loader
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+Oct 23, 2026 1:17:21 PM jason.stdlib.println execute
+TASK_SCOPE_DIAGNOSTIC A_start_t1 ENABLED refs=[beid:v1:moise/organisation/scheme-board/aorg/sch_nativeSteps/cb8c7347-3d91-40a3-b3c3-16b7c787bc05%3A309a6fa9-ddb5-4050-a548-146ddb4506ea, ] scopes=[Scope[id=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, definition=auction-execution, anchor=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, context=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, revision=083f8544cf8402091337b8a9aa4deb3a2dce55b2ef0376556d0f1049b8248100, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:2, members=[Member[actor=Auction, actorType=Auction_0e493d5d5a0221f74c383191, instance=cast_0e493d5d5a0221f74c3831917d05542dca469c9c2bf7e3f3c23e2ec5902ebd0b, player=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, role=, context=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, interval=, selves={}], Member[actor=Auctioneer, actorType=Auctioneer_b79917a6ad37ebb19ebcf058, instance=cast_b79917a6ad37ebb19ebcf05838ee9616cb2265165518c3ef4f24b93821633c2b, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, context=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, interval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, selves={}], Member[actor=Participant, actorType=Participant_f2d46eae7b5bcb443859af61, instance=cast_f2d46eae7b5bcb443859af61564a99de52f8a7335b6d5773a349702ca24ae40e, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, role=xml:m0:789b1fb705529b8e99bf41ee16f51661cf81027f389bf985c730b2c006f01e9e, context=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, interval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, selves={}]], unavailable=[], bindings={castComplete=true, group=beid:v1:moise/organisation/group-board/aorg/agrp/cb8c7347-3d91-40a3-b3c3-16b7c787bc05%3Afab354c1-bd33-4843-963a-08ddca2825cd, scheme=beid:v1:moise/organisation/scheme-board/aorg/sch_nativeSteps/cb8c7347-3d91-40a3-b3c3-16b7c787bc05%3A309a6fa9-ddb5-4050-a548-146ddb4506ea}, resources={}]] demands=[Demand[rule=require-A_decide_t1, target=A_decide_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Auctioneer, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, required=false, episode=0af50f191d088574411a1efb02275ca659db34422725c83ba19ce9b574efa1ce, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:2, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=0dbc80d5b22be0aeb487228f327d15dd8226fc96b29bf3b028d7983921a923e1, demandSourceHash=f8a9e8f35cba540424ccbb3a22ca210201dc67094c657ca19b2eaf09480538e8, targetTaskId=A_decide_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, demandEpisode=0af50f191d088574411a1efb02275ca659db34422725c83ba19ce9b574efa1ce, demandSourceProofs=d4e505f7be81ffd1b79a4bf3ebe3ad942583d9e791842b1badf206dcebe720cf, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-A_decide_t1}], Demand[rule=require-A_decide_t2, target=A_decide_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Auctioneer, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, required=false, episode=89e74b7b6515fcf45b3e5c73344e52fe58ceea98e3bc98de06950c207551976b, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:2, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=0dbc80d5b22be0aeb487228f327d15dd8226fc96b29bf3b028d7983921a923e1, demandSourceHash=f8a9e8f35cba540424ccbb3a22ca210201dc67094c657ca19b2eaf09480538e8, targetTaskId=A_decide_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, demandEpisode=89e74b7b6515fcf45b3e5c73344e52fe58ceea98e3bc98de06950c207551976b, demandSourceProofs=d4e505f7be81ffd1b79a4bf3ebe3ad942583d9e791842b1badf206dcebe720cf, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-A_decide_t2}], Demand[rule=require-A_start_t1, target=A_start_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Auctioneer, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, required=true, episode=10e97369ccc2c32fa7fcb30bc08ff7e5038e058b9162d0b5bcaa7f06c58ac3a3, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:2, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=19918862af8967261be4f4f37f94918e121cabf6112aa4e97fb80419d667704f, demandSourceHash=4ec12c0c666b71d8171371e17ca5fbcad91ced86c3b0b15a66391dc98cae003e, targetTaskId=A_start_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, demandEpisode=10e97369ccc2c32fa7fcb30bc08ff7e5038e058b9162d0b5bcaa7f06c58ac3a3, demandSourceProofs=d4e505f7be81ffd1b79a4bf3ebe3ad942583d9e791842b1badf206dcebe720cf, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-A_start_t1}], Demand[rule=require-A_start_t2, target=A_start_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Auctioneer, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, required=true, episode=db7811160d479a1eb3acbb70c7b93613acf962f58fa8fe4a141fd99b8f99b2c3, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:2, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=19918862af8967261be4f4f37f94918e121cabf6112aa4e97fb80419d667704f, demandSourceHash=4ec12c0c666b71d8171371e17ca5fbcad91ced86c3b0b15a66391dc98cae003e, targetTaskId=A_start_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, demandEpisode=db7811160d479a1eb3acbb70c7b93613acf962f58fa8fe4a141fd99b8f99b2c3, demandSourceProofs=d4e505f7be81ffd1b79a4bf3ebe3ad942583d9e791842b1badf206dcebe720cf, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-A_start_t2}], Demand[rule=require-P_bid_t1, target=P_bid_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Participant, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, role=xml:m0:789b1fb705529b8e99bf41ee16f51661cf81027f389bf985c730b2c006f01e9e, roleInterval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, required=false, episode=69dc99ea9ee373f83d6f58ac00e860ff930853d918b1a95d3371dda255ffc4d6, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:2, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=7dd786b6911ed610a4f1c25d3caeac20029c38e1004efbfec5e877d7cad66b8c, demandSourceHash=dbf26b13e618e46260c28f6da011f225d6df548906b35f6e54c3f389a8cbd751, targetTaskId=P_bid_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, demandEpisode=69dc99ea9ee373f83d6f58ac00e860ff930853d918b1a95d3371dda255ffc4d6, demandSourceProofs=d4e505f7be81ffd1b79a4bf3ebe3ad942583d9e791842b1badf206dcebe720cf, roleInterval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-P_bid_t1}], Demand[rule=require-P_bid_t2, target=P_bid_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Participant, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, role=xml:m0:789b1fb705529b8e99bf41ee16f51661cf81027f389bf985c730b2c006f01e9e, roleInterval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, required=false, episode=803cca668e2f982a113c0cf92e16966ca299b8e664945fda2444f5a73a7af02b, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:2, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=7dd786b6911ed610a4f1c25d3caeac20029c38e1004efbfec5e877d7cad66b8c, demandSourceHash=dbf26b13e618e46260c28f6da011f225d6df548906b35f6e54c3f389a8cbd751, targetTaskId=P_bid_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, demandEpisode=803cca668e2f982a113c0cf92e16966ca299b8e664945fda2444f5a73a7af02b, demandSourceProofs=d4e505f7be81ffd1b79a4bf3ebe3ad942583d9e791842b1badf206dcebe720cf, roleInterval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-P_bid_t2}]]
+INFO: Start scheme sch_nativeSteps for delivery
+TASK_SCOPE_DIAGNOSTIC A_start_t1 SUCCEEDED refs=[beid:v1:moise/organisation/scheme-board/aorg/sch_nativeSteps/cb8c7347-3d91-40a3-b3c3-16b7c787bc05%3A309a6fa9-ddb5-4050-a548-146ddb4506ea, cartago:artifact:2dc15c79-e454-4765-9a42-0ab2a39aafa9:/main:530f549b-bdfd-441f-99ff-a86b31bf7463] scopes=[Scope[id=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, definition=auction-execution, anchor=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, context=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, revision=f2b807179172ce6a42461d8dfe7aa8f40b4a01b23142800ac2274b11d1a93895, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:3, members=[Member[actor=Auction, actorType=Auction_0e493d5d5a0221f74c383191, instance=cast_0e493d5d5a0221f74c3831917d05542dca469c9c2bf7e3f3c23e2ec5902ebd0b, player=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, role=, context=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, interval=, selves={}], Member[actor=Auctioneer, actorType=Auctioneer_b79917a6ad37ebb19ebcf058, instance=cast_b79917a6ad37ebb19ebcf05838ee9616cb2265165518c3ef4f24b93821633c2b, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, context=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, interval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, selves={A_start_t1=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3, A_decide_t2=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3, A_decide_t1=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3, A_start_t2=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3}], Member[actor=Participant, actorType=Participant_f2d46eae7b5bcb443859af61, instance=cast_f2d46eae7b5bcb443859af61564a99de52f8a7335b6d5773a349702ca24ae40e, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, role=xml:m0:789b1fb705529b8e99bf41ee16f51661cf81027f389bf985c730b2c006f01e9e, context=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, interval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, selves={P_bid_t2=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3, P_bid_t1=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3}]], unavailable=[], bindings={castComplete=true, domain=beid:v1:cartago/environment/artifact/%2Fmain/nativeSteps/530f549b-bdfd-441f-99ff-a86b31bf7463, group=beid:v1:moise/organisation/group-board/aorg/agrp/cb8c7347-3d91-40a3-b3c3-16b7c787bc05%3Afab354c1-bd33-4843-963a-08ddca2825cd, scheme=beid:v1:moise/organisation/scheme-board/aorg/sch_nativeSteps/cb8c7347-3d91-40a3-b3c3-16b7c787bc05%3A309a6fa9-ddb5-4050-a548-146ddb4506ea}, resources={P_artifact=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3, A_artifact=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3}]] demands=[Demand[rule=require-A_decide_t1, target=A_decide_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Auctioneer, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, required=false, episode=0af50f191d088574411a1efb02275ca659db34422725c83ba19ce9b574efa1ce, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:3, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=0dbc80d5b22be0aeb487228f327d15dd8226fc96b29bf3b028d7983921a923e1, demandSourceHash=f8a9e8f35cba540424ccbb3a22ca210201dc67094c657ca19b2eaf09480538e8, targetTaskId=A_decide_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, demandEpisode=0af50f191d088574411a1efb02275ca659db34422725c83ba19ce9b574efa1ce, demandSourceProofs=f5008a168b0ade0a0802d2f1cedd2a431b358408ab07221820ba6a28d227b8f6, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-A_decide_t1}], Demand[rule=require-A_decide_t2, target=A_decide_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Auctioneer, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, required=false, episode=89e74b7b6515fcf45b3e5c73344e52fe58ceea98e3bc98de06950c207551976b, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:3, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=0dbc80d5b22be0aeb487228f327d15dd8226fc96b29bf3b028d7983921a923e1, demandSourceHash=f8a9e8f35cba540424ccbb3a22ca210201dc67094c657ca19b2eaf09480538e8, targetTaskId=A_decide_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, demandEpisode=89e74b7b6515fcf45b3e5c73344e52fe58ceea98e3bc98de06950c207551976b, demandSourceProofs=f5008a168b0ade0a0802d2f1cedd2a431b358408ab07221820ba6a28d227b8f6, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-A_decide_t2}], Demand[rule=require-A_start_t1, target=A_start_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Auctioneer, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, required=true, episode=10e97369ccc2c32fa7fcb30bc08ff7e5038e058b9162d0b5bcaa7f06c58ac3a3, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:3, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=19918862af8967261be4f4f37f94918e121cabf6112aa4e97fb80419d667704f, demandSourceHash=4ec12c0c666b71d8171371e17ca5fbcad91ced86c3b0b15a66391dc98cae003e, targetTaskId=A_start_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, demandEpisode=10e97369ccc2c32fa7fcb30bc08ff7e5038e058b9162d0b5bcaa7f06c58ac3a3, demandSourceProofs=f5008a168b0ade0a0802d2f1cedd2a431b358408ab07221820ba6a28d227b8f6, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-A_start_t1}], Demand[rule=require-A_start_t2, target=A_start_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Auctioneer, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, required=true, episode=db7811160d479a1eb3acbb70c7b93613acf962f58fa8fe4a141fd99b8f99b2c3, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:3, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=19918862af8967261be4f4f37f94918e121cabf6112aa4e97fb80419d667704f, demandSourceHash=4ec12c0c666b71d8171371e17ca5fbcad91ced86c3b0b15a66391dc98cae003e, targetTaskId=A_start_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, demandEpisode=db7811160d479a1eb3acbb70c7b93613acf962f58fa8fe4a141fd99b8f99b2c3, demandSourceProofs=f5008a168b0ade0a0802d2f1cedd2a431b358408ab07221820ba6a28d227b8f6, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-A_start_t2}], Demand[rule=require-P_bid_t1, target=P_bid_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Participant, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, role=xml:m0:789b1fb705529b8e99bf41ee16f51661cf81027f389bf985c730b2c006f01e9e, roleInterval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, required=false, episode=69dc99ea9ee373f83d6f58ac00e860ff930853d918b1a95d3371dda255ffc4d6, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:3, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=7dd786b6911ed610a4f1c25d3caeac20029c38e1004efbfec5e877d7cad66b8c, demandSourceHash=dbf26b13e618e46260c28f6da011f225d6df548906b35f6e54c3f389a8cbd751, targetTaskId=P_bid_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, demandEpisode=69dc99ea9ee373f83d6f58ac00e860ff930853d918b1a95d3371dda255ffc4d6, demandSourceProofs=f5008a168b0ade0a0802d2f1cedd2a431b358408ab07221820ba6a28d227b8f6, roleInterval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-P_bid_t1}], Demand[rule=require-P_bid_t2, target=P_bid_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Participant, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, role=xml:m0:789b1fb705529b8e99bf41ee16f51661cf81027f389bf985c730b2c006f01e9e, roleInterval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, required=false, episode=803cca668e2f982a113c0cf92e16966ca299b8e664945fda2444f5a73a7af02b, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:3, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=7dd786b6911ed610a4f1c25d3caeac20029c38e1004efbfec5e877d7cad66b8c, demandSourceHash=dbf26b13e618e46260c28f6da011f225d6df548906b35f6e54c3f389a8cbd751, targetTaskId=P_bid_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, demandEpisode=803cca668e2f982a113c0cf92e16966ca299b8e664945fda2444f5a73a7af02b, demandSourceProofs=f5008a168b0ade0a0802d2f1cedd2a431b358408ab07221820ba6a28d227b8f6, roleInterval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-P_bid_t2}]]
+TASK_SCOPE_DIAGNOSTIC A_start_t2 ENABLED refs=[beid:v1:moise/organisation/scheme-board/aorg/sch_nativeSteps/cb8c7347-3d91-40a3-b3c3-16b7c787bc05%3A309a6fa9-ddb5-4050-a548-146ddb4506ea, cartago:artifact:2dc15c79-e454-4765-9a42-0ab2a39aafa9:/main:530f549b-bdfd-441f-99ff-a86b31bf7463] scopes=[Scope[id=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, definition=auction-execution, anchor=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, context=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, revision=f2b807179172ce6a42461d8dfe7aa8f40b4a01b23142800ac2274b11d1a93895, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:4, members=[Member[actor=Auction, actorType=Auction_0e493d5d5a0221f74c383191, instance=cast_0e493d5d5a0221f74c3831917d05542dca469c9c2bf7e3f3c23e2ec5902ebd0b, player=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, role=, context=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, interval=, selves={}], Member[actor=Auctioneer, actorType=Auctioneer_b79917a6ad37ebb19ebcf058, instance=cast_b79917a6ad37ebb19ebcf05838ee9616cb2265165518c3ef4f24b93821633c2b, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, context=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, interval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, selves={A_start_t1=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3, A_decide_t2=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3, A_decide_t1=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3, A_start_t2=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3}], Member[actor=Participant, actorType=Participant_f2d46eae7b5bcb443859af61, instance=cast_f2d46eae7b5bcb443859af61564a99de52f8a7335b6d5773a349702ca24ae40e, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, role=xml:m0:789b1fb705529b8e99bf41ee16f51661cf81027f389bf985c730b2c006f01e9e, context=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, interval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, selves={P_bid_t2=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3, P_bid_t1=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3}]], unavailable=[], bindings={castComplete=true, domain=beid:v1:cartago/environment/artifact/%2Fmain/nativeSteps/530f549b-bdfd-441f-99ff-a86b31bf7463, group=beid:v1:moise/organisation/group-board/aorg/agrp/cb8c7347-3d91-40a3-b3c3-16b7c787bc05%3Afab354c1-bd33-4843-963a-08ddca2825cd, scheme=beid:v1:moise/organisation/scheme-board/aorg/sch_nativeSteps/cb8c7347-3d91-40a3-b3c3-16b7c787bc05%3A309a6fa9-ddb5-4050-a548-146ddb4506ea}, resources={P_artifact=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3, A_artifact=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3}]] demands=[Demand[rule=require-A_decide_t1, target=A_decide_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Auctioneer, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, required=false, episode=0af50f191d088574411a1efb02275ca659db34422725c83ba19ce9b574efa1ce, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:4, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=0dbc80d5b22be0aeb487228f327d15dd8226fc96b29bf3b028d7983921a923e1, demandSourceHash=f8a9e8f35cba540424ccbb3a22ca210201dc67094c657ca19b2eaf09480538e8, targetTaskId=A_decide_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, demandEpisode=0af50f191d088574411a1efb02275ca659db34422725c83ba19ce9b574efa1ce, demandSourceProofs=80362b8265dc68d64ee7e401ef87a0bc13645e5b79302c15569f83e772eca682, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-A_decide_t1}], Demand[rule=require-A_decide_t2, target=A_decide_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Auctioneer, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, required=false, episode=89e74b7b6515fcf45b3e5c73344e52fe58ceea98e3bc98de06950c207551976b, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:4, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=0dbc80d5b22be0aeb487228f327d15dd8226fc96b29bf3b028d7983921a923e1, demandSourceHash=f8a9e8f35cba540424ccbb3a22ca210201dc67094c657ca19b2eaf09480538e8, targetTaskId=A_decide_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, demandEpisode=89e74b7b6515fcf45b3e5c73344e52fe58ceea98e3bc98de06950c207551976b, demandSourceProofs=80362b8265dc68d64ee7e401ef87a0bc13645e5b79302c15569f83e772eca682, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-A_decide_t2}], Demand[rule=require-A_start_t1, target=A_start_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Auctioneer, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, required=true, episode=10e97369ccc2c32fa7fcb30bc08ff7e5038e058b9162d0b5bcaa7f06c58ac3a3, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:4, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=19918862af8967261be4f4f37f94918e121cabf6112aa4e97fb80419d667704f, demandSourceHash=4ec12c0c666b71d8171371e17ca5fbcad91ced86c3b0b15a66391dc98cae003e, targetTaskId=A_start_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, demandEpisode=10e97369ccc2c32fa7fcb30bc08ff7e5038e058b9162d0b5bcaa7f06c58ac3a3, demandSourceProofs=80362b8265dc68d64ee7e401ef87a0bc13645e5b79302c15569f83e772eca682, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-A_start_t1}], Demand[rule=require-A_start_t2, target=A_start_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Auctioneer, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, required=true, episode=db7811160d479a1eb3acbb70c7b93613acf962f58fa8fe4a141fd99b8f99b2c3, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:4, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=19918862af8967261be4f4f37f94918e121cabf6112aa4e97fb80419d667704f, demandSourceHash=4ec12c0c666b71d8171371e17ca5fbcad91ced86c3b0b15a66391dc98cae003e, targetTaskId=A_start_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, demandEpisode=db7811160d479a1eb3acbb70c7b93613acf962f58fa8fe4a141fd99b8f99b2c3, demandSourceProofs=80362b8265dc68d64ee7e401ef87a0bc13645e5b79302c15569f83e772eca682, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-A_start_t2}], Demand[rule=require-P_bid_t1, target=P_bid_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Participant, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, role=xml:m0:789b1fb705529b8e99bf41ee16f51661cf81027f389bf985c730b2c006f01e9e, roleInterval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, required=false, episode=69dc99ea9ee373f83d6f58ac00e860ff930853d918b1a95d3371dda255ffc4d6, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:4, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=7dd786b6911ed610a4f1c25d3caeac20029c38e1004efbfec5e877d7cad66b8c, demandSourceHash=dbf26b13e618e46260c28f6da011f225d6df548906b35f6e54c3f389a8cbd751, targetTaskId=P_bid_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, demandEpisode=69dc99ea9ee373f83d6f58ac00e860ff930853d918b1a95d3371dda255ffc4d6, demandSourceProofs=80362b8265dc68d64ee7e401ef87a0bc13645e5b79302c15569f83e772eca682, roleInterval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-P_bid_t1}], Demand[rule=require-P_bid_t2, target=P_bid_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Participant, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, role=xml:m0:789b1fb705529b8e99bf41ee16f51661cf81027f389bf985c730b2c006f01e9e, roleInterval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, required=false, episode=803cca668e2f982a113c0cf92e16966ca299b8e664945fda2444f5a73a7af02b, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:4, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=7dd786b6911ed610a4f1c25d3caeac20029c38e1004efbfec5e877d7cad66b8c, demandSourceHash=dbf26b13e618e46260c28f6da011f225d6df548906b35f6e54c3f389a8cbd751, targetTaskId=P_bid_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, demandEpisode=803cca668e2f982a113c0cf92e16966ca299b8e664945fda2444f5a73a7af02b, demandSourceProofs=80362b8265dc68d64ee7e401ef87a0bc13645e5b79302c15569f83e772eca682, roleInterval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-P_bid_t2}]]
+TASK_SCOPE_DIAGNOSTIC A_start_t2 SUCCEEDED refs=[beid:v1:moise/organisation/scheme-board/aorg/sch_nativeSteps/cb8c7347-3d91-40a3-b3c3-16b7c787bc05%3A309a6fa9-ddb5-4050-a548-146ddb4506ea, cartago:artifact:2dc15c79-e454-4765-9a42-0ab2a39aafa9:/main:530f549b-bdfd-441f-99ff-a86b31bf7463] scopes=[Scope[id=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, definition=auction-execution, anchor=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, context=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, revision=f2b807179172ce6a42461d8dfe7aa8f40b4a01b23142800ac2274b11d1a93895, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:5, members=[Member[actor=Auction, actorType=Auction_0e493d5d5a0221f74c383191, instance=cast_0e493d5d5a0221f74c3831917d05542dca469c9c2bf7e3f3c23e2ec5902ebd0b, player=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, role=, context=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, interval=, selves={}], Member[actor=Auctioneer, actorType=Auctioneer_b79917a6ad37ebb19ebcf058, instance=cast_b79917a6ad37ebb19ebcf05838ee9616cb2265165518c3ef4f24b93821633c2b, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, context=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, interval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, selves={A_start_t1=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3, A_decide_t2=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3, A_decide_t1=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3, A_start_t2=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3}], Member[actor=Participant, actorType=Participant_f2d46eae7b5bcb443859af61, instance=cast_f2d46eae7b5bcb443859af61564a99de52f8a7335b6d5773a349702ca24ae40e, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, role=xml:m0:789b1fb705529b8e99bf41ee16f51661cf81027f389bf985c730b2c006f01e9e, context=xml:m0:9573a281306dd1f08e31e45c4bcbaa256ef61a15bae77ec709ad383d7ec45e40, interval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, selves={P_bid_t2=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3, P_bid_t1=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3}]], unavailable=[], bindings={castComplete=true, domain=beid:v1:cartago/environment/artifact/%2Fmain/nativeSteps/530f549b-bdfd-441f-99ff-a86b31bf7463, group=beid:v1:moise/organisation/group-board/aorg/agrp/cb8c7347-3d91-40a3-b3c3-16b7c787bc05%3Afab354c1-bd33-4843-963a-08ddca2825cd, scheme=beid:v1:moise/organisation/scheme-board/aorg/sch_nativeSteps/cb8c7347-3d91-40a3-b3c3-16b7c787bc05%3A309a6fa9-ddb5-4050-a548-146ddb4506ea}, resources={P_artifact=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3, A_artifact=xml:m0:9ad438ed2db3023addd44bc5205a64d98287b7fda5eb2c27d410cae5860db2d3}]] demands=[Demand[rule=require-A_decide_t1, target=A_decide_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Auctioneer, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, required=false, episode=0af50f191d088574411a1efb02275ca659db34422725c83ba19ce9b574efa1ce, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:5, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=0dbc80d5b22be0aeb487228f327d15dd8226fc96b29bf3b028d7983921a923e1, demandSourceHash=f8a9e8f35cba540424ccbb3a22ca210201dc67094c657ca19b2eaf09480538e8, targetTaskId=A_decide_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, demandEpisode=0af50f191d088574411a1efb02275ca659db34422725c83ba19ce9b574efa1ce, demandSourceProofs=5794bb1421f4885db53e763808f36e5a48ecc40c069ca131e734ff91235db879, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-A_decide_t1}], Demand[rule=require-A_decide_t2, target=A_decide_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Auctioneer, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, required=false, episode=89e74b7b6515fcf45b3e5c73344e52fe58ceea98e3bc98de06950c207551976b, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:5, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=0dbc80d5b22be0aeb487228f327d15dd8226fc96b29bf3b028d7983921a923e1, demandSourceHash=f8a9e8f35cba540424ccbb3a22ca210201dc67094c657ca19b2eaf09480538e8, targetTaskId=A_decide_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, demandEpisode=89e74b7b6515fcf45b3e5c73344e52fe58ceea98e3bc98de06950c207551976b, demandSourceProofs=5794bb1421f4885db53e763808f36e5a48ecc40c069ca131e734ff91235db879, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-A_decide_t2}], Demand[rule=require-A_start_t1, target=A_start_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Auctioneer, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, required=true, episode=10e97369ccc2c32fa7fcb30bc08ff7e5038e058b9162d0b5bcaa7f06c58ac3a3, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:5, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=19918862af8967261be4f4f37f94918e121cabf6112aa4e97fb80419d667704f, demandSourceHash=4ec12c0c666b71d8171371e17ca5fbcad91ced86c3b0b15a66391dc98cae003e, targetTaskId=A_start_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, demandEpisode=10e97369ccc2c32fa7fcb30bc08ff7e5038e058b9162d0b5bcaa7f06c58ac3a3, demandSourceProofs=5794bb1421f4885db53e763808f36e5a48ecc40c069ca131e734ff91235db879, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-A_start_t1}], Demand[rule=require-A_start_t2, target=A_start_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Auctioneer, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, required=true, episode=db7811160d479a1eb3acbb70c7b93613acf962f58fa8fe4a141fd99b8f99b2c3, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:5, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=19918862af8967261be4f4f37f94918e121cabf6112aa4e97fb80419d667704f, demandSourceHash=4ec12c0c666b71d8171371e17ca5fbcad91ced86c3b0b15a66391dc98cae003e, targetTaskId=A_start_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, demandEpisode=db7811160d479a1eb3acbb70c7b93613acf962f58fa8fe4a141fd99b8f99b2c3, demandSourceProofs=5794bb1421f4885db53e763808f36e5a48ecc40c069ca131e734ff91235db879, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-A_start_t2}], Demand[rule=require-P_bid_t1, target=P_bid_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Participant, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, role=xml:m0:789b1fb705529b8e99bf41ee16f51661cf81027f389bf985c730b2c006f01e9e, roleInterval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, required=false, episode=69dc99ea9ee373f83d6f58ac00e860ff930853d918b1a95d3371dda255ffc4d6, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:5, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=7dd786b6911ed610a4f1c25d3caeac20029c38e1004efbfec5e877d7cad66b8c, demandSourceHash=dbf26b13e618e46260c28f6da011f225d6df548906b35f6e54c3f389a8cbd751, targetTaskId=P_bid_t1, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, demandEpisode=69dc99ea9ee373f83d6f58ac00e860ff930853d918b1a95d3371dda255ffc4d6, demandSourceProofs=5794bb1421f4885db53e763808f36e5a48ecc40c069ca131e734ff91235db879, roleInterval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-P_bid_t1}], Demand[rule=require-P_bid_t2, target=P_bid_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, actor=Participant, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, role=xml:m0:789b1fb705529b8e99bf41ee16f51661cf81027f389bf985c730b2c006f01e9e, roleInterval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, required=false, episode=803cca668e2f982a113c0cf92e16966ca299b8e664945fda2444f5a73a7af02b, cut=accepted-prefix:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:verification:5, quality=COMPLETE, diagnostic=, witness={activationFieldsHash=7dd786b6911ed610a4f1c25d3caeac20029c38e1004efbfec5e877d7cad66b8c, demandSourceHash=dbf26b13e618e46260c28f6da011f225d6df548906b35f6e54c3f389a8cbd751, targetTaskId=P_bid_t2, scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, player=beid:v1:jason/agent/runtime-agent/auction/participant19261ff95cc84851b44b3fff3d040321/actual-fixture-incarnation, demandEpisode=803cca668e2f982a113c0cf92e16966ca299b8e664945fda2444f5a73a7af02b, demandSourceProofs=5794bb1421f4885db53e763808f36e5a48ecc40c069ca131e734ff91235db879, roleInterval=fe39322ae166a6ae2f69943ffa7793c8c0d26658f662e0b82df6cb5f7d5b35eb, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP, demandRule=require-P_bid_t2}]]
+Oct 23, 2026 1:17:22 PM ora4mas.nopl.GroupBoard agKilled
+INFO: participant19261ff95cc84851b44b3fff3d040321 has quit, role participant removed by the platform!
+Oct 23, 2026 1:17:22 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: participant19261ff95cc84851b44b3fff3d040321 has quit, mission mParticipant removed by the platform!
+Oct 23, 2026 1:17:22 PM ora4mas.nopl.GroupBoard agKilled
+INFO: auctionBindingcfc4a38cba3a4f94970b6c8347e92130 has quit, role auctioneer removed by the platform!
+Oct 23, 2026 1:17:22 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: auctionBindingcfc4a38cba3a4f94970b6c8347e92130 has quit, mission mAuctioneer removed by the platform!
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 8.554 s <<< FAILURE! -- in org.tzi.use.plugins.jacamo.semantics.auction.AuctionDeclarativeTasksTest
+[ERROR] org.tzi.use.plugins.jacamo.semantics.auction.AuctionDeclarativeTasksTest.xmlBindsScopeBeforeArtifactAndOriginalStartTasksConsumeActualSourcePreAndPost -- Time elapsed: 8.551 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: {aggregateStatus=UNKNOWN, executionElement=A_start_t1_f81ddda452bbd1ad31636190, expansionKind=SOURCE_ELEMENT, key={bindingStack=[{actorType=Auctioneer_b79917a6ad37ebb19ebcf058, instanceId=cast_b79917a6ad37ebb19ebcf05838ee9616cb2265165518c3ef4f24b93821633c2b}], episode=10ff7bc623996ed0c1f7a5dbf85978d6671df2e5d0b176353c260c28fdcfa524, sourceElementId=A_start_t1_f81ddda452bbd1ad31636190}, leafStatus=UNKNOWN, mappingPlanHash=25c1594d4e850fa228c73cedf0391de7d4178acc78db9a1fd9b15416f71ba31a, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, quality=XML_TASK_TUPLE_UNAVAILABLE, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, sourceActor=Auctioneer, sourceElement=A_start_t1, sourceRule=auction-generated-v2, stack=[{actorType=Auctioneer_b79917a6ad37ebb19ebcf058, instanceId=cast_b79917a6ad37ebb19ebcf05838ee9616cb2265165518c3ef4f24b93821633c2b}], task={postSeen=false, preSeen=false}} boundaries=[[SemanticConstraintResult[id=TASK:A_start_t1:pre:64f05b4ed25dd032f6242a012601da08be8c75cff0606462c90091b721b29354, kind=TASK_PRE, contextClass=Auction, contextObject=, sourceIdentity=, expression=step.enabled, verdict=PASS, backendValue=true, diagnostic=, stateVersion=3, invocation=jason-step:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:test-boundary-instance:1, witness={scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, goalInvocation=jason-goal:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:test-boundary-instance:1, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, rawStepQuality=COMPLETE, phase=ENABLED, stepBindingHash=aa7b262d85b6665db2d2823654adc8886f19fe89cfedcb2ce59cb4e1f23443b9, postPreFieldCount=0, demandRule=require-A_start_t1, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, demandSourceHash=4ec12c0c666b71d8171371e17ca5fbcad91ced86c3b0b15a66391dc98cae003e, demandEpisode=10e97369ccc2c32fa7fcb30bc08ff7e5038e058b9162d0b5bcaa7f06c58ac3a3, postPreCoverage=, sourceActionNamespace=JASON_ACTIONEXEC_IDENTITY_NOT_CARTAGO_OPID, mappingPlanHash=25c1594d4e850fa228c73cedf0391de7d4178acc78db9a1fd9b15416f71ba31a, demandSourceProofs=d4e505f7be81ffd1b79a4bf3ebe3ad942583d9e791842b1badf206dcebe720cf, targetTaskId=A_start_t1, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, sourceActionCorrelation=, taskPredicateId=TASK:A_start_t1:pre, checkpointBinding=d3318138dd421fed41a323fef9470eef83a66ff9f0c8ae6c51e852e1a900ba21, activationFieldsHash=19918862af8967261be4f4f37f94918e121cabf6112aa4e97fb80419d667704f, stepInvocation=jason-step:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:test-boundary-instance:1, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP}]], [SemanticConstraintResult[id=XML:STEP:jason-step:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:test-boundary-instance:1, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE, stateVersion=5, invocation=jason-step:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:test-boundary-instance:1, witness={targetTaskId=A_start_t1, sourcePhase=SUCCEEDED}]], [SemanticConstraintResult[id=XML:STEP:jason-step:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:test-boundary-instance:2, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE, stateVersion=7, invocation=jason-step:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:test-boundary-instance:2, witness={targetTaskId=A_start_t2, sourcePhase=ENABLED}]], [SemanticConstraintResult[id=XML:STEP:jason-step:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:test-boundary-instance:2, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE, stateVersion=9, invocation=jason-step:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:test-boundary-instance:2, witness={targetTaskId=A_start_t2, sourcePhase=SUCCEEDED}]]] ==> expected: <FULFILLED> but was: <UNKNOWN>
+	at org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)
+	at org.junit.jupiter.api.AssertionUtils.failNotEqual(AssertionUtils.java:69)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:188)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1163)
+	at org.tzi.use.plugins.jacamo.semantics.auction.AuctionDeclarativeTasksTest.xmlBindsScopeBeforeArtifactAndOriginalStartTasksConsumeActualSourcePreAndPost(AuctionDeclarativeTasksTest.java:43)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutInvocation.proceed(TimeoutInvocation.java:46)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:140)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:84)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:214)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:210)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:135)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:66)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:107)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:88)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:67)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:52)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:86)
+	at org.junit.platform.launcher.core.DefaultLauncherSession$DelegatingLauncher.execute(DefaultLauncherSession.java:86)
+	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:56)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:184)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:122)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   AuctionDeclarativeTasksTest.xmlBindsScopeBeforeArtifactAndOriginalStartTasksConsumeActualSourcePreAndPost:43 {aggregateStatus=UNKNOWN, executionElement=A_start_t1_f81ddda452bbd1ad31636190, expansionKind=SOURCE_ELEMENT, key={bindingStack=[{actorType=Auctioneer_b79917a6ad37ebb19ebcf058, instanceId=cast_b79917a6ad37ebb19ebcf05838ee9616cb2265165518c3ef4f24b93821633c2b}], episode=10ff7bc623996ed0c1f7a5dbf85978d6671df2e5d0b176353c260c28fdcfa524, sourceElementId=A_start_t1_f81ddda452bbd1ad31636190}, leafStatus=UNKNOWN, mappingPlanHash=25c1594d4e850fa228c73cedf0391de7d4178acc78db9a1fd9b15416f71ba31a, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, quality=XML_TASK_TUPLE_UNAVAILABLE, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, sourceActor=Auctioneer, sourceElement=A_start_t1, sourceRule=auction-generated-v2, stack=[{actorType=Auctioneer_b79917a6ad37ebb19ebcf058, instanceId=cast_b79917a6ad37ebb19ebcf05838ee9616cb2265165518c3ef4f24b93821633c2b}], task={postSeen=false, preSeen=false}} boundaries=[[SemanticConstraintResult[id=TASK:A_start_t1:pre:64f05b4ed25dd032f6242a012601da08be8c75cff0606462c90091b721b29354, kind=TASK_PRE, contextClass=Auction, contextObject=, sourceIdentity=, expression=step.enabled, verdict=PASS, backendValue=true, diagnostic=, stateVersion=3, invocation=jason-step:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:test-boundary-instance:1, witness={scope=xml-occurrence:fb7f5403ed4980b1fdf6478373a73e0b624fc11182cab8d590c6b801ad5e1d2e, goalInvocation=jason-goal:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:test-boundary-instance:1, player=beid:v1:jason/agent/runtime-agent/auction/auctionBindingcfc4a38cba3a4f94970b6c8347e92130/test-boundary-instance, roleInterval=8447a92caf5ceebc102b4149532aa91bd6f7a81ad5e1c450efbbbb29de2aff3d, rawStepQuality=COMPLETE, phase=ENABLED, stepBindingHash=aa7b262d85b6665db2d2823654adc8886f19fe89cfedcb2ce59cb4e1f23443b9, postPreFieldCount=0, demandRule=require-A_start_t1, role=xml:m0:f72e4434471f9f6fc8e5bc9d12c4b3c001b88f8a40ba375e7000b85b49c9b7fb, demandSourceHash=4ec12c0c666b71d8171371e17ca5fbcad91ced86c3b0b15a66391dc98cae003e, demandEpisode=10e97369ccc2c32fa7fcb30bc08ff7e5038e058b9162d0b5bcaa7f06c58ac3a3, postPreCoverage=, sourceActionNamespace=JASON_ACTIONEXEC_IDENTITY_NOT_CARTAGO_OPID, mappingPlanHash=25c1594d4e850fa228c73cedf0391de7d4178acc78db9a1fd9b15416f71ba31a, demandSourceProofs=d4e505f7be81ffd1b79a4bf3ebe3ad942583d9e791842b1badf206dcebe720cf, targetTaskId=A_start_t1, programHash=648846e45f098abc4bfc911b50f0c6d22df2020a6781aba153aa4f7e73f2f001, sourceActionCorrelation=, taskPredicateId=TASK:A_start_t1:pre, checkpointBinding=d3318138dd421fed41a323fef9470eef83a66ff9f0c8ae6c51e852e1a900ba21, activationFieldsHash=19918862af8967261be4f4f37f94918e121cabf6112aa4e97fb80419d667704f, stepInvocation=jason-step:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:test-boundary-instance:1, demandAuthority=EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP}]], [SemanticConstraintResult[id=XML:STEP:jason-step:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:test-boundary-instance:1, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE, stateVersion=5, invocation=jason-step:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:test-boundary-instance:1, witness={targetTaskId=A_start_t1, sourcePhase=SUCCEEDED}]], [SemanticConstraintResult[id=XML:STEP:jason-step:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:test-boundary-instance:2, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE, stateVersion=7, invocation=jason-step:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:test-boundary-instance:2, witness={targetTaskId=A_start_t2, sourcePhase=ENABLED}]], [SemanticConstraintResult[id=XML:STEP:jason-step:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:test-boundary-instance:2, kind=TASK_INVOCATION, contextClass=, contextObject=, sourceIdentity=, expression=, verdict=INCONCLUSIVE, backendValue=, diagnostic=EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE, stateVersion=9, invocation=jason-step:cb8c7347-3d91-40a3-b3c3-16b7c787bc05:test-boundary-instance:2, witness={targetTaskId=A_start_t2, sourcePhase=SUCCEEDED}]]] ==> expected: <FULFILLED> but was: <UNKNOWN>
+[INFO] 
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] use 7.5.0 .......................................... SUCCESS [  0.000 s]
+[INFO] JaCaMo Bridge Neutral Contract 1.0.0-SNAPSHOT ...... SUCCESS [  0.764 s]
+[INFO] JaCaMo Bridge Official Adapters 1.0.0-SNAPSHOT ..... SUCCESS [  0.671 s]
+[INFO] use-core 7.5.0 ..................................... SUCCESS [ 11.842 s]
+[INFO] USE semantic engine � selected use4Goal core 7.5.0 . SUCCESS [  3.038 s]
+[INFO] use-gui 7.5.0 ...................................... SUCCESS [  7.924 s]
+[INFO] USE JaCaMo Plugin 1.0.1 ............................ FAILURE [ 25.503 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  49.840 s
+[INFO] Finished at: 2026-10-23T13:17:22+07:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.2.5:test (default-test) on project use-plugin: There are test failures.
+[ERROR] 
+[ERROR] Please refer to D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\surefire-reports for the individual test results.
+[ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+[ERROR] 
+[ERROR] After correcting the problems, you can resume the build with the command
+[ERROR]   mvn <args> -rf :use-plugin

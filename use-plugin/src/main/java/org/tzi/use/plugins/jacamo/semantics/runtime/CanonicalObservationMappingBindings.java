@@ -43,6 +43,10 @@ public final class CanonicalObservationMappingBindings implements ObservationMap
         return ScalarValueCodec.decode(attribute.type().toString(),values,javaTypes);
     }
     public void propertyWritten(SemanticObservationMapper.Port port,MObject object,MAttribute attribute,Value before,Value after) {
+        recordPropertyWritten(port,object,attribute,after);
+    }
+    /** Common observed-property bookkeeping; it is not a source/identity admission receipt. */
+    public static void recordPropertyWritten(SemanticObservationMapper.Port port,MObject object,MAttribute attribute,Value after) {
         String mutable=attribute.getAnnotationValue(Use75CslModelBackend.ATTRIBUTE,"mutable");
         String hash=valueHash(after),first=port.metadata(object,"immutableFirstValueHash:"+attribute.name());
         if("false".equals(mutable)) {

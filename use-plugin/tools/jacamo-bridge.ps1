@@ -12,12 +12,17 @@ param(
     [string]$OclProfilePath = "",
     [ValidateSet("AUTO", "FULL")]
     [string]$ProjectionMode = "AUTO",
-    [ValidateSet("NATIVE_CURRENT", "USE4GOAL_OBSERVED_V1", "CSL_OBSERVER_V1", "CSL_OBSERVER_V2")]
+    [ValidateSet("NATIVE_CURRENT", "USE4GOAL_OBSERVED_V1", "AUCTION_OBSERVED_V1", "CSL_OBSERVER_V1", "CSL_OBSERVER_V2")]
     [string]$SemanticProfile = "NATIVE_CURRENT",
     [string]$MappingSpecificationPath = "",
+    [ValidateRange(32768, 1073741824)]
+    [long]$RuntimeJournalMaxBytes = 67108864,
     [ValidateSet("AUTO", "WORLD", "FULL")]
     [string]$ObservationProfile = "AUTO",
-    [string]$RuntimeClasspathFile = ""
+    [string]$RuntimeClasspathFile = "",
+    [switch]$AuctionStepMarkers,
+    [switch]$AuctionSourceClock,
+    [switch]$AuctionSchemeObserver
 )
 
 Set-StrictMode -Version Latest
@@ -28,15 +33,27 @@ $ObservationProfile = $ObservationProfile.ToUpperInvariant()
 if ($ObservationProfile -eq "AUTO") {
     # The original observed profile maps world/organisation outcomes, not Jason
     # mental/execution internals. Keep the rich trace default for old profiles.
-    $ObservationProfile = if ($SemanticProfile -eq "USE4GOAL_OBSERVED_V1") { "WORLD" } else { "FULL" }
+    $ObservationProfile = if ($SemanticProfile -in @("USE4GOAL_OBSERVED_V1", "AUCTION_OBSERVED_V1")) { "WORLD" } else { "FULL" }
+}
+if ($SemanticProfile -eq "AUCTION_OBSERVED_V1") {
+    # Explicit profile selection opts into the pinned source observers; no case
+    # is inferred from the JCM name/path. I04/T02 measured the full journal load.
+    $AuctionStepMarkers = $true
+    $AuctionSourceClock = $true
+    $AuctionSchemeObserver = $true
+    if (-not $PSBoundParameters.ContainsKey('RuntimeJournalMaxBytes')) { $RuntimeJournalMaxBytes = 268435456 }
 }
 $producerObservationArguments = @("-Djacamo.bridge.structured-observation=$(([bool]($ObservationProfile -eq 'FULL')).ToString().ToLowerInvariant())")
-$semanticJvmArguments = @("-Duse.jacamo.semantics.profile=$SemanticProfile")
+if ($AuctionStepMarkers) { $producerObservationArguments += '-Djacamo.bridge.auction.step-markers=true' }
+if ($AuctionSourceClock) { $producerObservationArguments += '-Djacamo.bridge.auction.clock=true' }
+if ($AuctionSchemeObserver) { $producerObservationArguments += '-Djacamo.bridge.auction.scheme-observer=true' }
+$semanticJvmArguments = @("-Duse.jacamo.semantics.profile=$SemanticProfile", "-Duse.jacamo.runtime.journal.maxBytes=$RuntimeJournalMaxBytes")
 if ($SemanticProfile -ne "NATIVE_CURRENT") {
     if ([string]::IsNullOrWhiteSpace($MappingSpecificationPath)) { throw "AUTHORED_SPECIFICATION_FILE_REQUIRED:$SemanticProfile" }
     $semanticSpecification = [IO.Path]::GetFullPath($MappingSpecificationPath)
     if (-not (Test-Path -LiteralPath $semanticSpecification -PathType Leaf) -or (Get-Item -LiteralPath $semanticSpecification).Length -gt 16777216) { throw "AUTHORED_SPECIFICATION_FILE_INVALID:$semanticSpecification" }
-    $semanticProperty = if ($SemanticProfile -eq "USE4GOAL_OBSERVED_V1") { "use.jacamo.mapping.rules" } else { "use.jacamo.semantics.config" }
+    if ($SemanticProfile -eq "AUCTION_OBSERVED_V1" -and -not $semanticSpecification.EndsWith('.xml', [StringComparison]::OrdinalIgnoreCase)) { throw "AUCTION_XML_SPECIFICATION_REQUIRED:$semanticSpecification" }
+    $semanticProperty = if ($SemanticProfile -eq "AUCTION_OBSERVED_V1") { "use.jacamo.auction.specification" } elseif ($SemanticProfile -eq "USE4GOAL_OBSERVED_V1") { "use.jacamo.mapping.rules" } else { "use.jacamo.semantics.config" }
     $semanticJvmArguments += "-D${semanticProperty}=$semanticSpecification"
 } elseif (-not [string]::IsNullOrWhiteSpace($MappingSpecificationPath)) { throw "NATIVE_PROFILE_HAS_NO_AUTHORED_SPECIFICATION" }
 
@@ -433,6 +450,9 @@ try {
             pipeline = "CODE_GROUNDED_NATIVE"
             projectionMode = $ProjectionMode
             observationProfile = $ObservationProfile
+            semanticProfile = $SemanticProfile
+            mappingSpecification = $MappingSpecificationPath
+            runtimeJournalMaxBytes = $RuntimeJournalMaxBytes
             distributionSha256 = $distribution
             port = $port
         } | ConvertTo-Json -Depth 4), [Text.UTF8Encoding]::new($false))
@@ -468,6 +488,9 @@ try {
         pipeline = "CODE_GROUNDED_NATIVE"
         projectionMode = $ProjectionMode
         observationProfile = $ObservationProfile
+        semanticProfile = $SemanticProfile
+        mappingSpecification = $MappingSpecificationPath
+        runtimeJournalMaxBytes = $RuntimeJournalMaxBytes
         sourceJcm = $sourceJcm
         sourceJcmSha256 = $sourceDigest
         oclProfile = $externalOcl

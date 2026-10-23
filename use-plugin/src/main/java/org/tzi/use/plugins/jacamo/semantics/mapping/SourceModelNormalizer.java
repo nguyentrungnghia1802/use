@@ -20,9 +20,15 @@ public final class SourceModelNormalizer {
         var aliases=new TreeMap<String,List<String>>();
         input.semanticContract().artifactDeclarations().forEach(a->aliases.computeIfAbsent(a.javaClass(),k->new ArrayList<>()).add(a.metadata().semanticId()));
         input.semanticContract().cartagoEnvironments().forEach(e->e.artifactTypes().forEach(a->aliases.computeIfAbsent(a.javaClassName(),k->new ArrayList<>()).add(a.metadata().semanticId())));
+        var actionOnlyClasses=new HashSet<String>();
+        for(var reference:SourceArtifactTypeReferences.fromActions(input)) {
+            if(!aliases.containsKey(reference.javaClass()))actionOnlyClasses.add(reference.javaClass());
+            aliases.computeIfAbsent(reference.javaClass(),k->new ArrayList<>()).add(reference.sourceId());
+        }
         aliases.forEach((fqcn,origins)->{
             String id=DomainProjection.artifactId(fqcn);var values=new TreeMap<String,NormalizedSourceModel.Feature>();
-            values.put("javaClass",new NormalizedSourceModel.Feature(fqcn,true,"EXACT_DECLARED_OR_OBSERVED_CLASS_ALIAS"));
+            values.put("javaClass",new NormalizedSourceModel.Feature(fqcn,true,actionOnlyClasses.contains(fqcn)
+                    ?"EXACT_PRODUCER_CLASS_REFERENCE_ALIAS":"EXACT_DECLARED_OR_OBSERVED_CLASS_ALIAS"));
             values.put("sourceDefinitions",new NormalizedSourceModel.Feature(origins.stream().distinct().sorted().map(origin->Map.of("reference",origin)).toList(),true,"EXACT_SOURCE_BINDINGS"));
             var alias=new NormalizedSourceModel.Node(id,"Artifact",NormalizedSourceModel.Layer.MODEL_DEFINITION,"DERIVED_ARTIFACT_CLASS_ALIAS",fqcn,root,values);
             if(nodes.putIfAbsent(id,alias)!=null)throw new IllegalArgumentException("SOURCE_DERIVED_ID_COLLISION:"+id);

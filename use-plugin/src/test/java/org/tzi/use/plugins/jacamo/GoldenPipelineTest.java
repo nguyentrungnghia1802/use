@@ -42,7 +42,7 @@ class GoldenPipelineTest {
 
     @Test
     void auctionArtifactsMatchReviewedGoldenDigests() throws Exception {
-        String sourceCommit = EvidenceSourceCommit.verify(Path.of(".."), EvidenceSourceCommit.ACTIVE_V2_INPUTS);
+        String sourceCommit = EvidenceSourceCommit.verifyFrozen(Path.of(".."), EvidenceSourceCommit.ACTIVE_V2_INPUTS);
         Path fixture = Path.of("src/test/resources/auction");
         Path project = Files.createDirectory(temporary.resolve("auction")).toRealPath();
         // Fixed LF fixture bytes keep provenance hashes independent of Git autocrlf.

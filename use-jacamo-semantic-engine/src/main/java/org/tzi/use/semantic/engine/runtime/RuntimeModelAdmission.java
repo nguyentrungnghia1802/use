@@ -15,14 +15,17 @@ public final class RuntimeModelAdmission {
     }
     private RuntimeModelAdmission() { }
     public static Admitted admit(GoalModel model,List<ScenarioInstance> cast,InstanceContextMatcher matcher) {
+        return admit(model,cast,matcher,EngineSemanticsProfile.USE4GOAL_OBSERVED_V1);
+    }
+    public static Admitted admit(GoalModel model,List<ScenarioInstance> cast,InstanceContextMatcher matcher,EngineSemanticsProfile profile) {
         Objects.requireNonNull(matcher,"EXPLICIT_CONTEXT_MATCHER_REQUIRED");
-        var limits=EngineSemanticsProfile.USE4GOAL_OBSERVED_V1;
+        var limits=Objects.requireNonNull(profile);
         long elements=model.getActors().stream().mapToLong(a->a.elements().size()).sum();
         if(elements>limits.maxOccurrences()||cast.size()>limits.maxOccurrences())reject("ENGINE_GRAPH_SIZE_LIMIT",model.getName());
         // The original validator uses recursive DFS. Bound API-built definitions
         // before calling it, just as the text frontend bounds its parse tree.
         preflightGraph(model);
-        var diagnostics=OwnedGoalModel.validateDefinition(model,"<runtime-model>");
+        var diagnostics=OwnedGoalModel.validateDefinition(model,"<runtime-model>",profile);
         if(!diagnostics.isEmpty())throw new EngineAdmissionException(diagnostics);
         var counts=new HashMap<String,Integer>();var instances=new HashSet<String>();
         for(var instance:cast) {
@@ -46,8 +49,18 @@ public final class RuntimeModelAdmission {
             } else bound+=(long)actor.elements().size()*count;
             if(bound>limits.maxOccurrences())reject("ENGINE_CONTEXT_CROSS_PRODUCT_LIMIT",actor.name());
             if(!model.getDependencies().isEmpty()&&count>1)reject("AMBIGUOUS_ORIGINAL_OWNER_FALLBACK",actor.name());
-            if(!actor.associations().isEmpty()||!actor.qualifications().isEmpty()||!actor.neededBys().isEmpty())
+            if(!actor.qualifications().isEmpty()||(!profile.externalRelations()&&(!actor.associations().isEmpty()||!actor.neededBys().isEmpty())))
                 reject("RELATION_WITHOUT_ADMITTED_LIVE_SEMANTICS",actor.name());
+            // Context proof was required for every exact cast pair above. The
+            // original propagation does not execute these metadata relations.
+            if(profile.externalRelations()) {
+                if(actor.associations().stream().anyMatch(a->a.kind()!=AssocKind.PARTICIPATES_IN))
+                    reject("ASSOCIATION_WITHOUT_ADMITTED_LIVE_SEMANTICS",actor.name());
+                for(var needed:actor.neededBys())
+                    if(!(model.findElement(needed.resource()).orElse(null) instanceof Resource)
+                            ||!(model.findElement(needed.task()).orElse(null) instanceof Task))
+                        reject("RESOURCE_GATE_ENDPOINT_UNSUPPORTED",needed.task());
+            }
         }
         var children=new LinkedHashMap<String,List<String>>();var activation=new LinkedHashMap<String,Set<String>>();
         var activationParents=new HashMap<String,String>();var derived=new HashSet<String>();

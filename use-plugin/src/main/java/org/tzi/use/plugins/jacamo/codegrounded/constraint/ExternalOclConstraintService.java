@@ -294,7 +294,9 @@ public final class ExternalOclConstraintService {
             org.tzi.use.plugins.jacamo.codegrounded.runtime.CheckpointType checkpoint,Set<String> changedFeatures,Map<String,String> capabilities) {
         return evaluatePrepared(prepareEvaluation(sources,coverageLost,checkpoint,changedFeatures,capabilities,null,Set.of()),system.state());
     }
-    public record PreparedInvariant(String id,String context,Expression body,Expression flagged,Expression undefined,String skip,String error) { }
+    public record PreparedInvariant(String id,String context,Expression body,Expression flagged,Expression undefined,String skip,String error,org.tzi.use.plugins.jacamo.semantics.ocl.SemanticInvariantEvaluator.Prepared scoped) {
+        public PreparedInvariant(String id,String context,Expression body,Expression flagged,Expression undefined,String skip,String error){this(id,context,body,flagged,undefined,skip,error,null);}
+    }
     public record PreparedEvaluation(org.tzi.use.uml.mm.MModel model,List<PreparedInvariant> invariants) {
         public PreparedEvaluation {invariants=List.copyOf(invariants);}
     }
@@ -333,10 +335,14 @@ public final class ExternalOclConstraintService {
                     : owned.containsKey(invariant.qualifiedName()) && dependencies.requiredSources().stream()
                             .anyMatch(source -> sources.get(source) != Completeness.COMPLETE)
                             ? "REQUIRED_RUNTIME_SOURCE_INCOMPLETE:" + dependencies.requiredSources() : "";
+            if(engine!=null&&engine.auctionCase()) {
+                var scoped=new org.tzi.use.plugins.jacamo.semantics.ocl.SemanticInvariantEvaluator().prepareScoped(id,invariant,engine,sources,coverageLost,fresh,skip);
+                prepared.add(new PreparedInvariant(id,invariant.cls().name(),invariant.bodyExpression(),invariant.flaggedExpression(),null,skip,"",scoped));continue;
+            }
             if(skip.isBlank()&&engine!=null&&engine.canonicalMappingConfigured()) {
                 var coverage=new org.tzi.use.plugins.jacamo.semantics.ocl.ConstraintCoverageResolver();
                 skip=coverage.unavailable(invariant.bodyExpression(),engine,sources,coverageLost);
-                if(skip.isBlank()&&!coverage.populationComplete(invariant.cls(),sources))skip="REQUIRED_CONTEXT_POPULATION_UNPROVEN:"+invariant.cls().name();
+                if(skip.isBlank()&&!coverage.populationComplete(invariant.cls(),sources,engine))skip="REQUIRED_CONTEXT_POPULATION_UNPROVEN:"+invariant.cls().name();
                 if(skip.isBlank())for(var object:system.state().objectsOfClassAndSubClasses(invariant.cls())) {
                     skip=coverage.unavailableSelf(invariant.bodyExpression(),engine,object,sources,coverageLost,fresh);if(!skip.isBlank())break;
                 }
@@ -351,9 +357,16 @@ public final class ExternalOclConstraintService {
         return new PreparedEvaluation(system.model(),prepared);
     }
     public static List<Outcome> evaluatePrepared(PreparedEvaluation prepared,org.tzi.use.uml.sys.MSystemState state) {
+        return evaluateDetailedPrepared(prepared,state).outcomes();
+    }
+    public record PreparedResult(List<Outcome> outcomes,List<org.tzi.use.plugins.jacamo.semantics.evidence.SemanticConstraintResult> rows){public PreparedResult{outcomes=List.copyOf(outcomes);rows=List.copyOf(rows);}}
+    public static PreparedResult evaluateDetailedPrepared(PreparedEvaluation prepared,org.tzi.use.uml.sys.MSystemState state) {
         if(state.system().model()!=prepared.model())throw new IllegalArgumentException("OCL_PREPARED_STATE_MODEL_MISMATCH");
-        List<Outcome> outcomes=new ArrayList<>();
+        List<Outcome> outcomes=new ArrayList<>();var rows=new ArrayList<org.tzi.use.plugins.jacamo.semantics.evidence.SemanticConstraintResult>();
         for(var invariant:prepared.invariants()) {
+            if(invariant.scoped()!=null) {
+                var scoped=org.tzi.use.plugins.jacamo.semantics.ocl.SemanticInvariantEvaluator.evaluateScoped(invariant.scoped(),state);rows.addAll(scoped);outcomes.add(scoped.getLast().legacy());continue;
+            }
             VerificationOutcome outcome;String diagnostic=invariant.skip();
             String skip=invariant.skip();
             if (!skip.isEmpty()) outcome = VerificationOutcome.SKIPPED;
@@ -379,7 +392,7 @@ public final class ExternalOclConstraintService {
             }
             outcomes.add(new Outcome(invariant.id(), invariant.context(), outcome, diagnostic,invariant.body().toString()));
         }
-        return List.copyOf(outcomes);
+        return new PreparedResult(outcomes,rows);
     }
     private String runtimeId(MClassInvariant inv) {return (owned.containsKey(inv.qualifiedName())?"EXTERNAL:":"NATIVE:")+inv.qualifiedName();}
     private String conditionId(org.tzi.use.uml.mm.MPrePostCondition condition) {
@@ -410,11 +423,16 @@ public final class ExternalOclConstraintService {
 
     public static DependencyVisitor dependencyVisitor() {return new DependencyVisitor();}
     public static final class DependencyVisitor extends CoverageCalculationVisitor {
-        public record AttributeRead(org.tzi.use.uml.mm.MAttribute attribute,boolean directSelf){}
+        public record AttributeRead(org.tzi.use.uml.mm.MAttribute attribute,boolean directSelf,Expression receiver){}
         private final java.util.List<AttributeRead> reads=new java.util.ArrayList<>();
         public java.util.List<AttributeRead> attributeReads(){return java.util.List.copyOf(reads);}
+        private final java.util.List<org.tzi.use.uml.ocl.expr.ExpNavigation> navigations=new java.util.ArrayList<>();
+        public java.util.List<org.tzi.use.uml.ocl.expr.ExpNavigation> navigationReads(){return java.util.List.copyOf(navigations);}
+        @Override public void visitNavigation(org.tzi.use.uml.ocl.expr.ExpNavigation expression) {
+            navigations.add(expression);super.visitNavigation(expression);
+        }
         @Override public void visitAttrOp(org.tzi.use.uml.ocl.expr.ExpAttrOp expression) {
-            reads.add(new AttributeRead(expression.attr(),expression.objExp() instanceof org.tzi.use.uml.ocl.expr.ExpVariable variable && variable.getVarname().equals("self")));
+            reads.add(new AttributeRead(expression.attr(),expression.objExp() instanceof org.tzi.use.uml.ocl.expr.ExpVariable variable && variable.getVarname().equals("self"),expression.objExp()));
             super.visitAttrOp(expression);
         }
         private final Set<org.tzi.use.uml.mm.MClassifier> populations=new java.util.HashSet<>();

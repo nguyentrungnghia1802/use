@@ -18,11 +18,19 @@ public final class Use75CslModelBackend {
     public static final String HELPER = "SemanticRuntimeHelper";
     private static final Set<String> RESERVED = Set.of("String", "Integer", "Real", "Boolean", "OclAny", "OclVoid");
     public static boolean active(MModel model) { return model.getAnnotation(PROFILE) != null; }
+    @FunctionalInterface public interface ModelPreparation {
+        /** Construction-only extension, before authored invariants compile. No runtime state exists here. */
+        void prepare(UseModelApi api, Use75ModelBinding binding) throws UseApiException;
+    }
     public Use75ModelBinding compile(CslModel source) { return compile(source, M0ExtensionSpec.schemaOnly()); }
 
     public Use75ModelBinding compile(CslModel source, M0ExtensionSpec extension) {
+        return compile(source, extension, (api, binding) -> { });
+    }
+
+    public Use75ModelBinding compile(CslModel source, M0ExtensionSpec extension, ModelPreparation preparation) {
         org.tzi.use.semantic.engine.api.EngineInstallationGuard.verify();
-        new CslFrontend().validate(source, "<canonical-csl>").requireModel(); Objects.requireNonNull(extension);
+        new CslFrontend().validate(source, "<canonical-csl>").requireModel(); Objects.requireNonNull(extension); Objects.requireNonNull(preparation);
         validateGeneralizationMetadata(source);
         var api = new UseModelApi(source.name());
         var classifiers = new LinkedHashMap<String, Use75ModelBinding.Classifier>();
@@ -82,9 +90,11 @@ public final class Use75CslModelBackend {
                         "from64", encode(compatibility.fromRole()), "to64", encode(compatibility.toRole()),
                         "placement64", encode(compatibility.groupName()), "semantics", "SYMMETRIC_SAME_PLAYER_CONTEXT_M0")));
             }
+            var binding = new Use75ModelBinding(source, api.getModel(), extension, classifiers, owners, attributes, ends);
+            preparation.prepare(api, binding);
             for (var invariant : source.invariants()) api.createInvariant(invariant.name(), invariant.contextType(), invariant.expression(), false);
             if (extension.enforceRoleCompatibility()) installCompatibility(api, source);
-            return new Use75ModelBinding(source, api.getModel(), extension, classifiers, owners, attributes, ends);
+            return binding;
         } catch (UseApiException error) {
             throw new EngineAdmissionException(List.of(EngineDiagnostic.error(EngineDiagnostic.Stage.BACKEND,
                     "CSL_NATIVE_BACKEND_REJECTED", source.name(), error.getMessage())), error);

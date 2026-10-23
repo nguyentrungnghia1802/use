@@ -128,6 +128,10 @@ public final class NativeUseSoilExporter {
                         + error.getMessage(), error);
             }
         }
+        // A headless replay has no diagram registered to request eager derived
+        // values. Materialize them on this offline state before exposing it,
+        // just as the native runtime's accepted structure check does.
+        replay.state().updateDerivedValues(true);
         return replay;
     }
 
@@ -136,6 +140,11 @@ public final class NativeUseSoilExporter {
     }
 
     private static String attributeCommand(MObject object, MAttribute attribute, Value value) {
+        // Set{} is inferred as Set(OclVoid) by the official parser. USE's
+        // explicit typed empty literal preserves the admitted collection type.
+        if (value instanceof org.tzi.use.uml.ocl.value.CollectionValue collection
+                && collection.collection().isEmpty())
+            return "!" + object.name() + "." + attribute.name() + " := oclEmpty(" + value.type() + ")";
         // USE's legacy StringValue printer does not escape Windows backslashes.
         // Keep the official SOIL printer for every other value, but render this
         // literal with the parser's own escaping rules so paths and apostrophes

@@ -1,0 +1,1 @@
+{"errors":["BridgeProtocolException:BRIDGE_SUBSCRIPTION_DISCONNECTED <- EOFException"],"failure":"","nativeResync":false,"queued":505,"received":2239,"remainingPrefix":496,"retainedAtAcquisitionDeadline":767,"sourceTerminalKinds":["A_start_t1","A_start_t2","P_bid_t1","P_bid_t2"]}

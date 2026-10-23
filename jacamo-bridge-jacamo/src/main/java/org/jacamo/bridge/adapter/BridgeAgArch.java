@@ -32,6 +32,26 @@ public final class BridgeAgArch extends AgArch {
     private long nextGoalToken;
     private transient Map<String,Object> previousState;
     private transient java.util.Set<String> authoredBeliefs;
+    private transient AuctionStepObservation stepObservation;
+
+    void installStepObservation(org.jacamo.bridge.contract.semantic.JasonSemanticContract.AgentProgramSemantic program,java.nio.file.Path root)throws Exception {
+        if(stepObservation!=null||runtimeIdentity==null)throw new IllegalStateException("STEP_OWNER_ALREADY_INSTALLED_OR_ARCH_NOT_READY");
+        stepObservation=new AuctionStepObservation(getTS(),runtimeIdentity,sessionId,generation,System.getProperty("jacamo.bridge.modelRevision"),program,root,
+                observation->{var parent=emit(RuntimeEventKind.CHANGED,RuntimeFactKind.ACTION_EXECUTION,Map.of(),Map.of("runtimeConcept","JasonStepMarker","sourceLayer","RUNTIME","stepInvocation",observation.subject()),observation.subject());
+                    if(parent!=null)VerificationObservationSource.publishIfAttached(parent,()->observation);},
+                diagnostic->emit(RuntimeEventKind.GAP,RuntimeFactKind.ACTION_EXECUTION,Map.of(),Map.of("diagnostic",diagnostic),""));
+        try {
+            boolean observed=false;
+            for(var arch=getFirstAgArch();arch!=null;arch=arch.getNextAgArch()) {
+                if(arch==this)observed=true;
+                if(arch instanceof jaca.CAgentArch&&!observed)throw new IllegalStateException("STEP_OBSERVER_MUST_PRECEDE_CARTAGO_DISPATCH");
+            }
+        }catch(RuntimeException failure){retireStepObservation();throw failure;}
+    }
+    boolean stepCaptureAvailable(){return stepObservation!=null&&stepObservation.failure().isBlank();}
+    void retireStepObservation(){var owned=stepObservation;stepObservation=null;if(owned!=null)owned.close();}
+    void observeStepAction(ActionExec action,RuntimeEventKind kind,String correlation){var steps=stepObservation;if(steps!=null)try{steps.action(action,kind,correlation);}catch(RuntimeException missing){stepActionUnavailable("ACTION_CAPTURE:"+missing.getClass().getSimpleName());}}
+    void stepActionUnavailable(String reason){var steps=stepObservation;if(steps!=null)try{steps.unavailable(reason);}catch(RuntimeException notificationFailed){/* failure was latched before reporting; observation cannot fail the domain action */}}
 
     @Override public void init() {
         observer = BridgeRuntimeRegistry.require(); sequence = new AtomicLong();
@@ -80,8 +100,7 @@ public final class BridgeAgArch extends AgArch {
                 while(events!=null && events.hasNext()) observeGoal(goals,events.next());
                 if(circumstance.getPendingEvents()!=null) circumstance.getPendingEvents().values().forEach(e->observeGoal(goals,e));
                 observeGoal(goals,circumstance.getSelectedEvent());
-                var intentions=circumstance.getAllIntentions();
-                while(intentions!=null && intentions.hasNext()) observeIntention(goals,intentions.next());
+                for(var view:JasonIntentionViews.capture(circumstance))observeIntention(goals,view.intention());
                 observeIntention(goals,circumstance.getSelectedIntention());
             }
             values.put("goals",List.copyOf(goals.values()));
@@ -151,6 +170,20 @@ public final class BridgeAgArch extends AgArch {
         super.act(action);
     }
 
+    @Override public java.util.Collection<jason.asSyntax.Literal> perceive() {
+        var percepts=super.perceive();
+        // Pinned CAgentArch calls AgArch.super.actionExecuted, which directly
+        // queues feedback and bypasses BridgeAgArch.actionExecuted. Observe its
+        // public queue after CArtAgO perception, before the TS processes it.
+        // Never remove/requeue feedback or evaluate/modify source arguments.
+        if(correlations!=null)for(var action:getTS().getC().getFeedbackActions()) {
+            String correlation=correlations.remove(action);
+            if(correlation!=null)try{emitAction(action.getResult()?RuntimeEventKind.SUCCEEDED:RuntimeEventKind.FAILED,action,correlation);}
+            catch(RuntimeException unavailable){stepActionUnavailable("ACTION_FEEDBACK_CAPTURE:"+unavailable.getClass().getSimpleName());}
+        }
+        return percepts;
+    }
+
     @Override public void actionExecuted(ActionExec action) {
         requireReady();
         String correlation = correlations.remove(action);
@@ -160,6 +193,7 @@ public final class BridgeAgArch extends AgArch {
     }
 
     @Override public void stop() {
+        retireStepObservation();
         if (observer != null) emit(RuntimeEventKind.DISPOSED, RuntimeFactKind.AGENT,
                 Map.of("agent", getAgName()), Map.of(), "");
         if (runtimeIdentity != null) BridgeRuntimeRegistry.unregisterAgent(getAgName(), runtimeIdentity);
@@ -168,6 +202,8 @@ public final class BridgeAgArch extends AgArch {
     }
 
     private void emitAction(RuntimeEventKind kind, ActionExec action, String correlation) {
+        var steps=stepObservation;
+        if(steps!=null)observeStepAction(action,kind,correlation);
         Map<String, Object> before = runtimeActionValues(action);
         Map<String, Object> after = new LinkedHashMap<>(before);
         after.put("result", action.getResult());
@@ -192,20 +228,21 @@ public final class BridgeAgArch extends AgArch {
         return values;
     }
 
-    private void emit(RuntimeEventKind kind, RuntimeFactKind factKind,
+    private RuntimeEvent emit(RuntimeEventKind kind, RuntimeFactKind factKind,
                        Map<String,Object> before, Map<String,Object> after, String correlation) {
-        var target=observer;if(target==null)return;
+        var target=observer;if(target==null)return null;
         long current = sequence.incrementAndGet();
         String projectKey = System.getProperty("jacamo.bridge.projectKey", "unnegotiated");
         var id = runtimeIdentity == null
                 ? new BridgeEntityId("jason", "agent", "runtime-agent", projectKey, getAgName(), incarnation)
                 : runtimeIdentity;
-        target.accept(new RuntimeEvent(sessionId + ":jason:" + incarnation + ":" + current, sessionId, generation,
+        var event=new RuntimeEvent(sessionId + ":jason:" + incarnation + ":" + current, sessionId, generation,
                 System.getProperty("jacamo.bridge.modelRevision", "unnegotiated"), "jason", "jason:" + incarnation,
                 current, Instant.now(), kind, factKind,
                 "UPSERT_JASON_AGENT_STATE".equals(after.get("normalizedEventKind")) ? org.jacamo.bridge.contract.ProjectionStatus.MATERIALIZED_FAITHFULLY
                     : org.jacamo.bridge.contract.ProjectionStatus.EVIDENCE_ONLY, id, null, correlation, "", before, after,
-                new SourceWatermark("jason:" + incarnation, current), "UPSERT_JASON_AGENT_STATE".equals(after.get("normalizedEventKind")) ? Completeness.COMPLETE : Completeness.PARTIAL, List.of()));
+                new SourceWatermark("jason:" + incarnation, current), "UPSERT_JASON_AGENT_STATE".equals(after.get("normalizedEventKind")) ? Completeness.COMPLETE : Completeness.PARTIAL, List.of());
+        target.accept(event);return event;
     }
     private void requireReady() { if (observer == null) throw new IllegalStateException("BRIDGE_AGARCH_NOT_INITIALIZED"); }
 }

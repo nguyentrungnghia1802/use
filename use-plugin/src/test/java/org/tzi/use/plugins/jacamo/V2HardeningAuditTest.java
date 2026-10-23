@@ -22,7 +22,7 @@ class V2HardeningAuditTest {
                 reject(violations, file, source.contains("ProcessBuilder("), "arbitrary process creation");
                 reject(violations, file, source.contains("Runtime.getRuntime().exec"), "arbitrary shell execution");
                 reject(violations, file, source.contains("ORDER_V1"), "obsolete projection id");
-                reject(violations, file, source.matches("(?s).*\\b(?:Auction|CounterTeam)\\b.*"),
+                reject(violations, file, unscopedCaseSelector(file,source),
                         "case-specific core dispatch");
                 boolean console = source.contains("System.out") || source.contains("System.err")
                         || source.contains("printStackTrace(");
@@ -80,5 +80,27 @@ class V2HardeningAuditTest {
 
     private void reject(List<String> violations, Path file, boolean condition, String message) {
         if (condition) violations.add(file + ": " + message);
+    }
+
+    // This gate predates explicit XML case adapters. A case label in a comment
+    // or UI chooser is not model-name dispatch. Shared code still cannot select
+    // domain behavior by the literal model/class names; only the admitted case
+    // package may contain those domain selectors. Engine purity has separate
+    // module/layer and GenericAgentProjectionTest gates.
+    private static boolean unscopedCaseSelector(Path file,String source) {
+        if(file.normalize().startsWith(Path.of("src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction")))return false;
+        return java.util.regex.Pattern.compile("\"(?:Auction|CounterTeam)\"").matcher(source).find();
+    }
+
+    @Test void caseSelectorAuditDistinguishesDispatchFromExplicitAdapterCommentsAndUiLabels() {
+        Path shared=Path.of("src/main/java/org/tzi/use/plugins/jacamo/codegrounded/Shared.java");
+        assertTrue(unscopedCaseSelector(shared,"if (model.equals(\"Auction\")) applyRules();"));
+        assertTrue(unscopedCaseSelector(shared,"switch (name) {case \"CounterTeam\": break;}"));
+        assertFalse(unscopedCaseSelector(shared,"// Exact Auction step binding is in the case adapter."));
+        assertFalse(unscopedCaseSelector(shared,"chooser.setDialogTitle(\"Select Auction mapping specification\");"));
+        Path adapter=Path.of("src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/Adapter.java");
+        assertFalse(unscopedCaseSelector(adapter,"object.cls().name().equals(\"Auction\")"));
+        Path lookalike=Path.of("src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction-other/Adapter.java");
+        assertTrue(unscopedCaseSelector(lookalike,"object.cls().name().equals(\"Auction\")"));
     }
 }

@@ -1,0 +1,92 @@
+# Dialect 1.0: parent/element|required attributes|allowed attributes. No business names or values.
+#document/auctionJacamoToCslRules|caseStudy formatVersion targetMetamodel|caseStudy formatVersion targetMetamodel
+adapterInputs/input|id kind origin|id kind origin
+assignSnapshot/assign|converter sourceField target|converter sourceField target
+auctionJacamoToCslRules/formatContract||
+auctionJacamoToCslRules/limitations||
+auctionJacamoToCslRules/modelRules|targetModel targetVersion|targetModel targetVersion
+auctionJacamoToCslRules/observerSupport|createsCSLAssociations createsCSLClassifiers layer status|createsCSLAssociations createsCSLClassifiers layer status
+auctionJacamoToCslRules/omittedConcepts|meaning|meaning
+auctionJacamoToCslRules/profile|cslVersion id modelName nativeRuntimeAdapterAvailable scope use4GoalNativeRuleFormat xmlDialect|cslVersion id modelName nativeRuntimeAdapterAvailable scope use4GoalNativeRuleFormat xmlDialect
+auctionJacamoToCslRules/runtimeMapping|layer status|layer status
+auctionJacamoToCslRules/selectors||
+auctionJacamoToCslRules/sources|checksumAlgorithm sourceMutationPolicy|checksumAlgorithm sourceMutationPolicy
+auctionJacamoToCslRules/validation|checksPassed nativeCanonicalSha256 scope status|checksPassed nativeCanonicalSha256 scope status
+auctionJacamoToCslRules/verificationBindings|modifiesInputIStar modifiesInputOCL|modifiesInputIStar modifiesInputOCL
+commonRequirements/note||
+conversions/converter|algorithm id inputType onMismatch outputType|algorithm id identityResolution inputType onMismatch onOverflowOrUnsupportedBackend outputType sentinelReplacement
+conversions/note||
+evidenceClassification/case|actualBidBy adminBidOverride bidDoneBy event meaning|actualBidBy adminBidOverride bidDoneBy event meaning
+formatContract/modelExecution|defaultStringEncoding interpolation mode onDuplicateTarget onFailedCondition ruleOrder unmatchedObservable|defaultStringEncoding interpolation mode onDuplicateTarget onFailedCondition ruleOrder unmatchedObservable
+formatContract/note||
+formatContract/operation|meaning name|meaning name
+formatContract/runtimeSemantics|inputVocabulary liveSupportStatus onMissingRequiredState onStaleOrMixedRevision onUnresolvedBinding|inputVocabulary liveSupportStatus onMissingRequiredState onStaleOrMixedRevision onUnresolvedBinding
+formatContract/selectorSemantics|captures countFailure iteration regex regexFlags regexPreprocess xpath|captures countFailure iteration regex regexFlags regexPreprocess xpath
+formatContract/traceSemantics|coverage runtimeTraceKey traceStorage|coverage runtimeTraceKey traceStorage
+identityBindings/binding|id keyFields|domainLookup domainSelf id keyFields roleSelf source
+identityBindings/note||
+input/field|name required type|name origin required type
+limitation/trace|locator purpose sourceRef|locator purpose sourceRef
+limitations/limitation|id|id
+modelRules/rule|id label phase selectRef|id label phase selectRef
+observableCase/initializerDependency|equals field selectorRef|equals field selectorRef
+observableCase/runtimeInitialValue|javaDoubleRoundTripLexical rawBinary64Hex replacementAllowed sourceExpression|javaDoubleRoundTripLexical rawBinary64Hex replacementAllowed sourceExpression
+observerSupport/evidenceClassification||
+observerSupport/identityBindings||
+observerSupport/views||
+omit/trace|locator purpose sourceRef|locator purpose sourceRef
+omittedConcepts/omit|concept handledBy id reason|concept handledBy id reason
+operationBinding/trace|locator purpose sourceRef|locator purpose sourceRef
+profile/closedTarget|associationEnds associations attributes compatibilities declarationContainments entities generalizations invariants orgContexts roles|associationEnds associations attributes compatibilities declarationContainments entities generalizations invariants orgContexts roles
+profile/note||
+profile/scopeAlias|meaning physicalWorkspaceOwnership sourceOrganizationInstance targetOrgCtx|meaning physicalWorkspaceOwnership sourceOrganizationInstance targetOrgCtx
+profile/trace|locator purpose sourceRef|locator purpose sourceRef
+rule/assignSnapshot|atomic keyFields missingValuePolicy targetType|atomic keyFields missingValuePolicy targetType
+rule/createAttribute|drawioCell mutable name optional owner type|defaultEncoding defaultFrom drawioCell mutable name optional owner type
+rule/createClassifier|drawioCell kind name|drawioCell kind membership name owner
+rule/createPopulationInvariant|caseKey counts|caseKey counts
+rule/mapObservable|matchOn owner verifyInitialExpression|matchOn owner verifyInitialExpression
+rule/note||
+rule/observableCase|drawioCell initialExpression mutable optional runtimeConverter sourceName targetName type|defaultLiteral defaultPolicy drawioCell initialExpression mutable optional runtimeConverter sourceName targetName type
+rule/populationCase|context expectedMax expectedMin name oclTemplate sourceRole|context expectedMax expectedMin name oclTemplate sourceRole
+rule/reconcileRemoval|identity remove targetTypeByKind|identity remove targetTypeByKind
+rule/require|equals field selectorRef|equals field selectorRef
+rule/requireEvidence|fact|fact
+rule/requireResolvedInstance|byFields targetType|byFields targetType
+rule/requireSameSet|leftField leftSelectorRef rightField rightSelectorRef|leftField leftSelectorRef rightField rightSelectorRef
+rule/requireSet|field selectorRef values|field selectorRef values
+rule/trace|locator purpose sourceRef|locator purpose sourceRef
+rule/upsertInstance|keyFields|contextKeyFields contextType keyFields membership playerFrom targetType targetTypeFrom
+rule/when|equals field|equals field
+rule/whenFieldsEqual|left right|left right
+rule/whenIn|field values|field values
+rules/rule|id inputRef label phase|id inputRef label phase
+runtimeMapping/adapterInputs||
+runtimeMapping/commonRequirements||
+runtimeMapping/conversions||
+runtimeMapping/rules||
+select/capture|expression name|expression name
+select/pattern||
+selectors/select|expectedCount id sourceRef syntax|expectedCount expression id sourceRef syntax
+sources/archiveEntry|archivePath archiveSha256 entry id purpose sha256|archivePath archiveSha256 entry id purpose sha256
+sources/file|id path purpose rootRef sha256|id path purpose rootRef sha256
+sources/note||
+sources/root|id path|gitHead id path
+upsertInstance/assign|converter sourceField target write|converter sourceField target write
+validation/check|detail name status|detail name status
+validation/configuredFixture|artifactInstancesBeforeCreation auctioneer group organization participants requestedAuctions sourceSelectorRefs|artifactInstancesBeforeCreation auctioneer group organization participants requestedAuctions sourceSelectorRefs
+validation/nativeCompilerEvidence|compiler execution jarPath jarSha256 semanticComparison|compiler execution jarPath jarSha256 semanticComparison
+validation/note||
+validation/targetOracle|compareDiagramLayout embeddedSourceAttribute equivalence page sourceRef|compareDiagramLayout embeddedSourceAttribute equivalence page sourceRef
+verificationBindings/externalInvariant|emittedIntoCSL name observerViewRef sourceRef|emittedIntoCSL name observerViewRef sourceRef
+verificationBindings/goalEvaluation|adminSatisfiedFlagDefinesActualAchievement aggregateBid emitCSLGoalFlags istarCells method perBidScope|adminSatisfiedFlagDefinesActualAchievement aggregateBid emitCSLGoalFlags istarCells method perBidScope
+verificationBindings/operationBinding|clauses cslStateOwner id istarTask oclContext operationDeclarationLayer sourceOperation sourceParameterBinding stateAttributes successEvidenceRequired|clauses cslStateOwner id istarTask oclContext operationDeclarationLayer sourceOperation sourceParameterBinding stateAttributes successEvidenceRequired
+verificationBindings/organizationActorBinding|cslContext cslRoleCorrespondence inventCoordinatorRole istarCell kind|cslContext cslRoleCorrespondence inventCoordinatorRole istarCell kind
+verificationBindings/preState|currentOCLUsesAtPre emitHistoricalCSLAttributes operationPrePostCuts|currentOCLUsesAtPre emitHistoricalCSLAttributes operationPrePostCuts
+verificationBindings/roleActorBinding|cslRole istarCell|cslRole istarCell
+verificationBindings/taskBinding|istarCell observerViewRef requires|istarCell observerViewRef requires
+view/deadline|anchor durationMs goal sourceSelectorRef sourceText|anchor durationMs goal sourceSelectorRef sourceText
+view/field|name origin type|absent allowedValues associationInCSL capture clock elementIdentity initial name origin type unit
+view/note||
+view/trace|locator purpose sourceRef|locator purpose sourceRef
+views/view|id keyFields name sourceClassExists|id keyFields name sourceClassExists

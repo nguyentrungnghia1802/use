@@ -4,7 +4,7 @@ import java.util.Locale;
 
 /** Meaning of a projection, independent of AUTO/FULL materialization. Selected at import. */
 public enum SemanticProjectionProfile {
-    NATIVE_CURRENT, CSL_OBSERVER_V1, CSL_OBSERVER_V2, USE4GOAL_OBSERVED_V1;
+    NATIVE_CURRENT, CSL_OBSERVER_V1, CSL_OBSERVER_V2, USE4GOAL_OBSERVED_V1, AUCTION_OBSERVED_V1, JACAMO_DECLARATIVE_XML;
 
     public static final String PROPERTY = "use.jacamo.semantics.profile";
 

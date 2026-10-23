@@ -9,6 +9,34 @@ import org.junit.jupiter.api.Test;
 import org.jacamo.bridge.contract.CanonicalJson;
 
 class JasonStructuredObservationTest {
+    @Test void executionObservationDoesNotRewriteLiveInterpreterPlaceOrConsumeItsQueues()throws Exception {
+        var agent=new Agent();agent.initAg();var c=new Circumstance();
+        var ts=new TransitionSystem(agent,c,new Settings(),new jason.architecture.AgArch());
+        var plan=ASSyntax.parsePlan("+!work <- perform.");var i=new Intention();
+        i.push(new IntendedMeans(new Option(plan,new Unifier()),plan.getTrigger()));c.addRunningIntention(i);
+        i.setPlace(Circumstance.IntentionPlace.None);
+        var event=new Event(ASSyntax.parseTrigger("+ready"),Intention.EmptyInt);c.addEvent(event);
+        var before=i.peek().getCurrentStep().toString();
+        var cut=JasonCycleObservation.execution(ts,"agent",1,o->"token");
+        assertEquals(Circumstance.IntentionPlace.None,i.getPlace(),"Observing must not rewrite the interpreter's cached location");
+        assertTrue(c.hasRunningIntention(i));assertEquals(List.of(event),List.copyOf(c.getEvents()));
+        assertEquals(before,i.peek().getCurrentStep().toString());
+        var row=CanonicalJson.object(((List<?>)cut.get("intentions")).getFirst());
+        assertEquals("RunningIntentions",row.get("place"));assertEquals("running",row.get("state"));
+    }
+    @Test void snapshotEvidenceAlsoLeavesLiveInterpreterPlaceAndQueuesUntouched()throws Exception {
+        var agent=new Agent();agent.initAg();var c=new Circumstance();
+        var ts=new TransitionSystem(agent,c,new Settings(),new jason.architecture.AgArch());
+        var plan=ASSyntax.parsePlan("@probe +!work <- act.");var i=new Intention();
+        i.push(new IntendedMeans(new Option(plan,new Unifier()),plan.getTrigger()));c.addRunningIntention(i);
+        i.setPlace(Circumstance.IntentionPlace.None);
+        var source=new JasonSnapshotSource("session");
+        var capture=JasonSnapshotSource.class.getDeclaredMethod("addRuntimeEvidence",List.class,String.class,TransitionSystem.class,long.class);
+        capture.setAccessible(true);var facts=new ArrayList<org.jacamo.bridge.contract.RuntimeFact>();capture.invoke(source,facts,"agent",ts,1L);
+        assertEquals(Circumstance.IntentionPlace.None,i.getPlace());assertTrue(c.hasRunningIntention(i));
+        var observed=facts.stream().filter(f->f.kind()==org.jacamo.bridge.contract.RuntimeFactKind.INTENTION).findFirst().orElseThrow();
+        assertEquals("RunningIntentions",observed.values().get("place"));assertEquals("running",observed.values().get("state"));
+    }
     @Test void completeStoredCutPreservesNamespaceNegationAnnotationRulesAndNumericTermIdentity()throws Exception {
         var agent=new Agent();agent.initAg();for(String literal:List.of("price(10)[source(percept),sensor(a)]","~price(10)[source(self)]","shop::price(12)"))agent.getBB().add(ASSyntax.parseLiteral(literal));agent.getBB().add(ASSyntax.parseRule("eligible(X) :- price(X)."));
         var observed=JasonCycleObservation.mental(agent,"agent",7);assertEquals(Boolean.TRUE,observed.get("complete"));var beliefs=(List<?>)observed.get("beliefs");assertEquals(4,beliefs.size());

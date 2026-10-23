@@ -21,8 +21,12 @@ public final class SemanticObservationMapper {
         void value(MObject object, String attribute, Value value) throws UseApiException;
         void connect(String association, MObject first, MObject second) throws UseApiException;
         void delete(String id) throws UseApiException;
+        /** A logical role tuple may be re-enacted; physical incarnations may not. */
+        default void deleteRebindableRole(String id)throws UseApiException {throw new UnsupportedOperationException("REBINDABLE_ROLE_DELETE_NOT_IMPLEMENTED");}
         void disconnect(String association,MObject first,MObject second) throws UseApiException;
         default Value currentValue(MObject object,String attribute){return null;}
+        /** Same authoritative state, only for host-native expression evaluation. No ownership transfer. */
+        default org.tzi.use.uml.sys.MSystemState readState(){return null;}
     }
     public record Result(String identity, MObject object, String diagnostic) { }
     public static final class UnsupportedObservation extends RuntimeException {
@@ -95,7 +99,11 @@ public final class SemanticObservationMapper {
         String primary=jason?runtime.canonical():Objects.toString(data.get("agentRuntimeSemanticId"),text(data,"semanticId"));
         if(jason)for(var old:List.copyOf(port.objects()))if(old.cls().name().equals("AtomicAgent") && text(data,"name").equals(port.metadata(old,"name")) && runtime.scope().equals(port.metadata(old,"jasonScope")) && !primary.equals(port.metadata(old,"semanticId"))) {
             String oldId=port.metadata(old,"semanticId");
-            for(var dependent:List.copyOf(port.objects()))if(oldId.equals(port.metadata(dependent,"rolePlayer")) || oldId.equals(port.metadata(dependent,"mentalAgent")) || oldId.equals(port.metadata(dependent,"commitmentPlayer")))port.delete(port.metadata(dependent,"semanticId"));
+            for(var dependent:List.copyOf(port.objects()))if(oldId.equals(port.metadata(dependent,"rolePlayer")) || oldId.equals(port.metadata(dependent,"mentalAgent")) || oldId.equals(port.metadata(dependent,"commitmentPlayer"))) {
+                String dependentId=port.metadata(dependent,"semanticId");
+                if(!port.metadata(dependent,"xml:m0:program").isBlank()&&dependent.cls().isSubClassifierOf(dependent.cls().model().getClass("RoleOccurrence")))port.deleteRebindableRole(dependentId);
+                else port.delete(dependentId);
+            }
             port.delete(oldId);
         }
         var object=port.upsert(primary,"AtomicAgent",text(data,"name"));
@@ -182,6 +190,7 @@ public final class SemanticObservationMapper {
         port.alias(text(data,"semanticId"),context); copy(port,context,data,"name","organisationName","organisationSpecSemanticId","groupSpecSemanticId","boardArtifactIdentity","continuity");
         port.metadata(context,"authority","moise");port.metadata(context,"incarnation",runtime.incarnation());
         var accepted=new LinkedHashMap<String,Map.Entry<MObject,ObservationMappingBindings.Type>>();
+        var unresolvedPlayers=new ArrayList<Map<String,Object>>();
         for(Object raw:list(data,"players")) {
             var player=map(raw);String roleSource=text(player,"roleSemanticId");
             if(bindings.canonical()&&bindings.types().stream().noneMatch(t->t.kind()==ObservationMappingBindings.Kind.ROLE&&t.sourceId().equals(roleSource))) {
@@ -191,7 +200,14 @@ public final class SemanticObservationMapper {
             var role=registered(ObservationMappingBindings.Kind.ROLE,roleSource);
             if(!groupDefinition.roleSemanticIds().contains(role.sourceId()))throw new IllegalArgumentException("CSL_ROLE_NOT_DECLARED_IN_CONTEXT");
             String playerId=player.containsKey("agentSemanticId")?text(player,"agentSemanticId"):text(player,"agentDeclarationSemanticId");
-            var actor=required(port,playerId);
+            var actor=port.find(playerId);
+            if(actor==null&&bindings.canonical()) {
+                // GroupBoard.agKilled is asynchronous to the Cartago departure.
+                // Preserve the actual role report without inventing its player
+                // or rejecting unrelated observations in the admitted cut.
+                unresolvedPlayers.add(player);continue;
+            }
+            if(actor==null)throw new IllegalArgumentException("CSL_RUNTIME_BINDING_UNRESOLVED:"+playerId);
             if(!actor.cls().isSubClassifierOf(context.cls().model().getClass("RuntimePlayer")))throw new IllegalArgumentException("CSL_PLAYER_KIND_REQUIRED");
             String tuple=NativeUseModelBuilder.canonicalJson(List.of(id,port.metadata(actor,"semanticId"),role.id()));
             if(accepted.putIfAbsent(tuple,Map.entry(actor,role))!=null)throw new IllegalArgumentException("DUPLICATE_ACCEPTED_ENACTMENT");
@@ -215,6 +231,10 @@ public final class SemanticObservationMapper {
             port.connect("Plays",entry.getValue().getKey(),occurrence);port.connect("InContext",context,occurrence);
         }
         port.metadata(context,"lastGroupCut",org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.sha256(CanonicalJson.encode(data)));
+        if(bindings.canonical()) {
+            port.metadata(context,"rolePopulationQuality",unresolvedPlayers.isEmpty()?"COMPLETE_OBSERVED_BOARD":"INCOMPLETE");
+            port.metadata(context,"unresolvedPlayerEvidence",NativeUseModelBuilder.canonicalJson(unresolvedPlayers));
+        }
         return new Result(id,context,"CSL_ACCEPTED_ENACTMENTS_OBSERVED");
     }
     private static TreeSet<String> memberships(Port port,MObject object) {

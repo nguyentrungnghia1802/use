@@ -41,8 +41,9 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private final JButton stopMonitor = named(new JButton("Stop monitor"), "stop-monitor");
     private final JButton restartMonitor = named(new JButton("Restart monitor"), "restart-monitor");
     private final JButton loadProfile = named(new JButton("Load OCL..."), "load-profile");
-    private final javax.swing.JComboBox<String> engineProfile = named(new javax.swing.JComboBox<>(new String[]{"NATIVE_CURRENT","USE4GOAL_OBSERVED_V1","CSL_OBSERVER_V1","CSL_OBSERVER_V2"}),"engine-profile");
+    private final javax.swing.JComboBox<String> engineProfile = named(new javax.swing.JComboBox<>(new String[]{"NATIVE_CURRENT","JACAMO_DECLARATIVE_XML","USE4GOAL_OBSERVED_V1","AUCTION_OBSERVED_V1","CSL_OBSERVER_V1","CSL_OBSERVER_V2"}),"engine-profile");
     private final javax.swing.JTextField mappingFile=named(new javax.swing.JTextField(38),"mapping-specification");
+    private final javax.swing.JTextField authoredOcl=named(new javax.swing.JTextField(52),"authored-ocl");
     private final JLabel programSummary=named(new JLabel("No canonical program imported"),"program-summary");
     private final javax.swing.JTextArea programTrace=named(new javax.swing.JTextArea(),"program-trace");
     private final boolean selectable;
@@ -80,7 +81,8 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         this.facade = java.util.Objects.requireNonNull(facade, "facade");
         this.errorPresenter = java.util.Objects.requireNonNull(errorPresenter, "errorPresenter");
         var selection=facade.importSelection();selectable=selection!=null;
-        if(selectable){engineProfile.setSelectedItem(selection.profile());mappingFile.setText(selection.specification()==null?"":selection.specification().toString());}
+        if(selectable){engineProfile.setSelectedItem(selection.profile());mappingFile.setText(selection.specification()==null?"":selection.specification().toString());authoredOcl.setText(selection.ocl()==null?"":selection.ocl().toString());}
+        engineProfile.addActionListener(event->refreshWorkflowControls());
         startRuntime.addActionListener(event -> startRuntime());
         startRuntime.setToolTipText("Release reasoning in the separately launched JaCaMo process after model import");
         pauseRuntime.setToolTipText("Pause Jason at reasoning boundaries; CArtAgO/Moise operations may continue");
@@ -104,7 +106,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         // Capture widget values before leaving the EDT. Parsing/validation belongs
         // to the background facade call, and selection takes effect only on Import.
         JaCaMoFacade.ImportSelection selection;
-        try {selection=selectable?new JaCaMoFacade.ImportSelection((String)engineProfile.getSelectedItem(),engineProfile.getSelectedItem().equals("NATIVE_CURRENT")||mappingFile.getText().isBlank()?null:Path.of(mappingFile.getText().trim())):null;}
+        try {selection=selectable?new JaCaMoFacade.ImportSelection((String)engineProfile.getSelectedItem(),engineProfile.getSelectedItem().equals("NATIVE_CURRENT")||mappingFile.getText().isBlank()?null:Path.of(mappingFile.getText().trim()),engineProfile.getSelectedItem().equals("JACAMO_DECLARATIVE_XML")&&!authoredOcl.getText().isBlank()?Path.of(authoredOcl.getText().trim()):null):null;}
         catch(RuntimeException error){setStatus("Import failed: "+error.getMessage());errorPresenter.accept("Import failed: "+error.getMessage());return;}
         executeBackground("Import failed", () -> {if(selection==null)facade.importProject(normalized);else facade.importProject(normalized,selection);}, () -> {
             refreshRuntime();
@@ -140,6 +142,15 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         if(program!=displayedProgram&&!program.equals(displayedProgram)) {
             displayedProgram=program;
             programSummary.setText(displayMessage(program.getOrDefault("profile","No program")+" | "+program.getOrDefault("mapping","")+" | "+program.getOrDefault("programHash",program.getOrDefault("status",""))));
+            if(program.get("caseProgram") instanceof Map<?,?> rawCase) {
+                var caseProgram=CanonicalJson.object(rawCase);
+                var activeSelection=facade.importSelection();
+                programSummary.setText(displayMessage("Active "+(activeSelection==null?"canonical case":activeSelection.profile())+" | XML SHA-256 "+caseProgram.get("specificationHash")+" | Source model SHA-256 "+caseProgram.get("sourceHash")));
+                programSummary.setToolTipText(displayMessage("Program SHA-256 "+program.get("programHash")+" | Bundle SHA-256 "+caseProgram.get("bundleHash")+" | Engine policy "+program.get("profile")+" | Case OCL contracts installed during Import; Load OCL adds an optional invariant profile."));
+            }else if(program.get("declarativeProgram") instanceof Map<?,?> declarative) {
+                programSummary.setText(displayMessage("Generated CSL / iStar | XML SHA-256 "+declarative.get("specificationHash")));
+                programSummary.setToolTipText(displayMessage("Authored OCL SHA-256 "+declarative.get("oclHash")+" | Program SHA-256 "+program.get("programHash")));
+            }else programSummary.setToolTipText(null);
             if(selectable){String text=new String(CanonicalJson.encode(program),java.nio.charset.StandardCharsets.UTF_8);programTrace.setText(text.length()>131072?text.substring(0,131072)+"\nDISPLAY TRUNCATED; full trace is available through the facade":text);programTrace.setCaretPosition(0);}
         }
         var result=facade.runtimeVerificationResult();
@@ -167,7 +178,9 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         toolbar.add(actions);
         if(selectable) {
             var selection=new JPanel(new FlowLayout(FlowLayout.LEADING));selection.add(new JLabel("On next Import:"));selection.add(engineProfile);selection.add(mappingFile);
-            selection.add(button("Mapping/spec...","choose-mapping",()->{var chooser=new JFileChooser();chooser.setFileFilter(new FileNameExtensionFilter("Authored mapping/config (*.json)","json"));if(chooser.showOpenDialog(this)==JFileChooser.APPROVE_OPTION)mappingFile.setText(chooser.getSelectedFile().toPath().toString());}));toolbar.add(selection);toolbar.add(programSummary);
+            selection.add(button("Mapping/spec...","choose-mapping",this::chooseMapping));toolbar.add(selection);toolbar.add(programSummary);
+            var oclSelection=new JPanel(new FlowLayout(FlowLayout.LEADING));oclSelection.add(new JLabel("Authored OCL (declarative XML):"));oclSelection.add(authoredOcl);
+            oclSelection.add(button("OCL input...","choose-authored-ocl",this::chooseAuthoredOcl));toolbar.add(oclSelection);
         }
         toolbar.add(exports);
         return toolbar;
@@ -176,6 +189,21 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private void chooseProject() {
         JFileChooser chooser = createProjectChooser(projectFileHint());
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) importProject(chooser.getSelectedFile().toPath());
+    }
+    private void chooseMapping() {
+        Path hint=null;try{if(!mappingFile.getText().isBlank())hint=Path.of(mappingFile.getText().trim());}catch(java.nio.file.InvalidPathException ignored){/* The chooser can replace invalid input. */}
+        var chooser=createMappingChooser((String)engineProfile.getSelectedItem(),hint);
+        if(chooser.showOpenDialog(this)==JFileChooser.APPROVE_OPTION)mappingFile.setText(chooser.getSelectedFile().toPath().toString());
+    }
+    static JFileChooser createMappingChooser(String profile,Path hint) {
+        var chooser=createProjectChooser(hint);chooser.resetChoosableFileFilters();chooser.setAcceptAllFileFilterUsed(false);
+        boolean xml="AUCTION_OBSERVED_V1".equals(profile)||"JACAMO_DECLARATIVE_XML".equals(profile);chooser.setDialogTitle(xml?"Select mapping specification":"Select authored mapping/configuration");
+        chooser.setFileFilter(xml?new FileNameExtensionFilter("Mapping specification (*.xml)","xml"):new FileNameExtensionFilter("Authored mapping/config (*.json)","json"));
+        return chooser;
+    }
+    private void chooseAuthoredOcl() {
+        var chooser=new JFileChooser();chooser.setDialogTitle("Select authored verification requirements");chooser.setAcceptAllFileFilterUsed(false);chooser.setFileFilter(new FileNameExtensionFilter("OCL requirements (*.ocl)","ocl"));
+        if(chooser.showOpenDialog(this)==JFileChooser.APPROVE_OPTION)authoredOcl.setText(chooser.getSelectedFile().toPath().toString());
     }
 
     private void autoImportIfConfigured() {
@@ -325,10 +353,12 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         boolean imported=facade.projectSummary()!=null;
         stopMonitor.setEnabled(!busy&&!replayActive&&imported&&!workflow.state().equals("MONITOR_STOPPED"));
         restartMonitor.setEnabled(!busy&&!replayActive&&imported);
-        engineProfile.setEnabled(!busy&&!replayActive);mappingFile.setEnabled(!busy&&!replayActive);
+        engineProfile.setEnabled(!busy&&!replayActive);mappingFile.setEnabled(!busy&&!replayActive&&!"NATIVE_CURRENT".equals(engineProfile.getSelectedItem()));
+        boolean declarative=!busy&&!replayActive&&"JACAMO_DECLARATIVE_XML".equals(engineProfile.getSelectedItem());authoredOcl.setEnabled(declarative);
         actionButtons.forEach((name, button) -> button.setEnabled(!busy));
         actionButtons.get("import-project").setEnabled(!busy && !replayActive);
-        if(selectable)actionButtons.get("choose-mapping").setEnabled(!busy&&!replayActive);
+        if(selectable)actionButtons.get("choose-mapping").setEnabled(!busy&&!replayActive&&!"NATIVE_CURRENT".equals(engineProfile.getSelectedItem()));
+        if(selectable)actionButtons.get("choose-authored-ocl").setEnabled(declarative);
     }
 
     private void setStatus(String message) { status.setText(displayMessage(message)); }

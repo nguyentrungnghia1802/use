@@ -222,7 +222,7 @@ public final class OfficialProjectAdapter {
     private Path resolveAgentSource(JaCaMoProject project,Path root,JaCaMoAgentParameters agent){
         String reference=agent.getSource().isAbsolute()?agent.getSource().toString():agent.getSource().getSchemeSpecificPart();
         if("file".equals(agent.getSource().getScheme())&&agent.getSource().isOpaque())reference=agent.getSource().getSchemeSpecificPart();
-        String officialPath=project.getSourcePaths().fixPath(reference);java.net.URI uri=officialPath.startsWith("file:")?java.net.URI.create(officialPath):null;
+        String officialPath=ClosedSourcePathResolver.resolve(project.getSourcePaths(),reference);java.net.URI uri=officialPath.startsWith("file:")?java.net.URI.create(officialPath):null;
         Path source=uri==null?Path.of(officialPath):uri.isOpaque()?Path.of(uri.getSchemeSpecificPart()):Path.of(uri);
         return source.isAbsolute()?source.normalize():root.resolve(source).normalize();
     }

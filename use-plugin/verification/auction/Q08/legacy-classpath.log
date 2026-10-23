@@ -1,0 +1,15 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------------< org.tzi.use:use-core >------------------------
+[INFO] Building use-core 7.5.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- dependency:3.7.0:build-classpath (default-cli) @ use-core ---
+[INFO] Wrote classpath file 'D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\auction-legacy-classpath.txt'.
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  4.885 s
+[INFO] Finished at: 2026-10-22T11:39:43+07:00
+[INFO] ------------------------------------------------------------------------

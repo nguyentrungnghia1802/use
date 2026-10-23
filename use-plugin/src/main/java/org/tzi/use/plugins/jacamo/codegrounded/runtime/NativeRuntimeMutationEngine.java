@@ -12,7 +12,9 @@ import org.jacamo.bridge.contract.BridgeRelationId;
 import org.jacamo.bridge.contract.Completeness;
 import org.jacamo.bridge.contract.ProjectionStatus;
 import org.jacamo.bridge.contract.RuntimeFactKind;
+import org.jacamo.bridge.contract.RuntimeEvent;
 import org.jacamo.bridge.contract.RuntimeSnapshot;
+import org.jacamo.bridge.contract.VerificationObservation;
 import org.tzi.use.api.UseApiException;
 import org.tzi.use.api.UseSystemApi;
 import org.tzi.use.api.UseModelApi;
@@ -82,6 +84,7 @@ public final class NativeRuntimeMutationEngine {
     private final org.tzi.use.plugins.jacamo.semantics.runtime.SemanticObservationMapper cslMapper;
     private final org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoRuntimeStateMapping canonicalMapper;
     private final org.tzi.use.plugins.jacamo.semantics.mapping.SemanticProgram canonicalProgram;
+    private final org.tzi.use.plugins.jacamo.semantics.mapping.CaseRuntimeMapping caseMapping;
     private final java.util.Set<String> tombstones = new java.util.HashSet<>();
 
     public NativeRuntimeMutationEngine(MSystem system, NativeObjectBindings semanticObjectIndex,
@@ -103,6 +106,7 @@ public final class NativeRuntimeMutationEngine {
         this.cslMapper = org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.active(system.model())
             ? new org.tzi.use.plugins.jacamo.semantics.runtime.SemanticObservationMapper(org.tzi.use.plugins.jacamo.semantics.csl.CslUseBinding.configuration(system.model())) : null;
         canonicalMapper=program==null?null:new org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoRuntimeStateMapping(program,system.model());
+        caseMapping=canonicalMapper==null?null:canonicalMapper.caseMapping(system.model());
         this.baseline = capture();
     }
 
@@ -110,6 +114,36 @@ public final class NativeRuntimeMutationEngine {
     public boolean cslProfile() { return cslMapper != null; }
     public boolean canonicalProfile() {return org.tzi.use.semantic.engine.use75.Use75CslModelBackend.active(system.model())&&system.model().getAnnotation("CanonicalSemanticProgram")!=null;}
     public boolean canonicalMappingConfigured(){return canonicalMapper!=null;}
+    public boolean auctionCase(){return caseMapping!=null;}
+    public boolean xmlCase(){return canonicalProgram!=null&&canonicalProgram.xmlPlan()!=null;}
+    /** Read under the existing native barrier; the XML adapter returns immutable casts, not another state. */
+    public synchronized List<org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.OccurrenceProjection.Scope> xmlOccurrences(String run,long generation,String revision) {
+        if(!(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeStateMapping xml))throw new IllegalStateException("XML_RUNTIME_MAPPING_REQUIRED");
+        return xml.occurrences(cslPort(),run,generation,revision);
+    }
+    public synchronized List<org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.TaskDemandProjection.Demand> xmlTaskDemands(String run,long generation,String revision) {
+        if(!(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeStateMapping xml))throw new IllegalStateException("XML_RUNTIME_MAPPING_REQUIRED");return xml.taskDemands(cslPort(),run,generation,revision);
+    }
+    public void validateVerificationObservation(VerificationObservation observation,String run,long generation,String revision) {
+        if(caseMapping!=null)try{caseMapping.validateObservation(observation,run,generation,revision);}
+        catch(RuntimeException rejected){throw new NativeRuntimeProtocolException(caseMapping.observationRejectionCode()+":"+rejected.getMessage(),rejected);}
+    }
+    /** Same writer and rollback image; the adapter owns no native state. */
+    public synchronized List<ApplyResult> applyAuctionCut(RuntimeSnapshot cut,String run,long generation,List<RuntimeEvent> prefix) {
+        return applyAuctionCut(cut,run,generation,prefix,null);
+    }
+    public synchronized List<ApplyResult> applyAuctionCut(RuntimeSnapshot cut,String run,long generation,List<RuntimeEvent> prefix,RuntimeEvent event) {
+        if(caseMapping==null)return List.of();var before=capture();
+        try {
+            var projected=caseMapping.applyCut(cslPort(),run,generation,cut,prefix,event);
+            var results=new ArrayList<ApplyResult>();
+            for(var result:projected) {
+                if(result.materialized())results.add(new ApplyResult(Status.MATERIALIZED,result.ruleId(),result.identity(),result.object().name(),result.diagnostic()));
+                else results.add(ApplyResult.evidence(result.ruleId(),result.identity(),result.diagnostic()));
+            }
+            return List.copyOf(results);
+        }catch(RuntimeException|UseApiException invalid){restore(before);throw new NativeRuntimeProtocolException(caseMapping.mappingRejectionCode()+":"+invalid.getMessage(),invalid);}
+    }
     public String canonicalProgramHash(){return canonicalMapper==null?"":canonicalMapper.programHash();}
     public org.tzi.use.plugins.jacamo.semantics.mapping.SemanticProgram canonicalProgram(){if(canonicalProgram==null)throw new IllegalStateException("CANONICAL_PROGRAM_REQUIRED");return canonicalProgram;}
     private boolean observedProfile(){return cslProfile()||canonicalMappingConfigured();}
@@ -205,6 +239,7 @@ public final class NativeRuntimeMutationEngine {
      */
     /** A COMPLETE replacement cut proves which property occurrences ceased to exist before slot upserts. */
     public synchronized void prepareSnapshot(RuntimeSnapshot snapshot) {
+        if(auctionCase())return; // Case slots include metadata and authorized fields, not only observables.
         if(!observedProfile() || snapshot.sourceCompleteness().get("cartago")!=Completeness.COMPLETE)return;
         var observed=new java.util.HashSet<String>();
         for(var fact:snapshot.facts())if(fact.id().authority().equals("cartago")) {
@@ -259,6 +294,8 @@ public final class NativeRuntimeMutationEngine {
             Map<String, Object> payload, boolean validateStructure) {
         String identity = runtimeIdentity == null ? "<missing>" : runtimeIdentity.canonical();
         String normalized = textOrNull(payload, "normalizedEventKind");
+        if(auctionCase()&&normalized!=null&&!org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoRuntimeStateMapping.caseHelper(normalized))
+            return ApplyResult.evidence(caseMapping.rawInputRuleId(),identity,"CASE_RULE_BATCH_INPUT:"+normalized);
         if(cslProfile() && factKind==RuntimeFactKind.NORM_INSTANCE && "NPL_OBSERVATION/1.0".equals(payload.get("observationVersion"))) {
             if(completeness!=Completeness.COMPLETE || !"BOUND_PUBLIC_CREATED_ANNOTATION".equals(payload.get("activationIdentityStatus")))return ApplyResult.evidence("CSL-NPL-OBSERVER-V1",identity,"UNSUPPORTED:"+payload.get("activationIdentityStatus"));
             var image=capture();try {var mapped=cslMapper.apply(cslPort(),runtimeIdentity,"OBSERVE_NPL_NORM_V1",payload);return new ApplyResult(Status.MATERIALIZED,"CSL-NPL-OBSERVER-V1",mapped.identity(),mapped.object().name(),mapped.diagnostic());}
@@ -944,8 +981,15 @@ public final class NativeRuntimeMutationEngine {
             public java.util.Collection<MObject> objects() {return java.util.List.copyOf(system.state().allObjects());}
             public void value(MObject object,String name,Value value) throws UseApiException {api.setAttributeValueEx(object,requiredAttribute(object,name),value);}
             public Value currentValue(MObject object,String name){return object.state(system.state()).attributeValue(name);}
+            public org.tzi.use.uml.sys.MSystemState readState(){return system.state();}
             public void connect(String name,MObject first,MObject second) throws UseApiException {ensureLink(name,first,second);}
             public void delete(String id) throws UseApiException {NativeRuntimeMutationEngine.this.delete(id);}
+            public void deleteRebindableRole(String id)throws UseApiException {
+                var object=requiredObject(id);var role=system.model().getClass("RoleOccurrence");
+                if(role==null||!object.cls().isSubClassifierOf(role))throw new NativeRuntimeProtocolException("REBINDABLE_PROJECTION_MUST_BE_ROLE");
+                var aliases=semanticObjectIndex.entrySet().stream().filter(e->e.getValue()==object).map(Map.Entry::getKey).toList();
+                NativeRuntimeMutationEngine.this.delete(id);tombstones.removeAll(aliases);
+            }
             public void disconnect(String name,MObject first,MObject second) throws UseApiException {
                 for(var link:new ArrayList<>(system.state().allLinks()))if(link.association().name().equals(name)
                     && (first==null || link.linkedObjects().get(0)==first) && (second==null || link.linkedObjects().get(1)==second))deleteLink(link);
@@ -980,6 +1024,7 @@ public final class NativeRuntimeMutationEngine {
                     }
                 }
                 if(!"cartago".equals(metadata(object,"authority")))continue;
+                if(caseMapping!=null&&caseMapping.ownsRemoval(cslPort(),object))continue; // Case removal rules own these fields, not observable slots.
                 boolean owned=object.cls().name().equals("WorkspaceObservation") || object.cls().allParents().stream().anyMatch(c->c.name().equals("DomainEntity"));
                 if(owned && !retained.contains(metadata(object,"semanticId"))) {delete(metadata(object,"semanticId"));continue;}
                 for(var attribute:object.cls().allAttributes()) {

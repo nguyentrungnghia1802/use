@@ -1,0 +1,1152 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] use                                                                [pom]
+[INFO] JaCaMo Bridge Neutral Contract                                     [jar]
+[INFO] JaCaMo Bridge Official Adapters                                    [jar]
+[INFO] use-core                                                           [jar]
+[INFO] USE semantic engine � selected use4Goal core                       [jar]
+[INFO] use-gui                                                            [jar]
+[INFO] USE JaCaMo Plugin                                                  [jar]
+[INFO] 
+[INFO] --------------------------< org.tzi.use:use >---------------------------
+[INFO] Building use 7.5.0                                                 [1/7]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] -----------------< org.tzi.use:jacamo-bridge-contract >-----------------
+[INFO] Building JaCaMo Bridge Neutral Contract 1.0.0-SNAPSHOT             [2/7]
+[INFO]   from jacamo-bridge-contract\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ jacamo-bridge-contract ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ jacamo-bridge-contract ---
+[INFO] Not compiling main sources
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ jacamo-bridge-contract ---
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-contract\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ jacamo-bridge-contract ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ jacamo-bridge-contract ---
+[INFO] 
+[INFO] ------------------< org.tzi.use:jacamo-bridge-jacamo >------------------
+[INFO] Building JaCaMo Bridge Official Adapters 1.0.0-SNAPSHOT            [3/7]
+[INFO]   from jacamo-bridge-jacamo\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ jacamo-bridge-jacamo ---
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-jacamo\src\main\resources
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ jacamo-bridge-jacamo ---
+[INFO] Not compiling main sources
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ jacamo-bridge-jacamo ---
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-jacamo\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ jacamo-bridge-jacamo ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ jacamo-bridge-jacamo ---
+[INFO] 
+[INFO] ------------------------< org.tzi.use:use-core >------------------------
+[INFO] Building use-core 7.5.0                                            [4/7]
+[INFO]   from use-core\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- merge:1.2.0:merge (merge-grammar-files) @ use-core ---
+[INFO] 
+[INFO] --- antlr3:3.5.3:antlr (antlr) @ use-core ---
+[INFO] ANTLR: Processing source directory D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\grammars
+[INFO] 
+[INFO] --- copy-rename:1.0:rename (move-antlr-parser-use) @ use-core ---
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\USELexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\use\USELexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\USEParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\use\USEParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\GeneratorLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\generator\GeneratorLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\GeneratorParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\generator\GeneratorParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\OCLLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\ocl\OCLLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\OCLParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\ocl\OCLParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\ShellCommandLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\shell\ShellCommandLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\ShellCommandParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\shell\ShellCommandParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\SoilLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\soil\SoilLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\SoilParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\soil\SoilParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\TestSuiteLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\testsuite\TestSuiteLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\TestSuiteParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\testsuite\TestSuiteParser.java
+[INFO] 
+[INFO] --- build-helper:3.6.0:add-source (add-antlr3-generated-source) @ use-core ---
+[INFO] Source directory: D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3 added.
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-core ---
+[INFO] Copying 512 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- build-helper:3.6.0:add-test-source (add-test-source) @ use-core ---
+[INFO] Test Source directory: D:\_CODE_BANK\Project_\08_Thesis\use\use-core\src\it\java added.
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-core ---
+[INFO] Not compiling main sources
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-core ---
+[INFO] Copying 91 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-core ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-core ---
+[INFO] 
+[INFO] ---------------< org.tzi.use:use-jacamo-semantic-engine >---------------
+[INFO] Building USE semantic engine � selected use4Goal core 7.5.0        [5/7]
+[INFO]   from use-jacamo-semantic-engine\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- antlr4:4.9.3:antlr4 (generate-selected-original-grammars) @ use-jacamo-semantic-engine ---
+[INFO] No grammars to process
+[INFO] ANTLR 4: Processing source directory D:\_CODE_BANK\Project_\08_Thesis\use\use-jacamo-semantic-engine\src\main\resources\grammars
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-jacamo-semantic-engine ---
+[INFO] Copying 4 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-jacamo-semantic-engine ---
+[INFO] Not compiling main sources
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-jacamo-semantic-engine ---
+[INFO] Copying 4 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-jacamo-semantic-engine ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-jacamo-semantic-engine ---
+[INFO] 
+[INFO] ------------------------< org.tzi.use:use-gui >-------------------------
+[INFO] Building use-gui 7.5.0                                             [6/7]
+[INFO]   from use-gui\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-gui ---
+[INFO] Copying 56 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- build-helper:1.5:add-test-source (add-test-source) @ use-gui ---
+[INFO] Test Source directory: D:\_CODE_BANK\Project_\08_Thesis\use\use-gui\src\it\java added.
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-gui ---
+[INFO] Not compiling main sources
+[INFO] 
+[INFO] --- build-helper:1.5:add-test-resource (add-test-resource) @ use-gui ---
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-gui ---
+[INFO] Copying 1 resource from src\test\resources to target\test-classes
+[INFO] Copying 297 resources from src\it\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-gui ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-gui ---
+[INFO] 
+[INFO] -----------------------< org.tzi.use:use-plugin >-----------------------
+[INFO] Building USE JaCaMo Plugin 1.0.1                                   [7/7]
+[INFO]   from use-plugin\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-plugin ---
+[INFO] Copying 1 resource from src\main\version-manifest to target\classes
+[INFO] Copying 13 resources from src\main\resources to target\classes
+[INFO] Copying 2 resources from src\main\resources\org\tzi\use\plugins\jacamo\ocl to target\classes\org\tzi\use\plugins\jacamo\historical\version-1\ocl
+[INFO] Copying 3 resources from src\main\resources\org\tzi\use\plugins\jacamo\runtime to target\classes\org\tzi\use\plugins\jacamo\historical\version-1\runtime
+[INFO] Copying 1 resource from src\main\resources\org\tzi\use\plugins\jacamo\verification to target\classes\org\tzi\use\plugins\jacamo\historical\version-1\verification
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\Core\Metamodel\version-1
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\Core\Mapping\version-1
+[INFO] Copying 1 resource from Core\Metamodel\csl-monitor-v1 to target\classes\org\tzi\use\plugins\jacamo\semantics\metamodel
+[INFO] Copying 1 resource from Core\Metamodel\jacamo-source-v2 to target\classes\org\tzi\use\plugins\jacamo\semantics\metamodel
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\Core\Metamodel\version-2
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\Core\Mapping\version-2
+[INFO] Copying 2 resources from release to target\classes\org\tzi\use\plugins\jacamo\release
+[INFO] Copying 1 resource from  to target\classes\org\tzi\use\plugins\jacamo\release
+[INFO] Copying 3 resources from licenses to target\classes\org\tzi\use\plugins\jacamo\release\licenses
+[INFO] The encoding used to copy filtered properties files have not been set. This means that the same encoding will be used to copy filtered properties files as when copying other filtered resources. This might not be what you want! Run your build with --debug to see which files might be affected. Read more at https://maven.apache.org/plugins/maven-resources-plugin/examples/filtering-properties-files.html
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-plugin ---
+[INFO] Not compiling main sources
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-plugin ---
+[INFO] Copying 53 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-plugin ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 358 source files with javac [debug target 21] to target\test-classes
+[INFO] Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/mapping/OrderProjectionTest.java: Some input files use or override a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/mapping/OrderProjectionTest.java: Recompile with -Xlint:deprecation for details.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/runtime/RuntimeIdentityHardeningTest.java: Some input files use unchecked or unsafe operations.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/runtime/RuntimeIdentityHardeningTest.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-plugin ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running org.tzi.use.plugins.jacamo.semantics.auction.AuctionNativeRoundTripTest
+Configuration of 'jacamoJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/jacamo/1.3.1/jacamo-1.3.1.jar, based on class loader
+Configuration of 'moiseJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/moise/1.1/moise-1.1.jar, based on class loader
+Configuration of 'jasonJar' found at /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar, based on class loader
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+Oct 21, 2026 12:27:41 AM ora4mas.nopl.GroupBoard agKilled
+INFO: participantcfd9f0f1a8f94c62a29ef538bbac2737 has quit, role participant removed by the platform!
+Oct 21, 2026 12:27:41 AM ora4mas.nopl.SchemeBoard agKilled
+INFO: participantcfd9f0f1a8f94c62a29ef538bbac2737 has quit, mission mParticipant removed by the platform!
+Oct 21, 2026 12:27:41 AM ora4mas.nopl.SchemeBoard agKilled
+INFO: participantcfd9f0f1a8f94c62a29ef538bbac2737 has quit, mission mParticipant removed by the platform!
+Oct 21, 2026 12:27:41 AM ora4mas.nopl.GroupBoard agKilled
+INFO: auctionBindingf0cbf49d492741aaa02515166dc98af4 has quit, role auctioneer removed by the platform!
+Oct 21, 2026 12:27:41 AM ora4mas.nopl.SchemeBoard agKilled
+INFO: auctionBindingf0cbf49d492741aaa02515166dc98af4 has quit, mission mAuctioneer removed by the platform!
+Oct 21, 2026 12:27:41 AM ora4mas.nopl.SchemeBoard agKilled
+INFO: auctionBindingf0cbf49d492741aaa02515166dc98af4 has quit, mission mAuctioneer removed by the platform!
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+Received bid 42.5 from auctionBinding58f97db62bd84f71bd68ec7994d07233 for service 'quoted' \ route
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ERROR] Tests run: 6, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 13.05 s <<< FAILURE! -- in org.tzi.use.plugins.jacamo.semantics.auction.AuctionNativeRoundTripTest
+[ERROR] org.tzi.use.plugins.jacamo.semantics.auction.AuctionNativeRoundTripTest.unavailableRequiredStateStaysUndefinedThroughExportAndCannotGainAuthoredDefaults -- Time elapsed: 5.822 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <{link:CslContextScopes:[AuctionOrg_4cb172884852e80c3186, auctionGroup_3ec58d7ac552b88723b5]=[], link:CslEntityScopes:[AuctionOrg_4cb172884852e80c3186, Auction_bb6667aae03dc1faba95]=[], link:CslEntityScopes:[AuctionOrg_4cb172884852e80c3186, Auction_df31b6874c6595f25c3a]=[], link:InContext:[auctionGroup_3ec58d7ac552b88723b5, auctioneer_96e85d6c473f4207f9d8]=[], link:InContext:[auctionGroup_3ec58d7ac552b88723b5, participant_d3ebd79c46d227a558c9]=[], link:Plays:[auctionBindingf0cbf49d492741aaa02515166dc98af4, auctioneer_96e85d6c473f4207f9d8]=[], link:Plays:[participantcfd9f0f1a8f94c62a29ef538bbac2737, participant_d3ebd79c46d227a558c9]=[], object:AuctionMonitor=AuctionMonitor, object:AuctionMonitor_5d6952dbcec8220a=AuctionMonitor, object:AuctionOrg_4cb172884852e80c3186=AuctionOrg, object:Auction_bb6667aae03dc1faba95=Auction, object:Auction_df31b6874c6595f25c3a=Auction, object:aorg=WorkspaceObservation, object:auctionBindingf0cbf49d492741aaa02515166dc98af4=AtomicAgent, object:auctionGroup_3ec58d7ac552b88723b5=auctionGroup, object:auctioneer_96e85d6c473f4207f9d8=auctioneer, object:main=WorkspaceObservation, object:otherec31988d83ed4b65a96a5803453e45c4=WorkspaceObservation, object:participant_d3ebd79c46d227a558c9=participant, object:participantcfd9f0f1a8f94c62a29ef538bbac2737=AtomicAgent, value:AuctionMonitor:actualBidBy=Set(String):[], value:AuctionMonitor:adminBidOverride=Boolean:false, value:AuctionMonitor:bidCommittedBy=Set(String):[String:'participantcfd9f0f1a8f94c62a29ef538bbac2737'], value:AuctionMonitor:bidDoneBy=Set(String):[], value:AuctionMonitor:bidEnabledAt=Integer:-1, value:AuctionMonitor:bidSatisfiedAt=Integer:-1, value:AuctionMonitor:decideEnabledAt=Integer:-1, value:AuctionMonitor:decideSatisfiedAt=Integer:-1, value:AuctionMonitor:now=OclVoid:null, value:AuctionMonitor:startSatisfiedAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:actualBidBy=Set(String):[], value:AuctionMonitor_5d6952dbcec8220a:adminBidOverride=Boolean:false, value:AuctionMonitor_5d6952dbcec8220a:bidCommittedBy=Set(String):[String:'participantcfd9f0f1a8f94c62a29ef538bbac2737'], value:AuctionMonitor_5d6952dbcec8220a:bidDoneBy=Set(String):[], value:AuctionMonitor_5d6952dbcec8220a:bidEnabledAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:bidSatisfiedAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:decideEnabledAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:decideSatisfiedAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:now=OclVoid:null, value:AuctionMonitor_5d6952dbcec8220a:startSatisfiedAt=Integer:-1, value:Auction_bb6667aae03dc1faba95:best_bid=OclVoid:null, value:Auction_bb6667aae03dc1faba95:currentWinner=OclVoid:null, value:Auction_bb6667aae03dc1faba95:id=String:'castOne', value:Auction_bb6667aae03dc1faba95:running=OclVoid:null, value:Auction_bb6667aae03dc1faba95:task=OclVoid:null, value:Auction_bb6667aae03dc1faba95:winner=OclVoid:null, value:Auction_df31b6874c6595f25c3a:best_bid=Real:7fefffffffffffff, value:Auction_df31b6874c6595f25c3a:currentWinner=String:'no_winner', value:Auction_df31b6874c6595f25c3a:id=String:'castTwo', value:Auction_df31b6874c6595f25c3a:running=Boolean:false, value:Auction_df31b6874c6595f25c3a:task=String:'no_task', value:Auction_df31b6874c6595f25c3a:winner=String:'no_winner', value:auctionGroup_3ec58d7ac552b88723b5:auctioneer=Set(auctioneer):[Object:auctioneer_96e85d6c473f4207f9d8], value:auctionGroup_3ec58d7ac552b88723b5:participant=Set(participant):[Object:participant_d3ebd79c46d227a558c9]}> but was: <{link:CslContextScopes:[AuctionOrg_4cb172884852e80c3186, auctionGroup_3ec58d7ac552b88723b5]=[[], []], link:CslEntityScopes:[AuctionOrg_4cb172884852e80c3186, Auction_bb6667aae03dc1faba95]=[[], []], link:CslEntityScopes:[AuctionOrg_4cb172884852e80c3186, Auction_df31b6874c6595f25c3a]=[[], []], link:InContext:[auctionGroup_3ec58d7ac552b88723b5, auctioneer_96e85d6c473f4207f9d8]=[[], []], link:InContext:[auctionGroup_3ec58d7ac552b88723b5, participant_d3ebd79c46d227a558c9]=[[], []], link:Plays:[auctionBindingf0cbf49d492741aaa02515166dc98af4, auctioneer_96e85d6c473f4207f9d8]=[[], []], link:Plays:[participantcfd9f0f1a8f94c62a29ef538bbac2737, participant_d3ebd79c46d227a558c9]=[[], []], object:AuctionMonitor=AuctionMonitor, object:AuctionMonitor_5d6952dbcec8220a=AuctionMonitor, object:AuctionOrg_4cb172884852e80c3186=AuctionOrg, object:Auction_bb6667aae03dc1faba95=Auction, object:Auction_df31b6874c6595f25c3a=Auction, object:aorg=WorkspaceObservation, object:auctionBindingf0cbf49d492741aaa02515166dc98af4=AtomicAgent, object:auctionGroup_3ec58d7ac552b88723b5=auctionGroup, object:auctioneer_96e85d6c473f4207f9d8=auctioneer, object:main=WorkspaceObservation, object:otherec31988d83ed4b65a96a5803453e45c4=WorkspaceObservation, object:participant_d3ebd79c46d227a558c9=participant, object:participantcfd9f0f1a8f94c62a29ef538bbac2737=AtomicAgent, value:AuctionMonitor:actualBidBy=Set(OclVoid):[], value:AuctionMonitor:adminBidOverride=Boolean:false, value:AuctionMonitor:bidCommittedBy=Set(String):[String:'participantcfd9f0f1a8f94c62a29ef538bbac2737'], value:AuctionMonitor:bidDoneBy=Set(OclVoid):[], value:AuctionMonitor:bidEnabledAt=Integer:-1, value:AuctionMonitor:bidSatisfiedAt=Integer:-1, value:AuctionMonitor:decideEnabledAt=Integer:-1, value:AuctionMonitor:decideSatisfiedAt=Integer:-1, value:AuctionMonitor:now=OclVoid:null, value:AuctionMonitor:startSatisfiedAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:actualBidBy=Set(OclVoid):[], value:AuctionMonitor_5d6952dbcec8220a:adminBidOverride=Boolean:false, value:AuctionMonitor_5d6952dbcec8220a:bidCommittedBy=Set(String):[String:'participantcfd9f0f1a8f94c62a29ef538bbac2737'], value:AuctionMonitor_5d6952dbcec8220a:bidDoneBy=Set(OclVoid):[], value:AuctionMonitor_5d6952dbcec8220a:bidEnabledAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:bidSatisfiedAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:decideEnabledAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:decideSatisfiedAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:now=OclVoid:null, value:AuctionMonitor_5d6952dbcec8220a:startSatisfiedAt=Integer:-1, value:Auction_bb6667aae03dc1faba95:best_bid=OclVoid:null, value:Auction_bb6667aae03dc1faba95:currentWinner=OclVoid:null, value:Auction_bb6667aae03dc1faba95:id=String:'castOne', value:Auction_bb6667aae03dc1faba95:running=OclVoid:null, value:Auction_bb6667aae03dc1faba95:task=OclVoid:null, value:Auction_bb6667aae03dc1faba95:winner=OclVoid:null, value:Auction_df31b6874c6595f25c3a:best_bid=Real:7fefffffffffffff, value:Auction_df31b6874c6595f25c3a:currentWinner=String:'no_winner', value:Auction_df31b6874c6595f25c3a:id=String:'castTwo', value:Auction_df31b6874c6595f25c3a:running=Boolean:false, value:Auction_df31b6874c6595f25c3a:task=String:'no_task', value:Auction_df31b6874c6595f25c3a:winner=String:'no_winner', value:auctionGroup_3ec58d7ac552b88723b5:auctioneer=OclVoid:null, value:auctionGroup_3ec58d7ac552b88723b5:participant=OclVoid:null}>
+	at org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)
+	at org.junit.jupiter.api.AssertionUtils.failNotEqual(AssertionUtils.java:62)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1141)
+	at org.tzi.use.plugins.jacamo.semantics.auction.AuctionNativeRoundTripTest.unavailableRequiredStateStaysUndefinedThroughExportAndCannotGainAuthoredDefaults(AuctionNativeRoundTripTest.java:91)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:140)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:84)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:214)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:210)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:135)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:66)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:107)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:88)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:67)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:52)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:86)
+	at org.junit.platform.launcher.core.DefaultLauncherSession$DelegatingLauncher.execute(DefaultLauncherSession.java:86)
+	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:56)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:184)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:122)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+
+[ERROR] org.tzi.use.plugins.jacamo.semantics.auction.AuctionNativeRoundTripTest.twoActualAuctionsAndObserverValuesRoundTripIncludingMaximumRealAndQuotedService -- Time elapsed: 2.620 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <{link:CslContextScopes:[AuctionOrg_173480be193725b46d88, auctionGroup_c329bcdf74bb3a2d6a94]=[], link:CslEntityScopes:[AuctionOrg_173480be193725b46d88, Auction_a414b5cc96a82d276092]=[], link:CslEntityScopes:[AuctionOrg_173480be193725b46d88, Auction_afdc4b29a4c1937219ba]=[], link:InContext:[auctionGroup_c329bcdf74bb3a2d6a94, auctioneer_19f6db553f9bb894f76f]=[], link:InContext:[auctionGroup_c329bcdf74bb3a2d6a94, participant_fc60088739e647e24b64]=[], link:Plays:[auctionBinding58f97db62bd84f71bd68ec7994d07233, auctioneer_19f6db553f9bb894f76f]=[], link:Plays:[participantb66e070c320a40458c3016884bd614e3, participant_fc60088739e647e24b64]=[], object:AuctionMonitor=AuctionMonitor, object:AuctionMonitor_e5274403395523b9=AuctionMonitor, object:AuctionOrg_173480be193725b46d88=AuctionOrg, object:Auction_a414b5cc96a82d276092=Auction, object:Auction_afdc4b29a4c1937219ba=Auction, object:aorg=WorkspaceObservation, object:auctionBinding58f97db62bd84f71bd68ec7994d07233=AtomicAgent, object:auctionGroup_c329bcdf74bb3a2d6a94=auctionGroup, object:auctioneer_19f6db553f9bb894f76f=auctioneer, object:main=WorkspaceObservation, object:otherd65207444ea646d8bae493f5385881f4=WorkspaceObservation, object:participant_fc60088739e647e24b64=participant, object:participantb66e070c320a40458c3016884bd614e3=AtomicAgent, value:AuctionMonitor:actualBidBy=Set(String):[String:'auctionBinding58f97db62bd84f71bd68ec7994d07233'], value:AuctionMonitor:adminBidOverride=Boolean:false, value:AuctionMonitor:bidCommittedBy=Set(String):[String:'participantb66e070c320a40458c3016884bd614e3'], value:AuctionMonitor:bidDoneBy=Set(String):[], value:AuctionMonitor:bidEnabledAt=Integer:-1, value:AuctionMonitor:bidSatisfiedAt=Integer:-1, value:AuctionMonitor:decideEnabledAt=Integer:-1, value:AuctionMonitor:decideSatisfiedAt=Integer:-1, value:AuctionMonitor:now=Integer:0, value:AuctionMonitor:startSatisfiedAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:actualBidBy=Set(String):[], value:AuctionMonitor_e5274403395523b9:adminBidOverride=Boolean:false, value:AuctionMonitor_e5274403395523b9:bidCommittedBy=Set(String):[String:'participantb66e070c320a40458c3016884bd614e3'], value:AuctionMonitor_e5274403395523b9:bidDoneBy=Set(String):[], value:AuctionMonitor_e5274403395523b9:bidEnabledAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:bidSatisfiedAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:decideEnabledAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:decideSatisfiedAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:now=Integer:0, value:AuctionMonitor_e5274403395523b9:startSatisfiedAt=Integer:-1, value:Auction_a414b5cc96a82d276092:best_bid=Real:7fefffffffffffff, value:Auction_a414b5cc96a82d276092:currentWinner=String:'no_winner', value:Auction_a414b5cc96a82d276092:id=String:'castTwo', value:Auction_a414b5cc96a82d276092:running=Boolean:false, value:Auction_a414b5cc96a82d276092:task=String:'no_task', value:Auction_a414b5cc96a82d276092:winner=String:'no_winner', value:Auction_afdc4b29a4c1937219ba:best_bid=Real:4045400000000000, value:Auction_afdc4b29a4c1937219ba:currentWinner=String:'auctionBinding58f97db62bd84f71bd68ec7994d07233', value:Auction_afdc4b29a4c1937219ba:id=String:'castOne', value:Auction_afdc4b29a4c1937219ba:running=Boolean:true, value:Auction_afdc4b29a4c1937219ba:task=String:'service 'quoted' \ route', value:Auction_afdc4b29a4c1937219ba:winner=String:'no_winner', value:auctionGroup_c329bcdf74bb3a2d6a94:auctioneer=Set(auctioneer):[Object:auctioneer_19f6db553f9bb894f76f], value:auctionGroup_c329bcdf74bb3a2d6a94:participant=Set(participant):[Object:participant_fc60088739e647e24b64]}> but was: <{link:CslContextScopes:[AuctionOrg_173480be193725b46d88, auctionGroup_c329bcdf74bb3a2d6a94]=[[], []], link:CslEntityScopes:[AuctionOrg_173480be193725b46d88, Auction_a414b5cc96a82d276092]=[[], []], link:CslEntityScopes:[AuctionOrg_173480be193725b46d88, Auction_afdc4b29a4c1937219ba]=[[], []], link:InContext:[auctionGroup_c329bcdf74bb3a2d6a94, auctioneer_19f6db553f9bb894f76f]=[[], []], link:InContext:[auctionGroup_c329bcdf74bb3a2d6a94, participant_fc60088739e647e24b64]=[[], []], link:Plays:[auctionBinding58f97db62bd84f71bd68ec7994d07233, auctioneer_19f6db553f9bb894f76f]=[[], []], link:Plays:[participantb66e070c320a40458c3016884bd614e3, participant_fc60088739e647e24b64]=[[], []], object:AuctionMonitor=AuctionMonitor, object:AuctionMonitor_e5274403395523b9=AuctionMonitor, object:AuctionOrg_173480be193725b46d88=AuctionOrg, object:Auction_a414b5cc96a82d276092=Auction, object:Auction_afdc4b29a4c1937219ba=Auction, object:aorg=WorkspaceObservation, object:auctionBinding58f97db62bd84f71bd68ec7994d07233=AtomicAgent, object:auctionGroup_c329bcdf74bb3a2d6a94=auctionGroup, object:auctioneer_19f6db553f9bb894f76f=auctioneer, object:main=WorkspaceObservation, object:otherd65207444ea646d8bae493f5385881f4=WorkspaceObservation, object:participant_fc60088739e647e24b64=participant, object:participantb66e070c320a40458c3016884bd614e3=AtomicAgent, value:AuctionMonitor:actualBidBy=Set(String):[String:'auctionBinding58f97db62bd84f71bd68ec7994d07233'], value:AuctionMonitor:adminBidOverride=Boolean:false, value:AuctionMonitor:bidCommittedBy=Set(String):[String:'participantb66e070c320a40458c3016884bd614e3'], value:AuctionMonitor:bidDoneBy=Set(OclVoid):[], value:AuctionMonitor:bidEnabledAt=Integer:-1, value:AuctionMonitor:bidSatisfiedAt=Integer:-1, value:AuctionMonitor:decideEnabledAt=Integer:-1, value:AuctionMonitor:decideSatisfiedAt=Integer:-1, value:AuctionMonitor:now=Integer:0, value:AuctionMonitor:startSatisfiedAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:actualBidBy=Set(OclVoid):[], value:AuctionMonitor_e5274403395523b9:adminBidOverride=Boolean:false, value:AuctionMonitor_e5274403395523b9:bidCommittedBy=Set(String):[String:'participantb66e070c320a40458c3016884bd614e3'], value:AuctionMonitor_e5274403395523b9:bidDoneBy=Set(OclVoid):[], value:AuctionMonitor_e5274403395523b9:bidEnabledAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:bidSatisfiedAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:decideEnabledAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:decideSatisfiedAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:now=Integer:0, value:AuctionMonitor_e5274403395523b9:startSatisfiedAt=Integer:-1, value:Auction_a414b5cc96a82d276092:best_bid=Real:7fefffffffffffff, value:Auction_a414b5cc96a82d276092:currentWinner=String:'no_winner', value:Auction_a414b5cc96a82d276092:id=String:'castTwo', value:Auction_a414b5cc96a82d276092:running=Boolean:false, value:Auction_a414b5cc96a82d276092:task=String:'no_task', value:Auction_a414b5cc96a82d276092:winner=String:'no_winner', value:Auction_afdc4b29a4c1937219ba:best_bid=Real:4045400000000000, value:Auction_afdc4b29a4c1937219ba:currentWinner=String:'auctionBinding58f97db62bd84f71bd68ec7994d07233', value:Auction_afdc4b29a4c1937219ba:id=String:'castOne', value:Auction_afdc4b29a4c1937219ba:running=Boolean:true, value:Auction_afdc4b29a4c1937219ba:task=String:'service 'quoted' \ route', value:Auction_afdc4b29a4c1937219ba:winner=String:'no_winner', value:auctionGroup_c329bcdf74bb3a2d6a94:auctioneer=OclVoid:null, value:auctionGroup_c329bcdf74bb3a2d6a94:participant=OclVoid:null}>
+	at org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)
+	at org.junit.jupiter.api.AssertionUtils.failNotEqual(AssertionUtils.java:62)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1141)
+	at org.tzi.use.plugins.jacamo.semantics.auction.AuctionNativeRoundTripTest.twoActualAuctionsAndObserverValuesRoundTripIncludingMaximumRealAndQuotedService(AuctionNativeRoundTripTest.java:60)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:140)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:84)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:214)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:210)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:135)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:66)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:107)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:88)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:67)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:52)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:86)
+	at org.junit.platform.launcher.core.DefaultLauncherSession$DelegatingLauncher.execute(DefaultLauncherSession.java:86)
+	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:56)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:184)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:122)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+
+[ERROR] org.tzi.use.plugins.jacamo.semantics.auction.AuctionNativeRoundTripTest.recreatedArtifactHasFreshNativeIdentityAndStaleGenerationCannotAlterExportedState -- Time elapsed: 2.551 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <{link:CslContextScopes:[AuctionOrg_4be1435a4ae7054b1135, auctionGroup_452c508e2fb7bb29e175]=[], link:CslEntityScopes:[AuctionOrg_4be1435a4ae7054b1135, Auction_2ee7040fc295dcf601ab]=[], link:CslEntityScopes:[AuctionOrg_4be1435a4ae7054b1135, Auction_92ef290e0a7bd9794c92]=[], link:InContext:[auctionGroup_452c508e2fb7bb29e175, auctioneer_1eada305f0264cd43272]=[], link:InContext:[auctionGroup_452c508e2fb7bb29e175, participant_cce4c8fa807ecc2933b3]=[], link:Plays:[auctionBinding3a3220cd189f45cea2ecc2f031c270ac, auctioneer_1eada305f0264cd43272]=[], link:Plays:[participantb6b13b2c0d10413ba613572756401c1c, participant_cce4c8fa807ecc2933b3]=[], object:AuctionMonitor=AuctionMonitor, object:AuctionMonitor_b138b6ed5a67b7a3=AuctionMonitor, object:AuctionMonitor_d8970bade7f642ce=AuctionMonitor, object:AuctionOrg_4be1435a4ae7054b1135=AuctionOrg, object:Auction_2ee7040fc295dcf601ab=Auction, object:Auction_92ef290e0a7bd9794c92=Auction, object:aorg=WorkspaceObservation, object:auctionBinding3a3220cd189f45cea2ecc2f031c270ac=AtomicAgent, object:auctionGroup_452c508e2fb7bb29e175=auctionGroup, object:auctioneer_1eada305f0264cd43272=auctioneer, object:main=WorkspaceObservation, object:othera2678c1615fb4a78915474a9f9484bb3=WorkspaceObservation, object:participant_cce4c8fa807ecc2933b3=participant, object:participantb6b13b2c0d10413ba613572756401c1c=AtomicAgent, value:AuctionMonitor:actualBidBy=Set(String):[], value:AuctionMonitor:adminBidOverride=Boolean:false, value:AuctionMonitor:bidCommittedBy=Set(String):[String:'participantb6b13b2c0d10413ba613572756401c1c'], value:AuctionMonitor:bidDoneBy=Set(String):[], value:AuctionMonitor:bidEnabledAt=Integer:-1, value:AuctionMonitor:bidSatisfiedAt=Integer:-1, value:AuctionMonitor:decideEnabledAt=Integer:-1, value:AuctionMonitor:decideSatisfiedAt=Integer:-1, value:AuctionMonitor:now=OclVoid:null, value:AuctionMonitor:startSatisfiedAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:actualBidBy=Set(String):[], value:AuctionMonitor_b138b6ed5a67b7a3:adminBidOverride=Boolean:false, value:AuctionMonitor_b138b6ed5a67b7a3:bidCommittedBy=Set(String):[String:'participantb6b13b2c0d10413ba613572756401c1c'], value:AuctionMonitor_b138b6ed5a67b7a3:bidDoneBy=Set(String):[], value:AuctionMonitor_b138b6ed5a67b7a3:bidEnabledAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:bidSatisfiedAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:decideEnabledAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:decideSatisfiedAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:now=OclVoid:null, value:AuctionMonitor_b138b6ed5a67b7a3:startSatisfiedAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:actualBidBy=Set(String):[], value:AuctionMonitor_d8970bade7f642ce:adminBidOverride=Boolean:false, value:AuctionMonitor_d8970bade7f642ce:bidCommittedBy=Set(String):[String:'participantb6b13b2c0d10413ba613572756401c1c'], value:AuctionMonitor_d8970bade7f642ce:bidDoneBy=Set(String):[], value:AuctionMonitor_d8970bade7f642ce:bidEnabledAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:bidSatisfiedAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:decideEnabledAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:decideSatisfiedAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:now=OclVoid:null, value:AuctionMonitor_d8970bade7f642ce:startSatisfiedAt=Integer:-1, value:Auction_2ee7040fc295dcf601ab:best_bid=Real:7fefffffffffffff, value:Auction_2ee7040fc295dcf601ab:currentWinner=String:'no_winner', value:Auction_2ee7040fc295dcf601ab:id=String:'castOne', value:Auction_2ee7040fc295dcf601ab:running=Boolean:false, value:Auction_2ee7040fc295dcf601ab:task=String:'no_task', value:Auction_2ee7040fc295dcf601ab:winner=String:'no_winner', value:Auction_92ef290e0a7bd9794c92:best_bid=Real:7fefffffffffffff, value:Auction_92ef290e0a7bd9794c92:currentWinner=String:'no_winner', value:Auction_92ef290e0a7bd9794c92:id=String:'castTwo', value:Auction_92ef290e0a7bd9794c92:running=Boolean:false, value:Auction_92ef290e0a7bd9794c92:task=String:'no_task', value:Auction_92ef290e0a7bd9794c92:winner=String:'no_winner', value:auctionGroup_452c508e2fb7bb29e175:auctioneer=Set(auctioneer):[Object:auctioneer_1eada305f0264cd43272], value:auctionGroup_452c508e2fb7bb29e175:participant=Set(participant):[Object:participant_cce4c8fa807ecc2933b3]}> but was: <{link:CslContextScopes:[AuctionOrg_4be1435a4ae7054b1135, auctionGroup_452c508e2fb7bb29e175]=[[], []], link:CslEntityScopes:[AuctionOrg_4be1435a4ae7054b1135, Auction_2ee7040fc295dcf601ab]=[[], []], link:CslEntityScopes:[AuctionOrg_4be1435a4ae7054b1135, Auction_92ef290e0a7bd9794c92]=[[], []], link:InContext:[auctionGroup_452c508e2fb7bb29e175, auctioneer_1eada305f0264cd43272]=[[], []], link:InContext:[auctionGroup_452c508e2fb7bb29e175, participant_cce4c8fa807ecc2933b3]=[[], []], link:Plays:[auctionBinding3a3220cd189f45cea2ecc2f031c270ac, auctioneer_1eada305f0264cd43272]=[[], []], link:Plays:[participantb6b13b2c0d10413ba613572756401c1c, participant_cce4c8fa807ecc2933b3]=[[], []], object:AuctionMonitor=AuctionMonitor, object:AuctionMonitor_b138b6ed5a67b7a3=AuctionMonitor, object:AuctionMonitor_d8970bade7f642ce=AuctionMonitor, object:AuctionOrg_4be1435a4ae7054b1135=AuctionOrg, object:Auction_2ee7040fc295dcf601ab=Auction, object:Auction_92ef290e0a7bd9794c92=Auction, object:aorg=WorkspaceObservation, object:auctionBinding3a3220cd189f45cea2ecc2f031c270ac=AtomicAgent, object:auctionGroup_452c508e2fb7bb29e175=auctionGroup, object:auctioneer_1eada305f0264cd43272=auctioneer, object:main=WorkspaceObservation, object:othera2678c1615fb4a78915474a9f9484bb3=WorkspaceObservation, object:participant_cce4c8fa807ecc2933b3=participant, object:participantb6b13b2c0d10413ba613572756401c1c=AtomicAgent, value:AuctionMonitor:actualBidBy=Set(OclVoid):[], value:AuctionMonitor:adminBidOverride=Boolean:false, value:AuctionMonitor:bidCommittedBy=Set(String):[String:'participantb6b13b2c0d10413ba613572756401c1c'], value:AuctionMonitor:bidDoneBy=Set(OclVoid):[], value:AuctionMonitor:bidEnabledAt=Integer:-1, value:AuctionMonitor:bidSatisfiedAt=Integer:-1, value:AuctionMonitor:decideEnabledAt=Integer:-1, value:AuctionMonitor:decideSatisfiedAt=Integer:-1, value:AuctionMonitor:now=OclVoid:null, value:AuctionMonitor:startSatisfiedAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:actualBidBy=Set(OclVoid):[], value:AuctionMonitor_b138b6ed5a67b7a3:adminBidOverride=Boolean:false, value:AuctionMonitor_b138b6ed5a67b7a3:bidCommittedBy=Set(String):[String:'participantb6b13b2c0d10413ba613572756401c1c'], value:AuctionMonitor_b138b6ed5a67b7a3:bidDoneBy=Set(OclVoid):[], value:AuctionMonitor_b138b6ed5a67b7a3:bidEnabledAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:bidSatisfiedAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:decideEnabledAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:decideSatisfiedAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:now=OclVoid:null, value:AuctionMonitor_b138b6ed5a67b7a3:startSatisfiedAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:actualBidBy=Set(OclVoid):[], value:AuctionMonitor_d8970bade7f642ce:adminBidOverride=Boolean:false, value:AuctionMonitor_d8970bade7f642ce:bidCommittedBy=Set(String):[String:'participantb6b13b2c0d10413ba613572756401c1c'], value:AuctionMonitor_d8970bade7f642ce:bidDoneBy=Set(OclVoid):[], value:AuctionMonitor_d8970bade7f642ce:bidEnabledAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:bidSatisfiedAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:decideEnabledAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:decideSatisfiedAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:now=OclVoid:null, value:AuctionMonitor_d8970bade7f642ce:startSatisfiedAt=Integer:-1, value:Auction_2ee7040fc295dcf601ab:best_bid=Real:7fefffffffffffff, value:Auction_2ee7040fc295dcf601ab:currentWinner=String:'no_winner', value:Auction_2ee7040fc295dcf601ab:id=String:'castOne', value:Auction_2ee7040fc295dcf601ab:running=Boolean:false, value:Auction_2ee7040fc295dcf601ab:task=String:'no_task', value:Auction_2ee7040fc295dcf601ab:winner=String:'no_winner', value:Auction_92ef290e0a7bd9794c92:best_bid=Real:7fefffffffffffff, value:Auction_92ef290e0a7bd9794c92:currentWinner=String:'no_winner', value:Auction_92ef290e0a7bd9794c92:id=String:'castTwo', value:Auction_92ef290e0a7bd9794c92:running=Boolean:false, value:Auction_92ef290e0a7bd9794c92:task=String:'no_task', value:Auction_92ef290e0a7bd9794c92:winner=String:'no_winner', value:auctionGroup_452c508e2fb7bb29e175:auctioneer=OclVoid:null, value:auctionGroup_452c508e2fb7bb29e175:participant=OclVoid:null}>
+	at org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)
+	at org.junit.jupiter.api.AssertionUtils.failNotEqual(AssertionUtils.java:62)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1141)
+	at org.tzi.use.plugins.jacamo.semantics.auction.AuctionNativeRoundTripTest.recreatedArtifactHasFreshNativeIdentityAndStaleGenerationCannotAlterExportedState(AuctionNativeRoundTripTest.java:104)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:140)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:84)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:214)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:210)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:135)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:66)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:107)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:88)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:67)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:52)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:86)
+	at org.junit.platform.launcher.core.DefaultLauncherSession$DelegatingLauncher.execute(DefaultLauncherSession.java:86)
+	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:56)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:184)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:122)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   AuctionNativeRoundTripTest.recreatedArtifactHasFreshNativeIdentityAndStaleGenerationCannotAlterExportedState:104 expected: <{link:CslContextScopes:[AuctionOrg_4be1435a4ae7054b1135, auctionGroup_452c508e2fb7bb29e175]=[], link:CslEntityScopes:[AuctionOrg_4be1435a4ae7054b1135, Auction_2ee7040fc295dcf601ab]=[], link:CslEntityScopes:[AuctionOrg_4be1435a4ae7054b1135, Auction_92ef290e0a7bd9794c92]=[], link:InContext:[auctionGroup_452c508e2fb7bb29e175, auctioneer_1eada305f0264cd43272]=[], link:InContext:[auctionGroup_452c508e2fb7bb29e175, participant_cce4c8fa807ecc2933b3]=[], link:Plays:[auctionBinding3a3220cd189f45cea2ecc2f031c270ac, auctioneer_1eada305f0264cd43272]=[], link:Plays:[participantb6b13b2c0d10413ba613572756401c1c, participant_cce4c8fa807ecc2933b3]=[], object:AuctionMonitor=AuctionMonitor, object:AuctionMonitor_b138b6ed5a67b7a3=AuctionMonitor, object:AuctionMonitor_d8970bade7f642ce=AuctionMonitor, object:AuctionOrg_4be1435a4ae7054b1135=AuctionOrg, object:Auction_2ee7040fc295dcf601ab=Auction, object:Auction_92ef290e0a7bd9794c92=Auction, object:aorg=WorkspaceObservation, object:auctionBinding3a3220cd189f45cea2ecc2f031c270ac=AtomicAgent, object:auctionGroup_452c508e2fb7bb29e175=auctionGroup, object:auctioneer_1eada305f0264cd43272=auctioneer, object:main=WorkspaceObservation, object:othera2678c1615fb4a78915474a9f9484bb3=WorkspaceObservation, object:participant_cce4c8fa807ecc2933b3=participant, object:participantb6b13b2c0d10413ba613572756401c1c=AtomicAgent, value:AuctionMonitor:actualBidBy=Set(String):[], value:AuctionMonitor:adminBidOverride=Boolean:false, value:AuctionMonitor:bidCommittedBy=Set(String):[String:'participantb6b13b2c0d10413ba613572756401c1c'], value:AuctionMonitor:bidDoneBy=Set(String):[], value:AuctionMonitor:bidEnabledAt=Integer:-1, value:AuctionMonitor:bidSatisfiedAt=Integer:-1, value:AuctionMonitor:decideEnabledAt=Integer:-1, value:AuctionMonitor:decideSatisfiedAt=Integer:-1, value:AuctionMonitor:now=OclVoid:null, value:AuctionMonitor:startSatisfiedAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:actualBidBy=Set(String):[], value:AuctionMonitor_b138b6ed5a67b7a3:adminBidOverride=Boolean:false, value:AuctionMonitor_b138b6ed5a67b7a3:bidCommittedBy=Set(String):[String:'participantb6b13b2c0d10413ba613572756401c1c'], value:AuctionMonitor_b138b6ed5a67b7a3:bidDoneBy=Set(String):[], value:AuctionMonitor_b138b6ed5a67b7a3:bidEnabledAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:bidSatisfiedAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:decideEnabledAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:decideSatisfiedAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:now=OclVoid:null, value:AuctionMonitor_b138b6ed5a67b7a3:startSatisfiedAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:actualBidBy=Set(String):[], value:AuctionMonitor_d8970bade7f642ce:adminBidOverride=Boolean:false, value:AuctionMonitor_d8970bade7f642ce:bidCommittedBy=Set(String):[String:'participantb6b13b2c0d10413ba613572756401c1c'], value:AuctionMonitor_d8970bade7f642ce:bidDoneBy=Set(String):[], value:AuctionMonitor_d8970bade7f642ce:bidEnabledAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:bidSatisfiedAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:decideEnabledAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:decideSatisfiedAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:now=OclVoid:null, value:AuctionMonitor_d8970bade7f642ce:startSatisfiedAt=Integer:-1, value:Auction_2ee7040fc295dcf601ab:best_bid=Real:7fefffffffffffff, value:Auction_2ee7040fc295dcf601ab:currentWinner=String:'no_winner', value:Auction_2ee7040fc295dcf601ab:id=String:'castOne', value:Auction_2ee7040fc295dcf601ab:running=Boolean:false, value:Auction_2ee7040fc295dcf601ab:task=String:'no_task', value:Auction_2ee7040fc295dcf601ab:winner=String:'no_winner', value:Auction_92ef290e0a7bd9794c92:best_bid=Real:7fefffffffffffff, value:Auction_92ef290e0a7bd9794c92:currentWinner=String:'no_winner', value:Auction_92ef290e0a7bd9794c92:id=String:'castTwo', value:Auction_92ef290e0a7bd9794c92:running=Boolean:false, value:Auction_92ef290e0a7bd9794c92:task=String:'no_task', value:Auction_92ef290e0a7bd9794c92:winner=String:'no_winner', value:auctionGroup_452c508e2fb7bb29e175:auctioneer=Set(auctioneer):[Object:auctioneer_1eada305f0264cd43272], value:auctionGroup_452c508e2fb7bb29e175:participant=Set(participant):[Object:participant_cce4c8fa807ecc2933b3]}> but was: <{link:CslContextScopes:[AuctionOrg_4be1435a4ae7054b1135, auctionGroup_452c508e2fb7bb29e175]=[[], []], link:CslEntityScopes:[AuctionOrg_4be1435a4ae7054b1135, Auction_2ee7040fc295dcf601ab]=[[], []], link:CslEntityScopes:[AuctionOrg_4be1435a4ae7054b1135, Auction_92ef290e0a7bd9794c92]=[[], []], link:InContext:[auctionGroup_452c508e2fb7bb29e175, auctioneer_1eada305f0264cd43272]=[[], []], link:InContext:[auctionGroup_452c508e2fb7bb29e175, participant_cce4c8fa807ecc2933b3]=[[], []], link:Plays:[auctionBinding3a3220cd189f45cea2ecc2f031c270ac, auctioneer_1eada305f0264cd43272]=[[], []], link:Plays:[participantb6b13b2c0d10413ba613572756401c1c, participant_cce4c8fa807ecc2933b3]=[[], []], object:AuctionMonitor=AuctionMonitor, object:AuctionMonitor_b138b6ed5a67b7a3=AuctionMonitor, object:AuctionMonitor_d8970bade7f642ce=AuctionMonitor, object:AuctionOrg_4be1435a4ae7054b1135=AuctionOrg, object:Auction_2ee7040fc295dcf601ab=Auction, object:Auction_92ef290e0a7bd9794c92=Auction, object:aorg=WorkspaceObservation, object:auctionBinding3a3220cd189f45cea2ecc2f031c270ac=AtomicAgent, object:auctionGroup_452c508e2fb7bb29e175=auctionGroup, object:auctioneer_1eada305f0264cd43272=auctioneer, object:main=WorkspaceObservation, object:othera2678c1615fb4a78915474a9f9484bb3=WorkspaceObservation, object:participant_cce4c8fa807ecc2933b3=participant, object:participantb6b13b2c0d10413ba613572756401c1c=AtomicAgent, value:AuctionMonitor:actualBidBy=Set(OclVoid):[], value:AuctionMonitor:adminBidOverride=Boolean:false, value:AuctionMonitor:bidCommittedBy=Set(String):[String:'participantb6b13b2c0d10413ba613572756401c1c'], value:AuctionMonitor:bidDoneBy=Set(OclVoid):[], value:AuctionMonitor:bidEnabledAt=Integer:-1, value:AuctionMonitor:bidSatisfiedAt=Integer:-1, value:AuctionMonitor:decideEnabledAt=Integer:-1, value:AuctionMonitor:decideSatisfiedAt=Integer:-1, value:AuctionMonitor:now=OclVoid:null, value:AuctionMonitor:startSatisfiedAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:actualBidBy=Set(OclVoid):[], value:AuctionMonitor_b138b6ed5a67b7a3:adminBidOverride=Boolean:false, value:AuctionMonitor_b138b6ed5a67b7a3:bidCommittedBy=Set(String):[String:'participantb6b13b2c0d10413ba613572756401c1c'], value:AuctionMonitor_b138b6ed5a67b7a3:bidDoneBy=Set(OclVoid):[], value:AuctionMonitor_b138b6ed5a67b7a3:bidEnabledAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:bidSatisfiedAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:decideEnabledAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:decideSatisfiedAt=Integer:-1, value:AuctionMonitor_b138b6ed5a67b7a3:now=OclVoid:null, value:AuctionMonitor_b138b6ed5a67b7a3:startSatisfiedAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:actualBidBy=Set(OclVoid):[], value:AuctionMonitor_d8970bade7f642ce:adminBidOverride=Boolean:false, value:AuctionMonitor_d8970bade7f642ce:bidCommittedBy=Set(String):[String:'participantb6b13b2c0d10413ba613572756401c1c'], value:AuctionMonitor_d8970bade7f642ce:bidDoneBy=Set(OclVoid):[], value:AuctionMonitor_d8970bade7f642ce:bidEnabledAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:bidSatisfiedAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:decideEnabledAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:decideSatisfiedAt=Integer:-1, value:AuctionMonitor_d8970bade7f642ce:now=OclVoid:null, value:AuctionMonitor_d8970bade7f642ce:startSatisfiedAt=Integer:-1, value:Auction_2ee7040fc295dcf601ab:best_bid=Real:7fefffffffffffff, value:Auction_2ee7040fc295dcf601ab:currentWinner=String:'no_winner', value:Auction_2ee7040fc295dcf601ab:id=String:'castOne', value:Auction_2ee7040fc295dcf601ab:running=Boolean:false, value:Auction_2ee7040fc295dcf601ab:task=String:'no_task', value:Auction_2ee7040fc295dcf601ab:winner=String:'no_winner', value:Auction_92ef290e0a7bd9794c92:best_bid=Real:7fefffffffffffff, value:Auction_92ef290e0a7bd9794c92:currentWinner=String:'no_winner', value:Auction_92ef290e0a7bd9794c92:id=String:'castTwo', value:Auction_92ef290e0a7bd9794c92:running=Boolean:false, value:Auction_92ef290e0a7bd9794c92:task=String:'no_task', value:Auction_92ef290e0a7bd9794c92:winner=String:'no_winner', value:auctionGroup_452c508e2fb7bb29e175:auctioneer=OclVoid:null, value:auctionGroup_452c508e2fb7bb29e175:participant=OclVoid:null}>
+[ERROR]   AuctionNativeRoundTripTest.twoActualAuctionsAndObserverValuesRoundTripIncludingMaximumRealAndQuotedService:60 expected: <{link:CslContextScopes:[AuctionOrg_173480be193725b46d88, auctionGroup_c329bcdf74bb3a2d6a94]=[], link:CslEntityScopes:[AuctionOrg_173480be193725b46d88, Auction_a414b5cc96a82d276092]=[], link:CslEntityScopes:[AuctionOrg_173480be193725b46d88, Auction_afdc4b29a4c1937219ba]=[], link:InContext:[auctionGroup_c329bcdf74bb3a2d6a94, auctioneer_19f6db553f9bb894f76f]=[], link:InContext:[auctionGroup_c329bcdf74bb3a2d6a94, participant_fc60088739e647e24b64]=[], link:Plays:[auctionBinding58f97db62bd84f71bd68ec7994d07233, auctioneer_19f6db553f9bb894f76f]=[], link:Plays:[participantb66e070c320a40458c3016884bd614e3, participant_fc60088739e647e24b64]=[], object:AuctionMonitor=AuctionMonitor, object:AuctionMonitor_e5274403395523b9=AuctionMonitor, object:AuctionOrg_173480be193725b46d88=AuctionOrg, object:Auction_a414b5cc96a82d276092=Auction, object:Auction_afdc4b29a4c1937219ba=Auction, object:aorg=WorkspaceObservation, object:auctionBinding58f97db62bd84f71bd68ec7994d07233=AtomicAgent, object:auctionGroup_c329bcdf74bb3a2d6a94=auctionGroup, object:auctioneer_19f6db553f9bb894f76f=auctioneer, object:main=WorkspaceObservation, object:otherd65207444ea646d8bae493f5385881f4=WorkspaceObservation, object:participant_fc60088739e647e24b64=participant, object:participantb66e070c320a40458c3016884bd614e3=AtomicAgent, value:AuctionMonitor:actualBidBy=Set(String):[String:'auctionBinding58f97db62bd84f71bd68ec7994d07233'], value:AuctionMonitor:adminBidOverride=Boolean:false, value:AuctionMonitor:bidCommittedBy=Set(String):[String:'participantb66e070c320a40458c3016884bd614e3'], value:AuctionMonitor:bidDoneBy=Set(String):[], value:AuctionMonitor:bidEnabledAt=Integer:-1, value:AuctionMonitor:bidSatisfiedAt=Integer:-1, value:AuctionMonitor:decideEnabledAt=Integer:-1, value:AuctionMonitor:decideSatisfiedAt=Integer:-1, value:AuctionMonitor:now=Integer:0, value:AuctionMonitor:startSatisfiedAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:actualBidBy=Set(String):[], value:AuctionMonitor_e5274403395523b9:adminBidOverride=Boolean:false, value:AuctionMonitor_e5274403395523b9:bidCommittedBy=Set(String):[String:'participantb66e070c320a40458c3016884bd614e3'], value:AuctionMonitor_e5274403395523b9:bidDoneBy=Set(String):[], value:AuctionMonitor_e5274403395523b9:bidEnabledAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:bidSatisfiedAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:decideEnabledAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:decideSatisfiedAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:now=Integer:0, value:AuctionMonitor_e5274403395523b9:startSatisfiedAt=Integer:-1, value:Auction_a414b5cc96a82d276092:best_bid=Real:7fefffffffffffff, value:Auction_a414b5cc96a82d276092:currentWinner=String:'no_winner', value:Auction_a414b5cc96a82d276092:id=String:'castTwo', value:Auction_a414b5cc96a82d276092:running=Boolean:false, value:Auction_a414b5cc96a82d276092:task=String:'no_task', value:Auction_a414b5cc96a82d276092:winner=String:'no_winner', value:Auction_afdc4b29a4c1937219ba:best_bid=Real:4045400000000000, value:Auction_afdc4b29a4c1937219ba:currentWinner=String:'auctionBinding58f97db62bd84f71bd68ec7994d07233', value:Auction_afdc4b29a4c1937219ba:id=String:'castOne', value:Auction_afdc4b29a4c1937219ba:running=Boolean:true, value:Auction_afdc4b29a4c1937219ba:task=String:'service 'quoted' \ route', value:Auction_afdc4b29a4c1937219ba:winner=String:'no_winner', value:auctionGroup_c329bcdf74bb3a2d6a94:auctioneer=Set(auctioneer):[Object:auctioneer_19f6db553f9bb894f76f], value:auctionGroup_c329bcdf74bb3a2d6a94:participant=Set(participant):[Object:participant_fc60088739e647e24b64]}> but was: <{link:CslContextScopes:[AuctionOrg_173480be193725b46d88, auctionGroup_c329bcdf74bb3a2d6a94]=[[], []], link:CslEntityScopes:[AuctionOrg_173480be193725b46d88, Auction_a414b5cc96a82d276092]=[[], []], link:CslEntityScopes:[AuctionOrg_173480be193725b46d88, Auction_afdc4b29a4c1937219ba]=[[], []], link:InContext:[auctionGroup_c329bcdf74bb3a2d6a94, auctioneer_19f6db553f9bb894f76f]=[[], []], link:InContext:[auctionGroup_c329bcdf74bb3a2d6a94, participant_fc60088739e647e24b64]=[[], []], link:Plays:[auctionBinding58f97db62bd84f71bd68ec7994d07233, auctioneer_19f6db553f9bb894f76f]=[[], []], link:Plays:[participantb66e070c320a40458c3016884bd614e3, participant_fc60088739e647e24b64]=[[], []], object:AuctionMonitor=AuctionMonitor, object:AuctionMonitor_e5274403395523b9=AuctionMonitor, object:AuctionOrg_173480be193725b46d88=AuctionOrg, object:Auction_a414b5cc96a82d276092=Auction, object:Auction_afdc4b29a4c1937219ba=Auction, object:aorg=WorkspaceObservation, object:auctionBinding58f97db62bd84f71bd68ec7994d07233=AtomicAgent, object:auctionGroup_c329bcdf74bb3a2d6a94=auctionGroup, object:auctioneer_19f6db553f9bb894f76f=auctioneer, object:main=WorkspaceObservation, object:otherd65207444ea646d8bae493f5385881f4=WorkspaceObservation, object:participant_fc60088739e647e24b64=participant, object:participantb66e070c320a40458c3016884bd614e3=AtomicAgent, value:AuctionMonitor:actualBidBy=Set(String):[String:'auctionBinding58f97db62bd84f71bd68ec7994d07233'], value:AuctionMonitor:adminBidOverride=Boolean:false, value:AuctionMonitor:bidCommittedBy=Set(String):[String:'participantb66e070c320a40458c3016884bd614e3'], value:AuctionMonitor:bidDoneBy=Set(OclVoid):[], value:AuctionMonitor:bidEnabledAt=Integer:-1, value:AuctionMonitor:bidSatisfiedAt=Integer:-1, value:AuctionMonitor:decideEnabledAt=Integer:-1, value:AuctionMonitor:decideSatisfiedAt=Integer:-1, value:AuctionMonitor:now=Integer:0, value:AuctionMonitor:startSatisfiedAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:actualBidBy=Set(OclVoid):[], value:AuctionMonitor_e5274403395523b9:adminBidOverride=Boolean:false, value:AuctionMonitor_e5274403395523b9:bidCommittedBy=Set(String):[String:'participantb66e070c320a40458c3016884bd614e3'], value:AuctionMonitor_e5274403395523b9:bidDoneBy=Set(OclVoid):[], value:AuctionMonitor_e5274403395523b9:bidEnabledAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:bidSatisfiedAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:decideEnabledAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:decideSatisfiedAt=Integer:-1, value:AuctionMonitor_e5274403395523b9:now=Integer:0, value:AuctionMonitor_e5274403395523b9:startSatisfiedAt=Integer:-1, value:Auction_a414b5cc96a82d276092:best_bid=Real:7fefffffffffffff, value:Auction_a414b5cc96a82d276092:currentWinner=String:'no_winner', value:Auction_a414b5cc96a82d276092:id=String:'castTwo', value:Auction_a414b5cc96a82d276092:running=Boolean:false, value:Auction_a414b5cc96a82d276092:task=String:'no_task', value:Auction_a414b5cc96a82d276092:winner=String:'no_winner', value:Auction_afdc4b29a4c1937219ba:best_bid=Real:4045400000000000, value:Auction_afdc4b29a4c1937219ba:currentWinner=String:'auctionBinding58f97db62bd84f71bd68ec7994d07233', value:Auction_afdc4b29a4c1937219ba:id=String:'castOne', value:Auction_afdc4b29a4c1937219ba:running=Boolean:true, value:Auction_afdc4b29a4c1937219ba:task=String:'service 'quoted' \ route', value:Auction_afdc4b29a4c1937219ba:winner=String:'no_winner', value:auctionGroup_c329bcdf74bb3a2d6a94:auctioneer=OclVoid:null, value:auctionGroup_c329bcdf74bb3a2d6a94:participant=OclVoid:null}>
+[ERROR]   AuctionNativeRoundTripTest.unavailableRequiredStateStaysUndefinedThroughExportAndCannotGainAuthoredDefaults:91 expected: <{link:CslContextScopes:[AuctionOrg_4cb172884852e80c3186, auctionGroup_3ec58d7ac552b88723b5]=[], link:CslEntityScopes:[AuctionOrg_4cb172884852e80c3186, Auction_bb6667aae03dc1faba95]=[], link:CslEntityScopes:[AuctionOrg_4cb172884852e80c3186, Auction_df31b6874c6595f25c3a]=[], link:InContext:[auctionGroup_3ec58d7ac552b88723b5, auctioneer_96e85d6c473f4207f9d8]=[], link:InContext:[auctionGroup_3ec58d7ac552b88723b5, participant_d3ebd79c46d227a558c9]=[], link:Plays:[auctionBindingf0cbf49d492741aaa02515166dc98af4, auctioneer_96e85d6c473f4207f9d8]=[], link:Plays:[participantcfd9f0f1a8f94c62a29ef538bbac2737, participant_d3ebd79c46d227a558c9]=[], object:AuctionMonitor=AuctionMonitor, object:AuctionMonitor_5d6952dbcec8220a=AuctionMonitor, object:AuctionOrg_4cb172884852e80c3186=AuctionOrg, object:Auction_bb6667aae03dc1faba95=Auction, object:Auction_df31b6874c6595f25c3a=Auction, object:aorg=WorkspaceObservation, object:auctionBindingf0cbf49d492741aaa02515166dc98af4=AtomicAgent, object:auctionGroup_3ec58d7ac552b88723b5=auctionGroup, object:auctioneer_96e85d6c473f4207f9d8=auctioneer, object:main=WorkspaceObservation, object:otherec31988d83ed4b65a96a5803453e45c4=WorkspaceObservation, object:participant_d3ebd79c46d227a558c9=participant, object:participantcfd9f0f1a8f94c62a29ef538bbac2737=AtomicAgent, value:AuctionMonitor:actualBidBy=Set(String):[], value:AuctionMonitor:adminBidOverride=Boolean:false, value:AuctionMonitor:bidCommittedBy=Set(String):[String:'participantcfd9f0f1a8f94c62a29ef538bbac2737'], value:AuctionMonitor:bidDoneBy=Set(String):[], value:AuctionMonitor:bidEnabledAt=Integer:-1, value:AuctionMonitor:bidSatisfiedAt=Integer:-1, value:AuctionMonitor:decideEnabledAt=Integer:-1, value:AuctionMonitor:decideSatisfiedAt=Integer:-1, value:AuctionMonitor:now=OclVoid:null, value:AuctionMonitor:startSatisfiedAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:actualBidBy=Set(String):[], value:AuctionMonitor_5d6952dbcec8220a:adminBidOverride=Boolean:false, value:AuctionMonitor_5d6952dbcec8220a:bidCommittedBy=Set(String):[String:'participantcfd9f0f1a8f94c62a29ef538bbac2737'], value:AuctionMonitor_5d6952dbcec8220a:bidDoneBy=Set(String):[], value:AuctionMonitor_5d6952dbcec8220a:bidEnabledAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:bidSatisfiedAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:decideEnabledAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:decideSatisfiedAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:now=OclVoid:null, value:AuctionMonitor_5d6952dbcec8220a:startSatisfiedAt=Integer:-1, value:Auction_bb6667aae03dc1faba95:best_bid=OclVoid:null, value:Auction_bb6667aae03dc1faba95:currentWinner=OclVoid:null, value:Auction_bb6667aae03dc1faba95:id=String:'castOne', value:Auction_bb6667aae03dc1faba95:running=OclVoid:null, value:Auction_bb6667aae03dc1faba95:task=OclVoid:null, value:Auction_bb6667aae03dc1faba95:winner=OclVoid:null, value:Auction_df31b6874c6595f25c3a:best_bid=Real:7fefffffffffffff, value:Auction_df31b6874c6595f25c3a:currentWinner=String:'no_winner', value:Auction_df31b6874c6595f25c3a:id=String:'castTwo', value:Auction_df31b6874c6595f25c3a:running=Boolean:false, value:Auction_df31b6874c6595f25c3a:task=String:'no_task', value:Auction_df31b6874c6595f25c3a:winner=String:'no_winner', value:auctionGroup_3ec58d7ac552b88723b5:auctioneer=Set(auctioneer):[Object:auctioneer_96e85d6c473f4207f9d8], value:auctionGroup_3ec58d7ac552b88723b5:participant=Set(participant):[Object:participant_d3ebd79c46d227a558c9]}> but was: <{link:CslContextScopes:[AuctionOrg_4cb172884852e80c3186, auctionGroup_3ec58d7ac552b88723b5]=[[], []], link:CslEntityScopes:[AuctionOrg_4cb172884852e80c3186, Auction_bb6667aae03dc1faba95]=[[], []], link:CslEntityScopes:[AuctionOrg_4cb172884852e80c3186, Auction_df31b6874c6595f25c3a]=[[], []], link:InContext:[auctionGroup_3ec58d7ac552b88723b5, auctioneer_96e85d6c473f4207f9d8]=[[], []], link:InContext:[auctionGroup_3ec58d7ac552b88723b5, participant_d3ebd79c46d227a558c9]=[[], []], link:Plays:[auctionBindingf0cbf49d492741aaa02515166dc98af4, auctioneer_96e85d6c473f4207f9d8]=[[], []], link:Plays:[participantcfd9f0f1a8f94c62a29ef538bbac2737, participant_d3ebd79c46d227a558c9]=[[], []], object:AuctionMonitor=AuctionMonitor, object:AuctionMonitor_5d6952dbcec8220a=AuctionMonitor, object:AuctionOrg_4cb172884852e80c3186=AuctionOrg, object:Auction_bb6667aae03dc1faba95=Auction, object:Auction_df31b6874c6595f25c3a=Auction, object:aorg=WorkspaceObservation, object:auctionBindingf0cbf49d492741aaa02515166dc98af4=AtomicAgent, object:auctionGroup_3ec58d7ac552b88723b5=auctionGroup, object:auctioneer_96e85d6c473f4207f9d8=auctioneer, object:main=WorkspaceObservation, object:otherec31988d83ed4b65a96a5803453e45c4=WorkspaceObservation, object:participant_d3ebd79c46d227a558c9=participant, object:participantcfd9f0f1a8f94c62a29ef538bbac2737=AtomicAgent, value:AuctionMonitor:actualBidBy=Set(OclVoid):[], value:AuctionMonitor:adminBidOverride=Boolean:false, value:AuctionMonitor:bidCommittedBy=Set(String):[String:'participantcfd9f0f1a8f94c62a29ef538bbac2737'], value:AuctionMonitor:bidDoneBy=Set(OclVoid):[], value:AuctionMonitor:bidEnabledAt=Integer:-1, value:AuctionMonitor:bidSatisfiedAt=Integer:-1, value:AuctionMonitor:decideEnabledAt=Integer:-1, value:AuctionMonitor:decideSatisfiedAt=Integer:-1, value:AuctionMonitor:now=OclVoid:null, value:AuctionMonitor:startSatisfiedAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:actualBidBy=Set(OclVoid):[], value:AuctionMonitor_5d6952dbcec8220a:adminBidOverride=Boolean:false, value:AuctionMonitor_5d6952dbcec8220a:bidCommittedBy=Set(String):[String:'participantcfd9f0f1a8f94c62a29ef538bbac2737'], value:AuctionMonitor_5d6952dbcec8220a:bidDoneBy=Set(OclVoid):[], value:AuctionMonitor_5d6952dbcec8220a:bidEnabledAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:bidSatisfiedAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:decideEnabledAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:decideSatisfiedAt=Integer:-1, value:AuctionMonitor_5d6952dbcec8220a:now=OclVoid:null, value:AuctionMonitor_5d6952dbcec8220a:startSatisfiedAt=Integer:-1, value:Auction_bb6667aae03dc1faba95:best_bid=OclVoid:null, value:Auction_bb6667aae03dc1faba95:currentWinner=OclVoid:null, value:Auction_bb6667aae03dc1faba95:id=String:'castOne', value:Auction_bb6667aae03dc1faba95:running=OclVoid:null, value:Auction_bb6667aae03dc1faba95:task=OclVoid:null, value:Auction_bb6667aae03dc1faba95:winner=OclVoid:null, value:Auction_df31b6874c6595f25c3a:best_bid=Real:7fefffffffffffff, value:Auction_df31b6874c6595f25c3a:currentWinner=String:'no_winner', value:Auction_df31b6874c6595f25c3a:id=String:'castTwo', value:Auction_df31b6874c6595f25c3a:running=Boolean:false, value:Auction_df31b6874c6595f25c3a:task=String:'no_task', value:Auction_df31b6874c6595f25c3a:winner=String:'no_winner', value:auctionGroup_3ec58d7ac552b88723b5:auctioneer=OclVoid:null, value:auctionGroup_3ec58d7ac552b88723b5:participant=OclVoid:null}>
+[INFO] 
+[ERROR] Tests run: 6, Failures: 3, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] use 7.5.0 .......................................... SUCCESS [  0.000 s]
+[INFO] JaCaMo Bridge Neutral Contract 1.0.0-SNAPSHOT ...... SUCCESS [  0.688 s]
+[INFO] JaCaMo Bridge Official Adapters 1.0.0-SNAPSHOT ..... SUCCESS [  0.616 s]
+[INFO] use-core 7.5.0 ..................................... SUCCESS [  2.177 s]
+[INFO] USE semantic engine � selected use4Goal core 7.5.0 . SUCCESS [  0.234 s]
+[INFO] use-gui 7.5.0 ...................................... SUCCESS [  0.433 s]
+[INFO] USE JaCaMo Plugin 1.0.1 ............................ FAILURE [ 23.008 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  27.267 s
+[INFO] Finished at: 2026-10-21T00:27:48+07:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.2.5:test (default-test) on project use-plugin: There are test failures.
+[ERROR] 
+[ERROR] Please refer to D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\surefire-reports for the individual test results.
+[ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+[ERROR] 
+[ERROR] After correcting the problems, you can resume the build with the command
+[ERROR]   mvn <args> -rf :use-plugin

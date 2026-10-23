@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicLong;
@@ -38,10 +39,19 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
     private final CartagoEnvironment environment;
     private final Set<String> configuredWorkspaces;
     private final Set<String> registeredWorkspaces = new LinkedHashSet<>();
+    private final Map<String,cartago.Workspace> loggerOwners=new LinkedHashMap<>();
     private final Set<BridgeEntityId> knownArtifacts = new LinkedHashSet<>();
     private final Set<BridgeEntityId> pendingCreations = new LinkedHashSet<>();
+    // Actual completed create/lookup receipts survive a late consumer snapshot.
+    // One per live incarnation; never reconstructed from its name or properties.
+    private final Map<String,Map<String,Object>> auctionDiscovery = new LinkedHashMap<>();
+    private final Map<String,List<Map<String,Object>>> auctionOperationReceipts=new LinkedHashMap<>();
+    private final Set<String> auctionOperationBirth=new LinkedHashSet<>(),auctionOperationGaps=new LinkedHashSet<>();
     private final String sessionId;
     private final long generation;
+    private final AuctionArtifactStateProbe auctionProbe;
+    private final AuctionSchemeObservation auctionSchemes;
+    private final Consumer<ArtifactId> creationObserver;
     private final AtomicLong sequence = new AtomicLong();
     // Official controller reads can acquire workspace/artifact locks. Logger
     // callbacks must never wait for a monitor held across those reads.
@@ -51,11 +61,22 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
     private volatile Map<String,String> workspaceDeclarationAliases = Map.of();
 
     public CartagoSnapshotSource(CartagoEnvironment environment, List<String> workspaces, String sessionId) {
+        this(environment,workspaces,sessionId,null);
+    }
+    public CartagoSnapshotSource(CartagoEnvironment environment,List<String> workspaces,String sessionId,org.jacamo.bridge.contract.ModelSnapshot source) {
+        this(environment,workspaces,sessionId,source,null);
+    }
+    public CartagoSnapshotSource(CartagoEnvironment environment,List<String> workspaces,String sessionId,org.jacamo.bridge.contract.ModelSnapshot source,Consumer<ArtifactId> creationObserver) {
         this.environment = java.util.Objects.requireNonNull(environment);
         this.configuredWorkspaces = new LinkedHashSet<>(workspaces == null ? List.of() : workspaces);
         this.sessionId = java.util.Objects.requireNonNull(sessionId);
         this.generation = Long.parseLong(System.getProperty("jacamo.bridge.generation", "0"));
+        this.auctionProbe=source==null?null:new AuctionArtifactStateProbe(environment,source);
+        this.auctionSchemes=source!=null&&Boolean.getBoolean(AuctionSchemeObservation.PROPERTY)?new AuctionSchemeObservation(environment,source,sessionId,generation):null;
+        this.creationObserver=creationObserver;
     }
+    public boolean fieldProbeAvailable(){return auctionProbe!=null&&auctionProbe.available();}
+    public boolean schemeProbeAvailable(){return auctionSchemes!=null;}
 
     @Override public String sourceId() { return "cartago"; }
 
@@ -170,6 +191,15 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
                 values.put("artifactTypeClassLoaderIdentity", type.classLoaderIdentity());
                 values.put("workspaceSemanticId", artifact.workspaceSemanticId());
                 values.put("creatorAgentSemanticId", artifact.creatorAgentSemanticId());
+                var exactInfo=environment.getController(workspaceFullName).getArtifactInfo(artifact.name());
+                values.put("artifactProviderObservation",exactInfo!=null&&artifact.uuid().equals(exactInfo.getId().getId().toString())
+                        ?CartagoArtifactProviderObservation.capture(environment,exactInfo.getId())
+                        :Map.of("version","1.0.0","status","UNAVAILABLE","diagnostic","ARTIFACT_REPLACED"));
+                if(auctionProbe!=null&&exactInfo!=null&&artifact.uuid().equals(exactInfo.getId().getId().toString()))
+                    attachAuctionState(values,exactInfo.getId(),"SNAPSHOT","");
+                if(exactInfo!=null&&artifact.uuid().equals(exactInfo.getId().getId().toString()))attachSchemeState(values,exactInfo.getId(),"SNAPSHOT",0,null,null);
+                synchronized(this) {var receipt=auctionDiscovery.get(artifact.uuid());if(receipt!=null)values.put("auctionDiscoveryWitness",receipt);}
+                synchronized(this) {if(auctionSchemes!=null&&Set.of("auction_env.AuctionArtifact","ora4mas.nopl.SchemeBoard").contains(type.javaClassName()))values.put("auctionOperationObservation",operationHistory(artifact.uuid()));}
                 var declarations=BridgeRuntimeRegistry.projectDeclarations();
                 if(declarations.isPresent()) for(var declaration:declarations.get().artifactDeclarations()) {
                         // OfficialCartagoAdapter has already revalidated this UUID
@@ -247,14 +277,15 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
 
     @Override public Map<String,Object> captureMetadata() {
         return Map.of("operationLifecycleCoverage","PARTIAL","suspendResumeObservation","UNSUPPORTED_CARTAGO_3_1_AWAIT_NO_LOGGER_HOOKS",
-                "invocationBoundary","ICARTAGOLOGGER_OBSERVED_PREFIX","globalAtomicity","UNSUPPORTED");
+                "invocationBoundary","ICARTAGOLOGGER_OBSERVED_PREFIX","globalAtomicity","UNSUPPORTED",
+                "auctionFieldProbe",Map.of("available",fieldProbeAvailable(),"diagnostic",auctionProbe==null?"NOT_SELECTED":auctionProbe.diagnostic()));
     }
     @Override public synchronized Completeness completeness() {
         return pendingCreations.isEmpty() ? completeness : Completeness.PARTIAL;
     }
 
     @Override public void close() throws Exception {
-        synchronized(captureLock) { closeLoggers(); }
+        try{synchronized(captureLock) { closeLoggers(); }}finally{if(auctionProbe!=null)auctionProbe.close();if(auctionSchemes!=null)auctionSchemes.close();}
     }
 
     private void closeLoggers() throws Exception {
@@ -262,15 +293,27 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
         observer = null;
         Exception failure = null;
         for (String workspace : List.copyOf(registeredWorkspaces)) {
-            try { environment.unregisterLogger(workspace, this); }
+            try {var owned=loggerOwners.get(workspace);if(owned!=null)owned.unregisterLogger(this);else environment.unregisterLogger(workspace,this);}
             catch (Exception error) { if (failure == null) failure = error; else failure.addSuppressed(error); }
         }
         registeredWorkspaces.clear();
-        synchronized(this) { knownArtifacts.clear(); pendingCreations.clear(); }
+        loggerOwners.clear();
+        synchronized(this) { knownArtifacts.clear(); pendingCreations.clear(); auctionDiscovery.clear();auctionOperationReceipts.clear();auctionOperationBirth.clear();auctionOperationGaps.clear(); }
         if (failure != null) throw failure;
     }
 
     private void refreshRegistrations() {
+        // A path can disappear or be reused for a different workspace UUID.
+        // Unregister from the actual owner, not a name resolved after retirement.
+        for(var entry:List.copyOf(loggerOwners.entrySet())) {
+            cartago.Workspace current=null;try{current=environment.resolveWSP(entry.getKey()).getWorkspace();}catch(Exception absent){/* no current path owner */}
+            if(current!=entry.getValue()) {
+                entry.getValue().unregisterLogger(this);loggerOwners.remove(entry.getKey());registeredWorkspaces.remove(entry.getKey());
+                synchronized(this) {for(var id:List.copyOf(knownArtifacts))if(id.scope().equals(entry.getKey())) {
+                    knownArtifacts.remove(id);pendingCreations.remove(id);auctionDiscovery.remove(id.incarnation());auctionOperationReceipts.remove(id.incarnation());auctionOperationBirth.remove(id.incarnation());auctionOperationGaps.remove(id.incarnation());if(auctionSchemes!=null)auctionSchemes.retire(id.incarnation());
+                }pendingCreations.removeIf(id->id.scope().equals(entry.getKey()));}
+            }
+        }
         var aliases=new LinkedHashMap<String,String>();
         BridgeRuntimeRegistry.projectDeclarations().ifPresent(project -> {
             var root=environment.getRootWSP();
@@ -289,7 +332,7 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
         for (String workspace : discovered) {
             if (workspace == null || workspace.isBlank() || registeredWorkspaces.contains(workspace)) continue;
             try {
-                environment.registerLogger(workspace, this);
+                var owner=environment.resolveWSP(workspace).getWorkspace();if(owner==null)continue;owner.registerLogger(this);loggerOwners.put(workspace,owner);
                 registeredWorkspaces.add(workspace);
                 for (ArtifactId artifact : environment.getController(workspace).getCurrentArtifacts())
                     synchronized(this) { if (!pendingCreations.contains(artifactId(artifact))) knownArtifacts.add(artifactId(artifact)); }
@@ -331,12 +374,77 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
         if(!correlation.isBlank()) {
             values=new LinkedHashMap<>(values);values.put("invocationBoundary",Map.of("version","1.0","authority","ICARTAGOLOGGER_OBSERVED_PREFIX","sourceId",sourceId(),"artifactUuid",id.incarnation(),"previousWatermark",next-1,"globalAtomicity","UNSUPPORTED"));
         }
-        sink.accept(new RuntimeEvent(sessionId + ":cartago:" + next, sessionId, generation,
+        var event=new RuntimeEvent(sessionId + ":cartago:" + next, sessionId, generation,
                 System.getProperty("jacamo.bridge.modelRevision", "unnegotiated"), "cartago", sourceId(), next,
                 Instant.now(), kind, factKind,
                 values.containsKey("normalizedEventKind") ? ProjectionStatus.MATERIALIZED_FAITHFULLY : ProjectionStatus.EVIDENCE_ONLY,
                 id, null, correlation, "", Map.of(), values,
-                new SourceWatermark(sourceId(), next), Completeness.COMPLETE, List.of()));
+                new SourceWatermark(sourceId(), next), Completeness.COMPLETE, List.of());
+        if(auctionSchemes!=null&&factKind==RuntimeFactKind.ARTIFACT) {
+            boolean creation=kind==RuntimeEventKind.CREATED&&Set.of("auction_env.AuctionArtifact","ora4mas.nopl.SchemeBoard").contains(Objects.toString(values.get("artifactTypeJavaClassName"),""));
+            boolean operation=values.get("operationSignature") instanceof List<?> signature&&!signature.isEmpty()&&Set.of("auction_env.AuctionArtifact","ora4mas.nopl.SchemeBoard").contains(signature.getFirst())
+                    &&Set.of(RuntimeEventKind.STARTED,RuntimeEventKind.SUCCEEDED,RuntimeEventKind.FAILED).contains(kind);
+            if(creation||operation) {
+                String uuid=id.incarnation();
+                if(!auctionOperationReceipts.containsKey(uuid)&&auctionOperationReceipts.size()>=256){gap("AUCTION_OPERATION_ARTIFACT_CAPACITY");return;}
+                var receipts=auctionOperationReceipts.computeIfAbsent(uuid,k->new ArrayList<>());if(creation)auctionOperationBirth.add(uuid);
+                if(operation) {
+                    if(receipts.size()>=512){auctionOperationGaps.add(uuid);gap("AUCTION_OPERATION_HISTORY_CAPACITY");return;}
+                    receipts.add(org.jacamo.bridge.contract.ContractPayloads.event(event));
+                }
+                var after=new LinkedHashMap<>(event.after());after.put("auctionOperationObservation",operationHistory(uuid));
+                event=new RuntimeEvent(event.eventId(),event.sessionId(),event.generation(),event.modelRevision(),event.subsystem(),event.sourceId(),event.sourceSequence(),event.observedAt(),event.kind(),event.factKind(),event.projectionStatus(),event.entityId(),event.relationId(),event.correlationId(),event.causationId(),event.before(),after,event.watermark(),event.completeness(),event.evidence());
+            }
+        }
+        sink.accept(event);
+        retainAuctionDiscovery(event);
+        if(values.get("auctionSchemeObservation") instanceof Map<?,?> raw&&"COMPLETE".equals(raw.get("status"))) {
+            var state=org.jacamo.bridge.contract.CanonicalJson.object(raw);
+            for(Object value:(List<?>)state.get("goals")) {
+                var goal=org.jacamo.bridge.contract.CanonicalJson.object(value);String previous=(String)goal.get("previousState");
+                VerificationObservationSource.publishIfAttached(event,()->{
+                    var time=(String)state.get("publicationEpochMillis");boolean qualified=!time.isBlank();boolean continuous="COMPLETE".equals(state.get("historyQuality"))&&!previous.isBlank()&&qualified;
+                    return new org.jacamo.bridge.contract.VerificationObservation(org.jacamo.bridge.contract.VerificationObservation.Kind.GOAL_TRANSITION,
+                            state.get("schemeIdentity")+":"+goal.get("definition"),continuous?Completeness.COMPLETE:Completeness.PARTIAL,continuous?"":"SCHEME_PUBLICATION_BASELINE_OR_HISTORY_UNPROVEN",
+                            qualified?new org.jacamo.bridge.contract.VerificationObservation.SourceTime("OBSERVED",(String)state.get("clockIdentity"),"EPOCH_MILLISECONDS",time,AuctionSchemeObservation.TIME_AUTHORITY,"")
+                                    :org.jacamo.bridge.contract.VerificationObservation.SourceTime.unavailable("SCHEME_SNAPSHOT_IS_NOT_A_TRANSITION_TIME"),
+                            Map.of("boardIdentity",state.get("schemeIdentity"),"goalDefinition",goal.get("definition"),"previousState",previous,"state",goal.get("state"),"sourceCutId",state.get("cutHash"),"goalEvidence",state));
+                });
+            }
+        }
+        if(values.get("auctionStateObservation") instanceof Map<?,?> raw&&"COMPLETE".equals(raw.get("status"))) {
+            var state=org.jacamo.bridge.contract.CanonicalJson.object(raw);
+            VerificationObservationSource.publishIfAttached(event,()->{
+                var data=new LinkedHashMap<String,Object>();for(String key:List.of("artifactIdentity","classHash","fieldCutId","properties","fields","coherence","probeEvidence"))data.put(key,state.get(key));
+                return new org.jacamo.bridge.contract.VerificationObservation(org.jacamo.bridge.contract.VerificationObservation.Kind.ARTIFACT_FIELD_CUT,
+                        (String)state.get("artifactIdentity"),Completeness.COMPLETE,"",org.jacamo.bridge.contract.VerificationObservation.SourceTime.unavailable("FIELD_CUT_NOT_A_QUALIFIED_NPL_CLOCK"),data);
+            });
+        }
+    }
+    private Map<String,Object> operationHistory(String uuid) {
+        var result=new LinkedHashMap<String,Object>();result.put("version","AUCTION_OPERATION_HISTORY/1.0");result.put("sessionId",sessionId);result.put("generation",generation);
+        result.put("modelRevision",System.getProperty("jacamo.bridge.modelRevision","unnegotiated"));result.put("artifactUuid",uuid);result.put("fromCreation",auctionOperationBirth.contains(uuid));
+        result.put("historyQuality",auctionOperationBirth.contains(uuid)&&!auctionOperationGaps.contains(uuid)?"COMPLETE":"INCOMPLETE");result.put("events",List.copyOf(auctionOperationReceipts.getOrDefault(uuid,List.of())));
+        result.put("hash",AdapterEvidence.digest(org.jacamo.bridge.contract.CanonicalJson.encode(result)));return JasonStructuredTerms.immutable(result);
+    }
+
+    private void retainAuctionDiscovery(RuntimeEvent event) {
+        if(!fieldProbeAvailable()||event.kind()!=RuntimeEventKind.SUCCEEDED||!"completed".equals(event.after().get("phase")))return;
+        var signature=event.after().get("operationSignature");
+        boolean creation=List.of("cartago.WorkspaceArtifact","makeArtifact",List.of("java.lang.String","java.lang.String","[Ljava.lang.Object;","cartago.OpFeedbackParam"),"void").equals(signature);
+        boolean lookup=List.of("cartago.WorkspaceArtifact","lookupArtifact",List.of("java.lang.String","cartago.OpFeedbackParam"),"void").equals(signature);
+        if(!creation&&!lookup)return;
+        try {
+            var arguments=(List<?>)event.after().get("typedArgumentValues");var output=org.jacamo.bridge.contract.CanonicalJson.object(arguments.getLast());
+            if(!"FEEDBACK".equals(output.get("kind"))||!Boolean.TRUE.equals(output.get("available")))return;
+            var artifact=org.jacamo.bridge.contract.CanonicalJson.object(output.get("value"));
+            if(!"ARTIFACT_ID".equals(artifact.get("kind"))||!AuctionArtifactStateProbe.CLASS.equals(artifact.get("typeHint")))return;
+            String uuid=(String)artifact.get("uuid");java.util.UUID.fromString(uuid);
+            if(!auctionDiscovery.containsKey(uuid)&&auctionDiscovery.size()>=4096){gap("AUCTION_DISCOVERY_CAPACITY_EXCEEDED");return;}
+            var previous=auctionDiscovery.get(uuid);
+            boolean previousCreation=previous!=null&&"makeArtifact".equals(org.jacamo.bridge.contract.CanonicalJson.object(previous.get("after")).get("operation"));
+            if(creation||!previousCreation)auctionDiscovery.put(uuid,org.jacamo.bridge.contract.ContractPayloads.event(event));
+        }catch(RuntimeException malformed){gap("AUCTION_DISCOVERY_TYPED_OUTPUT_UNAVAILABLE:"+malformed.getClass().getSimpleName());}
     }
 
     private String workspaceSemanticId(cartago.WorkspaceId id) {
@@ -370,17 +478,22 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
     @Override public void opRequested(long time, AgentId agent, ArtifactId artifact, Op op) { event(RuntimeEventKind.STARTED, artifact, agent,
             Map.of("phase", "requested", "operation", op.getName(), "arity", op.getParamValues().length)); }
     @Override public void opStarted(long time, OpId id, ArtifactId artifact, Op op) { event(RuntimeEventKind.STARTED, artifact, null,
-            operationPayload(artifact,id,op,"started")); }
+            operationObservation(time,artifact,id,op,"started")); }
     @Override public void opSuspended(long time, OpId id, ArtifactId artifact, Op op) { event(RuntimeEventKind.CHANGED, artifact, null,
             Map.of("phase", "suspended", "opId", id.toString())); }
     @Override public void opResumed(long time, OpId id, ArtifactId artifact, Op op) { event(RuntimeEventKind.CHANGED, artifact, null,
             Map.of("phase", "resumed", "opId", id.toString())); }
     @Override public void opCompleted(long time, OpId id, ArtifactId artifact, Op op) { event(RuntimeEventKind.SUCCEEDED, artifact, null,
-            operationPayload(artifact,id,op,"completed")); }
+            operationObservation(time,artifact,id,op,"completed")); }
     @Override public void opFailed(long time, OpId id, ArtifactId artifact, Op op, String message, Tuple descriptor) { event(RuntimeEventKind.FAILED,
-            artifact, null, failedOperationPayload(artifact,id,op,message,descriptor)); }
-    private Map<String,Object> failedOperationPayload(ArtifactId artifact,OpId id,Op op,String message,Tuple descriptor) {
-        var values=new java.util.LinkedHashMap<>(operationPayload(artifact,id,op,"failed"));values.put("message",safe(message));values.put("descriptor",safe(descriptor));return values;
+            artifact, null, failedOperationPayload(time,artifact,id,op,message,descriptor)); }
+    private Map<String,Object> operationObservation(long time,ArtifactId artifact,OpId id,Op op,String phase) {
+        var values=new LinkedHashMap<>(operationPayload(artifact,id,op,phase));
+        attachSchemeState(values,artifact,phase.equals("started")?"OP_STARTED":phase.equals("completed")?"OP_SUCCEEDED":"OP_FAILED",time,id,op);
+        return values;
+    }
+    private Map<String,Object> failedOperationPayload(long time,ArtifactId artifact,OpId id,Op op,String message,Tuple descriptor) {
+        var values=new java.util.LinkedHashMap<>(operationObservation(time,artifact,id,op,"failed"));values.put("message",safe(message));values.put("descriptor",safe(descriptor));return values;
     }
     private Map<String,Object> operationPayload(ArtifactId artifact,OpId id,Op op,String phase) {
         var payload=new java.util.LinkedHashMap<String,Object>();
@@ -390,10 +503,14 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
         AgentId performer=id.getAgentBodyId();
         if(performer!=null && artifact.equals(id.getArtifactId())) {
             payload.put("performerSemanticId",OfficialCartagoAdapter.agentId(environment.getId().toString(),performer));
+            payload.put("performerName",performer.getAgentName());
             payload.put("performerAuthority","CARTAGO_OPID_AGENT_BODY_ID");
         } else payload.put("performerDiagnostic","EXACT_OPERATION_PERFORMER_UNAVAILABLE");
         payload.put("argumentValues",Arrays.stream(op.getParamValues()).map(v->v==null?"":v.toString()).toList());
         payload.put("argumentTypes",Arrays.stream(op.getParamValues()).map(v->v==null?"NULL":v.getClass().getName()).toList());
+        payload.put("argumentObservationVersion",CartagoArgumentObservation.VERSION);
+        payload.put("typedArgumentValues",Arrays.stream(op.getParamValues()).map(v->CartagoArgumentObservation.value(v,environment.getId().toString())).toList());
+        attachAuctionState(payload,artifact,"OPERATION_"+phase.toUpperCase(java.util.Locale.ROOT),id.toString());
         try {
             var info=environment.getController(artifact.getWorkspaceId().getFullName()).getArtifactInfo(artifact.getName());
             if(info==null || !artifact.equals(info.getId())) throw new IllegalStateException("ARTIFACT_INCARNATION_CHANGED");
@@ -409,6 +526,14 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
         } catch(Exception unavailable) {payload.put("operationEvidenceDiagnostic",unavailable.getClass().getSimpleName()+":"+unavailable.getMessage());}
         return payload;
     }
+    private void attachAuctionState(Map<String,Object> payload,ArtifactId artifact,String origin,String invocation) {
+        if(auctionProbe==null)return;var state=auctionProbe.capture(artifact,origin,invocation);if(!state.isEmpty())payload.put("auctionStateObservation",state);
+    }
+    private void attachSchemeState(Map<String,Object> payload,ArtifactId artifact,String origin,long time,OpId invocation,Op operation) {
+        if(auctionSchemes==null)return;String command=operation!=null&&operation.getName().equals("admCommand")&&operation.getParamValues().length==1&&operation.getParamValues()[0] instanceof String text?text:"";
+        var state=auctionSchemes.capture(artifact,origin,time,invocation==null?"":invocation.toString(),invocation==null?null:invocation.getAgentBodyId(),command);
+        if(!state.isEmpty())payload.put("auctionSchemeObservation",state);
+    }
     @Override public void newPercept(long time, ArtifactId artifact, Tuple signal, ArtifactObsProperty[] added,
                                      ArtifactObsProperty[] removed, ArtifactObsProperty[] changed) {
         synchronized (this) {
@@ -423,7 +548,8 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
         }
         if ((added == null || added.length == 0) && (removed == null || removed.length == 0)
                 && (changed == null || changed.length == 0)) {
-            event(RuntimeEventKind.CHANGED, artifact, null, Map.of("signal", safe(signal))); return;
+            var payload=new LinkedHashMap<String,Object>();payload.put("signal",safe(signal));attachSchemeState(payload,artifact,"PROPERTY_PUBLICATION",time,null,null);
+            event(RuntimeEventKind.CHANGED, artifact, null, payload); return;
         }
         String parent = OfficialCartagoAdapter.artifactId(String.valueOf(environment.getId()), artifact);
         List<Map<String, Object>> properties = new ArrayList<>();
@@ -434,6 +560,7 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
         var payload = values("APPLY_CARTAGO_PROPERTY_DELTA", parent);
         payload.put("properties", properties); payload.put("removedPropertySemanticIds", removedIds);
         payload.put("signal", safe(signal));
+        attachSchemeState(payload,artifact,"PROPERTY_PUBLICATION",time,null,null);
         event(RuntimeEventKind.CHANGED, artifact, null, payload);
     }
     static Map<String, Object> propertyPayload(String artifact, ArtifactObsProperty property) {
@@ -444,6 +571,10 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
                 "annotations", property.getAnnots() == null ? List.of() : property.getAnnots().stream().map(Object::toString).toList());
     }
     @Override public void artifactCreated(long time, ArtifactId artifact, AgentId creator) {
+        // Pinned Workspace.makeArtifact invokes this after init and before
+        // returning the new ID. Subscription is passive and must not fail the
+        // domain action when unavailable.
+        if(creationObserver!=null)try{creationObserver.accept(artifact);}catch(RuntimeException unavailable){gap("NPL_CREATION_SUBSCRIPTION_UNAVAILABLE:"+unavailable.getClass().getSimpleName());}
         String environmentId = String.valueOf(environment.getId());
         var payload = values("UPSERT_CARTAGO_ARTIFACT", OfficialCartagoAdapter.artifactId(environmentId, artifact));
         payload.put("name", artifact.getName()); payload.put("uuid", artifact.getId().toString());
@@ -460,6 +591,9 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
         } catch (ClassNotFoundException ignored) { /* Class-loader identity is unavailable, not inferred. */ }
         payload.put("artifactTypeClassLoaderIdentity", loader);
         payload.put("creatorAgentSemanticId", creator == null ? "" : OfficialCartagoAdapter.agentId(environmentId, creator));
+        payload.put("artifactProviderObservation",CartagoArtifactProviderObservation.capture(environment,artifact));
+        attachAuctionState(payload,artifact,"ARTIFACT_CREATED","");
+        attachSchemeState(payload,artifact,"ARTIFACT_CREATED",time,null,null);
         try {
             var info = environment.getController(artifact.getWorkspaceId().getFullName()).getArtifactInfo(artifact.getName());
             if (info == null || !artifact.equals(info.getId())) throw new IllegalStateException("ARTIFACT_ID_REVALIDATION_FAILED");
@@ -482,6 +616,9 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
                 Map.of("diagnostic", diagnostic), new SourceWatermark(sourceId(), next), Completeness.PARTIAL, List.of()));
     }
     @Override public synchronized void artifactDisposed(long time, ArtifactId artifact, AgentId disposer) {
+        if(auctionSchemes!=null)auctionSchemes.retire(artifact);
+        auctionOperationReceipts.remove(artifact.getId().toString());auctionOperationBirth.remove(artifact.getId().toString());auctionOperationGaps.remove(artifact.getId().toString());
+        auctionDiscovery.remove(artifact.getId().toString());
         event(RuntimeEventKind.DISPOSED, artifact, disposer, values("DELETE_CARTAGO_ARTIFACT",
                 OfficialCartagoAdapter.artifactId(String.valueOf(environment.getId()), artifact)));
         synchronized (this) { knownArtifacts.remove(artifactId(artifact)); pendingCreations.remove(artifactId(artifact)); }

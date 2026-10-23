@@ -43,6 +43,9 @@ class EngineExtractionTest {
                     verifyContextPatchScope(expected,actual);
                     String targetHash=HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(actual));
                     assertTrue(manifest.contains(targetHash),"Unrecorded P-CTX-01 target hash");
+                } else if(upstream.endsWith("/GoalModelValidator.java")||upstream.endsWith("/IStarCompiler.java")) {
+                    verifyAdmissionPatchScope(target.getFileName().toString(),expected,actual);
+                    assertTrue(manifest.contains(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(actual))),"Unrecorded P-IADM-01 target hash");
                 } else assertArrayEquals(expected,actual,upstream);
                 String hash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(expected));
                 assertTrue(manifest.contains(hash), "Unrecorded source hash: " + upstream);
@@ -50,6 +53,36 @@ class EngineExtractionTest {
         }
         assertEquals(123, javaFiles);
         assertEquals(2, grammars);
+    }
+    static void verifyAdmissionPatchScope(String name,byte[] original,byte[] patched) {
+        String expected=new String(original,StandardCharsets.UTF_8).replace("\r\n","\n");
+        String actual=new String(patched,StandardCharsets.UTF_8).replace("\r\n","\n");
+        String marker=name.equals("GoalModelValidator.java")
+                ? "        // P-IADM-01: strict public default is preserved."
+                : "        // P-IADM-01: existing entry points retain strict upstream validation.";
+        int start=actual.indexOf(marker),end=actual.indexOf("        List<String> errors = new ArrayList<>();",start);
+        assertTrue(start>=0&&end>start,"Missing explicit P-IADM-01 dispatch");
+        actual=actual.substring(0,start)+actual.substring(end);
+        if(name.equals("GoalModelValidator.java")) {
+            actual=actual.replace("        if (policy == GoalModelValidationPolicy.STRICT_ORIGINAL)\n            validateRefinementParentsAreNotDependencyEndpoints(model, errors);\n        else validateDerivedAndDependees(model, errors);",
+                    "        validateRefinementParentsAreNotDependencyEndpoints(model, errors);");
+            start=actual.indexOf("    // P-IADM-01-BEGIN:");end=actual.indexOf("    // P-IADM-01-END",start)+"    // P-IADM-01-END\n\n".length();
+            assertTrue(start>=0&&end>start,"Missing neutral P-IADM-01 admission block");
+            actual=actual.substring(0,start)+actual.substring(end);
+        } else {
+            actual=actual.replace("import org.vnu.sme.goal.dsl.istar.mm.GoalModelValidationPolicy;\n","")
+                    .replace("GoalModelValidator.validate(model, policy)","GoalModelValidator.validate(model)");
+        }
+        assertEquals(expected,actual,"Original code changed outside registered admission scope");
+    }
+    @Test void provenanceRejectsAnUnapprovedOriginalValidationChange() throws Exception {
+        String suffix="/GoalModelValidator.java";
+        try(var archive=new ZipFile(ROOT.resolve("src/test/resources/oracle/pinned-original-core.zip").toFile())) {
+            var entry=archive.getEntry("goal/src/main/java/org/vnu/sme/goal/dsl/istar/mm"+suffix);
+            byte[] changed=Files.readString(ROOT.resolve("src/main/java/org/vnu/sme/goal/dsl/istar/mm"+suffix))
+                    .replace("        validateContributions(model, errors);","        // removed validation").getBytes(StandardCharsets.UTF_8);
+            assertThrows(AssertionError.class,()->verifyAdmissionPatchScope("GoalModelValidator.java",archive.getInputStream(entry).readAllBytes(),changed));
+        }
     }
     static void verifyContextPatchScope(byte[] original,byte[] patched) {
         String expected=new String(original,StandardCharsets.UTF_8).replace("\r\n","\n");

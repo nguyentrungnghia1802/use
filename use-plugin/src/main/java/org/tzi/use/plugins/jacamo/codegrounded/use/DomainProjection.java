@@ -183,33 +183,79 @@ public final class DomainProjection {
     /** Exact interface copied by the authenticated producer; no consumer framework classloading. */
     public static org.tzi.use.uml.mm.MOperation declaredOperation(UseModelApi api,String owner,List<Object> signature,String sourceId,
             org.jacamo.bridge.contract.semantic.SourceEvidence proof) throws UseApiException {
+        return declaredOperation(api,owner,signature,sourceId,proof,null);
+    }
+    /** Explicit authored native names. Java identity is always the unchanged signature annotation. */
+    public record OperationExposure(String name,List<String> parameterNames) {
+        public OperationExposure {
+            parameterNames=List.copyOf(parameterNames);
+            if(name==null||!name.matches("[A-Za-z_][A-Za-z_0-9]*")||parameterNames.stream().anyMatch(p->!p.matches("[A-Za-z_][A-Za-z_0-9]*")||p.equals("self")||p.equals("result"))
+                    ||new java.util.HashSet<>(parameterNames).size()!=parameterNames.size())throw new IllegalArgumentException("OPERATION_EXPOSURE_NAMES_INVALID");
+        }
+    }
+    public static org.tzi.use.uml.mm.MOperation declaredOperation(UseModelApi api,String owner,List<Object> signature,String sourceId,
+            org.jacamo.bridge.contract.semantic.SourceEvidence proof,OperationExposure exposure) throws UseApiException {
         if(signature.size()!=4||!(signature.get(0) instanceof String declaring)||!(signature.get(1) instanceof String name)
                 ||!(signature.get(2) instanceof List<?> raw)||raw.stream().anyMatch(t->!(t instanceof String))||!(signature.get(3) instanceof String result))throw new IllegalArgumentException("DECLARED_OPERATION_SIGNATURE_INVALID");
         String artifactType=decode(api.getModel().getClass(owner).getAnnotationValue(ANNOTATION,"javaClass64"));
         String canonical=NativeUseModelBuilder.canonicalJson(signature);
+        boolean actionProof=proof!=null&&proof.diagnostics().contains(org.tzi.use.plugins.jacamo.semantics.mapping.SourceArtifactTypeReferences.OPERATION);
+        boolean declaredProof=proof!=null&&proof.diagnostics().contains("DECLARED_CARTAGO_ARTIFACT_OPERATION");
         if(proof==null||proof.authority()!=org.jacamo.bridge.contract.semantic.EvidenceAuthority.OFFICIAL_CARTAGO_API
                 ||proof.fidelity()!=org.jacamo.bridge.contract.semantic.Fidelity.EXACT||proof.capabilityStatus()!=org.jacamo.bridge.contract.CapabilityStatus.COMPLETE
                 ||!declaring.equals(proof.sourceJavaFqcn())||!proof.sourceDigest().matches("[0-9a-f]{64}")
                 ||!(proof.sourceUri().startsWith("file:")||proof.sourceUri().startsWith("jar:file:"))
-                ||!proof.diagnostics().containsAll(List.of("DECLARED_CARTAGO_ARTIFACT_OPERATION","OWNER:"+artifactType,"SIGNATURE:"+canonical)))
+                ||actionProof==declaredProof||actionProof&&!proof.sourceSemanticId().equals(sourceId)
+                ||!proof.diagnostics().containsAll(List.of("OWNER:"+artifactType,"SIGNATURE:"+canonical)))
             throw new IllegalArgumentException("DECLARED_OPERATION_PRODUCER_PROOF_INVALID:"+sourceId);
-        var operation=installOperation(api,owner,declaring,name,raw.stream().map(String.class::cast).toList(),result,"declared-interface:"+sourceId,"java-method:"+signature);
-        operation.addAnnotation(new MElementAnnotation("CslInterfaceAuthority",Map.of("kind","PRODUCER_REFLECTED_DECLARED_OPERATION","sourceId64",encode(sourceId),"bytecodeHash",proof.sourceDigest(),"sourceUri64",encode(proof.sourceUri()))));
+        var operation=installOperation(api,owner,declaring,name,raw.stream().map(String.class::cast).toList(),result,"declared-interface:"+sourceId,"java-method:"+signature,exposure);
+        var authority=new java.util.LinkedHashMap<String,String>();
+        authority.put("kind",actionProof?"PRODUCER_REFLECTED_SOURCE_ACTION_OPERATION":"PRODUCER_REFLECTED_DECLARED_OPERATION");
+        authority.put("sourceId64",encode(sourceId));authority.put("bytecodeHash",proof.sourceDigest());authority.put("sourceUri64",encode(proof.sourceUri()));
+        if(actionProof)authority.put("sourceReference64",encode(proof.sourceSemanticId()));
+        operation.addAnnotation(new MElementAnnotation("CslInterfaceAuthority",authority));
         return operation;
     }
     private static org.tzi.use.uml.mm.MOperation installOperation(UseModelApi api,String owner,String declaringClass,String methodName,
             List<String> parameterTypes,String returnType,String descriptorId,String backingId) throws UseApiException {
+        return installOperation(api,owner,declaringClass,methodName,parameterTypes,returnType,descriptorId,backingId,null);
+    }
+    private static org.tzi.use.uml.mm.MOperation installOperation(UseModelApi api,String owner,String declaringClass,String methodName,
+            List<String> parameterTypes,String returnType,String descriptorId,String backingId,OperationExposure exposure) throws UseApiException {
+        if(exposure!=null&&exposure.parameterNames().size()!=parameterTypes.size())throw new IllegalArgumentException("OPERATION_EXPOSURE_ARITY_MISMATCH");
         String[][] parameters=new String[parameterTypes.size()][2];
-        for(int i=0;i<parameters.length;i++) { parameters[i][0]="p"+i; parameters[i][1]=operationType(parameterTypes.get(i)); }
+        for(int i=0;i<parameters.length;i++) { parameters[i][0]=exposure==null?"p"+i:exposure.parameterNames().get(i); parameters[i][1]=operationType(parameterTypes.get(i)); }
         String result=returnType.equals("void") ? null : operationType(returnType);
         String signature=NativeUseModelBuilder.canonicalJson(List.of(declaringClass,methodName,parameterTypes,returnType));
-        String name=symbol(methodName)+"_"+hash(signature);
-        var cls=api.getModel().getClass(owner); var operation=cls.operation(name,false);
+        String name=exposure==null?symbol(methodName)+"_"+hash(signature):exposure.name();
+        var cls=api.getModel().getClass(owner);
+        var exact=cls.allOperations().stream().filter(o->encode(signature).equals(o.getAnnotationValue("CartagoOperation","signature64"))).toList();
+        // A later live descriptor may enrich an explicitly exposed interface;
+        // never install a second signature that makes invocation lookup ambiguous.
+        if(exposure==null&&exact.size()==1&&exact.getFirst().getAnnotationValue("CartagoOperation","exposure").equals("AUTHORED_NAMES_V1"))
+            name=exact.getFirst().name();
+        final String selectedName=name;
+        if(exposure!=null&&exact.stream().anyMatch(o->!o.name().equals(selectedName)))throw new IllegalArgumentException("OPERATION_EXPOSURE_DUPLICATE_SIGNATURE");
+        var operation=cls.operation(name,false);
+        if(operation!=null&&((exposure!=null||!operation.getAnnotationValue("CartagoOperation","signature64").isEmpty())
+                    &&!encode(signature).equals(operation.getAnnotationValue("CartagoOperation","signature64"))
+                ||operation.paramList().size()!=parameters.length||exposure!=null&&!operation.paramNames().equals(exposure.parameterNames())))
+            throw new IllegalArgumentException("CARTAGO_OPERATION_IDENTITY_COLLISION:"+signature);
+        if(operation!=null) {
+            for(int i=0;i<parameters.length;i++)if(!operation.paramList().varDecl(i).type().toString().equals(parameters[i][1]))
+                throw new IllegalArgumentException("CARTAGO_OPERATION_PARAMETER_TYPE_COLLISION:"+signature);
+            if(operation.hasResultType()!=(result!=null)||result!=null&&!operation.resultType().toString().equals(result))
+                throw new IllegalArgumentException("CARTAGO_OPERATION_RESULT_TYPE_COLLISION:"+signature);
+        }
         if(operation==null) operation=api.createOperation(owner,name,parameters,result);
         if(!operation.getAnnotationValue("CartagoOperation","signature64").isEmpty()
                 && !operation.getAnnotationValue("CartagoOperation","signature64").equals(encode(signature)))
             throw new IllegalArgumentException("CARTAGO_OPERATION_IDENTITY_COLLISION:"+signature);
-        operation.addAnnotation(new MElementAnnotation("CartagoOperation",Map.of("signature64",encode(signature),"javaName64",encode(methodName),"policy",NativeProjectionPolicy.VERSION)));
+        var identity=new java.util.LinkedHashMap<String,String>();identity.put("signature64",encode(signature));identity.put("javaName64",encode(methodName));identity.put("policy",NativeProjectionPolicy.VERSION);
+        if(exposure!=null||operation.getAnnotationValue("CartagoOperation","exposure").equals("AUTHORED_NAMES_V1")) {
+            identity.put("exposure","AUTHORED_NAMES_V1");identity.put("parameterAliases64",encode(NativeUseModelBuilder.canonicalJson(operation.paramNames())));
+        }
+        operation.addAnnotation(new MElementAnnotation("CartagoOperation",identity));
         operation.addAnnotation(new MElementAnnotation("OperationSource_"+hash(descriptorId),Map.of(
             "descriptorId64",encode(descriptorId),"backingId64",encode(backingId))));
         return operation;
@@ -218,7 +264,7 @@ public final class DomainProjection {
         attribute.addAnnotation(new MElementAnnotation("ProjectionAttribute",Map.of("category","VERIFICATION_STATE","provenance","application-observable")));
         attribute.addAnnotation(new MElementAnnotation("PropertySource_"+hash(sourceId),Map.of("sourceId64",encode(sourceId))));
     }
-    private static String operationType(String javaType) {
+    public static String operationType(String javaType) {
         return switch(javaType) {
             case "boolean","java.lang.Boolean" -> "Boolean";
             case "byte","short","int","java.lang.Byte","java.lang.Short","java.lang.Integer" -> "Integer";
