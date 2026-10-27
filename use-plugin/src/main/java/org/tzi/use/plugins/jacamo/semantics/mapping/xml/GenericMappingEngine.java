@@ -13,7 +13,9 @@ public final class GenericMappingEngine {
     public SemanticProgram map(ModelSnapshot input,MappingInputs inputs) {
         EngineInstallationGuard.verify();verifySource(input,inputs);
         var source=new SourceModelNormalizer().normalize(input);var selections=SourceSelections.execute(inputs);
-        var csl=new CslRuleExecutor().prepare(inputs);var goals=new IStarRuleExecutor().prepare(inputs);
+        var authored=new AuthoredModelLoader();
+        var csl=inputs.authoredModels()?authored.csl(inputs):new CslRuleExecutor().prepare(inputs);
+        var goals=inputs.authoredModels()?authored.goals(inputs):new IStarRuleExecutor().prepare(inputs);
         var bindings=new ArrayList<SemanticBindingIndex.Binding>();var instructions=new LinkedHashMap<String,List<SemanticBindingIndex.Binding>>();
         for(Node node:inputs.specification().root().child("bindings").children("static")) {
             var selected=node.optional("selectRef").isEmpty()?List.<Map<String,String>>of(Map.of()):SourceSelections.require(selections,node.attr("selectRef"),node).stream().map(SourceSelectors.Row::values).toList();
@@ -38,6 +40,13 @@ public final class GenericMappingEngine {
         for(Node node:inputs.specification().root().child("bindings").children("actorRuntime")) {
             var binding=single(instructions,node.attr("bindingRef"),node);
             if(binding.kind()!=SemanticBindingIndex.Kind.ACTOR||!binding.targetId().equals(node.attr("actor")))throw node.location().error("ACTOR_RUNTIME_BINDING_MISMATCH");
+            if(node.attr("activationPolicy").equals("MODEL_ONLY_CAPABILITY_ROLE")
+                    &&(!goals.profile().roleSpecialization()
+                        ||!RoleSpecialization.definitionOnly(goals.model(),goals.model().findActor(node.attr("actor")).orElseThrow())
+                        ||!node.optional("roleBindingRef").isBlank()||!node.optional("contextBindingRef").isBlank()
+                        ||!node.attr("episodePolicy").equals("MODEL_REVISION")
+                        ||!source.require(binding.sourceId()).sourceKind().equals("JASON_AGENT_PROGRAM")||binding.abstractionReason().isBlank()))
+                throw node.location().error("MODEL_ONLY_CAPABILITY_ROLE_REQUIRES_EXPLICIT_EMPTY_ROLE_ABSTRACTION");
             String role=optionalSource(instructions,node.optional("roleBindingRef"),node),context=optionalSource(instructions,node.optional("contextBindingRef"),node);
             if(actorTemplates.putIfAbsent(node.attr("actor"),new GoalRuntimeBindingPlan.ActorTemplate(node.attr("actor"),binding.sourceId(),role,context,"",node.attr("activationPolicy"),node.attr("episodePolicy")))!=null)throw node.location().error("ACTOR_RUNTIME_DUPLICATE");
         }
@@ -78,7 +87,7 @@ public final class GenericMappingEngine {
     }
     private static void verifySource(ModelSnapshot input,MappingInputs inputs) {
         var official=input.semanticContract();
-        if(official.project()==null||!official.project().sourceDigest().equals(inputs.require(inputs.specification().root().attr("jcmRef")).sha256()))throw new IllegalArgumentException("XML_OFFICIAL_PROJECT_DIGEST_MISMATCH");
+        if(official.project()==null||!official.project().sourceDigest().equals(inputs.projectDigest()))throw new IllegalArgumentException("XML_OFFICIAL_PROJECT_DIGEST_MISMATCH");
         for(Node file:inputs.specification().root().child("sources").children("file")) {
             String digest=inputs.require(file.attr("id")).sha256();
             if(file.attr("kind").equals("ASL")&&official.jasonPrograms().stream().noneMatch(p->p.sourceDigest().equals(digest)))throw file.location().error("OFFICIAL_ASL_DIGEST_MISMATCH");

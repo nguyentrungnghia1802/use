@@ -78,6 +78,15 @@ public final class BridgeMirrorStateMachine {
         try { accepted=ledger.inspect(event,ContractPayloads.event(event)); }
         catch(ContractException conflict){state=BridgeClientState.RESYNC_REQUIRED;throw new BridgeProtocolException("BRIDGE_EVENT_CONFLICT",conflict);}
         if(accepted==EventLedger.Result.DUPLICATE)return false;
+        if(org.jacamo.bridge.contract.CartagoSourceCut.KIND.equals(event.after().get("normalizedEventKind"))) {
+            final RuntimeSnapshot cut;
+            try{cut=org.jacamo.bridge.contract.CartagoSourceCut.require(event);}
+            catch(RuntimeException invalid){state=BridgeClientState.RESYNC_REQUIRED;throw new BridgeProtocolException("BRIDGE_CARTAGO_CUT_REJECTED",invalid);}
+            var kinds=org.jacamo.bridge.contract.CartagoSourceCut.kinds(cut);
+            facts.values().removeIf(f->f.id().authority().equals("cartago")&&kinds.contains(f.kind()));
+            cut.facts().forEach(f->facts.put(f.id().canonical(),f));
+            sequences.put(event.sourceId(),event.sourceSequence());ledger.accept(event,ContractPayloads.event(event));return true;
+        }
         if(event.kind()==RuntimeEventKind.STREAM_BOUNDARY) {
             try { VerificationBoundary.require(event,sequences); }
             catch(ContractException invalid) {

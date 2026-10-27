@@ -1,0 +1,67 @@
+
+# Audited source freeze v5 checkout bytes: preserve the tested LF/CRLF form.
+"pom.xml" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/BridgeEntityId.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/BridgeRelationId.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/CanonicalJson.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/Capability.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/CapabilityObservation.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/CapabilityStatus.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/CartagoSourceCut.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/Completeness.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/ContractCodec.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/ContractEnvelope.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/ContractException.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/ContractPayloads.java" -text
+"src/main/java/org/jacamo/bridge/contract/ContractSupport.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/ContractValidator.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/DistributionFingerprint.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/EventLedger.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/Evidence.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/ManagedStartupControl.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/MessageType.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/ModelFact.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/ModelSnapshot.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/ObservationCapabilityRequest.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/ObservationCaptureScope.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/ObservationRequestPlan.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/ProcessOwnerLease.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/ProjectionStatus.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/RelationCardinality.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/RuntimeControlContract.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/RuntimeEvent.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/RuntimeEventKind.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/RuntimeFact.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/RuntimeFactKind.java" -text
+"src/main/java/org/jacamo/bridge/contract/RuntimeSnapshot.java" -text
+"src/main/java/org/jacamo/bridge/contract/SnapshotAdmission.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/SourceWatermark.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/UnresolvedFact.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/UseDisplayNameAllocator.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/VerificationBoundary.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/VerificationObservation.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/semantic/CartagoSemanticContract.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/semantic/CrossSemanticContract.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/semantic/EvidenceAuthority.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/semantic/Fidelity.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/semantic/JacamoSemanticSnapshot.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/semantic/JasonSemanticContract.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/semantic/JcmSemanticContract.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/semantic/MoiseSemanticContract.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/semantic/SemanticContractCodec.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/semantic/SemanticMetadata.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/semantic/SemanticNode.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/semantic/SemanticSupport.java" text eol=lf
+"src/main/java/org/jacamo/bridge/contract/semantic/SourceEvidence.java" text eol=lf
+"src/main/resources/org/jacamo/bridge/contract/contract-envelope-v1.schema.json" -text
+"src/test/java/org/jacamo/bridge/contract/CapabilityObservationTest.java" text eol=lf
+"src/test/java/org/jacamo/bridge/contract/CartagoSourceCutTest.java" text eol=lf
+"src/test/java/org/jacamo/bridge/contract/ContractTest.java" -text
+"src/test/java/org/jacamo/bridge/contract/IsolatedContractConsumerMain.java" text eol=crlf
+"src/test/java/org/jacamo/bridge/contract/ManagedStartupControlTest.java" text eol=lf
+"src/test/java/org/jacamo/bridge/contract/ObservationRequestPlanTest.java" text eol=lf
+"src/test/java/org/jacamo/bridge/contract/ProcessOwnerLeaseTest.java" text eol=lf
+"src/test/java/org/jacamo/bridge/contract/RuntimeControlContractTest.java" text eol=lf
+"src/test/java/org/jacamo/bridge/contract/SnapshotAdmissionTest.java" text eol=lf
+"src/test/java/org/jacamo/bridge/contract/VerificationObservationTest.java" text eol=lf
+"src/test/java/org/jacamo/bridge/contract/semantic/SemanticContractTest.java" text eol=lf

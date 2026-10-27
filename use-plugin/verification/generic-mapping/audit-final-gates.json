@@ -1,0 +1,119 @@
+{
+  "scope": "AUDIT_REGRESSION_AND_LEGACY_PACKAGED_COMPATIBILITY_NOT_GENERIC_FINAL_ACCEPTANCE",
+  "status": "PASS",
+  "command": "mvn -B clean verify",
+  "finishedAt": "2026-10-23T20:27:54+07:00",
+  "log": "audit-final-regression-package.log",
+  "modules": [
+    {
+      "module": "jacamo-bridge-contract",
+      "runner": "surefire-reports",
+      "tests": 26,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "jacamo-bridge-jacamo",
+      "runner": "surefire-reports",
+      "tests": 116,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-core",
+      "runner": "surefire-reports",
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-core",
+      "runner": "failsafe-reports",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-jacamo-semantic-engine",
+      "runner": "surefire-reports",
+      "tests": 100,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-gui",
+      "runner": "surefire-reports",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-gui",
+      "runner": "failsafe-reports",
+      "tests": 129,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "runner": "surefire-reports",
+      "tests": 1039,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "runner": "failsafe-reports",
+      "tests": 35,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "unitTests": 1296,
+  "integrationTests": 165,
+  "legacyJUnit3": {
+    "tests": 198,
+    "status": "PASS",
+    "log": "audit-legacy-junit3.log"
+  },
+  "archives": [
+    {
+      "path": "use-plugin\\target\\use-jacamo-plugin-1.0.1-release.zip",
+      "sha256": "02f439eddcca69afd499d683b08d7d5e76dd635ecef77ecc9fc4e894433f3d49",
+      "bytes": 8842537
+    },
+    {
+      "path": "use-assembly\\target\\use-7.5.0-use-bin.zip",
+      "sha256": "50bf0d3e49403b7b66b3dc740fb3b4773c944adfe066148a5940a5d3c36a79f3",
+      "bytes": 116840339
+    }
+  ],
+  "legacyPackagedReceipts": {
+    "auction-installed-controlled.json": "ac4318df8ab8f292f5ea313253f31f6b6d40360026257d8ccc5b4c3d183e6135",
+    "auction-installed-live.json": "09929ecd2c72eb0cb60da8ae359822614607f89fd3dae33e379fcba4f500d6f8",
+    "auction-installed-static.json": "64543dcf6fc02c7181f63dbe7ffbb549afe764f8908fdc83491a5e9e6da2995c",
+    "auction-source-controlled.json": "6d709ee046c6f2b3987691fb06ebdd4f4fa4f1b27c2cbb9e9a4bf99765d00d21"
+  },
+  "genericGuiSmoke": {
+    "status": "MODEL_READY_AND_PRESTART_CLOSE_EXIT_ZERO",
+    "log": "audit-final-gui-lifecycle.log",
+    "receipt": "audit-gui-final/gui-ready.json",
+    "bridgeCompleteness": "PARTIAL"
+  },
+  "genericDefinitionOfDone": "NOT_MET",
+  "remaining": [
+    "G11 neutral producer capability bootstrap/publication",
+    "G11 installed generic runtime acceptance",
+    "G12 producer case logic retirement after parity",
+    "G13 generic acceptance aggregation/live evidence"
+  ]
+}

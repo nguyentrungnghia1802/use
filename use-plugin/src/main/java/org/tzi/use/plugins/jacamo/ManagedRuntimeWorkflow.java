@@ -14,10 +14,10 @@ final class ManagedRuntimeWorkflow {
     private volatile Map<String,Object> owner = Map.of();
     private volatile String error = "";
     ManagedRuntimeWorkflow() {
-        String configured = System.getProperty(ManagedStartupControl.DIRECTORY_PROPERTY, "");
-        directory = configured.isBlank() ? null : Path.of(configured).toAbsolutePath().normalize();
-        run = System.getProperty(ManagedStartupControl.RUN_PROPERTY, "");
+        this(configuredDirectory(),System.getProperty(ManagedStartupControl.RUN_PROPERTY, ""));
     }
+    ManagedRuntimeWorkflow(Path directory,String run) {this.directory=directory==null?null:directory.toAbsolutePath().normalize();this.run=run;}
+    private static Path configuredDirectory(){String value=System.getProperty(ManagedStartupControl.DIRECTORY_PROPERTY, "");return value.isBlank()?null:Path.of(value);}
     void importing() { importing = true; }
     void imported(Path project, JaCaMoFacade.AuthorityStatus authority, boolean sessionActive) {
         if (directory != null) {

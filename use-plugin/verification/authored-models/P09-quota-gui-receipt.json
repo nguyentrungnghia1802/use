@@ -1,0 +1,46 @@
+{
+  "status": "PASS_SCOPED_GUI_DOMAIN_NPL_LIFECYCLE",
+  "scope": "NOT_FINAL_MOISE_TEMPORAL_DOD",
+  "archiveSha256": "95a2499546540091dde0f20819831624929cba0c5be3805b66f4dfc0b21ec5d5",
+  "usePid": 23060,
+  "firstProducerPid": 15892,
+  "restartProducerPid": 13344,
+  "secondSession": "3a57e93b-58f0-4bbe-9a05-ffffeec37519",
+  "quotaMiBSelectedInGui": 256,
+  "tasks": [
+    "A_decide_t2",
+    "A_start_t1",
+    "A_start_t2",
+    "P_bid_t1",
+    "P_bid_t2"
+  ],
+  "originalCalls": [
+    "GoalModelInstanceTranslator.propagateDependencies",
+    "IStarPropagation.assignGoalTask:aggregate-only",
+    "IStarPropagation.closePending",
+    "TaskMarking.update"
+  ],
+  "qualifiedDeadlineBodies": 10,
+  "currentOriginalOccurrences": 60,
+  "operationBoundaries": {
+    "OPERATION_PRE": 11,
+    "OPERATION_POST": 11
+  },
+  "journalBytes": 126202798,
+  "journalGap": false,
+  "coverage": "INCOMPLETE",
+  "stateHash": "8bd628920eee4b6680c4ce9f4a9c88b7c3975b26a0e9e681119e80122c36c0dc",
+  "resultHash": "43ec8288ddf0a28ef5af19ae99bb551b2286b479a9247398f9c0e9d5328682b7",
+  "constraintVerdicts": {
+    "SKIPPED": 9,
+    "PASS": 13,
+    "FAIL": 2
+  },
+  "remaining": "MOISE internal transition timestamp clauses remain unavailable; early resync does not reconstruct cut-spanning invocations.",
+  "firstSession": "5de24d39-2dd2-4e02-a77d-1c5d70d90734",
+  "oldProducerGone": true,
+  "restartProducerGone": true,
+  "useAliveAfterBothStops": true,
+  "restartHistoryEmptyBeforeStart": true,
+  "producerLogScope": "Retained logs belong to first producer; second producer proven by GUI/PID checks and accepted native journal results. Owned staging/log subtree was cleaned before the final reactor."
+}

@@ -19,10 +19,14 @@ class PackagedProjectProducer implements AutoCloseable {
         this(install,work,step,auction,controlled,null);
     }
     PackagedProjectProducer(Path install,Path work,int step,boolean auction,boolean controlled,Path caseOverride)throws Exception {
+        this(install,work,step,auction,controlled,caseOverride,false);
+    }
+    PackagedProjectProducer(Path install,Path work,int step,boolean auction,boolean controlled,Path caseOverride,boolean declarative)throws Exception {
+        if(declarative&&(!auction||controlled||caseOverride!=null))throw new IllegalArgumentException("GENERIC_CANONICAL_INPUTS_REQUIRED");
         if(controlled&&!auction)throw new IllegalArgumentException("E02_AUCTION_FIXTURE_ONLY");
         if(caseOverride!=null&&!controlled)throw new IllegalArgumentException("E02_EXPLICIT_CONTROLS_REQUIRED");
         this.work=work;runId=auction?"installed-auction":"installed-counter";Path example=caseOverride==null?install.resolve(auction?"examples/auction-semantic":"examples/csl-counter"):caseOverride.toRealPath(),stage=Files.createDirectory(work.resolve("staging"));
-        try(var paths=Files.walk(example)){for(Path source:paths.toList()){Path target=stage.resolve(example.relativize(source));if(Files.isDirectory(source))Files.createDirectories(target);else Files.copy(source,target);}}
+        try(var paths=Files.walk(example)){for(Path source:paths.toList()){Path target=stage.resolve(example.relativize(source));if(Files.isDirectory(source))Files.createDirectories(target);else if(!declarative||Set.of("auction.jcm","auction-mapping.xml","auction_constraints_final.ocl","build.gradle").contains(example.relativize(source).toString())||example.relativize(source).toString().replace('\\','/').startsWith("src/"))Files.copy(source,target);}}
         jcm=stage.resolve(auction?"auction.jcm":"counter.jcm");control=Files.createDirectory(work.resolve("startup-control"));secret=work.resolve("secret.hex");stop=work.resolve("stop");ready=work.resolve("ready");release=work.resolve("release");stopMas=work.resolve("stop-mas");
         byte[] random=new byte[32];new java.security.SecureRandom().nextBytes(random);Files.writeString(secret,HexFormat.of().formatHex(random));
         var jars=new ArrayList<String>();jars.add(install.resolve("bridge/lib/jacamo-bridge-contract-1.0.0.jar").toString());jars.add(install.resolve("bridge/lib/jacamo-bridge-jacamo-1.0.0.jar").toString());
@@ -49,7 +53,8 @@ class PackagedProjectProducer implements AutoCloseable {
         Files.writeString(jcm,text.substring(0,end)+platform+text.substring(end));
         var arguments=new ArrayList<String>(List.of(java(),"-Djacamo.launch.captureConsole=true","-Djacamo.bridge.structured-observation=false","-Dcounter.demo.step="+step,"-Dcounter.demo.ready="+ready,"-Dcounter.demo.release="+release,"-Dcounter.demo.stopMas="+stopMas,
                 "-cp",cp,"jason.infra.local.LiveJaCaMoLauncherMain",jcm.toString(),stop.toString(),auction?"900":"240","true","","240",control.toString(),runId));
-        if(auction)arguments.addAll(1,List.of("-Djacamo.bridge.auction.step-markers=true","-Djacamo.bridge.auction.clock=true","-Djacamo.bridge.auction.scheme-observer=true"));
+        if(declarative)arguments.add(1,"-D"+org.jacamo.bridge.contract.ObservationRequestPlan.PROPERTY+"="+work.resolve("observation-requests.json"));
+        if(auction&&!declarative)arguments.addAll(1,List.of("-Djacamo.bridge.auction.step-markers=true","-Djacamo.bridge.auction.clock=true","-Djacamo.bridge.auction.scheme-observer=true"));
         if(controlled) {
             arguments.set(arguments.indexOf("jason.infra.local.LiveJaCaMoLauncherMain"),"auctionfixture.AuctionControlProducerMain");arguments.add(1,"-Dauction.fixture.directory="+fixture);
             boolean late=caseOverride!=null&&Boolean.TRUE.equals(CanonicalJson.object(CanonicalJson.decode(Files.readAllBytes(work.resolve("control-profile.json")))).get("lateRole"));
@@ -72,7 +77,12 @@ class PackagedProjectProducer implements AutoCloseable {
     Properties consumerProperties(Path install,int step) {
         var p=new Properties();p.setProperty("use.jacamo.authority","bridge");p.setProperty("use.jacamo.bridge.endpoint",endpoint);p.setProperty("use.jacamo.bridge.secret-file",secret.toString());p.setProperty("use.jacamo.bridge.distribution-sha256",distribution);
         p.setProperty("use.jacamo.startup.directory",control.toString());p.setProperty("use.jacamo.startup.run-id",runId);p.setProperty("jcm",jcm.toString());p.setProperty("mapping",install.resolve("examples/csl-counter/mapping.json").toString());p.setProperty("evidence",work.toString());
-        p.setProperty("ready",ready.toString());p.setProperty("release",release.toString());p.setProperty("stopMas",stopMas.toString());p.setProperty("producerStop",stop.toString());p.setProperty("producerPid",Long.toString(process.pid()));p.setProperty("step",Integer.toString(step));return p;
+        p.setProperty("ready",ready.toString());p.setProperty("release",release.toString());p.setProperty("stopMas",stopMas.toString());p.setProperty("producerStop",stop.toString());p.setProperty("producerPid",Long.toString(process.pid()));p.setProperty("step",Integer.toString(step));
+        if(command.stream().anyMatch(a->a.startsWith("-D"+org.jacamo.bridge.contract.ObservationRequestPlan.PROPERTY+"="))) {
+            p.setProperty(org.jacamo.bridge.contract.ObservationRequestPlan.PROPERTY,work.resolve("observation-requests.json").toString());
+            p.setProperty("profile","JACAMO_DECLARATIVE_XML");p.setProperty("mapping",jcm.resolveSibling("auction-mapping.xml").toString());p.setProperty("ocl",jcm.resolveSibling("auction_constraints_final.ocl").toString());
+        }
+        return p;
     }
     @Override public void close()throws Exception {
         Files.writeString(stop,"stop owned producer");

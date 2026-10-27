@@ -1,0 +1,31 @@
+{
+  "status": "VERIFIED_SOURCE_AUTHORITY_BOUNDARY_NOT_FINAL_LIVE_ACCEPTANCE",
+  "profile": "MOISE_PUBLIC_CONFIRMATION/1.0",
+  "sourceVersion": "MOISE_SCHEME_CUT/2.3",
+  "workspaceClassSha256": "0578556e6977dd23d04de4b5f55a293be9ba7da0fa14d16254ae804b10af4798",
+  "jarSha256": "bf03b37b28e304b2d784c8d77267e56c12b943ff70eed35b533c6323e0736866",
+  "bytecode": {
+    "notifyObsEvent(": "  public void notifyObsEvent(cartago.ArtifactId, cartago.Tuple, cartago.ArtifactObsProperty[], cartago.ArtifactObsProperty[], cartago.ArtifactObsProperty[]);\n    Code:\n       0: aload_0\n       1: getfield      #142                // Field logManager:Lcartago/ICartagoLoggerManager;\n       4: invokeinterface #466,  1          // InterfaceMethod cartago/ICartagoLoggerManager.isLogging:()Z\n       9: ifeq          31\n      12: aload_0\n      13: getfield      #142                // Field logManager:Lcartago/ICartagoLoggerManager;\n      16: invokestatic  #460                // Method java/lang/System.currentTimeMillis:()J\n      19: aload_1\n      20: aload_2\n      21: aload         4\n      23: aload         5\n      25: aload_3\n      26: invokeinterface #943,  8          // InterfaceMethod cartago/ICartagoLoggerManager.newPercept:(JLcartago/ArtifactId;Lcartago/Tuple;[Lcartago/ArtifactObsProperty;[Lcartago/ArtifactObsProperty;[Lcartago/ArtifactObsProperty;)V",
+    "notifyObsEventToAgent(": "  public void notifyObsEventToAgent(cartago.ArtifactId, cartago.AgentId, cartago.Tuple, cartago.ArtifactObsProperty[], cartago.ArtifactObsProperty[], cartago.ArtifactObsProperty[]);\n    Code:\n       0: aload_0\n       1: getfield      #142                // Field logManager:Lcartago/ICartagoLoggerManager;\n       4: invokeinterface #466,  1          // InterfaceMethod cartago/ICartagoLoggerManager.isLogging:()Z\n       9: ifeq          32\n      12: aload_0\n      13: getfield      #142                // Field logManager:Lcartago/ICartagoLoggerManager;\n      16: invokestatic  #460                // Method java/lang/System.currentTimeMillis:()J\n      19: aload_1\n      20: aload_3\n      21: aload         5\n      23: aload         6\n      25: aload         4\n      27: invokeinterface #943,  8          // InterfaceMethod cartago/ICartagoLoggerManager.newPercept:(JLcartago/ArtifactId;Lcartago/Tuple;[Lcartago/ArtifactObsProperty;[Lcartago/ArtifactObsProperty;[Lcartago/ArtifactObsProperty;)V"
+  },
+  "productionCallChain": [
+    "Workspace.notifyObsEvent / notifyObsEventToAgent",
+    "ICartagoLoggerManager.newPercept(source epoch millis)",
+    "CartagoSnapshotSource.newPercept -> attachSchemeState(PROPERTY_PUBLICATION, time)",
+    "MoiseSchemeCapability.record -> transitions.publicationEpochMillis",
+    "MoiseSchemeCutDecoder pinned state/chain + publicationClockProof qualification",
+    "RuntimeTables firstMatch/relativeTime -> native observer expression",
+    "authored source-confirmed-v1 OCL -> native USE evaluator"
+  ],
+  "strictOracleSha256": {
+    "use-plugin\\examples\\auction\\authored-v1\\auction_csl.csl": "0d0872612661235c0d7865c177dc31dfe2ef649913a99750eb9e42f87163de37",
+    "use-plugin\\examples\\auction\\authored-v1\\auction_istar_final.istar": "a3bb1203367f570d8a3cb9b9f5b1a6619d5e4db189ef304f409ca6cb49aea2a9",
+    "use-plugin\\examples\\auction\\authored-v1\\auction_constraints_final_fixed.ocl": "07f692a7412cd877203846081018d846076b7fd149392db1accc5e83ad4fa0d6"
+  },
+  "notClaimed": [
+    "internal MOISE proposition truth-change time",
+    "creation baseline state timestamp",
+    "consumer receipt or poll time",
+    "new model/runtime/OCL engine"
+  ]
+}

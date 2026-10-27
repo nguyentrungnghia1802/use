@@ -1,0 +1,14 @@
+[
+  {
+    "file": "P07-csl-view.png",
+    "sha256": "321be6a5fc50a0f96c16087b655b79545f8b51a940103eb5cc2ed3dd234674b0",
+    "nonWhitePixels": 0,
+    "status": "REJECTED_BLANK_RENDER"
+  },
+  {
+    "file": "P07-istar-view.png",
+    "sha256": "321be6a5fc50a0f96c16087b655b79545f8b51a940103eb5cc2ed3dd234674b0",
+    "nonWhitePixels": 0,
+    "status": "REJECTED_BLANK_RENDER"
+  }
+]

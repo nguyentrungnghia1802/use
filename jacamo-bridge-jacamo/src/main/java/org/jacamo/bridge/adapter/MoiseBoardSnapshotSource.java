@@ -33,6 +33,14 @@ public final class MoiseBoardSnapshotSource implements SnapshotSource {
     private final AtomicLong sequence = new AtomicLong();
     private Consumer<RuntimeEvent> observer;
     private final Map<String,RuntimeFact> publishedFacts=new java.util.LinkedHashMap<>();
+    private volatile Set<RuntimeFactKind> selectedKinds=Set.of(RuntimeFactKind.GROUP_BOARD,RuntimeFactKind.SCHEME_BOARD);
+    private volatile boolean awaitingObservationPlan;
+    void deferObservation(){selectedKinds=Set.of();awaitingObservationPlan=true;}
+    public synchronized void observationKinds(Set<RuntimeFactKind> kinds){
+        if(!Set.of(RuntimeFactKind.GROUP_BOARD,RuntimeFactKind.SCHEME_BOARD).containsAll(kinds))throw new IllegalArgumentException("MOISE_CAPTURE_KIND_UNSUPPORTED");
+        selectedKinds=Set.copyOf(kinds);awaitingObservationPlan=false;publishedFacts.clear();
+    }
+    @Override public Map<String,Object> captureMetadata(){return Map.of("selectedBoardKinds",selectedKinds.stream().map(Enum::name).sorted().toList(),"historyQuality","POLLING_ONLY","observationPolicy",awaitingObservationPlan?"AWAITING_PLAN":selectedKinds.isEmpty()?"NOT_REQUESTED":"SELECTED_BOARD_KINDS");}
 
     /** Captures one organization declared statically by the JCM project. */
     public MoiseBoardSnapshotSource(String organisation, String sessionId,
@@ -84,14 +92,14 @@ public final class MoiseBoardSnapshotSource implements SnapshotSource {
 
     @Override public String topologyFingerprint() throws Exception {
         var values = new TreeSet<String>();
-        for(var board:groups.get())if(board!=null && acceptsOrganisation(board.getOEId()))values.add("g:"+board.getOEId()+":"+board.getArtId()+":"+MoiseBoardArtifactObservation.capture(board).getId().getId());
-        for(var board:schemes.get())if(board!=null && acceptsOrganisation(board.getOEId()))values.add("s:"+board.getOEId()+":"+board.getArtId()+":"+MoiseBoardArtifactObservation.capture(board).getId().getId());
+        if(selectedKinds.contains(RuntimeFactKind.GROUP_BOARD))for(var board:groups.get())if(board!=null && acceptsOrganisation(board.getOEId()))values.add("g:"+board.getOEId()+":"+board.getArtId()+":"+MoiseBoardArtifactObservation.capture(board).getId().getId());
+        if(selectedKinds.contains(RuntimeFactKind.SCHEME_BOARD))for(var board:schemes.get())if(board!=null && acceptsOrganisation(board.getOEId()))values.add("s:"+board.getOEId()+":"+board.getArtId()+":"+MoiseBoardArtifactObservation.capture(board).getId().getId());
         return AdapterEvidence.digest(String.join("\n", values).getBytes());
     }
 
     @Override public synchronized List<RuntimeFact> capture() {
         var facts = new ArrayList<RuntimeFact>();
-        var observedGroups=List.copyOf(groups.get());
+        var observedGroups=selectedKinds.contains(RuntimeFactKind.GROUP_BOARD)?List.copyOf(groups.get()):List.<GroupBoard>of();
         for (GroupBoard board : observedGroups) {
             if (board == null) throw new IllegalStateException("MOISE_GROUP_BOARD_INVALID");
             String scope = board.getOEId();
@@ -133,6 +141,7 @@ public final class MoiseBoardSnapshotSource implements SnapshotSource {
                     players.add(Map.of("agentSemanticId",agent,"roleSemanticId",roles.get(0).metadata().semanticId()));
                 }
                 players.sort(Comparator.comparing(Object::toString)); values.put("players",players);
+                values.put("publicGroupRoster",MoisePublicRoster.of(state));
                 var parentBoards=observedGroups.stream().filter(p->p!=board && scope.equals(p.getOEId()) && state.getParentGroup().equals(p.getArtId())
                     && p.getGrpState()!=null && p.getGrpState().clone().getSubgroup(state.getId())!=null).toList();
                 if(parentBoards.size()>1 || parentBoards.isEmpty() && !"root".equals(state.getParentGroup()))
@@ -157,7 +166,7 @@ public final class MoiseBoardSnapshotSource implements SnapshotSource {
                     Map.of("agent", player.getAg(), "role", player.getTarget(), "group", state.getId()),
                     List.of(), ProjectionStatus.EVIDENCE_ONLY, Completeness.COMPLETE, List.of())));
         }
-        for (SchemeBoard board : List.copyOf(schemes.get())) {
+        for (SchemeBoard board : selectedKinds.contains(RuntimeFactKind.SCHEME_BOARD)?List.copyOf(schemes.get()):List.<SchemeBoard>of()) {
             if (board == null) throw new IllegalStateException("MOISE_SCHEME_BOARD_INVALID");
             String scope = board.getOEId();
             if (!acceptsOrganisation(scope)) continue;

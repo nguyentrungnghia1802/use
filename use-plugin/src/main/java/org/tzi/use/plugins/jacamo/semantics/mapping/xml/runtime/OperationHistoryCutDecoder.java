@@ -10,12 +10,16 @@ public final class OperationHistoryCutDecoder {
     private static final String VERSION="CARTAGO_OPERATION_HISTORY/1.0",FRAMEWORK="67830177f2cb450876ac3b43aa90741cbc0b72079f5fcdc8320ff2f11b17c012";
     private final ObservationCapabilityRequest request;
     private final String type,hash;
+    private final Set<String> operations;
     public record Result(Completeness quality,Map<String,Object> values,String cutId,String diagnostic) {
         public Result {values=SemanticJson.object(values);}
     }
     public OperationHistoryCutDecoder(ObservationCapabilityRequest request) {
         this.request=request;
-        need(request.provider().equals("cartago.operation-history.v1")&&Set.of("class","hash","sourceRef","sourceHash","sourcePath").containsAll(request.parameters().keySet()),"REQUEST_UNSUPPORTED");
+        need(request.provider().equals("cartago.operation-history.v1")&&Set.of("class","hash","sourceRef","sourceHash","sourcePath","operations").containsAll(request.parameters().keySet()),"REQUEST_UNSUPPORTED");
+        Object raw=request.parameters().getOrDefault("operations",List.of());need(raw instanceof List<?>,"OPERATION_SELECTION_INVALID");
+        var names=(List<?>)raw;need(names.size()<=32&&(!request.parameters().containsKey("operations")||!names.isEmpty()),"OPERATION_SELECTION_INVALID");
+        var selected=new TreeSet<String>();for(Object value:names){need(value instanceof String name&&name.matches("[A-Za-z_$][A-Za-z0-9_$]*"),"OPERATION_SELECTION_INVALID");need(selected.add((String)value),"OPERATION_SELECTION_DUPLICATE");}operations=Set.copyOf(selected);
         type=text(request.parameters(),"class");hash=text(request.parameters(),"hash");need(hash.matches("[0-9a-f]{64}"),"BINARY_PIN_REQUIRED");
     }
     public Result decode(Object raw,RuntimeFact artifact,RuntimeFact workspace,RuntimeSnapshot cut,String run,long generation) {
@@ -31,7 +35,7 @@ public final class OperationHistoryCutDecoder {
             need("COMPLETE".equals(actual.get("status"))&&hash.equals(actual.get("classHash"))&&type.equals(actual.get("javaClass"))&&artifact.id().incarnation().equals(actual.get("artifactUuid"))
                     &&type.equals(data.get("javaClass"))&&hash.equals(data.get("classHash"))&&Objects.equals(actual.get("resource"),data.get("resource"))&&Objects.equals(actual.get("provider"),data.get("provider"))&&FRAMEWORK.equals(data.get("frameworkArtifactHash")),"ACTUAL_PROVIDER_BINARY_MISMATCH");
             need(artifact.id().canonical().equals(data.get("artifact"))&&artifact.id().incarnation().equals(data.get("artifactUuid"))&&workspace.id().incarnation().equals(data.get("workspaceUuid"))&&scope.sourceSequence()==integer(data.get("lastSourceSequence")),"PHYSICAL_CUT_CROSSWALK_MISMATCH");
-            need("ICARTAGOLOGGER_OBSERVED_START_TERMINAL_PREFIX_SUSPEND_RESUME_UNSUPPORTED".equals(data.get("scopeMeaning"))&&data.get("fromCreation") instanceof Boolean&&Set.of("COMPLETE","INCOMPLETE").contains(data.get("historyQuality")),"HISTORY_SCOPE_UNSUPPORTED");
+            need((operations.isEmpty()?"ICARTAGOLOGGER_OBSERVED_START_TERMINAL_PREFIX_SUSPEND_RESUME_UNSUPPORTED":"ICARTAGOLOGGER_SELECTED_START_TERMINAL_PREFIX_SUSPEND_RESUME_UNSUPPORTED").equals(data.get("scopeMeaning"))&&data.get("fromCreation") instanceof Boolean&&Set.of("COMPLETE","INCOMPLETE").contains(data.get("historyQuality")),"HISTORY_SCOPE_UNSUPPORTED");
             boolean continuous=Boolean.TRUE.equals(data.get("fromCreation"))&&data.get("historyQuality").equals("COMPLETE");need(!data.get("historyQuality").equals("COMPLETE")||continuous,"FALSE_HISTORY_COMPLETENESS");
             var unsigned=new LinkedHashMap<>(data);Object digest=unsigned.remove("hash");need(SemanticJson.hash(unsigned).equals(digest),"HASH_MISMATCH");
             need(data.get("events") instanceof List<?> values&&values.size()<=512,"EVENT_CAPACITY");
@@ -46,6 +50,7 @@ public final class OperationHistoryCutDecoder {
                 need(descriptors.size()==1,"EXACT_PUBLIC_OPERATION_REQUIRED");var descriptor=descriptors.getFirst();
                 var backing=SemanticContractCodec.backingOperationFromTree(descriptor.values().get("backingOperation"));var operation=SemanticContractCodec.operationFromTree(descriptor.values().get("operationDescriptor"));
                 var signature=List.of(backing.declaringClass(),backing.methodName(),backing.parameterTypes(),backing.returnType());
+                need(operations.isEmpty()||operations.contains(backing.methodName()),"OPERATION_OUTSIDE_REQUEST_SELECTION");
                 need(!backing.varArgs()&&!operation.dynamic()&&!operation.internal()&&Objects.equals(artifact.values().get("semanticId"),operation.artifactSemanticId())&&backing.operationDescriptorId().equals(operation.metadata().semanticId())&&signature.equals(after.get("operationSignature")),"PUBLIC_OPERATION_SIGNATURE_MISMATCH");
                 String performer=text(after,"performerSemanticId"),name=text(after,"performerName");need(!performer.isBlank()&&!name.isBlank(),"PERFORMER_REQUIRED");
                 var agents=cut.facts().stream().filter(f->faithful(f,RuntimeFactKind.AGENT)&&Objects.equals(f.values().get("semanticId"),performer)&&f.id().scope().equals(artifact.id().scope())).toList();need(agents.size()<=1,"PERFORMER_IDENTITY_AMBIGUOUS");

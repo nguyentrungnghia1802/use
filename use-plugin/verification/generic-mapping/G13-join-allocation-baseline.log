@@ -1,0 +1,32 @@
+XML_JOIN_PROOF_ALLOCATED_BYTES=34048984 joins=24 historyEntries=4096
+
+Test run finished after 408 ms
+[         2 containers found      ]
+[         0 containers skipped    ]
+[         2 containers started    ]
+[         0 containers aborted    ]
+[         2 containers successful ]
+[         0 containers failed     ]
+[         1 tests found           ]
+[         0 tests skipped         ]
+[         1 tests started         ]
+[         0 tests aborted         ]
+[         0 tests successful      ]
+[         1 tests failed          ]
+
+
+Failures (1):
+  JUnit Jupiter:RuntimeJoinAllocationTest:joinProofEnrichmentDoesNotMultiplyAnUnselectedImmutableHistory()
+    MethodSource [className = 'org.tzi.use.plugins.jacamo.semantics.xml.RuntimeJoinAllocationTest', methodName = 'joinProofEnrichmentDoesNotMultiplyAnUnselectedImmutableHistory', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: Proof-only joins must stay below4MiB instead of copying a4096-entry payload24 times; actual=34048984 ==> expected: <true> but was: <false>
+       org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)
+       org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:40)
+       org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:210)
+       org.tzi.use.plugins.jacamo.semantics.xml.RuntimeJoinAllocationTest.joinProofEnrichmentDoesNotMultiplyAnUnselectedImmutableHistory(RuntimeJoinAllocationTest.java:36)
+       java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+       org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+       org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+       org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
+       [...]

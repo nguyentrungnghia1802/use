@@ -1,0 +1,1 @@
+context Pallet inv NonnegativeWeight: self.weight >= 0

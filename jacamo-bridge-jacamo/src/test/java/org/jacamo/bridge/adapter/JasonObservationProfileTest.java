@@ -10,6 +10,50 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JasonObservationProfileTest {
+    @Test void explicitBeliefViewPublishesContentChangesRatherThanIdleCycleHeartbeats()throws Exception {
+        var file=Path.of("../use-plugin/src/test/resources/canonical-cases/hello-world/helloworld.jcm").toAbsolutePath();
+        var project=new OfficialProjectAdapter().adapt(new OfficialProjectLoader().load(file),file).semanticContract();
+        var agent=new Agent();agent.initAg();var architecture=new BridgeAgArch();var events=new ArrayList<RuntimeEvent>();
+        architecture.setTS(new TransitionSystem(agent,new Circumstance(),new Settings(),architecture));
+        try(var attached=BridgeRuntimeRegistry.attach(events::add)) {
+            BridgeRuntimeRegistry.configureDeclarations(project);architecture.init();
+            BridgeRuntimeRegistry.registerAgent(architecture.getAgName(),BridgeRuntimeRegistry.agentIdentity(architecture.getAgName()).orElseThrow(),project.agentDeclarations().getFirst().name());
+            architecture.observationFields(List.of("normalizedEventKind","semanticId","name","cycles","storedBeliefObservation"));
+            agent.getBB().add(ASSyntax.parseLiteral("selected(1)"));architecture.setCycleNumber(1);architecture.reasoningCycleFinished();
+            long before=events.stream().filter(e->e.kind()==RuntimeEventKind.CHANGED).count();
+            for(int cycle=2;cycle<=1001;cycle++){architecture.setCycleNumber(cycle);architecture.reasoningCycleFinished();}
+            assertEquals(before,events.stream().filter(e->e.kind()==RuntimeEventKind.CHANGED).count(),"Idle cycles must not flood the transport with unchanged stored belief views");
+            assertEquals(1,((Number)BridgeRuntimeRegistry.jasonState(architecture.getAgName()).orElseThrow().get("cycles")).intValue(),"Cache and watermark retain the same last published observation");
+            agent.getBB().add(ASSyntax.parseLiteral("selected(2)"));architecture.setCycleNumber(1002);architecture.reasoningCycleFinished();
+            assertEquals(before+1,events.stream().filter(e->e.kind()==RuntimeEventKind.CHANGED).count());
+            var state=BridgeRuntimeRegistry.jasonState(architecture.getAgName()).orElseThrow();assertEquals(1002,((Number)state.get("cycles")).intValue());
+            assertEquals(1002,((Number)CanonicalJson.object(state.get("storedBeliefObservation")).get("cycle")).intValue());
+            BridgeRuntimeRegistry.invalidateJasonState(architecture.getAgName(),"EXPLICIT_CUT_INVALIDATION");
+            architecture.setCycleNumber(1003);architecture.reasoningCycleFinished();
+            var recovered=BridgeRuntimeRegistry.jasonState(architecture.getAgName()).orElseThrow();
+            assertEquals(before+2,events.stream().filter(e->e.kind()==RuntimeEventKind.CHANGED).count(),"Recovery must publish a new cut even with unchanged stored content");
+            assertEquals(1003,((Number)recovered.get("cycles")).intValue());
+            assertEquals(1003,((Number)CanonicalJson.object(recovered.get("storedBeliefObservation")).get("cycle")).intValue());
+            assertTrue(BridgeRuntimeRegistry.jasonStateError(architecture.getAgName()).isEmpty());
+            architecture.setCycleNumber(1004);architecture.reasoningCycleFinished();
+            assertEquals(before+2,events.stream().filter(e->e.kind()==RuntimeEventKind.CHANGED).count(),"Recovery must not re-enable idle heartbeat publication");
+        }finally{architecture.stop();BridgeRuntimeRegistry.clearAgents();}
+    }
+    @Test void explicitMentalFieldRequestUsesCycleProviderEvenInMinimalProfileWithoutExecutionDump()throws Exception {
+        var file=Path.of("../use-plugin/src/test/resources/canonical-cases/hello-world/helloworld.jcm").toAbsolutePath();
+        var project=new OfficialProjectAdapter().adapt(new OfficialProjectLoader().load(file),file).semanticContract();
+        String before=System.getProperty("jacamo.bridge.structured-observation");var agent=new Agent();agent.initAg();var architecture=new BridgeAgArch();
+        architecture.setTS(new TransitionSystem(agent,new Circumstance(),new Settings(),architecture));
+        try(var attached=BridgeRuntimeRegistry.attach(event->{})) {
+            System.setProperty("jacamo.bridge.structured-observation","false");BridgeRuntimeRegistry.configureDeclarations(project);architecture.init();
+            BridgeRuntimeRegistry.registerAgent(architecture.getAgName(),BridgeRuntimeRegistry.agentIdentity(architecture.getAgName()).orElseThrow(),project.agentDeclarations().getFirst().name());
+            architecture.observationFields(List.of("normalizedEventKind","semanticId","name","cycles","mentalObservation"));
+            agent.getBB().add(ASSyntax.parseRule("known(X) :- observed(X)."));architecture.setCycleNumber(4);architecture.reasoningCycleFinished();
+            var state=BridgeRuntimeRegistry.jasonState(architecture.getAgName()).orElseThrow();
+            assertEquals(4,((Number)CanonicalJson.object(state.get("mentalObservation")).get("cycle")).intValue());
+            assertFalse(state.containsKey("executionObservation"));assertEquals(1,((List<?>)CanonicalJson.object(state.get("mentalObservation")).get("beliefs")).size());
+        }finally {architecture.stop();BridgeRuntimeRegistry.clearAgents();if(before==null)System.clearProperty("jacamo.bridge.structured-observation");else System.setProperty("jacamo.bridge.structured-observation",before);}
+    }
     @Test void nativeDeduplicatesUnchangedLiteralsAndCslKeepsEveryCycleCut() throws Exception {
         var source=Path.of("../use-plugin/src/test/resources/canonical-cases/hello-world/helloworld.jcm").toAbsolutePath();
         var project=new OfficialProjectAdapter().adapt(new OfficialProjectLoader().load(source),source).semanticContract();

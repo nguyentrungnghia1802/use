@@ -41,7 +41,27 @@ import org.jacamo.bridge.contract.semantic.SemanticMetadata;
 
 /** Read-only CArtAgO adapter. It emits exact runtime identities and never joins by display name. */
 public final class OfficialCartagoAdapter {
+    @FunctionalInterface interface ArtifactInfoReader {ArtifactInfo read(ICartagoController controller,ArtifactId artifact) throws CartagoException;}
+    private final ArtifactInfoReader artifactInfoReader;
+    public OfficialCartagoAdapter(){this((controller,artifact)->controller.getArtifactInfo(artifact.getName()));}
+    OfficialCartagoAdapter(ArtifactInfoReader reader){artifactInfoReader=java.util.Objects.requireNonNull(reader);}
     public EnvironmentSemantic capture(CartagoEnvironment environment) throws CartagoException {
+        return capture(environment,true);
+    }
+    /** A runtime population cut may omit static operation descriptors when its compiled
+     * mapping plan does not query them. The default official extraction stays complete. */
+    public EnvironmentSemantic capture(CartagoEnvironment environment,boolean includeOperations) throws CartagoException {
+        return capture(environment,(artifact,operation)->includeOperations);
+    }
+    public EnvironmentSemantic capture(CartagoEnvironment environment,java.util.function.BiPredicate<ArtifactId,IArtifactOp> operationSelection) throws CartagoException {
+        return capture(environment,operationSelection,artifact->true,(artifact,property)->true);
+    }
+    /** Capture bounds are applied before ArtifactInfo/value serialization.
+     * Official controller inventory enumeration remains necessary for identity
+     * and population validation; unselected artifact payloads are not captured. */
+    public EnvironmentSemantic capture(CartagoEnvironment environment,java.util.function.BiPredicate<ArtifactId,IArtifactOp> operationSelection,
+            java.util.function.Predicate<ArtifactId> artifactSelection,
+            java.util.function.BiPredicate<ArtifactId,ArtifactObsProperty> propertySelection) throws CartagoException {
         if (environment == null) throw new IllegalArgumentException("CARTAGO_ENVIRONMENT_REQUIRED");
         WorkspaceDescriptor root = environment.getRootWSP();
         if (root == null || root.getId() == null) throw new IllegalStateException("CARTAGO_ENVIRONMENT_NOT_INITIALIZED");
@@ -92,7 +112,8 @@ public final class OfficialCartagoAdapter {
                         agent.getGlobalId(), agent.getLocalId(), text(agent.getAgentName()), text(agent.getAgentRole()), semanticId));
             }
             for (ArtifactId artifact : controller.getCurrentArtifacts()) {
-                ArtifactInfo info = controller.getArtifactInfo(artifact.getName());
+                if(!artifactSelection.test(artifact))continue;
+                ArtifactInfo info = artifactInfoReader.read(controller,artifact);
                 if (info == null || !artifact.equals(info.getId()))
                     throw new IllegalStateException("CARTAGO_ARTIFACT_ID_REVALIDATION_FAILED: " + artifact.getName());
                 String artifactSemanticId = artifactId(environmentId, artifact);
@@ -114,6 +135,7 @@ public final class OfficialCartagoAdapter {
                 List<String> propertyIds = new ArrayList<>();
                 for (OpDescriptor descriptorValue : safe(info.getOperations())) {
                     IArtifactOp operation = descriptorValue.getOp();
+                    if(!operationSelection.test(artifact,operation))continue;
                     if (operation == null || operation.getName() == null || operation.getName().isBlank())
                         throw new IllegalStateException("CARTAGO_OPERATION_NAME_UNAVAILABLE: " + descriptorValue.getKeyId());
                     String operationId = operationId(artifactSemanticId, descriptorValue.getKeyId());
@@ -132,6 +154,7 @@ public final class OfficialCartagoAdapter {
                     if (operation instanceof ArtifactOpMethod method) backingOperations.add(backing(operationId, method, evidence));
                 }
                 for (ArtifactObsProperty property : safe(info.getObsProperties())) {
+                    if(!propertySelection.test(artifact,property))continue;
                     String propertyId = propertyId(artifactSemanticId, property.getFullId());
                     propertyIds.add(propertyId);
                     List<String> values = java.util.Arrays.stream(property.getValues()).map(OfficialCartagoAdapter::text).toList();

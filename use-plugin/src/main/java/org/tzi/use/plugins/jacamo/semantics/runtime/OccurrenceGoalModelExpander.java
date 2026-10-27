@@ -5,6 +5,7 @@ import org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson;
 import org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingSpecification;
 import org.tzi.use.semantic.engine.api.EngineSemanticsProfile;
 import org.tzi.use.semantic.engine.api.OwnedGoalModel;
+import org.tzi.use.semantic.engine.api.RoleSpecialization;
 import org.vnu.sme.goal.dsl.istar.mm.*;
 import org.vnu.sme.goal.dsl.iscn.mm.ScenarioInstance;
 
@@ -25,6 +26,8 @@ public final class OccurrenceGoalModelExpander {
     public OccurrenceGoalModelExpander(GoalModel source,EngineSemanticsProfile profile,Map<String,Quantifier> policies) {
         this.source=new OwnedGoalModel(source,profile).model();this.profile=profile;canonicalHash=OwnedGoalModel.fingerprint(source);this.policies=Map.copyOf(policies);
         for(String target:policies.keySet())if(source.getDependencies().stream().noneMatch(d->d.dependum().id().equals(target)))throw new IllegalArgumentException("OCCURRENCE_QUANTIFIER_TARGET_UNRESOLVED:"+target);
+        for(var actor:source.getActors())for(var relation:actor.associations())if(relation.kind()==AssocKind.IS_A
+                &&(!profile.roleSpecialization()||!RoleSpecialization.admitted(source,actor,relation)))throw new IllegalArgumentException("UNSUPPORTED:INTENTIONAL_ROLE_INHERITANCE");
     }
     public static Map<String,Quantifier> policies(MappingSpecification specification,GoalModel model) {
         var result=new TreeMap<String,Quantifier>();
@@ -39,11 +42,15 @@ public final class OccurrenceGoalModelExpander {
     public Expansion expand(List<Player> members,String executionName) {
         assertUnchanged();if(members.isEmpty()||members.size()>4096||executionName==null||!executionName.matches("[A-Za-z_][A-Za-z0-9_]*"))throw new IllegalArgumentException("OCCURRENCE_CAST_OR_MODEL_NAME_INVALID");
         if(members.stream().map(Player::actorType).distinct().count()!=members.size()||members.stream().map(Player::instance).distinct().count()!=members.size())throw new IllegalArgumentException("OCCURRENCE_ACTOR_OR_INSTANCE_AMBIGUOUS");
-        for(var member:members)if(source.findActor(member.sourceActor()).isEmpty())throw new IllegalArgumentException("OCCURRENCE_SOURCE_ACTOR_UNRESOLVED");
+        for(var member:members) {
+            var actor=source.findActor(member.sourceActor()).orElseThrow(()->new IllegalArgumentException("OCCURRENCE_SOURCE_ACTOR_UNRESOLVED"));
+            if(profile.roleSpecialization()&&RoleSpecialization.definitionOnly(source,actor))throw new IllegalArgumentException("MODEL_ONLY_ROLE_MUST_NOT_HAVE_RUNTIME_CAST");
+        }
         var actors=new LinkedHashMap<String,Actor>();var traces=new TreeMap<String,Trace>();var cast=new ArrayList<ScenarioInstance>();
         var rows=members.stream().sorted(Comparator.comparing(Player::actorType)).toList();
         var bySource=new TreeMap<String,List<Player>>();rows.forEach(p->bySource.computeIfAbsent(p.sourceActor(),k->new ArrayList<>()).add(p));
-        for(var original:source.getActors())if(bySource.getOrDefault(original.name(),List.of()).isEmpty())throw new IllegalArgumentException("OCCURRENCE_EXPANSION_MISSING_ACTOR:"+original.name());
+        for(var original:source.getActors())if(bySource.getOrDefault(original.name(),List.of()).isEmpty()
+                &&!(profile.roleSpecialization()&&RoleSpecialization.definitionOnly(source,original)))throw new IllegalArgumentException("OCCURRENCE_EXPANSION_MISSING_ACTOR:"+original.name());
         var targets=source.getDependencies().stream().filter(d->bySource.get(d.dependee()).size()>1).toList();
         for(var dependency:targets) {
             if(!policies.containsKey(dependency.dependum().id()))throw new IllegalArgumentException("OCCURRENCE_EXPLICIT_QUANTIFIER_REQUIRED:"+dependency.dependum().id());
@@ -67,7 +74,18 @@ public final class OccurrenceGoalModelExpander {
                 else children.forEach(child->refinements.add(new OrRefinement(id(player,dependency.dependerElmt()),child)));
             }
             var resources=original.neededBys().stream().map(n->new NeededBy(id(player,n.resource()),id(player,n.task()))).toList();
-            var associations=original.associations().stream().map(a->{var target=bySource.get(a.target());if(target==null||target.size()!=1)throw new IllegalArgumentException("OCCURRENCE_EXPANSION_ASSOCIATION_AMBIGUOUS");return new Association(player.actorType(),a.kind(),target.getFirst().actorType());}).toList();
+            var associations=new ArrayList<Association>();
+            for(var relation:original.associations()) {
+                if(relation.kind()==AssocKind.IS_A) {
+                    // Canonical metadata is retained in the source hash and trace.
+                    // An empty capability parent creates no player or enactment.
+                    String key="specialization:"+player.actorType()+":"+relation.target();
+                    traces.put(key,new Trace(key,relation.target(),player.sourceActor(),player.player(),player.role(),"DEFINITION_ONLY_SPECIALIZATION"));
+                    continue;
+                }
+                var target=bySource.get(relation.target());if(target==null||target.size()!=1)throw new IllegalArgumentException("OCCURRENCE_EXPANSION_ASSOCIATION_AMBIGUOUS");
+                associations.add(new Association(player.actorType(),relation.kind(),target.getFirst().actorType()));
+            }
             if(!original.contributions().isEmpty()||!original.qualifications().isEmpty())throw new IllegalArgumentException("OCCURRENCE_EXPANSION_RELATION_UNSUPPORTED");
             Actor actor=original instanceof Role?new Role(player.actorType(),elements,refinements,List.of(),List.of(),resources,associations):new Agent(player.actorType(),elements,refinements,List.of(),List.of(),resources,associations);
             actors.put(player.actorType(),actor);cast.add(new ScenarioInstance(player.instance(),player.actorType()));

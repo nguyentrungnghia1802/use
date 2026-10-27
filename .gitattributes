@@ -1,0 +1,3 @@
+
+# Audited source freeze v5 checkout bytes: preserve the tested LF/CRLF form.
+"pom.xml" text eol=lf

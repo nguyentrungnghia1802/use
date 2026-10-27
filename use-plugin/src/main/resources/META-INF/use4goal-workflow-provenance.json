@@ -1,0 +1,50 @@
+{
+  "version": "USE4GOAL_OBSERVED_WORKFLOW/1.0",
+  "upstreamCommit": "6f3e73801239fd8bfb94ca8d04ba531b903c0ac9",
+  "sourceOfTruth": "PINNED_WORKING_COPY_BYTES",
+  "license": "GPL-3.0",
+  "licenseResource": "org/tzi/use/plugins/jacamo/release/licenses/use4Goal-views-GPL-3.0.txt",
+  "files": [
+    {
+      "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/feature/cslstate/CslStateEvaluatorForm.java",
+      "sourceSha256": "c82d9cac5acb5a5a6156aa800ec2e595894851eb5b6e1b71e3657bc0b4aeefab",
+      "sourceFixture": "src/test/resources/semantics/use4goal-workflow/CslStateEvaluatorForm.java.txt",
+      "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel.java",
+      "targetSha256": "a2fd65c83036fa59186e063967e80207cf9b8925dbf37e1757cbf274c89f3163",
+      "reuseMode": "PATCHED_WITH_PROVENANCE",
+      "retainedMethods": [
+        "buildConformanceAolPanel layout",
+        "state navigation workflow"
+      ],
+      "patches": [
+        "EXTRACT_PANEL_FROM_DIALOG",
+        "RELOCATE_PLUGIN_NAMESPACE",
+        "INJECT_IMMUTABLE_NATIVE_CUTS",
+        "REPLACE_AOL_COMPILER_WITH_READ_ONLY_ACCEPTED_STATE",
+        "REMOVE_BPMN_SOLVER_AND_SECOND_RUNTIME",
+        "PRESERVE_QUALITY_AND_PER_OCCURRENCE_RESULTS",
+        "SHOW_OBSERVED_PREFIX_NOT_ALL_PATH_PROOF",
+        "COMPACT_BOUNDARY_SELECTOR_WITH_STABLE_EVIDENCE_IDENTITIES"
+      ]
+    },
+    {
+      "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/feature/cslstate/CslStateEvaluatorForm.java",
+      "sourceSha256": "c82d9cac5acb5a5a6156aa800ec2e595894851eb5b6e1b71e3657bc0b4aeefab",
+      "sourceFixture": "src/test/resources/semantics/use4goal-workflow/CslStateEvaluatorForm.java.txt",
+      "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ConformanceInputsPanel.java",
+      "targetSha256": "080f16cc1fa1786032cd23f1cad327f8def5c84d123254be9940d49c781bcdf8",
+      "reuseMode": "PATCHED_WITH_PROVENANCE",
+      "retainedMethods": [
+        "buildInputs layout, file-selection rows and verification action workflow"
+      ],
+      "patches": [
+        "EXTRACT_INPUT_PANEL_FROM_DIALOG",
+        "INJECT_EXISTING_FIELDS_AND_CONTROLLER_ACTIONS",
+        "REPLACE_BPMN_WITH_JCM_AND_BOUNDARY_WITH_MAPPING_XML",
+        "ADD_AUTHORED_OCL_FILE_ROW",
+        "REPLACE_WHOLE_PROCESS_SOLVER_ACTION_WITH_PREPARE_IMPORT",
+        "KEEP_NATIVE_SESSION_OWNERSHIP_OUTSIDE_UI"
+      ]
+    }
+  ]
+}

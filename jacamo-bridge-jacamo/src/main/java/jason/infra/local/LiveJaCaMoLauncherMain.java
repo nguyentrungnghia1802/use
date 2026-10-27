@@ -31,15 +31,28 @@ public final class LiveJaCaMoLauncherMain {
         long startupSeconds = args.length > 5 ? Long.parseLong(args[5]) : 60L;
         Path startupDirectory = args.length > 6 && !args[6].isBlank() ? Path.of(args[6]).toAbsolutePath().normalize() : null;
         String runId = args.length > 7 ? args[7] : "";
+        var ownerLease=args.length>9?new org.jacamo.bridge.contract.ProcessOwnerLease(Long.parseLong(args[8]),Long.parseLong(args[9])):null;
         Path controlledProject = project;
         if (consumerReady != null && startupSeconds < 1)
             throw new IllegalArgumentException("REAL_JACAMO_STARTUP_TIMEOUT_INVALID");
         // Zero lifetime is an explicit stop-file-controlled interactive session, not a startup timeout.
-        if (timeoutSeconds < 0 || (headless && timeoutSeconds == 0))
+        if (timeoutSeconds < 0 || (headless && timeoutSeconds == 0 && (startupDirectory==null||ownerLease==null)))
             throw new IllegalArgumentException("REAL_JACAMO_LIFETIME_INVALID");
         System.setProperty("java.awt.headless", Boolean.toString(headless));
         if (!Files.isRegularFile(project, LinkOption.NOFOLLOW_LINKS))
             throw new IllegalArgumentException("REAL_JACAMO_PROJECT_MISSING:" + project);
+        if(ownerLease!=null) {
+            if(!ownerLease.alive())throw new IllegalArgumentException("REAL_JACAMO_OWNER_NOT_ALIVE");
+            Thread.ofPlatform().daemon().name("jacamo-use-owner-lease").start(()->{
+                try {
+                    while(!Files.exists(stop,LinkOption.NOFOLLOW_LINKS)) {
+                        if(!ownerLease.alive()){Files.writeString(stop,"OWNER_PROCESS_EXITED_OR_REUSED",java.nio.charset.StandardCharsets.UTF_8,java.nio.file.StandardOpenOption.CREATE,java.nio.file.StandardOpenOption.TRUNCATE_EXISTING,LinkOption.NOFOLLOW_LINKS);return;}
+                        Thread.sleep(250);
+                    }
+                }catch(InterruptedException interrupted){Thread.currentThread().interrupt();}
+                catch(java.io.IOException failure){failure.printStackTrace(processErr);System.exit(1);}
+            });
+        }
 
         BaseLocalMAS.logger = Logger.getLogger(JaCaMoLauncher.class.getName());
         JaCaMoLauncher launcher = new org.jacamo.bridge.adapter.BridgeControlledLauncher() {
@@ -55,6 +68,7 @@ public final class LiveJaCaMoLauncherMain {
                     System.out.flush();
                     try {
                         var request = org.jacamo.bridge.contract.ManagedStartupControl.awaitRequest(startupDirectory, owner, stop);
+                        activateObservationPlan();
                         super.startAgs();
                         org.jacamo.bridge.contract.ManagedStartupControl.acknowledged(startupDirectory, request);
                         System.out.println("REAL_JACAMO_MANAGED_START_ACK run=" + runId);
@@ -74,7 +88,13 @@ public final class LiveJaCaMoLauncherMain {
                     System.out.println("REAL_JACAMO_CONSUMER_READY_START_AGENTS");
                     System.out.flush();
                 }
+                activateObservationPlan();
                 super.startAgs();
+            }
+            private void activateObservationPlan() {
+                var platforms=getPlatforms().stream().filter(JaCaMoBridgePlatform.class::isInstance).map(JaCaMoBridgePlatform.class::cast).toList();
+                if(platforms.size()!=1)throw new IllegalStateException("OBSERVATION_BRIDGE_OWNER_NOT_UNIQUE");
+                try{platforms.getFirst().activateObservationPlan();}catch(Exception failure){throw new IllegalStateException("OBSERVATION_BOOTSTRAP_FAILED",failure);}
             }
             /**
              * A disposable production-launcher JVM must not inherit a user's Jason GUI/FileHandler
@@ -149,6 +169,12 @@ public final class LiveJaCaMoLauncherMain {
             System.out.flush();
             awaitStopFile(stop, timeoutSeconds);
             stoppedNormally = true;
+        } catch (org.jacamo.bridge.contract.ManagedStartupControl.Cancelled cancelled) {
+            // Closing the owning Workbench before Start never starts agents and is a normal stop.
+            // Catch the explicit control outcome only; a later stop file cannot mask bootstrap errors.
+            stoppedNormally = true;
+            System.out.println("REAL_JACAMO_START_CANCELLED reason=" + cancelled.getMessage());
+            System.out.flush();
         } catch (Exception error) {
             error.printStackTrace(System.err);
             throw error;
@@ -239,7 +265,7 @@ public final class LiveJaCaMoLauncherMain {
         if (timeoutSeconds < 1) throw new IllegalArgumentException("REAL_JACAMO_STARTUP_TIMEOUT_INVALID");
         long started = System.nanoTime();
         while (!Files.isRegularFile(ready, LinkOption.NOFOLLOW_LINKS)) {
-            if (Files.exists(stop, LinkOption.NOFOLLOW_LINKS)) throw new IllegalStateException("REAL_JACAMO_START_CANCELLED");
+            if (Files.exists(stop, LinkOption.NOFOLLOW_LINKS)) throw new org.jacamo.bridge.contract.ManagedStartupControl.Cancelled("REAL_JACAMO_START_CANCELLED");
             if (System.nanoTime() - started >= TimeUnit.SECONDS.toNanos(timeoutSeconds))
                 throw new IllegalStateException("REAL_JACAMO_CONSUMER_READY_TIMEOUT");
             Thread.sleep(20L);

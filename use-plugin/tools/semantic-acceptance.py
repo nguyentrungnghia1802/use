@@ -150,7 +150,7 @@ def repository_path(value: str) -> Path:
     return path
 
 
-def recording_program(path: Path, receipt: dict) -> dict:
+def recording_program(path: Path, receipt: dict, *, declarative: bool = False) -> dict:
     """Verify the entire recording, not just a claimed successful replay count."""
     with zipfile.ZipFile(path) as z:
         names = z.namelist()
@@ -158,10 +158,10 @@ def recording_program(path: Path, receipt: dict) -> dict:
         require(z.getinfo("manifest.json").file_size <= 65536, "AUCTION_MANIFEST_BOUND")
         manifest = json.loads(z.read("manifest.json"))
         version = manifest["schemaVersion"]
-        require(version in ("3.1.0", "3.2.0"), "AUCTION_RECORDING_SCHEMA")
+        require(version in (("3.3.0", "3.4.0") if declarative else ("3.1.0", "3.2.0")), "AUCTION_RECORDING_SCHEMA")
         limit = manifest.get("runtimeByteLimit", 256 * 1024**2)
         require(type(limit) is int and (256 * 1024**2 < limit <= 1024**3
-                if version == "3.2.0" else "runtimeByteLimit" not in manifest), "AUCTION_REPLAY_BUDGET")
+                if version in ("3.2.0", "3.4.0") else "runtimeByteLimit" not in manifest), "AUCTION_REPLAY_BUDGET")
         require(set(names) == set(manifest["files"]) | {"manifest.json"}, "AUCTION_RECORDING_CATALOG")
         for name, expected in manifest["files"].items():
             require(z.getinfo(name).file_size <= (limit if name == "runtime.jsonl" else 64 * 1024**2), "AUCTION_RECORDING_BOUND:" + name)
@@ -174,8 +174,115 @@ def recording_program(path: Path, receipt: dict) -> dict:
             require(manifest["final" + field[0].upper() + field[1:]] == receipt[field], "AUCTION_RECORDING_FINAL:" + field)
         require(manifest["programHash"] == receipt["programHash"], "AUCTION_RECORDING_PROGRAM")
         program = json.loads(z.read("program.json"))
-        require(program["schemaVersion"] == "1.1.0" and program["programHash"] == receipt["programHash"], "AUCTION_PROGRAM_SCHEMA")
+        require(program["schemaVersion"] == ("1.2.0" if declarative else "1.1.0") and program["programHash"] == receipt["programHash"], "AUCTION_PROGRAM_SCHEMA")
+        if declarative:
+            validate_declarative_inputs(program)
         return program
+
+
+def validate_declarative_inputs(program: dict) -> None:
+    require(program.get("schemaVersion") == "1.2.0" and "declarative" in program and "case" not in program,
+            "GENERIC_PROGRAM_REQUIRED_NO_LEGACY_FALLBACK")
+    inputs = program["declarative"]
+    require(inputs["version"] == "JACAMO_MAPPING_XML/2.0", "GENERIC_SPEC_VERSION")
+    sources = inputs["sources"]
+    require(sources and len({a["id"] for a in sources}) == len(sources), "GENERIC_SOURCE_CLOSURE")
+    require({a["format"] for a in sources} <= {"JCM", "MOISE", "ASL", "JAVA", "RESOURCE", "BRIDGE_PLATFORM_INSERTION/1.0"},
+            "GENERIC_ORACLE_AS_PRODUCTION_SOURCE")
+    require(inputs["xml"]["format"] == "JACAMO_MAPPING_XML/2.0" and inputs["ocl"]["format"] == "NATIVE_USE_OCL",
+            "GENERIC_AUTHORED_INPUT_TYPES")
+    for asset in [inputs["xml"], inputs["ocl"], *sources]:
+        require(sha(base64.b64decode(asset["contentBase64"], validate=True)) == asset["sha256"], "GENERIC_INPUT_DIGEST:" + asset["id"])
+
+
+def validate_generic(result: dict, archive: Path, evidence: Path) -> dict:
+    """Additional profile; never substitutes the historical Auction/A-V gates."""
+    require(result.get("auction", {}).get("status") == "PASS", "GENERIC_REQUIRES_COMPATIBILITY_ACCEPTANCE")
+    suites = {s["suite"].rsplit(".", 1)[-1] for s in result["suites"]}
+    require({"GenericPackagedPluginIT", "GenericProducerTcpTest", "GenericMappingArchitectureTest", "MappingInputsTest",
+             "GenericProgramPublicationTest", "XmlTaskCheckpointsTest", "DeclarativeOperationCheckpointTest"} <= suites,
+            "GENERIC_CURRENT_SUITES_REQUIRED")
+    index = read_json(evidence)
+    archive_hash = sha(archive.read_bytes())
+    require(index.get("profile") == "JACAMO_DECLARATIVE_XML" and index.get("archiveSha256") == archive_hash,
+            "GENERIC_FROZEN_ARCHIVE_REQUIRED")
+    directory = repository_path(index["live"])
+    run, r = read_json(directory / "run.json"), read_json(directory / "consumer-receipt.json")
+    require(run.get("status") == "PASS" and run.get("fullHostArchiveSha256") == archive_hash,
+            "GENERIC_STALE_LIVE_ARCHIVE")
+    require(r.get("profile") == "JACAMO_DECLARATIVE_XML" and r.get("scope") == "INSTALLED_DECLARATIVE_AUCTION_LIVE"
+            and "caseProgram" not in r and "declarativeProgram" in r and r.get("status") == "PASS", "GENERIC_LIVE_PROFILE")
+    require(run["inputPolicy"] == "PROJECT_XML_AUTHORED_OCL_NO_ORACLES", "GENERIC_INPUT_POLICY")
+    program = recording_program(directory / "recording.zip", r, declarative=True)
+    plan = r["declarativeProgram"]
+    require(plan == r["semanticProgram"]["declarativeProgram"], "GENERIC_PLAN_IDENTITY")
+    require(plan["specificationHash"] == program["declarative"]["xml"]["sha256"] and
+            plan["oclHash"] == program["declarative"]["ocl"]["sha256"], "GENERIC_FROZEN_INPUT_BINDINGS")
+    require(sha(json.dumps(program["source"], sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")) ==
+            plan["sourceHash"] == r["semanticProgram"]["sourceHash"], "GENERIC_OFFICIAL_SOURCE_HASH")
+    require(len(plan["capabilityRequirements"]) == 8 and len({q["id"] for q in plan["capabilityRequirements"]}) == 8,
+            "GENERIC_CAPABILITY_INVENTORY")
+    require("BRIDGE_OBSERVATION_PLAN_ACTIVE" in (directory / "producer.log").read_text(encoding="utf-8", errors="replace"),
+            "GENERIC_PRODUCTION_PROVIDER_BOOTSTRAP")
+    require(not any(a.startswith("-Djacamo.bridge.auction.") for a in run["producerCommand"]), "GENERIC_LEGACY_PROVIDER_FLAGS")
+    require(r["guard"]["hostVersion"] == "7.5.0" and r["guard"]["antlrVersion"] == "4.9.3", "GENERIC_ENGINE_VERSION")
+    require(len(r["engineClasses"]) == 8 and len(set(r["engineClasses"].values())) == 1 and
+            all("/lib/plugins/" in value.replace("\\", "/") for value in r["engineClasses"].values()), "GENERIC_INSTALLED_ENGINE_OWNER")
+    require(not any(token in r["classpath"].lower().replace("\\", "/") for token in
+            ("/test-classes", "junit", "jason-interpreter", "cartago-", "jacamo-1.")), "GENERIC_CONSUMER_FRAMEWORK_CLASSPATH")
+    command = run["producerCommand"]
+    producer_cp = command[command.index("-cp") + 1].lower().replace("\\", "/")
+    require(not any(token in producer_cp for token in ("/test-classes", "junit")), "GENERIC_PRODUCER_TEST_CLASSPATH")
+    require(r["producerPid"] > 0 and r["consumerPid"] > 0 and r["producerPid"] != r["consumerPid"] and
+            r["runtimeChildProcesses"] == 0 and r["officialProducerExitUseSurvives"] is True, "GENERIC_RUNTIME_OWNERSHIP")
+    require(r["journalGap"] is False and 0 < r["journalBytes"] < r["journalLimit"] and 0 <= r["heartbeatP95Millis"] < 250,
+            "GENERIC_JOURNAL_OR_EDT")
+    validate_task_roster("canonical", r)
+    tasks = {"A_start_t1", "A_start_t2", "A_decide_t1", "A_decide_t2", "P_bid_t1", "P_bid_t2"}
+    require(set(r["sourceTerminalSites"]) == tasks and len(r["scopedTerminals"]) == 2 and
+            all(set(t) == tasks for t in r["scopedTerminals"].values()), "GENERIC_REAL_TASK_TERMINALS")
+    require(set(r["nativeOperationClauses"]) == {"COMPILED:post start::Opened", "COMPILED:post stop::Closed",
+            "COMPILED:pre bid::RunningForBid", "COMPILED:pre start::Idle", "COMPILED:pre stop::RunningForStop"}, "GENERIC_NATIVE_OPERATION_CLAUSES")
+    require({"TaskMarking.update", "IStarPropagation.closePending", "GoalModelInstanceTranslator.propagateDependencies"} <= set(r["originalCalls"]),
+            "GENERIC_ORIGINAL_ENGINE_CALLS")
+    require(set(r["acknowledgedPauseAgents"]) == set(r["requiredPauseAgents"]) and len(r["requiredPauseAgents"]) == 5,
+            "GENERIC_PAUSE_ACKS")
+    require(len(r["monitorCycles"]) == 2 and all(c["closed"] and c["terminated"] and
+            all(c[f] == 0 for f in ("expressions", "pendingPins", "pinnedSerializedBytes", "queue")) for c in r["monitorCycles"]),
+            "GENERIC_RETIRED_RUNTIME")
+    accepted, replay = read_json(directory / "accepted.json"), read_json(directory / "replay-report.json")
+    require(replay["complete"] is True and replay["checkedEntries"] == r["replayCheckedEntries"] > 0, "GENERIC_EXACT_REPLAY")
+    for field in ("stateHash", "resultHash"):
+        require(accepted[field] == r[field] == replay["final" + field[0].upper() + field[1:]], "GENERIC_REPLAY_PARITY:" + field)
+    core = accepted["semantic"]["observation"]["originalEngine"]
+    require(core["evaluated"] == "PINNED_NATIVE_CUT" and core["historyQuality"] == "OBSERVED_PREFIX" and len(core["contexts"]) == 2,
+            "GENERIC_ONE_NATIVE_ENGINE_CUT")
+    for field in ("programHash", "stateHash"):
+        require(core[field] == r[field], "GENERIC_CORE_IDENTITY:" + field)
+    for field in ("cslHash", "goalHash"):
+        require(core[field] == program[field] == plan[field], "GENERIC_GENERATED_MODEL_IDENTITY:" + field)
+    require(len(core["classHashes"]) == 5 and all(program["implementation"].get(name) == digest
+            for name, digest in core["classHashes"].items()), "GENERIC_ORIGINAL_RUNTIME_CLASS_HASH")
+    with zipfile.ZipFile(archive) as outer:
+        jars = {name: zipfile.ZipFile(io.BytesIO(outer.read(name))) for name in outer.namelist() if name.endswith(".jar") and "/lib/" in name}
+        try:
+            for name, digest in program["implementation"].items():
+                resource = name.lstrip("/") if name.startswith("/") else name.replace(".", "/") + ".class"
+                owners = [(n, j) for n, j in jars.items() if resource in j.namelist()]
+                require(owners and all(sha(j.read(resource)) == digest for _, j in owners), "GENERIC_DEPLOYED_BYTECODE:" + name)
+                if name.startswith("org.vnu.sme.goal."):
+                    require(len(owners) == 1 and "/lib/plugins/" in owners[0][0], "GENERIC_DUPLICATE_ENGINE:" + name)
+        finally:
+            for jar in jars.values():
+                jar.close()
+    b = read_json(repository_path(index["caseB"]))
+    require(b["status"] == "PASS" and b["scope"] == "INSTALLED_DECLARATIVE_COMPONENT_REPLAY_NOT_LIVE_CASE_B" and
+            b["fullHostArchiveSha256"] == archive_hash and b["programHash"] != r["programHash"], "GENERIC_COLD_CASE_B")
+    for name in ("installed-auction-workbench.png", "original-istar-history.png", "case-evidence.png"):
+        require((directory / name).read_bytes().startswith(b"\x89PNG\r\n\x1a\n"), "GENERIC_UI_EVIDENCE:" + name)
+    return dict(status="PASS", profile="JACAMO_DECLARATIVE_XML", archiveSha256=archive_hash,
+                liveEvidence=str(directory), recordingSha256=sha((directory / "recording.zip").read_bytes()),
+                caseBScope=b["scope"], programHash=r["programHash"], stateHash=r["stateHash"], resultHash=r["resultHash"])
 
 
 def validate_house_fixture(log: Path) -> dict:
@@ -367,6 +474,8 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--require-installed-live", action="store_true")
     parser.add_argument("--require-auction", action="store_true")
+    parser.add_argument("--require-generic", action="store_true")
+    parser.add_argument("--generic-evidence", type=Path)
     parser.add_argument("--archive", type=Path)
     parser.add_argument("--auction-evidence", type=Path)
     parser.add_argument("--auction-exceptions", type=Path)
@@ -378,6 +487,8 @@ def main() -> None:
         parser.error("Auction requires --archive, --auction-evidence, --legacy-log and --require-installed-live")
     if args.auction_exceptions and not args.require_auction:
         parser.error("--auction-exceptions is restricted to --require-auction")
+    if args.require_generic and not (args.require_auction and args.generic_evidence):
+        parser.error("Generic acceptance additionally requires --require-auction and --generic-evidence")
     result = validate(args.log.resolve(), args.legacy_log.resolve() if args.legacy_log else None, args.require_installed_live, args.require_auction)
     if args.require_auction:
         result["auction"] = validate_auction(result, args.archive.resolve(), args.auction_evidence.resolve())
@@ -388,6 +499,9 @@ def main() -> None:
         blocked = any(not p["unchanged"] and not p.get("acceptedException", False) for p in result["protectedInputs"])
         result["status"] = "BLOCKED" if blocked else "ACCEPTED_WITH_EXCEPTIONS" if result.get("authorizedExceptions") else "ACCEPTED"
         result["scope"] = "Auction explicit final archive qualification plus A–V/Counter functional gates; authorized LOST is not a verified hash and does not waive default historical integrity"
+    if args.require_generic:
+        result["generic"] = validate_generic(result, args.archive.resolve(), args.generic_evidence.resolve())
+        result["scope"] += "; explicit declarative generated-model/runtime/live qualification"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(json.dumps({"unit": result["unit"], "integration": result["integration"], "gates": len(result["matrix"]), "legacy": result["legacyJUnit3"]}))

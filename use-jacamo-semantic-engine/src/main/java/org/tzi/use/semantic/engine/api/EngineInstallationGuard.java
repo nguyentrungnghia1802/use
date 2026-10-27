@@ -16,6 +16,7 @@ public final class EngineInstallationGuard {
             "org.vnu.sme.goal.dsl.istar.parser.IStarCompiler","org.vnu.sme.goal.dsl.istar.mm.GoalModel",
             "org.vnu.sme.goal.dsl.istar.mm.GoalModelValidator","org.vnu.sme.goal.dsl.istar.mm.GoalModelValidationPolicy",
             "org.tzi.use.semantic.engine.api.EngineSemanticsProfile","org.tzi.use.semantic.engine.runtime.RuntimeModelAdmission",
+            "org.tzi.use.semantic.engine.api.RoleSpecialization",
             "org.vnu.sme.goal.verify.conformance.semantics.GoalMarking",
             "org.vnu.sme.goal.verify.conformance.semantics.TaskMarking",
             "org.vnu.sme.goal.verify.conformance.semantics.IStarMarking",

@@ -40,18 +40,37 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private final JButton resumeRuntime = named(new JButton("Resume Jason"), "resume-runtime");
     private final JButton stopMonitor = named(new JButton("Stop monitor"), "stop-monitor");
     private final JButton restartMonitor = named(new JButton("Restart monitor"), "restart-monitor");
+    private final JButton prepareProducer=named(new JButton("Prepare + Import..."),"prepare-producer");
+    private final JButton stopProducer=named(new JButton("Stop JaCaMo"),"stop-producer");
+    private final JButton restartProducer=named(new JButton("Restart JaCaMo"),"restart-producer");
+    private final javax.swing.JTextField runtimeClasspath=named(new javax.swing.JTextField(48),"runtime-classpath");
+    private final JLabel producerState=named(new JLabel("IDLE"),"owned-producer-state");
     private final JButton loadProfile = named(new JButton("Load OCL..."), "load-profile");
     private final javax.swing.JComboBox<String> engineProfile = named(new javax.swing.JComboBox<>(new String[]{"NATIVE_CURRENT","JACAMO_DECLARATIVE_XML","USE4GOAL_OBSERVED_V1","AUCTION_OBSERVED_V1","CSL_OBSERVER_V1","CSL_OBSERVER_V2"}),"engine-profile");
     private final javax.swing.JTextField mappingFile=named(new javax.swing.JTextField(38),"mapping-specification");
     private final javax.swing.JTextField authoredOcl=named(new javax.swing.JTextField(52),"authored-ocl");
+    private final javax.swing.JComboBox<String> modelInputMode=named(new javax.swing.JComboBox<>(new String[]{"GENERATED","AUTHORED"}),"model-input-mode");
+    private final javax.swing.JTextField authoredCsl=named(new javax.swing.JTextField(42),"authored-csl");
+    private final javax.swing.JTextField authoredIstar=named(new javax.swing.JTextField(42),"authored-istar");
+    private final javax.swing.JTextField journalBudget=named(new javax.swing.JTextField(5),"journal-budget-mib");
     private final JLabel programSummary=named(new JLabel("No canonical program imported"),"program-summary");
     private final javax.swing.JTextArea programTrace=named(new javax.swing.JTextArea(),"program-trace");
     private final boolean selectable;
+    private final boolean observedWorkflow;
+    private final javax.swing.JTextField selectedJcm=named(new javax.swing.JTextField(42),"selected-jcm");
     private Map<String,Object> displayedProgram;
     private final Map<String, JButton> actionButtons = new LinkedHashMap<>();
     private boolean autoImportStarted;
     private final JTabbedPane tabs=named(new JTabbedPane(),"workbench-tabs");
     private SemanticEvidencePanel semanticEvidence;
+    private ObservationRequirementsPanel observationRequirements;
+    private org.tzi.use.plugins.jacamo.ui.use4goal.csl.CslView cslView;
+    private org.tzi.use.plugins.jacamo.ui.use4goal.istar.IStarView istarView;
+    private org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel observedConformance;
+    private final org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePresenter observedPresenter;
+    private org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult observedDisplayedResult;
+    private boolean observedRefreshPending;
+    private org.tzi.use.uml.mm.MModel displayedNativeModel;
     private int backgroundOperations;
     private long viewEpoch;
     // Refresh only cached facade status, never start a second runtime or a network resync.
@@ -67,22 +86,32 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
 
     @Override public void removeNotify() {
         runtimeStatusTimer.stop();
+        detachSemanticViews();
         viewEpoch++;
         super.removeNotify();
     }
 
     public JaCaMoWorkbenchPanel(JaCaMoFacade facade) {
-        this(facade, message -> JOptionPane.showMessageDialog(null, new JLabel(displayMessage(message)),
-                "JaCaMo", JOptionPane.ERROR_MESSAGE));
+        this(facade, null);
     }
 
     JaCaMoWorkbenchPanel(JaCaMoFacade facade, Consumer<String> errorPresenter) {
+        this(facade,errorPresenter,false);
+    }
+    public static JaCaMoWorkbenchPanel authoredWorkflow(JaCaMoFacade facade){return new JaCaMoWorkbenchPanel(facade,null,true);}
+    JaCaMoWorkbenchPanel(JaCaMoFacade facade, Consumer<String> errorPresenter,boolean observedWorkflow) {
         super(new BorderLayout(8, 8));
+        this.observedWorkflow=observedWorkflow;
         this.facade = java.util.Objects.requireNonNull(facade, "facade");
-        this.errorPresenter = java.util.Objects.requireNonNull(errorPresenter, "errorPresenter");
+        this.observedPresenter = new org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePresenter(facade);
+        this.errorPresenter = errorPresenter!=null?errorPresenter:message->JOptionPane.showMessageDialog(this,new JLabel(displayMessage(message)),"JaCaMo",JOptionPane.ERROR_MESSAGE);
         var selection=facade.importSelection();selectable=selection!=null;
         if(selectable){engineProfile.setSelectedItem(selection.profile());mappingFile.setText(selection.specification()==null?"":selection.specification().toString());authoredOcl.setText(selection.ocl()==null?"":selection.ocl().toString());}
+        if(selectable){modelInputMode.setSelectedItem(selection.csl()==null?"GENERATED":"AUTHORED");authoredCsl.setText(selection.csl()==null?"":selection.csl().toString());authoredIstar.setText(selection.istar()==null?"":selection.istar().toString());}
+        if(observedWorkflow){engineProfile.setSelectedItem("JACAMO_DECLARATIVE_XML");modelInputMode.setSelectedItem("AUTHORED");
+            var hint=projectFileHint();if(hint!=null)selectedJcm.setText(hint.toString());}
         engineProfile.addActionListener(event->refreshWorkflowControls());
+        modelInputMode.addActionListener(event->refreshWorkflowControls());
         startRuntime.addActionListener(event -> startRuntime());
         startRuntime.setToolTipText("Release reasoning in the separately launched JaCaMo process after model import");
         pauseRuntime.setToolTipText("Pause Jason at reasoning boundaries; CArtAgO/Moise operations may continue");
@@ -92,7 +121,14 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         stopMonitor.setToolTipText("Close USE observation and semantic history; the external JaCaMo producer keeps running");
         restartMonitor.setToolTipText("Reconnect this monitor with fresh semantic history; does not restart the producer");
         stopMonitor.addActionListener(event->stopMonitorSession());restartMonitor.addActionListener(event->restartMonitorSession());
-        add(toolbar(), BorderLayout.NORTH);
+        if(!observedWorkflow)prepareProducer.addActionListener(event->{var chooser=createProjectChooser(projectFileHint());if(chooser.showOpenDialog(this)==JFileChooser.APPROVE_OPTION)prepareOwnedProject(chooser.getSelectedFile().toPath());});
+        prepareProducer.setToolTipText("Stage a copy, launch an owned external JaCaMo JVM and import into this USE session; Start Runtime releases reasoning");
+        stopProducer.addActionListener(event->stopOwnedProject());
+        restartProducer.addActionListener(event->executeBackground("JaCaMo restart failed",facade::restartOwnedProducer,this::refreshRuntime));
+        runtimeClasspath.setText(System.getProperty("use.jacamo.runtime.classpath-file",""));
+        journalBudget.setText(Long.toString((facade.nextJournalBudgetBytes()+1048575)/1048576));
+        journalBudget.setToolTipText("Disk journal quota for the next new monitor, 1–1024 MiB. Exhaustion keeps a coverage GAP; no old evidence is discarded to manufacture completeness.");
+        add(observedWorkflow?observedToolbar():toolbar(), BorderLayout.NORTH);
         tabs.addTab("Projection Rules", new MappingRulesPanel());
         if(selectable){programTrace.setEditable(false);programTrace.setLineWrap(true);tabs.addTab("Program / trace",new javax.swing.JScrollPane(programTrace));}
         add(tabs, BorderLayout.CENTER);
@@ -102,13 +138,36 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     }
 
     public void importProject(Path jcmFile) {
+        importSelectedProject(jcmFile,false);
+    }
+    public void prepareOwnedProject(Path jcmFile){importSelectedProject(jcmFile,true);}
+    public void stopOwnedProject(){
+        // Cancellation must remain available while the preparation worker is busy.
+        stopProducer.setEnabled(false);
+        new javax.swing.SwingWorker<Void,Void>() {
+            @Override protected Void doInBackground(){facade.stopOwnedProducer();return null;}
+            @Override protected void done(){try{get();setStatus("Owned JaCaMo stopped");}catch(Exception error){errorPresenter.accept("JaCaMo stop failed: "+error.getMessage());}finally{refreshRuntime();}}
+        }.execute();
+    }
+    private void importSelectedProject(Path jcmFile,boolean owned) {
         Path normalized = java.util.Objects.requireNonNull(jcmFile, "jcmFile").toAbsolutePath().normalize();
         // Capture widget values before leaving the EDT. Parsing/validation belongs
         // to the background facade call, and selection takes effect only on Import.
         JaCaMoFacade.ImportSelection selection;
-        try {selection=selectable?new JaCaMoFacade.ImportSelection((String)engineProfile.getSelectedItem(),engineProfile.getSelectedItem().equals("NATIVE_CURRENT")||mappingFile.getText().isBlank()?null:Path.of(mappingFile.getText().trim()),engineProfile.getSelectedItem().equals("JACAMO_DECLARATIVE_XML")&&!authoredOcl.getText().isBlank()?Path.of(authoredOcl.getText().trim()):null):null;}
+        try {
+            boolean declarative=engineProfile.getSelectedItem().equals("JACAMO_DECLARATIVE_XML"),authored=declarative&&modelInputMode.getSelectedItem().equals("AUTHORED");
+            if(authored&&(authoredCsl.getText().isBlank()||authoredIstar.getText().isBlank()))throw new IllegalArgumentException("SELECT_BOTH_AUTHORED_CSL_AND_ISTAR");
+            selection=selectable?new JaCaMoFacade.ImportSelection((String)engineProfile.getSelectedItem(),engineProfile.getSelectedItem().equals("NATIVE_CURRENT")||mappingFile.getText().isBlank()?null:Path.of(mappingFile.getText().trim()),declarative&&!authoredOcl.getText().isBlank()?Path.of(authoredOcl.getText().trim()):null,
+                    authored?Path.of(authoredCsl.getText().trim()):null,authored?Path.of(authoredIstar.getText().trim()):null):null;
+        }
         catch(RuntimeException error){setStatus("Import failed: "+error.getMessage());errorPresenter.accept("Import failed: "+error.getMessage());return;}
-        executeBackground("Import failed", () -> {if(selection==null)facade.importProject(normalized);else facade.importProject(normalized,selection);}, () -> {
+        Path classpath;
+        try{classpath=runtimeClasspath.getText().isBlank()?null:Path.of(runtimeClasspath.getText().trim());}
+        catch(RuntimeException error){errorPresenter.accept("Runtime classpath invalid: "+error.getMessage());return;}
+        long budget;
+        try{long mib=Long.parseLong(journalBudget.getText().trim());if(mib<1||mib>1024)throw new NumberFormatException();budget=mib*1048576;}
+        catch(NumberFormatException invalid){errorPresenter.accept("Journal quota must be an integer from 1 to 1024 MiB");return;}
+        executeBackground("Import failed", () -> {if(facade.journalBudgetSupported())facade.nextJournalBudgetBytes(budget);if(owned)facade.prepareOwnedProducer(normalized,selection,classpath);else if(selection==null)facade.importProject(normalized);else facade.importProject(normalized,selection);}, () -> {
             refreshRuntime();
             setStatus("Imported " + normalized);
             writeReadyEvidence(normalized);
@@ -141,6 +200,10 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         var program=facade.semanticProgramEvidence();
         if(program!=displayedProgram&&!program.equals(displayedProgram)) {
             displayedProgram=program;
+            if(program.get("bindingPreflight") instanceof Map<?,?> rawPreflight){
+                if(observationRequirements==null){observationRequirements=new ObservationRequirementsPanel();tabs.addTab("Observation plan",observationRequirements);}
+                observationRequirements.refresh(CanonicalJson.object(rawPreflight));
+            }else if(observationRequirements!=null){tabs.remove(observationRequirements);observationRequirements=null;}
             programSummary.setText(displayMessage(program.getOrDefault("profile","No program")+" | "+program.getOrDefault("mapping","")+" | "+program.getOrDefault("programHash",program.getOrDefault("status",""))));
             if(program.get("caseProgram") instanceof Map<?,?> rawCase) {
                 var caseProgram=CanonicalJson.object(rawCase);
@@ -148,16 +211,89 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
                 programSummary.setText(displayMessage("Active "+(activeSelection==null?"canonical case":activeSelection.profile())+" | XML SHA-256 "+caseProgram.get("specificationHash")+" | Source model SHA-256 "+caseProgram.get("sourceHash")));
                 programSummary.setToolTipText(displayMessage("Program SHA-256 "+program.get("programHash")+" | Bundle SHA-256 "+caseProgram.get("bundleHash")+" | Engine policy "+program.get("profile")+" | Case OCL contracts installed during Import; Load OCL adds an optional invariant profile."));
             }else if(program.get("declarativeProgram") instanceof Map<?,?> declarative) {
-                programSummary.setText(displayMessage("Generated CSL / iStar | XML SHA-256 "+declarative.get("specificationHash")));
+                programSummary.setText(displayMessage((declarative.containsKey("modelInputMode")?"Authored CSL / iStar":"Generated CSL / iStar")+" | XML SHA-256 "+declarative.get("specificationHash")));
                 programSummary.setToolTipText(displayMessage("Authored OCL SHA-256 "+declarative.get("oclHash")+" | Program SHA-256 "+program.get("programHash")));
             }else programSummary.setToolTipText(null);
             if(selectable){String text=new String(CanonicalJson.encode(program),java.nio.charset.StandardCharsets.UTF_8);programTrace.setText(text.length()>131072?text.substring(0,131072)+"\nDISPLAY TRUNCATED; full trace is available through the facade":text);programTrace.setCaretPosition(0);}
         }
+        refreshSemanticViews();
         var result=facade.runtimeVerificationResult();
+        refreshObservedConformance(result);
+        if(istarView!=null)istarView.setNodeBadges(SemanticDiagramBadges.from(result));
         if(result!=null && result.semantic()!=null) {
             if(semanticEvidence==null){semanticEvidence=new SemanticEvidencePanel();tabs.addTab("Semantic verification",semanticEvidence);}
             semanticEvidence.refresh(result);
         } else if(semanticEvidence!=null) {tabs.remove(semanticEvidence);semanticEvidence=null;}
+    }
+    private void detachSemanticViews() {
+        if(cslView!=null){cslView.detachModel();tabs.remove(cslView);cslView=null;}
+        if(istarView!=null){istarView.detachModel();tabs.remove(istarView);istarView=null;}
+        if(observedConformance!=null){tabs.remove(observedConformance);observedConformance=null;}
+        observedDisplayedResult=null;
+        displayedNativeModel=null;
+    }
+    private void refreshObservedConformance(org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult result) {
+        if(observedConformance==null || observedRefreshPending || result==observedDisplayedResult)return;
+        var panel=observedConformance;var model=displayedNativeModel;long epoch=viewEpoch;
+        observedRefreshPending=true;
+        new javax.swing.SwingWorker<java.util.List<org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.Cut>,Void>() {
+            @Override protected java.util.List<org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.Cut> doInBackground(){return observedPresenter.capture();}
+            @Override protected void done(){
+                try {
+                    var cuts=get();
+                    if(epoch==viewEpoch && observedConformance==panel && displayedNativeModel==model){panel.setCuts(cuts);observedDisplayedResult=result;}
+                }catch(Exception error){
+                    if(epoch==viewEpoch && observedConformance==panel)setStatus("Observed evidence unavailable: "+error.getMessage());
+                }finally{observedRefreshPending=false;}
+            }
+        }.execute();
+    }
+    private void refreshSemanticViews() {
+        var models=facade.semanticModels();
+        if(models==null){if(displayedNativeModel!=null)detachSemanticViews();return;}
+        if(models.nativeModel()==displayedNativeModel)return;
+        detachSemanticViews();
+        cslView=org.tzi.use.plugins.jacamo.ui.use4goal.csl.CslView.embedded(models.csl(),models.nativeModel());cslView.setName("canonical-csl-view");
+        istarView=new org.tzi.use.plugins.jacamo.ui.use4goal.istar.IStarView();istarView.setModel(models.goals());istarView.setName("canonical-istar-view");
+        observedConformance=new org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel();
+        tabs.addTab("use4Goal observed execution",observedConformance);
+        tabs.addTab("CSL model",cslView);tabs.addTab("iStar model",istarView);displayedNativeModel=models.nativeModel();
+        if(observedWorkflow)tabs.setSelectedComponent(observedConformance);
+    }
+
+    private JPanel observedToolbar(){
+        var panel=new JPanel();panel.setLayout(new javax.swing.BoxLayout(panel,javax.swing.BoxLayout.Y_AXIS));
+        var inputs=new org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ConformanceInputsPanel(selectedJcm,authoredCsl,authoredIstar,mappingFile,authoredOcl,
+                this::chooseObservedJcm,()->chooseModel("csl",authoredCsl),()->chooseModel("istar",authoredIstar),this::chooseMapping,this::chooseAuthoredOcl,
+                prepareProducer,()->prepareObservedProject(true));
+        registerInputButtons(inputs);panel.add(inputs);
+        var controls=new JPanel(new FlowLayout(FlowLayout.LEADING));
+        controls.add(startRuntime);controls.add(pauseRuntime);controls.add(resumeRuntime);controls.add(stopProducer);controls.add(restartProducer);
+        var advancedToggle=named(new javax.swing.JToggleButton("Advanced controls"),"show-advanced");controls.add(advancedToggle);panel.add(controls);
+        var sourceStatus=new JPanel(new FlowLayout(FlowLayout.LEADING));sourceStatus.add(new JLabel("Workflow:"));sourceStatus.add(workflowState);sourceStatus.add(new JLabel("Bridge:"));sourceStatus.add(runtimeState);panel.add(sourceStatus);
+        panel.add(producerState);panel.add(programSummary);
+        var advanced=named(new JPanel(new GridLayout(0,1)),"advanced-controls");advanced.setVisible(false);
+        var transport=new JPanel(new FlowLayout(FlowLayout.LEADING));transport.add(button("Import external project","import-project",()->prepareObservedProject(false)));
+        transport.add(stopMonitor);transport.add(restartMonitor);transport.add(loadProfile);advanced.add(transport);
+        var profiles=new JPanel(new FlowLayout(FlowLayout.LEADING));profiles.add(new JLabel("Compatibility profile:"));profiles.add(engineProfile);profiles.add(modelInputMode);advanced.add(profiles);
+        var runtime=new JPanel(new FlowLayout(FlowLayout.LEADING));runtime.add(new JLabel("Runtime dependency classpath (optional in checkout):"));runtime.add(runtimeClasspath);
+        runtime.add(button("Runtime libs...","choose-runtime-classpath",()->{var chooser=new JFileChooser();chooser.setDialogTitle("Select JaCaMo runtime dependency classpath text file");if(chooser.showOpenDialog(this)==JFileChooser.APPROVE_OPTION)runtimeClasspath.setText(chooser.getSelectedFile().toPath().toString());}));advanced.add(runtime);
+        var exports=new JPanel(new FlowLayout(FlowLayout.LEADING));exports.add(button("Export .use...","export-use",this::chooseNativeUse));exports.add(button("Export .cmd...","export-soil",this::chooseNativeSoil));
+        exports.add(new JLabel("Journal quota (MiB):"));exports.add(journalBudget);advanced.add(exports);panel.add(advanced);
+        advancedToggle.addActionListener(event->{advanced.setVisible(advancedToggle.isSelected());revalidate();});
+        return panel;
+    }
+    private void registerInputButtons(java.awt.Container parent){for(var child:parent.getComponents()){
+        if(child instanceof JButton button&&button.getName()!=null&&!button.getName().equals("prepare-producer"))actionButtons.put(button.getName(),button);
+        if(child instanceof java.awt.Container nested)registerInputButtons(nested);
+    }}
+    private void chooseObservedJcm(){var chooser=createProjectChooser(selectedJcm.getText().isBlank()?projectFileHint():Path.of(selectedJcm.getText().trim()));if(chooser.showOpenDialog(this)==JFileChooser.APPROVE_OPTION)selectedJcm.setText(chooser.getSelectedFile().toPath().toString());}
+    private void prepareObservedProject(boolean owned){
+        try {
+            if(selectedJcm.getText().isBlank()){chooseObservedJcm();if(selectedJcm.getText().isBlank())return;}
+            if(mappingFile.getText().isBlank()||authoredOcl.getText().isBlank()||authoredCsl.getText().isBlank()||authoredIstar.getText().isBlank())throw new IllegalArgumentException("SELECT_JCM_CSL_ISTAR_MAPPING_AND_OCL");
+            importSelectedProject(Path.of(selectedJcm.getText().trim()),owned);
+        }catch(RuntimeException error){setStatus("Import failed: "+error.getMessage());errorPresenter.accept("Import failed: "+error.getMessage());}
     }
 
     private JPanel toolbar() {
@@ -176,13 +312,26 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         exports.add(new JLabel("Runtime:"));
         exports.add(runtimeState);
         toolbar.add(actions);
+        if(facade.ownedProducerSupported()){
+            var producerActions=new JPanel(new FlowLayout(FlowLayout.LEADING));producerActions.add(prepareProducer);producerActions.add(stopProducer);producerActions.add(restartProducer);producerActions.add(producerState);toolbar.add(producerActions);
+        }
         if(selectable) {
             var selection=new JPanel(new FlowLayout(FlowLayout.LEADING));selection.add(new JLabel("On next Import:"));selection.add(engineProfile);selection.add(mappingFile);
             selection.add(button("Mapping/spec...","choose-mapping",this::chooseMapping));toolbar.add(selection);toolbar.add(programSummary);
             var oclSelection=new JPanel(new FlowLayout(FlowLayout.LEADING));oclSelection.add(new JLabel("Authored OCL (declarative XML):"));oclSelection.add(authoredOcl);
             oclSelection.add(button("OCL input...","choose-authored-ocl",this::chooseAuthoredOcl));toolbar.add(oclSelection);
+            var modelSelection=new JPanel(new FlowLayout(FlowLayout.LEADING));modelSelection.add(new JLabel("Model input mode:"));modelSelection.add(modelInputMode);toolbar.add(modelSelection);
+            var cslSelection=new JPanel(new FlowLayout(FlowLayout.LEADING));cslSelection.add(new JLabel("Authored CSL:"));cslSelection.add(authoredCsl);cslSelection.add(button("CSL input...","choose-authored-csl",()->chooseModel("csl",authoredCsl)));toolbar.add(cslSelection);
+            var istarSelection=new JPanel(new FlowLayout(FlowLayout.LEADING));istarSelection.add(new JLabel("Authored iStar:"));istarSelection.add(authoredIstar);istarSelection.add(button("iStar input...","choose-authored-istar",()->chooseModel("istar",authoredIstar)));toolbar.add(istarSelection);
         }
         toolbar.add(exports);
+        if(facade.ownedProducerSupported()){
+            var runtime=new JPanel(new FlowLayout(FlowLayout.LEADING));runtime.add(new JLabel("JaCaMo runtime classpath file (optional in checkout):"));runtime.add(runtimeClasspath);
+            runtime.add(button("Runtime libs...","choose-runtime-classpath",()->{var chooser=new JFileChooser();chooser.setDialogTitle("Select JaCaMo runtime dependency classpath text file");if(chooser.showOpenDialog(this)==JFileChooser.APPROVE_OPTION)runtimeClasspath.setText(chooser.getSelectedFile().toPath().toString());}));toolbar.add(runtime);
+        }
+        if(facade.journalBudgetSupported()){
+            var storage=new JPanel(new FlowLayout(FlowLayout.LEADING));storage.add(new JLabel("On next new monitor: journal quota (MiB)"));storage.add(journalBudget);storage.add(new JLabel("1–1024; quota exhaustion remains a coverage GAP"));toolbar.add(storage);
+        }
         return toolbar;
     }
 
@@ -204,6 +353,10 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private void chooseAuthoredOcl() {
         var chooser=new JFileChooser();chooser.setDialogTitle("Select authored verification requirements");chooser.setAcceptAllFileFilterUsed(false);chooser.setFileFilter(new FileNameExtensionFilter("OCL requirements (*.ocl)","ocl"));
         if(chooser.showOpenDialog(this)==JFileChooser.APPROVE_OPTION)authoredOcl.setText(chooser.getSelectedFile().toPath().toString());
+    }
+    private void chooseModel(String extension,javax.swing.JTextField field) {
+        var chooser=new JFileChooser();chooser.setDialogTitle("Select authored ."+extension+" model");chooser.setAcceptAllFileFilterUsed(false);chooser.setFileFilter(new FileNameExtensionFilter("Authored model (*."+extension+")",extension));
+        if(chooser.showOpenDialog(this)==JFileChooser.APPROVE_OPTION)field.setText(chooser.getSelectedFile().toPath().toString());
     }
 
     private void autoImportIfConfigured() {
@@ -353,12 +506,23 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         boolean imported=facade.projectSummary()!=null;
         stopMonitor.setEnabled(!busy&&!replayActive&&imported&&!workflow.state().equals("MONITOR_STOPPED"));
         restartMonitor.setEnabled(!busy&&!replayActive&&imported);
+        var producer=facade.ownedProducerStatus();
+        boolean ownedActive=java.util.Set.of("PREPARING","WAITING_FOR_START","RUNNING","EXITED").contains(producer.state());
+        producerState.setText(producer.state()+" | JaCaMo PID="+producer.pid()+" | USE PID="+ProcessHandle.current().pid());producerState.setToolTipText(producer.diagnostic());
+        prepareProducer.setEnabled(!busy&&!replayActive&&!ownedActive);
+        stopProducer.setEnabled(!replayActive&&ownedActive);
+        restartProducer.setEnabled(!busy&&!replayActive&&!producer.runId().isBlank()&&!producer.state().equals("ERROR"));
+        runtimeClasspath.setEnabled(!busy&&!replayActive);
+        journalBudget.setEnabled(!busy&&!replayActive);
+        selectedJcm.setEnabled(!busy&&!replayActive);
         engineProfile.setEnabled(!busy&&!replayActive);mappingFile.setEnabled(!busy&&!replayActive&&!"NATIVE_CURRENT".equals(engineProfile.getSelectedItem()));
         boolean declarative=!busy&&!replayActive&&"JACAMO_DECLARATIVE_XML".equals(engineProfile.getSelectedItem());authoredOcl.setEnabled(declarative);
+        modelInputMode.setEnabled(declarative);boolean authored=declarative&&"AUTHORED".equals(modelInputMode.getSelectedItem());authoredCsl.setEnabled(authored);authoredIstar.setEnabled(authored);
         actionButtons.forEach((name, button) -> button.setEnabled(!busy));
         actionButtons.get("import-project").setEnabled(!busy && !replayActive);
         if(selectable)actionButtons.get("choose-mapping").setEnabled(!busy&&!replayActive&&!"NATIVE_CURRENT".equals(engineProfile.getSelectedItem()));
         if(selectable)actionButtons.get("choose-authored-ocl").setEnabled(declarative);
+        if(selectable){actionButtons.get("choose-authored-csl").setEnabled(authored);actionButtons.get("choose-authored-istar").setEnabled(authored);}
     }
 
     private void setStatus(String message) { status.setText(displayMessage(message)); }

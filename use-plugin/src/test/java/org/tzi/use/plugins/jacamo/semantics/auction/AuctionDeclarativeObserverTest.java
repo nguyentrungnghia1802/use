@@ -5,10 +5,13 @@ import cartago.*;
 import org.jacamo.bridge.adapter.*;
 import org.jacamo.bridge.contract.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNativePipeline;
 import org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector;
 import org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode;
 import org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericMappingEngine;
+import org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs;
 import org.tzi.use.uml.ocl.value.*;
 import org.tzi.use.uml.sys.MObject;
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,6 +31,24 @@ class AuctionDeclarativeObserverTest {
                 assertTrue(cut.facts().stream().noneMatch(fact->fact.kind()==RuntimeFactKind.ARTIFACT&&"auction_env.AuctionArtifact".equals(fact.values().get("artifactTypeJavaClassName"))));
                 var sources=new org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources(program.xmlPlan().inputs().specification(),live.source,requests);
                 var row=sources.capture(cut,live.run.id(),live.run.generation()).get("source-scheme-history").rows().getFirst();
+                assertEquals(Map.of("version","MOISE_PUBLIC_CONFIRMATION/1.0","complete",true),row.values().get("confirmation"));
+                var schemeRequest=request(requests,"scheme-history");
+                for(String variant:List.of("old-version","wrong-binary")) {
+                    var changed=AuctionDeclarativeArtifactTest.copy(cut,cut.facts().stream().map(fact->{
+                        if(fact.kind()!=RuntimeFactKind.ARTIFACT||!(fact.values().get(CapabilityObservation.KEY) instanceof Map<?,?> receipts)||!receipts.containsKey(schemeRequest.id()))return fact;
+                        var receipt=CapabilityObservation.require(receipts.get(schemeRequest.id()),schemeRequest);var data=new LinkedHashMap<>(receipt.data());
+                        if(variant.equals("old-version")){data.put("version","MOISE_SCHEME_CUT/2.2");data.remove("publicationClockProof");}
+                        else {var proof=new LinkedHashMap<>(CanonicalJson.object(data.get("publicationClockProof")));proof.put("workspaceClassSha256","0".repeat(64));data.put("publicationClockProof",proof);}
+                        data.remove("cutHash");data.put("cutHash",org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(data));
+                        var replacements=new LinkedHashMap<>(CanonicalJson.object(receipts));replacements.put(schemeRequest.id(),CapabilityObservation.of(schemeRequest,receipt.scope(),receipt.quality(),receipt.diagnostic(),data).payload());
+                        var values=new LinkedHashMap<>(fact.values());values.put(CapabilityObservation.KEY,replacements);
+                        return new RuntimeFact(fact.id(),fact.kind(),values,fact.relations(),fact.projectionStatus(),fact.completeness(),fact.evidence());
+                    }).toList());
+                    var downgraded=sources.capture(changed,live.run.id(),live.run.generation()).get("source-scheme-history").rows().getFirst();
+                    assertEquals(Completeness.COMPLETE,downgraded.quality(),"Independent public state remains qualified: "+variant);
+                    assertEquals(false,CanonicalJson.object(downgraded.values().get("confirmation")).get("complete"),variant);
+                    assertEquals("UNSUPPORTED",downgraded.values().get("internalTransitionTimes"));
+                }
                 var groupId=cut.facts().stream().filter(fact->fact.kind()==RuntimeFactKind.GROUP_BOARD&&group.getId().toString().equals(fact.values().get("boardArtifactIdentity"))).findFirst().orElseThrow().id().canonical();
                 assertEquals(true,row.values().get("responsibilityComplete"));assertEquals(List.of(groupId),row.values().get("responsibleGroups"));
                 var publicGoals=(List<?>)row.values().get("publicGoals");assertEquals(4,publicGoals.size());
@@ -48,9 +69,14 @@ class AuctionDeclarativeObserverTest {
             }
         }
     }
-    @Test @Timeout(75) void xmlMonitorFreezesActualFirstCommitmentsAndKeepsDoneDistinctFromActualBids()throws Exception {
+    @ParameterizedTest(name="profile={0}") @ValueSource(strings={"generated","strict","confirmed"}) @Timeout(75)
+    void xmlMonitorFreezesActualFirstCommitmentsAndKeepsDoneDistinctFromActualBids(String profile)throws Exception {
+        boolean authored=!profile.equals("generated"),confirmed=profile.equals("confirmed");
         try(var f=new AuctionOrgFixture(true)) {
-            var live=f.live;var program=new GenericMappingEngine().map(live.source,AuctionDeclarativeSpecificationTest.inputs(AuctionDeclarativeSpecificationTest.CASE));
+            var root=AuctionDeclarativeSpecificationTest.CASE;var selected=root.resolve("authored-v1");
+            var inputs=authored?MappingInputs.read(root.resolve("auction.jcm"),selected.resolve("auction-mapping.xml"),selected.resolve("auction_constraints_final_fixed.ocl"),selected.resolve("auction_csl.csl"),selected.resolve("auction_istar_final.istar")):AuctionDeclarativeSpecificationTest.inputs(root);
+            if(confirmed)inputs=MappingInputs.read(root.resolve("auction.jcm"),root.resolve("source-confirmed-v1/auction-mapping.xml"),root.resolve("source-confirmed-v1/auction_confirmed.ocl"),selected.resolve("auction_csl.csl"),selected.resolve("auction_istar_final.istar"));
+            var live=f.live;var program=new GenericMappingEngine().map(live.source,inputs);
             var requests=program.xmlPlan().requirements();var frames=new ArrayList<VerificationObservation>();
             var context=new FrameworkObservationProviders.Context(live.environment,live.source,AuctionDeclarativeSpecificationTest.CASE.toRealPath(),live.run.id(),live.run.generation(),frames::add,ignored->{});
             var workspace=request(requests,"workspace-operations");var field=request(requests,"candidate-field");var steps=request(requests,"execution-steps");
@@ -62,6 +88,7 @@ class AuctionDeclarativeObserverTest {
                 try(var participantBinding=CslRuntimeTestRegistry.bind(live.source.semanticContract(),participant.getName(),"alice",participantId);var laterBinding=CslRuntimeTestRegistry.bind(live.source.semanticContract(),later.getName(),"maria",laterId)) {
                     var scheme=f.scheme("monitorOne","delivery_one");var other=f.scheme("monitorTwo","delivery_two");
                     live.actor.doAction(group,new Op("addScheme",scheme.getName()),5000);
+                    if(authored)live.actor.doAction(group,new Op("addScheme",other.getName()),5000);
                     AuctionMonitorProjectionTest.await(()->live.boards.getFirst().getSchState().getGroupsResponsibleFor().stream().anyMatch(g->g.hasPlayer(participant.getName(),"participant")));
                     live.actor.doAction(scheme,new Op("commitMission","mAuctioneer"),5000);participant.doAction(scheme,new Op("commitMission","mParticipant"),5000);
                     driver.start(scheme,"monitorOne","delivery_one");driver.start(other,"monitorTwo","delivery_two");
@@ -72,12 +99,16 @@ class AuctionDeclarativeObserverTest {
                         var monitor=monitor(projector,f,scheme);assertFalse(monitor.cls().isSubClassifierOf(system.model().getClass("DomainEntity")));
                         assertEquals(Set.of(participant.getName()),names(monitor.state(system.state()).attributeValue("bidCommittedBy")));
                         assertEquals(Set.of(),names(monitor.state(system.state()).attributeValue("bidDoneBy")));assertEquals(Set.of(),names(monitor.state(system.state()).attributeValue("actualBidBy")));
-                        assertTrue(monitor.state(system.state()).attributeValue("now") instanceof IntegerValue);assertEquals(IntegerValue.valueOf(-1),monitor.state(system.state()).attributeValue("bidSatisfiedAt"));
+                        assertTrue(monitor.state(system.state()).attributeValue("now") instanceof IntegerValue);assertEquals(IntegerValue.valueOf(-1),monitor.state(system.state()).attributeValue(confirmed?"bidSatisfiedConfirmedAt":"bidSatisfiedAt"));
                         live.actor.doAction(scheme,new Op("goalAchieved","start"),5000);participant.doAction(scheme,new Op("goalAchieved","bid"),5000);later.doAction(scheme,new Op("commitMission","mParticipant"),5000);
                         projector.applySnapshot(capture.cut(frames,driver.identity,workspace,history,field,fields),live.run.id(),live.run.generation());
                         assertEquals(Set.of(participant.getName()),names(monitor.state(system.state()).attributeValue("bidCommittedBy")),"First source satisfaction freezes before a later mission commitment");
                         assertEquals(Set.of(participant.getName()),names(monitor.state(system.state()).attributeValue("bidDoneBy")));assertEquals(Set.of(),names(monitor.state(system.state()).attributeValue("actualBidBy")),"An actual done fact cannot manufacture an Artifact bid");
-                        assertTrue(monitor.state(system.state()).attributeValue("startSatisfiedAt").isUndefined(),"Publication time must not substitute for unavailable internal MOISE transition time");
+                        if(confirmed) {
+                            var time=monitor.state(system.state()).attributeValue("startSatisfiedConfirmedAt");
+                            assertInstanceOf(IntegerValue.class,time,"Actual source publication supplies confirmation time");
+                            assertTrue(((IntegerValue)time).value()>=0);assertNull(monitor.cls().attribute("startSatisfiedAt",true));
+                        }else assertTrue(monitor.state(system.state()).attributeValue("startSatisfiedAt").isUndefined(),"Publication time must not substitute for unavailable internal MOISE transition time");
                         var artifact=live.artifacts.stream().filter(a->a.getName().equals("monitorOne")).findFirst().orElseThrow();
                         participant.doAction(artifact,new Op("bid",9.0),5000);later.doAction(artifact,new Op("bid",12.0),5000);
                         projector.applySnapshot(capture.cut(frames,driver.identity,workspace,history,field,fields),live.run.id(),live.run.generation());

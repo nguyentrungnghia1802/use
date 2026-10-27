@@ -53,7 +53,7 @@ public final class InstalledEngineMain {
         constructor.setAccessible(true);var panel=edt(()->(JPanel)constructor.newInstance(facade,(Consumer<String>)errors::add));
         long[] previous={System.nanoTime()};var timer=edt(()->new javax.swing.Timer(50,event->{long now=System.nanoTime();delays.add(Math.max(0,now-previous[0]-TimeUnit.MILLISECONDS.toNanos(50)));previous[0]=now;}));
         try {
-            edt(()->{frame.setContentPane(panel);frame.setSize(1500,1000);frame.setVisible(true);timer.start();
+            edt(()->{frame.setContentPane(panel);frame.setSize(1500,1000);org.tzi.use.plugins.jacamo.ui.AcceptanceScreen.place(frame);frame.setVisible(true);timer.start();
                 component(panel,"engine-profile",JComboBox.class).setSelectedItem("USE4GOAL_OBSERVED_V1");
                 component(panel,"mapping-specification",JTextField.class).setText(config.getProperty("mapping"));call(panel,"importProject",jcm);return null;});
             enabled(panel,"start-runtime",errors);var system=session.system();check(system!=null,"MModel/MSystem import");

@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "profile": "MOISE_PUBLIC_CONFIRMATION/1.0",
+  "inputModelSemantics": "UNCHANGED_AUTHORED_CSL_ISTAR",
+  "acceptedResult": "use-plugin\\verification\\authored-models\\P09-cold-installed\\auction-confirmed-17386908519215525216\\accepted.json",
+  "acceptedResultSha256": "6397099317bdd6f3228b0d3283dad47a79b215074d0ff77338469b1e88c1ecf6",
+  "receipt": "use-plugin\\verification\\authored-models\\P09-cold-installed\\auction-confirmed-17386908519215525216\\receipt.json",
+  "sourceConfirmationTimes": {
+    "AuctionMonitor_83fdab0fce1e6f13471a": {
+      "startSatisfiedConfirmedAt": 4543,
+      "bidEnabledConfirmedAt": 4543,
+      "bidSatisfiedConfirmedAt": 13922,
+      "decideEnabledConfirmedAt": 13922,
+      "decideSatisfiedConfirmedAt": 17374
+    },
+    "AuctionMonitor_ecadea190bcb72f031cf": {
+      "startSatisfiedConfirmedAt": 4954,
+      "bidEnabledConfirmedAt": 4954,
+      "bidSatisfiedConfirmedAt": 15344,
+      "decideEnabledConfirmedAt": 15344,
+      "decideSatisfiedConfirmedAt": 18495
+    }
+  },
+  "originalCalls": [
+    "GoalModelInstanceTranslator.propagateDependencies",
+    "IStarPropagation.assignGoalTask:aggregate-only",
+    "IStarPropagation.closePending",
+    "TaskMarking.update"
+  ],
+  "pluginSha256": "cb15ffae2c53abc4116df4b610bc84b2471e0b0ebce762d452d6bbecfccfef08",
+  "sameMSystem": true,
+  "selectedInputsDeleted": true,
+  "checkedReplayEntries": 3525,
+  "scope": "QUALIFIED_PLUGIN_RELEASE_LIVE_REPLAY_NOT_FINAL_FULL_REACTOR_ARCHIVE_GUI"
+}

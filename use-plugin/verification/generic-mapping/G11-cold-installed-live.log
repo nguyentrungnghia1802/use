@@ -1,0 +1,40 @@
+
+Test run finished after 6581 ms
+[         2 containers found      ]
+[         0 containers skipped    ]
+[         2 containers started    ]
+[         0 containers aborted    ]
+[         2 containers successful ]
+[         0 containers failed     ]
+[         1 tests found           ]
+[         0 tests skipped         ]
+[         1 tests started         ]
+[         0 tests aborted         ]
+[         0 tests successful      ]
+[         1 tests failed          ]
+
+
+Failures (1):
+  JUnit Jupiter:GenericPackagedPluginIT:installedDeclarativeAuctionUsesGeneratedModelsNeutralProvidersAndExactReplay()
+    MethodSource [className = 'org.tzi.use.plugins.jacamo.semantics.GenericPackagedPluginIT', methodName = 'installedDeclarativeAuctionUsesGeneratedModelsNeutralProvidersAndExactReplay', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: USE version 7.5.0, Copyright (C) 1999-2025 University of Bremen & University of Applied Sciences Hamburg
+java.lang.AssertionError: [Import failed: MAPPING_INPUT_UNREADABLE_OR_CAPACITY]
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.check(InstalledAuctionMain.java:461)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain$Gui.lambda$enabled$9(InstalledAuctionMain.java:439)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.await(InstalledAuctionMain.java:448)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain$Gui.enabled(InstalledAuctionMain.java:439)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain$Gui.importProject(InstalledAuctionMain.java:437)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.run(InstalledAuctionMain.java:54)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.main(InstalledAuctionMain.java:22)
+ ==> expected: <0> but was: <1>
+       org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)
+       org.junit.jupiter.api.AssertionUtils.failNotEqual(AssertionUtils.java:62)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:150)
+       org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:559)
+       org.tzi.use.plugins.jacamo.semantics.GenericPackagedPluginIT.installedDeclarativeAuctionUsesGeneratedModelsNeutralProvidersAndExactReplay(GenericPackagedPluginIT.java:30)
+       java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+       org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+       org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+       [...]

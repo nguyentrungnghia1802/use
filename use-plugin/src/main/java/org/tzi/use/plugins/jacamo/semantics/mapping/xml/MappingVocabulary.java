@@ -19,7 +19,20 @@ final class MappingVocabulary {
         if(!project.name().equals("file")||!project.attr("kind").equals("JCM"))throw project.location().error("JCM_SOURCE_REQUIRED");
         if(root.child("sources").children("file").stream().filter(n->n.attr("kind").equals("JCM")).count()!=1)throw root.location().error("EXACTLY_ONE_JCM_REQUIRED");
         if(!root.child("modelRules").attr("targetVersion").equals("v4.0"))throw root.location().error("CSL_VERSION_UNSUPPORTED");
+        var models=root.children("models");
+        if(models.size()>1)throw root.location().error("AUTHORED_MODELS_DUPLICATE");
+        if(!models.isEmpty()) {
+            var declaration=models.getFirst();
+            if(!declaration.attr("mode").equals("AUTHORED")
+                    ||!declaration.attr("cslSha256").matches("[0-9a-f]{64}")
+                    ||!declaration.attr("istarSha256").matches("[0-9a-f]{64}"))throw declaration.location().error("AUTHORED_MODEL_MODE_OR_HASH_INVALID");
+            if(!root.child("modelRules").children().isEmpty()||!root.child("istar").children().isEmpty())
+                throw declaration.location().error("AUTHORED_MODE_CANNOT_GENERATE_MODELS");
+        }
         for(Node node:spec.nodes()) {
+            if(node.attributes().containsKey("population")&&(!node.attr("population").equals("CARTAGO_BOARD_INVENTORY_V1")
+                    ||!(node.name().equals("schemeCuts")||node.name().equals("facts")&&node.attr("authority").equals("moise")&&Set.of("GROUP_BOARD","SCHEME_BOARD").contains(node.attr("kind")))))
+                throw node.location().error("POPULATION_POLICY_UNSUPPORTED");
             for(String key:List.of("sourceRef","selectRef","selectorRef","leftSelectorRef","rightSelectorRef"))if(node.attributes().containsKey(key)) {
                 var target=spec.requireId(node.attr(key));String expected=key.equals("sourceRef")?"file":"select";
                 if(!target.name().equals(expected))throw node.location().error("REFERENCE_KIND_MISMATCH:"+key);
@@ -56,6 +69,11 @@ final class MappingVocabulary {
         add(m,"#document/mapping","version id engineProfile jcmRef","");
         for(String section:List.of("sources","selectors","runtime","observers","bindings","requirements","omittedConcepts"))add(m,"mapping/"+section,"","");
         add(m,"mapping/ocl","sha256","");
+        add(m,"mapping/models","mode cslSha256 istarSha256","");
+        add(m,"mapping/assertions","","");
+        add(m,"assertions/require","selectorRef field equals","");
+        add(m,"assertions/requireSet","selectorRef field values","");
+        add(m,"assertions/requireSameSet","leftSelectorRef leftField rightSelectorRef rightField","");
         add(m,"sources/file","id path sha256 kind","");
         add(m,"selectors/select","id sourceRef syntax expectedCount","expression");
         add(m,"select/pattern","","");add(m,"select/capture","name expression","");
@@ -99,7 +117,7 @@ final class MappingVocabulary {
         add(m,"project/lifecycle","kind column requestRef","");
         add(m,"project/derive","field expression completeColumn","");
         add(m,"derive/arg","name column type","onMissing");
-        add(m,"requirements/capability","id provider required","sourceRef class field type hash hashOrigin organization scheme");
+        add(m,"requirements/capability","id provider required","sourceRef class field type hash hashOrigin organization scheme operations");
         add(m,"capability/property","name type","");
         add(m,"capability/plan","trigger","context");
         add(m,"plan/step","task first after variables","artifactVariable artifactClass schemeVariable allowMissingArtifactAtEntry");
@@ -129,15 +147,18 @@ final class MappingVocabulary {
         add(m,"runtime/taskDemands","","");
         add(m,"taskDemands/demand","id target scopeRef tableRef anchorColumn playerColumn requiredColumn episodeFields","completeColumn scopeColumn scopeKey");
         add(m,"runtime/datasets","","");
-        add(m,"datasets/facts","id authority kind","");
+        add(m,"datasets/facts","id authority kind","population");
         add(m,"datasets/removals","id authority kind","");
         add(m,"datasets/fieldCuts","id requestRef","");
         add(m,"datasets/clock","id requestRef","");
-        add(m,"datasets/schemeCuts","id requestRef","");
+        add(m,"datasets/schemeCuts","id requestRef","population");
         add(m,"datasets/npl","id requestRef","");
         add(m,"datasets/operationCuts","id requestRef","");
         add(m,"datasets/operationReferences","id requestRef argumentIndex","");
         add(m,"datasets/jasonSteps","id requestRef","");
+        add(m,"datasets/beliefViews","id namespace predicate arity selection","");
+        add(m,"runtime/beliefBindings","","");
+        add(m,"beliefBindings/bind","id roleType attribute datasetRef","");
         add(m,"datasets/artifactReferences","id requestRef","");
         add(m,"datasets/schemeReferences","id requestRef","");
         add(m,"tables/table","id dataset","");
@@ -163,7 +184,7 @@ final class MappingVocabulary {
         add(m,"table/join","tableRef leftPath rightPath as cardinality required","knowledge onMissing");
         add(m,"table/column","name path required","");
         add(m,"table/identity","mode","path fields as");
-        add(m,"omittedConcepts/omit","id concept reason","handledBy");
+        add(m,"omittedConcepts/omit","id concept reason","handledBy sourceStep");
         return Map.copyOf(m);
     }
     private static void add(Map<String,Shape> map,String path,String required,String optional) {

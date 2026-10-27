@@ -742,15 +742,15 @@
     <dependencyPopulation target="D_bid" quantifier="ALL" />
   </bindings>
   <requirements>
-    <capability id="scheme-operations" provider="cartago.operation-history.v1" required="true" class="ora4mas.nopl.SchemeBoard" hash="79f28443c5701d5b424de5d952db81f17274a7d3c170c2fc2f9ab6dbb4628ba6" />
-    <capability id="workspace-operations" provider="cartago.operation-history.v1" required="true" class="cartago.WorkspaceArtifact" hash="6fda906d426c1d66a6f42cce2a2a5bdeacc90960c0da20e2c2719e6f6bb2e1b4" />
+    <capability id="scheme-operations" provider="cartago.operation-history.v1" required="true" class="ora4mas.nopl.SchemeBoard" hash="79f28443c5701d5b424de5d952db81f17274a7d3c170c2fc2f9ab6dbb4628ba6" operations="admCommand" />
+    <capability id="workspace-operations" provider="cartago.operation-history.v1" required="true" class="cartago.WorkspaceArtifact" hash="6fda906d426c1d66a6f42cce2a2a5bdeacc90960c0da20e2c2719e6f6bb2e1b4" operations="makeArtifact" />
     <capability id="candidate-field" provider="cartago.artifact-field.v1" hashOrigin="OFFICIAL_CLASS_PROOF" required="true" sourceRef="src-artifact" class="auction_env.AuctionArtifact" field="currentWinner" type="java.lang.String">
       <property name="running" type="BOOLEAN" />
       <property name="task" type="STRING" />
       <property name="best_bid" type="IEEE754_BINARY64" />
       <property name="winner" type="JASON_ATOM" />
     </capability>
-    <capability id="auction-operations" provider="cartago.operation-history.v1" hashOrigin="OFFICIAL_CLASS_PROOF" required="true" sourceRef="src-artifact" class="auction_env.AuctionArtifact" />
+    <capability id="auction-operations" provider="cartago.operation-history.v1" hashOrigin="OFFICIAL_CLASS_PROOF" required="true" sourceRef="src-artifact" class="auction_env.AuctionArtifact" operations="start bid stop" />
     <capability id="scheme-history" provider="moise.scheme-lifecycle.v1" required="true" sourceRef="src-os" organization="auction" scheme="doAuction" />
     <capability id="source-clock" provider="npl.source-clock.v1" required="true" hash="956818edfe9aeff7c4fde35bf1dd276cd71e1da62daf77a2a15ab08f87903332" />
     <capability id="norm-lifecycle" provider="npl.lifecycle.v1" required="true" hash="956818edfe9aeff7c4fde35bf1dd276cd71e1da62daf77a2a15ab08f87903332" />

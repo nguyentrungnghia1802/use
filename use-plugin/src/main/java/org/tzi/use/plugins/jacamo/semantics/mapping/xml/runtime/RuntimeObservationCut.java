@@ -12,8 +12,30 @@ public final class RuntimeObservationCut {
         "UPSERT_CARTAGO_PROPERTY_SNAPSHOT",RuntimeFactKind.PROPERTY,"UPSERT_MOISE_GROUP",RuntimeFactKind.GROUP_BOARD,
         "UPSERT_MOISE_SCHEME",RuntimeFactKind.SCHEME_BOARD,"UPSERT_MOISE_GROUP_PARENT",RuntimeFactKind.RELATION_STATE);
     private RuntimeObservationCut(){ }
+    public static boolean requiresMapping(Map<String,RuntimeFact> before,Map<String,RuntimeFact> after,
+            RuntimeEvent event,long previousSequence,Completeness admittedCoverage) {
+        // A replacement cut carries population/provenance proof even if all values
+        // equal the prior partial cut. It must reach mapping and verification.
+        if(CartagoSourceCut.KIND.equals(event.after().get("normalizedEventKind"))
+                ||event.completeness()!=Completeness.COMPLETE&&admittedCoverage!=Completeness.PARTIAL||VerificationObservation.present(event)
+                ||Set.of(RuntimeEventKind.REMOVED,RuntimeEventKind.DISPOSED).contains(event.kind())||!before.equals(after))return true;
+        // Advancing CArtAgO once past a current receipt changes its qualification even
+        // without a fact delta. Subsequent raw callbacks cannot invalidate that old receipt again.
+        if(event.sourceId().equals("cartago"))for(var fact:before.values())
+            if(fact.values().get(CapabilityObservation.KEY) instanceof Map<?,?> receipts)for(Object raw:receipts.values()) {
+                var receipt=CanonicalJson.object(raw);var scope=CanonicalJson.object(receipt.get("scope"));
+                if(scope.get("sourceSequence") instanceof Number n&&n.longValue()==previousSequence)return true;
+            }
+        return false;
+    }
     public static Map<String,RuntimeFact> advance(Map<String,RuntimeFact> before,RuntimeEvent event) {
         var facts=new LinkedHashMap<>(before);String kind=Objects.toString(event.after().get("normalizedEventKind"),"");
+        if(kind.equals(CartagoSourceCut.KIND)) {
+            var cut=CartagoSourceCut.require(event);
+            var kinds=CartagoSourceCut.kinds(cut);
+            facts.values().removeIf(f->f.id().authority().equals("cartago")&&kinds.contains(f.kind()));
+            for(var fact:cut.facts())facts.put(fact.id().canonical(),fact);
+        }
         if(UPSERT.containsKey(kind)) {
             if(event.entityId()==null||event.factKind()!=UPSERT.get(kind))throw new IllegalArgumentException("XML_SOURCE_EVENT_KIND_MISMATCH");
             facts.put(event.entityId().canonical(),new RuntimeFact(event.entityId(),event.factKind(),event.after(),List.of(),event.projectionStatus(),event.completeness(),event.evidence()));
@@ -72,12 +94,16 @@ public final class RuntimeObservationCut {
     }
     public static RuntimeSnapshot eventCut(Map<String,RuntimeFact> facts,Map<String,Long> accepted,
             Map<String,Completeness> coverage,RuntimeEvent event) {
+        return eventCut(facts,accepted,coverage,event,Set.of(RuntimeFactKind.values()));
+    }
+    public static RuntimeSnapshot eventCut(Map<String,RuntimeFact> facts,Map<String,Long> accepted,
+            Map<String,Completeness> coverage,RuntimeEvent event,Set<RuntimeFactKind> cartagoKinds) {
         var marks=new TreeMap<String,SourceWatermark>();accepted.forEach((s,n)->marks.put(s,new SourceWatermark(s,n)));marks.put(event.sourceId(),event.watermark());
         var quality=new TreeMap<String,Completeness>();marks.keySet().forEach(s->quality.put(s,coverage.getOrDefault(s,Completeness.UNAVAILABLE)));
         if(event.completeness()!=Completeness.COMPLETE)quality.put(event.sourceId(),Completeness.PARTIAL);
-        var ordered=facts.values().stream().sorted(Comparator.comparing(f->f.id().canonical())).toList();
+        var ordered=facts.values().stream().filter(f->!f.id().authority().equals("cartago")||cartagoKinds.contains(f.kind())).sorted(Comparator.comparing(f->f.id().canonical())).toList();
         String hash=SemanticJson.hash(ordered.stream().map(f->List.of(f.id().canonical(),f.values(),f.completeness().name(),f.projectionStatus().name())).toList());
         return new RuntimeSnapshot("accepted-prefix:"+event.eventId(),event.modelRevision(),event.observedAt(),event.observedAt(),marks,marks,1,ordered,quality,hash,
-            Map.of("assembly","ADMITTED_EVENT_PREFIX_NOT_NEW_SOURCE_SNAPSHOT","globalAtomicity","UNSUPPORTED","sourceTime","UNQUALIFIED_OBSERVATION_TIME"));
+            Map.of("assembly","ADMITTED_EVENT_PREFIX_NOT_NEW_SOURCE_SNAPSHOT","globalAtomicity","UNSUPPORTED","sourceTime","UNQUALIFIED_OBSERVATION_TIME","cartagoQueryFactKinds",cartagoKinds.stream().map(Enum::name).sorted().toList()));
     }
 }

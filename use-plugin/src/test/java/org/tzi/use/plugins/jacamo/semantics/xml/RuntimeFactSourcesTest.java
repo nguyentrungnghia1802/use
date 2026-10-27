@@ -6,6 +6,13 @@ import org.jacamo.bridge.contract.*;
 import org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources;
 import static org.junit.jupiter.api.Assertions.*;
 class RuntimeFactSourcesTest {
+    @Test void operationHistoryQueriesKeepPublicDescriptorClosureWithoutClaimingItsPopulation() {
+        String runtime="<runtime><datasets><operationCuts id=\"operations\" requestRef=\"history\"/></datasets></runtime>";
+        String requirements="<requirements><capability id=\"history\" provider=\"cartago.operation-history.v1\" required=\"true\" class=\"warehouse.Stock\" hash=\""+"a".repeat(64)+"\"/></requirements>";
+        var specification=MappingXmlReaderTest.parse(MappingXmlReaderTest.XML.replace("<runtime/>",runtime).replace("<requirements/>",requirements));
+        assertFalse(RuntimeFactSources.producerCartagoKinds(specification).contains(RuntimeFactKind.OPERATION));
+        assertTrue(RuntimeFactSources.queryCartagoKinds(specification).contains(RuntimeFactKind.OPERATION));
+    }
     static final String SOURCES="<runtime><datasets><facts id=\"artifacts\" authority=\"cartago\" kind=\"ARTIFACT\"/><facts id=\"groups\" authority=\"moise\" kind=\"GROUP_BOARD\"/></datasets></runtime>";
     RuntimeFactSources sources(){return new RuntimeFactSources(MappingXmlReaderTest.parse(MappingXmlReaderTest.XML.replace("<runtime/>",SOURCES)));}
     static RuntimeSnapshot cut(List<RuntimeFact> facts,Map<String,Completeness> quality){

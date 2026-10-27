@@ -5,10 +5,13 @@ import cartago.*;
 import org.jacamo.bridge.adapter.*;
 import org.jacamo.bridge.contract.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNativePipeline;
 import org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector;
 import org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode;
 import org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericMappingEngine;
+import org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs;
 import org.tzi.use.plugins.jacamo.semantics.ocl.ConstraintCoverageResolver;
 import org.tzi.use.semantic.engine.use75.*;
 import org.tzi.use.uml.ocl.value.*;
@@ -18,9 +21,12 @@ import static org.tzi.use.plugins.jacamo.semantics.auction.AuctionDeclarativeObs
 
 /** Real unmodified ten-second NPL deadline; generic XML/native component gate, not MAS/TCP acceptance. */
 class AuctionDeclarativeObligationTest {
-    @Test @Timeout(75) void xmlProjectsActualActivationDeadlineFailureAndAdminRecoveryWithoutManufacturingABid()throws Exception {
+    @ParameterizedTest(name="authored={0}") @ValueSource(booleans={false,true}) @Timeout(75)
+    void xmlProjectsActualActivationDeadlineFailureAndAdminRecoveryWithoutManufacturingABid(boolean authored)throws Exception {
         try(var f=new AuctionOrgFixture(true)) {
-            var live=f.live;var program=new GenericMappingEngine().map(live.source,AuctionDeclarativeSpecificationTest.inputs(AuctionDeclarativeSpecificationTest.CASE));
+            var root=AuctionDeclarativeSpecificationTest.CASE;var selected=root.resolve("authored-v1");
+            var inputs=authored?MappingInputs.read(root.resolve("auction.jcm"),selected.resolve("auction-mapping.xml"),selected.resolve("auction_constraints_final_fixed.ocl"),selected.resolve("auction_csl.csl"),selected.resolve("auction_istar_final.istar")):AuctionDeclarativeSpecificationTest.inputs(root);
+            var live=f.live;var program=new GenericMappingEngine().map(live.source,inputs);
             var requests=program.xmlPlan().requirements();var frames=new ArrayList<VerificationObservation>();
             var context=new FrameworkObservationProviders.Context(live.environment,live.source,AuctionDeclarativeSpecificationTest.CASE.toRealPath(),live.run.id(),live.run.generation(),frames::add,ignored->{});
             var workspace=request(requests,"workspace-operations");var field=request(requests,"candidate-field");

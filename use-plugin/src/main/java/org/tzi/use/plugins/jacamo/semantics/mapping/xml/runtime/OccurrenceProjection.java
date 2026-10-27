@@ -27,10 +27,19 @@ public final class OccurrenceProjection {
     private final List<Definition> definitions;
     private final Map<String,Node> elements;
     public OccurrenceProjection(MappingSpecification specification,MModel model,String program) {
+        this(specification,model,program,null);
+    }
+    public OccurrenceProjection(MappingSpecification specification,MModel model,String program,org.vnu.sme.goal.dsl.istar.mm.GoalModel goals) {
         this.program=Objects.requireNonNull(program);this.model=Objects.requireNonNull(model);
         var bindings=specification.root().child("bindings");var elementIndex=new TreeMap<String,Node>();
         for(Node element:bindings.children("elementRuntime"))if(elementIndex.putIfAbsent(element.attr("target"),element)!=null)throw element.location().error("OCCURRENCE_ELEMENT_DUPLICATE");elements=Map.copyOf(elementIndex);
-        var actorBindings=new TreeMap<String,Node>();for(Node actor:bindings.children("actorRuntime"))if(actorBindings.putIfAbsent(actor.attr("actor"),actor)!=null)throw actor.location().error("OCCURRENCE_ACTOR_DUPLICATE");
+        var actorBindings=new TreeMap<String,Node>();for(Node actor:bindings.children("actorRuntime")) {
+            if(actor.attr("activationPolicy").equals("MODEL_ONLY_CAPABILITY_ROLE")) {
+                if(goals==null||!org.tzi.use.semantic.engine.api.RoleSpecialization.definitionOnly(goals,goals.findActor(actor.attr("actor")).orElseThrow()))throw actor.location().error("CANONICAL_MODEL_ONLY_ROLE_REQUIRED");
+                continue;
+            }
+            if(actorBindings.putIfAbsent(actor.attr("actor"),actor)!=null)throw actor.location().error("OCCURRENCE_ACTOR_DUPLICATE");
+        }
         var compiled=new ArrayList<Definition>();var sections=specification.root().child("runtime").children("occurrences");
         if(sections.size()>1)throw specification.root().location().error("OCCURRENCE_SECTION_DUPLICATE");
         if(!sections.isEmpty())for(Node scope:sections.getFirst().children("scope")) {
@@ -67,7 +76,10 @@ public final class OccurrenceProjection {
             }
             if(!assigned.equals(leaves))throw scope.location().error("OCCURRENCE_LEAF_SELF_COVERAGE");
             var resources=new HashSet<String>();
-            var originalResources=specification.root().child("istar").children("actor").stream().flatMap(a->a.children("resource").stream()).map(r->r.attr("name")).collect(java.util.stream.Collectors.toSet());
+            if(goals==null&&!specification.root().children("models").isEmpty())throw scope.location().error("AUTHORED_CANONICAL_GOAL_MODEL_REQUIRED");
+            var originalResources=goals==null
+                ?specification.root().child("istar").children("actor").stream().flatMap(a->a.children("resource").stream()).map(r->r.attr("name")).collect(java.util.stream.Collectors.toSet())
+                :goals.getActors().stream().flatMap(a->a.elements().stream()).filter(org.vnu.sme.goal.dsl.istar.mm.Resource.class::isInstance).map(e->e.id()).collect(java.util.stream.Collectors.toSet());
             for(Node resource:scope.children("resource")) {
                 MClass type=model.getClass(resource.attr("type"));
                 if(!resources.add(resource.attr("target"))||!originalResources.contains(resource.attr("target"))||!columns.contains(resource.attr("column"))||type==null||!(type.isSubClassifierOf(model.getClass("DomainEntity"))||type.isSubClassifierOf(model.getClass("OrgContext"))))throw resource.location().error("UNSUPPORTED:OCCURRENCE_NATIVE_RESOURCE_BINDING");

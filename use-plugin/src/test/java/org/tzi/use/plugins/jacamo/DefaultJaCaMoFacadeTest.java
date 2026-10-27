@@ -16,6 +16,15 @@ import org.tzi.use.plugins.jacamo.extraction.StaticProjectImporter;
 
 class DefaultJaCaMoFacadeTest {
     @TempDir Path temporary;
+    @Test void nextJournalQuotaIsFacadeOwnedBoundedAndNeverChangesGlobalConfiguration(){
+        String key="use.jacamo.runtime.journal.maxBytes",before=System.getProperty(key);
+        try(var first=new DefaultJaCaMoFacade(Path.of("."));var second=new DefaultJaCaMoFacade(Path.of("."))){
+            long defaultBytes=second.nextJournalBudgetBytes();first.nextJournalBudgetBytes(256L*1048576);
+            assertEquals(256L*1048576,first.nextJournalBudgetBytes());assertEquals(defaultBytes,second.nextJournalBudgetBytes());assertEquals(before,System.getProperty(key));
+            for(long invalid:new long[]{-1,0,32767,1073741825L})assertThrows(IllegalArgumentException.class,()->first.nextJournalBudgetBytes(invalid));
+            assertEquals(256L*1048576,first.nextJournalBudgetBytes());
+        }
+    }
 
     @Test
     void defaultFacadeRequiresAnExternalTcpEndpointBeforeImport() {

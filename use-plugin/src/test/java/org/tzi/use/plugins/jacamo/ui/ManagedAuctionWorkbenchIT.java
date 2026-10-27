@@ -58,10 +58,13 @@ class ManagedAuctionWorkbenchIT {
                 producer.clearWorkflowProperties(); facade.configureBridge(producer.configuration);
                 MainWindow.setJavaFxCall(true);
                 MainWindow window=onEdt(()->MainWindow.create(session,PluginRuntime.getInstance()));
+                // Native USE owns the large-state confirmation; realize its
+                // owner on the authorized monitor before opening native views.
+                onEdt(()->{AcceptanceScreen.place(window);window.setVisible(true);return null;});
                 JFrame workbench=onEdt(()->new JFrame("Managed Auction Workbench acceptance"));
                 JaCaMoWorkbenchPanel panel=onEdt(()->new JaCaMoWorkbenchPanel(facade,errors::add));
                 try {
-                    onEdt(()->{workbench.setContentPane(panel);workbench.setSize(1500,1000);workbench.setVisible(true);panel.importProject(producer.jcm);return null;});
+                    onEdt(()->{workbench.setContentPane(panel);workbench.setSize(1500,1000);org.tzi.use.plugins.jacamo.ui.AcceptanceScreen.place(workbench);workbench.setVisible(true);panel.importProject(producer.jcm);return null;});
                     await(()->facade.workflowStatus().state().equals("MODEL_READY"),60,errors);
                     // Facade readiness precedes SwingWorker.done() and the UI busy-guard release.
                     // A real user cannot Load OCL until this control is enabled; do not race that boundary.

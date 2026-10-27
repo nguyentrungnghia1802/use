@@ -1,0 +1,686 @@
+
+# Audited source freeze v5 checkout bytes: preserve the tested LF/CRLF form.
+"pom.xml" text eol=crlf
+"src/it/java/org/tzi/use/main/shell/ShellIT.java" text eol=crlf
+"src/it/resources/testfiles/shell/imports/t125_import.use" text eol=crlf
+"src/it/resources/testfiles/shell/imports/t126_import.use" text eol=crlf
+"src/it/resources/testfiles/shell/imports/t127_import.use" text eol=crlf
+"src/it/resources/testfiles/shell/imports/t128_import1.use" text eol=crlf
+"src/it/resources/testfiles/shell/imports/t128_import2.use" text eol=crlf
+"src/it/resources/testfiles/shell/imports/t129_import.use" text eol=crlf
+"src/it/resources/testfiles/shell/imports/t130_import1.use" text eol=crlf
+"src/it/resources/testfiles/shell/imports/t130_import2.use" text eol=crlf
+"src/it/resources/testfiles/shell/imports/t131_import.use" text eol=crlf
+"src/it/resources/testfiles/shell/imports/t132_import.use" text eol=crlf
+"src/it/resources/testfiles/shell/imports/t133_import_date.use" text eol=crlf
+"src/it/resources/testfiles/shell/imports/t133_import_datetime.use" text eol=crlf
+"src/it/resources/testfiles/shell/imports/t133_import_time.use" text eol=crlf
+"src/it/resources/testfiles/shell/relativepath/Book/Book_init.cmd" text eol=crlf
+"src/it/resources/testfiles/shell/relativepath/Copy/Copy_borrow.cmd" text eol=crlf
+"src/it/resources/testfiles/shell/relativepath/Copy/Copy_init.cmd" text eol=crlf
+"src/it/resources/testfiles/shell/relativepath/Copy/Copy_return.cmd" text eol=crlf
+"src/it/resources/testfiles/shell/relativepath/Szenario1/szenario1.cmd" text eol=crlf
+"src/it/resources/testfiles/shell/relativepath/User/User_borrow.cmd" text eol=crlf
+"src/it/resources/testfiles/shell/relativepath/User/User_init.cmd" text eol=crlf
+"src/it/resources/testfiles/shell/relativepath/User/User_return.cmd" text eol=crlf
+"src/it/resources/testfiles/shell/relativepath/library.use" text eol=crlf
+"src/it/resources/testfiles/shell/t001.in" text eol=crlf
+"src/it/resources/testfiles/shell/t001.use" text eol=crlf
+"src/it/resources/testfiles/shell/t002.in" text eol=crlf
+"src/it/resources/testfiles/shell/t002.use" text eol=crlf
+"src/it/resources/testfiles/shell/t003.in" text eol=crlf
+"src/it/resources/testfiles/shell/t003.use" text eol=crlf
+"src/it/resources/testfiles/shell/t004.in" text eol=crlf
+"src/it/resources/testfiles/shell/t004.use" text eol=crlf
+"src/it/resources/testfiles/shell/t005.in" text eol=crlf
+"src/it/resources/testfiles/shell/t005.use" text eol=crlf
+"src/it/resources/testfiles/shell/t006.in" text eol=crlf
+"src/it/resources/testfiles/shell/t006.use" text eol=crlf
+"src/it/resources/testfiles/shell/t007.in" text eol=crlf
+"src/it/resources/testfiles/shell/t007.use" text eol=crlf
+"src/it/resources/testfiles/shell/t008.in" text eol=crlf
+"src/it/resources/testfiles/shell/t008.use" text eol=crlf
+"src/it/resources/testfiles/shell/t009.in" text eol=crlf
+"src/it/resources/testfiles/shell/t009.use" text eol=crlf
+"src/it/resources/testfiles/shell/t010.in" text eol=crlf
+"src/it/resources/testfiles/shell/t010.use" text eol=crlf
+"src/it/resources/testfiles/shell/t011.in" text eol=crlf
+"src/it/resources/testfiles/shell/t011.use" text eol=crlf
+"src/it/resources/testfiles/shell/t012.in" text eol=crlf
+"src/it/resources/testfiles/shell/t012.use" text eol=crlf
+"src/it/resources/testfiles/shell/t013.in" text eol=crlf
+"src/it/resources/testfiles/shell/t013.use" text eol=crlf
+"src/it/resources/testfiles/shell/t014.in" text eol=crlf
+"src/it/resources/testfiles/shell/t014.use" text eol=crlf
+"src/it/resources/testfiles/shell/t015.assl" text eol=crlf
+"src/it/resources/testfiles/shell/t015.in" text eol=crlf
+"src/it/resources/testfiles/shell/t015.use" text eol=crlf
+"src/it/resources/testfiles/shell/t016.in" text eol=crlf
+"src/it/resources/testfiles/shell/t016.use" text eol=crlf
+"src/it/resources/testfiles/shell/t017.in" text eol=crlf
+"src/it/resources/testfiles/shell/t017.use" text eol=crlf
+"src/it/resources/testfiles/shell/t018.in" text eol=crlf
+"src/it/resources/testfiles/shell/t018.use" text eol=crlf
+"src/it/resources/testfiles/shell/t019.in" text eol=crlf
+"src/it/resources/testfiles/shell/t019.use" text eol=crlf
+"src/it/resources/testfiles/shell/t020.in" text eol=crlf
+"src/it/resources/testfiles/shell/t020.use" text eol=crlf
+"src/it/resources/testfiles/shell/t021.in" text eol=crlf
+"src/it/resources/testfiles/shell/t021.use" text eol=crlf
+"src/it/resources/testfiles/shell/t022.in" text eol=crlf
+"src/it/resources/testfiles/shell/t022.use" text eol=crlf
+"src/it/resources/testfiles/shell/t023.in" text eol=crlf
+"src/it/resources/testfiles/shell/t023.use" text eol=crlf
+"src/it/resources/testfiles/shell/t024.in" text eol=crlf
+"src/it/resources/testfiles/shell/t024.use" text eol=crlf
+"src/it/resources/testfiles/shell/t025.in" text eol=crlf
+"src/it/resources/testfiles/shell/t025.use" text eol=crlf
+"src/it/resources/testfiles/shell/t027.in" text eol=crlf
+"src/it/resources/testfiles/shell/t027.use" text eol=crlf
+"src/it/resources/testfiles/shell/t028.in" text eol=crlf
+"src/it/resources/testfiles/shell/t028.use" text eol=crlf
+"src/it/resources/testfiles/shell/t029.in" text eol=crlf
+"src/it/resources/testfiles/shell/t029.use" text eol=crlf
+"src/it/resources/testfiles/shell/t030.in" text eol=crlf
+"src/it/resources/testfiles/shell/t030.use" text eol=crlf
+"src/it/resources/testfiles/shell/t031.in" text eol=crlf
+"src/it/resources/testfiles/shell/t031.use" text eol=crlf
+"src/it/resources/testfiles/shell/t032.in" text eol=crlf
+"src/it/resources/testfiles/shell/t032.use" text eol=crlf
+"src/it/resources/testfiles/shell/t033.in" text eol=crlf
+"src/it/resources/testfiles/shell/t033.use" text eol=crlf
+"src/it/resources/testfiles/shell/t034.in" text eol=crlf
+"src/it/resources/testfiles/shell/t034.use" text eol=crlf
+"src/it/resources/testfiles/shell/t035.in" text eol=crlf
+"src/it/resources/testfiles/shell/t035.use" text eol=crlf
+"src/it/resources/testfiles/shell/t036.in" text eol=crlf
+"src/it/resources/testfiles/shell/t036.use" text eol=crlf
+"src/it/resources/testfiles/shell/t037.in" text eol=crlf
+"src/it/resources/testfiles/shell/t037.use" text eol=crlf
+"src/it/resources/testfiles/shell/t038.in" text eol=crlf
+"src/it/resources/testfiles/shell/t038.use" text eol=crlf
+"src/it/resources/testfiles/shell/t039.in" text eol=crlf
+"src/it/resources/testfiles/shell/t039.use" text eol=crlf
+"src/it/resources/testfiles/shell/t040.in" text eol=crlf
+"src/it/resources/testfiles/shell/t040.use" text eol=crlf
+"src/it/resources/testfiles/shell/t041.in" text eol=crlf
+"src/it/resources/testfiles/shell/t041.use" text eol=crlf
+"src/it/resources/testfiles/shell/t042.in" text eol=crlf
+"src/it/resources/testfiles/shell/t042.use" text eol=crlf
+"src/it/resources/testfiles/shell/t043.assl" text eol=crlf
+"src/it/resources/testfiles/shell/t043.in" text eol=crlf
+"src/it/resources/testfiles/shell/t043.use" text eol=crlf
+"src/it/resources/testfiles/shell/t044.in" text eol=crlf
+"src/it/resources/testfiles/shell/t044.use" text eol=crlf
+"src/it/resources/testfiles/shell/t045.in" text eol=crlf
+"src/it/resources/testfiles/shell/t045.use" text eol=crlf
+"src/it/resources/testfiles/shell/t046.in" text eol=crlf
+"src/it/resources/testfiles/shell/t046.use" text eol=crlf
+"src/it/resources/testfiles/shell/t047.in" text eol=crlf
+"src/it/resources/testfiles/shell/t047.use" text eol=crlf
+"src/it/resources/testfiles/shell/t048.in" text eol=crlf
+"src/it/resources/testfiles/shell/t048.use" text eol=crlf
+"src/it/resources/testfiles/shell/t049.in" text eol=crlf
+"src/it/resources/testfiles/shell/t049.use" text eol=crlf
+"src/it/resources/testfiles/shell/t050.in" text eol=crlf
+"src/it/resources/testfiles/shell/t050.use" text eol=crlf
+"src/it/resources/testfiles/shell/t051.in" text eol=crlf
+"src/it/resources/testfiles/shell/t051.use" text eol=crlf
+"src/it/resources/testfiles/shell/t052.in" text eol=crlf
+"src/it/resources/testfiles/shell/t052.use" text eol=crlf
+"src/it/resources/testfiles/shell/t053.in" text eol=crlf
+"src/it/resources/testfiles/shell/t053.use" text eol=crlf
+"src/it/resources/testfiles/shell/t054.assl" text eol=crlf
+"src/it/resources/testfiles/shell/t054.in" text eol=crlf
+"src/it/resources/testfiles/shell/t054.use" text eol=crlf
+"src/it/resources/testfiles/shell/t055.assl" text eol=crlf
+"src/it/resources/testfiles/shell/t055.in" text eol=crlf
+"src/it/resources/testfiles/shell/t055.use" text eol=crlf
+"src/it/resources/testfiles/shell/t056.in" text eol=crlf
+"src/it/resources/testfiles/shell/t056.use" -text
+"src/it/resources/testfiles/shell/t057.in" text eol=crlf
+"src/it/resources/testfiles/shell/t057.use" -text
+"src/it/resources/testfiles/shell/t058.in" text eol=crlf
+"src/it/resources/testfiles/shell/t058.use" text eol=crlf
+"src/it/resources/testfiles/shell/t059.in" text eol=crlf
+"src/it/resources/testfiles/shell/t059.use" text eol=crlf
+"src/it/resources/testfiles/shell/t060.in" text eol=crlf
+"src/it/resources/testfiles/shell/t060.use" text eol=crlf
+"src/it/resources/testfiles/shell/t061.in" text eol=crlf
+"src/it/resources/testfiles/shell/t061.use" text eol=crlf
+"src/it/resources/testfiles/shell/t062.in" text eol=crlf
+"src/it/resources/testfiles/shell/t062.use" text eol=crlf
+"src/it/resources/testfiles/shell/t063.in" text eol=crlf
+"src/it/resources/testfiles/shell/t063.use" text eol=crlf
+"src/it/resources/testfiles/shell/t064.in" text eol=crlf
+"src/it/resources/testfiles/shell/t064.use" text eol=crlf
+"src/it/resources/testfiles/shell/t065.in" text eol=crlf
+"src/it/resources/testfiles/shell/t065.use" text eol=crlf
+"src/it/resources/testfiles/shell/t066.in" text eol=crlf
+"src/it/resources/testfiles/shell/t066.use" text eol=crlf
+"src/it/resources/testfiles/shell/t067.in" text eol=crlf
+"src/it/resources/testfiles/shell/t067.use" text eol=crlf
+"src/it/resources/testfiles/shell/t068.in" text eol=crlf
+"src/it/resources/testfiles/shell/t068.use" text eol=crlf
+"src/it/resources/testfiles/shell/t069.in" text eol=crlf
+"src/it/resources/testfiles/shell/t069.use" text eol=crlf
+"src/it/resources/testfiles/shell/t070.in" text eol=crlf
+"src/it/resources/testfiles/shell/t070.use" text eol=crlf
+"src/it/resources/testfiles/shell/t071.in" text eol=crlf
+"src/it/resources/testfiles/shell/t071.use" text eol=crlf
+"src/it/resources/testfiles/shell/t072.in" -text
+"src/it/resources/testfiles/shell/t072.use" text eol=crlf
+"src/it/resources/testfiles/shell/t073.in" text eol=crlf
+"src/it/resources/testfiles/shell/t073.use" text eol=crlf
+"src/it/resources/testfiles/shell/t074.in" text eol=crlf
+"src/it/resources/testfiles/shell/t074.use" text eol=crlf
+"src/it/resources/testfiles/shell/t075.in" text eol=crlf
+"src/it/resources/testfiles/shell/t075.use" text eol=crlf
+"src/it/resources/testfiles/shell/t076.in" text eol=crlf
+"src/it/resources/testfiles/shell/t076.use" text eol=crlf
+"src/it/resources/testfiles/shell/t077.in" text eol=crlf
+"src/it/resources/testfiles/shell/t077.use" text eol=crlf
+"src/it/resources/testfiles/shell/t078.in" text eol=crlf
+"src/it/resources/testfiles/shell/t078.use" text eol=crlf
+"src/it/resources/testfiles/shell/t079.in" text eol=crlf
+"src/it/resources/testfiles/shell/t079.use" text eol=crlf
+"src/it/resources/testfiles/shell/t080.in" text eol=crlf
+"src/it/resources/testfiles/shell/t080.use" text eol=crlf
+"src/it/resources/testfiles/shell/t081.in" text eol=crlf
+"src/it/resources/testfiles/shell/t081.use" text eol=crlf
+"src/it/resources/testfiles/shell/t082.in" -text
+"src/it/resources/testfiles/shell/t082.use" text eol=crlf
+"src/it/resources/testfiles/shell/t083.in" -text
+"src/it/resources/testfiles/shell/t083.use" text eol=crlf
+"src/it/resources/testfiles/shell/t084.in" text eol=crlf
+"src/it/resources/testfiles/shell/t084.use" text eol=crlf
+"src/it/resources/testfiles/shell/t085.in" text eol=crlf
+"src/it/resources/testfiles/shell/t085.use" text eol=crlf
+"src/it/resources/testfiles/shell/t086.clt" text eol=crlf
+"src/it/resources/testfiles/shell/t086.in" text eol=crlf
+"src/it/resources/testfiles/shell/t086.use" text eol=crlf
+"src/it/resources/testfiles/shell/t087.in" text eol=crlf
+"src/it/resources/testfiles/shell/t087.use" text eol=crlf
+"src/it/resources/testfiles/shell/t088.in" text eol=crlf
+"src/it/resources/testfiles/shell/t088.use" text eol=crlf
+"src/it/resources/testfiles/shell/t089.in" text eol=crlf
+"src/it/resources/testfiles/shell/t089.use" text eol=crlf
+"src/it/resources/testfiles/shell/t090.in" text eol=crlf
+"src/it/resources/testfiles/shell/t090.use" text eol=crlf
+"src/it/resources/testfiles/shell/t092.in" text eol=crlf
+"src/it/resources/testfiles/shell/t092.use" text eol=crlf
+"src/it/resources/testfiles/shell/t093.assl" text eol=crlf
+"src/it/resources/testfiles/shell/t093.in" text eol=crlf
+"src/it/resources/testfiles/shell/t093.use" text eol=crlf
+"src/it/resources/testfiles/shell/t094.in" text eol=crlf
+"src/it/resources/testfiles/shell/t094.use" text eol=crlf
+"src/it/resources/testfiles/shell/t095.in" text eol=crlf
+"src/it/resources/testfiles/shell/t095.use" text eol=crlf
+"src/it/resources/testfiles/shell/t096.in" text eol=crlf
+"src/it/resources/testfiles/shell/t096.use" text eol=crlf
+"src/it/resources/testfiles/shell/t097.assl" text eol=crlf
+"src/it/resources/testfiles/shell/t097.in" text eol=crlf
+"src/it/resources/testfiles/shell/t097.use" text eol=crlf
+"src/it/resources/testfiles/shell/t098.in" text eol=crlf
+"src/it/resources/testfiles/shell/t098.use" text eol=crlf
+"src/it/resources/testfiles/shell/t099.clt" text eol=crlf
+"src/it/resources/testfiles/shell/t099.in" text eol=crlf
+"src/it/resources/testfiles/shell/t099.olt" text eol=crlf
+"src/it/resources/testfiles/shell/t099.use" text eol=crlf
+"src/it/resources/testfiles/shell/t100.in" text eol=crlf
+"src/it/resources/testfiles/shell/t100.use" text eol=crlf
+"src/it/resources/testfiles/shell/t101.in" text eol=crlf
+"src/it/resources/testfiles/shell/t101.use" text eol=crlf
+"src/it/resources/testfiles/shell/t102.assl" text eol=crlf
+"src/it/resources/testfiles/shell/t102.clt" text eol=crlf
+"src/it/resources/testfiles/shell/t102.in" text eol=crlf
+"src/it/resources/testfiles/shell/t102.use" text eol=crlf
+"src/it/resources/testfiles/shell/t103.assl" text eol=crlf
+"src/it/resources/testfiles/shell/t103.in" text eol=crlf
+"src/it/resources/testfiles/shell/t103.use" text eol=crlf
+"src/it/resources/testfiles/shell/t104.in" -text
+"src/it/resources/testfiles/shell/t104.use" text eol=crlf
+"src/it/resources/testfiles/shell/t105.in" text eol=crlf
+"src/it/resources/testfiles/shell/t105.use" text eol=crlf
+"src/it/resources/testfiles/shell/t106.in" text eol=crlf
+"src/it/resources/testfiles/shell/t106.use" text eol=crlf
+"src/it/resources/testfiles/shell/t107.in" text eol=crlf
+"src/it/resources/testfiles/shell/t107.use" text eol=crlf
+"src/it/resources/testfiles/shell/t108.clt" text eol=crlf
+"src/it/resources/testfiles/shell/t108.use" text eol=crlf
+"src/it/resources/testfiles/shell/t108_default.clt" text eol=crlf
+"src/it/resources/testfiles/shell/t109.in" text eol=crlf
+"src/it/resources/testfiles/shell/t109.use" text eol=crlf
+"src/it/resources/testfiles/shell/t110.use" text eol=crlf
+"src/it/resources/testfiles/shell/t111.in" text eol=crlf
+"src/it/resources/testfiles/shell/t111.use" text eol=crlf
+"src/it/resources/testfiles/shell/t112.in" text eol=crlf
+"src/it/resources/testfiles/shell/t112.use" text eol=crlf
+"src/it/resources/testfiles/shell/t113.in" text eol=crlf
+"src/it/resources/testfiles/shell/t113.use" -text
+"src/it/resources/testfiles/shell/t114.in" text eol=crlf
+"src/it/resources/testfiles/shell/t114.use" text eol=crlf
+"src/it/resources/testfiles/shell/t115.in" text eol=crlf
+"src/it/resources/testfiles/shell/t115.use" text eol=crlf
+"src/it/resources/testfiles/shell/t116.in" text eol=crlf
+"src/it/resources/testfiles/shell/t116.use" text eol=crlf
+"src/it/resources/testfiles/shell/t117.in" text eol=crlf
+"src/it/resources/testfiles/shell/t117.use" text eol=crlf
+"src/it/resources/testfiles/shell/t118.in" text eol=crlf
+"src/it/resources/testfiles/shell/t118.use" text eol=crlf
+"src/it/resources/testfiles/shell/t119.in" text eol=crlf
+"src/it/resources/testfiles/shell/t119.use" text eol=crlf
+"src/it/resources/testfiles/shell/t120.in" text eol=crlf
+"src/it/resources/testfiles/shell/t120.use" text eol=crlf
+"src/it/resources/testfiles/shell/t121.in" text eol=crlf
+"src/it/resources/testfiles/shell/t121.use" text eol=crlf
+"src/it/resources/testfiles/shell/t122.in" text eol=crlf
+"src/it/resources/testfiles/shell/t122.olt" text eol=crlf
+"src/it/resources/testfiles/shell/t122.use" text eol=crlf
+"src/it/resources/testfiles/shell/t123.in" text eol=crlf
+"src/it/resources/testfiles/shell/t123.use" text eol=crlf
+"src/it/resources/testfiles/shell/t124.in" text eol=crlf
+"src/it/resources/testfiles/shell/t124.use" text eol=crlf
+"src/it/resources/testfiles/shell/t125.in" text eol=crlf
+"src/it/resources/testfiles/shell/t125.use" text eol=crlf
+"src/it/resources/testfiles/shell/t126.in" text eol=crlf
+"src/it/resources/testfiles/shell/t126.use" text eol=crlf
+"src/it/resources/testfiles/shell/t127.in" text eol=crlf
+"src/it/resources/testfiles/shell/t127.use" text eol=crlf
+"src/it/resources/testfiles/shell/t128.in" text eol=crlf
+"src/it/resources/testfiles/shell/t128.use" text eol=crlf
+"src/it/resources/testfiles/shell/t129.in" text eol=crlf
+"src/it/resources/testfiles/shell/t129.use" text eol=crlf
+"src/it/resources/testfiles/shell/t130.in" text eol=crlf
+"src/it/resources/testfiles/shell/t130.use" text eol=crlf
+"src/it/resources/testfiles/shell/t131.in" text eol=crlf
+"src/it/resources/testfiles/shell/t131.use" text eol=crlf
+"src/it/resources/testfiles/shell/t132.in" text eol=crlf
+"src/it/resources/testfiles/shell/t132.use" text eol=crlf
+"src/it/resources/testfiles/shell/t133_imports.in" text eol=crlf
+"src/it/resources/testfiles/shell/t133_imports.use" text eol=crlf
+"src/main/java/module-info.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/graphlayout/AllLayoutTypes.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/graphlayout/GraphPanel.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/graphlayout/LayeredLayout.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/graphlayout/LayeredLayout_test.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/graphlayout/Layout.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/graphlayout/LayoutNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/graphlayout/SpringLayout.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/graphlayout/package.html" text eol=crlf
+"src/main/java/org/tzi/use/gui/main/AboutDialog.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/main/CreateObjectDialog.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/main/EvalOCLDialog.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/main/LogPanel.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/main/MainWindow.java" -text
+"src/main/java/org/tzi/use/gui/main/ModelBrowser.java" -text
+"src/main/java/org/tzi/use/gui/main/ModelBrowserSorting.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/main/ViewFrame.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/main/ViewManager.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/main/package.html" text eol=crlf
+"src/main/java/org/tzi/use/gui/main/runtime/IPluginActionExtensionPoint.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/main/runtime/IPluginMMVisitor.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/main/runtime/IPluginMModelExtensionPoint.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/mainFX/AboutDialog.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/mainFX/CreateObjectDialog.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/mainFX/EvalOCLDialog.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/mainFX/FolderTreeContextMenu.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/mainFX/LogPanel.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/mainFX/MainWindow.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/mainFX/ModelBrowser.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/mainFX/ModelBrowserSorting.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/mainFX/ResizableInternalWindow.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/mainFX/SwingNodeRegion.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/mainFX/ViewFrame.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/mainFX/runtime/IPluginMMVisitor.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/mainFX/runtime/IPluginMModelExtensionPoint.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/util/AlphanumComparator.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/util/CaptureTheWindow.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/util/CloseOnEscapeKeyListener.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/util/ExtFileFilter.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/util/ExtendedJTable.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/util/GridBagHelper.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/util/MMHTMLPrintVisitor.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/util/PersistHelper.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/util/PopupListener.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/util/RestoreLayoutException.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/util/Selection.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/util/StatusBar.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/util/TextComponentWriter.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/util/package.html" text eol=crlf
+"src/main/java/org/tzi/use/gui/utilFX/MMHTMLPrintVisitor.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/utilFX/StatusBar.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/utilFX/TextComponentWriter.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/AssociationEndsInfo.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/BarChartView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/BarChartView_test.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/CallStackView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/ClassExtentView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/ClassInvariantView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/CommandView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/LineChartView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/LineChartView_test.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/LinkCountView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/ObjectCountView.java" -text
+"src/main/java/org/tzi/use/gui/views/ObjectPropertiesView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/PrintableView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/StateEvolutionView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/StateTreeView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/View.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/DiagramGraph.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/DiagramOptionChangedListener.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/DiagramOptions.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/DiagramType.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/DiagramView.java" -text
+"src/main/java/org/tzi/use/gui/views/diagrams/DiagramViewWithObjectNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/Layoutable.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/ObjectNodeActivity.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/PositionChangedListener.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/Selectable.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/SelectionBox.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/StyleInfoBase.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/StyleInfoClassNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/StyleInfoEdge.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/StyleInfoEnumNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/ToolTipProvider.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/DrawingUtil.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/Actor.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/ActorNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/BaseNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/BlinkingThread.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/CommunicationDiagram.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/CommunicationDiagramData.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/CommunicationDiagramEdge.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/CommunicationDiagramLayout.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/CommunicationDiagramOptions.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/CommunicationDiagramView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/CreationTimeRecorder.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/ElementKey.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/LinkBoxNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/LinkObjectBoxNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/MMessage.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/MessagesGroup.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/MessagesNavigationDialog.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/ObjectBoxNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/ObjectState.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/PropertiesWindow.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/ShowRelatedObjectsPanel.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/ShowRelatedObjectsWindow.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/communicationdiagram/WindowHelper.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/sequencediagram/Activation.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/sequencediagram/AssLifeline.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/sequencediagram/EventMessageCreator.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/sequencediagram/InsertActivation.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/sequencediagram/Lifeline.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/sequencediagram/OBProperties.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/sequencediagram/ObjLifeline.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/sequencediagram/PropertiesWindow.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/sequencediagram/SDProperties.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/sequencediagram/SDScrollPane.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/sequencediagram/SequenceDiagram.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/sequencediagram/SequenceDiagramView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/shared/CancelButton.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/shared/CmdChooseWindow.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/shared/MessageSelectionView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/shared/OKButton.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/shared/VisibleData.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/behavior/shared/VisibleDataManager.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/classdiagram/ClassDiagram.java" -text
+"src/main/java/org/tzi/use/gui/views/diagrams/classdiagram/ClassDiagramData.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/classdiagram/ClassDiagramOptions.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/classdiagram/ClassDiagramView.java" -text
+"src/main/java/org/tzi/use/gui/views/diagrams/classdiagram/ClassNode.java" -text
+"src/main/java/org/tzi/use/gui/views/diagrams/classdiagram/ClassifierNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/classdiagram/DataTypeNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/classdiagram/EnumNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/classdiagram/ModelExporter.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/classdiagram/SignalNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/classdiagram/package.html" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/edges/DirectedEdge.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/edges/DirectedEdgeFactory.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/edges/I_DirectedEdge.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/edges/package.html" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/AssociationName.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/CommentNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/CompartmentNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/DiamondNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/EdgeProperty.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/Multiplicity.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/MultiplicityRolenameWrapper.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/PlaceableNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/ResizeNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/Rolename.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/edges/AssociationEdge.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/edges/AssociationOrLinkPartEdge.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/edges/BinaryAssociationClassOrObject.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/edges/BinaryAssociationOrLinkEdge.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/edges/DocumentationReflexiveEdges.odg" -text
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/edges/DocumentationReflexiveEdges.png" -text
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/edges/EdgeBase.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/edges/GeneralizationEdge.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/edges/LinkEdge.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/edges/NAryAssociationClassOrObjectEdge.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/edges/SimpleEdge.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/edges/package-info.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/package-info.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/positioning/PositionStrategy.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/positioning/StatefullPositionStrategy.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/positioning/StrategyAttachedIntersection.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/positioning/StrategyDeserializer.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/positioning/StrategyFixed.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/positioning/StrategyIdentity.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/positioning/StrategyInBetween.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/positioning/StrategyRelativeToAttached.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/positioning/StrategyRelativeToCorner.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/positioning/StrategyUnmovable.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/elements/positioning/package-info.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/event/ActionHide.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/event/ActionHideClassDiagram.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/event/ActionHideCommunicationDiagram.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/event/ActionHideObjectDiagram.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/event/ActionLoadLayout.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/event/ActionSaveLayout.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/event/ActionSelectAll.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/event/DiagramInputHandling.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/event/HighlightChangeEvent.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/event/HighlightChangeListener.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/event/ModelBrowserMouseHandling.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/event/package.html" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/objectdiagram/NewObjectDiagram.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/objectdiagram/NewObjectDiagramView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/objectdiagram/ObjDiagramOptions.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/objectdiagram/ObjectNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/objectdiagram/QualifierInputView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/objectdiagram/package.html" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/package.html" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/statemachine/FinalStateNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/statemachine/ProtocolTransitionEdge.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/statemachine/PseudoStateNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/statemachine/StateMachineDiagram.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/statemachine/StateMachineDiagramOptions.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/statemachine/StateMachineDiagramView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/statemachine/StateName.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/statemachine/StateNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/statemachine/TransitionEdge.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/statemachine/TransitionLabel.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/statemachine/VertexNode.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/util/DashedDirectedLine.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/util/DirectedGraphic.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/util/DirectedGraphicFactory.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/util/DirectedLine.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/util/DirectedLineFactory.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/util/Direction.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/util/FilledDirectedGraphic.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/util/GUI.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/util/I_DirectedGraphic.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/util/I_DirectedLine.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/util/MenuScroller.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/util/SimpleDirectedGraphic.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/util/SolidDirectedLine.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/util/Util.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/util/package.html" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/waypoints/AttachedWayPoint.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/waypoints/QualifierWayPoint.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/waypoints/WayPoint.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/waypoints/WayPointComparator.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/diagrams/waypoints/WayPointType.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/evalbrowser/EvalNodeVarAssignment.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/evalbrowser/ExprEvalBrowser.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/evalbrowser/ObjectBrowser.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/evalbrowser/SetDefaultDialog.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/package.html" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/ClassSelectionView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/ObjectSelectionView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/SelectionComparator.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/TableModel.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/classselection/ClassPathTableModel.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/classselection/ClassSelection.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/classselection/SelectedClassPathView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/classselection/SelectionClassTableModel.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/classselection/SelectionClassView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/objectselection/ActionSelectionOCLView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/objectselection/ActionSelectionObjectView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/objectselection/DataHolder.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/objectselection/ObjectPathTableModel.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/objectselection/ObjectSelection.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/objectselection/ObjectSelectionHelper.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/objectselection/SelectedObjectPathView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/objectselection/SelectionOCLView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/objectselection/SelectionObjectTableModel.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/views/selection/objectselection/SelectionObjectView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/viewsFX/CommandView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/viewsFX/PrintableView.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/viewsFX/evalbrowser/EvalNodeVarAssignment.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/viewsFX/evalbrowser/ExprEvalBrowser.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/viewsFX/evalbrowser/SetDefaultDialog.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/xmlparser/LayoutTags.java" text eol=crlf
+"src/main/java/org/tzi/use/gui/xmlparser/package.html" text eol=crlf
+"src/main/java/org/tzi/use/main/gui/Main.java" text eol=crlf
+"src/main/java/org/tzi/use/main/gui/fx/JavaFXAppLauncher.java" text eol=crlf
+"src/main/java/org/tzi/use/main/gui/fx/MainJavaFX.java" text eol=crlf
+"src/main/java/org/tzi/use/main/gui/swing/MainSwing.java" text eol=crlf
+"src/main/java/org/tzi/use/main/shell/HelpForCmd.java" text eol=crlf
+"src/main/java/org/tzi/use/main/shell/ModelToGraph.java" text eol=crlf
+"src/main/java/org/tzi/use/main/shell/ReadlineStack.java" text eol=crlf
+"src/main/java/org/tzi/use/main/shell/Shell.java" text eol=crlf
+"src/main/java/org/tzi/use/main/shell/ShellCoverageCommandProcessor.java" text eol=crlf
+"src/main/java/org/tzi/use/main/shell/ShellUtil.java" text eol=crlf
+"src/main/java/org/tzi/use/main/shell/runtime/IPluginShellCmd.java" text eol=crlf
+"src/main/java/org/tzi/use/main/shell/runtime/IPluginShellExtensionPoint.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/IPlugin.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/IPluginClassLoader.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/IPluginDescriptor.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/IPluginRuntime.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/MainPluginRuntime.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/gui/DiagramPlugin.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/gui/IPluginAction.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/gui/IPluginActionDelegate.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/gui/IPluginActionDescriptor.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/gui/IPluginDiagramExtensionPoint.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/gui/IPluginMModelElement.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/gui/impl/ActionExtensionPoint.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/gui/impl/DiagramExtensionPoint.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/gui/impl/MModelExtensionPoint.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/gui/impl/PluginAction.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/gui/impl/PluginActionDescriptor.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/gui/impl/PluginActionFactory.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/gui/impl/PluginActionProxy.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/gui/impl/PluginDiagramManipulator.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/gui/impl/PluginMMHTMLPrintVisitor.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/gui/impl/PluginMMPrintVisitor.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/gui/impl/StyleInfoProvider.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/guiFX/IPluginMModelElement.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/guiFX/impl/MModelExtensionPoint.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/guiFX/impl/PluginMMHTMLPrintVisitor.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/guiFX/impl/PluginMMPrintVisitor.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/impl/Plugin.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/impl/PluginDescriptor.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/impl/PluginRuntime.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/model/PluginActionModel.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/model/PluginModel.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/model/PluginServiceModel.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/model/PluginShellCmdModel.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/service/IPluginService.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/service/IPluginServiceDescriptor.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/service/impl/PluginServiceDescriptor.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/shell/IPluginShellCmdDelegate.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/shell/IPluginShellCmdDescriptor.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/shell/IPluginShellCmdProxy.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/shell/impl/PluginShellCmd.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/shell/impl/PluginShellCmdDescriptor.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/shell/impl/PluginShellCmdFactory.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/shell/impl/PluginShellCmdProxy.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/shell/impl/ShellExtensionPoint.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/util/ActionRegistry.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/util/IPluginParserSymbols.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/util/PluginClassLoader.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/util/PluginParser.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/util/PluginRegistry.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/util/ServiceRegistry.java" text eol=crlf
+"src/main/java/org/tzi/use/runtime/util/ShellCmdRegistry.java" text eol=crlf
+"src/main/java/org/tzi/use/util/input/shell/ShellReadline.java" text eol=crlf
+"src/main/resources/bin/start_use.bat" text eol=crlf
+"src/main/resources/bin/use" text eol=crlf
+"src/main/resources/bin/use.bat" text eol=crlf
+"src/main/resources/fxml/Main.fxml" text eol=crlf
+"src/main/resources/images/Aggregation.gif" -text
+"src/main/resources/images/Association.gif" -text
+"src/main/resources/images/CallStack.gif" -text
+"src/main/resources/images/Class.gif" -text
+"src/main/resources/images/ClassDiagram.gif" -text
+"src/main/resources/images/ClassExtentView.gif" -text
+"src/main/resources/images/Close.gif" -text
+"src/main/resources/images/CmdList.gif" -text
+"src/main/resources/images/CommunicationDiagram.gif" -text
+"src/main/resources/images/CompositeAggregation.gif" -text
+"src/main/resources/images/Diagram.gif" -text
+"src/main/resources/images/Generalization.gif" -text
+"src/main/resources/images/InvFalse.gif" -text
+"src/main/resources/images/InvNotAvail.gif" -text
+"src/main/resources/images/InvTrue.gif" -text
+"src/main/resources/images/New.gif" -text
+"src/main/resources/images/OCL.gif" -text
+"src/main/resources/images/ObjectDiagram.gif" -text
+"src/main/resources/images/ObjectProperties.gif" -text
+"src/main/resources/images/Select.gif" -text
+"src/main/resources/images/SequenceDiagram.gif" -text
+"src/main/resources/images/TreeClosed.gif" -text
+"src/main/resources/images/TreeCollapsed.gif" -text
+"src/main/resources/images/TreeExpanded.gif" -text
+"src/main/resources/images/TreeLeaf.gif" -text
+"src/main/resources/images/TreeOpen.gif" -text
+"src/main/resources/images/Zoom_in.gif" -text
+"src/main/resources/images/Zoom_out.gif" -text
+"src/main/resources/images/_image_licenses.txt" text eol=crlf
+"src/main/resources/images/arrow.gif" -text
+"src/main/resources/images/arrow.png" -text
+"src/main/resources/images/blue-chart-icon.png" -text
+"src/main/resources/images/document-open.png" -text
+"src/main/resources/images/document-print.png" -text
+"src/main/resources/images/export_pdf.png" -text
+"src/main/resources/images/invariant-view.png" -text
+"src/main/resources/images/line-chart.png" -text
+"src/main/resources/images/red-chart-icon.png" -text
+"src/main/resources/images/redo.png" -text
+"src/main/resources/images/refresh.png" -text
+"src/main/resources/images/save.png" -text
+"src/main/resources/images/shape-align-bottom-icon.png" -text
+"src/main/resources/images/shape-align-center-icon.png" -text
+"src/main/resources/images/shape-align-left-icon.png" -text
+"src/main/resources/images/shape-align-middle-icon.png" -text
+"src/main/resources/images/shape-align-right-icon.png" -text
+"src/main/resources/images/shape-align-top-icon.png" -text
+"src/main/resources/images/undo.png" -text
+"src/main/resources/images/use_icon.png" -text
+"src/main/resources/styles/style.css" text eol=crlf
+"src/main/resources/styles/template.css" text eol=crlf
+"src/main/resources/styles/treeview-style.css" text eol=crlf
+"src/test/java/org/tzi/use/architecture/AntCyclicDependenciesGUITest.java" text eol=crlf
+"src/test/java/org/tzi/use/architecture/AntLayeredArchitectureTest.java" text eol=crlf
+"src/test/java/org/tzi/use/architecture/MavenCyclicDependenciesGUITest.java" text eol=crlf
+"src/test/java/org/tzi/use/architecture/MavenLayeredArchitectureTest.java" text eol=crlf
+"src/test/java/org/tzi/use/gui/views/diagrams/util/CreationTimeRecorderTest.java" text eol=crlf
+"src/test/java/org/tzi/use/gui/views/diagrams/util/DirectedLineTest.java" text eol=crlf
+"src/test/java/org/tzi/use/gui/views/diagrams/util/DirectionTest.java" text eol=crlf
+"src/test/java/org/tzi/use/util/test/DiagramUtilTest.java" text eol=crlf
+"src/test/resources/archunit.properties" -text

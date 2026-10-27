@@ -16,6 +16,10 @@ class NativeStepReplayGuiIT {
     @Test void duplicateWorkbenchMenuOpenReusesItsOwnerAndCanReopenAfterClose() throws Exception {
         var session=new Session();MainWindow.setJavaFxCall(true);
         var window=StepReplayProof.onEdt(()->MainWindow.create(session,PluginRuntime.getInstance()));
+        // Swing centers a dialog on the default screen when its parent is
+        // hidden. Realize the test owner on the explicitly selected monitor
+        // before exercising the normal production dialog-opening code.
+        StepReplayProof.onEdt(()->{org.tzi.use.plugins.jacamo.ui.AcceptanceScreen.place(window);window.setVisible(true);return null;});
         class OfflineFacade implements JaCaMoFacade,AutoCloseable {
             int closes;
             @Override public String status(){return "synthetic/offline UI lifecycle";}

@@ -19,7 +19,7 @@ public final class XmlRuntimeStateMapping implements CaseRuntimeMapping {
         var asset=program.complement().assets().stream().filter(a->a.id().equals("official-model")).findFirst().orElseThrow();
         var source=ContractPayloads.model(CanonicalJson.object(CanonicalJson.decode(asset.bytes())));
         program.requireSourceHash(new SourceModelNormalizer().normalize(source).sourceHash());revision=source.modelRevision();
-        batch=new XmlRuntimeBatch(plan.inputs().specification(),model,program.hash(),source,plan.requirements(),program.bindings());
+        batch=new XmlRuntimeBatch(plan.inputs().specification(),model,program.hash(),source,plan.requirements(),program.bindings(),program.goalModel());
     }
     @Override public void validateObservation(VerificationObservation observation,String run,long generation,String revision) {
         program.assertUnchanged();

@@ -113,25 +113,25 @@ public final class AuctionMappingValidator {
             if (input == null || !input.sha256().equals(entry.attr("sha256")) || !input.archiveSha256().equals(entry.attr("archiveSha256")) || !input.archiveEntry().equals(entry.attr("entry")))
                 throw entry.location().error("ARCHIVE_PIN_MISMATCH");
         }
-        Set<String> cslCells = bundle.inputs().containsKey("target-drawio") ? diagramIds(bundle.require("target-drawio").bytes(), spec.root()) : Set.of();
-        Set<String> iStarCells = bundle.inputs().containsKey("input-istar") ? diagramIds(bundle.require("input-istar").bytes(), spec.root()) : Set.of();
-        Set<String> tasks = bundle.inputs().containsKey("target-istar") ? iStarTasks(bundle.require("target-istar").bytes(), spec.root()) : Set.of();
+        Set<String> cslCells = diagramIds(bundle.require("target-drawio").bytes(), spec.root());
+        Set<String> iStarCells = diagramIds(bundle.require("input-istar").bytes(), spec.root());
+        Set<String> tasks = iStarTasks(bundle.require("target-istar").bytes(), spec.root());
         // Reuse the located specification parser. Expression syntax uses the
         // host parser; model typing/evaluation still happens only at O01/native USE.
         var clauses = new HashSet<String>();
         new AuctionOclSpecificationLoader().load(bundle).clauses().forEach(c -> clauses.add(c.name()));
-        var csl = bundle.inputs().containsKey("target-csl") ? new CslFrontend().compile(new String(bundle.require("target-csl").bytes(), StandardCharsets.UTF_8), "target-csl").requireModel() : null;
+        var csl = new CslFrontend().compile(new String(bundle.require("target-csl").bytes(), StandardCharsets.UTF_8), "target-csl").requireModel();
         Set<String> viewNames = new HashSet<>(); spec.views().forEach(v -> viewNames.add(v.attr("name")));
         for (Node node : spec.nodes()) {
-            if (!cslCells.isEmpty() && node.attributes().containsKey("drawioCell") && !node.attr("drawioCell").contains("${")) member(cslCells, node.attr("drawioCell"), node, "CSL_CELL");
-            for (String attribute : List.of("istarCell", "istarCells")) if (!iStarCells.isEmpty() && node.attributes().containsKey(attribute)) for (String id : words(node.attr(attribute))) member(iStarCells, id, node, "ISTAR_CELL");
-            if (!tasks.isEmpty() && node.attributes().containsKey("istarTask")) member(tasks, node.attr("istarTask"), node, "ISTAR_TASK");
-            if (!tasks.isEmpty() && node.name().equals("taskBinding")) member(tasks, node.attr("istarCell"), node, "ISTAR_TASK");
+            if (node.attributes().containsKey("drawioCell") && !node.attr("drawioCell").contains("${")) member(cslCells, node.attr("drawioCell"), node, "CSL_CELL");
+            for (String attribute : List.of("istarCell", "istarCells")) if (node.attributes().containsKey(attribute)) for (String id : words(node.attr(attribute))) member(iStarCells, id, node, "ISTAR_CELL");
+            if (node.attributes().containsKey("istarTask")) member(tasks, node.attr("istarTask"), node, "ISTAR_TASK");
+            if (node.name().equals("taskBinding")) member(tasks, node.attr("istarCell"), node, "ISTAR_TASK");
             if (node.attributes().containsKey("clauses")) for (String name : words(node.attr("clauses"))) member(clauses, name, node, "OCL_CLAUSE");
             if (node.name().equals("externalInvariant")) member(clauses, node.attr("name"), node, "OCL_INVARIANT");
-            if (csl != null && node.attributes().containsKey("cslRole") && csl.findRole(node.attr("cslRole")).isEmpty()) throw node.location().error("CSL_ROLE_UNRESOLVED");
-            if (csl != null && node.attributes().containsKey("cslContext") && csl.findOrgContext(node.attr("cslContext")).isEmpty()) throw node.location().error("CSL_CONTEXT_UNRESOLVED");
-            if (csl != null && node.attributes().containsKey("cslStateOwner") && csl.findEntity(node.attr("cslStateOwner")).isEmpty()) throw node.location().error("CSL_ENTITY_UNRESOLVED");
+            if (node.attributes().containsKey("cslRole") && csl.findRole(node.attr("cslRole")).isEmpty()) throw node.location().error("CSL_ROLE_UNRESOLVED");
+            if (node.attributes().containsKey("cslContext") && csl.findOrgContext(node.attr("cslContext")).isEmpty()) throw node.location().error("CSL_CONTEXT_UNRESOLVED");
+            if (node.attributes().containsKey("cslStateOwner") && csl.findEntity(node.attr("cslStateOwner")).isEmpty()) throw node.location().error("CSL_ENTITY_UNRESOLVED");
             if (node.name().equals("field") && !Set.of("String", "Boolean", "Integer", "Real", "JavaBinary64", "JasonAtom", "Set(String)").contains(node.attr("type")) && !viewNames.contains(node.attr("type")))
                 throw node.location().error("FIELD_TYPE_UNSUPPORTED");
         }

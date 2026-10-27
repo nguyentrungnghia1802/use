@@ -8,6 +8,9 @@ param(
     [int]$BridgeTimeoutMillis = 60000,
     [bool]$Headless = $true,
     [switch]$InteractiveGui,
+    [switch]$PrepareOnly,
+    [string]$PreparationResultPath = "",
+    [string]$PreparationId = "",
     [switch]$SkipBuild,
     [string]$OclProfilePath = "",
     [ValidateSet("AUTO", "FULL")]
@@ -16,6 +19,8 @@ param(
     [string]$SemanticProfile = "NATIVE_CURRENT",
     [string]$MappingSpecificationPath = "",
     [string]$AuthoredOclPath = "",
+    [string]$AuthoredCslPath = "",
+    [string]$AuthoredIstarPath = "",
     [ValidateRange(32768, 1073741824)]
     [long]$RuntimeJournalMaxBytes = 67108864,
     [ValidateSet("AUTO", "WORLD", "FULL")]
@@ -34,7 +39,7 @@ $ObservationProfile = $ObservationProfile.ToUpperInvariant()
 if ($ObservationProfile -eq "AUTO") {
     # The original observed profile maps world/organisation outcomes, not Jason
     # mental/execution internals. Keep the rich trace default for old profiles.
-    $ObservationProfile = if ($SemanticProfile -in @("USE4GOAL_OBSERVED_V1", "AUCTION_OBSERVED_V1")) { "WORLD" } else { "FULL" }
+    $ObservationProfile = if ($SemanticProfile -in @("USE4GOAL_OBSERVED_V1", "AUCTION_OBSERVED_V1", "JACAMO_DECLARATIVE_XML")) { "WORLD" } else { "FULL" }
 }
 if ($SemanticProfile -eq "AUCTION_OBSERVED_V1") {
     # Explicit profile selection opts into the pinned source observers; no case
@@ -44,11 +49,25 @@ if ($SemanticProfile -eq "AUCTION_OBSERVED_V1") {
     $AuctionSchemeObserver = $true
     if (-not $PSBoundParameters.ContainsKey('RuntimeJournalMaxBytes')) { $RuntimeJournalMaxBytes = 268435456 }
 }
+if ($SemanticProfile -eq "JACAMO_DECLARATIVE_XML" -and -not $PSBoundParameters.ContainsKey('RuntimeJournalMaxBytes')) {
+    # Declarative observers retain exact source cuts and original-engine history.
+    # Keep a finite archive budget; callers may select a smaller/larger explicit bound.
+    $RuntimeJournalMaxBytes = 268435456
+}
 $producerObservationArguments = @("-Djacamo.bridge.structured-observation=$(([bool]($ObservationProfile -eq 'FULL')).ToString().ToLowerInvariant())")
 if ($AuctionStepMarkers) { $producerObservationArguments += '-Djacamo.bridge.auction.step-markers=true' }
 if ($AuctionSourceClock) { $producerObservationArguments += '-Djacamo.bridge.auction.clock=true' }
 if ($AuctionSchemeObserver) { $producerObservationArguments += '-Djacamo.bridge.auction.scheme-observer=true' }
 $semanticJvmArguments = @("-Duse.jacamo.semantics.profile=$SemanticProfile", "-Duse.jacamo.runtime.journal.maxBytes=$RuntimeJournalMaxBytes")
+if ($PrepareOnly -and ($InteractiveGui -or [string]::IsNullOrWhiteSpace($PreparationResultPath) -or $PreparationId -notmatch '^[0-9a-f-]{36}$')) { throw 'GUI_PREPARATION_OWNER_REQUIRED' }
+if (([string]::IsNullOrWhiteSpace($AuthoredCslPath) -ne [string]::IsNullOrWhiteSpace($AuthoredIstarPath)) -or
+    ((-not [string]::IsNullOrWhiteSpace($AuthoredCslPath)) -and $SemanticProfile -ne 'JACAMO_DECLARATIVE_XML')) { throw 'AUTHORED_MODEL_SELECTION_PAIR_AND_DECLARATIVE_MODE_REQUIRED' }
+if (-not [string]::IsNullOrWhiteSpace($AuthoredCslPath)) {
+    foreach ($entry in @(@($AuthoredCslPath,'.csl'),@($AuthoredIstarPath,'.istar'))) {
+        if (-not (Test-Path -LiteralPath $entry[0] -PathType Leaf) -or -not $entry[0].EndsWith($entry[1],[StringComparison]::OrdinalIgnoreCase)) { throw 'AUTHORED_MODEL_FILE_INVALID' }
+    }
+    $semanticJvmArguments += @("-Duse.jacamo.mapping.csl=$([IO.Path]::GetFullPath($AuthoredCslPath))","-Duse.jacamo.mapping.istar=$([IO.Path]::GetFullPath($AuthoredIstarPath))")
+}
 if ($SemanticProfile -ne "NATIVE_CURRENT") {
     if ([string]::IsNullOrWhiteSpace($MappingSpecificationPath)) { throw "AUTHORED_SPECIFICATION_FILE_REQUIRED:$SemanticProfile" }
     $semanticSpecification = [IO.Path]::GetFullPath($MappingSpecificationPath)
@@ -106,14 +125,22 @@ $stagedProject = Join-Path $runEvidence ("staging-" + $safeProjectStem)
 $jcmFile = Join-Path $stagedProject (Split-Path -Leaf $sourceJcm)
 $secretFile = Join-Path $stagedProject "bridge-secret.hex"
 $stopFile = Join-Path $stagedProject "stop.flag"
-$consumerReadyFile = if ([string]::IsNullOrWhiteSpace($externalOcl)) { "" } else { Join-Path $stagedProject "consumer-ready.flag" }
-$startupControlDirectory = if ($InteractiveGui) { Join-Path $runEvidence "startup-control" } else { "" }
-if ($InteractiveGui) { New-Item -ItemType Directory -Path $startupControlDirectory | Out-Null }
+$consumerReadyFile = if ([string]::IsNullOrWhiteSpace($externalOcl) -and $SemanticProfile -ne 'JACAMO_DECLARATIVE_XML') { "" } else { Join-Path $stagedProject "consumer-ready.flag" }
+$observationPlan = ""
+if ($SemanticProfile -eq 'JACAMO_DECLARATIVE_XML') {
+    if ($AuctionStepMarkers -or $AuctionSourceClock -or $AuctionSchemeObserver) { throw 'DECLARATIVE_PROFILE_FORBIDS_LEGACY_OBSERVERS' }
+    $observationPlan = Join-Path $runEvidence 'observation-requests.json'
+    $producerObservationArguments += "-Djacamo.bridge.observation.plan=$observationPlan"
+    $semanticJvmArguments += "-Djacamo.bridge.observation.plan=$observationPlan"
+}
+$startupControlDirectory = if ($InteractiveGui -or $PrepareOnly) { Join-Path $runEvidence "startup-control" } else { "" }
+if ($InteractiveGui -or $PrepareOnly) { New-Item -ItemType Directory -Path $startupControlDirectory | Out-Null }
 $producer = $null
 $consumer = $null
 $gui = $null
 $runCompleted = $false
 $producerFailure = $null
+$handoffPrepared = $false
 $runtimeProjectBuild = "NOT_REQUIRED"
 $runtimeProjectClasses = ""
 
@@ -241,7 +268,7 @@ try {
 
     if (-not $SkipBuild -and -not $installedLayout) {
         if ($InteractiveGui) {
-            Invoke-MavenBuild @("-B", "-pl", "use-plugin", "-am", "-DskipTests",
+            Invoke-MavenBuild @("-B", "-pl", "use-plugin", "-am", "-Dmaven.test.skip=true",
                 "-Dmaven.antrun.skip=true", "package")
         } else {
             Invoke-MavenBuild @("-B", "-pl", "use-plugin", "-am", "-Dmaven.test.skip=true", "-Dmaven.antrun.skip=true", "package")
@@ -278,6 +305,7 @@ try {
     $distribution = $digestMatch.Matches[0].Groups[1].Value
     $sourceDigest = (Get-FileHash -Algorithm SHA256 -LiteralPath $sourceJcm).Hash.ToLowerInvariant()
 
+    if ($PrepareOnly -and ($runEvidence + [IO.Path]::DirectorySeparatorChar).StartsWith($sourceProject.TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase)) { throw 'GUI_STAGING_MUST_BE_OUTSIDE_SELECTED_SOURCE_PROJECT' }
     Copy-Item -LiteralPath $sourceProject -Destination $stagedProject -Recurse -Force
     New-Item -ItemType Directory -Force -Path (Join-Path $stagedProject "log") | Out-Null
     $stagedGradleWrapper = Join-Path $stagedProject "gradlew.bat"
@@ -372,6 +400,26 @@ try {
     $jcmText = $jcmText.Substring(0, $closing) + $platform + [Environment]::NewLine + $jcmText.Substring($closing)
     [IO.File]::WriteAllText($jcmFile, $jcmText, [Text.UTF8Encoding]::new($false))
     $injectedDigest = (Get-FileHash -Algorithm SHA256 -LiteralPath $jcmFile).Hash.ToLowerInvariant()
+
+    if ($PrepareOnly) {
+        # Transfer only prepared paths/arguments to the existing USE JVM. The GUI
+        # owns the actual Java child and bounded stream readers; no second USE.
+        $prepared = @{
+            version = 'OWNED_JACAMO_PREPARATION/1.0'; preparationId = $PreparationId
+            runId = $runId; sourceJcm = $sourceJcm; sourceSha256 = $sourceDigest
+            derivedJcm = $jcmFile; derivedSha256 = $injectedDigest
+            runEvidence = $runEvidence; stagedProject = $stagedProject; classpath = $producerClasspath
+            stopFile = $stopFile; secretFile = $secretFile; startupDirectory = $startupControlDirectory
+            observationPlan = $observationPlan; endpoint = "tcp://127.0.0.1:$port"; distributionSha256 = $distribution
+            producerJvmArguments = @($producerObservationArguments); startupSeconds = $TimeoutSeconds
+        }
+        $destination = [IO.Path]::GetFullPath($PreparationResultPath)
+        [IO.File]::WriteAllText($destination + '.tmp',($prepared | ConvertTo-Json -Depth 6),[Text.UTF8Encoding]::new($false))
+        Move-Item -LiteralPath ($destination + '.tmp') -Destination $destination
+        $handoffPrepared = $true
+        Write-Host 'GUI_JACAMO_PREPARED_NO_PROCESS_STARTED'
+        return
+    }
 
     $producerHeadless = if ($InteractiveGui) { $false } else { $Headless }
     # GUI lifetime follows the USE window. TimeoutSeconds still bounds startup and headless runs.
@@ -542,6 +590,7 @@ try {
             $producerFailure = "PRODUCER_FAILED:$($producer.Process.ExitCode)"
         }
     }
+    if (-not $handoffPrepared) {
     foreach ($generatedFile in @($stopFile, $secretFile, $consumerReadyFile) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) {
         try { if (Test-Path -LiteralPath $generatedFile) { Remove-Item -LiteralPath $generatedFile -Force } } catch { }
     }
@@ -570,4 +619,5 @@ try {
         } catch { }
     }
     if ($null -ne $producerFailure) { throw $producerFailure }
+    }
 }

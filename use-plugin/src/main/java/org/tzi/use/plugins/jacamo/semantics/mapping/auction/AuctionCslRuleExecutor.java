@@ -40,11 +40,10 @@ public final class AuctionCslRuleExecutor {
         var model=generated.model();String fingerprint=generated.fingerprint();
         var traces=generated.traces().stream().map(t->{var r=t.row();return new Trace(t.ruleId(),new Row(r.selectorId(),r.sourceId(),r.sourceDigest(),r.values(),r.line(),r.column(),r.locator(),r.matched()),t.target(),t.drawioCell());}).toList();
         var frontend = new CslFrontend();
-        if (bundle.inputs().containsKey("target-csl") && bundle.inputs().containsKey("target-drawio")) {
-            CslModel oracle = frontend.compile(new String(bundle.require("target-csl").bytes(), StandardCharsets.UTF_8), "canonical-csl-oracle").requireModel();
-            CslModel diagram = frontend.compile(embeddedCsl(bundle.require("target-drawio").bytes(), spec.root()), "drawio-csl-oracle").requireModel();
-            if (!fingerprint.equals(CslModelFingerprint.of(oracle)) || !fingerprint.equals(CslModelFingerprint.of(diagram))) throw spec.root().location().error("M1_TARGET_ORACLE_MISMATCH");
-        }
+        // Historical profile owns a frozen oracle bundle. New XML programs never call this adapter.
+        CslModel oracle = frontend.compile(new String(bundle.require("target-csl").bytes(), StandardCharsets.UTF_8), "canonical-csl-oracle").requireModel();
+        CslModel diagram = frontend.compile(embeddedCsl(bundle.require("target-drawio").bytes(), spec.root()), "drawio-csl-oracle").requireModel();
+        if (!fingerprint.equals(CslModelFingerprint.of(oracle)) || !fingerprint.equals(CslModelFingerprint.of(diagram))) throw spec.root().location().error("M1_TARGET_ORACLE_MISMATCH");
         var omissions = spec.root().child("omittedConcepts").children("omit").stream().map(node -> new Omission(node.attr("id"), node.attr("concept"), node.attr("handledBy"), node.attr("reason"), "INTENTIONAL_M1_OMISSION_NOT_RUNTIME_VERDICT", node.children("trace"))).toList();
         return new Result(model, generated.generatedSource(), fingerprint, traces, omissions);
     }

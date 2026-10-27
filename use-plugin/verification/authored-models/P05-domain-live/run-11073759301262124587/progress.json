@@ -1,0 +1,1 @@
+{"entries":3403,"originalCalls":["GoalModelInstanceTranslator.propagateDependencies","IStarPropagation.assignGoalTask:aggregate-only","IStarPropagation.closePending","TaskMarking.update"],"status":"JaCaMo Bridge LIVE model=53d70e61fc467f641ea3d2eaf8f65af6b65af1a62af6ee66338765d6b8bf481c","tasks":["A_decide_t2","A_start_t1","A_start_t2","P_bid_t1","P_bid_t2"]}

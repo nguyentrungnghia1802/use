@@ -18,7 +18,7 @@ import org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeStateM
 import org.tzi.use.plugins.jacamo.ui.SemanticEvidencePanel;
 import static org.junit.jupiter.api.Assertions.*;
 
-class GenericMappingArchitectureTest {
+public class GenericMappingArchitectureTest {
     @TempDir Path temp;
 
     private static final String AUCTION_PACKAGE = "org.tzi.use.plugins.jacamo.semantics.mapping.auction.";
@@ -31,6 +31,19 @@ class GenericMappingArchitectureTest {
             "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime",
             "org.tzi.use.plugins.jacamo.semantics.mapping.ocl"
     );
+
+    @Test void neutralProducerProvidersContainNoCaseMappingConstantsOrLegacyHooks()throws Exception {
+        for(String name:List.of("ProductionObservationSession","FrameworkObservationProviders","ObservationCapabilityRegistry",
+                "JasonStepCapability","JasonStepObservation","JasonPlanInstrumentation","ArtifactFieldObservation",
+                "CartagoOperationHistory","MoiseSchemeCapability","NplLifecycleCapability")) {
+            String resource="org/jacamo/bridge/adapter/"+name+".class";
+            try(var input=getClass().getClassLoader().getResourceAsStream(resource)) {
+                assertNotNull(input,resource);String bytes=new String(input.readAllBytes(),java.nio.charset.StandardCharsets.ISO_8859_1);
+                for(String forbidden:List.of("Auction","auction_env","currentWinner","P_bid_t2","goalSatisfied(bid)","mapping/auction"))
+                    assertFalse(bytes.contains(forbidden),name+" contains case logic: "+forbidden);
+            }
+        }
+    }
 
     @Test
     void genericMappingEngineAndXmlPackagesHaveZeroAuctionDependencies() throws Exception {
@@ -186,6 +199,42 @@ class GenericMappingArchitectureTest {
         assertTrue(program.cslModel().findEntity("Pallet").isPresent(), "Pallet entity must exist in CSL model");
         assertTrue(program.goalModel().findElement("EnsureQuality").isPresent(), "EnsureQuality must exist in goal model");
         assertEquals("warehouse-case-b", program.xmlPlan().inputs().specification().root().attr("id"));
+    }
+
+    @Test
+    void caseBNativeRuntimeAndAuthoredOclFollowItsXmlWithoutAnotherJavaMapper()throws Exception {
+        var helper=new GenericMappingEngineTest();helper.temp=temp;helper.input();
+        Path mapping = temp.resolve("mapping.xml");
+        Path ocl = temp.resolve("requirements.ocl");
+        String previous = hash(ocl);
+        Files.writeString(ocl,"context Pallet inv Nonnegative: self.weight >= 0\n");
+        String xml=Files.readString(mapping).replace(previous,hash(ocl)).replaceAll("\\bCounter\\b","Pallet").replace("name=\"p\" owner=\"Pallet\"","name=\"weight\" owner=\"Pallet\"").replace("self.p","self.weight").replace("Worker","Supervisor").replace("Positive","EnsureQuality");
+        String runtime=XmlRuntimeMappingTest.PLAN.replace("targetType=\"Counter\"","targetType=\"Pallet\"").replace("target=\"p\"","target=\"weight\"");
+        xml=xml.replace("<runtime/>",runtime).replace("</bindings>","<oclClause name=\"Nonnegative\" context=\"context Pallet\"/></bindings>");Files.writeString(mapping,xml);
+        var source=GenericMappingEngineTest.official(GenericMappingEngineTest.JCM);var program=new GenericMappingEngine().map(source,MappingInputs.read(GenericMappingEngineTest.JCM,mapping,ocl));
+        var built=new CodeGroundedNativePipeline().buildCanonicalProgram(source,NativeProjectionMode.AUTO,program);
+        var fixture=new XmlRuntimeMappingTest.Fixture(null,source.modelRevision(),built);var cuts=new XmlRuntimeMappingTest();
+        try(var projector=new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector(built,"case-b",1,source.modelRevision(),temp.resolve("runtime"))) {
+            var system=projector.system();projector.applySnapshot(cuts.cut(fixture,1,Map.of("parcel",3),org.jacamo.bridge.contract.Completeness.COMPLETE),"case-b",1);
+            var first=projector.coordinator().awaitEvaluation(projector.coordinator().latest(),15000);
+            var pallet=projector.mutations().objectForSemanticId(XmlRuntimeMappingTest.id("parcel").canonical());assertEquals("Pallet",pallet.cls().name());assertEquals("3",pallet.state(system.state()).attributeValue("weight").toString());
+            assertTrue(first.semantic().constraints().stream().anyMatch(c->c.kind().equals("INVARIANT")&&c.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.PASS),first.semantic().constraints().toString());
+            projector.applySnapshot(cuts.cut(fixture,2,Map.of("parcel",-1),org.jacamo.bridge.contract.Completeness.COMPLETE),"case-b",1);
+            var negative=projector.coordinator().awaitEvaluation(projector.coordinator().latest(),15000);
+            assertTrue(negative.semantic().constraints().stream().anyMatch(c->c.kind().equals("INVARIANT")&&c.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.FAIL));
+            projector.applySnapshot(cuts.cut(fixture,3,Map.of("parcel",-1),org.jacamo.bridge.contract.Completeness.PARTIAL),"case-b",1);
+            var partial=projector.coordinator().awaitEvaluation(projector.coordinator().latest(),15000);assertTrue(pallet.state(system.state()).attributeValue("weight").isUndefined());
+            assertFalse(partial.semantic().constraints().stream().anyMatch(c->c.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.FAIL),"Unknown property is not false");assertSame(system,projector.system());assertNull(program.casePlan());
+            new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReplay().exportBundle(projector,built.nativeResult().export().useText(),temp.resolve("case-b-recording"));
+        }
+    }
+
+    /** Reuse the exact executable XML/native PASS/FAIL/PARTIAL fixture in the
+     * cold distribution gate; no production Java mapper is supplied. */
+    public static Path caseBRecording(Path directory)throws Exception {
+        var fixture=new GenericMappingArchitectureTest();fixture.temp=Files.createDirectories(directory);
+        fixture.caseBNativeRuntimeAndAuthoredOclFollowItsXmlWithoutAnotherJavaMapper();
+        return fixture.temp.resolve("case-b-recording");
     }
 
     @Test

@@ -40,7 +40,7 @@ class Use4GoalWorkbenchIT {
                 var previous=new long[]{System.nanoTime()};
                 var heartbeat=edt(()->new javax.swing.Timer(50,event->{long now=System.nanoTime();delays.add(Math.max(0,now-previous[0]-TimeUnit.MILLISECONDS.toNanos(50)));previous[0]=now;}));
                 try {
-                    edt(()->{frame.setContentPane(panel);frame.setSize(1500,1000);frame.setVisible(true);heartbeat.start();
+                    edt(()->{frame.setContentPane(panel);frame.setSize(1500,1000);org.tzi.use.plugins.jacamo.ui.AcceptanceScreen.place(frame);frame.setVisible(true);heartbeat.start();
                         component(panel,"engine-profile",JComboBox.class).setSelectedItem("USE4GOAL_OBSERVED_V1");component(panel,"mapping-specification",JTextField.class).setText(rules.toString());panel.importProject(producer.jcm);return null;});
                     enabled(panel,"start-runtime",errors);var system=host.system();
                     assertEquals("USE4GOAL_OBSERVED_V1",facade.runtimeVerificationResult().semantic().profile());assertFalse(Files.exists(producer.control.resolve("started.json")));

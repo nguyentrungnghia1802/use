@@ -100,9 +100,29 @@ class MultiCaseV2PipelineTest {
                 "counter-team", "counterteam", "counter1", "guardedset", "setvalue");
         List<String> findings = new ArrayList<>();
         for (Path input : inputs) {
-            String text = Files.readString(input, StandardCharsets.UTF_8).toLowerCase(java.util.Locale.ROOT);
+            String text = Files.readString(input, StandardCharsets.UTF_8);
+            if(input.toString().endsWith(".java"))text=withoutNativeSetConstructor(text);
+            text=text.toLowerCase(java.util.Locale.ROOT);
             for (String token : forbidden) if (text.contains(token)) findings.add(input + ":" + token);
         }
         assertTrue(findings.isEmpty(), "case-specific production content: " + findings);
+    }
+
+    /** SetValue is the host USE OCL value class, not a case operation named setValue.
+     * Mask only the exact Java constructor token; inspect its arguments and all literals unchanged. */
+    private static String withoutNativeSetConstructor(String source) {
+        var token=java.util.regex.Pattern.compile(
+                "\"(?:\\\\.|[^\"\\\\])*\"|'(?:\\\\.|[^'\\\\])*'|//[^\\r\\n]*|/\\*[\\s\\S]*?\\*/"
+                +"|(?<nativeConstructor>\\bnew\\s+(?:org\\.tzi\\.use\\.uml\\.ocl\\.value\\.)?SetValue\\s*\\()").matcher(source);
+        var result=new StringBuffer();
+        while(token.find())token.appendReplacement(result,java.util.regex.Matcher.quoteReplacement(token.group("nativeConstructor")==null?token.group():"new NativeOclSet("));
+        token.appendTail(result);return result.toString();
+    }
+
+    @Test void caseDispatchGuardDistinguishesNativeSetConstructionFromCaseDataAndOperations() {
+        assertFalse(withoutNativeSetConstructor("return new SetValue(type, values);").toLowerCase(java.util.Locale.ROOT).contains("setvalue"));
+        assertFalse(withoutNativeSetConstructor("return new org.tzi.use.uml.ocl.value.SetValue(type, values);").toLowerCase(java.util.Locale.ROOT).contains("setvalue"));
+        for(String source:List.of("object.setValue(1)","case \"setValue\": dispatch();", "String operation=\"SetValue\";", "new SetValue(type, List.of(\"setValue\"))", "String mapping=\"new SetValue(type)\";", "// case-specific new SetValue(type)"))
+            assertTrue(withoutNativeSetConstructor(source).toLowerCase(java.util.Locale.ROOT).contains("setvalue"),source);
     }
 }

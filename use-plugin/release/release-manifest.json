@@ -344,6 +344,74 @@
     {
       "source": "../use-jacamo-semantic-engine/provenance/single-owner-context-v1.md",
       "path": "provenance/single-owner-context-v1.md"
+    },
+    {
+      "source": "examples/auction/authored-v1/auction_csl.csl",
+      "path": "examples/auction-semantic/authored-v1/auction_csl.csl"
+    },
+    {
+      "source": "examples/auction/authored-v1/auction_istar_final.istar",
+      "path": "examples/auction-semantic/authored-v1/auction_istar_final.istar"
+    },
+    {
+      "source": "examples/auction/authored-v1/auction_constraints_final_fixed.ocl",
+      "path": "examples/auction-semantic/authored-v1/auction_constraints_final_fixed.ocl"
+    },
+    {
+      "source": "examples/auction/authored-v1/auction-mapping.xml",
+      "path": "examples/auction-semantic/authored-v1/auction-mapping.xml"
+    },
+    {
+      "source": "examples/auction/authored-v1/provenance.json",
+      "path": "examples/auction-semantic/authored-v1/provenance.json"
+    },
+    {
+      "source": "examples/auction/source-confirmed-v1/auction-mapping.xml",
+      "path": "examples/auction-semantic/source-confirmed-v1/auction-mapping.xml"
+    },
+    {
+      "source": "examples/auction/source-confirmed-v1/auction_confirmed.ocl",
+      "path": "examples/auction-semantic/source-confirmed-v1/auction_confirmed.ocl"
+    },
+    {
+      "source": "examples/auction/source-confirmed-v1/README.md",
+      "path": "examples/auction-semantic/source-confirmed-v1/README.md"
+    },
+    {
+      "source": "examples/auction/authored-v1/README.md",
+      "path": "examples/auction-semantic/authored-v1/README.md"
+    },
+    {
+      "source": "src/main/resources/META-INF/use4goal-view-provenance.json",
+      "path": "provenance/use4goal-view-provenance.json"
+    },
+    {
+      "source": "src/main/resources/META-INF/licenses/use4Goal-views-GPL-3.0.txt",
+      "path": "licenses/use4Goal-views-GPL-3.0.txt"
+    },
+    {
+      "source": "../use-jacamo-semantic-engine/provenance/patches/P-IADM-02.diff",
+      "path": "provenance/P-IADM-02.diff"
+    },
+    {
+      "source": "examples/csl-counter/authored-v1/stock.csl",
+      "path": "examples/csl-counter/authored-v1/stock.csl"
+    },
+    {
+      "source": "examples/csl-counter/authored-v1/stock.istar",
+      "path": "examples/csl-counter/authored-v1/stock.istar"
+    },
+    {
+      "source": "examples/csl-counter/authored-v1/stock.ocl",
+      "path": "examples/csl-counter/authored-v1/stock.ocl"
+    },
+    {
+      "source": "examples/csl-counter/authored-v1/stock-mapping.xml",
+      "path": "examples/csl-counter/authored-v1/stock-mapping.xml"
+    },
+    {
+      "source": "examples/csl-counter/authored-v1/README.md",
+      "path": "examples/csl-counter/authored-v1/README.md"
     }
   ],
   "releaseStatus": "frozen-candidate-not-tagged",

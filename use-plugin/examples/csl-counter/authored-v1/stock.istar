@@ -1,0 +1,5 @@
+istar StockRequirements {
+  role StockObserver {
+    goal StockSafe : Achieve condition {[ Pallet.allInstances()->notEmpty() and Pallet.allInstances()->forAll(p | p.weight >= 0) ]}
+  }
+}

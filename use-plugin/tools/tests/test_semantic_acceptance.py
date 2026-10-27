@@ -4,6 +4,7 @@ Run: python -B -m unittest discover -s use-plugin/tools/tests -v
 Fixtures qualify the validator only; they are never live Auction evidence.
 """
 import copy
+import base64
 import importlib.util
 import io
 import json
@@ -31,6 +32,45 @@ class AcceptanceTest(unittest.TestCase):
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(json.dumps(value), encoding="utf-8")
         return p
+
+    def generic_program(self):
+        def asset(ident, fmt, content):
+            data = content.encode()
+            return dict(id=ident, format=fmt, sha256=gate.sha(data), contentBase64=base64.b64encode(data).decode())
+        return dict(schemaVersion="1.2.0", programHash="a" * 64, declarative=dict(version="JACAMO_MAPPING_XML/2.0",
+                    xml=asset("xml", "JACAMO_MAPPING_XML/2.0", "<mapping/>"),
+                    ocl=asset("ocl", "NATIVE_USE_OCL", "context Stock inv: true"), sources=[asset("jcm", "JCM", "mas sample {}")]))
+
+    def test_generic_inputs_reject_oracles_legacy_fallback_and_digest_tamper(self):
+        value = self.generic_program()
+        gate.validate_declarative_inputs(value)
+        value["case"] = {}
+        with self.assertRaisesRegex(ValueError, "NO_LEGACY_FALLBACK"):
+            gate.validate_declarative_inputs(value)
+        del value["case"]
+        value["declarative"]["sources"][0]["format"] = "CSL"
+        with self.assertRaisesRegex(ValueError, "ORACLE_AS_PRODUCTION_SOURCE"):
+            gate.validate_declarative_inputs(value)
+        value["declarative"]["sources"][0]["format"] = "JCM"
+        value["declarative"]["ocl"]["contentBase64"] = base64.b64encode(b"changed").decode()
+        with self.assertRaisesRegex(ValueError, "GENERIC_INPUT_DIGEST"):
+            gate.validate_declarative_inputs(value)
+
+    def test_generic_recording_dialect_is_explicit_and_cannot_replace_legacy(self):
+        value = self.generic_program()
+        data = json.dumps(value).encode()
+        receipt = dict(programHash=value["programHash"], stateHash="b" * 64, resultHash="c" * 64)
+        manifest = dict(schemaVersion="3.3.0", programHash=value["programHash"], finalStateHash=receipt["stateHash"],
+                        finalResultHash=receipt["resultHash"], files={"program.json": gate.sha(data)})
+        path = self.root / "recording.zip"
+        with zipfile.ZipFile(path, "w") as z:
+            z.writestr("program.json", data)
+            z.writestr("manifest.json", json.dumps(manifest))
+        self.assertEqual(value, gate.recording_program(path, receipt, declarative=True))
+        with self.assertRaisesRegex(ValueError, "AUCTION_RECORDING_SCHEMA"):
+            gate.recording_program(path, receipt)
+        with self.assertRaisesRegex(ValueError, "GENERIC_REQUIRES_COMPATIBILITY_ACCEPTANCE"):
+            gate.validate_generic({}, path, path)
 
     def test_old_gate_keeps_all_a_to_v_and_counter_requirements(self):
         names = {name for group in gate.MATRIX.values() for name in group}

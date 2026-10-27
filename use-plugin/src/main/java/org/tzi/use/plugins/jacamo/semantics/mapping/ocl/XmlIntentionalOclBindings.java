@@ -18,8 +18,9 @@ public final class XmlIntentionalOclBindings {
     }
     private JaCaMoOclContractMapping.Result compile(SemanticProgram program,org.tzi.use.uml.mm.MModel model,ObserverSchema observers) {
         var result=new ArrayList<JaCaMoOclContractMapping.BoundContract>();var api=new UseModelApi(model);
+        String origin=program.xmlPlan().inputs().authoredModels()?"AUTHORED":"GENERATED";
         try(var compiler=new NativeOclBackend(model,program.hash(),program.profile().engine().name())) {
-            for(var invariant:program.cslModel().invariants())add(result,compiler,new OclContractSpec("CSL:"+invariant.qualifiedName(),OclContractSpec.Kind.INVARIANT,model.getClass(invariant.contextType()),null,invariant.expression()),"","GENERATED_CSL");
+            for(var invariant:program.cslModel().invariants())add(result,compiler,new OclContractSpec("CSL:"+invariant.qualifiedName(),OclContractSpec.Kind.INVARIANT,model.getClass(invariant.contextType()),null,invariant.expression()),"",origin+"_CSL");
             for(var node:program.xmlPlan().inputs().specification().root().child("bindings").children("elementRuntime")) {
                 var template=program.goalBindings().elements().get(node.attr("target"));if(template.derived())continue;
                 var variables=new TreeMap<String,Type>();
@@ -31,12 +32,12 @@ public final class XmlIntentionalOclBindings {
                 var element=program.goalModel().findElement(template.elementId()).orElseThrow();var self=model.getClass(template.selfDeclaration());
                 if(element instanceof Goal goal) {
                     if(goal.oclSource()==null||goal.oclSource().isBlank())throw node.location().error("INCOMPLETE:LEAF_GOAL_CONDITION_REQUIRED");
-                    add(result,compiler,new OclContractSpec("GOAL:"+goal.id(),OclContractSpec.Kind.GOAL,self,null,goal.oclSource(),variables),goal.id(),"GENERATED_ISTAR_CONDITION");
+                    add(result,compiler,new OclContractSpec("GOAL:"+goal.id(),OclContractSpec.Kind.GOAL,self,null,goal.oclSource(),variables),goal.id(),origin+"_ISTAR_CONDITION");
                 }
                 if(element instanceof Task task) {
                     if(task.preconditions().size()!=1||task.postconditions().size()!=1)throw node.location().error("TASK_PREDICATE_SLOTS_REQUIRED");
-                    add(result,compiler,new OclContractSpec("TASK:"+task.id()+":pre",OclContractSpec.Kind.TASK_PRE,self,null,task.preconditions().getFirst().oclBody(),variables),task.id(),"GENERATED_ISTAR_PRE");
-                    add(result,compiler,new OclContractSpec("TASK:"+task.id()+":post",OclContractSpec.Kind.TASK_POST,self,null,task.postconditions().getFirst().oclBody(),variables),task.id(),"GENERATED_ISTAR_POST");
+                    add(result,compiler,new OclContractSpec("TASK:"+task.id()+":pre",OclContractSpec.Kind.TASK_PRE,self,null,task.preconditions().getFirst().oclBody(),variables),task.id(),origin+"_ISTAR_PRE");
+                    add(result,compiler,new OclContractSpec("TASK:"+task.id()+":post",OclContractSpec.Kind.TASK_POST,self,null,task.postconditions().getFirst().oclBody(),variables),task.id(),origin+"_ISTAR_POST");
                 }
             }
         }catch(org.tzi.use.api.UseApiException invalid){throw new IllegalArgumentException("XML_INTENTIONAL_TYPE_UNRESOLVED",invalid);}

@@ -1,0 +1,22 @@
+{
+  "command": [
+    "D:\\DevTools\\Java\\jdk-21.0.5\\bin\\java.exe",
+    "-cp",
+    "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\target\\installed-declarative-case-b-3151762759039269223\\install\\use-7.5.0\\lib\\use-gui.jar;D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\target\\installed-declarative-case-b-3151762759039269223\\driver",
+    "org.tzi.use.plugins.jacamo.semantics.PackagedCanonicalReplayMain",
+    "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\target\\installed-declarative-case-b-3151762759039269223\\install\\use-7.5.0",
+    "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\target\\installed-declarative-case-b-3151762759039269223\\fixture\\case-b-recording",
+    "7fcb632f31cc4c5ccf1b00410c52b5209763ae6b44fda1aa6b14afe4253b43a1",
+    "deeb31c95682c2cbc15382df55c6ec400757ee1a4d833ba93f5bd86b13ea3517",
+    "Pallet.allInstances()->one(p | p.weight.oclIsUndefined())"
+  ],
+  "cslHash": "8d9c59be9a025f121d0e6b0689bac646cfb91c8659853cbbeb3e2e4290a6e3b7",
+  "fullHostArchiveSha256": "7401e604b021945fa3c0d593786f20faee9e82dfeae222af07a10beb5c14e960",
+  "goalHash": "40fe6f3689147de2db99d7c18e7c92a3f58c73dc177dc4ab99495ad8d455470e",
+  "programHash": "bacd06fa11fb0ee39cb2ea0b79a63242ffaee1661e1d12359ef76a9cab22af25",
+  "resultHash": "deeb31c95682c2cbc15382df55c6ec400757ee1a4d833ba93f5bd86b13ea3517",
+  "scope": "INSTALLED_DECLARATIVE_COMPONENT_REPLAY_NOT_LIVE_CASE_B",
+  "stateHash": "7fcb632f31cc4c5ccf1b00410c52b5209763ae6b44fda1aa6b14afe4253b43a1",
+  "status": "PASS",
+  "work": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\target\\installed-declarative-case-b-3151762759039269223"
+}

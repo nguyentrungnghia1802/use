@@ -9,6 +9,20 @@ import org.jacamo.bridge.contract.*;
 import org.junit.jupiter.api.Test;
 
 class BridgeMirrorStateMachineTest {
+    @Test void coherentSourceCutIsNotADomainIncarnationAndCannotBypassItsScopeChecks() {
+        var mark=new SourceWatermark("cartago",1);
+        var artifact=new RuntimeFact(new BridgeEntityId("cartago","environment","artifact","/main","counter","physical"),RuntimeFactKind.ARTIFACT,Map.of("name","counter"),List.of(),ProjectionStatus.MATERIALIZED_FAITHFULLY,Completeness.COMPLETE,List.of());
+        var cut=new RuntimeSnapshot("capture","revision",Instant.EPOCH,Instant.EPOCH,Map.of("cartago",mark),Map.of("cartago",mark),1,List.of(artifact),Map.of("cartago",Completeness.COMPLETE),"proof",Map.of("capturedFactKinds",List.of("ARTIFACT")));
+        var after=CartagoSourceCut.payload(cut);
+        var event=new RuntimeEvent("cut","session",2,"revision","cartago","cartago",1,Instant.EPOCH,RuntimeEventKind.CHANGED,RuntimeFactKind.RUNTIME_EVENT,ProjectionStatus.EVIDENCE_ONLY,new BridgeEntityId("cartago","environment","source-cut","env","capture","session"),null,"","",Map.of(),after,mark,Completeness.COMPLETE,List.of());
+        var mirror=live();var before=mirror.facts();assertTrue(mirror.apply(event));assertFalse(mirror.apply(event));
+        assertTrue(mirror.facts().entrySet().containsAll(before.entrySet()));assertEquals(artifact,mirror.facts().get(artifact.id().canonical()));
+        assertFalse(mirror.facts().containsKey(event.entityId().canonical()));assertEquals(BridgeClientState.LIVE,mirror.state());
+        var invalid=new java.util.LinkedHashMap<>(after);invalid.put("sourceCutVersion","unknown");
+        var bad=new RuntimeEvent("bad-cut","session",2,"revision","cartago","cartago",1,Instant.EPOCH,event.kind(),event.factKind(),event.projectionStatus(),event.entityId(),null,"","",Map.of(),invalid,mark,Completeness.COMPLETE,List.of());
+        var rejected=live();var unchanged=rejected.facts();assertThrows(BridgeProtocolException.class,()->rejected.apply(bad));
+        assertEquals(unchanged,rejected.facts());assertEquals(BridgeClientState.RESYNC_REQUIRED,rejected.state());
+    }
     @Test void callbackBoundaryAdvancesTheStreamWithoutInventingADomainObject() {
         var mirror=live();
         mirror.apply(event("cause","session",2,"revision",1,RuntimeEventKind.CHANGED,id("inc-1"),Map.of("active",false)));

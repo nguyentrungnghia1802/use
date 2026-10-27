@@ -161,7 +161,7 @@ class AuctionImportTest {
                 frame(MessageType.MODEL_SNAPSHOT,model,ContractPayloads.model(model)),
                 frame(MessageType.RUNTIME_SNAPSHOT,model,ContractPayloads.runtime(runtime)));
     }
-    private static byte[] frame(MessageType type,ModelSnapshot model,Map<String,Object> payload) {
+    static byte[] frame(MessageType type,ModelSnapshot model,Map<String,Object> payload) {
         var distribution=new DistributionFingerprint("1.3.1",DISTRIBUTION,Map.of("jason","3.3.2","cartago","3.1","moise","1.1","npl","0.6.1"));
         return ContractCodec.encode(ContractEnvelope.create("1.0.0",type,"auction-import-test",distribution,
                 model.sources().getFirst().id().scope(),model.modelRevision(),"auction-import-run",1,type.name(),Instant.EPOCH,

@@ -54,7 +54,8 @@ public final class RuntimeModelAdmission {
             // Context proof was required for every exact cast pair above. The
             // original propagation does not execute these metadata relations.
             if(profile.externalRelations()) {
-                if(actor.associations().stream().anyMatch(a->a.kind()!=AssocKind.PARTICIPATES_IN))
+                if(actor.associations().stream().anyMatch(a->a.kind()!=AssocKind.PARTICIPATES_IN
+                        &&!(profile.roleSpecialization()&&RoleSpecialization.admitted(model,actor,a))))
                     reject("ASSOCIATION_WITHOUT_ADMITTED_LIVE_SEMANTICS",actor.name());
                 for(var needed:actor.neededBys())
                     if(!(model.findElement(needed.resource()).orElse(null) instanceof Resource)

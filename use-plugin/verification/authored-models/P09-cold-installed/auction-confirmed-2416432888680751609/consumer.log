@@ -1,0 +1,9 @@
+USE version 7.5.0, Copyright (C) 1999-2025 University of Bremen & University of Applied Sciences Hamburg
+Exception in thread "main" java.nio.file.NoSuchFileException: D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\cold-authored-auction-confirmed-6393401400790250941\install\examples\auction-semantic\source-confirmed-v1\auction-mapping.xml
+	at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:85)
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:103)
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:108)
+	at java.base/sun.nio.fs.WindowsFileCopy.copy(WindowsFileCopy.java:108)
+	at java.base/sun.nio.fs.WindowsFileSystemProvider.copy(WindowsFileSystemProvider.java:282)
+	at java.base/java.nio.file.Files.copy(Files.java:1304)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuthoredMain.main(InstalledAuthoredMain.java:29)

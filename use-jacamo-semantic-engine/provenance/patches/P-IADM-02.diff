@@ -1,0 +1,121 @@
+--- before-P-IADM-02/src/main/java/org/vnu/sme/goal/dsl/istar/mm/GoalModelValidator.java
++++ src/main/java/org/vnu/sme/goal/dsl/istar/mm/GoalModelValidator.java
+@@ -33,7 +33,7 @@
+         }
+         List<String> errors = new ArrayList<>();
+         validateElementIdUniqueness(model, errors);
+-        validateRefinements(model, errors);
++        validateRefinements(model, errors, policy);
+         validateGoalTypeRefinements(model, errors);
+         validateRefinementKindConsistency(model, errors);
+         validateSingleRefinementParent(model, errors);
+@@ -45,7 +45,7 @@
+         validateDependencies(model, errors);
+         if (policy == GoalModelValidationPolicy.STRICT_ORIGINAL)
+             validateRefinementParentsAreNotDependencyEndpoints(model, errors);
+-        else validateDerivedAndDependees(model, errors);
++        else validateDerivedAndDependees(model, errors, policy);
+         validateOclContracts(model, errors);
+         return List.copyOf(errors);
+     }
+@@ -87,7 +87,7 @@
+         return visited == degree.size() ? List.of() : List.of("semantic: extended activation/dependency graph is cyclic");
+     }
+ 
+-    private static void validateDerivedAndDependees(GoalModel model, List<String> errors) {
++    private static void validateDerivedAndDependees(GoalModel model, List<String> errors, GoalModelValidationPolicy policy) {
+         Set<String> parents = new LinkedHashSet<>(), permitted = new LinkedHashSet<>();
+         for (Actor actor : model.getActors()) {
+             Map<String, List<Refinement>> groups = new LinkedHashMap<>();
+@@ -100,7 +100,7 @@
+                 if (!(element instanceof Goal goal) || !goal.conditions().isEmpty()
+                         || goal.goalType() != GoalType.ACHIEVE || refinements.size() != 1
+                         || !(refinements.getFirst() instanceof AndRefinement and)
+-                        || and.children().size() < 2 || !model.ownerOf(parent).orElse("").equals(actor.name())) return;
++                        || and.children().size() < 2 && !unaryRealization(model,actor,and,policy) || !model.ownerOf(parent).orElse("").equals(actor.name())) return;
+                 if (and.children().stream().allMatch(child -> model.ownerOf(child).orElse("").equals(actor.name()))) permitted.add(parent);
+             });
+         }
+@@ -112,6 +112,17 @@
+         }
+     }
+     // P-IADM-01-END
++
++    // P-IADM-02-BEGIN: exact opt-in unary Goal <- Task realization. Strict defaults stay unchanged.
++    private static boolean unaryRealization(GoalModel model, Actor actor, AndRefinement and, GoalModelValidationPolicy policy) {
++        return policy == GoalModelValidationPolicy.ROLE_SPECIALIZATION_V1 && and.children().size() == 1
++                && model.findElement(and.parent()).orElse(null) instanceof Goal goal
++                && goal.goalType() == GoalType.ACHIEVE && goal.conditions().isEmpty()
++                && model.findElement(and.children().getFirst()).orElse(null) instanceof Task
++                && model.ownerOf(and.parent()).orElse("").equals(actor.name())
++                && model.ownerOf(and.children().getFirst()).orElse("").equals(actor.name());
++    }
++    // P-IADM-02-END
+ 
+     private static void validateOclContracts(GoalModel model, List<String> errors) {
+         for (Actor actor : model.getActors()) {
+@@ -151,10 +162,10 @@
+         }
+     }
+ 
+-    private static void validateRefinements(GoalModel model, List<String> errors) {
++    private static void validateRefinements(GoalModel model, List<String> errors, GoalModelValidationPolicy policy) {
+         for (Actor actor : model.getActors()) {
+             for (Refinement ref : actor.refinements()) {
+-                if (ref instanceof AndRefinement and && and.children().size() < 2) {
++                if (ref instanceof AndRefinement and && and.children().size() < 2 && !unaryRealization(model, actor, and, policy)) {
+                     errors.add("semantic: and-refine '" + and.parent()
+                             + "' in actor '" + actor.name()
+                             + "' must have at least 2 children (found "
+--- before-P-IADM-02/src/main/java/org/vnu/sme/goal/dsl/istar/mm/GoalModelValidationPolicy.java
++++ src/main/java/org/vnu/sme/goal/dsl/istar/mm/GoalModelValidationPolicy.java
+@@ -3,5 +3,6 @@
+ /** P-IADM-01: an explicit validation extension, never the upstream default. */
+ public enum GoalModelValidationPolicy {
+     STRICT_ORIGINAL,
+-    DERIVED_AND_DEPENDEE_V1
++    DERIVED_AND_DEPENDEE_V1,
++    ROLE_SPECIALIZATION_V1
+ }
+--- before-P-IADM-02/src/main/java/org/tzi/use/semantic/engine/api/EngineSemanticsProfile.java
++++ src/main/java/org/tzi/use/semantic/engine/api/EngineSemanticsProfile.java
+@@ -4,16 +4,21 @@
+ public enum EngineSemanticsProfile {
+     USE4GOAL_OBSERVED_V1,
+     /** Versioned admission extension; original Boolean recurrence is unchanged. */
+-    DERIVED_AND_RESOURCE_V1;
++    DERIVED_AND_RESOURCE_V1,
++    /** Opt-in unary realization and empty capability-role specialization. */
++    ROLE_SPECIALIZATION_V1;
+ 
+     public org.vnu.sme.goal.dsl.istar.mm.GoalModelValidationPolicy validationPolicy() {
+-        return this == USE4GOAL_OBSERVED_V1
+-                ? org.vnu.sme.goal.dsl.istar.mm.GoalModelValidationPolicy.STRICT_ORIGINAL
+-                : org.vnu.sme.goal.dsl.istar.mm.GoalModelValidationPolicy.DERIVED_AND_DEPENDEE_V1;
++        return switch(this) {
++            case USE4GOAL_OBSERVED_V1 -> org.vnu.sme.goal.dsl.istar.mm.GoalModelValidationPolicy.STRICT_ORIGINAL;
++            case DERIVED_AND_RESOURCE_V1 -> org.vnu.sme.goal.dsl.istar.mm.GoalModelValidationPolicy.DERIVED_AND_DEPENDEE_V1;
++            case ROLE_SPECIALIZATION_V1 -> org.vnu.sme.goal.dsl.istar.mm.GoalModelValidationPolicy.ROLE_SPECIALIZATION_V1;
++        };
+     }
+-    public boolean externalRelations() { return this == DERIVED_AND_RESOURCE_V1; }
++    public boolean externalRelations() { return this != USE4GOAL_OBSERVED_V1; }
++    public boolean roleSpecialization() {return this==ROLE_SPECIALIZATION_V1;}
+     public java.util.Set<String> admissionPatchIds() {
+-        return this==DERIVED_AND_RESOURCE_V1?java.util.Set.of("P-IADM-01"):java.util.Set.of();
++        return this==ROLE_SPECIALIZATION_V1?java.util.Set.of("P-IADM-01","P-IADM-02"):this==DERIVED_AND_RESOURCE_V1?java.util.Set.of("P-IADM-01"):java.util.Set.of();
+     }
+ 
+     public String upstreamCommit() { return "6f3e73801239fd8bfb94ca8d04ba531b903c0ac9"; }
+--- before-P-IADM-02/src/main/java/org/tzi/use/semantic/engine/runtime/RuntimeModelAdmission.java
++++ src/main/java/org/tzi/use/semantic/engine/runtime/RuntimeModelAdmission.java
+@@ -54,7 +54,8 @@
+             // Context proof was required for every exact cast pair above. The
+             // original propagation does not execute these metadata relations.
+             if(profile.externalRelations()) {
+-                if(actor.associations().stream().anyMatch(a->a.kind()!=AssocKind.PARTICIPATES_IN))
++                if(actor.associations().stream().anyMatch(a->a.kind()!=AssocKind.PARTICIPATES_IN
++                        &&!(profile.roleSpecialization()&&RoleSpecialization.admitted(model,actor,a))))
+                     reject("ASSOCIATION_WITHOUT_ADMITTED_LIVE_SEMANTICS",actor.name());
+                 for(var needed:actor.neededBys())
+                     if(!(model.findElement(needed.resource()).orElse(null) instanceof Resource)

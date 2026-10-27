@@ -423,7 +423,22 @@ public final class ExternalOclConstraintService {
 
     public static DependencyVisitor dependencyVisitor() {return new DependencyVisitor();}
     public static final class DependencyVisitor extends CoverageCalculationVisitor {
-        public record AttributeRead(org.tzi.use.uml.mm.MAttribute attribute,boolean directSelf,Expression receiver){}
+        public record IteratorRange(String variable,Expression range){}
+        public record AttributeRead(org.tzi.use.uml.mm.MAttribute attribute,boolean directSelf,Expression receiver,java.util.List<IteratorRange> iterators,boolean preState){
+            public AttributeRead{iterators=java.util.List.copyOf(iterators);}
+            public AttributeRead(org.tzi.use.uml.mm.MAttribute attribute,boolean directSelf,Expression receiver){this(attribute,directSelf,receiver,java.util.List.of(),false);}
+            public AttributeRead(org.tzi.use.uml.mm.MAttribute attribute,boolean directSelf,Expression receiver,java.util.List<IteratorRange> iterators){this(attribute,directSelf,receiver,iterators,false);}
+        }
+        private final java.util.List<IteratorRange> iterators=new java.util.ArrayList<>();
+        @Override public void visitQuery(org.tzi.use.uml.ocl.expr.ExpQuery expression) {
+            expression.getRangeExpression().processWithVisitor(this);
+            int before=iterators.size();
+            try {
+                var declarations=expression.getVariableDeclarations();
+                for(int i=0;i<declarations.size();i++)iterators.add(new IteratorRange(declarations.varDecl(i).name(),expression.getRangeExpression()));
+                expression.getQueryExpression().processWithVisitor(this);
+            }finally{iterators.subList(before,iterators.size()).clear();}
+        }
         private final java.util.List<AttributeRead> reads=new java.util.ArrayList<>();
         public java.util.List<AttributeRead> attributeReads(){return java.util.List.copyOf(reads);}
         private final java.util.List<org.tzi.use.uml.ocl.expr.ExpNavigation> navigations=new java.util.ArrayList<>();
@@ -432,7 +447,7 @@ public final class ExternalOclConstraintService {
             navigations.add(expression);super.visitNavigation(expression);
         }
         @Override public void visitAttrOp(org.tzi.use.uml.ocl.expr.ExpAttrOp expression) {
-            reads.add(new AttributeRead(expression.attr(),expression.objExp() instanceof org.tzi.use.uml.ocl.expr.ExpVariable variable && variable.getVarname().equals("self"),expression.objExp()));
+            reads.add(new AttributeRead(expression.attr(),expression.objExp() instanceof org.tzi.use.uml.ocl.expr.ExpVariable variable && variable.getVarname().equals("self"),expression.objExp(),iterators,expression.isPre()));
             super.visitAttrOp(expression);
         }
         private final Set<org.tzi.use.uml.mm.MClassifier> populations=new java.util.HashSet<>();

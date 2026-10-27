@@ -15,8 +15,8 @@ public final class XmlTaskCheckpoints {
     public record Marker(String scope,String actor,String player,String role,String interval,String task,String demand,String goal,String invocation,String phase,long entrySequence,String references,String certificate) { }
     public record Entry(Marker marker,NativeInvocationEvaluation.Condition pre,long bytes) { }
     public record Epoch(String run,long generation,String revision) { }
-    public record Image(Map<String,Entry> active,Map<String,Marker> latest,Set<String> seen,List<NativeInvocationEvaluation.Work> prepared,Epoch epoch) {
-        public Image {active=Map.copyOf(active);latest=Map.copyOf(latest);seen=Set.copyOf(seen);prepared=List.copyOf(prepared);}
+    public record Image(Map<String,Entry> active,Map<String,Marker> latest,Map<String,Marker> historical,Set<String> seen,List<NativeInvocationEvaluation.Work> prepared,Epoch epoch) {
+        public Image {active=Map.copyOf(active);latest=Map.copyOf(latest);historical=Map.copyOf(historical);seen=Set.copyOf(seen);prepared=List.copyOf(prepared);}
     }
     private record Candidate(OccurrenceProjection.Scope scope,OccurrenceProjection.Member member,TaskDemandProjection.Demand demand) { }
     private final SemanticProgram program;
@@ -25,6 +25,7 @@ public final class XmlTaskCheckpoints {
     private final List<JasonStepCutDecoder> decoders;
     private final Map<String,Entry> active=new LinkedHashMap<>();
     private final Map<String,Marker> latest=new LinkedHashMap<>();
+    private final Map<String,Marker> historical=new LinkedHashMap<>();
     private final Set<String> seen=new LinkedHashSet<>();
     private List<NativeInvocationEvaluation.Work> prepared=List.of();
     private Epoch epoch;
@@ -35,29 +36,37 @@ public final class XmlTaskCheckpoints {
         program.requireSourceHash(new SourceModelNormalizer().normalize(source).sourceHash());
         decoders=program.xmlPlan().requirements().stream().filter(r->r.provider().equals("jason.plan-boundaries.v1")).map(r->new JasonStepCutDecoder(source,r)).toList();
     }
-    public Image savepoint(){return new Image(active,latest,seen,prepared,epoch);}
-    public void restore(Image image){active.clear();active.putAll(image.active());latest.clear();latest.putAll(image.latest());seen.clear();seen.addAll(image.seen());prepared=image.prepared();epoch=image.epoch();}
-    public void clear(){active.clear();latest.clear();seen.clear();prepared=List.of();epoch=null;}
-    public void retireUnavailable(){if(epoch==null)return;var scopes=engine.xmlOccurrences(epoch.run(),epoch.generation(),epoch.revision());var demands=engine.xmlTaskDemands(epoch.run(),epoch.generation(),epoch.revision());active.values().removeIf(e->!current(e.marker(),scopes,demands));latest.values().removeIf(m->!currentRole(m,scopes));}
+    public Image savepoint(){return new Image(active,latest,historical,seen,prepared,epoch);}
+    public void restore(Image image){active.clear();active.putAll(image.active());latest.clear();latest.putAll(image.latest());historical.clear();historical.putAll(image.historical());seen.clear();seen.addAll(image.seen());prepared=image.prepared();epoch=image.epoch();}
+    public void clear(){active.clear();latest.clear();historical.clear();seen.clear();prepared=List.of();epoch=null;}
+    public void retireUnavailable(){if(epoch==null)return;var scopes=engine.xmlOccurrences(epoch.run(),epoch.generation(),epoch.revision());var demands=engine.xmlTaskDemands(epoch.run(),epoch.generation(),epoch.revision());active.values().removeIf(e->!retainPending(e.marker(),scopes,demands));historical.values().removeIf(m->!retainPending(m,scopes,demands));latest.values().removeIf(m->!currentRole(m,scopes));}
     public List<NativeInvocationEvaluation.Work> drain(){var result=prepared;prepared=List.of();return result;}
     public static String key(String scope,String player,String role,String interval,String task){return SemanticJson.hash(List.of(scope,player,role,interval,task));}
     private static String key(Marker marker){return key(marker.scope(),marker.player(),marker.role(),marker.interval(),marker.task());}
     public Marker marker(String scope,String player,String role,String interval,String task){return latest.get(key(scope,player,role,interval,task));}
+    /** Historical source identity only. It must never supply a current PRE/POST
+     * tuple; current demand quality and marker() remain the authority gates. */
+    public Marker historicalMarker(String scope,String player,String role,String interval,String task){return historical.get(key(scope,player,role,interval,task));}
     public void observe(RuntimeEvent event,Map<String,Completeness> sources,boolean lost) {
         program.assertUnchanged();if(!VerificationObservation.present(event))return;var observation=VerificationObservation.require(event);if(observation.kind()!=VerificationObservation.Kind.JASON_STEP)return;
         var selected=decoders.stream().filter(d->d.accepts(observation)).toList();if(selected.isEmpty())return;if(selected.size()!=1)throw new IllegalArgumentException("XML_TASK_SOURCE_REQUEST_AMBIGUOUS");
-        var step=selected.getFirst().decode(observation,event.sessionId(),event.generation(),event.modelRevision());if(!bindings.slots().containsKey(step.task())){unavailable(step,"UNSUPPORTED:XML_TASK_OBSERVATION_BINDING_REQUIRED");return;}
+        var step=selected.getFirst().decode(observation,event.sessionId(),event.generation(),event.modelRevision());
+        if(program.xmlPlan().inputs().specification().root().child("omittedConcepts").children("omit").stream().anyMatch(n->n.optional("sourceStep").equals(step.task())&&n.optional("handledBy").equals("TRACE_ONLY"))) {
+            append(new NativeInvocationEvaluation.Work(List.of(),List.of(),List.of(new SemanticConstraintResult("XML:TRACE:"+step.invocation(),"SOURCE_TRACE","","","","",SemanticVerdict.SKIPPED,"","DECLARED_SOURCE_OBSERVATION_ONLY",0,step.invocation(),Map.of("sourceStepId",step.task(),"sourcePhase",step.phase()))),0));return;
+        }
+        if(!bindings.slots().containsKey(step.task())){unavailable(step,"UNSUPPORTED:XML_TASK_OBSERVATION_BINDING_REQUIRED");return;}
         var next=new Epoch(event.sessionId(),event.generation(),event.modelRevision());if(epoch!=null&&!epoch.equals(next))throw new IllegalArgumentException("XML_TASK_EPOCH_REQUIRES_CLEAR");epoch=next;
         if(lost){clear();unavailable(step,"COVERAGE_LOST");return;}
         var scopes=engine.xmlOccurrences(next.run(),next.generation(),next.revision());var demands=engine.xmlTaskDemands(next.run(),next.generation(),next.revision());
-        active.values().removeIf(e->!current(e.marker(),scopes,demands));latest.values().removeIf(m->!currentRole(m,scopes));
+        if(step.phase().equals("ENABLED")&&seen.contains(step.invocation())){active.remove(step.invocation());latest.values().removeIf(m->m.invocation().equals(step.invocation()));unavailable(step,"DUPLICATE_TASK_ENTRY_INVALIDATED");return;}
+        active.values().removeIf(e->!retainPending(e.marker(),scopes,demands));historical.values().removeIf(m->!retainPending(m,scopes,demands));latest.values().removeIf(m->!currentRole(m,scopes));
         var candidates=new ArrayList<Candidate>();
         for(var scope:scopes)if(scope.complete()&&bindings.references(step.task(),scope,step,engine,step.phase().equals("ENABLED")))for(var member:scope.members())
             if(member.actor().equals(program.goalBindings().elements().get(step.task()).actorId())&&engine.objectForSemanticId(step.agent())==engine.objectForSemanticId(member.player())) {
                 var matches=demands.stream().filter(d->d.target().equals(step.task())&&d.scope().equals(scope.id())&&d.player().equals(member.player())&&d.role().equals(member.role())&&d.roleInterval().equals(member.interval())&&d.quality()==Completeness.COMPLETE&&Boolean.TRUE.equals(d.required())&&!d.episode().isBlank()).toList();
                 if(matches.size()==1)candidates.add(new Candidate(scope,member,matches.getFirst()));
             }
-        if(candidates.size()!=1){unavailable(step,"EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE");return;}
+        if(candidates.size()!=1){if(!step.phase().equals("ENABLED"))active.remove(step.invocation());unavailable(step,"EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE");return;}
         var candidate=candidates.getFirst();var member=candidate.member();var scope=candidate.scope();var demand=candidate.demand();
         var role=engine.objectForSemanticId(member.role());String floor=role==null?"":engine.metadata(role,"xml:m0:observer-floor");
         try{if(floor.isBlank()||event.sourceSequence()<=Long.parseLong(floor)){unavailable(step,"STEP_PRECEDES_OBSERVED_ROLE_INTERVAL");return;}}catch(NumberFormatException invalid){unavailable(step,"OBSERVED_ROLE_INTERVAL_FLOOR_UNAVAILABLE");return;}
@@ -106,9 +115,24 @@ public final class XmlTaskCheckpoints {
         var oldResources=CanonicalJson.object(old.get("resources"));var nextResources=CanonicalJson.object(current.get("resources"));return oldResources.entrySet().stream().allMatch(e->Objects.equals(nextResources.get(e.getKey()),e.getValue()));
     }
     private static boolean currentRole(Marker marker,List<OccurrenceProjection.Scope> scopes){return scopes.stream().anyMatch(s->s.complete()&&s.id().equals(marker.scope())&&s.members().stream().anyMatch(m->m.player().equals(marker.player())&&m.role().equals(marker.role())&&m.interval().equals(marker.interval())));}
-    private static boolean current(Marker marker,List<OccurrenceProjection.Scope> scopes,List<TaskDemandProjection.Demand> demands){return currentRole(marker,scopes)&&demands.stream().anyMatch(d->d.scope().equals(marker.scope())&&d.target().equals(marker.task())&&d.player().equals(marker.player())&&d.role().equals(marker.role())&&d.roleInterval().equals(marker.interval())&&d.episode().equals(marker.demand())&&d.quality()==Completeness.COMPLETE&&Boolean.TRUE.equals(d.required()));}
+    /** Retention is not verification authority. A pending exact PRE survives temporary
+     * unavailability, but terminal evaluation still requires a fresh complete cast/demand
+     * and same() checks all invocation, actor, interval, episode and reference identities. */
+    private boolean retainPending(Marker marker,List<OccurrenceProjection.Scope> scopes,List<TaskDemandProjection.Demand> demands) {
+        if(engine.objectForSemanticId(marker.player())==null)return false;
+        if(!marker.role().isBlank()) {
+            var role=engine.objectForSemanticId(marker.role());
+            if(role==null||!marker.interval().equals(engine.metadata(role,"xml:m0:lifetime"))||!marker.player().equals(engine.metadata(role,"rolePlayer")))return false;
+        }
+        var selected=scopes.stream().filter(s->s.id().equals(marker.scope())).toList();
+        if(selected.size()!=1)return false;
+        if(!selected.getFirst().complete())return true;
+        if(!currentRole(marker,scopes))return false;
+        var known=demands.stream().filter(d->d.scope().equals(marker.scope())&&d.target().equals(marker.task())&&d.player().equals(marker.player())&&d.role().equals(marker.role())&&d.roleInterval().equals(marker.interval())&&d.quality()==Completeness.COMPLETE&&d.required()!=null).toList();
+        return known.isEmpty()||known.size()==1&&Boolean.TRUE.equals(known.getFirst().required())&&known.getFirst().episode().equals(marker.demand());
+    }
     private void remember(String invocation){if(seen.size()>=8192)throw new IllegalStateException("XML_TASK_INVOCATION_CAPACITY");seen.add(invocation);}
-    private void select(String slot,Marker marker){if(latest.size()>=4096&&!latest.containsKey(slot))throw new IllegalStateException("XML_TASK_SELECTION_CAPACITY");latest.put(slot,marker);}
+    private void select(String slot,Marker marker){if(latest.size()>=4096&&!latest.containsKey(slot)||historical.size()>=4096&&!historical.containsKey(slot))throw new IllegalStateException("XML_TASK_SELECTION_CAPACITY");latest.put(slot,marker);historical.put(slot,marker);}
     private void append(NativeInvocationEvaluation.Work work){var next=new ArrayList<>(prepared);next.add(work);if(next.size()>128)throw new IllegalStateException("XML_TASK_PREPARED_CAPACITY");prepared=List.copyOf(next);}
     private void unavailable(JasonStepCutDecoder.Step step,String reason){append(new NativeInvocationEvaluation.Work(List.of(),List.of(),List.of(new SemanticConstraintResult("XML:STEP:"+step.invocation(),"TASK_INVOCATION","","","","",SemanticVerdict.INCONCLUSIVE,"",reason,0,step.invocation(),Map.of("targetTaskId",step.task(),"sourcePhase",step.phase()))),0));}
     private static long stateBytes(org.tzi.use.uml.sys.MSystemState state){return new NativeUseSoilExporter().exportState(state).commands().getBytes(java.nio.charset.StandardCharsets.UTF_8).length;}

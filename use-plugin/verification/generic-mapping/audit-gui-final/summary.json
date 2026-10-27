@@ -1,0 +1,15 @@
+{
+    "sourceJcmSha256":  "c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb",
+    "observationProfile":  "FULL",
+    "projectionMode":  "AUTO",
+    "pipeline":  "CODE_GROUNDED_NATIVE",
+    "distributionSha256":  "bc7cab9be63c03114cca740d5daba99c3984768628985aae022647617d5cecfb",
+    "port":  61843,
+    "runtimeJournalMaxBytes":  67108864,
+    "status":  "MANUAL_GUI_SESSION_COMPLETED",
+    "semanticProfile":  "JACAMO_DECLARATIVE_XML",
+    "sourceJcm":  "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\examples\\auction\\auction.jcm",
+    "mappingSpecification":  "use-plugin/examples/auction/auction-mapping.xml",
+    "derivedJcm":  "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\target\\generic-gui-final\\20261023-202903-526-a12f8c26\\staging-auction\\auction.jcm",
+    "classification":  "INTERACTIVE_DEMO_ONLY"
+}

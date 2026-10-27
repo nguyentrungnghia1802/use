@@ -39,7 +39,7 @@ class AuctionWorkbenchUiTest {
         try(var fixture=new AuctionLiveFixture()) {
             var session=new Session();var frame=new AtomicReference<JFrame>();var panel=new AtomicReference<JaCaMoWorkbenchPanel>();var timer=new AtomicReference<javax.swing.Timer>();
             try(var facade=AuctionImportTest.facade(fixture.source,session)) {
-                SwingUtilities.invokeAndWait(()->{var view=new JaCaMoWorkbenchPanel(facade);panel.set(view);var window=new JFrame("Auction Workbench V01 acceptance");frame.set(window);window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);window.setContentPane(view);window.setSize(1120,800);window.setLocationRelativeTo(null);window.setVisible(true);});
+                SwingUtilities.invokeAndWait(()->{var view=new JaCaMoWorkbenchPanel(facade);panel.set(view);var window=new JFrame("Auction Workbench V01 acceptance");frame.set(window);window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);window.setContentPane(view);window.setSize(1120,800);window.setLocationRelativeTo(null);org.tzi.use.plugins.jacamo.ui.AcceptanceScreen.place(window);window.setVisible(true);});
                 try {
                     SwingUtilities.invokeAndWait(()->named(panel.get(),"engine-profile",JComboBox.class).setSelectedItem("AUCTION_OBSERVED_V1"));
                     Path xml=Path.of("examples/auction/auction_jacamo_to_csl_rules.xml").toAbsolutePath();

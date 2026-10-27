@@ -19,7 +19,11 @@ public final class NplBoardSnapshotSource implements SnapshotSource {
     private volatile Completeness completeness=Completeness.PARTIAL;
     private List<String> diagnostics=List.of();
     private boolean closed;private long subscriptions;
-    public synchronized Map<String,Object> captureMetadata(){return Map.of("selectedBoardUuids",attached.keySet().stream().sorted().toList(),"selectedSubscriptions",attached.values().stream().map(a->a.proof).toList(),"globalPopulationProof","UNAVAILABLE_SELECTED_BOARDS_ONLY","diagnostics",diagnostics,"nplRuntime",NplRuntimeProfile.evidence());}
+    private boolean observationEnabled=true,selectionFrozen;
+    /** Defer optional runtime reads/listeners until the consumer has negotiated requirements. */
+    synchronized void deferObservation(){if(observer!=null||selectionFrozen)throw new IllegalStateException("NPL_SELECTION_ALREADY_ACTIVE");observationEnabled=false;}
+    synchronized void selectObservation(boolean enabled){if(selectionFrozen||closed)throw new IllegalStateException("NPL_SELECTION_FROZEN_OR_CLOSED");selectionFrozen=true;observationEnabled=enabled;if(enabled&&observer!=null)refresh();}
+    public synchronized Map<String,Object> captureMetadata(){if(!observationEnabled)return Map.of("observationPolicy",selectionFrozen?"NOT_REQUESTED":"AWAITING_PLAN","selectedBoardUuids",List.of(),"selectedSubscriptions",List.of(),"globalPopulationProof","UNAVAILABLE_NOT_OBSERVED");return Map.of("selectedBoardUuids",attached.keySet().stream().sorted().toList(),"selectedSubscriptions",attached.values().stream().map(a->a.proof).toList(),"globalPopulationProof","UNAVAILABLE_SELECTED_BOARDS_ONLY","diagnostics",diagnostics,"nplRuntime",NplRuntimeProfile.evidence());}
     public NplBoardSnapshotSource(String sessionId,Supplier<? extends Collection<? extends OrgArt>> boards){this(sessionId,Long.parseLong(System.getProperty("jacamo.bridge.generation","0")),()->System.getProperty("jacamo.bridge.modelRevision","unnegotiated"),boards);}
     public NplBoardSnapshotSource(String sessionId,long generation,String revision,Supplier<? extends Collection<? extends OrgArt>> boards){this(sessionId,generation,()->revision,boards);if(revision==null||revision.isBlank())throw new IllegalArgumentException("NPL_SOURCE_REVISION_REQUIRED");}
     private NplBoardSnapshotSource(String sessionId,long generation,Supplier<String> revision,Supplier<? extends Collection<? extends OrgArt>> boards){NplRuntimeProfile.requireSupported();this.sessionId=Objects.requireNonNull(sessionId);this.boards=Objects.requireNonNull(boards);if(sessionId.isBlank()||generation<0)throw new IllegalArgumentException("NPL_SOURCE_EPOCH_REQUIRED");this.generation=generation;this.revision=revision;}
@@ -33,6 +37,7 @@ public final class NplBoardSnapshotSource implements SnapshotSource {
     private BridgeEntityId identity(Attached board,Map<String,Object> payload){String key=Objects.toString(payload.get("activationKey"),"");if(key.isBlank())key="unresolved:"+AdapterEvidence.digest(CanonicalJson.encode(payload));return new BridgeEntityId("npl","organisation","norm-instance",board.scope,key,sessionId+":"+board.uuid);}
     private void refresh(){
         if(closed)return;
+        if(!observationEnabled){completeness=Completeness.PARTIAL;diagnostics=List.of("NPL_NOT_REQUESTED");return;}
         var alive=new HashSet<String>();boolean complete=true;var errors=new ArrayList<String>();
         // Framework registries are mutable ArrayLists. Iterate a detached array,
         // never their fail-fast iterator. Discovery remains globally PARTIAL.
@@ -56,6 +61,7 @@ public final class NplBoardSnapshotSource implements SnapshotSource {
      * The pinned immediate lock guards the listener registration/empty baseline;
      * inability to obtain it is not silently promoted to continuous history. */
     public void artifactCreated(ArtifactId id) {
+        synchronized(this){if(!observationEnabled||closed)return;}
         try {
             var env=CartagoEnvironment.getInstance();var workspace=env.resolveWSP(id.getWorkspaceId().getFullName()).getWorkspace();var descriptor=workspace.getArtifactDescriptor(id.getName());
             if(descriptor==null||!(descriptor.getArtifact() instanceof OrgArt))return;
@@ -69,13 +75,27 @@ public final class NplBoardSnapshotSource implements SnapshotSource {
         }catch(Exception|LinkageError unavailable){synchronized(this){if(!closed){completeness=Completeness.UNAVAILABLE;diagnostics=List.of("NPL_EARLY_SUBSCRIPTION_UNAVAILABLE:"+unavailable.getClass().getSimpleName());}}}
     }
     private void bind(OrgArt board,ArtifactId id,NPLInterpreter interpreter,boolean creation) {
-        String uuid=id.getId().toString();var old=attached.get(uuid);if(old!=null&&old.interpreter==interpreter)return;
+        String uuid=id.getId().toString();var old=attached.get(uuid);
+        if(old!=null&&old.interpreter==interpreter) {
+            // Discovery may register the same listener before makeArtifact's creation
+            // callback. Revalidate its still-empty baseline at that actual boundary;
+            // retain the listener/crosswalk and never rewrite observed history.
+            if(creation&&!old.lifecycleObserved&&!Boolean.TRUE.equals(old.proof.get("emptyBaselineAfterListener"))&&empty(interpreter)) {
+                var proof=new LinkedHashMap<>(old.proof);proof.put("origin","CARTAGO_CREATION_BEFORE_RETURN");
+                proof.put("emptyBaselineAfterListener",true);proof.put("scopeQuality","CONTINUOUS_FROM_EMPTY_CREATION");old.proof=Map.copyOf(proof);
+            }
+            return;
+        }
         if(old!=null)old.interpreter.removeListener(old);if(old==null&&attached.size()>=1024)throw new IllegalStateException("NPL_SELECTED_BOARD_CAPACITY");
         var value=new Attached(id.getWorkspaceId().getFullName()+":"+board.getArtId(),uuid,interpreter);
         attached.put(uuid,value);interpreter.addListener(value);
-        boolean empty=creation&&interpreter.getActive().isEmpty()&&interpreter.getFulfilled().isEmpty()&&interpreter.getUnFulfilled().isEmpty()&&interpreter.getInactive().isEmpty()&&interpreter.getActivatedNorms().isEmpty();
+        boolean empty=creation&&empty(interpreter);
         value.proof=Map.of("version","NPL_BOARD_SUBSCRIPTION/1.0","boardArtifactIdentity",uuid,"artifactName",id.getName(),"artifactClass",id.getArtifactType(),"workspaceUuid",id.getWorkspaceId().getUUID().toString(),"workspaceFullName",id.getWorkspaceId().getFullName(),"sourceSubscriptionNumber",++subscriptions,
                 "origin",creation?"CARTAGO_CREATION_BEFORE_RETURN":"PUBLIC_ENGINE_DISCOVERY","emptyBaselineAfterListener",empty,"scopeQuality",empty?"CONTINUOUS_FROM_EMPTY_CREATION":"PARTIAL_LATE_OR_NONEMPTY_BASELINE");
+    }
+    private static boolean empty(NPLInterpreter interpreter) {
+        return interpreter.getActive().isEmpty()&&interpreter.getFulfilled().isEmpty()&&interpreter.getUnFulfilled().isEmpty()
+                &&interpreter.getInactive().isEmpty()&&interpreter.getActivatedNorms().isEmpty();
     }
     private Map<String,Object> payload(Attached board,NormInstance value,String origin,String state,long sourceSequence) {
         var result=new LinkedHashMap<String,Object>(board.crosswalk.observe(board.uuid,value,origin,state));result.put("boardObservationProof",board.proof);result.put("sourceSequence",sourceSequence);return JasonStructuredTerms.immutable(result);
@@ -84,6 +104,7 @@ public final class NplBoardSnapshotSource implements SnapshotSource {
     /** Scheduling hint only, never a completeness/absence proof. Reuse the
      * already selected engines; no calls that activate/update norms. */
     public synchronized boolean hasPendingTimedObligations() {
+        if(!observationEnabled||closed)return false;
         refresh();int inspected=0;boolean unknown=completeness==Completeness.UNAVAILABLE;
         for(var board:attached.values())try {for(var value:board.interpreter.getActive()) {
                 if(++inspected>8192)return true; // Unknown remainder still needs clock observations.
@@ -98,6 +119,7 @@ public final class NplBoardSnapshotSource implements SnapshotSource {
     private final class Attached implements NormativeListener {
         final String scope,uuid;final NPLInterpreter interpreter;final NplActivationCrosswalk crosswalk=new NplActivationCrosswalk(sessionId,generation);
         Map<String,Object> proof=Map.of();
+        boolean lifecycleObserved;
         Attached(String scope,String uuid,NPLInterpreter interpreter){this.scope=scope;this.uuid=uuid;this.interpreter=interpreter;}
         public void created(NormInstance value){emit(this,value,RuntimeEventKind.NORM_ACTIVATED,"ACTIVE","LISTENER_CREATED");}
         public void fulfilled(NormInstance value){emit(this,value,RuntimeEventKind.NORM_FULFILLED,"FULFILLED","LISTENER_TERMINAL");}
@@ -105,7 +127,7 @@ public final class NplBoardSnapshotSource implements SnapshotSource {
         public void inactive(NormInstance value){emit(this,value,RuntimeEventKind.NORM_INACTIVATED,"INACTIVE","LISTENER_TERMINAL");}
     }
     private synchronized void emit(Attached board,NormInstance value,RuntimeEventKind kind,String state,String origin){
-        if(closed||observer==null||attached.get(board.uuid)!=board)return;var copy=value.copy();long next=sequence.incrementAndGet();var payload=payload(board,copy,origin,state,next);
+        if(closed||observer==null||attached.get(board.uuid)!=board)return;board.lifecycleObserved=true;var copy=value.copy();long next=sequence.incrementAndGet();var payload=payload(board,copy,origin,state,next);
         var event=new RuntimeEvent(sessionId+":npl:"+next,sessionId,generation,revision.get(),"npl",sourceId(),next,Instant.now(),kind,RuntimeFactKind.NORM_INSTANCE,ProjectionStatus.EVIDENCE_ONLY,identity(board,payload),null,"","",Map.of(),payload,new SourceWatermark(sourceId(),next),quality(payload),List.of());
         observer.accept(event);
         VerificationObservationSource.publishIfAttached(event,()->{

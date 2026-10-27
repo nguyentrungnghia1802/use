@@ -98,6 +98,36 @@ class XmlTaskCheckpointsTest {
             assertTrue(f.checkpoints.drain().stream().flatMap(w->w.conditions().stream()).noneMatch(c->c.kind().equals("TASK_POST")));
         }
     }
+    @Test void intermediateUnqualifiedCutDoesNotEraseAnExactPendingPreOrCertifyIt()throws Exception {
+        try(var f=new Fixture()) {
+            f.observe(0,1);f.checkpoints.drain();assertEquals(1,f.checkpoints.savepoint().active().size());
+            var n=f.data.nativeFixture();var port=n.nativeFixture().port();
+            port.metadata(n.domain(),"xml:m0:quality","INCOMPLETE");f.checkpoints.retireUnavailable();
+            assertEquals(1,f.checkpoints.savepoint().active().size(),"Unknown current self is not proof that the invocation ended");
+            assertTrue(f.checkpoints.savepoint().latest().isEmpty(),"Pending PRE retention must not supply a current Task certificate");
+            f.checkpoints.retireUnavailable();assertTrue(f.checkpoints.drain().isEmpty());
+            port.metadata(n.domain(),"xml:m0:quality","COMPLETE");f.set(2);f.observe(1,2);
+            var rows=f.checkpoints.drain().stream().flatMap(w->NativeInvocationEvaluation.evaluate(w,2).stream()).toList();
+            assertTrue(rows.stream().anyMatch(r->r.kind().equals("TASK_POST")&&r.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.PASS),rows.toString());
+        }
+    }
+    @Test void actualRoleReincarnationDuringAnUnqualifiedCutStillRetiresPendingPre()throws Exception {
+        try(var f=new Fixture()) {
+            f.observe(0,1);f.checkpoints.drain();var n=f.data.nativeFixture();var port=n.nativeFixture().port();
+            port.metadata(n.domain(),"xml:m0:quality","INCOMPLETE");port.metadata(n.roles().getFirst(),"xml:m0:lifetime","new-enactment");
+            f.checkpoints.retireUnavailable();assertTrue(f.checkpoints.savepoint().active().isEmpty());
+        }
+    }
+    @Test void aTerminalAtAnUnqualifiedCutCannotBeReplayedLaterToRecoverAStalePre()throws Exception {
+        try(var f=new Fixture()) {
+            f.observe(0,1);f.checkpoints.drain();var n=f.data.nativeFixture();var port=n.nativeFixture().port();
+            port.metadata(n.domain(),"xml:m0:quality","INCOMPLETE");f.observe(1,2);
+            assertTrue(f.checkpoints.savepoint().active().isEmpty());
+            assertTrue(f.checkpoints.drain().stream().flatMap(w->w.conditions().stream()).noneMatch(c->c.kind().equals("TASK_POST")));
+            port.metadata(n.domain(),"xml:m0:quality","COMPLETE");f.set(2);f.observe(1,3);
+            assertTrue(f.checkpoints.drain().stream().flatMap(w->w.conditions().stream()).noneMatch(c->c.kind().equals("TASK_POST")));
+        }
+    }
     @Test void originalSessionConsumesOnlyTheExactActorsCorrelatedNativeTaskTuple()throws Exception {
         try(var f=new Fixture(true)) {
             var engine=f.data.nativeFixture().nativeFixture().engine();
@@ -118,6 +148,26 @@ class XmlTaskCheckpointsTest {
             }
             long until=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(3);while(!Boolean.TRUE.equals(owner.metrics().get("terminated"))&&System.nanoTime()<until)Thread.sleep(10);
             assertEquals(true,owner.metrics().get("terminated"));assertEquals(0,owner.metrics().get("expressions"));assertEquals(0,owner.metrics().get("pendingPins"));assertTrue(owner.admission().xmlSteps().active().isEmpty());assertTrue(owner.admission().xmlSteps().seen().isEmpty());
+        }
+    }
+    @Test void unavailableDemandMustDeferCurrentTruthWithoutResettingKnownOriginalTaskHistory()throws Exception {
+        try(var f=new Fixture(true)) {
+            var engine=f.data.nativeFixture().nativeFixture().engine();
+            try(var owner=new org.tzi.use.plugins.jacamo.semantics.runtime.RuntimeEngineSessionOwner(engine,"run",1,f.source.modelRevision())) {
+                owner.taskCheckpoint(f.event(0,1),coverage,false,null);evaluate(owner,engine,1,owner.drainTaskPrepared());
+                f.set(2);owner.taskCheckpoint(f.event(1,2),coverage,false,null);evaluate(owner,engine,2,owner.drainTaskPrepared());
+                f.helper.apply(f.data,f.helper.rows(f.data,Completeness.PARTIAL,true,"activation-1"));
+                var unknown=evaluate(owner,engine,3,List.of());
+                var context=CanonicalJson.object(((List<?>)CanonicalJson.object(unknown.evidence().observation().get("originalEngine")).get("contexts")).getFirst());
+                var row=CanonicalJson.object(context.get("occurrences")).values().stream().map(CanonicalJson::object).filter(v->v.get("sourceElement").equals("Positive")&&v.get("player").toString().contains("alpha")).findFirst().orElseThrow();
+                assertEquals("FULFILLED",row.get("leafStatus"),"Qualified historical TaskMarking must survive an unavailable current tuple");
+                assertNotEquals("KNOWN",row.get("quality"));assertTrue(unknown.evidence().constraints().stream().noneMatch(r->r.kind().equals("TASK_POST")),"No new certificate from historical identity");
+                f.helper.apply(f.data,f.helper.rows(f.data,Completeness.COMPLETE,true,"activation-2"));
+                var changed=evaluate(owner,engine,4,List.of());
+                var next=CanonicalJson.object(((List<?>)CanonicalJson.object(changed.evidence().observation().get("originalEngine")).get("contexts")).getFirst());
+                var nextRow=CanonicalJson.object(next.get("occurrences")).values().stream().map(CanonicalJson::object).filter(v->v.get("sourceElement").equals("Positive")&&v.get("player").toString().contains("alpha")).findFirst().orElseThrow();
+                assertNotEquals("FULFILLED",nextRow.get("leafStatus"),"A known new demand episode cannot inherit the old marking");
+            }
         }
     }
     @Test void declaredPureEntryCanPrecedeCreationWithoutReadingOrInventingDomainSelf()throws Exception {

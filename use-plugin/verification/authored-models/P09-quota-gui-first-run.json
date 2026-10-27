@@ -1,0 +1,27 @@
+{
+  "status": "GUI_LIFECYCLE_SLICE_NOT_FINAL_ACCEPTANCE",
+  "usePid": 23060,
+  "producerPid": 15892,
+  "quotaMiBSelectedInGui": 256,
+  "archiveSha256": "95a2499546540091dde0f20819831624929cba0c5be3805b66f4dfc0b21ec5d5",
+  "nativeTaskPostSeen": [
+    "A_start_t1"
+  ],
+  "originalCalls": [
+    "GoalModelInstanceTranslator.propagateDependencies",
+    "IStarPropagation.assignGoalTask:aggregate-only",
+    "IStarPropagation.closePending",
+    "TaskMarking.update"
+  ],
+  "journalBytes": 39665036,
+  "journalGap": [],
+  "resultStateHash": "405a4cd90e23d255687dc790c4ac27f5deaefc15b9ed972f23011ec78acc26b4",
+  "resultHash": "219f41dd4020be363fae7ca2ee8517bf0dd2ead758bd741ac380e96eb20ba930",
+  "coverage": "INCOMPLETE",
+  "constraintVerdicts": {
+    "SKIPPED": 9,
+    "PASS": 13,
+    "FAIL": 2
+  },
+  "limitation": "Early Pause/Resume performs source resync: later snapshots do not reconstruct skipped invocation PRE/terminal pairs. UNKNOWN remains UNKNOWN; this run does not prove all five Tasks."
+}

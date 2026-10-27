@@ -422,6 +422,15 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
     }
     /** Writer-barrier cut assembly reads the same rollback-owned coverage, never a parallel cache. */
     Map<String,Completeness> admittedSourceCoverage(){return Map.copyOf(sources);}
+    /** A validated local replacement cut can recover the program's selected population
+     * after metadata-only bootstrap. Individual callbacks cannot do this. This changes
+     * neither other source coverage nor the lost-history flag; transaction rollback and
+     * later partial snapshots retain their existing ownership of those claims. */
+    void observedCartagoPopulation(org.jacamo.bridge.contract.RuntimeSnapshot cut,Set<org.jacamo.bridge.contract.RuntimeFactKind> requiredKinds) {
+        if(requiredKinds.isEmpty()||!org.jacamo.bridge.contract.CartagoSourceCut.kinds(cut).containsAll(requiredKinds))return;
+        var admitted=new java.util.TreeMap<>(sources);
+        admitted.put("cartago",Completeness.COMPLETE);sources=Map.copyOf(admitted);
+    }
     public RuntimeVerificationResult loadProfile(Path path) {
         return read(() -> installProfile(() -> constraints.install(path, modelRevision)));
     }
@@ -590,8 +599,17 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
     private RuntimeVerificationResult finishOriginal(String kind,String eventId,String source,long sequence,Instant observed,
             Map<String,Object> payload,boolean checkpoint,boolean evidenceOnly,String diagnostic,Instant applied,long started,String commands,String hash,String checkpointId,boolean repeatedSourceCut) {
         String boundary=sessionId+":"+generation+":"+modelRevision+":"+stateVersion+":"+eventId+":consumer:"+(++originalBoundarySequence);
-        var prepared=constraints.prepareEvaluation(sources,coverageLost,CheckpointType.journalKind(kind),changedFeatures,runtimeCapabilities,engine,originalEngine.freshContexts());
         var invocation=operations.drainDetailed();var invocationWork=new java.util.ArrayList<>(operations.drainPrepared());invocationWork.addAll(originalEngine.drainTaskPrepared());var operation=operationOutcomes;operationOutcomes=List.of();
+        if(engine.xmlCase()&&kind.equals("EVENT")&&evidenceOnly&&!coverageLost&&invocation.isEmpty()&&invocationWork.isEmpty()&&operation.isEmpty()) {
+            // Admission/journal still retain the exact callback. It changed neither the
+            // native state nor the semantic input plan and owns no invocation checkpoint.
+            // Do not manufacture another marking tick or duplicate the full engine history.
+            var trace=org.tzi.use.plugins.jacamo.semantics.runtime.SemanticResultAdapter.pending(engine.canonicalProgram(),boundary,"TRACE_ONLY_NO_SEMANTIC_INPUT_CHANGE");
+            var result=new RuntimeVerificationResult(sessionId,generation,modelRevision,stateVersion,eventId,source,sequence,observed,applied,Instant.now(),checkpointId,constraints.constraintSetHash(),hash,List.of(),System.nanoTime()-started,"NOT_EVALUATED","TRACE_ONLY",diagnostic,trace);
+            if(!journal.append(kind,payload,result,profileInterval==null?"CORE_ONLY":profileInterval.intervalId())){coverageLost=true;originalEngine.lost();result=staleOriginal(result,journal.diagnostic());journal.remember(result);}
+            lastObservation=result;return result;
+        }
+        var prepared=constraints.prepareEvaluation(sources,coverageLost,CheckpointType.journalKind(kind),changedFeatures,runtimeCapabilities,engine,originalEngine.freshContexts());
         var pending=org.tzi.use.plugins.jacamo.semantics.runtime.SemanticResultAdapter.pending(engine.canonicalProgram(),boundary,"ORDERED_EVALUATION_PENDING");
         var outcomes=new java.util.ArrayList<ExternalOclConstraintService.Outcome>();
         prepared.invariants().forEach(inv->outcomes.add(new ExternalOclConstraintService.Outcome(inv.id(),inv.context(),VerificationOutcome.SKIPPED,"ORDERED_EVALUATION_PENDING",inv.body().toString())));

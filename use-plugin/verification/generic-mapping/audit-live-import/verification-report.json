@@ -1,0 +1,83 @@
+{
+  "schemaVersion" : "1.0.0",
+  "runId" : "e7d3ec4332a958237c6d959daf4649be32bbc91a0eb92c30dd8be80b32410a14",
+  "timestamp" : "2026-10-23T09:59:52.265439400Z",
+  "mode" : "RUNTIME_NATIVE",
+  "structureValid" : true,
+  "fingerprints" : {
+    "constraintSetHash" : "e8f7be67623c5e1dfd80ce268b9c10ea9232aaff8ddbb2cc51b6522735db6355",
+    "coverage" : "INCOMPLETE",
+    "eventId" : "manual",
+    "freshness" : "CURRENT_OBSERVED",
+    "generation" : "1",
+    "modelRevision" : "e97fd26df1adfd392952b13eeac815fa7f9f7d8427f9679f173e9d22419c2936",
+    "nativeModelSha256" : "5b45fc46ddf60c0f99db364fbeac495a93ca3d3a885ecb4eee13b60763f706a0",
+    "sessionId" : "d0334c51-aa89-4369-8681-22999b957d23",
+    "stateHash" : "c8097b7f3ed5d20938084f4c1e9e4282fc49ba6ebe53e7cb463ede7741fdb7ed",
+    "stateVersion" : "4"
+  },
+  "results" : [ {
+    "constraintId" : "NATIVE:AuctionMonitor::BidEvidence",
+    "outcome" : "SKIPPED",
+    "contextObject" : null,
+    "explanation" : "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN",
+    "oclSource" : "(self.bidDoneBy->forAll(a : String | self.actualBidBy->includes(a)) and ((self.bidSatisfiedAt >= 0) implies (self.adminBidOverride or (self.bidDoneBy->notEmpty and self.bidCommittedBy->forAll(a : String | self.bidDoneBy->includes(a))))))",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "NATIVE:AuctionMonitor::SchemeOrder",
+    "outcome" : "SKIPPED",
+    "contextObject" : null,
+    "explanation" : "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN",
+    "oclSource" : "(((((self.bidEnabledAt >= 0) implies ((self.startSatisfiedAt >= 0) and (self.startSatisfiedAt <= self.bidEnabledAt))) and ((self.bidSatisfiedAt >= 0) implies ((self.bidEnabledAt >= 0) and (self.bidEnabledAt <= self.bidSatisfiedAt)))) and ((self.decideEnabledAt >= 0) implies ((self.bidSatisfiedAt >= 0) and (self.bidSatisfiedAt <= self.decideEnabledAt)))) and ((self.decideSatisfiedAt >= 0) implies ((self.decideEnabledAt >= 0) and (self.decideEnabledAt <= self.decideSatisfiedAt))))",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "NATIVE:AuctionObligation::WithinDeadline",
+    "outcome" : "SKIPPED",
+    "contextObject" : null,
+    "explanation" : "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN",
+    "oclSource" : "(((self.deadlineAt = (self.activatedAt + if (self.goal = 'bid') then 10000 else 3600000 endif)) and not self.unfulfilled) and (if (self.endedAt >= 0) then self.endedAt else self.monitor.now endif <= self.deadlineAt))",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "NATIVE:OrgContext::CslV4RoleCompatibility",
+    "outcome" : "SKIPPED",
+    "contextObject" : null,
+    "explanation" : "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN",
+    "oclSource" : "self.roles->forAll(r1 : RoleOccurrence, r2 : RoleOccurrence | ((((r1 = r2) or (r1.player <> r2.player)) or (r1.oclIsKindOf(auctioneer) and r2.oclIsKindOf(auctioneer))) or (r1.oclIsKindOf(participant) and r2.oclIsKindOf(participant))))",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "NATIVE:auctionGroup::AuctioneerPopulation",
+    "outcome" : "SKIPPED",
+    "contextObject" : null,
+    "explanation" : "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN",
+    "oclSource" : "(self.auctioneer->size = 1)",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "NATIVE:auctionGroup::ParticipantPopulation",
+    "outcome" : "SKIPPED",
+    "contextObject" : null,
+    "explanation" : "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN",
+    "oclSource" : "(self.participant->size <= 300)",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "XML:OCCURRENCES",
+    "outcome" : "SKIPPED",
+    "contextObject" : null,
+    "explanation" : "XML_OCCURRENCE_BINDING_UNAVAILABLE",
+    "oclSource" : "",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  } ]
+}

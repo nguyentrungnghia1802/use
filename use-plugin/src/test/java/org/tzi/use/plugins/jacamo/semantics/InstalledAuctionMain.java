@@ -27,7 +27,7 @@ public final class InstalledAuctionMain {
         org.tzi.use.config.Options.processArgs(new String[]{"-H="+install,"-nr"});
         var config=new Properties();
         try(var input=Files.newInputStream(Path.of(args[1]))){config.load(input);}
-        for(String key:config.stringPropertyNames())if(key.startsWith("use."))System.setProperty(key,config.getProperty(key));
+        for(String key:config.stringPropertyNames())if(key.startsWith("use.")||key.equals("jacamo.bridge.observation.plan"))System.setProperty(key,config.getProperty(key));
         MainPluginRuntime.run(install.resolve("lib/plugins"));
         var plugin=((PluginRuntime)PluginRuntime.getInstance()).getPlugin("JaCaMo");check(plugin!=null,"Plugin discovery");
         loader=plugin.getPluginClassLoader()::loadClass;Object guard=call(loader.loadClass("org.tzi.use.semantic.engine.api.EngineInstallationGuard"),"verify");
@@ -46,12 +46,15 @@ public final class InstalledAuctionMain {
         var session=new Session();Object facade=loader.loadClass("org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade").getConstructor(Path.class,Session.class).newInstance(install,session);
         Gui gui=Boolean.parseBoolean(config.getProperty("live","false"))?new Gui(session,facade):null;
         try {
-            Object selection=loader.loadClass("org.tzi.use.plugins.jacamo.JaCaMoFacade$ImportSelection").getConstructor(String.class,Path.class)
-                    .newInstance("AUCTION_OBSERVED_V1",Path.of(config.getProperty("mapping")));
+            boolean declarative=declarative(config);
+            Class<?> selectionClass=loader.loadClass("org.tzi.use.plugins.jacamo.JaCaMoFacade$ImportSelection");
+            Object selection=declarative?selectionClass.getConstructor(String.class,Path.class,Path.class).newInstance("JACAMO_DECLARATIVE_XML",Path.of(config.getProperty("mapping")),Path.of(config.getProperty("ocl")))
+                    :selectionClass.getConstructor(String.class,Path.class).newInstance("AUCTION_OBSERVED_V1",Path.of(config.getProperty("mapping")));
             if(gui==null)call(facade,"importProject",Path.of(config.getProperty("jcm")),selection);
-            else gui.importProject(Path.of(config.getProperty("jcm")),config.getProperty("mapping"));
+            else gui.importProject(Path.of(config.getProperty("jcm")),config.getProperty("mapping"),declarative,config.getProperty("ocl",""));
             Object workspace=field(facade,"nativeWorkspace"),canonical=field(workspace,"canonical"),program=call(canonical,"program");
-            Object csl=call(program,"cslModel"),goal=call(program,"goalModel"),plan=call(program,"casePlan");
+            Object csl=call(program,"cslModel"),goal=call(program,"goalModel"),plan=call(program,declarative?"xmlPlan":"casePlan");
+            if(declarative)check(call(program,"casePlan")==null&&plan!=null,"No case-specific production fallback");
             check(csl.getClass()==loader.loadClass("org.vnu.sme.goal.dsl.csl.mm.CslModel"),"Real CSL M1");
             check(goal.getClass()==loader.loadClass("org.vnu.sme.goal.dsl.istar.mm.GoalModel"),"Real iStar M1");
             Object frontend=loader.loadClass("org.tzi.use.semantic.engine.frontend.CslFrontend").getConstructor().newInstance();
@@ -60,8 +63,13 @@ public final class InstalledAuctionMain {
             check(((List<?>)call(validator,"validate",goal)).size()==3,"Strict original limitations preserved");
             Object policy=loader.loadClass("org.vnu.sme.goal.dsl.istar.mm.GoalModelValidationPolicy").getField("DERIVED_AND_DEPENDEE_V1").get(null);
             check(((List<?>)call(validator,"validate",goal,policy)).isEmpty(),"Explicit policy validation");
-            check(((Map<?,?>)call(call(plan,"selectors"),"selections")).size()==18,"All eighteen XML selectors");
-            check(((List<?>)call(plan,"tasks")).size()==6,"Six bound source task sites");
+            if(declarative) {
+                check(((List<?>)call(plan,"requirements")).size()==8,"Eight neutral provider requests");
+                check(((Map<?,?>)call(goal,"allElements")).values().stream().filter(loader.loadClass("org.vnu.sme.goal.dsl.istar.mm.Task")::isInstance).count()==6,"Six generated real tasks");
+            }else {
+                check(((Map<?,?>)call(call(plan,"selectors"),"selections")).size()==18,"All eighteen XML selectors");
+                check(((List<?>)call(plan,"tasks")).size()==6,"Six bound source task sites");
+            }
             check(session.hasSystem(),"Native Session published");
             check(session.system().state().allObjects().stream().noneMatch(o->o.cls().name().equals("Auction")),"Configured requests must not invent Auction population before Start");
             check(session.system().model().getClass("Auction")!=null&&session.system().model().getClass("AuctionMonitor")!=null,"Domain/observer model");
@@ -71,7 +79,7 @@ public final class InstalledAuctionMain {
             var receipt=new TreeMap<String,Object>();receipt.put("status","PASS");receipt.put("scope","INSTALLED_STATIC_IMPORT_ONLY");
             receipt.put("consumerPid",ProcessHandle.current().pid());receipt.put("producerPid",Long.parseLong(config.getProperty("producerPid")));
             receipt.put("classpath",System.getProperty("java.class.path"));receipt.put("guard",guard);receipt.put("engineClasses",origins);
-            receipt.put("programHash",call(program,"hash"));receipt.put("caseProgram",call(plan,"evidence"));receipt.put("semanticProgram",call(facade,"semanticProgramEvidence"));
+            receipt.put("programHash",call(program,"hash"));receipt.put(declarative?"declarativeProgram":"caseProgram",call(plan,"evidence"));receipt.put("profile",declarative?"JACAMO_DECLARATIVE_XML":"AUCTION_OBSERVED_V1");receipt.put("semanticProgram",call(facade,"semanticProgramEvidence"));
             receipt.put("nativeObjects",session.system().state().numObjects());receipt.put("auctionObjects",session.system().state().allObjects().stream().filter(o->o.cls().name().equals("Auction")).count());receipt.put("journalLimit",call(loader.loadClass("org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationCoordinator"),"defaultJournalMaxBytes"));
             if(gui!=null)runLive(facade,session,gui,config,receipt);
             Files.write(Path.of(config.getProperty("evidence")).resolve("consumer-receipt.json"),(byte[])call(loader.loadClass("org.jacamo.bridge.contract.CanonicalJson"),"encode",receipt));
@@ -86,7 +94,7 @@ public final class InstalledAuctionMain {
     private static void runSource(Path install,Path configuration)throws Exception {
         org.tzi.use.config.Options.processArgs(new String[]{"-H="+install.toRealPath(),"-nr"});
         var config=new Properties();try(var input=Files.newInputStream(configuration)){config.load(input);}
-        for(String key:config.stringPropertyNames())if(key.startsWith("use."))System.setProperty(key,config.getProperty(key));
+        for(String key:config.stringPropertyNames())if(key.startsWith("use.")||key.equals("jacamo.bridge.observation.plan"))System.setProperty(key,config.getProperty(key));
         loader=InstalledAuctionMain.class.getClassLoader()::loadClass;
         var session=new Session();Object facade=loader.loadClass("org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade").getConstructor(Path.class,Session.class).newInstance(install,session);
         var receipt=new TreeMap<String,Object>();receipt.put("status","PASS");receipt.put("consumerPid",ProcessHandle.current().pid());receipt.put("producerPid",Long.parseLong(config.getProperty("producerPid")));
@@ -110,10 +118,12 @@ public final class InstalledAuctionMain {
         Path evidence=Path.of(config.getProperty("evidence"));var system=session.system();
         boolean controlled=Boolean.parseBoolean(config.getProperty("controlled","false"));
         Object projector=field(field(facade,"nativeWorkspace"),"runtimeProjector"),coordinator=call(projector,"coordinator");
-        var watch=new Watch();var stream=new JournalCursor(call(coordinator,"journal"),watch);gui.click("start-runtime");gui.enabled("pause-runtime");
-        // The extended roster/negative workload records more accepted cuts. This
-        // is a bounded harness wait, independent of the unchanged 10s NPL deadline.
-        long until=System.nanoTime()+TimeUnit.SECONDS.toNanos(controlled?480:240);
+        var watch=new Watch(declarative(config));var stream=new JournalCursor(call(coordinator,"journal"),watch);gui.click("start-runtime");gui.enabled("pause-runtime");
+        // Both source profiles can leave a substantial admitted callback prefix
+        // behind the native writer (recorded canonical lag exceeded 235 seconds).
+        // Use the same finite consumer-processing budget; do not resync past the
+        // queued terminal callbacks or alter the source's unchanged 10s deadline.
+        long until=System.nanoTime()+TimeUnit.SECONDS.toNanos(480);
         while(System.nanoTime()<until&&!watch.complete()) {
             stream.drain();
             for(Object cut:(List<?>)call(facade,"runtimeVerificationHistory"))watch.accept(cut);
@@ -140,7 +150,7 @@ public final class InstalledAuctionMain {
         String query=(String)call(coordinator,"read",(Callable<String>)()->org.tzi.use.api.UseSystemApi.create(system,false).evaluate("Auction.allInstances()->size() = 2").toString());check(query.equals("true"),"Native manual OCL same cut");
         edt(()->{call(facade,"showObjectDiagram");check(gui.window.getObjectDiagrams().getLast().system()==system,"Native diagram shares Session");call(gui.panel,"refreshRuntime");
             for(String table:List.of("semantic-original-history","semantic-case-evidence","semantic-coverage"))check(component(gui.panel,table,JTable.class).getRowCount()>0,"Evidence table "+table);
-            check(component(gui.panel,"program-trace",JTextArea.class).getText().contains("caseProgram"),"Program XML trace UI");
+            check(component(gui.panel,"program-trace",JTextArea.class).getText().contains(declarative(config)?"declarativeProgram":"caseProgram"),"Program XML trace UI");
             var rootTabs=component(gui.panel,"workbench-tabs",JTabbedPane.class);int semanticTab=rootTabs.indexOfTab("Semantic verification");check(semanticTab>=0,"Visible semantic evidence tab");rootTabs.setSelectedIndex(semanticTab);
             capture(gui,evidence.resolve("installed-auction-workbench.png"));
             var history=component(gui.panel,"semantic-original-history",JTable.class);var detailTabs=(JTabbedPane)SwingUtilities.getAncestorOfClass(JTabbedPane.class,history);
@@ -175,7 +185,7 @@ public final class InstalledAuctionMain {
         var children=new ArrayList<Object>();for(var child:ProcessHandle.current().children().toList()) {
             String exe=child.info().command().orElse("UNAVAILABLE");check(System.getProperty("os.name").startsWith("Windows")&&Path.of(System.getenv("SystemRoot"),"System32","conhost.exe").toString().equalsIgnoreCase(exe),"Unexpected USE child "+exe);children.add(Map.of("pid",child.pid(),"executable",exe,"kind","WINDOWS_CONSOLE_HOST"));
         }
-        receipt.put("scope",controlled?"INSTALLED_CONTROLLED_AUCTION_LIVE":"INSTALLED_CANONICAL_AUCTION_LIVE");receipt.put("finalAuctionObjects",auctions);receipt.put("journalBytes",bytes);receipt.put("journalGap",false);
+        receipt.put("scope",declarative(config)?"INSTALLED_DECLARATIVE_AUCTION_LIVE":controlled?"INSTALLED_CONTROLLED_AUCTION_LIVE":"INSTALLED_CANONICAL_AUCTION_LIVE");receipt.put("finalAuctionObjects",auctions);receipt.put("journalBytes",bytes);receipt.put("journalGap",false);
         receipt.put("originalCalls",watch.calls);receipt.put("sourceTerminalSites",watch.terminalSites);receipt.put("nativeTaskPostPass",watch.passTasks);receipt.put("schemes",watch.schemes);receipt.put("players",watch.actorPlayers);
         receipt.put("scopedTerminals",watch.scopedTerminals);receipt.put("nativeOperationClauses",watch.nativeClauses);receipt.put("requiredPauseAgents",call(control,"required"));receipt.put("acknowledgedPauseAgents",call(control,"acknowledged"));
         receipt.put("stateHash",state);receipt.put("resultHash",result);receipt.put("monitorCycles",cycles);receipt.put("heartbeatP95Millis",p95);receipt.put("consumerChildren",children);receipt.put("runtimeChildProcesses",0);receipt.put("officialProducerExitUseSurvives",true);
@@ -370,6 +380,9 @@ public final class InstalledAuctionMain {
         final Set<Object> seen=Collections.newSetFromMap(new IdentityHashMap<>());
         final Map<String,Set<String>> scopedTerminals=new TreeMap<>();
         final List<Object> rows=new ArrayList<>();
+        final String scopeKey;
+        Watch(){this(false);}
+        Watch(boolean declarative){scopeKey=declarative?"scope":"scheme";}
         boolean complete(){return scopedTerminals.size()==2&&scopedTerminals.values().stream().allMatch(s->s.containsAll(TASKS));}
         void acceptJson(Map<String,Object> cut) {
             if(!(cut.get("semantic") instanceof Map<?,?>))return;var semantic=map(cut.get("semantic"));
@@ -378,10 +391,10 @@ public final class InstalledAuctionMain {
                 if(kind.equals("TASK_POST")) {
                     String task=Objects.toString(witness.get("targetTaskId"),"");
                     if(Set.of("PASS","FAIL").contains(row.get("verdict"))) {
-                        terminalSites.add(task);scopedTerminals.computeIfAbsent(Objects.toString(witness.get("scheme"),""),ignored->new TreeSet<>()).add(task);
+                        terminalSites.add(task);scopedTerminals.computeIfAbsent(Objects.toString(witness.get(scopeKey),""),ignored->new TreeSet<>()).add(task);
                     }
                     if("PASS".equals(row.get("verdict")))passTasks.add(task);
-                    if(witness.containsKey("scheme"))schemes.add(witness.get("scheme").toString());
+                    if(witness.containsKey(scopeKey))schemes.add(witness.get(scopeKey).toString());
                     if(witness.containsKey("player"))actorPlayers.add(witness.get("player").toString());rows.add(row);
                 }
                 if(Set.of("PRE","POST").contains(kind)&&Set.of("PASS","FAIL").contains(row.get("verdict"))) {nativeClauses.add(row.get("id").toString());rows.add(row);}
@@ -397,10 +410,10 @@ public final class InstalledAuctionMain {
                 if(kind.equals("TASK_POST")) {
                     String task=Objects.toString(witness.get("targetTaskId"),"");
                     if(Set.of("PASS","FAIL").contains(call(raw,"verdict").toString())) {
-                        terminalSites.add(task);scopedTerminals.computeIfAbsent(Objects.toString(witness.get("scheme"),""),ignored->new TreeSet<>()).add(task);
+                        terminalSites.add(task);scopedTerminals.computeIfAbsent(Objects.toString(witness.get(scopeKey),""),ignored->new TreeSet<>()).add(task);
                     }
                     if(call(raw,"verdict").toString().equals("PASS"))passTasks.add(task);
-                    if(witness.containsKey("scheme"))schemes.add(witness.get("scheme").toString());
+                    if(witness.containsKey(scopeKey))schemes.add(witness.get(scopeKey).toString());
                     if(witness.containsKey("player"))actorPlayers.add(witness.get("player").toString());
                     rows.add(call(loader.loadClass("org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson"),"tree",raw));
                 }
@@ -420,13 +433,15 @@ public final class InstalledAuctionMain {
             var ctor=loader.loadClass("org.tzi.use.plugins.jacamo.ui.JaCaMoWorkbenchPanel").getDeclaredConstructor(loader.loadClass("org.tzi.use.plugins.jacamo.JaCaMoFacade"),Consumer.class);ctor.setAccessible(true);
             panel=edt(()->(JPanel)ctor.newInstance(facade,(Consumer<String>)errors::add));frame=edt(()->new JFrame("Installed original Auction CSL/iStar/OCL acceptance"));
             long[] previous={System.nanoTime()};timer=edt(()->new javax.swing.Timer(50,event->{long now=System.nanoTime();delays.add(Math.max(0,now-previous[0]-TimeUnit.MILLISECONDS.toNanos(50)));previous[0]=now;}));
-            edt(()->{frame.setContentPane(panel);frame.setSize(1500,1000);frame.setVisible(true);timer.start();return null;});
+            edt(()->{frame.setContentPane(panel);frame.setSize(1500,1000);org.tzi.use.plugins.jacamo.ui.AcceptanceScreen.place(frame);frame.setVisible(true);timer.start();return null;});
         }
-        void importProject(Path jcm,String mapping)throws Exception {edt(()->{component(panel,"engine-profile",JComboBox.class).setSelectedItem("AUCTION_OBSERVED_V1");component(panel,"mapping-specification",JTextField.class).setText(mapping);call(panel,"importProject",jcm);return null;});enabled("start-runtime");}
+        void importProject(Path jcm,String mapping)throws Exception {importProject(jcm,mapping,false,"");}
+        void importProject(Path jcm,String mapping,boolean declarative,String ocl)throws Exception {edt(()->{component(panel,"engine-profile",JComboBox.class).setSelectedItem(declarative?"JACAMO_DECLARATIVE_XML":"AUCTION_OBSERVED_V1");component(panel,"mapping-specification",JTextField.class).setText(mapping);if(declarative)component(panel,"authored-ocl",JTextField.class).setText(ocl);call(panel,"importProject",jcm);return null;});enabled("start-runtime");}
         void click(String name)throws Exception {edt(()->{component(panel,name,JButton.class).doClick();return null;});}
         void enabled(String name)throws Exception {await(()->{check(errors.isEmpty(),errors.toString());return edt(()->component(panel,name,JButton.class).isEnabled());},60);}
         public void close()throws Exception {edt(()->{timer.stop();frame.dispose();window.getObjectDiagrams().forEach(v->v.detachModel());window.dispose();MainWindow.setJavaFxCall(false);return null;});javafx.application.Platform.exit();}
     }
+    private static boolean declarative(Properties config){return "JACAMO_DECLARATIVE_XML".equals(config.getProperty("profile"));}
     private static void settle(Object coordinator)throws Exception{((CompletableFuture<?>)call(coordinator,"originalEngineDrained")).get(30,TimeUnit.SECONDS);call(coordinator,"read",(Callable<Object>)()->null);}
     @SuppressWarnings("unchecked") private static Map<String,Object> map(Object value){return (Map<String,Object>)value;}
     private static void write(Path file,Object value)throws Exception{Files.write(file,(byte[])call(loader.loadClass("org.jacamo.bridge.contract.CanonicalJson"),"encode",value));}

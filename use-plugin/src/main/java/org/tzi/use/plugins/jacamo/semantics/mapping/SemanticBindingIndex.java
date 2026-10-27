@@ -39,7 +39,10 @@ public final class SemanticBindingIndex {
             if(binding.kind()==Kind.ENTITY&&!node.concept().equals("Artifact"))throw new IllegalArgumentException("ENTITY_REQUIRES_REGISTERED_ARTIFACT_VIEW:"+node.concept());
             if(binding.kind()==Kind.ENTITY&&(node.layer()!=NormalizedSourceModel.Layer.MODEL_DEFINITION
                     ||Set.of("CARTAGO_ARTIFACT","CARTAGO_ARTIFACT_INFO").contains(node.sourceKind())))throw new IllegalArgumentException("ENTITY_REQUIRES_ARTIFACT_TYPE_VIEW:"+node.sourceKind());
-            if(binding.kind()==Kind.ROLE&&!node.concept().equals("Role"))throw new IllegalArgumentException("ROLE_SOURCE_KIND_REQUIRED");
+            if(binding.kind()==Kind.ROLE&&!node.concept().equals("Role")
+                    &&!(node.sourceKind().equals("JASON_AGENT_PROGRAM")&&node.layer()==NormalizedSourceModel.Layer.MODEL_DEFINITION
+                        && "ASL_CAPABILITY_VIEW".equals(binding.metadata().get("roleAbstraction"))&&!binding.abstractionReason().isBlank()
+                        &&csl.generalizations().stream().anyMatch(g->g.general().equals(binding.targetId()))))throw new IllegalArgumentException("ROLE_SOURCE_KIND_REQUIRED");
             if(binding.kind()==Kind.ORG_CONTEXT&&!node.concept().equals("Group")
                     && !(node.sourceKind().equals("JACAMO_ORGANIZATION_DEPLOYMENT")
                         && "ORGANIZATION_DEPLOYMENT_VIEW".equals(binding.metadata().get("contextAbstraction"))
@@ -49,8 +52,16 @@ public final class SemanticBindingIndex {
     }
     private static boolean attributeExists(CslModel model,String id) {
         int split=id.indexOf("::");if(split<1)return false;String type=id.substring(0,split),name=id.substring(split+2);
-        return model.entities().stream().anyMatch(e->e.name().equals(type)&&e.attributes().stream().anyMatch(a->a.name().equals(name)))
-                ||model.roles().stream().anyMatch(e->e.name().equals(type)&&e.attributes().stream().anyMatch(a->a.name().equals(name)))
-                ||model.orgContexts().stream().anyMatch(e->e.name().equals(type)&&e.attributes().stream().anyMatch(a->a.name().equals(name)));
+        // Same-instance CSL inheritance: the binding names the concrete receiver,
+        // while the property may be declared on an ancestor. No declaration copy.
+        var pending=new ArrayDeque<String>();pending.add(type);var visited=new HashSet<String>();
+        while(!pending.isEmpty()) {
+            String current=pending.remove();if(!visited.add(current))continue;
+            if(model.entities().stream().anyMatch(e->e.name().equals(current)&&e.attributes().stream().anyMatch(a->a.name().equals(name)))
+                    ||model.roles().stream().anyMatch(e->e.name().equals(current)&&e.attributes().stream().anyMatch(a->a.name().equals(name)))
+                    ||model.orgContexts().stream().anyMatch(e->e.name().equals(current)&&e.attributes().stream().anyMatch(a->a.name().equals(name))))return true;
+            model.generalizations().stream().filter(e->e.specific().equals(current)).forEach(e->pending.add(e.general()));
+        }
+        return false;
     }
 }

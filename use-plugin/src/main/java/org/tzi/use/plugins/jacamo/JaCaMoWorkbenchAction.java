@@ -37,13 +37,17 @@ public final class JaCaMoWorkbenchAction implements IPluginActionDelegate {
     @Override public boolean shouldBeEnabled(IPluginAction action) { return true; }
 
     private static void openDialog(MainWindow parent, JaCaMoFacade facade) {
+        openDialog(parent,facade,false);
+    }
+    static void openObservedDialog(MainWindow parent,JaCaMoFacade facade){openDialog(parent,facade,true);}
+    private static void openDialog(MainWindow parent, JaCaMoFacade facade,boolean observedWorkflow) {
         JDialog existing = dialogs.get(parent);
         if (existing != null && existing.isDisplayable()) {
             existing.setVisible(true);
             existing.toFront();
             return;
         }
-        JDialog dialog = new JDialog(parent, "USE JaCaMo Workbench", false);
+        JDialog dialog = new JDialog(parent, observedWorkflow?"use4Goal — Goal–Execution Conformance":"USE JaCaMo Workbench", false);
         dialogs.put(parent, dialog);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.addWindowListener(new WindowAdapter() {
@@ -54,7 +58,7 @@ public final class JaCaMoWorkbenchAction implements IPluginActionDelegate {
             }
         });
         dialog.setLayout(new BorderLayout());
-        dialog.add(new JaCaMoWorkbenchPanel(facade), BorderLayout.CENTER);
+        dialog.add(observedWorkflow?JaCaMoWorkbenchPanel.authoredWorkflow(facade):new JaCaMoWorkbenchPanel(facade), BorderLayout.CENTER);
         dialog.setSize(1100, 720);
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);

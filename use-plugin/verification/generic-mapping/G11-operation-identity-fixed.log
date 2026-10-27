@@ -1,0 +1,45 @@
+Configuration of 'jacamoJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/jacamo/1.3.1/jacamo-1.3.1.jar, based on class loader
+Configuration of 'moiseJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/moise/1.1/moise-1.1.jar, based on class loader
+Configuration of 'jasonJar' found at /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar, based on class loader
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+
+Test run finished after 9305 ms
+[         4 containers found      ]
+[         0 containers skipped    ]
+[         4 containers started    ]
+[         0 containers aborted    ]
+[         4 containers successful ]
+[         0 containers failed     ]
+[        10 tests found           ]
+[         0 tests skipped         ]
+[        10 tests started         ]
+[         0 tests aborted         ]
+[         9 tests successful      ]
+[         1 tests failed          ]
+
+
+Failures (1):
+  JUnit Jupiter:DeclarativeOperationCheckpointTest:genericPhysicalIdentityOwnsNativePrePostWithoutLegacyUuidMetadata()
+    MethodSource [className = 'org.tzi.use.plugins.jacamo.codegrounded.runtime.DeclarativeOperationCheckpointTest', methodName = 'genericPhysicalIdentityOwnsNativePrePostWithoutLegacyUuidMetadata', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: [SemanticConstraintResult[id=COMPILED:post increment::Increased, kind=POST, contextClass=Counter, contextObject=counter, sourceIdentity=xml:m0:counter, expression=(self.p = (self.p@pre + 1)), verdict=SKIPPED, backendValue=, diagnostic=NATIVE_VALUE_DIFFERS_FROM_ACCEPTED_OBSERVATION:counter.p, stateVersion=0, invocation=invocation, witness={performerSourceId=, preStateHash=d2858562d60c02c0a580a21e34f2387145ef195d6813b594d131b10c5393ef8f, intervalPolicy=OBSERVED_SHARED_STATE_NO_EFFECT_ISOLATION, performerSemanticId=, requiredFields=["Counter.p"], fieldWitnesses={"Counter.p":[{"acceptedValueHash":"dab536ca6894d57fe63beab07964ecc7fe72be46eabd2bcc579f21052922f500","activation":"","artifact":"","identity":"xml:m0:counter","normSourceHash":"","object":"counter","observerCut":"","observerQuality":"","observerValueHash":"","scheme":"","sourceCut":""}]}, after.p=5, performerBinding=UNAVAILABLE, postStateHash=03f1de27bc6db333a1771ae42dc75cb5f4ea8937afe28333b1ac6820714cb90e, requiredPopulations=[], sourceCompleteness={"cartago":"COMPLETE"}, before.p=4, coverageReason=NATIVE_VALUE_DIFFERS_FROM_ACCEPTED_OBSERVATION:counter.p, currentEventId=op-2, phases=["started"], operationLifecycleCoverage=UNPROVEN, scopeProof=, sourceCell=, artifact=xml:m0:counter, performerSourceAuthority=UNAVAILABLE, operationDescriptorHash=9732da11989c0ddd034d3937c766fca76bb00723143dbd0a12dbf722d476b401, sourceRule=, preEventId=op-1, observationQuality=UNAVAILABLE, interference=[], suspendResumeObservation=UNPROVEN}]] ==> expected: <true> but was: <false>
+       org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)
+       org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:40)
+       org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:210)
+       org.tzi.use.plugins.jacamo.codegrounded.runtime.DeclarativeOperationCheckpointTest.genericPhysicalIdentityOwnsNativePrePostWithoutLegacyUuidMetadata(DeclarativeOperationCheckpointTest.java:31)
+       java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+       org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+       org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+       org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
+       [...]

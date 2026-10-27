@@ -1,0 +1,1 @@
+{"failedSchemes":["sch_a1","sch_a2"],"meaning":"explicit fixture commitment requests after actual bid failure in both enabled schemes; outcomes still require TCP evidence","players":["alice","francois","maria"]}

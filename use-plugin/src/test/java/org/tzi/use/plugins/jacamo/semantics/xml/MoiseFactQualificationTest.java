@@ -25,6 +25,8 @@ class MoiseFactQualificationTest {
             try(var snapshots=new SnapshotCoordinator(List.of(boards),128)) {
                 var cut=snapshots.capture(source.modelRevision(),3).snapshot();
                 var first=dataset.capture(cut,"run",1).get("groups");assertEquals(1,first.rows().size());assertEquals(Completeness.COMPLETE,first.rows().getFirst().quality());
+                assertEquals(first,dataset.captureWithClocks(cut,"run",1,null).datasets().get("groups"));
+                assertThrows(IllegalArgumentException.class,()->dataset.captureWithClocks(cut,"other-run",1,null));
                 var fact=cut.facts().stream().filter(f->f.kind()==RuntimeFactKind.GROUP_BOARD).findFirst().orElseThrow();
                 for(String key:List.of("groupSpecSemanticId","organisationSpecSemanticId")) {
                     var values=new LinkedHashMap<>(fact.values());values.put(key,"wrong-definition");

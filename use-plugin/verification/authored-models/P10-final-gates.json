@@ -1,0 +1,175 @@
+{
+  "status": "PARTIAL",
+  "definitionOfDone": "NOT_MET_P06_SOURCE_AUTHORITY",
+  "scope": "AUTHORED_FIVE_INPUTS_FINAL_EXECUTABLE_GATES",
+  "completedAt": "2026-10-26T20:20:14.0995286+07:00",
+  "git": {
+    "committedOrPushedByThisTask": false,
+    "head": "34b29a428ae8ae9f9070eef4e57a4219cd93f97a",
+    "branch": "main"
+  },
+  "reactor": {
+    "status": "PASS",
+    "command": "mvn -B clean verify",
+    "exitCode": 0,
+    "unitTests": 1367.0,
+    "integrationTests": 172.0,
+    "failures": 0.0,
+    "errors": 0.0,
+    "skipped": 0.0,
+    "log": "P10-final-qualified-clean-verify.log",
+    "logSha256": "d3c27e59646b125aba77f721f6360963eba839b41dd8ac4f8660c3b1d90e4704",
+    "modules": [
+      {
+        "module": "jacamo-bridge-contract",
+        "kind": "surefire",
+        "reports": 10,
+        "tests": 32,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "module": "jacamo-bridge-jacamo",
+        "kind": "surefire",
+        "reports": 39,
+        "tests": 122,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "module": "use-core",
+        "kind": "surefire",
+        "reports": 3,
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "module": "use-core",
+        "kind": "failsafe",
+        "reports": 1,
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "module": "use-jacamo-semantic-engine",
+        "kind": "surefire",
+        "reports": 11,
+        "tests": 103,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "module": "use-gui",
+        "kind": "surefire",
+        "reports": 1,
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "module": "use-gui",
+        "kind": "failsafe",
+        "reports": 1,
+        "tests": 129,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "module": "use-plugin",
+        "kind": "surefire",
+        "reports": 314,
+        "tests": 1095,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "module": "use-plugin",
+        "kind": "failsafe",
+        "reports": 24,
+        "tests": 42,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ]
+  },
+  "coreLegacy": {
+    "status": "PASS",
+    "tests": 198,
+    "log": "P10-qualified-core-legacy-junit3.log"
+  },
+  "acceptanceTool": {
+    "status": "PASS",
+    "tests": 15,
+    "log": "P10-qualified-acceptance-tool-tests.log"
+  },
+  "focusedBehavior": {
+    "status": "PASS",
+    "tests": 9,
+    "log": "P05-authored-behavior-qualified-focused.log"
+  },
+  "frozenArchive": {
+    "archive": "use-assembly/target/use-7.5.0-use-bin.zip",
+    "cases": [
+      {
+        "qualification": "P09-cold-installed/stock-14878637080879529833/qualification.json",
+        "originalCalls": [
+          "GoalMarking.update",
+          "GoalModelInstanceTranslator.propagateDependencies",
+          "IStarPropagation.assignGoalTask:aggregate-only",
+          "IStarPropagation.closePending"
+        ],
+        "case": "stock",
+        "receipt": "P09-cold-installed/stock-14878637080879529833/receipt.json",
+        "stateHash": "ac7a3caf96ed43a8f2212066a4498cf9727cfc68d69c361f0c63b9fe390d6674",
+        "resultHash": "7c751d0efa15af358434cceac5c6dc578c4cdf4fe63dc3a7b4f20b949b68c229",
+        "replayEntries": 492
+      },
+      {
+        "qualification": "P09-cold-installed/auction-15010252319824213975/qualification.json",
+        "originalCalls": [
+          "GoalModelInstanceTranslator.propagateDependencies",
+          "IStarPropagation.assignGoalTask:aggregate-only",
+          "IStarPropagation.closePending",
+          "TaskMarking.update"
+        ],
+        "case": "auction",
+        "receipt": "P09-cold-installed/auction-15010252319824213975/receipt.json",
+        "stateHash": "aa3a15b216ce9be1292211daae167b90a0bb956261e4d8cb5f3220bd8039188f",
+        "resultHash": "bedf8d79d0f818f1976422f8e81680a41dabf5df5a8ca342e473ff1d82262d83",
+        "replayEntries": 3486
+      }
+    ],
+    "checks": 2,
+    "log": "P10-frozen-archive-authored.log",
+    "pluginSha256": "4e7ba3a8dfac9eeee3cb018d1031502209ca5cfc4b509efcc3ab3f987f6ae360",
+    "status": "PASS",
+    "archiveSha256": "280f5904ac128a5737ddc4365fb8e2d48f4ade46ee010fadf8a56150fe8fee90"
+  },
+  "sourceIntegrity": "P10-source-integrity.json",
+  "desktopIntegrity": "P10-desktop-input-integrity.json",
+  "actualMainGui": "P09-quota-gui-receipt.json",
+  "guiClassContinuity": "P10-gui-class-continuity.json",
+  "blockedTasks": [
+    "P06 exact internal MOISE enabled/satisfied transition times",
+    "P10 final semantic acceptance depends on P06",
+    "P06/P10 required temporal evidence and honest scoped population qualification; current aggregate diagnostics remain POPULATION_UNPROVEN"
+  ],
+  "blockerEvidence": "P06-authority-blocker.json",
+  "notClaimed": [
+    "Exact internal MOISE transition timestamps",
+    "PASS for SchemeOrder/BidEvidence without qualified required fields",
+    "A fresh manual GUI run of the final archive; current UI integration tests and class continuity supplement the prior main-GUI run",
+    "Global source/population completeness from currently observed object counts"
+  ]
+}

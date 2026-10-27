@@ -1,0 +1,95 @@
+{
+  "status": "PASS",
+  "command": "mvn -B clean verify",
+  "exitCode": 0,
+  "unitTests": 1367.0,
+  "integrationTests": 172.0,
+  "failures": 0.0,
+  "errors": 0.0,
+  "skipped": 0.0,
+  "log": "P10-final-qualified-clean-verify.log",
+  "logSha256": "d3c27e59646b125aba77f721f6360963eba839b41dd8ac4f8660c3b1d90e4704",
+  "modules": [
+    {
+      "module": "jacamo-bridge-contract",
+      "kind": "surefire",
+      "reports": 10,
+      "tests": 32,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "jacamo-bridge-jacamo",
+      "kind": "surefire",
+      "reports": 39,
+      "tests": 122,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-core",
+      "kind": "surefire",
+      "reports": 3,
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-core",
+      "kind": "failsafe",
+      "reports": 1,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-jacamo-semantic-engine",
+      "kind": "surefire",
+      "reports": 11,
+      "tests": 103,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-gui",
+      "kind": "surefire",
+      "reports": 1,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-gui",
+      "kind": "failsafe",
+      "reports": 1,
+      "tests": 129,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "kind": "surefire",
+      "reports": 314,
+      "tests": 1095,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "kind": "failsafe",
+      "reports": 24,
+      "tests": 42,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ]
+}

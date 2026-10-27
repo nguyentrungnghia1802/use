@@ -19,7 +19,7 @@ class V2HardeningAuditTest {
                 String source = Files.readString(file);
                 reject(violations, file, source.matches("(?s).*\\b(?:TODO|FIXME)\\b.*"),
                         "unresolved correctness marker");
-                reject(violations, file, source.contains("ProcessBuilder("), "arbitrary process creation");
+                reject(violations, file, unownedProcessCreation(file,source), "arbitrary process creation");
                 reject(violations, file, source.contains("Runtime.getRuntime().exec"), "arbitrary shell execution");
                 reject(violations, file, source.contains("ORDER_V1"), "obsolete projection id");
                 reject(violations, file, unscopedCaseSelector(file,source),
@@ -80,6 +80,31 @@ class V2HardeningAuditTest {
 
     private void reject(List<String> violations, Path file, boolean condition, String message) {
         if (condition) violations.add(file + ": " + message);
+    }
+
+    // The current external-runtime lifecycle explicitly owns a single launcher.
+    // Keep the old ban everywhere else, and constrain the one package-private
+    // owner rather than renaming/hiding ProcessBuilder to evade this audit.
+    private static boolean unownedProcessCreation(Path file,String source) {
+        if(!source.contains("ProcessBuilder("))return false;
+        if(!file.normalize().equals(Path.of("src/main/java/org/tzi/use/plugins/jacamo/OwnedJaCaMoRuntime.java")))return true;
+        return source.split("ProcessBuilder\\(",-1).length!=2
+                ||!source.contains("final class OwnedJaCaMoRuntime implements AutoCloseable")
+                ||!source.contains("private Process launch(")
+                ||!source.contains("-PrepareOnly")||!source.contains("-PreparationId")
+                ||!source.contains("ProcessOwnerLease.current()")
+                ||!source.contains("jason.infra.local.LiveJaCaMoLauncherMain")
+                ||!source.contains("readPreparation(result,a.root,a.nonce,source)")
+                ||source.contains("cmd.exe")||source.contains("-EncodedCommand");
+    }
+    @Test void processAuditAllowsOnlyTheBoundedOwnedLauncherAndRejectsLookalikes()throws Exception {
+        Path owner=Path.of("src/main/java/org/tzi/use/plugins/jacamo/OwnedJaCaMoRuntime.java");String source=Files.readString(owner);
+        assertFalse(unownedProcessCreation(owner,source));
+        assertTrue(unownedProcessCreation(owner.resolveSibling("AnotherOwner.java"),source));
+        assertTrue(unownedProcessCreation(owner,source+"\nnew ProcessBuilder(unsafe);"));
+        assertTrue(unownedProcessCreation(owner,source.replace("ProcessOwnerLease.current()","missingLease()")));
+        assertTrue(unownedProcessCreation(owner,source+"\n// cmd.exe"));
+        assertTrue(unownedProcessCreation(Path.of("src/main/java/org/tzi/use/plugins/jacamo/Shared.java"),"new ProcessBuilder(command)"));
     }
 
     // This gate predates explicit XML case adapters. A case label in a comment

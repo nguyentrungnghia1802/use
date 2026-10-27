@@ -1,0 +1,32 @@
+Agent mind inspector is running at http://192.168.0.103:3272
+
+Test run finished after 458 ms
+[         2 containers found      ]
+[         0 containers skipped    ]
+[         2 containers started    ]
+[         0 containers aborted    ]
+[         2 containers successful ]
+[         0 containers failed     ]
+[         3 tests found           ]
+[         0 tests skipped         ]
+[         3 tests started         ]
+[         0 tests aborted         ]
+[         2 tests successful      ]
+[         1 tests failed          ]
+
+
+Failures (1):
+  JUnit Jupiter:AuctionNplSubscriptionTest:discoveryBeforeCreationCallbackMustNotLoseTheVerifiedEmptyCreationBaseline()
+    MethodSource [className = 'org.jacamo.bridge.adapter.AuctionNplSubscriptionTest', methodName = 'discoveryBeforeCreationCallbackMustNotLoseTheVerifiedEmptyCreationBaseline', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: expected: <CARTAGO_CREATION_BEFORE_RETURN> but was: <PUBLIC_ENGINE_DISCOVERY>
+       org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)
+       org.junit.jupiter.api.AssertionUtils.failNotEqual(AssertionUtils.java:62)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
+       org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1141)
+       org.jacamo.bridge.adapter.AuctionNplSubscriptionTest.discoveryBeforeCreationCallbackMustNotLoseTheVerifiedEmptyCreationBaseline(AuctionNplSubscriptionTest.java:31)
+       java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+       org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+       [...]

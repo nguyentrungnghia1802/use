@@ -37,16 +37,20 @@ final class CanonicalReplaySupport {
         return "runtime.jsonl".equals(file)?bytes:64L*1024*1024;
     }
     private record Cut(SemanticProgram program,Path journal,Path baseline,Map<String,Object> bindings,
-            String profile,long entries,long bytes,long budget,String version,String baselineHash,RuntimeVerificationResult result) { }
+            String profile,long entries,long bytes,long budget,String version,String baselineHash,RuntimeVerificationResult result,String finalResultHash) { }
     static void export(NativeRuntimeProjector projector,String model,Path directory) {
         if(javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("SEMANTIC_REPLAY_EXPORT_REQUIRES_WORKER");
         if(model==null||model.isBlank())throw new IllegalArgumentException("SEMANTIC_REPLAY_BASELINE_MODEL_REQUIRED");
-        var coordinator=projector.coordinator();coordinator.awaitEvaluation(coordinator.lastObservation(),30000);
+        var coordinator=projector.coordinator();
+        if(!coordinator.lastObservation().freshness().equals("TRACE_ONLY"))coordinator.awaitEvaluation(coordinator.lastObservation(),30000);
+        else try{coordinator.originalEngineDrained().get(30,java.util.concurrent.TimeUnit.SECONDS);coordinator.read(()->null);}
+        catch(Exception failure){throw new IllegalStateException("SEMANTIC_REPLAY_DRAIN_FAILED",failure);}
         var cut=coordinator.read(()->{
             if(coordinator.journal().hasGap())throw new IllegalStateException("REPLAY_EXPORT_INCOMPLETE_JOURNAL:"+coordinator.journal().diagnostic());
             var last=coordinator.lastObservation();
             if(last==null||last.semantic()==null||!(last.semantic().observation().get("originalEngine") instanceof Map<?,?> core)
-                    ||!Set.of("PINNED_NATIVE_CUT","ERROR").contains(core.get("evaluated")))
+                    ||!(Set.of("PINNED_NATIVE_CUT","ERROR").contains(core.get("evaluated"))
+                        ||projector.mutations().xmlCase()&&last.freshness().equals("TRACE_ONLY")&&"TRACE_ONLY_NO_SEMANTIC_INPUT_CHANGE".equals(core.get("evaluated"))))
                 throw new IllegalStateException("SEMANTIC_REPLAY_EXPORT_REQUIRES_STABLE_COMPLETED_CUT");
             long budget=coordinator.journal().maxBytes();
             String version=projector.mutations().xmlCase()?(budget>CASE_ARCHIVE_BYTES?BUDGETED_DECLARATIVE_VERSION:DECLARATIVE_VERSION)
@@ -54,9 +58,15 @@ final class CanonicalReplaySupport {
             var policy=new TreeMap<String,Object>();policy.put("schemaVersion",version);if(budgeted(version))policy.put("runtimeByteLimit",budget);
             if(coordinator.journal().persistedBytes()>fileLimit(policy,"runtime.jsonl"))throw new IllegalStateException("SEMANTIC_REPLAY_ARCHIVE_CAPACITY_EXCEEDED");
             var profile=coordinator.constraints().profile();
+            // An earlier accepted cut may complete after a later trace-only callback.
+            // Live lastObservation still belongs to that callback, while replay's final
+            // result belongs to the actual last persisted record. Pin both independently
+            // on this writer barrier; never relabel the older completion as live truth.
+            var tail=coordinator.journal().history();
+            if(tail.isEmpty())throw new IllegalStateException("SEMANTIC_REPLAY_JOURNAL_TAIL_REQUIRED");
             return new Cut(projector.mutations().canonicalProgram(),coordinator.journal().path(),coordinator.checkpoints().baseline().commands(),
                     projector.mutations().baselineBindings(),profile==null?"":profile.source(),coordinator.journal().persistedEntries(),coordinator.journal().persistedBytes(),
-                    budget,version,coordinator.checkpoints().baseline().stateHash(),last);
+                    budget,version,coordinator.checkpoints().baseline().stateHash(),last,tail.getLast().resultHash());
         });
         Path output=directory.toAbsolutePath().normalize();
         try {
@@ -78,7 +88,7 @@ final class CanonicalReplaySupport {
             var hashes=new TreeMap<String,Object>();var names=new ArrayList<>(NativeRuntimeReplay.FILES);names.add(PROGRAM);
             for(String name:names)hashes.put(name,fileHash(output.resolve(name)));
             var manifest=new TreeMap<String,Object>(Map.of("schemaVersion",cut.version(),"files",hashes,"entries",cut.entries(),
-                    "finalStateHash",cut.result().stateHash(),"finalResultHash",cut.result().resultHash(),"baselineStateHash",cut.baselineHash(),
+                    "finalStateHash",cut.result().stateHash(),"finalResultHash",cut.finalResultHash(),"baselineStateHash",cut.baselineHash(),
                     "scope","OBSERVED_SUPPORTED_PROJECTION_ONLY","temporalOrder","ACCEPTED_NATIVE_BOUNDARIES_AND_EXACT_ENGINE_COMPLETIONS","programHash",cut.program().hash()));
             if(budgeted(cut.version()))manifest.put("runtimeByteLimit",cut.budget());
             Files.write(output.resolve("manifest.json"),CanonicalJson.encode(manifest));

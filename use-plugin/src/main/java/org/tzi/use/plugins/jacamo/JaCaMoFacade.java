@@ -24,6 +24,9 @@ public interface JaCaMoFacade {
         return importProject(jcmFile);
     }
     default Map<String,Object> semanticProgramEvidence() { return Map.of(); }
+    /** Borrowed read-only canonical definitions and the installed native model for views. */
+    record SemanticModels(org.vnu.sme.goal.dsl.csl.mm.CslModel csl,org.vnu.sme.goal.dsl.istar.mm.GoalModel goals,org.tzi.use.uml.mm.MModel nativeModel,String programHash) { }
+    default SemanticModels semanticModels(){return null;}
     default ProjectSummary rebuild() { throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED"); }
     default ProjectSummary projectSummary() { return null; }
     default List<SourceRow> sources() { return List.of(); }
@@ -35,6 +38,16 @@ public interface JaCaMoFacade {
     default void loadVerificationProfile(Path profile) { throw new UnsupportedOperationException("PROJECT_NOT_IMPORTED"); }
     default WorkflowStatus workflowStatus() { return new WorkflowStatus("NOT_IMPORTED", false, false, "", "OBSERVE_ONLY", "", ""); }
     default void startRuntime() { throw new UnsupportedOperationException("START_RUNTIME_UNAVAILABLE:OBSERVE_ONLY"); }
+    record OwnedProducerStatus(String state,long pid,String runId,String diagnostic){ }
+    default boolean ownedProducerSupported(){return false;}
+    /** Storage option for the next new monitor owner; never changes a live journal. */
+    default boolean journalBudgetSupported(){return false;}
+    default long nextJournalBudgetBytes(){return org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationCoordinator.defaultJournalMaxBytes();}
+    default void nextJournalBudgetBytes(long bytes){throw new UnsupportedOperationException("JOURNAL_BUDGET_NOT_CONFIGURED");}
+    default OwnedProducerStatus ownedProducerStatus(){return new OwnedProducerStatus("EXTERNAL",0,"","");}
+    default ProjectSummary prepareOwnedProducer(Path jcm,ImportSelection selection,Path runtimeClasspath){throw new UnsupportedOperationException("OWNED_PRODUCER_NOT_CONFIGURED");}
+    default void stopOwnedProducer(){throw new UnsupportedOperationException("OWNED_PRODUCER_NOT_CONFIGURED");}
+    default ProjectSummary restartOwnedProducer(){throw new UnsupportedOperationException("OWNED_PRODUCER_NOT_CONFIGURED");}
     default org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeControlService.View runtimeControlState(){return null;}
     default java.util.concurrent.CompletableFuture<org.jacamo.bridge.contract.RuntimeControlContract.Status> pauseRuntime(String reason){throw new UnsupportedOperationException("CONTROL_UNAVAILABLE");}
     default java.util.concurrent.CompletableFuture<org.jacamo.bridge.contract.RuntimeControlContract.Status> resumeRuntime(){throw new UnsupportedOperationException("CONTROL_UNAVAILABLE");}
@@ -68,6 +81,8 @@ public interface JaCaMoFacade {
         return new org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot(0, runtimeVerificationResult(), null);
     }
     default List<org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult> runtimeVerificationHistory() { return List.of(); }
+    /** Bounded immutable accepted-cut copies from the existing retention owner. */
+    default List<org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot> retainedVerificationSnapshots() { return List.of(); }
     default void exportRuntimeReplay(Path directory) { throw new UnsupportedOperationException("NATIVE_RUNTIME_NOT_CONFIGURED"); }
     default void openStepReplay(Path recording) { throw new UnsupportedOperationException("STEP_REPLAY_NOT_CONFIGURED"); }
     default void resetStepReplay() { throw new UnsupportedOperationException("REPLAY_NOT_OPEN"); }
@@ -104,12 +119,17 @@ public interface JaCaMoFacade {
     record SourceRow(Path path, String kind, long bytes, String sha256) { }
     record WorkflowStatus(String state, boolean startAvailable, boolean managed, String runId,
                           String diagnostic, String bootstrapAt, String startedAt) { }
-    record ImportSelection(String profile,Path specification,Path ocl) {
+    record ImportSelection(String profile,Path specification,Path ocl,Path csl,Path istar) {
         public ImportSelection(String profile,Path specification){this(profile,specification,null);}
+        public ImportSelection(String profile,Path specification,Path ocl){this(profile,specification,ocl,null,null);}
         public ImportSelection {
             profile=org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.configured(profile).name();
             if(specification!=null)specification=specification.toAbsolutePath().normalize();
             if(ocl!=null)ocl=ocl.toAbsolutePath().normalize();
+            if(csl!=null)csl=csl.toAbsolutePath().normalize();
+            if(istar!=null)istar=istar.toAbsolutePath().normalize();
+            if((csl==null)!=(istar==null))throw new IllegalArgumentException("AUTHORED_CSL_ISTAR_PAIR_REQUIRED");
+            if(csl!=null&&!profile.equals("JACAMO_DECLARATIVE_XML"))throw new IllegalArgumentException("AUTHORED_MODELS_REQUIRE_DECLARATIVE_PROFILE");
             if(profile.equals("NATIVE_CURRENT")&&specification!=null)throw new IllegalArgumentException("NATIVE_PROFILE_HAS_NO_AUTHORED_SPECIFICATION");
             if(!profile.equals("JACAMO_DECLARATIVE_XML")&&ocl!=null)throw new IllegalArgumentException("AUTHORED_OCL_SELECTION_REQUIRES_DECLARATIVE_PROFILE");
         }

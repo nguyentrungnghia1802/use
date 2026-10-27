@@ -1,0 +1,565 @@
+REAL_JACAMO_INIT project=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\installed-auction-live-4115938889639603383\staging\auction.jcm headless=true
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+REAL_JACAMO_INIT_OK
+CArtAgO Http Server running on http://192.168.0.103:3273
+Agent mind inspector is running at http://192.168.0.103:3272
+REAL_JACAMO_CREATE_OK platforms=4 agents=5
+Moise Http Server running on http://192.168.0.103:3271
+Oct 24, 2026 7:03:30 PM jacamo.platform.Moise start
+INFO: OrgBoard aorg created.
+Oct 24, 2026 7:03:30 PM jacamo.platform.Moise start
+INFO: OrgBoard aorg created.
+Oct 24, 2026 7:03:30 PM jacamo.platform.Moise createGroup
+INFO: group created: agrp: auctionGroup using artifact ora4mas.nopl.GroupBoard
+Oct 24, 2026 7:03:30 PM jacamo.platform.Moise createGroup
+INFO: group created: agrp: auctionGroup using artifact ora4mas.nopl.GroupBoard
+REAL_JACAMO_MANAGED_WAIT_START run=installed-auction
+REAL_JACAMO_MANAGED_START_ACK run=installed-auction
+REAL_JACAMO_START_OK
+REAL_JACAMO_BRIDGE_READY port=59862 session=78d9a253-4a74-4d90-ac48-ea335cc13035 agents=5
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: join workspace /main/aorg: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: join workspace /main/aorg: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focusing on artifact agrp (at workspace /main/aorg) using namespace default
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focusing on artifact agrp (at workspace /main/aorg) using namespace default
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: join workspace /main/aorg: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: join workspace /main/aorg: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focusing on artifact agrp (at workspace /main/aorg) using namespace default
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focusing on artifact agrp (at workspace /main/aorg) using namespace default
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focus on agrp: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focus on agrp: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focus on agrp: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focus on agrp: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: join workspace /main/aorg: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: join workspace /main/aorg: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focusing on artifact aorg (at workspace /main/aorg) using namespace default
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focusing on artifact aorg (at workspace /main/aorg) using namespace default
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focusing on artifact aorg (at workspace /main/aorg) using namespace default
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focusing on artifact aorg (at workspace /main/aorg) using namespace default
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focusing on artifact agrp (at workspace /main/aorg) using namespace default
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focusing on artifact agrp (at workspace /main/aorg) using namespace default
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: join workspace /main/aorg: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: join workspace /main/aorg: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focusing on artifact agrp (at workspace /main/aorg) using namespace default
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focusing on artifact agrp (at workspace /main/aorg) using namespace default
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focus on aorg: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focus on aorg: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focus on aorg: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focus on aorg: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focus on agrp: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focus on agrp: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focusing on artifact aorg (at workspace /main/aorg) using namespace default
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focusing on artifact aorg (at workspace /main/aorg) using namespace default
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focus on aorg: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focus on aorg: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focus on agrp: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focus on agrp: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focusing on artifact aorg (at workspace /main/aorg) using namespace default
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focusing on artifact aorg (at workspace /main/aorg) using namespace default
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focus on aorg: done
+Oct 24, 2026 7:03:37 PM jason.stdlib.println execute
+INFO: focus on aorg: done
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a2... doing so
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a2... doing so
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a2... doing so
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a2... doing so
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a1... doing so
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a1... doing so
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a1... doing so
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a1... doing so
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mAuctioneer on sch_a2... doing so
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mAuctioneer on sch_a2... doing so
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mAuctioneer on sch_a1... doing so
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mAuctioneer on sch_a1... doing so
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: Start scheme sch_a1 for flight_ticket(paris,athens,date(15,12,2015))
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: Start scheme sch_a1 for flight_ticket(paris,athens,date(15,12,2015))
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a2... doing so
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a2... doing so
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a1... doing so
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a1... doing so
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: Start scheme sch_a2 for flight_ticket(athens,paris,date(18,12,2015))
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: Start scheme sch_a2 for flight_ticket(athens,paris,date(18,12,2015))
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: The following error in console is normal, it is due to the fail while bidding.
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: The following error in console is normal, it is due to the fail while bidding.
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: The following error in console is normal, it is due to the fail while bidding.
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: The following error in console is normal, it is due to the fail while bidding.
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: The following error in console is normal, it is due to the fail while bidding.
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: The following error in console is normal, it is due to the fail while bidding.
+Oct 24, 2026 7:03:38 PM jason.asSemantics.TransitionSystem generateGoalDeletion
+WARNING: No failure event was generated for +!bid[code(.fail),code_line(41),code_src("file:src/agt/auction_capabilities.asl"),error(ia_failed),error_msg(""),scheme(sch_a1),source(self)]
+intention 33: 
+    +!bid[scheme(sch_a1),source(self)] <- ... .fail; org.jacamo.bridge.adapter.AuctionStagingInstrumentation$Marker("P_bid_t2","SUCCEEDED") / {Sch=sch_a1, Id=a1, AId=cobj_10}
+    +!fulfill_obligation(sch_a1,bid,cobj_6,mParticipant)[source(self)] <- ... !Goal[scheme(Scheme)]; goalAchieved(Goal)[artifact_id(ArtId)] / {Goal=bid, Scheme=sch_a1, ArtId=cobj_6, Mission=mParticipant}
+    +obligation(alice,enabled(sch_a1,bid),done(sch_a1,bid,alice),"2026-10-24 19:3:48")[artifact_id(cobj_6),artifact_name(sch_a1),norm(ngoal,[["A",alice],["S",sch_a1],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a1,bid,alice)]]),percept_type(obs_prop),source(percept),workspace("/main/aorg",cobj_2)] <- ... !fulfill_obligation(Scheme,Goal,ArtId,Mission) / {Goal=bid, Scheme=sch_a1, Ag=alice, Deadline="2026-10-24 19:3:48", ArtId=cobj_6, _60=ngoal, Norm=enabled(sch_a1,bid), Un=[["A",alice],["S",sch_a1],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a1,bid,alice)]], Mission=mParticipant, What=done(sch_a1,bid,alice)}
+
+Oct 24, 2026 7:03:38 PM jason.asSemantics.TransitionSystem generateGoalDeletion
+WARNING: No failure event was generated for +!bid[code(.fail),code_line(41),code_src("file:src/agt/auction_capabilities.asl"),error(ia_failed),error_msg(""),scheme(sch_a1),source(self)]
+intention 34: 
+    +!bid[scheme(sch_a1),source(self)] <- ... .fail; org.jacamo.bridge.adapter.AuctionStagingInstrumentation$Marker("P_bid_t2","SUCCEEDED") / {Sch=sch_a1, Id=a1, AId=cobj_10}
+    +!fulfill_obligation(sch_a1,bid,cobj_6,mParticipant)[source(self)] <- ... !Goal[scheme(Scheme)]; goalAchieved(Goal)[artifact_id(ArtId)] / {Goal=bid, Scheme=sch_a1, ArtId=cobj_6, Mission=mParticipant}
+    +obligation(francois,enabled(sch_a1,bid),done(sch_a1,bid,francois),"2026-10-24 19:3:48")[artifact_id(cobj_6),artifact_name(sch_a1),norm(ngoal,[["A",francois],["S",sch_a1],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a1,bid,francois)]]),percept_type(obs_prop),source(percept),workspace("/main/aorg",cobj_2)] <- ... !fulfill_obligation(Scheme,Goal,ArtId,Mission) / {Goal=bid, Scheme=sch_a1, _140=ngoal, Ag=francois, Deadline="2026-10-24 19:3:48", ArtId=cobj_6, Norm=enabled(sch_a1,bid), Un=[["A",francois],["S",sch_a1],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a1,bid,francois)]], Mission=mParticipant, What=done(sch_a1,bid,francois)}
+
+Oct 24, 2026 7:03:38 PM jason.asSemantics.TransitionSystem generateGoalDeletion
+WARNING: No failure event was generated for +!bid[code(.fail),code_line(41),code_src("file:src/agt/auction_capabilities.asl"),error(ia_failed),error_msg(""),scheme(sch_a1),source(self)]
+intention 34: 
+    +!bid[scheme(sch_a1),source(self)] <- ... .fail; org.jacamo.bridge.adapter.AuctionStagingInstrumentation$Marker("P_bid_t2","SUCCEEDED") / {Sch=sch_a1, Id=a1, AId=cobj_10}
+    +!fulfill_obligation(sch_a1,bid,cobj_6,mParticipant)[source(self)] <- ... !Goal[scheme(Scheme)]; goalAchieved(Goal)[artifact_id(ArtId)] / {Goal=bid, Scheme=sch_a1, ArtId=cobj_6, Mission=mParticipant}
+    +obligation(francois,enabled(sch_a1,bid),done(sch_a1,bid,francois),"2026-10-24 19:3:48")[artifact_id(cobj_6),artifact_name(sch_a1),norm(ngoal,[["A",francois],["S",sch_a1],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a1,bid,francois)]]),percept_type(obs_prop),source(percept),workspace("/main/aorg",cobj_2)] <- ... !fulfill_obligation(Scheme,Goal,ArtId,Mission) / {Goal=bid, Scheme=sch_a1, _140=ngoal, Ag=francois, Deadline="2026-10-24 19:3:48", ArtId=cobj_6, Norm=enabled(sch_a1,bid), Un=[["A",francois],["S",sch_a1],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a1,bid,francois)]], Mission=mParticipant, What=done(sch_a1,bid,francois)}
+
+Oct 24, 2026 7:03:38 PM jason.asSemantics.TransitionSystem generateGoalDeletion
+WARNING: No failure event was generated for +!bid[code(.fail),code_line(41),code_src("file:src/agt/auction_capabilities.asl"),error(ia_failed),error_msg(""),scheme(sch_a1),source(self)]
+intention 33: 
+    +!bid[scheme(sch_a1),source(self)] <- ... .fail; org.jacamo.bridge.adapter.AuctionStagingInstrumentation$Marker("P_bid_t2","SUCCEEDED") / {Sch=sch_a1, Id=a1, AId=cobj_10}
+    +!fulfill_obligation(sch_a1,bid,cobj_6,mParticipant)[source(self)] <- ... !Goal[scheme(Scheme)]; goalAchieved(Goal)[artifact_id(ArtId)] / {Goal=bid, Scheme=sch_a1, ArtId=cobj_6, Mission=mParticipant}
+    +obligation(alice,enabled(sch_a1,bid),done(sch_a1,bid,alice),"2026-10-24 19:3:48")[artifact_id(cobj_6),artifact_name(sch_a1),norm(ngoal,[["A",alice],["S",sch_a1],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a1,bid,alice)]]),percept_type(obs_prop),source(percept),workspace("/main/aorg",cobj_2)] <- ... !fulfill_obligation(Scheme,Goal,ArtId,Mission) / {Goal=bid, Scheme=sch_a1, Ag=alice, Deadline="2026-10-24 19:3:48", ArtId=cobj_6, _60=ngoal, Norm=enabled(sch_a1,bid), Un=[["A",alice],["S",sch_a1],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a1,bid,alice)]], Mission=mParticipant, What=done(sch_a1,bid,alice)}
+
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: The following error in console is normal, it is due to the fail while bidding.
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: The following error in console is normal, it is due to the fail while bidding.
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: The following error in console is normal, it is due to the fail while bidding.
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: The following error in console is normal, it is due to the fail while bidding.
+Oct 24, 2026 7:03:38 PM jason.asSemantics.TransitionSystem generateGoalDeletion
+WARNING: No failure event was generated for +!bid[code(.fail),code_line(41),code_src("file:src/agt/auction_capabilities.asl"),error(ia_failed),error_msg(""),scheme(sch_a2),source(self)]
+intention 36: 
+    +!bid[scheme(sch_a2),source(self)] <- ... .fail; org.jacamo.bridge.adapter.AuctionStagingInstrumentation$Marker("P_bid_t2","SUCCEEDED") / {Sch=sch_a2, Id=a2, AId=cobj_11}
+    +!fulfill_obligation(sch_a2,bid,cobj_7,mParticipant)[source(self)] <- ... !Goal[scheme(Scheme)]; goalAchieved(Goal)[artifact_id(ArtId)] / {Goal=bid, Scheme=sch_a2, ArtId=cobj_7, Mission=mParticipant}
+    +obligation(alice,enabled(sch_a2,bid),done(sch_a2,bid,alice),"2026-10-24 19:3:48")[artifact_id(cobj_7),artifact_name(sch_a2),norm(ngoal,[["A",alice],["S",sch_a2],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a2,bid,alice)]]),percept_type(obs_prop),source(percept),workspace("/main/aorg",cobj_2)] <- ... !fulfill_obligation(Scheme,Goal,ArtId,Mission) / {Goal=bid, Scheme=sch_a2, Ag=alice, Deadline="2026-10-24 19:3:48", ArtId=cobj_7, _60=ngoal, Norm=enabled(sch_a2,bid), Un=[["A",alice],["S",sch_a2],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a2,bid,alice)]], Mission=mParticipant, What=done(sch_a2,bid,alice)}
+
+Oct 24, 2026 7:03:38 PM jason.asSemantics.TransitionSystem generateGoalDeletion
+WARNING: No failure event was generated for +!bid[code(.fail),code_line(41),code_src("file:src/agt/auction_capabilities.asl"),error(ia_failed),error_msg(""),scheme(sch_a2),source(self)]
+intention 36: 
+    +!bid[scheme(sch_a2),source(self)] <- ... .fail; org.jacamo.bridge.adapter.AuctionStagingInstrumentation$Marker("P_bid_t2","SUCCEEDED") / {Sch=sch_a2, Id=a2, AId=cobj_11}
+    +!fulfill_obligation(sch_a2,bid,cobj_7,mParticipant)[source(self)] <- ... !Goal[scheme(Scheme)]; goalAchieved(Goal)[artifact_id(ArtId)] / {Goal=bid, Scheme=sch_a2, ArtId=cobj_7, Mission=mParticipant}
+    +obligation(alice,enabled(sch_a2,bid),done(sch_a2,bid,alice),"2026-10-24 19:3:48")[artifact_id(cobj_7),artifact_name(sch_a2),norm(ngoal,[["A",alice],["S",sch_a2],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a2,bid,alice)]]),percept_type(obs_prop),source(percept),workspace("/main/aorg",cobj_2)] <- ... !fulfill_obligation(Scheme,Goal,ArtId,Mission) / {Goal=bid, Scheme=sch_a2, Ag=alice, Deadline="2026-10-24 19:3:48", ArtId=cobj_7, _60=ngoal, Norm=enabled(sch_a2,bid), Un=[["A",alice],["S",sch_a2],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a2,bid,alice)]], Mission=mParticipant, What=done(sch_a2,bid,alice)}
+
+Oct 24, 2026 7:03:38 PM jason.asSemantics.TransitionSystem generateGoalDeletion
+WARNING: No failure event was generated for +!bid[code(.fail),code_line(41),code_src("file:src/agt/auction_capabilities.asl"),error(ia_failed),error_msg(""),scheme(sch_a2),source(self)]
+intention 37: 
+    +!bid[scheme(sch_a2),source(self)] <- ... .fail; org.jacamo.bridge.adapter.AuctionStagingInstrumentation$Marker("P_bid_t2","SUCCEEDED") / {Sch=sch_a2, Id=a2, AId=cobj_11}
+    +!fulfill_obligation(sch_a2,bid,cobj_7,mParticipant)[source(self)] <- ... !Goal[scheme(Scheme)]; goalAchieved(Goal)[artifact_id(ArtId)] / {Goal=bid, Scheme=sch_a2, ArtId=cobj_7, Mission=mParticipant}
+    +obligation(francois,enabled(sch_a2,bid),done(sch_a2,bid,francois),"2026-10-24 19:3:48")[artifact_id(cobj_7),artifact_name(sch_a2),norm(ngoal,[["A",francois],["S",sch_a2],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a2,bid,francois)]]),percept_type(obs_prop),source(percept),workspace("/main/aorg",cobj_2)] <- ... !fulfill_obligation(Scheme,Goal,ArtId,Mission) / {Goal=bid, Scheme=sch_a2, _140=ngoal, Ag=francois, Deadline="2026-10-24 19:3:48", ArtId=cobj_7, Norm=enabled(sch_a2,bid), Un=[["A",francois],["S",sch_a2],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a2,bid,francois)]], Mission=mParticipant, What=done(sch_a2,bid,francois)}
+
+Oct 24, 2026 7:03:38 PM jason.asSemantics.TransitionSystem generateGoalDeletion
+WARNING: No failure event was generated for +!bid[code(.fail),code_line(41),code_src("file:src/agt/auction_capabilities.asl"),error(ia_failed),error_msg(""),scheme(sch_a2),source(self)]
+intention 37: 
+    +!bid[scheme(sch_a2),source(self)] <- ... .fail; org.jacamo.bridge.adapter.AuctionStagingInstrumentation$Marker("P_bid_t2","SUCCEEDED") / {Sch=sch_a2, Id=a2, AId=cobj_11}
+    +!fulfill_obligation(sch_a2,bid,cobj_7,mParticipant)[source(self)] <- ... !Goal[scheme(Scheme)]; goalAchieved(Goal)[artifact_id(ArtId)] / {Goal=bid, Scheme=sch_a2, ArtId=cobj_7, Mission=mParticipant}
+    +obligation(francois,enabled(sch_a2,bid),done(sch_a2,bid,francois),"2026-10-24 19:3:48")[artifact_id(cobj_7),artifact_name(sch_a2),norm(ngoal,[["A",francois],["S",sch_a2],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a2,bid,francois)]]),percept_type(obs_prop),source(percept),workspace("/main/aorg",cobj_2)] <- ... !fulfill_obligation(Scheme,Goal,ArtId,Mission) / {Goal=bid, Scheme=sch_a2, _140=ngoal, Ag=francois, Deadline="2026-10-24 19:3:48", ArtId=cobj_7, Norm=enabled(sch_a2,bid), Un=[["A",francois],["S",sch_a2],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a2,bid,francois)]], Mission=mParticipant, What=done(sch_a2,bid,francois)}
+
+Oct 24, 2026 7:03:38 PM jason.asSemantics.TransitionSystem generateGoalDeletion
+WARNING: No failure event was generated for +!bid[code(.fail),code_line(41),code_src("file:src/agt/auction_capabilities.asl"),error(ia_failed),error_msg(""),scheme(sch_a1),source(self)]
+intention 35: 
+    +!bid[scheme(sch_a1),source(self)] <- ... .fail; org.jacamo.bridge.adapter.AuctionStagingInstrumentation$Marker("P_bid_t2","SUCCEEDED") / {Sch=sch_a1, Id=a1, AId=cobj_10}
+    +!fulfill_obligation(sch_a1,bid,cobj_6,mParticipant)[source(self)] <- ... !Goal[scheme(Scheme)]; goalAchieved(Goal)[artifact_id(ArtId)] / {Goal=bid, Scheme=sch_a1, ArtId=cobj_6, Mission=mParticipant}
+    +obligation(maria,enabled(sch_a1,bid),done(sch_a1,bid,maria),"2026-10-24 19:3:48")[artifact_id(cobj_6),artifact_name(sch_a1),norm(ngoal,[["A",maria],["S",sch_a1],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a1,bid,maria)]]),percept_type(obs_prop),source(percept),workspace("/main/aorg",cobj_2)] <- ... !fulfill_obligation(Scheme,Goal,ArtId,Mission) / {Goal=bid, Scheme=sch_a1, Ag=maria, Deadline="2026-10-24 19:3:48", ArtId=cobj_6, Norm=enabled(sch_a1,bid), _100=ngoal, Un=[["A",maria],["S",sch_a1],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a1,bid,maria)]], Mission=mParticipant, What=done(sch_a1,bid,maria)}
+
+Oct 24, 2026 7:03:38 PM jason.asSemantics.TransitionSystem generateGoalDeletion
+WARNING: No failure event was generated for +!bid[code(.fail),code_line(41),code_src("file:src/agt/auction_capabilities.asl"),error(ia_failed),error_msg(""),scheme(sch_a1),source(self)]
+intention 35: 
+    +!bid[scheme(sch_a1),source(self)] <- ... .fail; org.jacamo.bridge.adapter.AuctionStagingInstrumentation$Marker("P_bid_t2","SUCCEEDED") / {Sch=sch_a1, Id=a1, AId=cobj_10}
+    +!fulfill_obligation(sch_a1,bid,cobj_6,mParticipant)[source(self)] <- ... !Goal[scheme(Scheme)]; goalAchieved(Goal)[artifact_id(ArtId)] / {Goal=bid, Scheme=sch_a1, ArtId=cobj_6, Mission=mParticipant}
+    +obligation(maria,enabled(sch_a1,bid),done(sch_a1,bid,maria),"2026-10-24 19:3:48")[artifact_id(cobj_6),artifact_name(sch_a1),norm(ngoal,[["A",maria],["S",sch_a1],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a1,bid,maria)]]),percept_type(obs_prop),source(percept),workspace("/main/aorg",cobj_2)] <- ... !fulfill_obligation(Scheme,Goal,ArtId,Mission) / {Goal=bid, Scheme=sch_a1, Ag=maria, Deadline="2026-10-24 19:3:48", ArtId=cobj_6, Norm=enabled(sch_a1,bid), _100=ngoal, Un=[["A",maria],["S",sch_a1],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a1,bid,maria)]], Mission=mParticipant, What=done(sch_a1,bid,maria)}
+
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: The following error in console is normal, it is due to the fail while bidding.
+Oct 24, 2026 7:03:38 PM jason.stdlib.println execute
+INFO: The following error in console is normal, it is due to the fail while bidding.
+Oct 24, 2026 7:03:38 PM jason.asSemantics.TransitionSystem generateGoalDeletion
+WARNING: No failure event was generated for +!bid[code(.fail),code_line(41),code_src("file:src/agt/auction_capabilities.asl"),error(ia_failed),error_msg(""),scheme(sch_a2),source(self)]
+intention 38: 
+    +!bid[scheme(sch_a2),source(self)] <- ... .fail; org.jacamo.bridge.adapter.AuctionStagingInstrumentation$Marker("P_bid_t2","SUCCEEDED") / {Sch=sch_a2, Id=a2, AId=cobj_11}
+    +!fulfill_obligation(sch_a2,bid,cobj_7,mParticipant)[source(self)] <- ... !Goal[scheme(Scheme)]; goalAchieved(Goal)[artifact_id(ArtId)] / {Goal=bid, Scheme=sch_a2, ArtId=cobj_7, Mission=mParticipant}
+    +obligation(maria,enabled(sch_a2,bid),done(sch_a2,bid,maria),"2026-10-24 19:3:48")[artifact_id(cobj_7),artifact_name(sch_a2),norm(ngoal,[["A",maria],["S",sch_a2],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a2,bid,maria)]]),percept_type(obs_prop),source(percept),workspace("/main/aorg",cobj_2)] <- ... !fulfill_obligation(Scheme,Goal,ArtId,Mission) / {Goal=bid, Scheme=sch_a2, Ag=maria, Deadline="2026-10-24 19:3:48", ArtId=cobj_7, Norm=enabled(sch_a2,bid), _100=ngoal, Un=[["A",maria],["S",sch_a2],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a2,bid,maria)]], Mission=mParticipant, What=done(sch_a2,bid,maria)}
+
+Oct 24, 2026 7:03:38 PM jason.asSemantics.TransitionSystem generateGoalDeletion
+WARNING: No failure event was generated for +!bid[code(.fail),code_line(41),code_src("file:src/agt/auction_capabilities.asl"),error(ia_failed),error_msg(""),scheme(sch_a2),source(self)]
+intention 38: 
+    +!bid[scheme(sch_a2),source(self)] <- ... .fail; org.jacamo.bridge.adapter.AuctionStagingInstrumentation$Marker("P_bid_t2","SUCCEEDED") / {Sch=sch_a2, Id=a2, AId=cobj_11}
+    +!fulfill_obligation(sch_a2,bid,cobj_7,mParticipant)[source(self)] <- ... !Goal[scheme(Scheme)]; goalAchieved(Goal)[artifact_id(ArtId)] / {Goal=bid, Scheme=sch_a2, ArtId=cobj_7, Mission=mParticipant}
+    +obligation(maria,enabled(sch_a2,bid),done(sch_a2,bid,maria),"2026-10-24 19:3:48")[artifact_id(cobj_7),artifact_name(sch_a2),norm(ngoal,[["A",maria],["S",sch_a2],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a2,bid,maria)]]),percept_type(obs_prop),source(percept),workspace("/main/aorg",cobj_2)] <- ... !fulfill_obligation(Scheme,Goal,ArtId,Mission) / {Goal=bid, Scheme=sch_a2, Ag=maria, Deadline="2026-10-24 19:3:48", ArtId=cobj_7, Norm=enabled(sch_a2,bid), _100=ngoal, Un=[["A",maria],["S",sch_a2],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a2,bid,maria)]], Mission=mParticipant, What=done(sch_a2,bid,maria)}
+
+Oct 24, 2026 7:03:39 PM jason.stdlib.println execute
+INFO: E02 actual late role adopted
+Oct 24, 2026 7:03:39 PM jason.stdlib.println execute
+INFO: E02 actual late role adopted
+Oct 24, 2026 7:03:39 PM jason.stdlib.println execute
+INFO: The following error in console is normal, it is due to the fail while bidding.
+Oct 24, 2026 7:03:39 PM jason.stdlib.println execute
+INFO: The following error in console is normal, it is due to the fail while bidding.
+Oct 24, 2026 7:03:39 PM jason.asSemantics.TransitionSystem generateGoalDeletion
+WARNING: No failure event was generated for +!bid[code(.fail),code_line(41),code_src("file:src/agt/auction_capabilities.asl"),error(ia_failed),error_msg(""),scheme(sch_a1),source(self)]
+intention 44: 
+    +!bid[scheme(sch_a1),source(self)] <- ... .fail; org.jacamo.bridge.adapter.AuctionStagingInstrumentation$Marker("P_bid_t2","SUCCEEDED") / {Sch=sch_a1, Id=a1, AId=cobj_9}
+    +!fulfill_obligation(sch_a1,bid,cobj_7,mParticipant)[source(self)] <- ... !Goal[scheme(Scheme)]; goalAchieved(Goal)[artifact_id(ArtId)] / {Goal=bid, Scheme=sch_a1, ArtId=cobj_7, Mission=mParticipant}
+    +obligation(giacomo,enabled(sch_a1,bid),done(sch_a1,bid,giacomo),"2026-10-24 19:3:49")[artifact_id(cobj_7),artifact_name(sch_a1),norm(ngoal,[["A",giacomo],["S",sch_a1],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a1,bid,giacomo)]]),percept_type(obs_prop),source(percept),workspace("/main/aorg",cobj_2)] <- ... !fulfill_obligation(Scheme,Goal,ArtId,Mission) / {_180=ngoal, Goal=bid, Scheme=sch_a1, Ag=giacomo, Deadline="2026-10-24 19:3:49", ArtId=cobj_7, Norm=enabled(sch_a1,bid), Un=[["A",giacomo],["S",sch_a1],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a1,bid,giacomo)]], Mission=mParticipant, What=done(sch_a1,bid,giacomo)}
+
+Oct 24, 2026 7:03:39 PM jason.asSemantics.TransitionSystem generateGoalDeletion
+WARNING: No failure event was generated for +!bid[code(.fail),code_line(41),code_src("file:src/agt/auction_capabilities.asl"),error(ia_failed),error_msg(""),scheme(sch_a1),source(self)]
+intention 44: 
+    +!bid[scheme(sch_a1),source(self)] <- ... .fail; org.jacamo.bridge.adapter.AuctionStagingInstrumentation$Marker("P_bid_t2","SUCCEEDED") / {Sch=sch_a1, Id=a1, AId=cobj_9}
+    +!fulfill_obligation(sch_a1,bid,cobj_7,mParticipant)[source(self)] <- ... !Goal[scheme(Scheme)]; goalAchieved(Goal)[artifact_id(ArtId)] / {Goal=bid, Scheme=sch_a1, ArtId=cobj_7, Mission=mParticipant}
+    +obligation(giacomo,enabled(sch_a1,bid),done(sch_a1,bid,giacomo),"2026-10-24 19:3:49")[artifact_id(cobj_7),artifact_name(sch_a1),norm(ngoal,[["A",giacomo],["S",sch_a1],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a1,bid,giacomo)]]),percept_type(obs_prop),source(percept),workspace("/main/aorg",cobj_2)] <- ... !fulfill_obligation(Scheme,Goal,ArtId,Mission) / {_180=ngoal, Goal=bid, Scheme=sch_a1, Ag=giacomo, Deadline="2026-10-24 19:3:49", ArtId=cobj_7, Norm=enabled(sch_a1,bid), Un=[["A",giacomo],["S",sch_a1],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a1,bid,giacomo)]], Mission=mParticipant, What=done(sch_a1,bid,giacomo)}
+
+Oct 24, 2026 7:03:39 PM jason.stdlib.println execute
+INFO: The following error in console is normal, it is due to the fail while bidding.
+Oct 24, 2026 7:03:39 PM jason.stdlib.println execute
+INFO: The following error in console is normal, it is due to the fail while bidding.
+Oct 24, 2026 7:03:39 PM jason.asSemantics.TransitionSystem generateGoalDeletion
+WARNING: No failure event was generated for +!bid[code(.fail),code_line(41),code_src("file:src/agt/auction_capabilities.asl"),error(ia_failed),error_msg(""),scheme(sch_a2),source(self)]
+intention 45: 
+    +!bid[scheme(sch_a2),source(self)] <- ... .fail; org.jacamo.bridge.adapter.AuctionStagingInstrumentation$Marker("P_bid_t2","SUCCEEDED") / {Sch=sch_a2, Id=a2, AId=cobj_10}
+    +!fulfill_obligation(sch_a2,bid,cobj_5,mParticipant)[source(self)] <- ... !Goal[scheme(Scheme)]; goalAchieved(Goal)[artifact_id(ArtId)] / {Goal=bid, Scheme=sch_a2, ArtId=cobj_5, Mission=mParticipant}
+    +obligation(giacomo,enabled(sch_a2,bid),done(sch_a2,bid,giacomo),"2026-10-24 19:3:49")[artifact_id(cobj_5),artifact_name(sch_a2),norm(ngoal,[["A",giacomo],["S",sch_a2],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a2,bid,giacomo)]]),percept_type(obs_prop),source(percept),workspace("/main/aorg",cobj_2)] <- ... !fulfill_obligation(Scheme,Goal,ArtId,Mission) / {_180=ngoal, Goal=bid, Scheme=sch_a2, Ag=giacomo, Deadline="2026-10-24 19:3:49", ArtId=cobj_5, Norm=enabled(sch_a2,bid), Un=[["A",giacomo],["S",sch_a2],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a2,bid,giacomo)]], Mission=mParticipant, What=done(sch_a2,bid,giacomo)}
+
+Oct 24, 2026 7:03:39 PM jason.asSemantics.TransitionSystem generateGoalDeletion
+WARNING: No failure event was generated for +!bid[code(.fail),code_line(41),code_src("file:src/agt/auction_capabilities.asl"),error(ia_failed),error_msg(""),scheme(sch_a2),source(self)]
+intention 45: 
+    +!bid[scheme(sch_a2),source(self)] <- ... .fail; org.jacamo.bridge.adapter.AuctionStagingInstrumentation$Marker("P_bid_t2","SUCCEEDED") / {Sch=sch_a2, Id=a2, AId=cobj_10}
+    +!fulfill_obligation(sch_a2,bid,cobj_5,mParticipant)[source(self)] <- ... !Goal[scheme(Scheme)]; goalAchieved(Goal)[artifact_id(ArtId)] / {Goal=bid, Scheme=sch_a2, ArtId=cobj_5, Mission=mParticipant}
+    +obligation(giacomo,enabled(sch_a2,bid),done(sch_a2,bid,giacomo),"2026-10-24 19:3:49")[artifact_id(cobj_5),artifact_name(sch_a2),norm(ngoal,[["A",giacomo],["S",sch_a2],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a2,bid,giacomo)]]),percept_type(obs_prop),source(percept),workspace("/main/aorg",cobj_2)] <- ... !fulfill_obligation(Scheme,Goal,ArtId,Mission) / {_180=ngoal, Goal=bid, Scheme=sch_a2, Ag=giacomo, Deadline="2026-10-24 19:3:49", ArtId=cobj_5, Norm=enabled(sch_a2,bid), Un=[["A",giacomo],["S",sch_a2],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a2,bid,giacomo)]], Mission=mParticipant, What=done(sch_a2,bid,giacomo)}
+
+Oct 24, 2026 7:03:48 PM jason.stdlib.println execute
+INFO: Participant alice didn't bid on time! S/he will be placed in a block list
+Oct 24, 2026 7:03:48 PM jason.stdlib.println execute
+INFO: Participant alice didn't bid on time! S/he will be placed in a block list
+Oct 24, 2026 7:03:48 PM jason.stdlib.println execute
+INFO: Participant maria didn't bid on time! S/he will be placed in a block list
+Oct 24, 2026 7:03:48 PM jason.stdlib.println execute
+INFO: Participant maria didn't bid on time! S/he will be placed in a block list
+Oct 24, 2026 7:03:48 PM jason.stdlib.println execute
+INFO: Participant francois didn't bid on time! S/he will be placed in a block list
+Oct 24, 2026 7:03:48 PM jason.stdlib.println execute
+INFO: Participant francois didn't bid on time! S/he will be placed in a block list
+Oct 24, 2026 7:03:48 PM jason.stdlib.println execute
+INFO: Participant alice didn't bid on time! S/he will be placed in a block list
+Oct 24, 2026 7:03:48 PM jason.stdlib.println execute
+INFO: Participant alice didn't bid on time! S/he will be placed in a block list
+Oct 24, 2026 7:03:48 PM jason.stdlib.println execute
+INFO: Participant francois didn't bid on time! S/he will be placed in a block list
+Oct 24, 2026 7:03:48 PM jason.stdlib.println execute
+INFO: Participant francois didn't bid on time! S/he will be placed in a block list
+Oct 24, 2026 7:03:48 PM jason.stdlib.println execute
+INFO: Participant maria didn't bid on time! S/he will be placed in a block list
+Oct 24, 2026 7:03:48 PM jason.stdlib.println execute
+INFO: Participant maria didn't bid on time! S/he will be placed in a block list
+Oct 24, 2026 7:03:49 PM jason.stdlib.println execute
+INFO: Participant giacomo didn't bid on time! S/he will be placed in a block list
+Oct 24, 2026 7:03:49 PM jason.stdlib.println execute
+INFO: Participant giacomo didn't bid on time! S/he will be placed in a block list
+Oct 24, 2026 7:03:49 PM jason.stdlib.println execute
+INFO: Participant giacomo didn't bid on time! S/he will be placed in a block list
+Oct 24, 2026 7:03:49 PM jason.stdlib.println execute
+INFO: Participant giacomo didn't bid on time! S/he will be placed in a block list
+Received bid 42.5 from alice for E02_service
+Received bid 80.0 from maria for E02_service
+Oct 24, 2026 7:06:20 PM jason.stdlib.println execute
+INFO: Winner for E02_service is alice with 42.5
+Oct 24, 2026 7:06:20 PM jason.stdlib.println execute
+INFO: Winner for E02_service is alice with 42.5
+Oct 24, 2026 7:06:20 PM jason.stdlib.println execute
+INFO: I Won!
+Oct 24, 2026 7:06:20 PM jason.stdlib.println execute
+INFO: I Won!
+Oct 24, 2026 7:06:22 PM jason.stdlib.println execute
+INFO: E02 fixture observed failed bid on a1
+Oct 24, 2026 7:06:22 PM jason.stdlib.println execute
+INFO: E02 fixture observed failed bid on a1
+REAL_JACAMO_BRIDGE_FINAL_READINESS {agents=State[readiness=READY, detail=BridgeAgArch=org.jacamo.bridge.adapter.BridgeAgArch; injected=5], bridge=State[readiness=CONFIGURED, detail=session=78d9a253-4a74-4d90-ac48-ea335cc13035], events=State[readiness=ATTACHED, detail=bounded observer attached], project=State[readiness=READY, detail=modelRevision=b15dff10d2d74acc7bae6ccbc6305c4e6732123e2c1b8f1bd6306dfe4615d0cc], runtime=State[readiness=READY, detail=snapshot=snapshot:246f62920d066892f6c002e0bb86bab356b89b9653f6b19b89c078a459341bfc; facts=621; sourceCompleteness={observer:verification=PARTIAL, moise:aorg=PARTIAL, cartago=COMPLETE, npl=PARTIAL, bridge:platform=COMPLETE, moise:dynamic=PARTIAL, jason=COMPLETE}], transport=State[readiness=READY, detail=loopback TCP port=59862]}
+REAL_JACAMO_BRIDGE_STOP_REQUESTED
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob has quit, role auctioneer removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.GroupBoard agKilled
+INFO: bob has quit, role auctioneer removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: bob has quit, mission mAuctioneer removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: bob has quit, mission mAuctioneer removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: bob has quit, mission mAuctioneer removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: bob has quit, mission mAuctioneer removed by the platform!
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:182)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:182)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.ArtifactNotAvailableException
+	at cartago.Workspace.lookupLocalArtifact(Workspace.java:956)
+	at cartago.Workspace.lookupArtifact(Workspace.java:948)
+	at cartago.Workspace.closeSession(Workspace.java:453)
+	at cartago.AgentSession.closeSession(AgentSession.java:206)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:182)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice has quit, role participant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.GroupBoard agKilled
+INFO: alice has quit, role participant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: alice has quit, mission mParticipant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: alice has quit, mission mParticipant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: alice has quit, mission mParticipant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: alice has quit, mission mParticipant removed by the platform!
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:182)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:182)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.ArtifactNotAvailableException
+	at cartago.Workspace.lookupLocalArtifact(Workspace.java:956)
+	at cartago.Workspace.lookupArtifact(Workspace.java:948)
+	at cartago.Workspace.closeSession(Workspace.java:453)
+	at cartago.AgentSession.closeSession(AgentSession.java:206)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:182)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.GroupBoard agKilled
+INFO: giacomo has quit, role participant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.GroupBoard agKilled
+INFO: giacomo has quit, role participant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: giacomo has quit, mission mParticipant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: giacomo has quit, mission mParticipant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: giacomo has quit, mission mParticipant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: giacomo has quit, mission mParticipant removed by the platform!
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:182)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:182)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.ArtifactNotAvailableException
+	at cartago.Workspace.lookupLocalArtifact(Workspace.java:956)
+	at cartago.Workspace.lookupArtifact(Workspace.java:948)
+	at cartago.Workspace.closeSession(Workspace.java:453)
+	at cartago.AgentSession.closeSession(AgentSession.java:206)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:182)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.GroupBoard agKilled
+INFO: maria has quit, role participant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.GroupBoard agKilled
+INFO: maria has quit, role participant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: maria has quit, mission mParticipant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: maria has quit, mission mParticipant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: maria has quit, mission mParticipant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: maria has quit, mission mParticipant removed by the platform!
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:182)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:182)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.ArtifactNotAvailableException
+	at cartago.Workspace.lookupLocalArtifact(Workspace.java:956)
+	at cartago.Workspace.lookupArtifact(Workspace.java:948)
+	at cartago.Workspace.closeSession(Workspace.java:453)
+	at cartago.AgentSession.closeSession(AgentSession.java:206)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:182)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.GroupBoard agKilled
+INFO: francois has quit, role participant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.GroupBoard agKilled
+INFO: francois has quit, role participant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: francois has quit, mission mParticipant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: francois has quit, mission mParticipant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: francois has quit, mission mParticipant removed by the platform!
+Oct 24, 2026 7:06:40 PM ora4mas.nopl.SchemeBoard agKilled
+INFO: francois has quit, mission mParticipant removed by the platform!
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:182)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.CartagoException: User not in workspace.
+	at cartago.Workspace.quitAgent(Workspace.java:692)
+	at cartago.AgentBody.quit(AgentBody.java:90)
+	at cartago.AgentSession.closeSession(AgentSession.java:199)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:182)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+cartago.ArtifactNotAvailableException
+	at cartago.Workspace.lookupLocalArtifact(Workspace.java:956)
+	at cartago.Workspace.lookupArtifact(Workspace.java:948)
+	at cartago.Workspace.closeSession(Workspace.java:453)
+	at cartago.AgentSession.closeSession(AgentSession.java:206)
+	at jaca.CAgentArch.stop(CAgentArch.java:154)
+	at jason.infra.local.LocalAgArch.stopAg(LocalAgArch.java:147)
+	at jason.infra.local.RunLocalMAS.stopAgs(RunLocalMAS.java:899)
+	at jacamo.infra.JaCaMoLauncher.finish(JaCaMoLauncher.java:318)
+	at jason.infra.local.LiveJaCaMoLauncherMain.lambda$main$2(LiveJaCaMoLauncherMain.java:182)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+REAL_JACAMO_BRIDGE_STOPPED

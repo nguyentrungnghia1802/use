@@ -1,0 +1,41 @@
+Configuration of 'jacamoJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/jacamo/1.3.1/jacamo-1.3.1.jar, based on class loader
+Configuration of 'moiseJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/moise/1.1/moise-1.1.jar, based on class loader
+Configuration of 'jasonJar' found at /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar, based on class loader
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+Oct 24, 2026 1:50:39 AM ora4mas.nopl.GroupBoard agKilled
+INFO: alice9275e2449b3649dba72e710272389e6d has quit, role worker removed by the platform!
+Oct 24, 2026 1:50:39 AM ora4mas.nopl.GroupBoard agKilled
+INFO: bob9275e2449b3649dba72e710272389e6d has quit, role reviewer removed by the platform!
+Oct 24, 2026 1:50:43 AM ora4mas.nopl.GroupBoard agKilled
+INFO: alicede1b656086a34ad4a1157d192860378d has quit, role worker removed by the platform!
+Oct 24, 2026 1:50:43 AM ora4mas.nopl.GroupBoard agKilled
+INFO: bobde1b656086a34ad4a1157d192860378d has quit, role reviewer removed by the platform!
+Oct 24, 2026 1:50:48 AM ora4mas.nopl.GroupBoard agKilled
+INFO: alice672d7a731c704d6f98bb0e31963b3818 has quit, role worker removed by the platform!
+Oct 24, 2026 1:50:48 AM ora4mas.nopl.GroupBoard agKilled
+INFO: bob672d7a731c704d6f98bb0e31963b3818 has quit, role reviewer removed by the platform!
+
+Test run finished after 24607 ms
+[         3 containers found      ]
+[         0 containers skipped    ]
+[         3 containers started    ]
+[         0 containers aborted    ]
+[         3 containers successful ]
+[         0 containers failed     ]
+[        11 tests found           ]
+[         0 tests skipped         ]
+[        11 tests started         ]
+[         0 tests aborted         ]
+[        11 tests successful      ]
+[         0 tests failed          ]
+

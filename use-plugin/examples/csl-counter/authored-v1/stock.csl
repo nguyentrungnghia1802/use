@@ -1,0 +1,4 @@
+csl v4.0 StockView {
+  entity Pallet { attribute weight : Integer required mutable; }
+  orgContext Warehouse {}
+}

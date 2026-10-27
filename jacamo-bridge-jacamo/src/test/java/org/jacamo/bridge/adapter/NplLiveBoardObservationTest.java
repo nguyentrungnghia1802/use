@@ -32,7 +32,7 @@ public class NplLiveBoardObservationTest {
             assertFalse(CanonicalJson.object(observed.data().get("norm")).isEmpty());assertEquals("OBSERVED",observed.sourceTime().status());assertEquals(Completeness.COMPLETE,observed.quality());
             var timeProof=CanonicalJson.object(miss.after().get("sourceLifecycle"));assertEquals(timeProof.get("terminalEpochMillis"),observed.sourceTime().rawValue());
             assertEquals(NplLifecycleEvidence.AUTHORITY,observed.sourceTime().authority());assertEquals(Completeness.PARTIAL,source.completeness(),"One qualified activation never proves a complete global normative population");
-        } finally {if(Board.instance!=null){Board.instance.getNormativeEngine().stop();Board.instance.destroy();}environment.getController("/main").removeArtifact(name);}
+        } finally {destroy(context,board);}
     }
     @Test void stateDeadlineMaintenanceInactivityAndSameNameBoardReplacementHaveDistinctSourceLifetimes()throws Exception {
         var env=CartagoEnvironment.getInstance();env.init();String name="stateNorms"+UUID.randomUUID().toString().replace("-","");var ctx=new CartagoBasicContext(name);createdActor=ctx.getName();var first=ctx.makeArtifact(ctx.getJoinedWspId("main"),name,Board.class.getName());var events=new CopyOnWriteArrayList<RuntimeEvent>();var firstInstance=Board.instance;
@@ -42,12 +42,21 @@ public class NplLiveBoardObservationTest {
             var activation=events.stream().filter(e->e.after().get("normDefinition").equals("n_state")).findFirst().orElseThrow();assertEquals("STATE",activation.after().get("deadlineKind"));assertEquals("finished",activation.after().get("deadlineRaw"));
             ctx.doAction(first,new Op("addFact","finished"));await(()->events.stream().anyMatch(e->e.kind()==RuntimeEventKind.NORM_UNFULFILLED && e.after().get("normDefinition").equals("n_state")));
             assertTrue(firstInstance.getNormativeEngine().removeFact(jason.asSyntax.ASSyntax.parseLiteral("keep[source(nboard)]")));firstInstance.getNormativeEngine().verifyNorms();await(()->events.stream().anyMatch(e->e.kind()==RuntimeEventKind.NORM_INACTIVATED && e.after().get("normDefinition").equals("n_inactive")));
-            firstInstance.getNormativeEngine().stop();ctx.doAction(new Op("disposeArtifact",first),ctx.getJoinedWspId("main"));var replacement=ctx.makeArtifact(ctx.getJoinedWspId("main"),name,Board.class.getName());source.capture();ctx.doAction(replacement,new Op("load",program));ctx.doAction(replacement,new Op("addFact","keep"));ctx.doAction(replacement,new Op("addFact","start"));await(()->events.stream().anyMatch(e->e.kind()==RuntimeEventKind.NORM_ACTIVATED && e.after().get("normDefinition").equals("n_state") && replacement.getId().toString().equals(e.after().get("boardArtifactIdentity"))));
+            destroy(ctx,first);var replacement=ctx.makeArtifact(ctx.getJoinedWspId("main"),name,Board.class.getName());source.capture();ctx.doAction(replacement,new Op("load",program));ctx.doAction(replacement,new Op("addFact","keep"));ctx.doAction(replacement,new Op("addFact","start"));await(()->events.stream().anyMatch(e->e.kind()==RuntimeEventKind.NORM_ACTIVATED && e.after().get("normDefinition").equals("n_state") && replacement.getId().toString().equals(e.after().get("boardArtifactIdentity"))));
             var next=events.stream().filter(e->e.kind()==RuntimeEventKind.NORM_ACTIVATED && e.after().get("normDefinition").equals("n_state") && replacement.getId().toString().equals(e.after().get("boardArtifactIdentity"))).findFirst().orElseThrow();assertNotEquals(activation.entityId(),next.entityId());assertNotEquals(activation.after().get("activationKey"),next.after().get("activationKey"));assertTrue(source.capture().stream().filter(f->f.kind()==RuntimeFactKind.NORM_INSTANCE).allMatch(f->replacement.getId().toString().equals(f.values().get("boardArtifactIdentity"))));
-        }finally{if(Board.instance!=null){Board.instance.getNormativeEngine().stop();Board.instance.destroy();}env.getController("/main").removeArtifact(name);}
+        }finally{destroy(ctx,env.getController("/main").getArtifactInfo(name).getId());}
     }
     @Test void noSelectedBoardIsAnAvailableEmptySelectionWithUnprovenGlobalNormPopulation()throws Exception {
         try(var source=new NplBoardSnapshotSource("empty-npl",List::of)){source.attach(e->{});assertTrue(source.capture().isEmpty());assertEquals(Completeness.PARTIAL,source.completeness());assertTrue(source.captureMetadata().toString().contains("NPL_NO_SELECTED_BOARDS_GLOBAL_POPULATION_UNPROVEN"));}
+    }
+    /** destroy is a CArtAgO operation: its signal/commit requires the workspace operation lock.
+     * A direct Java call prints a swallowed IllegalMonitorStateException and leaks GUI/lifecycle state. */
+    static void destroy(CartagoBasicContext actor,ArtifactId board)throws Exception {
+        var workspace=CartagoEnvironment.getInstance().resolveWSP(board.getWorkspaceId().getFullName()).getWorkspace();
+        var actual=workspace.getArtifactDescriptor(board.getName()).getArtifact();
+        actor.doAction(board,new Op("destroy"),5000);
+        assertFalse(ora4mas.nopl.NormativeBoard.getNormativeBoards().contains(actual),"Official destroy must withdraw exactly this board from the static registry");
+        assertNull(workspace.getArtifactDescriptor(board.getName()),"Official destroy must dispose the actual Artifact");
     }
     static void await(java.util.function.BooleanSupplier condition)throws Exception{long end=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(8);while(!condition.getAsBoolean() && System.nanoTime()<end)Thread.sleep(10);assertTrue(condition.getAsBoolean(),"NPL source event timed out");}
 }

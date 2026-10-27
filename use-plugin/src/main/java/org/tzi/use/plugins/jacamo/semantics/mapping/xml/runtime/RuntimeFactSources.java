@@ -9,6 +9,32 @@ import static org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingSpecificat
 
 /** Framework fact envelopes from an admitted snapshot. Provider payloads require separate qualification. */
 public final class RuntimeFactSources {
+    public static Set<RuntimeFactKind> queryCartagoKinds(MappingSpecification specification) {
+        var kinds=EnumSet.copyOf(producerCartagoKinds(specification));
+        for(var section:specification.root().child("runtime").children("datasets"))for(var dataset:section.children())
+            if(Set.of("operationCuts","operationReferences").contains(dataset.name()))kinds.add(RuntimeFactKind.OPERATION);
+        return Set.copyOf(kinds);
+    }
+    /** Only requested populations need a coherent publication at an exact step boundary.
+     * Operation descriptors remain in the initial snapshot and in their ordinary event lane;
+     * a spec explicitly querying them includes them here as well. */
+    public static Set<RuntimeFactKind> producerCartagoKinds(MappingSpecification specification) {
+        var kinds=EnumSet.of(RuntimeFactKind.ARTIFACT,RuntimeFactKind.WORKSPACE,RuntimeFactKind.AGENT);
+        for(var section:specification.root().child("runtime").children("datasets"))for(var dataset:section.children()) {
+            if(Set.of("facts","removals").contains(dataset.name())&&dataset.attr("authority").equals("cartago"))kinds.add(RuntimeFactKind.valueOf(dataset.attr("kind")));
+            if(dataset.name().equals("fieldCuts"))kinds.add(RuntimeFactKind.PROPERTY);
+        }
+        return Set.copyOf(kinds);
+    }
+    /** Exact source fields available to this dialect, plus the physical player crosswalk.
+     * Mental state is not exposed by facts datasets; step evidence has its own capability lane. */
+    public static Map<String,List<String>> producerFields(MappingSpecification specification) {
+        var names=new TreeSet<>(Set.of("normalizedEventKind","semanticId","name","active","agentDeclarationSemanticId","agentRuntimeSemanticId"));
+        for(var section:specification.root().child("runtime").children("datasets"))for(var dataset:section.children("facts"))
+            if(dataset.attr("authority").equals("jason")&&dataset.attr("kind").equals("AGENT"))names.addAll(fields("jason",RuntimeFactKind.AGENT));
+        for(var section:specification.root().child("runtime").children("datasets"))if(!section.children("beliefViews").isEmpty())names.addAll(Set.of("cycles","storedBeliefObservation"));
+        return Map.of("jason",List.copyOf(names));
+    }
     private record Definition(Node node,String authority,RuntimeFactKind kind,Set<String> fields) { }
     private final List<Definition> definitions;
     private final Map<String,ObservationCapabilityRequest> requirements;
@@ -33,6 +59,9 @@ public final class RuntimeFactSources {
         var result=new ArrayList<Definition>();
         if(!sections.isEmpty())for(Node node:sections.getFirst().children()) {
             if(result.size()>=64)throw node.location().error("RUNTIME_DATASET_LIMIT");
+            if(node.name().equals("beliefViews")) {
+                JasonBeliefViews.validate(node);result.add(new Definition(node,"jason",RuntimeFactKind.AGENT,Set.of()));continue;
+            }
             if(Set.of("jasonSteps","artifactReferences","schemeReferences").contains(node.name())) {
                 var request=requirements.get(node.attr("requestRef"));
                 if(source==null||request==null)throw node.location().error("RUNTIME_JASON_REQUIREMENT_UNRESOLVED");
@@ -90,11 +119,32 @@ public final class RuntimeFactSources {
         return capture(cut,run,generation,null);
     }
     /** Trusted clock context for this immutable admitted cut, never decoded from mapping row fields. */
+    /** Validation reuse is confined to this immutable cut and epoch, never a live state/cache. */
+    private final class CaptureContext {
+        final RuntimeSnapshot cut;final String run;final long generation;
+        final Map<RuntimeFact,VerificationObservation> decoded=new IdentityHashMap<>();
+        final Set<RuntimeFact> qualified=Collections.newSetFromMap(new IdentityHashMap<>());
+        CaptureContext(RuntimeSnapshot cut,String run,long generation){this.cut=cut;this.run=run;this.generation=generation;}
+        VerificationObservation observation(RuntimeFact fact){return decoded.computeIfAbsent(fact,f->VerificationObservation.require(f,cut,run,generation));}
+        List<VerificationObservation> observations(){return cut.facts().stream().filter(f->f.values().containsKey(VerificationObservation.KEY)).map(this::observation).toList();}
+        void qualify(RuntimeFact fact){if(qualified.contains(fact))return;moise.require(fact,run);qualified.add(fact);}
+    }
+    public record Captured(Map<String,RuntimeTables.Dataset> datasets,Map<String,SourceClock> clocks) {
+        public Captured {datasets=Map.copyOf(datasets);clocks=Map.copyOf(clocks);}
+    }
+    public Captured captureWithClocks(RuntimeSnapshot cut,String run,long generation,RuntimeEvent event) {
+        var context=new CaptureContext(cut,run,generation);
+        return new Captured(capture(cut,run,generation,event,context),clocks(cut,run,generation,context));
+    }
     public Map<String,SourceClock> clocks(RuntimeSnapshot cut,String run,long generation) {
+        return clocks(cut,run,generation,new CaptureContext(cut,run,generation));
+    }
+    private Map<String,SourceClock> clocks(RuntimeSnapshot cut,String run,long generation,CaptureContext context) {
         SnapshotAdmission.require(cut,Map.of());var result=new LinkedHashMap<String,SourceClock>();
         for(Definition definition:definitions)if(definition.node().name().equals("clock")) {
             var request=requirements.get(definition.node().attr("requestRef"));
-            var clock=SourceClock.fromCut(cut,run,generation,cut.modelRevision(),(String)request.parameters().get("hash"));
+            var frames=context.observations().stream().filter(o->o.kind()==VerificationObservation.Kind.CLOCK).toList();
+            var clock=frames.size()==1?SourceClock.decode(frames.getFirst(),run,generation,cut.modelRevision(),(String)request.parameters().get("hash")):SourceClock.unavailable();
             if(cut.sourceCompleteness().getOrDefault(VerificationObservation.SOURCE_ID,Completeness.UNAVAILABLE)==Completeness.UNAVAILABLE
                     ||!Objects.equals(cut.startWatermarks().get(VerificationObservation.SOURCE_ID),cut.endWatermarks().get(VerificationObservation.SOURCE_ID)))clock=SourceClock.unavailable();
             result.put(request.id(),clock);
@@ -102,6 +152,9 @@ public final class RuntimeFactSources {
         return Collections.unmodifiableMap(result);
     }
     public Map<String,RuntimeTables.Dataset> capture(RuntimeSnapshot cut,String run,long generation,RuntimeEvent event) {
+        return capture(cut,run,generation,event,new CaptureContext(cut,run,generation));
+    }
+    private Map<String,RuntimeTables.Dataset> capture(RuntimeSnapshot cut,String run,long generation,RuntimeEvent event,CaptureContext context) {
         if(run==null||run.isBlank()||generation<0)throw new IllegalArgumentException("RUNTIME_DATASET_EPOCH_REQUIRED");
         SnapshotAdmission.require(cut,Map.of());
         if(cut.facts().size()>16384)throw new IllegalArgumentException("RUNTIME_FACT_CAPACITY");
@@ -109,13 +162,14 @@ public final class RuntimeFactSources {
         String proof=SemanticJson.hash(Map.of("run",run,"generation",generation,"revision",cut.modelRevision(),"cut",cut.snapshotId(),"state",cut.stateFingerprint(),"watermarks",SemanticJson.tree(cut.endWatermarks())));
         var result=new LinkedHashMap<String,RuntimeTables.Dataset>();
         for(Definition definition:definitions) {
-            if(Set.of("artifactReferences","schemeReferences").contains(definition.node().name())) {result.put(definition.node().attr("id"),artifactReferences(definition,cut,run,generation,proof));continue;}
-            if(definition.node().name().equals("jasonSteps")) {result.put(definition.node().attr("id"),steps(definition,cut,run,generation,proof));continue;}
+            if(definition.node().name().equals("beliefViews")) {result.put(definition.node().attr("id"),JasonBeliefViews.capture(definition.node(),cut,run,generation,proof));continue;}
+            if(Set.of("artifactReferences","schemeReferences").contains(definition.node().name())) {result.put(definition.node().attr("id"),artifactReferences(definition,cut,run,generation,proof,context));continue;}
+            if(definition.node().name().equals("jasonSteps")) {result.put(definition.node().attr("id"),steps(definition,cut,run,generation,proof,context));continue;}
             if(definition.node().name().equals("operationReferences")) {result.put(definition.node().attr("id"),operationReferences(definition,cut,run,generation,proof));continue;}
             if(definition.node().name().equals("operationCuts")) {result.put(definition.node().attr("id"),operationCuts(definition,cut,run,generation,proof));continue;}
             if(definition.node().name().equals("npl")) {result.put(definition.node().attr("id"),norms(definition,cut,run,generation,proof));continue;}
-            if(definition.node().name().equals("schemeCuts")) {result.put(definition.node().attr("id"),schemeCuts(definition,cut,run,generation,proof));continue;}
-            if(definition.node().name().equals("clock")) {result.put(definition.node().attr("id"),clock(definition,cut,run,generation,proof));continue;}
+            if(definition.node().name().equals("schemeCuts")) {result.put(definition.node().attr("id"),schemeCuts(definition,cut,run,generation,proof,context));continue;}
+            if(definition.node().name().equals("clock")) {result.put(definition.node().attr("id"),clock(definition,cut,run,generation,proof,context));continue;}
             if(definition.node().name().equals("fieldCuts")) {result.put(definition.node().attr("id"),fieldCuts(definition,cut,run,generation,proof));continue;}
             if(definition.node().name().equals("removals")) {result.put(definition.node().attr("id"),removals(definition,cut,run,generation,event,proof));continue;}
             var rows=new ArrayList<RuntimeTables.Row>();var sources=cut.sourceCompleteness().keySet().stream().filter(s->sourceFamily(s,definition.authority())).toList();
@@ -128,7 +182,7 @@ public final class RuntimeFactSources {
                 if(fact.projectionStatus()!=ProjectionStatus.MATERIALIZED_FAITHFULLY)quality=Completeness.UNAVAILABLE;
                 if(cut.sourceCompleteness().get(source)==Completeness.UNAVAILABLE)quality=Completeness.UNAVAILABLE;
                 if(!cut.startWatermarks().get(source).equals(cut.endWatermarks().get(source)))quality=merge(quality,Completeness.PARTIAL);
-                if(quality==Completeness.COMPLETE){verifyPhysical(fact);if(moise!=null&&fact.id().authority().equals("moise"))moise.require(fact,run);}
+                if(quality==Completeness.COMPLETE){verifyPhysical(fact);if(moise!=null&&fact.id().authority().equals("moise"))context.qualify(fact);}
                 var values=new LinkedHashMap<String,Object>();
                 // Closed public API fields: a nested internal-field/step receipt cannot bypass its capability decoder.
                 fact.values().forEach((key,value)->{if(definition.fields().contains(key))values.put(key,value);});
@@ -141,12 +195,12 @@ public final class RuntimeFactSources {
                 rows.add(new RuntimeTables.Row(fact.id().canonical(),envelope,quality,Map.of("source-cut",proof,"physical-identity",fact.id().canonical()),Set.of(fact.id().canonical())));
                 population=merge(population,quality);
             }
-            result.put(definition.node().attr("id"),new RuntimeTables.Dataset(rows,population));
+            result.put(definition.node().attr("id"),withPopulation(definition,rows,population,cut,run,proof));
         }
         return Collections.unmodifiableMap(result);
     }
-    private RuntimeTables.Dataset artifactReferences(Definition definition,RuntimeSnapshot cut,String run,long generation,String proof) {
-        var frames=steps(definition,cut,run,generation,proof);var rows=new ArrayList<RuntimeTables.Row>();
+    private RuntimeTables.Dataset artifactReferences(Definition definition,RuntimeSnapshot cut,String run,long generation,String proof,CaptureContext context) {
+        var frames=steps(definition,cut,run,generation,proof,context);var rows=new ArrayList<RuntimeTables.Row>();
         for(var frame:frames.rows())if(frame.quality()==Completeness.COMPLETE)try {
             var bindings=CanonicalJson.object(frame.values().get("bindings"));
             var actual=CartagoPhysicalReference.require(bindings.get("artifact"),cut);
@@ -161,7 +215,7 @@ public final class RuntimeFactSources {
                 var board=boards.getFirst();String family=sourceFor(board,cut);
                 if(!"1.0.0".equals(board.values().get("schemeArgumentObservationVersion")))continue;
                 if(cut.sourceCompleteness().getOrDefault(family,Completeness.UNAVAILABLE)==Completeness.UNAVAILABLE||!cut.startWatermarks().containsKey(family)||!Objects.equals(cut.startWatermarks().get(family),cut.endWatermarks().get(family)))continue;
-                moise.require(board,run);
+                context.qualify(board);
                 values.put("schemeArtifactIdentity",referenced.artifact().id().canonical());values.put("schemeWorkspaceIdentity",referenced.workspace().id().canonical());
                 values.put("schemeArguments",board.values().get("schemeArguments"));values.put("schemeArgumentTerms",board.values().get("schemeArgumentTerms"));
             }
@@ -175,10 +229,10 @@ public final class RuntimeFactSources {
         }catch(IllegalArgumentException|ContractException unavailable){/* A past/missing handle never supplies a current physical world object. */}
         return new RuntimeTables.Dataset(rows,Completeness.PARTIAL);
     }
-    private RuntimeTables.Dataset steps(Definition definition,RuntimeSnapshot cut,String run,long generation,String proof) {
+    private RuntimeTables.Dataset steps(Definition definition,RuntimeSnapshot cut,String run,long generation,String proof,CaptureContext context) {
         var decoder=stepDecoders.get(definition.node().attr("id"));var request=requirements.get(definition.node().attr("requestRef"));var rows=new ArrayList<RuntimeTables.Row>();
         for(var fact:cut.facts())if(fact.values().containsKey(VerificationObservation.KEY)) {
-            var observation=VerificationObservation.require(fact,cut,run,generation);if(!decoder.accepts(observation))continue;
+            var observation=context.observation(fact);if(!decoder.accepts(observation))continue;
             var step=decoder.decode(observation,run,generation,cut.modelRevision());
             var current=cut.facts().stream().filter(f->f.kind()==RuntimeFactKind.AGENT&&f.id().canonical().equals(step.agent())).toList();
             boolean agentKnown=current.size()==1&&current.getFirst().completeness()==Completeness.COMPLETE&&current.getFirst().projectionStatus()==ProjectionStatus.MATERIALIZED_FAITHFULLY;
@@ -296,7 +350,7 @@ public final class RuntimeFactSources {
         if(players.size()!=1||!players.getFirst().id().canonical().equals(runtime)||players.getFirst().completeness()!=Completeness.COMPLETE||players.getFirst().projectionStatus()!=ProjectionStatus.MATERIALIZED_FAITHFULLY||!players.getFirst().id().localId().equals(players.getFirst().values().get("name")))return null;
         return runtime;
     }
-    private RuntimeTables.Dataset schemeCuts(Definition definition,RuntimeSnapshot cut,String run,long generation,String proof) {
+    private RuntimeTables.Dataset schemeCuts(Definition definition,RuntimeSnapshot cut,String run,long generation,String proof,CaptureContext context) {
         var request=requirements.get(definition.node().attr("requestRef"));var decoder=schemeDecoders.get(definition.node().attr("id"));
         var rows=new ArrayList<RuntimeTables.Row>();Completeness population=cut.sourceCompleteness().getOrDefault("cartago",Completeness.UNAVAILABLE);
         var selected=cut.facts().stream().filter(f->f.kind()==RuntimeFactKind.SCHEME_BOARD&&f.id().authority().equals("moise")).toList();
@@ -307,7 +361,7 @@ public final class RuntimeFactSources {
                 rows.add(new RuntimeTables.Row(board.id().canonical(),Map.of("identity",board.id().canonical(),"diagnostic","SOURCE_SCHEME_DEFINITION_UNAVAILABLE"),Completeness.UNAVAILABLE,Map.of("source-cut",proof),Set.of(board.id().canonical())));
                 population=merge(population,Completeness.UNAVAILABLE);continue;
             }
-            if(moise!=null)moise.require(board,run);
+            if(moise!=null)context.qualify(board);
             if(!decoder.acceptsDefinition(declared))continue;
             String source=sourceFor(board,cut);Completeness sourceQuality=merge(cut.sourceCompleteness().getOrDefault(source,Completeness.UNAVAILABLE),cut.sourceCompleteness().getOrDefault("cartago",Completeness.UNAVAILABLE));
             var artifacts=cut.facts().stream().filter(f->f.kind()==RuntimeFactKind.ARTIFACT&&f.id().authority().equals("cartago")&&f.id().incarnation().equals(board.values().get("boardArtifactIdentity"))).toList();
@@ -319,17 +373,25 @@ public final class RuntimeFactSources {
             if(cut.startWatermarks().containsKey(source)&&!cut.startWatermarks().get(source).equals(cut.endWatermarks().get(source)))quality=merge(quality,Completeness.PARTIAL);
             var data=new LinkedHashMap<String,Object>();data.put("identity",board.id().canonical());data.put("incarnation",board.id().incarnation());data.put("request",request.id());
             var proofs=new LinkedHashMap<String,String>();proofs.put("source-cut",proof);proofs.put("physical-identity",board.id().canonical());
-            if(quality==Completeness.COMPLETE){data.putAll(decoded.values());publicSchemeBindings(data,board,artifact,cut,run);proofs.put("capability:"+request.id(),decoded.cutId());}else data.put("diagnostic",decoded.diagnostic());
+            if(quality==Completeness.COMPLETE){data.putAll(decoded.values());publicSchemeBindings(data,board,artifact,cut,run,context);proofs.put("capability:"+request.id(),decoded.cutId());}else data.put("diagnostic",decoded.diagnostic());
             // The decoder checked the public MOISE UUID against this exact current
             // CArtAgO board/workspace. Both identifiers denote that same physical board.
             Set<String> aliases=quality==Completeness.COMPLETE?Set.of(board.id().canonical(),artifact.id().canonical()):Set.of(board.id().canonical());
             rows.add(new RuntimeTables.Row(board.id().canonical(),data,quality,proofs,aliases));population=merge(population,merge(sourceQuality,quality));
         }
         if(selected.isEmpty()&&cut.sourceCompleteness().keySet().stream().noneMatch(s->s.startsWith("moise:")))population=Completeness.UNAVAILABLE;
+        return withPopulation(definition,rows,population,cut,run,proof);
+    }
+    private RuntimeTables.Dataset withPopulation(Definition definition,List<RuntimeTables.Row> rows,Completeness population,RuntimeSnapshot cut,String run,String proof) {
+        if(MoisePopulationClosure.POLICY.equals(definition.node().optional("population"))&&moise!=null
+                &&rows.stream().allMatch(r->r.quality()==Completeness.COMPLETE)&&MoisePopulationClosure.complete(cut,definition.kind(),run)) {
+            population=Completeness.COMPLETE;
+            rows.replaceAll(row->{var qualified=new LinkedHashMap<>(row.proofs());qualified.put(MoisePopulationClosure.PROOF,proof);return new RuntimeTables.Row(row.identity(),row.values(),row.quality(),qualified,row.aliases());});
+        }
         return new RuntimeTables.Dataset(rows,population);
     }
     /** Public normalized MOISE relations, independent of a case's domain Artifact or step completion. */
-    private void publicSchemeBindings(Map<String,Object> data,RuntimeFact board,RuntimeFact artifact,RuntimeSnapshot cut,String run) {
+    private void publicSchemeBindings(Map<String,Object> data,RuntimeFact board,RuntimeFact artifact,RuntimeSnapshot cut,String run,CaptureContext context) {
         var observation=org.tzi.use.plugins.jacamo.semantics.observer.FunctionalObservation.decode(board.id(),board.values());
         data.put("publicGoals",observation.goals().stream().map(goal->{
             var definition=observation.definition().goals().stream().filter(g->g.metadata().semanticId().equals(goal.definition())).findFirst().orElseThrow();
@@ -344,7 +406,7 @@ public final class RuntimeFactSources {
             var selected=cut.facts().stream().filter(f->f.kind()==RuntimeFactKind.GROUP_BOARD&&f.id().authority().equals("moise")&&f.id().scope().equals(board.id().scope())
                 &&(f.id().canonical().equals(reference)||Objects.equals(f.values().get("semanticId"),reference))).toList();
             if(selected.size()!=1||!faithfulCartago(selected.getFirst())){complete=false;continue;}
-            var group=selected.getFirst();moise.require(group,run);verifyPhysical(group);
+            var group=selected.getFirst();context.qualify(group);verifyPhysical(group);
             var declarations=groupDeclarations.stream().filter(g->g.organization().equals(group.id().scope())&&g.name().equals(group.id().localId())).toList();
             if(declarations.size()>1)throw new IllegalArgumentException("SCHEME_RESPONSIBILITY_GROUP_DECLARATION_AMBIGUOUS");
             String expected=declarations.isEmpty()?group.id().canonical():declarations.getFirst().metadata().semanticId();
@@ -364,9 +426,9 @@ public final class RuntimeFactSources {
         if(new HashSet<>(groups).size()!=groups.size())throw new IllegalArgumentException("SCHEME_RESPONSIBILITY_DUPLICATE_PHYSICAL_GROUP");
         data.put("responsibilityComplete",complete);if(complete)data.put("responsibleGroups",List.copyOf(groups));
     }
-    private RuntimeTables.Dataset clock(Definition definition,RuntimeSnapshot cut,String run,long generation,String proof) {
+    private RuntimeTables.Dataset clock(Definition definition,RuntimeSnapshot cut,String run,long generation,String proof,CaptureContext context) {
         var request=requirements.get(definition.node().attr("requestRef"));
-        var clocks=cut.facts().stream().filter(f->f.values().containsKey(VerificationObservation.KEY)).map(f->VerificationObservation.require(f,cut,run,generation)).filter(o->o.kind()==VerificationObservation.Kind.CLOCK).toList();
+        var clocks=context.observations().stream().filter(o->o.kind()==VerificationObservation.Kind.CLOCK).toList();
         if(clocks.isEmpty())return new RuntimeTables.Dataset(List.of(),Completeness.UNAVAILABLE);
         if(clocks.size()!=1)throw definition.node().location().error("SOURCE_CLOCK_POPULATION_AMBIGUOUS");
         var value=org.tzi.use.plugins.jacamo.semantics.observer.SourceClock.decode(clocks.getFirst(),run,generation,cut.modelRevision(),(String)request.parameters().get("hash"));

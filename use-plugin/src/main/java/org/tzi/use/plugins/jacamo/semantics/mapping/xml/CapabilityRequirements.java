@@ -12,6 +12,12 @@ public final class CapabilityRequirements {
         var result=new ArrayList<ObservationCapabilityRequest>();
         for(var node:inputs.specification().root().child("requirements").children("capability")) {
             var parameters=new TreeMap<String,Object>();
+            if(!node.optional("operations").isBlank()) {
+                if(!node.attr("provider").equals("cartago.operation-history.v1"))throw node.location().error("CAPABILITY_OPERATION_SELECTION_PROVIDER_UNSUPPORTED");
+                var names=List.of(node.attr("operations").trim().split("\\s+"));
+                if(names.size()>32||new HashSet<>(names).size()!=names.size()||names.stream().anyMatch(n->!n.matches("[A-Za-z_$][A-Za-z0-9_$]*")))throw node.location().error("CAPABILITY_OPERATION_SELECTION_INVALID");
+                parameters.put("operations",names);
+            }
             for(String name:List.of("class","field","type","hash","organization","scheme"))if(!node.optional(name).isBlank())parameters.put(name,node.attr(name));
             if(!node.optional("hashOrigin").isBlank()) {
                 if(!node.attr("hashOrigin").equals("OFFICIAL_CLASS_PROOF")||!node.optional("hash").isBlank()

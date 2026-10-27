@@ -1,0 +1,141 @@
+Configuration of 'jacamoJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/jacamo/1.3.1/jacamo-1.3.1.jar, based on class loader
+Configuration of 'moiseJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/moise/1.1/moise-1.1.jar, based on class loader
+Configuration of 'jasonJar' found at /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar, based on class loader
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+Oct 24, 2026 1:56:04 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:04 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:04 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:04 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:05 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:05 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:05 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:05 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:05 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:05 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:05 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:05 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:06 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:06 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:06 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:06 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:06 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:06 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:06 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:06 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:07 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:07 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:07 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:07 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:07 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:07 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:07 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:07 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:08 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:08 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:08 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:08 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:08 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:08 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:08 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:08 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:09 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:09 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:09 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:09 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:09 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:09 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:09 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:09 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:10 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:10 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:10 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:10 AM jason.stdlib.println execute
+INFO: source execution
+
+Test run finished after 7194 ms
+[         2 containers found      ]
+[         0 containers skipped    ]
+[         2 containers started    ]
+[         0 containers aborted    ]
+[         2 containers successful ]
+[         0 containers failed     ]
+[        12 tests found           ]
+[         0 tests skipped         ]
+[        12 tests started         ]
+[         0 tests aborted         ]
+[        11 tests successful      ]
+[         1 tests failed          ]
+
+
+Failures (1):
+  JUnit Jupiter:XmlTaskCheckpointsTest:unavailableDemandMustDeferCurrentTruthWithoutResettingKnownOriginalTaskHistory()
+    MethodSource [className = 'org.tzi.use.plugins.jacamo.semantics.xml.XmlTaskCheckpointsTest', methodName = 'unavailableDemandMustDeferCurrentTruthWithoutResettingKnownOriginalTaskHistory', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: Qualified historical TaskMarking must survive an unavailable current tuple ==> expected: <FULFILLED> but was: <UNKNOWN>
+       org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)
+       org.junit.jupiter.api.AssertionUtils.failNotEqual(AssertionUtils.java:62)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+       org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1152)
+       org.tzi.use.plugins.jacamo.semantics.xml.XmlTaskCheckpointsTest.unavailableDemandMustDeferCurrentTruthWithoutResettingKnownOriginalTaskHistory(XmlTaskCheckpointsTest.java:163)
+       java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+       org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+       org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+       [...]

@@ -1,0 +1,10 @@
+
+# Audited source freeze v5 checkout bytes: preserve the tested LF/CRLF form.
+"pom.xml" text eol=lf
+"src/assembly/assembly.xml" text eol=lf
+"src/main/resources/plugins/AssociationExtend.jar" -text
+"src/main/resources/plugins/ModelValidatorPlugin-5.2.0-r1.jar" -text
+"src/main/resources/plugins/OCLComplexityPlugin5.1.0.jar" -text
+"src/main/resources/plugins/ObjectToClassPlugin-2.0.jar" -text
+"src/main/resources/plugins/place_plugin_jars_here" -text
+"src/main/resources/plugins/use-filmstrip.jar" -text

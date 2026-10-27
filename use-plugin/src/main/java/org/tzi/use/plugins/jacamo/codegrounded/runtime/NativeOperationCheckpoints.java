@@ -73,7 +73,7 @@ final class NativeOperationCheckpoints {
                 if(active.size()>=policy.capacity())return classified(SemanticVerdict.INCONCLUSIVE,"PRE_CORRELATION_CAPACITY",event);
                 var semantic=event.after().get("artifactSemanticId");var object=semantic instanceof String id?engine.objectForSemanticId(id):null;
                 if(object==null)return classified(SemanticVerdict.SKIPPED,"PRE_EXACT_CONTEXT_UNAVAILABLE",event);
-                if(!engine.metadata(object,"uuid").equals(event.entityId().incarnation()))return classified(SemanticVerdict.INCONCLUSIVE,"PRE_ARTIFACT_INCARNATION_MISMATCH",event);
+                if(!artifactOwner(object,event.entityId()))return classified(SemanticVerdict.INCONCLUSIVE,"PRE_ARTIFACT_INCARNATION_MISMATCH",event);
                 if(!(event.after().get("operationSignature") instanceof List<?> signature))return classified(SemanticVerdict.UNSUPPORTED,"PRE_EXACT_SIGNATURE_UNAVAILABLE",event);
                 String canonical=NativeUseModelBuilder.canonicalJson(signature);var matches=object.cls().allOperations().stream().filter(op->canonical.equals(DomainProjection.decode(op.getAnnotationValue("CartagoOperation","signature64")))).toList();
                 if(matches.size()!=1)return classified(SemanticVerdict.UNSUPPORTED,"PRE_EXACT_OPERATION_UNAVAILABLE",event);var operation=matches.getFirst();
@@ -101,7 +101,7 @@ final class NativeOperationCheckpoints {
             var before=active.remove(key);if(before==null)return classified(SemanticVerdict.INCONCLUSIVE,"POST_MATCHING_PRE_UNAVAILABLE",event);
             if(semanticProfile() && !before.descriptor().equals(invocationDescriptor(event)))return classified(SemanticVerdict.INCONCLUSIVE,"POST_INVOCATION_DESCRIPTOR_MISMATCH",event);
             var object=engine.system().state().objectByName(before.check().request().objectName());if(object==null)return classified(SemanticVerdict.INCONCLUSIVE,"POST_CONTEXT_REMOVED",event);
-            if(!engine.metadata(object,"uuid").equals(event.entityId().incarnation()))return classified(SemanticVerdict.INCONCLUSIVE,"POST_CONTEXT_INCARNATION_CHANGED",event);features(object.name());
+            if(!artifactOwner(object,event.entityId()))return classified(SemanticVerdict.INCONCLUSIVE,"POST_CONTEXT_INCARNATION_CHANGED",event);features(object.name());
             if(semanticProfile() && boundary.sourceSequence()<=before.boundary().sourceSequence())return classified(SemanticVerdict.ERROR,"POST_SOURCE_BOUNDARY_NOT_AFTER_PRE",event);
             var interval=operationWitness(event,before.check(),engine.system().state(),before.performer(),Map.of("interference",NativeUseModelBuilder.canonicalJson(before.interference().stream().sorted().toList()),"phases",NativeUseModelBuilder.canonicalJson(before.phases()),"intervalPolicy","OBSERVED_SHARED_STATE_NO_EFFECT_ISOLATION","operationLifecycleCoverage",Objects.toString(event.after().get("operationLifecycleCoverage"),"UNPROVEN"),"suspendResumeObservation",Objects.toString(event.after().get("suspendResumeObservation"),"UNPROVEN")));
             if(deferCanonical) {
@@ -139,7 +139,13 @@ final class NativeOperationCheckpoints {
         result.put("performerSourceId",Objects.toString(event.after().get("performerSemanticId"),""));result.put("performerSourceAuthority",Objects.toString(event.after().get("performerAuthority"),"UNAVAILABLE"));
         result.put("performerSemanticId",performer);result.put("performerBinding",performer.isBlank()?"UNAVAILABLE":"EXACT_NATIVE_PLAYER_AT_PRE");
         result.put("artifact",engine.metadata(engine.system().state().objectByName(check.request().objectName()),"semanticId"));
-        result.put("sourceRule",check.operation().getAnnotationValue("AuctionOperationBinding","bindingId"));result.put("sourceCell",check.operation().getAnnotationValue("AuctionOperationBinding","taskId"));
+        if(engine.xmlCase()) {
+            result.put("sourceRule",check.operation().getAnnotationValue("DeclarativeOperationBinding","id"));
+            result.put("mappingPlanHash",engine.canonicalProgram().xmlPlan().hash());
+            String task=check.operation().getAnnotationValue("DeclarativeOperationBinding","task");if(!task.isBlank())result.put("targetTaskId",task);
+        }else {
+            result.put("sourceRule",check.operation().getAnnotationValue("AuctionOperationBinding","bindingId"));result.put("sourceCell",check.operation().getAnnotationValue("AuctionOperationBinding","taskId"));
+        }
         result.put("preEventId",check.request().runtimeEventIds().getFirst());result.put("currentEventId",event.eventId());
         return Map.copyOf(result);
     }
@@ -155,10 +161,26 @@ final class NativeOperationCheckpoints {
     void retireUnavailableContexts(String boundary) {
         for(var entry:new ArrayList<>(active.entrySet())) {
             var value=entry.getValue();var object=engine.system().state().objectByName(value.check().request().objectName());
-            if(object!=null&&(value.boundary()==null||value.boundary().artifactUuid().equals(engine.metadata(object,"uuid"))))continue;
+            if(object!=null&&(value.boundary()==null||value.boundary().artifactUuid().equals(artifactIncarnation(object))))continue;
             active.remove(entry.getKey());
             if(semanticProfile())addDetailed(List.of(detail("OPERATION:"+value.check().request().correlationId(),"INVOCATION_RETIRED",value.check(),SemanticVerdict.INCONCLUSIVE,"","EXACT_NATIVE_CONTEXT_RETIRED",Map.of("retirementBoundary",boundary,"invocationKey",entry.getKey()))));
         }
+    }
+    private boolean artifactOwner(org.tzi.use.uml.sys.MObject object,BridgeEntityId identity) {
+        if(!engine.xmlCase())return engine.metadata(object,"uuid").equals(identity.incarnation());
+        return identity.canonical().equals(engine.metadata(object,"xml:m0:identity"))
+                &&identity.incarnation().equals(artifactIncarnation(object));
+    }
+    /** Generic M0 owns an exact physical BridgeEntityId; legacy UUID metadata is
+     * not its contract. An alias alone cannot redirect invocation ownership. */
+    private String artifactIncarnation(org.tzi.use.uml.sys.MObject object) {
+        if(!engine.xmlCase())return engine.metadata(object,"uuid");
+        if(!engine.canonicalProgramHash().equals(engine.metadata(object,"xml:m0:program")))return "";
+        try {
+            var identity=BridgeEntityId.parse(engine.metadata(object,"xml:m0:identity"));
+            return identity.authority().equals("cartago")&&identity.dimension().equals("environment")&&identity.kind().equals("artifact")
+                    &&engine.objectForSemanticId(identity.canonical())==object?identity.incarnation():"";
+        }catch(IllegalArgumentException unavailable){return "";}
     }
     private Map<String,String> postCoverage(OperationCheck check) {
         var result=new TreeMap<String,String>();for(var condition:check.operation().postConditions())

@@ -35,11 +35,18 @@ class XmlClockDatasetTest {
         var marks=Map.of(VerificationObservation.SOURCE_ID,event.watermark());
         var cut=new RuntimeSnapshot("clock-cut",source.modelRevision(),java.time.Instant.EPOCH,java.time.Instant.EPOCH,marks,marks,1,List.of(fact),Map.of(VerificationObservation.SOURCE_ID,Completeness.PARTIAL),"clock-proof");
         var sources=new RuntimeFactSources(spec,source,List.of(request));var result=sources.capture(cut,"run",1).get("time");
+        var paired=sources.captureWithClocks(cut,"run",1,null);
+        assertEquals(result,paired.datasets().get("time"));assertEquals(sources.clocks(cut,"run",1),paired.clocks());
+        assertEquals("VERIFICATION_OBSERVATION_MIXED_SCOPE_OR_ENVELOPE",assertThrows(ContractException.class,()->sources.captureWithClocks(cut,"other-run",1,null)).getMessage());
+        assertEquals("VERIFICATION_OBSERVATION_MIXED_SCOPE_OR_ENVELOPE",assertThrows(ContractException.class,()->sources.captureWithClocks(cut,"run",2,null)).getMessage());
         assertEquals(Completeness.COMPLETE,result.rows().getFirst().quality());assertEquals(Completeness.PARTIAL,result.populationQuality());
         assertEquals(0,((Number)result.rows().getFirst().values().get("relativeNow")).intValue());
         assertFalse(result.rows().getFirst().proofs().get("capability:clock").isBlank());
         var absent=new RuntimeSnapshot("no-clock",source.modelRevision(),java.time.Instant.EPOCH,java.time.Instant.EPOCH,marks,marks,1,List.of(),Map.of(VerificationObservation.SOURCE_ID,Completeness.PARTIAL),"no-proof");
         var missing=sources.capture(absent,"run",1).get("time");assertEquals(Completeness.UNAVAILABLE,missing.populationQuality());assertTrue(missing.rows().isEmpty());
+        var missingPair=sources.captureWithClocks(absent,"run",1,null);
+        assertEquals(missing,missingPair.datasets().get("time"));assertEquals(Completeness.UNAVAILABLE,missingPair.clocks().get("clock").quality());
+        assertEquals(paired,sources.captureWithClocks(cut,"run",1,null),"A later cut/epoch must never inherit a prior capture context");
         var wrong=new RuntimeFactSources(spec,source,List.of(new ObservationCapabilityRequest("clock",request.provider(),true,Map.of("hash","0".repeat(64)))));
         assertThrows(IllegalArgumentException.class,()->wrong.capture(cut,"run",1));
         assertThrows(IllegalArgumentException.class,()->new RuntimeFactSources(spec,source,List.of()));

@@ -79,7 +79,7 @@ class JaCaMoPluginTest {
         assertTrue(bytes.toString().contains("JaCaMo Bridge DISCONNECTED"));
 
         var actions = descriptor.getPluginModel().getActions();
-        assertEquals(2, actions.size(), "status and workbench actions are registered");
+        assertEquals(3, actions.size(), "use4Goal workflow, status and advanced Workbench actions are registered");
         for (var actionModel : actions) {
             Class<?> actionClass = descriptor.getPluginClassLoader().loadClass(actionModel.getActionClass());
             assertTrue(IPluginActionDelegate.class.isAssignableFrom(actionClass));
@@ -88,7 +88,8 @@ class JaCaMoPluginTest {
         }
         var useActions = ((ActionExtensionPoint) ActionExtensionPoint.getInstance())
                 .createPluginActions(null, null);
-        assertEquals(2, useActions.size(), "USE action extension point must expose both menu actions");
+        assertEquals(3, useActions.size(), "USE action extension point must expose workflow and compatibility actions");
+        assertTrue(useActions.keySet().stream().anyMatch(action -> "org.tzi.use.plugins.jacamo.goal-verification.action".equals(action.get("id"))));
         assertTrue(useActions.keySet().stream().anyMatch(action ->
                 "org.tzi.use.plugins.jacamo.workbench.action".equals(action.get("id"))),
                 "Workbench action must retain its exact plugin action id for deterministic startup");

@@ -94,6 +94,49 @@ class XmlRuntimeMappingTest {
             assertEquals(IntegerValue.valueOf(7),next.state(system.state()).attributeValue("p"));assertEquals(1,system.state().numObjects());
         }
     }
+    @Test void unrelatedJasonActionIsJournalledWithoutReprojectingTheSameWorldCut()throws Exception {
+        var f=fixture();try(var projector=new NativeRuntimeProjector(f.built(),"run",1,f.revision(),temp.resolve("action-runtime"))) {
+            projector.applySnapshot(cut(f,1,Map.of("A",1),Completeness.COMPLETE),"run",1);
+            projector.coordinator().originalEngineDrained().get(10,java.util.concurrent.TimeUnit.SECONDS);projector.coordinator().read(()->null);
+            long version=projector.coordinator().latest().stateVersion();
+            long entries=projector.coordinator().journal().persistedEntries();
+            var event=new RuntimeEvent("raw-action","run",1,f.revision(),"jason","jason",1,java.time.Instant.EPOCH,
+                RuntimeEventKind.STARTED,RuntimeFactKind.RUNTIME_EVENT,ProjectionStatus.EVIDENCE_ONLY,new BridgeEntityId("jason","agent","runtime-agent","model","worker","incarnation"),null,"action-id","",
+                Map.of(),Map.of("normalizedEventKind","ACTION_EXECUTION_STARTED","action","println(message)"),new SourceWatermark("jason",1),Completeness.COMPLETE,List.of());
+            assertFalse(projector.apply(event),"Raw ActionExec is trace, not a changed XML dataset or Task checkpoint");
+            assertEquals(version,projector.coordinator().latest().stateVersion());
+            assertEquals(1L,projector.sourceWatermarks().get("jason"));
+            assertTrue(projector.coordinator().journal().persistedEntries()>entries,"Do not discard admission or evidence");
+            assertFalse(projector.apply(event),"Duplicate remains idempotent");
+            assertFalse(projector.resyncRequired());
+            projector.coordinator().originalEngineDrained().get(10,java.util.concurrent.TimeUnit.SECONDS);projector.coordinator().read(()->null);
+            assertEquals("TRACE_ONLY",projector.coordinator().lastObservation().freshness());
+            var expected=projector.coordinator().lastObservation();var replay=new NativeRuntimeReplay();var recording=temp.resolve("trace-replay");
+            replay.exportBundle(projector,f.built().nativeResult().export().useText(),recording);
+            var result=replay.replay(recording);assertTrue(result.complete(),result.diagnostics().toString());assertEquals(expected.resultHash(),result.finalResultHash());assertEquals(expected.stateHash(),result.finalStateHash());
+        }
+    }
+    @Test void portableExportPinsTheActualJournalTailWhenAnOlderCompletionFollowsTrace()throws Exception {
+        var f=fixture();try(var projector=new NativeRuntimeProjector(f.built(),"run",1,f.revision(),temp.resolve("completion-tail-runtime"))) {
+            var coordinator=projector.coordinator();
+            coordinator.originalEngineDrained().get(10,java.util.concurrent.TimeUnit.SECONDS);coordinator.read(()->null);
+            coordinator.read(()->{
+                projector.applySnapshot(cut(f,1,Map.of("A",1),Completeness.COMPLETE),"run",1);
+                var event=new RuntimeEvent("trace-before-completion","run",1,f.revision(),"jason","jason",1,java.time.Instant.EPOCH,
+                    RuntimeEventKind.STARTED,RuntimeFactKind.RUNTIME_EVENT,ProjectionStatus.EVIDENCE_ONLY,new BridgeEntityId("jason","agent","runtime-agent","model","worker","incarnation"),null,"action-id","",
+                    Map.of(),Map.of("normalizedEventKind","ACTION_EXECUTION_STARTED","action","println(message)"),new SourceWatermark("jason",1),Completeness.COMPLETE,List.of());
+                assertFalse(projector.apply(event));return null;
+            });
+            coordinator.originalEngineDrained().get(10,java.util.concurrent.TimeUnit.SECONDS);coordinator.read(()->null);
+            assertEquals("TRACE_ONLY",coordinator.lastObservation().freshness());
+            var tail=coordinator.journal().history().getLast();
+            assertNotEquals(tail.resultHash(),coordinator.lastObservation().resultHash(),"Older completion is durable after the latest admitted trace");
+            var recording=temp.resolve("completion-tail-replay");var replay=new NativeRuntimeReplay();
+            replay.exportBundle(projector,f.built().nativeResult().export().useText(),recording);
+            var result=replay.replay(recording);assertTrue(result.complete(),result.diagnostics().toString());
+            assertEquals(tail.resultHash(),result.finalResultHash());assertEquals(coordinator.lastObservation().stateHash(),result.finalStateHash());
+        }
+    }
     static final String REMOVAL=PLAN.replace("</datasets>","<removals id=\"disposed\" authority=\"cartago\" kind=\"ARTIFACT\"/></datasets>")
       .replace("</tables>","<table id=\"disposals\" dataset=\"disposed\"><column name=\"uuid\" path=\"identity\" required=\"true\"/><identity mode=\"PHYSICAL\" path=\"identity\"/></table></tables>")
       .replace("</inputs>","<input id=\"removed-input\" identityKind=\"PHYSICAL\" identityFields=\"uuid\" tableRef=\"disposals\"><field name=\"uuid\" type=\"String\" required=\"true\"/></input></inputs>")

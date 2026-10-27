@@ -1,0 +1,11 @@
+{
+  "scope": "SUCCESSFUL_CLEAN_REACTOR_PENDING_FULL_ARCHIVE_LIVE_QUALIFICATION",
+  "unit": 1323,
+  "integration": 167,
+  "matrixGates": 22,
+  "legacy198": true,
+  "fullArchive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+  "fullArchiveSha256": "7401e604b021945fa3c0d593786f20faee9e82dfeae222af07a10beb5c14e960",
+  "sourceFreezeSha256": "7175f81bcebbc22561c588b0621ff60b8517f878fcdc34670e7376218c7da2da",
+  "sourceDrift": []
+}

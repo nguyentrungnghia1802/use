@@ -1,0 +1,6 @@
+USE version 7.5.0, Copyright (C) 1999-2025 University of Bremen & University of Applied Sciences Hamburg
+java.lang.AssertionError: Actual six source terminals on each scheme {beid:v1:moise/organisation/scheme-board/aorg/sch_a1/ce219f34-017f-4cd9-b626-9c8c7249af1a%3Abfeb1c11-3e2a-4b66-bf8c-9ada58491627=[A_decide_t1, A_decide_t2, A_start_t1, A_start_t2, P_bid_t1, P_bid_t2], beid:v1:moise/organisation/scheme-board/aorg/sch_a2/ce219f34-017f-4cd9-b626-9c8c7249af1a%3Ac4de2d06-9029-4dec-9a05-c5fab89027f0=[A_start_t1, A_start_t2, P_bid_t1, P_bid_t2]}
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.check(InstalledAuctionMain.java:461)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.runLive(InstalledAuctionMain.java:133)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.run(InstalledAuctionMain.java:84)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.main(InstalledAuctionMain.java:22)

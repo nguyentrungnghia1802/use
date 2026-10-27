@@ -339,10 +339,12 @@ public final class NativeRuntimeReplay {
                 // settles eagerly. A future completion is not yet visible in UI.
                 var formal=c.read(c::latest);
                 if(formal!=null&&formal.semantic()!=null&&formal.semantic().boundary().equals(actual.semantic().boundary()))recordedFormal=expected;
-                var done=c.awaitEvaluation(actual,30000);
-                if(completed.put(done.semantic().boundary(),done)!=null)throw new IllegalArgumentException("REPLAY_ENGINE_BOUNDARY_DUPLICATED");
-                completionBytes+=CanonicalJson.encode(done.toMap()).length;
-                if(completed.size()>1024||completionBytes>16L*1024*1024)throw new IllegalArgumentException("REPLAY_COMPLETION_RETENTION_EXCEEDED");
+                if(!actual.freshness().equals("TRACE_ONLY")) {
+                    var done=c.awaitEvaluation(actual,30000);
+                    if(completed.put(done.semantic().boundary(),done)!=null)throw new IllegalArgumentException("REPLAY_ENGINE_BOUNDARY_DUPLICATED");
+                    completionBytes+=CanonicalJson.encode(done.toMap()).length;
+                    if(completed.size()>1024||completionBytes>16L*1024*1024)throw new IllegalArgumentException("REPLAY_COMPLETION_RETENTION_EXCEEDED");
+                }else if(!bundle.declarativeRecording()||!record.kind().equals("EVENT")||!"TRACE_ONLY_NO_SEMANTIC_INPUT_CHANGE".equals(CanonicalJson.object(actual.semantic().observation().get("originalEngine")).get("evaluated")))throw new IllegalArgumentException("REPLAY_TRACE_ONLY_SCOPE_INVALID");
             } else if(recordedFormal!=null&&recordedFormal.semantic().boundary().equals(actual.semantic().boundary()))recordedFormal=expected;
             if(c.journal().hasGap())throw new IllegalArgumentException("REPLAY_LOCAL_PERSISTENCE_GAP");
             stale|="STALE".equals(expected.freshness());if(record.kind().equals("PROFILE"))lastProfile=(String)record.payload().get("source");
@@ -389,7 +391,7 @@ public final class NativeRuntimeReplay {
                     || !last.stateHash().equals(bundle.manifest.get("finalStateHash"))
                     || !last.resultHash().equals(bundle.manifest.get("finalResultHash"))
                     || !lastProfile.equals(profile))
-                throw new IllegalArgumentException("REPLAY_TRUNCATED_OR_PROFILE_MISMATCH");
+                throw new IllegalArgumentException("REPLAY_TRUNCATED_OR_PROFILE_MISMATCH:entries="+ordinal+"/"+bundle.manifest.get("entries")+";state="+(last!=null&&last.stateHash().equals(bundle.manifest.get("finalStateHash")))+";result="+(last!=null&&last.resultHash().equals(bundle.manifest.get("finalResultHash")))+";profile="+lastProfile.equals(profile));
             if(bundle.canonical()&&!completed.isEmpty())throw new IllegalArgumentException("REPLAY_UNCOMPLETED_ENGINE_BOUNDARY");
         }
         @Override public void close() {

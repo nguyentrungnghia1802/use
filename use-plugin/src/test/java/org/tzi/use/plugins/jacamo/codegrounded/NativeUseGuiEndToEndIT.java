@@ -57,7 +57,7 @@ class NativeUseGuiEndToEndIT {
             try {
                 new NativeUseSessionActivator().activate(session,observed.pipeline); flushEdt();
                 var system=observed.projector.system(); assertSame(system,session.system());
-                onEdt(()->{window.setSize(1400,950);window.setVisible(true);return null;});
+                onEdt(()->{window.setSize(1400,950);org.tzi.use.plugins.jacamo.ui.AcceptanceScreen.place(window);window.setVisible(true);return null;});
                 var browser=onEdt(()->{
                     var tree=components(window.getModelBrowser(),JTree.class).getFirst();
                     for(int row=0;row<tree.getRowCount();row++) tree.expandRow(row);
@@ -245,6 +245,9 @@ class NativeUseGuiEndToEndIT {
             assertSame(pipeline.state().system(), session.system());
 
             MainWindow activeWindow = window;
+            // The OCL dialog below uses this owner for screen placement.
+            // A hidden owner makes Swing fall back to the primary screen.
+            onEdt(()->{org.tzi.use.plugins.jacamo.ui.AcceptanceScreen.place(activeWindow);activeWindow.setVisible(true);return null;});
             var browserElements = onEdt(() -> {
                 JTree tree = components(activeWindow.getModelBrowser(), JTree.class).getFirst();
                 DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();

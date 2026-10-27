@@ -13,6 +13,11 @@ import java.util.Map;
 public final class ManagedStartupControl {
     public static final String DIRECTORY_PROPERTY = "use.jacamo.startup.directory";
     public static final String RUN_PROPERTY = "use.jacamo.startup.run-id";
+    /** Explicit owner-side cancellation, distinct from timeout/invalid control/bootstrap failure. */
+    public static final class Cancelled extends IllegalStateException {
+        private static final long serialVersionUID=1L;
+        public Cancelled(String reason){super(reason);}
+    }
     private ManagedStartupControl() { }
 
     public static Map<String,Object> owner(String run, Path project, String session, long generation,
@@ -53,7 +58,7 @@ public final class ManagedStartupControl {
         Instant deadline = Instant.parse(waiting.get("deadline").toString());
         while (true) {
             if (Files.exists(stop, LinkOption.NOFOLLOW_LINKS) || !read(directory, "cancel.json").isEmpty())
-                throw new IllegalStateException("STARTUP_CANCELLED");
+                throw new Cancelled("STARTUP_CANCELLED");
             if (!Instant.now().isBefore(deadline)) throw new IllegalStateException("STARTUP_TIMEOUT");
             var request = read(directory, "request.json");
             if (!request.isEmpty()) { requireOwner(owner, request); return request; }

@@ -47,6 +47,8 @@ public final class ObservationCapabilityRegistry {
         private boolean closed;
         private Session(List<ObservationCapabilityRequest> requests,Map<String,Handle> handles){this.requests=List.copyOf(requests);this.handles=Collections.unmodifiableMap(new LinkedHashMap<>(handles));}
         public synchronized List<Capability> capabilities(){requireOpen();return handles.values().stream().map(Handle::capability).toList();}
+        /** Lifecycle status for a publication owner which may race an agent retiring its session. */
+        public synchronized List<Capability> status(){return closed?requests.stream().map(r->new Capability(r.id(),CapabilityStatus.UNAVAILABLE,List.of(),"PROVIDER_SESSION_CLOSED")).toList():capabilities();}
         public synchronized List<Capability> requiredUnavailable(){requireOpen();return requests.stream().filter(ObservationCapabilityRequest::required).map(r->handles.get(r.id()).capability()).filter(c->c.status()!=CapabilityStatus.COMPLETE).toList();}
         public synchronized <T extends Handle> Optional<T> handle(String id,Class<T> type){requireOpen();var value=handles.get(id);return type.isInstance(value)?Optional.of(type.cast(value)):Optional.empty();}
         private void requireOpen(){if(closed)throw new IllegalStateException("OBSERVATION_CAPABILITY_SESSION_CLOSED");}

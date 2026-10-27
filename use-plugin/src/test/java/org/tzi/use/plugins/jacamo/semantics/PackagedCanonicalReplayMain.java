@@ -16,6 +16,13 @@ public final class PackagedCanonicalReplayMain {
         var descriptor=((PluginRuntime)PluginRuntime.getInstance()).getPlugin("JaCaMo");
         if(descriptor==null)throw new AssertionError("Plugin not discovered");
         var loader=descriptor.getPluginClassLoader();
+        if(args.length==5) {
+            Class<?> codec=loader.loadClass("org.tzi.use.plugins.jacamo.semantics.evidence.SemanticProgramManifest");
+            Object decoded=codec.getMethod("decode",byte[].class).invoke(codec.getConstructor().newInstance(),
+                    (Object)java.nio.file.Files.readAllBytes(Path.of(args[1]).resolve("program.json")));
+            Object program=get(decoded,"program");
+            if(get(program,"xmlPlan")==null||get(program,"casePlan")!=null)throw new AssertionError("Generic component replay requires a declarative program");
+        }
         for(String name:List.of("org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReplay",
                 "org.vnu.sme.goal.dsl.csl.mm.CslModel","org.vnu.sme.goal.dsl.istar.mm.GoalModel",
                 "org.vnu.sme.goal.verify.conformance.semantics.GoalMarking",
@@ -57,10 +64,10 @@ public final class PackagedCanonicalReplayMain {
             if(!((Map<?,?>)get(semantic,"requirements")).isEmpty())throw new AssertionError("Local recurrence authority");
             var observation=(Map<?,?>)get(semantic,"observation");var core=(Map<?,?>)observation.get("originalEngine");
             if(core==null||!"PINNED_NATIVE_CUT".equals(core.get("evaluated")))throw new AssertionError("Original engine not called");
-            var contexts=(List<?>)core.get("contexts");if(contexts.isEmpty())throw new AssertionError("No contextual markings");
+            var contexts=(List<?>)core.get("contexts");if(args.length==4&&contexts.isEmpty())throw new AssertionError("No contextual markings");
             if(!host.system().isReadOnly())throw new AssertionError("Replay state writable");
             var expression=org.tzi.use.parser.ocl.OCLCompiler.compileExpression(host.system().model(),host.system().state(),
-                    "Counter.allInstances()->one(c | c.p = 2)","installed-manual",new java.io.PrintWriter(System.err),host.system().varBindings());
+                    args.length==5?args[4]:"Counter.allInstances()->one(c | c.p = 2)","installed-manual",new java.io.PrintWriter(System.err),host.system().varBindings());
             if(expression==null||!"true".equals(new org.tzi.use.uml.ocl.expr.Evaluator().eval(expression,host.system().state(),host.system().state(),host.system().varBindings()).toString()))
                 throw new AssertionError("Native manual OCL failed");
             controllerType.getMethod("previous").invoke(controller);controllerType.getMethod("reset").invoke(controller);

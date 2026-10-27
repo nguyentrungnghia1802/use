@@ -23,6 +23,11 @@ public final class NativeReplayStepController implements AutoCloseable {
     public boolean active() { return selected.get()!=null; }
     public boolean busy() { return busy.get(); }
     public MSystem system() { var current=selected.get(); return current==null ? null : current.cursor().projector().system(); }
+    public org.tzi.use.plugins.jacamo.JaCaMoFacade.SemanticModels semanticModels() {
+        var current=selected.get();if(current==null||!current.bundle().canonical())return null;
+        var program=current.cursor().projector().mutations().canonicalProgram();program.assertUnchanged();
+        return new org.tzi.use.plugins.jacamo.JaCaMoFacade.SemanticModels(program.cslModel(),program.goalModel(),current.cursor().projector().system().model(),program.hash());
+    }
     public VerificationSnapshot verificationSnapshot() {
         var current=selected.get();
         return current==null ? VerificationSnapshot.empty() : current.cursor().verificationSnapshot();

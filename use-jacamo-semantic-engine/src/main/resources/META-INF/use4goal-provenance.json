@@ -3066,7 +3066,7 @@
       "gitStatus": "",
       "targetModule": "use-jacamo-semantic-engine",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar/mm/GoalModelValidator.java",
-      "targetSha256": "9a18fff4c08ef2ee32aeae736d26a82b76d03731ddf134e90fe37a8cda888fd3",
+      "targetSha256": "e0d400bdc4e7d8294718042e62487dbc9ad5ba2c52319975014841e5e217cb89",
       "fqcn": "org.vnu.sme.goal.dsl.istar.mm.GoalModelValidator",
       "imports": [
         "java.util.ArrayList",
@@ -3083,7 +3083,8 @@
         "P-IADM-01"
       ],
       "appliedPatchIds": [
-        "P-IADM-01"
+        "P-IADM-01",
+        "P-IADM-02"
       ],
       "extractionStatus": "PATCHED_WITH_PROVENANCE",
       "productionEvaluationAllowed": true,
@@ -4026,6 +4027,30 @@
       "profile": "DERIVED_AND_RESOURCE_V1",
       "validationPolicy": "DERIVED_AND_DEPENDEE_V1",
       "expectedDifference": "Derived same-owner condition-free Achieve AND parent may be dependee only; external resource/context gates required"
+    },
+    {
+      "id": "P-IADM-02",
+      "status": "APPLIED_VERIFIED",
+      "patchPath": "provenance/patches/P-IADM-02.diff",
+      "patchSha256": "9a45d81a6c3b97b32781c632428d71da34abe460fb5ab0071cea438e0b444b27",
+      "profile": "ROLE_SPECIALIZATION_V1",
+      "validationPolicy": "ROLE_SPECIALIZATION_V1",
+      "strictDefaultPreserved": true,
+      "originalRecurrenceUnchanged": true,
+      "expectedDifference": "Only same-owner condition-free Achieve <- single Task AND realization; IS_A only between Role and empty definition-only capability Role. No invented enactment or inherited intentional behavior.",
+      "newApiFiles": [
+        {
+          "targetPath": "src/main/java/org/tzi/use/semantic/engine/api/RoleSpecialization.java",
+          "sha256": "b87d144710f598407da98a2a6b132c6215db0535cfcf0dcda584b9b15ead460f"
+        }
+      ],
+      "tests": [
+        "RoleSpecializationPolicyTest",
+        "DerivedDependeePolicyTest",
+        "EngineExtractionTest",
+        "CapabilityRoleBindingTest",
+        "OccurrenceGoalModelExpanderTest"
+      ]
     }
   ],
   "forbiddenProductionDependencies": [

@@ -1,0 +1,31 @@
+{
+  "status": "UNACCEPTED_QUOTA_GAP",
+  "scope": "ACTUAL_MAIN_GUI_PACKAGED_AUTHORED_AUCTION",
+  "monitor": "LEFT_ONLY",
+  "usePid": 6400,
+  "producerPid": 1932,
+  "inputsSelectedInGui": true,
+  "archiveSha256": "e55cfbd7ba1591f0a179a5ef5d7c85841414680935056d8b3d532dbb26483cfa",
+  "journalBytesObservedBeforeCleanup": 67023633,
+  "diagnosticObservedBeforeCleanup": "JOURNAL_OVERFLOW",
+  "journalOrdinalObservedBeforeCleanup": 2827,
+  "journalRemovedOnOwnerClose": true,
+  "actionsObserved": [
+    "Plugins > JaCaMo > Open Workbench",
+    "select XML/CSL/iStar/OCL in widgets",
+    "select .jcm in Prepare + Import",
+    "Start Runtime",
+    "view CSL",
+    "view iStar",
+    "inspect STALE/history GAP",
+    "Stop JaCaMo"
+  ],
+  "producerStopped": true,
+  "useAliveAfterStop": true,
+  "evidence": [
+    "P09-main-gui-csl.png",
+    "P09-main-gui-istar.png",
+    "P09-main-gui-journal-gap.png",
+    "P09-main-gui-stopped.png"
+  ]
+}

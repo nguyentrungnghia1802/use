@@ -1,0 +1,83 @@
+@CslAgentDeclarations(payload64="W3siaWQiOiJiZWlkOnYxOmphY2Ftby9hZ2VudC9kZWNsYXJhdGlvbi9jc2xfY291bnRlci9hbGljZS9tb2RlbCIsImluc3RhbmNlcyI6MX0seyJpZCI6ImJlaWQ6djE6amFjYW1vL2FnZW50L2RlY2xhcmF0aW9uL2NzbF9jb3VudGVyL2JvYi9tb2RlbCIsImluc3RhbmNlcyI6MX1d")
+@Use4GoalCslV4(compatibility="true", players="true", profile="USE4GOAL_OBSERVED_V1", version="v4.0")
+@DeclarativeObserverView(mappingHash="581923c7e436bb7a0b593737f7386e88c1a26d58c74b7a4f9a2506e6d0bae925", version="2.0")
+@CanonicalSemanticProgram(cslHash="8aad44611c8aefca80cbad0f43e51b5bcb2eaa23ea148af6b89822de210c7147", goalHash="e4bdaea7d39b9873b3e6d0314aa7cb4bf4856537b4e6898c419bbf704686b4d5", mappingProfile="JACAMO_DECLARATIVE_XML", mappingVersion="2.0", programHash="e8dda76731192bf177de7bb0dad41f09668c25e49e96c553397ff059b66542ef", ruleHash="d2a33cc43af676f474dd8868b00c50cf70681aed7c849a449ec9b449566b7405", sourceHash="329560eb28923ee77bc1f30caaafd0470e5f403e48fa254062d901837878bdef", version="2.0")
+model StockView
+
+
+@CanonicalSemanticBinding(kind="ORG_CONTEXT", metadata64="e30", reason64="T2JzZXJ2ZWQgZ3JvdXAgY29udGV4dA", rule64="Z3JvdXAtZGVmaW5pdGlvbg", source64="bW9pc2U6b3JnYW5pemF0aW9uOmNzbF9jb3VudGVyOmNvdW50ZXJfc2VydmljZTpncm91cDp0ZWFtfHRlYW0", target64="V2FyZWhvdXNl")
+@OriginalCslDeclaration(id64="V2FyZWhvdXNl", kind="ORG_CONTEXT", owner64="")
+@DomainProjection(javaClass64="", kind="csl-org_context", sourceId64="bW9pc2U6b3JnYW5pemF0aW9uOmNzbF9jb3VudGVyOmNvdW50ZXJfc2VydmljZTpncm91cDp0ZWFtfHRlYW0")
+class Warehouse < OrgContext
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOlJvbGVPY2N1cnJlbmNl", kind="M0_EXTENSION")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="aGVscGVyOlJvbGVPY2N1cnJlbmNl")
+abstract class RoleOccurrence
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOlJ1bnRpbWVQbGF5ZXI=", kind="M0_EXTENSION")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="aGVscGVyOlJ1bnRpbWVQbGF5ZXI")
+abstract class RuntimePlayer
+end
+
+@SemanticRuntimeHelper(kind="DECLARATION_SCOPE_ONLY", physicalOwnership="false")
+association CslEntityScopes between
+  OrgContext[0..1] role cslEntityScope
+  DomainEntity[*] role cslScopedEntities
+end
+
+association Plays between
+  RuntimePlayer[1] role player
+  RoleOccurrence[*] role enactedRoles
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOk9yZ0NvbnRleHQ=", kind="M0_EXTENSION")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="aGVscGVyOk9yZ0NvbnRleHQ")
+abstract class OrgContext < RuntimePlayer
+end
+
+@SemanticRuntimeHelper(kind="DECLARATION_SCOPE_ONLY", physicalOwnership="false")
+association CslContextScopes between
+  OrgContext[0..1] role cslScopeParent
+  OrgContext[*] role cslNestedContexts
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOldvcmtzcGFjZU9ic2VydmF0aW9u", kind="M0_EXTENSION")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="aGVscGVyOldvcmtzcGFjZU9ic2VydmF0aW9u")
+class WorkspaceObservation
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOkF0b21pY0FnZW50", kind="M0_EXTENSION")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="aGVscGVyOkF0b21pY0FnZW50")
+class AtomicAgent < RuntimePlayer
+end
+
+@CanonicalSemanticBinding(kind="ENTITY", metadata64="e30", reason64="UGFzc2l2ZSBudW1lcmljIGFydGlmYWN0IHN0YXRlOyBDb3VudGVyLnAgaXMgZXhwbGljaXRseSBtYXBwZWQgdG8gUGFsbGV0LndlaWdodA", rule64="c3RvY2stZGVmaW5pdGlvbg", source64="YXJ0aWZhY3QtY2xhc3M6ZGVtby5jb3VudGVyLkNvdW50ZXI", target64="UGFsbGV0")
+@OriginalCslDeclaration(id64="UGFsbGV0", kind="ENTITY", owner64="")
+@DomainProjection(javaClass64="ZGVtby5jb3VudGVyLkNvdW50ZXI", kind="artifact", sourceId64="YXJ0aWZhY3QtY2xhc3M6ZGVtby5jb3VudGVyLkNvdW50ZXI")
+class Pallet < DomainEntity
+attributes
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="UGFsbGV0Ojp3ZWlnaHQ=", mutable="true", optional="false")
+  weight : Integer
+end
+
+association InContext between
+  OrgContext[1]
+  RoleOccurrence[*] role roles
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOkRvbWFpbkVudGl0eQ==", kind="M0_EXTENSION")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="aGVscGVyOkRvbWFpbkVudGl0eQ")
+abstract class DomainEntity
+end
+
+constraints
+context OrgContext inv CslV4RoleCompatibility:
+  self.roles->forAll( r1:RoleOccurrence, r2:RoleOccurrence | (((r1 = r2) or (r1.player <> r2.player)) or false) )
+
+context self : Pallet
+  @AuthoredOclSource(bodyEnd="56", bodyStart="37", clause64="Tm9ubmVnYXRpdmVXZWlnaHQ=", kind="INVARIANT", line="1", source64="YXV0aG9yZWQtb2Ns", sourceHash="db06effb70f3d17dc95a69ed80a8e8b2a3c525db1222aa6e8750ed39276a3ca1")
+  inv NonnegativeWeight:
+    (self.weight >= 0)
+

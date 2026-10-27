@@ -19,5 +19,17 @@
         </dependency>
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>5.8.2</version><scope>test</scope></dependency>
     </dependencies>
-    <build><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>3.2.5</version></plugin></plugins></build>
+    <build><plugins>
+        <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>3.2.5</version></plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId><artifactId>maven-dependency-plugin</artifactId><version>3.8.1</version>
+            <executions><execution>
+                <id>owned-producer-runtime-classpath</id><phase>generate-resources</phase><goals><goal>build-classpath</goal></goals>
+                <configuration>
+                    <includeScope>runtime</includeScope><excludeGroupIds>org.tzi.use</excludeGroupIds>
+                    <outputFile>${project.build.directory}/jacamo-bridge-classpath.txt</outputFile><regenerateFile>true</regenerateFile>
+                </configuration>
+            </execution></executions>
+        </plugin>
+    </plugins></build>
 </project>

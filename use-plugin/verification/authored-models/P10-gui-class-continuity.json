@@ -1,0 +1,21 @@
+{
+  "scope": "CLASS_BYTE_CONTINUITY_WITH_PRIOR_ACTUAL_MAIN_GUI_NOT_A_NEW_MANUAL_RUN",
+  "sameClassCount": 1125,
+  "changedClasses": [
+    {
+      "oldSha256": "7a63a574b7328e1c7d6a12102f0447a1bc0a91dc83804efa15c312df82faa7d0",
+      "class": "org/tzi/use/plugins/jacamo/ui/use4goal/csl/CslView.class",
+      "newSha256": "a57e9e38314e3a1908da1d9dde741038935106aecd092b1aaa63280613592361"
+    },
+    {
+      "oldSha256": "bb2f9ee497820e4a557c1491086e6dfee25dc686ca9e69e6577a130891317001",
+      "class": "org/tzi/use/plugins/jacamo/ui/use4goal/istar/IStarView.class",
+      "newSha256": "19f3da16c3bebbc00890536fee7c845327f7b1f79838285aaf721ba5bab29881"
+    }
+  ],
+  "missingClasses": [],
+  "currentPluginSha256": "4e7ba3a8dfac9eeee3cb018d1031502209ca5cfc4b509efcc3ab3f987f6ae360",
+  "priorGuiReceipt": "P09-quota-gui-receipt.json",
+  "sourceChange": "CslView/IStarView null log writer fallback; actual MainWindow log writer unchanged",
+  "status": "EXPECTED_TWO_VIEW_FALLBACK_CHANGES_ONLY"
+}

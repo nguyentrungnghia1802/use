@@ -1,0 +1,1 @@
+{"calls":["GoalModelInstanceTranslator.propagateDependencies","IStarPropagation.assignGoalTask:aggregate-only","IStarPropagation.closePending","TaskMarking.update"],"consumerPid":5832,"producerPid":7988,"sameActiveMSystem":true,"tasks":["A_decide_t1","A_decide_t2","A_start_t1","A_start_t2","P_bid_t1","P_bid_t2"]}

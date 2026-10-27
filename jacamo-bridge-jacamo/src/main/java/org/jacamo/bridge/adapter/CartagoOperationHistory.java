@@ -11,6 +11,7 @@ public final class CartagoOperationHistory implements ObservationCapabilityRegis
     private final ObservationCapabilityRequest request;
     private final FrameworkObservationProviders.Context context;
     private final String type,hash,resource,provider;
+    private final Set<String> selectedOperations;
     private final Map<String,History> histories=new LinkedHashMap<>();
     private long lastSequence;private String lastEventHash="";private boolean closed;
     private static final class History {
@@ -21,7 +22,8 @@ public final class CartagoOperationHistory implements ObservationCapabilityRegis
     }
     public CartagoOperationHistory(ObservationCapabilityRequest request,FrameworkObservationProviders.Context context)throws Exception {
         this.request=request;this.context=context;
-        if(!request.provider().equals(PROVIDER)||!Set.of("class","hash","sourceRef","sourceHash","sourcePath").containsAll(request.parameters().keySet()))throw new IllegalArgumentException("OPERATION_HISTORY_REQUEST_UNSUPPORTED");
+        if(!request.provider().equals(PROVIDER)||!Set.of("class","hash","sourceRef","sourceHash","sourcePath","operations").containsAll(request.parameters().keySet()))throw new IllegalArgumentException("OPERATION_HISTORY_REQUEST_UNSUPPORTED");
+        selectedOperations=selectedOperations(request);
         type=text(request.parameters(),"class");hash=text(request.parameters(),"hash");
         if(!type.matches("[A-Za-z_$][A-Za-z0-9_$]*(\\.[A-Za-z_$][A-Za-z0-9_$]*)+")||!hash.matches("[0-9a-f]{64}")||context.run()==null||context.run().isBlank()||context.generation()<0)throw new IllegalArgumentException("OPERATION_HISTORY_CLASS_PIN_OR_SCOPE_REQUIRED");
         ProviderSourcePin.require(request,context.root());
@@ -29,6 +31,11 @@ public final class CartagoOperationHistory implements ObservationCapabilityRegis
         var binary=DeclaredArtifactTypeProof.readActualBinary(selected);var framework=DeclaredArtifactTypeProof.readActualBinary(Artifact.class);
         if(!Artifact.class.isAssignableFrom(selected)||binary==null||framework==null||!hash.equals(AdapterEvidence.digest(binary.bytes()))||!FRAMEWORK.equals(AdapterEvidence.digest(framework.bytes())))throw new IllegalArgumentException("OPERATION_HISTORY_BINARY_MISMATCH");
         resource=binary.resource().toExternalForm();provider=selected.getProtectionDomain().getCodeSource().getLocation().toExternalForm();
+        // CArtAgO's public operation interface includes annotated package/protected methods.
+        // Java getMethods() omits WorkspaceArtifact.makeArtifact even though the official adapter exposes it.
+        var publicNames=new HashSet<String>();for(Class<?> owner=selected;owner!=null&&Artifact.class.isAssignableFrom(owner);owner=owner.getSuperclass())
+            Arrays.stream(owner.getDeclaredMethods()).filter(m->m.isAnnotationPresent(OPERATION.class)).map(java.lang.reflect.Method::getName).forEach(publicNames::add);
+        if(!publicNames.containsAll(selectedOperations))throw new IllegalArgumentException("OPERATION_HISTORY_SELECTED_PUBLIC_OPERATION_UNAVAILABLE");
     }
     /** Called on the existing CArtAgO source publication lane, before transport. */
     public synchronized void observe(RuntimeEvent event) {
@@ -47,7 +54,7 @@ public final class CartagoOperationHistory implements ObservationCapabilityRegis
         boolean birth=event.kind()==RuntimeEventKind.CREATED&&type.equals(after.get("artifactTypeJavaClassName"));
         Object signature=after.get("operationSignature");
         boolean operation=Set.of(RuntimeEventKind.STARTED,RuntimeEventKind.SUCCEEDED,RuntimeEventKind.FAILED).contains(event.kind())&&!event.correlationId().isBlank()
-                &&signature instanceof List<?> parts&&parts.size()==4&&(histories.containsKey(uuid)||type.equals(parts.getFirst()));
+                &&signature instanceof List<?> parts&&parts.size()==4&&(histories.containsKey(uuid)||type.equals(parts.getFirst()))&&(selectedOperations.isEmpty()||selectedOperations.contains(parts.get(1)));
         if(!birth&&!operation)return;
         if(!histories.containsKey(uuid)&&histories.size()>=256){histories.values().forEach(h->h.broken=true);return;}
         var history=histories.computeIfAbsent(uuid,k->new History());
@@ -82,8 +89,8 @@ public final class CartagoOperationHistory implements ObservationCapabilityRegis
             result.put("javaClass",type);result.put("classHash",hash);result.put("resource",resource);result.put("provider",provider);result.put("frameworkArtifactHash",FRAMEWORK);
             result.put("artifact",new BridgeEntityId("cartago","environment","artifact",identity.getWorkspaceId().getFullName(),identity.getName(),uuid).canonical());result.put("artifactUuid",uuid);result.put("workspaceUuid",identity.getWorkspaceId().getUUID().toString());
             result.put("lastSourceSequence",lastSequence);result.put("fromCreation",history.fromCreation);result.put("historyQuality",history.fromCreation&&!history.broken?"COMPLETE":"INCOMPLETE");
-            result.put("scopeMeaning","ICARTAGOLOGGER_OBSERVED_START_TERMINAL_PREFIX_SUSPEND_RESUME_UNSUPPORTED");result.put("events",history.events.stream().map(ContractPayloads::event).toList());
-            try {result.put("hash",AdapterEvidence.digest(CanonicalJson.encode(result,128*1024)));CanonicalJson.encode(result,128*1024);return JasonStructuredTerms.immutable(result);}
+            result.put("scopeMeaning",selectedOperations.isEmpty()?"ICARTAGOLOGGER_OBSERVED_START_TERMINAL_PREFIX_SUSPEND_RESUME_UNSUPPORTED":"ICARTAGOLOGGER_SELECTED_START_TERMINAL_PREFIX_SUSPEND_RESUME_UNSUPPORTED");result.put("events",history.events.stream().map(ContractPayloads::event).toList());
+            try {result.put("hash",AdapterEvidence.digest(CanonicalJson.encode(result,128*1024)));if(CanonicalJson.encode(result,128*1024).length>128*1024)throw new ContractException("HISTORY_RECEIPT_CAPACITY");return JasonStructuredTerms.immutable(result);}
             catch(ContractException overflow){history.broken=true;return unavailable("HISTORY_RECEIPT_CAPACITY");}
         }
     }
@@ -91,4 +98,9 @@ public final class CartagoOperationHistory implements ObservationCapabilityRegis
     public synchronized Capability capability(){return new Capability(request.id(),closed?CapabilityStatus.UNAVAILABLE:CapabilityStatus.COMPLETE,List.of(VERSION),closed?"PROVIDER_CLOSED":"Pinned actual Artifact logger receipts; per-cut history completeness remains authoritative");}
     @Override public synchronized void close(){if(closed)return;closed=true;histories.clear();}
     private static String text(Map<String,Object> values,String key){if(!(values.get(key) instanceof String value)||value.isBlank())throw new IllegalArgumentException("OPERATION_HISTORY_REQUEST_FIELD:"+key);return value;}
+    private static Set<String> selectedOperations(ObservationCapabilityRequest request) {
+        Object raw=request.parameters().getOrDefault("operations",List.of());
+        if(!(raw instanceof List<?> names)||names.size()>32||request.parameters().containsKey("operations")&&names.isEmpty())throw new IllegalArgumentException("OPERATION_HISTORY_SELECTION_INVALID");
+        var result=new TreeSet<String>();for(Object value:names)if(!(value instanceof String name)||!name.matches("[A-Za-z_$][A-Za-z0-9_$]*")||!result.add(name))throw new IllegalArgumentException("OPERATION_HISTORY_SELECTION_INVALID");return Set.copyOf(result);
+    }
 }

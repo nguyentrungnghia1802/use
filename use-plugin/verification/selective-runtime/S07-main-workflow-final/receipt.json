@@ -1,0 +1,143 @@
+{
+  "version": "MAIN_AUTHORED_GUI_ACCEPTANCE/1.0",
+  "status": "PASS",
+  "at": "2026-10-27T09:21:16.174639+00:00",
+  "scope": "Actual installed USE MainWindow menu -> NEW use4Goal verification entry -> five real file choosers -> Prepare/Start -> selected model views/timeline/native/original evidence -> Pause/Resume -> Stop/Restart -> repeated Prepare/Import -> live dispose -> reopen/dispose",
+  "interaction": "Computer Use @oai/sky only; read-only launcher/probe did not select inputs or invoke import/runtime/UI actions",
+  "monitor": "LEFT_ONLY",
+  "allObservedShownWindowsOnLeft": true,
+  "sourceFreeze": "../S07-source-freeze-v5.json",
+  "sourceFreezeSha256": "ca54704b82eecea39c43de0a2224146c4fe9782187734c3c5d6898d02037fac5",
+  "archive": "use-assembly/target/use-7.5.0-use-bin.zip",
+  "archiveSha256": "ff10b72811065d468f9689a80211ea326344c6bd940317b9082d756dce6c3ee5",
+  "pluginSha256": "120364ada04228555b95b9996ede0e1732f763b968e3cda24dcc0c68b34cdb50",
+  "usePid": 23176,
+  "runs": [
+    {
+      "producerPid": 28500,
+      "runId": "20261027-160702-209-0c19a185",
+      "nativeSystem": 1698843890,
+      "sameMSystem": true
+    },
+    {
+      "producerPid": 13944,
+      "runId": "20261027-161103-496-e8c628d9",
+      "nativeSystem": 1024574891,
+      "sameMSystem": true
+    },
+    {
+      "producerPid": 30236,
+      "runId": "20261027-161227-931-7a34d1be",
+      "nativeSystem": 1044723178,
+      "sameMSystem": true
+    }
+  ],
+  "freshRestartAndReimportHaveNoOriginalContextsOrTaskPosts": true,
+  "sessionListenerCounts": {
+    "baseline": 1,
+    "active": 2,
+    "disposed": 1,
+    "reopened": 2,
+    "disposedAgain": 1
+  },
+  "disposedPanels": "Both displayable=false, timerRunning=false, cslDetached=true, istarDetached=true",
+  "retiredSubscriptionEngineControlOutputThreadsAbsent": true,
+  "producerPidsExited": [
+    28500,
+    13944,
+    30236
+  ],
+  "hostPidsExited": [
+    23176,
+    27708,
+    20080
+  ],
+  "sameLiveMSystemAcrossAllObservedSamples": true,
+  "acceptedTaskPostsObservedInThisGuiRun": [
+    "A_start_t1",
+    "A_start_t2",
+    "P_bid_t1",
+    "P_bid_t2"
+  ],
+  "originalCallsObserved": [
+    "GoalModelInstanceTranslator.propagateDependencies",
+    "IStarPropagation.assignGoalTask:aggregate-only",
+    "IStarPropagation.closePending",
+    "TaskMarking.update"
+  ],
+  "nativeOclGuiAfterDispose": {
+    "expression": "Auction.allInstances()->size()",
+    "result": "0 : Integer",
+    "evidence": "19-native-ocl-after-dispose.png"
+  },
+  "quality": "Actual PASS/FAIL and raw FULFILLED/qualified UNKNOWN displayed; no claim that every task/goal is satisfied. Four qualified Task POST targets observed in this GUI run; full required Task coverage is separately proven by the final cold Auction gate. State image eviction is explicitly displayed as not retained.",
+  "replayClaim": "COLD: deletion of four copied CSL/iStar/XML/OCL files only; JCM/ASL/MOISE/Artifact source remain. Separate S06 component test deletes copied source tree. No stronger cold deletion claim.",
+  "harnessCorrections": {
+    "host.log": "Workflow/cleanup passed; final host-close NPE because qualification launcher omitted host Shell, after dialog/runtime cleanup already complete. Retained as evidence, not called error-free.",
+    "host-exit-smoke.log": "Intermediate harness correction initialized Shell but not readline; retained as failed smoke.",
+    "host-shell-close.log": "Final harness uses ordinary Shell.run initialization with an idle test-owned input; native host Close exits 0 without exception. Only test launcher changed; production ZIP unchanged."
+  },
+  "newProductionChanges": false,
+  "fullReactorRerun": false,
+  "validationCommand": "D:/DevTools/Python/python.exe use-plugin/verification/selective-runtime/S07-main-workflow-final/verify_evidence.py",
+  "validation": "MAIN_WORKFLOW_CLOSEOUT_PASS samples=565 runs=3 disposeCycles=2 sourceFiles=3304",
+  "files": {
+    "01-main-menu.png": "a9e3a9d2f37350229f9689b03082ce0ff5fe2d4f0c3ce64f68eb32d36aec855d",
+    "02-five-inputs.png": "94895da65d6a51372518b7dfa1054058436053d141273901fa12047e4e1702d7",
+    "03-model-ready.png": "aac7564239ff64ba2bd1b479bbbe56b87ef34a9a813d977cf07316de830950d4",
+    "04-live-timeline.png": "9c3dff5a498fb39d15798a870fbea65ee08350cd23cc3a180f8ec2cc80b0dc01",
+    "05-csl-view.png": "c99c937af1a79cb852f77dba443d30b685a4667afc181aea478fb9217587b238",
+    "06-istar-view.png": "dfc1dffe5abfbea36a2a0ee5b577bd9bd0b1f9a3e592f046abb6b48e07b09680",
+    "07-native-ocl-evidence.png": "400f36c89c5d52287cdea74357255486868b4d1474d25db2814c1b4b259a2395",
+    "08-original-markings.png": "acfbfd9b22897d944a7483eef0c583372856b0d2e6ee590a620580f56a19f284",
+    "09-observed-latest.png": "18fb5eb61a916e752296d1e2f27dc9954903408b0aba6db9a051ad93f90d15cc",
+    "10-observed-previous.png": "8afb22a6840cd00804634cd674291f4f9c617b48629a7fffa35612db3f80ff2e",
+    "11-resumed.png": "280923e622d5758423f49fb4f35560e4460e9b1fab81681c58f964dad79b76c8",
+    "12-stopped-use-alive.png": "3c928ccf7090e0d30205e6324cca3c3f1aebe41d45d62833d3ebc7a2be709484",
+    "13-restart-new-empty-history.png": "fd3ffde8a55e175f67eb945f79dc027420e786e4068bcd925aa4d4ca6fc48610",
+    "14-restart-live.png": "ce750cde0e1711321c74c7b11cf2d73c40e43093d6845911f8cdc8c15756eff0",
+    "15-reimport-empty-history.png": "d134a269d89b5539b44e9448836c7efa1cd41795b49f364cd073f3489a7355c1",
+    "16-reimport-live-before-dispose.png": "e63d731367a2ef4c987ee4e39c8ed15ab604510de5e105b07acce37ddf6f98d3",
+    "17-disposed-use-alive.png": "9f1744257c345e8725e9a52f97c0e7060fa867957b38600dcba8ea41dcaf370f",
+    "18-reopened-fresh-owner.png": "e8b9b6a64ef6adf7bdd59de36a8bb3e25769cc87cc89146b584f4be6f0164b30",
+    "19-native-ocl-after-dispose.png": "9c87c8d2acb17134c447ba3e858e91225ee6a0dc5f5b038e779aa820d20461c1",
+    "disposed1.json": "df6f377d9651a00eb7b24960c87d0574f87cabad14900398211f483edbed51b4",
+    "disposed2.json": "e876752ea6ed1506bf2ca0f117d2039992fec7303d7f024920694575e3355a5f",
+    "gui-result.json": "9224363d8038a9305fa0b4d12c5889221b2c9a7c642448d0faa2692f82e3288a",
+    "host-exit-smoke/probe-history.jsonl": "e4708efb80f598d8e9ce44f19cd0dec89686a47a74351edb1ad570787a236b0a",
+    "host-exit-smoke/probe.json": "7815ee6e38d0aa361cc7ed69ab214b76eb1ef4200bed0aa2642def69ff512f04",
+    "host-exit-smoke.log": "bcc7a231f370f3227dc1466d85d8f90a3b0901f7b7ff36c71d1e62958ae0d48f",
+    "host-shell-close/probe-history.jsonl": "cb68510cb2cfd69b2b7bd8cb3d5f90a782d79167f28198188c7b5b6fc3d387ae",
+    "host-shell-close/probe.json": "c1489e4e29588cfbfb2d4631ab280d585e09b997a777508a8e00efaf591127b3",
+    "host-shell-close.log": "4db9022c68f9ce2f7506799b395dc15c1558638df201d8a2b92871d4eb51cebf",
+    "host.log": "dbb538caeb9fae0c9342f01c0ac9e6ff04f979a25e8e1d0718ad01d601d57bdd",
+    "probe-history.jsonl": "0794491536d141e298089d3099db740eb1d83750cd03e0e900ee24ef71be571f",
+    "probe.json": "37c4bbd117d2e595337c72b9dacd0696bafe148ae73258cdc05dcaac6ff5937b",
+    "reopened2.json": "d97ad829f76855cacadee489fe8b12351ad8297ff58f6bb4f9d37c2a9c22e951",
+    "run1-before-stop.json": "3e9081d803f6e1c00f0eff3b98b26b095069fa5dd1260fdc98dcba3cd5f30b97",
+    "run1-evidence.json": "e3458aee5ccf4b925cc0d90e3759152e091c764f8a0ecfa3562e9c8d83129400",
+    "run1-paused-result.json": "78bf6d25fd7c4fb9370278295e5c95b63ded59b639fbb5d2309c7f4af180a90f",
+    "run1-stopped.json": "0f27281dc3dc698808ac0cc9f27bde7ebd899db1b3ff89c14866d985556d7815",
+    "run2-ready-result.json": "89a8e8f5f47b24c8d1fb6a5b518d0f076f8009f9e295c3a28ecb5987f57752c5",
+    "run2-ready.json": "133ce2cb37bc34fe4a9234335998447a7df7ce52f8f167686cac99d84d247963",
+    "run2-started.json": "53c3981bb44bf4d6bea14c668fdb0dd9368b2345a2a637855ce8386a8ded8541",
+    "run2-stopped.json": "71ae44c1dc61c194c731b63ecd36281ac0521cb5431dc7e0b52b5e4082031a2a",
+    "run3-ready-result.json": "53635af53c9daebaa6cd964abb4f2c9f2f3687ed64b15b28d1976c640e668792",
+    "run3-ready.json": "79c4f4d86132e865fe10424dc1eeba689e3dbebbbb20522da4006f2ccfcce9e8",
+    "run3-started.json": "a8570672c49d94d1f3b76b6fe856002d79ef5b1db0426085aad235b0be5d9930",
+    "S07MainGuiProbe.java": "b7cf765598cec057157e36e79f2df1bcf417acc7e092a9e82906d6e593818851",
+    "threads-after-dispose.txt": "80d66b8afd110fb3dc40087f46120e71de1625f392a5d1b23da022a9ddadb485",
+    "threads-after-dispose2.txt": "1f6d4694307cddacb9cbcbacada8dcfbe8119027504cb5b2a7cc388c2663c827",
+    "threads-run2.txt": "fd4312745d681850725abfd65778ab12831205d0d87648e606772ac1649e4f3d",
+    "threads-run3.txt": "d67a7c53844cff125d97f2843ebf59581d29b50f2cce018c4b9b6f56f951a08d",
+    "verify_evidence.py": "89a855fd5892a993d3ccdf2c518c6316b14847c91743080ecec0d5072b1904b1",
+    "acceptance-check.log": "fa0a9ab1cb0c2514b0f083bec5f2106b3f5f5d28a6182509df0525c1459fcaae"
+  },
+  "fiveSelectedInputs": {
+    "auction.jcm": "c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb",
+    "authored-v1/auction_csl.csl": "0d0872612661235c0d7865c177dc31dfe2ef649913a99750eb9e42f87163de37",
+    "authored-v1/auction_istar_final.istar": "a3bb1203367f570d8a3cb9b9f5b1a6619d5e4db189ef304f409ca6cb49aea2a9",
+    "source-confirmed-v1/auction-mapping.xml": "e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185",
+    "source-confirmed-v1/auction_confirmed.ocl": "7550f0f817f7ce6112dfe3aba800bff77bae52138de189858f2076534ea8234c"
+  }
+}

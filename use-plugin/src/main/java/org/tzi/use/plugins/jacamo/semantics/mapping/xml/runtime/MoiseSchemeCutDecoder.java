@@ -8,7 +8,7 @@ import org.tzi.use.plugins.jacamo.semantics.observer.FunctionalObservation;
 
 /** Pinned public MOISE evidence, not goal credit, administrative policy or internal transition time. */
 public final class MoiseSchemeCutDecoder {
-    private static final String PROVIDER="moise.scheme-lifecycle.v1",VERSION="MOISE_SCHEME_CUT/2.2";
+    private static final String PROVIDER="moise.scheme-lifecycle.v1",VERSION="MOISE_SCHEME_CUT/2.3";
     private static final String MOISE_HASH="2b7d0415c5ec0bcf060a430c7d12753aa02bdf769172922d10ff2909870161a8",CARTAGO_HASH="67830177f2cb450876ac3b43aa90741cbc0b72079f5fcdc8320ff2f11b17c012";
     private static final Set<String> STATES=Set.of("WAITING","ENABLED","SATISFIED");
     private static final String TIME="PUBLICATION_ONLY_INTERNAL_TRANSITION_TIME_UNAVAILABLE";
@@ -45,10 +45,11 @@ public final class MoiseSchemeCutDecoder {
             need("ora4mas.nopl.SchemeBoard".equals(artifact.values().get("artifactTypeJavaClassName"))&&Objects.equals(artifact.values().get("workspaceSemanticId"),workspace.values().get("semanticId"))
                 &&artifact.id().incarnation().equals(artifact.values().get("uuid"))&&workspace.id().incarnation().equals(workspace.values().get("uuid"))&&artifact.id().incarnation().equals(board.values().get("boardArtifactIdentity")),"PHYSICAL_BOARD_CROSSWALK_MISMATCH");
             publicFacts.require(board,run);var publicBoard=FunctionalObservation.decode(board.id(),board.values());
-            var data=receipt.data();boolean typed=VERSION.equals(data.get("version"));
+            var data=receipt.data();boolean clockProof=VERSION.equals(data.get("version")),typed=clockProof||"MOISE_SCHEME_CUT/2.2".equals(data.get("version"));
             need(typed||"MOISE_SCHEME_CUT/2.1".equals(data.get("version")),"SOURCE_SCOPE_OR_VERSION");
             if(typed)need(data.get("commitmentBindings") instanceof Map<?,?>,"PLAYER_BINDING_OBJECT_REQUIRED");
-            keys(data,bindingKeys(typed,Set.of("version","status","sessionId","generation","modelRevision","schemeIdentity","artifactIdentity","artifactUuid","workspaceUuid","schemeDefinition","sourceOsSha256","moiseArtifactSha256","cartagoArtifactClassSha256","coherence","lockAlreadyHeld","origin","sequence","fromCreation","historyQuality","birthSequence","historyMeaning","timeAuthority","clockIdentity","publicationEpochMillis","goals","done","commitments","administrativeEffect","administrativeEffects","transitions","cutHash")));
+            var expectedKeys=new HashSet<>(bindingKeys(typed,Set.of("version","status","sessionId","generation","modelRevision","schemeIdentity","artifactIdentity","artifactUuid","workspaceUuid","schemeDefinition","sourceOsSha256","moiseArtifactSha256","cartagoArtifactClassSha256","coherence","lockAlreadyHeld","origin","sequence","fromCreation","historyQuality","birthSequence","historyMeaning","timeAuthority","clockIdentity","publicationEpochMillis","goals","done","commitments","administrativeEffect","administrativeEffects","transitions","cutHash")));
+            if(clockProof)expectedKeys.add("publicationClockProof");keys(data,expectedKeys);
             need("COMPLETE".equals(data.get("status"))&&run.equals(data.get("sessionId"))&&generation==integer(data.get("generation"))&&cut.modelRevision().equals(data.get("modelRevision")),"SOURCE_SCOPE_OR_VERSION");
             need(board.id().canonical().equals(data.get("schemeIdentity"))&&Objects.equals(artifact.values().get("semanticId"),data.get("artifactIdentity"))&&artifact.id().incarnation().equals(data.get("artifactUuid"))&&workspace.id().incarnation().equals(data.get("workspaceUuid")),"SOURCE_IDENTITY_MISMATCH");
             need(osHash.equals(data.get("sourceOsSha256"))&&MOISE_HASH.equals(data.get("moiseArtifactSha256"))&&CARTAGO_HASH.equals(data.get("cartagoArtifactClassSha256"))&&definition.metadata().semanticId().equals(data.get("schemeDefinition"))
@@ -109,6 +110,7 @@ public final class MoiseSchemeCutDecoder {
             values.put("sourceVersion",data.get("version"));
             values.put("commitments",commitments(data.get("commitments")));values.put("transitions",transitions);values.put("administrativeEffects",effects);
             values.put("clockIdentity",data.get("clockIdentity"));values.put("publicationEpochMillis",data.get("publicationEpochMillis"));values.put("internalTransitionTimes","UNSUPPORTED");
+            values.put("confirmation",Map.of("version",MoisePublicConfirmation.VERSION,"complete",clockProof&&MoisePublicConfirmation.clockQualified(data.get("publicationClockProof"))&&MoisePublicConfirmation.complete(continuous,transitions)));
             values.put("administrativeAbsenceCoverage","UNAVAILABLE"); // State history is not proof that every operation callback was observed.
             return new Result(Completeness.COMPLETE,values,hash,"");
         }catch(IllegalArgumentException|ContractException|NoSuchElementException unavailable){return new Result(Completeness.UNAVAILABLE,Map.of(),"",unavailable.getMessage());}

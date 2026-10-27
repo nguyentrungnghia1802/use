@@ -209,7 +209,14 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
                 if(program.goalModel().findElement(trace.source()).orElse(null) instanceof Task) {
                     var matched=demands.stream().filter(d->d.target().equals(trace.source())&&d.scope().equals(scope.id())&&d.actor().equals(member.actor())&&d.player().equals(member.player())&&d.role().equals(member.role())&&d.roleInterval().equals(member.interval())).toList();var demand=matched.size()==1?matched.getFirst():null;
                     var marker=xmlSteps.marker(scope.id(),member.player(),member.role(),member.interval(),trace.source());if(marker!=null&&(demand==null||!marker.demand().equals(demand.episode())))marker=null;
-                    String episode=SemanticJson.hash(List.of(SemanticJson.tree(identity),scope.id(),member.instance(),member.interval(),trace.source(),selfId,scope.resources(),demand==null?"UNAVAILABLE":demand.episode(),marker==null?"NO_ADMITTED_STEP":marker.goal(),marker==null?"":marker.invocation()));
+                    var historical=marker==null?xmlSteps.historicalMarker(scope.id(),member.player(),member.role(),member.interval(),trace.source()):marker;
+                    String demandIdentity=demand!=null&&demand.quality()==Completeness.COMPLETE?demand.episode():historical==null?"UNAVAILABLE":historical.demand();
+                    if(historical!=null&&!historical.demand().equals(demandIdentity))historical=null;
+                    // Missing current evidence defers the original recurrence; it does
+                    // not start a new historical episode. This identity is never fed
+                    // into xmlTaskInput as a certificate. Known activation, role,
+                    // player, self/resource or invocation changes still fence history.
+                    String episode=SemanticJson.hash(List.of(SemanticJson.tree(identity),scope.id(),member.instance(),member.interval(),trace.source(),selfId,scope.resources(),demandIdentity,historical==null?"NO_ADMITTED_STEP":historical.goal(),historical==null?"":historical.invocation()));
                     taskReads.put(trace.expanded(),new XmlTaskRead(demand,marker,episode));continue;
                 }
                 var expression=conditions.get(trace.source());if(expression==null)continue;

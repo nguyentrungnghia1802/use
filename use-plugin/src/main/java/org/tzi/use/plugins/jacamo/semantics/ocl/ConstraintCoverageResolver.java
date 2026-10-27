@@ -87,6 +87,12 @@ public final class ConstraintCoverageResolver {
         }
         if(engine.xmlCase())for(var navigation:visitor.navigationReads()) {
             String reference=xmlReferenceUnavailable(navigation,engine,self);if(!reference.isBlank())return reference;
+            if(navigation.getDestination().association().name().equals("InContext")&&navigation.getDestination().nameAsRolename().equals("roles"))try {
+                var variables=new org.tzi.use.uml.ocl.value.VarBindings(engine.system().state());variables.push("self",self.value());
+                var value=new org.tzi.use.uml.ocl.expr.Evaluator().eval(navigation.getObjectExpression(),engine.system().state(),variables);
+                if(value instanceof org.tzi.use.uml.ocl.value.ObjectValue object&&!engine.metadata(object.value(),"xml:m0:population-authority").isBlank()
+                        &&(!"COMPLETE".equals(engine.metadata(object.value(),"xml:m0:roles-quality"))||!engine.metadata(object.value(),"xml:m0:cut").equals(engine.metadata(object.value(),"xml:m0:roles-cut"))))return "XML_CURRENT_ROLE_MATERIALIZATION_INCOMPLETE";
+            }catch(RuntimeException unavailable){return "XML_ROLE_SCOPE_RECEIVER_UNAVAILABLE";}
         }
         for(var read:visitor.attributeReads()) {
             var candidates=receivers(read,engine,self);if(candidates==null)return "AUCTION_ATTRIBUTE_RECEIVER_UNAVAILABLE:"+read.attribute().owner().name()+"."+read.attribute().name();
@@ -127,6 +133,19 @@ public final class ConstraintCoverageResolver {
     }
     private List<MObject> receivers(ExternalOclConstraintService.DependencyVisitor.AttributeRead read,NativeRuntimeMutationEngine engine,MObject self) {
         if(read.directSelf()&&self.cls().isSubClassifierOf(read.attribute().owner()))return List.of(self);
+        if(engine.xmlCase()&&read.receiver() instanceof org.tzi.use.uml.ocl.expr.ExpVariable variable) {
+            // Only compiler-bound, direct allInstances iterators have a closed
+            // receiver range here. The caller separately requires population
+            // completeness and checks every selected object's accepted values.
+            // Arbitrary unbound variables/navigation keep the old fail-closed path.
+            for(var iterator:read.iterators().reversed())if(iterator.variable().equals(variable.getVarname())) {
+                if(iterator.range() instanceof org.tzi.use.uml.ocl.expr.ExpAllInstances population
+                        &&population.getSourceType() instanceof org.tzi.use.uml.mm.MClass type
+                        &&type.isSubClassifierOf(read.attribute().owner()))
+                    return engine.system().state().allObjects().stream().filter(o->o.cls().isSubClassifierOf(type)).toList();
+                break;
+            }
+        }
         if(legacyAuction(engine)||engine.xmlCase())try {
             var variables=new org.tzi.use.uml.ocl.value.VarBindings(engine.system().state());variables.push("self",self.value());
             var value=new org.tzi.use.uml.ocl.expr.Evaluator().eval(read.receiver(),engine.system().state(),variables);
@@ -184,7 +203,18 @@ public final class ConstraintCoverageResolver {
         return false; // Unknown source authority cannot certify an empty or complete population.
     }
     public boolean populationComplete(org.tzi.use.uml.mm.MClassifier cls,Map<String,Completeness> sources,NativeRuntimeMutationEngine engine) {
-        if(!populationComplete(cls,sources))return false;
+        if(engine!=null&&engine.xmlCase()&&cls.getAnnotation("DeclarativeObserverView")!=null
+                &&sources.get("cartago")==Completeness.COMPLETE) {
+            var objects=engine.system().state().allObjects().stream().filter(o->o.cls().isSubClassifierOf(cls)).toList();
+            if(!objects.isEmpty()&&objects.stream().allMatch(o->xmlObserverOwned(engine,o)
+                    &&"COMPLETE".equals(engine.metadata(o,"xml:observer:population"))
+                    &&engine.metadata(o,"xml:observer:population-proof").matches("[0-9a-f]{64}")
+                    &&engine.metadata(o,"xml:observer:cut").equals(engine.metadata(o,"xml:observer:population-cut"))))return true;
+        }
+        boolean organization=kind(cls,"OrgContext")||kind(cls,"RoleOccurrence");
+        boolean inventory=engine!=null&&engine.xmlCase()&&organization&&sources.get("cartago")==Completeness.COMPLETE
+                &&xmlInventoryComplete(cls,engine);
+        if(!populationComplete(cls,sources)&&!inventory)return false;
         if(engine!=null&&engine.xmlCase()&&(kind(cls,"DomainEntity")||kind(cls,"OrgContext")||kind(cls,"RoleOccurrence"))) {
             var objects=engine.system().state().allObjects().stream().filter(o->o.cls().isSubClassifierOf(cls)).toList();
             return !objects.isEmpty()&&objects.stream().allMatch(o->engine.canonicalProgramHash().equals(engine.metadata(o,"xml:m0:program"))&&"COMPLETE".equals(engine.metadata(o,"xml:m0:quality"))&&"COMPLETE".equals(engine.metadata(o,"xml:m0:population")));
@@ -192,6 +222,15 @@ public final class ConstraintCoverageResolver {
         if(engine==null||!legacyAuction(engine)||!kind(cls,"DomainEntity"))return true;
         var witnesses=engine.system().state().allObjects().stream().filter(o->o.cls().name().equals("WorkspaceObservation")).toList();
         return !witnesses.isEmpty()&&witnesses.stream().allMatch(o->"COMPLETE".equals(engine.metadata(o,"auctionDomainPopulationQuality")));
+    }
+    /** Source-derived current inventory certificates do not upgrade polling history. */
+    private static boolean xmlInventoryComplete(org.tzi.use.uml.mm.MClassifier cls,NativeRuntimeMutationEngine engine) {
+        var objects=engine.system().state().allObjects().stream().filter(o->o.cls().isSubClassifierOf(cls)).toList();
+        return !objects.isEmpty()&&objects.stream().allMatch(o->engine.canonicalProgramHash().equals(engine.metadata(o,"xml:m0:program"))
+                &&"COMPLETE".equals(engine.metadata(o,"xml:m0:quality"))&&"COMPLETE".equals(engine.metadata(o,"xml:m0:population"))
+                &&Set.of("CARTAGO_BOARD_INVENTORY_V1","CARTAGO_WORKSPACE_INVENTORY_V1").contains(engine.metadata(o,"xml:m0:population-authority"))
+                &&engine.metadata(o,"xml:m0:population-proof").matches("[0-9a-f]{64}")
+                &&!engine.metadata(o,"xml:m0:cut").isBlank()&&engine.metadata(o,"xml:m0:cut").equals(engine.metadata(o,"xml:m0:population-cut")));
     }
     private static boolean legacyAuction(NativeRuntimeMutationEngine engine){return engine!=null&&engine.auctionCase()&&!engine.xmlCase();}
     private static boolean xmlObserver(MObject object){return object.cls().getAnnotation("DeclarativeObserverView")!=null&&object.cls().getAnnotationValue(org.tzi.use.semantic.engine.use75.Use75CslModelBackend.HELPER,"kind").equals("EXTERNAL_OBSERVER_VIEW");}

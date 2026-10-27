@@ -142,3 +142,36 @@ fabric.properties
 **/.DS_Store
 *.class
 
+
+# Large raw evidence is retained locally; byte-identical archives and hashes are versioned.
+/use-plugin/verification/authored-models/P05-domain-live/run-11008457034790524280/journal.jsonl
+/use-plugin/verification/authored-models/P05-domain-live/run-11073759301262124587/journal.jsonl
+/use-plugin/verification/authored-models/P05-domain-live/run-14002787616073598449/journal.jsonl
+/use-plugin/verification/authored-models/P05-domain-live/run-17509646462451968466/journal.jsonl
+/use-plugin/verification/authored-models/P05-domain-live/run-18344734446272755788/journal.jsonl
+/use-plugin/verification/authored-models/P05-domain-live/run-3957139093490105316/journal.jsonl
+/use-plugin/verification/authored-models/P05-domain-live/run-4215184341396031378/journal.jsonl
+/use-plugin/verification/authored-models/P05-domain-live/run-7582090632816171549/journal.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-1318918411844911341/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-13306713286069295172/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-15010252319824213975/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-15752802744069049573/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-15776153419396678194/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-16979581976537853847/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-17898528769106887433/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-2908383629713395790/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-3611007452818476799/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-447052562902258023/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-590137034088971204/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-6060705434134040428/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-7770668494552311137/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-8033131740602364634/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-8496181343357604631/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-confirmed-15261341072478832565/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-confirmed-15675144874807787505/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-confirmed-16313755921666370249/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-confirmed-17172557725839686250/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-confirmed-17240177631336569024/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-confirmed-17386908519215525216/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-confirmed-2050077835659203769/replay/runtime.jsonl
+/use-plugin/verification/authored-models/P09-cold-installed/auction-confirmed-7529741196779809784/replay/runtime.jsonl

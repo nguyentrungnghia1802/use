@@ -8,6 +8,8 @@ import jason.asSyntax.*;
 import org.jacamo.bridge.adapter.*;
 import org.jacamo.bridge.contract.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNativePipeline;
 import org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector;
 import org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode;
@@ -17,24 +19,32 @@ import static org.junit.jupiter.api.Assertions.*;
 /** Exact source Jason plans with fixture-only action dispatch to actual CArtAgO.
  * No changed source/oracle, full MAS, external TCP or Task acceptance is claimed. */
 class AuctionDeclarativeArtifactTest {
-    @Test @Timeout(60) void exactSourceHandlesArgumentsAndCreationReceiptsDriveXmlArtifactState()throws Exception {
+    @ParameterizedTest(name="authored={0}") @ValueSource(booleans={false,true}) @Timeout(60)
+    void exactSourceHandlesArgumentsAndCreationReceiptsDriveXmlArtifactState(boolean authored)throws Exception {
         try(var f=new AuctionOrgFixture()) {
-            var live=f.live;f.organizationBoard();f.group();
-            var program=new GenericMappingEngine().map(live.source,AuctionDeclarativeSpecificationTest.inputs(AuctionDeclarativeSpecificationTest.CASE));
+            var live=f.live;f.organizationBoard();var group=f.group();
+            var root=AuctionDeclarativeSpecificationTest.CASE;var selected=root.resolve("authored-v1");
+            var inputs=authored?MappingInputs.read(root.resolve("auction.jcm"),selected.resolve("auction-mapping.xml"),selected.resolve("auction_constraints_final_fixed.ocl"),selected.resolve("auction_csl.csl"),selected.resolve("auction_istar_final.istar")):AuctionDeclarativeSpecificationTest.inputs(root);
+            var program=new GenericMappingEngine().map(live.source,inputs);
             var requests=program.xmlPlan().requirements();var discovery=requests.stream().filter(r->r.id().equals("workspace-operations")).findFirst().orElseThrow();
             var field=requests.stream().filter(r->r.id().equals("candidate-field")).findFirst().orElseThrow();
             var steps=requests.stream().filter(r->r.id().equals("execution-steps")).findFirst().orElseThrow();
             var context=new FrameworkObservationProviders.Context(live.environment,live.source,AuctionDeclarativeSpecificationTest.CASE.toRealPath(),live.run.id(),live.run.generation(),ignored->{},reason->fail(reason));
             var frames=new ArrayList<VerificationObservation>();int[] consumed={0};
             try(var history=new CartagoOperationHistory(discovery,context);var fields=new ArtifactFieldObservation(live.environment,live.source,field,AuctionDeclarativeSpecificationTest.CASE.toRealPath());
-                var driver=new SourceDriver(f,steps,frames)) {
+                var driver=new SourceDriver(f,steps,frames);
+                var capture=authored?new AuctionDeclarativeObserverTest.Capture(f,context,requests,history,frames):null) {
+                // The authored containment rule requires a qualified physical
+                // Scheme -> responsible Group receipt, not a workspace guess.
+                java.util.concurrent.Callable<RuntimeSnapshot> snapshot=()->capture==null?observed(f,frames,driver.identity,discovery,history,field,fields):capture.cut(frames,driver.identity,discovery,history,field,fields);
                 var first=f.scheme("xmlOne","delivery(city,date(15,12,2015))");var second=f.scheme("xmlTwo","service_two");
+                if(authored){live.actor.doAction(group,new Op("addScheme",first.getName()),5000);live.actor.doAction(group,new Op("addScheme",second.getName()),5000);}
                 driver.start(first,"xmlOne","delivery(city,date(15,12,2015))");driver.start(second,"xmlTwo","service_two");
-                assertEquals(8,frames.size());assertTrue(frames.stream().allMatch(o->o.quality()==Completeness.COMPLETE),frames.toString());
+                assertEquals(8,frames.stream().filter(o->o.kind()==VerificationObservation.Kind.JASON_STEP).count());assertTrue(frames.stream().allMatch(o->o.quality()==Completeness.COMPLETE),frames.toString());
                 while(consumed[0]<live.events.size())history.observe(live.events.get(consumed[0]++));
                 var built=new CodeGroundedNativePipeline().buildCanonicalProgram(live.source,NativeProjectionMode.AUTO,program);
                 try(var projector=new NativeRuntimeProjector(built,live.run.id(),live.run.generation(),live.source.modelRevision())) {
-                    var cut=observed(f,frames,driver.identity,discovery,history,field,fields);
+                    var cut=snapshot.call();
                     var futureArguments=copy(cut,cut.facts().stream().map(fact->{if(fact.kind()!=RuntimeFactKind.SCHEME_BOARD)return fact;
                         var values=new LinkedHashMap<>(fact.values());values.put("schemeArgumentObservationVersion","999");return new RuntimeFact(fact.id(),fact.kind(),values,fact.relations(),fact.projectionStatus(),fact.completeness(),fact.evidence());}).toList());
                     var sources=new org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources(program.xmlPlan().inputs().specification(),live.source,requests);
@@ -54,26 +64,26 @@ class AuctionDeclarativeArtifactTest {
                     assertEquals(2,system.state().allLinks().stream().filter(l->l.association().name().equals("CslEntityScopes")).count());
                     var artifact=live.artifacts.stream().filter(a->a.getName().equals("xmlOne")).findFirst().orElseThrow();
                     live.actor.doAction(artifact,new Op("bid",9.0),5000);live.actor.doAction(artifact,new Op("bid",12.0),5000);while(consumed[0]<live.events.size())history.observe(live.events.get(consumed[0]++));
-                    projector.applySnapshot(observed(f,frames,driver.identity,discovery,history,field,fields),live.run.id(),live.run.generation());
+                    projector.applySnapshot(snapshot.call(),live.run.id(),live.run.generation());
                     var one=auctions.stream().filter(o->o.state(system.state()).attributeValue("id").toString().equals("'xmlOne'")).findFirst().orElseThrow();
                     assertEquals("9.0",one.state(system.state()).attributeValue("best_bid").toString());
                     assertEquals("'"+live.actor.getName()+"'",one.state(system.state()).attributeValue("currentWinner").toString());
                     live.actor.doAction(artifact,new Op("stop"),5000);while(consumed[0]<live.events.size())history.observe(live.events.get(consumed[0]++));
-                    projector.applySnapshot(observed(f,frames,driver.identity,discovery,history,field,fields),live.run.id(),live.run.generation());
+                    projector.applySnapshot(snapshot.call(),live.run.id(),live.run.generation());
                     assertSame(system,projector.system());assertEquals("false",one.state(system.state()).attributeValue("running").toString());
                     assertEquals(one.state(system.state()).attributeValue("currentWinner"),one.state(system.state()).attributeValue("winner"));
-                    var known=observed(f,frames,driver.identity,discovery,history,field,fields);
+                    var known=snapshot.call();
                     var unavailable=copy(known,known.facts().stream().map(fact->{if(fact.kind()!=RuntimeFactKind.ARTIFACT||!"auction_env.AuctionArtifact".equals(fact.values().get("artifactTypeJavaClassName")))return fact;
                         var values=new LinkedHashMap<>(fact.values());values.remove(CapabilityObservation.KEY);return new RuntimeFact(fact.id(),fact.kind(),values,fact.relations(),fact.projectionStatus(),fact.completeness(),fact.evidence());}).toList());
                     projector.applySnapshot(unavailable,live.run.id(),live.run.generation());
                     for(String attribute:List.of("running","task","best_bid","winner","currentWinner"))assertTrue(one.state(system.state()).attributeValue(attribute).isUndefined(),"Missing coherent field evidence must invalidate "+attribute);
                     assertEquals("'xmlOne'",one.state(system.state()).attributeValue("id").toString());
-                    projector.applySnapshot(observed(f,frames,driver.identity,discovery,history,field,fields),live.run.id(),live.run.generation());
+                    projector.applySnapshot(snapshot.call(),live.run.id(),live.run.generation());
                     String previousName=one.name(),previousLifetime=projector.mutations().metadata(one,"xml:m0:lifetime");
                     int from=live.events.size();live.dispose(artifact);for(var event:List.copyOf(live.events.subList(from,live.events.size())))projector.apply(event);
                     assertEquals(1,system.state().allObjects().stream().filter(o->o.cls().name().equals("Auction")).count(),"Actual disposal, not missing enumeration, removes the old incarnation");
                     driver.start(first,"xmlOne","delivery(city,date(15,12,2015))");while(consumed[0]<live.events.size())history.observe(live.events.get(consumed[0]++));
-                    projector.applySnapshot(observed(f,frames,driver.identity,discovery,history,field,fields),live.run.id(),live.run.generation());
+                    projector.applySnapshot(snapshot.call(),live.run.id(),live.run.generation());
                     var recreated=system.state().allObjects().stream().filter(o->o.cls().name().equals("Auction")&&o.state(system.state()).attributeValue("id").toString().equals("'xmlOne'")).findFirst().orElseThrow();
                     assertNotEquals(previousName,recreated.name());assertNotEquals(previousLifetime,projector.mutations().metadata(recreated,"xml:m0:lifetime"));
                 }

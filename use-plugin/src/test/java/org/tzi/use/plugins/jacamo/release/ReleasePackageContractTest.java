@@ -126,6 +126,10 @@ class ReleasePackageContractTest {
         var caseManifest=new ObjectMapper().readTree(root.resolve("examples/auction/case-manifest.json").toFile());
         for(var asset:caseManifest.path("assets"))required.add("examples/auction-semantic/"+asset.path("path").asText());
         required.addAll(Set.of("examples/auction-semantic/case-manifest.json","examples/auction-semantic/README.md","examples/auction-semantic/auction-mapping.xml","provenance/P-IADM-01.md","provenance/P-IADM-01.diff","provenance/single-owner-context-v1.md"));
+        required.addAll(Set.of("examples/auction-semantic/authored-v1/auction_csl.csl","examples/auction-semantic/authored-v1/auction_istar_final.istar","examples/auction-semantic/authored-v1/auction_constraints_final_fixed.ocl","examples/auction-semantic/authored-v1/auction-mapping.xml","examples/auction-semantic/authored-v1/provenance.json","examples/auction-semantic/authored-v1/README.md","provenance/use4goal-view-provenance.json","licenses/use4Goal-views-GPL-3.0.txt","provenance/P-IADM-02.diff"));
+        required.addAll(Set.of("examples/csl-counter/authored-v1/stock.csl","examples/csl-counter/authored-v1/stock.istar","examples/csl-counter/authored-v1/stock.ocl","examples/csl-counter/authored-v1/stock-mapping.xml","examples/csl-counter/authored-v1/README.md"));
+        // The explicit confirmation profile ships separately; strict authored oracles stay unchanged.
+        required.addAll(Set.of("examples/auction-semantic/source-confirmed-v1/auction-mapping.xml","examples/auction-semantic/source-confirmed-v1/auction_confirmed.ocl","examples/auction-semantic/source-confirmed-v1/README.md"));
         assertEquals(required, declared);
         assertTrue(manifest.path("packageTrees").isMissingNode());
         assertEquals("authenticated-loopback-tcp",manifest.path("runtimeArchitecture").path("transport").asText());

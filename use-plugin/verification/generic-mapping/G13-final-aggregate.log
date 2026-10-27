@@ -1,0 +1,20 @@
+Traceback (most recent call last):
+  File "D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\tools\semantic-acceptance.py", line 513, in <module>
+    main()
+    ~~~~^^
+  File "D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\tools\semantic-acceptance.py", line 494, in main
+    result["auction"] = validate_auction(result, args.archive.resolve(), args.auction_evidence.resolve())
+                        ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\tools\semantic-acceptance.py", line 347, in validate_auction
+    live = {key: validate_auction_run(key, repository_path(value), archive_hash, pins, jars)
+                 ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\tools\semantic-acceptance.py", line 457, in validate_auction_run
+    require(sha(location.read_bytes()) == digest, "AUCTION_CONTROL_SOURCE_HASH:" + name)
+                ~~~~~~~~~~~~~~~~~~~^^
+  File "D:\DevTools\Python\Lib\pathlib\_abc.py", line 625, in read_bytes
+    with self.open(mode='rb') as f:
+         ~~~~~~~~~^^^^^^^^^^^
+  File "D:\DevTools\Python\Lib\pathlib\_local.py", line 537, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\generic-mapping\\G13-frozen-auction\\controlled\\fixture-control\\classes\\AuctionControlProducerMain$1.class'

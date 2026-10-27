@@ -1,0 +1,6 @@
+USE version 7.5.0, Copyright (C) 1999-2025 University of Bremen & University of Applied Sciences Hamburg
+java.lang.AssertionError: EDT p95 391.8145
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.check(InstalledAuctionMain.java:463)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.runLive(InstalledAuctionMain.java:184)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.run(InstalledAuctionMain.java:84)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.main(InstalledAuctionMain.java:22)

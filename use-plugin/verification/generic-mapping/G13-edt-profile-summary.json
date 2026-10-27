@@ -1,0 +1,31 @@
+{
+  "scope": "DIAGNOSTIC_EDT_STACK_SAMPLING_NOT_ACCEPTANCE",
+  "jfrSha256": "5ed639947cfa8fb7a3b8830cc346f254a805af6e254bcb16a66209dc374c75e2",
+  "edtSamples": 1264,
+  "inclusiveSamples": {
+    "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeBatch.apply": 740,
+    "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.capture": 625,
+    "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.artifactReferences": 405,
+    "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.steps": 250,
+    "org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot.estimatedBytes": 231,
+    "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.MoiseFactQualification.require": 184,
+    "org.tzi.use.plugins.jacamo.codegrounded.runtime.SnapshotRetention.complete": 112,
+    "org.tzi.use.plugins.jacamo.codegrounded.runtime.SnapshotRetention.validateCompletion": 107,
+    "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.clock": 90,
+    "org.tzi.use.plugins.jacamo.semantics.observer.SourceClock.fromCut": 87,
+    "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.clocks": 87,
+    "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.lambda$clock$23": 87,
+    "org.tzi.use.plugins.jacamo.codegrounded.runtime.SnapshotRetention.retain": 70,
+    "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.schemeCuts": 65,
+    "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.norms": 27,
+    "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.operationCuts": 11,
+    "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.publicSchemeBindings": 10,
+    "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.operationReferences": 5,
+    "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.lambda$steps$4": 3,
+    "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.lambda$clock$22": 1,
+    "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.fieldCuts": 1,
+    "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.lambda$publicSchemeBindings$21": 1,
+    "org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.lambda$operationCuts$7": 1
+  },
+  "note": "Overlapping inclusive stack samples, not disjoint elapsed-time percentages. Capture-local reuse still requires cold acceptance."
+}

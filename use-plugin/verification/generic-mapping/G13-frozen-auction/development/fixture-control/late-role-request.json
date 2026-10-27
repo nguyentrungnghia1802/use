@@ -1,0 +1,1 @@
+{"failedSourceGoals":["alice:bid[scheme(sch_a1),source(self)]","alice:bid[scheme(sch_a2),source(self)]","francois:bid[scheme(sch_a1),source(self)]","francois:bid[scheme(sch_a2),source(self)]","maria:bid[scheme(sch_a1),source(self)]","maria:bid[scheme(sch_a2),source(self)]"],"meaning":"actual first three players failed both bid goals before late role request"}

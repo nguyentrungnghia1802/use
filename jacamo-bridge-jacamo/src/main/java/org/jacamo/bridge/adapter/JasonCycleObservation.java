@@ -7,6 +7,14 @@ import jason.asSyntax.*;
 /** Called on the agent cycle thread. Polling code consumes this frozen copy, not live interpreter collections. */
 public final class JasonCycleObservation {
     private JasonCycleObservation(){}
+    /** Exact lexical iterator view for String belief attributes. Full literal
+     * text retains terms/annotations/rules; no duplicate recursive term tree. */
+    public static Map<String,Object> storedLiterals(Agent agent,String owner,long cycle) {
+        var beliefs=new ArrayList<Map<String,Object>>();boolean available=agent.getBB()!=null;
+        if(available)for(Literal literal:agent.getBB())beliefs.add(Map.of("raw",literal.toString(),"namespace",literal.getNS().toString(),"functor",literal.getFunctor(),"arity",literal.getArity(),"rule",literal instanceof Rule));
+        beliefs.sort(Comparator.comparing(b->b.get("raw").toString()));
+        return JasonStructuredTerms.immutable(Map.of("version","STORED_LITERALS/1.0","owner",owner,"cycle",cycle,"complete",available,"beliefBaseClass",available?agent.getBB().getClass().getName():"","beliefs",beliefs,"authority","AGENT_CYCLE_BB_ITERATOR"));
+    }
     public static Map<String,Object> mental(Agent agent,String owner,long cycle) {
         var beliefs=new ArrayList<Map<String,Object>>();boolean available=agent.getBB()!=null;
         if(available)for(Literal literal:agent.getBB())beliefs.add(JasonStructuredTerms.literal(literal));beliefs.sort(Comparator.comparing(b->b.get("raw").toString()));

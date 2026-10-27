@@ -63,9 +63,9 @@ public final class ObserverProjection {
             if(!node.children("lifecycle").isEmpty()) {
                 if(node.children("lifecycle").size()!=1)throw node.location().error("OBSERVER_LIFECYCLE_DUPLICATE");
                 Node policy=node.child("lifecycle"),request=specification.requireId(policy.attr("requestRef")),dataset=specification.requireId(table.attr("dataset"));
-                if(!policy.attr("kind").equals("NPL_REPORTED")||!request.name().equals("capability")||!request.attr("provider").equals("npl.lifecycle.v1")||!request.optional("hash").matches("[0-9a-f]{64}")
+                if(!Set.of("NPL_REPORTED","NPL_REPORTED_SOURCE_CONTINUOUS_V1").contains(policy.attr("kind"))||!request.name().equals("capability")||!request.attr("provider").equals("npl.lifecycle.v1")||!request.optional("hash").matches("[0-9a-f]{64}")
                         ||!dataset.name().equals("npl")||!dataset.attr("requestRef").equals(request.attr("id"))||!columns.contains(policy.attr("column")))throw policy.location().error("OBSERVER_NPL_LIFECYCLE_REQUIREMENT_OR_DATASET_INVALID");
-                lifecycle=new NplObserverHistory(policy.attr("column"),request.attr("id"),request.attr("hash"));
+                lifecycle=new NplObserverHistory(policy.attr("column"),request.attr("id"),request.attr("hash"),policy.attr("kind"));
             }
             compiled.add(new Project(node,view,type,List.copyOf(node.children("write")),List.copyOf(node.children("reference")),lifecycle,List.copyOf(derived)));
         }
@@ -101,10 +101,13 @@ public final class ObserverProjection {
                 if(!owns(port,object,project,epoch))throw new IllegalArgumentException("OBSERVER_EXISTING_OWNER_MISMATCH");
                 boolean complete=project(port,object,project,row,epoch,cut,run,generation);touched.add(object);
                 port.metadata(object,"xml:observer:population",table.populationQuality().name());port.metadata(object,"xml:observer:cut",cut);
+                port.metadata(object,"xml:observer:population-proof",table.populationQuality()==Completeness.COMPLETE?row.proofs().getOrDefault(MoisePopulationClosure.PROOF,""):"");
+                port.metadata(object,"xml:observer:population-cut",cut);
                 result.add(new M0RuleExecutor.Outcome(project.node().attr("id"),complete?"MAPPED":"INCOMPLETE",key,object,"OBSERVER_VIEW_NOT_CSL_ENTITY"));
             }
             for(var object:List.copyOf(port.objects()))if(owns(port,object,project,epoch)&&!touched.contains(object)) {
                 project(port,object,project,null,epoch,cut,run,generation);port.metadata(object,"xml:observer:population","UNAVAILABLE");
+                port.metadata(object,"xml:observer:population-proof","");
                 result.add(new M0RuleExecutor.Outcome(project.node().attr("id"),"INCOMPLETE",port.metadata(object,"xml:observer:key"),object,"OBSERVER_CURRENT_ROW_UNAVAILABLE"));
             }
         }

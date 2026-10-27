@@ -21,7 +21,7 @@ public final class SemanticProgramManifest {
         program.requireSourceHash(SemanticJson.hash(source));
         if(program.xmlPlan()!=null) {
             var inputs=program.xmlPlan().inputs();var body=new TreeMap<String,Object>();
-            body.put("schemaVersion","1.2.0");body.put("profile",SemanticJson.tree(program.profile()));body.put("source",source);body.put("rules",CanonicalJson.decode(program.rules().bytes()));
+            body.put("schemaVersion",inputs.authoredModels()?"1.3.0":"1.2.0");body.put("profile",SemanticJson.tree(program.profile()));body.put("source",source);body.put("rules",CanonicalJson.decode(program.rules().bytes()));
             body.put("programHash",program.hash());body.put("cslHash",program.cslHash());body.put("goalHash",program.goalHash());body.put("bindingHash",program.bindings().hash());body.put("traceHash",SemanticJson.hash(SemanticJson.tree(program.complement())));body.put("implementation",declarativeImplementation());
             body.put("declarative",Map.of("version","JACAMO_MAPPING_XML/2.0","location",inputs.specification().root().location().source(),"xml",SemanticJson.tree(inputs.xml()),"ocl",SemanticJson.tree(inputs.ocl()),"sources",SemanticJson.tree(inputs.sources().values())));
             return CanonicalJson.encode(body);
@@ -40,7 +40,7 @@ public final class SemanticProgramManifest {
     }
     public Decoded decode(byte[] bytes) {
         var body=CanonicalJson.object(CanonicalJson.decode(bytes));
-        if("1.2.0".equals(body.get("schemaVersion")))return decodeDeclarative(body);
+        if("1.2.0".equals(body.get("schemaVersion"))||"1.3.0".equals(body.get("schemaVersion")))return decodeDeclarative(body);
         if("1.1.0".equals(body.get("schemaVersion")))return decodeCase(body);
         if(!body.keySet().equals(FIELDS)||!"1.0.0".equals(body.get("schemaVersion")))throw new IllegalArgumentException("REPLAY_PROGRAM_SCHEMA_UNSUPPORTED");
         if(!SemanticJson.hash(implementation()).equals(SemanticJson.hash(body.get("implementation"))))throw new IllegalArgumentException("REPLAY_ENGINE_GRAMMAR_BACKEND_INCOMPATIBLE");
@@ -63,6 +63,7 @@ public final class SemanticProgramManifest {
         if(!xml.id().equals("mapping-specification")||!xml.format().equals("JACAMO_MAPPING_XML/2.0")||!ocl.id().equals("authored-ocl")||!ocl.format().equals("NATIVE_USE_OCL"))throw new IllegalArgumentException("REPLAY_DECLARATIVE_ASSET_TYPE");
         var sources=new LinkedHashMap<String,TraceComplement.Asset>();for(var row:rows){var value=asset(row);if(sources.putIfAbsent(value.id(),value)!=null)throw new IllegalArgumentException("REPLAY_DECLARATIVE_SOURCE_DUPLICATE");}
         var inputs=org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.fromFrozen(xml.bytes(),ocl.bytes(),sources,location);
+        if(inputs.authoredModels()!= "1.3.0".equals(body.get("schemaVersion")))throw new IllegalArgumentException("REPLAY_MODEL_INPUT_VERSION_MISMATCH");
         var source=ContractPayloads.model(CanonicalJson.object(body.get("source")));var program=new org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericMappingEngine().map(source,inputs);
         if(!program.profile().hash().equals(SemanticJson.hash(body.get("profile")))||!Arrays.equals(program.rules().bytes(),CanonicalJson.encode(body.get("rules")))
                 ||!program.hash().equals(body.get("programHash"))||!program.cslHash().equals(body.get("cslHash"))||!program.goalHash().equals(body.get("goalHash"))||!program.bindings().hash().equals(body.get("bindingHash"))||!SemanticJson.hash(SemanticJson.tree(program.complement())).equals(body.get("traceHash")))throw new IllegalArgumentException("REPLAY_DECLARATIVE_FINGERPRINT_MISMATCH");
@@ -70,13 +71,15 @@ public final class SemanticProgramManifest {
     }
     private static Map<String,Object> declarativeImplementation() {
         var result=new TreeMap<>(implementation());
-        for(String name:List.of("MappingInputs","MappingXmlReader","MappingSpecification","MappingVocabulary","GenericMappingEngine","GenericBindingPlan","SourceSelectors","SourceSelections","CslRuleExecutor","IStarRuleExecutor","CapabilityRequirements")) {
+        result.put("org.jacamo.bridge.contract.CartagoSourceCut",resource("/org/jacamo/bridge/contract/CartagoSourceCut.class"));
+        for(String name:List.of("MappingInputs","BridgeJcmDerivation","MappingXmlReader","MappingSpecification","MappingVocabulary","GenericMappingEngine","GenericBindingPlan","SourceSelectors","SourceSelections","CslRuleExecutor","IStarRuleExecutor","CapabilityRequirements","AuthoredModelLoader")) {
             String fqcn="org.tzi.use.plugins.jacamo.semantics.mapping.xml."+name;result.put(fqcn,resource("/"+fqcn.replace('.','/')+".class"));
         }
-        for(String name:List.of("RuntimeTables","RuntimeFactSources","RuntimeValueConverters","M0RuleExecutor","XmlRuntimeBatch","XmlRuntimeStateMapping","OccurrenceProjection","TaskDemandProjection","XmlTaskCheckpoints","RuntimeObservationCut","JasonStepCutDecoder","MoiseSchemeCutDecoder","ArtifactFieldCutDecoder","OperationHistoryCutDecoder","CartagoPhysicalReference","ObserverProjection","NativeObserverExpression","NplLifecycleCut","NplObserverHistory","MoiseFactQualification")) {
+        for(String name:List.of("RuntimeTables","RuntimeFactSources","RuntimeValueConverters","M0RuleExecutor","XmlRuntimeBatch","XmlRuntimeStateMapping","RoleBeliefProjection","OccurrenceProjection","TaskDemandProjection","XmlTaskCheckpoints","RuntimeObservationCut","JasonStepCutDecoder","MoiseSchemeCutDecoder","MoisePublicConfirmation","ArtifactFieldCutDecoder","OperationHistoryCutDecoder","CartagoPhysicalReference","ObserverProjection","NativeObserverExpression","NplLifecycleCut","NplObserverHistory","MoiseFactQualification","MoisePopulationClosure","SelectedObservationPlanner")) {
             String fqcn="org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime."+name;result.put(fqcn,resource("/"+fqcn.replace('.','/')+".class"));
         }
-        for(String name:List.of("org.tzi.use.plugins.jacamo.semantics.mapping.ocl.XmlTaskOclBindings","org.tzi.use.plugins.jacamo.semantics.mapping.ocl.XmlIntentionalOclBindings","org.tzi.use.plugins.jacamo.semantics.mapping.ocl.XmlNativePreparation","org.tzi.use.plugins.jacamo.semantics.mapping.ocl.XmlOperationBindings","org.tzi.use.plugins.jacamo.semantics.mapping.ocl.ObserverSchema","org.tzi.use.plugins.jacamo.semantics.mapping.ocl.CslScopeModelAdapter","org.tzi.use.plugins.jacamo.semantics.mapping.ocl.AuthoredOclSpecificationLoader","org.tzi.use.plugins.jacamo.semantics.runtime.OccurrenceGoalModelExpander","org.tzi.use.plugins.jacamo.semantics.runtime.SemanticResultAdapter","org.jacamo.bridge.contract.ObservationCapabilityRequest","org.jacamo.bridge.contract.CapabilityObservation","org.jacamo.bridge.contract.VerificationObservation"))result.put(name,resource("/"+name.replace('.','/')+".class"));
+        for(String name:List.of("org.tzi.use.plugins.jacamo.semantics.mapping.ocl.XmlTaskOclBindings","org.tzi.use.plugins.jacamo.semantics.mapping.ocl.XmlIntentionalOclBindings","org.tzi.use.plugins.jacamo.semantics.mapping.ocl.XmlNativePreparation","org.tzi.use.plugins.jacamo.semantics.mapping.ocl.XmlBindingPreflight","org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.JasonBeliefViews","org.tzi.use.plugins.jacamo.semantics.mapping.ocl.XmlOperationBindings","org.tzi.use.plugins.jacamo.semantics.mapping.ocl.ObserverSchema","org.tzi.use.plugins.jacamo.semantics.mapping.ocl.CslScopeModelAdapter","org.tzi.use.plugins.jacamo.semantics.mapping.ocl.AuthoredOclSpecificationLoader","org.tzi.use.plugins.jacamo.semantics.runtime.OccurrenceGoalModelExpander","org.tzi.use.plugins.jacamo.semantics.runtime.SemanticResultAdapter","org.jacamo.bridge.contract.ObservationCapabilityRequest","org.jacamo.bridge.contract.CapabilityObservation","org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService$DependencyVisitor","org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService$DependencyVisitor$AttributeRead","org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService$DependencyVisitor$IteratorRange","org.tzi.use.plugins.jacamo.semantics.ocl.ConstraintCoverageResolver","org.jacamo.bridge.contract.VerificationObservation"))result.put(name,resource("/"+name.replace('.','/')+".class"));
+        for(String name:List.of("org.tzi.use.plugins.jacamo.semantics.mapping.ocl.ObservationReadSet","org.jacamo.bridge.contract.ObservationCaptureScope","org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeCaptureScopeGuard"))result.put(name,resource("/"+name.replace('.','/')+".class"));
         return Collections.unmodifiableMap(result);
     }
     private Decoded decodeCase(Map<String,Object> body) {
@@ -122,7 +125,7 @@ public final class SemanticProgramManifest {
                 "org.vnu.sme.goal.dsl.iscn.goalmodelinstance.parser.GoalModelInstanceTranslator",
                 "org.tzi.use.semantic.engine.runtime.Use4GoalRuntimeSessionAdapter","org.tzi.use.semantic.engine.use75.Use75CslModelBackend",
                 "org.tzi.use.semantic.engine.use75.NativeOclBackend","org.tzi.use.semantic.engine.use75.Use75ModelPrinter",
-                "org.tzi.use.semantic.engine.api.EngineInstallationGuard","org.antlr.v4.runtime.RuntimeMetaData","org.antlr.v4.runtime.Parser",
+                "org.tzi.use.semantic.engine.api.EngineInstallationGuard","org.tzi.use.semantic.engine.api.RoleSpecialization","org.antlr.v4.runtime.RuntimeMetaData","org.antlr.v4.runtime.Parser",
                 "org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoStaticMappingAdapter","org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoRuntimeStateMapping",
                 "org.tzi.use.plugins.jacamo.semantics.mapping.CaseRuntimeMapping",
                 "org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoCslMappingRules","org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoGoalMappingRules",

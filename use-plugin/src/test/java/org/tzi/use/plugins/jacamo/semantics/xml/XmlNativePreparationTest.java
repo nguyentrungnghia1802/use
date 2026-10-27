@@ -11,7 +11,7 @@ import org.tzi.use.uml.ocl.expr.Evaluator;
 import org.tzi.use.uml.ocl.value.*;
 import org.tzi.use.uml.sys.MSystemState;
 import static org.junit.jupiter.api.Assertions.*;
-class XmlNativePreparationTest {
+public class XmlNativePreparationTest {
     @TempDir Path temp;
     private MappingInputs input(boolean operation)throws Exception {
         var fixture=new GenericMappingEngineTest();fixture.temp=temp;var original=fixture.input();
@@ -29,6 +29,11 @@ class XmlNativePreparationTest {
         return read();
     }
     private MappingInputs read(){return MappingInputs.read(GenericMappingEngineTest.JCM,temp.resolve("mapping.xml"),temp.resolve("requirements.ocl"));}
+    public static CodeGroundedNativePipeline.CanonicalBuildResult operationFixture(Path directory)throws Exception {
+        var fixture=new XmlNativePreparationTest();fixture.temp=Files.createDirectories(directory);
+        var source=GenericMappingEngineTest.official(GenericMappingEngineTest.JCM);
+        return new CodeGroundedNativePipeline().buildCanonicalProgram(source,NativeProjectionMode.AUTO,new GenericMappingEngine().map(source,fixture.input(true)));
+    }
     @Test void genericProgramBuildsOneNativeCandidateWithAuthoredInvariantAndGeneratedGoalCondition()throws Exception {
         var source=GenericMappingEngineTest.official(GenericMappingEngineTest.JCM);var program=new GenericMappingEngine().map(source,input(false));
         var built=new CodeGroundedNativePipeline().buildCanonicalProgram(source,NativeProjectionMode.AUTO,program);

@@ -25,7 +25,11 @@ public final class NativeRuntimeProjector implements AutoCloseable {
     }
     private final NativeRuntimeMutationEngine mutations;
     private final RuntimeVerificationCoordinator coordinator;
+    private final java.util.Set<RuntimeFactKind> xmlCartagoKinds;
+    private final java.util.Set<RuntimeFactKind> xmlCartagoPopulationKinds;
     private final java.util.concurrent.atomic.AtomicBoolean deliveryRevoked=new java.util.concurrent.atomic.AtomicBoolean();
+    private ObservationCaptureScope expectedCaptureScope;
+    private boolean selectiveCaptureActive;
     public void revokeDelivery(){deliveryRevoked.set(true);}
     private String sessionId, modelRevision, snapshotId = "";
     private long generation;
@@ -42,11 +46,11 @@ public final class NativeRuntimeProjector implements AutoCloseable {
     private final Map<String,RuntimeFact> auctionClockProofs=new LinkedHashMap<>();
     private record ProtocolState(String session, long generation, String snapshotId, EventLedger ledger,
             Map<String, Long> watermarks, Map<String, RuntimeFact> evidence,
-            Map<String, RuntimeAlias> aliases, List<NativeRuntimeTraceRecord> trace,List<RuntimeEvent> auctionDiscovery,Map<String,RuntimeFact> auctionClockProofs) { }
+            Map<String, RuntimeAlias> aliases, List<NativeRuntimeTraceRecord> trace,List<RuntimeEvent> auctionDiscovery,Map<String,RuntimeFact> auctionClockProofs,boolean selectiveCaptureActive) { }
 
     private ProtocolState saveProtocol() {
         return new ProtocolState(sessionId, generation, snapshotId, ledger, Map.copyOf(sourceWatermarks),
-                Map.copyOf(evidence), Map.copyOf(aliases), List.copyOf(trace),List.copyOf(auctionDiscovery),Map.copyOf(auctionClockProofs));
+                Map.copyOf(evidence), Map.copyOf(aliases), List.copyOf(trace),List.copyOf(auctionDiscovery),Map.copyOf(auctionClockProofs),selectiveCaptureActive);
     }
     private void restoreProtocol(ProtocolState state) {
         sessionId = state.session(); generation = state.generation(); snapshotId = state.snapshotId(); ledger = state.ledger();
@@ -55,6 +59,7 @@ public final class NativeRuntimeProjector implements AutoCloseable {
         trace.clear(); trace.addAll(state.trace()); resyncRequired = true;
         auctionDiscovery.clear();auctionDiscovery.addAll(state.auctionDiscovery());
         auctionClockProofs.clear();auctionClockProofs.putAll(state.auctionClockProofs());
+        selectiveCaptureActive=state.selectiveCaptureActive();
     }
 
     public NativeRuntimeProjector(CodeGroundedNativePipeline.Result pipeline, String session, long generation, String revision) {
@@ -67,6 +72,9 @@ public final class NativeRuntimeProjector implements AutoCloseable {
     public NativeRuntimeProjector(CodeGroundedNativePipeline.Result pipeline, String session, long generation,
             String revision, Path runtimeDirectory) {
         this(pipeline, session, generation, revision, new CodeGroundedRuntimeRuleRegistry(), runtimeDirectory);
+    }
+    public NativeRuntimeProjector(CodeGroundedNativePipeline.Result pipeline,String session,long generation,String revision,Path runtimeDirectory,long journalBytes) {
+        this(pipeline.state().system(),pipeline.state().semanticObjectIndex(),session,generation,revision,new CodeGroundedRuntimeRuleRegistry(),runtimeDirectory,null,journalBytes);
     }
     public NativeRuntimeProjector(CodeGroundedNativePipeline.Result pipeline, String session, long generation,
             String revision, CodeGroundedRuntimeRuleRegistry registry, Path runtimeDirectory) {
@@ -83,12 +91,19 @@ public final class NativeRuntimeProjector implements AutoCloseable {
     }
     public NativeRuntimeProjector(CodeGroundedNativePipeline.CanonicalBuildResult pipeline,String session,long generation,String revision) {
         this(pipeline.nativeResult().state().system(),pipeline.nativeResult().state().semanticObjectIndex(),session,generation,revision,new CodeGroundedRuntimeRuleRegistry(),null,pipeline.program());
+        installCaptureScope(pipeline);
     }
     public NativeRuntimeProjector(CodeGroundedNativePipeline.CanonicalBuildResult pipeline,String session,long generation,String revision,Path directory) {
         this(pipeline.nativeResult().state().system(),pipeline.nativeResult().state().semanticObjectIndex(),session,generation,revision,new CodeGroundedRuntimeRuleRegistry(),directory,pipeline.program());
+        installCaptureScope(pipeline);
     }
-    NativeRuntimeProjector(CodeGroundedNativePipeline.CanonicalBuildResult pipeline,String session,long generation,String revision,Path directory,long journalBytes) {
+    public NativeRuntimeProjector(CodeGroundedNativePipeline.CanonicalBuildResult pipeline,String session,long generation,String revision,Path directory,long journalBytes) {
         this(pipeline.nativeResult().state().system(),pipeline.nativeResult().state().semanticObjectIndex(),session,generation,revision,new CodeGroundedRuntimeRuleRegistry(),directory,pipeline.program(),journalBytes);
+        installCaptureScope(pipeline);
+    }
+    private void installCaptureScope(CodeGroundedNativePipeline.CanonicalBuildResult pipeline) {
+        if(pipeline.xmlPreparation()!=null&&pipeline.xmlPreparation().preflight().get("captureScope") instanceof Map<?,?> scope)
+            expectedCaptureScope=ObservationCaptureScope.fromMap(CanonicalJson.object(scope));
     }
     private NativeRuntimeProjector(MSystem system,NativeObjectBindings index,String session,long generation,String revision,
             CodeGroundedRuntimeRuleRegistry registry,Path runtimeDirectory,org.tzi.use.plugins.jacamo.semantics.mapping.SemanticProgram program) {
@@ -100,6 +115,8 @@ public final class NativeRuntimeProjector implements AutoCloseable {
             throw new IllegalArgumentException("NATIVE_RUNTIME_IDENTITY_REQUIRED");
         this.sessionId = session; this.generation = generation; this.modelRevision = revision;
         mutations = new NativeRuntimeMutationEngine(system, index, registry,program);
+        xmlCartagoKinds=program!=null&&program.xmlPlan()!=null?org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.queryCartagoKinds(program.xmlPlan().inputs().specification()):java.util.Set.of(RuntimeFactKind.values());
+        xmlCartagoPopulationKinds=program!=null&&program.xmlPlan()!=null?org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.producerCartagoKinds(program.xmlPlan().inputs().specification()):java.util.Set.of(RuntimeFactKind.values());
         coordinator = new RuntimeVerificationCoordinator(mutations, session, generation, revision,
                 runtimeDirectory==null?RuntimeVerificationCoordinator.createEphemeralDirectory(RuntimeVerificationCoordinator.defaultRuntimeRoot()):runtimeDirectory,
                 512, journalBytes, true);
@@ -137,6 +154,8 @@ public final class NativeRuntimeProjector implements AutoCloseable {
             if (session == null || session.isBlank() || nextGeneration < 0 || sessionId.equals(session) && nextGeneration < generation)
                 throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_SNAPSHOT_IDENTITY_STALE");
             boolean sameEpoch=sessionId.equals(session) && generation==nextGeneration;
+            boolean scoped=NativeCaptureScopeGuard.snapshot(snapshot,expectedCaptureScope,sameEpoch&&selectiveCaptureActive);
+            selectiveCaptureActive=scoped||sameEpoch&&selectiveCaptureActive;
             if(!sameEpoch){auctionDiscovery.clear();auctionClockProofs.clear();}
             boolean repeatedCut=mutations.canonicalMappingConfigured()&&!snapshotId.isBlank()&&sameEpoch
                     &&sourceWatermarks.equals(snapshot.endWatermarks().entrySet().stream().collect(java.util.stream.Collectors.toMap(Map.Entry::getKey,e->e.getValue().sequence())));
@@ -196,8 +215,10 @@ public final class NativeRuntimeProjector implements AutoCloseable {
     public boolean apply(RuntimeEvent event) {
         return coordinator.read(() -> {
             if(deliveryRevoked.get())return false;
+            boolean scopedEvent;
             try {
                 requireIdentity(event);
+                scopedEvent=NativeCaptureScopeGuard.event(event,expectedCaptureScope,selectiveCaptureActive);
                 if(org.jacamo.bridge.contract.VerificationObservation.present(event))try {var observation=org.jacamo.bridge.contract.VerificationObservation.require(event);mutations.validateVerificationObservation(observation,event.sessionId(),event.generation(),event.modelRevision());}
                 catch(org.jacamo.bridge.contract.ContractException invalid){throw new NativeRuntimeProtocolException(invalid.getMessage(),invalid);}
                 if(mutations.auctionCase()&&!mutations.xmlCase())org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionObservationCut.validateClockContinuation(auctionClockProofs,event);
@@ -225,12 +246,18 @@ public final class NativeRuntimeProjector implements AutoCloseable {
             String kind=boundary?"STREAM_BOUNDARY":coordinator.operationKind(event);
             boolean materialized = coordinator.transaction(kind, event.eventId(), event.sourceId(), event.sourceSequence(),
                     event.observedAt(), ContractPayloads.event(event), !kind.equals("EVENT"), () -> {
+                selectiveCaptureActive=scopedEvent||selectiveCaptureActive;
                 if(boundary) {
                     sourceWatermarks.put(event.sourceId(),event.sourceSequence());
                     return new RuntimeVerificationCoordinator.Mutation<>(false,false);
                 }
+                boolean xmlMappingRequired=false;
                 if(mutations.xmlCase()) {
-                    var advanced=RuntimeObservationCut.advance(evidence,event);evidence.clear();evidence.putAll(advanced);
+                    var advanced=RuntimeObservationCut.advance(evidence,event);
+                    if(CartagoSourceCut.KIND.equals(event.after().get("normalizedEventKind")))
+                        coordinator.observedCartagoPopulation(CartagoSourceCut.require(event),xmlCartagoPopulationKinds);
+                    xmlMappingRequired=RuntimeObservationCut.requiresMapping(evidence,advanced,event,sourceWatermarks.getOrDefault(event.sourceId(),-1L),coordinator.admittedSourceCoverage().getOrDefault(event.sourceId(),Completeness.UNAVAILABLE));
+                    evidence.clear();evidence.putAll(advanced);
                     if(VerificationObservation.present(event)&&SourceClock.qualified(VerificationObservation.require(event)))auctionClockProofs.put(event.entityId().canonical(),evidence.get(event.entityId().canonical()));
                 } else if(mutations.auctionCase()) {
                     var advanced=org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionObservationCut.advance(evidence,auctionDiscovery,event);
@@ -244,9 +271,9 @@ public final class NativeRuntimeProjector implements AutoCloseable {
                     resyncRequired = true;
                     throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_MUTATION_REJECTED:" + result.diagnostic());
                 }
-                var xmlCut=mutations.xmlCase()?RuntimeObservationCut.eventCut(evidence,sourceWatermarks,coordinator.admittedSourceCoverage(),event):null;
+                var xmlCut=mutations.xmlCase()&&xmlMappingRequired?RuntimeObservationCut.eventCut(evidence,sourceWatermarks,coordinator.admittedSourceCoverage(),event,xmlCartagoKinds):null;
                 var caseApplied=xmlCut!=null?mutations.applyAuctionCut(xmlCut,sessionId,generation,List.of(),event)
-                    :mutations.auctionCase()&&org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionObservationCut.relevant(event)?mutations.applyAuctionCut(org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionObservationCut.eventCut(evidence,sourceWatermarks,event),sessionId,generation,auctionDiscovery,event):List.<NativeRuntimeMutationEngine.ApplyResult>of();
+                    :!mutations.xmlCase()&&mutations.auctionCase()&&org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionObservationCut.relevant(event)?mutations.applyAuctionCut(org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionObservationCut.eventCut(evidence,sourceWatermarks,event),sessionId,generation,auctionDiscovery,event):List.<NativeRuntimeMutationEngine.ApplyResult>of();
                 if(!kind.equals("EVENT") || event.subsystem().equals("cartago")) coordinator.operationCheckpoint(event,
                         xmlCut!=null?xmlCut:mutations.auctionCase()&&VerificationObservation.present(event)&&VerificationObservation.require(event).kind()==VerificationObservation.Kind.JASON_STEP
                                 ?org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionObservationCut.eventCut(evidence,sourceWatermarks,event):null);

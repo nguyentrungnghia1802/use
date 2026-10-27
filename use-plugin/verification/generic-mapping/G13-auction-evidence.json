@@ -1,0 +1,8 @@
+{
+  "archiveSha256": "7401e604b021945fa3c0d593786f20faee9e82dfeae222af07a10beb5c14e960",
+  "runs": {
+    "canonical": "use-plugin/verification/generic-mapping/G13-frozen-auction/canonical",
+    "controlled": "use-plugin/verification/generic-mapping/G13-frozen-auction/controlled",
+    "development": "use-plugin/verification/generic-mapping/G13-frozen-auction/development"
+  }
+}

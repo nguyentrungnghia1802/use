@@ -1,0 +1,510 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] use                                                                [pom]
+[INFO] JaCaMo Bridge Neutral Contract                                     [jar]
+[INFO] JaCaMo Bridge Official Adapters                                    [jar]
+[INFO] use-core                                                           [jar]
+[INFO] USE semantic engine � selected use4Goal core                       [jar]
+[INFO] use-gui                                                            [jar]
+[INFO] USE JaCaMo Plugin                                                  [jar]
+[INFO] 
+[INFO] --------------------------< org.tzi.use:use >---------------------------
+[INFO] Building use 7.5.0                                                 [1/7]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] -----------------< org.tzi.use:jacamo-bridge-contract >-----------------
+[INFO] Building JaCaMo Bridge Neutral Contract 1.0.0-SNAPSHOT             [2/7]
+[INFO]   from jacamo-bridge-contract\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ jacamo-bridge-contract ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ jacamo-bridge-contract ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ jacamo-bridge-contract ---
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-contract\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ jacamo-bridge-contract ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ jacamo-bridge-contract ---
+[INFO] 
+[INFO] ------------------< org.tzi.use:jacamo-bridge-jacamo >------------------
+[INFO] Building JaCaMo Bridge Official Adapters 1.0.0-SNAPSHOT            [3/7]
+[INFO]   from jacamo-bridge-jacamo\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ jacamo-bridge-jacamo ---
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-jacamo\src\main\resources
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ jacamo-bridge-jacamo ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ jacamo-bridge-jacamo ---
+[INFO] skip non existing resourceDirectory D:\_CODE_BANK\Project_\08_Thesis\use\jacamo-bridge-jacamo\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ jacamo-bridge-jacamo ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ jacamo-bridge-jacamo ---
+[INFO] 
+[INFO] ------------------------< org.tzi.use:use-core >------------------------
+[INFO] Building use-core 7.5.0                                            [4/7]
+[INFO]   from use-core\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- merge:1.2.0:merge (merge-grammar-files) @ use-core ---
+[INFO] 
+[INFO] --- antlr3:3.5.3:antlr (antlr) @ use-core ---
+[INFO] ANTLR: Processing source directory D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\grammars
+[INFO] 
+[INFO] --- copy-rename:1.0:rename (move-antlr-parser-use) @ use-core ---
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\USELexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\use\USELexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\USEParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\use\USEParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\GeneratorLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\generator\GeneratorLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\GeneratorParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\generator\GeneratorParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\OCLLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\ocl\OCLLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\OCLParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\ocl\OCLParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\ShellCommandLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\shell\ShellCommandLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\ShellCommandParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\shell\ShellCommandParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\SoilLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\soil\SoilLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\SoilParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\soil\SoilParser.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\TestSuiteLexer.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\testsuite\TestSuiteLexer.java
+[INFO] Renamed D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\TestSuiteParser.java to D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3\org\tzi\use\parser\testsuite\TestSuiteParser.java
+[INFO] 
+[INFO] --- build-helper:3.6.0:add-source (add-antlr3-generated-source) @ use-core ---
+[INFO] Source directory: D:\_CODE_BANK\Project_\08_Thesis\use\use-core\target\generated-sources\antlr3 added.
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-core ---
+[INFO] Copying 512 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- build-helper:3.6.0:add-test-source (add-test-source) @ use-core ---
+[INFO] Test Source directory: D:\_CODE_BANK\Project_\08_Thesis\use\use-core\src\it\java added.
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-core ---
+[WARNING] *********************************************************************************************************************************************************************************************
+[WARNING] * Required filename-based automodules detected: [antlr-runtime-3.5.3.jar, combinatoricslib-2.3.jar, vtd-xml-2.13.4.jar]. Please don't publish this project to a public artifact repository! *
+[WARNING] *********************************************************************************************************************************************************************************************
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 570 source files with javac [debug target 21 module-path] to target\classes
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-core/src/main/java/org/tzi/use/uml/ocl/type/MessageType.java: Some input files use or override a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-core/src/main/java/org/tzi/use/uml/ocl/type/MessageType.java: Recompile with -Xlint:deprecation for details.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-core/target/generated-sources/antlr3/org/tzi/use/parser/generator/GeneratorParser.java: Some input files use unchecked or unsafe operations.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-core/target/generated-sources/antlr3/org/tzi/use/parser/generator/GeneratorParser.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-core ---
+[INFO] Copying 91 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-core ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 53 source files with javac [debug target 21 module-path] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-core ---
+[INFO] 
+[INFO] ---------------< org.tzi.use:use-jacamo-semantic-engine >---------------
+[INFO] Building USE semantic engine � selected use4Goal core 7.5.0        [5/7]
+[INFO]   from use-jacamo-semantic-engine\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- antlr4:4.9.3:antlr4 (generate-selected-original-grammars) @ use-jacamo-semantic-engine ---
+[INFO] No grammars to process
+[INFO] ANTLR 4: Processing source directory D:\_CODE_BANK\Project_\08_Thesis\use\use-jacamo-semantic-engine\src\main\resources\grammars
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-jacamo-semantic-engine ---
+[INFO] Copying 4 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-jacamo-semantic-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 165 source files with javac [debug release 21] to target\classes
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/dsl/csl/mm/CslModel.java: Some input files use or override a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/dsl/csl/mm/CslModel.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-jacamo-semantic-engine ---
+[INFO] Copying 4 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-jacamo-semantic-engine ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 11 source files with javac [debug release 21] to target\test-classes
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-jacamo-semantic-engine/src/test/java/org/tzi/use/semantic/engine/EngineInstallationGuardTest.java: D:\_CODE_BANK\Project_\08_Thesis\use\use-jacamo-semantic-engine\src\test\java\org\tzi\use\semantic\engine\EngineInstallationGuardTest.java uses or overrides a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-jacamo-semantic-engine/src/test/java/org/tzi/use/semantic/engine/EngineInstallationGuardTest.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-jacamo-semantic-engine ---
+[INFO] 
+[INFO] ------------------------< org.tzi.use:use-gui >-------------------------
+[INFO] Building use-gui 7.5.0                                             [6/7]
+[INFO]   from use-gui\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-gui ---
+[INFO] Copying 56 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- build-helper:1.5:add-test-source (add-test-source) @ use-gui ---
+[INFO] Test Source directory: D:\_CODE_BANK\Project_\08_Thesis\use\use-gui\src\it\java added.
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-gui ---
+[WARNING] ******************************************************************************************************************************************************************************************************************************************
+[WARNING] * Required filename-based automodules detected: [antlr-runtime-3.5.3.jar, combinatoricslib-2.3.jar, annotations-13.0.jar, itextpdf-5.5.13.3.jar, vtd-xml-2.13.4.jar]. Please don't publish this project to a public artifact repository! *
+[WARNING] ******************************************************************************************************************************************************************************************************************************************
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 307 source files with javac [debug target 21 module-path] to target\classes
+[WARNING] /D:/_CODE_BANK/Project_/08_Thesis/use/use-gui/src/main/java/org/tzi/use/gui/views/diagrams/util/MenuScroller.java:[435,15] finalize() in java.lang.Object has been deprecated and marked for removal
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-gui/src/main/java/org/tzi/use/runtime/gui/impl/PluginActionProxy.java: Some input files use or override a deprecated API.
+[INFO] /D:/_CODE_BANK/Project_/08_Thesis/use/use-gui/src/main/java/org/tzi/use/runtime/gui/impl/PluginActionProxy.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- build-helper:1.5:add-test-resource (add-test-resource) @ use-gui ---
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ use-gui ---
+[INFO] Copying 1 resource from src\test\resources to target\test-classes
+[INFO] Copying 297 resources from src\it\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ use-gui ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 9 source files with javac [debug target 21 module-path] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ use-gui ---
+[INFO] 
+[INFO] -----------------------< org.tzi.use:use-plugin >-----------------------
+[INFO] Building USE JaCaMo Plugin 1.0.1                                   [7/7]
+[INFO]   from use-plugin\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ use-plugin ---
+[INFO] Copying 1 resource from src\main\version-manifest to target\classes
+[INFO] Copying 13 resources from src\main\resources to target\classes
+[INFO] Copying 2 resources from src\main\resources\org\tzi\use\plugins\jacamo\ocl to target\classes\org\tzi\use\plugins\jacamo\historical\version-1\ocl
+[INFO] Copying 3 resources from src\main\resources\org\tzi\use\plugins\jacamo\runtime to target\classes\org\tzi\use\plugins\jacamo\historical\version-1\runtime
+[INFO] Copying 1 resource from src\main\resources\org\tzi\use\plugins\jacamo\verification to target\classes\org\tzi\use\plugins\jacamo\historical\version-1\verification
+[INFO] Copying 1 resource from Core\Metamodel\version-1 to target\classes\org\tzi\use\plugins\jacamo\historical\version-1
+[INFO] Copying 3 resources from Core\Mapping\version-1 to target\classes\org\tzi\use\plugins\jacamo\historical\version-1
+[INFO] Copying 1 resource from Core\Metamodel\csl-monitor-v1 to target\classes\org\tzi\use\plugins\jacamo\semantics\metamodel
+[INFO] Copying 1 resource from Core\Metamodel\jacamo-source-v2 to target\classes\org\tzi\use\plugins\jacamo\semantics\metamodel
+[INFO] Copying 1 resource from Core\Metamodel\version-2 to target\classes\org\tzi\use\plugins\jacamo\canonical\version-2
+[INFO] Copying 2 resources from Core\Mapping\version-2 to target\classes\org\tzi\use\plugins\jacamo\canonical\version-2
+[INFO] Copying 2 resources from release to target\classes\org\tzi\use\plugins\jacamo\release
+[INFO] Copying 1 resource from  to target\classes\org\tzi\use\plugins\jacamo\release
+[INFO] Copying 3 resources from licenses to target\classes\org\tzi\use\plugins\jacamo\release\licenses
+[INFO] The encoding used to copy filtered properties files have not been set. This means that the same encoding will be used to copy filtered properties files as when copying other filtered resources. This might not be what you want! Run your build with --debug to see which files might be affected. Read more at https://maven.apache.org/plugins/maven-resources-plugin/examples/filtering-properties-files.html
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ use-plugin ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 357 source files with javac [debug target 21] to target\classes
+[INFO] Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[45,24] package org.tzi.use.main does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[46,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[51,30] cannot find symbol
+  symbol:   class Session
+  location: class org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[57,19] cannot find symbol
+  symbol:   class Session
+  location: class org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[61,22] cannot find symbol
+  symbol:   class MSystem
+  location: class org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[65,29] package org.tzi.use.main does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeReplayStepController.java:[10,24] package org.tzi.use.main does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeReplayStepController.java:[11,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[92,47] cannot find symbol
+  symbol:   class Session
+  location: class org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[132,32] cannot find symbol
+  symbol:   class Session
+  location: class org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[148,63] cannot find symbol
+  symbol:   class Session
+  location: class org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[157,5] cannot find symbol
+  symbol:   class MSystem
+  location: class org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/JaCaMoOclContractMapping.java:[10,32] package org.tzi.use.uml.ocl.type does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/AuthoredOclSpecificationLoader.java:[8,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/AuthoredOclSpecificationLoader.java:[9,26] package org.tzi.use.parser does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/AuthoredOclSpecificationLoader.java:[15,32] package org.tzi.use.uml.ocl.expr does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/AuthoredOclSpecificationLoader.java:[16,32] package org.tzi.use.uml.ocl.expr does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/XmlNativePreparation.java:[4,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/ObserverSchema.java:[8,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/XmlOperationBindings.java:[15,120] cannot find symbol
+  symbol:   class MOperation
+  location: class org.tzi.use.plugins.jacamo.semantics.mapping.ocl.XmlOperationBindings.Operation
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionOclBindings.java:[15,120] cannot find symbol
+  symbol:   class MOperation
+  location: class org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionOclBindings.Operation
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseModelBuilder.java:[6,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseModelBuilder.java:[7,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseModelBuilder.java:[11,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/DomainProjection.java:[13,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/DomainProjection.java:[14,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/DomainProjection.java:[18,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/DomainProjection.java:[19,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/DomainProjection.java:[20,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseStateBuilder.java:[7,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseStateBuilder.java:[8,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseStateBuilder.java:[11,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseExporter.java:[11,30] package org.tzi.use.parser.use does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseExporter.java:[12,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseExporter.java:[13,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseExporter.java:[14,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseExporter.java:[54,42] cannot find symbol
+  symbol:   class MModel
+  location: class org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseExporter.Result
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseStateBuilder.java:[257,26] cannot find symbol
+  symbol:   class MSystem
+  location: class org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseStateBuilder.Result
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/trace/NativeObjectBindings.java:[5,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/trace/NativeObjectBindings.java:[6,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/trace/NativeObjectBindings.java:[9,68] cannot find symbol
+  symbol: class MObject
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseModelBuilder.java:[235,26] cannot find symbol
+  symbol:   class MModel
+  location: class org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseModelBuilder.Result
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/MoiseDomainProjection.java:[7,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/MoiseDomainProjection.java:[8,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/MoiseDomainProjection.java:[9,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/MoiseDomainProjection.java:[10,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/MoiseDomainProjection.java:[11,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/MoiseDomainProjection.java:[16,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[23,37] package org.tzi.use.analysis.coverage does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[24,26] package org.tzi.use.parser does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[25,36] package org.tzi.use.parser.generator does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[26,36] package org.tzi.use.parser.generator does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[28,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[29,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[30,32] package org.tzi.use.uml.ocl.expr does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[31,32] package org.tzi.use.uml.ocl.expr does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[32,32] package org.tzi.use.uml.ocl.expr does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[33,32] package org.tzi.use.uml.ocl.expr does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[34,32] package org.tzi.use.uml.ocl.expr does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[35,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[36,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[37,34] package org.tzi.use.uml.sys.events does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[38,34] package org.tzi.use.uml.sys.events does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[39,39] package org.tzi.use.uml.sys.events.tags does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/GoalViewSnapshot.java:[6,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/GoalViewSnapshot.java:[7,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[650,53] cannot find symbol
+  symbol:   class MSystem
+  location: class org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeReanalysis.java:[17,30] package org.tzi.use.parser.use does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeReanalysis.java:[20,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeProjector.java:[14,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[1158,13] cannot find symbol
+  symbol:   class MSystem
+  location: class org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[18,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[19,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[20,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[26,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[27,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[28,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[29,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[30,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[31,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[32,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[33,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[34,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[35,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[36,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java:[21,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java:[22,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java:[23,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java:[24,34] package org.tzi.use.uml.sys.events does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java:[25,29] package org.tzi.use.util.soil does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeProjector.java:[76,35] cannot find symbol
+  symbol:   class MSystem
+  location: class org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeProjector.java:[80,35] cannot find symbol
+  symbol:   class MSystem
+  location: class org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeProjector.java:[93,36] cannot find symbol
+  symbol:   class MSystem
+  location: class org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeProjector.java:[97,36] cannot find symbol
+  symbol:   class MSystem
+  location: class org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeProjector.java:[108,12] cannot find symbol
+  symbol:   class MSystem
+  location: class org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/SemanticRuntimeVerifier.java:[13,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/SemanticRuntimeVerifier.java:[14,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/RuntimeEngineSessionOwner.java:[20,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java:[220,51] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java:[281,12] cannot find symbol
+  symbol:   class MSystem
+  location: class org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationCoordinator
+[INFO] 100 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] use 7.5.0 .......................................... SUCCESS [  0.003 s]
+[INFO] JaCaMo Bridge Neutral Contract 1.0.0-SNAPSHOT ...... SUCCESS [  0.829 s]
+[INFO] JaCaMo Bridge Official Adapters 1.0.0-SNAPSHOT ..... SUCCESS [  0.724 s]
+[INFO] use-core 7.5.0 ..................................... SUCCESS [ 16.669 s]
+[INFO] USE semantic engine � selected use4Goal core 7.5.0 . SUCCESS [  4.156 s]
+[INFO] use-gui 7.5.0 ...................................... SUCCESS [ 13.890 s]
+[INFO] USE JaCaMo Plugin 1.0.1 ............................ FAILURE [  6.182 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  42.577 s
+[INFO] Finished at: 2026-10-23T16:23:07+07:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.15.0:compile (default-compile) on project use-plugin: Compilation failure: Compilation failure: 
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[45,24] package org.tzi.use.main does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[46,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[51,30] cannot find symbol
+[ERROR]   symbol:   class Session
+[ERROR]   location: class org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[57,19] cannot find symbol
+[ERROR]   symbol:   class Session
+[ERROR]   location: class org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[61,22] cannot find symbol
+[ERROR]   symbol:   class MSystem
+[ERROR]   location: class org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[65,29] package org.tzi.use.main does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeReplayStepController.java:[10,24] package org.tzi.use.main does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeReplayStepController.java:[11,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[92,47] cannot find symbol
+[ERROR]   symbol:   class Session
+[ERROR]   location: class org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[132,32] cannot find symbol
+[ERROR]   symbol:   class Session
+[ERROR]   location: class org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[148,63] cannot find symbol
+[ERROR]   symbol:   class Session
+[ERROR]   location: class org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[157,5] cannot find symbol
+[ERROR]   symbol:   class MSystem
+[ERROR]   location: class org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/JaCaMoOclContractMapping.java:[10,32] package org.tzi.use.uml.ocl.type does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/AuthoredOclSpecificationLoader.java:[8,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/AuthoredOclSpecificationLoader.java:[9,26] package org.tzi.use.parser does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/AuthoredOclSpecificationLoader.java:[15,32] package org.tzi.use.uml.ocl.expr does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/AuthoredOclSpecificationLoader.java:[16,32] package org.tzi.use.uml.ocl.expr does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/XmlNativePreparation.java:[4,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/ObserverSchema.java:[8,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/XmlOperationBindings.java:[15,120] cannot find symbol
+[ERROR]   symbol:   class MOperation
+[ERROR]   location: class org.tzi.use.plugins.jacamo.semantics.mapping.ocl.XmlOperationBindings.Operation
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionOclBindings.java:[15,120] cannot find symbol
+[ERROR]   symbol:   class MOperation
+[ERROR]   location: class org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionOclBindings.Operation
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseModelBuilder.java:[6,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseModelBuilder.java:[7,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseModelBuilder.java:[11,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/DomainProjection.java:[13,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/DomainProjection.java:[14,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/DomainProjection.java:[18,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/DomainProjection.java:[19,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/DomainProjection.java:[20,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseStateBuilder.java:[7,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseStateBuilder.java:[8,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseStateBuilder.java:[11,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseExporter.java:[11,30] package org.tzi.use.parser.use does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseExporter.java:[12,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseExporter.java:[13,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseExporter.java:[14,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseExporter.java:[54,42] cannot find symbol
+[ERROR]   symbol:   class MModel
+[ERROR]   location: class org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseExporter.Result
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseStateBuilder.java:[257,26] cannot find symbol
+[ERROR]   symbol:   class MSystem
+[ERROR]   location: class org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseStateBuilder.Result
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/trace/NativeObjectBindings.java:[5,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/trace/NativeObjectBindings.java:[6,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/trace/NativeObjectBindings.java:[9,68] cannot find symbol
+[ERROR]   symbol: class MObject
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/NativeUseModelBuilder.java:[235,26] cannot find symbol
+[ERROR]   symbol:   class MModel
+[ERROR]   location: class org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseModelBuilder.Result
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/MoiseDomainProjection.java:[7,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/MoiseDomainProjection.java:[8,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/MoiseDomainProjection.java:[9,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/MoiseDomainProjection.java:[10,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/MoiseDomainProjection.java:[11,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/use/MoiseDomainProjection.java:[16,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[23,37] package org.tzi.use.analysis.coverage does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[24,26] package org.tzi.use.parser does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[25,36] package org.tzi.use.parser.generator does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[26,36] package org.tzi.use.parser.generator does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[28,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[29,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[30,32] package org.tzi.use.uml.ocl.expr does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[31,32] package org.tzi.use.uml.ocl.expr does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[32,32] package org.tzi.use.uml.ocl.expr does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[33,32] package org.tzi.use.uml.ocl.expr does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[34,32] package org.tzi.use.uml.ocl.expr does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[35,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[36,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[37,34] package org.tzi.use.uml.sys.events does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[38,34] package org.tzi.use.uml.sys.events does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/constraint/ExternalOclConstraintService.java:[39,39] package org.tzi.use.uml.sys.events.tags does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/GoalViewSnapshot.java:[6,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/GoalViewSnapshot.java:[7,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[650,53] cannot find symbol
+[ERROR]   symbol:   class MSystem
+[ERROR]   location: class org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeReanalysis.java:[17,30] package org.tzi.use.parser.use does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeReanalysis.java:[20,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeProjector.java:[14,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:[1158,13] cannot find symbol
+[ERROR]   symbol:   class MSystem
+[ERROR]   location: class org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[18,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[19,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[20,23] package org.tzi.use.api does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[26,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[27,26] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[28,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[29,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[30,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[31,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[32,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[33,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[34,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[35,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java:[36,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java:[21,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java:[22,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java:[23,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java:[24,34] package org.tzi.use.uml.sys.events does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java:[25,29] package org.tzi.use.util.soil does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeProjector.java:[76,35] cannot find symbol
+[ERROR]   symbol:   class MSystem
+[ERROR]   location: class org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeProjector.java:[80,35] cannot find symbol
+[ERROR]   symbol:   class MSystem
+[ERROR]   location: class org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeProjector.java:[93,36] cannot find symbol
+[ERROR]   symbol:   class MSystem
+[ERROR]   location: class org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeProjector.java:[97,36] cannot find symbol
+[ERROR]   symbol:   class MSystem
+[ERROR]   location: class org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeProjector.java:[108,12] cannot find symbol
+[ERROR]   symbol:   class MSystem
+[ERROR]   location: class org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/SemanticRuntimeVerifier.java:[13,33] package org.tzi.use.uml.ocl.value does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/SemanticRuntimeVerifier.java:[14,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/RuntimeEngineSessionOwner.java:[20,27] package org.tzi.use.uml.sys does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java:[220,51] package org.tzi.use.uml.mm does not exist
+[ERROR] /D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java:[281,12] cannot find symbol
+[ERROR]   symbol:   class MSystem
+[ERROR]   location: class org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationCoordinator
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+[ERROR] 
+[ERROR] After correcting the problems, you can resume the build with the command
+[ERROR]   mvn <args> -rf :use-plugin

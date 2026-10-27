@@ -1,0 +1,12 @@
+{
+  "status": "FOCUSED_PASS",
+  "reason": "Add the three explicitly shipped source-confirmed-v1 assets to the exact package inventory contract; retain set equality and all semantic expected results",
+  "changed": [
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/release/ReleasePackageContractTest.java"
+  ],
+  "productionSourcesChanged": false,
+  "previousFullRun": "INTERRUPTED_AFTER_REPRODUCED_FAILURE_NOT_ACCEPTED",
+  "baselineLog": "P10-source-confirmed-clean-verify.log",
+  "focusedLog": "P10-confirmation-package-contract.log",
+  "tests": 2
+}

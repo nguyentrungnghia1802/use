@@ -78,7 +78,12 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     private volatile NativeWorkspace nativeWorkspace;
     private volatile List<Diagnostic> lastDiagnostics = List.of();
     private volatile long lastFullCheckNanos;
-    private final ManagedRuntimeWorkflow workflow = new ManagedRuntimeWorkflow();
+    private volatile ManagedRuntimeWorkflow workflow = new ManagedRuntimeWorkflow();
+    private volatile OwnedJaCaMoRuntime ownedProducer;
+    private volatile Path ownedObservationPlan;
+    private volatile Path ownedSource,ownedClasspath;
+    private volatile ImportSelection ownedSelection;
+    private volatile Long selectedJournalBudget;
     private volatile org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController stepReplay;
     private volatile boolean closed;
     private volatile boolean replayOpening;
@@ -182,8 +187,12 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 :profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.USE4GOAL_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.MappingRuleSet.PROPERTY:org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration.PROPERTY;
         String file=System.getProperty(property,"").trim();
         String ocl=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.JACAMO_DECLARATIVE_XML?System.getProperty(org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.OCL_PROPERTY,"").trim():"";
-        return new ImportSelection(profile.name(),profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.NATIVE_CURRENT||file.isBlank()?null:Path.of(file),ocl.isBlank()?null:Path.of(ocl));
+        var declarative=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.JACAMO_DECLARATIVE_XML;
+        return new ImportSelection(profile.name(),profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.NATIVE_CURRENT||file.isBlank()?null:Path.of(file),ocl.isBlank()?null:Path.of(ocl),
+                declarative?modelProperty(org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.CSL_PROPERTY):null,
+                declarative?modelProperty(org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.ISTAR_PROPERTY):null);
     }
+    private static Path modelProperty(String name) {String value=System.getProperty(name,"").trim();return value.isEmpty()?null:Path.of(value);}
     @Override public synchronized ProjectSummary importProject(Path jcmFile,ImportSelection request) {
         if(javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("SEMANTIC_IMPORT_REQUIRES_BACKGROUND_WORKER");
         var selection=ImportSemantics.from(java.util.Objects.requireNonNull(request),jcmFile);
@@ -200,6 +209,15 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         try {
             var imported = synchronizeBridge(candidate, null,selection);
             workflow.imported(candidate, authorityStatus(), session != null && session.system() == currentSystem());
+            String observationPlan=ownedObservationPlan==null?System.getProperty(org.jacamo.bridge.contract.ObservationRequestPlan.PROPERTY,""):ownedObservationPlan.toString();
+            if(!observationPlan.isBlank()) {
+                var current=nativeWorkspace;
+                if(current==null||current.canonical==null||current.canonical.program().xmlPlan()==null)throw new IllegalStateException("OBSERVATION_DECLARATIVE_PROGRAM_REQUIRED");
+                var accepted=authorityStatus();var program=current.canonical.program();
+                var preflight=current.canonical.xmlPreparation()==null?Map.<String,Object>of():current.canonical.xmlPreparation().preflight();
+                var scope=preflight.get("captureScope") instanceof Map<?,?> rawScope?org.jacamo.bridge.contract.ObservationCaptureScope.fromMap(org.jacamo.bridge.contract.CanonicalJson.object(rawScope)):null;
+                org.jacamo.bridge.contract.ObservationRequestPlan.publish(Path.of(observationPlan),accepted.sessionId(),accepted.generation(),accepted.modelRevision(),program.hash(),program.xmlPlan().requirements(),org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.producerFields(program.xmlPlan().inputs().specification()),org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.producerCartagoKinds(program.xmlPlan().inputs().specification()),scope);
+            }
             return imported;
         } catch (RuntimeException failure) { workflow.importFailed(failure.getMessage()); throw failure; }
     }
@@ -207,6 +225,14 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         var current=nativeWorkspace;
         if(current==null)return Map.of("status","NOT_IMPORTED");
         return current.programEvidence;
+    }
+    @Override public SemanticModels semanticModels() {
+        var replay=stepReplay;if(replay!=null&&replay.active())return replay.semanticModels();
+        var current=nativeWorkspace;if(current==null||current.canonical==null)return null;
+        var program=current.canonical.program();program.assertUnchanged();
+        var model=current.canonical.binding().model();
+        if(session!=null&&(!session.hasSystem()||session.system().model()!=model))return null;
+        return new SemanticModels(program.cslModel(),program.goalModel(),model,program.hash());
     }
     private static Map<String,Object> programEvidence(CodeGroundedNativePipeline.CanonicalBuildResult canonical,String legacyProfile) {
         if(canonical==null)return Map.of("profile",legacyProfile,"status","LEGACY_OR_NATIVE_PROFILE");
@@ -216,7 +242,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 "goalHash",program.goalHash(),"validators","original CSL/iStar; native USE OCL", "diagnostics",org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.tree(program.diagnostics()),
                 "traceBindings",org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.tree(program.bindings().bindings())));
         if(program.casePlan()!=null)evidence.put("caseProgram",program.casePlan().evidence());
-        if(program.xmlPlan()!=null)evidence.put("declarativeProgram",program.xmlPlan().evidence());
+        if(program.xmlPlan()!=null){evidence.put("declarativeProgram",program.xmlPlan().evidence());if(canonical.xmlPreparation()!=null)evidence.put("bindingPreflight",canonical.xmlPreparation().preflight());}
         return java.util.Collections.unmodifiableMap(evidence);
     }
 
@@ -245,6 +271,12 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         var projector=current.runtimeProjector;
         return projector==null?current.stoppedSnapshot:projector.coordinator().verificationSnapshot();
     }
+    @Override public List<org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot> retainedVerificationSnapshots() {
+        var replay=stepReplay;if(replay!=null&&replay.active())return List.of(replay.verificationSnapshot());
+        var current=nativeWorkspace;if(current==null)return List.of();var projector=current.runtimeProjector;
+        return projector==null?(current.stoppedSnapshot==null?List.of():List.of(current.stoppedSnapshot)):
+                projector.coordinator().read(()->projector.coordinator().snapshots().snapshots());
+    }
     @Override public void startRuntime() {
         requireNotReplaying();
         requireNativeWorkspace();
@@ -257,6 +289,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         // snapshot handoff can discard the source PRE/terminal prefix or fill
         // its bounded bootstrap queue while waiting for the old writer.
         if(nativeWorkspace!=owner)throw new IllegalStateException("START_RUNTIME_OWNER_CHANGED");
+        var producer=ownedProducer;if(producer!=null)producer.started();
         if(owner.control!=null)owner.control.refresh().join();
     }
     private org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeControlService requireRuntimeControl() {
@@ -541,6 +574,44 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         bridgeDiagnostic = "";
     }
 
+    @Override public boolean ownedProducerSupported(){return true;}
+    @Override public boolean journalBudgetSupported(){return true;}
+    @Override public long nextJournalBudgetBytes(){var selected=selectedJournalBudget;return selected==null?RuntimeVerificationCoordinator.defaultJournalMaxBytes():selected;}
+    @Override public void nextJournalBudgetBytes(long bytes){if(bytes<32768||bytes>1024L*1024*1024)throw new IllegalArgumentException("RUNTIME_JOURNAL_BUDGET_INVALID");selectedJournalBudget=bytes;}
+    @Override public OwnedProducerStatus ownedProducerStatus(){var producer=ownedProducer;if(producer==null)return new OwnedProducerStatus("IDLE",0,"","");var state=producer.view();return new OwnedProducerStatus(state.state(),state.pid(),state.runId(),state.diagnostic());}
+    @Override public ProjectSummary prepareOwnedProducer(Path jcm,ImportSelection selection,Path runtimeClasspath) {
+        if(javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("PRODUCER_PREPARATION_REQUIRES_WORKER");
+        // Validate selected assets before creating a process or changing the live owner.
+        ImportSemantics.from(java.util.Objects.requireNonNull(selection),jcm);
+        OwnedJaCaMoRuntime producer;
+        synchronized(this){
+            requireNotReplaying();if(closed)throw new IllegalStateException("FACADE_CLOSED");
+            if(ownedProducer!=null&&ownedProducer.active())throw new IllegalStateException("STOP_OWNED_PRODUCER_BEFORE_PREPARING");
+            if(ownedProducer!=null)ownedProducer.close();ownedProducer=producer=new OwnedJaCaMoRuntime(checkout);
+        }
+        var prepared=producer.prepare(jcm,selection,runtimeClasspath);
+        synchronized(this){
+            if(closed||!producer.active()){producer.stop();throw new IllegalStateException("OWNED_PRODUCER_CANCELLED");}
+            var previousWorkflow=workflow;var previousBridge=configuredBridge;var previousPlan=ownedObservationPlan;
+            workflow=new ManagedRuntimeWorkflow(prepared.startup(),prepared.runId());configuredBridge=prepared.bridge();ownedObservationPlan=prepared.observations();
+            try {
+                var summary=importProject(prepared.project(),selection);
+                if(closed||!producer.active())throw new IllegalStateException("OWNED_PRODUCER_CANCELLED_DURING_IMPORT");
+                ownedSource=jcm.toAbsolutePath().normalize();ownedSelection=selection;ownedClasspath=runtimeClasspath;return summary;
+            }catch(RuntimeException failure){workflow=previousWorkflow;configuredBridge=previousBridge;ownedObservationPlan=previousPlan;producer.stop();throw failure;}
+        }
+    }
+    @Override public void stopOwnedProducer(){
+        if(javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("PRODUCER_STOP_REQUIRES_WORKER");
+        var producer=ownedProducer;if(producer==null)return;
+        try{if(nativeWorkspace!=null&&stepReplayStatus()==null)stopMonitorSession();}finally{producer.stop();workflow=new ManagedRuntimeWorkflow(null,"");ownedObservationPlan=null;}
+    }
+    @Override public ProjectSummary restartOwnedProducer(){
+        var source=ownedSource;var selection=ownedSelection;var cp=ownedClasspath;
+        if(source==null||selection==null)throw new IllegalStateException("NO_OWNED_IMPORT_TO_RESTART");
+        stopOwnedProducer();return prepareOwnedProducer(source,selection,cp);
+    }
+
     @Override public synchronized void connectRuntime() {
         requireNotReplaying();
         requireWorkspace();
@@ -686,6 +757,8 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         if (!workflow.status().state().equals("LIVE")) workflow.cancel();
         retireMonitor("WORKBENCH_CLOSED");
         if(!javax.swing.SwingUtilities.isEventDispatchThread())awaitRetiredIngress();
+        var producer=ownedProducer;
+        if(producer!=null){if(javax.swing.SwingUtilities.isEventDispatchThread())Thread.ofPlatform().daemon().name("owned-jacamo-close").start(producer::close);else producer.close();}
         bridgeMirror = null;
         bridgeAccepted = null;
     }
@@ -786,8 +859,8 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             if(next==null)throw new IllegalStateException("NATIVE_STATIC_CANDIDATE_NOT_PREPARED");
             NativeRuntimeProjector nativeProjector = compatibleResync ? previous.runtimeProjector
                     : next.canonical==null?new NativeRuntimeProjector(next.pipeline, accepted.sessionId(), accepted.generation(),
-                            accepted.modelRevision(), RuntimeVerificationCoordinator.createEphemeralDirectory(runtimeRoot()))
-                    : new NativeRuntimeProjector(next.canonical,accepted.sessionId(),accepted.generation(),accepted.modelRevision(),RuntimeVerificationCoordinator.createEphemeralDirectory(runtimeRoot()));
+                            accepted.modelRevision(), RuntimeVerificationCoordinator.createEphemeralDirectory(runtimeRoot()),nextJournalBudgetBytes())
+                    : new NativeRuntimeProjector(next.canonical,accepted.sessionId(),accepted.generation(),accepted.modelRevision(),RuntimeVerificationCoordinator.createEphemeralDirectory(runtimeRoot()),nextJournalBudgetBytes());
             if (!compatibleResync) newlyCreatedNativeProjector.set(nativeProjector);
             nativeProjector.coordinator().runtimeCapabilities(accepted.capabilities().stream().collect(
                     java.util.stream.Collectors.toMap(org.jacamo.bridge.contract.Capability::name,c->c.status().name())),accepted.sourceVersions());
@@ -809,7 +882,12 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 if (failure != null) nativeProjector.coordinator().coverageGap(failure.event(), failure.diagnostic());
                 // Capture the bootstrap boundary before releasing buffered ingress.
                 // Subsequent live observations may legitimately still be pending.
-                initialCut=nativeProjector.coordinator().read(nativeProjector.coordinator()::lastObservation);
+                initialCut=nativeProjector.coordinator().read(()->{
+                    var coordinator=nativeProjector.coordinator();var observed=coordinator.lastObservation();
+                    // Trace-only ingress has no engine submission. It remains in the
+                    // journal but cannot replace the formal native bootstrap boundary.
+                    return observed!=null&&observed.freshness().equals("TRACE_ONLY")?coordinator.latest():observed;
+                });
             }
             if(next.canonical!=null) {
                 var completed=nativeProjector.coordinator().awaitEvaluation(initialCut,30000);
@@ -975,7 +1053,9 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             var profile=org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.configured(System.getProperty(org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.PROPERTY));
             if(profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.JACAMO_DECLARATIVE_XML) {
                 String xml=System.getProperty(org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.SPECIFICATION_PROPERTY,"").trim(),ocl=System.getProperty(org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.OCL_PROPERTY,"").trim();
-                return from(new ImportSelection(profile.name(),xml.isBlank()?null:Path.of(xml),ocl.isBlank()?null:Path.of(ocl)),jcm);
+                return from(new ImportSelection(profile.name(),xml.isBlank()?null:Path.of(xml),ocl.isBlank()?null:Path.of(ocl),
+                        modelProperty(org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.CSL_PROPERTY),
+                        modelProperty(org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.ISTAR_PROPERTY)),jcm);
             }
             if(profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.AUCTION_OBSERVED_V1) {
                 String path=System.getProperty(org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionStaticMappingAdapter.PROPERTY,"").trim();
@@ -993,7 +1073,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs declarative=null;
             if(profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.JACAMO_DECLARATIVE_XML) {
                 if(request.ocl()==null)throw new IllegalArgumentException("AUTHORED_OCL_FILE_REQUIRED");
-                declarative=org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.read(jcm,request.specification(),request.ocl());
+                declarative=org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.read(jcm,request.specification(),request.ocl(),request.csl(),request.istar());
             }
             var rules=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.USE4GOAL_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.MappingRuleSet.read(request.specification()):null;
             var auction=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.AUCTION_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionStaticMappingAdapter.read(request.specification()):null;
@@ -1185,11 +1265,22 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
 
     private static Path detectCheckout() {
+        Path home=org.tzi.use.config.Options.homeDir;
+        if(home!=null&&(Files.isDirectory(home.resolve("Core"))||Files.isDirectory(home.resolve("use-plugin/Core"))))return home.toAbsolutePath().normalize();
         Path current = Path.of("").toAbsolutePath().normalize();
         for (Path candidate = current; candidate != null; candidate = candidate.getParent()) {
             if (Files.isDirectory(candidate.resolve("use-plugin/Core")) || Files.isDirectory(candidate.resolve("Core")))
                 return candidate;
         }
+        try {
+            Path code=Path.of(DefaultJaCaMoFacade.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            if(Files.isRegularFile(code)) {
+                Path parent=code.getParent();
+                if(parent!=null&&parent.getParent()!=null&&parent.getParent().getParent()!=null) {
+                    Path installed=parent.getParent().getParent();if(Files.isDirectory(installed.resolve("Core")))return installed;
+                }
+            }
+        }catch(java.net.URISyntaxException ignored){/* Explicit host home/cwd remain available. */}
         return current;
     }
 

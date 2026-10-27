@@ -52,7 +52,8 @@ public final class JaCaMoBridgeNativeConsumerMain {
             if (options.consumerReadyFile() != null) {
                 Path temporary = Files.createTempFile(options.consumerReadyFile().getParent(), "consumer-ready-", ".tmp");
                 try {
-                    byte[] readiness = CanonicalJson.encode(Map.of("status", "PROFILE_COMPILED_AND_BASELINE_VERIFIED",
+                    byte[] readiness = CanonicalJson.encode(profile==null?Map.of("status","DECLARATIVE_PROGRAM_AND_BASELINE_VERIFIED","program",facade.semanticProgramEvidence())
+                            :Map.of("status", "PROFILE_COMPILED_AND_BASELINE_VERIFIED",
                             "profileSha256", profile.sha256(), "stateVersion", profile.baseline().stateVersion(),
                             "baselineVerifiedAt", profile.baseline().verifiedAt().toString()));
                     Files.write(temporary, readiness);
@@ -144,7 +145,7 @@ public final class JaCaMoBridgeNativeConsumerMain {
                     throw new IllegalArgumentException("JACAMO_BRIDGE_NATIVE_OCL_PROFILE_INVALID:" + profile);
                 Path ready = args.length == 12 && !args[11].isBlank()
                         ? Path.of(args[11]).toAbsolutePath().normalize() : null;
-                if (ready != null && (profile == null || !ready.getParent().equals(jcm.getParent())
+                if (ready != null && (profile == null && System.getProperty(org.jacamo.bridge.contract.ObservationRequestPlan.PROPERTY,"").isBlank() || !ready.getParent().equals(jcm.getParent())
                         || Files.exists(ready, java.nio.file.LinkOption.NOFOLLOW_LINKS)))
                     throw new IllegalArgumentException("JACAMO_BRIDGE_NATIVE_READY_FILE_INVALID");
                 return new Options(port, secret, args[2], jcm, checkout, evidence, observation, maxBuffered, timeout,

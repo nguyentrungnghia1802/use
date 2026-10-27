@@ -1,0 +1,39 @@
+<mapping xmlns="urn:use:jacamo-mapping:2" version="2.0" id="stock-authored-v1" engineProfile="USE4GOAL_OBSERVED_V1" jcmRef="project">
+ <sources><file id="project" kind="JCM" path="counter.jcm" sha256="eaaf3526e5c0c19c46846669c3de61291eb512a4fb756705f0ab691412a57809"/><file id="source-env" kind="JAVA" path="src/env/demo/counter/Counter.java" sha256="9e4cdfd3c6f8b2664918166cd57d036d51e25b0bbeb5daca78415d01202671d8"/><file id="source-alice" kind="ASL" path="src/agt/alice.asl" sha256="898d3a58c841939111feb0a7a12170c48fac3f1da14b0e48f83623802c17facf"/><file id="source-bob" kind="ASL" path="src/agt/bob.asl" sha256="65bb699839b2e6e3c5c7dae09dc852aea5f46de843a9eb88a6768b63c9d1a14a"/><file id="source-os" kind="MOISE" path="src/org/organization.xml" sha256="c91af422f52d216953ef1856c6b07edccbe3e88f2e786c9740ab429fbc0bc1d2"/></sources>
+ <ocl sha256="db06effb70f3d17dc95a69ed80a8e8b2a3c525db1222aa6e8750ed39276a3ca1"/><models mode="AUTHORED" cslSha256="e74911eee59f2731039c8f9ea2363258f1930921e919f69d5eb6caa01d82d7bf" istarSha256="4eeb3ce25ee9c1920aa3ec0176dbfd24bdd4698f8b83644bcd89f934b1175b09"/>
+ <selectors/><modelRules targetVersion="v4.0" targetModel="StockView"/><istar name="StockRequirements"/>
+ <runtime>
+  <datasets><facts id="raw-artifacts" authority="cartago" kind="ARTIFACT"/><facts id="raw-properties" authority="cartago" kind="PROPERTY"/><facts id="raw-groups" authority="moise" kind="GROUP_BOARD"/></datasets>
+  <tables>
+   <table id="properties" dataset="raw-properties"><where path="values.name" type="String" equals="p"/><column name="artifact" path="values.artifactSemanticId" required="true"/><column name="value" path="scalar.value" required="true"/></table>
+   <table id="objects" dataset="raw-artifacts">
+    <where path="values.artifactTypeJavaClassName" type="String" equals="demo.counter.Counter"/>
+    <join tableRef="properties" leftPath="values.semanticId" rightPath="artifact" as="property" cardinality="ONE" required="true"/>
+    <column name="uuid" path="identity" required="true"/><column name="weight" path="property.value" required="true"/><identity mode="PHYSICAL" path="identity"/>
+   </table>
+   <table id="groups" dataset="raw-groups"><whereBound path="values.groupSpecSemanticId" bindingRef="group-definition"/><test negate="false" as="viewpointDeclared" path="values.normalizedEventKind" type="String" equals="UPSERT_MOISE_GROUP"/><column name="group" path="identity" required="true"/><column name="viewpointDeclared" path="viewpointDeclared" required="true"/><identity mode="PHYSICAL" path="identity"/></table>
+  </tables>
+  <inputs>
+   <input id="object-input" identityKind="PHYSICAL" identityFields="uuid" tableRef="objects"><field name="uuid" type="String" required="true"/><field name="weight" type="Integer" required="true"/></input>
+   <input id="group-input" identityKind="PHYSICAL" identityFields="group" tableRef="groups"><field name="group" type="String" required="true"/><field name="viewpointDeclared" type="Boolean" required="true"/></input>
+  </inputs>
+  <converters><converter id="integer" inputType="Integer" outputType="Integer" algorithm="preserve-exact-integer" onMismatch="incomplete"/></converters>
+  <rule id="map-stock" inputRef="object-input"><requireEvidence proof="source-cut"/><upsertInstance targetType="Pallet" keyFields="uuid" aliasFrom="uuid"><assign target="weight" sourceField="weight" converter="integer"/></upsertInstance></rule>
+  <rule id="map-context" inputRef="group-input"><requireEvidence proof="source-cut"/><upsertInstance targetType="Warehouse" keyFields="group" aliasFrom="group"/></rule>
+  <occurrences><scope id="stock-observation" tableRef="groups" anchorColumn="group" contextColumn="group" keyFields="group">
+    <actor actor="StockObserver" tableRef="groups" scopeColumn="group" scopeKey="group" playerColumn="group" kind="CONTEXT_VIEWPOINT" cardinality="ONE" completeColumn="viewpointDeclared"/>
+    <self target="StockSafe" origin="CONTEXT"/>
+  </scope></occurrences>
+ </runtime>
+ <observers/>
+ <bindings>
+  <static id="stock-definition" kind="ENTITY" target="Pallet" sourceKind="DERIVED_ARTIFACT_CLASS_ALIAS" feature="javaClass" value="demo.counter.Counter" reason="Passive numeric artifact state; Counter.p is explicitly mapped to Pallet.weight"/>
+  <static id="group-definition" kind="ORG_CONTEXT" target="Warehouse" sourceKind="MOISE_GROUP" feature="groupId" value="team" reason="Observed group context"/>
+  <static id="observer-definition" kind="ACTOR" target="StockObserver" sourceKind="JACAMO_ORGANIZATION_DEPLOYMENT" feature="name" value="org" reason="Intentional organization viewpoint; no artificial agent or role enactment"/>
+  <actorRuntime actor="StockObserver" bindingRef="observer-definition" contextBindingRef="group-definition" activationPolicy="OBSERVED_SCHEME_COMMITMENT" episodePolicy="RUN_SCHEME_PLAYER_INVOCATION"/>
+  <elementRuntime target="StockSafe" actor="StockObserver" self="Warehouse" derived="false" selfKind="CONTEXT" reason="Authored population property, not an agent belief or task success"/>
+  <oclClause name="NonnegativeWeight" context="context Pallet"/>
+ </bindings>
+ <requirements/>
+ <omittedConcepts><omit id="scope" concept="Counter ASL execution and MOISE sequence" reason="This profile verifies observed stock state only; it does not claim invocation/task or sequence verification" handledBy="TRACE_ONLY"/></omittedConcepts>
+</mapping>

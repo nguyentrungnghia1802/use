@@ -28,6 +28,61 @@ import org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepControlle
 import org.tzi.use.plugins.jacamo.runtime.MirrorState;
 
 class JaCaMoWorkbenchPanelTest {
+    @Test void journalQuotaIsExplicitCapturedBeforeImportAndNeverSetByWidgetEditsAlone()throws Exception {
+        var imported=new CountDownLatch(1);var bytes=new java.util.concurrent.atomic.AtomicLong(64L*1048576);var calls=new java.util.concurrent.atomic.AtomicInteger();
+        var errors=new ArrayList<String>();
+        var facade=new JaCaMoFacade(){
+            public String status(){return "quota";}public boolean journalBudgetSupported(){return true;}
+            public long nextJournalBudgetBytes(){return bytes.get();}
+            public void nextJournalBudgetBytes(long value){assertFalse(SwingUtilities.isEventDispatchThread());bytes.set(value);calls.incrementAndGet();}
+            public ProjectSummary importProject(Path path){assertEquals(256L*1048576,bytes.get());imported.countDown();return null;}
+        };
+        SwingUtilities.invokeAndWait(()->{
+            var panel=new JaCaMoWorkbenchPanel(facade,errors::add);var quota=component(panel,"journal-budget-mib",javax.swing.JTextField.class);
+            assertEquals("64",quota.getText());quota.setText("0");panel.importProject(Path.of("project.jcm"));assertEquals(0,calls.get());assertEquals(1,errors.size());
+            quota.setText("256");assertEquals(64L*1048576,bytes.get(),"Changing next-import widgets must not mutate a live owner");panel.importProject(Path.of("project.jcm"));
+        });
+        assertTrue(imported.await(5,TimeUnit.SECONDS));assertEquals(1,calls.get());
+    }
+    @Test void ownedProducerPreparationAndCancellationUseWorkersAndPreserveExplicitInputs()throws Exception {
+        var expected=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",Path.of("mapping.xml"),Path.of("requirements.ocl"),Path.of("view.csl"),Path.of("rationale.istar"));
+        var preparing=new CountDownLatch(1);var cancelled=new CountDownLatch(1);var returned=new CountDownLatch(1);
+        var selected=new java.util.concurrent.atomic.AtomicReference<JaCaMoFacade.ImportSelection>();
+        JaCaMoFacade facade=new JaCaMoFacade(){
+            public String status(){return "owned test";}public boolean ownedProducerSupported(){return true;}public ImportSelection importSelection(){return expected;}
+            public ProjectSummary prepareOwnedProducer(Path source,ImportSelection inputs,Path cp){assertFalse(SwingUtilities.isEventDispatchThread());selected.set(inputs);preparing.countDown();try{assertTrue(cancelled.await(5,TimeUnit.SECONDS));}catch(InterruptedException e){throw new IllegalStateException(e);}finally{returned.countDown();}return null;}
+            public void stopOwnedProducer(){assertFalse(SwingUtilities.isEventDispatchThread());cancelled.countDown();}
+        };
+        var panel=new java.util.concurrent.atomic.AtomicReference<JaCaMoWorkbenchPanel>();
+        SwingUtilities.invokeAndWait(()->{panel.set(new JaCaMoWorkbenchPanel(facade,message->fail(message)));assertTrue(button(panel.get(),"prepare-producer").isEnabled());panel.get().prepareOwnedProject(Path.of("project.jcm"));});
+        assertTrue(preparing.await(5,TimeUnit.SECONDS));SwingUtilities.invokeAndWait(()->panel.get().stopOwnedProject());
+        assertTrue(returned.await(5,TimeUnit.SECONDS));assertEquals(expected,selected.get());assertTrue(ProcessHandle.current().isAlive());
+    }
+    @Test void producerActionsHaveTheirOwnRowAndRestartRemainsAvailableAfterStop()throws Exception {
+        var selection=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",Path.of("spec.xml"),Path.of("req.ocl"),Path.of("model.csl"),Path.of("goals.istar"));
+        var facade=new JaCaMoFacade(){public String status(){return "layout";}public boolean ownedProducerSupported(){return true;}public ImportSelection importSelection(){return selection;}public OwnedProducerStatus ownedProducerStatus(){return new OwnedProducerStatus("STOPPED",0,"previous-owned-run","");}};
+        SwingUtilities.invokeAndWait(()->{
+            var panel=new JaCaMoWorkbenchPanel(facade,message->fail(message));
+            var prepare=button(panel,"prepare-producer");var stop=button(panel,"stop-producer");var restart=button(panel,"restart-producer");
+            assertSame(prepare.getParent(),restart.getParent());assertNotSame(prepare.getParent(),button(panel,"import-project").getParent());
+            assertTrue(prepare.isEnabled());assertFalse(stop.isEnabled());assertTrue(restart.isEnabled());
+            assertTrue(component(panel,"owned-producer-state",JLabel.class).getText().contains("USE PID="));
+        });
+    }
+    @Test void authoredFiveInputSelectionIsCapturedOnTheWorkerWithoutMutatingTheActiveProgram()throws Exception {
+        var expected=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",Path.of("mapping.xml"),Path.of("requirements.ocl"),Path.of("view.csl"),Path.of("rationale.istar"));
+        var imported=new CountDownLatch(1);var selected=new java.util.concurrent.atomic.AtomicReference<JaCaMoFacade.ImportSelection>();
+        JaCaMoFacade facade=new JaCaMoFacade(){public String status(){return "authored widget";}public ImportSelection importSelection(){return expected;}public ProjectSummary importProject(Path path,ImportSelection request){assertFalse(SwingUtilities.isEventDispatchThread());selected.set(request);imported.countDown();return null;}};
+        SwingUtilities.invokeAndWait(()->{
+            var panel=new JaCaMoWorkbenchPanel(facade,message->fail(message));
+            assertEquals("AUTHORED",component(panel,"model-input-mode",javax.swing.JComboBox.class).getSelectedItem());
+            assertEquals(expected.csl().toString(),component(panel,"authored-csl",javax.swing.JTextField.class).getText());
+            assertEquals(expected.istar().toString(),component(panel,"authored-istar",javax.swing.JTextField.class).getText());
+            assertTrue(button(panel,"choose-authored-csl").isEnabled());assertTrue(button(panel,"choose-authored-istar").isEnabled());
+            panel.importProject(Path.of("project.jcm"));
+        });
+        assertTrue(imported.await(5,TimeUnit.SECONDS));assertEquals(expected,selected.get());
+    }
     @Test void declarativeImportCapturesTheAuthoredOclWithTheXmlOnAWorker()throws Exception {
         var expected=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",Path.of("examples/auction/auction-mapping.xml"),Path.of("examples/auction/auction_constraints_final.ocl"));
         var imported=new CountDownLatch(1);var selected=new java.util.concurrent.atomic.AtomicReference<JaCaMoFacade.ImportSelection>();

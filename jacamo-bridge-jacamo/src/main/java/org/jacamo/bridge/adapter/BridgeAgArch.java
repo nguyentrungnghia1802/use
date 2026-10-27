@@ -33,6 +33,24 @@ public final class BridgeAgArch extends AgArch {
     private transient Map<String,Object> previousState;
     private transient java.util.Set<String> authoredBeliefs;
     private transient AuctionStepObservation stepObservation;
+    private transient ObservationCapabilityRegistry.Session capabilitySession;
+    private transient List<JasonStepCapability> neutralSteps=List.of();
+    private transient java.util.Set<String> observationFields=java.util.Set.of();
+    void observationFields(List<String> fields) {
+        var allowed=java.util.Set.of("normalizedEventKind","semanticId","name","active","cycles","agentDeclarationSemanticId","agentRuntimeSemanticId","beliefs","goals","goalCoverage","mentalObservation","storedBeliefObservation","executionObservation");
+        if(!allowed.containsAll(fields))throw new IllegalArgumentException("JASON_STATE_FIELD_UNSUPPORTED");
+        observationFields=java.util.Set.copyOf(fields);previousState=Map.of();
+    }
+
+    void installCapabilities(ProductionObservationSession owner,org.jacamo.bridge.contract.semantic.JasonSemanticContract.AgentProgramSemantic program) {
+        if(capabilitySession!=null||stepObservation!=null||runtimeIdentity==null)throw new IllegalStateException("STEP_OWNER_ALREADY_INSTALLED_OR_ARCH_NOT_READY");
+        boolean reached=false;for(var arch=getFirstAgArch();arch!=null;arch=arch.getNextAgArch()) {
+            if(arch==this)reached=true;
+            if(arch instanceof jaca.CAgentArch&&!reached)throw new IllegalStateException("STEP_OBSERVER_MUST_PRECEDE_CARTAGO_DISPATCH");
+        }
+        capabilitySession=owner.agent(getTS(),runtimeIdentity,program);
+        neutralSteps=capabilitySession.capabilities().stream().flatMap(c->capabilitySession.handle(c.name(),JasonStepCapability.class).stream()).toList();
+    }
 
     void installStepObservation(org.jacamo.bridge.contract.semantic.JasonSemanticContract.AgentProgramSemantic program,java.nio.file.Path root)throws Exception {
         if(stepObservation!=null||runtimeIdentity==null)throw new IllegalStateException("STEP_OWNER_ALREADY_INSTALLED_OR_ARCH_NOT_READY");
@@ -49,9 +67,9 @@ public final class BridgeAgArch extends AgArch {
         }catch(RuntimeException failure){retireStepObservation();throw failure;}
     }
     boolean stepCaptureAvailable(){return stepObservation!=null&&stepObservation.failure().isBlank();}
-    void retireStepObservation(){var owned=stepObservation;stepObservation=null;if(owned!=null)owned.close();}
-    void observeStepAction(ActionExec action,RuntimeEventKind kind,String correlation){var steps=stepObservation;if(steps!=null)try{steps.action(action,kind,correlation);}catch(RuntimeException missing){stepActionUnavailable("ACTION_CAPTURE:"+missing.getClass().getSimpleName());}}
-    void stepActionUnavailable(String reason){var steps=stepObservation;if(steps!=null)try{steps.unavailable(reason);}catch(RuntimeException notificationFailed){/* failure was latched before reporting; observation cannot fail the domain action */}}
+    void retireStepObservation(){var owned=stepObservation;stepObservation=null;if(owned!=null)owned.close();neutralSteps=List.of();var session=capabilitySession;capabilitySession=null;if(session!=null)session.close();}
+    void observeStepAction(ActionExec action,RuntimeEventKind kind,String correlation){var steps=stepObservation;try{if(steps!=null)steps.action(action,kind,correlation);for(var neutral:neutralSteps)neutral.action(action,kind,correlation);}catch(RuntimeException missing){stepActionUnavailable("ACTION_CAPTURE:"+missing.getClass().getSimpleName());}}
+    void stepActionUnavailable(String reason){var steps=stepObservation;try{if(steps!=null)steps.unavailable(reason);for(var neutral:neutralSteps)neutral.unavailable(reason);}catch(RuntimeException notificationFailed){/* failure was latched before reporting; observation cannot fail the domain action */}}
 
     @Override public void init() {
         observer = BridgeRuntimeRegistry.require(); sequence = new AtomicLong();
@@ -83,6 +101,12 @@ public final class BridgeAgArch extends AgArch {
             var values=new LinkedHashMap<String,Object>();
             values.put("normalizedEventKind","UPSERT_JASON_AGENT_STATE"); values.put("semanticId",runtimeIdentity.canonical());
             values.put("agentDeclarationSemanticId",declaration.get()); values.put("name",getAgName());
+            var selected=observationFields;
+            if(!selected.isEmpty()) {
+                if(selected.contains("active"))values.put("active",isRunning());
+                if(selected.contains("cycles"))values.put("cycles",getCycleNumber());
+            }
+            if(selected.isEmpty()||selected.contains("beliefs")) {
             var beliefs=new java.util.ArrayList<Map<String,Object>>();
             if(authoredBeliefs==null) authoredBeliefs = BridgeRuntimeRegistry.projectDeclarations().stream().flatMap(p -> p.jasonPrograms().stream())
                     .filter(p -> BridgeRuntimeRegistry.projectDeclarations().orElseThrow().agentDeclarations().stream()
@@ -94,6 +118,8 @@ public final class BridgeAgArch extends AgArch {
                 observed.putAll(JasonBeliefEvidence.provenance(literal, authoredBeliefs)); beliefs.add(Map.copyOf(observed));
             }
             beliefs.sort(java.util.Comparator.comparing(v->v.get("semanticId").toString())); values.put("beliefs",beliefs);
+            }
+            if(selected.isEmpty()||selected.contains("goals")||selected.contains("goalCoverage")) {
             var goals=new java.util.TreeMap<String,Map<String,Object>>(); var circumstance=getTS().getC();
             if(circumstance!=null) {
                 var events=circumstance.getEventsPlusAtomic();
@@ -105,13 +131,23 @@ public final class BridgeAgArch extends AgArch {
             }
             values.put("goals",List.copyOf(goals.values()));
             values.put("goalCoverage","OBSERVED_CIRCUMSTANCE_EVENTS_AND_INTENTION_TRIGGERS");
-            if(BridgeRuntimeRegistry.structuredJasonObservation()) {
-                values.put("mentalObservation",JasonCycleObservation.mental(getTS().getAg(),runtimeIdentity.canonical(),getCycleNumber()));
-                values.put("executionObservation",JasonCycleObservation.execution(getTS(),runtimeIdentity.canonical(),getCycleNumber(),this::occurrenceToken));
             }
+            if(BridgeRuntimeRegistry.structuredJasonObservation()&&selected.isEmpty()||selected.contains("mentalObservation"))
+                values.put("mentalObservation",JasonCycleObservation.mental(getTS().getAg(),runtimeIdentity.canonical(),getCycleNumber()));
+            if(selected.contains("storedBeliefObservation"))values.put("storedBeliefObservation",JasonCycleObservation.storedLiterals(getTS().getAg(),runtimeIdentity.canonical(),getCycleNumber()));
+            if(BridgeRuntimeRegistry.structuredJasonObservation()&&selected.isEmpty()||selected.contains("executionObservation"))
+                values.put("executionObservation",JasonCycleObservation.execution(getTS(),runtimeIdentity.canonical(),getCycleNumber(),this::occurrenceToken));
+            if(!selected.isEmpty())values.keySet().retainAll(selected);
             synchronized(BridgeRuntimeRegistry.JASON_PUBLICATION_LOCK) {
-                BridgeRuntimeRegistry.publishJasonState(getAgName(),values);
-                if(!values.equals(previousState)) {
+                // Stored-content views are not cycle heartbeats. Keep both cache
+                // and watermark at the same last published observation.
+                boolean storedView=(selected.contains("mentalObservation")||selected.contains("storedBeliefObservation"))&&!selected.contains("executionObservation");
+                boolean changed=storedView?!storedContent(values).equals(storedContent(previousState)):!values.equals(previousState);
+                // An invalidated cut must recover even when its content has not
+                // changed since the last publication. Recovery is a new cut,
+                // unlike an idle-cycle heartbeat, and needs its own watermark.
+                if(changed || BridgeRuntimeRegistry.jasonState(getAgName()).isEmpty()) {
+                    BridgeRuntimeRegistry.publishJasonState(getAgName(),values);
                     emit(RuntimeEventKind.CHANGED,RuntimeFactKind.AGENT,previousState,values,""); previousState=Map.copyOf(values);
                 }
             }
@@ -124,6 +160,16 @@ public final class BridgeAgArch extends AgArch {
                     "normalizedEventKind","JASON_CYCLE_OBSERVATION_INCOMPLETE","diagnostic",diagnostic),"");
             }
         }
+    }
+    private static Map<String,Object> storedContent(Map<String,Object> state) {
+        var result=new LinkedHashMap<String,Object>(state);result.remove("cycles");
+        if(result.get("mentalObservation") instanceof Map<?,?> mental) {
+            var content=new LinkedHashMap<>(org.jacamo.bridge.contract.CanonicalJson.object(mental));content.remove("cycle");result.put("mentalObservation",content);
+        }
+        if(result.get("storedBeliefObservation") instanceof Map<?,?> stored) {
+            var content=new LinkedHashMap<>(org.jacamo.bridge.contract.CanonicalJson.object(stored));content.remove("cycle");result.put("storedBeliefObservation",content);
+        }
+        return result;
     }
     private Map<String,Object> literal(String kind,String source,String value,String origin) {
         String id=kind+":"+new String(org.jacamo.bridge.contract.CanonicalJson.encode(List.of(runtimeIdentity.canonical(),source)),java.nio.charset.StandardCharsets.UTF_8);
@@ -202,8 +248,7 @@ public final class BridgeAgArch extends AgArch {
     }
 
     private void emitAction(RuntimeEventKind kind, ActionExec action, String correlation) {
-        var steps=stepObservation;
-        if(steps!=null)observeStepAction(action,kind,correlation);
+        observeStepAction(action,kind,correlation);
         Map<String, Object> before = runtimeActionValues(action);
         Map<String, Object> after = new LinkedHashMap<>(before);
         after.put("result", action.getResult());

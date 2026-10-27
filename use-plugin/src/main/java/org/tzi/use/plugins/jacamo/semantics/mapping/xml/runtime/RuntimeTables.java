@@ -27,18 +27,19 @@ public final class RuntimeTables {
     }
     private record Table(Node node,List<Node> operations) { }
     private record Working(Row source,Map<String,Object> data,Map<String,Object> columns,
-                           Completeness quality,String identity,Set<String> aliases) {
-        Working partial(){return new Working(source,data,columns,merge(quality,Completeness.PARTIAL),identity,aliases);}
-        Working data(Map<String,Object> next){return new Working(source,next,columns,quality,identity,aliases);}
+                           Completeness quality,String identity,Set<String> aliases,Map<String,String> proofs) {
+        Working partial(){return new Working(source,data,columns,merge(quality,Completeness.PARTIAL),identity,aliases,proofs);}
+        Working data(Map<String,Object> next){return new Working(source,next,columns,quality,identity,aliases,proofs);}
         Working evidence(String alias,Row joined) {
-            var proofs=new LinkedHashMap<>(source.proofs());
+            var enriched=new LinkedHashMap<>(proofs);
             joined.proofs().forEach((key,value)->{
                 String name="join:"+alias+":"+key;
-                if(name.length()>512||proofs.putIfAbsent(name,value)!=null)throw new IllegalArgumentException("RUNTIME_JOIN_PROOF_COLLISION_OR_DEPTH");
+                if(name.length()>512||enriched.putIfAbsent(name,value)!=null)throw new IllegalArgumentException("RUNTIME_JOIN_PROOF_COLLISION_OR_DEPTH");
             });
-            if(proofs.size()>256)throw new IllegalArgumentException("RUNTIME_JOIN_PROOF_CAPACITY");
-            var qualified=new Row(source.identity(),source.values(),source.quality(),proofs,source.aliases());
-            return new Working(qualified,data,columns,quality,identity,aliases);
+            if(enriched.size()>256)throw new IllegalArgumentException("RUNTIME_JOIN_PROOF_CAPACITY");
+            // Source values are already deeply owned by Row. Adding immutable
+            // proof metadata must not copy their complete history on every join.
+            return new Working(source,data,columns,quality,identity,aliases,Map.copyOf(enriched));
         }
     }
     private static final class Budget {
@@ -191,7 +192,7 @@ public final class RuntimeTables {
                 results.put(table.node().attr("id"),new Result(List.of(),Completeness.UNAVAILABLE,List.of("DATASET_UNAVAILABLE:"+table.node().attr("dataset"))));continue;
             }
             var rows=new ArrayList<Working>();Completeness population=dataset.populationQuality();
-            for(Row row:dataset.rows())rows.add(new Working(row,row.values(),new LinkedHashMap<>(),row.quality(),row.identity(),row.aliases()));
+            for(Row row:dataset.rows())rows.add(new Working(row,row.values(),new LinkedHashMap<>(),row.quality(),row.identity(),row.aliases(),row.proofs()));
             for(Node op:table.operations()) {
                 if(op.name().equals("firstBy")){rows=firstBy(rows,op,budget,diagnostics);continue;}
                 var next=new ArrayList<Working>();
@@ -335,7 +336,7 @@ public final class RuntimeTables {
                             Working updated=row;
                             if(value!=null)columns.put(op.attr("name"),value);
                             else if(bool(op,"required")){updated=row.partial();diagnose(diagnostics,op,"COLUMN_UNAVAILABLE:"+op.attr("name"));}
-                            next.add(new Working(updated.source(),updated.data(),columns,updated.quality(),updated.identity(),updated.aliases()));
+                            next.add(new Working(updated.source(),updated.data(),columns,updated.quality(),updated.identity(),updated.aliases(),updated.proofs()));
                         }
                         case "identity" -> {
                             if(op.attr("mode").equals("PHYSICAL")) {
@@ -361,7 +362,7 @@ public final class RuntimeTables {
                 rows=next;
             }
             var output=new ArrayList<Row>();
-            for(Working row:rows){population=merge(population,row.quality());output.add(new Row(row.identity(),row.columns(),row.quality(),row.source().proofs(),row.aliases()));}
+            for(Working row:rows){population=merge(population,row.quality());output.add(new Row(row.identity(),row.columns(),row.quality(),row.proofs(),row.aliases()));}
             if(!diagnostics.isEmpty())population=merge(population,Completeness.PARTIAL);
             results.put(table.node().attr("id"),new Result(output,population,diagnostics));
         }
@@ -372,7 +373,7 @@ public final class RuntimeTables {
     private static Working identified(Working row,String identity,Set<String> aliases,Node operation) {
         var columns=new LinkedHashMap<>(row.columns());
         if(!operation.optional("as").isEmpty())columns.put(operation.attr("as"),identity);
-        return new Working(row.source(),row.data(),columns,row.quality(),identity,aliases);
+        return new Working(row.source(),row.data(),columns,row.quality(),identity,aliases,row.proofs());
     }
     public static Set<String> outputColumns(Node table) {
         if(!table.name().equals("table"))throw table.location().error("RUNTIME_TABLE_REQUIRED");

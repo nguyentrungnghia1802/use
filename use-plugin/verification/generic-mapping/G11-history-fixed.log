@@ -1,0 +1,311 @@
+Configuration of 'jacamoJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/jacamo/1.3.1/jacamo-1.3.1.jar, based on class loader
+Configuration of 'moiseJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/moise/1.1/moise-1.1.jar, based on class loader
+Configuration of 'jasonJar' found at /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar, based on class loader
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+Oct 24, 2026 1:56:49 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:49 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:49 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:49 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:50 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:50 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:50 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:50 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:50 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:50 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:50 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:50 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:50 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:50 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:50 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:50 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:51 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:51 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:51 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:51 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:51 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:51 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:51 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:51 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:52 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:52 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:52 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:52 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:52 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:52 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:52 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:52 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:53 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:53 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:53 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:53 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:53 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:53 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:53 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:53 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:54 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:54 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:54 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:54 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:54 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:54 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:54 AM jason.stdlib.println execute
+INFO: source execution
+Oct 24, 2026 1:56:54 AM jason.stdlib.println execute
+INFO: source execution
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+Oct 24, 2026 1:57:03 AM jason.stdlib.println execute
+INFO: Start scheme sch_nativeSteps for delivery
+Oct 24, 2026 1:57:08 AM jason.stdlib.println execute
+INFO: The following error in console is normal, it is due to the fail while bidding.
+Oct 24, 2026 1:57:09 AM jason.asSemantics.TransitionSystem generateGoalDeletion
+WARNING: No failure event was generated for +!bid[code(.fail),code_line(41),code_src("file:///D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/examples/auction/src/agt/auction_capabilities.asl"),error(ia_failed),error_msg(""),scheme(sch_nativeSteps)]
+intention 50: 
+    +!bid[scheme(sch_nativeSteps)] <- ... .fail; org.jacamo.bridge.adapter.JasonPlanInstrumentation$Marker("P_bid_t2","SUCCEEDED") / {Sch=sch_nativeSteps, Id="nativeSteps", AId=cobj_1}
+
+Received bid 73.74174253501083 from participant4437264efd3945b994797066bf21a426 for delivery
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+Oct 24, 2026 1:57:33 AM ora4mas.nopl.GroupBoard agKilled
+INFO: participant4437264efd3945b994797066bf21a426 has quit, role participant removed by the platform!
+Oct 24, 2026 1:57:33 AM ora4mas.nopl.SchemeBoard agKilled
+INFO: participant4437264efd3945b994797066bf21a426 has quit, mission mParticipant removed by the platform!
+Oct 24, 2026 1:57:33 AM ora4mas.nopl.SchemeBoard agKilled
+INFO: participant4437264efd3945b994797066bf21a426 has quit, mission mParticipant removed by the platform!
+Oct 24, 2026 1:57:33 AM ora4mas.nopl.GroupBoard agKilled
+INFO: auctionBinding07a506d9aa1d4cbea2636c3a631e3225 has quit, role auctioneer removed by the platform!
+Oct 24, 2026 1:57:33 AM ora4mas.nopl.SchemeBoard agKilled
+INFO: auctionBinding07a506d9aa1d4cbea2636c3a631e3225 has quit, mission mAuctioneer removed by the platform!
+Oct 24, 2026 1:57:33 AM ora4mas.nopl.SchemeBoard agKilled
+INFO: auctionBinding07a506d9aa1d4cbea2636c3a631e3225 has quit, mission mAuctioneer removed by the platform!
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+java.lang.InterruptedException
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+java.lang.InterruptedException
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:1727)
+	at java.base/java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:420)
+	at cartago.Workspace$EnvironmentController.run(Workspace.java:1919)
+[ENV] [ENV-CONTROLLER] uncaught operation exception: java.lang.InterruptedException
+
+Test run finished after 46345 ms
+[         4 containers found      ]
+[         0 containers skipped    ]
+[         4 containers started    ]
+[         0 containers aborted    ]
+[         4 containers successful ]
+[         0 containers failed     ]
+[        20 tests found           ]
+[         0 tests skipped         ]
+[        20 tests started         ]
+[         0 tests aborted         ]
+[        20 tests successful      ]
+[         0 tests failed          ]
+

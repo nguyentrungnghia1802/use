@@ -9,8 +9,8 @@ import org.tzi.use.semantic.engine.use75.Use75ModelBinding;
 /** Builds an unpublished native candidate; no MSystem or runtime/history is created here. */
 public final class XmlNativePreparation {
     public record Result(Use75ModelBinding binding,List<XmlOperationBindings.Operation> operations,
-            AuthoredOclSpecificationLoader.Prepared authored,JaCaMoOclContractMapping.Result intentional,ObserverSchema observers) {
-        public Result {operations=List.copyOf(operations);}
+            AuthoredOclSpecificationLoader.Prepared authored,JaCaMoOclContractMapping.Result intentional,ObserverSchema observers,Map<String,Object> preflight) {
+        public Result {operations=List.copyOf(operations);preflight=Map.copyOf(preflight);}
     }
     public Result prepare(ModelSnapshot source,SemanticProgram program,CodeGroundedTraceCollector trace) {
         program.assertUnchanged();program.requireSourceHash(org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(org.jacamo.bridge.contract.ContractPayloads.model(source)));
@@ -24,8 +24,12 @@ public final class XmlNativePreparation {
         for(var node:inputs.specification().root().child("bindings").children("oclClause"))if(clauses.putIfAbsent(node.attr("name"),AuthoredOclSpecificationLoader.parseContext(node.attr("context")))!=null)throw node.location().error("OCL_CLAUSE_BINDING_DUPLICATE");
         var prepared=loader.compile(authored,binding,inputs.ocl().sha256(),clauses);
         var intentional=new XmlIntentionalOclBindings().compile(program,binding,observers);
+        // Validate the complete authored runtime plan before any live MSystem is
+        // created/published. This compiles instructions only; no writer/history.
+        if(inputs.authoredModels())new org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeStateMapping(program,binding.model());
         prepared.install(new UseModelApi(binding.model()));
-        return new Result(binding,operations,prepared,intentional,observers);
+        var preflight=inputs.authoredModels()?XmlBindingPreflight.inspect(program,binding.model(),prepared,intentional):Map.<String,Object>of();
+        return new Result(binding,operations,prepared,intentional,observers,preflight);
     }
     public static ObserverSchema observerSchema(org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingSpecification specification) {
         var classIds=new LinkedHashSet<String>();var valueIds=new LinkedHashSet<String>();

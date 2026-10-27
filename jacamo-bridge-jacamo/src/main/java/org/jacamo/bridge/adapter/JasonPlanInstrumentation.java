@@ -132,7 +132,7 @@ public class JasonPlanInstrumentation {
         private final Site site;private final String phase;private final Reporter reporter;
         Marker(Site site,String phase,Reporter reporter){this.site=site;this.phase=phase;this.reporter=reporter;}
         @Override public Object execute(TransitionSystem ts,Unifier unifier,Term[] args) {
-            try {reporter.marker(ts,site,phase);}catch(Exception missing){try{reporter.unavailable("STEP_MARKER_CAPTURE_FAILED:"+missing.getClass().getSimpleName());}catch(RuntimeException retired){/* Retired transport cannot grant a Boolean result. */}}
+            try {reporter.marker(ts,site,phase);}catch(Exception missing){try{reporter.unavailable("STEP_MARKER_CAPTURE_FAILED:"+missing.getClass().getSimpleName()+":"+missing.getMessage());}catch(RuntimeException retired){/* Retired transport cannot grant a Boolean result. */}}
             return Boolean.TRUE; // Observation never changes the original deed's outcome.
         }
     }

@@ -1,0 +1,96 @@
+{
+  "status": "PASS",
+  "command": "mvn -B clean verify",
+  "log": "P10-source-confirmed-complete-clean-verify.log",
+  "unitTests": 1372,
+  "integrationTests": 173,
+  "modules": [
+    {
+      "module": "jacamo-bridge-contract",
+      "kind": "surefire",
+      "reports": 10,
+      "tests": 32,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "jacamo-bridge-jacamo",
+      "kind": "surefire",
+      "reports": 39,
+      "tests": 122,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-core",
+      "kind": "surefire",
+      "reports": 3,
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-core",
+      "kind": "failsafe",
+      "reports": 1,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-jacamo-semantic-engine",
+      "kind": "surefire",
+      "reports": 11,
+      "tests": 103,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-gui",
+      "kind": "surefire",
+      "reports": 1,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-gui",
+      "kind": "failsafe",
+      "reports": 1,
+      "tests": 129,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "kind": "surefire",
+      "reports": 317,
+      "tests": 1100,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "use-plugin",
+      "kind": "failsafe",
+      "reports": 24,
+      "tests": 43,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "sourceFreeze": "P10-source-confirmed-freeze-v3.json",
+  "frozenFiles": 3285,
+  "sourceChanges": [],
+  "archive": "use-assembly\\target\\use-7.5.0-use-bin.zip",
+  "archiveSha256": "7b29d54262b105ca5e5d4accee5198b92ceda21d86eae2fd9072aa6e906edb00",
+  "pluginSha256": "a19157aabfc00a6edf58b40661507b79efdac4ac9356ff49dae04726945c34e6"
+}

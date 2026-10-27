@@ -19,6 +19,9 @@ public final class TaskDemandProjection {
     private final String program;
     private final List<Rule> rules;
     public TaskDemandProjection(MappingSpecification specification,String program) {
+        this(specification,program,null);
+    }
+    public TaskDemandProjection(MappingSpecification specification,String program,org.vnu.sme.goal.dsl.istar.mm.GoalModel goals) {
         this.program=Objects.requireNonNull(program);var compiled=new ArrayList<Rule>();var sections=specification.root().child("runtime").children("taskDemands");
         if(sections.size()>1)throw specification.root().location().error("TASK_DEMAND_SECTION_DUPLICATE");
         var selected=new HashSet<String>();
@@ -28,8 +31,13 @@ public final class TaskDemandProjection {
             var elements=specification.root().child("bindings").children("elementRuntime").stream().filter(e->e.attr("target").equals(node.attr("target"))).toList();
             if(elements.size()!=1||!elements.getFirst().attr("derived").equals("false"))throw node.location().error("TASK_DEMAND_TARGET_BINDING_REQUIRED");
             String actor=elements.getFirst().attr("actor");
-            var original=specification.root().child("istar").children("actor").stream().filter(a->a.attr("name").equals(actor)).toList();
-            if(original.size()!=1||original.getFirst().children("task").stream().noneMatch(t->t.attr("name").equals(node.attr("target")))||scope.children("actor").stream().noneMatch(a->a.attr("actor").equals(actor)))throw node.location().error("TASK_DEMAND_ORIGINAL_TASK_OWNER_REQUIRED");
+            if(goals==null&&!specification.root().children("models").isEmpty())throw node.location().error("AUTHORED_CANONICAL_GOAL_MODEL_REQUIRED");
+            boolean originalTask;
+            if(goals==null) {
+                var original=specification.root().child("istar").children("actor").stream().filter(a->a.attr("name").equals(actor)).toList();
+                originalTask=original.size()==1&&original.getFirst().children("task").stream().anyMatch(t->t.attr("name").equals(node.attr("target")));
+            }else originalTask=goals.findElement(node.attr("target")).orElse(null) instanceof org.vnu.sme.goal.dsl.istar.mm.Task&&goals.ownerOf(node.attr("target")).orElse("").equals(actor);
+            if(!originalTask||scope.children("actor").stream().noneMatch(a->a.attr("actor").equals(actor)))throw node.location().error("TASK_DEMAND_ORIGINAL_TASK_OWNER_REQUIRED");
             var columns=RuntimeTables.outputColumns(table);var episode=words(node.attr("episodeFields"));
             if(!columns.containsAll(List.of(node.attr("anchorColumn"),node.attr("playerColumn"),node.attr("requiredColumn")))||episode.isEmpty()||episode.size()>16||new HashSet<>(episode).size()!=episode.size()||!columns.containsAll(episode)
                     ||!node.optional("completeColumn").isBlank()&&!columns.contains(node.attr("completeColumn")))throw node.location().error("TASK_DEMAND_COLUMNS_REQUIRED");

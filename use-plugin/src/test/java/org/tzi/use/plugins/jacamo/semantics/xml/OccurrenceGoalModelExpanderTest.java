@@ -56,4 +56,26 @@ class OccurrenceGoalModelExpanderTest {
         assertThrows(IllegalArgumentException.class,()->new OccurrenceGoalModelExpander(model,EngineSemanticsProfile.DERIVED_AND_RESOURCE_V1,Map.of()).expand(cast(),"MissingPolicy"));
         assertThrows(IllegalArgumentException.class,()->new OccurrenceGoalModelExpander(model,EngineSemanticsProfile.DERIVED_AND_RESOURCE_V1,Map.of("shipment",OccurrenceGoalModelExpander.Quantifier.ALL)).expand(List.of(cast().getFirst()),"MissingActors"));
     }
+    @Test void specializationKeepsCanonicalRelationWithoutInventingParentEnactmentOrSharingPlayerHistory() {
+        var original=source();var model=new GoalModel("SpecializedShipment");
+        model.addActor(original.findActor("Dispatch").orElseThrow());
+        var carrier=original.findActor("Carrier").orElseThrow();
+        model.addActor(new Role(carrier.name(),carrier.elements(),carrier.refinements(),carrier.contributions(),carrier.qualifications(),carrier.neededBys(),List.of(new Association("Carrier",AssocKind.IS_A,"Capability"))));
+        model.addActor(new Role("Capability",List.of(),List.of(),List.of(),List.of(),List.of(),List.of()));
+        original.getDependencies().forEach(model::addDependency);
+        var profile=EngineSemanticsProfile.ROLE_SPECIALIZATION_V1;String canonical=OwnedGoalModel.fingerprint(model);
+        var expander=new OccurrenceGoalModelExpander(model,profile,Map.of("shipment",OccurrenceGoalModelExpander.Quantifier.ANY));
+        var expanded=expander.expand(cast(),"Execution");
+        assertEquals(3,expanded.cast().size());assertTrue(expanded.cast().stream().noneMatch(p->p.actorType().equals("Capability")));
+        assertEquals(2,expanded.trace().values().stream().filter(t->t.kind().equals("DEFINITION_ONLY_SPECIALIZATION")).count());
+        assertEquals(canonical,OwnedGoalModel.fingerprint(model));assertEquals(1,model.findActor("Carrier").orElseThrow().associations().size());
+        try(var engine=new Use4GoalRuntimeSessionAdapter(expanded.model(),expanded.cast(),(a,x,b,y)->true,"scope",profile,EngineTopologyPolicy.SINGLE_OWNER_CONTEXT_V1)) {
+            var result=engine.step(input(engine,expanded,Set.of("physical-A"),true));
+            var other=engine.topology().occurrences().values().stream().filter(o->expanded.trace().get(o.sourceElementId()).source().equals("ship")&&expanded.trace().get(o.sourceElementId()).player().equals("physical-B")).findFirst().orElseThrow();
+            assertEquals(GoalTaskStatus.PENDING,result.history().tasks().get(other.occurrenceId()).status());
+        }
+        var invalid=new ArrayList<>(cast());invalid.add(new OccurrenceGoalModelExpander.Player("Capability","Capability","fake","invented-player","fake-role","fake-interval"));
+        assertThrows(IllegalArgumentException.class,()->expander.expand(invalid,"Invalid"));
+        assertThrows(IllegalArgumentException.class,()->new OccurrenceGoalModelExpander(model,EngineSemanticsProfile.DERIVED_AND_RESOURCE_V1,Map.of()));
+    }
 }

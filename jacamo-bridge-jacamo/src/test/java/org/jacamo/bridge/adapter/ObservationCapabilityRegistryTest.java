@@ -20,6 +20,8 @@ class ObservationCapabilityRegistryTest {
         var requests=List.of(new ObservationCapabilityRequest("one","framework.known",true,Map.of()),new ObservationCapabilityRequest("two","framework.known",true,Map.of()));
         var session=registry.open(requests);assertTrue(session.requiredUnavailable().isEmpty());session.close();session.close();
         assertEquals(List.of("two","one"),retired);assertThrows(IllegalStateException.class,session::capabilities);
+        assertEquals(List.of(CapabilityStatus.UNAVAILABLE,CapabilityStatus.UNAVAILABLE),session.status().stream().map(Capability::status).toList());
+        assertTrue(session.status().stream().allMatch(c->c.reason().equals("PROVIDER_SESSION_CLOSED")),"Publisher status cannot retain COMPLETE or throw after agent retirement");
         assertThrows(IllegalArgumentException.class,()->registry.open(List.of(requests.getFirst(),requests.getFirst())));
         try(var fresh=registry.open(requests)){assertTrue(fresh.requiredUnavailable().isEmpty());}
         assertEquals(List.of("two","one","two","one"),retired);

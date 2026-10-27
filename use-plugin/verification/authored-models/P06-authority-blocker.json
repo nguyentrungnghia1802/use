@@ -1,0 +1,106 @@
+{
+  "status": "BLOCKED",
+  "scope": "EXACT_INTERNAL_MOISE_GOAL_ENABLED_SATISFIED_TRANSITION_TIME",
+  "provider": "moise.scheme-lifecycle.v1",
+  "providerVersion": "MOISE_SCHEME_CUT/2.2",
+  "timeAuthority": "PUBLICATION_ONLY_INTERNAL_TRANSITION_TIME_UNAVAILABLE",
+  "reason": "Pinned public SchemeBoard goal states are computed via NPLInterpreter.holds; current source cut does not retain exact internal truth-change times. No accepted source instrumentation supplies them.",
+  "notAnImpossibilityClaim": "A future neutral source instrumentation provider requires a proven internal mutation/clock boundary and complete prefix before enabling this authority.",
+  "forbiddenSubstitutions": [
+    "TCP receipt time",
+    "property publication time",
+    "operation return time",
+    "obligation activation time as goal enabled time",
+    "hardcoded or inferred timestamps"
+  ],
+  "acceptedResultPath": "use-plugin/verification/authored-models/P09-cold-installed/auction-15010252319824213975/accepted.json",
+  "acceptedResultSha256": "0b62b0284f727a1c9832f1a986443a79efef01fadc285ace7b080f398c6b6a66",
+  "blockedConstraints": [
+    {
+      "id": "NATIVE:AuctionMonitor::BidEvidence",
+      "kind": "INVARIANT_BODY",
+      "contextObject": "AuctionMonitor_074cda92baeeb4cbf148",
+      "verdict": "SKIPPED",
+      "diagnostic": "XML_OBSERVER_FIELD_UNAVAILABLE:bidSatisfiedAt:UNDEFINED",
+      "observationQuality": "UNAVAILABLE"
+    },
+    {
+      "id": "NATIVE:AuctionMonitor::BidEvidence",
+      "kind": "INVARIANT_BODY",
+      "contextObject": "AuctionMonitor_74a84818184889c4ba86",
+      "verdict": "SKIPPED",
+      "diagnostic": "XML_OBSERVER_FIELD_UNAVAILABLE:bidSatisfiedAt:UNDEFINED",
+      "observationQuality": "UNAVAILABLE"
+    },
+    {
+      "id": "NATIVE:AuctionMonitor::BidEvidence",
+      "kind": "INVARIANT",
+      "contextObject": "",
+      "verdict": "SKIPPED",
+      "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN",
+      "observationQuality": "UNAVAILABLE"
+    },
+    {
+      "id": "NATIVE:AuctionMonitor::SchemeOrder",
+      "kind": "INVARIANT_BODY",
+      "contextObject": "AuctionMonitor_074cda92baeeb4cbf148",
+      "verdict": "SKIPPED",
+      "diagnostic": "XML_OBSERVER_FIELD_UNAVAILABLE:bidEnabledAt:UNDEFINED",
+      "observationQuality": "UNAVAILABLE"
+    },
+    {
+      "id": "NATIVE:AuctionMonitor::SchemeOrder",
+      "kind": "INVARIANT_BODY",
+      "contextObject": "AuctionMonitor_74a84818184889c4ba86",
+      "verdict": "SKIPPED",
+      "diagnostic": "XML_OBSERVER_FIELD_UNAVAILABLE:bidEnabledAt:UNDEFINED",
+      "observationQuality": "UNAVAILABLE"
+    },
+    {
+      "id": "NATIVE:AuctionMonitor::SchemeOrder",
+      "kind": "INVARIANT",
+      "contextObject": "",
+      "verdict": "SKIPPED",
+      "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN",
+      "observationQuality": "UNAVAILABLE"
+    }
+  ],
+  "qualifiedDeadlineBodyCount": 10,
+  "proofs": {
+    "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/MoiseSchemeCapability.java": "a6d5bd943ce68d9c0e4f70a89a2e58f4cff7b5b7ff74b48b9a95aa40fdaa6dbd",
+    "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/MoiseSchemeRead.java": "cea895f2bd9f1f602ce8cd4288c5245a5dc092109a4f7bf24ebe85a3081eda26",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/xml/MoiseTransitionEvidenceTest.java": "8234f4871c1a8b53a83c33cc9f73457f01a9318a63f4213c64b59f6e5c668b45",
+    "use-plugin/verification/authored-models/P06-moise-pinned-api.txt": "dbd4304c08bb1e09db50bd0e2ac18388da1ca62a3b2413c97dec0a704f1e1820",
+    "use-plugin/verification/authored-models/P06-moise-pinned-bytecode.txt": "d056beb920d7d22cfdefe6b9d6bed3a81415b9b2e760ae70da9b7b3a2b274269",
+    "use-plugin/examples/auction/authored-v1/auction_constraints_final_fixed.ocl": "07f692a7412cd877203846081018d846076b7fd149392db1accc5e83ad4fa0d6"
+  },
+  "fullArchiveQualification": "use-plugin/verification/authored-models/P09-cold-installed/auction-15010252319824213975/qualification.json",
+  "populationDiagnostics": [
+    {
+      "id": "NATIVE:AuctionMonitor::BidEvidence",
+      "verdict": "SKIPPED",
+      "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN"
+    },
+    {
+      "id": "NATIVE:AuctionMonitor::SchemeOrder",
+      "verdict": "SKIPPED",
+      "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN"
+    },
+    {
+      "id": "NATIVE:OrgContext::CslV4RoleCompatibility",
+      "verdict": "SKIPPED",
+      "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN"
+    },
+    {
+      "id": "NATIVE:auctionGroup::AuctioneerPopulation",
+      "verdict": "SKIPPED",
+      "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN"
+    },
+    {
+      "id": "NATIVE:auctionGroup::ParticipantPopulation",
+      "verdict": "SKIPPED",
+      "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN"
+    }
+  ],
+  "acceptedCoverage": "INCOMPLETE"
+}

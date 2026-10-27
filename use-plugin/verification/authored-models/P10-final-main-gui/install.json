@@ -1,0 +1,8 @@
+{
+  "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+  "archiveSha256": "7b29d54262b105ca5e5d4accee5198b92ceda21d86eae2fd9072aa6e906edb00",
+  "install": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\target\\final-gui-b4bde978\\use-7.5.0",
+  "usePid": 17984,
+  "harness": "P10LeftMainGui.java",
+  "scope": "INITIAL_LEFT_PLACEMENT_AND_READ_ONLY_SAMPLER_ALL_ACTIONS_THROUGH_GUI"
+}

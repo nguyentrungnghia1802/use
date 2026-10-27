@@ -6,7 +6,8 @@ import org.jacamo.bridge.contract.*;
 
 /** Public source facts/history only. Freeze sets, administrative policy and goal credit belong to XML observers. */
 public final class MoiseSchemeCapability implements ObservationCapabilityRegistry.Handle {
-    public static final String PROVIDER="moise.scheme-lifecycle.v1",VERSION="MOISE_SCHEME_CUT/2.2";
+    public static final String PROVIDER="moise.scheme-lifecycle.v1",VERSION="MOISE_SCHEME_CUT/2.3";
+    private static final Map<String,Object> PUBLICATION_CLOCK=publicationClock();
     private final ObservationCapabilityRequest request;
     private final MoiseSchemeRead reader;
     private final String run,revision;private final long generation;
@@ -94,12 +95,21 @@ public final class MoiseSchemeCapability implements ObservationCapabilityRegistr
         result.put("origin",origin);result.put("sequence",++history.sequence);result.put("fromCreation",history.fromCreation);result.put("historyQuality",history.fromCreation&&!history.broken?"COMPLETE":"INCOMPLETE");
         result.put("birthSequence",history.birthSequence);result.put("historyMeaning","PUBLIC_STATE_PREFIX_SINCE_OBSERVED_POST_INIT_CREATION");
         result.put("timeAuthority","PUBLICATION_ONLY_INTERNAL_TRANSITION_TIME_UNAVAILABLE");result.put("clockIdentity",NplSourceClockObservation.clockIdentity(run,generation));result.put("publicationEpochMillis",time>0?Long.toString(time):"");
+        result.put("publicationClockProof",PUBLICATION_CLOCK);
         result.put("goals",goals);result.put("done",raw.done());result.put("commitments",raw.commitments());result.put("administrativeEffect",effect);
         result.put("commitmentBindings",raw.commitmentBindings());
         result.put("transitions",List.copyOf(history.transitions));result.put("administrativeEffects",List.copyOf(history.administrativeEffects));
         result.put("cutHash",AdapterEvidence.digest(CanonicalJson.encode(result)));CanonicalJson.encode(result,128*1024);return JasonStructuredTerms.immutable(result);
     }
     public synchronized void retire(ArtifactId identity){histories.remove(identity.getId().toString());}
+    private static Map<String,Object> publicationClock() {
+        String hash="";
+        try {var binary=DeclaredArtifactTypeProof.readActualBinary(Workspace.class);if(binary!=null)hash=AdapterEvidence.digest(binary.bytes());}
+        catch(Exception|LinkageError unavailable){ /* Independent public state remains readable. */ }
+        return Map.of("version","CARTAGO_PUBLICATION_CLOCK/1.0","workspaceClassSha256",hash,
+                "status",hash.equals("0578556e6977dd23d04de4b5f55a293be9ba7da0fa14d16254ae804b10af4798")?"COMPLETE":"UNSUPPORTED",
+                "unit","EPOCH_MILLISECONDS","authority","WORKSPACE_NEW_PERCEPT_LOGGER_SYSTEM_CURRENT_TIME_MILLIS");
+    }
     @Override public synchronized Capability capability(){return new Capability(request.id(),closed?CapabilityStatus.UNAVAILABLE:CapabilityStatus.COMPLETE,List.of(reader.osHash,MoiseSchemeRead.MOISE_SHA),closed?"PROVIDER_CLOSED":"Public MOISE state; internal transition times remain unavailable");}
     @Override public synchronized void close(){closed=true;histories.clear();}
     private static String text(Map<String,Object> map,String name){if(!(map.get(name) instanceof String value)||value.isBlank())throw new IllegalArgumentException("MOISE_PARAMETER_REQUIRED:"+name);return value;}

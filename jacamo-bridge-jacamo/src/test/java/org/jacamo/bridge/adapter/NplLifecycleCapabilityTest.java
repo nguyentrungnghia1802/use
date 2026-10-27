@@ -30,7 +30,7 @@ class NplLifecycleCapabilityTest {
             var wrong=new ObservationCapabilityRequest("wrong",request.provider(),true,Map.of("hash","0".repeat(64)));
             try(var rejected=registry.open(List.of(wrong))){assertEquals(1,rejected.requiredUnavailable().size());}
         }finally {
-            if(handle!=null)handle.close();if(artifact!=null){NplLiveBoardObservationTest.Board.instance.getNormativeEngine().stop();NplLiveBoardObservationTest.Board.instance.destroy();environment.getController("/main").removeArtifact(artifact.getName());}
+            if(handle!=null)handle.close();if(artifact!=null){NplLiveBoardObservationTest.destroy(actor,artifact);}
             for(var id:environment.getController("/main").getCurrentAgents())if(id.getAgentName().equals(actor.getName()))environment.resolveWSP("/main").getWorkspace().quitAgent(id);environment.shutdown();
         }
     }

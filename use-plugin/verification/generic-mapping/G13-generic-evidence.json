@@ -1,0 +1,6 @@
+{
+  "profile": "JACAMO_DECLARATIVE_XML",
+  "archiveSha256": "7401e604b021945fa3c0d593786f20faee9e82dfeae222af07a10beb5c14e960",
+  "live": "use-plugin/verification/generic-mapping/G13-frozen-generic-live",
+  "caseB": "use-plugin/verification/generic-mapping/G13-frozen-case-b.json"
+}

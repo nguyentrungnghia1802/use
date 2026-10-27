@@ -1,0 +1,17 @@
+{
+  "status": "NOT_ACCEPTED_SOURCE_BOUNDARY_GAP",
+  "usePid": 17984,
+  "producerPid": 21288,
+  "tasksBeforeGap": [
+    "A_start_t1",
+    "A_start_t2",
+    "P_bid_t1",
+    "P_bid_t2"
+  ],
+  "diagnostics": [
+    "BRIDGE_EVENT_GAP:source=bridge:transport:sequence=1:JASON_STEP_CAPTURE_UNAVAILABLE:STEP_MARKER_CAPTURE_FAILED:IllegalStateException:OBSERVATION_BOUNDARY_CAPTURE_FAILED:IllegalStateException:CARTAGO_BOUNDARY_CUT_NOT_STABLE",
+    "BridgeProtocolException:BRIDGE_SUBSCRIPTION_DISCONNECTED <- BridgeProtocolException:BRIDGE_EVENT_ORDER_REJECTED <- BridgeProtocolException:BRIDGE_NOT_LIVE:RESYNC_REQUIRED"
+  ],
+  "journalBytes": 100983984,
+  "quotaExhausted": false
+}

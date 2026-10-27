@@ -1,0 +1,56 @@
+
+Test run finished after 147485 ms
+[         2 containers found      ]
+[         0 containers skipped    ]
+[         2 containers started    ]
+[         0 containers aborted    ]
+[         2 containers successful ]
+[         0 containers failed     ]
+[         1 tests found           ]
+[         0 tests skipped         ]
+[         1 tests started         ]
+[         0 tests aborted         ]
+[         0 tests successful      ]
+[         1 tests failed          ]
+
+
+Failures (1):
+  JUnit Jupiter:GenericPackagedPluginIT:installedDeclarativeAuctionUsesGeneratedModelsNeutralProvidersAndExactReplay()
+    MethodSource [className = 'org.tzi.use.plugins.jacamo.semantics.GenericPackagedPluginIT', methodName = 'installedDeclarativeAuctionUsesGeneratedModelsNeutralProvidersAndExactReplay', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: USE version 7.5.0, Copyright (C) 1999-2025 University of Bremen & University of Applied Sciences Hamburg
+java.util.concurrent.ExecutionException: java.lang.AssertionError: Evidence table semantic-case-evidence
+	at java.base/java.util.concurrent.FutureTask.report(FutureTask.java:122)
+	at java.base/java.util.concurrent.FutureTask.get(FutureTask.java:205)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.edt(InstalledAuctionMain.java:449)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.runLive(InstalledAuctionMain.java:149)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.run(InstalledAuctionMain.java:84)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.main(InstalledAuctionMain.java:22)
+Caused by: java.lang.AssertionError: Evidence table semantic-case-evidence
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.check(InstalledAuctionMain.java:461)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuctionMain.lambda$runLive$10(InstalledAuctionMain.java:150)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.desktop/java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:318)
+	at java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:773)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:720)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:714)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:400)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:87)
+	at java.desktop/java.awt.EventQueue.dispatchEvent(EventQueue.java:742)
+	at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+ ==> expected: <0> but was: <1>
+       org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)
+       org.junit.jupiter.api.AssertionUtils.failNotEqual(AssertionUtils.java:62)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:150)
+       org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:559)
+       org.tzi.use.plugins.jacamo.semantics.GenericPackagedPluginIT.installedDeclarativeAuctionUsesGeneratedModelsNeutralProvidersAndExactReplay(GenericPackagedPluginIT.java:47)
+       java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+       org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+       org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+       [...]

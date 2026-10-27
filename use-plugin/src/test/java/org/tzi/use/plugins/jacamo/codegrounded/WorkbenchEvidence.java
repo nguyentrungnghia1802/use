@@ -20,7 +20,7 @@ public final class WorkbenchEvidence {
         var frame=StepReplayProof.onEdt(()->new JFrame("Simplified Workbench acceptance"));
         try {
             StepReplayProof.onEdt(()->{
-                var panel=new JaCaMoWorkbenchPanel(facade);frame.setContentPane(panel);frame.setSize(1550,1100);frame.setVisible(true);panel.refreshRuntime();
+                var panel=new JaCaMoWorkbenchPanel(facade);frame.setContentPane(panel);frame.setSize(1550,1100);org.tzi.use.plugins.jacamo.ui.AcceptanceScreen.place(frame);frame.setVisible(true);panel.refreshRuntime();
                 var tabs=StepReplayProof.component(panel,"workbench-tabs",JTabbedPane.class);
                 assertNotNull(facade.importSelection(),"Real Workbench exposes the import-profile selector");
                 assertEquals(2,tabs.getTabCount());assertEquals("Projection Rules",tabs.getTitleAt(0));

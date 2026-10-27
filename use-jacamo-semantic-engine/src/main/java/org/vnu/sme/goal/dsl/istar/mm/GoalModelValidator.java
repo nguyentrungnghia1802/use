@@ -33,7 +33,7 @@ public final class GoalModelValidator {
         }
         List<String> errors = new ArrayList<>();
         validateElementIdUniqueness(model, errors);
-        validateRefinements(model, errors);
+        validateRefinements(model, errors, policy);
         validateGoalTypeRefinements(model, errors);
         validateRefinementKindConsistency(model, errors);
         validateSingleRefinementParent(model, errors);
@@ -45,7 +45,7 @@ public final class GoalModelValidator {
         validateDependencies(model, errors);
         if (policy == GoalModelValidationPolicy.STRICT_ORIGINAL)
             validateRefinementParentsAreNotDependencyEndpoints(model, errors);
-        else validateDerivedAndDependees(model, errors);
+        else validateDerivedAndDependees(model, errors, policy);
         validateOclContracts(model, errors);
         return List.copyOf(errors);
     }
@@ -87,7 +87,7 @@ public final class GoalModelValidator {
         return visited == degree.size() ? List.of() : List.of("semantic: extended activation/dependency graph is cyclic");
     }
 
-    private static void validateDerivedAndDependees(GoalModel model, List<String> errors) {
+    private static void validateDerivedAndDependees(GoalModel model, List<String> errors, GoalModelValidationPolicy policy) {
         Set<String> parents = new LinkedHashSet<>(), permitted = new LinkedHashSet<>();
         for (Actor actor : model.getActors()) {
             Map<String, List<Refinement>> groups = new LinkedHashMap<>();
@@ -100,7 +100,7 @@ public final class GoalModelValidator {
                 if (!(element instanceof Goal goal) || !goal.conditions().isEmpty()
                         || goal.goalType() != GoalType.ACHIEVE || refinements.size() != 1
                         || !(refinements.getFirst() instanceof AndRefinement and)
-                        || and.children().size() < 2 || !model.ownerOf(parent).orElse("").equals(actor.name())) return;
+                        || and.children().size() < 2 && !unaryRealization(model,actor,and,policy) || !model.ownerOf(parent).orElse("").equals(actor.name())) return;
                 if (and.children().stream().allMatch(child -> model.ownerOf(child).orElse("").equals(actor.name()))) permitted.add(parent);
             });
         }
@@ -112,6 +112,17 @@ public final class GoalModelValidator {
         }
     }
     // P-IADM-01-END
+
+    // P-IADM-02-BEGIN: exact opt-in unary Goal <- Task realization. Strict defaults stay unchanged.
+    private static boolean unaryRealization(GoalModel model, Actor actor, AndRefinement and, GoalModelValidationPolicy policy) {
+        return policy == GoalModelValidationPolicy.ROLE_SPECIALIZATION_V1 && and.children().size() == 1
+                && model.findElement(and.parent()).orElse(null) instanceof Goal goal
+                && goal.goalType() == GoalType.ACHIEVE && goal.conditions().isEmpty()
+                && model.findElement(and.children().getFirst()).orElse(null) instanceof Task
+                && model.ownerOf(and.parent()).orElse("").equals(actor.name())
+                && model.ownerOf(and.children().getFirst()).orElse("").equals(actor.name());
+    }
+    // P-IADM-02-END
 
     private static void validateOclContracts(GoalModel model, List<String> errors) {
         for (Actor actor : model.getActors()) {
@@ -151,10 +162,10 @@ public final class GoalModelValidator {
         }
     }
 
-    private static void validateRefinements(GoalModel model, List<String> errors) {
+    private static void validateRefinements(GoalModel model, List<String> errors, GoalModelValidationPolicy policy) {
         for (Actor actor : model.getActors()) {
             for (Refinement ref : actor.refinements()) {
-                if (ref instanceof AndRefinement and && and.children().size() < 2) {
+                if (ref instanceof AndRefinement and && and.children().size() < 2 && !unaryRealization(model, actor, and, policy)) {
                     errors.add("semantic: and-refine '" + and.parent()
                             + "' in actor '" + actor.name()
                             + "' must have at least 2 children (found "

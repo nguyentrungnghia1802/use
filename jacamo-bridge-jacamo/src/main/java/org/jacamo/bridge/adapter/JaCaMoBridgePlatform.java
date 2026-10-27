@@ -65,7 +65,10 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
     private JasonSnapshotSource jasonSource;
     private CartagoSnapshotSource cartagoSource;
     private NplBoardSnapshotSource nplSource;
+    private final List<MoiseBoardSnapshotSource> moiseSources=new ArrayList<>();
     private AuctionClockObservation sourceClock;
+    private VerificationObservationSource verificationSource;
+    private volatile ProductionObservationSession observationSession;
     private final List<BridgeAgArch> stepArchitectures=new ArrayList<>();
     private volatile RuntimeSnapshot latestRuntimeSnapshot;
     private volatile boolean configured;
@@ -155,30 +158,37 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
     }
 
     private void installRuntimeSources() throws Exception {
+        moiseSources.clear();
         jasonSource = new JasonSnapshotSource(sessionId);
         var sources = new ArrayList<SnapshotSource>();
         // Register the publication lane before subsystem listeners and before startAgs.
-        var verificationSource=new VerificationObservationSource(sessionId,generation(),modelSnapshot.modelRevision());sources.add(verificationSource);
+        verificationSource=new VerificationObservationSource(sessionId,generation(),modelSnapshot.modelRevision());sources.add(verificationSource);
         sources.add(jasonSource);
         nplSource=new NplBoardSnapshotSource(sessionId, JaCaMoBridgePlatform::officialNormativeBoards);
-        cartagoSource=new CartagoSnapshotSource(CartagoEnvironment.getInstance(),configuredWorkspaces(),sessionId,modelSnapshot,nplSource::artifactCreated);
+        if(neutralObservationConfigured())nplSource.deferObservation();
+        cartagoSource=new CartagoSnapshotSource(CartagoEnvironment.getInstance(),configuredWorkspaces(),sessionId,modelSnapshot,nplSource::artifactCreated,!neutralObservationConfigured());
+        if(neutralObservationConfigured())cartagoSource.deferObservation();
         sources.add(cartagoSource);
         Set<String> declaredOrganisations = project.getOrgs().stream()
                 .map(value -> value.getName()).collect(java.util.stream.Collectors.toUnmodifiableSet());
         for (String name : declaredOrganisations) {
-            sources.add(new MoiseBoardSnapshotSource(name, sessionId, JaCaMoBridgePlatform::officialGroupBoards,
-                    JaCaMoBridgePlatform::officialSchemeBoards,modelSnapshot.semanticContract(),resolveProjectFile().getParent()));
+            var boards=new MoiseBoardSnapshotSource(name, sessionId, JaCaMoBridgePlatform::officialGroupBoards,
+                    JaCaMoBridgePlatform::officialSchemeBoards,modelSnapshot.semanticContract(),resolveProjectFile().getParent());
+            if(neutralObservationConfigured())boards.deferObservation();
+            moiseSources.add(boards);sources.add(boards);
         }
         // Agent plans may create boards without a static organisation declaration.
-        sources.add(new MoiseBoardSnapshotSource(declaredOrganisations, sessionId,
+        var dynamicBoards=new MoiseBoardSnapshotSource(declaredOrganisations, sessionId,
                 JaCaMoBridgePlatform::officialGroupBoards, JaCaMoBridgePlatform::officialSchemeBoards,
-                modelSnapshot.semanticContract(),resolveProjectFile().getParent()));
+                modelSnapshot.semanticContract(),resolveProjectFile().getParent());
+        if(neutralObservationConfigured())dynamicBoards.deferObservation();
+        moiseSources.add(dynamicBoards);sources.add(dynamicBoards);
         // SchemeBoard and GroupBoard extend OrgArt, NOT NormativeBoard.
         // Its static registry alone therefore misses their actual NPL engines.
         sources.add(nplSource);
         checkpointSource=new BridgeCheckpointSource();sources.add(checkpointSource);
         runtimeCoordinator = new SnapshotCoordinator(sources, EVENT_CAPACITY, this::enqueueEvent);
-        if(Boolean.getBoolean(AuctionClockObservation.PROPERTY)) {
+        if(!neutralObservationConfigured()&&Boolean.getBoolean(AuctionClockObservation.PROPERTY)) {
             sourceClock=new AuctionClockObservation(sessionId,generation(),modelSnapshot.modelRevision(),observation->verificationSource.publish(observation,"",""));
             sourceClock.pulse(false);
         }
@@ -187,7 +197,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
     }
 
     private void installStepObservation(Path root)throws Exception {
-        if(!Boolean.getBoolean(AuctionStepObservation.PROPERTY))return;
+        if(neutralObservationConfigured()||!Boolean.getBoolean(AuctionStepObservation.PROPERTY))return;
         var runner=jason.infra.local.BaseLocalMAS.getRunner();
         if(runner==null||runner.getAgs().isEmpty())throw new IllegalStateException("STEP_RUNTIME_AGENTS_UNAVAILABLE");
         try {
@@ -202,6 +212,49 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
                 selected.installStepObservation(programs.getFirst(),root);stepArchitectures.add(selected);
             }
         }catch(Exception invalid){for(var arch:stepArchitectures)arch.retireStepObservation();stepArchitectures.clear();throw invalid;}
+    }
+
+    private static boolean neutralObservationConfigured(){return !System.getProperty(org.jacamo.bridge.contract.ObservationRequestPlan.PROPERTY,"").isBlank();}
+
+    /** Called at the owned startAgs boundary, after consumer import and before any domain reasoning. */
+    public synchronized void activateObservationPlan() throws Exception {
+        if(!neutralObservationConfigured())return;
+        if(!started||observationSession!=null)throw new IllegalStateException("OBSERVATION_BOOTSTRAP_NOT_READY_OR_REPEATED");
+        var plan=org.jacamo.bridge.contract.ObservationRequestPlan.read(Path.of(System.getProperty(org.jacamo.bridge.contract.ObservationRequestPlan.PROPERTY)),sessionId,generation(),modelSnapshot.modelRevision());
+        var context=new FrameworkObservationProviders.Context(CartagoEnvironment.getInstance(),modelSnapshot,resolveProjectFile().getParent(),sessionId,generation(),
+                observation->{
+                    if(observation.kind()==org.jacamo.bridge.contract.VerificationObservation.Kind.JASON_STEP) {
+                        try{cartagoSource.publishObservation(()->{runtimeCoordinator.poll();return null;},()->verificationSource.publish(observation,observation.subject(),""));}
+                        catch(Exception unavailable){
+                            java.util.logging.Logger.getLogger(JaCaMoBridgePlatform.class.getName()).log(java.util.logging.Level.WARNING,"OBSERVATION_BOUNDARY_CAPTURE_FAILED",unavailable);
+                            throw new IllegalStateException("OBSERVATION_BOUNDARY_CAPTURE_FAILED:"+unavailable.getClass().getSimpleName()+":"+unavailable.getMessage(),unavailable);
+                        }
+                    }else verificationSource.publish(observation,"","");
+                },diagnostic->{publicationFailure=diagnostic;publicationGap.set(true);readiness.update("observation",AdapterReadiness.FAILED,diagnostic);java.util.logging.Logger.getLogger(JaCaMoBridgePlatform.class.getName()).warning(diagnostic);},nplSource);
+        var owned=new ProductionObservationSession(context,plan.requests());
+        try {
+            cartagoSource.observationKinds(plan.cartagoCaptureKinds());
+            nplSource.selectObservation(plan.captureScope()==null||plan.captureScope().nplObservation());
+            moiseSources.forEach(source->source.observationKinds(plan.captureScope()==null?Set.of(org.jacamo.bridge.contract.RuntimeFactKind.GROUP_BOARD,org.jacamo.bridge.contract.RuntimeFactKind.SCHEME_BOARD):plan.captureScope().moiseKinds()));
+            if(plan.captureScope()!=null)cartagoSource.observationScope(plan.captureScope());
+            var runner=jason.infra.local.BaseLocalMAS.getRunner();
+            if(runner==null)throw new IllegalStateException("OBSERVATION_RUNTIME_AGENTS_UNAVAILABLE");
+            for(var local:runner.getAgs().values()) {
+                String declaration=BridgeRuntimeRegistry.agentDeclarationId(local.getAgName()).orElse("");
+                var declarations=modelSnapshot.semanticContract().agentDeclarations().stream().filter(a->a.metadata().semanticId().equals(declaration)).toList();
+                if(declarations.size()!=1)continue;
+                var programs=modelSnapshot.semanticContract().jasonPrograms().stream().filter(p->p.declarationId().equals(declarations.getFirst().name())).toList();
+                if(programs.size()!=1)continue;
+                BridgeAgArch selected=null;for(var arch=local.getFirstAgArch();arch!=null;arch=arch.getNextAgArch())if(arch instanceof BridgeAgArch bridge){if(selected!=null)throw new IllegalStateException("OBSERVATION_ARCHITECTURE_AMBIGUOUS");selected=bridge;}
+                if(selected==null)throw new IllegalStateException("OBSERVATION_ARCHITECTURE_UNAVAILABLE");
+                selected.observationFields(plan.sourceFields().getOrDefault("jason",List.of()));
+                selected.installCapabilities(owned,programs.getFirst());stepArchitectures.add(selected);
+            }
+            cartagoSource.capabilities(owned);cartagoSource.observationsReady();observationSession=owned;owned.pulse(nplSource.hasPendingTimedObligations());
+            cartagoSource.publishObservation(()->{runtimeCoordinator.poll();return null;},()->{});
+            readiness.update("observation",AdapterReadiness.ATTACHED,"program="+plan.programHash()+"; requests="+plan.requests().size()+"; requiredUnavailable="+owned.requiredUnavailable());
+            System.out.println("BRIDGE_OBSERVATION_PLAN_ACTIVE program="+plan.programHash()+" requests="+plan.requests().size()+" capabilities="+owned.capabilities());
+        }catch(Exception|Error failure){for(var arch:stepArchitectures)arch.retireStepObservation();stepArchitectures.clear();owned.close();throw failure;}
     }
 
     private List<String> configuredWorkspaces() {
@@ -306,6 +359,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
                     // Source time is evidence on the existing lane. A bounded
                     // CLOCK callback can cause a cut even when artifacts idle.
                     var clock=sourceClock;var norms=nplSource;if(clock!=null&&norms!=null)clock.pulse(norms.hasPendingTimedObligations());
+                    var neutral=observationSession;if(neutral!=null&&norms!=null)neutral.pulse(norms.hasPendingTimedObligations());
                     if (publicationGap.getAndSet(false)) server.publish("platform:gap", gap.get());
                     RuntimeEvent event = events.poll(500, TimeUnit.MILLISECONDS);
                     RuntimeEvent cause = null;
@@ -418,6 +472,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
         capabilities.add(new Capability("runtime.observation.jason-step.v1",!stepArchitectures.isEmpty()&&stepArchitectures.stream().allMatch(BridgeAgArch::stepCaptureAvailable)?CapabilityStatus.COMPLETE:CapabilityStatus.UNAVAILABLE,List.of(),"opt-in pinned disposable PlanBody markers and public GoalListener; each frame retains exact invocation/scope quality"));
         capabilities.add(new Capability("runtime.observation.goal-transition.v1",cartagoSource!=null&&cartagoSource.schemeProbeAvailable()?CapabilityStatus.COMPLETE:CapabilityStatus.UNAVAILABLE,List.of(),"opt-in exact SchemeBoard coherent public cuts and correlated admin effect; timestamps are source PUBLICATION time, internal MOISE transition time unavailable"));
         capabilities.add(new Capability("runtime.observation.clock.v1",sourceClock!=null?CapabilityStatus.COMPLETE:CapabilityStatus.UNAVAILABLE,List.of(),"opt-in same-process pinned NPL wall-clock sampler; monotonicity unproven; per-frame regression/range quality retained"));
+        var neutral=observationSession;if(neutral!=null)capabilities.addAll(neutral.capabilities());
         return List.copyOf(capabilities);
     }
 
@@ -484,6 +539,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
         publishing = false;
         if(sourceClock!=null){sourceClock.close();sourceClock=null;}
         for(var arch:stepArchitectures)arch.retireStepObservation();stepArchitectures.clear();
+        var neutral=observationSession;observationSession=null;if(neutral!=null)try{neutral.close();}catch(RuntimeException error){failure=error;}
         if (publisher != null) {
             publisher.interrupt();
             try { publisher.join(1000); }

@@ -104,6 +104,9 @@ class Use4GoalPackagedPluginIT {
     static Path driver(Path work,Class<?> driverType)throws Exception {
         Path driver=Files.createDirectory(work.resolve("driver"));String prefix=driverType.getSimpleName(),resource=driverType.getPackageName().replace('.','/');Path source=Path.of("target/test-classes").resolve(resource);
         try(var paths=Files.list(source)){for(Path file:paths.filter(p->p.getFileName().toString().startsWith(prefix)&&p.getFileName().toString().endsWith(".class")).toList()){Path target=driver.resolve(resource).resolve(file.getFileName());Files.createDirectories(target.getParent());Files.copy(file,target);}}
+        String screen="org/tzi/use/plugins/jacamo/ui/AcceptanceScreen.class";
+        Path screenTarget=driver.resolve(screen);Files.createDirectories(screenTarget.getParent());
+        Files.copy(Path.of("target/test-classes").resolve(screen),screenTarget);
         return driver;
     }
     private static void extract(Path archive,Path destination)throws Exception {

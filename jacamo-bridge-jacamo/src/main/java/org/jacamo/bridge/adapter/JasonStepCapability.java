@@ -42,6 +42,7 @@ public final class JasonStepCapability implements ObservationCapabilityRegistry.
         observer=new JasonStepObservation(ts,agent,run,generation,revision,source,root,sink,gap,specification,captures);
     }
     public void action(ActionExec action,RuntimeEventKind kind,String correlation){observer.action(action,kind,correlation);}
+    public void unavailable(String reason){observer.unavailable(reason);}
     public Map<String,Object> manifest(){return observer.manifest();}
     @Override public synchronized Capability capability(){String reason=closed?"PROVIDER_CLOSED":observer.failure();return new Capability(request.id(),reason.isEmpty()?CapabilityStatus.COMPLETE:CapabilityStatus.UNAVAILABLE,List.of(observer.recipeHash()),reason);}
     @Override public synchronized void close(){if(closed)return;closed=true;observer.close();}

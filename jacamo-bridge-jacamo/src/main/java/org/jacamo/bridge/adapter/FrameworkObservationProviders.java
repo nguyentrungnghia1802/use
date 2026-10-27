@@ -9,7 +9,9 @@ import org.jacamo.bridge.contract.semantic.JasonSemanticContract.AgentProgramSem
 
 /** Curated provider registration. Runtime bootstrap supplies real owners; XML cannot select implementation classes. */
 public final class FrameworkObservationProviders {
-    public record Context(CartagoEnvironment environment,ModelSnapshot source,Path root,String run,long generation,Consumer<VerificationObservation> sink,Consumer<String> gap) { }
+    public record Context(CartagoEnvironment environment,ModelSnapshot source,Path root,String run,long generation,Consumer<VerificationObservation> sink,Consumer<String> gap,NplBoardSnapshotSource nplSource) {
+        public Context(CartagoEnvironment environment,ModelSnapshot source,Path root,String run,long generation,Consumer<VerificationObservation> sink,Consumer<String> gap){this(environment,source,root,run,generation,sink,gap,null);}
+    }
     public static ObservationCapabilityRegistry runtime(Context context) {
         return new ObservationCapabilityRegistry(Map.of(
             ArtifactFieldObservation.PROVIDER,r->new ArtifactFieldObservation(context.environment(),context.source(),r,context.root()),

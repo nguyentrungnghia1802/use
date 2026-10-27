@@ -8,6 +8,10 @@
                  help="Show Bridge authority, readiness, negotiated capabilities and revision status"/>
     </commands>
     <actions>
+        <action id="org.tzi.use.plugins.jacamo.goal-verification.action" label="use4Goal verification"
+                class="org.tzi.use.plugins.jacamo.JaCaMoGoalVerificationAction"
+                icon="icons/status.gif" tooltip="Authored CSL/iStar models and OCL over selected external JaCaMo state"
+                menu="JaCaMo" menuitem="use4Goal verification..." toolbaritem="false"/>
         <action id="org.tzi.use.plugins.jacamo.workbench.action" label="JaCaMo workbench"
                 class="org.tzi.use.plugins.jacamo.JaCaMoWorkbenchAction"
                 icon="icons/status.gif" tooltip="Import official JaCaMo Bridge snapshots and verify them in USE"

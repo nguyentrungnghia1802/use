@@ -1,0 +1,59 @@
+Configuration of 'jacamoJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/jacamo/1.3.1/jacamo-1.3.1.jar, based on class loader
+Configuration of 'moiseJar' found at /C:/Users/NTNghia/.m2/repository/org/jacamo/moise/1.1/moise-1.1.jar, based on class loader
+Configuration of 'jasonJar' found at /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar, based on class loader
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+
+Test run finished after 1591 ms
+[         3 containers found      ]
+[         0 containers skipped    ]
+[         3 containers started    ]
+[         0 containers aborted    ]
+[         3 containers successful ]
+[         0 containers failed     ]
+[         4 tests found           ]
+[         0 tests skipped         ]
+[         4 tests started         ]
+[         0 tests aborted         ]
+[         2 tests successful      ]
+[         2 tests failed          ]
+
+
+Failures (2):
+  JUnit Jupiter:SemanticEvidencePanelTest:declarativePlanEvidenceAndScopeAreVisibleWithoutLegacyCaseKeys()
+    MethodSource [className = 'org.tzi.use.plugins.jacamo.ui.SemanticEvidencePanelTest', methodName = 'declarativePlanEvidenceAndScopeAreVisibleWithoutLegacyCaseKeys', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: expected: <2> but was: <1>
+       org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)
+       org.junit.jupiter.api.AssertionUtils.failNotEqual(AssertionUtils.java:62)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:150)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:145)
+       org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:527)
+       org.tzi.use.plugins.jacamo.ui.SemanticEvidencePanelTest.lambda$declarativePlanEvidenceAndScopeAreVisibleWithoutLegacyCaseKeys$1(SemanticEvidencePanelTest.java:17)
+       java.desktop/java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:308)
+       java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:773)
+       java.desktop/java.awt.EventQueue$4.run(EventQueue.java:720)
+       java.desktop/java.awt.EventQueue$4.run(EventQueue.java:714)
+       [...]
+  JUnit Jupiter:DeclarativeOperationCheckpointTest:genericPhysicalIdentityOwnsNativePrePostWithoutLegacyUuidMetadata()
+    MethodSource [className = 'org.tzi.use.plugins.jacamo.codegrounded.runtime.DeclarativeOperationCheckpointTest', methodName = 'genericPhysicalIdentityOwnsNativePrePostWithoutLegacyUuidMetadata', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: expected: <increment-interface> but was: <>
+       org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:55)
+       org.junit.jupiter.api.AssertionUtils.failNotEqual(AssertionUtils.java:62)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
+       org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1141)
+       org.tzi.use.plugins.jacamo.codegrounded.runtime.DeclarativeOperationCheckpointTest.genericPhysicalIdentityOwnsNativePrePostWithoutLegacyUuidMetadata(DeclarativeOperationCheckpointTest.java:30)
+       java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+       org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+       [...]

@@ -116,4 +116,19 @@ class XmlOccurrenceProjectionTest {
         var checks=new org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.PreparedEvaluation(engine.system().model(),List.of());var result=owner.submit(owner.prepare(version,"cut-"+version,hash,Map.of("cartago",Completeness.COMPLETE),false,true,List.of(),checks,4096)).get(10,java.util.concurrent.TimeUnit.SECONDS);
         var core=org.jacamo.bridge.contract.CanonicalJson.object(result.evidence().observation().get("originalEngine"));var context=org.jacamo.bridge.contract.CanonicalJson.object(((List<?>)core.get("contexts")).getFirst());return org.jacamo.bridge.contract.CanonicalJson.object(context.get("occurrences")).values().stream().map(org.jacamo.bridge.contract.CanonicalJson::object).toList();
     }
+    @Test void authoredResourceBindingsUseCanonicalGoalModelAndRejectUnresolvedResource()throws Exception {
+        var f=fixture();var engine=f.nativeFixture().engine();
+        String xml=Files.readString(temp.resolve("mapping.xml")).replace("<runtime/>",OCCURRENCES)
+            .replace("roleBindingRef=\"actor-binding\"","roleBindingRef=\"role-binding\"")
+            .replaceFirst("(?s)<istar .*?</istar>","<istar name=\"Requirements\"/>")
+            .replace("<selectors>","<models mode=\"AUTHORED\" cslSha256=\""+"1".repeat(64)+"\" istarSha256=\""+"2".repeat(64)+"\"/><selectors>")
+            .replaceFirst("(?s)<modelRules .*?</modelRules>","<modelRules targetVersion=\"v4.0\" targetModel=\"CounterView\"/>")
+            .replace("</scope>","<resource target=\"tool\" column=\"domain\" type=\"Counter\"/></scope>");
+        var goals=new org.tzi.use.semantic.engine.frontend.IStarFrontend().compile("istar Requirements { role Worker { goal Positive : Achieve condition {[ true ]} resource tool } }","authored.istar").requireModel();
+        var spec=MappingXmlReaderTest.parse(xml);
+        assertThrows(IllegalArgumentException.class,()->new OccurrenceProjection(spec,engine.system().model(),engine.canonicalProgramHash()));
+        assertDoesNotThrow(()->new OccurrenceProjection(spec,engine.system().model(),engine.canonicalProgramHash(),goals));
+        var wrong=MappingXmlReaderTest.parse(xml.replace("target=\"tool\"","target=\"absent\""));
+        assertThrows(IllegalArgumentException.class,()->new OccurrenceProjection(wrong,engine.system().model(),engine.canonicalProgramHash(),goals));
+    }
 }

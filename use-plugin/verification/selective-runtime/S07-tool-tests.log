@@ -1,0 +1,20 @@
+test_auction_lost_exception_is_exact_and_keeps_unchanged_false (test_semantic_acceptance.AcceptanceTest.test_auction_lost_exception_is_exact_and_keeps_unchanged_false) ... ok
+test_budget_missing_invalid_or_downgraded_is_rejected (test_semantic_acceptance.AcceptanceTest.test_budget_missing_invalid_or_downgraded_is_rejected) ... ok
+test_canonical_commitment_roster_differs_from_explicit_controlled_roster (test_semantic_acceptance.AcceptanceTest.test_canonical_commitment_roster_differs_from_explicit_controlled_roster) ... ok
+test_exception_policy_cannot_cover_another_missing_file (test_semantic_acceptance.AcceptanceTest.test_exception_policy_cannot_cover_another_missing_file) ... ok
+test_failed_full_reactor_cannot_be_waived_by_auction_collection (test_semantic_acceptance.AcceptanceTest.test_failed_full_reactor_cannot_be_waived_by_auction_collection) ... ok
+test_generic_inputs_reject_oracles_legacy_fallback_and_digest_tamper (test_semantic_acceptance.AcceptanceTest.test_generic_inputs_reject_oracles_legacy_fallback_and_digest_tamper) ... ok
+test_generic_recording_dialect_is_explicit_and_cannot_replace_legacy (test_semantic_acceptance.AcceptanceTest.test_generic_recording_dialect_is_explicit_and_cannot_replace_legacy) ... ok
+test_house_fixture_witness_cannot_be_replaced_by_old_original_source_claim (test_semantic_acceptance.AcceptanceTest.test_house_fixture_witness_cannot_be_replaced_by_old_original_source_claim) ... ok
+test_live_receipt_cannot_substitute_scope_pid_or_actual_witnesses (test_semantic_acceptance.AcceptanceTest.test_live_receipt_cannot_substitute_scope_pid_or_actual_witnesses) ... ok
+test_missing_protected_only_collects_blocked_in_explicit_mode (test_semantic_acceptance.AcceptanceTest.test_missing_protected_only_collects_blocked_in_explicit_mode) ... ok
+test_modified_protected_is_never_waived (test_semantic_acceptance.AcceptanceTest.test_modified_protected_is_never_waived) ... ok
+test_old_gate_keeps_all_a_to_v_and_counter_requirements (test_semantic_acceptance.AcceptanceTest.test_old_gate_keeps_all_a_to_v_and_counter_requirements) ... ok
+test_old_recording_and_budgeted_recording_are_distinct (test_semantic_acceptance.AcceptanceTest.test_old_recording_and_budgeted_recording_are_distinct) ... ok
+test_outside_evidence_is_rejected (test_semantic_acceptance.AcceptanceTest.test_outside_evidence_is_rejected) ... ok
+test_recording_hash_and_replay_result_tamper_are_rejected (test_semantic_acceptance.AcceptanceTest.test_recording_hash_and_replay_result_tamper_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.429s
+
+OK

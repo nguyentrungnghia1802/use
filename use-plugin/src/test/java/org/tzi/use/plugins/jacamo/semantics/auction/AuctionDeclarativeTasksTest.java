@@ -5,18 +5,28 @@ import cartago.*;
 import org.jacamo.bridge.adapter.*;
 import org.jacamo.bridge.contract.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNativePipeline;
 import org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeProjector;
 import org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode;
 import org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericMappingEngine;
+import org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.tzi.use.plugins.jacamo.semantics.auction.AuctionDeclarativeObserverTest.*;
 
 /** Actual source callbacks against controlled framework fixtures; full MAS/TCP is a separate final gate. */
 class AuctionDeclarativeTasksTest {
-    @Test @Timeout(90) void xmlBindsAllSixOriginalTasksFromActualSourceCallbacksAndDoesNotRebindFrozenPlayers()throws Exception {
+    @ParameterizedTest(name="authored={0}") @ValueSource(booleans={false,true}) @Timeout(90)
+    void xmlBindsDeclaredOriginalTasksFromActualSourceCallbacksAndDoesNotRebindFrozenPlayers(boolean authored)throws Exception {
         try(var f=new AuctionOrgFixture(true)) {
-            var live=f.live;var program=new GenericMappingEngine().map(live.source,AuctionDeclarativeSpecificationTest.inputs(AuctionDeclarativeSpecificationTest.CASE));var requests=program.xmlPlan().requirements();var frames=new ArrayList<VerificationObservation>();
+            var root=AuctionDeclarativeSpecificationTest.CASE;var selected=root.resolve("authored-v1");
+            var inputs=authored?MappingInputs.read(root.resolve("auction.jcm"),selected.resolve("auction-mapping.xml"),selected.resolve("auction_constraints_final_fixed.ocl"),selected.resolve("auction_csl.csl"),selected.resolve("auction_istar_final.istar")):AuctionDeclarativeSpecificationTest.inputs(root);
+            // The authored oracle has five Tasks. Its decide prefix is source trace only;
+            // the historical generated profile deliberately retains its sixth Task.
+            var expectedTasks=new ArrayList<>(List.of("A_start_t1","A_start_t2","P_bid_t1","P_bid_t2","A_decide_t2"));
+            if(!authored)expectedTasks.add("A_decide_t1");
+            var live=f.live;var program=new GenericMappingEngine().map(live.source,inputs);var requests=program.xmlPlan().requirements();var frames=new ArrayList<VerificationObservation>();
             var context=new FrameworkObservationProviders.Context(live.environment,live.source,AuctionDeclarativeSpecificationTest.CASE.toRealPath(),live.run.id(),live.run.generation(),frames::add,ignored->{});
             var workspace=request(requests,"workspace-operations");var field=request(requests,"candidate-field");
             try(var history=new CartagoOperationHistory(workspace,context);var fields=new ArtifactFieldObservation(live.environment,live.source,field,context.root());var driver=new AuctionDeclarativeArtifactTest.SourceDriver(f,request(requests,"execution-steps"),frames);var capture=new Capture(f,context,requests,history,frames)) {
@@ -46,14 +56,18 @@ class AuctionDeclarativeTasksTest {
                         participant.doAction(scheme,new Op("goalAchieved","bid"),5000);driver.goal("decide",scheme);assertEquals(16,boundaries.size());
                         var result=await(projector);var contextEvidence=CanonicalJson.object(((List<?>)CanonicalJson.object(result.semantic().observation().get("originalEngine")).get("contexts")).getFirst());
                         var occurrences=CanonicalJson.object(contextEvidence.get("occurrences")).values().stream().map(CanonicalJson::object).toList();
-                        for(String task:List.of("A_start_t1","A_start_t2","P_bid_t1","P_bid_t2","A_decide_t1","A_decide_t2")) {
+                        if(authored)assertTrue(occurrences.stream().noneMatch(o->"A_decide_t1".equals(o.get("sourceElement"))),"A source-only prefix cannot acquire original Task credit");
+                        for(String task:expectedTasks) {
                             var row=occurrences.stream().filter(o->task.equals(o.get("sourceElement"))).findFirst().orElseThrow();assertEquals("FULFILLED",row.get("leafStatus"),()->row+" boundaries="+boundaries.stream().map(b->b.semantic().constraints().stream().filter(c->c.kind().startsWith("TASK_")).toList()).toList());assertEquals("KNOWN",row.get("quality"),row.toString());
                         }
                         assertTrue(((List<?>)contextEvidence.get("originalApiCalls")).contains("TaskMarking.update"));assertSame(system,projector.system());
+                        var recording=java.nio.file.Files.createTempDirectory(java.nio.file.Files.createDirectories(java.nio.file.Path.of("target/generic-mapping-audit")),"declared-task-replay-");
+                        var replay=new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReplay();replay.exportBundle(projector,built.nativeResult().export().useText(),recording);
+                        var replayed=replay.replay(recording);assertTrue(replayed.complete(),replayed.diagnostics().toString());assertEquals(result.resultHash(),replayed.finalResultHash());assertEquals(result.stateHash(),replayed.finalStateHash());
                         var other=f.scheme("secondExecution","another_service");live.actor.doAction(group,new Op("addScheme",other.getName()),5000);live.actor.doAction(other,new Op("commitMission","mAuctioneer"),5000);participant.doAction(other,new Op("commitMission","mParticipant"),5000);
                         projector.applySnapshot(withPlayers(capture.cut(frames,driver.identity,workspace,history,field,fields),bidder.identity),live.run.id(),live.run.generation());await(projector);
                         assertEquals(2,projector.mutations().xmlOccurrences(live.run.id(),live.run.generation(),live.source.modelRevision()).stream().filter(s->s.complete()).count());
-                        var demands=projector.mutations().xmlTaskDemands(live.run.id(),live.run.generation(),live.source.modelRevision());assertEquals(12,demands.size());assertTrue(demands.stream().allMatch(d->d.quality()==Completeness.COMPLETE),demands.toString());
+                        var demands=projector.mutations().xmlTaskDemands(live.run.id(),live.run.generation(),live.source.modelRevision());assertEquals(2*expectedTasks.size(),demands.size());assertTrue(demands.stream().allMatch(d->d.quality()==Completeness.COMPLETE),demands.toString());
                         assertEquals(2,demands.stream().filter(d->d.target().equals("A_start_t1")).map(d->d.episode()).distinct().count(),"Separate source executions retain independent demand episodes");
                         var replacement=new BridgeEntityId("jason","agent","runtime-agent",live.source.semanticContract().project().name(),participant.getName(),"new-player-incarnation");
                         try(var rebound=CslRuntimeTestRegistry.bind(live.source.semanticContract(),participant.getName(),"alice",replacement)) {

@@ -84,6 +84,23 @@
         <file><source>examples/auction/provenance/licenses/use4Goal-GPL-3.0.txt</source><outputDirectory>examples/auction-semantic/provenance/licenses</outputDirectory><destName>use4Goal-GPL-3.0.txt</destName></file>
         <file><source>examples/auction/provenance/licenses/JaCaMo-LGPL-3.0.txt</source><outputDirectory>examples/auction-semantic/provenance/licenses</outputDirectory><destName>JaCaMo-LGPL-3.0.txt</destName></file>
         <file><source>examples/auction/auction-mapping.xml</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>auction-mapping.xml</destName></file>
+        <file><source>examples/auction/authored-v1/auction_csl.csl</source><outputDirectory>examples/auction-semantic/authored-v1</outputDirectory></file>
+        <file><source>examples/auction/authored-v1/auction_istar_final.istar</source><outputDirectory>examples/auction-semantic/authored-v1</outputDirectory></file>
+        <file><source>examples/auction/authored-v1/auction_constraints_final_fixed.ocl</source><outputDirectory>examples/auction-semantic/authored-v1</outputDirectory></file>
+        <file><source>examples/auction/authored-v1/auction-mapping.xml</source><outputDirectory>examples/auction-semantic/authored-v1</outputDirectory></file>
+        <file><source>examples/auction/authored-v1/provenance.json</source><outputDirectory>examples/auction-semantic/authored-v1</outputDirectory></file>
+        <file><source>examples/auction/authored-v1/README.md</source><outputDirectory>examples/auction-semantic/authored-v1</outputDirectory></file>
+        <file><source>examples/auction/source-confirmed-v1/auction-mapping.xml</source><outputDirectory>examples/auction-semantic/source-confirmed-v1</outputDirectory></file>
+        <file><source>examples/auction/source-confirmed-v1/auction_confirmed.ocl</source><outputDirectory>examples/auction-semantic/source-confirmed-v1</outputDirectory></file>
+        <file><source>examples/auction/source-confirmed-v1/README.md</source><outputDirectory>examples/auction-semantic/source-confirmed-v1</outputDirectory></file>
+        <file><source>src/main/resources/META-INF/use4goal-view-provenance.json</source><outputDirectory>provenance</outputDirectory></file>
+        <file><source>src/main/resources/META-INF/licenses/use4Goal-views-GPL-3.0.txt</source><outputDirectory>licenses</outputDirectory></file>
+        <file><source>../use-jacamo-semantic-engine/provenance/patches/P-IADM-02.diff</source><outputDirectory>provenance</outputDirectory><destName>P-IADM-02.diff</destName></file>
+        <file><source>examples/csl-counter/authored-v1/stock.csl</source><outputDirectory>examples/csl-counter/authored-v1</outputDirectory></file>
+        <file><source>examples/csl-counter/authored-v1/stock.istar</source><outputDirectory>examples/csl-counter/authored-v1</outputDirectory></file>
+        <file><source>examples/csl-counter/authored-v1/stock.ocl</source><outputDirectory>examples/csl-counter/authored-v1</outputDirectory></file>
+        <file><source>examples/csl-counter/authored-v1/stock-mapping.xml</source><outputDirectory>examples/csl-counter/authored-v1</outputDirectory></file>
+        <file><source>examples/csl-counter/authored-v1/README.md</source><outputDirectory>examples/csl-counter/authored-v1</outputDirectory></file>
         <file><source>../use-jacamo-semantic-engine/provenance/P-IADM-01.md</source><outputDirectory>provenance</outputDirectory><destName>P-IADM-01.md</destName></file>
         <file><source>../use-jacamo-semantic-engine/provenance/patches/P-IADM-01.diff</source><outputDirectory>provenance</outputDirectory><destName>P-IADM-01.diff</destName></file>
         <file><source>../use-jacamo-semantic-engine/provenance/single-owner-context-v1.md</source><outputDirectory>provenance</outputDirectory><destName>single-owner-context-v1.md</destName></file>

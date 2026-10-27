@@ -45,7 +45,7 @@ public final class StepReplayProof {
         captureStep=steps.getLast().stepIndex();
         var errors=new CopyOnWriteArrayList<String>();
         var panel=onEdt(()->panel(facade,errors));
-        var frame=onEdt(()->{var value=new JFrame("Generic Step Replay acceptance");value.setContentPane(panel);value.setSize(1500,1000);value.setVisible(true);return value;});
+        var frame=onEdt(()->{var value=new JFrame("Generic Step Replay acceptance");value.setContentPane(panel);value.setSize(1500,1000);org.tzi.use.plugins.jacamo.ui.AcceptanceScreen.place(value);value.setVisible(true);return value;});
         JDialog[] dialog={null};
         int[] stableListeners={-1,-1,-1,-1};
         var visited=new ArrayList<Map<String,Object>>();

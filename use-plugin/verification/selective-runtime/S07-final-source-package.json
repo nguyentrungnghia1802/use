@@ -1,0 +1,42 @@
+{
+  "version": "FINAL_SOURCE_PACKAGE_LINK/1.0",
+  "sourceFreeze": "S07-source-freeze-v5.json",
+  "sourceFreezeSha256": "ca54704b82eecea39c43de0a2224146c4fe9782187734c3c5d6898d02037fac5",
+  "files": 3304,
+  "differencesFromV4": [
+    "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/JaCaMoBridgePlatform.java"
+  ],
+  "newProductionChangesThisCloseout": false,
+  "fullReactorLog": "S07-full-clean-verify-final.log",
+  "fullReactorLogSha256": "7b82e87b9d0c74deffcb7f450247879c49f1480330de3b67249f3f57a1640847",
+  "fullReactorStatus": "BUILD_SUCCESS",
+  "archiveSha256": "ff10b72811065d468f9689a80211ea326344c6bd940317b9082d756dce6c3ee5",
+  "archive": "use-assembly/target/use-7.5.0-use-bin.zip",
+  "pluginSha256": "120364ada04228555b95b9996ede0e1732f763b968e3cda24dcc0c68b34cdb50",
+  "bridgeBootstrapClassMatchesFinalArchive": true,
+  "coldCases": {
+    "stock": {
+      "qualification": "use-plugin/verification/authored-models/P09-cold-installed/stock-12560202194979406387/qualification.json",
+      "qualificationSha256": "dad598c0211662d147c30d63acd7d697ae45c08d2a638cb96c5a5f703ee0938c",
+      "receiptSha256": "6e8849724bdec3b0a030d056c1033489aefe0c384888c4b372ce4912584c6135",
+      "replayDeletionScope": "FOUR_COPIED_CSL_ISTAR_XML_OCL_FILES_ONLY_JCM_AND_REFERENCED_SOURCE_REMAIN"
+    },
+    "auction": {
+      "qualification": "use-plugin/verification/authored-models/P09-cold-installed/auction-7770668494552311137/qualification.json",
+      "qualificationSha256": "2142bc0c247429bafdd7e9ab47f5b8b1f9f96ab793cca26d6181eaf998beb1dc",
+      "receiptSha256": "2313777f417d919799cb1889e086d83bc0ef9883f5bd55f96810681209e19e5c",
+      "replayDeletionScope": "FOUR_COPIED_CSL_ISTAR_XML_OCL_FILES_ONLY_JCM_AND_REFERENCED_SOURCE_REMAIN"
+    },
+    "auction-confirmed": {
+      "qualification": "use-plugin/verification/authored-models/P09-cold-installed/auction-confirmed-15675144874807787505/qualification.json",
+      "qualificationSha256": "e81932d0c29a4471ba56b644178d14278c86678db8292e0b80bbbb490b7e65f5",
+      "receiptSha256": "c4636b98de78f3efb281bb09dae66ecbceb1d98577c093a5df62338ba7661236",
+      "replayDeletionScope": "FOUR_COPIED_CSL_ISTAR_XML_OCL_FILES_ONLY_JCM_AND_REFERENCED_SOURCE_REMAIN"
+    }
+  },
+  "guiAcceptance": {
+    "status": "PASS",
+    "receipt": "S07-main-workflow-final/receipt.json",
+    "sha256": "5d806b2eeae34514d5654173d1dce6d2015c2421e4d0c177918d10ff3c36c5ba"
+  }
+}

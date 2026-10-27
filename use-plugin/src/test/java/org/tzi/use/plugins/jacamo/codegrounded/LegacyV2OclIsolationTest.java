@@ -9,11 +9,14 @@ import org.junit.jupiter.api.Test;
 
 class LegacyV2OclIsolationTest {
     @Test void nativeAuthorityHasNoProductionDependencyOnMappingV2OrV2Profiles() throws Exception {
-        String sources = Files.walk(Path.of("src/main/java/org/tzi/use/plugins/jacamo/codegrounded"))
+        String sources;
+        try(var files=Files.walk(Path.of("src/main/java/org/tzi/use/plugins/jacamo/codegrounded"))) {
+        sources = files
                 .filter(Files::isRegularFile).map(path -> {
                     try { return Files.readString(path); }
                     catch (Exception error) { throw new RuntimeException(error); }
                 }).reduce("", String::concat);
+        }
         for (String forbidden : List.of("ActiveBaseline", "MappingLoader", "MappingModel",
                 "TransformationPlanner", "StructuralUseGenerator", "jacamo-core-v2.ocl", "OclGenerator",
                 "OclProfileLoader", "VerificationProfileLoader", "VerificationSemanticLayer",
@@ -31,8 +34,8 @@ class LegacyV2OclIsolationTest {
         String branch = section(source,"private ProjectSummary synchronizeBridge","private void validateBridgeSelection");
         assertTrue(branch.contains("candidate.synchronize(() ->"),"The native resync must fence the previous writer before copying its cut");
         assertTrue(branch.contains("previous.stopRuntimeDelivery.run()"));
-        assertTrue(branch.contains("selectedImport==null?ImportSemantics.configured():selectedImport"),
-                "Programmatic defaults remain available while an accepted explicit selection stays frozen");
+        assertTrue(branch.contains("selectedImport==null?ImportSemantics.configured(selectedJcm):selectedImport"),
+                "Defaults must freeze the selected project's inputs; resync must reuse the accepted explicit selection");
         assertTrue(branch.contains("Path verificationProfile,ImportSemantics selection)"),
                 "Both routes must pass their frozen selection to the same native handoff");
         assertTrue(branch.contains("selection.hash().equals(previous.semanticSelectionHash)"),"Resync must keep the same frozen mapping/profile");

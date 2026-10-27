@@ -1,0 +1,4 @@
+USE version 7.5.0, Copyright (C) 1999-2025 University of Bremen & University of Applied Sciences Hamburg
+Exception in thread "main" java.lang.AssertionError: Live accepted semantics: tasks=[], calls=[GoalModelInstanceTranslator.propagateDependencies, IStarPropagation.assignGoalTask:aggregate-only, IStarPropagation.closePending], status=JaCaMo Bridge LIVE model=990902b29895599ed9fd2fcc17ff092515adf1acb822a47551c85b8ca2c15507
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuthoredMain.check(InstalledAuthoredMain.java:138)
+	at org.tzi.use.plugins.jacamo.semantics.InstalledAuthoredMain.main(InstalledAuthoredMain.java:78)

@@ -8,6 +8,14 @@ import org.tzi.use.plugins.jacamo.semantics.evidence.*;
 import org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult;
 
 class SemanticEvidencePanelTest {
+    @Test void declarativePlanEvidenceAndScopeAreVisibleWithoutLegacyCaseKeys()throws Exception {
+        var generic=new SemanticConstraintResult("invariant","INVARIANT_BODY","Pallet","pallet","physical","self.weight >= 0",SemanticVerdict.SKIPPED,"","MISSING_SOURCE_FIELD",1,"",Map.of("mappingPlanHash","plan-hash","scope","scope-17","observationQuality","UNAVAILABLE"));
+        var legacy=new SemanticConstraintResult("legacy","INVARIANT_BODY","Counter","counter","physical","true",SemanticVerdict.PASS,"true","",1,"",Map.of("casePlanHash","legacy-hash","scheme","legacy-scheme"));
+        var envelope=new SemanticVerificationEnvelope("1.0","USE4GOAL_OBSERVED_V1","config","boundary",List.of(generic,legacy),Map.of(),Map.of(),List.of());var now=java.time.Instant.EPOCH;
+        var result=new RuntimeVerificationResult("run",1,"revision",1,"event","source",1,now,now,now,"","constraints","state",List.of(),0,"INCOMPLETE","CURRENT_OBSERVED","",envelope);
+        SwingUtilities.invokeAndWait(()->{var panel=new SemanticEvidencePanel();panel.refresh(result);var tables=new ArrayList<JTable>();collect(panel,tables);var table=tables.stream().filter(t->"semantic-case-evidence".equals(t.getName())).findFirst().orElseThrow();
+            assertEquals(2,table.getRowCount());assertEquals("scope-17",table.getValueAt(0,2));assertEquals("SKIPPED",table.getValueAt(0,1));assertTrue(table.getValueAt(0,11).toString().contains("UNAVAILABLE"));assertEquals("legacy-scheme",table.getValueAt(1,2));assertFalse(table.isCellEditable(0,1));});
+    }
     @Test void originalRawPendingQualityAndInvocationFailRemainIndependentAndEmptyIsNotPass() throws Exception {
         var row=new SemanticConstraintResult("post","INVOCATION_CONFORMANCE","Counter","c","source","self.p = self.p@pre + 1",SemanticVerdict.FAIL,"false","",1,"call",Map.of());
         var occurrence=Map.<String,Object>of("sourceElement","none","leafStatus","PENDING","aggregateStatus","UNKNOWN","quality","HISTORY_GAP","goal",Map.of("status","PENDING"),"stack",List.of("full","stack"),"key",Map.of("episode","actual-incarnation"));

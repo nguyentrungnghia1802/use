@@ -35,6 +35,15 @@ final class MoiseFactQualification {
                     ||!(player.get("roleSemanticId") instanceof String role)||!groups.getFirst().roleSemanticIds().contains(role))throw invalid("PUBLIC_PLAYER_ROLE_SCOPE_MISMATCH");
             if(!tuples.add(SemanticJson.hash(List.of(agent,role))))throw invalid("PUBLIC_PLAYER_ROLE_DUPLICATE");
         }
+        if(data.get("publicGroupRoster") instanceof Map<?,?> roster) {
+            if(!"MOISE_PUBLIC_ROSTER/1.0".equals(roster.get("version"))||!"COMPLETE".equals(roster.get("status"))||!Objects.equals(data.get("name"),roster.get("group"))||!(roster.get("players") instanceof List<?> rawPlayers))throw invalid("PUBLIC_ROSTER_VERSION_OR_IDENTITY");
+            var rawTuples=new HashSet<String>();
+            for(Object raw:rawPlayers) {
+                var player=CanonicalJson.object(raw);var roles=definition.structuralSpecification().roles().stream().filter(r->r.roleId().equals(player.get("role"))).toList();
+                if(roles.size()!=1||!(player.get("agentSemanticId") instanceof String agent)||agent.isBlank()||!rawTuples.add(SemanticJson.hash(List.of(agent,roles.getFirst().metadata().semanticId()))))throw invalid("PUBLIC_ROSTER_TUPLE_INVALID");
+            }
+            if(!rawTuples.equals(tuples))throw invalid("PUBLIC_ROSTER_DIFFERS_FROM_PROJECTED_PLAYERS");
+        }
     }
     /** Same legacy semantic comparison: only evidence carrier and source URI differ for a live OS graph. */
     static Object shape(Object raw) {

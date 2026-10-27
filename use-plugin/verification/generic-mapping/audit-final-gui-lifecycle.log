@@ -1,0 +1,11 @@
+INTERACTIVE_GUI_READY
+Native USE projection: AUTO
+The JaCaMo Workbench is opening and importing the derived JCM automatically.
+Local agents wait at the official startAgs hook. Optional Load OCL, then click Start Runtime.
+Platforms/environment timers already bootstrap; this delay is not original timing equivalence.
+Derived JCM: D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\generic-gui-final\20261023-202903-526-a12f8c26\staging-auction\auction.jcm
+Original source remains unchanged: D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\examples\auction\auction.jcm
+Close the USE window to stop the derived JaCaMo producer.
+INTERACTIVE_GUI_MODEL_READY evidence=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\generic-gui-final\20261023-202903-526-a12f8c26\gui-ready.json
+{"associationCount":5,"bridgeCompleteness":"PARTIAL","bridgeReadiness":"LIVE","classCount":13,"generation":1,"linkCount":1,"modelRevision":"afc1294df20a2c03e753b9918846777a7c42dcd37cc1786de6aec5129f93fe24","objectCount":10,"projectFile":"D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\target\\generic-gui-final\\20261023-202903-526-a12f8c26\\staging-auction\\auction.jcm","projectionMode":"AUTO","sessionId":"a7b671ce-c248-4057-a189-90ae87c24fd0","stateSha256":"a24656b36f067ae6db6aaf5401eaca75def14fbc437a64bcdd5bceb583e9dc7b","status":"READY"}
+JACAMO_BRIDGE_GUI_SESSION_COMPLETE evidence=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\generic-gui-final\20261023-202903-526-a12f8c26

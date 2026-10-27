@@ -23,18 +23,30 @@ class XmlOperationReferenceTest {
         String runtime="<runtime><datasets><operationReferences id=\"references\" requestRef=\"workspace-receipts\" argumentIndex=\"3\"/></datasets></runtime>";
         var specification=MappingXmlReaderTest.parse(MappingXmlReaderTest.XML.replace("<runtime/>",runtime));
         var environment=CartagoEnvironment.getInstance();environment.init();var actor=new CartagoBasicContext("feedback"+UUID.randomUUID().toString().replace("-",""));var created=new ArrayList<ArtifactId>();
+        var unrelated=environment.getRootWSP().getWorkspace().createWorkspace("unrelated"+UUID.randomUUID().toString().replace("-",""));
+        var completed=new java.util.concurrent.CountDownLatch(2);
         String oldRevision=System.getProperty("jacamo.bridge.modelRevision"),oldGeneration=System.getProperty("jacamo.bridge.generation");System.setProperty("jacamo.bridge.modelRevision",source.modelRevision());System.setProperty("jacamo.bridge.generation","2");
         try(var provider=new CartagoOperationHistory(request,new FrameworkObservationProviders.Context(environment,source,temp,"run",2,ignored->{},reason->fail(reason)));
-            var cartago=new CartagoSnapshotSource(environment,List.of("/main"),"run");var snapshots=new SnapshotCoordinator(List.of(cartago),2048,provider::observe)) {
+            var cartago=new CartagoSnapshotSource(environment,List.of("/main"),"run");var snapshots=new SnapshotCoordinator(List.of(cartago),2048,event->{
+                provider.observe(event);
+                if(event.kind()==RuntimeEventKind.SUCCEEDED&&"makeArtifact".equals(event.after().get("operation")))completed.countDown();
+            })) {
             for(String name:List.of("feedbackOne","feedbackTwo"))created.add(actor.makeArtifact(actor.getJoinedWspId("main"),name,type));
-            var cut=snapshots.capture(source.modelRevision(),3).snapshot();
-            var workspaceArtifact=cut.facts().stream().filter(f->f.kind()==RuntimeFactKind.ARTIFACT&&WorkspaceArtifact.class.getName().equals(f.values().get("artifactTypeJavaClassName"))).findFirst().orElseThrow();
-            var actual=environment.getController("/main").getArtifactInfo(workspaceArtifact.id().localId()).getId();
+            // Pair this snapshot with actual terminal publication, never elapsed time or invented history.
+            assertTrue(completed.await(5,java.util.concurrent.TimeUnit.SECONDS),"Both real makeArtifact terminal receipts must reach the provider before freezing its cut");
+            var captured=snapshots.capture(source.modelRevision(),3).snapshot();
+            // Enumeration order is not authority: deliberately place another workspace first.
+            var cut=XmlNplDatasetTest.copy(captured,captured.facts().stream().sorted(java.util.Comparator.comparing(f->!f.id().scope().equals(unrelated.getId().getFullName()))).toList());
+            String actorWorkspace=actor.getJoinedWspId("main").getFullName();
+            var workspaceArtifacts=cut.facts().stream().filter(f->f.kind()==RuntimeFactKind.ARTIFACT&&WorkspaceArtifact.class.getName().equals(f.values().get("artifactTypeJavaClassName"))&&actorWorkspace.equals(f.id().scope())).toList();
+            assertEquals(1,workspaceArtifacts.size(),"The receipt must belong to the actor's exact workspace, never the first global WorkspaceArtifact");
+            var workspaceArtifact=workspaceArtifacts.getFirst();
+            var actual=environment.getController(actorWorkspace).getArtifactInfo(workspaceArtifact.id().localId()).getId();
             var data=provider.capture(actual);assertEquals(false,data.get("fromCreation"),"A pre-existing workspace does not grant history from its creation");
             var scope=new CapabilityObservation.Scope("run",2,source.modelRevision(),"cartago",cut.endWatermarks().get("cartago").sequence());
             var observed=observe(cut,workspaceArtifact,request,CapabilityObservation.of(request,scope,Completeness.COMPLETE,"",data));
             var sources=new RuntimeFactSources(specification,source,List.of(request));var relation=sources.capture(observed,"run",2).get("references");
-            assertEquals(Completeness.PARTIAL,relation.populationQuality());assertEquals(2,relation.rows().size());
+            assertEquals(Completeness.PARTIAL,relation.populationQuality());assertEquals(2,relation.rows().size(),()->"history="+data+"; cartago="+cut.sourceCompleteness()+"; marks="+cut.endWatermarks());
             assertEquals(Set.copyOf(created.stream().map(a->a.getId().toString()).toList()),relation.rows().stream().map(r->(String)r.values().get("artifactUuid")).collect(java.util.stream.Collectors.toSet()));
             for(var row:relation.rows()) {
                 assertEquals(Completeness.COMPLETE,row.quality());assertEquals("makeArtifact",row.values().get("operation"));

@@ -57,6 +57,22 @@ class EngineExtractionTest {
     static void verifyAdmissionPatchScope(String name,byte[] original,byte[] patched) {
         String expected=new String(original,StandardCharsets.UTF_8).replace("\r\n","\n");
         String actual=new String(patched,StandardCharsets.UTF_8).replace("\r\n","\n");
+        if(name.equals("GoalModelValidator.java")) {
+            // Reverse only the registered P-IADM-02 diff, then apply the original
+            // P-IADM-01 guard. Every unrelated validator algorithm stays pinned.
+            int extension=actual.indexOf("    // P-IADM-02-BEGIN:");
+            if(extension>=0) {
+                int finish=actual.indexOf("    // P-IADM-02-END",extension)+"    // P-IADM-02-END\n\n".length();
+                assertTrue(finish>extension,"Missing P-IADM-02 terminator");
+                actual=actual.substring(0,extension)+actual.substring(finish);
+                actual=actual.replace("validateRefinements(model, errors, policy)","validateRefinements(model, errors)")
+                        .replace("validateDerivedAndDependees(model, errors, policy)","validateDerivedAndDependees(model, errors)")
+                        .replace("private static void validateDerivedAndDependees(GoalModel model, List<String> errors, GoalModelValidationPolicy policy)","private static void validateDerivedAndDependees(GoalModel model, List<String> errors)")
+                        .replace("and.children().size() < 2 && !unaryRealization(model,actor,and,policy)","and.children().size() < 2")
+                        .replace("private static void validateRefinements(GoalModel model, List<String> errors, GoalModelValidationPolicy policy)","private static void validateRefinements(GoalModel model, List<String> errors)")
+                        .replace("and.children().size() < 2 && !unaryRealization(model, actor, and, policy)","and.children().size() < 2");
+            }
+        }
         String marker=name.equals("GoalModelValidator.java")
                 ? "        // P-IADM-01: strict public default is preserved."
                 : "        // P-IADM-01: existing entry points retain strict upstream validation.";

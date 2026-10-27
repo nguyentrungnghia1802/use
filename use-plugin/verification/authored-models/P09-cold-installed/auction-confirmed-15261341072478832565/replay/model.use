@@ -1,0 +1,246 @@
+@CslAgentDeclarations(payload64="W3siaWQiOiJiZWlkOnYxOmphY2Ftby9hZ2VudC9kZWNsYXJhdGlvbi9hdWN0aW9uL2FsaWNlL21vZGVsIiwiaW5zdGFuY2VzIjoxfSx7ImlkIjoiYmVpZDp2MTpqYWNhbW8vYWdlbnQvZGVjbGFyYXRpb24vYXVjdGlvbi9ib2IvbW9kZWwiLCJpbnN0YW5jZXMiOjF9LHsiaWQiOiJiZWlkOnYxOmphY2Ftby9hZ2VudC9kZWNsYXJhdGlvbi9hdWN0aW9uL2ZyYW5jb2lzL21vZGVsIiwiaW5zdGFuY2VzIjoxfSx7ImlkIjoiYmVpZDp2MTpqYWNhbW8vYWdlbnQvZGVjbGFyYXRpb24vYXVjdGlvbi9naWFjb21vL21vZGVsIiwiaW5zdGFuY2VzIjoxfSx7ImlkIjoiYmVpZDp2MTpqYWNhbW8vYWdlbnQvZGVjbGFyYXRpb24vYXVjdGlvbi9tYXJpYS9tb2RlbCIsImluc3RhbmNlcyI6MX1d")
+@Use4GoalCslV4(compatibility="true", players="true", profile="USE4GOAL_OBSERVED_V1", version="v4.0")
+@DeclarativeObserverView(mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", version="2.0")
+@CanonicalSemanticProgram(cslHash="4c409639cdfadc66a69a54702435ec511113785be9c12536dec4a45656d489fc", goalHash="3422c85e3fd086329634fb22a00061d6e569eb9e9b94d34da4fc2b2259cfef45", mappingProfile="JACAMO_DECLARATIVE_XML", mappingVersion="2.0", programHash="ae2e0489472515b94554c8d1421c6b6dc98c34a52b2c1a54b03d2889aa107e98", ruleHash="16a00d0f873035a441d83550365544549e1e51425ef2ff6941230534632d319c", sourceHash="e5b28e5a9cdef02856ded9f771d0463bde7d5bac57de952ab17e7ea6537c1ef2", version="2.0")
+model AuctionState
+
+
+@CanonicalSemanticBinding(kind="ENTITY", metadata64="e30", reason64="UGFzc2l2ZSBhcHBsaWNhdGlvbiBBcnRpZmFjdCB0eXBlLCBub3QgYW4gaW5zdGFuY2Ugb3IgcmVxdWVzdA", rule64="YmluZC1kb21haW4", source64="YXJ0aWZhY3QtY2xhc3M6YXVjdGlvbl9lbnYuQXVjdGlvbkFydGlmYWN0", target64="QXVjdGlvbg")
+@OriginalCslDeclaration(id64="QXVjdGlvbg==", kind="ENTITY", owner64="YXVjdGlvbkdyb3Vw")
+@DomainProjection(javaClass64="YXVjdGlvbl9lbnYuQXVjdGlvbkFydGlmYWN0", kind="artifact", sourceId64="YXJ0aWZhY3QtY2xhc3M6YXVjdGlvbl9lbnYuQXVjdGlvbkFydGlmYWN0")
+class Auction < DomainEntity
+attributes
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="QXVjdGlvbjo6YmVzdF9iaWQ=", mutable="true", optional="false")
+  best_bid : Real
+  @OriginalCslAttribute(default64="J25vX3dpbm5lcic=", hasDefault="true", id64="QXVjdGlvbjo6Y3VycmVudFdpbm5lcg==", mutable="true", optional="false")
+  currentWinner : String
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="QXVjdGlvbjo6aWQ=", mutable="false", optional="false")
+  id : String
+  @OriginalCslAttribute(default64="ZmFsc2U=", hasDefault="true", id64="QXVjdGlvbjo6cnVubmluZw==", mutable="true", optional="false")
+  running : Boolean
+  @OriginalCslAttribute(default64="J25vX3Rhc2sn", hasDefault="true", id64="QXVjdGlvbjo6dGFzaw==", mutable="true", optional="false")
+  task : String
+  @OriginalCslAttribute(default64="J25vX3dpbm5lcic=", hasDefault="true", id64="QXVjdGlvbjo6d2lubmVy", mutable="true", optional="false")
+  winner : String
+operations
+  @CslInterfaceAuthority(bytecodeHash="3e18301988e95073e60de924a6ce6a2f091f29a18fd38673de30d3669599c789", kind="PRODUCER_REFLECTED_SOURCE_ACTION_OPERATION", sourceId64="amFzb246YWdlbnQtcHJvZ3JhbTphdWN0aW9uOmFsaWNlOnBsYW4tbGlicmFyeTpwbGFuOjI6ZTU1OTI4MDk0M2UwODk3M2IxODAxYWVhNmQwZWUwNzVjZTQwMDdjMTIyNDNmNjA0YzBkN2YxZmQzNzY2ODA0ODpib2R5OjM6NzZkNWE5MmI4ZjllZjliOTA1OWQyMDZmMzdhNjY1OTRkYmI2MDczMzc2YTdkNGRlMTJlYjYwM2VmNDQ1NmVjYzphY3Rpb24", sourceReference64="amFzb246YWdlbnQtcHJvZ3JhbTphdWN0aW9uOmFsaWNlOnBsYW4tbGlicmFyeTpwbGFuOjI6ZTU1OTI4MDk0M2UwODk3M2IxODAxYWVhNmQwZWUwNzVjZTQwMDdjMTIyNDNmNjA0YzBkN2YxZmQzNzY2ODA0ODpib2R5OjM6NzZkNWE5MmI4ZjllZjliOTA1OWQyMDZmMzdhNjY1OTRkYmI2MDczMzc2YTdkNGRlMTJlYjYwM2VmNDQ1NmVjYzphY3Rpb24", sourceUri64="ZmlsZTovRDovX0NPREVfQkFOSy9Qcm9qZWN0Xy8wOF9UaGVzaXMvdXNlL3VzZS1wbHVnaW4vdGFyZ2V0L2NvbGQtYXV0aG9yZWQtYXVjdGlvbi1jb25maXJtZWQtMTYzOTU5MjY2ODQyMTczOTA5NDAvaW5zdGFsbC93b3JrL293bmVkLXJ1bnRpbWUvMDg1OTA3M2MtODIyMC00OTY3LTliMmMtN2U5ZDI5NzYyZTkxL2V2aWRlbmNlLzIwMjYxMDI3LTEyNDgxOS01MjEtY2U5YjBmZjgvc3RhZ2luZy1hdWN0aW9uL2J1aWxkL2NsYXNzZXMvamF2YS9tYWluL2F1Y3Rpb25fZW52L0F1Y3Rpb25BcnRpZmFjdC5jbGFzcw")
+  @CartagoOperation(exposure="AUTHORED_NAMES_V1", javaName64="Ymlk", parameterAliases64="WyJhbW91bnQiXQ", policy="3.0.0", signature64="WyJhdWN0aW9uX2Vudi5BdWN0aW9uQXJ0aWZhY3QiLCJiaWQiLFsiZG91YmxlIl0sInZvaWQiXQ")
+  @OperationSource_44bc543a4c687003(backingId64="amF2YS1tZXRob2Q6W2F1Y3Rpb25fZW52LkF1Y3Rpb25BcnRpZmFjdCwgYmlkLCBbZG91YmxlXSwgdm9pZF0", descriptorId64="ZGVjbGFyZWQtaW50ZXJmYWNlOmphc29uOmFnZW50LXByb2dyYW06YXVjdGlvbjphbGljZTpwbGFuLWxpYnJhcnk6cGxhbjoyOmU1NTkyODA5NDNlMDg5NzNiMTgwMWFlYTZkMGVlMDc1Y2U0MDA3YzEyMjQzZjYwNGMwZDdmMWZkMzc2NjgwNDg6Ym9keTozOjc2ZDVhOTJiOGY5ZWY5YjkwNTlkMjA2ZjM3YTY2NTk0ZGJiNjA3MzM3NmE3ZDRkZTEyZWI2MDNlZjQ0NTZlY2M6YWN0aW9u")
+  @DeclarativeOperationBinding(id="op-bid", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", oclHash="7550f0f817f7ce6112dfe3aba800bff77bae52138de189858f2076534ea8234c", task="P_bid_t2")
+  bid(amount : Real)
+  @CslInterfaceAuthority(bytecodeHash="3e18301988e95073e60de924a6ce6a2f091f29a18fd38673de30d3669599c789", kind="PRODUCER_REFLECTED_SOURCE_ACTION_OPERATION", sourceId64="amFzb246YWdlbnQtcHJvZ3JhbTphdWN0aW9uOmFsaWNlOnBsYW4tbGlicmFyeTpwbGFuOjI6ZTU1OTI4MDk0M2UwODk3M2IxODAxYWVhNmQwZWUwNzVjZTQwMDdjMTIyNDNmNjA0YzBkN2YxZmQzNzY2ODA0ODpib2R5OjM6NzZkNWE5MmI4ZjllZjliOTA1OWQyMDZmMzdhNjY1OTRkYmI2MDczMzc2YTdkNGRlMTJlYjYwM2VmNDQ1NmVjYzphY3Rpb24", sourceReference64="amFzb246YWdlbnQtcHJvZ3JhbTphdWN0aW9uOmFsaWNlOnBsYW4tbGlicmFyeTpwbGFuOjI6ZTU1OTI4MDk0M2UwODk3M2IxODAxYWVhNmQwZWUwNzVjZTQwMDdjMTIyNDNmNjA0YzBkN2YxZmQzNzY2ODA0ODpib2R5OjM6NzZkNWE5MmI4ZjllZjliOTA1OWQyMDZmMzdhNjY1OTRkYmI2MDczMzc2YTdkNGRlMTJlYjYwM2VmNDQ1NmVjYzphY3Rpb24", sourceUri64="ZmlsZTovRDovX0NPREVfQkFOSy9Qcm9qZWN0Xy8wOF9UaGVzaXMvdXNlL3VzZS1wbHVnaW4vdGFyZ2V0L2NvbGQtYXV0aG9yZWQtYXVjdGlvbi1jb25maXJtZWQtMTYzOTU5MjY2ODQyMTczOTA5NDAvaW5zdGFsbC93b3JrL293bmVkLXJ1bnRpbWUvMDg1OTA3M2MtODIyMC00OTY3LTliMmMtN2U5ZDI5NzYyZTkxL2V2aWRlbmNlLzIwMjYxMDI3LTEyNDgxOS01MjEtY2U5YjBmZjgvc3RhZ2luZy1hdWN0aW9uL2J1aWxkL2NsYXNzZXMvamF2YS9tYWluL2F1Y3Rpb25fZW52L0F1Y3Rpb25BcnRpZmFjdC5jbGFzcw")
+  @CartagoOperation(exposure="AUTHORED_NAMES_V1", javaName64="c3RhcnQ", parameterAliases64="WyJzZXJ2aWNlIl0", policy="3.0.0", signature64="WyJhdWN0aW9uX2Vudi5BdWN0aW9uQXJ0aWZhY3QiLCJzdGFydCIsWyJqYXZhLmxhbmcuU3RyaW5nIl0sInZvaWQiXQ")
+  @OperationSource_44bc543a4c687003(backingId64="amF2YS1tZXRob2Q6W2F1Y3Rpb25fZW52LkF1Y3Rpb25BcnRpZmFjdCwgc3RhcnQsIFtqYXZhLmxhbmcuU3RyaW5nXSwgdm9pZF0", descriptorId64="ZGVjbGFyZWQtaW50ZXJmYWNlOmphc29uOmFnZW50LXByb2dyYW06YXVjdGlvbjphbGljZTpwbGFuLWxpYnJhcnk6cGxhbjoyOmU1NTkyODA5NDNlMDg5NzNiMTgwMWFlYTZkMGVlMDc1Y2U0MDA3YzEyMjQzZjYwNGMwZDdmMWZkMzc2NjgwNDg6Ym9keTozOjc2ZDVhOTJiOGY5ZWY5YjkwNTlkMjA2ZjM3YTY2NTk0ZGJiNjA3MzM3NmE3ZDRkZTEyZWI2MDNlZjQ0NTZlY2M6YWN0aW9u")
+  @DeclarativeOperationBinding(id="op-start", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", oclHash="7550f0f817f7ce6112dfe3aba800bff77bae52138de189858f2076534ea8234c", task="A_start_t2")
+  start(service : String)
+  @CslInterfaceAuthority(bytecodeHash="3e18301988e95073e60de924a6ce6a2f091f29a18fd38673de30d3669599c789", kind="PRODUCER_REFLECTED_SOURCE_ACTION_OPERATION", sourceId64="amFzb246YWdlbnQtcHJvZ3JhbTphdWN0aW9uOmFsaWNlOnBsYW4tbGlicmFyeTpwbGFuOjI6ZTU1OTI4MDk0M2UwODk3M2IxODAxYWVhNmQwZWUwNzVjZTQwMDdjMTIyNDNmNjA0YzBkN2YxZmQzNzY2ODA0ODpib2R5OjM6NzZkNWE5MmI4ZjllZjliOTA1OWQyMDZmMzdhNjY1OTRkYmI2MDczMzc2YTdkNGRlMTJlYjYwM2VmNDQ1NmVjYzphY3Rpb24", sourceReference64="amFzb246YWdlbnQtcHJvZ3JhbTphdWN0aW9uOmFsaWNlOnBsYW4tbGlicmFyeTpwbGFuOjI6ZTU1OTI4MDk0M2UwODk3M2IxODAxYWVhNmQwZWUwNzVjZTQwMDdjMTIyNDNmNjA0YzBkN2YxZmQzNzY2ODA0ODpib2R5OjM6NzZkNWE5MmI4ZjllZjliOTA1OWQyMDZmMzdhNjY1OTRkYmI2MDczMzc2YTdkNGRlMTJlYjYwM2VmNDQ1NmVjYzphY3Rpb24", sourceUri64="ZmlsZTovRDovX0NPREVfQkFOSy9Qcm9qZWN0Xy8wOF9UaGVzaXMvdXNlL3VzZS1wbHVnaW4vdGFyZ2V0L2NvbGQtYXV0aG9yZWQtYXVjdGlvbi1jb25maXJtZWQtMTYzOTU5MjY2ODQyMTczOTA5NDAvaW5zdGFsbC93b3JrL293bmVkLXJ1bnRpbWUvMDg1OTA3M2MtODIyMC00OTY3LTliMmMtN2U5ZDI5NzYyZTkxL2V2aWRlbmNlLzIwMjYxMDI3LTEyNDgxOS01MjEtY2U5YjBmZjgvc3RhZ2luZy1hdWN0aW9uL2J1aWxkL2NsYXNzZXMvamF2YS9tYWluL2F1Y3Rpb25fZW52L0F1Y3Rpb25BcnRpZmFjdC5jbGFzcw")
+  @CartagoOperation(exposure="AUTHORED_NAMES_V1", javaName64="c3RvcA", parameterAliases64="W10", policy="3.0.0", signature64="WyJhdWN0aW9uX2Vudi5BdWN0aW9uQXJ0aWZhY3QiLCJzdG9wIixbXSwidm9pZCJd")
+  @OperationSource_44bc543a4c687003(backingId64="amF2YS1tZXRob2Q6W2F1Y3Rpb25fZW52LkF1Y3Rpb25BcnRpZmFjdCwgc3RvcCwgW10sIHZvaWRd", descriptorId64="ZGVjbGFyZWQtaW50ZXJmYWNlOmphc29uOmFnZW50LXByb2dyYW06YXVjdGlvbjphbGljZTpwbGFuLWxpYnJhcnk6cGxhbjoyOmU1NTkyODA5NDNlMDg5NzNiMTgwMWFlYTZkMGVlMDc1Y2U0MDA3YzEyMjQzZjYwNGMwZDdmMWZkMzc2NjgwNDg6Ym9keTozOjc2ZDVhOTJiOGY5ZWY5YjkwNTlkMjA2ZjM3YTY2NTk0ZGJiNjA3MzM3NmE3ZDRkZTEyZWI2MDNlZjQ0NTZlY2M6YWN0aW9u")
+  @DeclarativeOperationBinding(id="op-stop", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", oclHash="7550f0f817f7ce6112dfe3aba800bff77bae52138de189858f2076534ea8234c", task="A_decide_t2")
+  stop()
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOlJ1bnRpbWVQbGF5ZXI=", kind="M0_EXTENSION")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="aGVscGVyOlJ1bnRpbWVQbGF5ZXI")
+abstract class RuntimePlayer
+end
+
+@SemanticRuntimeHelper(kind="DECLARATION_SCOPE_ONLY", physicalOwnership="false")
+association CslEntityScopes between
+  OrgContext[0..1] role cslEntityScope
+  DomainEntity[*] role cslScopedEntities
+end
+
+association Plays between
+  RuntimePlayer[1] role player
+  RoleOccurrence[*] role enactedRoles
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOk9yZ0NvbnRleHQ=", kind="M0_EXTENSION")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="aGVscGVyOk9yZ0NvbnRleHQ")
+abstract class OrgContext < RuntimePlayer
+end
+
+@SemanticRuntimeHelper(kind="DECLARATION_SCOPE_ONLY", physicalOwnership="false")
+association CslContextScopes between
+  OrgContext[0..1] role cslScopeParent
+  OrgContext[*] role cslNestedContexts
+end
+
+@SemanticRuntimeHelper(id64="b2JzZXJ2ZXI6dmlldy1vYmxpZ2F0aW9u", kind="EXTERNAL_OBSERVER_VIEW")
+@DeclarativeObserverView(details64="eyJjYXRlZ29yeSI6IkNMQVNTIiwiaWQiOiJ2aWV3LW9ibGlnYXRpb24iLCJrZXlGaWVsZHMiOiJydW5JZCBzY2hlbWVVaWQgcGxheWVyIGFjdGl2YXRpb24iLCJuYW1lIjoiQXVjdGlvbk9ibGlnYXRpb24ifQ==", keys64="cnVuSWQgc2NoZW1lVWlkIHBsYXllciBhY3RpdmF0aW9u", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", sourceLine="617", version="2.0", view64="dmlldy1vYmxpZ2F0aW9u")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="b2JzZXJ2ZXI6dmlldy1vYmxpZ2F0aW9u")
+class AuctionObligation
+attributes
+  @DeclarativeObserverView(details64="eyJuYW1lIjoiYWN0aXZhdGVkQXQiLCJvcmlnaW4iOiJOUEwgYWN0aXZhdGlvbiBlbmdpbmUgY2xvY2siLCJ0eXBlIjoiSW50ZWdlciJ9", field64="YWN0aXZhdGVkQXQ=", keys64="cnVuSWQgc2NoZW1lVWlkIHBsYXllciBhY3RpdmF0aW9u", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", sourceLine="619", version="2.0", view64="dmlldy1vYmxpZ2F0aW9u")
+  activatedAt : Integer
+  @DeclarativeObserverView(details64="eyJuYW1lIjoiZGVhZGxpbmVBdCIsIm9yaWdpbiI6Ik5QTCBhYnNvbHV0ZSBkZWFkbGluZSByZWxhdGl2ZSB0byBzb3VyY2UgcnVuIGNsb2NrIiwidHlwZSI6IkludGVnZXIifQ==", field64="ZGVhZGxpbmVBdA==", keys64="cnVuSWQgc2NoZW1lVWlkIHBsYXllciBhY3RpdmF0aW9u", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", sourceLine="620", version="2.0", view64="dmlldy1vYmxpZ2F0aW9u")
+  deadlineAt : Integer
+  @DeclarativeObserverView(details64="eyJuYW1lIjoiZW5kZWRBdCIsIm9yaWdpbiI6ImZpcnN0IGFjdHVhbCB0ZXJtaW5hbCBvciBrbm93biBwZW5kaW5nIHNlbnRpbmVsIiwidHlwZSI6IkludGVnZXIifQ==", field64="ZW5kZWRBdA==", keys64="cnVuSWQgc2NoZW1lVWlkIHBsYXllciBhY3RpdmF0aW9u", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", sourceLine="621", version="2.0", view64="dmlldy1vYmxpZ2F0aW9u")
+  endedAt : Integer
+  @DeclarativeObserverView(details64="eyJuYW1lIjoiZ29hbCIsIm9yaWdpbiI6ImFjdHVhbCBhY3RpdmF0ZWQgZ29hbCBvYmxpZ2F0aW9uIiwidHlwZSI6IlN0cmluZyJ9", field64="Z29hbA==", keys64="cnVuSWQgc2NoZW1lVWlkIHBsYXllciBhY3RpdmF0aW9u", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", sourceLine="618", version="2.0", view64="dmlldy1vYmxpZ2F0aW9u")
+  goal : String
+  @DeclarativeObserverView(details64="eyJuYW1lIjoidW5mdWxmaWxsZWQiLCJvcmlnaW4iOiJsYXRjaGVkIGFjdHVhbCBsaWZlY3ljbGUgdGVybWluYWwiLCJ0eXBlIjoiQm9vbGVhbiJ9", field64="dW5mdWxmaWxsZWQ=", keys64="cnVuSWQgc2NoZW1lVWlkIHBsYXllciBhY3RpdmF0aW9u", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", sourceLine="622", version="2.0", view64="dmlldy1vYmxpZ2F0aW9u")
+  unfulfilled : Boolean
+end
+
+@SemanticRuntimeHelper(id64="b2JzZXJ2ZXI6dmlldy1tb25pdG9y", kind="EXTERNAL_OBSERVER_VIEW")
+@DeclarativeObserverView(details64="eyJjYXRlZ29yeSI6IkNMQVNTIiwiaWQiOiJ2aWV3LW1vbml0b3IiLCJrZXlGaWVsZHMiOiJydW5JZCBzY2hlbWVVaWQiLCJuYW1lIjoiQXVjdGlvbk1vbml0b3IifQ==", keys64="cnVuSWQgc2NoZW1lVWlk", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", sourceLine="605", version="2.0", view64="dmlldy1tb25pdG9y")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="b2JzZXJ2ZXI6dmlldy1tb25pdG9y")
+class AuctionMonitor
+attributes
+  @DeclarativeObserverView(details64="eyJuYW1lIjoiYWN0dWFsQmlkQnkiLCJvcmlnaW4iOiJzdWNjZXNzZnVsIGJvdW5kIGJpZCBvcGVyYXRpb24gaW5jbHVkaW5nIG5vbi1pbXByb3ZpbmcgYmlkcyIsInR5cGUiOiJTZXQoU3RyaW5nKSJ9", field64="YWN0dWFsQmlkQnk=", keys64="cnVuSWQgc2NoZW1lVWlk", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", sourceLine="614", version="2.0", view64="dmlldy1tb25pdG9y")
+  actualBidBy : Set(String)
+  @DeclarativeObserverView(details64="eyJuYW1lIjoiYWRtaW5CaWRPdmVycmlkZSIsIm9yaWdpbiI6InN1Y2Nlc3NmdWwgZXhhY3QgYWRtaW5pc3RyYXRpdmUgY29tbWFuZCwgbmV2ZXIgYWN0dWFsIGJpZCIsInR5cGUiOiJCb29sZWFuIn0=", field64="YWRtaW5CaWRPdmVycmlkZQ==", keys64="cnVuSWQgc2NoZW1lVWlk", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", sourceLine="615", version="2.0", view64="dmlldy1tb25pdG9y")
+  adminBidOverride : Boolean
+  @DeclarativeObserverView(details64="eyJuYW1lIjoiYmlkQ29tbWl0dGVkQnkiLCJvcmlnaW4iOiJhY3R1YWwgcGFydGljaXBhbnQgbWlzc2lvbiBjb21taXRtZW50cyBmcm96ZW4gYXQgZmlyc3Qgc291cmNlIHNhdGlzZmFjdGlvbiIsInR5cGUiOiJTZXQoU3RyaW5nKSJ9", field64="YmlkQ29tbWl0dGVkQnk=", keys64="cnVuSWQgc2NoZW1lVWlk", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", sourceLine="612", version="2.0", view64="dmlldy1tb25pdG9y")
+  bidCommittedBy : Set(String)
+  @DeclarativeObserverView(details64="eyJuYW1lIjoiYmlkRG9uZUJ5Iiwib3JpZ2luIjoiYWN0dWFsIE1PSVNFIGRvbmUgZmFjdHMiLCJ0eXBlIjoiU2V0KFN0cmluZykifQ==", field64="YmlkRG9uZUJ5", keys64="cnVuSWQgc2NoZW1lVWlk", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", sourceLine="613", version="2.0", view64="dmlldy1tb25pdG9y")
+  bidDoneBy : Set(String)
+  @DeclarativeObserverView(details64="eyJuYW1lIjoiYmlkRW5hYmxlZENvbmZpcm1lZEF0Iiwib3JpZ2luIjoiTU9JU0VfUFVCTElDX0NPTkZJUk1BVElPTi8xLjAgc291cmNlIGNhbGxiYWNrLCBub3QgaW50ZXJuYWwgdHJ1dGggdGltZSIsInR5cGUiOiJJbnRlZ2VyIn0=", field64="YmlkRW5hYmxlZENvbmZpcm1lZEF0", keys64="cnVuSWQgc2NoZW1lVWlk", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", sourceLine="608", version="2.0", view64="dmlldy1tb25pdG9y")
+  bidEnabledConfirmedAt : Integer
+  @DeclarativeObserverView(details64="eyJuYW1lIjoiYmlkU2F0aXNmaWVkQ29uZmlybWVkQXQiLCJvcmlnaW4iOiJNT0lTRV9QVUJMSUNfQ09ORklSTUFUSU9OLzEuMCBzb3VyY2UgY2FsbGJhY2ssIG5vdCBpbnRlcm5hbCB0cnV0aCB0aW1lIiwidHlwZSI6IkludGVnZXIifQ==", field64="YmlkU2F0aXNmaWVkQ29uZmlybWVkQXQ=", keys64="cnVuSWQgc2NoZW1lVWlk", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", sourceLine="609", version="2.0", view64="dmlldy1tb25pdG9y")
+  bidSatisfiedConfirmedAt : Integer
+  @DeclarativeObserverView(details64="eyJuYW1lIjoiZGVjaWRlRW5hYmxlZENvbmZpcm1lZEF0Iiwib3JpZ2luIjoiTU9JU0VfUFVCTElDX0NPTkZJUk1BVElPTi8xLjAgc291cmNlIGNhbGxiYWNrLCBub3QgaW50ZXJuYWwgdHJ1dGggdGltZSIsInR5cGUiOiJJbnRlZ2VyIn0=", field64="ZGVjaWRlRW5hYmxlZENvbmZpcm1lZEF0", keys64="cnVuSWQgc2NoZW1lVWlk", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", sourceLine="610", version="2.0", view64="dmlldy1tb25pdG9y")
+  decideEnabledConfirmedAt : Integer
+  @DeclarativeObserverView(details64="eyJuYW1lIjoiZGVjaWRlU2F0aXNmaWVkQ29uZmlybWVkQXQiLCJvcmlnaW4iOiJNT0lTRV9QVUJMSUNfQ09ORklSTUFUSU9OLzEuMCBzb3VyY2UgY2FsbGJhY2ssIG5vdCBpbnRlcm5hbCB0cnV0aCB0aW1lIiwidHlwZSI6IkludGVnZXIifQ==", field64="ZGVjaWRlU2F0aXNmaWVkQ29uZmlybWVkQXQ=", keys64="cnVuSWQgc2NoZW1lVWlk", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", sourceLine="611", version="2.0", view64="dmlldy1tb25pdG9y")
+  decideSatisfiedConfirmedAt : Integer
+  @DeclarativeObserverView(details64="eyJuYW1lIjoibm93Iiwib3JpZ2luIjoidmFsaWRhdGVkIHNvdXJjZSBydW4gY2xvY2siLCJ0eXBlIjoiSW50ZWdlciJ9", field64="bm93", keys64="cnVuSWQgc2NoZW1lVWlk", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", sourceLine="606", version="2.0", view64="dmlldy1tb25pdG9y")
+  now : Integer
+  @DeclarativeObserverView(details64="eyJuYW1lIjoic3RhcnRTYXRpc2ZpZWRDb25maXJtZWRBdCIsIm9yaWdpbiI6Ik1PSVNFX1BVQkxJQ19DT05GSVJNQVRJT04vMS4wIHNvdXJjZSBjYWxsYmFjaywgbm90IGludGVybmFsIHRydXRoIHRpbWUiLCJ0eXBlIjoiSW50ZWdlciJ9", field64="c3RhcnRTYXRpc2ZpZWRDb25maXJtZWRBdA==", keys64="cnVuSWQgc2NoZW1lVWlk", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", sourceLine="607", version="2.0", view64="dmlldy1tb25pdG9y")
+  startSatisfiedConfirmedAt : Integer
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOldvcmtzcGFjZU9ic2VydmF0aW9u", kind="M0_EXTENSION")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="aGVscGVyOldvcmtzcGFjZU9ic2VydmF0aW9u")
+class WorkspaceObservation
+end
+
+@CanonicalSemanticBinding(kind="ORG_CONTEXT", metadata64="eyJjb250ZXh0QWJzdHJhY3Rpb24iOiJPUkdBTklaQVRJT05fREVQTE9ZTUVOVF9WSUVXIn0", reason64="RXhwbGljaXQgb3JnYW5pemF0aW9uIGRlcGxveW1lbnQgdmlld3BvaW50LCBub3QgYSBmcmFtZXdvcmsgRW50aXR5", rule64="YmluZC1vcmc", source64="YmVpZDp2MTpqYWNhbW8vb3JnYW5pc2F0aW9uL29yZ2FuaXphdGlvbi1kZXBsb3ltZW50L2F1Y3Rpb24vYW9yZy9tb2RlbA", target64="QXVjdGlvbk9yZw")
+@OriginalCslDeclaration(id64="QXVjdGlvbk9yZw==", kind="ORG_CONTEXT", owner64="")
+@DomainProjection(javaClass64="", kind="csl-org_context", sourceId64="YmVpZDp2MTpqYWNhbW8vb3JnYW5pc2F0aW9uL29yZ2FuaXphdGlvbi1kZXBsb3ltZW50L2F1Y3Rpb24vYW9yZy9tb2RlbA")
+class AuctionOrg < OrgContext
+end
+
+@CanonicalSemanticBinding(kind="ROLE", metadata64="e30", reason64="RGVjbGFyZWQgTU9JU0Ugcm9sZSwgbm90IGEgbGl2ZSBlbmFjdG1lbnQ", rule64="YmluZC1yb2xlLXBhcnRpY2lwYW50", source64="bW9pc2U6b3JnYW5pemF0aW9uOmF1Y3Rpb246YXVjdGlvbjpyb2xlOnBhcnRpY2lwYW50", target64="cGFydGljaXBhbnQ")
+@OriginalCslDeclaration(id64="cGFydGljaXBhbnQ=", kind="ROLE", owner64="YXVjdGlvbkdyb3Vw")
+@DomainProjection(javaClass64="", kind="csl-role", sourceId64="bW9pc2U6b3JnYW5pemF0aW9uOmF1Y3Rpb246YXVjdGlvbjpyb2xlOnBhcnRpY2lwYW50")
+class participant < auction_capabilities
+end
+
+@CanonicalSemanticBinding(kind="ROLE", metadata64="e30", reason64="RGVjbGFyZWQgTU9JU0Ugcm9sZSwgbm90IGEgbGl2ZSBlbmFjdG1lbnQ", rule64="YmluZC1yb2xlLWF1Y3Rpb25lZXI", source64="bW9pc2U6b3JnYW5pemF0aW9uOmF1Y3Rpb246YXVjdGlvbjpyb2xlOmF1Y3Rpb25lZXI", target64="YXVjdGlvbmVlcg")
+@OriginalCslDeclaration(id64="YXVjdGlvbmVlcg==", kind="ROLE", owner64="YXVjdGlvbkdyb3Vw")
+@DomainProjection(javaClass64="", kind="csl-role", sourceId64="bW9pc2U6b3JnYW5pemF0aW9uOmF1Y3Rpb246YXVjdGlvbjpyb2xlOmF1Y3Rpb25lZXI")
+class auctioneer < auction_capabilities
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOlJvbGVPY2N1cnJlbmNl", kind="M0_EXTENSION")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="aGVscGVyOlJvbGVPY2N1cnJlbmNl")
+abstract class RoleOccurrence
+end
+
+@SemanticRuntimeHelper(id64="dmlldy1vYmxpZ2F0aW9uOjptb25pdG9y", kind="EXTERNAL_OBSERVER_REFERENCE")
+@DeclarativeObserverView(details64="eyJuYW1lIjoibW9uaXRvciIsIm9yaWdpbiI6ImV4YWN0IHNhbWUgc2NoZW1lIGFuZCBydW4iLCJ0eXBlIjoiQXVjdGlvbk1vbml0b3IifQ==", field64="bW9uaXRvcg==", keys64="cnVuSWQgc2NoZW1lVWlkIHBsYXllciBhY3RpdmF0aW9u", mappingHash="e001badd2c6b7fb19fca92e53f074af1f1c16017ee7761fd9e2ff956de007185", sourceLine="623", version="2.0", view64="dmlldy1vYmxpZ2F0aW9u")
+association Observer_view_obligation_monitor between
+  AuctionObligation[*] role owners_view_obligation_monitor
+  AuctionMonitor[0..1] role monitor
+end
+
+@CanonicalSemanticBinding(kind="ORG_CONTEXT", metadata64="e30", reason64="Q29uZmlndXJlZCBzdHJ1Y3R1cmFsIGdyb3VwIGRlZmluaXRpb24", rule64="YmluZC1ncm91cA", source64="bW9pc2U6b3JnYW5pemF0aW9uOmF1Y3Rpb246YXVjdGlvbjpncm91cDphdWN0aW9uR3JvdXB8YXVjdGlvbkdyb3Vw", target64="YXVjdGlvbkdyb3Vw")
+@OriginalCslDeclaration(id64="YXVjdGlvbkdyb3Vw", kind="ORG_CONTEXT", owner64="QXVjdGlvbk9yZw==")
+@DomainProjection(javaClass64="", kind="csl-org_context", sourceId64="bW9pc2U6b3JnYW5pemF0aW9uOmF1Y3Rpb246YXVjdGlvbjpncm91cDphdWN0aW9uR3JvdXB8YXVjdGlvbkdyb3Vw")
+class auctionGroup < OrgContext
+attributes
+  @SemanticRuntimeHelper(id64="YXVjdGlvbl9jYXBhYmlsaXRpZXM=", kind="DECLARED_ROLE_NAVIGATION", owner64="YXVjdGlvbkdyb3Vw")
+  auction_capabilities : Set(auction_capabilities) derived : self.roles->select( r:RoleOccurrence | r.oclIsKindOf(auction_capabilities) )->collect( r:RoleOccurrence | r.oclAsType(auction_capabilities) )->asSet()
+  @SemanticRuntimeHelper(id64="YXVjdGlvbmVlcg==", kind="DECLARED_ROLE_NAVIGATION", owner64="YXVjdGlvbkdyb3Vw")
+  auctioneer : Set(auctioneer) derived : self.roles->select( r:RoleOccurrence | r.oclIsKindOf(auctioneer) )->collect( r:RoleOccurrence | r.oclAsType(auctioneer) )->asSet()
+  @SemanticRuntimeHelper(id64="cGFydGljaXBhbnQ=", kind="DECLARED_ROLE_NAVIGATION", owner64="YXVjdGlvbkdyb3Vw")
+  participant : Set(participant) derived : self.roles->select( r:RoleOccurrence | r.oclIsKindOf(participant) )->collect( r:RoleOccurrence | r.oclAsType(participant) )->asSet()
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOkF0b21pY0FnZW50", kind="M0_EXTENSION")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="aGVscGVyOkF0b21pY0FnZW50")
+class AtomicAgent < RuntimePlayer
+end
+
+@CanonicalSemanticBinding(kind="ROLE", metadata64="eyJyb2xlQWJzdHJhY3Rpb24iOiJBU0xfQ0FQQUJJTElUWV9WSUVXIn0", reason64="U2hhcmVkIGF1dGhvcmVkIEFTTCBjYXBhYmlsaXR5IHJvbGUsIGFuY2hvcmVkIGJ5IGV4YWN0IHNvdXJjZSBkZWNsYXJhdGlvbjsgbm90IGEgc2VwYXJhdGVseSBhZG9wdGVkIE1PSVNFIHJvbGU", rule64="YmluZC1jYXBhYmlsaXR5LXJvbGU", source64="amFzb246YWdlbnQtcHJvZ3JhbTphdWN0aW9uOmJvYg", target64="YXVjdGlvbl9jYXBhYmlsaXRpZXM")
+@OriginalCslDeclaration(id64="YXVjdGlvbl9jYXBhYmlsaXRpZXM=", kind="ROLE", owner64="YXVjdGlvbkdyb3Vw")
+@DomainProjection(javaClass64="", kind="csl-role", sourceId64="amFzb246YWdlbnQtcHJvZ3JhbTphdWN0aW9uOmJvYg")
+class auction_capabilities < RoleOccurrence
+attributes
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="YXVjdGlvbl9jYXBhYmlsaXRpZXM6OmJlbGllZkJhc2U=", mutable="true", optional="true")
+  beliefBase : String
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="YXVjdGlvbl9jYXBhYmlsaXRpZXM6OmJlbGllZl9iZXN0X2JpZA==", mutable="true", optional="true")
+  belief_best_bid : String
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="YXVjdGlvbl9jYXBhYmlsaXRpZXM6OmJlbGllZl9mb2N1c2luZw==", mutable="true", optional="true")
+  belief_focusing : String
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="YXVjdGlvbl9jYXBhYmlsaXRpZXM6OmJlbGllZl9nb2FsQXJndW1lbnQ=", mutable="true", optional="true")
+  belief_goalArgument : String
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="YXVjdGlvbl9jYXBhYmlsaXRpZXM6OmJlbGllZl9qb2luZWRXc3A=", mutable="true", optional="true")
+  belief_joinedWsp : String
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="YXVjdGlvbl9jYXBhYmlsaXRpZXM6OmJlbGllZl9wbGF5", mutable="true", optional="true")
+  belief_play : String
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="YXVjdGlvbl9jYXBhYmlsaXRpZXM6OmJlbGllZl9ydW5uaW5n", mutable="true", optional="true")
+  belief_running : String
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="YXVjdGlvbl9jYXBhYmlsaXRpZXM6OmJlbGllZl90YXNr", mutable="true", optional="true")
+  belief_task : String
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="YXVjdGlvbl9jYXBhYmlsaXRpZXM6OmJlbGllZl93aW5uZXI=", mutable="true", optional="true")
+  belief_winner : String
+end
+
+association InContext between
+  OrgContext[1]
+  RoleOccurrence[*] role roles
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOkRvbWFpbkVudGl0eQ==", kind="M0_EXTENSION")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="aGVscGVyOkRvbWFpbkVudGl0eQ")
+abstract class DomainEntity
+end
+
+constraints
+context OrgContext inv CslV4RoleCompatibility:
+  self.roles->forAll( r1:RoleOccurrence, r2:RoleOccurrence | (((((((((r1 = r2) or (r1.player <> r2.player)) or (r1.oclIsKindOf(auction_capabilities) and r2.oclIsKindOf(auction_capabilities))) or (r1.oclIsKindOf(auction_capabilities) and r2.oclIsKindOf(auctioneer))) or (r1.oclIsKindOf(auction_capabilities) and r2.oclIsKindOf(participant))) or (r1.oclIsKindOf(auctioneer) and r2.oclIsKindOf(auction_capabilities))) or (r1.oclIsKindOf(auctioneer) and r2.oclIsKindOf(auctioneer))) or (r1.oclIsKindOf(participant) and r2.oclIsKindOf(auction_capabilities))) or (r1.oclIsKindOf(participant) and r2.oclIsKindOf(participant))) )
+
+context auctionGroup inv AuctioneerPopulation:
+  (self.auctioneer->size() = 1)
+
+context auctionGroup inv ParticipantPopulation:
+  (self.participant->size() <= 300)
+
+context self : AuctionMonitor
+  @AuthoredOclSource(bodyEnd="3786", bodyStart="3039", clause64="Q29uZmlybWVkQmlkRXZpZGVuY2U=", kind="INVARIANT", line="61", source64="YXV0aG9yZWQtb2Ns", sourceHash="7550f0f817f7ce6112dfe3aba800bff77bae52138de189858f2076534ea8234c")
+  inv ConfirmedBidEvidence:
+    (self.bidDoneBy->forAll( a:String | self.actualBidBy->includes(a) ) and ((self.bidSatisfiedConfirmedAt >= 0) implies (self.adminBidOverride or self.bidCommittedBy->exists( a:String | (self.bidDoneBy->includes(a) and self.actualBidBy->includes(a)) ))))
+
+context self : AuctionMonitor
+    @AuthoredOclSource(bodyEnd="2991", bodyStart="1843", clause64="Q29uZmlybWVkU2NoZW1lT3JkZXI=", kind="INVARIANT", line="40", source64="YXV0aG9yZWQtb2Ns", sourceHash="7550f0f817f7ce6112dfe3aba800bff77bae52138de189858f2076534ea8234c")
+    inv ConfirmedSchemeOrder:
+      (((((self.bidEnabledConfirmedAt >= 0) implies ((self.startSatisfiedConfirmedAt >= 0) and (self.startSatisfiedConfirmedAt <= self.bidEnabledConfirmedAt))) and ((self.bidSatisfiedConfirmedAt >= 0) implies ((self.bidEnabledConfirmedAt >= 0) and (self.bidEnabledConfirmedAt <= self.bidSatisfiedConfirmedAt)))) and ((self.decideEnabledConfirmedAt >= 0) implies ((self.bidSatisfiedConfirmedAt >= 0) and (self.bidSatisfiedConfirmedAt <= self.decideEnabledConfirmedAt)))) and ((self.decideSatisfiedConfirmedAt >= 0) implies ((self.decideEnabledConfirmedAt >= 0) and (self.decideEnabledConfirmedAt <= self.decideSatisfiedConfirmedAt))))
+
+context self : AuctionObligation
+      @AuthoredOclSource(bodyEnd="4102", bodyStart="3831", clause64="V2l0aGluRGVhZGxpbmU=", kind="INVARIANT", line="77", source64="YXV0aG9yZWQtb2Ns", sourceHash="7550f0f817f7ce6112dfe3aba800bff77bae52138de189858f2076534ea8234c")
+      inv WithinDeadline:
+        (((self.deadlineAt = (self.activatedAt + if (self.goal = 'bid') then 10000 else 3600000 endif)) and not self.unfulfilled) and (if (self.endedAt >= 0) then self.endedAt else self.monitor.now endif <= self.deadlineAt))
+
+context Auction::bid(amount : Real)
+        @AuthoredOclSource(bodyEnd="1389", bodyStart="1370", clause64="UnVubmluZ0ZvckJpZA==", kind="PRE", line="26", source64="YXV0aG9yZWQtb2Ns", sourceHash="7550f0f817f7ce6112dfe3aba800bff77bae52138de189858f2076534ea8234c")
+        pre RunningForBid: self.running
+
+context Auction::start(service : String)
+        @AuthoredOclSource(bodyEnd="1261", bodyStart="1239", clause64="SWRsZQ==", kind="PRE", line="20", source64="YXV0aG9yZWQtb2Ns", sourceHash="7550f0f817f7ce6112dfe3aba800bff77bae52138de189858f2076534ea8234c")
+        pre Idle: not self.running
+
+context Auction::start(service : String)
+        @AuthoredOclSource(bodyEnd="1316", bodyStart="1273", clause64="T3BlbmVk", kind="POST", line="22", source64="YXV0aG9yZWQtb2Ns", sourceHash="7550f0f817f7ce6112dfe3aba800bff77bae52138de189858f2076534ea8234c")
+        post Opened: (self.running and (self.task = service))
+
+context Auction::stop()
+        @AuthoredOclSource(bodyEnd="1795", bodyStart="1462", clause64="Q2xvc2Vk", kind="POST", line="32", source64="YXV0aG9yZWQtb2Ns", sourceHash="7550f0f817f7ce6112dfe3aba800bff77bae52138de189858f2076534ea8234c")
+        post Closed: not self.running
+
+context Auction::stop()
+        @AuthoredOclSource(bodyEnd="1450", bodyStart="1432", clause64="UnVubmluZ0ZvclN0b3A=", kind="PRE", line="30", source64="YXV0aG9yZWQtb2Ns", sourceHash="7550f0f817f7ce6112dfe3aba800bff77bae52138de189858f2076534ea8234c")
+        pre RunningForStop: self.running
+
