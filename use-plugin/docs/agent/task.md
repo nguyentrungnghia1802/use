@@ -1,3 +1,5 @@
+> **Current AA scope:** root `plan.md` supersedes historical legacy-retention claims below. Case-specific Java/profile/readers are retired from production; current authority is declarative XML plus the native contract inventory. See `verification/no-case-production/final` for this change.
+
 > **Active scope 2026-10-26:** implementation tiếp theo theo [`../../../plan.md`](../../../plan.md) tại root repository (`use/plan.md`). Nội dung G00–G13 dưới đây là evidence lịch sử của generated-model profile, không phải acceptance cho authored five-input mode.
 
 # Generic declarative JaCaMo mapping — implementation checklist

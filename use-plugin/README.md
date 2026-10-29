@@ -1,5 +1,12 @@
 # USE JaCaMo Plugin 1.0.1
 
+> **Current case mapping:** use `JACAMO_DECLARATIVE_XML` and the authored five-input
+> workflow documented in `docs/project/use4goal-run.md` (Auction: `authored-v1/`).
+> Case-specific Java/profile `AUCTION_OBSERVED_V1` has been retired; old case replay
+> requires the historical binary or a fresh import/recording through declarative XML.
+> Historical commands below for that retired profile are reference only. Framework
+> native/explicit JSON profiles remain; no case-name detection or fallback is used.
+
 **Chạy CSL/iStar gốc:** [hướng dẫn USE 7.5](docs/project/use4goal-run.md),
 [ví dụ Counter](examples/csl-counter/README.md). Chọn profile
 `USE4GOAL_OBSERVED_V1` và `examples/csl-counter/mapping.json` tại Import.

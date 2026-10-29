@@ -1,0 +1,61 @@
+{
+  "status": "PASS",
+  "scope": "V01–V04 restored selected-state browsing and truthful original history display, not all Auction requirements satisfied",
+  "createdAt": "2026-10-28T11:55:09.955383+00:00",
+  "tests": {
+    "focused": 36,
+    "liveAuctionWithReplay": 1,
+    "total": 37,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "runtimeReceipt": {
+    "coverage": "INCOMPLETE",
+    "domainFailures": 1,
+    "fixedGoalTaskRows": 12,
+    "pid": 25784,
+    "sameMSystem": true,
+    "samples": 124,
+    "scope": "Audit, not assertion that full normative profile is satisfied",
+    "status": "PASS",
+    "winnerObservedForTwoArtifacts": true
+  },
+  "replay": {
+    "entries": 2255,
+    "status": "PASS"
+  },
+  "liveDirectory": "use-plugin/verification/live-results-ui/auction-5174455660464896815",
+  "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+  "archiveSha256": "aa4ef3f4b4bf8469df0fb9366e579d1a22046988a841ce60b9e8f46355a2a804",
+  "launcher": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\restored-state-browser-lygw_tdw\\use-7.5.0\\bin\\start_use.bat",
+  "artifacts": {
+    "use-plugin/verification/restored-state-browser/final/auction-live.log": "e3926ac00e7066286e4873c7975e589ad4d623961d933dd732ae1415cd486e0f",
+    "use-plugin/verification/restored-state-browser/final/baseline.log": "3165285668469f04ff232cc0aacb812258ebf576968472dcc1e5b6f760e8e780",
+    "use-plugin/verification/restored-state-browser/final/focused.log": "c269725c7e8e4d83853a19bf97c93befa921efd182d8ff307e4b430f12d3d5f8",
+    "use-plugin/verification/restored-state-browser/final/package-checks.json": "03aa9c9c7e1adc47b005a0a8a56850e4ef39e13b7655c537da7277e2114b5782",
+    "use-plugin/verification/restored-state-browser/final/package.log": "3e2f6ad46dd83e14eba4ff2bc12324fe96db7ac84570607b997e2df6dd178600",
+    "use-plugin/verification/restored-state-browser/final/source-freeze.json": "40b61363b4a695902e7758f768aed1e3f00053db6c14cd8cf78a1fe4adbf79e2",
+    "use-plugin/verification/restored-state-browser/final/tests.json": "5d893719d8da1dc2f3eed4107f0f3f251171db130a8e562adc4d77d109e9de21",
+    "use-plugin/verification/live-results-ui/auction-5174455660464896815/domain-and-observer-state.json": "269229e7ac3c60d8bd2f4b811bdeefbd55b6ea34508ba3a9e749493b0cd908d6",
+    "use-plugin/verification/live-results-ui/auction-5174455660464896815/goal-summary.json": "db5d2fa4ed7f4c674617c5b151b437373c2e6efc6a8e0ffa86304a506efc60dc",
+    "use-plugin/verification/live-results-ui/auction-5174455660464896815/last-result.json": "8edc4b264f2ca596fd77c8cf12ab0d6255104093b72b060d6c76471687065fc4",
+    "use-plugin/verification/live-results-ui/auction-5174455660464896815/last-state.json": "eec81a99d8e5770a0b12650b3ca91a4864401013ec6a01db544d8034d8bddd30",
+    "use-plugin/verification/live-results-ui/auction-5174455660464896815/observer-checks.json": "158e8704512e635988cca0dbb25a39c21f7ca41b4998b968008b9803b46a5c63",
+    "use-plugin/verification/live-results-ui/auction-5174455660464896815/producer.stderr.log": "7fd1d8e640e9503e6d7842e291c9cd8b42f055085b144c609dec3caad83bcd23",
+    "use-plugin/verification/live-results-ui/auction-5174455660464896815/producer.stdout.log": "6e379bce20bbb0fcc0459c97a0ccd57588d850a011b8d3d3fae599d9610c7323",
+    "use-plugin/verification/live-results-ui/auction-5174455660464896815/receipt.json": "0cbbc46a9fe25e302073c9023ac4d7b9f64ce4c5356c5124eb74d008f1a90edb",
+    "use-plugin/verification/live-results-ui/auction-5174455660464896815/replay-receipt.json": "ac26465021112fb96aae6c701716979f4a2050ff1897a9580e34335d8161b55a",
+    "use-plugin/verification/live-results-ui/auction-5174455660464896815/result.json": "c6d69981a6161779293cd0798bf5593bc252f6f59a5ef9d12e7a77bc26cab6eb",
+    "use-plugin/verification/live-results-ui/auction-5174455660464896815/transport.json": "fd3f855069f0831cedc58186d8890f935b61bc782baf6858e897425387650071",
+    "use-plugin/verification/restored-state-browser/ui-fixture.png": "d37c7e46a3200c4479f69fdbdd4866dc72fa24b3f072a81ab31dbd6a502ca044"
+  },
+  "planSha256": "9fed11a659026107bb644d18e717d8f5c0590d27d2159dcd98458bfda1dea474",
+  "limitations": [
+    "Raw original history and current evidence are deliberately separate; missing remains UNKNOWN",
+    "Old recordings without stored state images cannot display an evicted image",
+    "Full authored source-to-consumer backlog remains; quota and gaps remain fail-closed",
+    "Offscreen Swing layout + actual main workflow service/TCP live and ZIP bytes, not manual/cold installed GUI acceptance"
+  ],
+  "commitPushPerformed": false
+}

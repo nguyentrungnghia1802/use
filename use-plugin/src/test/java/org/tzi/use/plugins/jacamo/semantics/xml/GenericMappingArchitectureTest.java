@@ -195,7 +195,7 @@ public class GenericMappingArchitectureTest {
         var program = new GenericMappingEngine().map(snapshot, inputs);
 
         assertNotNull(program.xmlPlan(), "Must generate xmlPlan");
-        assertNull(program.casePlan(), "Must have zero legacy casePlan");
+        assertFalse(java.util.Arrays.stream(org.tzi.use.plugins.jacamo.semantics.mapping.SemanticProgram.class.getDeclaredFields()).anyMatch(field->field.getName().equals("casePlan")));
         assertTrue(program.cslModel().findEntity("Pallet").isPresent(), "Pallet entity must exist in CSL model");
         assertTrue(program.goalModel().findElement("EnsureQuality").isPresent(), "EnsureQuality must exist in goal model");
         assertEquals("warehouse-case-b", program.xmlPlan().inputs().specification().root().attr("id"));
@@ -224,7 +224,7 @@ public class GenericMappingArchitectureTest {
             assertTrue(negative.semantic().constraints().stream().anyMatch(c->c.kind().equals("INVARIANT")&&c.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.FAIL));
             projector.applySnapshot(cuts.cut(fixture,3,Map.of("parcel",-1),org.jacamo.bridge.contract.Completeness.PARTIAL),"case-b",1);
             var partial=projector.coordinator().awaitEvaluation(projector.coordinator().latest(),15000);assertTrue(pallet.state(system.state()).attributeValue("weight").isUndefined());
-            assertFalse(partial.semantic().constraints().stream().anyMatch(c->c.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.FAIL),"Unknown property is not false");assertSame(system,projector.system());assertNull(program.casePlan());
+            assertFalse(partial.semantic().constraints().stream().anyMatch(c->c.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.FAIL),"Unknown property is not false");assertSame(system,projector.system());assertFalse(java.util.Arrays.stream(org.tzi.use.plugins.jacamo.semantics.mapping.SemanticProgram.class.getDeclaredFields()).anyMatch(field->field.getName().equals("casePlan")));
             new org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeRuntimeReplay().exportBundle(projector,built.nativeResult().export().useText(),temp.resolve("case-b-recording"));
         }
     }
@@ -249,7 +249,7 @@ public class GenericMappingArchitectureTest {
         var program = new GenericMappingEngine().map(source, inputs);
 
         assertNotNull(program.xmlPlan());
-        assertNull(program.casePlan());
+        assertFalse(java.util.Arrays.stream(org.tzi.use.plugins.jacamo.semantics.mapping.SemanticProgram.class.getDeclaredFields()).anyMatch(field->field.getName().equals("casePlan")));
 
         var built = new CodeGroundedNativePipeline().buildCanonicalProgram(source, NativeProjectionMode.AUTO, program);
         var engine = new NativeRuntimeMutationEngine(
@@ -261,8 +261,7 @@ public class GenericMappingArchitectureTest {
         assertTrue(engine.xmlCase(), "Must report xmlCase as true");
         var caseMapping = new org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoRuntimeStateMapping(program, engine.system().model()).caseMapping(engine.system().model());
         assertInstanceOf(XmlRuntimeStateMapping.class, caseMapping, "Runtime state mapping must be XmlRuntimeStateMapping");
-        assertFalse(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionRuntimeStateMapping,
-                "Case mapping must NOT be AuctionRuntimeStateMapping");
+        assertEquals("org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeStateMapping",caseMapping.getClass().getName());
     }
 
     private static String hash(Path path) throws Exception {

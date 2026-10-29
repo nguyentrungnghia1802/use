@@ -1,0 +1,68 @@
+{
+  "createdAt": "2026-10-28T17:41:52.749823+00:00",
+  "head": "c3b7b648a468c89eabf1436ca2994eafb3bf72e2",
+  "branch": "main",
+  "scope": "Requested terminal-failure and business milestone fixes on dirty current branch, not a commit",
+  "files": {
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/ExecutionEvidence.java": "7b9e79a742c6f7c80bc3aaa2f0162994fd89af44e16e6f0c61fec5167c43339c",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/RuntimeEngineSessionOwner.java": "cc413c9f8ec160d8c250a37e9fe7c9bbfe4e29e6d63c4ddfac80bf16aefa7a0a",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/SemanticResultAdapter.java": "2e32dcba2d48f863b9f89b36e93a78b23e0924dca5c6c081404c5008f616afd6",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePresenter.java": "b25a7d40b1ff69db5bfe99ff978661dea4a86ac1e2191abd88f62c09966ef91b",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel.java": "58d35c36e7e21a90cd304b105b463a9aa319b15a3913c7a245066d4cad981038",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/LiveGoalSummary.java": "b127d5223c50789ebc5c53f4ea70a0b567e32c64100c6cb744136fc44f58bc53",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/BusinessTimeline.java": "28c6a4919a242ed71668d0d1b98e1eb9c0580449b3698800b4e56ad0046ed6db",
+    "use-plugin/src/main/resources/META-INF/use4goal-workflow-provenance.json": "e0f513abdaf8bd8d34af6b45239551ccacf0aa45c56560c6ce54c65664f03016",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/runtime/ExecutionEvidenceTest.java": "9aff5e3a727353c58ad6abf130db3c766dbe67254205309605db87c70f35e57c",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/xml/XmlTaskCheckpointsTest.java": "0aed125aba5ead7e487da2b87ae7aa065584ba699a4ba6d910dddb7c8654ca75",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/CertifiedGoalHistoryTest.java": "d6b602a7ec39c0d5365e4d345f0238de08c2e2f548125033a90d22494fd58bb0",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/BusinessTimelineTest.java": "140e4a9b874c49de4f92ba1c61179ed9d3c5a7477d1576650209d4e26c185485",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/LiveGoalSummaryTest.java": "628788d6746b93dcbd8e9a0f5870b7a08e5204a34b33da1dff868f9c18a2547a",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/AuthoredAuctionResultsIT.java": "09cbcc4c666a05ecb80185b7aac673825e709bcd7bef261796e911c6208c45b8",
+    "use-plugin/examples/auction/authored-v1/README.md": "595287246ff4cb96d3a66e9b9a7198003b6762d1404c8a7eb512f8632a0c3d65",
+    "use-plugin/examples/auction/authored-v1/auction_csl.csl": "0d0872612661235c0d7865c177dc31dfe2ef649913a99750eb9e42f87163de37",
+    "use-plugin/examples/auction/authored-v1/auction_istar_final.istar": "a3bb1203367f570d8a3cb9b9f5b1a6619d5e4db189ef304f409ca6cb49aea2a9",
+    "use-plugin/examples/auction/authored-v1/auction-mapping.xml": "f31bea3acf30ace170ea632c4deddcf92a5b0257d29d24cfa5feabf47d63bae8",
+    "use-plugin/examples/auction/authored-v1/auction_constraints_final_fixed.ocl": "891c77f07981e03c808cfdaf23285d5a6d9050859954f5f561f7308aab81039a",
+    "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/GoalMarking.java": "e9ddcc1bfbafef0c987be6c7a017f8ce88c56a16e3c757bc637d1e1246660f48",
+    "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/TaskMarking.java": "e5eae4cd7b10994e5d71c5c7782ff04de3972352f17f5c5fa0732d39eb9af07d",
+    "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/IStarMarking.java": "c93e88db8bf323991d3ae66f64cca1f3106edaa5ed9bde19fafbc057dc48910f",
+    "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/IStarPropagation.java": "90e8ff0662f03889a4ec977cd1296c57f4dbdde2a0cbcde76afe937b25e35de3"
+  },
+  "package": {
+    "status": "PASS",
+    "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+    "sha256": "e55880423ef2278e6b265026ec500c5e06611ceafe1aef782505a25cb5d8acf3",
+    "extractedInstall": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\terminal-milestones-final-20261029\\use-7.5.0",
+    "wholePluginBytesMatch": true,
+    "compiledClassesChecked": [
+      "semantics/runtime/ExecutionEvidence",
+      "semantics/runtime/ExecutionEvidence$Certificate",
+      "semantics/runtime/RuntimeEngineSessionOwner",
+      "semantics/runtime/SemanticResultAdapter",
+      "ui/use4goal/conformance/ObservedConformancePanel",
+      "ui/use4goal/conformance/ObservedConformancePanel$Cut",
+      "ui/use4goal/conformance/ObservedConformancePresenter",
+      "ui/use4goal/conformance/LiveGoalSummary",
+      "ui/use4goal/conformance/BusinessTimeline"
+    ],
+    "originalEngineClassesChecked": [
+      "GoalMarking",
+      "TaskMarking",
+      "IStarMarking",
+      "IStarPropagation"
+    ],
+    "inputsAndDocsMatch": [
+      "auction_csl.csl",
+      "auction_istar_final.istar",
+      "auction-mapping.xml",
+      "auction_constraints_final_fixed.ocl",
+      "README.md",
+      "provenance.json",
+      "references/auction-mapping-strict-v1.xml",
+      "references/auction_constraints_strict_v1.ocl",
+      "references/auction-mapping-full-observers.xml"
+    ],
+    "scope": "Final ZIP class/input byte checks; separate isolated cold replay; not manual desktop or installed live GUI acceptance"
+  },
+  "planSha256": "88ccb26425dc7dc5f68a3f5abfb36ca0e42d6b887f6a287ccba892d2c3a07d6f"
+}

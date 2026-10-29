@@ -48,7 +48,7 @@ class GenericMappingEngineTest {
         var source=official(JCM);var inputs=input();var program=new GenericMappingEngine().map(source,inputs);
         assertEquals(program.hash(),new GenericMappingEngine().map(source,inputs).hash());
         assertTrue(program.cslModel().findEntity("Counter").isPresent());assertTrue(program.goalModel().findElement("Positive").isPresent());
-        assertNull(program.casePlan());assertEquals(3,program.bindings().bindings().size());
+        assertFalse(java.util.Arrays.stream(org.tzi.use.plugins.jacamo.semantics.mapping.SemanticProgram.class.getDeclaredFields()).anyMatch(field->field.getName().equals("casePlan")));assertEquals(3,program.bindings().bindings().size());
         assertEquals(program.source().nodes().stream().mapToInt(n->n.features().size()).sum(),program.complement().decisions().size());
         assertTrue(program.complement().assets().stream().anyMatch(a->a.sha256().equals(inputs.xml().sha256())));
         assertThrows(UnsupportedOperationException.class,()->program.xmlPlan().evidence().clear());
@@ -63,7 +63,7 @@ class GenericMappingEngineTest {
         var trace=program.complement();
         var incomplete=new TraceComplement(trace.version(),trace.ruleVersion(),trace.sourceHash(),trace.metamodelHash(),trace.assets().stream().filter(a->!a.id().equals("authored-ocl")).toList(),trace.decisions());
         assertThrows(IllegalArgumentException.class,()->SemanticProgram.fromXml(program.profile(),program.rules(),program.source(),program.cslModel(),program.goalModel(),program.bindings(),incomplete,program.goalBindings(),program.xmlPlan()));
-        assertThrows(IllegalArgumentException.class,()->new SemanticProgram(program.profile(),program.rules(),program.source(),program.cslModel(),program.goalModel(),program.bindings(),program.complement(),java.util.List.of(),program.goalBindings(),null));
+        assertThrows(IllegalArgumentException.class,()->new SemanticProgram(program.profile(),program.rules(),program.source(),program.cslModel(),program.goalModel(),program.bindings(),program.complement(),java.util.List.of(),program.goalBindings()));
         var error=assertThrows(IllegalArgumentException.class,()->new org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNativePipeline().buildCanonicalProgram(source,org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.AUTO,program));
         assertEquals("OCL_SPEC_CLAUSE_INVENTORY_MISMATCH",error.getMessage(),"G05 now admits native preparation, but never missing declarative OCL bindings");
     }
@@ -79,4 +79,12 @@ class GenericMappingEngineTest {
             assertThrows(IllegalArgumentException.class,()->new GenericMappingEngine().map(source,MappingInputs.read(JCM,file,temp.resolve("requirements.ocl"))));
         }
     }
+    @Test void selectedRequirementMustBeAUniqueRealGoalOrTaskNeverAnIgnoredTypo()throws Exception {
+        var source=official(JCM);input();Path mapping=temp.resolve("mapping.xml");String original=Files.readString(mapping);
+        for(String selection:java.util.List.of("<requirement target=\"Unknown\"/>","<requirement target=\"Positive\"/><requirement target=\"Positive\"/>")) {
+            Files.writeString(mapping,original.replace("</bindings>",selection+"</bindings>"));
+            assertThrows(IllegalArgumentException.class,()->new GenericMappingEngine().map(source,MappingInputs.read(JCM,mapping,temp.resolve("requirements.ocl"))),selection);
+        }
+    }
+
 }

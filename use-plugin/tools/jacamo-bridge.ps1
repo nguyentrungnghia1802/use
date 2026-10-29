@@ -15,7 +15,7 @@ param(
     [string]$OclProfilePath = "",
     [ValidateSet("AUTO", "FULL")]
     [string]$ProjectionMode = "AUTO",
-    [ValidateSet("NATIVE_CURRENT", "JACAMO_DECLARATIVE_XML", "USE4GOAL_OBSERVED_V1", "AUCTION_OBSERVED_V1", "CSL_OBSERVER_V1", "CSL_OBSERVER_V2")]
+    [ValidateSet("NATIVE_CURRENT", "JACAMO_DECLARATIVE_XML", "USE4GOAL_OBSERVED_V1", "CSL_OBSERVER_V1", "CSL_OBSERVER_V2")]
     [string]$SemanticProfile = "NATIVE_CURRENT",
     [string]$MappingSpecificationPath = "",
     [string]$AuthoredOclPath = "",
@@ -25,10 +25,7 @@ param(
     [long]$RuntimeJournalMaxBytes = 67108864,
     [ValidateSet("AUTO", "WORLD", "FULL")]
     [string]$ObservationProfile = "AUTO",
-    [string]$RuntimeClasspathFile = "",
-    [switch]$AuctionStepMarkers,
-    [switch]$AuctionSourceClock,
-    [switch]$AuctionSchemeObserver
+    [string]$RuntimeClasspathFile = ""
 )
 
 Set-StrictMode -Version Latest
@@ -39,15 +36,7 @@ $ObservationProfile = $ObservationProfile.ToUpperInvariant()
 if ($ObservationProfile -eq "AUTO") {
     # The original observed profile maps world/organisation outcomes, not Jason
     # mental/execution internals. Keep the rich trace default for old profiles.
-    $ObservationProfile = if ($SemanticProfile -in @("USE4GOAL_OBSERVED_V1", "AUCTION_OBSERVED_V1", "JACAMO_DECLARATIVE_XML")) { "WORLD" } else { "FULL" }
-}
-if ($SemanticProfile -eq "AUCTION_OBSERVED_V1") {
-    # Explicit profile selection opts into the pinned source observers; no case
-    # is inferred from the JCM name/path. I04/T02 measured the full journal load.
-    $AuctionStepMarkers = $true
-    $AuctionSourceClock = $true
-    $AuctionSchemeObserver = $true
-    if (-not $PSBoundParameters.ContainsKey('RuntimeJournalMaxBytes')) { $RuntimeJournalMaxBytes = 268435456 }
+    $ObservationProfile = if ($SemanticProfile -in @("USE4GOAL_OBSERVED_V1", "JACAMO_DECLARATIVE_XML")) { "WORLD" } else { "FULL" }
 }
 if ($SemanticProfile -eq "JACAMO_DECLARATIVE_XML" -and -not $PSBoundParameters.ContainsKey('RuntimeJournalMaxBytes')) {
     # Declarative observers retain exact source cuts and original-engine history.
@@ -55,9 +44,6 @@ if ($SemanticProfile -eq "JACAMO_DECLARATIVE_XML" -and -not $PSBoundParameters.C
     $RuntimeJournalMaxBytes = 268435456
 }
 $producerObservationArguments = @("-Djacamo.bridge.structured-observation=$(([bool]($ObservationProfile -eq 'FULL')).ToString().ToLowerInvariant())")
-if ($AuctionStepMarkers) { $producerObservationArguments += '-Djacamo.bridge.auction.step-markers=true' }
-if ($AuctionSourceClock) { $producerObservationArguments += '-Djacamo.bridge.auction.clock=true' }
-if ($AuctionSchemeObserver) { $producerObservationArguments += '-Djacamo.bridge.auction.scheme-observer=true' }
 $semanticJvmArguments = @("-Duse.jacamo.semantics.profile=$SemanticProfile", "-Duse.jacamo.runtime.journal.maxBytes=$RuntimeJournalMaxBytes")
 if ($PrepareOnly -and ($InteractiveGui -or [string]::IsNullOrWhiteSpace($PreparationResultPath) -or $PreparationId -notmatch '^[0-9a-f-]{36}$')) { throw 'GUI_PREPARATION_OWNER_REQUIRED' }
 if (([string]::IsNullOrWhiteSpace($AuthoredCslPath) -ne [string]::IsNullOrWhiteSpace($AuthoredIstarPath)) -or
@@ -72,14 +58,14 @@ if ($SemanticProfile -ne "NATIVE_CURRENT") {
     if ([string]::IsNullOrWhiteSpace($MappingSpecificationPath)) { throw "AUTHORED_SPECIFICATION_FILE_REQUIRED:$SemanticProfile" }
     $semanticSpecification = [IO.Path]::GetFullPath($MappingSpecificationPath)
     if (-not (Test-Path -LiteralPath $semanticSpecification -PathType Leaf) -or (Get-Item -LiteralPath $semanticSpecification).Length -gt 16777216) { throw "AUTHORED_SPECIFICATION_FILE_INVALID:$semanticSpecification" }
-    if ($SemanticProfile -in @("AUCTION_OBSERVED_V1", "JACAMO_DECLARATIVE_XML") -and -not $semanticSpecification.EndsWith('.xml', [StringComparison]::OrdinalIgnoreCase)) { throw "AUCTION_XML_SPECIFICATION_REQUIRED:$semanticSpecification" }
+    if ($SemanticProfile -in @("JACAMO_DECLARATIVE_XML") -and -not $semanticSpecification.EndsWith('.xml', [StringComparison]::OrdinalIgnoreCase)) { throw "XML_SPECIFICATION_REQUIRED:$semanticSpecification" }
     if ($SemanticProfile -eq "JACAMO_DECLARATIVE_XML") {
         if ([string]::IsNullOrWhiteSpace($AuthoredOclPath)) { throw "AUTHORED_OCL_FILE_REQUIRED:$SemanticProfile" }
         $authoredOcl = [IO.Path]::GetFullPath($AuthoredOclPath)
         if (-not (Test-Path -LiteralPath $authoredOcl -PathType Leaf) -or -not $authoredOcl.EndsWith('.ocl', [StringComparison]::OrdinalIgnoreCase)) { throw "AUTHORED_OCL_FILE_INVALID:$authoredOcl" }
         $semanticJvmArguments += @("-Duse.jacamo.mapping.xml=$semanticSpecification", "-Duse.jacamo.mapping.ocl=$authoredOcl")
     } else {
-        $semanticProperty = if ($SemanticProfile -eq "AUCTION_OBSERVED_V1") { "use.jacamo.auction.specification" } elseif ($SemanticProfile -eq "USE4GOAL_OBSERVED_V1") { "use.jacamo.mapping.rules" } else { "use.jacamo.semantics.config" }
+        $semanticProperty = if ($SemanticProfile -eq "USE4GOAL_OBSERVED_V1") { "use.jacamo.mapping.rules" } else { "use.jacamo.semantics.config" }
         $semanticJvmArguments += "-D${semanticProperty}=$semanticSpecification"
     }
 } elseif (-not [string]::IsNullOrWhiteSpace($MappingSpecificationPath)) { throw "NATIVE_PROFILE_HAS_NO_AUTHORED_SPECIFICATION" }
@@ -128,7 +114,6 @@ $stopFile = Join-Path $stagedProject "stop.flag"
 $consumerReadyFile = if ([string]::IsNullOrWhiteSpace($externalOcl) -and $SemanticProfile -ne 'JACAMO_DECLARATIVE_XML') { "" } else { Join-Path $stagedProject "consumer-ready.flag" }
 $observationPlan = ""
 if ($SemanticProfile -eq 'JACAMO_DECLARATIVE_XML') {
-    if ($AuctionStepMarkers -or $AuctionSourceClock -or $AuctionSchemeObserver) { throw 'DECLARATIVE_PROFILE_FORBIDS_LEGACY_OBSERVERS' }
     $observationPlan = Join-Path $runEvidence 'observation-requests.json'
     $producerObservationArguments += "-Djacamo.bridge.observation.plan=$observationPlan"
     $semanticJvmArguments += "-Djacamo.bridge.observation.plan=$observationPlan"

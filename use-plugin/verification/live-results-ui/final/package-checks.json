@@ -1,0 +1,120 @@
+{
+  "status": "PASS",
+  "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+  "archiveSha256": "f971c839b30ea0a32dcb75f66695deaf6a379938d51912ee1566c6085cd78f21",
+  "archiveBytes": 117307978,
+  "extractedLauncher": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\live-results-ui-78alqhom\\use-7.5.0\\bin\\start_use.bat",
+  "checks": [
+    {
+      "entry": "use-7.5.0/lib/plugins/use-jacamo-plugin-1.0.1.jar",
+      "source": "use-plugin/target/use-plugin-1.0.1.jar",
+      "sha256": "69bddcee3b04393384feb82a149cf10ca5ee1546a4c2206c7a74c4dcab7a42bf"
+    },
+    {
+      "entry": "use-7.5.0/bridge/lib/jacamo-bridge-jacamo-1.0.0.jar",
+      "source": "jacamo-bridge-jacamo/target/jacamo-bridge-jacamo-1.0.0-SNAPSHOT.jar",
+      "sha256": "d5bbccae3064e6d39c19dc6f7f078b8886539babe22e0ec0c25008b190f57749"
+    },
+    {
+      "entry": "use-7.5.0/bridge/lib/jacamo-bridge-contract-1.0.0.jar",
+      "source": "jacamo-bridge-contract/target/jacamo-bridge-contract-1.0.0-SNAPSHOT.jar",
+      "sha256": "caa707d043dff050e9ae43df33d33505fc506d23c891224318792a6d22c1e0eb"
+    },
+    {
+      "entry": "use-7.5.0/lib/use-gui.jar",
+      "source": "use-gui/target/use-gui.jar",
+      "sha256": "fdfd3eb15cde362b95c3952c26ce01fb3e57c0602047f93f9353b436ab93eb35"
+    },
+    {
+      "entry": "use-7.5.0/examples/auction-semantic/authored-v1/README.md",
+      "source": "use-plugin/examples/auction/authored-v1/README.md",
+      "sha256": "9c2a789388dd40749319c2e2da387d3e558860d1d7517238098385292470aacf"
+    },
+    {
+      "entry": "use-7.5.0/examples/auction-semantic/compact-v1/README.md",
+      "source": "use-plugin/examples/auction/compact-v1/README.md",
+      "sha256": "d3db5dcc6b621d8a2027e4dcdf2c525e60bf18e075e9d1516b58a5073737883e"
+    },
+    {
+      "entry": "use-7.5.0/docs/use4goal-run.md",
+      "source": "use-plugin/docs/project/use4goal-run.md",
+      "sha256": "82ea03727c03b943265a7616e9b6202e223198669f46cfcf326f5acf0bd16c63"
+    }
+  ],
+  "compiledClassChecks": [
+    {
+      "class": "org/tzi/use/plugins/jacamo/JaCaMoWorkbenchAction$1.class",
+      "sha256": "e045b7d3abb56c3d58087a9c8c9e446f672efe3cb618d95d851fd9d4d99857b1"
+    },
+    {
+      "class": "org/tzi/use/plugins/jacamo/JaCaMoWorkbenchAction.class",
+      "sha256": "87a7120a66b7e5a14e95ba3b8b783fbc4d16fa9a63846e97374468855bae702e"
+    },
+    {
+      "class": "org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel$1.class",
+      "sha256": "8c642362c19bac1261a1b5a1f373550cebd9cfc46a7d54edf9673345a53c3c9d"
+    },
+    {
+      "class": "org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel$2.class",
+      "sha256": "a59911640adc00bce0271b02ddd85bf7266cde9fb07a69d95a1f74ce407d5c82"
+    },
+    {
+      "class": "org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel$3.class",
+      "sha256": "829390af85d4132f693230e2a20918eade95dc78625624b2fb62bbcca0b83054"
+    },
+    {
+      "class": "org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel.class",
+      "sha256": "48b8a8492e3e25431f1be8bdeba826b2ce904d7c610cb1975255b11183f53e24"
+    },
+    {
+      "class": "org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel$1.class",
+      "sha256": "597c305025deb3835770e306e16102cca15f71eec033fde3630857540156f41e"
+    },
+    {
+      "class": "org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel$2.class",
+      "sha256": "c79d09aa6b330f67141248e2e37a9c2de221fb5960ef2ac5728289af73a4a059"
+    },
+    {
+      "class": "org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel$3.class",
+      "sha256": "66977329bc4ac9296a4743d5b78dee8a88d1b796098da2812015e353f1a6dd29"
+    },
+    {
+      "class": "org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel$4.class",
+      "sha256": "45954bbbe6b1cf5d71579e056280d45de23a9ffd374de834021e986f213e3240"
+    },
+    {
+      "class": "org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel$5.class",
+      "sha256": "9cdfa8ad38acfdd53c5cdaeec755de62d9aaeb29bc71788a7f1e596d0399d45e"
+    },
+    {
+      "class": "org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel$Cut.class",
+      "sha256": "c78ddc028600f6010e04fe2f019577d87516cff9344c8cd15f1f4b6a268324f1"
+    },
+    {
+      "class": "org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel$Evaluation.class",
+      "sha256": "c34c9593807bb3f6a9c36b4a639df56f6617224c95c783f5efdaf648dac3dd80"
+    },
+    {
+      "class": "org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel.class",
+      "sha256": "606cf938b79e974ba75d7d30ddc003d6ff954a307c7980ecc93ee783ceda9f07"
+    },
+    {
+      "class": "org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePresenter$Rendered.class",
+      "sha256": "a702779c3abb8435c60ff54d4e8bbb4a8c1426d647818a54094109c2f9edf403"
+    },
+    {
+      "class": "org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePresenter.class",
+      "sha256": "20e9eacdccf16ab894f5988a80787526c8ad4cd43bd2b411c516af8b56e26e4a"
+    },
+    {
+      "class": "org/tzi/use/plugins/jacamo/ui/use4goal/conformance/LiveGoalSummary$Row.class",
+      "sha256": "f3b10ebef82120925494c21f449afd4d8517b15f91059468387c135150340df3"
+    },
+    {
+      "class": "org/tzi/use/plugins/jacamo/ui/use4goal/conformance/LiveGoalSummary.class",
+      "sha256": "8fcd6b5744949e70711d27616595f6650e0c7e60879947f43ab17d2650ff84eb"
+    }
+  ],
+  "originalEngineClassByteParity": 4,
+  "scope": "Final ZIP / fresh extraction byte parity; no manual GUI or cold ZIP live claim"
+}

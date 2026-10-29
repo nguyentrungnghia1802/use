@@ -37,7 +37,7 @@ public class XmlNativePreparationTest {
     @Test void genericProgramBuildsOneNativeCandidateWithAuthoredInvariantAndGeneratedGoalCondition()throws Exception {
         var source=GenericMappingEngineTest.official(GenericMappingEngineTest.JCM);var program=new GenericMappingEngine().map(source,input(false));
         var built=new CodeGroundedNativePipeline().buildCanonicalProgram(source,NativeProjectionMode.AUTO,program);
-        assertNotNull(built.xmlPreparation());assertNull(program.casePlan());assertSame(built.binding().model(),built.nativeResult().state().system().model());
+        assertNotNull(built.xmlPreparation());assertFalse(java.util.Arrays.stream(org.tzi.use.plugins.jacamo.semantics.mapping.SemanticProgram.class.getDeclaredFields()).anyMatch(field->field.getName().equals("casePlan")));assertSame(built.binding().model(),built.nativeResult().state().system().model());
         assertEquals(1,built.xmlPreparation().authored().clauses().size());assertEquals(1,built.contracts().contracts().size());
         assertEquals("GOAL:Positive",built.contracts().contracts().getFirst().id());assertEquals(0,built.nativeResult().state().system().state().numObjects());
     }

@@ -1,0 +1,104 @@
+{
+  "status": "PASS_FOR_LISTED_CHANGES_WITH_REMAINING_LIMITATIONS",
+  "createdAt": "2026-10-28T15:32:40.785800+00:00",
+  "planTasks": [
+    "X01",
+    "X02",
+    "X03",
+    "X04",
+    "X05"
+  ],
+  "liveEvidence": "use-plugin\\verification\\live-results-ui\\auction-17473406535072442727",
+  "selectedTests": {
+    "unitNearby": 41,
+    "auctionIT": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "essentialStates": {
+    "auditBoundaries": 1030,
+    "completionDelayLatestVerifiedMs": 48,
+    "completionDelayMaxMs": 41329,
+    "latestVerifiedEventId": "manual",
+    "latestVerifiedEventSource": "user",
+    "milestones": 13,
+    "optionalBeliefsAcquired": false,
+    "pinnedResultHash": "31f611a7fa8d811000662cb1bd0f89a2c265cf9dbacfadb607527c90ea3b6975",
+    "presentationMode": "DOMAIN"
+  },
+  "liveReceipt": {
+    "coverage": "INCOMPLETE",
+    "domainFailures": 0,
+    "fixedGoalTaskRows": 12,
+    "pid": 28544,
+    "sameMSystem": true,
+    "samples": 74,
+    "scope": "Audit, not assertion that full normative profile is satisfied",
+    "status": "PASS",
+    "winnerObservedForTwoArtifacts": true
+  },
+  "replay": {
+    "entries": 1643,
+    "status": "PASS"
+  },
+  "installedColdReplay": {
+    "status": "PASS",
+    "entries": 1643,
+    "log": "cold-replay.log",
+    "scope": "Fresh final ZIP class origins checked; no checkout plugin/engine on app classpath"
+  },
+  "package": {
+    "status": "PASS",
+    "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+    "sha256": "60e61a5b19a93860767a369830b498226875aa707e5b726903e7fbcbfbc7c5a0",
+    "extractedInstall": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\essential-states-final-v2-20261028\\use-7.5.0",
+    "wholePluginBytesMatch": true,
+    "compiledClassesChecked": [
+      "semantics/runtime/SemanticResultAdapter",
+      "semantics/runtime/RuntimeEngineSessionOwner",
+      "semantics/runtime/RuntimeEngineSessionOwner$ContextSession",
+      "semantics/runtime/RuntimeEngineSessionOwner$Checkpoint",
+      "semantics/mapping/xml/MappingVocabulary",
+      "semantics/mapping/ocl/XmlNativePreparation",
+      "ui/use4goal/conformance/ObservedConformancePanel",
+      "ui/use4goal/conformance/ObservedConformancePanel$Cut",
+      "ui/use4goal/conformance/ObservedConformancePresenter",
+      "ui/use4goal/conformance/BusinessTimeline"
+    ],
+    "originalEngineClassesChecked": [
+      "GoalMarking",
+      "TaskMarking",
+      "IStarMarking",
+      "IStarPropagation"
+    ],
+    "formalInputsAndDocsMatch": [
+      "auction_csl.csl",
+      "auction_istar_final.istar",
+      "auction_constraints_final_fixed.ocl",
+      "auction-mapping.xml",
+      "provenance.json",
+      "README.md",
+      "references/auction-mapping-full-observers.xml"
+    ],
+    "scope": "Archive/extraction byte checks and subsequent isolated replay; not manual desktop or installed live GUI acceptance"
+  },
+  "evidence": [
+    "baseline.log",
+    "focused-and-auction.log",
+    "package.log",
+    "cold-replay.log",
+    "source-freeze.json",
+    "producer-latency.json",
+    "unknown-analysis.json"
+  ],
+  "limitations": [
+    "Producer backlog still reaches 41.33 seconds; not solved real-time performance",
+    "Two participant summaries UNKNOWN with unproven terminal completions",
+    "Active observer requirements still SKIPPED; overall INCOMPLETE retained",
+    "No manual desktop or cold-installed live GUI acceptance in this change",
+    "Only focused/nearby and actual Auction live tests; no unrelated cases or full reactor tests"
+  ],
+  "baselineReproduction": "Two focused failures: incorrect OR/ANY quality and internal dependency receiver double-count",
+  "noCommitOrPush": true
+}

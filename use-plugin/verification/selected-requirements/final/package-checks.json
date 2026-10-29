@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+  "sha256": "75dd232d328696b3bd9617ecd7f77dad385a257a2527554f928cfbad800b5442",
+  "extractedInstall": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\selected-requirements-final-20261028\\use-7.5.0",
+  "wholePluginBytesMatch": true,
+  "compiledClassesChecked": [
+    "semantics/runtime/SemanticResultAdapter",
+    "ui/use4goal/conformance/ObservedConformancePanel",
+    "ui/use4goal/conformance/ObservedConformancePanel$Cut",
+    "ui/use4goal/conformance/ObservedConformancePresenter"
+  ],
+  "originalEngineClassesChecked": [
+    "GoalMarking",
+    "TaskMarking",
+    "IStarMarking",
+    "IStarPropagation"
+  ],
+  "inputsAndDocsMatch": [
+    "auction_csl.csl",
+    "auction_istar_final.istar",
+    "auction_constraints_final_fixed.ocl",
+    "auction-mapping.xml",
+    "provenance.json",
+    "README.md",
+    "references/auction-mapping-full-observers.xml",
+    "references/auction-mapping-strict-v1.xml",
+    "references/auction_constraints_strict_v1.ocl"
+  ],
+  "scope": "Final archive byte checks; separate isolated cold replay follows, no manual installed GUI/live claim"
+}

@@ -12,6 +12,15 @@ public final class RuntimeValueConverters {
             return switch(converter.attr("algorithm")) {
                 case "identity" -> {if(!(value instanceof Boolean bool))throw new Unavailable("BOOLEAN_REQUIRED");yield BooleanValue.get(bool);}
                 case "preserve-exact-content" -> {if(!(value instanceof String text))throw new Unavailable("STRING_REQUIRED");yield new StringValue(text);}
+                case "parse-finite-java-number-text" -> {
+                    // An explicit XML conversion of the public numeric property's
+                    // Java decimal text; no locale, suffix, hex, NaN or clamping.
+                    if(!(value instanceof String text)||text.length()>128
+                            ||!text.matches("-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?"))throw new Unavailable("JAVA_NUMBER_TEXT_REQUIRED");
+                    double number=Double.parseDouble(text);
+                    if(!Double.isFinite(number)||number==0.0&&new java.math.BigDecimal(text).signum()!=0)throw new Unavailable("FINITE_NUMBER_RANGE_REQUIRED");
+                    yield new RealValue(number);
+                }
                 case "preserve-exact-integer" -> {
                     if(!(value instanceof Number number))throw new Unavailable("INTEGER_REQUIRED");
                     try{yield IntegerValue.valueOf(new java.math.BigDecimal(number.toString()).intValueExact());}
@@ -47,9 +56,10 @@ public final class RuntimeValueConverters {
             case "Integer->Integer" -> "preserve-exact-integer";
             case "JasonAtom->String" -> "extract-Atom-name-without-term-pretty-print-quotes";
             case "JavaBinary64->Real" -> "preserve-the-finite-source-value-with-binary64-round-trip-or-exact-real-decoding";
+            case "String->Real" -> "parse-finite-java-number-text";
             default -> throw converter.location().error("M0_CONVERTER_TYPE_UNSUPPORTED");
         };
         if(!algorithm.equals(converter.attr("algorithm")))throw converter.location().error("M0_CONVERTER_ALGORITHM_UNSUPPORTED");
-        if(pair.equals("JavaBinary64->Real")&&(!converter.attr("onOverflowOrUnsupportedBackend").equals("incomplete-do-not-clamp")||!converter.attr("sentinelReplacement").equals("forbidden")))throw converter.location().error("M0_BINARY64_POLICY_UNSUPPORTED");
+        if(Set.of("JavaBinary64->Real","String->Real").contains(pair)&&(!converter.attr("onOverflowOrUnsupportedBackend").equals("incomplete-do-not-clamp")||!converter.attr("sentinelReplacement").equals("forbidden")))throw converter.location().error("M0_BINARY64_POLICY_UNSUPPORTED");
     }
 }

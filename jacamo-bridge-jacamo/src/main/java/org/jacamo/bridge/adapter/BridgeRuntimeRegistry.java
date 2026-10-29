@@ -12,6 +12,20 @@ import org.jacamo.bridge.contract.RuntimeEvent;
 /** Process-local hook used only by official JaCaMo extension instances. */
 public final class BridgeRuntimeRegistry {
     private static final AtomicReference<Consumer<RuntimeEvent>> ACTIVE = new AtomicReference<>();
+    private static final AtomicReference<Runnable> WORKSPACE_OBSERVER=new AtomicReference<>();
+    static AutoCloseable attachWorkspaceObserver(Runnable observer) {
+        Objects.requireNonNull(observer);
+        if(!WORKSPACE_OBSERVER.compareAndSet(null,observer))throw new IllegalStateException("WORKSPACE_OBSERVER_ALREADY_ATTACHED");
+        return ()->WORKSPACE_OBSERVER.compareAndSet(observer,null);
+    }
+    static void observeWorkspaceFeedback(jason.asSemantics.ActionExec action) {
+        if(!action.getResult()||!java.util.Set.of("createWorkspace","joinWorkspace").contains(action.getActionTerm().getFunctor()))return;
+        var observer=WORKSPACE_OBSERVER.get();if(observer!=null)observer.run();
+    }
+    static void observeWorkspaceDispatch(jason.asSemantics.ActionExec action) {
+        if(!java.util.Set.of("joinWorkspace","makeArtifact").contains(action.getActionTerm().getFunctor()))return;
+        var observer=WORKSPACE_OBSERVER.get();if(observer!=null)observer.run();
+    }
     private static final ConcurrentMap<String, BridgeEntityId> AGENT_IDENTITIES = new ConcurrentHashMap<>();
     private static final ConcurrentMap<String,jason.infra.local.LocalAgArch> AGENT_ARCHITECTURES=new ConcurrentHashMap<>();
     private static volatile BridgeLocalExecutionControl controller;

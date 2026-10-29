@@ -335,7 +335,7 @@ public final class ExternalOclConstraintService {
                     : owned.containsKey(invariant.qualifiedName()) && dependencies.requiredSources().stream()
                             .anyMatch(source -> sources.get(source) != Completeness.COMPLETE)
                             ? "REQUIRED_RUNTIME_SOURCE_INCOMPLETE:" + dependencies.requiredSources() : "";
-            if(engine!=null&&engine.auctionCase()) {
+            if(engine!=null&&engine.declarativeMapping()) {
                 var scoped=new org.tzi.use.plugins.jacamo.semantics.ocl.SemanticInvariantEvaluator().prepareScoped(id,invariant,engine,sources,coverageLost,fresh,skip);
                 prepared.add(new PreparedInvariant(id,invariant.cls().name(),invariant.bodyExpression(),invariant.flaggedExpression(),null,skip,"",scoped));continue;
             }

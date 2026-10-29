@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "focusedTests": 33,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "mainTabs": [
+    "Execution & Results",
+    "CSL model",
+    "iStar model",
+    "Advanced / Diagnostics"
+  ],
+  "advancedTabs": [
+    "Projection Rules",
+    "Program / trace",
+    "Observation plan",
+    "Verification Details"
+  ],
+  "legacyWorkbenchUnchanged": true,
+  "scope": "UI layout only; no verification semantics changes; focused component tests, no fresh live/manual GUI run",
+  "install": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\ui-tabs-final-cmmsktfe\\use-7.5.0",
+  "archiveSha256": "8bbf3bef43a9d717f396d6b646eaf86a5eeac3b9d63c88c163a99ac64035092f",
+  "sourceSha256": "30f775deb81bc1e6d0667f57491078de82c0ab8630224cadd5a6042c02bfd242",
+  "packagedClassMatchesTarget": true
+}

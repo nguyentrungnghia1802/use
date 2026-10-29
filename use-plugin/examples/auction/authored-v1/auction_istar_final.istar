@@ -19,7 +19,10 @@
 // D_bid uses ANY over this scheme's committed Participant occurrences, nonempty,
 // matching the latest diagram label. XML must declare this population/quantifier;
 // it is not encoded by renaming a Task or by modifying the original recurrence.
-// Administrative goalSatisfied(bid) never supplies actual-bid Task success.
+// Contract AUCTION_ATTEMPT_AND_ACCEPTED_BID/3.0: Participant completion is an
+// observed attempt/decision, including ONLY the XML-declared intentional .fail.
+// Collective O_bid additionally requires a source-confirmed accepted bid.
+// Administrative goalSatisfied(bid) alone satisfies neither condition.
 // AND is outcome conjunction. MOISE sequence and deadlines are checked separately
 // by the authored OCL/observer; AND does not assert execution order.
 //
@@ -44,6 +47,10 @@ istar AuctionGoals {
         // Dependency realization, not a raw MOISE administrative status flag.
         goal O_start : Achieve > O_root
         goal O_bid : Achieve > O_root
+        goal O_bid_attempt : Achieve > O_bid
+        // This source field changes from no_winner only on an accepted improving bid.
+        // The first accepted bid improves the initial MAX_VALUE; no console inference.
+        goal O_bid_accepted : Achieve > O_bid condition {[ self.currentWinner <> 'no_winner' ]}
         goal O_decide : Achieve > O_root
     }
 
@@ -85,17 +92,19 @@ istar AuctionGoals {
         pre {[ step.enabled ]}
         post {[ step.succeeded ]}
 
-        // P_bid_t2: successful wait/bid branch; Jason .fail is not an alternative.
-        // A successful non-improving bid still fulfills the bound step.
+        // P_bid_t2: completion of the participation decision/attempt.
+        // A successful non-improving bid and the explicitly declared simulated
+        // decline (.fail at the verified source site) both complete this Task.
+        // Other failures or absent evidence do not. This is not bid acceptance.
         task P_bid_t2 > P_bid
         pre {[ step.enabled and self.running ]}
-        post {[ step.succeeded ]}
+        post {[ step.completed ]}
 
         resource P_artifact > needed-by P_bid_t2
     }
 
     depend Auction.O_start -> goal D_start -> Auctioneer.A_start
     depend Auction.O_decide -> goal D_decide -> Auctioneer.A_decide
-    // At least one assigned/committed Participant successfully bids in this scheme.
-    depend Auction.O_bid -> goal D_bid -> Participant.P_bid
+    // ANY observed Participant attempt, AND the separate actual-accepted-bid leaf.
+    depend Auction.O_bid_attempt -> goal D_bid -> Participant.P_bid
 }

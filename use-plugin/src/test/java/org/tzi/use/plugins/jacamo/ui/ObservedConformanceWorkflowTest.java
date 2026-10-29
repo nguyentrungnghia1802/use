@@ -15,6 +15,26 @@ import org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePre
 import static org.junit.jupiter.api.Assertions.*;
 
 class ObservedConformanceWorkflowTest {
+    @Test void auctionGuiChoiceIsCapturedByThePreparationWorker() throws Exception {
+        var called=new java.util.concurrent.CountDownLatch(1);var selected=new java.util.concurrent.atomic.AtomicReference<Boolean>();
+        var source=new java.util.concurrent.atomic.AtomicReference<java.nio.file.Path>();
+        var facade=new JaCaMoFacade(){public String status(){return "Auction GUI";}
+            public ImportSelection importSelection(){return new ImportSelection("NATIVE_CURRENT",null);}
+            public boolean ownedProducerSupported(){return true;}
+            public ProjectSummary prepareOwnedProducer(java.nio.file.Path jcm,ImportSelection inputs,java.nio.file.Path cp,boolean showGui){
+                assertFalse(SwingUtilities.isEventDispatchThread());assertFalse(inputs.strictSourceChecksums());source.set(jcm);selected.set(showGui);called.countDown();return null;}};
+        var external=java.nio.file.Path.of("..").toAbsolutePath().normalize().getParent().resolve("jacamo/examples/auction/auction.jcm");
+        var inputs=java.nio.file.Path.of("examples/auction").toAbsolutePath();
+        SwingUtilities.invokeAndWait(()->{
+            var panel=new JaCaMoWorkbenchPanel(facade,message->fail(message),true);
+            assertTrue(find(panel,"show-producer-gui",JCheckBox.class).isSelected());
+            assertFalse(find(panel,"strict-source-checksums",JCheckBox.class).isSelected());
+            for(var field:Map.of("selected-jcm",external,"authored-csl",inputs.resolve("authored-v1/auction_csl.csl"),"authored-istar",inputs.resolve("authored-v1/auction_istar_final.istar"),"mapping-specification",inputs.resolve("source-confirmed-v1/auction-mapping.xml"),"authored-ocl",inputs.resolve("source-confirmed-v1/auction_confirmed.ocl")).entrySet())
+                find(panel,field.getKey(),JTextField.class).setText(field.getValue().toString());
+            find(panel,"prepare-producer",JButton.class).doClick();
+        });
+        assertTrue(called.await(5,java.util.concurrent.TimeUnit.SECONDS));assertEquals(Boolean.TRUE,selected.get());assertEquals(external,source.get());
+    }
     @Test void asyncCompletionReplacesItsPendingRowButDoesNotDropAnExecutionOnlyBoundary() {
         var now=Instant.EPOCH;
         var pending=new RuntimeVerificationResult("run",1,"revision",1,"entry","cartago",1,now,now,now,"c1","contracts","same-state",List.of(),0,"EVALUATION_PENDING","PENDING_EVALUATION","",null);

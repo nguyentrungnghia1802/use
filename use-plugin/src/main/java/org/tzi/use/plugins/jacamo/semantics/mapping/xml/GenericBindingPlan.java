@@ -31,6 +31,11 @@ public final class GenericBindingPlan {
         }
         cslSource=csl.generatedSource();iStarSource=goals.generatedSource();this.bindings=bindings;this.goalBindings=goalBindings;
         dependencyPopulations=org.tzi.use.plugins.jacamo.semantics.runtime.OccurrenceGoalModelExpander.policies(inputs.specification(),goals.model());
+        var verificationTargets=new HashSet<String>();
+        for(var node:inputs.specification().root().child("bindings").children("requirement")) {
+            var element=goals.model().findElement(node.attr("target")).orElseThrow(()->node.location().error("VERIFICATION_TARGET_UNRESOLVED"));
+            if(!(element instanceof org.vnu.sme.goal.dsl.istar.mm.Goal||element instanceof org.vnu.sme.goal.dsl.istar.mm.Task)||!verificationTargets.add(node.attr("target")))throw node.location().error("VERIFICATION_TARGET_KIND_OR_DUPLICATE");
+        }
         var values=new TreeMap<String,Object>();
         values.put("format","JACAMO_MAPPING_XML/2.0");values.put("sourceHash",sourceHash);
         values.put("specificationHash",inputs.xml().sha256());values.put("oclHash",inputs.ocl().sha256());
@@ -39,7 +44,7 @@ public final class GenericBindingPlan {
         if(!inputs.projectDerivation().isEmpty())values.put("jcmDerivation",inputs.projectDerivation());
         values.put("cslHash",cslHash);values.put("goalHash",goalHash);values.put("engineProfile",goals.profile().name());
         values.put("bindingsHash",bindings.hash());values.put("goalBindings",SemanticJson.tree(goalBindings));
-        values.put("dependencyPopulations",SemanticJson.tree(dependencyPopulations));
+        values.put("dependencyPopulations",SemanticJson.tree(dependencyPopulations));values.put("verificationTargets",verificationTargets.stream().sorted().toList());
         // Located traces remain evidence, never mutable model/state or semantic aliases.
         values.put("cslTraces",SemanticJson.tree(csl.traces()));values.put("goalTraces",SemanticJson.tree(goals.traces()));
         values.put("omissions",SemanticJson.tree(csl.omissions()));

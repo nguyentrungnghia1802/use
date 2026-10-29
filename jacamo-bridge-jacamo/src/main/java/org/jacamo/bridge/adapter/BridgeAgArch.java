@@ -32,7 +32,6 @@ public final class BridgeAgArch extends AgArch {
     private long nextGoalToken;
     private transient Map<String,Object> previousState;
     private transient java.util.Set<String> authoredBeliefs;
-    private transient AuctionStepObservation stepObservation;
     private transient ObservationCapabilityRegistry.Session capabilitySession;
     private transient List<JasonStepCapability> neutralSteps=List.of();
     private transient java.util.Set<String> observationFields=java.util.Set.of();
@@ -43,7 +42,7 @@ public final class BridgeAgArch extends AgArch {
     }
 
     void installCapabilities(ProductionObservationSession owner,org.jacamo.bridge.contract.semantic.JasonSemanticContract.AgentProgramSemantic program) {
-        if(capabilitySession!=null||stepObservation!=null||runtimeIdentity==null)throw new IllegalStateException("STEP_OWNER_ALREADY_INSTALLED_OR_ARCH_NOT_READY");
+        if(capabilitySession!=null||runtimeIdentity==null)throw new IllegalStateException("STEP_OWNER_ALREADY_INSTALLED_OR_ARCH_NOT_READY");
         boolean reached=false;for(var arch=getFirstAgArch();arch!=null;arch=arch.getNextAgArch()) {
             if(arch==this)reached=true;
             if(arch instanceof jaca.CAgentArch&&!reached)throw new IllegalStateException("STEP_OBSERVER_MUST_PRECEDE_CARTAGO_DISPATCH");
@@ -52,24 +51,10 @@ public final class BridgeAgArch extends AgArch {
         neutralSteps=capabilitySession.capabilities().stream().flatMap(c->capabilitySession.handle(c.name(),JasonStepCapability.class).stream()).toList();
     }
 
-    void installStepObservation(org.jacamo.bridge.contract.semantic.JasonSemanticContract.AgentProgramSemantic program,java.nio.file.Path root)throws Exception {
-        if(stepObservation!=null||runtimeIdentity==null)throw new IllegalStateException("STEP_OWNER_ALREADY_INSTALLED_OR_ARCH_NOT_READY");
-        stepObservation=new AuctionStepObservation(getTS(),runtimeIdentity,sessionId,generation,System.getProperty("jacamo.bridge.modelRevision"),program,root,
-                observation->{var parent=emit(RuntimeEventKind.CHANGED,RuntimeFactKind.ACTION_EXECUTION,Map.of(),Map.of("runtimeConcept","JasonStepMarker","sourceLayer","RUNTIME","stepInvocation",observation.subject()),observation.subject());
-                    if(parent!=null)VerificationObservationSource.publishIfAttached(parent,()->observation);},
-                diagnostic->emit(RuntimeEventKind.GAP,RuntimeFactKind.ACTION_EXECUTION,Map.of(),Map.of("diagnostic",diagnostic),""));
-        try {
-            boolean observed=false;
-            for(var arch=getFirstAgArch();arch!=null;arch=arch.getNextAgArch()) {
-                if(arch==this)observed=true;
-                if(arch instanceof jaca.CAgentArch&&!observed)throw new IllegalStateException("STEP_OBSERVER_MUST_PRECEDE_CARTAGO_DISPATCH");
-            }
-        }catch(RuntimeException failure){retireStepObservation();throw failure;}
-    }
-    boolean stepCaptureAvailable(){return stepObservation!=null&&stepObservation.failure().isBlank();}
-    void retireStepObservation(){var owned=stepObservation;stepObservation=null;if(owned!=null)owned.close();neutralSteps=List.of();var session=capabilitySession;capabilitySession=null;if(session!=null)session.close();}
-    void observeStepAction(ActionExec action,RuntimeEventKind kind,String correlation){var steps=stepObservation;try{if(steps!=null)steps.action(action,kind,correlation);for(var neutral:neutralSteps)neutral.action(action,kind,correlation);}catch(RuntimeException missing){stepActionUnavailable("ACTION_CAPTURE:"+missing.getClass().getSimpleName());}}
-    void stepActionUnavailable(String reason){var steps=stepObservation;try{if(steps!=null)steps.unavailable(reason);for(var neutral:neutralSteps)neutral.unavailable(reason);}catch(RuntimeException notificationFailed){/* failure was latched before reporting; observation cannot fail the domain action */}}
+
+    void retireStepObservation(){neutralSteps=List.of();var session=capabilitySession;capabilitySession=null;if(session!=null)session.close();}
+    void observeStepAction(ActionExec action,RuntimeEventKind kind,String correlation){try{for(var neutral:neutralSteps)neutral.action(action,kind,correlation);}catch(RuntimeException missing){stepActionUnavailable("ACTION_CAPTURE:"+missing.getClass().getSimpleName());}}
+    void stepActionUnavailable(String reason){try{for(var neutral:neutralSteps)neutral.unavailable(reason);}catch(RuntimeException notificationFailed){/* failure was latched before reporting; observation cannot fail the domain action */}}
 
     @Override public void init() {
         observer = BridgeRuntimeRegistry.require(); sequence = new AtomicLong();
@@ -210,6 +195,10 @@ public final class BridgeAgArch extends AgArch {
 
     @Override public void act(ActionExec action) {
         requireReady();
+        // Registration only, before delegation. Feedback can be consumed on a
+        // TS cycle that does not call perceive; creation must not depend on that
+        // queue being observed before the next action is dispatched.
+        BridgeRuntimeRegistry.observeWorkspaceDispatch(action);
         String correlation = UUID.randomUUID().toString();
         correlations.put(action, correlation);
         emitAction(RuntimeEventKind.STARTED, action, correlation);
@@ -248,6 +237,7 @@ public final class BridgeAgArch extends AgArch {
     }
 
     private void emitAction(RuntimeEventKind kind, ActionExec action, String correlation) {
+        if(kind==RuntimeEventKind.SUCCEEDED)BridgeRuntimeRegistry.observeWorkspaceFeedback(action);
         observeStepAction(action,kind,correlation);
         Map<String, Object> before = runtimeActionValues(action);
         Map<String, Object> after = new LinkedHashMap<>(before);

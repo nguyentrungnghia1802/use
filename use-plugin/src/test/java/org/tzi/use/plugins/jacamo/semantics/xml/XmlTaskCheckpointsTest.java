@@ -33,10 +33,11 @@ class XmlTaskCheckpointsTest {
         Fixture(boolean resources,boolean lateSelf)throws Exception {
             this(resources,lateSelf,java.util.function.UnaryOperator.identity());
         }
-        Fixture(boolean resources,boolean lateSelf,java.util.function.UnaryOperator<String> configure)throws Exception {
+        Fixture(boolean resources,boolean lateSelf,java.util.function.UnaryOperator<String> configure)throws Exception {this(resources,lateSelf,configure,false);}
+        Fixture(boolean resources,boolean lateSelf,java.util.function.UnaryOperator<String> configure,boolean fail)throws Exception {
             Files.createDirectories(temp.resolve("src/agt"));Files.createDirectories(temp.resolve("src/org"));
             Files.copy(GenericMappingEngineTest.JCM.getParent().resolve("src/org/monitor.xml"),temp.resolve("src/org/monitor.xml"));
-            Path behavior=Files.writeString(temp.resolve("src/agt/a.asl"),"+!work <- .print(\"source execution\").\n");
+            Path behavior=Files.writeString(temp.resolve("src/agt/a.asl"),fail?"+!work <- .fail.\n":"+!work <- .print(\"source execution\").\n");
             Path jcm=Files.writeString(temp.resolve("monitor.jcm"),Files.readString(GenericMappingEngineTest.JCM).replace("agent a : a.asl","agent a : a.asl\n    agent b : a.asl"));
             helper.temp=temp;helper.project=jcm;
             data=helper.fixture(s->{String xml=(resources?s.replace("engineProfile=\"USE4GOAL_OBSERVED_V1\"","engineProfile=\"DERIVED_AND_RESOURCE_V1\"").replace("</actor></istar>","<resource id=\"parcel-resource\" name=\"Parcel\"><neededBy task=\"Positive\"/></resource></actor></istar>")
@@ -79,6 +80,25 @@ class XmlTaskCheckpointsTest {
         @Override public void close(){checkpoints.clear();backend.close();}
     }
     static String uncheckedHash(Path file){try{return GenericMappingEngineTest.hash(file);}catch(Exception error){throw new IllegalStateException(error);}}
+
+    @Test void actualFailedJasonCallbackRetainsTerminalEvidenceAfterMarkerRetirementAndRollback()throws Exception {
+        try(var f=new Fixture(false,false,s->s.replace("SKIP_WORLD_POST","EVALUATE_PURE_CALLBACK_POST").replace("<pre>self.p >= 0</pre><post>self.p = self.p@pre + 1</post>","<pre>receipt.entryConfirmed</pre><post>receipt.successful</post>").replace("reason=\"Authored world condition, not an agent mental goal\"/>","reason=\"Explicit source failure receipt\"><variable name=\"receipt\" viewRef=\"failure-proof\" origin=\"STEP_TUPLE\"/></elementRuntime>").replace("<observers/>","<observers><view id=\"failure-proof\" name=\"FailureProof\" category=\"TUPLE\" keyFields=\"invocation\"><field name=\"entryConfirmed\" type=\"Boolean\" origin=\"STEP_ENABLED\"/><field name=\"successful\" type=\"Boolean\" origin=\"STEP_SUCCEEDED\"/></view></observers>"),true)) {
+            var engine=f.data.nativeFixture().nativeFixture().engine();
+            try(var owner=new org.tzi.use.plugins.jacamo.semantics.runtime.RuntimeEngineSessionOwner(engine,"run",1,f.source.modelRevision())) {
+                owner.taskCheckpoint(f.event(0,1),coverage,false,null);evaluate(owner,engine,1,owner.drainTaskPrepared());var before=owner.checkpoint().get();
+                owner.taskCheckpoint(f.event(1,2),coverage,false,null);var result=evaluate(owner,engine,2,owner.drainTaskPrepared());
+                assertTrue(result.evidence().constraints().stream().anyMatch(r->r.kind().equals("TASK_POST")&&r.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.FAIL&&"FAILED".equals(r.witness().get("phase"))),result.evidence().constraints().toString());
+                var held=owner.checkpoint().get();assertTrue(held.certificates().values().stream().anyMatch(c->c.kind().equals("TASK_FAILED")&&!c.invocation().isBlank()));
+                var admission=owner.admission();owner.taskCheckpoint(f.event(1,3),coverage,false,null);evaluate(owner,engine,3,owner.drainTaskPrepared());
+                var current=evaluate(owner,engine,4,List.of());assertTrue(current.evidence().constraints().stream().anyMatch(r->r.kind().equals("EXECUTION_OUTCOME")&&r.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.INCONCLUSIVE&&!r.invocation().isBlank()));var core=CanonicalJson.object(current.evidence().observation().get("originalEngine"));
+                var occurrences=((List<?>)core.get("contexts")).stream().map(CanonicalJson::object).flatMap(c->CanonicalJson.object(c.get("occurrences")).values().stream()).map(CanonicalJson::object).toList();
+                var alpha=occurrences.stream().filter(v->"Positive".equals(v.get("sourceElement"))&&v.get("player").toString().contains("alpha")).findFirst().orElseThrow();
+                assertEquals("FAILED",alpha.get("executionStatus"));assertEquals("KNOWN_HISTORY",alpha.get("executionQuality"));assertEquals("PENDING",alpha.get("leafStatus"));
+                assertTrue(occurrences.stream().filter(v->v.get("player").toString().contains("beta")).noneMatch(v->"FAILED".equals(v.get("executionStatus"))));
+                owner.restore(before).get();assertTrue(owner.checkpoint().get().certificates().isEmpty());owner.restore(held).get();assertEquals(held.certificates(),owner.checkpoint().get().certificates());owner.restoreAdmission(admission);
+            }
+        }
+    }
     @Test void actualFramesRetainExactPreAndDoNotBorrowOtherPerformersOrDemandEpisode()throws Exception {
         try(var f=new Fixture()) {
             f.observe(0,1);var entry=f.checkpoints.drain();assertEquals(1,entry.size());assertEquals("TASK_PRE",entry.getFirst().conditions().getFirst().kind());
@@ -230,4 +250,40 @@ class XmlTaskCheckpointsTest {
         var checks=new org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.PreparedEvaluation(engine.system().model(),List.of());
         return owner.submit(owner.prepare(version,"checkpoint-"+version,hash,coverage,false,true,List.of(),checks,work,4096)).get(10,java.util.concurrent.TimeUnit.SECONDS);
     }
+    @Test void exactDeclaredFailureCompletesAttemptButMissingOrDifferentSourceInstructionNeverDoes()throws Exception {
+        var configured=(java.util.function.UnaryOperator<String>)(xml->xml
+            .replace("SKIP_WORLD_POST","EVALUATE_PURE_CALLBACK_POST")
+            .replace("<pre>self.p >= 0</pre><post>self.p = self.p@pre + 1</post>","<pre>receipt.entryConfirmed</pre><post>receipt.completed</post>")
+            .replace("reason=\"Authored world condition, not an agent mental goal\"/>","reason=\"Declared attempt outcome\"><acceptedFailure term=\".fail\" bodyType=\"internalAction\" line=\"1\" sourceFailure=\"GOAL_LISTENER_FAILED:ia_failed\"/><variable name=\"receipt\" viewRef=\"entry-proof\" origin=\"STEP_TUPLE\"/></elementRuntime>")
+            .replace("<observers/>","<observers><view id=\"entry-proof\" name=\"EntryProof\" category=\"TUPLE\" keyFields=\"invocation\"><field name=\"entryConfirmed\" type=\"Boolean\" origin=\"STEP_ENABLED\"/><field name=\"completed\" type=\"Boolean\" origin=\"STEP_COMPLETED\"/></view></observers>"));
+        try(var f=new Fixture(false,false,configured,true)) {
+            f.observe(0,1);f.checkpoints.drain();f.observe(1,2);
+            var work=f.checkpoints.drain();var rows=work.stream().flatMap(w->NativeInvocationEvaluation.evaluate(w,2).stream()).toList();
+            var post=rows.stream().filter(r->r.kind().equals("TASK_POST")).findFirst().orElseThrow();
+            assertEquals(org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.PASS,post.verdict(),post.toString());assertEquals("FAILED",post.witness().get("phase"));assertEquals("true",post.witness().get("acceptedFailure"));
+            var engine=f.data.nativeFixture().nativeFixture().engine();
+            try(var owner=new org.tzi.use.plugins.jacamo.semantics.runtime.RuntimeEngineSessionOwner(engine,"run",1,f.source.modelRevision())) {
+                owner.taskCheckpoint(f.event(0,1),coverage,false,null);evaluate(owner,engine,1,owner.drainTaskPrepared());
+                owner.taskCheckpoint(f.event(1,2),coverage,false,null);var result=evaluate(owner,engine,2,owner.drainTaskPrepared());
+                var core=CanonicalJson.object(result.evidence().observation().get("originalEngine"));
+                var occurrences=((List<?>)core.get("contexts")).stream().map(CanonicalJson::object).flatMap(c->CanonicalJson.object(c.get("occurrences")).values().stream()).map(CanonicalJson::object).toList();
+                var actor=occurrences.stream().filter(v->"Positive".equals(v.get("sourceElement"))&&v.get("player").toString().contains("alpha")).findFirst().orElseThrow();
+                assertEquals("FULFILLED",actor.get("leafStatus"),"Original TaskMarking must consume the declared attempt postcondition");
+                assertTrue(occurrences.stream().filter(v->v.get("player").toString().contains("beta")).noneMatch(v->"FULFILLED".equals(v.get("leafStatus"))),"Do not credit another actor");
+                assertTrue(owner.checkpoint().get().certificates().values().stream().noneMatch(c->c.kind().equals("TASK_FAILED")));
+            }
+            var original=f.frames.get(1);var data=new TreeMap<>(original.data());var bindings=new TreeMap<>(CanonicalJson.object(data.get("bindings")));
+            for(String mutation:List.of("MISSING","OTHER","FRAMEWORK_ERROR")) {
+                f.checkpoints.clear();f.observe(0,3);f.checkpoints.drain();
+                var changed=new TreeMap<>(bindings);
+                if(mutation.equals("MISSING"))changed.remove("failureSite");else if(mutation.equals("FRAMEWORK_ERROR"))changed.put("sourceFailure","GOAL_LISTENER_FAILED:internal_action_error");else {var proof=new TreeMap<>(CanonicalJson.object(changed.get("failureSite")));proof.put("term",".another_action");changed.put("failureSite",proof);}
+                data.put("bindings",changed);
+                var frame=new VerificationObservation(original.kind(),original.subject(),original.quality(),original.diagnostic(),original.sourceTime(),data);
+                f.checkpoints.observe(frame.event("run",1,f.source.modelRevision(),4,java.time.Instant.EPOCH,"","",true),coverage,false);
+                var negative=f.checkpoints.drain().stream().flatMap(w->NativeInvocationEvaluation.evaluate(w,4).stream()).filter(r->r.kind().equals("TASK_POST")).findFirst().orElseThrow();
+                assertEquals(mutation.equals("MISSING")?org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.SKIPPED:org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.FAIL,negative.verdict(),negative.toString());
+            }
+        }
+    }
+
 }

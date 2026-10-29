@@ -28,4 +28,23 @@ class JasonStepObservationTest {
         }finally{actor.stopAg();environment.shutdown();}
         assertSame(original,actor.getPL().getPlans().getFirst().getBody());assertTrue(ts.getGoalListeners().stream().noneMatch(JasonStepObservation.class::isInstance));
     }
+    @Test void actualFailureCarriesExactCurrentSourceInstructionRatherThanInferringFromTaskName()throws Exception {
+        var path=Files.writeString(temp.resolve("decline.asl"),"+!deliver <- if (true) { .fail }.\n");
+        var source=new OfficialJasonAdapter().adapt(temp,path,"dispatch","worker").program();
+        var actor=new Agent();actor.setConsiderToAddMIForThisAgent(false);actor.initAg();actor.setASLSrc(path.toUri().toString());
+        try(var input=Files.newInputStream(path)){actor.parseAS(input,path.toUri().toString());}
+        var ts=new TransitionSystem(actor,new Circumstance(),new jason.runtime.Settings(),new jason.architecture.AgArch(){@Override public String getAgName(){return "worker";}});
+        var definition=new JasonPlanInstrumentation.Specification(JasonPlanInstrumentation.RECIPE,source.sourceDigest(),List.of(new JasonPlanInstrumentation.PlanSelection(source.planLibrary().plans().getFirst().metadata().semanticId(),List.of(new JasonPlanInstrumentation.Boundary("Attempt",0,1)))));
+        var frames=new ArrayList<VerificationObservation>();var environment=cartago.CartagoEnvironment.getInstance();environment.init();
+        try(var observer=new JasonStepObservation(ts,new BridgeEntityId("jason","agent","runtime-agent","dispatch","worker","incarnation"),"run",1,"revision",source,temp,frames::add,reason->fail(reason),definition,List.of(new JasonStepObservation.Capture("Attempt",List.of(),"","","",false,List.of())))) {
+            ts.getC().addAchvGoal(ASSyntax.parseLiteral("deliver"),Intention.EmptyInt);for(int i=0;i<20;i++)ts.reasoningCycle();
+            assertEquals(List.of("ENABLED","FAILED"),frames.stream().map(f->f.data().get("phase")).toList());
+            var bindings=CanonicalJson.object(frames.getLast().data().get("bindings"));var proof=CanonicalJson.object(bindings.get("failureSite"));
+            assertEquals("ACTUAL_INTENDED_MEANS_CURRENT_INSTRUCTION/1.0",proof.get("authority"));
+            assertEquals(".fail",proof.get("term"));assertEquals("internalAction",proof.get("bodyType"));
+            assertEquals(1,((Number)proof.get("line")).intValue());
+            assertEquals(source.sourceDigest(),proof.get("sourceHash"));
+        }finally{actor.stopAg();environment.shutdown();}
+    }
+
 }

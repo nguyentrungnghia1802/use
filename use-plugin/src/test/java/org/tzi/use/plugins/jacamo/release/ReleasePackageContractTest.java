@@ -18,7 +18,8 @@ class ReleasePackageContractTest {
         var declared=new java.util.TreeMap<String,String>();for(var entry:release.path("packageEntries"))assertTrue(declared.put(entry.path("path").asText(),entry.path("source").asText())==null);
         assertEquals("src/test/resources/auction/auction.jcm",declared.get("examples/auction/auction.jcm"),"Preserve the old native toy under its existing compatibility path");
         assertEquals("examples/auction/case-manifest.json",declared.get("examples/auction-semantic/case-manifest.json"),"The actual canonical Auction must be separately shipped");
-        var manifest=json.readTree(Path.of("examples/auction/case-manifest.json").toFile());assertEquals(22,manifest.path("assets").size());
+        var manifest=json.readTree(Path.of("examples/auction/case-manifest.json").toFile());assertEquals(21,manifest.path("assets").size(),"Retired case-rules XML is no longer distributed");
+        for(var asset:manifest.path("assets"))assertTrue(!"case-rules".equals(asset.path("id").asText()));
         for(var asset:manifest.path("assets")) {
             String relative=asset.path("path").asText();assertEquals("examples/auction/"+relative,declared.get("examples/auction-semantic/"+relative),relative);
             assertEquals(asset.path("sha256").asText(),java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(Path.of("examples/auction").resolve(relative)))));

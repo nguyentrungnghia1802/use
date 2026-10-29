@@ -1,0 +1,282 @@
+{
+  "status": "PASS",
+  "scope": "Final ZIP bytes, packaged jars and fresh extraction; no cold live or manual GUI claim",
+  "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+  "archiveSha256": "f48724a287a13cffee05ebacdec7272a4c730fd2dbe883b3dbd2c682932f3815",
+  "archiveBytes": 117269210,
+  "extractedRoot": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\additional-cases-20261028-bw06h6c3\\use-7.5.0",
+  "checks": [
+    {
+      "archiveEntry": "use-7.5.0/examples/hello-world/LICENSE-JaCaMo.txt",
+      "source": "use-plugin/examples/hello-world/LICENSE-JaCaMo.txt",
+      "sha256": "ea7d049c7705dc13afc202dd18e1827f3484f8212fd3fa7b82fc4a0c363432c9"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/hello-world/README.md",
+      "source": "use-plugin/examples/hello-world/README.md",
+      "sha256": "08bc34626b01fb4e89397d2213d5114fafdbbbed817570b2d0664499c602f6e2"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/hello-world/build.gradle",
+      "source": "use-plugin/examples/hello-world/build.gradle",
+      "sha256": "894ef12cc5b22944b37ba7a26df77e803d1339b10033d6b305d2d0189204d10c"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/hello-world/case-manifest.json",
+      "source": "use-plugin/examples/hello-world/case-manifest.json",
+      "sha256": "96c70dbb0291ccfb934b8b93ac05b35e865660be29780463e1446fbf3df71b1b"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/hello-world/hello-mapping.xml",
+      "source": "use-plugin/examples/hello-world/hello-mapping.xml",
+      "sha256": "e02baadcf176c4e5ba1f0111d58e94d341d42993278efa25a9899801e9903a5f"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/hello-world/hello.csl",
+      "source": "use-plugin/examples/hello-world/hello.csl",
+      "sha256": "2b1df53f81edacb46e30f76fc0aa64a748b3e8040a3a067e762c87c966197b51"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/hello-world/hello.istar",
+      "source": "use-plugin/examples/hello-world/hello.istar",
+      "sha256": "2fb9606c446dba1848595de9441b4dd7dfcd1da76cab0437e66176dbb38cc96d"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/hello-world/hello.ocl",
+      "source": "use-plugin/examples/hello-world/hello.ocl",
+      "sha256": "2f8febd764e6f8afb7e44e0a5fd940264d5a9cb23d5f1f1d3fae4909104e71ba"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/hello-world/helloworld.jcm",
+      "source": "use-plugin/examples/hello-world/helloworld.jcm",
+      "sha256": "c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/hello-world/provenance.json",
+      "source": "use-plugin/examples/hello-world/provenance.json",
+      "sha256": "167089eca6105d58b1eb5197bc9e33a9c484a32d9f5524e0418195c7f318e9e8"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/hello-world/src/agt/hello-grid.asl",
+      "source": "use-plugin/examples/hello-world/src/agt/hello-grid.asl",
+      "sha256": "1054e9faeb464dbbd7bab25eeaca46f9827055ad9ef6c8dfb3e49d5475efe8d0"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/hello-world/src/agt/hello.asl",
+      "source": "use-plugin/examples/hello-world/src/agt/hello.asl",
+      "sha256": "7c9a0dcd47c8b256b33506299968faad71aeb47a2bec814958f07993b219922a"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/hello-world/src/agt/hello2.asl",
+      "source": "use-plugin/examples/hello-world/src/agt/hello2.asl",
+      "sha256": "e0ad5e7dd82270dc169aacf0c1f97fb7d70fd10f574feee9dcffdc0984972902"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/hello-world/src/agt/hf.asl",
+      "source": "use-plugin/examples/hello-world/src/agt/hf.asl",
+      "sha256": "fbb17e720c1395490c84b2e1000c98cb8e73653219fa86f959fe983059e8f07b"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/hello-world/src/env/display/GUIConsole.java",
+      "source": "use-plugin/examples/hello-world/src/env/display/GUIConsole.java",
+      "sha256": "e6c10b463080bc40e6f71844ec3e11e7266612dbebefd7291cc317ff66b3108a"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/hello-world/src/env/display/GridDisplay.java",
+      "source": "use-plugin/examples/hello-world/src/env/display/GridDisplay.java",
+      "sha256": "ced4160f05dfb301571fbf528897f737ed1564555d369194219be302370d8f1c"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/hello-world/src/org/o1.xml",
+      "source": "use-plugin/examples/hello-world/src/org/o1.xml",
+      "sha256": "6b9794e719dabe233e6dc00baf0d5e6256a7e8a8b189c454bccd527fe17a4206"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/LICENSE-JaCaMo.txt",
+      "source": "use-plugin/examples/house-building/LICENSE-JaCaMo.txt",
+      "sha256": "ea7d049c7705dc13afc202dd18e1827f3484f8212fd3fa7b82fc4a0c363432c9"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/README.md",
+      "source": "use-plugin/examples/house-building/README.md",
+      "sha256": "e3971f8d8b26425f22c68c3f5b81f04356223a12c604312c2a24823df4fd5848"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/build.gradle",
+      "source": "use-plugin/examples/house-building/build.gradle",
+      "sha256": "69f127e0cca06170211c3eadfc2e44f9da7be2cfcb5c7efb37ec2cdc6f8e0584"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/case-manifest.json",
+      "source": "use-plugin/examples/house-building/case-manifest.json",
+      "sha256": "824da39cff430ffb17a734089b4b330e0e2f793d4623660d3c550824673385ed"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/house-building.jcm",
+      "source": "use-plugin/examples/house-building/house-building.jcm",
+      "sha256": "c14ae6299b0d2e0034d7daaa233b9bf1b94a7b337aa39477ec865c52ca5fef08"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/house-mapping.xml",
+      "source": "use-plugin/examples/house-building/house-mapping.xml",
+      "sha256": "85ddf0b8f8f854c10ee5a25b932c3020e57da2ed09f6bf41148167b45df3612d"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/house.csl",
+      "source": "use-plugin/examples/house-building/house.csl",
+      "sha256": "e6d8620aa3503fa687330403311a6cfa78af9ee0d83934c744b7078bcc8d43f3"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/house.istar",
+      "source": "use-plugin/examples/house-building/house.istar",
+      "sha256": "5ac21d7b700b003d3b164121e928186311c03e7e5c0ad17a3c135ab3963163df"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/house.ocl",
+      "source": "use-plugin/examples/house-building/house.ocl",
+      "sha256": "c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/provenance.json",
+      "source": "use-plugin/examples/house-building/provenance.json",
+      "sha256": "998aee0936f64c6adeaf82a30cc278a0d67d7cd44723c25417c346022accd0ff"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/agt/companyA.asl",
+      "source": "use-plugin/examples/house-building/src/agt/companyA.asl",
+      "sha256": "da55328b72311a1d4c31a85db1da1d0fc7193d0fc1c196ba39f1484f3639535e"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/agt/companyB.asl",
+      "source": "use-plugin/examples/house-building/src/agt/companyB.asl",
+      "sha256": "172d0a91b6daafe46e6b349da2810c7aee09952b46c1e1bd7d9ac04738bfee13"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/agt/companyC.asl",
+      "source": "use-plugin/examples/house-building/src/agt/companyC.asl",
+      "sha256": "362b027c493a7379a0ed7c10e9b02b7f05a94dc796d134fc382c2899d323bc70"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/agt/companyD.asl",
+      "source": "use-plugin/examples/house-building/src/agt/companyD.asl",
+      "sha256": "9bca8b5ead0f1c83531bc370746e362db9a04c0f782ad44ead95d599ddc6c1ba"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/agt/companyE.asl",
+      "source": "use-plugin/examples/house-building/src/agt/companyE.asl",
+      "sha256": "07f0d731346838bbb788124d5a551e5a411ea95c3fe88f82c6658f6f29df0a78"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/agt/giacomo.asl",
+      "source": "use-plugin/examples/house-building/src/agt/giacomo.asl",
+      "sha256": "c381af45aa14588d57ee29dec8e761751f6ccd08a72c1bf81a7d811ae487ebad"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/agt/inc/common.asl",
+      "source": "use-plugin/examples/house-building/src/agt/inc/common.asl",
+      "sha256": "7fc62ffaa8ce2452b0585c064b337e2e3ea7196ed8fcc2491a249d7399d398c2"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/agt/inc/org_code.asl",
+      "source": "use-plugin/examples/house-building/src/agt/inc/org_code.asl",
+      "sha256": "10e0b90dcfc85a005b63405f48f69366bd078b83872a713d2ebaf5e973432bfb"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/agt/inc/org_goals.asl",
+      "source": "use-plugin/examples/house-building/src/agt/inc/org_goals.asl",
+      "sha256": "75ee6cbba0f12a4db85279c0b7887f906505310ac9a8058667480939162c7868"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/env/simulator/Doors.java",
+      "source": "use-plugin/examples/house-building/src/env/simulator/Doors.java",
+      "sha256": "1362456533add19d66f303abe449d5a92a8f18ca8b330d95b0088ec9c40ce536"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/env/simulator/ElectricalSystem.java",
+      "source": "use-plugin/examples/house-building/src/env/simulator/ElectricalSystem.java",
+      "sha256": "a3b4a6301db65f2287ef5b3beab8afc5777c3da82a19e7e57fa72c2eea026e53"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/env/simulator/ExteriorPainting.java",
+      "source": "use-plugin/examples/house-building/src/env/simulator/ExteriorPainting.java",
+      "sha256": "3eb44b699b65e8d091207b737a1317f415dd668d4050fe1b06bb87e78efcb001"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/env/simulator/Floor.java",
+      "source": "use-plugin/examples/house-building/src/env/simulator/Floor.java",
+      "sha256": "f9ee120635dce3e053043009661d26b2565719cb6009a39ccd5b0743d0fdcf29"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/env/simulator/House.java",
+      "source": "use-plugin/examples/house-building/src/env/simulator/House.java",
+      "sha256": "c1f0e34438889a312d05861b13cea54e4a362a34b586c6aa783ec94b6376adc7"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/env/simulator/HousePart.java",
+      "source": "use-plugin/examples/house-building/src/env/simulator/HousePart.java",
+      "sha256": "f141560e5a6d0b2b0a6c6990c62394e1922f62d9f95055f1d18f654b50c9760f"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/env/simulator/InteriorPainting.java",
+      "source": "use-plugin/examples/house-building/src/env/simulator/InteriorPainting.java",
+      "sha256": "ad4b94e991b5fcd9f831cd67eb6a344e060be3b55e622f4d88d34305a4eb5c93"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/env/simulator/Plumbing.java",
+      "source": "use-plugin/examples/house-building/src/env/simulator/Plumbing.java",
+      "sha256": "c8aae09eda9c8aae7813be91c050d32d0b11415c16f13ea5ba4e767069ff2128"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/env/simulator/Roof.java",
+      "source": "use-plugin/examples/house-building/src/env/simulator/Roof.java",
+      "sha256": "1e7d91d877a30f8fb9dc99926aef2cb3d80abee677b6b9d53957dc0cf23f04f9"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/env/simulator/Site.java",
+      "source": "use-plugin/examples/house-building/src/env/simulator/Site.java",
+      "sha256": "d5c48daa34b4218f896a1f1a51bb9b49ba2e0700c54c3f4d550b06c4afb5a47e"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/env/simulator/Walls.java",
+      "source": "use-plugin/examples/house-building/src/env/simulator/Walls.java",
+      "sha256": "2abea36e744cf74222b5a6476001606ddf6d006b2d71be788732e34b80c64eed"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/env/simulator/Windows.java",
+      "source": "use-plugin/examples/house-building/src/env/simulator/Windows.java",
+      "sha256": "ea20b0684b6dad1de2786cc54f1302de6e571dec8cb1c64579ce1f0d7dcd9dc6"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/env/tools/AuctionArt.java",
+      "source": "use-plugin/examples/house-building/src/env/tools/AuctionArt.java",
+      "sha256": "da3263c013b9a52c3918146d550389c8d00c830cff726f89598f4f2e72de0882"
+    },
+    {
+      "archiveEntry": "use-7.5.0/examples/house-building/src/org/house-os.xml",
+      "source": "use-plugin/examples/house-building/src/org/house-os.xml",
+      "sha256": "6d0896b7c69692683f65f3ef4a413bba1496da2f492f02d3f92efcc5daef0ef4"
+    },
+    {
+      "archiveEntry": "use-7.5.0/lib/plugins/use-jacamo-plugin-1.0.1.jar",
+      "source": "use-plugin/target/use-plugin-1.0.1.jar",
+      "sha256": "701ecc3d0c02b9874e398294627901f5bb6f460e2d7cf2331a5db3efb223af05"
+    },
+    {
+      "archiveEntry": "use-7.5.0/bridge/lib/jacamo-bridge-jacamo-1.0.0.jar",
+      "source": "jacamo-bridge-jacamo/target/jacamo-bridge-jacamo-1.0.0-SNAPSHOT.jar",
+      "sha256": "d5bbccae3064e6d39c19dc6f7f078b8886539babe22e0ec0c25008b190f57749"
+    },
+    {
+      "archiveEntry": "use-7.5.0/bridge/lib/jacamo-bridge-contract-1.0.0.jar",
+      "source": "jacamo-bridge-contract/target/jacamo-bridge-contract-1.0.0-SNAPSHOT.jar",
+      "sha256": "caa707d043dff050e9ae43df33d33505fc506d23c891224318792a6d22c1e0eb"
+    },
+    {
+      "archiveEntry": "use-7.5.0/lib/use-gui.jar",
+      "source": "use-gui/target/use-gui.jar",
+      "sha256": "189232acdc24ec0b6957e546de82e1fa0c54b959f9f66ea8467992bd7f998d9d"
+    }
+  ],
+  "verifiedFiles": 54,
+  "createdAt": "2026-10-28T10:49:09.343696+07:00"
+}

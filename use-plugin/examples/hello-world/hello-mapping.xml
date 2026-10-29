@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mapping xmlns="urn:use:jacamo-mapping:2" version="2.0" id="hello-world-observed-v1" engineProfile="USE4GOAL_OBSERVED_V1" jcmRef="source-jcm">
+  <sources>
+    <file id="source-jcm" path="helloworld.jcm" sha256="c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101" kind="JCM" />
+    <file id="source-1" path="build.gradle" sha256="894ef12cc5b22944b37ba7a26df77e803d1339b10033d6b305d2d0189204d10c" kind="RESOURCE" />
+    <file id="source-2" path="src/agt/hello-grid.asl" sha256="1054e9faeb464dbbd7bab25eeaca46f9827055ad9ef6c8dfb3e49d5475efe8d0" kind="RESOURCE" />
+    <file id="source-3" path="src/agt/hello.asl" sha256="7c9a0dcd47c8b256b33506299968faad71aeb47a2bec814958f07993b219922a" kind="ASL" />
+    <file id="source-4" path="src/agt/hello2.asl" sha256="e0ad5e7dd82270dc169aacf0c1f97fb7d70fd10f574feee9dcffdc0984972902" kind="RESOURCE" />
+    <file id="source-5" path="src/agt/hf.asl" sha256="fbb17e720c1395490c84b2e1000c98cb8e73653219fa86f959fe983059e8f07b" kind="ASL" />
+    <file id="source-6" path="src/env/display/GridDisplay.java" sha256="ced4160f05dfb301571fbf528897f737ed1564555d369194219be302370d8f1c" kind="JAVA" />
+    <file id="source-7" path="src/env/display/GUIConsole.java" sha256="e6c10b463080bc40e6f71844ec3e11e7266612dbebefd7291cc317ff66b3108a" kind="JAVA" />
+    <file id="source-8" path="src/org/o1.xml" sha256="6b9794e719dabe233e6dc00baf0d5e6256a7e8a8b189c454bccd527fe17a4206" kind="MOISE" />
+  </sources>
+  <ocl sha256="2f8febd764e6f8afb7e44e0a5fd940264d5a9cb23d5f1f1d3fae4909104e71ba" />
+  <models mode="AUTHORED" cslSha256="2b1df53f81edacb46e30f76fc0aa64a748b3e8040a3a067e762c87c966197b51" istarSha256="2fb9606c446dba1848595de9441b4dd7dfcd1da76cab0437e66176dbb38cc96d" />
+  <assertions>
+    <require selectorRef="project-selector" field="name" equals="helloworld" />
+  </assertions>
+  <selectors>
+    <select id="project-selector" sourceRef="source-jcm" syntax="regex" expectedCount="1">
+      <pattern>\bmas\s+(?P&lt;name&gt;\w+)\s*\{</pattern>
+    </select>
+  </selectors>
+  <modelRules targetVersion="v4.0" targetModel="HelloWorldState" />
+  <istar name="HelloWorldRequirements" />
+  <runtime>
+    <datasets>
+      <facts id="raw-operations" authority="cartago" kind="OPERATION" />
+      <facts id="raw-artifacts" authority="cartago" kind="ARTIFACT" />
+      <facts id="raw-properties" authority="cartago" kind="PROPERTY" />
+      <facts id="raw-workspaces" authority="cartago" kind="WORKSPACE" />
+    </datasets>
+    <tables>
+      <table id="all-workspaces" dataset="raw-workspaces">
+        <column name="uuid" path="identity" required="true" />
+        <column name="workspace" path="values.semanticId" required="true" />
+      </table>
+      <table id="selected-workspaces" dataset="raw-workspaces">
+        <where path="values.name" type="String" equals="jacamo" />
+        <column name="uuid" path="identity" required="true" />
+        <column name="workspace" path="values.semanticId" required="true" />
+        <identity mode="PHYSICAL" path="identity" />
+      </table>
+      <table id="property-numMsg" dataset="raw-properties">
+        <where path="values.name" type="String" equals="numMsg" />
+        <column name="artifact" path="values.artifactSemanticId" required="true" />
+        <column name="value" path="scalar.value" required="true" />
+      </table>
+      <table id="selected-artifacts" dataset="raw-artifacts">
+        <where path="values.artifactTypeJavaClassName" type="String" equals="display.GUIConsole" />
+        <join tableRef="all-workspaces" leftPath="values.workspaceSemanticId" rightPath="workspace" as="w" cardinality="ONE" required="true" />
+        <join tableRef="property-numMsg" leftPath="values.semanticId" rightPath="artifact" as="pnumMsg" cardinality="ONE" required="true" />
+        <column name="uuid" path="identity" required="true" />
+        <column name="name" path="values.name" required="true" />
+        <column name="workspace" path="w.workspace" required="true" />
+        <column name="numMsg" path="pnumMsg.value" required="true" />
+        <identity mode="PHYSICAL" path="identity" />
+      </table>
+    </tables>
+    <inputs>
+      <input id="context-input" identityKind="PHYSICAL" identityFields="uuid" tableRef="selected-workspaces">
+        <field name="uuid" type="String" required="true" />
+        <field name="workspace" type="String" required="true" />
+      </input>
+      <input id="artifact-input" identityKind="PHYSICAL" identityFields="uuid" tableRef="selected-artifacts">
+        <field name="uuid" type="String" required="true" />
+        <field name="name" type="String" required="true" />
+        <field name="workspace" type="String" required="true" />
+        <field name="numMsg" type="Integer" required="true" />
+      </input>
+    </inputs>
+    <converters>
+      <converter id="string" inputType="String" outputType="String" algorithm="preserve-exact-content" onMismatch="incomplete" />
+      <converter id="integer" inputType="Integer" outputType="Integer" algorithm="preserve-exact-integer" onMismatch="incomplete" />
+    </converters>
+    <rule id="map-context" inputRef="context-input">
+      <requireEvidence proof="source-cut" />
+      <upsertInstance targetType="GreetingRun" keyFields="uuid" aliasFrom="uuid">
+        <assign target="workspace" sourceField="workspace" converter="string" />
+      </upsertInstance>
+    </rule>
+    <rule id="map-artifact" inputRef="artifact-input">
+      <requireEvidence proof="source-cut" />
+      <upsertInstance targetType="Console" keyFields="uuid" aliasFrom="uuid">
+        <assign target="name" sourceField="name" converter="string" />
+        <assign target="workspace" sourceField="workspace" converter="string" />
+        <assign target="numMsg" sourceField="numMsg" converter="integer" />
+      </upsertInstance>
+    </rule>
+    <occurrences>
+      <scope id="observed-run" tableRef="selected-workspaces" anchorColumn="uuid" contextColumn="uuid" keyFields="uuid">
+        <actor actor="GreetingObserver" tableRef="selected-workspaces" scopeColumn="uuid" scopeKey="uuid" playerColumn="uuid" kind="CONTEXT_VIEWPOINT" cardinality="ONE" />
+        <self target="TwelveMessagesObserved" origin="CONTEXT" />
+        <self target="NonnegativeCounts" origin="CONTEXT" />
+      </scope>
+    </occurrences>
+  </runtime>
+  <observers />
+  <bindings>
+    <static id="bind-context" kind="ORG_CONTEXT" target="GreetingRun" sourceKind="JACAMO_PROJECT" feature="name" value="helloworld" reason="Authored physical workspace viewpoint; not a second organization or running agent">
+      <metadata key="contextAbstraction" value="PROJECT_EXECUTION_VIEW/1.0" />
+    </static>
+    <static id="bind-entity" kind="ENTITY" target="Console" sourceKind="DERIVED_ARTIFACT_CLASS_ALIAS" feature="javaClass" value="display.GUIConsole" reason="Passive application artifact state, not Jason Agent or belief truth" />
+    <static id="bind-actor" kind="ACTOR" target="GreetingObserver" sourceKind="JACAMO_PROJECT" feature="name" value="helloworld" reason="Collective observation viewpoint; never credits an operation to an individual agent" />
+    <actorRuntime actor="GreetingObserver" bindingRef="bind-actor" contextBindingRef="bind-context" activationPolicy="OBSERVED_SCHEME_COMMITMENT" episodePolicy="RUN_SCHEME_PLAYER_INVOCATION" />
+    <elementRuntime target="TwelveMessagesObserved" actor="GreetingObserver" self="GreetingRun" derived="false" selfKind="CONTEXT" reason="Authored outcome condition on accepted state; not a raw active Jason goal" />
+    <elementRuntime target="NonnegativeCounts" actor="GreetingObserver" self="GreetingRun" derived="false" selfKind="CONTEXT" reason="Authored outcome condition on accepted state; not a raw active Jason goal" />
+    <oclClause name="NonnegativeMessages" context="context Console" />
+    <oclClause name="CanPrint" context="context Console::printMsg(msg : String)" />
+    <oclClause name="CountIncremented" context="context Console::printMsg(msg : String)" />
+    <operation id="observed-operation" owner="Console" signature="[&quot;display.GUIConsole&quot;,&quot;printMsg&quot;,[&quot;java.lang.String&quot;],&quot;void&quot;]" clauses="CanPrint CountIncremented" />
+  </bindings>
+  <requirements>
+    <capability id="console-operations" provider="cartago.operation-history.v1" required="true" hashOrigin="OFFICIAL_CLASS_PROOF" sourceRef="source-7" class="display.GUIConsole" operations="printMsg" />
+  </requirements>
+  <omittedConcepts>
+    <omit id="mental-state" concept="Jason beliefs and goals" reason="Agent beliefs are not world truth; active goals do not prove outcome satisfaction" handledBy="TRACE_ONLY" />
+    <omit id="org-norms" concept="MOISE roles missions norms and deadlines" reason="Source OS retained with provenance; this observed-world profile does not claim complete organizational compliance" handledBy="TRACE_ONLY" />
+    <omit id="execution-order" concept="MOISE sequence parallel" reason="Refinement means outcome conjunction only; House operation-return order is checked separately, Hello character order remains outside the count requirement" handledBy="TRACE_ONLY" />
+  </omittedConcepts>
+</mapping>

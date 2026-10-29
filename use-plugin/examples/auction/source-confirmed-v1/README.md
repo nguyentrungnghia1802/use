@@ -6,6 +6,19 @@ and `../authored-v1/auction_istar_final.istar` in USE's five-input GUI.
 All five selections remain explicit. Prepare/import and Start owned runtime
 use the existing external JaCaMo/TCP pipeline.
 
+The JCM source entry additionally declares `JCM_LINE_LAYOUT/1.0` with a
+cryptographic layout digest. The project may be selected from any directory;
+source paths resolve relative to that selected JCM. Empty lines, a final line
+terminator and LF/CRLF outside quoted literals may differ. Nonempty line
+contents and quoted literal bytes remain exact; this is not arbitrary source
+or identifier normalization. The selected raw bytes and actual runtime digest
+are frozen for replay. Other source files retain their original SHA-256 pins.
+Changes such as adding an organization require a matching mapping revision.
+
+The main GUI's **Show JaCaMo GUI** option opens the original MAS Console in
+the owned external producer. It defaults on for interactive preparation;
+headless service callers remain supported. Restart preserves this choice.
+
 This profile intentionally differs from the strict Desktop requirements:
 `*ConfirmedAt` is the first qualified **public source confirmation** of the
 selected MOISE state in the complete post-creation observed prefix. It is

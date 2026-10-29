@@ -101,7 +101,13 @@ public final class ObserverProjection {
                 if(!owns(port,object,project,epoch))throw new IllegalArgumentException("OBSERVER_EXISTING_OWNER_MISMATCH");
                 boolean complete=project(port,object,project,row,epoch,cut,run,generation);touched.add(object);
                 port.metadata(object,"xml:observer:population",table.populationQuality().name());port.metadata(object,"xml:observer:cut",cut);
-                port.metadata(object,"xml:observer:population-proof",table.populationQuality()==Completeness.COMPLETE?row.proofs().getOrDefault(MoisePopulationClosure.PROOF,""):"");
+                // Dataset/table admission has already checked the entire selected
+                // population and every required join/row. MOISE keeps its stronger
+                // inventory certificate; ordinary controller/capability datasets
+                // carry the genuine source-cut certificate instead. A complete
+                // value alone, or any PARTIAL table, never supplies closure.
+                port.metadata(object,"xml:observer:population-proof",table.populationQuality()==Completeness.COMPLETE
+                        ?row.proofs().getOrDefault(MoisePopulationClosure.PROOF,row.proofs().getOrDefault("source-cut","")):"");
                 port.metadata(object,"xml:observer:population-cut",cut);
                 result.add(new M0RuleExecutor.Outcome(project.node().attr("id"),complete?"MAPPED":"INCOMPLETE",key,object,"OBSERVER_VIEW_NOT_CSL_ENTITY"));
             }

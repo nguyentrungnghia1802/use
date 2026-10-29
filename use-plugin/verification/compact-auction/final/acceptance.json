@@ -1,0 +1,78 @@
+{
+  "status": "PASS",
+  "scope": "T01–T06 compact selective state/outcome update; not full normative compliance or manual GUI/cold ZIP live",
+  "createdAt": "2026-10-28T09:22:16.186169+00:00",
+  "tests": {
+    "total": 32,
+    "focusedAndNearby": 31,
+    "liveAuction": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "receipt": {
+    "auditBoundaries": 424,
+    "businessMilestones": 6,
+    "producerPid": 24832,
+    "project": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\auction\\auction.jcm",
+    "replayCheckedEntries": 499,
+    "replayDirectory": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\compact-auction\\replay-bbd8eeb7-2c15-477a-b3b9-d71169838f23",
+    "restartPid": 8264,
+    "sameMSystem": true,
+    "status": "PASS",
+    "stopRestartCleanup": true
+  },
+  "finalGoals": [
+    {
+      "sourceElement": "AuctionFinished",
+      "status": "FULFILLED",
+      "quality": "KNOWN_DERIVED"
+    },
+    {
+      "sourceElement": "AuctionFinished",
+      "status": "FULFILLED",
+      "quality": "KNOWN_DERIVED"
+    }
+  ],
+  "overallSourceCoverage": "INCOMPLETE",
+  "freshness": "CURRENT_OBSERVED",
+  "operationResults": {
+    "PRE/PASS": 18,
+    "POST/PASS": 4
+  },
+  "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+  "archiveSha256": "c713e059c0b70a392c21d8297ed9dbd37f7923357de541125e4cb700a3c82420",
+  "extractedLauncher": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\compact-auction-hp5al2vr\\use-7.5.0\\bin\\start_use.bat",
+  "artifacts": {
+    "use-plugin/verification/compact-auction/final/acceptance-tests.log": "f7cddedbb0a0248768a558f90a7289fba77b3c6fde4475b6a02010a12d807867",
+    "use-plugin/verification/compact-auction/final/baseline-exact-field-join.log": "cc5aea7964b293344c6c7a182fc69e906b9bed38b56db6ae357aabcd046d22b5",
+    "use-plugin/verification/compact-auction/final/baseline-pending-and-binding.log": "f6fd4bd6894619a45aa46f15e3eb8dd5a5b0a3e59dd76135bbf6bc9a4a400454",
+    "use-plugin/verification/compact-auction/final/baseline-replay-directory.log": "84f05bba0d481188bc957432fc002227f5f544b8fb22492192f93ef2fc120a14",
+    "use-plugin/verification/compact-auction/final/baseline-stale-pending-anchor.log": "9c8c03b08161309cef485cdcae892e925c66656a271bb75be70c40728504f5da",
+    "use-plugin/verification/compact-auction/final/focused.log": "ce846e5b48cf639e014991c316a491bd7d5a3de962aded1e213a607402f8add9",
+    "use-plugin/verification/compact-auction/final/package-checks.json": "c5b9f202468f9cef7d876ce27e0631b945ba11f71501267d952ce21051f7d399",
+    "use-plugin/verification/compact-auction/final/package.log": "64755112bea714588e7273ce2ba4d35ebe1015b16ebd4076cb8a096af08eab8c",
+    "use-plugin/verification/compact-auction/final/source-freeze.json": "140f87d853cb183812db61f327903a07d40d16e47f1925514353f63ddd854ab9",
+    "use-plugin/verification/compact-auction/final/test-results.json": "b411357cbdc1f6913b12925f6402165b1b4a346f1f187a04e64bae43a3708213",
+    "use-plugin/verification/compact-auction/receipt.json": "5dfa4b1887c502bc19b66607f84f88d4c69190011d84b0a5ae3300553da1d43f",
+    "use-plugin/verification/compact-auction/result.json": "565cccba5de79e2d4bf41dc869a28c35a7f29bfde818b7872b00ff0da7c27356",
+    "use-plugin/verification/compact-auction/program.json": "d9775f97e65a09f75a9b6fd2f5aa70441a3f268d5f93ba2d72a8aa448564fde0",
+    "use-plugin/verification/compact-auction/operations.json": "f174d165fca44c592c97afc916a9cdb5992ac738f71c306135d1175c3af49b8f",
+    "use-plugin/verification/compact-auction/timeline-summary.json": "175515d7551ef85fc0ba2cbcbd285c611619e309650315dc0f03bcef917fb4a2"
+  },
+  "replayHashes": {
+    "baseline.cmd": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bindings.json": "5cbe8a42fdc73497b6deb1e92b61ea554990e58bdb01f260a78e3d12657f44b5",
+    "constraints.ocl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "manifest.json": "24876575d2fb1c9c2f820452328424ac2fb6135829fe98e160f18d90b96e54d4",
+    "model.use": "552c41e1b3651c29e66cd6b7dac51d8c3822815944b69713f5b10333add18287",
+    "program.json": "e970482308fa00ce902f306d34dd02f3a75ae3de035bdeedcf5fdb313c449a2d",
+    "runtime.jsonl": "000f6804f11157088ca4fc25a20674860acf4e50827c0aaabefa8b4476882c59"
+  },
+  "planSha256": "01174a577257762f3c50831b38064f8dc0551bbe1e28b15d506e9cbed34bc00d",
+  "limitations": [
+    "Manual GUI and cold installed live were not run in this update",
+    "Full authored-v1 keeps its original Task/norm/clock requirements; compact-v1 is a separate state/outcome profile"
+  ],
+  "commitPushPerformed": false
+}

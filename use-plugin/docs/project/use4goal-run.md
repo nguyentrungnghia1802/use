@@ -5,6 +5,38 @@ chiếu. Runtime JaCaMo chạy JVM riêng, Bridge TCP authenticated. Engine CSL/
 nằm trong plugin USE, dùng native USE 7.5 OCL và cùng một Session/MSystem.
 Profile mặc định vẫn là `NATIVE_CURRENT`; profile gốc là lựa chọn tường minh.
 
+## Case mapping policy (current)
+
+Production dùng `JACAMO_DECLARATIVE_XML` với rule/binding và capability requirements
+trong XML. Không còn Java mapper/observer riêng cho Auction hoặc fallback theo tên
+project/agent/task/field. `AUCTION_OBSERVED_V1` và replay case dialect 1.1 / archive
+3.1–3.2 đã retire: cần import lại bằng XML declarative để ghi recording mới; không
+bỏ hash fence hoặc diễn giải lại recording cũ. Historical Java/tests được giữ tại
+`docs/agent/retired-case-java`, không compile/đóng gói, không tính vào gate hiện tại.
+
+Completeness theo native contract inventory: mọi authored OCL và invariant CSL đều
+bắt buộc dù context là helper/base type. SKIPPED/UNDEFINED/ERROR hoặc thiếu aggregate
+result giữ INCOMPLETE. Chỉ invariant helper do backend tạo mới có thể là supporting;
+mọi FAIL thật vẫn hiển thị VIOLATION. COMPLETE_OBSERVED chỉ nói về requirement được
+khai báo và observed prefix, không chứng minh toàn bộ source coverage hoặc realtime.
+
+## Main authored five-input UI
+
+Plugins → JaCaMo / use4Goal verification...: chọn CSL, JCM, iStar, mapping XML
+và authored OCL, Prepare + Import rồi Start Runtime. Kết quả mở trong cửa sổ
+modeless riêng; Show results mở lại. Các tabs CSL/iStar/verification dùng cùng
+facade/MSystem với input. Đóng kết quả chỉ ẩn; đóng input dispose kết quả và
+đóng phiên như trước. Main Results có state selector/Previous/Next/failure checkpoint trở lại,
+verdict/coverage boxes ở dưới. Export .use/.cmd và Load OCL thứ hai vẫn bị bỏ.
+
+Goal & Task Status giữ một dòng cho mỗi actor Goal/Task definition của model;
+social dependums không có marking riêng không thành dòng UNKNOWN. Chọn dòng
+để xem occurrences, original history và current qualified quality riêng. OCL/binding checks là bảng
+riêng; FAIL giữ expression/witness thật. Winning Artifact không chứng minh
+norm/deadline hoặc mọi Task đã đạt. Ví dụ input và phạm vi requirements ở
+`examples/auction/authored-v1/README.md` và `examples/auction/compact-v1/README.md`.
+Forensic Workbench APIs/navigation, raw journal và replay vẫn giữ nguyên.
+
 ## Build và thử từ source
 
 PowerShell (điều chỉnh đường dẫn JDK/Maven nếu máy cài nơi khác):
@@ -130,7 +162,23 @@ khi hoàn tất retirement hoặc mở monitor mới. Close trên EDT vẫn tr�
 không được chặn EDT để chờ daemon xóa thư mục runtime.
 
 TaskMarking gốc là historical preSeen/postSeen; invocation pre/post là bằng
-chứng tương quan riêng. NONE false có thể PENDING theo engine gốc. Missing,
+chứng tương quan riêng. Cột **Certified execution** dùng certificate
+`CERTIFIED_EXECUTION/1.0` của runtime owner: Task và ACHIEVE Goal đã hoàn thành
+với input được admit giữ FULFILLED cho cùng context/player/role/episode, dù
+marker hiện tại đã kết thúc hoặc nguồn quan sát sau đó thiếu dữ liệu. Certificate
+lưu original occurrence key + accepted state version/hash trong semantic result,
+checkpoint/rollback cùng engine, được journal/replay giữ lại; UI không tự nâng raw
+FULFILLED thành chứng minh. Parent được qualify lại từ các leaf có bằng chứng;
+original marking/propagation không đổi. Episode/run/model mới không mượn proof cũ.
+MAINTAIN/SUSTAIN/NONE và invariant vẫn theo semantics/current evidence riêng.
+Nguồn STALE/GAP không xóa một sự thật lịch sử đã chứng minh, nhưng coverage hiện
+tại vẫn INCOMPLETE; OCL observer SKIPPED vẫn chưa được verify. Không gọi toàn bộ
+requirements COMPLETE chỉ vì đã có winner hoặc vài Task FULFILLED.
+Recording mới khai báo executionEvidencePolicy. Với implementation hash tương
+thích, recording không có field này dùng CURRENT_CUT_ONLY/1.0, không tự nâng kết
+quả hoặc thay hash lịch sử. Strict implementation/engine hash gate vẫn giữ nguyên:
+recording từ binary trước revision này cần archive/binary tương ứng; bản mới sẽ
+reject IMPLEMENTATION_INCOMPATIBLE thay vì bỏ guard hoặc viết lại recording. NONE false có thể PENDING theo engine gốc. Missing,
 undefined, error, partial và unsupported không bị đổi thành FAIL. Mapping
 hiện tại không tuyên bố bảo toàn toàn bộ JaCaMo/iStar grammar hoặc liveness;
 SEQUENCE/PARALLEL chỉ giữ trace khi chưa có abstraction được chứng minh.

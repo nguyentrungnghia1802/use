@@ -46,6 +46,7 @@ public interface JaCaMoFacade {
     default void nextJournalBudgetBytes(long bytes){throw new UnsupportedOperationException("JOURNAL_BUDGET_NOT_CONFIGURED");}
     default OwnedProducerStatus ownedProducerStatus(){return new OwnedProducerStatus("EXTERNAL",0,"","");}
     default ProjectSummary prepareOwnedProducer(Path jcm,ImportSelection selection,Path runtimeClasspath){throw new UnsupportedOperationException("OWNED_PRODUCER_NOT_CONFIGURED");}
+    default ProjectSummary prepareOwnedProducer(Path jcm,ImportSelection selection,Path runtimeClasspath,boolean showGui){return prepareOwnedProducer(jcm,selection,runtimeClasspath);}
     default void stopOwnedProducer(){throw new UnsupportedOperationException("OWNED_PRODUCER_NOT_CONFIGURED");}
     default ProjectSummary restartOwnedProducer(){throw new UnsupportedOperationException("OWNED_PRODUCER_NOT_CONFIGURED");}
     default org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeControlService.View runtimeControlState(){return null;}
@@ -119,7 +120,8 @@ public interface JaCaMoFacade {
     record SourceRow(Path path, String kind, long bytes, String sha256) { }
     record WorkflowStatus(String state, boolean startAvailable, boolean managed, String runId,
                           String diagnostic, String bootstrapAt, String startedAt) { }
-    record ImportSelection(String profile,Path specification,Path ocl,Path csl,Path istar) {
+    record ImportSelection(String profile,Path specification,Path ocl,Path csl,Path istar,boolean strictSourceChecksums) {
+        public ImportSelection(String profile,Path specification,Path ocl,Path csl,Path istar){this(profile,specification,ocl,csl,istar,true);}
         public ImportSelection(String profile,Path specification){this(profile,specification,null);}
         public ImportSelection(String profile,Path specification,Path ocl){this(profile,specification,ocl,null,null);}
         public ImportSelection {

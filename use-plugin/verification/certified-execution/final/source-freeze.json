@@ -1,0 +1,27 @@
+{
+  "scope": "Files directly involved in this change, not whole workspace audit",
+  "sourceSha256": {
+    "plan.md": "f34ef9c342199a4f6d244cecdaa0d13443a441dba14908dc5f681edea051aedd",
+    "use-plugin/docs/project/use4goal-run.md": "c157d6f3850d2ab77f7e2e24b71c7de6f03626498629ed81ffcdfda1a41adfa0",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/ExecutionEvidence.java": "74cbd19efb580a8f00cb884fc21cef3236573ca714b77a8eefbf398c5bfc1296",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/RuntimeEngineSessionOwner.java": "ff6ebd989ef48c3e9ca51fe3f61ddbc03bad5f08ce67cb272255afa56af1f49f",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/SemanticResultAdapter.java": "9519d2a69e01412f39076067c7f34870911781e169e204d374e31a1a1d41fec2",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/evidence/SemanticProgramManifest.java": "a0a1447f5fe1d3fbbb6c0f49734477869ba413fe2bcce90c749fb4349c22a71a",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/CanonicalReplaySupport.java": "1e8205d7ce5c97fdbaf2d6ccf5027dfbae230ac81d568eecfce76dfd14377dec",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeReplay.java": "da34b79875945d8575197b7c3a23897b7a04753344b2c2813e88f46711817efc",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePresenter.java": "77efb08eef49f5153e4f57945f1452d7f9cff9d859894dc83dfb25c215f9d1d4",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel.java": "de92ed608c6e350d0bd364f0c672c3476db86f63d4fa3c62fbaa3b247e7124f3",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/LiveGoalSummary.java": "6e81133756f039c367ad848765b8a1971f2462822c26085efed76c352f960970",
+    "use-plugin/src/main/resources/META-INF/use4goal-workflow-provenance.json": "d5cdb3533253be543adf78528f98e187c566ca05dd5023e163d81b897ed9a938",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/runtime/ExecutionEvidenceTest.java": "a8b5cc26fb4a3f0184379c05e2eed2706675600475457ba974da9a08640f4edd",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/CertifiedGoalHistoryTest.java": "3b3d9c21b485b2475fa3cd3bfd58c3591e27b1bbcea95032b4ddaaac8944e971",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/AuthoredAuctionResultsIT.java": "d52fb2f13e1d32d40623fc15120aca0a0222355bd5ddca618a12afd2665ee396",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/CertifiedExecutionReplayMain.java": "5e0d7932f417f6a3c1252b7bc60ab86a43a10c28f603144b82ed4de11f1a6037"
+  },
+  "formalInputSha256": {
+    "use-plugin\\examples\\auction\\authored-v1\\auction-mapping.xml": "d0a45d016b2cdd189f7d78890d84aafb1015b41087adfcdbcd7ea9c8221947e8",
+    "use-plugin\\examples\\auction\\authored-v1\\auction_constraints_final_fixed.ocl": "ec35a31fdd9714e9abd3eb80d76676ad5f356e5079cb10aef9ab55cbef2355ba",
+    "use-plugin\\examples\\auction\\authored-v1\\auction_csl.csl": "0d0872612661235c0d7865c177dc31dfe2ef649913a99750eb9e42f87163de37",
+    "use-plugin\\examples\\auction\\authored-v1\\auction_istar_final.istar": "a3bb1203367f570d8a3cb9b9f5b1a6619d5e4db189ef304f409ca6cb49aea2a9"
+  }
+}

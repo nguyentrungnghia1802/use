@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+  "archiveSha256": "4e4beedcf3ea7937823f754bedef73d7f2965cef48d53fd284c3b9120426cf62",
+  "pluginJarSha256": "61b82d2a310d3fb91926e2a449db339979af5773b3a4efe3f4d8812ce28648f1",
+  "extractedLauncher": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\flexible-source-import-0gh8ds6_\\use-7.5.0\\bin\\start_use.bat",
+  "tests": 20,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "sourceHashes": {
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/JaCaMoFacade.java": "9edef481f132dc56210426946936866cc9747f2ba00e82b0eed71766e49c7d21",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java": "73c5cd623d18e8a7f9b2def16dc7a101de71116330eb6fa4cd43ef243d9ff32c",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel.java": "6c5fd43fdaecbc47828069a767ab0a0fd059a0665529e50d84196d453b15cab3",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/MappingInputs.java": "2139da0e6947c14170cea884c81621bd3b0dc0e6bf0ebd8cae6de32adaad2348",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/MappingVocabulary.java": "90fdc17c384f70041ec07626c8a336ac75b039d602bd68b52ab20b8d3658089e",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/BridgeJcmDerivation.java": "c5397bae2d1dd09c403c2619bb3eb70e9db52d44f9d859dd5b251042f1770abc",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/FlexibleSourceImportIT.java": "6158bc21cb7f15bb332b3918cecead14881e3a9484586abb54c713459ca4f018",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/xml/FlexibleSourceImportTest.java": "0638456d34b914d2f4d1623185476625f71542d74136c5d6904009d163067b65",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/ObservedConformanceWorkflowTest.java": "4cbf5b21d763a6f67bbc49df807d10f2682810b12355d1fd0ade7aac1a997766"
+  },
+  "branch": "main",
+  "scope": "Actual external Auction Prepare/Import over TCP; focused strict/validated/frozen-source/UI regression; package byte parity. No new full runtime/GUI manual acceptance claim."
+}

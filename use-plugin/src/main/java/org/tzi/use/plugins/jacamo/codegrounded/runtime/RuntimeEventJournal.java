@@ -36,6 +36,7 @@ public final class RuntimeEventJournal {
     public synchronized boolean append(String kind, Map<String,Object> payload, RuntimeVerificationResult result, String installedInterval) {
         if (gap) return false;
         try {
+            String stateCommands=stateCommands(payload,result);
             Map<String, Object> body = new LinkedHashMap<>();
             body.put("ordinal", ordinal); body.put("previousHash", chain); body.put("kind", kind);
             body.put("payload", payload); body.put("result", result.toMap());
@@ -48,7 +49,7 @@ public final class RuntimeEventJournal {
             byte[] line = (new String(CanonicalJson.encode(body), StandardCharsets.UTF_8) + "\n").getBytes(StandardCharsets.UTF_8);
             if (bytes + line.length > maxBytes - 4096) { fail("JOURNAL_OVERFLOW"); return false; }
             Files.write(path, line, StandardOpenOption.APPEND);
-            bytes += line.length; chain = hash; add(new RuntimeHistoryPage.Entry(ordinal++, kind, interval, result, true)); return true;
+            bytes += line.length; chain = hash; add(new RuntimeHistoryPage.Entry(ordinal++, kind, interval, result, true,stateCommands)); return true;
         } catch (RuntimeException | java.io.IOException error) { fail("JOURNAL_IO_OR_PAYLOAD_ERROR:" + error.getMessage()); return false; }
     }
     private void fail(String reason) {
@@ -100,12 +101,18 @@ public final class RuntimeEventJournal {
                     var result=RuntimeVerificationResult.fromMap(CanonicalJson.object(body.get("result")));
                     if (body.containsKey("verificationInterval")) activeInterval=(String)body.get("verificationInterval");
                     else if (kind.equals("PROFILE")) activeInterval="profile:" + position;
-                    if (position >= offset) entries.add(new RuntimeHistoryPage.Entry(position,kind,activeInterval,result,true));
+                    if (position >= offset) entries.add(new RuntimeHistoryPage.Entry(position,kind,activeInterval,result,true,stateCommands(CanonicalJson.object(body.get("payload")),result)));
                     position++;
                 }
             }
             return new RuntimeHistoryPage(entries, position, end, retained, lost, reason, true);
         } catch (java.io.IOException error) { throw new IllegalStateException("HISTORY_READ_FAILED", error); }
+    }
+    private static String stateCommands(Map<String,Object> payload,RuntimeVerificationResult result){
+        Object raw=payload.get("acceptedStateCommands");if(raw==null)return ""; // older recordings
+        if(!(raw instanceof String commands)||commands.getBytes(StandardCharsets.UTF_8).length>16*1024*1024
+                ||!ExternalOclConstraintService.sha256(commands.getBytes(StandardCharsets.UTF_8)).equals(result.stateHash()))throw new IllegalArgumentException("HISTORY_ACCEPTED_STATE_HASH_MISMATCH");
+        return commands;
     }
     private static void checkLimit(int limit) { if (limit < 1 || limit > 128) throw new IllegalArgumentException("HISTORY_PAGE_LIMIT_INVALID"); }
     public Path path() { return path; }

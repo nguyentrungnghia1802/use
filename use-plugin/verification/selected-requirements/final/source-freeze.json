@@ -1,0 +1,62 @@
+{
+  "createdAt": "2026-10-28T16:51:04.620848+00:00",
+  "head": "c3b7b648a468c89eabf1436ca2994eafb3bf72e2",
+  "branch": "main",
+  "scope": "Dirty working tree source/input/test/docs frozen for this requested fix; no new commit",
+  "files": {
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/SemanticResultAdapter.java": "6ab22374e9431537fdf25f94a962ef2f48d6f39918dc157076bb96c6233e0cb8",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel.java": "2a5607f9ebb60b1f238f3a6a33070a0798c0d397fb9c9d386fbf61af25c7be81",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePresenter.java": "8e2a52554aaf4408770847223ffec13c3bac620d76588f520b6a4f883cba5e33",
+    "use-plugin/src/main/resources/META-INF/use4goal-workflow-provenance.json": "2a0abebd73c07f53e3a7e2e6a4a7666cf9feb4973d14ce3bf9a3a58ada57a8c8",
+    "use-plugin/src/assembly/release.xml": "e30efa15b7cadd5c9a33a2f98a73370c68227d7dffbcf6ac971f694e770855e8",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/SelectedRequirementsTest.java": "7413bb2516dd2fa70f4d5523005869dc1e511b700687746ed55ac7d9080381bd",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/AuthoredAuctionResultsIT.java": "58133d0cb6e40d4da3259057302a925e7d3709f721c8d1d65b5ac51b3a9fb832",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/xml/AuctionEssentialStateTest.java": "ae80fc41301ca433fc25e68375271f9eb723dd87f45ed3ce6e688a616a974d9d",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/SourceConfirmedAuctionProgramTest.java": "f60d93886f83a7c55674f5c71390d902166b6166803d57f91e9bdf174c2982be",
+    "use-plugin/examples/auction/authored-v1/auction_csl.csl": "0d0872612661235c0d7865c177dc31dfe2ef649913a99750eb9e42f87163de37",
+    "use-plugin/examples/auction/authored-v1/auction_istar_final.istar": "a3bb1203367f570d8a3cb9b9f5b1a6619d5e4db189ef304f409ca6cb49aea2a9",
+    "use-plugin/examples/auction/authored-v1/auction-mapping.xml": "f31bea3acf30ace170ea632c4deddcf92a5b0257d29d24cfa5feabf47d63bae8",
+    "use-plugin/examples/auction/authored-v1/auction_constraints_final_fixed.ocl": "891c77f07981e03c808cfdaf23285d5a6d9050859954f5f561f7308aab81039a",
+    "use-plugin/examples/auction/authored-v1/README.md": "704c05ad063d8e037736a96644f97ceb3d2e97c0dc2c8b11527c6013557b381b",
+    "use-plugin/examples/auction/authored-v1/provenance.json": "3ca64f2e4e602f0307d75ab9b68811ee7aa0bf175648e5001cbf224e71fcdb4a",
+    "use-plugin/examples/auction/authored-v1/references/auction-mapping-strict-v1.xml": "8a67ab2f4b6c9c1be8d3c2dd5b8b9e7163f74aa843f898a7e26293009a3b6380",
+    "use-plugin/examples/auction/authored-v1/references/auction_constraints_strict_v1.ocl": "ec35a31fdd9714e9abd3eb80d76676ad5f356e5079cb10aef9ab55cbef2355ba",
+    "use-plugin/examples/auction/authored-v1/references/auction-mapping-full-observers.xml": "b470c7fe1f8da07c3c01a70870127afd43cc82a0baf9f14b1a05430cda0ab789",
+    "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/GoalMarking.java": "e9ddcc1bfbafef0c987be6c7a017f8ce88c56a16e3c757bc637d1e1246660f48",
+    "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/TaskMarking.java": "e5eae4cd7b10994e5d71c5c7782ff04de3972352f17f5c5fa0732d39eb9af07d",
+    "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/IStarMarking.java": "c93e88db8bf323991d3ae66f64cca1f3106edaa5ed9bde19fafbc057dc48910f",
+    "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/IStarPropagation.java": "90e8ff0662f03889a4ec977cd1296c57f4dbdde2a0cbcde76afe937b25e35de3"
+  },
+  "package": {
+    "status": "PASS",
+    "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+    "sha256": "75dd232d328696b3bd9617ecd7f77dad385a257a2527554f928cfbad800b5442",
+    "extractedInstall": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\selected-requirements-final-20261028\\use-7.5.0",
+    "wholePluginBytesMatch": true,
+    "compiledClassesChecked": [
+      "semantics/runtime/SemanticResultAdapter",
+      "ui/use4goal/conformance/ObservedConformancePanel",
+      "ui/use4goal/conformance/ObservedConformancePanel$Cut",
+      "ui/use4goal/conformance/ObservedConformancePresenter"
+    ],
+    "originalEngineClassesChecked": [
+      "GoalMarking",
+      "TaskMarking",
+      "IStarMarking",
+      "IStarPropagation"
+    ],
+    "inputsAndDocsMatch": [
+      "auction_csl.csl",
+      "auction_istar_final.istar",
+      "auction_constraints_final_fixed.ocl",
+      "auction-mapping.xml",
+      "provenance.json",
+      "README.md",
+      "references/auction-mapping-full-observers.xml",
+      "references/auction-mapping-strict-v1.xml",
+      "references/auction_constraints_strict_v1.ocl"
+    ],
+    "scope": "Final archive byte checks; separate isolated cold replay follows, no manual installed GUI/live claim"
+  },
+  "planSha256": "72e62bd891e644afe2f00123189ff2c41a70a8ca0b6ed706089b0bbfc4332bd6"
+}

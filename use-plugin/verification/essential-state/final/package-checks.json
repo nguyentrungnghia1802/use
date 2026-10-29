@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+  "sha256": "60e61a5b19a93860767a369830b498226875aa707e5b726903e7fbcbfbc7c5a0",
+  "extractedInstall": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\essential-states-final-v2-20261028\\use-7.5.0",
+  "wholePluginBytesMatch": true,
+  "compiledClassesChecked": [
+    "semantics/runtime/SemanticResultAdapter",
+    "semantics/runtime/RuntimeEngineSessionOwner",
+    "semantics/runtime/RuntimeEngineSessionOwner$ContextSession",
+    "semantics/runtime/RuntimeEngineSessionOwner$Checkpoint",
+    "semantics/mapping/xml/MappingVocabulary",
+    "semantics/mapping/ocl/XmlNativePreparation",
+    "ui/use4goal/conformance/ObservedConformancePanel",
+    "ui/use4goal/conformance/ObservedConformancePanel$Cut",
+    "ui/use4goal/conformance/ObservedConformancePresenter",
+    "ui/use4goal/conformance/BusinessTimeline"
+  ],
+  "originalEngineClassesChecked": [
+    "GoalMarking",
+    "TaskMarking",
+    "IStarMarking",
+    "IStarPropagation"
+  ],
+  "formalInputsAndDocsMatch": [
+    "auction_csl.csl",
+    "auction_istar_final.istar",
+    "auction_constraints_final_fixed.ocl",
+    "auction-mapping.xml",
+    "provenance.json",
+    "README.md",
+    "references/auction-mapping-full-observers.xml"
+  ],
+  "scope": "Archive/extraction byte checks and subsequent isolated replay; not manual desktop or installed live GUI acceptance"
+}

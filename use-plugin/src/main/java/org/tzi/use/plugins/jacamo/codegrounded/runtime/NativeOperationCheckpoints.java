@@ -47,7 +47,19 @@ final class NativeOperationCheckpoints {
         if(!"cartago".equals(event.subsystem()) || event.correlationId().isBlank())return "EVENT";
         return event.kind()==RuntimeEventKind.STARTED && "started".equals(event.after().get("phase"))?"OPERATION_PRE":event.kind()==RuntimeEventKind.SUCCEEDED || event.kind()==RuntimeEventKind.FAILED?"OPERATION_POST":"EVENT";
     }
-    String eligibleKind(RuntimeEvent event){Object id=event.after().get("artifactSemanticId");return id instanceof String value && engine.objectForSemanticId(value)!=null?kind(event):"EVENT";}
+    String eligibleKind(RuntimeEvent event){return operationReceiver(event)!=null?kind(event):"EVENT";}
+    private org.tzi.use.uml.sys.MObject operationReceiver(RuntimeEvent event) {
+        if(engine.xmlCase()) {
+            // Raw XML M0 rules deliberately expose no unverified framework
+            // alias. Resolve the admitted physical envelope identity instead;
+            // ownership still requires its complete scope and incarnation.
+            var identity=event.entityId();if(identity==null)return null;
+            var object=engine.objectForSemanticId(identity.canonical());
+            return object!=null&&artifactOwner(object,identity)?object:null;
+        }
+        Object id=event.after().get("artifactSemanticId");
+        return id instanceof String value?engine.objectForSemanticId(value):null;
+    }
     Set<String> features(){return features;}
     private void features(String name){var object=engine.system().state().objectByName(name);if(object==null){features=Set.of();return;}var keys=new HashSet<String>();keys.add("class:"+object.cls().name());object.cls().allParents().forEach(p->keys.add("class:"+p.name()));object.cls().allAttributes().forEach(a->keys.add("attribute:"+a.owner().name()+"."+a.name()));engine.system().state().allLinks().stream().filter(l->l.linkedObjects().contains(object)).forEach(l->keys.add("association:"+l.association().name()));features=Set.copyOf(keys);}
     private void addDetailed(Collection<SemanticConstraintResult> rows){var all=new ArrayList<>(detailed);all.addAll(rows);detailed=List.copyOf(all);}
@@ -71,7 +83,7 @@ final class NativeOperationCheckpoints {
             if(kind.equals("OPERATION_PRE")) {
                 if(active.containsKey(key)){active.remove(key);return classified(SemanticVerdict.INCONCLUSIVE,"PRE_DUPLICATE_CORRELATION_INVALIDATED",event);}
                 if(active.size()>=policy.capacity())return classified(SemanticVerdict.INCONCLUSIVE,"PRE_CORRELATION_CAPACITY",event);
-                var semantic=event.after().get("artifactSemanticId");var object=semantic instanceof String id?engine.objectForSemanticId(id):null;
+                var object=operationReceiver(event);
                 if(object==null)return classified(SemanticVerdict.SKIPPED,"PRE_EXACT_CONTEXT_UNAVAILABLE",event);
                 if(!artifactOwner(object,event.entityId()))return classified(SemanticVerdict.INCONCLUSIVE,"PRE_ARTIFACT_INCARNATION_MISMATCH",event);
                 if(!(event.after().get("operationSignature") instanceof List<?> signature))return classified(SemanticVerdict.UNSUPPORTED,"PRE_EXACT_SIGNATURE_UNAVAILABLE",event);
@@ -132,7 +144,7 @@ final class NativeOperationCheckpoints {
     /** Additive case provenance. The original profiles retain their evidence
      * format; no hash implies isolation beyond the admitted shared-state cut. */
     private Map<String,String> operationWitness(RuntimeEvent event,OperationCheck check,org.tzi.use.uml.sys.MSystemState after,String performer,Map<String,String> interval) {
-        if(!engine.auctionCase())return interval;
+        if(!engine.declarativeMapping())return interval;
         var result=new TreeMap<>(interval);
         result.put("preStateHash",nativeStateHash(check.preState()));result.put("postStateHash",nativeStateHash(after));
         result.put("operationDescriptorHash",ExternalOclConstraintService.sha256(invocationDescriptor(event).getBytes(java.nio.charset.StandardCharsets.UTF_8)));
@@ -143,8 +155,6 @@ final class NativeOperationCheckpoints {
             result.put("sourceRule",check.operation().getAnnotationValue("DeclarativeOperationBinding","id"));
             result.put("mappingPlanHash",engine.canonicalProgram().xmlPlan().hash());
             String task=check.operation().getAnnotationValue("DeclarativeOperationBinding","task");if(!task.isBlank())result.put("targetTaskId",task);
-        }else {
-            result.put("sourceRule",check.operation().getAnnotationValue("AuctionOperationBinding","bindingId"));result.put("sourceCell",check.operation().getAnnotationValue("AuctionOperationBinding","taskId"));
         }
         result.put("preEventId",check.request().runtimeEventIds().getFirst());result.put("currentEventId",event.eventId());
         return Map.copyOf(result);
@@ -235,7 +245,7 @@ final class NativeOperationCheckpoints {
         for(var condition:pre?check.operation().preConditions():check.operation().postConditions()) {
             var vars=new VarBindings(state);vars.push("self",object.value());for(int i=0;i<check.request().arguments().size();i++)vars.push(check.operation().paramNames().get(i),check.request().arguments().get(i));String unavailable=sourceCoverage.unavailableSelf(condition.expression(),engine,object,observationSources,observationLost,observationFresh);
             var value=unavailable.isBlank()?new OclEvaluationAdapter().evaluate(condition.expression(),check.preState(),state,vars):new OclEvaluationAdapter.Result(ConstraintCoverageResolver.unavailableVerdict(unavailable),"",unavailable);
-            var witness=new TreeMap<String,String>(interval);if(engine.auctionCase())witness.putAll(sourceCoverage.witness(condition.expression(),engine,object,observationSources,unavailable));for(var attribute:object.cls().allAttributes()){witness.put("before."+attribute.name(),object.state(check.preState()).attributeValue(attribute).toString());witness.put("after."+attribute.name(),object.state(state).attributeValue(attribute).toString());}rows.add(detail(conditionId(condition),pre?"PRE":"POST",check,value.verdict(),value.backendValue(),value.diagnostic(),witness));
+            var witness=new TreeMap<String,String>(interval);if(engine.declarativeMapping())witness.putAll(sourceCoverage.witness(condition.expression(),engine,object,observationSources,unavailable));for(var attribute:object.cls().allAttributes()){witness.put("before."+attribute.name(),object.state(check.preState()).attributeValue(attribute).toString());witness.put("after."+attribute.name(),object.state(state).attributeValue(attribute).toString());}rows.add(detail(conditionId(condition),pre?"PRE":"POST",check,value.verdict(),value.backendValue(),value.diagnostic(),witness));
         }return List.copyOf(rows);
     }
     private List<NativeInvocationEvaluation.Condition> preparedConditions(OperationCheck check,boolean pre,org.tzi.use.uml.sys.MSystemState state,Map<String,String> interval,Map<String,String> preCoverage,boolean failed) {
@@ -247,7 +257,7 @@ final class NativeOperationCheckpoints {
             if(!unavailable.isBlank())unavailableVerdict=ConstraintCoverageResolver.unavailableVerdict(unavailable);
             if(!pre&&check.operation().hasResultType()){unavailable="OPERATION_RETURN_VALUE_NOT_OBSERVED_BY_ICARTAGOLOGGER";unavailableVerdict=SemanticVerdict.UNSUPPORTED;}
             if(!pre&&failed){unavailable="OPERATION_FAILED_OR_ABORTED";unavailableVerdict=SemanticVerdict.SKIPPED;}
-            var witness=new TreeMap<>(interval);if(engine.auctionCase())witness.putAll(sourceCoverage.witness(condition.expression(),engine,object,observationSources,unavailable));for(var attribute:object.cls().allAttributes()){witness.put("before."+attribute.name(),object.state(check.preState()).attributeValue(attribute).toString());witness.put("after."+attribute.name(),object.state(state).attributeValue(attribute).toString());}
+            var witness=new TreeMap<>(interval);if(engine.declarativeMapping())witness.putAll(sourceCoverage.witness(condition.expression(),engine,object,observationSources,unavailable));for(var attribute:object.cls().allAttributes()){witness.put("before."+attribute.name(),object.state(check.preState()).attributeValue(attribute).toString());witness.put("after."+attribute.name(),object.state(state).attributeValue(attribute).toString());}
             rows.add(new NativeInvocationEvaluation.Condition(conditionId(condition),pre?"PRE":"POST",object.cls().name(),object.name(),engine.metadata(object,"semanticId"),condition.expression().toString(),condition.expression(),check.preState(),state,variables,unavailable,unavailableVerdict,check.request().correlationId(),witness));
         }
         return List.copyOf(rows);

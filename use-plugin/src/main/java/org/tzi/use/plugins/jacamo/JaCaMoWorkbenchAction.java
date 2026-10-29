@@ -59,7 +59,7 @@ public final class JaCaMoWorkbenchAction implements IPluginActionDelegate {
         });
         dialog.setLayout(new BorderLayout());
         dialog.add(observedWorkflow?JaCaMoWorkbenchPanel.authoredWorkflow(facade):new JaCaMoWorkbenchPanel(facade), BorderLayout.CENTER);
-        dialog.setSize(1100, 720);
+        dialog.setSize(1100, observedWorkflow?440:720);
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
     }

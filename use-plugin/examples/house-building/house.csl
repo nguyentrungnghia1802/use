@@ -1,0 +1,11 @@
+csl v4.0 HouseBuildingState {
+  orgContext BuildingRun { attribute workspace : String required; }
+  entity ProcurementAuction {
+    attribute name : String required;
+    attribute workspace : String required;
+    attribute task : String required;
+    attribute maxValue : Integer required;
+    attribute currentBid : Real required mutable;
+    attribute currentWinner : String required mutable;
+  }
+}

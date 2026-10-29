@@ -37,6 +37,9 @@ final class OwnedJaCaMoRuntime implements AutoCloseable {
     boolean active(){var a=active;return a!=null&&!a.cancelled;}
     synchronized void started(){var a=active;if(a!=null&&!a.cancelled&&a.producer!=null&&a.producer.isAlive())view=new View("RUNNING",a.producer.pid(),a.run,"");}
     Prepared prepare(Path source,JaCaMoFacade.ImportSelection selection,Path classpath) {
+        return prepare(source,selection,classpath,false);
+    }
+    Prepared prepare(Path source,JaCaMoFacade.ImportSelection selection,Path classpath,boolean showGui) {
         if(javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("PRODUCER_PREPARATION_REQUIRES_WORKER");
         if(selection==null)throw new IllegalArgumentException("EXPLICIT_IMPORT_SELECTION_REQUIRED");
         Attempt a;
@@ -72,6 +75,7 @@ final class OwnedJaCaMoRuntime implements AutoCloseable {
             var bridge=new BridgeConnectionConfig(URI.create(string(manifest,"endpoint")),inside(a.root,string(manifest,"secretFile")),
                     string(manifest,"distributionSha256"),Set.of("official.model","runtime.snapshot"),CanonicalJson.DEFAULT_MAX_BYTES,60_000,1024);
             List<String> java=new ArrayList<>(List.of(javaExecutable()));
+            if(showGui){java.add("-Djacamo.launch.captureConsole=true");String position=consolePosition();if(!position.isBlank())java.add("-Djacamo.bridge.gui.position="+position);}
             if(!(manifest.get("producerJvmArguments") instanceof List<?> options))throw new IllegalArgumentException("PRODUCER_JVM_ARGUMENTS_REQUIRED");
             for(Object item:options) {
                 if(!(item instanceof String option)||!option.startsWith("-Djacamo.bridge.")||option.indexOf('\0')>=0)throw new IllegalArgumentException("PRODUCER_JVM_ARGUMENT_INVALID");
@@ -79,7 +83,7 @@ final class OwnedJaCaMoRuntime implements AutoCloseable {
             }
             var owner=ProcessOwnerLease.current();
             java.addAll(List.of("-cp",string(manifest,"classpath"),"jason.infra.local.LiveJaCaMoLauncherMain",project.toString(),a.stop.toString(),
-                    "0","true","",string(manifest,"startupSeconds"),startup.toString(),a.run,Long.toString(owner.pid()),Long.toString(owner.startedAtEpochMillis())));
+                    "0",Boolean.toString(!showGui),"",string(manifest,"startupSeconds"),startup.toString(),a.run,Long.toString(owner.pid()),Long.toString(owner.startedAtEpochMillis())));
             a.producer=launch(a,java,a.stage,"producer");
             long deadline=System.nanoTime()+Duration.ofMinutes(3).toNanos();
             while(!Files.isRegularFile(startup.resolve("waiting.json"))) {
@@ -98,6 +102,21 @@ final class OwnedJaCaMoRuntime implements AutoCloseable {
     static Path defaultClasspath(Path checkout) {
         String configured=System.getProperty(CLASSPATH_PROPERTY,"").trim();
         return configured.isEmpty()?checkout.resolve("jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt"):Path.of(configured).toAbsolutePath().normalize();
+    }
+    private static String consolePosition() throws Exception {
+        String configured=System.getProperty("use.jacamo.runtime.gui.position","").trim();
+        if(!configured.isBlank()) {
+            if(!configured.matches("-?[0-9]{1,6},-?[0-9]{1,6}"))throw new IllegalArgumentException("PRODUCER_GUI_POSITION_INVALID");
+            return configured;
+        }
+        if(java.awt.GraphicsEnvironment.isHeadless())return "";
+        var location=new java.util.concurrent.atomic.AtomicReference<String>("");
+        javax.swing.SwingUtilities.invokeAndWait(()->{
+            var windows=Arrays.stream(java.awt.Window.getWindows()).filter(java.awt.Window::isShowing).toList();
+            var host=windows.stream().filter(java.awt.Window::isActive).findFirst().or(()->windows.stream().findFirst());
+            host.ifPresent(window->{var bounds=window.getGraphicsConfiguration().getBounds();location.set((bounds.x+30)+","+(bounds.y+30));});
+        });
+        return location.get();
     }
     private static void argument(List<String> command,String key,Path value){if(value!=null){command.add(key);command.add(value.toString());}}
     private static String javaExecutable(){return Path.of(System.getProperty("java.home"),"bin",System.getProperty("os.name").startsWith("Windows")?"java.exe":"java").toString();}

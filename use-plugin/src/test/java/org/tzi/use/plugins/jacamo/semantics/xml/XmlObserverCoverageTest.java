@@ -18,7 +18,7 @@ class XmlObserverCoverageTest {
     record Fixture(XmlObserverProjectionTest helper,XmlRuntimeMappingTest.Fixture state,MObject observer) { }
     Fixture fixture()throws Exception {
         var helper=new XmlObserverProjectionTest();helper.temp=temp;var state=helper.helper().fixture(XmlObserverProjectionTest.RUNTIME,XmlObserverProjectionTest.OBSERVERS);
-        state.engine().applyAuctionCut(helper.cut(helper.helper(),state,1,3,true,true),"run",1,List.of());
+        state.engine().applyMappingCut(helper.cut(helper.helper(),state,1,3,true,true),"run",1,List.of());
         var object=state.engine().system().state().allObjects().stream().filter(o->o.cls().name().equals("SignalView")).findFirst().orElseThrow();return new Fixture(helper,state,object);
     }
     @Test void exactObserverFieldsHaveIndependentCoverageAndCannotBeReplacedByManualNativeValues()throws Exception {
@@ -29,7 +29,7 @@ class XmlObserverCoverageTest {
             assertEquals(NativeOclOutcome.Status.PASS,backend.evaluate(compiled,UseStateReadView.pin(null,engine.system().state()),Map.of("self",observer.value()),"").status());
             var saved=engine.savepoint();UseSystemApi.create(engine.system(),false).setAttributeValue(observer.name(),"current","false");
             assertTrue(resolver.unavailableSelf(compiled.expression(),engine,observer,coverage,false).startsWith("ERROR:XML_OBSERVER_VALUE_DIFFERS"),"Native edits are not source observations");engine.rollback(saved);
-            engine.applyAuctionCut(f.helper().cut(f.helper().helper(),f.state(),2,3,null,false),"run",1,List.of());
+            engine.applyMappingCut(f.helper().cut(f.helper().helper(),f.state(),2,3,null,false),"run",1,List.of());
             assertFalse(resolver.unavailableSelf(compiled.expression(),engine,observer,coverage,false).isBlank());
             var missing=backend.compile(new OclContractSpec("missing",OclContractSpec.Kind.INVARIANT,observer.cls(),null,"self.current.oclIsUndefined()"));
             assertFalse(resolver.unavailableSelf(missing.expression(),engine,observer,coverage,false).isBlank(),"Undefined knowledge cannot become a verified true predicate about source state");
@@ -43,6 +43,16 @@ class XmlObserverCoverageTest {
         assertEquals(1,prepared.bodies().size());assertEquals("",prepared.bodies().getFirst().unavailable());
         assertEquals(engine.canonicalProgram().xmlPlan().hash(),prepared.bodies().getFirst().witness().get("mappingPlanHash"));
         var results=SemanticInvariantEvaluator.evaluateScoped(prepared,engine.system().state());assertTrue(results.stream().anyMatch(r->r.kind().equals("INVARIANT_BODY")&&r.verdict()==SemanticVerdict.PASS));
+    }
+    @Test void completeGenericTablePopulationKeepsItsSourceCutProofAndPartialCutsRevokeIt()throws Exception {
+        var f=fixture();var engine=f.state().engine();var resolver=new ConstraintCoverageResolver();
+        assertTrue(resolver.populationComplete(f.observer().cls(),coverage,engine),"A complete non-MOISE table needs its genuine source-cut certificate");
+        String proof=engine.metadata(f.observer(),"xml:observer:population-proof");assertTrue(proof.matches("[0-9a-f]{64}"));
+        var cut=f.helper().cut(f.helper().helper(),f.state(),2,3,true,true);
+        var partial=new org.jacamo.bridge.contract.RuntimeSnapshot(cut.snapshotId(),cut.modelRevision(),cut.captureStartedAt(),cut.captureEndedAt(),cut.startWatermarks(),cut.endWatermarks(),cut.validationAttempts(),cut.facts(),Map.of("cartago",Completeness.PARTIAL),cut.stateFingerprint(),cut.captureMetadata());
+        engine.applyMappingCut(partial,"run",1,List.of());
+        assertFalse(resolver.populationComplete(f.observer().cls(),coverage,engine),"Complete individual values do not close a partial population");
+        assertEquals("",engine.metadata(f.observer(),"xml:observer:population-proof"));
     }
     @Test void navigationMustUseTheAcceptedObserverReferenceEvenWhenBothTargetsHaveQualifiedValues()throws Exception {
         var helper=new XmlObserverReferenceTest();helper.temp=temp;var f=helper.fixture(XmlObserverReferenceTest.VIEWS);var engine=f.nativeState().engine();

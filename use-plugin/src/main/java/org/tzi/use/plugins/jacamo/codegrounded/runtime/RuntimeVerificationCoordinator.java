@@ -120,7 +120,7 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
     public void controlState(org.jacamo.bridge.contract.RuntimeControlContract.State state) {read(()->{controlState=state;return null;});}
     void operationCheckpoint(org.jacamo.bridge.contract.RuntimeEvent event){operationCheckpoint(event,null);}
     void operationCheckpoint(org.jacamo.bridge.contract.RuntimeEvent event,org.jacamo.bridge.contract.RuntimeSnapshot acceptedPrefix) {operationOutcomes=operations.observe(event,sources,coverageLost,semanticVerifier!=null?semanticVerifier.freshContexts():originalEngine!=null?originalEngine.freshContexts():Set.of());if(originalEngine!=null)originalEngine.taskCheckpoint(event,sources,coverageLost,acceptedPrefix);}
-    String operationKind(org.jacamo.bridge.contract.RuntimeEvent event){if(engine.auctionCase()&&org.jacamo.bridge.contract.VerificationObservation.present(event)){var value=org.jacamo.bridge.contract.VerificationObservation.require(event);if(value.kind()==org.jacamo.bridge.contract.VerificationObservation.Kind.JASON_STEP)return value.data().get("phase").equals("ENABLED")?"TASK_PRE":"TASK_POST";}return operations.eligibleKind(event);}
+    String operationKind(org.jacamo.bridge.contract.RuntimeEvent event){if(engine.declarativeMapping()&&org.jacamo.bridge.contract.VerificationObservation.present(event)){var value=org.jacamo.bridge.contract.VerificationObservation.require(event);if(value.kind()==org.jacamo.bridge.contract.VerificationObservation.Kind.JASON_STEP)return value.data().get("phase").equals("ENABLED")?"TASK_PRE":"TASK_POST";}return operations.eligibleKind(event);}
     private java.util.ArrayList<Object> deferredNotifications;
     public VerificationSnapshot verificationSnapshot() {
         return read(() -> {
@@ -223,7 +223,9 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
     public Path directory() { return directory; }
     /** Disk budget, captured per run; overflow remains a coverage failure. */
     public static long defaultJournalMaxBytes() {
-        String configured = System.getProperty("use.jacamo.runtime.journal.maxBytes", "67108864");
+        // Match the declarative launcher budget; 64 MiB overflows on an ordinary
+        // declarative observation prefix. Explicit caller limits still fail closed.
+        String configured = System.getProperty("use.jacamo.runtime.journal.maxBytes", "268435456");
         try {
             long bytes = Long.parseLong(configured);
             if (bytes < 32768 || bytes > 1024L * 1024 * 1024) throw new NumberFormatException();
@@ -644,7 +646,11 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
             try{faults.accept("BEFORE_SNAPSHOT_COMPLETE");snapshots.validateCompletion(new VerificationSnapshot(frozen.currentVersion(),result,frozen.profile(),frozen.metadata(),frozen.image()));}
             catch(RuntimeException captureFailure){coverageLost=true;originalEngine.lost();journal.markGap("SNAPSHOT_COMPLETION_FAILED:"+captureFailure.getMessage());result=staleOriginal(result,journal.diagnostic());}
         }
-        if(!journal.append("ENGINE_RESULT",Map.of("boundary",cut.boundary(),"stateVersion",cut.version(),"stateHash",cut.stateHash()),result,profileInterval==null?"CORE_ONLY":profileInterval.intervalId())){originalEngine.lost();coverageLost=true;result=staleOriginal(result,journal.diagnostic());journal.remember(result);}
+        var completionPayload=new java.util.LinkedHashMap<String,Object>(Map.of("boundary",cut.boundary(),"stateVersion",cut.version(),"stateHash",cut.stateHash()));
+        // Persist the already-frozen accepted image, not a read of the newer live state.
+        // Same journal/hash chain/quota/cleanup owner; no second native runtime.
+        if(frozen!=null&&frozen.image()!=null)completionPayload.put("acceptedStateCommands",frozen.image().soil());
+        if(!journal.append("ENGINE_RESULT",completionPayload,result,profileInterval==null?"CORE_ONLY":profileInterval.intervalId())){originalEngine.lost();coverageLost=true;result=staleOriginal(result,journal.diagnostic());journal.remember(result);}
         if(frozen!=null) {
             var completed=new VerificationSnapshot(frozen.currentVersion(),result,frozen.profile(),frozen.metadata(),frozen.image());
             try{snapshots.complete(completed);if(latestSnapshot!=null&&latestSnapshot.snapshotId().equals(frozen.snapshotId()))latestSnapshot=completed;}

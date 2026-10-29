@@ -1,0 +1,15 @@
+context ProcurementAuction inv NonnegativeBid: self.currentBid >= 0
+context ProcurementAuction inv WithinBudget: self.currentBid <= self.maxValue
+context ProcurementAuction::bid(amount : Real)
+pre NonnegativeOffer: amount >= 0
+post BestOfferRetained: self.currentBid = if amount < self.currentBid@pre then amount else self.currentBid@pre endif
+// Source-sequence order of successful operation returns, not first internal MOISE truth time.
+context BuildProgress inv FloorAfterSite: self.layFloorsAt < 0 or ((self.prepareSiteAt >= 0 and self.prepareSiteAt < self.layFloorsAt))
+context BuildProgress inv WallsAfterFloors: self.buildWallsAt < 0 or ((self.layFloorsAt >= 0 and self.layFloorsAt < self.buildWallsAt))
+context BuildProgress inv buildRoofAfterWalls: self.buildRoofAt < 0 or ((self.buildWallsAt >= 0 and self.buildWallsAt < self.buildRoofAt))
+context BuildProgress inv fitWindowsAfterWalls: self.fitWindowsAt < 0 or ((self.buildWallsAt >= 0 and self.buildWallsAt < self.fitWindowsAt))
+context BuildProgress inv fitDoorsAfterWalls: self.fitDoorsAt < 0 or ((self.buildWallsAt >= 0 and self.buildWallsAt < self.fitDoorsAt))
+context BuildProgress inv installPlumbingAfterShell: self.installPlumbingAt < 0 or ((self.buildRoofAt >= 0 and self.buildRoofAt < self.installPlumbingAt) and (self.fitWindowsAt >= 0 and self.fitWindowsAt < self.installPlumbingAt) and (self.fitDoorsAt >= 0 and self.fitDoorsAt < self.installPlumbingAt))
+context BuildProgress inv installElectricalSystemAfterShell: self.installElectricalSystemAt < 0 or ((self.buildRoofAt >= 0 and self.buildRoofAt < self.installElectricalSystemAt) and (self.fitWindowsAt >= 0 and self.fitWindowsAt < self.installElectricalSystemAt) and (self.fitDoorsAt >= 0 and self.fitDoorsAt < self.installElectricalSystemAt))
+context BuildProgress inv paintExteriorAfterShell: self.paintExteriorAt < 0 or ((self.buildRoofAt >= 0 and self.buildRoofAt < self.paintExteriorAt) and (self.fitWindowsAt >= 0 and self.fitWindowsAt < self.paintExteriorAt) and (self.fitDoorsAt >= 0 and self.fitDoorsAt < self.paintExteriorAt))
+context BuildProgress inv InteriorAfterServices: self.paintInteriorAt < 0 or ((self.installPlumbingAt >= 0 and self.installPlumbingAt < self.paintInteriorAt) and (self.installElectricalSystemAt >= 0 and self.installElectricalSystemAt < self.paintInteriorAt) and (self.paintExteriorAt >= 0 and self.paintExteriorAt < self.paintInteriorAt))

@@ -46,6 +46,9 @@ public final class SemanticBindingIndex {
             if(binding.kind()==Kind.ORG_CONTEXT&&!node.concept().equals("Group")
                     && !(node.sourceKind().equals("JACAMO_ORGANIZATION_DEPLOYMENT")
                         && "ORGANIZATION_DEPLOYMENT_VIEW".equals(binding.metadata().get("contextAbstraction"))
+                        && !binding.abstractionReason().isBlank())
+                    && !(node.sourceKind().equals("JACAMO_PROJECT")&&node.layer()==NormalizedSourceModel.Layer.MODEL_DEFINITION
+                        && "PROJECT_EXECUTION_VIEW/1.0".equals(binding.metadata().get("contextAbstraction"))
                         && !binding.abstractionReason().isBlank()))throw new IllegalArgumentException("ORG_CONTEXT_SOURCE_GROUP_OR_EXPLICIT_ORGANIZATION_VIEW_REQUIRED");
             if(Set.of("Belief","AGoal","Plan","OPlan","Norm").contains(node.concept())&&binding.abstractionReason().isBlank())throw new IllegalArgumentException("EXPLICIT_SEMANTIC_ABSTRACTION_REQUIRED:"+node.concept());
         }

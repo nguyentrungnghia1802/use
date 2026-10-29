@@ -78,4 +78,22 @@ class OccurrenceGoalModelExpanderTest {
         assertThrows(IllegalArgumentException.class,()->expander.expand(invalid,"Invalid"));
         assertThrows(IllegalArgumentException.class,()->new OccurrenceGoalModelExpander(model,EngineSemanticsProfile.DERIVED_AND_RESOURCE_V1,Map.of()));
     }
+    @Test void completingEveryAttemptWithoutActualAcceptanceCannotFulfillCollectiveOutcome() {
+        var model=org.vnu.sme.goal.dsl.istar.parser.IStarCompiler.compile("istar Dispatch { role Dispatch { goal complete : Achieve goal attempted : Achieve > complete goal accepted : Achieve > complete condition {[ true ]} } role Carrier { task ship pre {[ true ]} post {[ true ]} } depend Dispatch.attempted -> goal shipment -> Carrier.ship }").model();
+        var expanded=new OccurrenceGoalModelExpander(model,EngineSemanticsProfile.DERIVED_AND_RESOURCE_V1,Map.of("shipment",OccurrenceGoalModelExpander.Quantifier.ANY)).expand(cast(),"Attempts");
+        for(Boolean accepted:Arrays.asList(null,Boolean.FALSE,Boolean.TRUE))try(var engine=new Use4GoalRuntimeSessionAdapter(expanded.model(),expanded.cast(),(a,x,b,y)->true,"scope-one",EngineSemanticsProfile.DERIVED_AND_RESOURCE_V1,EngineTopologyPolicy.SINGLE_OWNER_CONTEXT_V1)) {
+            var tasks=new TreeMap<String,EngineInputs.TaskInput>();var goals=new TreeMap<String,EngineInputs.GoalInput>();String root="";
+            for(var occurrence:engine.topology().occurrences().values()) {
+                String source=expanded.trace().get(occurrence.sourceElementId()).source();
+                if(source.equals("ship"))tasks.put(occurrence.occurrenceId(),new EngineInputs.TaskInput("episode",true,true,true));
+                if(source.equals("accepted"))goals.put(occurrence.occurrenceId(),new EngineInputs.GoalInput("episode",true,accepted));
+                if(source.equals("complete"))root=occurrence.occurrenceId();
+            }
+            var result=engine.step(new EngineInputs(goals,tasks,Map.of()));
+            assertEquals(Boolean.TRUE.equals(accepted),result.aggregate().goalTaskStatus(root)==GoalTaskStatus.FULFILLED,"Every attempt is complete, actual accepted="+accepted);
+            assertTrue(result.originalApiCalls().contains("TaskMarking.update"));
+            assertTrue(result.originalApiCalls().contains("GoalModelInstanceTranslator.propagateDependencies"));
+        }
+    }
+
 }

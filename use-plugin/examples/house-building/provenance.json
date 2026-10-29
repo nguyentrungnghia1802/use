@@ -1,0 +1,192 @@
+{
+  "version": "1.0",
+  "case": "house-building",
+  "upstreamProject": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building",
+  "jcm": "house-building.jcm",
+  "license": "LGPL-3.0 (JaCaMo project); see upstream LICENSE",
+  "files": [
+    {
+      "path": "house-building.jcm",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\house-building.jcm",
+      "upstreamSha256": "c14ae6299b0d2e0034d7daaa233b9bf1b94a7b337aa39477ec865c52ca5fef08",
+      "localSha256": "c14ae6299b0d2e0034d7daaa233b9bf1b94a7b337aa39477ec865c52ca5fef08",
+      "patches": []
+    },
+    {
+      "path": "build.gradle",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\build.gradle",
+      "upstreamSha256": "69f127e0cca06170211c3eadfc2e44f9da7be2cfcb5c7efb37ec2cdc6f8e0584",
+      "localSha256": "69f127e0cca06170211c3eadfc2e44f9da7be2cfcb5c7efb37ec2cdc6f8e0584",
+      "patches": []
+    },
+    {
+      "path": "src/agt/companyA.asl",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\agt\\companyA.asl",
+      "upstreamSha256": "da55328b72311a1d4c31a85db1da1d0fc7193d0fc1c196ba39f1484f3639535e",
+      "localSha256": "da55328b72311a1d4c31a85db1da1d0fc7193d0fc1c196ba39f1484f3639535e",
+      "patches": []
+    },
+    {
+      "path": "src/agt/companyB.asl",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\agt\\companyB.asl",
+      "upstreamSha256": "172d0a91b6daafe46e6b349da2810c7aee09952b46c1e1bd7d9ac04738bfee13",
+      "localSha256": "172d0a91b6daafe46e6b349da2810c7aee09952b46c1e1bd7d9ac04738bfee13",
+      "patches": []
+    },
+    {
+      "path": "src/agt/companyC.asl",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\agt\\companyC.asl",
+      "upstreamSha256": "362b027c493a7379a0ed7c10e9b02b7f05a94dc796d134fc382c2899d323bc70",
+      "localSha256": "362b027c493a7379a0ed7c10e9b02b7f05a94dc796d134fc382c2899d323bc70",
+      "patches": []
+    },
+    {
+      "path": "src/agt/companyD.asl",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\agt\\companyD.asl",
+      "upstreamSha256": "9bca8b5ead0f1c83531bc370746e362db9a04c0f782ad44ead95d599ddc6c1ba",
+      "localSha256": "9bca8b5ead0f1c83531bc370746e362db9a04c0f782ad44ead95d599ddc6c1ba",
+      "patches": []
+    },
+    {
+      "path": "src/agt/companyE.asl",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\agt\\companyE.asl",
+      "upstreamSha256": "07f0d731346838bbb788124d5a551e5a411ea95c3fe88f82c6658f6f29df0a78",
+      "localSha256": "07f0d731346838bbb788124d5a551e5a411ea95c3fe88f82c6658f6f29df0a78",
+      "patches": []
+    },
+    {
+      "path": "src/agt/giacomo.asl",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\agt\\giacomo.asl",
+      "upstreamSha256": "36cc0e6f1ee6f38a5d0bb1d2f3841a2733f233cb60115e67a789e71b8a072bc8",
+      "localSha256": "c381af45aa14588d57ee29dec8e761751f6ccd08a72c1bf81a7d811ae487ebad",
+      "patches": [
+        "HOUSE_BUILDING_CONDITION_WAIT_V1: previously authorized condition-wait compatibility fixture; no upstream edits",
+        "EXPLICIT_ARTIFACT_FEEDBACK_V1: equivalent makeArtifact/4 empty argument list; exposes existing class-proof API; unused returned HouseArtId; not an extra artifact"
+      ]
+    },
+    {
+      "path": "src/agt/inc/common.asl",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\agt\\inc\\common.asl",
+      "upstreamSha256": "7fc62ffaa8ce2452b0585c064b337e2e3ea7196ed8fcc2491a249d7399d398c2",
+      "localSha256": "7fc62ffaa8ce2452b0585c064b337e2e3ea7196ed8fcc2491a249d7399d398c2",
+      "patches": []
+    },
+    {
+      "path": "src/agt/inc/org_code.asl",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\agt\\inc\\org_code.asl",
+      "upstreamSha256": "10e0b90dcfc85a005b63405f48f69366bd078b83872a713d2ebaf5e973432bfb",
+      "localSha256": "10e0b90dcfc85a005b63405f48f69366bd078b83872a713d2ebaf5e973432bfb",
+      "patches": []
+    },
+    {
+      "path": "src/agt/inc/org_goals.asl",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\agt\\inc\\org_goals.asl",
+      "upstreamSha256": "75ee6cbba0f12a4db85279c0b7887f906505310ac9a8058667480939162c7868",
+      "localSha256": "75ee6cbba0f12a4db85279c0b7887f906505310ac9a8058667480939162c7868",
+      "patches": []
+    },
+    {
+      "path": "src/env/simulator/Doors.java",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\env\\simulator\\Doors.java",
+      "upstreamSha256": "1362456533add19d66f303abe449d5a92a8f18ca8b330d95b0088ec9c40ce536",
+      "localSha256": "1362456533add19d66f303abe449d5a92a8f18ca8b330d95b0088ec9c40ce536",
+      "patches": []
+    },
+    {
+      "path": "src/env/simulator/ElectricalSystem.java",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\env\\simulator\\ElectricalSystem.java",
+      "upstreamSha256": "a3b4a6301db65f2287ef5b3beab8afc5777c3da82a19e7e57fa72c2eea026e53",
+      "localSha256": "a3b4a6301db65f2287ef5b3beab8afc5777c3da82a19e7e57fa72c2eea026e53",
+      "patches": []
+    },
+    {
+      "path": "src/env/simulator/ExteriorPainting.java",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\env\\simulator\\ExteriorPainting.java",
+      "upstreamSha256": "3eb44b699b65e8d091207b737a1317f415dd668d4050fe1b06bb87e78efcb001",
+      "localSha256": "3eb44b699b65e8d091207b737a1317f415dd668d4050fe1b06bb87e78efcb001",
+      "patches": []
+    },
+    {
+      "path": "src/env/simulator/Floor.java",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\env\\simulator\\Floor.java",
+      "upstreamSha256": "f9ee120635dce3e053043009661d26b2565719cb6009a39ccd5b0743d0fdcf29",
+      "localSha256": "f9ee120635dce3e053043009661d26b2565719cb6009a39ccd5b0743d0fdcf29",
+      "patches": []
+    },
+    {
+      "path": "src/env/simulator/House.java",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\env\\simulator\\House.java",
+      "upstreamSha256": "2d60342250a03b7fa46a1a10f72a1c838114936b04acd0b9d0c0c6b24a851450",
+      "localSha256": "c1f0e34438889a312d05861b13cea54e4a362a34b586c6aa783ec94b6376adc7",
+      "patches": [
+        "HEADLESS_PRESENTATION_ONLY_V1: preserve operations, waits and drawing in GUI mode; skip JFrame in headless mode"
+      ]
+    },
+    {
+      "path": "src/env/simulator/HousePart.java",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\env\\simulator\\HousePart.java",
+      "upstreamSha256": "f141560e5a6d0b2b0a6c6990c62394e1922f62d9f95055f1d18f654b50c9760f",
+      "localSha256": "f141560e5a6d0b2b0a6c6990c62394e1922f62d9f95055f1d18f654b50c9760f",
+      "patches": []
+    },
+    {
+      "path": "src/env/simulator/InteriorPainting.java",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\env\\simulator\\InteriorPainting.java",
+      "upstreamSha256": "ad4b94e991b5fcd9f831cd67eb6a344e060be3b55e622f4d88d34305a4eb5c93",
+      "localSha256": "ad4b94e991b5fcd9f831cd67eb6a344e060be3b55e622f4d88d34305a4eb5c93",
+      "patches": []
+    },
+    {
+      "path": "src/env/simulator/Plumbing.java",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\env\\simulator\\Plumbing.java",
+      "upstreamSha256": "c8aae09eda9c8aae7813be91c050d32d0b11415c16f13ea5ba4e767069ff2128",
+      "localSha256": "c8aae09eda9c8aae7813be91c050d32d0b11415c16f13ea5ba4e767069ff2128",
+      "patches": []
+    },
+    {
+      "path": "src/env/simulator/Roof.java",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\env\\simulator\\Roof.java",
+      "upstreamSha256": "1e7d91d877a30f8fb9dc99926aef2cb3d80abee677b6b9d53957dc0cf23f04f9",
+      "localSha256": "1e7d91d877a30f8fb9dc99926aef2cb3d80abee677b6b9d53957dc0cf23f04f9",
+      "patches": []
+    },
+    {
+      "path": "src/env/simulator/Site.java",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\env\\simulator\\Site.java",
+      "upstreamSha256": "d5c48daa34b4218f896a1f1a51bb9b49ba2e0700c54c3f4d550b06c4afb5a47e",
+      "localSha256": "d5c48daa34b4218f896a1f1a51bb9b49ba2e0700c54c3f4d550b06c4afb5a47e",
+      "patches": []
+    },
+    {
+      "path": "src/env/simulator/Walls.java",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\env\\simulator\\Walls.java",
+      "upstreamSha256": "2abea36e744cf74222b5a6476001606ddf6d006b2d71be788732e34b80c64eed",
+      "localSha256": "2abea36e744cf74222b5a6476001606ddf6d006b2d71be788732e34b80c64eed",
+      "patches": []
+    },
+    {
+      "path": "src/env/simulator/Windows.java",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\env\\simulator\\Windows.java",
+      "upstreamSha256": "ea20b0684b6dad1de2786cc54f1302de6e571dec8cb1c64579ce1f0d7dcd9dc6",
+      "localSha256": "ea20b0684b6dad1de2786cc54f1302de6e571dec8cb1c64579ce1f0d7dcd9dc6",
+      "patches": []
+    },
+    {
+      "path": "src/env/tools/AuctionArt.java",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\env\\tools\\AuctionArt.java",
+      "upstreamSha256": "da3263c013b9a52c3918146d550389c8d00c830cff726f89598f4f2e72de0882",
+      "localSha256": "da3263c013b9a52c3918146d550389c8d00c830cff726f89598f4f2e72de0882",
+      "patches": []
+    },
+    {
+      "path": "src/org/house-os.xml",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\src\\org\\house-os.xml",
+      "upstreamSha256": "6d0896b7c69692683f65f3ef4a413bba1496da2f492f02d3f92efcc5daef0ef4",
+      "localSha256": "6d0896b7c69692683f65f3ef4a413bba1496da2f492f02d3f92efcc5daef0ef4",
+      "patches": []
+    }
+  ],
+  "upstreamCommit": "04fc08df259d94045f6cfc95637d56faa1cb33b2",
+  "licenseFile": "LICENSE-JaCaMo.txt",
+  "profile": "OBSERVED_WORLD_OUTCOMES_V1"
+}

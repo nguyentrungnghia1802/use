@@ -57,7 +57,7 @@ public final class GenericMappingEngine {
             var element=goals.model().findElement(target).orElseThrow(()->node.location().error("ELEMENT_RUNTIME_TARGET_UNRESOLVED"));
             if(!goals.model().ownerOf(target).orElse("").equals(actor)||!actorTemplates.containsKey(actor))throw node.location().error("ELEMENT_RUNTIME_WRONG_OWNER");
             if(!(element instanceof Goal)&&!(element instanceof Task))throw node.location().error("ELEMENT_RUNTIME_KIND_UNSUPPORTED");
-            if(!(element instanceof Task)&&(!node.children("actionReceipt").isEmpty()||List.of("stepScope","scopePolicy","entryPolicy","failurePolicy","stepSchemeColumn","stepArtifactColumn").stream().anyMatch(k->!node.optional(k).isBlank())))throw node.location().error("TASK_OBSERVATION_POLICY_ON_NON_TASK");
+            if(!(element instanceof Task)&&(!node.children("actionReceipt").isEmpty()||!node.children("acceptedFailure").isEmpty()||List.of("stepScope","scopePolicy","entryPolicy","failurePolicy","stepSchemeColumn","stepArtifactColumn").stream().anyMatch(k->!node.optional(k).isBlank())))throw node.location().error("TASK_OBSERVATION_POLICY_ON_NON_TASK");
             if(!Set.of("true","false").contains(node.attr("derived")))throw node.location().error("DERIVED_BOOLEAN_REQUIRED");
             boolean derived=Boolean.parseBoolean(node.attr("derived"));
             boolean structural=goals.model().getActors().stream().flatMap(a->a.refinements().stream()).anyMatch(r->r.parent().equals(target))

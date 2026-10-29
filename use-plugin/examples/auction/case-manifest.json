@@ -152,15 +152,6 @@
       "archiveEntry": "asl/org-obedient.asl"
     },
     {
-      "id": "case-rules",
-      "path": "auction_jacamo_to_csl_rules.xml",
-      "sha256": "46979b627e1102ce7368bc1f84ea4954ce0cb920159a164304fe2390b1e48032",
-      "format": "MAPPING_XML",
-      "origin": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\examples\\auction\\auction_jacamo_to_csl_rules.xml",
-      "archiveSha256": "",
-      "archiveEntry": ""
-    },
-    {
       "id": "target-csl",
       "path": "auction_csl.csl",
       "sha256": "c039ad94928fab1791aab91b7b3323507ba1916704b4a60d0ee5cf1824ac1c56",

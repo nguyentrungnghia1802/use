@@ -1,0 +1,152 @@
+{
+  "status": "PASS",
+  "scope": "U01–U04 audit and detached main live results UI; not satisfaction of all Auction requirements",
+  "createdAt": "2026-10-28T10:57:07.261745+00:00",
+  "liveEvidenceDirectory": "use-plugin/verification/live-results-ui/auction-9535956303843528274",
+  "tests": {
+    "total": 24,
+    "focusedNearby": 23,
+    "actualExternalAuction": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "runtimeReceipt": {
+    "coverage": "INCOMPLETE",
+    "domainFailures": 1,
+    "fixedGoalTaskRows": 15,
+    "pid": 4660,
+    "sameMSystem": true,
+    "samples": 140,
+    "scope": "Audit, not assertion that full normative profile is satisfied",
+    "status": "PASS",
+    "winnerObservedForTwoArtifacts": true
+  },
+  "verifiedFailureExamples": [
+    {
+      "id": "NATIVE:AuctionObligation::WithinDeadline",
+      "object": "AuctionObligation_16ff7d29ceed151f4350",
+      "verdict": "FAIL",
+      "expression": "(((self.deadlineAt = (self.activatedAt + if (self.goal = 'bid') then 10000 else 3600000 endif)) and not self.unfulfilled) and (if (self.endedAt >= 0) then self.endedAt else self.monitor.now endif <= self.deadlineAt))",
+      "witness": {
+        "activatedAt": "6636",
+        "coverageReason": "",
+        "deadlineAt": "16636",
+        "endedAt": "16651",
+        "fieldWitnesses": "{\"AuctionMonitor.now\":[{\"identity\":\"beid:v1:moise/organisation/scheme-board/aorg/sch_a2/c270a110-dca8-4e61-92f3-947896246d5f%3A89bfc964-e329-4ef7-8396-7fca0397f71c\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionMonitor_3eb6f1cfd2da68e19f12\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"02b672ee287ba6ba81ea5d8b3f4f5b0ab746037c741ef2e90bcdcf53dd632d5a\",\"project\":\"project-monitor\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.activatedAt\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a2/438d1369f2806fcf6eb3df0eca75c5e3f739a38e6a238244f882254e97f2a28d/c270a110-dca8-4e61-92f3-947896246d5f%3A89bfc964-e329-4ef7-8396-7fca0397f71c\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_16ff7d29ceed151f4350\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"1d3d5070525edd3937245056319ff5738d707a79b8a9331fa1b24112647cbe95\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.deadlineAt\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a2/438d1369f2806fcf6eb3df0eca75c5e3f739a38e6a238244f882254e97f2a28d/c270a110-dca8-4e61-92f3-947896246d5f%3A89bfc964-e329-4ef7-8396-7fca0397f71c\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_16ff7d29ceed151f4350\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"ae7424409ab7acd078989071cb2b82272402f093ff4576f4af2c87664b8002b1\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.endedAt\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a2/438d1369f2806fcf6eb3df0eca75c5e3f739a38e6a238244f882254e97f2a28d/c270a110-dca8-4e61-92f3-947896246d5f%3A89bfc964-e329-4ef7-8396-7fca0397f71c\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_16ff7d29ceed151f4350\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"dc9c0305b8d43979be5f2de272d77b692124a6bfc6dc7a55e5ef5d20c8f52313\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.goal\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a2/438d1369f2806fcf6eb3df0eca75c5e3f739a38e6a238244f882254e97f2a28d/c270a110-dca8-4e61-92f3-947896246d5f%3A89bfc964-e329-4ef7-8396-7fca0397f71c\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_16ff7d29ceed151f4350\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"d62023d75b5a908199916d97716f5961bccf227c3078a5dbba8bdba08d584e5e\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.unfulfilled\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a2/438d1369f2806fcf6eb3df0eca75c5e3f739a38e6a238244f882254e97f2a28d/c270a110-dca8-4e61-92f3-947896246d5f%3A89bfc964-e329-4ef7-8396-7fca0397f71c\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_16ff7d29ceed151f4350\",\"observerQuality\":\"HISTORICAL_COMPLETE\",\"observerValueHash\":\"bbd8789093636e6d0a7c3bd680465b44be6b331427b494c7c4c2b4d0c30dd24b\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}]}",
+        "goal": "'bid'",
+        "mappingPlanHash": "c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c",
+        "mappingSpecificationHash": "2855a1601700032a8a8da2e2da6b0ea83ba9b9ebb01b2d636b77fbfb7fca22a1",
+        "observationQuality": "COMPLETE_FOR_EXPRESSION",
+        "programHash": "4a6e085afce7ee905162adea60c01038567aa58a571b533ba2a8f99763483fd0",
+        "requiredFields": "[\"AuctionMonitor.now\",\"AuctionObligation.activatedAt\",\"AuctionObligation.deadlineAt\",\"AuctionObligation.endedAt\",\"AuctionObligation.goal\",\"AuctionObligation.unfulfilled\"]",
+        "requiredPopulations": "[]",
+        "scopeProof": "",
+        "sourceCompleteness": "{\"bridge:platform\":\"COMPLETE\",\"cartago\":\"COMPLETE\",\"jason\":\"PARTIAL\",\"moise.domain\":\"COMPLETE\",\"moise:aorg\":\"PARTIAL\",\"moise:dynamic\":\"PARTIAL\",\"npl\":\"PARTIAL\",\"observer:verification\":\"PARTIAL\"}",
+        "unfulfilled": "true"
+      }
+    },
+    {
+      "id": "NATIVE:AuctionObligation::WithinDeadline",
+      "object": "AuctionObligation_4d42b2143750d2137532",
+      "verdict": "FAIL",
+      "expression": "(((self.deadlineAt = (self.activatedAt + if (self.goal = 'bid') then 10000 else 3600000 endif)) and not self.unfulfilled) and (if (self.endedAt >= 0) then self.endedAt else self.monitor.now endif <= self.deadlineAt))",
+      "witness": {
+        "activatedAt": "4803",
+        "coverageReason": "",
+        "deadlineAt": "14803",
+        "endedAt": "14809",
+        "fieldWitnesses": "{\"AuctionMonitor.now\":[{\"identity\":\"beid:v1:moise/organisation/scheme-board/aorg/sch_a1/c270a110-dca8-4e61-92f3-947896246d5f%3A0f5db3fb-b7ec-4301-9f45-7b7cac92f8b5\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionMonitor_f1d22b2644c3acf5a06e\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"02b672ee287ba6ba81ea5d8b3f4f5b0ab746037c741ef2e90bcdcf53dd632d5a\",\"project\":\"project-monitor\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.activatedAt\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a1/2ed21fada8a23968b60ba4f35290bbe6d911b954ca8bd60cea9e2f4fd1a5dbe6/c270a110-dca8-4e61-92f3-947896246d5f%3A0f5db3fb-b7ec-4301-9f45-7b7cac92f8b5\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_4d42b2143750d2137532\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"fffd08303d1be286b721a475016e45351640c4ede24fa8f73f4d1eb4e8fd3128\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.deadlineAt\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a1/2ed21fada8a23968b60ba4f35290bbe6d911b954ca8bd60cea9e2f4fd1a5dbe6/c270a110-dca8-4e61-92f3-947896246d5f%3A0f5db3fb-b7ec-4301-9f45-7b7cac92f8b5\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_4d42b2143750d2137532\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"72083a655a657c3db05e4e7bde7e7704898024af03cc00bf6a76e4af3187c724\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.endedAt\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a1/2ed21fada8a23968b60ba4f35290bbe6d911b954ca8bd60cea9e2f4fd1a5dbe6/c270a110-dca8-4e61-92f3-947896246d5f%3A0f5db3fb-b7ec-4301-9f45-7b7cac92f8b5\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_4d42b2143750d2137532\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"0d94e87d6c0226cd540120ff5ff225f4f77cbd83d491b5da48ec37dce5e65469\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.goal\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a1/2ed21fada8a23968b60ba4f35290bbe6d911b954ca8bd60cea9e2f4fd1a5dbe6/c270a110-dca8-4e61-92f3-947896246d5f%3A0f5db3fb-b7ec-4301-9f45-7b7cac92f8b5\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_4d42b2143750d2137532\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"d62023d75b5a908199916d97716f5961bccf227c3078a5dbba8bdba08d584e5e\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.unfulfilled\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a1/2ed21fada8a23968b60ba4f35290bbe6d911b954ca8bd60cea9e2f4fd1a5dbe6/c270a110-dca8-4e61-92f3-947896246d5f%3A0f5db3fb-b7ec-4301-9f45-7b7cac92f8b5\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_4d42b2143750d2137532\",\"observerQuality\":\"HISTORICAL_COMPLETE\",\"observerValueHash\":\"bbd8789093636e6d0a7c3bd680465b44be6b331427b494c7c4c2b4d0c30dd24b\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}]}",
+        "goal": "'bid'",
+        "mappingPlanHash": "c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c",
+        "mappingSpecificationHash": "2855a1601700032a8a8da2e2da6b0ea83ba9b9ebb01b2d636b77fbfb7fca22a1",
+        "observationQuality": "COMPLETE_FOR_EXPRESSION",
+        "programHash": "4a6e085afce7ee905162adea60c01038567aa58a571b533ba2a8f99763483fd0",
+        "requiredFields": "[\"AuctionMonitor.now\",\"AuctionObligation.activatedAt\",\"AuctionObligation.deadlineAt\",\"AuctionObligation.endedAt\",\"AuctionObligation.goal\",\"AuctionObligation.unfulfilled\"]",
+        "requiredPopulations": "[]",
+        "scopeProof": "",
+        "sourceCompleteness": "{\"bridge:platform\":\"COMPLETE\",\"cartago\":\"COMPLETE\",\"jason\":\"PARTIAL\",\"moise.domain\":\"COMPLETE\",\"moise:aorg\":\"PARTIAL\",\"moise:dynamic\":\"PARTIAL\",\"npl\":\"PARTIAL\",\"observer:verification\":\"PARTIAL\"}",
+        "unfulfilled": "true"
+      }
+    },
+    {
+      "id": "NATIVE:AuctionObligation::WithinDeadline",
+      "object": "AuctionObligation_b1ea29519d39d6f7f7c7",
+      "verdict": "FAIL",
+      "expression": "(((self.deadlineAt = (self.activatedAt + if (self.goal = 'bid') then 10000 else 3600000 endif)) and not self.unfulfilled) and (if (self.endedAt >= 0) then self.endedAt else self.monitor.now endif <= self.deadlineAt))",
+      "witness": {
+        "activatedAt": "6637",
+        "coverageReason": "",
+        "deadlineAt": "16637",
+        "endedAt": "16653",
+        "fieldWitnesses": "{\"AuctionMonitor.now\":[{\"identity\":\"beid:v1:moise/organisation/scheme-board/aorg/sch_a2/c270a110-dca8-4e61-92f3-947896246d5f%3A89bfc964-e329-4ef7-8396-7fca0397f71c\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionMonitor_3eb6f1cfd2da68e19f12\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"02b672ee287ba6ba81ea5d8b3f4f5b0ab746037c741ef2e90bcdcf53dd632d5a\",\"project\":\"project-monitor\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.activatedAt\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a2/9a3fad220d049b172cfb4fa8974df93a105876aa5126d2e4e9419bf9ecaf2454/c270a110-dca8-4e61-92f3-947896246d5f%3A89bfc964-e329-4ef7-8396-7fca0397f71c\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_b1ea29519d39d6f7f7c7\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"4c1155e002b4099fe572e1561c61595f9dd002a1de0443fc05ce60b08e7d766a\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.deadlineAt\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a2/9a3fad220d049b172cfb4fa8974df93a105876aa5126d2e4e9419bf9ecaf2454/c270a110-dca8-4e61-92f3-947896246d5f%3A89bfc964-e329-4ef7-8396-7fca0397f71c\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_b1ea29519d39d6f7f7c7\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"3a4b522a35f0ec765378f265558832f045630e8d007744027a9338b61e8f038e\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.endedAt\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a2/9a3fad220d049b172cfb4fa8974df93a105876aa5126d2e4e9419bf9ecaf2454/c270a110-dca8-4e61-92f3-947896246d5f%3A89bfc964-e329-4ef7-8396-7fca0397f71c\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_b1ea29519d39d6f7f7c7\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"90f3bf39e2dff574a948ad36f9f3f811a98b692da5ad48e97cf7c9f29a49f816\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.goal\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a2/9a3fad220d049b172cfb4fa8974df93a105876aa5126d2e4e9419bf9ecaf2454/c270a110-dca8-4e61-92f3-947896246d5f%3A89bfc964-e329-4ef7-8396-7fca0397f71c\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_b1ea29519d39d6f7f7c7\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"d62023d75b5a908199916d97716f5961bccf227c3078a5dbba8bdba08d584e5e\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.unfulfilled\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a2/9a3fad220d049b172cfb4fa8974df93a105876aa5126d2e4e9419bf9ecaf2454/c270a110-dca8-4e61-92f3-947896246d5f%3A89bfc964-e329-4ef7-8396-7fca0397f71c\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_b1ea29519d39d6f7f7c7\",\"observerQuality\":\"HISTORICAL_COMPLETE\",\"observerValueHash\":\"bbd8789093636e6d0a7c3bd680465b44be6b331427b494c7c4c2b4d0c30dd24b\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}]}",
+        "goal": "'bid'",
+        "mappingPlanHash": "c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c",
+        "mappingSpecificationHash": "2855a1601700032a8a8da2e2da6b0ea83ba9b9ebb01b2d636b77fbfb7fca22a1",
+        "observationQuality": "COMPLETE_FOR_EXPRESSION",
+        "programHash": "4a6e085afce7ee905162adea60c01038567aa58a571b533ba2a8f99763483fd0",
+        "requiredFields": "[\"AuctionMonitor.now\",\"AuctionObligation.activatedAt\",\"AuctionObligation.deadlineAt\",\"AuctionObligation.endedAt\",\"AuctionObligation.goal\",\"AuctionObligation.unfulfilled\"]",
+        "requiredPopulations": "[]",
+        "scopeProof": "",
+        "sourceCompleteness": "{\"bridge:platform\":\"COMPLETE\",\"cartago\":\"COMPLETE\",\"jason\":\"PARTIAL\",\"moise.domain\":\"COMPLETE\",\"moise:aorg\":\"PARTIAL\",\"moise:dynamic\":\"PARTIAL\",\"npl\":\"PARTIAL\",\"observer:verification\":\"PARTIAL\"}",
+        "unfulfilled": "true"
+      }
+    },
+    {
+      "id": "NATIVE:AuctionObligation::WithinDeadline",
+      "object": "AuctionObligation_ceea436a280f3bbef912",
+      "verdict": "FAIL",
+      "expression": "(((self.deadlineAt = (self.activatedAt + if (self.goal = 'bid') then 10000 else 3600000 endif)) and not self.unfulfilled) and (if (self.endedAt >= 0) then self.endedAt else self.monitor.now endif <= self.deadlineAt))",
+      "witness": {
+        "activatedAt": "4805",
+        "coverageReason": "",
+        "deadlineAt": "14805",
+        "endedAt": "14807",
+        "fieldWitnesses": "{\"AuctionMonitor.now\":[{\"identity\":\"beid:v1:moise/organisation/scheme-board/aorg/sch_a1/c270a110-dca8-4e61-92f3-947896246d5f%3A0f5db3fb-b7ec-4301-9f45-7b7cac92f8b5\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionMonitor_f1d22b2644c3acf5a06e\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"02b672ee287ba6ba81ea5d8b3f4f5b0ab746037c741ef2e90bcdcf53dd632d5a\",\"project\":\"project-monitor\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.activatedAt\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a1/4f6dd323c05425e8b9426e2238932a9df2741543411e7554735cb1503178278f/c270a110-dca8-4e61-92f3-947896246d5f%3A0f5db3fb-b7ec-4301-9f45-7b7cac92f8b5\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_ceea436a280f3bbef912\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"87f1e7d6e198772a4df01c38f1303f834988b9d910c10da1d6ab357db98d343d\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.deadlineAt\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a1/4f6dd323c05425e8b9426e2238932a9df2741543411e7554735cb1503178278f/c270a110-dca8-4e61-92f3-947896246d5f%3A0f5db3fb-b7ec-4301-9f45-7b7cac92f8b5\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_ceea436a280f3bbef912\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"eb3b90f7f9fa953eaf309c327bf9f353fbf03ee9dda40ce5908d071db8147ca4\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.endedAt\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a1/4f6dd323c05425e8b9426e2238932a9df2741543411e7554735cb1503178278f/c270a110-dca8-4e61-92f3-947896246d5f%3A0f5db3fb-b7ec-4301-9f45-7b7cac92f8b5\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_ceea436a280f3bbef912\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"ede4a4b121f80a10aec752b98cc3eece53a7529a8b142027d50cb198fb9abea8\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.goal\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a1/4f6dd323c05425e8b9426e2238932a9df2741543411e7554735cb1503178278f/c270a110-dca8-4e61-92f3-947896246d5f%3A0f5db3fb-b7ec-4301-9f45-7b7cac92f8b5\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_ceea436a280f3bbef912\",\"observerQuality\":\"COMPLETE\",\"observerValueHash\":\"d62023d75b5a908199916d97716f5961bccf227c3078a5dbba8bdba08d584e5e\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}],\"AuctionObligation.unfulfilled\":[{\"identity\":\"beid:v1:npl/organisation/norm-instance/%2Fmain%2Faorg%3Asch_a1/4f6dd323c05425e8b9426e2238932a9df2741543411e7554735cb1503178278f/c270a110-dca8-4e61-92f3-947896246d5f%3A0f5db3fb-b7ec-4301-9f45-7b7cac92f8b5\",\"mappingPlanHash\":\"c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c\",\"object\":\"AuctionObligation_ceea436a280f3bbef912\",\"observerQuality\":\"HISTORICAL_COMPLETE\",\"observerValueHash\":\"bbd8789093636e6d0a7c3bd680465b44be6b331427b494c7c4c2b4d0c30dd24b\",\"project\":\"project-obligation\",\"sourceCut\":\"accepted-prefix:c270a110-dca8-4e61-92f3-947896246d5f:cartago:323\"}]}",
+        "goal": "'bid'",
+        "mappingPlanHash": "c88218618beec0fc880ee8cb528d9309e99b092e1e51bdbdde47a87bce0a693c",
+        "mappingSpecificationHash": "2855a1601700032a8a8da2e2da6b0ea83ba9b9ebb01b2d636b77fbfb7fca22a1",
+        "observationQuality": "COMPLETE_FOR_EXPRESSION",
+        "programHash": "4a6e085afce7ee905162adea60c01038567aa58a571b533ba2a8f99763483fd0",
+        "requiredFields": "[\"AuctionMonitor.now\",\"AuctionObligation.activatedAt\",\"AuctionObligation.deadlineAt\",\"AuctionObligation.endedAt\",\"AuctionObligation.goal\",\"AuctionObligation.unfulfilled\"]",
+        "requiredPopulations": "[]",
+        "scopeProof": "",
+        "sourceCompleteness": "{\"bridge:platform\":\"COMPLETE\",\"cartago\":\"COMPLETE\",\"jason\":\"PARTIAL\",\"moise.domain\":\"COMPLETE\",\"moise:aorg\":\"PARTIAL\",\"moise:dynamic\":\"PARTIAL\",\"npl\":\"PARTIAL\",\"observer:verification\":\"PARTIAL\"}",
+        "unfulfilled": "true"
+      }
+    }
+  ],
+  "authoritativeMSystemCount": 1,
+  "originalEnginesUnchanged": true,
+  "authoredFormalInputsUnchanged": true,
+  "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+  "archiveSha256": "f971c839b30ea0a32dcb75f66695deaf6a379938d51912ee1566c6085cd78f21",
+  "launcher": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\live-results-ui-78alqhom\\use-7.5.0\\bin\\start_use.bat",
+  "artifacts": {
+    "use-plugin/verification/live-results-ui/final/live-results-ui-baseline.log": "6a8993cf206cd1f4b637da33e09449dbeddfdb6c1cdafff1f2e4709369ee0dc9",
+    "use-plugin/verification/live-results-ui/final/live-results-ui-current-cut.log": "2e6735e870cd10988ba48fec19bec6f7db8f6523afa1f291d8a15891e696812c",
+    "use-plugin/verification/live-results-ui/final/live-results-ui-drain-gate.log": "b6eb03ec5ae8e5dfe22e5bb8aa9390fce2089aab46d2c2c98400e8e10a4eb611",
+    "use-plugin/verification/live-results-ui/final/package-checks.json": "35162c9edf502ee0b4d646cbcbf7b428a5895ce6703cde329f39c4510ca7fafa",
+    "use-plugin/verification/live-results-ui/final/package.log": "2478ab5c2fc4acc373b3791f49588ce277bea89b6ebffa0d04f55c225503095a",
+    "use-plugin/verification/live-results-ui/final/source-freeze.json": "a91f8590dbee08ee8a8f89718bdf171ac05c2d9a1c78f8c3ce4e6b6a4d610aa0",
+    "use-plugin/verification/live-results-ui/final/tests.json": "8b2f64fa1c122ea3e5125e71111e00ddd9743849a1b1f57207db29a29f666daf",
+    "use-plugin/verification/live-results-ui/final/tests.log": "7f8519c3ffb35b4bef128a6033d8afce4af4735059a40c90474f774c57b54711",
+    "use-plugin/verification/live-results-ui/auction-9535956303843528274/domain-and-observer-state.json": "e4cab1f95c11cd997d0c28f87829aa51553060393f21b5dfe834f173efb5bc4f",
+    "use-plugin/verification/live-results-ui/auction-9535956303843528274/goal-summary.json": "fea9021a0649df8b11428452bb902db869b245ffa447f46cf0b530df5467447a",
+    "use-plugin/verification/live-results-ui/auction-9535956303843528274/last-result.json": "3ceb09fec1724bfe5fecffe2426d7cf9d38810f768bcae52259e5906a5254283",
+    "use-plugin/verification/live-results-ui/auction-9535956303843528274/last-state.json": "b9d7cd23ce3d3e04c2d269f64fa50c1680a7ad952cf9dee616b2698aae57c0a9",
+    "use-plugin/verification/live-results-ui/auction-9535956303843528274/observer-checks.json": "024d0f9eb0040b9eeff9076e604677339d1cf1b0a76e2df60499f594422b8e09",
+    "use-plugin/verification/live-results-ui/auction-9535956303843528274/producer.stderr.log": "68b5036dfab0352c795632bdc7c0f7ef15aef652ef71fc0b79c7e4d3c6cac4ca",
+    "use-plugin/verification/live-results-ui/auction-9535956303843528274/producer.stdout.log": "283d7fcd0ad151f97dba0b20a0eae2d47a3c52a95881a2e5a1c734081ac17eef",
+    "use-plugin/verification/live-results-ui/auction-9535956303843528274/receipt.json": "593b7a84516bcf31c08872ad1e89e995b0bb0b0251e0b2ba0446b4fb131e1031",
+    "use-plugin/verification/live-results-ui/auction-9535956303843528274/result.json": "17b7e20473b0b45b17c4c5a869a8d81079acc56da285d46c11505f5db99d76b1",
+    "use-plugin/verification/live-results-ui/auction-9535956303843528274/transport.json": "eeb262bde370d13a31fa0e01e2664d9a0c1dcd8fc558fc54511a3ace78366b8c"
+  },
+  "planSha256": "a25f8f2914309ed4f5d97377c5866e005dcdeea97707c725c53baa938e38703e",
+  "limitations": [
+    "Current exact Task/derived quality remains UNKNOWN when source step marker is absent; raw history is separate",
+    "Full authored input may have substantial source-to-consumer backlog; no fake PASS from winner logs",
+    "Native Swing lifecycle tests + actual service-level Auction live, not manual GUI or cold ZIP live"
+  ],
+  "commitPushPerformed": false
+}

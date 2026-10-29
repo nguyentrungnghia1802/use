@@ -1,0 +1,130 @@
+{
+  "status": "PASS_FOR_NO_CASE_PRODUCTION_SCOPE",
+  "plan": [
+    "AA01",
+    "AA02",
+    "AA03",
+    "AA04"
+  ],
+  "focused": {
+    "plugin": 98,
+    "producer": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "liveTest": {
+    "coverage": "INCOMPLETE",
+    "domainFailures": 2,
+    "fixedGoalTaskRows": 12,
+    "pid": 21560,
+    "sameMSystem": true,
+    "samples": 68,
+    "scope": "Audit, not assertion that full normative profile is satisfied",
+    "status": "PASS",
+    "winnerObservedForTwoArtifacts": true
+  },
+  "liveEvidence": "use-plugin/verification/live-results-ui/auction-9141219160766461805",
+  "liveSelectedVerdict": "VIOLATION",
+  "terminalFailures": 2,
+  "states": {
+    "auditBoundaries": 994,
+    "completionDelayLatestVerifiedMs": 37649,
+    "completionDelayMaxMs": 37649,
+    "latestVerifiedEventId": "27fa48b2-3101-43ca-b7a1-2743a3ea1046:cartago:321",
+    "latestVerifiedEventSource": "cartago",
+    "milestones": 12,
+    "optionalBeliefsAcquired": false,
+    "pinnedResultHash": "5e056afdb24f68c27eefd3562e412cd7a5b4ccaac644fc1abc04ccc35244c401",
+    "presentationMode": "DOMAIN"
+  },
+  "sourceReplay": {
+    "entries": 1568,
+    "status": "PASS"
+  },
+  "installedReplay": {
+    "status": "PASS",
+    "entries": 1568,
+    "scope": "COLD_INSTALLED_COMPONENT_REPLAY_NOT_FRESH_INSTALLED_LIVE_GUI",
+    "classpath": "installed lib/* plus one isolated reflection driver class only"
+  },
+  "package": {
+    "status": "PASS",
+    "archiveSha256": "0596d054a299e278f9be39b5b2733494ea37bf0c29e19a2149844314f4df08de",
+    "install": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\no-case-production-final-20261029-0153\\use-7.5.0",
+    "pluginSha256": "cf8d662aa25b608008a970c56471eaa7d625f3740c9723985b7b58212a58200f",
+    "bridgeSha256": "100e6a6574c17e03e40e1172d9093204bacd18278e75821cd369291b0c56430a",
+    "originalEngineClassesUnchanged": {
+      "GoalMarking": "56c9e566cd2f45ee4aa662257ef51eaa02e2836453eb5b05e2d80d83c95f4540",
+      "TaskMarking": "a3d1cf1437f4bb1fedc583f1086b695c3a22267ddd5a37117df340980135748a",
+      "IStarMarking": "07d383707a76f2b7227391b69275bb2d79e64cfb77f474e98d496f2553c0f922",
+      "IStarPropagation": "9f80d5c1b836a23c0d7f055baac2a895048dd53f44b1177f4b77680f8fdc9d75"
+    },
+    "productionCaseClasses": 0,
+    "authoredInputsMatch": true
+  },
+  "sourceFreezeSha256": "8c91f51508bc9192e3231e17a89ce0e964996495ebd79731810eaac5302603cb",
+  "limits": [
+    "XML must explicitly describe a case; no automatic arbitrary semantic inference",
+    "Old case-specific profile/readers intentionally retired",
+    "Full source coverage still incomplete; backlog unchanged",
+    "No full reactor regression or unrelated live cases",
+    "No commit/push"
+  ],
+  "additionalLauncherFocused": {
+    "tests": 10,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "finalRecompileMatchesPackage": {
+    "use-plugin": {
+      "matchingPackagedClasses": 771,
+      "excludedByExistingMavenJarRules": [
+        "org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor$1.class",
+        "org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor$2.class",
+        "org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor$3.class",
+        "org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor$StringSource.class",
+        "org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.class",
+        "org/tzi/use/plugins/jacamo/extraction/ElementDraft.class",
+        "org/tzi/use/plugins/jacamo/extraction/ExtractionContext.class",
+        "org/tzi/use/plugins/jacamo/extraction/ImportResult.class",
+        "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser$1.class",
+        "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser$BodyCursor.class",
+        "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser$Directive.class",
+        "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser$DynamicArtifactBinding.class",
+        "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser$FocusBinding.class",
+        "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser$ParsedSource.class",
+        "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser$SanitizedSource.class",
+        "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser$StaticParsingAgent.class",
+        "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.class",
+        "org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser$ConfigTerm.class",
+        "org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.class",
+        "org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser$1.class",
+        "org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.class",
+        "org/tzi/use/plugins/jacamo/extraction/SemanticResolver$1.class",
+        "org/tzi/use/plugins/jacamo/extraction/SemanticResolver.class",
+        "org/tzi/use/plugins/jacamo/extraction/StaticProjectImporter.class",
+        "org/tzi/use/plugins/jacamo/extraction/XmlSourcePositions$1.class",
+        "org/tzi/use/plugins/jacamo/extraction/XmlSourcePositions.class",
+        "org/tzi/use/plugins/jacamo/project/ImportService.class",
+        "org/tzi/use/plugins/jacamo/project/JcmLexer$Token.class",
+        "org/tzi/use/plugins/jacamo/project/JcmLexer.class",
+        "org/tzi/use/plugins/jacamo/project/JcmProjectLoader$1.class",
+        "org/tzi/use/plugins/jacamo/project/JcmProjectLoader$Declaration.class",
+        "org/tzi/use/plugins/jacamo/project/JcmProjectLoader$Document.class",
+        "org/tzi/use/plugins/jacamo/project/JcmProjectLoader.class",
+        "org/tzi/use/plugins/jacamo/project/ProjectDiscoveryResult.class",
+        "org/tzi/use/plugins/jacamo/project/ProjectEdge.class",
+        "org/tzi/use/plugins/jacamo/project/ProjectEdgeKind.class",
+        "org/tzi/use/plugins/jacamo/project/ProjectGraph.class"
+      ],
+      "unexpectedMissingOrDifferent": 0
+    },
+    "jacamo-bridge-jacamo": {
+      "matchingPackagedClasses": 116,
+      "excludedByExistingMavenJarRules": [],
+      "unexpectedMissingOrDifferent": 0
+    }
+  }
+}

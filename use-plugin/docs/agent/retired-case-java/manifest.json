@@ -1,0 +1,462 @@
+{
+  "status": "REFERENCE_ONLY_NOT_COMPILED_OR_PACKAGED",
+  "reason": "User forbids case-specific production semantics; generic XML replaces legacy case routes. Historical assertions are archived unchanged, not counted as current regression.",
+  "sources": [
+    {
+      "original": "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/AuctionArtifactStateProbe.java",
+      "sha256": "99d5c515898786ca26a1945167f1de1199a20d9f3eab04c3e49e103244a9611e"
+    },
+    {
+      "original": "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/AuctionClockObservation.java",
+      "sha256": "454faf683db14e3f76d00a5e094bc303973f41a9e699a87d3910b1a94414e958"
+    },
+    {
+      "original": "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/AuctionSchemeObservation.java",
+      "sha256": "87331b32131d1d0cf9ef3a31e75c1e863d1a9200c3a44bc44e0056379f85165d"
+    },
+    {
+      "original": "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/AuctionStagingInstrumentation.java",
+      "sha256": "647702b6b46e84642e79a96fbd13dfc680edd89454c76f7a3d522fcad780f249"
+    },
+    {
+      "original": "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/AuctionStepObservation.java",
+      "sha256": "5841273f9ba751e61b608a5a5030de14266388d2d17206f24409dd6854a5bd30"
+    },
+    {
+      "original": "jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/AuctionClockNplTest.java",
+      "sha256": "1290514f86ea5bab32c1e72718c7911bf238b7196016d30c5a93162fe854f160"
+    },
+    {
+      "original": "jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/AuctionClockObservationTest.java",
+      "sha256": "b8f104a89d325a0829a43f753c56ba02ce226241fc995d5889e5eab45b9a3615"
+    },
+    {
+      "original": "jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/AuctionNplSubscriptionTest.java",
+      "sha256": "b07ecdbb2dc518518e151233e90cd9b77a2c3f8f253ad13ff0743c04a0206566"
+    },
+    {
+      "original": "jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/AuctionStepBoundaryTest.java",
+      "sha256": "378c3996de1f55e67ff5477d1907d6ca2b6c12e935af4dc51be775a33882469f"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/evidence/AuctionEvidenceEncoder.java",
+      "sha256": "24cf7e79fc4a4964fbf49613c170ac82de4d0da05e70de2c27036452bc259e0b"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionArtifactBindingResolver.java",
+      "sha256": "11ad516cc39c0d6bbcfa6ea38e4712e583857c72a852adc3bd6b4592e4ed1ddc"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionBindingPlan.java",
+      "sha256": "3aaeb6c91be8d0abdf936bd30b51eaa6e708f4979c8dc31c2dad9ec2103f60d4"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionCaseBundle.java",
+      "sha256": "18580c2286da16ada9eab97ecd6032bca0cdcb0229964464b80cf40c53fdbe7f"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionCslRuleExecutor.java",
+      "sha256": "9697130829dfe0489a66e0a0d51a4132af96901baf1f27c1fd3354dfcd15ac41"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionGoalInstanceExpander.java",
+      "sha256": "d28f3119f0c0ef625752b200acf263522be04761ceda457f2079655f84e92622"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionIStarSourceAdapter.java",
+      "sha256": "b9a0bbb57e8f1c6baeb4f7ca08e39fea0b50bb9ed15fa9dc94e66c8f15502fd8"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionJcmDerivation.java",
+      "sha256": "985331f910600a421a82ec76a5b21cab8f070b841734576bd1cf832cf29aaaf2"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionLifecycleMapping.java",
+      "sha256": "c44f904dc370010268f7e8b9bea66b277a57aca8c3062d467b8b8d22552b765e"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionMappingSpecification.java",
+      "sha256": "4d8547786a2894e7a01725ab3aefc50c25659a53ba8db32f96cd44249615cd11"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionMappingValidator.java",
+      "sha256": "d22d703a32536158b80cedeb791b89c84c13b4872b85dac464994e3b123d293c"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionMappingXmlLoader.java",
+      "sha256": "1b60ed869233696d124552a8e14dd12d0723df70116c3e4999a6ab98196adcbf"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionMonitorProjection.java",
+      "sha256": "fa4874926838ca5724a24b2f38754126f6fbb9f655c411c44dd7e406457ebfaa"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionObligationDecoder.java",
+      "sha256": "60e72b3aacc631b98f9fa209f9206d0373bc81e0566bc6683889a70a89ef63be"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionObligationProjection.java",
+      "sha256": "d5f123e3846ca79ed74bc56a588e84b386bce048d241d6e0788cfadbb0d8863e"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionObservationCut.java",
+      "sha256": "056e81b3433ea73456419aca1e8439a0bd3ca697a1b7664e936df79e3df23769"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionObserverUseBinding.java",
+      "sha256": "a07f300472b8413a8e608ed283087248f6a7bc08ae3066e47c1aa1fc49e6b713"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionOccurrenceBindingAdapter.java",
+      "sha256": "73fea9ffa01e9648dbfc71a9be1c4c10f25aca722c422eb193cda65c6fc04066"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionOclBindings.java",
+      "sha256": "7c212e9590789f4dd6bfc9f64cc457318cc5c55bdc3c173c60ac46074869e587"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionOclSpecificationLoader.java",
+      "sha256": "b629a3bec9d8edf5f8aaaf3e543e91c6129d15169dbdcd53f0ca3199a2fe9884"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionRuntimeRules.java",
+      "sha256": "bb15631db4e3b2bfc54705f493d3d5d81390a86ecf5d716663745885272a05dd"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionRuntimeStateMapping.java",
+      "sha256": "b5fa974e162dc10dea47c6646b574ed098ab4a04680d63276455f626ec567c06"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionSchemeObservationDecoder.java",
+      "sha256": "c8b8ba547d442d23611e565a3726623fc2f773bf183670140e4b9956a2b84f7d"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionSelectorResult.java",
+      "sha256": "4a1cee5d67f400bdd83e8fa9271d6425ca373c41567e052be9d8d5b76b9ec3d6"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionSourceClock.java",
+      "sha256": "d39f9d79bb0d6ab6b2548bda7984b64420ecf886b51ff8caa0912759360fd21f"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionSourceSelector.java",
+      "sha256": "0089091fa3d9ed72c2551b4eabdf6ee55382b5ea63c8536960504b08b83daf7a"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionStaticMappingAdapter.java",
+      "sha256": "987b7c2e12f7fe4e117c84209437ae6be552975ded6479e33e55ec710ff3cdbc"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionStepObservationDecoder.java",
+      "sha256": "d8d9c078e8cc2ce97ce5819fa0428f8201a6dbccd57600449ed67588d3611192"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionTaskCheckpoints.java",
+      "sha256": "2ef79225d8f91a081517eeca2e2bf1f2422ecec3146f7466ae619bfbfba2c01c"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionTaskDemand.java",
+      "sha256": "1fcf43a79f7552a485d2ad0ad17fbca7087f87338eced311c47bef09887e47c1"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionTaskOclBindings.java",
+      "sha256": "5e863a752f1eac6ea57d5c7d829536a4c67bad43b1a1be2d50b17abe1e51fa7c"
+    },
+    {
+      "original": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/auction/AuctionUseModelAdapter.java",
+      "sha256": "ed74f1ea4d0183e99e023beb4f831f69693d4c12bd6ab231da369806a6449474"
+    },
+    {
+      "original": "use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/semantics/mapping/auction/xml-vocabulary-1.0.txt",
+      "sha256": "a4772880406888907f1b335a9544c25e9d09626f35511d9383dc4b787812d569"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/jacamo/bridge/adapter/AuctionSourceClockTest.java",
+      "sha256": "115b982da225783805c1b570a572efeb388835889e71a362e00718c130ed74cd"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/AuctionNativeTransactionTest.java",
+      "sha256": "14162e7f5d846e4ffd4732cb4ed99b296009783e6a77082d025197b1c1bcc4fe"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionArtifactBindingTest.java",
+      "sha256": "4fee75ab64e8dbd8659e67ba6231e8a32fbc62b0468d6286bbed148ceff011eb"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionArtifactProbeTest.java",
+      "sha256": "3bbec5c84608bc64d3fc01677f5fc3d0a4343e0c64622009d4b61de33e0988f3"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionCaseBundleTest.java",
+      "sha256": "c6033085c0729b14e6ebd0fdd3d1b460b3ba3dad0dba015f364f8080b7bf084f"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionCastFixture.java",
+      "sha256": "c6796792e8db899c47a4ca9ece46d40d84216553a87f07cb354ec72a34b12038"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionClockBatchBoundaryTest.java",
+      "sha256": "af76297679105aa16950de696b48ca4597ad124c5a6692c1444308a8241c5b55"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionClockLiveTcpTest.java",
+      "sha256": "5e87b9f5b34553ef98fbf36a1784db1effd0e675e30f355c6eb20b505991fcd1"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionClockNativeIngressTest.java",
+      "sha256": "03b8099a7f865ac5d856e14f4f2d19237e95bf51eb9e31b9f449a617f1d7cb9f"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionCslRuleExecutorTest.java",
+      "sha256": "b4d5cbff5665ad4bf0281ee66b9373499da65a6a294e871b0b00ccfd94e51d6f"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionDeclarativeArtifactTest.java",
+      "sha256": "1ba42971523f3d2b2cb7395b5df5c7a17a3570bd2493345e7a7c33c7d8156a95"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionDeclarativeObligationTest.java",
+      "sha256": "569ff681e03b3032aeb1a8e26f0caa8d806a8002587f77eb19b8c112d5686693"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionDeclarativeObserverTest.java",
+      "sha256": "9fc0518ee6ffa4b2bca021ff317ebdbb22c6522dab4bcc32e525ee960f28fd2e"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionDeclarativeRuntimeTest.java",
+      "sha256": "95c2bbb61af71b06440ecee46231993def3207fae1883fae74d651e5ccd67876"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionDeclarativeSpecificationTest.java",
+      "sha256": "349b08cbc1cd87c0a2fe5c717f382b8dcd7b4d4f04a904e6da54d1ccc3e3321c"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionDeclarativeTasksTest.java",
+      "sha256": "dc8677e55bc860954ab3112994ff5b3b191c68144347a9e35f8253120c0e0579"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionDependencyCoverageTest.java",
+      "sha256": "eb4d96fe57178958a76650161709914be51c4dc72383bccfa3566986da4a6b21"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionEvidenceTest.java",
+      "sha256": "197e4c846c15d4260560d8162d5a7c24052c5c836735c84c4fba25ba73102c68"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionFacadeLifecycleTcpTest.java",
+      "sha256": "ec8f41e859222de7016b9524dd3ce43f71e4ef00bd452ed3e0fbf388efac8907"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionFixtureCleanupTest.java",
+      "sha256": "c4651d072b823be3cc8fad1d018e7e012c9098813d5b7aa74e94d23eef556440"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionFixtureIsolationTest.java",
+      "sha256": "6b8115f289e0ade7784ecb2e1c29c5dd789b75c4068e2dc45d291315360f68b5"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionImportTest.java",
+      "sha256": "f47afbcdc991fc73e699688b3d01e012fdcb19927f416e897ddc6b1f617dc8c6"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionIStarAdmissionTest.java",
+      "sha256": "a76682bcfa3e3f23fe9807991c808ce6e7cce73a2912aa760ceaa0d37303d91c"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionIStarSourceTest.java",
+      "sha256": "592d9b36772ca8e3fcd47faf26d38b3ddc314cc55065999e6c1dd6a3a48ec8d6"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionLifecycleTest.java",
+      "sha256": "13c01438e96409dbb5b2da3c2e1749e7db53a141b9a13c96d02836453e94f593"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionLiveFixture.java",
+      "sha256": "d0ba5f43ecc485d638134c593b652341dccbb161560e4ee77b5b926d9f2650dc"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionLiveReplayTest.java",
+      "sha256": "ced48fd91d23c0831fbb686816ed2f6c2290322db3f0b45b0955f28dda31822b"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionMappingXmlTest.java",
+      "sha256": "f9c62b2a1a9dd118efc98097f45b22071da8e33051c6ac38e5e05b07864f7c5d"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionMonitorEventTest.java",
+      "sha256": "39aa89f1a86aafd3f6ffe5f6014ede27abcf33231308fc2f67cb921eafbd5cab"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionMonitorProjectionTest.java",
+      "sha256": "05b953d91a5af581f28e1548d5fe24dc05783e299861e89d98b53edc5433d0d8"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionNativeOperationTest.java",
+      "sha256": "dfdda3f090d37353a68caa4fa46e41940302daea686e6305567d915cbeb14cbc"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionNativeRoundTripTest.java",
+      "sha256": "04ab5372eea157a6b0960ac31382f7b9b3b39b581549fc8616f40e357cea0465"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionNativeSchemaTest.java",
+      "sha256": "80f687753ca052d6bbc93d32631537d572abb06079104a83e98d8bc60e691f1e"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionObligationEventTest.java",
+      "sha256": "0fbe760a7a0c7991999e8e341ddc7b872ca427b2211f09784cb7d5d151eef1ad"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionObligationLiveTcpTest.java",
+      "sha256": "91b1eaf250b17b0e125adae2596d605f297e5f040b949565625b9c66238226a0"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionObligationProjectionTest.java",
+      "sha256": "35b9ec4983f8997ced07a38f8bc10b5b09682270304d78bcc063ca1f3ed3513e"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionObservationIngressTest.java",
+      "sha256": "6092e542cecdd67e0d3bd540bcb9854ab8931217e17cc986b5a5303e37b67a1e"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionObservationTcpTest.java",
+      "sha256": "e773f961536d8a383e97b5f7258174e2101d558cb08e7ccf5ba3db22eda09c27"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionObserverSchemaTest.java",
+      "sha256": "3c069e5004afdc010fca3b08dcdc293a0ceb93039396b1b3a284c46435ae7d72"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionOccurrenceExpansionTest.java",
+      "sha256": "c0ff8b9c4df10a9ea3dcf75dbcdeea81cd7cf4ee5d31f67a7ddc78c53d4e0945"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionOclSpecificationTest.java",
+      "sha256": "590e0d92fa0c95dd0b9af43ac158f53c065d05d6939bfae62262e1f8acc3b532"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionOperationBindingsTest.java",
+      "sha256": "090169e4e87856f901a6d423081c1075c78a006df71376bbfe619c1ae4ff5f54"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionOrgFixture.java",
+      "sha256": "5fb58c224947aa426699152d02cfac7e098cd30638712469193dabfecd9bdba9"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionOwnerLifecycleTest.java",
+      "sha256": "f3c530173b93b4a5168853b107b8790a09eaeb5a99a98fd35905b5e2a0c12098"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionProgramReplayTest.java",
+      "sha256": "4332d2bbac2fead4e709effb0f466c304396ffd0745c9aba33bcad2662165c29"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionRuntimeCoverageTest.java",
+      "sha256": "a9304e9d9447b6bc3cdac57e146fca20375f1ba40381084d846a8ae6bd2fa441"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionRuntimeProjectionTest.java",
+      "sha256": "6a01ea714604405b75188c72c622e9aa755e93856f88662476dcab09d72eff52"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionRuntimeRulesTest.java",
+      "sha256": "596c1fc07a1a46143832dcc2d0410b82fde11c8f51a85d07bb65b2c3388499c1"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionSchemeDecoderTest.java",
+      "sha256": "0b01267da5eefb80a2544f003c0a12f81adc9fbae2759ba0346ebb8d018a3beb"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionSchemeLiveTcpTest.java",
+      "sha256": "72346016f381bf0d1b98a871e5c4f5a7df05c43439e94cfe41201b655b65c630"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionSchemeObservationTest.java",
+      "sha256": "33a37b7adc43d08553c93c14991a8a49c9ca424b3eff35ec1a7cb6ecc02db172"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionSourceSelectorTest.java",
+      "sha256": "42480f2ee240e52ae84ad7af5d80410ff0f1769cb48a29a51890fc9c2d2ae86e"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionStagingInstrumentationTest.java",
+      "sha256": "b5118aeea12e869028e37b5fd2781f5c1682ee141e24d88a4df10b20ed55f9b2"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionStaticProgramTest.java",
+      "sha256": "c7546b18ecaf46fb05e0eac5430b8ee4dbac61f98daba80ab43a284e1f38fec9"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionStepDecoderTest.java",
+      "sha256": "2bdc8a67e54db108f37961a1cb79f4a5338e1a4e243cdb3812190d6486340149"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionStepLiveTcpTest.java",
+      "sha256": "12143f7a9f9e8d269996c6c62f582f5b25ab9a36c069624fe91c1b106cc0f5b6"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionStepObservationTest.java",
+      "sha256": "6a87a682a96ef1a41d360e9bc16f9ce5b5a4f7678dac974709ce77ad75bab15f"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionTaskLiveTcpTest.java",
+      "sha256": "c84536f7efc99a7fcaf92f6f0b99c96bd439d5fe213d5469e5c3c7b825c27ea3"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionTaskOclBindingsTest.java",
+      "sha256": "733b00bc384b9b00dbcb4c7f2d43a40600636d094d13af77c31134e6757b33b2"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionTaskRuntimeTest.java",
+      "sha256": "e194e144516a2fbfceff0fc513422d1b46b5056b6195f1b79ed410be8f7699c1"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuctionWorkbenchUiTest.java",
+      "sha256": "cb22b24c23645a3be1260d9da94c5206482753dc84c859269ea48df31bf6a20a"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/AuthoredAuctionProgramTest.java",
+      "sha256": "6ed584f9884633d97373b15ef315b9364a1c67107060e0e7ab9de943e66d2968"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/GenericProgramPublicationTest.java",
+      "sha256": "f4cbb82a24ac312dbde1d7b8219e89f09b8cb130ef22a0014bb2268c9c46cf26"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/MoisePopulationClosureTest.java",
+      "sha256": "4f4724937882f4f26bd74c8a9f18513c5c4248c4f72b5fea76939a5479810808"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/SourceActionArtifactReferenceTest.java",
+      "sha256": "2b7997946eb6d09eaec8607a5c703bf9d7a5cf6a49ad7ad4ee0988726c2aa2a6"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/auction/SourceConfirmedAuctionProgramTest.java",
+      "sha256": "f60d93886f83a7c55674f5c71390d902166b6166803d57f91e9bdf174c2982be"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/AuctionControlledCase.java",
+      "sha256": "1c5b3081c1487ef74de74ea445a56c489183a4f73d93f4c8ae20ef262f525e0d"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/AuctionControlledCaseTest.java",
+      "sha256": "7bf47050511b3d0a30d3d7ea20e68ba656864e8a024f171a8a828041a655296b"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/AuctionOperationCheckpointTest.java",
+      "sha256": "17c8faa411d4db94d75baae8d4a34328059518f6276244f41073bc68691ac339"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/runtime/AuctionEngineBoundaryTest.java",
+      "sha256": "31497056521fd02db26e3cdaf6572f122a7ced6adfccb628ddd924c0faf9c31a"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/AuctionControlledProducerIT.java",
+      "sha256": "f4b6c28162516607e8ccc9a1fad5b1c046b4326170561bb9e440b3a31bfad6a6"
+    },
+    {
+      "original": "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/AuctionPackagedPluginIT.java",
+      "sha256": "3ed08ea857a55eec5d4f48bc61b082928bc0f75fba66eae61ae8a74d8f6e6c37"
+    }
+  ]
+}

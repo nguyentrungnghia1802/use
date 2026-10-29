@@ -85,6 +85,10 @@ public final class JasonStepCutDecoder {
         need("JASON_STEP_VALUES/2.0".equals(valueQuality.get("version"))&&"COMPLETE_CALLBACK".equals(valueQuality.get("enabled"))&&"PINNED_PLAN_BODY_ENTRY_MARKER".equals(valueQuality.get("enabledAuthority"))&&Set.of("ENABLED","SUCCEEDED","FAILED").contains(phase),"ENTRY_OR_PHASE_PROOF");
         need((phase.equals("ENABLED")?"UNAVAILABLE":"COMPLETE_CALLBACK").equals(valueQuality.get("succeeded"))&&(phase.equals("ENABLED")?"UNAVAILABLE":phase.equals("SUCCEEDED")?"PINNED_PLAN_BODY_EXIT_MARKER":"PUBLIC_GOAL_LISTENER_FAILURE").equals(valueQuality.get("succeededAuthority")),"TERMINAL_CALLBACK_PROOF");
         if(phase.equals("FAILED"))need(text(bindings,"sourceFailure").startsWith("GOAL_LISTENER_"),"FAILURE_AUTHORITY");
+        if(bindings.containsKey("failureSite")) {
+            var failure=CanonicalJson.object(bindings.get("failureSite"));keys(failure,Set.of("authority","term","bodyType","line","sourceHash"));
+            need(phase.equals("FAILED")&&"ACTUAL_INTENDED_MEANS_CURRENT_INSTRUCTION/1.0".equals(failure.get("authority"))&&hash.equals(failure.get("sourceHash"))&&integer(failure.get("line"))>0&&!text(failure,"term").isBlank()&&text(failure,"term").length()<=4096&&!text(failure,"bodyType").isBlank(),"FAILURE_SITE_PROOF");
+        }
         var values=CanonicalJson.object(bindings.get("values"));need(new HashSet<>(list(site.capture().get("variables"),32)).containsAll(values.keySet()),"UNREQUESTED_VARIABLE_CAPTURE");
         var inputs=CanonicalJson.object(bindings.get("inputs"));var requestedInputs=new HashMap<String,Map<String,Object>>();for(Object input:list(site.capture().get("inputs"),16)){var row=CanonicalJson.object(input);requestedInputs.put(text(row,"name"),row);}
         need(requestedInputs.keySet().containsAll(inputs.keySet()),"UNREQUESTED_INPUT_CAPTURE");

@@ -14,7 +14,7 @@ class XmlQuantifiedCoverageTest {
     @TempDir Path temp;
     @Test void compilerBoundAllInstancesIteratorUsesExactObservedReceiversAndKeepsPopulationAndValueGates()throws Exception {
         var helper=new XmlRuntimeMappingTest();helper.temp=temp;var f=helper.fixture();var engine=f.engine();
-        engine.applyAuctionCut(helper.cut(f,1,Map.of("A",3),Completeness.COMPLETE),"run",1,List.of());
+        engine.applyMappingCut(helper.cut(f,1,Map.of("A",3),Completeness.COMPLETE),"run",1,List.of());
         var object=engine.objectForSemanticId(XmlRuntimeMappingTest.id("A").canonical());var resolver=new ConstraintCoverageResolver();
         try(var backend=new NativeOclBackend(engine.system().model(),"test","quantified")) {
             var compiled=backend.compile(new OclContractSpec("qualified",OclContractSpec.Kind.GOAL,object.cls(),null,"Counter.allInstances()->forAll(p | p.p >= 0)"));

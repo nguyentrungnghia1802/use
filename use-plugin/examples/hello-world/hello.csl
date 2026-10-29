@@ -1,0 +1,8 @@
+csl v4.0 HelloWorldState {
+  orgContext GreetingRun { attribute workspace : String required; }
+  entity Console {
+    attribute name : String required;
+    attribute workspace : String required;
+    attribute numMsg : Integer required mutable;
+  }
+}

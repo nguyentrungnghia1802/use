@@ -54,7 +54,7 @@ final class CanonicalReplaySupport {
                 throw new IllegalStateException("SEMANTIC_REPLAY_EXPORT_REQUIRES_STABLE_COMPLETED_CUT");
             long budget=coordinator.journal().maxBytes();
             String version=projector.mutations().xmlCase()?(budget>CASE_ARCHIVE_BYTES?BUDGETED_DECLARATIVE_VERSION:DECLARATIVE_VERSION)
-                    :projector.mutations().auctionCase()?(budget>CASE_ARCHIVE_BYTES?BUDGETED_CASE_VERSION:CASE_VERSION):VERSION;
+                    :VERSION;
             var policy=new TreeMap<String,Object>();policy.put("schemaVersion",version);if(budgeted(version))policy.put("runtimeByteLimit",budget);
             if(coordinator.journal().persistedBytes()>fileLimit(policy,"runtime.jsonl"))throw new IllegalStateException("SEMANTIC_REPLAY_ARCHIVE_CAPACITY_EXCEEDED");
             var profile=coordinator.constraints().profile();
@@ -90,6 +90,7 @@ final class CanonicalReplaySupport {
             var manifest=new TreeMap<String,Object>(Map.of("schemaVersion",cut.version(),"files",hashes,"entries",cut.entries(),
                     "finalStateHash",cut.result().stateHash(),"finalResultHash",cut.finalResultHash(),"baselineStateHash",cut.baselineHash(),
                     "scope","OBSERVED_SUPPORTED_PROJECTION_ONLY","temporalOrder","ACCEPTED_NATIVE_BOUNDARIES_AND_EXACT_ENGINE_COMPLETIONS","programHash",cut.program().hash()));
+            manifest.put("executionEvidencePolicy",projector.coordinator().originalEngine().executionEvidencePolicy());
             if(budgeted(cut.version()))manifest.put("runtimeByteLimit",cut.budget());
             Files.write(output.resolve("manifest.json"),CanonicalJson.encode(manifest));
         }catch(java.io.IOException error){throw new IllegalStateException("SEMANTIC_REPLAY_EXPORT_IO_FAILED",error);}

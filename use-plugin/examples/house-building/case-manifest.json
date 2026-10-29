@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "profile": "JACAMO_DECLARATIVE_XML",
+  "modelMode": "AUTHORED",
+  "inputs": {
+    "jcm": "house-building.jcm",
+    "csl": "house.csl",
+    "istar": "house.istar",
+    "mapping": "house-mapping.xml",
+    "ocl": "house.ocl"
+  },
+  "sha256": {
+    "house-building.jcm": "c14ae6299b0d2e0034d7daaa233b9bf1b94a7b337aa39477ec865c52ca5fef08",
+    "house.csl": "e6d8620aa3503fa687330403311a6cfa78af9ee0d83934c744b7078bcc8d43f3",
+    "house.istar": "5ac21d7b700b003d3b164121e928186311c03e7e5c0ad17a3c135ab3963163df",
+    "house-mapping.xml": "85ddf0b8f8f854c10ee5a25b932c3020e57da2ed09f6bf41148167b45df3612d",
+    "house.ocl": "c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca"
+  },
+  "scope": "Observed world state/outcome requirements; not complete mental or normative compliance"
+}

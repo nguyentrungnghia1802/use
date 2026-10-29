@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <mapping xmlns="urn:use:jacamo-mapping:2" version="2.0" id="auction-source-confirmed-v1" engineProfile="ROLE_SPECIALIZATION_V1" jcmRef="src-jcm" xmlns:os="http://moise.sourceforge.net/os">
   <sources>
-    <file id="src-jcm" path="auction.jcm" sha256="c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb" kind="JCM" />
+    <file id="src-jcm" path="auction.jcm" sha256="c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb" kind="JCM" layoutPolicy="JCM_LINE_LAYOUT/1.0" layoutSha256="da4a3a4164ed2a086b08f4180edb3f6b4a4579acc40d8ec7b6bfdee67a6d463f" />
     <file id="src-os" path="src/org/auction-os.xml" sha256="d2481d4ee3c45b2cead42f942a3943684e86facee992870356ca4d1e47d16f9a" kind="MOISE" />
     <file id="src-asl" path="src/agt/auction_capabilities.asl" sha256="31679b13210114b211dad862ad86af352cc9003ac9527ea7268e3a1d0f9cfe1b" kind="ASL" />
     <file id="src-artifact" path="src/env/auction_env/AuctionArtifact.java" sha256="34036fc220274853e39f93682cdb22c350fe6a06739669860f2a66afe606ff4b" kind="JAVA" />

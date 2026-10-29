@@ -52,22 +52,22 @@ class XmlRuntimeMappingTest {
         return new RuntimeSnapshot("cut-"+sequence,f.revision(),java.time.Instant.EPOCH,java.time.Instant.EPOCH,mark,mark,1,facts,Map.of("cartago",population),"fingerprint-"+sequence);
     }
     @Test void genericProgramUsesExistingCutWriterAndNoLegacyFallbackAndPartialDoesNotInventFalse()throws Exception {
-        var f=fixture();var engine=f.engine();assertTrue(engine.auctionCase(),"Existing case-cut seam must select the neutral XML adapter");
+        var f=fixture();var engine=f.engine();assertTrue(engine.declarativeMapping(),"Existing case-cut seam must select the neutral XML adapter");
         var system=engine.system();var initial=cut(f,1,Map.of("A",1,"B",2),Completeness.COMPLETE);
-        assertEquals(2,engine.applyAuctionCut(initial,"run",1,List.of()).stream().filter(r->r.status()==NativeRuntimeMutationEngine.Status.MATERIALIZED).count());
+        assertEquals(2,engine.applyMappingCut(initial,"run",1,List.of()).stream().filter(r->r.status()==NativeRuntimeMutationEngine.Status.MATERIALIZED).count());
         assertSame(system,engine.system());assertEquals(2,system.state().numObjects());
         var a=engine.objectForSemanticId(id("A").canonical());assertEquals(IntegerValue.valueOf(1),a.state(system.state()).attributeValue("p"));
-        engine.applyAuctionCut(cut(f,2,Map.of("A",3),Completeness.PARTIAL),"run",1,List.of());
+        engine.applyMappingCut(cut(f,2,Map.of("A",3),Completeness.PARTIAL),"run",1,List.of());
         assertSame(a,engine.objectForSemanticId(id("A").canonical()));
         assertTrue(a.state(system.state()).attributeValue("p").isUndefined(),"An incomplete property join population cannot certify unique current value");
         assertTrue(engine.objectForSemanticId(id("B").canonical()).state(system.state()).attributeValue("p").isUndefined());
         assertEquals(2,system.state().numObjects(),"Missing population is unknown, not disposal");
     }
     @Test void laterRowFailureRestoresEarlierWritesAliasesAndMetadataOnSameNativeSavepoint()throws Exception {
-        var f=fixture();var engine=f.engine();engine.applyAuctionCut(cut(f,1,Map.of("A",1),Completeness.COMPLETE),"run",1,List.of());
+        var f=fixture();var engine=f.engine();engine.applyMappingCut(cut(f,1,Map.of("A",1),Completeness.COMPLETE),"run",1,List.of());
         var before=engine.savepoint();var old=engine.objectForSemanticId(id("A").canonical());
         var rows=new LinkedHashMap<String,Integer>();rows.put("NEW",9);rows.put("A",8);
-        var error=assertThrows(NativeRuntimeProtocolException.class,()->engine.applyAuctionCut(cut(f,2,rows,Completeness.COMPLETE),"different-run",1,List.of()));
+        var error=assertThrows(NativeRuntimeProtocolException.class,()->engine.applyMappingCut(cut(f,2,rows,Completeness.COMPLETE),"different-run",1,List.of()));
         assertTrue(error.getMessage().contains("M0_SOURCE_ALIAS_CONFLICT"));
         assertSame(old,engine.objectForSemanticId(id("A").canonical()));assertNull(engine.objectForSemanticId(id("NEW").canonical()));
         assertEquals(before.bindings().toMap(),engine.savepoint().bindings().toMap());assertEquals(before.tombstones(),engine.savepoint().tombstones());

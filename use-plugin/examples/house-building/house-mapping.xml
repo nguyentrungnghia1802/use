@@ -1,0 +1,345 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mapping xmlns="urn:use:jacamo-mapping:2" version="2.0" id="house-building-observed-v1" engineProfile="USE4GOAL_OBSERVED_V1" jcmRef="source-jcm">
+  <sources>
+    <file id="source-jcm" path="house-building.jcm" sha256="c14ae6299b0d2e0034d7daaa233b9bf1b94a7b337aa39477ec865c52ca5fef08" kind="JCM" />
+    <file id="source-1" path="build.gradle" sha256="69f127e0cca06170211c3eadfc2e44f9da7be2cfcb5c7efb37ec2cdc6f8e0584" kind="RESOURCE" />
+    <file id="source-2" path="src/agt/companyA.asl" sha256="da55328b72311a1d4c31a85db1da1d0fc7193d0fc1c196ba39f1484f3639535e" kind="ASL" />
+    <file id="source-3" path="src/agt/companyB.asl" sha256="172d0a91b6daafe46e6b349da2810c7aee09952b46c1e1bd7d9ac04738bfee13" kind="ASL" />
+    <file id="source-4" path="src/agt/companyC.asl" sha256="362b027c493a7379a0ed7c10e9b02b7f05a94dc796d134fc382c2899d323bc70" kind="ASL" />
+    <file id="source-5" path="src/agt/companyD.asl" sha256="9bca8b5ead0f1c83531bc370746e362db9a04c0f782ad44ead95d599ddc6c1ba" kind="ASL" />
+    <file id="source-6" path="src/agt/companyE.asl" sha256="07f0d731346838bbb788124d5a551e5a411ea95c3fe88f82c6658f6f29df0a78" kind="ASL" />
+    <file id="source-7" path="src/agt/giacomo.asl" sha256="c381af45aa14588d57ee29dec8e761751f6ccd08a72c1bf81a7d811ae487ebad" kind="ASL" />
+    <file id="source-8" path="src/agt/inc/common.asl" sha256="7fc62ffaa8ce2452b0585c064b337e2e3ea7196ed8fcc2491a249d7399d398c2" kind="RESOURCE" />
+    <file id="source-9" path="src/agt/inc/org_code.asl" sha256="10e0b90dcfc85a005b63405f48f69366bd078b83872a713d2ebaf5e973432bfb" kind="RESOURCE" />
+    <file id="source-10" path="src/agt/inc/org_goals.asl" sha256="75ee6cbba0f12a4db85279c0b7887f906505310ac9a8058667480939162c7868" kind="RESOURCE" />
+    <file id="source-11" path="src/env/simulator/Doors.java" sha256="1362456533add19d66f303abe449d5a92a8f18ca8b330d95b0088ec9c40ce536" kind="JAVA" />
+    <file id="source-12" path="src/env/simulator/ElectricalSystem.java" sha256="a3b4a6301db65f2287ef5b3beab8afc5777c3da82a19e7e57fa72c2eea026e53" kind="JAVA" />
+    <file id="source-13" path="src/env/simulator/ExteriorPainting.java" sha256="3eb44b699b65e8d091207b737a1317f415dd668d4050fe1b06bb87e78efcb001" kind="JAVA" />
+    <file id="source-14" path="src/env/simulator/Floor.java" sha256="f9ee120635dce3e053043009661d26b2565719cb6009a39ccd5b0743d0fdcf29" kind="JAVA" />
+    <file id="source-15" path="src/env/simulator/House.java" sha256="c1f0e34438889a312d05861b13cea54e4a362a34b586c6aa783ec94b6376adc7" kind="JAVA" />
+    <file id="source-16" path="src/env/simulator/HousePart.java" sha256="f141560e5a6d0b2b0a6c6990c62394e1922f62d9f95055f1d18f654b50c9760f" kind="JAVA" />
+    <file id="source-17" path="src/env/simulator/InteriorPainting.java" sha256="ad4b94e991b5fcd9f831cd67eb6a344e060be3b55e622f4d88d34305a4eb5c93" kind="JAVA" />
+    <file id="source-18" path="src/env/simulator/Plumbing.java" sha256="c8aae09eda9c8aae7813be91c050d32d0b11415c16f13ea5ba4e767069ff2128" kind="JAVA" />
+    <file id="source-19" path="src/env/simulator/Roof.java" sha256="1e7d91d877a30f8fb9dc99926aef2cb3d80abee677b6b9d53957dc0cf23f04f9" kind="JAVA" />
+    <file id="source-20" path="src/env/simulator/Site.java" sha256="d5c48daa34b4218f896a1f1a51bb9b49ba2e0700c54c3f4d550b06c4afb5a47e" kind="JAVA" />
+    <file id="source-21" path="src/env/simulator/Walls.java" sha256="2abea36e744cf74222b5a6476001606ddf6d006b2d71be788732e34b80c64eed" kind="JAVA" />
+    <file id="source-22" path="src/env/simulator/Windows.java" sha256="ea20b0684b6dad1de2786cc54f1302de6e571dec8cb1c64579ce1f0d7dcd9dc6" kind="JAVA" />
+    <file id="source-23" path="src/env/tools/AuctionArt.java" sha256="da3263c013b9a52c3918146d550389c8d00c830cff726f89598f4f2e72de0882" kind="JAVA" />
+    <file id="source-24" path="src/org/house-os.xml" sha256="6d0896b7c69692683f65f3ef4a413bba1496da2f492f02d3f92efcc5daef0ef4" kind="RESOURCE" />
+  </sources>
+  <ocl sha256="c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca" />
+  <models mode="AUTHORED" cslSha256="e6d8620aa3503fa687330403311a6cfa78af9ee0d83934c744b7078bcc8d43f3" istarSha256="5ac21d7b700b003d3b164121e928186311c03e7e5c0ad17a3c135ab3963163df" />
+  <assertions>
+    <require selectorRef="project-selector" field="name" equals="house_building" />
+  </assertions>
+  <selectors>
+    <select id="project-selector" sourceRef="source-jcm" syntax="regex" expectedCount="1">
+      <pattern>\bmas\s+(?P&lt;name&gt;\w+)\s*\{</pattern>
+    </select>
+  </selectors>
+  <modelRules targetVersion="v4.0" targetModel="HouseBuildingState" />
+  <istar name="HouseBuildingRequirements" />
+  <runtime>
+    <datasets>
+      <facts id="raw-artifacts" authority="cartago" kind="ARTIFACT" />
+      <facts id="raw-properties" authority="cartago" kind="PROPERTY" />
+      <facts id="raw-workspaces" authority="cartago" kind="WORKSPACE" />
+      <operationCuts id="construction-calls" requestRef="construction-operations" />
+      <facts id="raw-operation-descriptors" authority="cartago" kind="OPERATION" />
+    </datasets>
+    <tables>
+      <table id="selected-workspaces" dataset="raw-workspaces">
+        <where path="values.name" type="String" equals="main" />
+        <column name="uuid" path="identity" required="true" />
+        <column name="workspace" path="values.semanticId" required="true" />
+        <identity mode="PHYSICAL" path="identity" />
+      </table>
+      <table id="property-task" dataset="raw-properties">
+        <where path="values.name" type="String" equals="task" />
+        <column name="artifact" path="values.artifactSemanticId" required="true" />
+        <column name="value" path="scalar.value" required="true" />
+      </table>
+      <table id="property-maxValue" dataset="raw-properties">
+        <where path="values.name" type="String" equals="maxValue" />
+        <column name="artifact" path="values.artifactSemanticId" required="true" />
+        <column name="value" path="scalar.value" required="true" />
+      </table>
+      <table id="property-currentBid" dataset="raw-properties">
+        <where path="values.name" type="String" equals="currentBid" />
+        <whereAny path="values.valueTypes.0" type="String">
+          <value equals="java.lang.Double" />
+          <value equals="java.lang.Integer" />
+        </whereAny>
+        <column name="artifact" path="values.artifactSemanticId" required="true" />
+        <column name="value" path="values.values.0" required="true" />
+      </table>
+      <table id="property-currentWinner" dataset="raw-properties">
+        <where path="values.name" type="String" equals="currentWinner" />
+        <column name="artifact" path="values.artifactSemanticId" required="true" />
+        <column name="value" path="scalar.value" required="true" />
+      </table>
+      <table id="selected-artifacts" dataset="raw-artifacts">
+        <where path="values.artifactTypeJavaClassName" type="String" equals="tools.AuctionArt" />
+        <join tableRef="selected-workspaces" leftPath="values.workspaceSemanticId" rightPath="workspace" as="w" cardinality="ONE" required="true" />
+        <join tableRef="property-task" leftPath="values.semanticId" rightPath="artifact" as="ptask" cardinality="ONE" required="true" />
+        <join tableRef="property-maxValue" leftPath="values.semanticId" rightPath="artifact" as="pmaxValue" cardinality="ONE" required="true" />
+        <join tableRef="property-currentBid" leftPath="values.semanticId" rightPath="artifact" as="pcurrentBid" cardinality="ONE" required="true" />
+        <join tableRef="property-currentWinner" leftPath="values.semanticId" rightPath="artifact" as="pcurrentWinner" cardinality="ONE" required="true" />
+        <column name="uuid" path="identity" required="true" />
+        <column name="name" path="values.name" required="true" />
+        <column name="workspace" path="w.workspace" required="true" />
+        <column name="task" path="ptask.value" required="true" />
+        <column name="maxValue" path="pmaxValue.value" required="true" />
+        <column name="currentBid" path="pcurrentBid.value" required="true" />
+        <column name="currentWinner" path="pcurrentWinner.value" required="true" />
+        <identity mode="PHYSICAL" path="identity" />
+      </table>
+      <table id="building-workspaces" dataset="raw-workspaces">
+        <whereNot path="values.parentSemanticId" type="String" equals="" />
+        <join tableRef="selected-workspaces" leftPath="values.parentSemanticId" rightPath="workspace" as="executionContext" cardinality="ONE" required="true" />
+        <column name="workspace" path="values.semanticId" required="true" />
+        <column name="runWorkspace" path="executionContext.workspace" required="true" />
+      </table>
+      <table id="house-identities" dataset="raw-artifacts">
+        <where path="values.artifactTypeJavaClassName" type="String" equals="simulator.House" />
+        <join tableRef="building-workspaces" leftPath="values.workspaceSemanticId" rightPath="workspace" as="executionContext" cardinality="ONE" required="true" />
+        <column name="uuid" path="identity" required="true" />
+        <column name="workspace" path="executionContext.runWorkspace" required="true" />
+      </table>
+      <table id="construction-history" dataset="construction-calls">
+        <join tableRef="house-identities" leftPath="identity" rightPath="uuid" as="house" cardinality="ONE" required="true" />
+        <firstMatch path="events" as="prepareSite" orderPath="sourceSequence" completePath="continuous">
+          <match path="operation" type="String" equals="prepareSite" />
+          <match path="outcome" type="String" equals="SUCCEEDED" />
+          <match path="correlated" type="Boolean" equals="true" />
+        </firstMatch>
+        <firstMatch path="events" as="layFloors" orderPath="sourceSequence" completePath="continuous">
+          <match path="operation" type="String" equals="layFloors" />
+          <match path="outcome" type="String" equals="SUCCEEDED" />
+          <match path="correlated" type="Boolean" equals="true" />
+        </firstMatch>
+        <firstMatch path="events" as="buildWalls" orderPath="sourceSequence" completePath="continuous">
+          <match path="operation" type="String" equals="buildWalls" />
+          <match path="outcome" type="String" equals="SUCCEEDED" />
+          <match path="correlated" type="Boolean" equals="true" />
+        </firstMatch>
+        <firstMatch path="events" as="buildRoof" orderPath="sourceSequence" completePath="continuous">
+          <match path="operation" type="String" equals="buildRoof" />
+          <match path="outcome" type="String" equals="SUCCEEDED" />
+          <match path="correlated" type="Boolean" equals="true" />
+        </firstMatch>
+        <firstMatch path="events" as="fitWindows" orderPath="sourceSequence" completePath="continuous">
+          <match path="operation" type="String" equals="fitWindows" />
+          <match path="outcome" type="String" equals="SUCCEEDED" />
+          <match path="correlated" type="Boolean" equals="true" />
+        </firstMatch>
+        <firstMatch path="events" as="fitDoors" orderPath="sourceSequence" completePath="continuous">
+          <match path="operation" type="String" equals="fitDoors" />
+          <match path="outcome" type="String" equals="SUCCEEDED" />
+          <match path="correlated" type="Boolean" equals="true" />
+        </firstMatch>
+        <firstMatch path="events" as="installPlumbing" orderPath="sourceSequence" completePath="continuous">
+          <match path="operation" type="String" equals="installPlumbing" />
+          <match path="outcome" type="String" equals="SUCCEEDED" />
+          <match path="correlated" type="Boolean" equals="true" />
+        </firstMatch>
+        <firstMatch path="events" as="installElectricalSystem" orderPath="sourceSequence" completePath="continuous">
+          <match path="operation" type="String" equals="installElectricalSystem" />
+          <match path="outcome" type="String" equals="SUCCEEDED" />
+          <match path="correlated" type="Boolean" equals="true" />
+        </firstMatch>
+        <firstMatch path="events" as="paintExterior" orderPath="sourceSequence" completePath="continuous">
+          <match path="operation" type="String" equals="paintExterior" />
+          <match path="outcome" type="String" equals="SUCCEEDED" />
+          <match path="correlated" type="Boolean" equals="true" />
+        </firstMatch>
+        <firstMatch path="events" as="paintInterior" orderPath="sourceSequence" completePath="continuous">
+          <match path="operation" type="String" equals="paintInterior" />
+          <match path="outcome" type="String" equals="SUCCEEDED" />
+          <match path="correlated" type="Boolean" equals="true" />
+        </firstMatch>
+        <column name="uuid" path="identity" required="true" />
+        <column name="workspace" path="house.workspace" required="true" />
+        <column name="history" path="continuous" required="true" />
+        <column name="prepareSiteFound" path="prepareSite.found" required="true" />
+        <column name="layFloorsFound" path="layFloors.found" required="true" />
+        <column name="buildWallsFound" path="buildWalls.found" required="true" />
+        <column name="buildRoofFound" path="buildRoof.found" required="true" />
+        <column name="fitWindowsFound" path="fitWindows.found" required="true" />
+        <column name="fitDoorsFound" path="fitDoors.found" required="true" />
+        <column name="installPlumbingFound" path="installPlumbing.found" required="true" />
+        <column name="installElectricalSystemFound" path="installElectricalSystem.found" required="true" />
+        <column name="paintExteriorFound" path="paintExterior.found" required="true" />
+        <column name="paintInteriorFound" path="paintInterior.found" required="true" />
+        <column name="prepareSiteAt" path="prepareSite.value.sourceSequence" required="false" />
+        <column name="layFloorsAt" path="layFloors.value.sourceSequence" required="false" />
+        <column name="buildWallsAt" path="buildWalls.value.sourceSequence" required="false" />
+        <column name="buildRoofAt" path="buildRoof.value.sourceSequence" required="false" />
+        <column name="fitWindowsAt" path="fitWindows.value.sourceSequence" required="false" />
+        <column name="fitDoorsAt" path="fitDoors.value.sourceSequence" required="false" />
+        <column name="installPlumbingAt" path="installPlumbing.value.sourceSequence" required="false" />
+        <column name="installElectricalSystemAt" path="installElectricalSystem.value.sourceSequence" required="false" />
+        <column name="paintExteriorAt" path="paintExterior.value.sourceSequence" required="false" />
+        <column name="paintInteriorAt" path="paintInterior.value.sourceSequence" required="false" />
+        <identity mode="PHYSICAL" path="identity" />
+      </table>
+    </tables>
+    <inputs>
+      <input id="context-input" identityKind="PHYSICAL" identityFields="uuid" tableRef="selected-workspaces">
+        <field name="uuid" type="String" required="true" />
+        <field name="workspace" type="String" required="true" />
+      </input>
+      <input id="artifact-input" identityKind="PHYSICAL" identityFields="uuid" tableRef="selected-artifacts">
+        <field name="uuid" type="String" required="true" />
+        <field name="name" type="String" required="true" />
+        <field name="workspace" type="String" required="true" />
+        <field name="task" type="String" required="true" />
+        <field name="maxValue" type="Integer" required="true" />
+        <field name="currentBid" type="String" required="true" />
+        <field name="currentWinner" type="String" required="true" />
+      </input>
+    </inputs>
+    <converters>
+      <converter id="string" inputType="String" outputType="String" algorithm="preserve-exact-content" onMismatch="incomplete" />
+      <converter id="integer" inputType="Integer" outputType="Integer" algorithm="preserve-exact-integer" onMismatch="incomplete" />
+      <converter id="number-text" inputType="String" outputType="Real" algorithm="parse-finite-java-number-text" onMismatch="incomplete" onOverflowOrUnsupportedBackend="incomplete-do-not-clamp" sentinelReplacement="forbidden" />
+    </converters>
+    <rule id="map-context" inputRef="context-input">
+      <requireEvidence proof="source-cut" />
+      <upsertInstance targetType="BuildingRun" keyFields="uuid" aliasFrom="uuid">
+        <assign target="workspace" sourceField="workspace" converter="string" />
+      </upsertInstance>
+    </rule>
+    <rule id="map-artifact" inputRef="artifact-input">
+      <requireEvidence proof="source-cut" />
+      <upsertInstance targetType="ProcurementAuction" keyFields="uuid" aliasFrom="uuid">
+        <assign target="name" sourceField="name" converter="string" />
+        <assign target="workspace" sourceField="workspace" converter="string" />
+        <assign target="task" sourceField="task" converter="string" />
+        <assign target="maxValue" sourceField="maxValue" converter="integer" />
+        <assign target="currentBid" sourceField="currentBid" converter="number-text" />
+        <assign target="currentWinner" sourceField="currentWinner" converter="string" />
+      </upsertInstance>
+    </rule>
+    <occurrences>
+      <scope id="observed-run" tableRef="selected-workspaces" anchorColumn="uuid" contextColumn="uuid" keyFields="uuid">
+        <actor actor="ConstructionObserver" tableRef="selected-workspaces" scopeColumn="uuid" scopeKey="uuid" playerColumn="uuid" kind="CONTEXT_VIEWPOINT" cardinality="ONE" />
+        <self target="ContractsAwarded" origin="CONTEXT" />
+        <self target="SitePrepared" origin="CONTEXT" />
+        <self target="FloorsLaid" origin="CONTEXT" />
+        <self target="WallsBuilt" origin="CONTEXT" />
+        <self target="RoofBuilt" origin="CONTEXT" />
+        <self target="WindowsFitted" origin="CONTEXT" />
+        <self target="DoorsFitted" origin="CONTEXT" />
+        <self target="PlumbingInstalled" origin="CONTEXT" />
+        <self target="ElectricalInstalled" origin="CONTEXT" />
+        <self target="ExteriorPainted" origin="CONTEXT" />
+        <self target="InteriorPainted" origin="CONTEXT" />
+      </scope>
+    </occurrences>
+  </runtime>
+  <observers>
+    <view id="build-progress" name="BuildProgress" category="CLASS" keyFields="uuid">
+      <field name="workspace" type="String" origin="Exact CArtAgO workspace semantic identity" />
+      <field name="prepareSiteAt" type="Integer" origin="First correlated successful operation source sequence; -1 only under complete creation history" />
+      <field name="layFloorsAt" type="Integer" origin="First correlated successful operation source sequence; -1 only under complete creation history" />
+      <field name="buildWallsAt" type="Integer" origin="First correlated successful operation source sequence; -1 only under complete creation history" />
+      <field name="buildRoofAt" type="Integer" origin="First correlated successful operation source sequence; -1 only under complete creation history" />
+      <field name="fitWindowsAt" type="Integer" origin="First correlated successful operation source sequence; -1 only under complete creation history" />
+      <field name="fitDoorsAt" type="Integer" origin="First correlated successful operation source sequence; -1 only under complete creation history" />
+      <field name="installPlumbingAt" type="Integer" origin="First correlated successful operation source sequence; -1 only under complete creation history" />
+      <field name="installElectricalSystemAt" type="Integer" origin="First correlated successful operation source sequence; -1 only under complete creation history" />
+      <field name="paintExteriorAt" type="Integer" origin="First correlated successful operation source sequence; -1 only under complete creation history" />
+      <field name="paintInteriorAt" type="Integer" origin="First correlated successful operation source sequence; -1 only under complete creation history" />
+    </view>
+    <project id="project-build-progress" viewRef="build-progress" tableRef="construction-history" keyFields="uuid">
+      <write field="workspace" column="workspace" mode="current" />
+      <derive field="prepareSiteAt" expression="if found then sequence else -1 endif" completeColumn="history">
+        <arg name="found" column="prepareSiteFound" type="Boolean" />
+        <arg name="sequence" column="prepareSiteAt" type="Integer" onMissing="undefined" />
+      </derive>
+      <derive field="layFloorsAt" expression="if found then sequence else -1 endif" completeColumn="history">
+        <arg name="found" column="layFloorsFound" type="Boolean" />
+        <arg name="sequence" column="layFloorsAt" type="Integer" onMissing="undefined" />
+      </derive>
+      <derive field="buildWallsAt" expression="if found then sequence else -1 endif" completeColumn="history">
+        <arg name="found" column="buildWallsFound" type="Boolean" />
+        <arg name="sequence" column="buildWallsAt" type="Integer" onMissing="undefined" />
+      </derive>
+      <derive field="buildRoofAt" expression="if found then sequence else -1 endif" completeColumn="history">
+        <arg name="found" column="buildRoofFound" type="Boolean" />
+        <arg name="sequence" column="buildRoofAt" type="Integer" onMissing="undefined" />
+      </derive>
+      <derive field="fitWindowsAt" expression="if found then sequence else -1 endif" completeColumn="history">
+        <arg name="found" column="fitWindowsFound" type="Boolean" />
+        <arg name="sequence" column="fitWindowsAt" type="Integer" onMissing="undefined" />
+      </derive>
+      <derive field="fitDoorsAt" expression="if found then sequence else -1 endif" completeColumn="history">
+        <arg name="found" column="fitDoorsFound" type="Boolean" />
+        <arg name="sequence" column="fitDoorsAt" type="Integer" onMissing="undefined" />
+      </derive>
+      <derive field="installPlumbingAt" expression="if found then sequence else -1 endif" completeColumn="history">
+        <arg name="found" column="installPlumbingFound" type="Boolean" />
+        <arg name="sequence" column="installPlumbingAt" type="Integer" onMissing="undefined" />
+      </derive>
+      <derive field="installElectricalSystemAt" expression="if found then sequence else -1 endif" completeColumn="history">
+        <arg name="found" column="installElectricalSystemFound" type="Boolean" />
+        <arg name="sequence" column="installElectricalSystemAt" type="Integer" onMissing="undefined" />
+      </derive>
+      <derive field="paintExteriorAt" expression="if found then sequence else -1 endif" completeColumn="history">
+        <arg name="found" column="paintExteriorFound" type="Boolean" />
+        <arg name="sequence" column="paintExteriorAt" type="Integer" onMissing="undefined" />
+      </derive>
+      <derive field="paintInteriorAt" expression="if found then sequence else -1 endif" completeColumn="history">
+        <arg name="found" column="paintInteriorFound" type="Boolean" />
+        <arg name="sequence" column="paintInteriorAt" type="Integer" onMissing="undefined" />
+      </derive>
+    </project>
+  </observers>
+  <bindings>
+    <static id="bind-context" kind="ORG_CONTEXT" target="BuildingRun" sourceKind="JACAMO_PROJECT" feature="name" value="house_building" reason="Authored physical workspace viewpoint; not a second organization or running agent">
+      <metadata key="contextAbstraction" value="PROJECT_EXECUTION_VIEW/1.0" />
+    </static>
+    <static id="bind-entity" kind="ENTITY" target="ProcurementAuction" sourceKind="DERIVED_ARTIFACT_CLASS_ALIAS" feature="javaClass" value="tools.AuctionArt" reason="Passive application artifact state, not Jason Agent or belief truth" />
+    <static id="bind-actor" kind="ACTOR" target="ConstructionObserver" sourceKind="JACAMO_PROJECT" feature="name" value="house_building" reason="Collective observation viewpoint; never credits an operation to an individual agent" />
+    <actorRuntime actor="ConstructionObserver" bindingRef="bind-actor" contextBindingRef="bind-context" activationPolicy="OBSERVED_SCHEME_COMMITMENT" episodePolicy="RUN_SCHEME_PLAYER_INVOCATION" />
+    <elementRuntime target="HouseRealized" actor="ConstructionObserver" self="BuildingRun" derived="true" selfKind="CONTEXT" reason="Authored outcome condition on accepted state; not a raw active Jason goal" />
+    <elementRuntime target="ConstructionCompleted" actor="ConstructionObserver" self="BuildingRun" derived="true" selfKind="CONTEXT" reason="Authored outcome condition on accepted state; not a raw active Jason goal" />
+    <elementRuntime target="RwdCompleted" actor="ConstructionObserver" self="BuildingRun" derived="true" selfKind="CONTEXT" reason="Authored outcome condition on accepted state; not a raw active Jason goal" />
+    <elementRuntime target="PeeCompleted" actor="ConstructionObserver" self="BuildingRun" derived="true" selfKind="CONTEXT" reason="Authored outcome condition on accepted state; not a raw active Jason goal" />
+    <elementRuntime target="ContractsAwarded" actor="ConstructionObserver" self="BuildingRun" derived="false" selfKind="CONTEXT" reason="Authored outcome condition on accepted state; not a raw active Jason goal" />
+    <elementRuntime target="SitePrepared" actor="ConstructionObserver" self="BuildingRun" derived="false" selfKind="CONTEXT" reason="Authored outcome condition on accepted state; not a raw active Jason goal" />
+    <elementRuntime target="FloorsLaid" actor="ConstructionObserver" self="BuildingRun" derived="false" selfKind="CONTEXT" reason="Authored outcome condition on accepted state; not a raw active Jason goal" />
+    <elementRuntime target="WallsBuilt" actor="ConstructionObserver" self="BuildingRun" derived="false" selfKind="CONTEXT" reason="Authored outcome condition on accepted state; not a raw active Jason goal" />
+    <elementRuntime target="RoofBuilt" actor="ConstructionObserver" self="BuildingRun" derived="false" selfKind="CONTEXT" reason="Authored outcome condition on accepted state; not a raw active Jason goal" />
+    <elementRuntime target="WindowsFitted" actor="ConstructionObserver" self="BuildingRun" derived="false" selfKind="CONTEXT" reason="Authored outcome condition on accepted state; not a raw active Jason goal" />
+    <elementRuntime target="DoorsFitted" actor="ConstructionObserver" self="BuildingRun" derived="false" selfKind="CONTEXT" reason="Authored outcome condition on accepted state; not a raw active Jason goal" />
+    <elementRuntime target="PlumbingInstalled" actor="ConstructionObserver" self="BuildingRun" derived="false" selfKind="CONTEXT" reason="Authored outcome condition on accepted state; not a raw active Jason goal" />
+    <elementRuntime target="ElectricalInstalled" actor="ConstructionObserver" self="BuildingRun" derived="false" selfKind="CONTEXT" reason="Authored outcome condition on accepted state; not a raw active Jason goal" />
+    <elementRuntime target="ExteriorPainted" actor="ConstructionObserver" self="BuildingRun" derived="false" selfKind="CONTEXT" reason="Authored outcome condition on accepted state; not a raw active Jason goal" />
+    <elementRuntime target="InteriorPainted" actor="ConstructionObserver" self="BuildingRun" derived="false" selfKind="CONTEXT" reason="Authored outcome condition on accepted state; not a raw active Jason goal" />
+    <oclClause name="NonnegativeBid" context="context ProcurementAuction" />
+    <oclClause name="WithinBudget" context="context ProcurementAuction" />
+    <oclClause name="NonnegativeOffer" context="context ProcurementAuction::bid(amount : Real)" />
+    <oclClause name="BestOfferRetained" context="context ProcurementAuction::bid(amount : Real)" />
+    <oclClause name="FloorAfterSite" context="context BuildProgress" />
+    <oclClause name="WallsAfterFloors" context="context BuildProgress" />
+    <oclClause name="buildRoofAfterWalls" context="context BuildProgress" />
+    <oclClause name="fitWindowsAfterWalls" context="context BuildProgress" />
+    <oclClause name="fitDoorsAfterWalls" context="context BuildProgress" />
+    <oclClause name="installPlumbingAfterShell" context="context BuildProgress" />
+    <oclClause name="installElectricalSystemAfterShell" context="context BuildProgress" />
+    <oclClause name="paintExteriorAfterShell" context="context BuildProgress" />
+    <oclClause name="InteriorAfterServices" context="context BuildProgress" />
+    <operation id="observed-operation" owner="ProcurementAuction" signature="[&quot;tools.AuctionArt&quot;,&quot;bid&quot;,[&quot;double&quot;],&quot;void&quot;]" clauses="NonnegativeOffer BestOfferRetained" />
+  </bindings>
+  <requirements>
+    <capability id="bid-operations" provider="cartago.operation-history.v1" required="true" hashOrigin="OFFICIAL_CLASS_PROOF" sourceRef="source-23" class="tools.AuctionArt" operations="bid" />
+    <capability id="construction-operations" provider="cartago.operation-history.v1" required="true" hashOrigin="OFFICIAL_CLASS_PROOF" sourceRef="source-15" class="simulator.House" operations="prepareSite layFloors buildWalls buildRoof fitWindows fitDoors installPlumbing installElectricalSystem paintExterior paintInterior" />
+  </requirements>
+  <omittedConcepts>
+    <omit id="mental-state" concept="Jason beliefs and goals" reason="Agent beliefs are not world truth; active goals do not prove outcome satisfaction" handledBy="TRACE_ONLY" />
+    <omit id="org-norms" concept="MOISE roles missions norms and deadlines" reason="Source OS retained with provenance; this observed-world profile does not claim complete organizational compliance" handledBy="TRACE_ONLY" />
+    <omit id="execution-order" concept="MOISE sequence parallel" reason="Refinement means outcome conjunction only; House operation-return order is checked separately, Hello character order remains outside the count requirement" handledBy="TRACE_ONLY" />
+  </omittedConcepts>
+</mapping>

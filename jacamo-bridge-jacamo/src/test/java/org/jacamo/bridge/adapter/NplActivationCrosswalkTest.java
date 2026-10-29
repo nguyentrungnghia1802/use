@@ -36,7 +36,7 @@ class NplActivationCrosswalkTest {
             var payload=new NplActivationCrosswalk("clock-run",2).observe("board",value.copy(),"LISTENER_CREATED","ACTIVE");
             long deadline=Long.parseLong((String)payload.get("deadline")),created=Long.parseLong((String)payload.get("createdEpochMillis"));
             assertTrue(created>=before&&created<=after);assertTrue(deadline>=before+duration&&deadline<=after+duration);
-            assertEquals(AuctionClockObservation.clockIdentity("clock-run",2),((Map<?,?>)payload.get("timeBasis")).get("clockIdentity"));
+            assertEquals(NplSourceClockObservation.clockIdentity("clock-run",2),((Map<?,?>)payload.get("timeBasis")).get("clockIdentity"));
             if(duration==10000L){if(firstDeadline!=0)assertTrue(deadline>=firstDeadline);firstDeadline=deadline;}
         }
         assertThrows(IllegalArgumentException.class,()->NplActivationCrosswalk.epoch(new TimeTerm(0,"never")));

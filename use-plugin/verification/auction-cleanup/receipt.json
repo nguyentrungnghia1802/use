@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "tests": 25,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "removed": [
+    "use-plugin/examples/auction/auction_jacamo_to_csl_rules.xml"
+  ],
+  "reason": "Retired case-specific Java profile; active workflow uses authored-v1 declarative XML",
+  "updated": [
+    "case-manifest.json",
+    "README.md",
+    "release inventory and assembly",
+    "UI file-selection regression test",
+    "package contract inventory regression test"
+  ],
+  "preserved": "All remaining 44 Auction assets are runtime inputs, active alternate profile/test fixtures, oracle, provenance or licenses; no blind deletion",
+  "gitDelivery": "Current coherent source/test/docs checkpoint plus selected receipts; raw local verification recordings and build output excluded"
+}

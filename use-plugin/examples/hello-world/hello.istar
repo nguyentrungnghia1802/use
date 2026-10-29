@@ -1,0 +1,9 @@
+istar HelloWorldRequirements {
+  role GreetingObserver {
+    // Achievement and maintenance remain independent: their status alphabets differ.
+    goal TwelveMessagesObserved : Achieve
+      condition {[ Console.allInstances()->exists(c | c.workspace = self.workspace and c.numMsg >= 12) ]}
+    goal NonnegativeCounts : Maintain
+      condition {[ Console.allInstances()->exists(c | c.workspace = self.workspace) and Console.allInstances()->forAll(c | c.workspace <> self.workspace or c.numMsg >= 0) ]}
+  }
+}

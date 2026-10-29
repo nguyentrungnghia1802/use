@@ -108,6 +108,15 @@ public final class LiveJaCaMoLauncherMain {
                         .getBytes(java.nio.charset.StandardCharsets.UTF_8));
             }
             @Override public synchronized void setupLogger(String ignoredProjectLoggingFile) {
+                if(!headless) {
+                    String position=System.getProperty("jacamo.bridge.gui.position","");
+                    if(!position.isBlank()) {
+                        if(!position.matches("-?[0-9]{1,6},-?[0-9]{1,6}"))throw new IllegalArgumentException("PRODUCER_GUI_POSITION_INVALID");
+                        String[] coordinates=position.split(",");
+                        try {javax.swing.SwingUtilities.invokeAndWait(()->jason.runtime.MASConsoleGUI.get().getFrame().setLocation(Integer.parseInt(coordinates[0]),Integer.parseInt(coordinates[1])));}
+                        catch(Exception failure){throw new IllegalStateException("PRODUCER_GUI_POSITION_FAILED",failure);}
+                    }
+                }
                 // Keep headless runs process-local and deterministic.  Interactive runs use the
                 // official JaCaMo MAS console handler so the shared launcher exposes the same
                 // native runtime window for every case study, even when the project has no

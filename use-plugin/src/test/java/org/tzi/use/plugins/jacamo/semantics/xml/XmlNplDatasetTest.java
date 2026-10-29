@@ -49,7 +49,7 @@ class XmlNplDatasetTest {
                 </project></observers>
                 """;
             var helper=new XmlRuntimeMappingTest();helper.temp=temp;var nativeState=helper.fixture(plan,observers,"<requirements><capability id=\"norms\" provider=\"npl.lifecycle.v1\" hash=\""+request.parameters().get("hash")+"\" required=\"true\"/></requirements>");
-            var engine=nativeState.engine();engine.applyAuctionCut(cut,"dataset-run",2,List.of());
+            var engine=nativeState.engine();engine.applyMappingCut(cut,"dataset-run",2,List.of());
             var duty=engine.system().state().allObjects().stream().filter(o->o.cls().name().equals("ShipmentDuty")).findFirst().orElseThrow();
             assertEquals(org.tzi.use.uml.ocl.value.BooleanValue.FALSE,duty.state(engine.system().state()).attributeValue("unfulfilled"));
             var withoutBoard=copy(cut,cut.facts().stream().filter(f->f.kind()!=RuntimeFactKind.ARTIFACT).toList());
@@ -69,13 +69,13 @@ class XmlNplDatasetTest {
             assertEquals("UNFULFILLED",advanced.get(obligation.identity()).values().get("state"),"Raw NPL event must replace its activation fact in the admitted evidence index");
             var marks=new HashMap<String,Long>();cut.endWatermarks().forEach((s,m)->marks.put(s,m.sequence()));
             var eventCut=RuntimeObservationCut.eventCut(advanced,marks,cut.sourceCompleteness(),terminalEvent);
-            engine.applyAuctionCut(eventCut,"dataset-run",2,List.of(),terminalEvent);assertEquals(org.tzi.use.uml.ocl.value.BooleanValue.TRUE,duty.state(engine.system().state()).attributeValue("unfulfilled"));
-            engine.applyAuctionCut(terminalCut,"dataset-run",2,List.of());assertEquals(org.tzi.use.uml.ocl.value.BooleanValue.TRUE,duty.state(engine.system().state()).attributeValue("unfulfilled"));
+            engine.applyMappingCut(eventCut,"dataset-run",2,List.of(),terminalEvent);assertEquals(org.tzi.use.uml.ocl.value.BooleanValue.TRUE,duty.state(engine.system().state()).attributeValue("unfulfilled"));
+            engine.applyMappingCut(terminalCut,"dataset-run",2,List.of());assertEquals(org.tzi.use.uml.ocl.value.BooleanValue.TRUE,duty.state(engine.system().state()).attributeValue("unfulfilled"));
             var saved=engine.savepoint();
             // Deliberately bypass projector admission to exercise the independent lifecycle conflict guard.
-            engine.applyAuctionCut(cut,"dataset-run",2,List.of());assertEquals("ERROR",engine.metadata(duty,"xml:observer:lifecycle:verdict"));
+            engine.applyMappingCut(cut,"dataset-run",2,List.of());assertEquals("ERROR",engine.metadata(duty,"xml:observer:lifecycle:verdict"));
             assertTrue(duty.state(engine.system().state()).attributeValue("unfulfilled").isUndefined());
-            engine.applyAuctionCut(terminalCut,"dataset-run",2,List.of());assertTrue(duty.state(engine.system().state()).attributeValue("unfulfilled").isUndefined(),"Terminal contradiction is sticky until rollback/reset, never a FAIL Boolean");
+            engine.applyMappingCut(terminalCut,"dataset-run",2,List.of());assertTrue(duty.state(engine.system().state()).attributeValue("unfulfilled").isUndefined(),"Terminal contradiction is sticky until rollback/reset, never a FAIL Boolean");
             engine.rollback(saved);assertEquals(org.tzi.use.uml.ocl.value.BooleanValue.TRUE,duty.state(engine.system().state()).attributeValue("unfulfilled"));
         }finally {
             if(artifact!=null){NeutralNormBoard.instance.getNormativeEngine().stop();environment.getController("/main").removeArtifact(artifact.getName());}NeutralNormBoard.instance=null;

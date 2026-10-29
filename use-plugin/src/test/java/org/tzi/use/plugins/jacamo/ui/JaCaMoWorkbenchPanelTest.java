@@ -96,16 +96,16 @@ class JaCaMoWorkbenchPanelTest {
     }
     @Test void mappingChooserMatchesTheExplicitDialectAndNativeHasNoSpecification()throws Exception {
         SwingUtilities.invokeAndWait(()->{
-            Path xml=Path.of("examples/auction/auction_jacamo_to_csl_rules.xml").toAbsolutePath();
-            var chooser=JaCaMoWorkbenchPanel.createMappingChooser("AUCTION_OBSERVED_V1",xml);
+            Path xml=Path.of("examples/auction/authored-v1/auction-mapping.xml").toAbsolutePath();
+            var chooser=JaCaMoWorkbenchPanel.createMappingChooser("JACAMO_DECLARATIVE_XML",xml);
             assertTrue(chooser.getFileFilter().accept(xml.toFile()));assertFalse(chooser.getFileFilter().accept(Path.of("rules.json").toFile()));assertEquals(xml.toFile(),chooser.getSelectedFile());
             var json=JaCaMoWorkbenchPanel.createMappingChooser("USE4GOAL_OBSERVED_V1",null);assertTrue(json.getFileFilter().accept(Path.of("rules.json").toFile()));assertFalse(json.getFileFilter().accept(xml.toFile()));
             var panel=new JaCaMoWorkbenchPanel(new JaCaMoFacade(){public String status(){return "dialect selection";}public ImportSelection importSelection(){return new ImportSelection("NATIVE_CURRENT",null);}},message->fail(message));
-            assertFalse(button(panel,"choose-mapping").isEnabled());component(panel,"engine-profile",javax.swing.JComboBox.class).setSelectedItem("AUCTION_OBSERVED_V1");assertTrue(button(panel,"choose-mapping").isEnabled());
+            assertFalse(button(panel,"choose-mapping").isEnabled());component(panel,"engine-profile",javax.swing.JComboBox.class).setSelectedItem("JACAMO_DECLARATIVE_XML");assertTrue(button(panel,"choose-mapping").isEnabled());
         });
     }
-    @Test void acceptedAuctionXmlSelectionMustRemainAuctionWhenTheRealImportWidgetCapturesIt()throws Exception {
-        var expected=new JaCaMoFacade.ImportSelection("AUCTION_OBSERVED_V1",Path.of("examples/auction/auction_jacamo_to_csl_rules.xml"));
+    @Test void acceptedXmlSelectionMustRemainDeclarativeWhenTheRealImportWidgetCapturesIt()throws Exception {
+        var expected=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",Path.of("examples/auction/authored-v1/auction-mapping.xml"));
         var selected=new java.util.concurrent.atomic.AtomicReference<JaCaMoFacade.ImportSelection>();var imported=new CountDownLatch(1);
         JaCaMoFacade facade=new JaCaMoFacade(){
             public String status(){return "Auction widget route";}
@@ -115,7 +115,7 @@ class JaCaMoWorkbenchPanelTest {
         var panel=new java.util.concurrent.atomic.AtomicReference<JaCaMoWorkbenchPanel>();
         SwingUtilities.invokeAndWait(()->{
             panel.set(new JaCaMoWorkbenchPanel(facade,message->fail(message)));
-            assertEquals("AUCTION_OBSERVED_V1",component(panel.get(),"engine-profile",javax.swing.JComboBox.class).getSelectedItem(),"A configured case profile cannot silently fall back to Native");
+            assertEquals("JACAMO_DECLARATIVE_XML",component(panel.get(),"engine-profile",javax.swing.JComboBox.class).getSelectedItem(),"A configured case profile cannot silently fall back to Native");
             panel.get().importProject(Path.of("examples/auction/auction.jcm"));
         });
         assertTrue(imported.await(5,TimeUnit.SECONDS));assertEquals(expected,selected.get());

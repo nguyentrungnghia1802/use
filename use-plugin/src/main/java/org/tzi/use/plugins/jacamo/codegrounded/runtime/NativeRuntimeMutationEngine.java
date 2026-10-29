@@ -114,7 +114,7 @@ public final class NativeRuntimeMutationEngine {
     public boolean cslProfile() { return cslMapper != null; }
     public boolean canonicalProfile() {return org.tzi.use.semantic.engine.use75.Use75CslModelBackend.active(system.model())&&system.model().getAnnotation("CanonicalSemanticProgram")!=null;}
     public boolean canonicalMappingConfigured(){return canonicalMapper!=null;}
-    public boolean auctionCase(){return caseMapping!=null;}
+    public boolean declarativeMapping(){return caseMapping!=null;}
     public boolean xmlCase(){return canonicalProgram!=null&&canonicalProgram.xmlPlan()!=null;}
     /** Read under the existing native barrier; the XML adapter returns immutable casts, not another state. */
     public synchronized List<org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.OccurrenceProjection.Scope> xmlOccurrences(String run,long generation,String revision) {
@@ -129,10 +129,10 @@ public final class NativeRuntimeMutationEngine {
         catch(RuntimeException rejected){throw new NativeRuntimeProtocolException(caseMapping.observationRejectionCode()+":"+rejected.getMessage(),rejected);}
     }
     /** Same writer and rollback image; the adapter owns no native state. */
-    public synchronized List<ApplyResult> applyAuctionCut(RuntimeSnapshot cut,String run,long generation,List<RuntimeEvent> prefix) {
-        return applyAuctionCut(cut,run,generation,prefix,null);
+    public synchronized List<ApplyResult> applyMappingCut(RuntimeSnapshot cut,String run,long generation,List<RuntimeEvent> prefix) {
+        return applyMappingCut(cut,run,generation,prefix,null);
     }
-    public synchronized List<ApplyResult> applyAuctionCut(RuntimeSnapshot cut,String run,long generation,List<RuntimeEvent> prefix,RuntimeEvent event) {
+    public synchronized List<ApplyResult> applyMappingCut(RuntimeSnapshot cut,String run,long generation,List<RuntimeEvent> prefix,RuntimeEvent event) {
         if(caseMapping==null)return List.of();var before=capture();
         try {
             var projected=caseMapping.applyCut(cslPort(),run,generation,cut,prefix,event);
@@ -239,7 +239,7 @@ public final class NativeRuntimeMutationEngine {
      */
     /** A COMPLETE replacement cut proves which property occurrences ceased to exist before slot upserts. */
     public synchronized void prepareSnapshot(RuntimeSnapshot snapshot) {
-        if(auctionCase())return; // Case slots include metadata and authorized fields, not only observables.
+        if(declarativeMapping())return; // Case slots include metadata and authorized fields, not only observables.
         if(!observedProfile() || snapshot.sourceCompleteness().get("cartago")!=Completeness.COMPLETE)return;
         var observed=new java.util.HashSet<String>();
         for(var fact:snapshot.facts())if(fact.id().authority().equals("cartago")) {
@@ -294,7 +294,7 @@ public final class NativeRuntimeMutationEngine {
             Map<String, Object> payload, boolean validateStructure) {
         String identity = runtimeIdentity == null ? "<missing>" : runtimeIdentity.canonical();
         String normalized = textOrNull(payload, "normalizedEventKind");
-        if(auctionCase()&&normalized!=null&&!org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoRuntimeStateMapping.caseHelper(normalized))
+        if(declarativeMapping()&&normalized!=null&&!org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoRuntimeStateMapping.caseHelper(normalized))
             return ApplyResult.evidence(caseMapping.rawInputRuleId(),identity,"CASE_RULE_BATCH_INPUT:"+normalized);
         if(cslProfile() && factKind==RuntimeFactKind.NORM_INSTANCE && "NPL_OBSERVATION/1.0".equals(payload.get("observationVersion"))) {
             if(completeness!=Completeness.COMPLETE || !"BOUND_PUBLIC_CREATED_ANNOTATION".equals(payload.get("activationIdentityStatus")))return ApplyResult.evidence("CSL-NPL-OBSERVER-V1",identity,"UNSUPPORTED:"+payload.get("activationIdentityStatus"));

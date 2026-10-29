@@ -7,6 +7,7 @@ giữ compatibility, không phải chuyển tất cả project sang CSL/iStar m�
 |---|---|---|---|---|
 | NATIVE_CURRENT | Native JaCaMo specification | Native projector + USE OCL | schema2.0 | KEEP |
 | CSL_OBSERVER_V1/V2 | CslSchema + RequirementModel | SemanticRuntimeVerifier → TemporalGoalMonitor, native OCL | schema2.0 + mapping.json | KEEP cho compatibility |
+| JACAMO_DECLARATIVE_XML | Original CslModel + GoalModel từ explicit inputs/XML | Generic XML mapping, neutral capability registry, original use4Goal + native OCL | schema3.3/3.4, exact hash fence | Production authored/generated route |
 | USE4GOAL_OBSERVED_V1 | Original CslModel + GoalModel trong SemanticProgram | RuntimeEngineSessionOwner → Use4GoalRuntimeSessionAdapter → original marking/propagation; native OCL | schema3.0 + program.json, exact implementation hashes | Route mới, opt-in |
 
 `CodeGroundedNativePipeline.buildCanonicalProgram` gọi original backend trực tiếp;
@@ -84,3 +85,13 @@ khác biệt chủ ý, không thể lấy new status để ghi đè expected c�
 
 Rollback là chọn lại old profile tại Import và dùng reader đúng schema; không reset
 source hoặc sửa recordings. Physical deletion không thuộc Definition of Done.
+
+## Explicit case-route retirement (current)
+
+Case-specific Java implementations and source probes were removed from production
+and retained only in `docs/agent/retired-case-java` with source hashes. The old
+case profile is unsupported; portable case program schema 1.1 / archive 3.1–3.2
+are rejected, never interpreted as declarative XML. XML replay still requires
+exact current executable fingerprints. This intentional compatibility change
+follows the requirement to prohibit case-specific production hardcoding; it is
+not a claim that archived legacy tests still execute or that old recordings migrate.

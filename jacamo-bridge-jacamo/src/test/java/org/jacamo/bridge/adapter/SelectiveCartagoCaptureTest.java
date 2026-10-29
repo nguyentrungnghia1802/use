@@ -29,7 +29,7 @@ class SelectiveCartagoCaptureTest {
         var request=new ObservationCapabilityRequest("operations",CartagoOperationHistory.PROVIDER,true,
                 Map.of("class",type,"hash",hash,"operations",List.of("bump","reset","keepSame","reject")));
         System.setProperty("jacamo.bridge.generation","1");System.setProperty("jacamo.bridge.modelRevision",model.modelRevision());
-        try(var source=new CartagoSnapshotSource(env,List.of(),"selective",model,null,false);
+        try(var source=new CartagoSnapshotSource(env,List.of(),"selective",model,null);
             var providers=new ProductionObservationSession(new FrameworkObservationProviders.Context(env,model,root,"selective",1,o->{},reason->fail(reason)),List.of(request))) {
             var scope=new ObservationCaptureScope(false,Set.of(type),false,Set.of("reading"),"a".repeat(64));
             source.deferObservation();source.capabilities(providers);source.attach(events::add);
@@ -74,7 +74,7 @@ class SelectiveCartagoCaptureTest {
             assertEquals(0,Payload.reads.get());
             var selected=source.capture();
             long selectedBytes=bytes(selected);
-            try(var full=new CartagoSnapshotSource(env,List.of(),"baseline",model,null,false)) {
+            try(var full=new CartagoSnapshotSource(env,List.of(),"baseline",model,null)) {
                 var baseline=full.capture();long fullBytes=bytes(baseline);
                 assertTrue(Payload.reads.get()>0,"The same workload's full capture must actually inspect the noise values");
                 assertTrue(selectedBytes<fullBytes);
@@ -88,7 +88,7 @@ class SelectiveCartagoCaptureTest {
             var values=new ArrayList<String>();
             for(var event:events)if(event.after().get("properties") instanceof List<?> properties)
                 for(var raw:properties){var property=CanonicalJson.object(raw);if(property.get("name").equals("reading"))values.add(((List<?>)property.get("values")).getFirst().toString());}
-            assertEquals(List.of("0","1","0"),values,"Relevant public state boundaries must survive an A→B→A execution");
+            assertEquals(List.of("0","1","0"),values,"Relevant public state boundaries must survive an Aâ†’Bâ†’A execution");
             var retired=created.removeFirst();env.getController("/main").removeArtifact(retired.getName());
             var replacement=actor.makeArtifact(actor.getJoinedWspId("main"),"meter",type);created.add(replacement);
             assertNotEquals(retired.getId(),replacement.getId());

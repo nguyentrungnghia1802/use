@@ -1,0 +1,71 @@
+{
+  "scope": "Current change inputs/source/test/docs, original reference engine; dirty working tree, not a new commit",
+  "createdAt": "2026-10-28T15:31:41.170785+00:00",
+  "head": "c3b7b648a468c89eabf1436ca2994eafb3bf72e2",
+  "branch": "main",
+  "files": {
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/SemanticResultAdapter.java": "a3bd6cff8f9b6c46ae20af3c7f0017c4928d3b5947b540c7b4f4d6fed4d47721",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/RuntimeEngineSessionOwner.java": "2622a864c91f4e64f333d8f6063c7abcab293e4c9de2251283ef7d937c8c3de5",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/ExecutionEvidence.java": "74cbd19efb580a8f00cb884fc21cef3236573ca714b77a8eefbf398c5bfc1296",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/MappingVocabulary.java": "190b1e484c5f21fb7e9ed36549fac3a5d9082527f42f7d59ed1b3f8fb2d4cffc",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/XmlNativePreparation.java": "30a3567e778702f5d8a8599c95464bf0f2f57f6eacaa784e31d174d005aa67e7",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePresenter.java": "4cf9781eef0246d910d59f5ea12f21f37dffbf97c42f4e9e917d0eb9b4e34525",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel.java": "e0d3d1afdcd6a1314d36ef55cd6bf50a5d5c562feac454a87d765189c6908e88",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/BusinessTimeline.java": "3af3a737952bc63acb81d7ba947e7ff3d9fcdfcfd94ee623b8490dcb6303cab0",
+    "use-plugin/src/main/resources/META-INF/use4goal-workflow-provenance.json": "1412cb76189340189a3d626534cafb23d5522989f3905802b136b03a5263505c",
+    "use-plugin/src/assembly/release.xml": "c13af8ffbcc97b0673990d69444e9ff7e9bc2aaf5bc71d9c103d2c895b06c3d0",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/runtime/ExecutionEvidenceTest.java": "835b125c15d2c1513b700276f2f15a48de62998f0e0011b95837d212ee8e6aba",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/xml/AuctionEssentialStateTest.java": "bbc816ddc53a29067891e3ffce08f36cf2db1ce1746a673638241ffeafd99e5a",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/BusinessTimelineTest.java": "2bebe61a1a37c800a7b7a48849b9d830b28f091353a5a8689170b4008f59ea33",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/CertifiedGoalHistoryTest.java": "1f3a2d4a391341bf2ff9a2cf6d409074c2f3cb6571ed5329280aab1b32e799ff",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/AuthoredAuctionResultsIT.java": "b311dcbf5679e1e8d20b2d3075ed9f97f69f3b6a29bd5b360ff1beed2f68405d",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/CertifiedExecutionReplayMain.java": "5e0d7932f417f6a3c1252b7bc60ab86a43a10c28f603144b82ed4de11f1a6037",
+    "use-plugin/examples/auction/authored-v1/auction-mapping.xml": "8a67ab2f4b6c9c1be8d3c2dd5b8b9e7163f74aa843f898a7e26293009a3b6380",
+    "use-plugin/examples/auction/authored-v1/auction_csl.csl": "0d0872612661235c0d7865c177dc31dfe2ef649913a99750eb9e42f87163de37",
+    "use-plugin/examples/auction/authored-v1/auction_istar_final.istar": "a3bb1203367f570d8a3cb9b9f5b1a6619d5e4db189ef304f409ca6cb49aea2a9",
+    "use-plugin/examples/auction/authored-v1/auction_constraints_final_fixed.ocl": "ec35a31fdd9714e9abd3eb80d76676ad5f356e5079cb10aef9ab55cbef2355ba",
+    "use-plugin/examples/auction/authored-v1/provenance.json": "db37f22358389eb91c4d5178783cc3b65a72680e688a456f515b71749b8c9cd9",
+    "use-plugin/examples/auction/authored-v1/README.md": "4ce4d48cdad7b9ee93a0f4764795c2227b586ff47b2d030bc7e383f5c96d0b63",
+    "use-plugin/examples/auction/authored-v1/references/auction-mapping-full-observers.xml": "b470c7fe1f8da07c3c01a70870127afd43cc82a0baf9f14b1a05430cda0ab789",
+    "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/GoalMarking.java": "e9ddcc1bfbafef0c987be6c7a017f8ce88c56a16e3c757bc637d1e1246660f48",
+    "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/TaskMarking.java": "e5eae4cd7b10994e5d71c5c7782ff04de3972352f17f5c5fa0732d39eb9af07d",
+    "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/IStarMarking.java": "c93e88db8bf323991d3ae66f64cca1f3106edaa5ed9bde19fafbc057dc48910f",
+    "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/IStarPropagation.java": "90e8ff0662f03889a4ec977cd1296c57f4dbdde2a0cbcde76afe937b25e35de3"
+  },
+  "archive": {
+    "status": "PASS",
+    "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+    "sha256": "60e61a5b19a93860767a369830b498226875aa707e5b726903e7fbcbfbc7c5a0",
+    "extractedInstall": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\essential-states-final-v2-20261028\\use-7.5.0",
+    "wholePluginBytesMatch": true,
+    "compiledClassesChecked": [
+      "semantics/runtime/SemanticResultAdapter",
+      "semantics/runtime/RuntimeEngineSessionOwner",
+      "semantics/runtime/RuntimeEngineSessionOwner$ContextSession",
+      "semantics/runtime/RuntimeEngineSessionOwner$Checkpoint",
+      "semantics/mapping/xml/MappingVocabulary",
+      "semantics/mapping/ocl/XmlNativePreparation",
+      "ui/use4goal/conformance/ObservedConformancePanel",
+      "ui/use4goal/conformance/ObservedConformancePanel$Cut",
+      "ui/use4goal/conformance/ObservedConformancePresenter",
+      "ui/use4goal/conformance/BusinessTimeline"
+    ],
+    "originalEngineClassesChecked": [
+      "GoalMarking",
+      "TaskMarking",
+      "IStarMarking",
+      "IStarPropagation"
+    ],
+    "formalInputsAndDocsMatch": [
+      "auction_csl.csl",
+      "auction_istar_final.istar",
+      "auction_constraints_final_fixed.ocl",
+      "auction-mapping.xml",
+      "provenance.json",
+      "README.md",
+      "references/auction-mapping-full-observers.xml"
+    ],
+    "scope": "Archive/extraction byte checks and subsequent isolated replay; not manual desktop or installed live GUI acceptance"
+  },
+  "planSha256": "cb1aec771abdee7af2cff1c59d406d162ace59fde38448704e74c0b92f5619f8"
+}

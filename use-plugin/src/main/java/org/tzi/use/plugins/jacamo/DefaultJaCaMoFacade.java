@@ -83,6 +83,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     private volatile Path ownedObservationPlan;
     private volatile Path ownedSource,ownedClasspath;
     private volatile ImportSelection ownedSelection;
+    private volatile boolean ownedGui;
     private volatile Long selectedJournalBudget;
     private volatile org.tzi.use.plugins.jacamo.codegrounded.runtime.NativeReplayStepController stepReplay;
     private volatile boolean closed;
@@ -176,14 +177,13 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         var summary=importUsing(jcmFile,selection);
         // The case owns accepted bundle bytes. Preserve the historical implicit
         // JSON reimport contract; explicit ImportSelection already freezes it.
-        if(selection.auction()!=null||selection.declarative()!=null){selectedImport=selection;selectedRequest=request;}
+        if(selection.declarative()!=null){selectedImport=selection;selectedRequest=request;}
         return summary;
     }
     @Override public ImportSelection importSelection() {
         var selected=selectedRequest;if(selected!=null)return selected;
         var profile=org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.configured(System.getProperty(org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.PROPERTY));
-        String property=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.AUCTION_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionStaticMappingAdapter.PROPERTY
-                :profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.JACAMO_DECLARATIVE_XML?org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.SPECIFICATION_PROPERTY
+        String property=                profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.JACAMO_DECLARATIVE_XML?org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.SPECIFICATION_PROPERTY
                 :profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.USE4GOAL_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.MappingRuleSet.PROPERTY:org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration.PROPERTY;
         String file=System.getProperty(property,"").trim();
         String ocl=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.JACAMO_DECLARATIVE_XML?System.getProperty(org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.OCL_PROPERTY,"").trim():"";
@@ -241,7 +241,6 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 "rulesVersion",program.rules().version(),"programHash",program.hash(),"sourceHash",program.source().sourceHash(),"cslHash",program.cslHash(),
                 "goalHash",program.goalHash(),"validators","original CSL/iStar; native USE OCL", "diagnostics",org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.tree(program.diagnostics()),
                 "traceBindings",org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.tree(program.bindings().bindings())));
-        if(program.casePlan()!=null)evidence.put("caseProgram",program.casePlan().evidence());
         if(program.xmlPlan()!=null){evidence.put("declarativeProgram",program.xmlPlan().evidence());if(canonical.xmlPreparation()!=null)evidence.put("bindingPreflight",canonical.xmlPreparation().preflight());}
         return java.util.Collections.unmodifiableMap(evidence);
     }
@@ -580,6 +579,9 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     @Override public void nextJournalBudgetBytes(long bytes){if(bytes<32768||bytes>1024L*1024*1024)throw new IllegalArgumentException("RUNTIME_JOURNAL_BUDGET_INVALID");selectedJournalBudget=bytes;}
     @Override public OwnedProducerStatus ownedProducerStatus(){var producer=ownedProducer;if(producer==null)return new OwnedProducerStatus("IDLE",0,"","");var state=producer.view();return new OwnedProducerStatus(state.state(),state.pid(),state.runId(),state.diagnostic());}
     @Override public ProjectSummary prepareOwnedProducer(Path jcm,ImportSelection selection,Path runtimeClasspath) {
+        return prepareOwnedProducer(jcm,selection,runtimeClasspath,false);
+    }
+    @Override public ProjectSummary prepareOwnedProducer(Path jcm,ImportSelection selection,Path runtimeClasspath,boolean showGui) {
         if(javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("PRODUCER_PREPARATION_REQUIRES_WORKER");
         // Validate selected assets before creating a process or changing the live owner.
         ImportSemantics.from(java.util.Objects.requireNonNull(selection),jcm);
@@ -589,7 +591,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             if(ownedProducer!=null&&ownedProducer.active())throw new IllegalStateException("STOP_OWNED_PRODUCER_BEFORE_PREPARING");
             if(ownedProducer!=null)ownedProducer.close();ownedProducer=producer=new OwnedJaCaMoRuntime(checkout);
         }
-        var prepared=producer.prepare(jcm,selection,runtimeClasspath);
+        var prepared=producer.prepare(jcm,selection,runtimeClasspath,showGui);
         synchronized(this){
             if(closed||!producer.active()){producer.stop();throw new IllegalStateException("OWNED_PRODUCER_CANCELLED");}
             var previousWorkflow=workflow;var previousBridge=configuredBridge;var previousPlan=ownedObservationPlan;
@@ -597,7 +599,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             try {
                 var summary=importProject(prepared.project(),selection);
                 if(closed||!producer.active())throw new IllegalStateException("OWNED_PRODUCER_CANCELLED_DURING_IMPORT");
-                ownedSource=jcm.toAbsolutePath().normalize();ownedSelection=selection;ownedClasspath=runtimeClasspath;return summary;
+                ownedSource=jcm.toAbsolutePath().normalize();ownedSelection=selection;ownedClasspath=runtimeClasspath;ownedGui=showGui;return summary;
             }catch(RuntimeException failure){workflow=previousWorkflow;configuredBridge=previousBridge;ownedObservationPlan=previousPlan;producer.stop();throw failure;}
         }
     }
@@ -609,7 +611,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     @Override public ProjectSummary restartOwnedProducer(){
         var source=ownedSource;var selection=ownedSelection;var cp=ownedClasspath;
         if(source==null||selection==null)throw new IllegalStateException("NO_OWNED_IMPORT_TO_RESTART");
-        stopOwnedProducer();return prepareOwnedProducer(source,selection,cp);
+        boolean showGui=ownedGui;stopOwnedProducer();return prepareOwnedProducer(source,selection,cp,showGui);
     }
 
     @Override public synchronized void connectRuntime() {
@@ -795,7 +797,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     }
     private ProjectSummary synchronizeBridge(Path selectedJcm, Path verificationProfile,ImportSemantics selection) {
         requireNotReplaying();
-        if((selection.rules()!=null||selection.auction()!=null||selection.declarative()!=null)&&javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("CANONICAL_IMPORT_REQUIRES_BACKGROUND_WORKER");
+        if((selection.rules()!=null||selection.declarative()!=null)&&javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("CANONICAL_IMPORT_REQUIRES_BACKGROUND_WORKER");
         awaitRetiredIngress();
         long sessionEpoch=sessionChanges.get();
         BridgeConnectionConfig configuration = configuredBridge == null ? bridgeConfigurationSource.get() : configuredBridge;
@@ -1047,7 +1049,6 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
     private record ImportSemantics(org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile profile,
             org.tzi.use.plugins.jacamo.semantics.mapping.MappingRuleSet rules,
             org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration legacy,
-            org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionStaticMappingAdapter.Selection auction,
             org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs declarative,String hash) {
         static ImportSemantics configured(Path jcm) {
             var profile=org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.configured(System.getProperty(org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.PROPERTY));
@@ -1057,15 +1058,11 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                         modelProperty(org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.CSL_PROPERTY),
                         modelProperty(org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.ISTAR_PROPERTY)),jcm);
             }
-            if(profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.AUCTION_OBSERVED_V1) {
-                String path=System.getProperty(org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionStaticMappingAdapter.PROPERTY,"").trim();
-                if(path.isEmpty())throw new IllegalArgumentException("AUCTION_SPECIFICATION_FILE_REQUIRED");
-                return from(new ImportSelection(profile.name(),Path.of(path)),jcm);
-            }
+
             var rules=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.USE4GOAL_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.MappingRuleSet.configured():null;
             var legacy=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.CSL_OBSERVER_V1||profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.CSL_OBSERVER_V2?org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration.configured():null;
             String content=profile.name()+":"+(rules!=null?rules.hash():legacy!=null?java.util.HexFormat.of().formatHex(legacy.bytes()):"");
-            return new ImportSemantics(profile,rules,legacy,null,null,org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.sha256(content.getBytes(StandardCharsets.UTF_8)));
+            return new ImportSemantics(profile,rules,legacy,null,org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.sha256(content.getBytes(StandardCharsets.UTF_8)));
         }
         static ImportSemantics from(ImportSelection request,Path jcm) {
             var profile=org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.configured(request.profile());
@@ -1073,19 +1070,18 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs declarative=null;
             if(profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.JACAMO_DECLARATIVE_XML) {
                 if(request.ocl()==null)throw new IllegalArgumentException("AUTHORED_OCL_FILE_REQUIRED");
-                declarative=org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.read(jcm,request.specification(),request.ocl(),request.csl(),request.istar());
+                declarative=org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.read(jcm,request.specification(),request.ocl(),request.csl(),request.istar(),request.strictSourceChecksums());
             }
             var rules=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.USE4GOAL_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.MappingRuleSet.read(request.specification()):null;
-            var auction=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.AUCTION_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionStaticMappingAdapter.read(request.specification()):null;
             org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration legacy=null;
             if(profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.CSL_OBSERVER_V1||profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.CSL_OBSERVER_V2)try {
                 if(!Files.isRegularFile(request.specification())||Files.size(request.specification())>CanonicalJson.DEFAULT_MAX_BYTES)throw new IllegalArgumentException("CSL_MONITOR_CONFIGURATION_FILE_INVALID");
                 legacy=org.tzi.use.plugins.jacamo.semantics.profile.CslMonitorConfiguration.parse(Files.readAllBytes(request.specification()));
                 if(legacy.profile()!=profile)throw new IllegalArgumentException("CSL_MONITOR_PROFILE_CONFIGURATION_MISMATCH");
             } catch(java.io.IOException error){throw new IllegalArgumentException("CSL_MONITOR_CONFIGURATION_READ_FAILED",error);}
-            String content=profile.name()+":"+(auction!=null?auction.hash():rules!=null?rules.hash():legacy!=null?java.util.HexFormat.of().formatHex(legacy.bytes()):"");
+            String content=profile.name()+":"+(rules!=null?rules.hash():legacy!=null?java.util.HexFormat.of().formatHex(legacy.bytes()):"");
             if(declarative!=null)content+=declarative.xml().sha256()+":"+declarative.ocl().sha256()+":"+org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(declarative.sources().values().stream().map(a->Map.of("id",a.id(),"hash",a.sha256())).toList());
-            return new ImportSemantics(profile,rules,legacy,auction,declarative,org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.sha256(content.getBytes(StandardCharsets.UTF_8)));
+            return new ImportSemantics(profile,rules,legacy,declarative,org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintService.sha256(content.getBytes(StandardCharsets.UTF_8)));
         }
     }
     private NativeWorkspace buildNativeSemantic(Path jcmFile, org.jacamo.bridge.contract.ModelSnapshot snapshot,
@@ -1095,9 +1091,6 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         CodeGroundedNativePipeline.Result pipeline;
         if(selection.declarative()!=null) {
             var program=new org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericMappingEngine().map(snapshot,selection.declarative());
-            canonical=new CodeGroundedNativePipeline().buildCanonicalProgram(snapshot,projectionMode,program);pipeline=canonical.nativeResult();
-        }else if(selection.auction()!=null) {
-            var program=new org.tzi.use.plugins.jacamo.semantics.mapping.auction.AuctionStaticMappingAdapter().map(snapshot,selection.auction(),jcmFile);
             canonical=new CodeGroundedNativePipeline().buildCanonicalProgram(snapshot,projectionMode,program);pipeline=canonical.nativeResult();
         }else if(selection.rules()!=null) {
             var program=new org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoStaticMappingAdapter().map(snapshot,org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoMappingProfile.observedV1(),selection.rules());

@@ -1,0 +1,1 @@
+{"failedOccurrences":0,"note":"Nondeterministic source; a zero-failure live run is allowed. Exact failed Jason callbacks are also exercised deterministically by XmlTaskCheckpointsTest.","rows":[]}

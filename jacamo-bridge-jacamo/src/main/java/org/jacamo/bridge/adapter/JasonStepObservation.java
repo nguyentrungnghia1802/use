@@ -123,6 +123,14 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
     private void publish(Step step,String sourceFailure) {
         var capture=captures.get(step.site.task());
         var bindings=new LinkedHashMap<String,Object>();bindings.put("taskCell",step.site.task());bindings.put("intentionAuthority","ACTUAL_INTENDED_MEANS_TRIGGER_IDENTITY");
+        if(step.phase.equals("FAILED")) {
+            var instruction=step.episode.means.getCurrentStep();
+            var term=instruction==null?null:instruction.getBodyTerm();
+            var info=term==null?null:term.getSrcInfo();
+            if(info==null&&instruction!=null)info=instruction.getSrcInfo();
+            if(instruction!=null&&term!=null&&info!=null&&info.getSrcLine()>0)
+                bindings.put("failureSite",Map.of("authority","ACTUAL_INTENDED_MEANS_CURRENT_INSTRUCTION/1.0","term",OfficialJasonAdapter.canonicalAst(term.toString()),"bodyType",instruction.getBodyType().name(),"line",info.getSrcLine(),"sourceHash",prepared.manifest().get("sourceSha256")));
+        }
         bindings.put("agentDeclaration",declaration);bindings.put("agentName",ts.getAgArch().getAgName());bindings.put("sourceFailure",sourceFailure);
         bindings.put("stepValueQuality",Map.of("version",qualityVersion,"enabled","COMPLETE_CALLBACK","succeeded",step.phase.equals("ENABLED")?"UNAVAILABLE":"COMPLETE_CALLBACK",
                 "enabledAuthority","PINNED_PLAN_BODY_ENTRY_MARKER","succeededAuthority",step.phase.equals("ENABLED")?"UNAVAILABLE":step.phase.equals("SUCCEEDED")?"PINNED_PLAN_BODY_EXIT_MARKER":"PUBLIC_GOAL_LISTENER_FAILURE"));

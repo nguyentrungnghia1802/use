@@ -6,7 +6,9 @@ import java.util.List;
 public record RuntimeHistoryPage(List<Entry> entries, long nextOrdinal, long persistedEntries,
         long retainedFromOrdinal, boolean gap, String diagnostic, boolean persistedPage) {
     public RuntimeHistoryPage { entries = List.copyOf(entries); }
-    public record Entry(long ordinal, String kind, String intervalId, RuntimeVerificationResult result, boolean persisted) {
+    public record Entry(long ordinal, String kind, String intervalId, RuntimeVerificationResult result, boolean persisted,String stateCommands) {
+        public Entry(long ordinal,String kind,String intervalId,RuntimeVerificationResult result,boolean persisted){this(ordinal,kind,intervalId,result,persisted,"");}
+        public Entry {java.util.Objects.requireNonNull(stateCommands);}
         public boolean evidenceOnly() { return !result.outcomes().isEmpty() && result.outcomes().stream().allMatch(value -> value.constraintId().startsWith("OBSERVED:")); }
     }
     public static RuntimeHistoryPage empty() { return new RuntimeHistoryPage(List.of(), 0, 0, 0, false, "", false); }

@@ -1,0 +1,145 @@
+{
+  "status": "PASS",
+  "scope": "C01-C06 observed-world authored Hello World and House Building; service-level main workflow live plus final ZIP byte verification",
+  "sourceFreezeSha256": "4f002f6ef903ee1117dafb6bdd8514124fa4d0c992b8d0562e6a225f912e5fe1",
+  "packageChecksSha256": "7fb128645949e70b788125bda88b93f26c04776a3476b5cc19ead8f7568d8543",
+  "planSha256": "fbdd59d5e10bb42f72be34dfcbd740cc37ef847a0e3ffd5845471dd9ed1c7b29",
+  "logs": {
+    "new-cases-focused-final.log": {
+      "sha256": "84e97fd02bf112ecc92c26c6a9037567f159b8b518b34df1b21bd4c3589c4f0c",
+      "build": "SUCCESS",
+      "testSummaries": [
+        "Tests run: 1, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 1, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 5, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 7, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 2, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 1, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 4, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 4, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 1, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 1, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 4, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 4, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 5, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 26, Failures: 0, Errors: 0, Skipped: 0"
+      ]
+    },
+    "new-case-operation-focused.log": {
+      "sha256": "e42e43f2916414f5078329c9a0960b95dab0b61e591317bd2c19017ee75dff78",
+      "build": "SUCCESS",
+      "testSummaries": [
+        "Tests run: 2, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 5, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 1, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 4, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 4, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 5, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 4, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 25, Failures: 0, Errors: 0, Skipped: 0"
+      ]
+    },
+    "new-cases-acceptance-completed.log": {
+      "sha256": "d67bdb02adbcf32a818deb920bc016b1b1d61907a487ca23e9aa2579784050c8",
+      "build": "SUCCESS",
+      "testSummaries": [
+        "Tests run: 2, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 5, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 7, Failures: 0, Errors: 0, Skipped: 0"
+      ]
+    },
+    "new-cases-package-final.log": {
+      "sha256": "957d59bde7f117e24d3657f273d3bde93837ea11c737ce33e66d3d5f4ad2f68b",
+      "build": "SUCCESS",
+      "testSummaries": []
+    }
+  },
+  "cases": [
+    {
+      "case": "hello-world",
+      "receipt": "use-plugin\\verification\\additional-cases\\hello-world-9596413875591659644\\receipt.json",
+      "files": {
+        "hello-world-9596413875591659644/cartago-events.jsonl": "7117888c810dd4258c267c39e7a8a2d162ab851394f5403cd689f0e26c284aef",
+        "hello-world-9596413875591659644/last-result.json": "459cd42b5362377273f41e4915b0f8eb3ae3a0c4d3039a1f3c4ae07a0299f82a",
+        "hello-world-9596413875591659644/operation-checks.json": "3586520b0a0adb4288fbf5edaffbf60a2585ed7fde5756a1d615ddf49fd5c9b2",
+        "hello-world-9596413875591659644/prepare.stderr.log": "c865827eb1fd209f3b8903168ee2286d009deca39596f89333d9c9e4494fde03",
+        "hello-world-9596413875591659644/prepare.stdout.log": "396f9219971506080da6b5c73671ad41262ee720f571a03cc7f7e1d0227eba42",
+        "hello-world-9596413875591659644/producer.stderr.log": "d16e8dc2872404636a8599dc6ad19dd45352de2b8245f010e6c2e4742ab05b1a",
+        "hello-world-9596413875591659644/producer.stdout.log": "7ef99325137e07286a9929ab0552d5824e655dcadf9c2182bd7d93f59369769d",
+        "hello-world-9596413875591659644/program.json": "36c9c25b3a9df11de0cc2b5361e3b0a600ec04f08dd06a94b67f6caeaaf64b2b",
+        "hello-world-9596413875591659644/receipt.json": "ebf5adf877ed909ded9278f46c62eb4ff8ae59160d2732d78c84ef739f0377c2",
+        "hello-world-9596413875591659644/result.json": "2c0db63ce62016a4b12c66c373593df08ab51e3e61e4720dc397e6b127ffab33",
+        "hello-world-9596413875591659644/state.json": "9a100941eb83c2f22ca4994b40a7aaea09bdcc3599f2238e0fdbcfd6384203a3",
+        "hello-world-9596413875591659644/replay/baseline.cmd": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "hello-world-9596413875591659644/replay/bindings.json": "5cbe8a42fdc73497b6deb1e92b61ea554990e58bdb01f260a78e3d12657f44b5",
+        "hello-world-9596413875591659644/replay/constraints.ocl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "hello-world-9596413875591659644/replay/manifest.json": "95428001059a1d879ff017f99e1c121ca77111599bb185b0e7a69dc0ed04708e",
+        "hello-world-9596413875591659644/replay/model.use": "5f8d72ea24916895d8afca37660bb205cf2d905a829c4bc18c28af7f86561cfa",
+        "hello-world-9596413875591659644/replay/program.json": "43fc2023d0f9e08caca540bb2e370924045291452c78a22ffc893ab6bfd779ff",
+        "hello-world-9596413875591659644/replay/runtime.jsonl": "ddd54c1fbb89d7d145f248f966f110709a53b493ce052eeedfa09710f46e0af4"
+      },
+      "goalStatuses": {
+        "NonnegativeCounts": "FULFILLED",
+        "TwelveMessagesObserved": "FULFILLED"
+      },
+      "replayCheckedEntries": 758,
+      "coverage": "INCOMPLETE",
+      "freshness": "CURRENT_OBSERVED",
+      "producerPid": 8700,
+      "restartPid": 19028
+    },
+    {
+      "case": "house-building",
+      "receipt": "use-plugin\\verification\\additional-cases\\house-building-3676368246113313720\\receipt.json",
+      "files": {
+        "house-building-3676368246113313720/cartago-events.jsonl": "a0996ce02934d90dd6d090ab7ca49b0062d33c1342af37277ea3d6439fb2716f",
+        "house-building-3676368246113313720/last-result.json": "95bd40581af8fc94688dddf15a2894fe98b35432bf6f0d4d893188c949e8ccde",
+        "house-building-3676368246113313720/operation-checks.json": "b903f65054fa0a9916b40c248d8e78a4d4b6dadfdc8b5e5995c967afd9449443",
+        "house-building-3676368246113313720/prepare.stderr.log": "91352b16442d5aa34d972eaaa45df8b42e44010201ef00d440d4c03906feb3f1",
+        "house-building-3676368246113313720/prepare.stdout.log": "396f9219971506080da6b5c73671ad41262ee720f571a03cc7f7e1d0227eba42",
+        "house-building-3676368246113313720/producer.stderr.log": "88ec583384c4455627c422bb29fde00fe8def38fc3ca4a81ea95aa2825bc7697",
+        "house-building-3676368246113313720/producer.stdout.log": "9f8b779196e3e5145a2f17fdc944e52e19071a34e26b874a6c3df4259ef574c3",
+        "house-building-3676368246113313720/program.json": "19ed1560bcf995bf18314b2afd4e9a4fe2dd30569192363520df40e34e7f9e2a",
+        "house-building-3676368246113313720/receipt.json": "5ecee01b9a74de4b58bdd63b33086b352cc8acec21187f3a4e6006a3b2b5ac54",
+        "house-building-3676368246113313720/result.json": "3beb6b367e840502f2d116e0c96a9508920b26ceab5d25d53bdbdae95793af8c",
+        "house-building-3676368246113313720/state.json": "355e7fccba93d2608077d09fad8a5282d012fd6252d3a0ff195f4c1d7c4d6e6f",
+        "house-building-3676368246113313720/replay/baseline.cmd": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "house-building-3676368246113313720/replay/bindings.json": "5cbe8a42fdc73497b6deb1e92b61ea554990e58bdb01f260a78e3d12657f44b5",
+        "house-building-3676368246113313720/replay/constraints.ocl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "house-building-3676368246113313720/replay/manifest.json": "62fe9ad3f2cc1a3ee2b93567b586c741c37c86328ca071f0c4a747f877af89df",
+        "house-building-3676368246113313720/replay/model.use": "c40d80269f96712a02c13055ab8ca080044a4dcd3e41c8df32b826033ddf3817",
+        "house-building-3676368246113313720/replay/program.json": "26ae779d2123ecdfa915ef806adbf66f221fecccc4ee62739c3b261caa449a5b",
+        "house-building-3676368246113313720/replay/runtime.jsonl": "533a609cb3537f3255a5c3bc5ea75837f13c37d47577a23a91390e1c77a11191"
+      },
+      "goalStatuses": {
+        "ConstructionCompleted": "FULFILLED",
+        "ContractsAwarded": "FULFILLED",
+        "DoorsFitted": "FULFILLED",
+        "ElectricalInstalled": "FULFILLED",
+        "ExteriorPainted": "FULFILLED",
+        "FloorsLaid": "FULFILLED",
+        "HouseRealized": "FULFILLED",
+        "InteriorPainted": "FULFILLED",
+        "PeeCompleted": "FULFILLED",
+        "PlumbingInstalled": "FULFILLED",
+        "RoofBuilt": "FULFILLED",
+        "RwdCompleted": "FULFILLED",
+        "SitePrepared": "FULFILLED",
+        "WallsBuilt": "FULFILLED",
+        "WindowsFitted": "FULFILLED"
+      },
+      "replayCheckedEntries": 2826,
+      "coverage": "INCOMPLETE",
+      "freshness": "CURRENT_OBSERVED",
+      "producerPid": 14964,
+      "restartPid": 8164
+    }
+  ],
+  "limits": [
+    "Overall coverage remains INCOMPLETE; unproven role-population invariant is SKIPPED",
+    "No claim of full normative/mental verification or per-invocation iStar Tasks",
+    "No manual GUI or cold installed live claim",
+    "Only focused/nearby tests and the two new live cases; no full regression rerun"
+  ],
+  "noCommitOrPush": true
+}

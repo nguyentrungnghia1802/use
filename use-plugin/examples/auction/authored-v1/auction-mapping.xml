@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<mapping xmlns="urn:use:jacamo-mapping:2" version="2.0" id="auction-authored-v1" engineProfile="ROLE_SPECIALIZATION_V1" jcmRef="src-jcm" xmlns:os="http://moise.sourceforge.net/os">
+<mapping xmlns="urn:use:jacamo-mapping:2" version="2.0" id="auction-attempt-and-accepted-bid-v3" engineProfile="ROLE_SPECIALIZATION_V1" jcmRef="src-jcm" xmlns:os="http://moise.sourceforge.net/os">
   <sources>
     <file id="src-jcm" path="auction.jcm" sha256="c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb" kind="JCM" />
     <file id="src-os" path="src/org/auction-os.xml" sha256="d2481d4ee3c45b2cead42f942a3943684e86facee992870356ca4d1e47d16f9a" kind="MOISE" />
@@ -7,8 +7,8 @@
     <file id="src-artifact" path="src/env/auction_env/AuctionArtifact.java" sha256="34036fc220274853e39f93682cdb22c350fe6a06739669860f2a66afe606ff4b" kind="JAVA" />
     <file id="src-build" path="build.gradle" sha256="0c81b7f1b57c8f9b427280eb8967e820edaffe329540e4988ddd85e402175b40" kind="RESOURCE" />
   </sources>
-  <ocl sha256="07f692a7412cd877203846081018d846076b7fd149392db1accc5e83ad4fa0d6" />
-  <models mode="AUTHORED" cslSha256="0d0872612661235c0d7865c177dc31dfe2ef649913a99750eb9e42f87163de37" istarSha256="a3bb1203367f570d8a3cb9b9f5b1a6619d5e4db189ef304f409ca6cb49aea2a9" />
+  <ocl sha256="891c77f07981e03c808cfdaf23285d5a6d9050859954f5f561f7308aab81039a" />
+  <models mode="AUTHORED" cslSha256="0d0872612661235c0d7865c177dc31dfe2ef649913a99750eb9e42f87163de37" istarSha256="4e2ccc86a980cb3f010cb13eaf051dd2f76529f1214031924f44afcaf5ecfed9" />
   <assertions>
     <require selectorRef="sel-org" field="instance" equals="aorg" />
     <require selectorRef="sel-org" field="spec" equals="auction-os.xml" />
@@ -90,6 +90,7 @@
     </istar>
   <runtime>
     <datasets>
+      <clock id="source-clock-cut" requestRef="source-clock" />
       <facts id="source-workspaces" authority="cartago" kind="WORKSPACE" />
       <facts id="source-artifacts" authority="cartago" kind="ARTIFACT" />
       <facts id="source-groups" authority="moise" kind="GROUP_BOARD" population="CARTAGO_BOARD_INVENTORY_V1" />
@@ -98,20 +99,19 @@
       <schemeCuts id="source-scheme-history" requestRef="scheme-history" population="CARTAGO_BOARD_INVENTORY_V1" />
       <operationCuts id="source-domain-operations" requestRef="auction-operations" />
       <operationCuts id="source-scheme-operations" requestRef="scheme-operations" />
-      <npl id="source-norms" requestRef="norm-lifecycle" />
-      <clock id="source-clock-cut" requestRef="source-clock" />
+
       <operationReferences id="source-creations" requestRef="workspace-operations" argumentIndex="3" />
       <fieldCuts id="source-domain-state" requestRef="candidate-field" />
       <removals id="source-disposals" authority="cartago" kind="ARTIFACT" />
-      <beliefViews id="source-beliefBase" namespace="*" predicate="*" arity="*" selection="STORED" />
-      <beliefViews id="source-belief_joinedWsp" namespace="*" predicate="joinedWsp" arity="3" selection="FACTS" />
-      <beliefViews id="source-belief_focusing" namespace="*" predicate="focusing" arity="6" selection="FACTS" />
-      <beliefViews id="source-belief_goalArgument" namespace="*" predicate="goalArgument" arity="4" selection="FACTS" />
-      <beliefViews id="source-belief_play" namespace="*" predicate="play" arity="3" selection="FACTS" />
-      <beliefViews id="source-belief_running" namespace="*" predicate="running" arity="1" selection="FACTS" />
-      <beliefViews id="source-belief_task" namespace="*" predicate="task" arity="1" selection="FACTS" />
-      <beliefViews id="source-belief_best_bid" namespace="*" predicate="best_bid" arity="1" selection="FACTS" />
-      <beliefViews id="source-belief_winner" namespace="*" predicate="winner" arity="1" selection="FACTS" />
+
+
+
+
+
+
+
+
+
     </datasets>
     <tables>
       <table id="observed-workspaces" dataset="source-workspaces">
@@ -268,7 +268,7 @@
           <match path="raw.after.typedArgumentValues.0.value" type="String" equals="goalSatisfied(bid)" />
           <match path="performerKnown" type="Boolean" equals="true" />
         </selectValues>
-        <sampleClock as="clockSample" requestRef="source-clock" sourceClockPath="clockIdentity" />
+
         <selectValues path="transitions" as="startStates" valuePath="state" valueType="String" completePath="continuous" distinct="true">
           <match path="goal" type="String" equals="start" />
         </selectValues>
@@ -278,9 +278,45 @@
         <selectValues path="transitions" as="decideStates" valuePath="state" valueType="String" completePath="continuous" distinct="true">
           <match path="goal" type="String" equals="decide" />
         </selectValues>
+        <firstMatch path="transitions" as="startSatisfiedConfirmation" orderPath="sequence" completePath="confirmation.complete">
+          <match path="goal" type="String" equals="start" />
+          <match path="state" type="String" equals="SATISFIED" />
+        </firstMatch>
+        <relativeTime as="startSatisfiedTime" requestRef="source-clock" epochPath="startSatisfiedConfirmation.value.publicationEpochMillis" sourceClockPath="clockIdentity" onMissing="unavailable-value" />
+        <firstMatch path="transitions" as="bidEnabledConfirmation" orderPath="sequence" completePath="confirmation.complete">
+          <match path="goal" type="String" equals="bid" />
+          <match path="state" type="String" equals="ENABLED" />
+        </firstMatch>
+        <relativeTime as="bidEnabledTime" requestRef="source-clock" epochPath="bidEnabledConfirmation.value.publicationEpochMillis" sourceClockPath="clockIdentity" onMissing="unavailable-value" />
+        <firstMatch path="transitions" as="bidSatisfiedConfirmation" orderPath="sequence" completePath="confirmation.complete">
+          <match path="goal" type="String" equals="bid" />
+          <match path="state" type="String" equals="SATISFIED" />
+        </firstMatch>
+        <relativeTime as="bidSatisfiedTime" requestRef="source-clock" epochPath="bidSatisfiedConfirmation.value.publicationEpochMillis" sourceClockPath="clockIdentity" onMissing="unavailable-value" />
+        <firstMatch path="transitions" as="decideEnabledConfirmation" orderPath="sequence" completePath="confirmation.complete">
+          <match path="goal" type="String" equals="decide" />
+          <match path="state" type="String" equals="ENABLED" />
+        </firstMatch>
+        <relativeTime as="decideEnabledTime" requestRef="source-clock" epochPath="decideEnabledConfirmation.value.publicationEpochMillis" sourceClockPath="clockIdentity" onMissing="unavailable-value" />
+        <firstMatch path="transitions" as="decideSatisfiedConfirmation" orderPath="sequence" completePath="confirmation.complete">
+          <match path="goal" type="String" equals="decide" />
+          <match path="state" type="String" equals="SATISFIED" />
+        </firstMatch>
+        <relativeTime as="decideSatisfiedTime" requestRef="source-clock" epochPath="decideSatisfiedConfirmation.value.publicationEpochMillis" sourceClockPath="clockIdentity" onMissing="unavailable-value" />
+        <column name="confirmationComplete" path="confirmation.complete" required="true" />
+        <column name="startSatisfiedFound" path="startSatisfiedConfirmation.found" required="false" />
+        <column name="startSatisfiedTime" path="startSatisfiedTime" required="false" />
+        <column name="bidEnabledFound" path="bidEnabledConfirmation.found" required="false" />
+        <column name="bidEnabledTime" path="bidEnabledTime" required="false" />
+        <column name="bidSatisfiedFound" path="bidSatisfiedConfirmation.found" required="false" />
+        <column name="bidSatisfiedTime" path="bidSatisfiedTime" required="false" />
+        <column name="decideEnabledFound" path="decideEnabledConfirmation.found" required="false" />
+        <column name="decideEnabledTime" path="decideEnabledTime" required="false" />
+        <column name="decideSatisfiedFound" path="decideSatisfiedConfirmation.found" required="false" />
+        <column name="decideSatisfiedTime" path="decideSatisfiedTime" required="false" />
         <column name="runId" path="binding.runId" required="true" />
         <column name="schemeUid" path="identity" required="true" />
-        <column name="now" path="clockSample.now" required="false" />
+
         <column name="history" path="continuous" required="true" />
         <column name="firstSatisfied" path="firstBid.found" required="true" />
         <column name="committed" path="committed" required="true" />
@@ -291,75 +327,6 @@
         <column name="startStates" path="startStates" required="true" />
         <column name="bidStates" path="bidStates" required="true" />
         <column name="decideStates" path="decideStates" required="true" />
-        <identity mode="PHYSICAL" path="identity" />
-      </table>
-      <table id="obligation-observations" dataset="source-norms">
-        <where path="modality" type="String" equals="OBLIGATION" />
-        <where path="raw.sourceLifecycle.aimTerm.supported" type="Boolean" equals="true" />
-        <where path="raw.sourceLifecycle.aimTerm.ground" type="Boolean" equals="true" />
-        <where path="raw.sourceLifecycle.subjectTerm.supported" type="Boolean" equals="true" />
-        <where path="raw.sourceLifecycle.subjectTerm.ground" type="Boolean" equals="true" />
-        <where path="raw.sourceLifecycle.maintenanceTerm.supported" type="Boolean" equals="true" />
-        <where path="raw.sourceLifecycle.maintenanceTerm.ground" type="Boolean" equals="true" />
-        <where path="raw.sourceLifecycle.aimTerm.key.kind" type="String" equals="LITERAL" />
-        <where path="raw.sourceLifecycle.aimTerm.key.namespace" type="String" equals="default" />
-        <where path="raw.sourceLifecycle.aimTerm.key.negative" type="Boolean" equals="false" />
-        <where path="raw.sourceLifecycle.aimTerm.key.functor" type="String" equals="done" />
-        <whereSize path="raw.sourceLifecycle.aimTerm.key.terms" equals="3" />
-        <where path="raw.sourceLifecycle.subjectTerm.key.kind" type="String" equals="LITERAL" />
-        <where path="raw.sourceLifecycle.subjectTerm.key.namespace" type="String" equals="default" />
-        <where path="raw.sourceLifecycle.subjectTerm.key.negative" type="Boolean" equals="false" />
-        <whereSize path="raw.sourceLifecycle.subjectTerm.key.terms" equals="0" />
-        <where path="raw.sourceLifecycle.maintenanceTerm.key.kind" type="String" equals="LITERAL" />
-        <where path="raw.sourceLifecycle.maintenanceTerm.key.namespace" type="String" equals="default" />
-        <where path="raw.sourceLifecycle.maintenanceTerm.key.negative" type="Boolean" equals="false" />
-        <where path="raw.sourceLifecycle.maintenanceTerm.key.functor" type="String" equals="enabled" />
-        <whereSize path="raw.sourceLifecycle.maintenanceTerm.key.terms" equals="2" />
-        <where path="raw.sourceLifecycle.aimTerm.key.terms.0.kind" type="String" equals="LITERAL" />
-        <where path="raw.sourceLifecycle.aimTerm.key.terms.0.namespace" type="String" equals="default" />
-        <where path="raw.sourceLifecycle.aimTerm.key.terms.0.negative" type="Boolean" equals="false" />
-        <whereSize path="raw.sourceLifecycle.aimTerm.key.terms.0.terms" equals="0" />
-        <where path="raw.sourceLifecycle.aimTerm.key.terms.1.kind" type="String" equals="LITERAL" />
-        <where path="raw.sourceLifecycle.aimTerm.key.terms.1.namespace" type="String" equals="default" />
-        <where path="raw.sourceLifecycle.aimTerm.key.terms.1.negative" type="Boolean" equals="false" />
-        <whereAny path="raw.sourceLifecycle.aimTerm.key.terms.1.functor" type="String">
-          <value equals="bid" />
-          <value equals="decide" />
-        </whereAny>
-        <whereSize path="raw.sourceLifecycle.aimTerm.key.terms.1.terms" equals="0" />
-        <where path="raw.sourceLifecycle.aimTerm.key.terms.2.kind" type="String" equals="LITERAL" />
-        <where path="raw.sourceLifecycle.aimTerm.key.terms.2.namespace" type="String" equals="default" />
-        <where path="raw.sourceLifecycle.aimTerm.key.terms.2.negative" type="Boolean" equals="false" />
-        <whereSize path="raw.sourceLifecycle.aimTerm.key.terms.2.terms" equals="0" />
-        <where path="raw.sourceLifecycle.maintenanceTerm.key.terms.0.kind" type="String" equals="LITERAL" />
-        <where path="raw.sourceLifecycle.maintenanceTerm.key.terms.0.namespace" type="String" equals="default" />
-        <where path="raw.sourceLifecycle.maintenanceTerm.key.terms.0.negative" type="Boolean" equals="false" />
-        <whereSize path="raw.sourceLifecycle.maintenanceTerm.key.terms.0.terms" equals="0" />
-        <where path="raw.sourceLifecycle.maintenanceTerm.key.terms.1.kind" type="String" equals="LITERAL" />
-        <where path="raw.sourceLifecycle.maintenanceTerm.key.terms.1.namespace" type="String" equals="default" />
-        <where path="raw.sourceLifecycle.maintenanceTerm.key.terms.1.negative" type="Boolean" equals="false" />
-        <whereFieldsEqual leftPath="raw.sourceLifecycle.maintenanceTerm.key.terms.1.functor" rightPath="raw.sourceLifecycle.aimTerm.key.terms.1.functor" type="String" />
-        <whereSize path="raw.sourceLifecycle.maintenanceTerm.key.terms.1.terms" equals="0" />
-        <whereFieldsEqual leftPath="raw.sourceLifecycle.subjectTerm.key.functor" rightPath="subject" type="String" />
-        <whereFieldsEqual leftPath="raw.sourceLifecycle.aimTerm.key.terms.2.functor" rightPath="subject" type="String" />
-        <whereFieldsEqual leftPath="raw.sourceLifecycle.aimTerm.key.terms.0.functor" rightPath="raw.boardObservationProof.artifactName" type="String" />
-        <whereFieldsEqual leftPath="raw.sourceLifecycle.maintenanceTerm.key.terms.0.functor" rightPath="raw.sourceLifecycle.aimTerm.key.terms.0.functor" type="String" />
-        <join tableRef="qualified-monitor-scopes" leftPath="boardArtifact" rightPath="physical" as="scope" cardinality="ONE" required="true" knowledge="QUALIFIED_PHYSICAL_REFERENCE" />
-        <relativeTime as="activated" requestRef="source-clock" epochPath="createdEpochMillis" sourceClockPath="clockIdentity" onMissing="unavailable-value" />
-        <relativeTime as="deadline" requestRef="source-clock" epochPath="deadlineEpochMillis" sourceClockPath="clockIdentity" onMissing="unavailable-value" />
-        <relativeTime as="terminal" requestRef="source-clock" epochPath="terminalEpochMillis" sourceClockPath="clockIdentity" onMissing="unavailable-value" />
-        <column name="runId" path="scope.runId" required="true" />
-        <column name="schemeUid" path="scope.schemeUid" required="true" />
-        <column name="player" path="subject" required="true" />
-        <column name="activation" path="activation" required="true" />
-        <column name="raw" path="raw" required="true" />
-        <column name="history" path="continuous" required="true" />
-        <column name="state" path="state" required="true" />
-        <column name="goal" path="raw.sourceLifecycle.aimTerm.key.terms.1.functor" required="true" />
-        <column name="activated" path="activated" required="false" />
-        <column name="deadline" path="deadline" required="false" />
-        <column name="terminal" path="terminal" required="false" />
-        <column name="unfulfilled" path="reportedUnfulfilled" required="false" />
         <identity mode="PHYSICAL" path="identity" />
       </table>
       <table id="execution-scopes" dataset="source-scheme-history">
@@ -537,6 +504,7 @@
         <actor actor="Auction" tableRef="execution-scopes" scopeColumn="scheme" scopeKey="scheme" playerColumn="group" kind="CONTEXT_VIEWPOINT" cardinality="ONE" completeColumn="castComplete" />
         <actor actor="Auctioneer" tableRef="execution-auctioneers" scopeColumn="scheme" scopeKey="scheme" playerColumn="player" kind="ROLE_OCCURRENCE" cardinality="ONE" roleLookup="EXACT_NATIVE_ENACTMENT" completeColumn="castComplete" />
         <actor actor="Participant" tableRef="execution-participants" scopeColumn="scheme" scopeKey="scheme" playerColumn="player" kind="ROLE_OCCURRENCE" cardinality="MANY_NONEMPTY" roleLookup="EXACT_NATIVE_ENACTMENT" completeColumn="castComplete" />
+        <self target="O_bid_accepted" origin="COLUMN" column="domain" optional="true" />
         <self target="A_start_t1" origin="COLUMN" column="domain" optional="true" />
         <self target="A_start_t2" origin="COLUMN" column="domain" optional="true" />
         <self target="A_decide_t2" origin="COLUMN" column="domain" optional="true" />
@@ -553,80 +521,59 @@
       <demand id="require-P_bid_t1" target="P_bid_t1" scopeRef="auction-execution" tableRef="demand-bid" anchorColumn="group" playerColumn="player" requiredColumn="required" scopeColumn="scheme" scopeKey="scheme" episodeFields="scheme goal" completeColumn="complete" />
       <demand id="require-P_bid_t2" target="P_bid_t2" scopeRef="auction-execution" tableRef="demand-bid" anchorColumn="group" playerColumn="player" requiredColumn="required" scopeColumn="scheme" scopeKey="scheme" episodeFields="scheme goal" completeColumn="complete" />
     </taskDemands>
-    <beliefBindings>
-      <bind id="map-beliefBase" roleType="auction_capabilities" attribute="beliefBase" datasetRef="source-beliefBase" />
-      <bind id="map-belief_joinedWsp" roleType="auction_capabilities" attribute="belief_joinedWsp" datasetRef="source-belief_joinedWsp" />
-      <bind id="map-belief_focusing" roleType="auction_capabilities" attribute="belief_focusing" datasetRef="source-belief_focusing" />
-      <bind id="map-belief_goalArgument" roleType="auction_capabilities" attribute="belief_goalArgument" datasetRef="source-belief_goalArgument" />
-      <bind id="map-belief_play" roleType="auction_capabilities" attribute="belief_play" datasetRef="source-belief_play" />
-      <bind id="map-belief_running" roleType="auction_capabilities" attribute="belief_running" datasetRef="source-belief_running" />
-      <bind id="map-belief_task" roleType="auction_capabilities" attribute="belief_task" datasetRef="source-belief_task" />
-      <bind id="map-belief_best_bid" roleType="auction_capabilities" attribute="belief_best_bid" datasetRef="source-belief_best_bid" />
-      <bind id="map-belief_winner" roleType="auction_capabilities" attribute="belief_winner" datasetRef="source-belief_winner" />
-    </beliefBindings>
+    <!-- Optional epistemic attributes are not inputs to these OCL/iStar requirements.
+         Do not acquire full belief/cycle streams; leave those optional values undefined. -->
   </runtime>
+  <!-- Only observer state read by active authored contracts is materialized.
+       Raw NPL/source-clock requests remain trace evidence. To restore the disabled
+       WithinDeadline requirement use references/auction-mapping-full-observers.xml. -->
   <observers>
     <view id="view-monitor" name="AuctionMonitor" category="CLASS" keyFields="runId schemeUid">
-      <field name="now" type="Integer" origin="validated source run clock" />
-      <field name="startSatisfiedAt" type="Integer" origin="internal MOISE transition time unavailable in public provider" />
-      <field name="bidEnabledAt" type="Integer" origin="internal MOISE transition time unavailable in public provider" />
-      <field name="bidSatisfiedAt" type="Integer" origin="internal MOISE transition time unavailable in public provider" />
-      <field name="decideEnabledAt" type="Integer" origin="internal MOISE transition time unavailable in public provider" />
-      <field name="decideSatisfiedAt" type="Integer" origin="internal MOISE transition time unavailable in public provider" />
+
+      <field name="startSatisfiedConfirmedAt" type="Integer" origin="MOISE_PUBLIC_CONFIRMATION/1.0 source callback, not internal truth time" />
+      <field name="bidEnabledConfirmedAt" type="Integer" origin="MOISE_PUBLIC_CONFIRMATION/1.0 source callback, not internal truth time" />
+      <field name="bidSatisfiedConfirmedAt" type="Integer" origin="MOISE_PUBLIC_CONFIRMATION/1.0 source callback, not internal truth time" />
+      <field name="decideEnabledConfirmedAt" type="Integer" origin="MOISE_PUBLIC_CONFIRMATION/1.0 source callback, not internal truth time" />
+      <field name="decideSatisfiedConfirmedAt" type="Integer" origin="MOISE_PUBLIC_CONFIRMATION/1.0 source callback, not internal truth time" />
+      <field name="bidSatisfiedObserved" type="Boolean" origin="qualified complete public MOISE state history contains SATISFIED; no timestamp assumption" />
       <field name="bidCommittedBy" type="Set(String)" origin="actual participant mission commitments frozen at first source satisfaction" />
       <field name="bidDoneBy" type="Set(String)" origin="actual MOISE done facts" />
       <field name="actualBidBy" type="Set(String)" origin="successful bound bid operation including non-improving bids" />
       <field name="adminBidOverride" type="Boolean" origin="successful exact administrative command, never actual bid" />
     </view>
-    <view id="view-obligation" name="AuctionObligation" category="CLASS" keyFields="runId schemeUid player activation">
-      <field name="goal" type="String" origin="actual activated goal obligation" />
-      <field name="activatedAt" type="Integer" origin="NPL activation engine clock" />
-      <field name="deadlineAt" type="Integer" origin="NPL absolute deadline relative to source run clock" />
-      <field name="endedAt" type="Integer" origin="first actual terminal or known pending sentinel" />
-      <field name="unfulfilled" type="Boolean" origin="latched actual lifecycle terminal" />
-      <field name="monitor" type="AuctionMonitor" origin="exact same scheme and run" />
-    </view>
     <view id="view-step" name="step" category="TUPLE" keyFields="run scheme player goalInvocation stepInvocation">
       <field name="enabled" type="Boolean" origin="STEP_ENABLED" />
       <field name="succeeded" type="Boolean" origin="STEP_SUCCEEDED" />
+      <field name="completed" type="Boolean" origin="STEP_COMPLETED" />
     </view>
     <project id="project-monitor" viewRef="view-monitor" tableRef="monitor-observations" keyFields="runId schemeUid">
-      <write field="now" column="now" mode="current" />
+
       <write field="bidCommittedBy" column="committed" mode="freeze-first-qualified" historyColumn="history" whenColumn="firstSatisfied" beforeFreeze="current" />
       <write field="bidDoneBy" column="done" mode="current" />
       <write field="actualBidBy" column="actual" mode="current" />
+      <derive field="bidSatisfiedObserved" expression="states-&gt;includes('SATISFIED')" completeColumn="history"><arg name="states" column="bidStates" type="Set(String)" /></derive>
       <derive field="adminBidOverride" expression="calls-&gt;notEmpty()" completeColumn="adminHistory">
         <arg name="calls" column="adminCalls" type="Set(String)" />
       </derive>
-      <derive field="startSatisfiedAt" expression="if states-&gt;includes('SATISFIED') then null else -1 endif" completeColumn="history">
-        <arg name="states" column="startStates" type="Set(String)" />
+      <derive field="startSatisfiedConfirmedAt" expression="if found then timestamp else -1 endif" completeColumn="confirmationComplete">
+        <arg name="found" column="startSatisfiedFound" type="Boolean" />
+        <arg name="timestamp" column="startSatisfiedTime" type="Integer" onMissing="undefined" />
       </derive>
-      <derive field="bidEnabledAt" expression="if states-&gt;includes('ENABLED') then null else -1 endif" completeColumn="history">
-        <arg name="states" column="bidStates" type="Set(String)" />
+      <derive field="bidEnabledConfirmedAt" expression="if found then timestamp else -1 endif" completeColumn="confirmationComplete">
+        <arg name="found" column="bidEnabledFound" type="Boolean" />
+        <arg name="timestamp" column="bidEnabledTime" type="Integer" onMissing="undefined" />
       </derive>
-      <derive field="bidSatisfiedAt" expression="if states-&gt;includes('SATISFIED') then null else -1 endif" completeColumn="history">
-        <arg name="states" column="bidStates" type="Set(String)" />
+      <derive field="bidSatisfiedConfirmedAt" expression="if found then timestamp else -1 endif" completeColumn="confirmationComplete">
+        <arg name="found" column="bidSatisfiedFound" type="Boolean" />
+        <arg name="timestamp" column="bidSatisfiedTime" type="Integer" onMissing="undefined" />
       </derive>
-      <derive field="decideEnabledAt" expression="if states-&gt;includes('ENABLED') then null else -1 endif" completeColumn="history">
-        <arg name="states" column="decideStates" type="Set(String)" />
+      <derive field="decideEnabledConfirmedAt" expression="if found then timestamp else -1 endif" completeColumn="confirmationComplete">
+        <arg name="found" column="decideEnabledFound" type="Boolean" />
+        <arg name="timestamp" column="decideEnabledTime" type="Integer" onMissing="undefined" />
       </derive>
-      <derive field="decideSatisfiedAt" expression="if states-&gt;includes('SATISFIED') then null else -1 endif" completeColumn="history">
-        <arg name="states" column="decideStates" type="Set(String)" />
-      </derive>
-    </project>
-    <project id="project-obligation" viewRef="view-obligation" tableRef="obligation-observations" keyFields="runId schemeUid player activation">
-      <lifecycle kind="NPL_REPORTED_SOURCE_CONTINUOUS_V1" column="raw" requestRef="norm-lifecycle" />
-      <write field="goal" column="goal" mode="current" />
-      <write field="activatedAt" column="activated" mode="current" />
-      <write field="deadlineAt" column="deadline" mode="current" />
-      <write field="unfulfilled" column="unfulfilled" mode="latch-true" historyColumn="history" />
-      <reference field="monitor" targetProject="project-monitor" subjectColumn="schemeUid" mode="retain-bound">
-        <key field="runId" column="runId" />
-        <key field="schemeUid" column="schemeUid" />
-      </reference>
-      <derive field="endedAt" expression="if state = 'ACTIVE' then -1 else terminal endif" completeColumn="history">
-        <arg name="state" column="state" type="String" />
-        <arg name="terminal" column="terminal" type="Integer" onMissing="undefined" />
+      <derive field="decideSatisfiedConfirmedAt" expression="if found then timestamp else -1 endif" completeColumn="confirmationComplete">
+        <arg name="found" column="decideSatisfiedFound" type="Boolean" />
+        <arg name="timestamp" column="decideSatisfiedTime" type="Integer" onMissing="undefined" />
       </derive>
     </project>
   </observers>
@@ -647,6 +594,8 @@
     <elementRuntime target="O_root" actor="Auction" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original refinement/dependency result" />
     <elementRuntime target="O_start" actor="Auction" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original refinement/dependency result" />
     <elementRuntime target="O_bid" actor="Auction" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original refinement/dependency result" />
+    <elementRuntime target="O_bid_attempt" actor="Auction" self="Auction" derived="true" selfKind="ARTIFACT" reason="Declared ANY dependency over completed participation attempts" />
+    <elementRuntime target="O_bid_accepted" actor="Auction" self="Auction" derived="false" selfKind="ARTIFACT" reason="Source-backed Artifact field proves an actual accepted bid independently of participant attempts" />
     <elementRuntime target="O_decide" actor="Auction" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original refinement/dependency result" />
     <elementRuntime target="A_start" actor="Auctioneer" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original refinement/dependency result" />
     <elementRuntime target="A_start_t1" actor="Auctioneer" self="Auction" derived="false" selfKind="ARTIFACT" reason="Exact declared Jason step, never state-only task completion" stepScope="auction-execution" scopePolicy="EXACT_REFERENCES" stepSchemeColumn="scheme" stepArtifactColumn="domain" entryPolicy="ALLOW_UNBOUND_SELF_FOR_PURE_CALLBACK" failurePolicy="EVALUATE_PURE_CALLBACK_POST">
@@ -666,6 +615,7 @@
     </elementRuntime>
     <elementRuntime target="P_bid_t2" actor="Participant" self="Auction" derived="false" selfKind="ARTIFACT" reason="Exact declared Jason step, never state-only task completion" stepScope="auction-execution" scopePolicy="EXACT_REFERENCES" stepSchemeColumn="scheme" stepArtifactColumn="domain" entryPolicy="EXACT_SELF" failurePolicy="EVALUATE_PURE_CALLBACK_POST">
       <actionReceipt operationRef="op-bid" />
+      <acceptedFailure term=".fail" bodyType="internalAction" line="41" sourceFailure="GOAL_LISTENER_FAILED:ia_failed" />
       <variable name="step" viewRef="view-step" origin="STEP_TUPLE" />
     </elementRuntime>
     <oclClause name="Idle" context="context Auction::start(service : String)" />
@@ -673,13 +623,14 @@
     <oclClause name="RunningForBid" context="context Auction::bid(amount : Real)" />
     <oclClause name="RunningForStop" context="context Auction::stop()" />
     <oclClause name="Closed" context="context Auction::stop()" />
-    <oclClause name="SchemeOrder" context="context AuctionMonitor" />
-    <oclClause name="BidEvidence" context="context AuctionMonitor" />
-    <oclClause name="WithinDeadline" context="context AuctionObligation" />
+    <oclClause name="ConfirmedSchemeOrder" context="context AuctionMonitor" />
+    <oclClause name="ObservedBidEvidence" context="context AuctionMonitor" />
+    <!-- TEMPORARY USER TEST: <oclClause name="WithinDeadline" context="context AuctionObligation" /> -->
     <operation id="op-start" owner="Auction" signature="[&quot;auction_env.AuctionArtifact&quot;,&quot;start&quot;,[&quot;java.lang.String&quot;],&quot;void&quot;]" clauses="Idle Opened" task="A_start_t2" />
     <operation id="op-bid" owner="Auction" signature="[&quot;auction_env.AuctionArtifact&quot;,&quot;bid&quot;,[&quot;double&quot;],&quot;void&quot;]" clauses="RunningForBid" task="P_bid_t2" />
     <operation id="op-stop" owner="Auction" signature="[&quot;auction_env.AuctionArtifact&quot;,&quot;stop&quot;,[],&quot;void&quot;]" clauses="RunningForStop Closed" task="A_decide_t2" />
     <dependencyPopulation target="D_bid" quantifier="ANY" />
+    <requirement target="O_root" />
     <static id="bind-capability-role" kind="ROLE" target="auction_capabilities" sourceKind="JASON_AGENT_PROGRAM" feature="declarationId" value="bob" reason="Shared authored ASL capability role, anchored by exact source declaration; not a separately adopted MOISE role">
       <metadata key="roleAbstraction" value="ASL_CAPABILITY_VIEW" />
     </static>
@@ -724,4 +675,12 @@
     <omit id="publication-not-transition" concept="MOISE internal transition timestamps" reason="Public MOISE history supplies publication order, not exact internal engine timestamps; affected authored constraints stay unavailable" handledBy="source-clock" />
     <omit id="trace-decide-prefix" concept="SOURCE_EXECUTION_PREFIX" sourceStep="decide_source_prefix" handledBy="TRACE_ONLY" reason="Actual argument/focusing-query prefix retained for complete source partition and reference evidence; no sixth intentional Task exists in the authored diagram." />
   </omittedConcepts>
+  <!-- Business-state browser only. All verification audit boundaries remain recorded. -->
+  <presentation milestones="DOMAIN">
+    <state owner="AuctionOrg" />
+    <state owner="auctionGroup" />
+    <state owner="auctioneer" />
+    <state owner="participant" />
+    <state owner="Auction" attributes="id running task best_bid winner currentWinner" />
+  </presentation>
 </mapping>

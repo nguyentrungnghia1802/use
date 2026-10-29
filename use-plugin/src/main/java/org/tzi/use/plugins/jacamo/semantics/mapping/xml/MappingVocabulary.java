@@ -12,8 +12,11 @@ final class MappingVocabulary {
     private MappingVocabulary() { }
     static void validate(MappingSpecification spec) {
         Node root=spec.root();shape(root,"#document");
+        if(!root.optional("sourcePolicy").isBlank()&&!Set.of("PINNED","VALIDATED_SOURCE_V1").contains(root.attr("sourcePolicy")))throw root.location().error("SOURCE_POLICY_UNSUPPORTED");
         if(!root.attr("version").equals("2.0"))throw root.location().error("VERSION_UNSUPPORTED");
         try{EngineSemanticsProfile.valueOf(root.attr("engineProfile"));}catch(IllegalArgumentException e){throw root.location().error("ENGINE_PROFILE_UNSUPPORTED");}
+        if(root.children("presentation").size()>1)throw root.location().error("PRESENTATION_DUPLICATE");
+        for(var presentation:root.children("presentation"))if(!presentation.optional("milestones").isEmpty()&&!Set.of("DOMAIN","DOMAIN_AND_EXECUTION").contains(presentation.attr("milestones")))throw presentation.location().error("PRESENTATION_MILESTONES_UNSUPPORTED");
         for(String section:List.of("sources","ocl","selectors","modelRules","istar","runtime","observers","bindings","requirements","omittedConcepts"))root.child(section);
         var project=spec.requireId(root.attr("jcmRef"));
         if(!project.name().equals("file")||!project.attr("kind").equals("JCM"))throw project.location().error("JCM_SOURCE_REQUIRED");
@@ -41,6 +44,10 @@ final class MappingVocabulary {
             for(String key:List.of("optional","mutable","verifyInitialExpression","required"))if(node.attributes().containsKey(key)&&!Set.of("true","false").contains(node.attr(key)))throw node.location().error("BOOLEAN_REQUIRED:"+key);
             if(node.attributes().containsKey("expectedCount")&&!node.attr("expectedCount").matches("[0-9]{1,4}"))throw node.location().error("COUNT_REQUIRED");
             if(node.name().equals("file")) {
+                if(!node.optional("layoutPolicy").isBlank()||!node.optional("layoutSha256").isBlank()) {
+                    if(!node.attr("kind").equals("JCM")||!node.optional("layoutPolicy").equals("JCM_LINE_LAYOUT/1.0")
+                            ||!node.optional("layoutSha256").matches("[0-9a-f]{64}"))throw node.location().error("JCM_LAYOUT_POLICY_UNSUPPORTED");
+                }
                 String path=node.attr("path");relative(path,node);
                 if(!Set.of("JCM","ASL","MOISE","JAVA","RESOURCE").contains(node.attr("kind"))||path.toLowerCase(Locale.ROOT).matches(".*\\.(csl|istar|drawio)$"))throw node.location().error("ORACLE_NOT_PRODUCTION_SOURCE");
                 if(node.attr("kind").equals("JCM")&&!path.endsWith(".jcm"))throw node.location().error("JCM_EXTENSION_REQUIRED");
@@ -66,15 +73,17 @@ final class MappingVocabulary {
     }
     private static Map<String,Shape> shapes() {
         var m=new HashMap<String,Shape>();
-        add(m,"#document/mapping","version id engineProfile jcmRef","");
+        add(m,"#document/mapping","version id engineProfile jcmRef","sourcePolicy");
         for(String section:List.of("sources","selectors","runtime","observers","bindings","requirements","omittedConcepts"))add(m,"mapping/"+section,"","");
         add(m,"mapping/ocl","sha256","");
+        add(m,"mapping/presentation","","milestones");
+        add(m,"presentation/state","owner","attributes");
         add(m,"mapping/models","mode cslSha256 istarSha256","");
         add(m,"mapping/assertions","","");
         add(m,"assertions/require","selectorRef field equals","");
         add(m,"assertions/requireSet","selectorRef field values","");
         add(m,"assertions/requireSameSet","leftSelectorRef leftField rightSelectorRef rightField","");
-        add(m,"sources/file","id path sha256 kind","");
+        add(m,"sources/file","id path sha256 kind","layoutPolicy layoutSha256");
         add(m,"selectors/select","id sourceRef syntax expectedCount","expression");
         add(m,"select/pattern","","");add(m,"select/capture","name expression","");
         add(m,"mapping/modelRules","targetVersion targetModel","");
@@ -105,6 +114,8 @@ final class MappingVocabulary {
         add(m,"bindings/elementRuntime","target actor self derived selfKind reason","contract stepScope scopePolicy entryPolicy failurePolicy stepSchemeColumn stepArtifactColumn");
         add(m,"elementRuntime/variable","name origin","type viewRef");
         add(m,"elementRuntime/actionReceipt","operationRef","");
+        add(m,"elementRuntime/acceptedFailure","term bodyType line sourceFailure","");
+        add(m,"bindings/requirement","target","");
         add(m,"bindings/oclClause","name context","");
         add(m,"bindings/operation","id owner signature clauses","task");
         add(m,"bindings/dependencyPopulation","target quantifier","");

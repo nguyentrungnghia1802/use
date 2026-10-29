@@ -1,0 +1,451 @@
+{
+  "createdAt": "2026-10-28T10:50:39.715932+07:00",
+  "head": "c3b7b648a468c89eabf1436ca2994eafb3bf72e2",
+  "branch": "main",
+  "dirty": true,
+  "scope": "Current worktree including preserved earlier user changes; no commit/push",
+  "files": {
+    "jacamo-bridge-jacamo/pom.xml": "36090f03e1748136d284a1aa2885c37499d86456ada59f73088bedad4b90ece5",
+    "jacamo-bridge-jacamo/src/main/java/jason/infra/local/LiveJaCaMoLauncherMain.java": "977e3cfb6ee6c690303c0cf94a1fd1dd710353847f71b311fec13b83867f9a19",
+    "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/BridgeAgArch.java": "7fdc004e8d28739fd536b3bf9dc391fd3d8344221003a6d47b83d685dffa1a8e",
+    "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/BridgeRuntimeRegistry.java": "a517568f13dc74adad3f2320ad3523c17ffe364aeb4025059145d686d815ea0c",
+    "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/CartagoSnapshotSource.java": "6238b9cdb8c834f966b72ac2bbb34b248b1252b3c421bc02276701a636cb587f",
+    "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/JaCaMoBridgePlatform.java": "220e6ee0ecd5c27c0e36115e957e7d3af426c5668a3e9a8f99d997c7f3a3f972",
+    "jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/AuctionStepBoundaryTest.java": "378c3996de1f55e67ff5477d1907d6ca2b6c12e935af4dc51be775a33882469f",
+    "jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/DynamicWorkspaceObservationTest.java": "956e33f6d8f9afa954b10aa52ceac9225daf0654d613e4342b448535b4b3dac1",
+    "plan.md": "fbdd59d5e10bb42f72be34dfcbd740cc37ef847a0e3ffd5845471dd9ed1c7b29",
+    "pom.xml": "c12d153e489272f1ae629d53d8acd09bbd7d7361dee505fff75521f1b0924cc1",
+    "use-assembly/pom.xml": "2e0cf686d6b90e65825579ee078cbe26cd66a7381ed583214cfb8a1bf0dd447f",
+    "use-assembly/src/assembly/assembly.xml": "0753f5bcf7403c2c04c1cbc7d3119a5d39b0ddaa552a95243132ef09549d9e0c",
+    "use-plugin/examples/auction/source-confirmed-v1/README.md": "8c55e849d7fb2bdff4fb33159ecd00d66255b20d4fcd3e810d862e829627b4db",
+    "use-plugin/examples/auction/source-confirmed-v1/auction-mapping.xml": "8b7bb7d7228f207338f23acf205cdcd34eb0d3b47768b3a509826f7d5d6419c2",
+    "use-plugin/examples/hello-world/LICENSE-JaCaMo.txt": "ea7d049c7705dc13afc202dd18e1827f3484f8212fd3fa7b82fc4a0c363432c9",
+    "use-plugin/examples/hello-world/README.md": "08bc34626b01fb4e89397d2213d5114fafdbbbed817570b2d0664499c602f6e2",
+    "use-plugin/examples/hello-world/build.gradle": "894ef12cc5b22944b37ba7a26df77e803d1339b10033d6b305d2d0189204d10c",
+    "use-plugin/examples/hello-world/case-manifest.json": "96c70dbb0291ccfb934b8b93ac05b35e865660be29780463e1446fbf3df71b1b",
+    "use-plugin/examples/hello-world/hello-mapping.xml": "e02baadcf176c4e5ba1f0111d58e94d341d42993278efa25a9899801e9903a5f",
+    "use-plugin/examples/hello-world/hello.csl": "2b1df53f81edacb46e30f76fc0aa64a748b3e8040a3a067e762c87c966197b51",
+    "use-plugin/examples/hello-world/hello.istar": "2fb9606c446dba1848595de9441b4dd7dfcd1da76cab0437e66176dbb38cc96d",
+    "use-plugin/examples/hello-world/hello.ocl": "2f8febd764e6f8afb7e44e0a5fd940264d5a9cb23d5f1f1d3fae4909104e71ba",
+    "use-plugin/examples/hello-world/helloworld.jcm": "c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101",
+    "use-plugin/examples/hello-world/provenance.json": "167089eca6105d58b1eb5197bc9e33a9c484a32d9f5524e0418195c7f318e9e8",
+    "use-plugin/examples/hello-world/src/agt/hello-grid.asl": "1054e9faeb464dbbd7bab25eeaca46f9827055ad9ef6c8dfb3e49d5475efe8d0",
+    "use-plugin/examples/hello-world/src/agt/hello.asl": "7c9a0dcd47c8b256b33506299968faad71aeb47a2bec814958f07993b219922a",
+    "use-plugin/examples/hello-world/src/agt/hello2.asl": "e0ad5e7dd82270dc169aacf0c1f97fb7d70fd10f574feee9dcffdc0984972902",
+    "use-plugin/examples/hello-world/src/agt/hf.asl": "fbb17e720c1395490c84b2e1000c98cb8e73653219fa86f959fe983059e8f07b",
+    "use-plugin/examples/hello-world/src/env/display/GUIConsole.java": "e6c10b463080bc40e6f71844ec3e11e7266612dbebefd7291cc317ff66b3108a",
+    "use-plugin/examples/hello-world/src/env/display/GridDisplay.java": "ced4160f05dfb301571fbf528897f737ed1564555d369194219be302370d8f1c",
+    "use-plugin/examples/hello-world/src/org/o1.xml": "6b9794e719dabe233e6dc00baf0d5e6256a7e8a8b189c454bccd527fe17a4206",
+    "use-plugin/examples/house-building/LICENSE-JaCaMo.txt": "ea7d049c7705dc13afc202dd18e1827f3484f8212fd3fa7b82fc4a0c363432c9",
+    "use-plugin/examples/house-building/README.md": "e3971f8d8b26425f22c68c3f5b81f04356223a12c604312c2a24823df4fd5848",
+    "use-plugin/examples/house-building/build.gradle": "69f127e0cca06170211c3eadfc2e44f9da7be2cfcb5c7efb37ec2cdc6f8e0584",
+    "use-plugin/examples/house-building/case-manifest.json": "824da39cff430ffb17a734089b4b330e0e2f793d4623660d3c550824673385ed",
+    "use-plugin/examples/house-building/house-building.jcm": "c14ae6299b0d2e0034d7daaa233b9bf1b94a7b337aa39477ec865c52ca5fef08",
+    "use-plugin/examples/house-building/house-mapping.xml": "85ddf0b8f8f854c10ee5a25b932c3020e57da2ed09f6bf41148167b45df3612d",
+    "use-plugin/examples/house-building/house.csl": "e6d8620aa3503fa687330403311a6cfa78af9ee0d83934c744b7078bcc8d43f3",
+    "use-plugin/examples/house-building/house.istar": "5ac21d7b700b003d3b164121e928186311c03e7e5c0ad17a3c135ab3963163df",
+    "use-plugin/examples/house-building/house.ocl": "c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca",
+    "use-plugin/examples/house-building/provenance.json": "998aee0936f64c6adeaf82a30cc278a0d67d7cd44723c25417c346022accd0ff",
+    "use-plugin/examples/house-building/src/agt/companyA.asl": "da55328b72311a1d4c31a85db1da1d0fc7193d0fc1c196ba39f1484f3639535e",
+    "use-plugin/examples/house-building/src/agt/companyB.asl": "172d0a91b6daafe46e6b349da2810c7aee09952b46c1e1bd7d9ac04738bfee13",
+    "use-plugin/examples/house-building/src/agt/companyC.asl": "362b027c493a7379a0ed7c10e9b02b7f05a94dc796d134fc382c2899d323bc70",
+    "use-plugin/examples/house-building/src/agt/companyD.asl": "9bca8b5ead0f1c83531bc370746e362db9a04c0f782ad44ead95d599ddc6c1ba",
+    "use-plugin/examples/house-building/src/agt/companyE.asl": "07f0d731346838bbb788124d5a551e5a411ea95c3fe88f82c6658f6f29df0a78",
+    "use-plugin/examples/house-building/src/agt/giacomo.asl": "c381af45aa14588d57ee29dec8e761751f6ccd08a72c1bf81a7d811ae487ebad",
+    "use-plugin/examples/house-building/src/agt/inc/common.asl": "7fc62ffaa8ce2452b0585c064b337e2e3ea7196ed8fcc2491a249d7399d398c2",
+    "use-plugin/examples/house-building/src/agt/inc/org_code.asl": "10e0b90dcfc85a005b63405f48f69366bd078b83872a713d2ebaf5e973432bfb",
+    "use-plugin/examples/house-building/src/agt/inc/org_goals.asl": "75ee6cbba0f12a4db85279c0b7887f906505310ac9a8058667480939162c7868",
+    "use-plugin/examples/house-building/src/env/simulator/Doors.java": "1362456533add19d66f303abe449d5a92a8f18ca8b330d95b0088ec9c40ce536",
+    "use-plugin/examples/house-building/src/env/simulator/ElectricalSystem.java": "a3b4a6301db65f2287ef5b3beab8afc5777c3da82a19e7e57fa72c2eea026e53",
+    "use-plugin/examples/house-building/src/env/simulator/ExteriorPainting.java": "3eb44b699b65e8d091207b737a1317f415dd668d4050fe1b06bb87e78efcb001",
+    "use-plugin/examples/house-building/src/env/simulator/Floor.java": "f9ee120635dce3e053043009661d26b2565719cb6009a39ccd5b0743d0fdcf29",
+    "use-plugin/examples/house-building/src/env/simulator/House.java": "c1f0e34438889a312d05861b13cea54e4a362a34b586c6aa783ec94b6376adc7",
+    "use-plugin/examples/house-building/src/env/simulator/HousePart.java": "f141560e5a6d0b2b0a6c6990c62394e1922f62d9f95055f1d18f654b50c9760f",
+    "use-plugin/examples/house-building/src/env/simulator/InteriorPainting.java": "ad4b94e991b5fcd9f831cd67eb6a344e060be3b55e622f4d88d34305a4eb5c93",
+    "use-plugin/examples/house-building/src/env/simulator/Plumbing.java": "c8aae09eda9c8aae7813be91c050d32d0b11415c16f13ea5ba4e767069ff2128",
+    "use-plugin/examples/house-building/src/env/simulator/Roof.java": "1e7d91d877a30f8fb9dc99926aef2cb3d80abee677b6b9d53957dc0cf23f04f9",
+    "use-plugin/examples/house-building/src/env/simulator/Site.java": "d5c48daa34b4218f896a1f1a51bb9b49ba2e0700c54c3f4d550b06c4afb5a47e",
+    "use-plugin/examples/house-building/src/env/simulator/Walls.java": "2abea36e744cf74222b5a6476001606ddf6d006b2d71be788732e34b80c64eed",
+    "use-plugin/examples/house-building/src/env/simulator/Windows.java": "ea20b0684b6dad1de2786cc54f1302de6e571dec8cb1c64579ce1f0d7dcd9dc6",
+    "use-plugin/examples/house-building/src/env/tools/AuctionArt.java": "da3263c013b9a52c3918146d550389c8d00c830cff726f89598f4f2e72de0882",
+    "use-plugin/examples/house-building/src/org/house-os.xml": "6d0896b7c69692683f65f3ef4a413bba1496da2f492f02d3f92efcc5daef0ef4",
+    "use-plugin/pom.xml": "41be5ca5860aa1b46582ef92673608cb44c18d0b97c0094ce0266623a9a0db5e",
+    "use-plugin/src/assembly/release.xml": "f3f1048943a6fa75845dc767a11b321c38b6e732681655ebf1ae710e753a3c21",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java": "25b22cb5585c651fc31814cda0f0c2d30dcaadc034ea7aa685498aca7f603c56",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/JaCaMoFacade.java": "ca07b1167808d5fd04fd7ae166da17374d1071dd6a8830da1e80ce4478503dad",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/OwnedJaCaMoRuntime.java": "5671aac9f151cdf03e1acaa9967f1cfab09d99f12ab83e8ac860390da8b53e9d",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeOperationCheckpoints.java": "ac04d8bb7860a2b9bc4a92e6d5b87a8383159ce159812e707d54ea8c15175626",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java": "f8eff8b8f99116ce1590853d8cd194c563195ef848599cb28ba7884691c87b36",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/SemanticBindingIndex.java": "87a91fd0a3f6388f3f9a55c5ca3eebca9fb82414b0cdaebb36b6888507563a52",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/BridgeJcmDerivation.java": "94a00fc370e329ce8fab7820583bbcdad96d3d45802baed8670f4d51bc7e6a2a",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/MappingInputs.java": "38c17ac29225fa331b602a75c0106e93f11569ae911aeeb91713b2bb1cf17905",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/MappingVocabulary.java": "2fddca6ec5be8d8c0160799357eca09f118ee8ac89d67bf0fb8b7a2800a77eca",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/ObserverProjection.java": "2dbb3979e52952e139a39e271d70c8966c33cf13412ce77d4e1083ff75b3ceec",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/RuntimeValueConverters.java": "bca737a865d592edecae97bfa78d46b523e560660bb57558dca22babeca1a6dc",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel.java": "33ac3cd2920ab91d0b7a77f7d72d080f4c97f29aaf30949c48048db87581d23d",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePresenter.java": "5e34f753e3abc0d11b90df6e0b559cd029b8e2f2c6472bc67fb326314ac7b853",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/AdditionalAuthoredCasesIT.java": "bfe4616ddfddf01d374ea258319c190674745dec205f616d79f81e5c02452073",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/AuctionReportedRuntimeRegressionIT.java": "de644f64759153e0cef940eaf40fa39de84eff781ef8f5983a6befa7228d0704",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/DeclarativeOperationCheckpointTest.java": "8050791941a0d0f5bc915451056fb51ca36e39be58bbeaf073f08da00b41b05b",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/xml/AuctionImportRegressionTest.java": "74ae90ee65fa58e679d9dd4cd2302d9ac35333a739bbe49d0d593715583ddb71",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/xml/NewCaseStudyBundlesTest.java": "2852214cfe2369ee10fceceb9430e1fea25363c41629bb6302ae40536153d744",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/xml/XmlObserverCoverageTest.java": "b68b001d39098afd53b54e582194def52b50617e11397a6ace72549baaac8e75",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/ObservedConformanceWorkflowTest.java": "1d2d029523892597d674d541b2912ec5aa8fa32160e73e21ca0334a66c490415",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/ObservedTimelineHistoryTest.java": "89f8f3f6b2cb3f3c34bc2900a574227fdd579b2e167ce2f2c35d96ea073c8fc2"
+  },
+  "packagedCompiledClasses": [
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java",
+      "class": "org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade$1.class",
+      "sha256": "a63fba53411bd98beccf015325170fe7c82050c9fe574dfb69cf3b0ca3a7bf6e",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java",
+      "class": "org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade$2.class",
+      "sha256": "5c311a2b4bff25df285af41e4b8c3a83f6ff06601da6b74c012699fcbe0d756f",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java",
+      "class": "org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade$3.class",
+      "sha256": "dee2d3d253f801a133769979643d31b718df07fdd3a2a3ee36766527f29eaf49",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java",
+      "class": "org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade$ImportSemantics.class",
+      "sha256": "fff04afef2f0c52f5185e6c8205bb359ea4b8de2bb09e02d78a58b9120a3f6f7",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java",
+      "class": "org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade$NativeWorkspace.class",
+      "sha256": "04345ab1bbff9f7c30ab52b828f89bbdec904dee5a736d174b81999bfb7e8a8e",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java",
+      "class": "org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.class",
+      "sha256": "94d5858269ee6f8ddd191a3a7015630748687928200d33b256a3b960ca9d7c73",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/JaCaMoFacade.java",
+      "class": "org/tzi/use/plugins/jacamo/JaCaMoFacade$AuthorityStatus.class",
+      "sha256": "2dcd80a4a73d69ebf87f68f82aa93f7b47ba6ed6882e6ee71f7b08f9145ddfa9",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/JaCaMoFacade.java",
+      "class": "org/tzi/use/plugins/jacamo/JaCaMoFacade$FormalStateStatus.class",
+      "sha256": "90f0dfadbebf33d40ce4ec47f874ac5ff3395f0be3e1fec801f6cd8d05d66742",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/JaCaMoFacade.java",
+      "class": "org/tzi/use/plugins/jacamo/JaCaMoFacade$ImportSelection.class",
+      "sha256": "2129460d69b19ee536ded5c5055992178bba3cac235fd69e4e08dd80fdd6bb1b",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/JaCaMoFacade.java",
+      "class": "org/tzi/use/plugins/jacamo/JaCaMoFacade$OwnedProducerStatus.class",
+      "sha256": "b3b96d356160b85a376a6f623589719926bd4626f4b3c83e886c2e7016f09704",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/JaCaMoFacade.java",
+      "class": "org/tzi/use/plugins/jacamo/JaCaMoFacade$PerformanceMetrics.class",
+      "sha256": "cf3fa8d5e7f098052988f5d14a0328c11ee3917d1a35bdf5c1a2f74365d38b5b",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/JaCaMoFacade.java",
+      "class": "org/tzi/use/plugins/jacamo/JaCaMoFacade$ProjectSummary.class",
+      "sha256": "849ab33252f5a661fd20606a0868c5491c61419b159030f3bb667f943faf8693",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/JaCaMoFacade.java",
+      "class": "org/tzi/use/plugins/jacamo/JaCaMoFacade$RuntimeStatus.class",
+      "sha256": "f450baf45e519d08183ca89548baa4160cc21692e9cdf1967f3bf7c9eef8cb06",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/JaCaMoFacade.java",
+      "class": "org/tzi/use/plugins/jacamo/JaCaMoFacade$SemanticModels.class",
+      "sha256": "0e8e069b6080b7ca7b8c32788354611d1214ece8d4f1d4ae63e7f08f46e1437d",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/JaCaMoFacade.java",
+      "class": "org/tzi/use/plugins/jacamo/JaCaMoFacade$SourceRow.class",
+      "sha256": "c266d543cffe8cf0955bcc7fee69b9aab1d84732a7b5b282afc133ad6ac9e58d",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/JaCaMoFacade.java",
+      "class": "org/tzi/use/plugins/jacamo/JaCaMoFacade$TraceRow.class",
+      "sha256": "9ac8101d49388eeb4267a2c266cf69fd05dcbbdf20d3e2061563ec89ca308e75",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/JaCaMoFacade.java",
+      "class": "org/tzi/use/plugins/jacamo/JaCaMoFacade$WorkflowStatus.class",
+      "sha256": "d5aa69ab56b54ab442c14d5175d1e3c0f6268bfe615452346aff338e1eb546dc",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/JaCaMoFacade.java",
+      "class": "org/tzi/use/plugins/jacamo/JaCaMoFacade.class",
+      "sha256": "e09d4f35c512ca56fb6ae9bf09cce4b4023f33be5bc19251a4375606c2483f55",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/OwnedJaCaMoRuntime.java",
+      "class": "org/tzi/use/plugins/jacamo/OwnedJaCaMoRuntime$Attempt.class",
+      "sha256": "7b454c909ad2612f4f4e103ef5f550a8b59038a8ce4345b7beaaec46897cd883",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/OwnedJaCaMoRuntime.java",
+      "class": "org/tzi/use/plugins/jacamo/OwnedJaCaMoRuntime$Capture.class",
+      "sha256": "2dc3cf32409eb0ef180205ebe6919d58d17d2cda0e567a23438cd30e3e38a742",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/OwnedJaCaMoRuntime.java",
+      "class": "org/tzi/use/plugins/jacamo/OwnedJaCaMoRuntime$Prepared.class",
+      "sha256": "01965f7ba47b48dd86dbc7f5e70ddd7d8f02a234ccaa486d47eceeece54d48c8",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/OwnedJaCaMoRuntime.java",
+      "class": "org/tzi/use/plugins/jacamo/OwnedJaCaMoRuntime$View.class",
+      "sha256": "f048c0bc9a776a5ccb2125b7adc4597d41dd9fa074b40457add16fc7f748f6b6",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/OwnedJaCaMoRuntime.java",
+      "class": "org/tzi/use/plugins/jacamo/OwnedJaCaMoRuntime.class",
+      "sha256": "d1f3e09a78ca84a45916f8f8e624d236eece69dd5c8458b5b6938e4000ce1476",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeOperationCheckpoints.java",
+      "class": "org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeOperationCheckpoints$Active.class",
+      "sha256": "62bbb8cdc26e22d46aa6d78d0bdf9bbca066fecb5d89ca3a5c06d36a01f26da5",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeOperationCheckpoints.java",
+      "class": "org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeOperationCheckpoints$Savepoint.class",
+      "sha256": "90575e37c749864cd9075608911f70dfa8bbb94f7b2515bf8dcfe24edba2f02b",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeOperationCheckpoints.java",
+      "class": "org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeOperationCheckpoints.class",
+      "sha256": "22f5bbf84f0e4e6c3b65c9b5ebabfead7c64efd7a803ff3b6dad3b28835574a7",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java",
+      "class": "org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator$MoiseObservation.class",
+      "sha256": "187945cbbf92280d457d988aa674046962f7de5ce43a6ffc4e6c86f3bedfbddf",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java",
+      "class": "org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator$Mutation.class",
+      "sha256": "cd87fa5e2683710863e6992f6ad8fa75da88a9feece3a1d4af65e1a8b494fd93",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java",
+      "class": "org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.class",
+      "sha256": "fa353adab2f0d4a8d7d355a8634806ba865a458ee8ccbbb2ff3580f2945cd7ba",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/SemanticBindingIndex.java",
+      "class": "org/tzi/use/plugins/jacamo/semantics/mapping/SemanticBindingIndex$Binding.class",
+      "sha256": "81faad72846d4f0c049b218b7efc5796b53dff531fa99746737cc14799333141",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/SemanticBindingIndex.java",
+      "class": "org/tzi/use/plugins/jacamo/semantics/mapping/SemanticBindingIndex$Kind.class",
+      "sha256": "950fce73edbee22573336b9c7609a8f9fd526d33cb07a7d0c5d23f828e84c5cd",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/SemanticBindingIndex.java",
+      "class": "org/tzi/use/plugins/jacamo/semantics/mapping/SemanticBindingIndex.class",
+      "sha256": "da27344eeb9dbaee1c8a97b3e3d6cd3f606b1de18c4255e915e0788b0b18ac8c",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/BridgeJcmDerivation.java",
+      "class": "org/tzi/use/plugins/jacamo/semantics/mapping/xml/BridgeJcmDerivation.class",
+      "sha256": "62663231754296703b4b9f2f52ef008ed473e99bbd7993ca147a3ea53fa62a3d",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/MappingInputs.java",
+      "class": "org/tzi/use/plugins/jacamo/semantics/mapping/xml/MappingInputs.class",
+      "sha256": "5e6e00e7408292163b7c958ed35fdb102885c98d7aac79963864e433fa1fc4da",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/MappingVocabulary.java",
+      "class": "org/tzi/use/plugins/jacamo/semantics/mapping/xml/MappingVocabulary$Shape.class",
+      "sha256": "6c4f2e8e41ee4c42b71a9dd6e6fc688176f939bee9d055e9427c8514fae1826f",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/MappingVocabulary.java",
+      "class": "org/tzi/use/plugins/jacamo/semantics/mapping/xml/MappingVocabulary.class",
+      "sha256": "2fe41b07488a7b75dc46c2674258852cd336f15245623334d34c43b6cf4c013c",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/ObserverProjection.java",
+      "class": "org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/ObserverProjection$Project.class",
+      "sha256": "e349f969632402411454f34933a1e3cc546a97e47c36f7a696ccf42811d323ef",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/ObserverProjection.java",
+      "class": "org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/ObserverProjection.class",
+      "sha256": "e2a91be500d517ed9f8825312794464d85ec95d6237eedc1f6e64fc3be0e7f78",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/RuntimeValueConverters.java",
+      "class": "org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/RuntimeValueConverters$Unavailable.class",
+      "sha256": "ac51586d50c95b0918983de2e2443a941bf5f991a2f4079d3d1c0d91958f9058",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/RuntimeValueConverters.java",
+      "class": "org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/RuntimeValueConverters.class",
+      "sha256": "52d6e74a54c055974ec0516515fa9e73370d8b4a7107a88e2368cdfa9a4a6961",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel.java",
+      "class": "org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel$1.class",
+      "sha256": "1e9ca9aac363d11d2f8f349c27e141bdaef99a644e5260d66bec6aefc3ee8a00",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel.java",
+      "class": "org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel$2.class",
+      "sha256": "48c6e44b8825386509f0ef1daf04d45e6057f2797ac7fc6d938a43f7d8231b01",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel.java",
+      "class": "org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel$3.class",
+      "sha256": "82caa1cebdbbb33e444f3edec2030dd6bea18ffb49511d138da890ff7f70e3b2",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel.java",
+      "class": "org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel.class",
+      "sha256": "aef05d7d384f1057a4f721ef74fc0be2f8b0909c38a02f886027c29995103f02",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePresenter.java",
+      "class": "org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePresenter$Rendered.class",
+      "sha256": "983dcfa1d6ae72097b7928577da58c99d7deda94fbd021197660ec58e4dcc618",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePresenter.java",
+      "class": "org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePresenter.class",
+      "sha256": "b503f79d805db5c2f5902cd8f8733186596be48dcf1696273dc4b8e25ddc98a6",
+      "archiveJar": "lib/plugins/use-jacamo-plugin-1.0.1.jar"
+    },
+    {
+      "source": "jacamo-bridge-jacamo/src/main/java/jason/infra/local/LiveJaCaMoLauncherMain.java",
+      "class": "jason/infra/local/LiveJaCaMoLauncherMain$1$1.class",
+      "sha256": "32dd008d18185b26f50110925317e305e9eb19e95ac6dbf45d2b8ebc44d08e16",
+      "archiveJar": "bridge/lib/jacamo-bridge-jacamo-1.0.0.jar"
+    },
+    {
+      "source": "jacamo-bridge-jacamo/src/main/java/jason/infra/local/LiveJaCaMoLauncherMain.java",
+      "class": "jason/infra/local/LiveJaCaMoLauncherMain$1.class",
+      "sha256": "5777bca0a1ab5712c526ab75b4290bac00db6ff7f770f6e4916caf3f62873a51",
+      "archiveJar": "bridge/lib/jacamo-bridge-jacamo-1.0.0.jar"
+    },
+    {
+      "source": "jacamo-bridge-jacamo/src/main/java/jason/infra/local/LiveJaCaMoLauncherMain.java",
+      "class": "jason/infra/local/LiveJaCaMoLauncherMain.class",
+      "sha256": "5c316667e1037bbddd1fe468b93afb7b50657e54a5d0aa772f70ead07c6a8995",
+      "archiveJar": "bridge/lib/jacamo-bridge-jacamo-1.0.0.jar"
+    },
+    {
+      "source": "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/BridgeAgArch.java",
+      "class": "org/jacamo/bridge/adapter/BridgeAgArch$WeakIdentityKey.class",
+      "sha256": "91624687e4f606068c81dfdc39c102b0e2582ce42eda14eebfb5928a95ac5a1a",
+      "archiveJar": "bridge/lib/jacamo-bridge-jacamo-1.0.0.jar"
+    },
+    {
+      "source": "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/BridgeAgArch.java",
+      "class": "org/jacamo/bridge/adapter/BridgeAgArch.class",
+      "sha256": "56867d0ea2e30cb838f06a7ddd72f506d382d2c2175892ed1d17c3fcda006b16",
+      "archiveJar": "bridge/lib/jacamo-bridge-jacamo-1.0.0.jar"
+    },
+    {
+      "source": "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/BridgeRuntimeRegistry.java",
+      "class": "org/jacamo/bridge/adapter/BridgeRuntimeRegistry.class",
+      "sha256": "ad295a2dfc8b04534cf843db4c69469371b6b11aac4d442bac24785024430fa4",
+      "archiveJar": "bridge/lib/jacamo-bridge-jacamo-1.0.0.jar"
+    },
+    {
+      "source": "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/CartagoSnapshotSource.java",
+      "class": "org/jacamo/bridge/adapter/CartagoSnapshotSource$UnstableCutException.class",
+      "sha256": "6f04e37bf10cb10c5a4037418347593f3fea56aac8044af2b85b486bed727b2c",
+      "archiveJar": "bridge/lib/jacamo-bridge-jacamo-1.0.0.jar"
+    },
+    {
+      "source": "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/CartagoSnapshotSource.java",
+      "class": "org/jacamo/bridge/adapter/CartagoSnapshotSource.class",
+      "sha256": "3603e1ae5b3b0411a1a4f1ba5fae1c8d134fee645119d923c769d325e92a74ff",
+      "archiveJar": "bridge/lib/jacamo-bridge-jacamo-1.0.0.jar"
+    },
+    {
+      "source": "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/JaCaMoBridgePlatform.java",
+      "class": "org/jacamo/bridge/adapter/JaCaMoBridgePlatform.class",
+      "sha256": "78476464c54c08e58e233e9af3c65c522ea4866f809a88aa37960a2618f36429",
+      "archiveJar": "bridge/lib/jacamo-bridge-jacamo-1.0.0.jar"
+    }
+  ],
+  "originalEngineCore": [
+    {
+      "source": "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/GoalMarking.java",
+      "sha256": "e9ddcc1bfbafef0c987be6c7a017f8ce88c56a16e3c757bc637d1e1246660f48",
+      "reuseMode": "ORIGINAL_COPY"
+    },
+    {
+      "source": "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/IStarMarking.java",
+      "sha256": "c93e88db8bf323991d3ae66f64cca1f3106edaa5ed9bde19fafbc057dc48910f",
+      "reuseMode": "ORIGINAL_COPY"
+    },
+    {
+      "source": "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/IStarPropagation.java",
+      "sha256": "90e8ff0662f03889a4ec977cd1296c57f4dbdde2a0cbcde76afe937b25e35de3",
+      "reuseMode": "ORIGINAL_COPY"
+    },
+    {
+      "source": "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/TaskMarking.java",
+      "sha256": "e5eae4cd7b10994e5d71c5c7782ff04de3972352f17f5c5fa0732d39eb9af07d",
+      "reuseMode": "ORIGINAL_COPY"
+    }
+  ],
+  "archiveSha256": "f48724a287a13cffee05ebacdec7272a4c730fd2dbe883b3dbd2c682932f3815"
+}

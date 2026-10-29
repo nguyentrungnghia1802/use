@@ -1,0 +1,31 @@
+// AND is outcome conjunction. Ordered successful source operations are checked in house.ocl.
+istar HouseBuildingRequirements {
+  role ConstructionObserver {
+    goal HouseRealized : Achieve
+    goal ContractsAwarded : Achieve > HouseRealized
+      condition {[ ProcurementAuction.allInstances()->exists(a | a.workspace = self.workspace and a.task = 'SitePreparation' and a.currentWinner <> 'no_winner') and ProcurementAuction.allInstances()->exists(a | a.workspace = self.workspace and a.task = 'Floors' and a.currentWinner <> 'no_winner') and ProcurementAuction.allInstances()->exists(a | a.workspace = self.workspace and a.task = 'Walls' and a.currentWinner <> 'no_winner') and ProcurementAuction.allInstances()->exists(a | a.workspace = self.workspace and a.task = 'Roof' and a.currentWinner <> 'no_winner') and ProcurementAuction.allInstances()->exists(a | a.workspace = self.workspace and a.task = 'WindowsDoors' and a.currentWinner <> 'no_winner') and ProcurementAuction.allInstances()->exists(a | a.workspace = self.workspace and a.task = 'Plumbing' and a.currentWinner <> 'no_winner') and ProcurementAuction.allInstances()->exists(a | a.workspace = self.workspace and a.task = 'ElectricalSystem' and a.currentWinner <> 'no_winner') and ProcurementAuction.allInstances()->exists(a | a.workspace = self.workspace and a.task = 'Painting' and a.currentWinner <> 'no_winner') ]}
+    goal ConstructionCompleted : Achieve > HouseRealized
+    goal RwdCompleted : Achieve > ConstructionCompleted
+    goal PeeCompleted : Achieve > ConstructionCompleted
+    goal SitePrepared : Achieve > ConstructionCompleted
+      condition {[ BuildProgress.allInstances()->exists(p | p.workspace = self.workspace and p.prepareSiteAt >= 0) ]}
+    goal FloorsLaid : Achieve > ConstructionCompleted
+      condition {[ BuildProgress.allInstances()->exists(p | p.workspace = self.workspace and p.layFloorsAt >= 0) ]}
+    goal WallsBuilt : Achieve > ConstructionCompleted
+      condition {[ BuildProgress.allInstances()->exists(p | p.workspace = self.workspace and p.buildWallsAt >= 0) ]}
+    goal RoofBuilt : Achieve > RwdCompleted
+      condition {[ BuildProgress.allInstances()->exists(p | p.workspace = self.workspace and p.buildRoofAt >= 0) ]}
+    goal WindowsFitted : Achieve > RwdCompleted
+      condition {[ BuildProgress.allInstances()->exists(p | p.workspace = self.workspace and p.fitWindowsAt >= 0) ]}
+    goal DoorsFitted : Achieve > RwdCompleted
+      condition {[ BuildProgress.allInstances()->exists(p | p.workspace = self.workspace and p.fitDoorsAt >= 0) ]}
+    goal PlumbingInstalled : Achieve > PeeCompleted
+      condition {[ BuildProgress.allInstances()->exists(p | p.workspace = self.workspace and p.installPlumbingAt >= 0) ]}
+    goal ElectricalInstalled : Achieve > PeeCompleted
+      condition {[ BuildProgress.allInstances()->exists(p | p.workspace = self.workspace and p.installElectricalSystemAt >= 0) ]}
+    goal ExteriorPainted : Achieve > PeeCompleted
+      condition {[ BuildProgress.allInstances()->exists(p | p.workspace = self.workspace and p.paintExteriorAt >= 0) ]}
+    goal InteriorPainted : Achieve > ConstructionCompleted
+      condition {[ BuildProgress.allInstances()->exists(p | p.workspace = self.workspace and p.paintInteriorAt >= 0) ]}
+  }
+}

@@ -140,8 +140,8 @@ public final class NativeRuntimeReplay {
         private Bundle(Path root, Map<String,Object> manifest) throws Exception {
             this.root=root; this.manifest=manifest;
             canonical=CanonicalReplaySupport.canonical(manifest.get("schemaVersion"))?new org.tzi.use.plugins.jacamo.semantics.evidence.SemanticProgramManifest().decode(Files.readAllBytes(root.resolve(CanonicalReplaySupport.PROGRAM))):null;
-            if(canonical!=null&&caseRecording()!=(canonical.program().casePlan()!=null))throw new IllegalArgumentException("REPLAY_RECORDING_PROGRAM_SCHEMA_MISMATCH");
-            if(canonical!=null&&declarativeRecording()!=(canonical.program().xmlPlan()!=null))throw new IllegalArgumentException("REPLAY_RECORDING_PROGRAM_SCHEMA_MISMATCH");
+            if(caseRecording())throw new IllegalArgumentException("REPLAY_CASE_PROFILE_RETIRED_USE_DECLARATIVE_XML");
+            if(canonical!=null&&declarativeRecording()!=(canonical.program().xmlPlan()!=null))throw new IllegalArgumentException("REPLAY_CASE_PROFILE_RETIRED_USE_DECLARATIVE_XML");
             if(canonical!=null&&!canonical.program().hash().equals(manifest.get("programHash")))throw new IllegalArgumentException("REPLAY_MANIFEST_PROGRAM_MISMATCH");
         }
         public boolean canonical(){return canonical!=null;}
@@ -253,6 +253,7 @@ public final class NativeRuntimeReplay {
         private Cursor(Bundle bundle,org.tzi.use.uml.sys.MSystem system,NativeObjectBindings index,NativeRuntimeProjector canonical) throws Exception {
             this.bundle=bundle; this.system=system; this.index=index;
             projector=canonical;
+            if(canonical!=null)canonical.coordinator().originalEngine().recordedExecutionEvidencePolicy((String)bundle.manifest.getOrDefault("executionEvidencePolicy","CURRENT_CUT_ONLY/1.0")).join();
             reader=Files.newBufferedReader(bundle.root.resolve("runtime.jsonl"),StandardCharsets.UTF_8);
             nextLine=reader.readLine();
         }
@@ -416,7 +417,7 @@ public final class NativeRuntimeReplay {
                     ((Number)expected.get("generation")).longValue());
             case "EVENT", "OPERATION_PRE", "OPERATION_POST", "STREAM_BOUNDARY" -> projector.apply(ContractPayloads.event(payload));
             case "TASK_PRE", "TASK_POST" -> {
-                if(!projector.mutations().auctionCase()&&!projector.mutations().xmlCase())throw new IllegalArgumentException("REPLAY_ENTRY_UNSUPPORTED:"+kind);
+                if(!projector.mutations().declarativeMapping()&&!projector.mutations().xmlCase())throw new IllegalArgumentException("REPLAY_ENTRY_UNSUPPORTED:"+kind);
                 projector.apply(ContractPayloads.event(payload));
             }
             case "CAPABILITIES" -> {

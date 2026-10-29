@@ -18,6 +18,11 @@ public final class XmlNativePreparation {
         var observers=observerSchema(inputs.specification());
         var binding=new CslScopeModelAdapter().compile(program.cslModel(),observers);
         new CanonicalUseBindingAdapter().install(program,binding,trace);
+        for(var presentation:inputs.specification().root().children("presentation"))for(var selection:presentation.children("state")) {
+            var cls=binding.model().getClass(selection.attr("owner"));
+            if(cls==null)throw selection.location().error("PRESENTATION_CLASS_OR_FIELDS_REQUIRED");
+            for(String field:selection.optional("attributes").isBlank()?List.<String>of():Arrays.asList(selection.attr("attributes").trim().split("\\s+")))if(cls.attribute(field,true)==null)throw selection.location().error("PRESENTATION_ATTRIBUTE_UNRESOLVED:"+field);
+        }
         var loader=new AuthoredOclSpecificationLoader();var authored=loader.parse(inputs.ocl().bytes(),inputs.ocl().id());
         var operations=new XmlOperationBindings().install(source,program,binding,authored);
         var clauses=new LinkedHashMap<String,AuthoredOclSpecificationLoader.Context>();

@@ -107,4 +107,14 @@ class XmlTaskOclBindingsTest {
             assertFalse(binding.prepare("Positive",false,engine,scope,member,demand,wrong,view,Map.of(),false).unavailable().isBlank());
         }
     }
+    @Test void invalidAcceptedFailurePolicyCannotFallBackToAcceptingAnyError()throws Exception {
+        for(String attributes:List.of("term=\".fail\" bodyType=\"internalAction\" line=\"0\"","term=\".fail\" bodyType=\"action\" line=\"1\"","term=\".fail\" bodyType=\"internalAction\" line=\"1\" acceptAny=\"true\"")) {
+            assertThrows(IllegalArgumentException.class,()->{
+                var f=callbacks("receipt.entryConfirmed",xml->xml.replace("<variable name=\"receipt\"","<acceptedFailure sourceFailure=\"GOAL_LISTENER_FAILED:ia_failed\" "+attributes+"/><variable name=\"receipt\""));
+                var engine=f.nativeFixture().nativeFixture().engine();
+                try(var backend=new NativeOclBackend(engine.system().model(),engine.canonicalProgramHash(),engine.canonicalProgram().profile().engine().name())) {new XmlTaskOclBindings(engine.canonicalProgram(),engine.system().model(),backend);}
+            },attributes);
+        }
+    }
+
 }

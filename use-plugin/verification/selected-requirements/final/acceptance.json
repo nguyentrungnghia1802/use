@@ -1,0 +1,161 @@
+{
+  "status": "PASS_FOR_REQUESTED_FIX_AND_SELECTED_PUBLIC_PROFILE",
+  "createdAt": "2026-10-28T16:52:37.621788+00:00",
+  "plan": [
+    "Y01",
+    "Y02",
+    "Y03",
+    "Y04"
+  ],
+  "liveEvidence": "use-plugin\\verification\\live-results-ui\\auction-5275946803128123890",
+  "live": {
+    "coverage": "INCOMPLETE",
+    "domainFailures": 0,
+    "fixedGoalTaskRows": 12,
+    "pid": 14652,
+    "sameMSystem": true,
+    "samples": 58,
+    "scope": "Audit, not assertion that full normative profile is satisfied",
+    "status": "PASS",
+    "winnerObservedForTwoArtifacts": true
+  },
+  "selectedRequirements": {
+    "goalStatuses": [
+      {
+        "id": "O_root",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "O_start",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "O_bid",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "O_decide",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "A_start",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "A_start_t1",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "A_start_t2",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "A_decide",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "A_decide_t2",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "P_bid",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "P_bid_t1",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "P_bid_t2",
+        "status": "FULFILLED"
+      }
+    ],
+    "overallCoverage": "INCOMPLETE",
+    "requirements": "Requirements: KNOWN | Overall source coverage: INCOMPLETE | Last completion delay: 32188 ms [cartago] (not a caught-up assertion)",
+    "selectedRequirements": true,
+    "verdict": "COMPLETE_OBSERVED"
+  },
+  "states": {
+    "auditBoundaries": 1017,
+    "completionDelayLatestVerifiedMs": 32188,
+    "completionDelayMaxMs": 32188,
+    "latestVerifiedEventId": "39b6c414-4055-46c1-925d-bd2e7b0acd76:cartago:335",
+    "latestVerifiedEventSource": "cartago",
+    "milestones": 12,
+    "optionalBeliefsAcquired": false,
+    "pinnedResultHash": "ca49e82a0f50937605c2706813dcfcae23adcd9ce9a6d54a27bf0828fa5d0da3",
+    "presentationMode": "DOMAIN"
+  },
+  "tests": {
+    "focusedNearby": {
+      "plugin": 48,
+      "semanticEngine": 5,
+      "result": "PASS; subsequent manual-cut IT failure retained"
+    },
+    "finalAfterTestSynchronizationFix": {
+      "focused": 5,
+      "actualExternalAuctionIT": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "result": "BUILD SUCCESS"
+    }
+  },
+  "replay": {
+    "entries": 1596,
+    "status": "PASS"
+  },
+  "coldReplay": {
+    "entries": 1596,
+    "status": "PASS",
+    "scope": "Installed ZIP isolated loader replay, not manual GUI/live"
+  },
+  "package": {
+    "status": "PASS",
+    "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+    "sha256": "75dd232d328696b3bd9617ecd7f77dad385a257a2527554f928cfbad800b5442",
+    "extractedInstall": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\selected-requirements-final-20261028\\use-7.5.0",
+    "wholePluginBytesMatch": true,
+    "compiledClassesChecked": [
+      "semantics/runtime/SemanticResultAdapter",
+      "ui/use4goal/conformance/ObservedConformancePanel",
+      "ui/use4goal/conformance/ObservedConformancePanel$Cut",
+      "ui/use4goal/conformance/ObservedConformancePresenter"
+    ],
+    "originalEngineClassesChecked": [
+      "GoalMarking",
+      "TaskMarking",
+      "IStarMarking",
+      "IStarPropagation"
+    ],
+    "inputsAndDocsMatch": [
+      "auction_csl.csl",
+      "auction_istar_final.istar",
+      "auction_constraints_final_fixed.ocl",
+      "auction-mapping.xml",
+      "provenance.json",
+      "README.md",
+      "references/auction-mapping-full-observers.xml",
+      "references/auction-mapping-strict-v1.xml",
+      "references/auction_constraints_strict_v1.ocl"
+    ],
+    "scope": "Final archive byte checks; separate isolated cold replay follows, no manual installed GUI/live claim"
+  },
+  "evidence": [
+    "baseline.log",
+    "focused.log",
+    "manual-cut-baseline.log",
+    "auction-final.log",
+    "package.log",
+    "cold-replay.log",
+    "source-freeze.json"
+  ],
+  "semanticDifference": "AUCTION_PUBLIC_CONFIRMATION/2.0 verifies qualified public confirmation order, not exact internal truth-transition order. Strict XML/OCL preserved. WithinDeadline remains disabled.",
+  "limitations": [
+    "Backlog up to about32seconds at final cut remains",
+    "Complete observed selected requirements is not full JaCaMo state completeness",
+    "No unrelated case/full regression/manual desktop or installed live GUI run",
+    "Missing/failed participant behavior may differ between nondeterministic Auction runs"
+  ],
+  "noCommitOrPush": true
+}

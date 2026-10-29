@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+  "archiveSha256": "aa4ef3f4b4bf8469df0fb9366e579d1a22046988a841ce60b9e8f46355a2a804",
+  "archiveBytes": 117310692,
+  "launcher": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\restored-state-browser-lygw_tdw\\use-7.5.0\\bin\\start_use.bat",
+  "checks": [
+    {
+      "entry": "use-7.5.0/lib/plugins/use-jacamo-plugin-1.0.1.jar",
+      "source": "use-plugin/target/use-plugin-1.0.1.jar",
+      "sha256": "62c8b63aa489929fc8b34784d2ac4d293679514bd48fb8ff0d001d9277dda30b"
+    },
+    {
+      "entry": "use-7.5.0/bridge/lib/jacamo-bridge-jacamo-1.0.0.jar",
+      "source": "jacamo-bridge-jacamo/target/jacamo-bridge-jacamo-1.0.0-SNAPSHOT.jar",
+      "sha256": "d5bbccae3064e6d39c19dc6f7f078b8886539babe22e0ec0c25008b190f57749"
+    },
+    {
+      "entry": "use-7.5.0/bridge/lib/jacamo-bridge-contract-1.0.0.jar",
+      "source": "jacamo-bridge-contract/target/jacamo-bridge-contract-1.0.0-SNAPSHOT.jar",
+      "sha256": "caa707d043dff050e9ae43df33d33505fc506d23c891224318792a6d22c1e0eb"
+    },
+    {
+      "entry": "use-7.5.0/lib/use-gui.jar",
+      "source": "use-gui/target/use-gui.jar",
+      "sha256": "1fac62c47320242e10f0c86fdb823ab8a012bf0c680208b2a1974636f9efa26f"
+    },
+    {
+      "entry": "use-7.5.0/examples/auction-semantic/authored-v1/README.md",
+      "source": "use-plugin/examples/auction/authored-v1/README.md",
+      "sha256": "ad401b30f8905664fe2fa9a7daf69a8115e7ea6ae1a35b78417a62d4943d240f"
+    },
+    {
+      "entry": "use-7.5.0/examples/auction-semantic/compact-v1/README.md",
+      "source": "use-plugin/examples/auction/compact-v1/README.md",
+      "sha256": "50c6b895b1236c1a804caef25d3e4d13c9082c5398463b70bb2af945cc955069"
+    },
+    {
+      "entry": "use-7.5.0/docs/use4goal-run.md",
+      "source": "use-plugin/docs/project/use4goal-run.md",
+      "sha256": "3f61482a5080c6f2299e4d127baec9cd9052217eecf52f5c162826da8e8504f4"
+    }
+  ],
+  "compiledClassParity": 22,
+  "originalEngineClassParity": 4,
+  "unchangedAuthoredFormalFiles": 4,
+  "scope": "ZIP bytes and fresh extraction, not cold installed live or manual GUI"
+}

@@ -25,7 +25,7 @@ class DeclarativeOperationCheckpointTest {
         var portMethod=NativeRuntimeMutationEngine.class.getDeclaredMethod("cslPort");portMethod.setAccessible(true);
         var port=(org.tzi.use.plugins.jacamo.semantics.runtime.SemanticObservationMapper.Port)portMethod.invoke(engine);
         assertTrue(engine.xmlCase());assertEquals("",engine.metadata(self,"uuid"),"The generic writer owns a physical identity, not the legacy metadata shape");
-        var pre=event(built.program(),id,1,"started");checks.observe(pre,Map.of("cartago",Completeness.COMPLETE),false,Set.of());
+        var pre=event(built.program(),id,1,"started");assertEquals("OPERATION_PRE",checks.eligibleKind(pre));checks.observe(pre,Map.of("cartago",Completeness.COMPLETE),false,Set.of());
         var before=checks.drainDetailed();assertTrue(before.stream().anyMatch(r->r.kind().equals("PRE")&&r.verdict()==SemanticVerdict.PASS),before.toString());
         assertEquals("increment-interface",before.stream().filter(r->r.kind().equals("PRE")).findFirst().orElseThrow().witness().get("sourceRule"));
         checks.retireUnavailableContexts("unrelated-boundary");assertEquals(1,checks.savepoint().active().size());
@@ -38,7 +38,9 @@ class DeclarativeOperationCheckpointTest {
     }
     private RuntimeEvent event(org.tzi.use.plugins.jacamo.semantics.mapping.SemanticProgram program,BridgeEntityId id,long sequence,String phase) {
         var signature=List.of("org.tzi.use.plugins.jacamo.semantics.CslCounterArtifact","increment",List.of(),"void");
-        var data=Map.<String,Object>of("artifactSemanticId",id.canonical(),"phase",phase,"operationSignature",signature,"argumentValues",List.of(),"argumentTypes",List.of(),
+        // Real OfficialCartagoAdapter uses its framework semantic ID here,
+        // while generic raw M0 rules bind only the verified BridgeEntityId.
+        var data=Map.<String,Object>of("artifactSemanticId","cartago:artifact:environment:"+id.scope()+":"+id.incarnation(),"phase",phase,"operationSignature",signature,"argumentValues",List.of(),"argumentTypes",List.of(),
                 "invocationBoundary",Map.of("version","1.0","authority","ICARTAGOLOGGER_OBSERVED_PREFIX","sourceId","cartago","artifactUuid",id.incarnation(),"previousWatermark",sequence-1));
         return new RuntimeEvent("op-"+sequence,"run",1,program.source().sourceHash(),"cartago","cartago",sequence,Instant.ofEpochMilli(sequence),phase.equals("started")?RuntimeEventKind.STARTED:RuntimeEventKind.SUCCEEDED,RuntimeFactKind.ARTIFACT,ProjectionStatus.EVIDENCE_ONLY,id,null,"invocation","",Map.of(),data,new SourceWatermark("cartago",sequence),Completeness.COMPLETE,List.of());
     }

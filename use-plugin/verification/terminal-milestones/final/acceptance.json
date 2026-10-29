@@ -1,0 +1,165 @@
+{
+  "status": "PASS_FOR_REQUESTED_TERMINAL_AND_MILESTONE_FIX",
+  "createdAt": "2026-10-28T17:43:05.900565+00:00",
+  "plan": [
+    "Z01",
+    "Z02",
+    "Z03",
+    "Z04"
+  ],
+  "tests": {
+    "pluginFocusedNearby": 64,
+    "semanticEngine": 5,
+    "realExternalAuctionIT": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "deterministicFailureComponent": "XmlTaskCheckpointsTest.actualFailedJasonCallbackRetainsTerminalEvidenceAfterMarkerRetirementAndRollback uses actual Jason .fail callbacks, native OCL and production runtime owner; not a live TCP Auction failure"
+  },
+  "liveEvidence": "use-plugin\\verification\\live-results-ui\\auction-10080899007607398949",
+  "live": {
+    "coverage": "INCOMPLETE",
+    "domainFailures": 0,
+    "fixedGoalTaskRows": 12,
+    "pid": 18832,
+    "sameMSystem": true,
+    "samples": 68,
+    "scope": "Audit, not assertion that full normative profile is satisfied",
+    "status": "PASS",
+    "winnerObservedForTwoArtifacts": true
+  },
+  "states": {
+    "auditBoundaries": 1025,
+    "completionDelayLatestVerifiedMs": 13,
+    "completionDelayMaxMs": 37676,
+    "latestVerifiedEventId": "manual",
+    "latestVerifiedEventSource": "user",
+    "milestones": 12,
+    "optionalBeliefsAcquired": false,
+    "pinnedResultHash": "263dbbf36d14e460ae46c75acb88351d8597371aee433af20157125f6bdc4729",
+    "presentationMode": "DOMAIN"
+  },
+  "selectedRequirements": {
+    "goalStatuses": [
+      {
+        "id": "O_root",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "O_start",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "O_bid",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "O_decide",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "A_start",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "A_start_t1",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "A_start_t2",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "A_decide",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "A_decide_t2",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "P_bid",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "P_bid_t1",
+        "status": "FULFILLED"
+      },
+      {
+        "id": "P_bid_t2",
+        "status": "FULFILLED"
+      }
+    ],
+    "overallCoverage": "INCOMPLETE",
+    "requirements": "Requirements: KNOWN | Overall source coverage: INCOMPLETE | Last completion delay: 13 ms [user] (local check, not producer lag)",
+    "selectedRequirements": true,
+    "verdict": "COMPLETE_OBSERVED"
+  },
+  "liveTerminalOutcomes": {
+    "failedOccurrences": 0,
+    "note": "Nondeterministic source; a zero-failure live run is allowed. Exact failed Jason callbacks are also exercised deterministically by XmlTaskCheckpointsTest.",
+    "rows": []
+  },
+  "replay": {
+    "entries": 1617,
+    "status": "PASS"
+  },
+  "installedColdReplay": {
+    "status": "PASS",
+    "entries": 1617,
+    "scope": "Isolated final ZIP plugin loader and native replay, not manual GUI or installed live"
+  },
+  "package": {
+    "status": "PASS",
+    "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+    "sha256": "e55880423ef2278e6b265026ec500c5e06611ceafe1aef782505a25cb5d8acf3",
+    "extractedInstall": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\terminal-milestones-final-20261029\\use-7.5.0",
+    "wholePluginBytesMatch": true,
+    "compiledClassesChecked": [
+      "semantics/runtime/ExecutionEvidence",
+      "semantics/runtime/ExecutionEvidence$Certificate",
+      "semantics/runtime/RuntimeEngineSessionOwner",
+      "semantics/runtime/SemanticResultAdapter",
+      "ui/use4goal/conformance/ObservedConformancePanel",
+      "ui/use4goal/conformance/ObservedConformancePanel$Cut",
+      "ui/use4goal/conformance/ObservedConformancePresenter",
+      "ui/use4goal/conformance/LiveGoalSummary",
+      "ui/use4goal/conformance/BusinessTimeline"
+    ],
+    "originalEngineClassesChecked": [
+      "GoalMarking",
+      "TaskMarking",
+      "IStarMarking",
+      "IStarPropagation"
+    ],
+    "inputsAndDocsMatch": [
+      "auction_csl.csl",
+      "auction_istar_final.istar",
+      "auction-mapping.xml",
+      "auction_constraints_final_fixed.ocl",
+      "README.md",
+      "provenance.json",
+      "references/auction-mapping-strict-v1.xml",
+      "references/auction_constraints_strict_v1.ocl",
+      "references/auction-mapping-full-observers.xml"
+    ],
+    "scope": "Final ZIP class/input byte checks; separate isolated cold replay; not manual desktop or installed live GUI acceptance"
+  },
+  "evidence": [
+    "ledger-baseline.log",
+    "timeline-baseline.log",
+    "focused.log",
+    "auction-and-nearby.log",
+    "package.log",
+    "cold-replay.log",
+    "source-freeze.json",
+    "unchanged-semantic-inputs.json"
+  ],
+  "limitations": [
+    "Final random live Auction had no failed branch; deterministic actual Jason callback component test covers FAILED",
+    "Producer backlog remains; manual completion latency is not source lag",
+    "No unrelated live cases/full regression/manual installed GUI acceptance",
+    "Original TaskMarking remains PENDING when post never succeeded; FAILED is separate execution outcome"
+  ],
+  "noCommitOrPush": true
+}

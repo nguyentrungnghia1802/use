@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+  "archiveSha256": "c00b212f9bd5111b8bee1f852d495a15bab442e1b9f6d95bc058598a3d30452e",
+  "launcher": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\certified-execution-final-20261028\\use-7.5.0\\bin\\start_use.bat",
+  "pluginSha256": "4474bfa6b655163248c09f69cba9464a722f1c32fd6ef7b9bb84648b7f15d6ce",
+  "runtimeClasses": 6,
+  "originalEngineClasses": 4,
+  "scope": "Fresh ZIP extraction and full plugin byte parity; cold replay checked separately"
+}

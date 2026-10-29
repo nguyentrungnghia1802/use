@@ -29,7 +29,7 @@ public final class XmlTaskOclBindings implements AutoCloseable {
         for(Node node:spec.root().child("bindings").children("elementRuntime"))if(program.goalModel().findElement(node.attr("target")).orElse(null) instanceof org.vnu.sme.goal.dsl.istar.mm.Task) {
             String task=node.attr("target");
             if(node.optional("stepScope").isBlank()) {
-                if(!node.children("actionReceipt").isEmpty()||List.of("scopePolicy","entryPolicy","failurePolicy","stepSchemeColumn","stepArtifactColumn").stream().anyMatch(k->!node.optional(k).isBlank()))throw node.location().error("XML_TASK_STEP_SCOPE_REQUIRED");
+                if(!node.children("actionReceipt").isEmpty()||!node.children("acceptedFailure").isEmpty()||List.of("scopePolicy","entryPolicy","failurePolicy","stepSchemeColumn","stepArtifactColumn").stream().anyMatch(k->!node.optional(k).isBlank()))throw node.location().error("XML_TASK_STEP_SCOPE_REQUIRED");
                 continue; // Unconfigured Tasks remain unavailable; no actor/operation fallback.
             }
             var scope=spec.requireId(node.attr("stepScope"));
@@ -48,8 +48,14 @@ public final class XmlTaskOclBindings implements AutoCloseable {
                 if(origin.startsWith("SCOPE_COLUMN:")&&!fields.contains(origin.substring("SCOPE_COLUMN:".length())))throw variable.location().error("XML_TASK_VARIABLE_COLUMN_UNRESOLVED");
                 if(origin.equals("STEP_TUPLE")) {
                     Node view=spec.requireId(variable.attr("viewRef"));
-                    if(!view.attr("category").equals("TUPLE")||view.children("field").stream().anyMatch(f->!f.attr("type").equals("Boolean")||!Set.of("STEP_ENABLED","STEP_SUCCEEDED").contains(f.attr("origin"))))throw variable.location().error("UNSUPPORTED:XML_TASK_CALLBACK_VIEW");
+                    if(!view.attr("category").equals("TUPLE")||view.children("field").stream().anyMatch(f->!f.attr("type").equals("Boolean")||!Set.of("STEP_ENABLED","STEP_SUCCEEDED","STEP_COMPLETED").contains(f.attr("origin"))))throw variable.location().error("UNSUPPORTED:XML_TASK_CALLBACK_VIEW");
                 }
+            }
+            if(node.children("acceptedFailure").size()>16)throw node.location().error("ACCEPTED_FAILURE_CAPACITY");
+            for(var accepted:node.children("acceptedFailure")) {
+                try {if(Integer.parseInt(accepted.attr("line"))<=0)throw new NumberFormatException();}
+                catch(NumberFormatException invalid){throw accepted.location().error("ACCEPTED_FAILURE_SOURCE_LINE_REQUIRED");}
+                if(accepted.attr("sourceFailure").isBlank()||accepted.attr("sourceFailure").length()>4096||accepted.attr("term").isBlank()||accepted.attr("term").length()>4096||!accepted.attr("bodyType").equals("internalAction"))throw accepted.location().error("UNSUPPORTED:ACCEPTED_FAILURE_INSTRUCTION");
             }
             var operations=new ArrayList<String>();var selected=new HashSet<String>();
             for(Node receipt:node.children("actionReceipt")) {
@@ -109,7 +115,12 @@ public final class XmlTaskOclBindings implements AutoCloseable {
                     case "PLAYER","ROLE","CONTEXT","SELF" -> {String id=switch(origin){case "PLAYER"->member.player();case "ROLE"->member.role();case "CONTEXT"->member.context();default->member.selves().getOrDefault(task,"");};var object=engine.objectForSemanticId(id);if(object!=null)value=object.value();}
                     case "STEP_TUPLE" -> {
                         var tuple=(TupleType)type;Node schema=program.xmlPlan().inputs().specification().requireId(binding.attr("viewRef"));var parts=new ArrayList<TupleValue.Part>();var used=NativeExpressionInputs.wholeTupleVariables(compiled.expression()).contains(name)?tuple.getParts().keySet():NativeExpressionInputs.tupleParts(compiled.expression()).getOrDefault(name,Set.of());
-                        for(var part:tuple.getParts().values()) {var field=schema.children("field").stream().filter(f->f.attr("name").equals(part.name())).findFirst().orElseThrow();Boolean known=field.attr("origin").equals("STEP_ENABLED")?Boolean.valueOf(step.enabled()):step.succeeded();
+                        for(var part:tuple.getParts().values()) {var field=schema.children("field").stream().filter(f->f.attr("name").equals(part.name())).findFirst().orElseThrow();Boolean known=switch(field.attr("origin")) {
+                                case "STEP_ENABLED"->Boolean.valueOf(step.enabled());
+                                case "STEP_SUCCEEDED"->step.succeeded();
+                                case "STEP_COMPLETED"->step.phase().equals("ENABLED")||step.phase().equals("FAILED")&&!step.bindings().containsKey("failureSite")?null:Boolean.valueOf(Boolean.TRUE.equals(step.succeeded())||acceptedFailure(node,step));
+                                default->throw field.location().error("UNSUPPORTED:STEP_CALLBACK_ORIGIN");
+                            };
                             if(used.contains(part.name())&&known==null&&reason.isBlank())reason="STEP_CALLBACK_VALUE_UNAVAILABLE:"+part.name();parts.add(new TupleValue.Part(part.getPosition(),part.name(),known==null?UndefinedValue.instance:BooleanValue.get(known)));}
                         value=new TupleValue(tuple,parts);
                     }
@@ -136,10 +147,27 @@ public final class XmlTaskOclBindings implements AutoCloseable {
             }
             witness.put("postPreCoverage",beforeQuality);witness.put("postPreFieldCount",Integer.toString(NativePreStateCoverage.attributeReads(slot.post().expression()).size()));
         }
+        if(step!=null&&step.phase().equals("FAILED")) {
+            witness.put("sourceFailure",Objects.toString(step.bindings().get("sourceFailure"),""));
+            witness.put("sourceFailureSite",new String(CanonicalJson.encode(step.bindings().getOrDefault("failureSite",Map.of())),java.nio.charset.StandardCharsets.UTF_8));
+            witness.put("acceptedFailure",Boolean.toString(acceptedFailure(node,step)));
+        }
         if(demand!=null)witness.putAll(demand.witness());witness.put("taskPredicateId",compiled.specification().id());
         if(self!=null)witness.putAll(coverage.witness(compiled.expression(),engine,self,sources,reason));
         String invocation=step==null?"":step.invocation();String id=compiled.specification().id()+":"+SemanticJson.hash(List.of(scope.id(),member.instance(),invocation));
         return new NativeInvocationEvaluation.Condition(id,pre?"TASK_PRE":"TASK_POST",compiled.specification().self().name(),self==null?"":self.name(),member.selves().getOrDefault(task,""),compiled.specification().body(),compiled.expression(),view.before()==null?view.after():view.before(),view.after(),variables,reason,ConstraintCoverageResolver.unavailableVerdict(reason),invocation,witness);
+    }
+    /** Exact source instruction selected by authored XML. A phase/reason/name alone
+     * cannot accept an unrelated error, failed action or missing callback. */
+    private static boolean acceptedFailure(Node node,JasonStepCutDecoder.Step step) {
+        if(!step.phase().equals("FAILED")||step.quality()!=Completeness.COMPLETE||!step.operation().isBlank()
+                ||!(step.bindings().get("actions") instanceof List<?> actions)||!actions.isEmpty()
+                ||!(step.bindings().get("failureSite") instanceof Map<?,?>))return false;
+        var proof=CanonicalJson.object(step.bindings().get("failureSite"));
+        if(!"ACTUAL_INTENDED_MEANS_CURRENT_INSTRUCTION/1.0".equals(proof.get("authority")))return false;
+        for(var accepted:node.children("acceptedFailure"))if(accepted.attr("sourceFailure").equals(step.bindings().get("sourceFailure"))&&accepted.attr("term").equals(proof.get("term"))&&accepted.attr("bodyType").equals(proof.get("bodyType"))
+                &&proof.get("line") instanceof Number line&&new java.math.BigDecimal(line.toString()).compareTo(new java.math.BigDecimal(accepted.attr("line")))==0)return true;
+        return false;
     }
     private boolean pureCallback(NativeOclBackend.Compiled compiled,Node node) {
         var origins=new HashMap<String,String>();node.children("variable").forEach(v->origins.put(v.attr("name"),v.attr("origin")));

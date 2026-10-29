@@ -1,0 +1,36 @@
+{
+  "status": "PASS",
+  "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+  "sha256": "e55880423ef2278e6b265026ec500c5e06611ceafe1aef782505a25cb5d8acf3",
+  "extractedInstall": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\terminal-milestones-final-20261029\\use-7.5.0",
+  "wholePluginBytesMatch": true,
+  "compiledClassesChecked": [
+    "semantics/runtime/ExecutionEvidence",
+    "semantics/runtime/ExecutionEvidence$Certificate",
+    "semantics/runtime/RuntimeEngineSessionOwner",
+    "semantics/runtime/SemanticResultAdapter",
+    "ui/use4goal/conformance/ObservedConformancePanel",
+    "ui/use4goal/conformance/ObservedConformancePanel$Cut",
+    "ui/use4goal/conformance/ObservedConformancePresenter",
+    "ui/use4goal/conformance/LiveGoalSummary",
+    "ui/use4goal/conformance/BusinessTimeline"
+  ],
+  "originalEngineClassesChecked": [
+    "GoalMarking",
+    "TaskMarking",
+    "IStarMarking",
+    "IStarPropagation"
+  ],
+  "inputsAndDocsMatch": [
+    "auction_csl.csl",
+    "auction_istar_final.istar",
+    "auction-mapping.xml",
+    "auction_constraints_final_fixed.ocl",
+    "README.md",
+    "provenance.json",
+    "references/auction-mapping-strict-v1.xml",
+    "references/auction_constraints_strict_v1.ocl",
+    "references/auction-mapping-full-observers.xml"
+  ],
+  "scope": "Final ZIP class/input byte checks; separate isolated cold replay; not manual desktop or installed live GUI acceptance"
+}

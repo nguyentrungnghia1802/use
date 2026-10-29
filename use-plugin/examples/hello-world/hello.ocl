@@ -1,0 +1,4 @@
+context Console inv NonnegativeMessages: self.numMsg >= 0
+context Console::printMsg(msg : String)
+pre CanPrint: true
+post CountIncremented: self.numMsg = self.numMsg@pre + 1

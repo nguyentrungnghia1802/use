@@ -45,11 +45,11 @@ class ProductionObservationSessionTest {
         System.setProperty("jacamo.bridge.generation","4");System.setProperty("jacamo.bridge.modelRevision",model.modelRevision());
         var events=new CopyOnWriteArrayList<RuntimeEvent>();ArtifactId id=null;
         try(var norms=new NplBoardSnapshotSource("run",4,model.modelRevision(),List::of);
-            var source=new CartagoSnapshotSource(environment,List.of("/main"),"run",model,norms::artifactCreated,false);
+            var source=new CartagoSnapshotSource(environment,List.of("/main"),"run",model,norms::artifactCreated);
             var coordinator=new SnapshotCoordinator(List.of(source,norms),512,events::add);
             var providers=new ProductionObservationSession(new FrameworkObservationProviders.Context(environment,model,root,"run",4,ignored->{},reason->fail(reason),norms),List.of(field,operation,npl,absent))) {
             assertEquals(List.of("absent"),providers.requiredUnavailable().stream().map(Capability::name).toList());
-            source.capabilities(providers);assertFalse(source.fieldProbeAvailable());assertFalse(source.schemeProbeAvailable());
+            source.capabilities(providers);assertFalse(java.util.Arrays.stream(CartagoSnapshotSource.class.getDeclaredFields()).anyMatch(f->f.getType().getSimpleName().startsWith("Auction")));
             id=actor.makeArtifact(actor.getJoinedWspId("main"),"neutralOne",type);actor.doAction(id,new Op("bump"),5000);
             NplLiveBoardObservationTest.await(()->events.stream().anyMatch(e->e.kind()==RuntimeEventKind.SUCCEEDED&&e.after().get("operation")!=null&&e.after().get("operation").equals("bump")));
             var cut=coordinator.capture(model.modelRevision(),3).snapshot();

@@ -306,10 +306,6 @@
       "path": "examples/auction-semantic/provenance/moise/asl/org-obedient.asl"
     },
     {
-      "source": "examples/auction/auction_jacamo_to_csl_rules.xml",
-      "path": "examples/auction-semantic/auction_jacamo_to_csl_rules.xml"
-    },
-    {
       "source": "examples/auction/auction_csl.csl",
       "path": "examples/auction-semantic/auction_csl.csl"
     },
@@ -454,18 +450,17 @@
     "fullTraceCapacity": "WORKLOAD_DEPENDENT_GAP_REPORTED_ON_EXHAUSTION"
   },
   "auctionSemanticCase": {
-    "profile": "AUCTION_OBSERVED_V1",
+    "profile": "JACAMO_DECLARATIVE_XML",
     "path": "examples/auction-semantic",
     "manifest": "examples/auction-semantic/case-manifest.json",
-    "specification": "examples/auction-semantic/auction_jacamo_to_csl_rules.xml",
+    "specification": "examples/auction-semantic/authored-v1/auction-mapping.xml",
     "legacyToyPath": "examples/auction",
-    "recording": "3.1.0",
-    "programManifest": "1.1.0",
     "consumerJournalBytes": 268435456,
     "recordingJournalMaxBytes": 268435456,
     "transport": "authenticated-loopback-tcp",
     "sameLiveNativeState": true,
     "timingLimitations": "SOURCE_WALL_CLOCK_NOT_PROVEN_MONOTONIC_INTERNAL_MOISE_TRANSITION_TIME_UNAVAILABLE",
-    "acceptance": "REQUIRES_EXACT_ARTIFACT_E01_E02_Q08_RECEIPTS"
+    "acceptance": "SELECTED_OBSERVED_REQUIREMENTS_WITH_QUALITY_GATES",
+    "modelInputMode": "AUTHORED"
   }
 }

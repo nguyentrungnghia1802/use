@@ -28,7 +28,7 @@ public final class SemanticInvariantEvaluator {
             var witness=new TreeMap<>(coverage.witness(inv.bodyExpression(),engine,object,sources,missing));
             if(engine.xmlCase()) {
                 witness.put("mappingPlanHash",engine.canonicalProgram().xmlPlan().hash());witness.put("mappingSpecificationHash",engine.canonicalProgram().xmlPlan().inputs().xml().sha256());witness.put("programHash",engine.canonicalProgramHash());
-            }else if(engine.auctionCase())witness.putAll(AuctionEvidenceEncoder.invariant(engine,object,inv.qualifiedName()));
+            }
             for(var attribute:object.cls().allAttributes())witness.put(attribute.name(),object.state(engine.system().state()).attributeValue(attribute).toString());
             bodies.add(new PreparedBody(object.name(),engine.metadata(object,"semanticId"),object.value(),missing,witness));
         }

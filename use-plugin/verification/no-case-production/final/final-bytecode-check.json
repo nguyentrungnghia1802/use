@@ -1,0 +1,50 @@
+{
+  "use-plugin": {
+    "matchingPackagedClasses": 771,
+    "excludedByExistingMavenJarRules": [
+      "org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor$1.class",
+      "org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor$2.class",
+      "org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor$3.class",
+      "org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor$StringSource.class",
+      "org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor.class",
+      "org/tzi/use/plugins/jacamo/extraction/ElementDraft.class",
+      "org/tzi/use/plugins/jacamo/extraction/ExtractionContext.class",
+      "org/tzi/use/plugins/jacamo/extraction/ImportResult.class",
+      "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser$1.class",
+      "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser$BodyCursor.class",
+      "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser$Directive.class",
+      "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser$DynamicArtifactBinding.class",
+      "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser$FocusBinding.class",
+      "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser$ParsedSource.class",
+      "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser$SanitizedSource.class",
+      "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser$StaticParsingAgent.class",
+      "org/tzi/use/plugins/jacamo/extraction/JasonSourceParser.class",
+      "org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser$ConfigTerm.class",
+      "org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser.class",
+      "org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser$1.class",
+      "org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser.class",
+      "org/tzi/use/plugins/jacamo/extraction/SemanticResolver$1.class",
+      "org/tzi/use/plugins/jacamo/extraction/SemanticResolver.class",
+      "org/tzi/use/plugins/jacamo/extraction/StaticProjectImporter.class",
+      "org/tzi/use/plugins/jacamo/extraction/XmlSourcePositions$1.class",
+      "org/tzi/use/plugins/jacamo/extraction/XmlSourcePositions.class",
+      "org/tzi/use/plugins/jacamo/project/ImportService.class",
+      "org/tzi/use/plugins/jacamo/project/JcmLexer$Token.class",
+      "org/tzi/use/plugins/jacamo/project/JcmLexer.class",
+      "org/tzi/use/plugins/jacamo/project/JcmProjectLoader$1.class",
+      "org/tzi/use/plugins/jacamo/project/JcmProjectLoader$Declaration.class",
+      "org/tzi/use/plugins/jacamo/project/JcmProjectLoader$Document.class",
+      "org/tzi/use/plugins/jacamo/project/JcmProjectLoader.class",
+      "org/tzi/use/plugins/jacamo/project/ProjectDiscoveryResult.class",
+      "org/tzi/use/plugins/jacamo/project/ProjectEdge.class",
+      "org/tzi/use/plugins/jacamo/project/ProjectEdgeKind.class",
+      "org/tzi/use/plugins/jacamo/project/ProjectGraph.class"
+    ],
+    "unexpectedMissingOrDifferent": 0
+  },
+  "jacamo-bridge-jacamo": {
+    "matchingPackagedClasses": 116,
+    "excludedByExistingMavenJarRules": [],
+    "unexpectedMissingOrDifferent": 0
+  }
+}

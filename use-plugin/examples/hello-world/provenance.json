@@ -1,0 +1,77 @@
+{
+  "version": "1.0",
+  "case": "hello-world",
+  "upstreamProject": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\doc\\tutorials\\hello-world\\code\\helloworld",
+  "jcm": "helloworld.jcm",
+  "license": "LGPL-3.0 (JaCaMo project); see upstream LICENSE",
+  "files": [
+    {
+      "path": "helloworld.jcm",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\doc\\tutorials\\hello-world\\code\\helloworld\\helloworld.jcm",
+      "upstreamSha256": "c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101",
+      "localSha256": "c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101",
+      "patches": []
+    },
+    {
+      "path": "build.gradle",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\doc\\tutorials\\hello-world\\code\\helloworld\\build.gradle",
+      "upstreamSha256": "894ef12cc5b22944b37ba7a26df77e803d1339b10033d6b305d2d0189204d10c",
+      "localSha256": "894ef12cc5b22944b37ba7a26df77e803d1339b10033d6b305d2d0189204d10c",
+      "patches": []
+    },
+    {
+      "path": "src/agt/hello-grid.asl",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\doc\\tutorials\\hello-world\\code\\helloworld\\src\\agt\\hello-grid.asl",
+      "upstreamSha256": "1054e9faeb464dbbd7bab25eeaca46f9827055ad9ef6c8dfb3e49d5475efe8d0",
+      "localSha256": "1054e9faeb464dbbd7bab25eeaca46f9827055ad9ef6c8dfb3e49d5475efe8d0",
+      "patches": []
+    },
+    {
+      "path": "src/agt/hello.asl",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\doc\\tutorials\\hello-world\\code\\helloworld\\src\\agt\\hello.asl",
+      "upstreamSha256": "7c9a0dcd47c8b256b33506299968faad71aeb47a2bec814958f07993b219922a",
+      "localSha256": "7c9a0dcd47c8b256b33506299968faad71aeb47a2bec814958f07993b219922a",
+      "patches": []
+    },
+    {
+      "path": "src/agt/hello2.asl",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\doc\\tutorials\\hello-world\\code\\helloworld\\src\\agt\\hello2.asl",
+      "upstreamSha256": "e0ad5e7dd82270dc169aacf0c1f97fb7d70fd10f574feee9dcffdc0984972902",
+      "localSha256": "e0ad5e7dd82270dc169aacf0c1f97fb7d70fd10f574feee9dcffdc0984972902",
+      "patches": []
+    },
+    {
+      "path": "src/agt/hf.asl",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\doc\\tutorials\\hello-world\\code\\helloworld\\src\\agt\\hf.asl",
+      "upstreamSha256": "fbb17e720c1395490c84b2e1000c98cb8e73653219fa86f959fe983059e8f07b",
+      "localSha256": "fbb17e720c1395490c84b2e1000c98cb8e73653219fa86f959fe983059e8f07b",
+      "patches": []
+    },
+    {
+      "path": "src/env/display/GridDisplay.java",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\doc\\tutorials\\hello-world\\code\\helloworld\\src\\env\\display\\GridDisplay.java",
+      "upstreamSha256": "ced4160f05dfb301571fbf528897f737ed1564555d369194219be302370d8f1c",
+      "localSha256": "ced4160f05dfb301571fbf528897f737ed1564555d369194219be302370d8f1c",
+      "patches": []
+    },
+    {
+      "path": "src/env/display/GUIConsole.java",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\doc\\tutorials\\hello-world\\code\\helloworld\\src\\env\\display\\GUIConsole.java",
+      "upstreamSha256": "37216ecc8b59e58686ebf67371b1b4f68784446f67d167672fec5be32f794e98",
+      "localSha256": "e6c10b463080bc40e6f71844ec3e11e7266612dbebefd7291cc317ff66b3108a",
+      "patches": [
+        "HEADLESS_PRESENTATION_ONLY_V1: keep numMsg and printMsg behavior; skip JFrame only in headless mode"
+      ]
+    },
+    {
+      "path": "src/org/o1.xml",
+      "upstream": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\doc\\tutorials\\hello-world\\code\\helloworld\\src\\org\\o1.xml",
+      "upstreamSha256": "6b9794e719dabe233e6dc00baf0d5e6256a7e8a8b189c454bccd527fe17a4206",
+      "localSha256": "6b9794e719dabe233e6dc00baf0d5e6256a7e8a8b189c454bccd527fe17a4206",
+      "patches": []
+    }
+  ],
+  "upstreamCommit": "04fc08df259d94045f6cfc95637d56faa1cb33b2",
+  "licenseFile": "LICENSE-JaCaMo.txt",
+  "profile": "OBSERVED_WORLD_OUTCOMES_V1"
+}

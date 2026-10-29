@@ -40,16 +40,16 @@ class XmlObserverProjectionTest {
     }
     @Test void sameNativeObserverViewHasExplicitCurrentLatchAndFreezeSemanticsWithNoMissingFalse()throws Exception {
         var helper=helper();var f=helper.fixture(RUNTIME,OBSERVERS);var engine=f.engine();var system=engine.system();
-        engine.applyAuctionCut(cut(helper,f,1,1,false,false),"run",1,List.of());
+        engine.applyMappingCut(cut(helper,f,1,1,false,false),"run",1,List.of());
         var observer=system.state().allObjects().stream().filter(o->o.cls().name().equals("SignalView")).findFirst().orElseThrow();
         assertFalse(observer.cls().isSubClassifierOf(system.model().getClass("DomainEntity")));
         assertEquals(BooleanValue.FALSE,observer.state(system.state()).attributeValue("current"));
         assertTrue(observer.state(system.state()).attributeValue("ever").isUndefined());assertTrue(observer.state(system.state()).attributeValue("frozen").isUndefined());
-        engine.applyAuctionCut(cut(helper,f,2,2,false,true),"run",1,List.of());assertEquals(BooleanValue.FALSE,observer.state(system.state()).attributeValue("ever"));
-        engine.applyAuctionCut(cut(helper,f,3,5,true,true),"run",1,List.of());
+        engine.applyMappingCut(cut(helper,f,2,2,false,true),"run",1,List.of());assertEquals(BooleanValue.FALSE,observer.state(system.state()).attributeValue("ever"));
+        engine.applyMappingCut(cut(helper,f,3,5,true,true),"run",1,List.of());
         assertEquals(BooleanValue.TRUE,observer.state(system.state()).attributeValue("ever"));assertEquals(IntegerValue.valueOf(5),observer.state(system.state()).attributeValue("frozen"));
-        var saved=engine.savepoint();engine.applyAuctionCut(cut(helper,f,4,9,true,true),"run",1,List.of());assertEquals(IntegerValue.valueOf(5),observer.state(system.state()).attributeValue("frozen"));
-        engine.applyAuctionCut(cut(helper,f,5,9,null,false),"run",1,List.of());
+        var saved=engine.savepoint();engine.applyMappingCut(cut(helper,f,4,9,true,true),"run",1,List.of());assertEquals(IntegerValue.valueOf(5),observer.state(system.state()).attributeValue("frozen"));
+        engine.applyMappingCut(cut(helper,f,5,9,null,false),"run",1,List.of());
         assertTrue(observer.state(system.state()).attributeValue("current").isUndefined());assertEquals(BooleanValue.TRUE,observer.state(system.state()).attributeValue("ever"));
         assertEquals(IntegerValue.valueOf(5),observer.state(system.state()).attributeValue("frozen"));
         engine.rollback(saved);assertSame(observer,system.state().objectByName(observer.name()));assertEquals(BooleanValue.TRUE,observer.state(system.state()).attributeValue("current"));
@@ -57,12 +57,12 @@ class XmlObserverProjectionTest {
     }
     @Test void explicitlyCurrentUntilFirstQualifiedFreezeDoesNotLatchEarlyOrFallbackOnUnknown()throws Exception {
         var helper=helper();String xml=OBSERVERS.replace("mode=\"freeze-first-qualified\"","mode=\"freeze-first-qualified\" beforeFreeze=\"current\"");var f=helper.fixture(RUNTIME,xml);var engine=f.engine();
-        engine.applyAuctionCut(cut(helper,f,1,3,false,true),"run",1,List.of());
+        engine.applyMappingCut(cut(helper,f,1,3,false,true),"run",1,List.of());
         var object=engine.system().state().allObjects().stream().filter(o->o.cls().name().equals("SignalView")).findFirst().orElseThrow();
         assertEquals(IntegerValue.valueOf(3),object.state(engine.system().state()).attributeValue("frozen"));
-        engine.applyAuctionCut(cut(helper,f,2,4,false,false),"run",1,List.of());assertTrue(object.state(engine.system().state()).attributeValue("frozen").isUndefined(),"Unknown prefix cannot certify that the freeze condition never held");
-        engine.applyAuctionCut(cut(helper,f,3,5,true,true),"run",1,List.of());assertEquals(IntegerValue.valueOf(5),object.state(engine.system().state()).attributeValue("frozen"));
-        engine.applyAuctionCut(cut(helper,f,4,9,false,true),"run",1,List.of());assertEquals(IntegerValue.valueOf(5),object.state(engine.system().state()).attributeValue("frozen"),"The pre-freeze current value must not have been stored as history");
+        engine.applyMappingCut(cut(helper,f,2,4,false,false),"run",1,List.of());assertTrue(object.state(engine.system().state()).attributeValue("frozen").isUndefined(),"Unknown prefix cannot certify that the freeze condition never held");
+        engine.applyMappingCut(cut(helper,f,3,5,true,true),"run",1,List.of());assertEquals(IntegerValue.valueOf(5),object.state(engine.system().state()).attributeValue("frozen"));
+        engine.applyMappingCut(cut(helper,f,4,9,false,true),"run",1,List.of());assertEquals(IntegerValue.valueOf(5),object.state(engine.system().state()).attributeValue("frozen"),"The pre-freeze current value must not have been stored as history");
         assertThrows(IllegalArgumentException.class,()->helper.fixture(RUNTIME,xml.replace("beforeFreeze=\"current\"","beforeFreeze=\"zero\"")));
         assertThrows(IllegalArgumentException.class,()->helper.fixture(RUNTIME,OBSERVERS.replace("mode=\"current\"","mode=\"current\" beforeFreeze=\"current\"")));
     }
