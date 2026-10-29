@@ -338,7 +338,7 @@ def validate_auction(result: dict, archive: Path, evidence: Path) -> dict:
         pins = current_pins
         history[gate] = {"receiptSha256": sha(path.read_bytes()), "status": "REQUALIFIED_BY_FULL_RUN"}
     for pin in pins.values():
-        require(sha((ROOT / "use-plugin/examples/auction" / pin["path"]).read_bytes()) == pin["sha256"], "AUCTION_CANONICAL_CHANGED:" + pin["id"])
+        require(sha((ROOT / "use-plugin/src/test/resources/auction-reference" / pin["path"]).read_bytes()) == pin["sha256"], "AUCTION_CANONICAL_CHANGED:" + pin["id"])
     require(set(index["runs"]) == {"canonical", "controlled", "development"}, "AUCTION_REQUIRED_LIVE_RUNS")
     with zipfile.ZipFile(archive) as outer:
         jar_names = [n for n in outer.namelist() if n.endswith(".jar") and ("/lib/" in n)]
@@ -449,7 +449,7 @@ def validate_auction_run(kind: str, directory: Path, archive_hash: str, pins: di
         fixture_dir = directory / "fixture-control"
         fixture = read_json(fixture_dir / "manifest.json")
         require(variant["canonicalSourceUnchanged"] is True and variant["lateRole"] is True and
-                variant["canonicalManifestSha256"] == sha((ROOT / "use-plugin/examples/auction/case-manifest.json").read_bytes()), "AUCTION_CONTROL_CANONICAL_SOURCE")
+                variant["canonicalManifestSha256"] == sha((ROOT / "use-plugin/src/test/resources/auction-reference/case-manifest.json").read_bytes()), "AUCTION_CONTROL_CANONICAL_SOURCE")
         require(variant["variantManifestSha256"] == fixture["inputCaseManifestSha256"] == program["case"]["manifest"]["sha256"], "AUCTION_CONTROL_INPUT_HASH")
         require(variant["changedAssets"] == {ident: assets[ident]["sha256"] for ident in changed}, "AUCTION_CONTROL_VARIANT_HASH")
         for name, digest in fixture["sourceHashes"].items():

@@ -24,7 +24,7 @@ class ObservedConformanceWorkflowTest {
             public ProjectSummary prepareOwnedProducer(java.nio.file.Path jcm,ImportSelection inputs,java.nio.file.Path cp,boolean showGui){
                 assertFalse(SwingUtilities.isEventDispatchThread());assertFalse(inputs.strictSourceChecksums());source.set(jcm);selected.set(showGui);called.countDown();return null;}};
         var external=java.nio.file.Path.of("..").toAbsolutePath().normalize().getParent().resolve("jacamo/examples/auction/auction.jcm");
-        var inputs=java.nio.file.Path.of("examples/auction").toAbsolutePath();
+        var inputs=java.nio.file.Path.of("src/test/resources/auction-reference").toAbsolutePath();
         SwingUtilities.invokeAndWait(()->{
             var panel=new JaCaMoWorkbenchPanel(facade,message->fail(message),true);
             assertTrue(find(panel,"show-producer-gui",JCheckBox.class).isSelected());

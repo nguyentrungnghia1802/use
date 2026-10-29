@@ -27,7 +27,7 @@ public final class InstalledAuthoredMain {
             check(jar.equals(Path.of(loader.loadClass(name).getProtectionDomain().getCodeSource().getLocation().toURI()).toRealPath()),"Installed reused UI origin: "+name);
         check(loader.loadClass("org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel").getResource("/META-INF/use4goal-workflow-provenance.json")!=null,"Installed original workflow attribution");
         for(String name:List.of("cartago.Artifact","jacamo.infra.JaCaMoLauncher","jason.asSemantics.Agent"))try{loader.loadClass(name);throw new AssertionError("Framework leaked: "+name);}catch(ClassNotFoundException expected){ }
-        Path project=install.resolve(auction?"examples/auction-semantic":"examples/csl-counter"),input=project.resolve("authored-v1"),selected=Files.createDirectory(evidence.resolve("selected"));
+        Path project=install.resolve(auction?"reference/auction":"examples/csl-counter"),input=project.resolve("authored-v1"),selected=Files.createDirectory(evidence.resolve("selected"));
         String xml=auction?"auction-mapping.xml":"stock-mapping.xml",ocl=confirmed?"auction_confirmed.ocl":auction?"auction_constraints_final_fixed.ocl":"stock.ocl",csl=auction?"auction_csl.csl":"stock.csl",istar=auction?"auction_istar_final.istar":"stock.istar";
         for(String name:List.of(xml,ocl,csl,istar))Files.copy((confirmed&&List.of(xml,ocl).contains(name)?project.resolve("source-confirmed-v1"):input).resolve(name),selected.resolve(name));
         var selection=loader.loadClass("org.tzi.use.plugins.jacamo.JaCaMoFacade$ImportSelection").getConstructor(String.class,Path.class,Path.class,Path.class,Path.class)

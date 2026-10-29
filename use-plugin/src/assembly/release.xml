@@ -8,7 +8,8 @@
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
-        <fileSet><directory>examples/auction/compact-v1</directory><outputDirectory>examples/auction-semantic/compact-v1</outputDirectory></fileSet>
+        <fileSet><directory>examples/auction</directory><outputDirectory>examples/auction-current</outputDirectory></fileSet>
+        <fileSet><directory>src/test/resources/auction-reference/compact-v1</directory><outputDirectory>reference/auction/compact-v1</outputDirectory></fileSet>
         <fileSet><directory>examples/hello-world</directory><outputDirectory>examples/hello-world</outputDirectory></fileSet>
         <fileSet><directory>examples/house-building</directory><outputDirectory>examples/house-building</outputDirectory></fileSet>
     </fileSets>
@@ -64,45 +65,45 @@
         <file><source>examples/csl-counter/src/agt/bob.asl</source><outputDirectory>examples/csl-counter/src/agt</outputDirectory><destName>bob.asl</destName></file>
         <file><source>examples/csl-counter/src/env/demo/counter/Counter.java</source><outputDirectory>examples/csl-counter/src/env/demo/counter</outputDirectory><destName>Counter.java</destName></file>
         <file><source>examples/csl-counter/src/org/organization.xml</source><outputDirectory>examples/csl-counter/src/org</outputDirectory><destName>organization.xml</destName></file>
-        <file><source>examples/auction/case-manifest.json</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>case-manifest.json</destName></file>
-        <file><source>examples/auction/README.md</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>README.md</destName></file>
-        <file><source>examples/auction/auction.jcm</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>auction.jcm</destName></file>
-        <file><source>examples/auction/src/org/auction-os.xml</source><outputDirectory>examples/auction-semantic/src/org</outputDirectory><destName>auction-os.xml</destName></file>
-        <file><source>examples/auction/src/agt/auction_capabilities.asl</source><outputDirectory>examples/auction-semantic/src/agt</outputDirectory><destName>auction_capabilities.asl</destName></file>
-        <file><source>examples/auction/src/env/auction_env/AuctionArtifact.java</source><outputDirectory>examples/auction-semantic/src/env/auction_env</outputDirectory><destName>AuctionArtifact.java</destName></file>
-        <file><source>examples/auction/build.gradle</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>build.gradle</destName></file>
-        <file><source>examples/auction/auction_csl.drawio</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>auction_csl.drawio</destName></file>
-        <file><source>examples/auction/auction_istar_final.drawio</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>auction_istar_final.drawio</destName></file>
-        <file><source>examples/auction/auction_constraints_final.ocl</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>auction_constraints_final.ocl</destName></file>
-        <file><source>examples/auction/provenance/use4goal/docs/model/csl.ecore</source><outputDirectory>examples/auction-semantic/provenance/use4goal/docs/model</outputDirectory><destName>csl.ecore</destName></file>
-        <file><source>examples/auction/provenance/use4goal/goal/src/main/resources/grammars/CSL.g4</source><outputDirectory>examples/auction-semantic/provenance/use4goal/goal/src/main/resources/grammars</outputDirectory><destName>CSL.g4</destName></file>
-        <file><source>examples/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/parser/CslCompiler.java</source><outputDirectory>examples/auction-semantic/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/parser</outputDirectory><destName>CslCompiler.java</destName></file>
-        <file><source>examples/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslSpecText.java</source><outputDirectory>examples/auction-semantic/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/view</outputDirectory><destName>CslSpecText.java</destName></file>
-        <file><source>examples/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/mm/CslModel.java</source><outputDirectory>examples/auction-semantic/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/mm</outputDirectory><destName>CslModel.java</destName></file>
-        <file><source>examples/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/verify/conformance/mapping/ConformanceMappingParser.java</source><outputDirectory>examples/auction-semantic/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/verify/conformance/mapping</outputDirectory><destName>ConformanceMappingParser.java</destName></file>
-        <file><source>examples/auction/provenance/use4goal/examples/ProposalReview/proposal-review-final.csl</source><outputDirectory>examples/auction-semantic/provenance/use4goal/examples/ProposalReview</outputDirectory><destName>proposal-review-final.csl</destName></file>
-        <file><source>examples/auction/provenance/moise/asl/org-obedient.asl</source><outputDirectory>examples/auction-semantic/provenance/moise/asl</outputDirectory><destName>org-obedient.asl</destName></file>
-        <file><source>examples/auction/auction_csl.csl</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>auction_csl.csl</destName></file>
-        <file><source>examples/auction/auction_istar_final.istar</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>auction_istar_final.istar</destName></file>
-        <file><source>examples/auction/provenance/use4goal-engine.json</source><outputDirectory>examples/auction-semantic/provenance</outputDirectory><destName>use4goal-engine.json</destName></file>
-        <file><source>examples/auction/provenance/licenses/use4Goal-GPL-3.0.txt</source><outputDirectory>examples/auction-semantic/provenance/licenses</outputDirectory><destName>use4Goal-GPL-3.0.txt</destName></file>
-        <file><source>examples/auction/provenance/licenses/JaCaMo-LGPL-3.0.txt</source><outputDirectory>examples/auction-semantic/provenance/licenses</outputDirectory><destName>JaCaMo-LGPL-3.0.txt</destName></file>
-        <file><source>examples/auction/auction-mapping.xml</source><outputDirectory>examples/auction-semantic</outputDirectory><destName>auction-mapping.xml</destName></file>
-        <file><source>examples/auction/authored-v1/auction_csl.csl</source><outputDirectory>examples/auction-semantic/authored-v1</outputDirectory></file>
-        <file><source>examples/auction/authored-v1/auction_istar_final.istar</source><outputDirectory>examples/auction-semantic/authored-v1</outputDirectory></file>
-        <file><source>examples/auction/authored-v1/auction_constraints_final_fixed.ocl</source><outputDirectory>examples/auction-semantic/authored-v1</outputDirectory></file>
-        <file><source>examples/auction/authored-v1/auction-mapping.xml</source><outputDirectory>examples/auction-semantic/authored-v1</outputDirectory></file>
-        <file><source>examples/auction/authored-v1/provenance.json</source><outputDirectory>examples/auction-semantic/authored-v1</outputDirectory></file>
-        <file><source>examples/auction/authored-v1/README.md</source><outputDirectory>examples/auction-semantic/authored-v1</outputDirectory></file>
-        <file><source>examples/auction/authored-v1/references/auction_istar_success_only_v2.istar</source><outputDirectory>examples/auction-semantic/authored-v1/references</outputDirectory></file>
-        <file><source>examples/auction/authored-v1/references/auction-mapping-success-only-v2.xml</source><outputDirectory>examples/auction-semantic/authored-v1/references</outputDirectory></file>
-        <file><source>examples/auction/authored-v1/references/auction-mapping-full-observers.xml</source><outputDirectory>examples/auction-semantic/authored-v1/references</outputDirectory></file>
-        <file><source>examples/auction/authored-v1/references/auction-mapping-strict-v1.xml</source><outputDirectory>examples/auction-semantic/authored-v1/references</outputDirectory></file>
-        <file><source>examples/auction/authored-v1/references/auction_constraints_strict_v1.ocl</source><outputDirectory>examples/auction-semantic/authored-v1/references</outputDirectory></file>
+        <file><source>src/test/resources/auction-reference/case-manifest.json</source><outputDirectory>reference/auction</outputDirectory><destName>case-manifest.json</destName></file>
+        <file><source>src/test/resources/auction-reference/README.md</source><outputDirectory>reference/auction</outputDirectory><destName>README.md</destName></file>
+        <file><source>src/test/resources/auction-reference/auction.jcm</source><outputDirectory>reference/auction</outputDirectory><destName>auction.jcm</destName></file>
+        <file><source>src/test/resources/auction-reference/src/org/auction-os.xml</source><outputDirectory>reference/auction/src/org</outputDirectory><destName>auction-os.xml</destName></file>
+        <file><source>src/test/resources/auction-reference/src/agt/auction_capabilities.asl</source><outputDirectory>reference/auction/src/agt</outputDirectory><destName>auction_capabilities.asl</destName></file>
+        <file><source>src/test/resources/auction-reference/src/env/auction_env/AuctionArtifact.java</source><outputDirectory>reference/auction/src/env/auction_env</outputDirectory><destName>AuctionArtifact.java</destName></file>
+        <file><source>src/test/resources/auction-reference/build.gradle</source><outputDirectory>reference/auction</outputDirectory><destName>build.gradle</destName></file>
+        <file><source>src/test/resources/auction-reference/auction_csl.drawio</source><outputDirectory>reference/auction</outputDirectory><destName>auction_csl.drawio</destName></file>
+        <file><source>src/test/resources/auction-reference/auction_istar_final.drawio</source><outputDirectory>reference/auction</outputDirectory><destName>auction_istar_final.drawio</destName></file>
+        <file><source>src/test/resources/auction-reference/auction_constraints_final.ocl</source><outputDirectory>reference/auction</outputDirectory><destName>auction_constraints_final.ocl</destName></file>
+        <file><source>src/test/resources/auction-reference/provenance/use4goal/docs/model/csl.ecore</source><outputDirectory>reference/auction/provenance/use4goal/docs/model</outputDirectory><destName>csl.ecore</destName></file>
+        <file><source>src/test/resources/auction-reference/provenance/use4goal/goal/src/main/resources/grammars/CSL.g4</source><outputDirectory>reference/auction/provenance/use4goal/goal/src/main/resources/grammars</outputDirectory><destName>CSL.g4</destName></file>
+        <file><source>src/test/resources/auction-reference/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/parser/CslCompiler.java</source><outputDirectory>reference/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/parser</outputDirectory><destName>CslCompiler.java</destName></file>
+        <file><source>src/test/resources/auction-reference/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslSpecText.java</source><outputDirectory>reference/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/view</outputDirectory><destName>CslSpecText.java</destName></file>
+        <file><source>src/test/resources/auction-reference/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/mm/CslModel.java</source><outputDirectory>reference/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/mm</outputDirectory><destName>CslModel.java</destName></file>
+        <file><source>src/test/resources/auction-reference/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/verify/conformance/mapping/ConformanceMappingParser.java</source><outputDirectory>reference/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/verify/conformance/mapping</outputDirectory><destName>ConformanceMappingParser.java</destName></file>
+        <file><source>src/test/resources/auction-reference/provenance/use4goal/examples/ProposalReview/proposal-review-final.csl</source><outputDirectory>reference/auction/provenance/use4goal/examples/ProposalReview</outputDirectory><destName>proposal-review-final.csl</destName></file>
+        <file><source>src/test/resources/auction-reference/provenance/moise/asl/org-obedient.asl</source><outputDirectory>reference/auction/provenance/moise/asl</outputDirectory><destName>org-obedient.asl</destName></file>
+        <file><source>src/test/resources/auction-reference/auction_csl.csl</source><outputDirectory>reference/auction</outputDirectory><destName>auction_csl.csl</destName></file>
+        <file><source>src/test/resources/auction-reference/auction_istar_final.istar</source><outputDirectory>reference/auction</outputDirectory><destName>auction_istar_final.istar</destName></file>
+        <file><source>src/test/resources/auction-reference/provenance/use4goal-engine.json</source><outputDirectory>reference/auction/provenance</outputDirectory><destName>use4goal-engine.json</destName></file>
+        <file><source>src/test/resources/auction-reference/provenance/licenses/use4Goal-GPL-3.0.txt</source><outputDirectory>reference/auction/provenance/licenses</outputDirectory><destName>use4Goal-GPL-3.0.txt</destName></file>
+        <file><source>src/test/resources/auction-reference/provenance/licenses/JaCaMo-LGPL-3.0.txt</source><outputDirectory>reference/auction/provenance/licenses</outputDirectory><destName>JaCaMo-LGPL-3.0.txt</destName></file>
+        <file><source>src/test/resources/auction-reference/auction-mapping.xml</source><outputDirectory>reference/auction</outputDirectory><destName>auction-mapping.xml</destName></file>
+        <file><source>src/test/resources/auction-reference/authored-v1/auction_csl.csl</source><outputDirectory>reference/auction/authored-v1</outputDirectory></file>
+        <file><source>src/test/resources/auction-reference/authored-v1/auction_istar_final.istar</source><outputDirectory>reference/auction/authored-v1</outputDirectory></file>
+        <file><source>src/test/resources/auction-reference/authored-v1/auction_constraints_final_fixed.ocl</source><outputDirectory>reference/auction/authored-v1</outputDirectory></file>
+        <file><source>src/test/resources/auction-reference/authored-v1/auction-mapping.xml</source><outputDirectory>reference/auction/authored-v1</outputDirectory></file>
+        <file><source>src/test/resources/auction-reference/authored-v1/provenance.json</source><outputDirectory>reference/auction/authored-v1</outputDirectory></file>
+        <file><source>src/test/resources/auction-reference/authored-v1/README.md</source><outputDirectory>reference/auction/authored-v1</outputDirectory></file>
+        <file><source>src/test/resources/auction-reference/authored-v1/references/auction_istar_success_only_v2.istar</source><outputDirectory>reference/auction/authored-v1/references</outputDirectory></file>
+        <file><source>src/test/resources/auction-reference/authored-v1/references/auction-mapping-success-only-v2.xml</source><outputDirectory>reference/auction/authored-v1/references</outputDirectory></file>
+        <file><source>src/test/resources/auction-reference/authored-v1/references/auction-mapping-full-observers.xml</source><outputDirectory>reference/auction/authored-v1/references</outputDirectory></file>
+        <file><source>src/test/resources/auction-reference/authored-v1/references/auction-mapping-strict-v1.xml</source><outputDirectory>reference/auction/authored-v1/references</outputDirectory></file>
+        <file><source>src/test/resources/auction-reference/authored-v1/references/auction_constraints_strict_v1.ocl</source><outputDirectory>reference/auction/authored-v1/references</outputDirectory></file>
 
-        <file><source>examples/auction/source-confirmed-v1/auction-mapping.xml</source><outputDirectory>examples/auction-semantic/source-confirmed-v1</outputDirectory></file>
-        <file><source>examples/auction/source-confirmed-v1/auction_confirmed.ocl</source><outputDirectory>examples/auction-semantic/source-confirmed-v1</outputDirectory></file>
-        <file><source>examples/auction/source-confirmed-v1/README.md</source><outputDirectory>examples/auction-semantic/source-confirmed-v1</outputDirectory></file>
+        <file><source>src/test/resources/auction-reference/source-confirmed-v1/auction-mapping.xml</source><outputDirectory>reference/auction/source-confirmed-v1</outputDirectory></file>
+        <file><source>src/test/resources/auction-reference/source-confirmed-v1/auction_confirmed.ocl</source><outputDirectory>reference/auction/source-confirmed-v1</outputDirectory></file>
+        <file><source>src/test/resources/auction-reference/source-confirmed-v1/README.md</source><outputDirectory>reference/auction/source-confirmed-v1</outputDirectory></file>
         <file><source>src/main/resources/META-INF/use4goal-view-provenance.json</source><outputDirectory>provenance</outputDirectory></file>
         <file><source>src/main/resources/META-INF/licenses/use4Goal-views-GPL-3.0.txt</source><outputDirectory>licenses</outputDirectory></file>
         <file><source>../use-jacamo-semantic-engine/provenance/patches/P-IADM-02.diff</source><outputDirectory>provenance</outputDirectory><destName>P-IADM-02.diff</destName></file>

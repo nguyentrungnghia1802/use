@@ -14,7 +14,7 @@ import org.tzi.use.plugins.jacamo.bridge.BridgeClientState;
  * never certified from this test's process exit or Task pass count. */
 class AuthoredAuctionOutcomeIT {
     @Test @Timeout(480) void fiveAuthoredTasksReachNativeOclAndTheOriginalEngineOnLiveTcpCuts()throws Exception {
-        Path root=Path.of("..").toAbsolutePath().normalize(),jcm=Path.of("examples/auction/auction.jcm").toAbsolutePath(),input=jcm.getParent().resolve("authored-v1");
+        Path root=Path.of("..").toAbsolutePath().normalize(),jcm=Path.of("src/test/resources/auction-reference/auction.jcm").toAbsolutePath(),input=jcm.getParent().resolve("authored-v1");
         Path evidence=Files.createTempDirectory(Files.createDirectories(root.resolve("use-plugin/verification/authored-models/P05-domain-live")),"run-");
         var selection=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",input.resolve("auction-mapping.xml"),input.resolve("auction_constraints_final_fixed.ocl"),input.resolve("auction_csl.csl"),input.resolve("auction_istar_final.istar"));
         String before=System.getProperty("use.jacamo.runtime.journal.maxBytes");System.setProperty("use.jacamo.runtime.journal.maxBytes","268435456");

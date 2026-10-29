@@ -34,7 +34,7 @@ social dependums không có marking riêng không thành dòng UNKNOWN. Chọn d
 để xem occurrences, original history và current qualified quality riêng. OCL/binding checks là bảng
 riêng; FAIL giữ expression/witness thật. Winning Artifact không chứng minh
 norm/deadline hoặc mọi Task đã đạt. Ví dụ input và phạm vi requirements ở
-`examples/auction/authored-v1/README.md` và `examples/auction/compact-v1/README.md`.
+`examples/auction/README.md` và `src/test/resources/auction-reference/compact-v1/README.md`.
 Forensic Workbench APIs/navigation, raw journal và replay vẫn giữ nguyên.
 
 ## Build và thử từ source
@@ -192,3 +192,5 @@ Evaluator chưa có API force-cancel an toàn;
 cleanup đã kiểm thử với workload hữu hạn, không cam kết kill tùy ý một OCL
 không kết thúc. Diagnostics `ENGINE_INSTALLATION_*` chặn thiếu/trùng engine,
 grammar, provenance, license, sai host7.5/ANTLR4.9.3; sửa bản cài thay vì fallback.
+
+Auction: các input hiện hành nằm trực tiếp trong `use-plugin/examples/auction`: `auction.csl`, `auction.jcm`, `auction.istar`, `auction-mapping.xml`, `auction.ocl`. ZIP: `examples/auction-current`. Các profile/oracle cũ nằm trong `src/test/resources/auction-reference`, không phải input mặc định.

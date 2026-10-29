@@ -1,3 +1,7 @@
 
 # Audited source freeze v5 checkout bytes: preserve the tested LF/CRLF form.
 "pom.xml" text eol=lf
+
+# Formal case inputs and pinned reference fixtures are byte-hashed.
+/use-plugin/examples/auction/** -text
+/use-plugin/src/test/resources/auction-reference/** -text

@@ -9,7 +9,7 @@ import org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeTables;
 
 class AuthoredAuctionContainmentTest {
     @Test void containmentUsesExactSchemeResponsibilityInsteadOfAssumingAUniqueGroupInAWorkspace()throws Exception {
-        String xml=Files.readString(Path.of("examples/auction/authored-v1/auction-mapping.xml"));
+        String xml=Files.readString(Path.of("src/test/resources/auction-reference/authored-v1/auction-mapping.xml"));
         int start=xml.indexOf("<table id=\"qualified-scheme-group\"");String actual=xml.substring(start,xml.indexOf("</table>",start)+8);
         String tables="<runtime><tables><table id=\"qualified-groups\" dataset=\"groups\"><column name=\"uuid\" path=\"identity\" required=\"true\"/><identity mode=\"PHYSICAL\" path=\"identity\"/></table>"+actual+"</tables></runtime>";
         var executor=new RuntimeTables(MappingXmlReaderTest.parse(MappingXmlReaderTest.XML.replace("<runtime/>",tables)));

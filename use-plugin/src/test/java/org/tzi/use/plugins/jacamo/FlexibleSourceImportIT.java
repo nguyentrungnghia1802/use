@@ -7,7 +7,7 @@ import org.jacamo.bridge.contract.CanonicalJson;
 import static org.junit.jupiter.api.Assertions.*;
 class FlexibleSourceImportIT {
  @Test @Timeout(240) void preparesActualExternalAuctionWithAuthoredMappingAndStopsOwnedChild()throws Exception {
-  Path checkout=Path.of("..").toAbsolutePath().normalize(),project=checkout.getParent().resolve("jacamo/examples/auction/auction.jcm"),inputs=checkout.resolve("use-plugin/examples/auction/authored-v1");
+  Path checkout=Path.of("..").toAbsolutePath().normalize(),project=checkout.getParent().resolve("jacamo/examples/auction/auction.jcm"),inputs=checkout.resolve("use-plugin/src/test/resources/auction-reference/authored-v1");
   byte[] before=Files.readAllBytes(project);var session=new Session();long pid;
   try(var facade=new DefaultJaCaMoFacade(checkout,session)) {
    var selection=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",inputs.resolve("auction-mapping.xml"),inputs.resolve("auction_constraints_final_fixed.ocl"),inputs.resolve("auction_csl.csl"),inputs.resolve("auction_istar_final.istar"),false);

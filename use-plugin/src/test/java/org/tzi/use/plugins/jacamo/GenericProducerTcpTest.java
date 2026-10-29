@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class GenericProducerTcpTest {
     @Test @Timeout(300) void declarativeAuctionRequestsReachProductionBeforeReasoningAndOriginalEngine() throws Exception {
         Path evidence=Files.createTempDirectory(Files.createDirectories(Path.of("target/generic-production")),"auction-").toAbsolutePath();
-        Path plan=evidence.resolve("observation-requests.json"),project=Path.of("examples/auction/auction.jcm");
+        Path plan=evidence.resolve("observation-requests.json"),project=Path.of("src/test/resources/auction-reference/auction.jcm");
         // Test classes can contain another compiled copy of the application FQCN. A production
         // source proof correctly rejects shadow resources; the real producer needs no test classes.
         String oldBudget=System.getProperty("use.jacamo.runtime.journal.maxBytes");

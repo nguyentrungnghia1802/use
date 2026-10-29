@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class AuctionImportRegressionTest {
     @TempDir Path temporary;
     private final Path checkout=Path.of("..").toAbsolutePath().normalize();
-    private final Path caseRoot=checkout.resolve("use-plugin/examples/auction");
+    private final Path caseRoot=checkout.resolve("use-plugin/src/test/resources/auction-reference");
     private final Path external=checkout.getParent().resolve("jacamo/examples/auction/auction.jcm");
     private MappingInputs read(Path project) {
         return MappingInputs.read(project,caseRoot.resolve("source-confirmed-v1/auction-mapping.xml"),

@@ -56,7 +56,7 @@ class ReusedSemanticViewsTest {
         }
     }
     @Test void originalViewsRenderAuthoredGraphBorrowInstalledModelAndDetachOnReimport()throws Exception {
-        Path inputs=Path.of("examples/auction/authored-v1");
+        Path inputs=Path.of("src/test/resources/auction-reference/authored-v1");
         var csl=new CslFrontend().compile(Files.readString(inputs.resolve("auction_csl.csl")),"authored.csl").requireModel();
         var goals=new IStarFrontend().compile(Files.readString(inputs.resolve("auction_istar_final.istar")),"authored.istar",EngineSemanticsProfile.ROLE_SPECIALIZATION_V1).requireModel();
         var first=new CslScopeModelAdapter().compile(csl);var second=new CslScopeModelAdapter().compile(csl);

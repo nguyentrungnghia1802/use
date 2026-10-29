@@ -1,7 +1,7 @@
 # USE JaCaMo Plugin 1.0.1
 
 > **Current case mapping:** use `JACAMO_DECLARATIVE_XML` and the authored five-input
-> workflow documented in `docs/project/use4goal-run.md` (Auction: `authored-v1/`).
+> workflow documented in `docs/project/use4goal-run.md` (Auction: `examples/auction/`).
 > Case-specific Java/profile `AUCTION_OBSERVED_V1` has been retired; old case replay
 > requires the historical binary or a fresh import/recording through declarative XML.
 > Historical commands below for that retired profile are reference only. Framework

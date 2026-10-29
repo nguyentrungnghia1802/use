@@ -1,46 +1,26 @@
-# Auction — JaCaMo → USE/use4Goal
+# Auction — bộ input hiện hành
 
-## Bộ input hiện hành
+Mở USE (Java 21) → Plugins → JaCaMo → use4Goal verification.
+Chọn năm inputs ngay trong thư mục này:
 
-Mở USE (Java 21), chọn **Plugins → JaCaMo → use4Goal verification**.
-Chọn đủ năm inputs:
+1. CSL: `auction.csl`
+2. JaCaMo: `auction.jcm` (hoặc project Auction tương thích tại vị trí khác)
+3. iStar: `auction.istar`
+4. Mapping: `auction-mapping.xml`
+5. OCL: `auction.ocl`
 
-1. CSL: `authored-v1/auction_csl.csl`.
-2. JaCaMo project: `auction.jcm` trong thư mục này, hoặc project Auction tương thích ở vị trí khác (ví dụ repo JaCaMo `examples/auction/auction.jcm`).
-3. iStar: `authored-v1/auction_istar_final.istar`.
-4. Mapping: `authored-v1/auction-mapping.xml`.
-5. OCL: `authored-v1/auction_constraints_final_fixed.ocl`.
+Bấm Prepare + Import, rồi Start Runtime. JaCaMo chạy process riêng qua TCP;
+USE giữ một authoritative MSystem. Kết quả ở Execution & Results.
 
-Bấm **Prepare + Import**, rồi **Start Runtime**. Kết quả ở cửa sổ riêng:
-Execution & Results / CSL model / iStar model; thông tin kỹ thuật ở Advanced / Diagnostics.
-JaCaMo chạy process riêng qua TCP, USE có một authoritative MSystem.
-Runtime libs tự phát hiện trong checkout đã build; nếu cần chọn
-`jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt`.
+Contract v3: Participant hoàn thành lượt tham gia theo callback/XML; chỉ nhánh
+.fail mô phỏng được khai báo đúng source site và mã lỗi được chấp nhận.
+Auction vẫn cần bid thực sự được Artifact chấp nhận. Missing không thành PASS.
+COMPLETE_OBSERVED nói về requirements quan sát được, không phải full state.
+WithinDeadline vẫn tắt theo yêu cầu trước; không tuyên bố kiểm chứng deadline.
 
-## Semantics hiện hành
-
-Contract `AUCTION_ATTEMPT_AND_ACCEPTED_BID/3.0`: Participant hoàn thành lượt
-tham gia theo source callback và XML, gồm nhánh `.fail` mô phỏng được khai báo
-chính xác. Goal Auction vẫn cần ít nhất một bid thật được Artifact chấp nhận.
-Lỗi khác không tự được chấp nhận; missing/unsupported không thành PASS.
-`COMPLETE_OBSERVED` chỉ nói về requirements đang bật trên observed execution;
-không đồng nghĩa quan sát toàn bộ framework. WithinDeadline vẫn tắt theo yêu
-cầu thử nghiệm trước; xem `authored-v1/provenance.json`.
-
-## Các file khác được giữ có chủ đích
-
-- `src/`, `.jcm`, `build.gradle`: source/runtime project.
-- `authored-v1/references/`: model/contract trước migration, dùng đối chiếu và regression; không chọn nhầm với bộ hiện hành.
-- `compact-v1/`, `source-confirmed-v1/`: profile riêng có test/package tham chiếu, không phải input mặc định.
-- Các model/XML/Draw.io ở root: oracle và generated-profile regression.
-- `case-manifest.json`, `provenance/`: nguồn gốc, hash, license và source parity fixtures; không phải engine Java thứ hai.
-
-XML `auction_jacamo_to_csl_rules.xml` của profile Java Auction đã retire được
-loại bỏ; không còn hướng dẫn chạy `AUCTION_OBSERVED_V1`.
-Trong ZIP, case này ở `examples/auction-semantic`.
-
-Journal quota mặc định 256 MiB (`268435456` bytes); launcher hỗ trợ
-`-RuntimeJournalMaxBytes` nếu cần chọn quota riêng. Hết quota phải báo GAP,
-không được xoá history để tạo COMPLETE. **Original iStar history** nằm trong
-Advanced / Diagnostics → Verification Details; overall source coverage có thể
-là **INCOMPLETE** dù requirements được quan sát đã hoàn thành.
+Source runtime nằm trong `src/` và `build.gradle`. Không có mapper Java riêng.
+Các profile khác, model cũ, Draw.io, provenance và license/source parity fixtures
+đã chuyển tới `use-plugin/src/test/resources/auction-reference` trong repository;
+không dùng chúng thay bộ input hiện hành. Byte gốc và hash được giữ ở đó.
+Trong distribution: bộ này ở `examples/auction-current`, reference ở `reference/auction`;
+`examples/auction` trong ZIP vẫn là toy native cũ cho compatibility.

@@ -8,7 +8,7 @@ import org.tzi.use.plugins.jacamo.semantics.evidence.TraceComplement;
 import static org.junit.jupiter.api.Assertions.*;
 class FlexibleSourceImportTest {
  @TempDir Path temp;
- final Path bundle=Path.of("examples/auction"), external=Path.of("../../jacamo/examples/auction");
+ final Path bundle=Path.of("src/test/resources/auction-reference"), external=Path.of("../../jacamo/examples/auction");
  MappingInputs read(Path jcm, boolean strict){return MappingInputs.read(jcm,bundle.resolve("authored-v1/auction-mapping.xml"),bundle.resolve("authored-v1/auction_constraints_final_fixed.ocl"),bundle.resolve("authored-v1/auction_csl.csl"),bundle.resolve("authored-v1/auction_istar_final.istar"),strict);}
  Path copy()throws Exception {
   for(String file:List.of("auction.jcm","src/agt/auction_capabilities.asl","src/org/auction-os.xml","src/env/auction_env/AuctionArtifact.java","build.gradle")) {

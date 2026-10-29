@@ -8,7 +8,7 @@ import org.tzi.use.plugins.jacamo.codegrounded.runtime.*;
 import static org.junit.jupiter.api.Assertions.*;
 class AuthoredAuctionResultsIT {
  @Test @Timeout(420) void fullAuthoredAuctionKeepsFixedModelRowsAndReportsRealConstraintsEvenAfterWinner()throws Exception {
-  Path checkout=Path.of("..").toAbsolutePath().normalize(),project=checkout.getParent().resolve("jacamo/examples/auction/auction.jcm"),inputs=checkout.resolve("use-plugin/examples/auction/authored-v1");
+  Path checkout=Path.of("..").toAbsolutePath().normalize(),project=checkout.getParent().resolve("jacamo/examples/auction/auction.jcm"),inputs=checkout.resolve("use-plugin/src/test/resources/auction-reference/authored-v1");
   Path evidence=Files.createTempDirectory(Files.createDirectories(checkout.resolve("use-plugin/verification/live-results-ui")),"auction-");
   byte[] source=Files.readAllBytes(project);var session=new Session();long pid=0;
   try(var facade=new DefaultJaCaMoFacade(checkout,session)){

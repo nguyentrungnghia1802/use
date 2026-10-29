@@ -9,7 +9,7 @@ import org.vnu.sme.goal.dsl.istar.mm.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AuthoredAuctionModelTest {
-    private static final Path INPUT=Path.of("examples/auction/authored-v1");
+    private static final Path INPUT=Path.of("src/test/resources/auction-reference/authored-v1");
     @Test void exactUpdatedAuthoredModelsRetainGraphAndUseExplicitProfileInsteadOfInventedTask()throws Exception {
         var csl=new CslFrontend().compile(Files.readString(INPUT.resolve("auction_csl.csl")),"auction_csl.csl").requireModel();
         var result=new IStarFrontend().compile(Files.readString(INPUT.resolve("auction_istar_final.istar")),"auction_istar_final.istar",EngineSemanticsProfile.ROLE_SPECIALIZATION_V1);

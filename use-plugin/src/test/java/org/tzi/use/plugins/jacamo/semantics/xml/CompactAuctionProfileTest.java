@@ -6,7 +6,7 @@ import org.tzi.use.plugins.jacamo.semantics.mapping.ocl.*;
 import static org.junit.jupiter.api.Assertions.*;
 class CompactAuctionProfileTest {
  @Test void compactProfileKeepsRealOriginalModelsAndExplicitObservationClosure()throws Exception {
-  Path root=Path.of("examples/auction"),inputs=root.resolve("compact-v1");
+  Path root=Path.of("src/test/resources/auction-reference"),inputs=root.resolve("compact-v1");
   var frozen=MappingInputs.read(root.resolve("auction.jcm"),inputs.resolve("auction-mapping.xml"),inputs.resolve("auction.ocl"),inputs.resolve("auction.csl"),inputs.resolve("auction.istar"),false);
   var loader=new AuthoredModelLoader();var csl=loader.csl(frozen);var goals=loader.goals(frozen);assertEquals(1,csl.model().entities().size());assertEquals(3,goals.model().getActors().getFirst().elements().size());
   assertTrue(frozen.specification().root().child("runtime").child("datasets").children("beliefViews").isEmpty());

@@ -961,3 +961,8 @@ unchanged. No unrelated case live tests/full clean reactor, branch or commit/pus
 ## Auction cleanup / Git checkpoint
 
 - [x] Remove retired Java-profile case-rules XML; update pinned asset inventory (21 assets), assembly/release metadata, and current five-input README. Preserve active profile/oracle/provenance/license fixtures. Focused Auction/UI/package contract tests: 25 PASS, zero failures/errors/skips. See `use-plugin/verification/auction-cleanup/receipt.json`. Raw verification logs/recordings remain local; source/test/docs and selected receipts form the Git checkpoint. No verification semantics changed by cleanup.
+
+
+## Clean Auction layout
+
+- [x] Move old profiles/oracles/provenance to `use-plugin/src/test/resources/auction-reference`; promote current inputs to `use-plugin/examples/auction/{auction.csl,auction.istar,auction-mapping.xml,auction.ocl}`, with project/source and README. Exact source/model/contract bytes retained. Tests, docs, package inventory and acceptance script paths updated. 51 focused tests PASS; package BUILD SUCCESS. Final ZIP has active bundle `examples/auction-current`, fixtures `reference/auction`, zero stale `examples/auction-semantic` entries. Old native toy ZIP path remains compatible. Stage and ZIP byte checks PASS, formal inputs pinned with -text attributes. Evidence: `use-plugin/verification/auction-layout/receipt.json`. No semantic change or fresh live acceptance claim.

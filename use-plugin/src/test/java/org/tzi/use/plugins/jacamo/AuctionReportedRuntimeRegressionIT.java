@@ -15,7 +15,7 @@ class AuctionReportedRuntimeRegressionIT {
     @Test @Timeout(240) void externalAuctionRemainsObservedThroughBothAuctionCompletions() throws Exception {
         Path checkout=Path.of("..").toAbsolutePath().normalize();
         Path project=checkout.getParent().resolve("jacamo/examples/auction/auction.jcm");
-        Path inputs=checkout.resolve("use-plugin/examples/auction");
+        Path inputs=checkout.resolve("use-plugin/src/test/resources/auction-reference");
         Path evidence=Files.createTempDirectory(Files.createDirectories(checkout.resolve("use-plugin/verification/auction-reported-fix")),"run-");
         byte[] original=Files.readAllBytes(project);
         var selection=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",inputs.resolve("source-confirmed-v1/auction-mapping.xml"),

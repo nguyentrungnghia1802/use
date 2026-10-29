@@ -84,19 +84,19 @@ class JaCaMoWorkbenchPanelTest {
         assertTrue(imported.await(5,TimeUnit.SECONDS));assertEquals(expected,selected.get());
     }
     @Test void declarativeImportCapturesTheAuthoredOclWithTheXmlOnAWorker()throws Exception {
-        var expected=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",Path.of("examples/auction/auction-mapping.xml"),Path.of("examples/auction/auction_constraints_final.ocl"));
+        var expected=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",Path.of("src/test/resources/auction-reference/auction-mapping.xml"),Path.of("src/test/resources/auction-reference/auction_constraints_final.ocl"));
         var imported=new CountDownLatch(1);var selected=new java.util.concurrent.atomic.AtomicReference<JaCaMoFacade.ImportSelection>();
         JaCaMoFacade facade=new JaCaMoFacade(){public String status(){return "declarative widget";}public ImportSelection importSelection(){return expected;}public ProjectSummary importProject(Path path,ImportSelection request){assertFalse(SwingUtilities.isEventDispatchThread());selected.set(request);imported.countDown();return null;}};
         SwingUtilities.invokeAndWait(()->{
             var panel=new JaCaMoWorkbenchPanel(facade,message->fail(message));
             assertEquals(expected.ocl().toString(),component(panel,"authored-ocl",javax.swing.JTextField.class).getText());
-            assertTrue(JaCaMoWorkbenchPanel.createMappingChooser(expected.profile(),expected.specification()).getFileFilter().accept(expected.specification().toFile()));panel.importProject(Path.of("examples/auction/auction.jcm"));
+            assertTrue(JaCaMoWorkbenchPanel.createMappingChooser(expected.profile(),expected.specification()).getFileFilter().accept(expected.specification().toFile()));panel.importProject(Path.of("src/test/resources/auction-reference/auction.jcm"));
         });
         assertTrue(imported.await(5,TimeUnit.SECONDS));assertEquals(expected,selected.get());
     }
     @Test void mappingChooserMatchesTheExplicitDialectAndNativeHasNoSpecification()throws Exception {
         SwingUtilities.invokeAndWait(()->{
-            Path xml=Path.of("examples/auction/authored-v1/auction-mapping.xml").toAbsolutePath();
+            Path xml=Path.of("src/test/resources/auction-reference/authored-v1/auction-mapping.xml").toAbsolutePath();
             var chooser=JaCaMoWorkbenchPanel.createMappingChooser("JACAMO_DECLARATIVE_XML",xml);
             assertTrue(chooser.getFileFilter().accept(xml.toFile()));assertFalse(chooser.getFileFilter().accept(Path.of("rules.json").toFile()));assertEquals(xml.toFile(),chooser.getSelectedFile());
             var json=JaCaMoWorkbenchPanel.createMappingChooser("USE4GOAL_OBSERVED_V1",null);assertTrue(json.getFileFilter().accept(Path.of("rules.json").toFile()));assertFalse(json.getFileFilter().accept(xml.toFile()));
@@ -105,7 +105,7 @@ class JaCaMoWorkbenchPanelTest {
         });
     }
     @Test void acceptedXmlSelectionMustRemainDeclarativeWhenTheRealImportWidgetCapturesIt()throws Exception {
-        var expected=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",Path.of("examples/auction/authored-v1/auction-mapping.xml"));
+        var expected=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",Path.of("src/test/resources/auction-reference/authored-v1/auction-mapping.xml"));
         var selected=new java.util.concurrent.atomic.AtomicReference<JaCaMoFacade.ImportSelection>();var imported=new CountDownLatch(1);
         JaCaMoFacade facade=new JaCaMoFacade(){
             public String status(){return "Auction widget route";}
@@ -116,7 +116,7 @@ class JaCaMoWorkbenchPanelTest {
         SwingUtilities.invokeAndWait(()->{
             panel.set(new JaCaMoWorkbenchPanel(facade,message->fail(message)));
             assertEquals("JACAMO_DECLARATIVE_XML",component(panel.get(),"engine-profile",javax.swing.JComboBox.class).getSelectedItem(),"A configured case profile cannot silently fall back to Native");
-            panel.get().importProject(Path.of("examples/auction/auction.jcm"));
+            panel.get().importProject(Path.of("src/test/resources/auction-reference/auction.jcm"));
         });
         assertTrue(imported.await(5,TimeUnit.SECONDS));assertEquals(expected,selected.get());
     }

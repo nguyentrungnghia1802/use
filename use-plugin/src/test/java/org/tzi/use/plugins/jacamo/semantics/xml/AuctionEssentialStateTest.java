@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class AuctionEssentialStateTest {
     @Test void selectedNativeRequirementsDoNotReadOptionalBeliefsAndKeepExactStepSources()throws Exception {
         Path project=Path.of("..").toAbsolutePath().normalize().getParent().resolve("jacamo/examples/auction/auction.jcm");
-        Path inputs=Path.of("examples/auction/authored-v1");
+        Path inputs=Path.of("src/test/resources/auction-reference/authored-v1");
         var frozen=MappingInputs.read(project,inputs.resolve("auction-mapping.xml"),inputs.resolve("auction_constraints_final_fixed.ocl"),inputs.resolve("auction_csl.csl"),inputs.resolve("auction_istar_final.istar"),false);
         var source=GenericMappingEngineTest.official(project);var program=new GenericMappingEngine().map(source,frozen);
         var built=new CodeGroundedNativePipeline().buildCanonicalProgram(source,NativeProjectionMode.AUTO,program);
@@ -41,7 +41,7 @@ class AuctionEssentialStateTest {
     }
 
     @Test void publicObserverProfileUsesNativeOclAndNeverInventsMissingTimes()throws Exception {
-        Path project=Path.of("..").toAbsolutePath().normalize().getParent().resolve("jacamo/examples/auction/auction.jcm");Path d=Path.of("examples/auction/authored-v1");
+        Path project=Path.of("..").toAbsolutePath().normalize().getParent().resolve("jacamo/examples/auction/auction.jcm");Path d=Path.of("src/test/resources/auction-reference/authored-v1");
         var source=GenericMappingEngineTest.official(project);
         var program=new GenericMappingEngine().map(source,MappingInputs.read(project,d.resolve("auction-mapping.xml"),d.resolve("auction_constraints_final_fixed.ocl"),d.resolve("auction_csl.csl"),d.resolve("auction_istar_final.istar"),false));
         var strict=new GenericMappingEngine().map(source,MappingInputs.read(project,d.resolve("references/auction-mapping-strict-v1.xml"),d.resolve("references/auction_constraints_strict_v1.ocl"),d.resolve("auction_csl.csl"),d.resolve("references/auction_istar_success_only_v2.istar"),false));

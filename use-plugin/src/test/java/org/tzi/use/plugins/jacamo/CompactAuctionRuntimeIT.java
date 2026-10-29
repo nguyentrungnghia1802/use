@@ -5,7 +5,7 @@ import org.tzi.use.plugins.jacamo.ui.use4goal.conformance.*;
 import static org.junit.jupiter.api.Assertions.*;
 class CompactAuctionRuntimeIT {
  @Test @Timeout(300) void externalAuctionUsesCompactReadSetAndOriginalGoalEngineWithShortBusinessTimeline()throws Exception {
-  Path checkout=Path.of("..").toAbsolutePath().normalize(),project=checkout.getParent().resolve("jacamo/examples/auction/auction.jcm"),inputs=checkout.resolve("use-plugin/examples/auction/compact-v1");
+  Path checkout=Path.of("..").toAbsolutePath().normalize(),project=checkout.getParent().resolve("jacamo/examples/auction/auction.jcm"),inputs=checkout.resolve("use-plugin/src/test/resources/auction-reference/compact-v1");
   Path evidence=Files.createDirectories(checkout.resolve("use-plugin/verification/compact-auction"));var host=new Session();boolean accepted=false;
   Files.write(evidence.resolve("receipt.json"),CanonicalJson.encode(Map.of("status","RUNNING","startedAt",java.time.Instant.now().toString())));
   var selection=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",inputs.resolve("auction-mapping.xml"),inputs.resolve("auction.ocl"),inputs.resolve("auction.csl"),inputs.resolve("auction.istar"),false);

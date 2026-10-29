@@ -12,7 +12,7 @@ import org.tzi.use.main.Session;
 /** Real GUI-facing service, preparation script, official producer and TCP. No UI mock. */
 class OwnedProducerRuntimeIT {
     @Test @Timeout(360) void authoredInputsPrepareStartStopAndRestartWithoutReplacingTheUseProcess()throws Exception {
-        Path checkout=Path.of("..").toAbsolutePath().normalize(),project=Path.of("examples/auction/auction.jcm").toAbsolutePath();
+        Path checkout=Path.of("..").toAbsolutePath().normalize(),project=Path.of("src/test/resources/auction-reference/auction.jcm").toAbsolutePath();
         Path inputs=project.getParent().resolve("authored-v1");
         var selection=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",inputs.resolve("auction-mapping.xml"),inputs.resolve("auction_constraints_final_fixed.ocl"),inputs.resolve("auction_csl.csl"),inputs.resolve("auction_istar_final.istar"));
         var session=new Session();long usePid=ProcessHandle.current().pid();

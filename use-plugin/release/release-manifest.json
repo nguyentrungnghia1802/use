@@ -234,100 +234,100 @@
       "path": "examples/csl-counter/src/org/organization.xml"
     },
     {
-      "source": "examples/auction/case-manifest.json",
-      "path": "examples/auction-semantic/case-manifest.json"
+      "source": "src/test/resources/auction-reference/case-manifest.json",
+      "path": "reference/auction/case-manifest.json"
     },
     {
-      "source": "examples/auction/README.md",
-      "path": "examples/auction-semantic/README.md"
+      "source": "src/test/resources/auction-reference/README.md",
+      "path": "reference/auction/README.md"
     },
     {
-      "source": "examples/auction/auction.jcm",
-      "path": "examples/auction-semantic/auction.jcm"
+      "source": "src/test/resources/auction-reference/auction.jcm",
+      "path": "reference/auction/auction.jcm"
     },
     {
-      "source": "examples/auction/src/org/auction-os.xml",
-      "path": "examples/auction-semantic/src/org/auction-os.xml"
+      "source": "src/test/resources/auction-reference/src/org/auction-os.xml",
+      "path": "reference/auction/src/org/auction-os.xml"
     },
     {
-      "source": "examples/auction/src/agt/auction_capabilities.asl",
-      "path": "examples/auction-semantic/src/agt/auction_capabilities.asl"
+      "source": "src/test/resources/auction-reference/src/agt/auction_capabilities.asl",
+      "path": "reference/auction/src/agt/auction_capabilities.asl"
     },
     {
-      "source": "examples/auction/src/env/auction_env/AuctionArtifact.java",
-      "path": "examples/auction-semantic/src/env/auction_env/AuctionArtifact.java"
+      "source": "src/test/resources/auction-reference/src/env/auction_env/AuctionArtifact.java",
+      "path": "reference/auction/src/env/auction_env/AuctionArtifact.java"
     },
     {
-      "source": "examples/auction/build.gradle",
-      "path": "examples/auction-semantic/build.gradle"
+      "source": "src/test/resources/auction-reference/build.gradle",
+      "path": "reference/auction/build.gradle"
     },
     {
-      "source": "examples/auction/auction_csl.drawio",
-      "path": "examples/auction-semantic/auction_csl.drawio"
+      "source": "src/test/resources/auction-reference/auction_csl.drawio",
+      "path": "reference/auction/auction_csl.drawio"
     },
     {
-      "source": "examples/auction/auction_istar_final.drawio",
-      "path": "examples/auction-semantic/auction_istar_final.drawio"
+      "source": "src/test/resources/auction-reference/auction_istar_final.drawio",
+      "path": "reference/auction/auction_istar_final.drawio"
     },
     {
-      "source": "examples/auction/auction_constraints_final.ocl",
-      "path": "examples/auction-semantic/auction_constraints_final.ocl"
+      "source": "src/test/resources/auction-reference/auction_constraints_final.ocl",
+      "path": "reference/auction/auction_constraints_final.ocl"
     },
     {
-      "source": "examples/auction/provenance/use4goal/docs/model/csl.ecore",
-      "path": "examples/auction-semantic/provenance/use4goal/docs/model/csl.ecore"
+      "source": "src/test/resources/auction-reference/provenance/use4goal/docs/model/csl.ecore",
+      "path": "reference/auction/provenance/use4goal/docs/model/csl.ecore"
     },
     {
-      "source": "examples/auction/provenance/use4goal/goal/src/main/resources/grammars/CSL.g4",
-      "path": "examples/auction-semantic/provenance/use4goal/goal/src/main/resources/grammars/CSL.g4"
+      "source": "src/test/resources/auction-reference/provenance/use4goal/goal/src/main/resources/grammars/CSL.g4",
+      "path": "reference/auction/provenance/use4goal/goal/src/main/resources/grammars/CSL.g4"
     },
     {
-      "source": "examples/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/parser/CslCompiler.java",
-      "path": "examples/auction-semantic/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/parser/CslCompiler.java"
+      "source": "src/test/resources/auction-reference/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/parser/CslCompiler.java",
+      "path": "reference/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/parser/CslCompiler.java"
     },
     {
-      "source": "examples/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslSpecText.java",
-      "path": "examples/auction-semantic/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslSpecText.java"
+      "source": "src/test/resources/auction-reference/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslSpecText.java",
+      "path": "reference/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslSpecText.java"
     },
     {
-      "source": "examples/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/mm/CslModel.java",
-      "path": "examples/auction-semantic/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/mm/CslModel.java"
+      "source": "src/test/resources/auction-reference/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/mm/CslModel.java",
+      "path": "reference/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/dsl/csl/mm/CslModel.java"
     },
     {
-      "source": "examples/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/verify/conformance/mapping/ConformanceMappingParser.java",
-      "path": "examples/auction-semantic/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/verify/conformance/mapping/ConformanceMappingParser.java"
+      "source": "src/test/resources/auction-reference/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/verify/conformance/mapping/ConformanceMappingParser.java",
+      "path": "reference/auction/provenance/use4goal/goal/src/main/java/org/vnu/sme/goal/verify/conformance/mapping/ConformanceMappingParser.java"
     },
     {
-      "source": "examples/auction/provenance/use4goal/examples/ProposalReview/proposal-review-final.csl",
-      "path": "examples/auction-semantic/provenance/use4goal/examples/ProposalReview/proposal-review-final.csl"
+      "source": "src/test/resources/auction-reference/provenance/use4goal/examples/ProposalReview/proposal-review-final.csl",
+      "path": "reference/auction/provenance/use4goal/examples/ProposalReview/proposal-review-final.csl"
     },
     {
-      "source": "examples/auction/provenance/moise/asl/org-obedient.asl",
-      "path": "examples/auction-semantic/provenance/moise/asl/org-obedient.asl"
+      "source": "src/test/resources/auction-reference/provenance/moise/asl/org-obedient.asl",
+      "path": "reference/auction/provenance/moise/asl/org-obedient.asl"
     },
     {
-      "source": "examples/auction/auction_csl.csl",
-      "path": "examples/auction-semantic/auction_csl.csl"
+      "source": "src/test/resources/auction-reference/auction_csl.csl",
+      "path": "reference/auction/auction_csl.csl"
     },
     {
-      "source": "examples/auction/auction_istar_final.istar",
-      "path": "examples/auction-semantic/auction_istar_final.istar"
+      "source": "src/test/resources/auction-reference/auction_istar_final.istar",
+      "path": "reference/auction/auction_istar_final.istar"
     },
     {
-      "source": "examples/auction/provenance/use4goal-engine.json",
-      "path": "examples/auction-semantic/provenance/use4goal-engine.json"
+      "source": "src/test/resources/auction-reference/provenance/use4goal-engine.json",
+      "path": "reference/auction/provenance/use4goal-engine.json"
     },
     {
-      "source": "examples/auction/provenance/licenses/use4Goal-GPL-3.0.txt",
-      "path": "examples/auction-semantic/provenance/licenses/use4Goal-GPL-3.0.txt"
+      "source": "src/test/resources/auction-reference/provenance/licenses/use4Goal-GPL-3.0.txt",
+      "path": "reference/auction/provenance/licenses/use4Goal-GPL-3.0.txt"
     },
     {
-      "source": "examples/auction/provenance/licenses/JaCaMo-LGPL-3.0.txt",
-      "path": "examples/auction-semantic/provenance/licenses/JaCaMo-LGPL-3.0.txt"
+      "source": "src/test/resources/auction-reference/provenance/licenses/JaCaMo-LGPL-3.0.txt",
+      "path": "reference/auction/provenance/licenses/JaCaMo-LGPL-3.0.txt"
     },
     {
-      "source": "examples/auction/auction-mapping.xml",
-      "path": "examples/auction-semantic/auction-mapping.xml"
+      "source": "src/test/resources/auction-reference/auction-mapping.xml",
+      "path": "reference/auction/auction-mapping.xml"
     },
     {
       "source": "../use-jacamo-semantic-engine/provenance/P-IADM-01.md",
@@ -342,40 +342,40 @@
       "path": "provenance/single-owner-context-v1.md"
     },
     {
-      "source": "examples/auction/authored-v1/auction_csl.csl",
-      "path": "examples/auction-semantic/authored-v1/auction_csl.csl"
+      "source": "src/test/resources/auction-reference/authored-v1/auction_csl.csl",
+      "path": "reference/auction/authored-v1/auction_csl.csl"
     },
     {
-      "source": "examples/auction/authored-v1/auction_istar_final.istar",
-      "path": "examples/auction-semantic/authored-v1/auction_istar_final.istar"
+      "source": "src/test/resources/auction-reference/authored-v1/auction_istar_final.istar",
+      "path": "reference/auction/authored-v1/auction_istar_final.istar"
     },
     {
-      "source": "examples/auction/authored-v1/auction_constraints_final_fixed.ocl",
-      "path": "examples/auction-semantic/authored-v1/auction_constraints_final_fixed.ocl"
+      "source": "src/test/resources/auction-reference/authored-v1/auction_constraints_final_fixed.ocl",
+      "path": "reference/auction/authored-v1/auction_constraints_final_fixed.ocl"
     },
     {
-      "source": "examples/auction/authored-v1/auction-mapping.xml",
-      "path": "examples/auction-semantic/authored-v1/auction-mapping.xml"
+      "source": "src/test/resources/auction-reference/authored-v1/auction-mapping.xml",
+      "path": "reference/auction/authored-v1/auction-mapping.xml"
     },
     {
-      "source": "examples/auction/authored-v1/provenance.json",
-      "path": "examples/auction-semantic/authored-v1/provenance.json"
+      "source": "src/test/resources/auction-reference/authored-v1/provenance.json",
+      "path": "reference/auction/authored-v1/provenance.json"
     },
     {
-      "source": "examples/auction/source-confirmed-v1/auction-mapping.xml",
-      "path": "examples/auction-semantic/source-confirmed-v1/auction-mapping.xml"
+      "source": "src/test/resources/auction-reference/source-confirmed-v1/auction-mapping.xml",
+      "path": "reference/auction/source-confirmed-v1/auction-mapping.xml"
     },
     {
-      "source": "examples/auction/source-confirmed-v1/auction_confirmed.ocl",
-      "path": "examples/auction-semantic/source-confirmed-v1/auction_confirmed.ocl"
+      "source": "src/test/resources/auction-reference/source-confirmed-v1/auction_confirmed.ocl",
+      "path": "reference/auction/source-confirmed-v1/auction_confirmed.ocl"
     },
     {
-      "source": "examples/auction/source-confirmed-v1/README.md",
-      "path": "examples/auction-semantic/source-confirmed-v1/README.md"
+      "source": "src/test/resources/auction-reference/source-confirmed-v1/README.md",
+      "path": "reference/auction/source-confirmed-v1/README.md"
     },
     {
-      "source": "examples/auction/authored-v1/README.md",
-      "path": "examples/auction-semantic/authored-v1/README.md"
+      "source": "src/test/resources/auction-reference/authored-v1/README.md",
+      "path": "reference/auction/authored-v1/README.md"
     },
     {
       "source": "src/main/resources/META-INF/use4goal-view-provenance.json",
@@ -408,6 +408,46 @@
     {
       "source": "examples/csl-counter/authored-v1/README.md",
       "path": "examples/csl-counter/authored-v1/README.md"
+    },
+    {
+      "source": "examples/auction/auction-mapping.xml",
+      "path": "examples/auction-current/auction-mapping.xml"
+    },
+    {
+      "source": "examples/auction/auction.csl",
+      "path": "examples/auction-current/auction.csl"
+    },
+    {
+      "source": "examples/auction/auction.istar",
+      "path": "examples/auction-current/auction.istar"
+    },
+    {
+      "source": "examples/auction/auction.jcm",
+      "path": "examples/auction-current/auction.jcm"
+    },
+    {
+      "source": "examples/auction/auction.ocl",
+      "path": "examples/auction-current/auction.ocl"
+    },
+    {
+      "source": "examples/auction/build.gradle",
+      "path": "examples/auction-current/build.gradle"
+    },
+    {
+      "source": "examples/auction/src/agt/auction_capabilities.asl",
+      "path": "examples/auction-current/src/agt/auction_capabilities.asl"
+    },
+    {
+      "source": "examples/auction/src/org/auction-os.xml",
+      "path": "examples/auction-current/src/org/auction-os.xml"
+    },
+    {
+      "source": "examples/auction/src/env/auction_env/AuctionArtifact.java",
+      "path": "examples/auction-current/src/env/auction_env/AuctionArtifact.java"
+    },
+    {
+      "source": "examples/auction/README.md",
+      "path": "examples/auction-current/README.md"
     }
   ],
   "releaseStatus": "frozen-candidate-not-tagged",
@@ -451,9 +491,9 @@
   },
   "auctionSemanticCase": {
     "profile": "JACAMO_DECLARATIVE_XML",
-    "path": "examples/auction-semantic",
-    "manifest": "examples/auction-semantic/case-manifest.json",
-    "specification": "examples/auction-semantic/authored-v1/auction-mapping.xml",
+    "path": "examples/auction-current",
+    "manifest": "reference/auction/case-manifest.json",
+    "specification": "examples/auction-current/auction-mapping.xml",
     "legacyToyPath": "examples/auction",
     "consumerJournalBytes": 268435456,
     "recordingJournalMaxBytes": 268435456,
@@ -461,6 +501,7 @@
     "sameLiveNativeState": true,
     "timingLimitations": "SOURCE_WALL_CLOCK_NOT_PROVEN_MONOTONIC_INTERNAL_MOISE_TRANSITION_TIME_UNAVAILABLE",
     "acceptance": "SELECTED_OBSERVED_REQUIREMENTS_WITH_QUALITY_GATES",
-    "modelInputMode": "AUTHORED"
+    "modelInputMode": "AUTHORED",
+    "referencePath": "reference/auction"
   }
 }

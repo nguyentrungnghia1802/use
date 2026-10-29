@@ -17,16 +17,16 @@ class ReleasePackageContractTest {
         var json=new ObjectMapper();var release=json.readTree(Path.of("release/release-manifest.json").toFile());
         var declared=new java.util.TreeMap<String,String>();for(var entry:release.path("packageEntries"))assertTrue(declared.put(entry.path("path").asText(),entry.path("source").asText())==null);
         assertEquals("src/test/resources/auction/auction.jcm",declared.get("examples/auction/auction.jcm"),"Preserve the old native toy under its existing compatibility path");
-        assertEquals("examples/auction/case-manifest.json",declared.get("examples/auction-semantic/case-manifest.json"),"The actual canonical Auction must be separately shipped");
-        var manifest=json.readTree(Path.of("examples/auction/case-manifest.json").toFile());assertEquals(21,manifest.path("assets").size(),"Retired case-rules XML is no longer distributed");
+        assertEquals("src/test/resources/auction-reference/case-manifest.json",declared.get("reference/auction/case-manifest.json"),"The actual canonical Auction must be separately shipped");
+        var manifest=json.readTree(Path.of("src/test/resources/auction-reference/case-manifest.json").toFile());assertEquals(21,manifest.path("assets").size(),"Retired case-rules XML is no longer distributed");
         for(var asset:manifest.path("assets"))assertTrue(!"case-rules".equals(asset.path("id").asText()));
         for(var asset:manifest.path("assets")) {
-            String relative=asset.path("path").asText();assertEquals("examples/auction/"+relative,declared.get("examples/auction-semantic/"+relative),relative);
-            assertEquals(asset.path("sha256").asText(),java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(Path.of("examples/auction").resolve(relative)))));
+            String relative=asset.path("path").asText();assertEquals("src/test/resources/auction-reference/"+relative,declared.get("reference/auction/"+relative),relative);
+            assertEquals(asset.path("sha256").asText(),java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(Path.of("src/test/resources/auction-reference").resolve(relative)))));
         }
-        assertEquals("examples/auction/auction-mapping.xml",declared.get("examples/auction-semantic/auction-mapping.xml"),"The declarative Auction mapping XML must be shipped for generic consumers");
-        assertEquals("examples/auction/README.md",declared.get("examples/auction-semantic/README.md"));
-        String readme=Files.readString(Path.of("examples/auction/README.md"));
+        assertEquals("src/test/resources/auction-reference/auction-mapping.xml",declared.get("reference/auction/auction-mapping.xml"),"The declarative Auction mapping XML must be shipped for generic consumers");
+        assertEquals("src/test/resources/auction-reference/README.md",declared.get("reference/auction/README.md"));
+        String readme=Files.readString(Path.of("src/test/resources/auction-reference/README.md"));
         for(String required:java.util.List.of("AUCTION_OBSERVED_V1","RuntimeJournalMaxBytes","268435456","Import","Original iStar history","INCOMPLETE","auction-semantic"))assertTrue(readme.contains(required),required);
         for(String required:java.util.List.of("P-IADM-01.md","P-IADM-01.diff","single-owner-context-v1.md"))assertTrue(declared.containsKey("provenance/"+required),required);
     }
@@ -124,13 +124,14 @@ class ReleasePackageContractTest {
             assertTrue(declared.add(target), () -> "duplicate archive path: " + target);
         }
         var required=new LinkedHashSet<>(REQUIRED_ENTRIES);
-        var caseManifest=new ObjectMapper().readTree(root.resolve("examples/auction/case-manifest.json").toFile());
-        for(var asset:caseManifest.path("assets"))required.add("examples/auction-semantic/"+asset.path("path").asText());
-        required.addAll(Set.of("examples/auction-semantic/case-manifest.json","examples/auction-semantic/README.md","examples/auction-semantic/auction-mapping.xml","provenance/P-IADM-01.md","provenance/P-IADM-01.diff","provenance/single-owner-context-v1.md"));
-        required.addAll(Set.of("examples/auction-semantic/authored-v1/auction_csl.csl","examples/auction-semantic/authored-v1/auction_istar_final.istar","examples/auction-semantic/authored-v1/auction_constraints_final_fixed.ocl","examples/auction-semantic/authored-v1/auction-mapping.xml","examples/auction-semantic/authored-v1/provenance.json","examples/auction-semantic/authored-v1/README.md","provenance/use4goal-view-provenance.json","licenses/use4Goal-views-GPL-3.0.txt","provenance/P-IADM-02.diff"));
+        var caseManifest=new ObjectMapper().readTree(root.resolve("src/test/resources/auction-reference/case-manifest.json").toFile());
+        for(var asset:caseManifest.path("assets"))required.add("reference/auction/"+asset.path("path").asText());
+        required.addAll(Set.of("reference/auction/case-manifest.json","reference/auction/README.md","reference/auction/auction-mapping.xml","provenance/P-IADM-01.md","provenance/P-IADM-01.diff","provenance/single-owner-context-v1.md"));
+        required.addAll(Set.of("reference/auction/authored-v1/auction_csl.csl","reference/auction/authored-v1/auction_istar_final.istar","reference/auction/authored-v1/auction_constraints_final_fixed.ocl","reference/auction/authored-v1/auction-mapping.xml","reference/auction/authored-v1/provenance.json","reference/auction/authored-v1/README.md","provenance/use4goal-view-provenance.json","licenses/use4Goal-views-GPL-3.0.txt","provenance/P-IADM-02.diff"));
         required.addAll(Set.of("examples/csl-counter/authored-v1/stock.csl","examples/csl-counter/authored-v1/stock.istar","examples/csl-counter/authored-v1/stock.ocl","examples/csl-counter/authored-v1/stock-mapping.xml","examples/csl-counter/authored-v1/README.md"));
         // The explicit confirmation profile ships separately; strict authored oracles stay unchanged.
-        required.addAll(Set.of("examples/auction-semantic/source-confirmed-v1/auction-mapping.xml","examples/auction-semantic/source-confirmed-v1/auction_confirmed.ocl","examples/auction-semantic/source-confirmed-v1/README.md"));
+        required.addAll(Set.of("reference/auction/source-confirmed-v1/auction-mapping.xml","reference/auction/source-confirmed-v1/auction_confirmed.ocl","reference/auction/source-confirmed-v1/README.md"));
+        for(String file:java.util.List.of("README.md","auction.jcm","auction.csl","auction.istar","auction-mapping.xml","auction.ocl","build.gradle","src/agt/auction_capabilities.asl","src/org/auction-os.xml","src/env/auction_env/AuctionArtifact.java"))required.add("examples/auction-current/"+file);
         assertEquals(required, declared);
         assertTrue(manifest.path("packageTrees").isMissingNode());
         assertEquals("authenticated-loopback-tcp",manifest.path("runtimeArchitecture").path("transport").asText());

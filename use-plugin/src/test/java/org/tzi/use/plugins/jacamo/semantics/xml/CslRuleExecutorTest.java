@@ -8,7 +8,7 @@ import org.tzi.use.semantic.engine.frontend.CslFrontend;
 import static org.junit.jupiter.api.Assertions.*;
 class CslRuleExecutorTest {
     @TempDir Path temp;
-    static final Path CASE=Path.of("examples/auction");
+    static final Path CASE=Path.of("src/test/resources/auction-reference");
     static MappingInputs auction(Path root){return MappingInputs.read(root.resolve("auction.jcm"),root.resolve("auction-mapping.xml"),root.resolve("auction_constraints_final.ocl"));}
     @Test void differentCaseUsesSameInterpreterWithNoJavaCaseClasses()throws Exception {
         Files.writeString(temp.resolve("demo.jcm"),"mas inventory {}\n");

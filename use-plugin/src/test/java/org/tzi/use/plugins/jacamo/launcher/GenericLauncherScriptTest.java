@@ -79,7 +79,7 @@ class GenericLauncherScriptTest {
         // Case-specific opt-in APIs are deliberately retired. Neutral capability
         // requirements are declared by XML; no project name selects an observer.
         assertFalse(script.contains("examples\\auction"));
-        assertFalse(script.contains("examples/auction"));
+        assertFalse(script.contains("src/test/resources/auction-reference"));
         assertFalse(script.contains("$jcmpath = \"auction"));
         assertFalse(script.contains("auction_observed_v1"));
         assertTrue(script.contains("\"jacamo_declarative_xml\""));
