@@ -1163,3 +1163,26 @@ harness/regression attempts and the final renderer provenance mismatch are retai
 the latter was corrected by recording the changed source hash, without weakening tests.
 No fresh manual desktop GUI claim, unrelated live case studies, full clean verify,
 marking changes, commit or push.
+
+## Execution failure navigation and capability-summary audit
+- [x] FN01 — Restore individually selectable scoped OCL counterexamples, preserve Goal/Task categories and exact execution/history isolation; retain native aggregate/negation authority.
+- [x] FN02 — Distinguish unmet conditions from failures in navigation; explain empty failure lists without changing verification truth.
+- [x] FN03 — Trace capability MIXED/UNKNOWN to actual source assignments and demand evidence; report the cause and proposed applicability model without coercing unknowns. Focused tests, package and offscreen UI evidence only.
+
+FN01–FN03 evidence: `use-plugin/verification/execution-failure-navigation/receipt.json`.
+The supplied CONDITION_FALSE is unmet progress, not a failed Goal or invariant.
+Scoped native object counterexamples are individually navigable again when their
+exact aggregate fails; passing negated/quantified aggregates cannot create raw-body
+failure points. Failures remain separated by execution and Goal/Task/OCL/diagnostic
+category. Unmet conditions have a separate navigation category and do not change
+verification truth. Native engine, demand/assignment logic and case inputs unchanged.
+36 focused tests PASS; archive BUILD SUCCESS. Final source/package byte checks PASS:
+120 accepted backend entries unchanged, 114 tested UI class bytes match final package,
+297 original engine classes unchanged. Offscreen navigation/condition and authentic
+recorded Auction views inspected. No fresh MAS/manual desktop GUI run claimed.
+Capability audit traces 1 fulfilled start performer plus 4 unknown skill occurrences
+per execution to positive-only source demand rows and absent applicability evidence.
+The proposed source-backed NOT_ASSIGNED distinction is not implemented or inferred.
+Retained red tests and stale legacy aggregate-GUI expectation failure; the legacy
+fixture/hash and raw 2-fulfilled/8-unknown assertions remain unchanged, while its UI
+check now tests independent scopes and rejects missing scoped-native OCL evidence.

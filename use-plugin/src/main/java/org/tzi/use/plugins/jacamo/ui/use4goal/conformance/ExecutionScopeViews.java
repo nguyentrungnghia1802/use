@@ -44,6 +44,23 @@ public final class ExecutionScopeViews {
   return "Exec "+ordinal;
  }
  public static String selected(Cut cut){return Objects.toString(cut.visualEvidence().get("selectedExecution"),"");}
+ /** Native object counterexamples are navigation evidence, not extra requirements.
+  * A false body is a failure point only when its exact scoped aggregate fails;
+  * negation/existential semantics remain authoritative in that aggregate. */
+ public static List<Evaluation> failureEvaluations(Cut cut){
+  String id=selected(cut);if(id.isBlank())return cut.evaluations();
+  var context=contexts(cut).stream().filter(c->id.equals(c.get("context"))).findFirst().orElse(Map.of());
+  Object checks=context.get("executionConstraints");if(!(checks instanceof List<?> list))return cut.evaluations();
+  var failed=cut.evaluations().stream().filter(r->r.kind().equals("INVARIANT")&&r.status().equals("FAIL")).map(Evaluation::element).collect(java.util.stream.Collectors.toSet());
+  var result=new ArrayList<>(cut.evaluations());
+  for(Object raw:list){var body=object(raw);String name=Objects.toString(body.get("id"),"");
+   if(!"INVARIANT_BODY".equals(body.get("kind"))||!"FAIL".equals(body.get("verdict"))||!failed.contains(name))continue;
+   String owner=Objects.toString(body.get("contextObject"),"");
+   result.add(new Evaluation(name,Objects.toString(body.get("backendValue"),""),"FAIL",Objects.toString(body.get("diagnostic"),""),
+     owner+" / expression="+body.get("expression")+" / witness="+body.get("witness"),"",false,"INVARIANT_BODY","","",id+" / "+owner,Objects.toString(body.get("invocation"),"")));
+  }
+  return List.copyOf(result);
+ }
  public static Cut project(Cut cut,String id){
   if(id.isBlank())return cut;
   var context=contexts(cut).stream().filter(c->id.equals(c.get("context"))).findFirst().orElse(Map.of());

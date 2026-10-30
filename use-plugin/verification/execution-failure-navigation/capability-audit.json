@@ -1,0 +1,122 @@
+{
+  "source": "use-plugin\\verification\\live-results-ui\\auction-3514017882445095492\\result.json",
+  "sourceSha256": "71cf822e44aecbf0f2b62f22bd8b125dc582055e933df8bad78498364cf07bfe",
+  "scope": "Previously recorded actual external Auction receipt; not a new run of the user screenshots",
+  "capabilityStartExamples": [
+    {
+      "context": "xml-occurrence:1097c6af790f8e1306ae31d499e0f6d6e13abb5ffaaae15806d5a431e32e719c",
+      "entities": {
+        "Auction:Auction_e936c74c8f7f5b39cb55": {
+          "attributes": {
+            "best_bid": "18.815110492822075",
+            "currentWinner": "'maria'",
+            "id": "'a1'",
+            "running": "false",
+            "task": "'flight_ticket(paris,athens,date(15,12,2015))'",
+            "winner": "'maria'"
+          },
+          "identity": "xml:m0:fc4c673c2ab38728e2edd17b4da06e973f4b74e523f6b4c174cf3153498d9121"
+        }
+      },
+      "rows": [
+        {
+          "sourceElement": "A_start_t1",
+          "player": "beid:v1:jason/agent/runtime-agent/auction/maria/ae13d03b-40c8-4010-917d-721e5a1400fe",
+          "aggregateStatus": "UNKNOWN",
+          "executionQuality": "XML_TASK_TUPLE_UNAVAILABLE:DEMAND_INCOMPLETE"
+        },
+        {
+          "sourceElement": "A_start_t1",
+          "player": "beid:v1:jason/agent/runtime-agent/auction/bob/2b56e62f-f949-464f-8e21-6ed82d9a2fcf",
+          "aggregateStatus": "FULFILLED",
+          "executionQuality": "KNOWN_HISTORY"
+        },
+        {
+          "sourceElement": "A_start_t1",
+          "player": "beid:v1:jason/agent/runtime-agent/auction/francois/953ad3b1-f3a3-4bdf-a186-04de730db23f",
+          "aggregateStatus": "UNKNOWN",
+          "executionQuality": "XML_TASK_TUPLE_UNAVAILABLE:DEMAND_INCOMPLETE"
+        },
+        {
+          "sourceElement": "A_start_t1",
+          "player": "beid:v1:jason/agent/runtime-agent/auction/alice/43aeee34-74f9-4ab9-9909-8963f43173a6",
+          "aggregateStatus": "UNKNOWN",
+          "executionQuality": "XML_TASK_TUPLE_UNAVAILABLE:DEMAND_INCOMPLETE"
+        },
+        {
+          "sourceElement": "A_start_t1",
+          "player": "beid:v1:jason/agent/runtime-agent/auction/giacomo/9038c55e-5261-4671-a074-fbf9a9c96d5f",
+          "aggregateStatus": "UNKNOWN",
+          "executionQuality": "XML_TASK_TUPLE_UNAVAILABLE:DEMAND_INCOMPLETE"
+        }
+      ],
+      "counts": {
+        "UNKNOWN": 4,
+        "FULFILLED": 1
+      }
+    },
+    {
+      "context": "xml-occurrence:89ef30b3f5c55582e4a169dd21d8ff5672830c431662c7cd0841353ae39c8f4e",
+      "entities": {
+        "Auction:Auction_c633a2b1a6284164a534": {
+          "attributes": {
+            "best_bid": "20.41975936028271",
+            "currentWinner": "'giacomo'",
+            "id": "'a2'",
+            "running": "false",
+            "task": "'flight_ticket(athens,paris,date(18,12,2015))'",
+            "winner": "'giacomo'"
+          },
+          "identity": "xml:m0:1682d3feda95f4a88f67dace2249d636f0a69be39e9215857c508f2fd9cdb6ef"
+        }
+      },
+      "rows": [
+        {
+          "sourceElement": "A_start_t1",
+          "player": "beid:v1:jason/agent/runtime-agent/auction/alice/43aeee34-74f9-4ab9-9909-8963f43173a6",
+          "aggregateStatus": "UNKNOWN",
+          "executionQuality": "XML_TASK_TUPLE_UNAVAILABLE:DEMAND_INCOMPLETE"
+        },
+        {
+          "sourceElement": "A_start_t1",
+          "player": "beid:v1:jason/agent/runtime-agent/auction/maria/ae13d03b-40c8-4010-917d-721e5a1400fe",
+          "aggregateStatus": "UNKNOWN",
+          "executionQuality": "XML_TASK_TUPLE_UNAVAILABLE:DEMAND_INCOMPLETE"
+        },
+        {
+          "sourceElement": "A_start_t1",
+          "player": "beid:v1:jason/agent/runtime-agent/auction/giacomo/9038c55e-5261-4671-a074-fbf9a9c96d5f",
+          "aggregateStatus": "UNKNOWN",
+          "executionQuality": "XML_TASK_TUPLE_UNAVAILABLE:DEMAND_INCOMPLETE"
+        },
+        {
+          "sourceElement": "A_start_t1",
+          "player": "beid:v1:jason/agent/runtime-agent/auction/francois/953ad3b1-f3a3-4bdf-a186-04de730db23f",
+          "aggregateStatus": "UNKNOWN",
+          "executionQuality": "XML_TASK_TUPLE_UNAVAILABLE:DEMAND_INCOMPLETE"
+        },
+        {
+          "sourceElement": "A_start_t1",
+          "player": "beid:v1:jason/agent/runtime-agent/auction/bob/2b56e62f-f949-464f-8e21-6ed82d9a2fcf",
+          "aggregateStatus": "FULFILLED",
+          "executionQuality": "KNOWN_HISTORY"
+        }
+      ],
+      "counts": {
+        "UNKNOWN": 4,
+        "FULFILLED": 1
+      }
+    }
+  ],
+  "sourceClauses": {
+    "mAuctioneer": [
+      "start",
+      "decide"
+    ],
+    "mParticipant": [
+      "bid"
+    ]
+  },
+  "finding": "All five runtime agents own the capability actor definition. Positive source demand rows only exist for committed task holders. Missing rows become TASK_DEMAND_SOURCE_ROW_UNAVAILABLE/PARTIAL, presented as DEMAND_INCOMPLETE; definition summaries mix assigned completed work with other actors whose applicability is not proved. A console winner is not evidence that every player performed every capability task.",
+  "proposal": "Add explicit source-backed applicability/assignment rows. Distinguish not assigned from unavailable evidence; never infer false demand merely from a missing row or coerce unknowns to fulfilled. Keep native raw markings and selected root dependency semantics unchanged."
+}

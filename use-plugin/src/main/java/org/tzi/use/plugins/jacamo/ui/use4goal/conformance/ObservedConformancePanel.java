@@ -51,9 +51,13 @@ public final class ObservedConformancePanel extends JPanel {
     private final JButton stateNextButton = named(new JButton("Next State >"), "observed-next");
     private final JButton jumpCheckpointButton = named(new JButton("Failure Point"), "observed-failure");
     private record FailurePoint(Cut cut,Evaluation evaluation,String category,int boundary,int milestone,boolean audit) {
-        @Override public String toString(){return (audit?"Boundary "+boundary:milestone==0?"Before first milestone":"Milestone "+milestone)+" · "+category+" · "+(evaluation==null?"verification failure":evaluation.element()+" ["+evaluation.status()+"]");}
+        @Override public String toString(){
+            String object=evaluation!=null&&evaluation.kind().equals("INVARIANT_BODY")?evaluation.context():"";
+            int separator=object.lastIndexOf(" / ");if(separator>=0)object=object.substring(separator+3);
+            return (audit?"Boundary "+boundary:milestone==0?"Before first milestone":"Milestone "+milestone)+" · "+category+" · "+(evaluation==null?"verification failure":evaluation.element()+" ["+evaluation.status()+"]")+(object.isBlank()?"":" · "+object);
+        }
     }
-    private final JComboBox<String> failureFilter=named(new JComboBox<>(new String[]{"All failures","Goal / Task","OCL / constraints","Diagnostics"}),"observed-failure-filter");
+    private final JComboBox<String> failureFilter=named(new JComboBox<>(new String[]{"All failures","Goal / Task","OCL / constraints","Diagnostics","Unmet conditions"}),"observed-failure-filter");
     private final JComboBox<FailurePoint> failurePoints=named(new JComboBox<>(),"observed-failure-points");
     private boolean updatingFailures;
     private FailurePoint failureFocus;
@@ -177,6 +181,7 @@ public final class ObservedConformancePanel extends JPanel {
         return java.util.Set.of("FAIL","FAILED","VIOLATED","ERROR","EXECUTION_FAILED").contains(row.status());
     }
     private String failureKey(Evaluation row){return row.kind()+"\u0000"+row.element()+"\u0000"+row.context()+"\u0000"+row.occurrence();}
+    private static boolean unmetCondition(Evaluation row){return java.util.Set.of("GOAL_CONDITION","TASK_PRE","TASK_POST").contains(row.kind())&&row.status().equals("CONDITION_FALSE");}
     private void refreshFailurePoints(){
         var selected=(FailurePoint)failurePoints.getSelectedItem();updatingFailures=true;
         try {
@@ -185,25 +190,32 @@ public final class ObservedConformancePanel extends JPanel {
                 Object core=cut.visualEvidence().get("originalEngine");
                 String currentOwner=core instanceof java.util.Map<?,?> engine&&engine.get("identity")!=null?org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(engine.get("identity")):"";
                 if(!currentOwner.isBlank()&&!currentOwner.equals(owner)){active.clear();owner=currentOwner;}
-                var failedBodies=cut.evaluations().stream().filter(r->r.kind().equals("INVARIANT_BODY")&&failureEvaluation(r)).map(Evaluation::element).collect(java.util.stream.Collectors.toSet());
-                for(var row:cut.evaluations()) {
+                var navigationRows=ExecutionScopeViews.failureEvaluations(cut);
+                var failedBodies=navigationRows.stream().filter(r->r.kind().equals("INVARIANT_BODY")&&failureEvaluation(r)).map(Evaluation::element).collect(java.util.stream.Collectors.toSet());
+                for(var row:navigationRows) {
                     String key=failureKey(row);
-                    boolean recovered=row.kind().equals("GOAL_TASK")?row.status().equals("FULFILLED")&&java.util.Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(row.quality()):row.status().equals("PASS");
-                    if(recovered){active.remove(key);continue;}
-                    if(!failureEvaluation(row))continue;
-                    found=true;
+                    boolean recovered=row.kind().equals("GOAL_TASK")?row.status().equals("FULFILLED")&&java.util.Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(row.quality()):row.status().equals("PASS")||row.status().equals("CONDITION_TRUE");
+                    if(recovered){
+                        active.remove(key);
+                        if(row.kind().equals("INVARIANT"))active.removeIf(k->k.startsWith("INVARIANT_BODY\u0000"+row.element()+"\u0000"));
+                        continue;
+                    }
+                    boolean unmet=unmetCondition(row);
+                    if(!failureEvaluation(row)&&!unmet)continue;
+                    found|=!unmet;
                     // The aggregate summarizes these exact counterexamples. Keep
                     // each object witness once instead of adding a second failure.
                     if(row.kind().equals("INVARIANT")&&failedBodies.contains(row.element()))continue;
                     if(!active.add(key))continue;
-                    String category=row.status().equals("ERROR")?"Diagnostics":java.util.Set.of("GOAL_TASK","EXECUTION_OUTCOME").contains(row.kind())?"Goal / Task":"OCL / constraints";
-                    if(failureFilter.getSelectedIndex()==0||category.equals(failureFilter.getSelectedItem()))failurePoints.addItem(new FailurePoint(cut,row,category,ordinal,milestoneNumbers.getOrDefault(cut.id(),0),details.isSelected()));
+                    String category=unmet?"Unmet conditions":row.status().equals("ERROR")?"Diagnostics":java.util.Set.of("GOAL_TASK","EXECUTION_OUTCOME").contains(row.kind())?"Goal / Task":"OCL / constraints";
+                    if(failureFilter.getSelectedIndex()==0&&!unmet||category.equals(failureFilter.getSelectedItem()))failurePoints.addItem(new FailurePoint(cut,row,category,ordinal,milestoneNumbers.getOrDefault(cut.id(),0),details.isSelected()));
                 }
                 if(cut.failed()&&!found&&active.add("boundary:"+cut.id())&&(failureFilter.getSelectedIndex()==0||"Diagnostics".equals(failureFilter.getSelectedItem())))failurePoints.addItem(new FailurePoint(cut,null,"Diagnostics",ordinal,milestoneNumbers.getOrDefault(cut.id(),0),details.isSelected()));
             }
             failurePoints.setSelectedIndex(-1);
             if(selected!=null)for(int i=0;i<failurePoints.getItemCount();i++){var point=failurePoints.getItemAt(i);if(point.cut().id().equals(selected.cut().id())&&java.util.Objects.equals(point.evaluation(),selected.evaluation())){failurePoints.setSelectedIndex(i);break;}}
             failurePoints.setEnabled(failurePoints.getItemCount()>0);jumpCheckpointButton.setEnabled(failurePoints.getItemCount()>0);
+            jumpCheckpointButton.setToolTipText(failurePoints.getItemCount()>0?"Open the first point in the selected category for this execution; use the list for other points.":"No matching failures in this execution. A false condition is not a violation; select Unmet conditions to inspect it.");
         }finally{updatingFailures=false;}
     }
     private void openAuditedFailure(){
@@ -222,8 +234,9 @@ public final class ObservedConformancePanel extends JPanel {
             for(int j=0;j<displayedInstances.size();j++)if(displayedInstances.get(j).equals(row)){liveInstanceTable.setRowSelectionInterval(j,j);break;}
             break;
         }
+        if(!row.kind().equals("GOAL_TASK"))for(int i=0;i<liveChecks.getRowCount();i++)if(row.element().equals(liveChecks.getValueAt(i,0))&&(row.kind().equals("INVARIANT_BODY")||row.evidence().equals(liveChecks.getValueAt(i,3)))){liveCheckTable.setRowSelectionInterval(i,i);liveCheckTable.scrollRectToVisible(liveCheckTable.getCellRect(i,0,true));break;}
+        // Row selection may render the aggregate. Restore the exact selected object witness afterwards.
         liveDetails.setText(row.element()+"\n"+row.status()+" | "+row.quality()+"\n"+row.evidence()+"\n"+row.certifiedHistory());liveDetails.setCaretPosition(0);liveDetailTabs.setSelectedIndex(1);
-        if(!row.kind().equals("GOAL_TASK"))for(int i=0;i<liveChecks.getRowCount();i++)if(row.element().equals(liveChecks.getValueAt(i,0))&&row.evidence().equals(liveChecks.getValueAt(i,3))){liveCheckTable.setRowSelectionInterval(i,i);liveCheckTable.scrollRectToVisible(liveCheckTable.getCellRect(i,0,true));break;}
     }
 
     private void inspectInterval() {
@@ -272,7 +285,7 @@ public final class ObservedConformancePanel extends JPanel {
     }
 
     private void updatePosition(Cut cut){
-        stateStepInfoLabel.setText(details.isSelected()?"Boundary "+(auditCuts.indexOf(cut)+1)+" / "+auditCuts.size():((milestoneNumbers.getOrDefault(cut.id(),0)==0?"Before first milestone":"Milestone "+milestoneNumbers.get(cut.id())+" / "+businessMilestones.size())+(failureFocus==null?"":" — Failure Point")));
+        stateStepInfoLabel.setText(details.isSelected()?"Boundary "+(auditCuts.indexOf(cut)+1)+" / "+auditCuts.size():((milestoneNumbers.getOrDefault(cut.id(),0)==0?"Before first milestone":"Milestone "+milestoneNumbers.get(cut.id())+" / "+businessMilestones.size())+(failureFocus==null?"":failureFocus.category().equals("Unmet conditions")?" — Unmet condition":" — Failure Point")));
     }
 
     private JPanel buildLiveResults(){
@@ -299,6 +312,11 @@ public final class ObservedConformancePanel extends JPanel {
         var buttons=new JPanel(new FlowLayout(FlowLayout.LEFT,6,3));buttons.add(new JLabel("Execution:"));buttons.add(executionSelector);buttons.add(new JLabel("Go to State:"));buttons.add(stateSelectorCombo);buttons.add(statePrevButton);buttons.add(stateNextButton);buttons.add(jumpCheckpointButton);buttons.add(milestonesButton);buttons.add(stateStepInfoLabel);
         var options=new JPanel(new FlowLayout(FlowLayout.LEFT,6,3));
         options.add(failureFilter);failurePoints.setPrototypeDisplayValue(new FailurePoint(new Cut("","","",List.of(),"","",false),new Evaluation("Constraint or Task definition","","FAIL","",""),"OCL / constraints",9999,9999,false));options.add(failurePoints);
+        failurePoints.setRenderer(new DefaultListCellRenderer(){@Override public Component getListCellRendererComponent(JList<?> list,Object value,int index,boolean selected,boolean focus){
+            super.getListCellRendererComponent(list,value,index,selected,focus);
+            if(value==null&&failurePoints.getItemCount()==0)setText("Unmet conditions".equals(failureFilter.getSelectedItem())?"No unmet conditions in this execution":"No matching failures in this execution");
+            return this;
+        }});
         options.add(auditToggle);details.setVisible(false);options.add(details);
         auditToggle.addActionListener(e->{
             var focus=failureFocus;String selected=selectedCut()==null?"":selectedCut().id();
@@ -309,7 +327,8 @@ public final class ObservedConformancePanel extends JPanel {
         });
         milestonesButton.setVisible(false);milestonesButton.addActionListener(e->{failureFocus=null;intervalIds=null;auditToggle.setSelected(false);details.setSelected(false);details.setText("Show all audit boundaries");setCuts(allCuts);if(selectedStateIndex>=0)updateSelectedCounterexampleState(selectedStateIndex);});
         failureFilter.addActionListener(e->{refreshFailurePoints();});failurePoints.addActionListener(e->{if(!updatingFailures)openFailure((FailurePoint)failurePoints.getSelectedItem());});
-        failurePoints.setToolTipText("New failures in time order. Persistent failures appear once; only qualified PASS/FULFILLED starts recovery. Pending/SKIPPED never erase a failure. Supporting Task failure does not automatically violate a selected requirement.");
+        failurePoints.setToolTipText("Points belong only to the selected execution. All failures excludes unmet conditions. Persistent failures appear once; only qualified PASS/FULFILLED starts recovery. Pending/SKIPPED never erase a failure. Supporting Task failure does not automatically violate a selected requirement.");
+        failureFilter.setToolTipText("Unmet conditions are inspectable progress states, not verification failures. Diagnostics contains evaluation errors; missing evidence remains UNKNOWN.");
         navigation.add(requirementScope,BorderLayout.NORTH);navigation.add(buttons,BorderLayout.CENTER);navigation.add(options,BorderLayout.SOUTH);
         statePrevButton.addActionListener(e->navigateStateStep(-1));stateNextButton.addActionListener(e->navigateStateStep(1));jumpCheckpointButton.addActionListener(e->openAuditedFailure());
         stateSelectorCombo.addActionListener(e->{if(!updatingStateComboInternal&&stateSelectorCombo.getSelectedIndex()>=0){failureFocus=null;updateSelectedCounterexampleState(stateSelectorCombo.getSelectedIndex());}});

@@ -331,3 +331,23 @@ Một agent có thể có liên kết ở cả hai auction khi có binding tham 
 có dữ liệu không được che mất Entity độc lập đã có dữ liệu. Các giá trị không đủ
 bằng chứng và scope thiếu vẫn unavailable; nguồn coverage được báo riêng. Không tạo
 MSystem, model hành vi hoặc engine đánh giá thứ hai. Source/replay ghi đủ evidence gốc.
+
+Failure Point chỉ duyệt các điểm thuộc execution đang chọn. Nhóm **OCL / constraints**
+cho chọn riêng từng object counterexample của native aggregate đang FAIL; bảng OCL
+vẫn chỉ có một dòng aggregate cho mỗi invariant. Một raw body false dưới aggregate
+PASS (chẳng hạn invariant có negation) không phải một lỗi độc lập. Đổi execution
+không mang theo điểm lỗi hoặc evidence của execution trước.
+
+**Unmet conditions** là nhóm xem tiến độ riêng, không nằm trong **All failures**:
+`CONDITION_FALSE` có thể chỉ có nghĩa chưa có người thắng ở state khởi tạo. Chỉ khi
+native Goal/Task hay contract có failure được xác nhận thì mới có điểm lỗi tương ứng.
+Khi danh sách rỗng, bộ chọn báo không có lỗi phù hợp; **Audit details** chuyển nhãn
+milestone sang exact boundary, giữ nguyên cut và witness.
+
+Capability summaries vẫn gộp các occurrence của cùng một định nghĩa trong execution.
+Ví dụ một task có thể chỉ được giao cho một player, trong khi actor capability tồn
+tại ở nhiều player. Source demand thiếu row hiện được giữ UNKNOWN, không tự suy ra
+không được giao. Vì vậy MIXED/UNKNOWN của supporting skills không chứng minh MAS có
+lỗi, và cũng không được đổi thành FULFILLED từ console winner. Muốn phân biệt rõ
+NOT_ASSIGNED với thiếu evidence cần bổ sung applicability có chứng cứ âm từ nguồn
+đầy đủ; đó là thay đổi mapping/contract riêng, chưa được suy diễn trong giao diện.

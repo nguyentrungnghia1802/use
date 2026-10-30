@@ -37,11 +37,15 @@ class LiveGoalSummaryTest {
   assertTrue(skill.instances().stream().allMatch(i->!i.player().isBlank()&&!i.context().isBlank()&&!i.occurrence().isBlank()));
   SwingUtilities.invokeAndWait(()->{
    var panel=ObservedConformancePanel.liveResults(model);panel.setCuts(List.of(cut));
-   var goals=DetachedAuthoredWorkflowTest.find(panel,"live-goal-status",JTable.class);int row=-1;
-   for(int i=0;i<goals.getRowCount();i++)if(goals.getValueAt(i,0).toString().endsWith("::A_start_t2"))row=i;
-   assertTrue(row>=0);goals.setRowSelectionInterval(row,row);
-   assertEquals(10,DetachedAuthoredWorkflowTest.find(panel,"live-goal-instances",JTable.class).getRowCount());
-   assertEquals("COMPLETE_OBSERVED",DetachedAuthoredWorkflowTest.find(panel,"observed-verdict",JLabel.class).getText());
+   var choices=ExecutionScopeViews.choices(List.of(cut));assertEquals(2,choices.size());
+   for(String context:choices.keySet()){
+    panel.selectExecution(context);
+    var goals=DetachedAuthoredWorkflowTest.find(panel,"live-goal-status",JTable.class);int row=-1;
+    for(int i=0;i<goals.getRowCount();i++)if(goals.getValueAt(i,0).toString().split(" · ",2)[0].endsWith("::A_start_t2"))row=i;
+    assertTrue(row>=0);goals.setRowSelectionInterval(row,row);
+    assertEquals(5,DetachedAuthoredWorkflowTest.find(panel,"live-goal-instances",JTable.class).getRowCount());
+    assertEquals("INCOMPLETE",DetachedAuthoredWorkflowTest.find(panel,"observed-verdict",JLabel.class).getText(),"This historical receipt predates scoped native OCL results and cannot certify a current per-execution view");
+   }
    renderPanel(panel,"recorded-agent-scope.png");
   });
  }

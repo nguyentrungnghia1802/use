@@ -1,0 +1,65 @@
+{
+  "status": "PASS",
+  "createdAt": "2026-10-30T05:58:08.032161+00:00",
+  "scope": "Execution-specific failure navigation and conservative capability-summary audit",
+  "screenshotFinding": "CONDITION_FALSE at initial no-winner state is not an independently certified failure. A final winner does not prove every capability task ran for every agent.",
+  "repaired": "Individual native object counterexamples were only embedded in scoped aggregate details. Navigation now exposes each scoped failing object without duplicating native OCL requirements.",
+  "nativeAuthority": "Raw invariant bodies become failure navigation evidence only under the same scoped failing native aggregate; aggregate PASS/negation authority retained.",
+  "categories": [
+    "All failures",
+    "Goal / Task",
+    "OCL / constraints",
+    "Diagnostics",
+    "Unmet conditions"
+  ],
+  "tests": {
+    "tests": 36,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "verificationMode": "Focused regressions, authentic frozen Auction receipt renders and native/backend package byte parity; no new live MAS run",
+  "checks": [
+    "Per-execution isolation for both constraint and task failures",
+    "Multiple object counterexamples selectable individually",
+    "Qualified recovery permits a new failure episode",
+    "Exact object proof remains visible after selecting its aggregate table row",
+    "Audit mode uses native boundaries; default uses milestones",
+    "False body under passing native aggregate produces no failure point",
+    "Condition false/true/false inspected separately without a violation",
+    "MIXED/UNKNOWN remains conservative; original frozen result and counts retained"
+  ],
+  "capabilityAudit": "capability-audit.json",
+  "applicabilityChange": "Proposed only: distinguish source-proved non-assignment from missing evidence; no NOT_ASSIGNED inference or UNKNOWN-to-FULFILLED conversion",
+  "packageChecks": {
+    "status": "PASS",
+    "install": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\failure-navigation-final-4x81zgc_\\use-7.5.0",
+    "isolatedDriver": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\failure-navigation-final-4x81zgc_\\isolated-driver",
+    "archiveSha256": "dc6afcfdcb52bca7684288b51e0f53e34ffba1a2b3318e4cad34be12ebda5a95",
+    "liveImplementationEntriesEqualPackage": 120,
+    "packagedUiClassesEqualTested": 114,
+    "originalEngineClassesEqualPriorAcceptedPackage": 297,
+    "originalMarkingHashes": {
+      "GoalMarking": "56c9e566cd2f45ee4aa662257ef51eaa02e2836453eb5b05e2d80d83c95f4540",
+      "TaskMarking": "a3d1cf1437f4bb1fedc583f1086b695c3a22267ddd5a37117df340980135748a",
+      "IStarMarking": "07d383707a76f2b7227391b69275bb2d79e64cfb77f474e98d496f2553c0f922",
+      "IStarPropagation": "9f80d5c1b836a23c0d7f055baac2a895048dd53f44b1177f4b77680f8fdc9d75"
+    },
+    "currentCaseFilesEqualPackage": true,
+    "liveEvidence": "use-plugin\\verification\\live-results-ui\\auction-3514017882445095492"
+  },
+  "launcher": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\failure-navigation-final-4x81zgc_\\use-7.5.0\\bin\\start_use.bat",
+  "sourceFrozenFiles": 739,
+  "sourceFreeze": "source-freeze.json",
+  "sourceFreezeSha256": "98159d815d3433ee86795ea26072479ce7f5d3160c82e8668c793dd0341289ed",
+  "freshLiveMasRun": false,
+  "manualDesktopGuiTest": false,
+  "nativeEngineChanges": false,
+  "caseInputChanges": false,
+  "fullCleanVerify": false,
+  "commitOrPush": false,
+  "retainedFailedRuns": [
+    "baseline.log",
+    "focused.log"
+  ]
+}
