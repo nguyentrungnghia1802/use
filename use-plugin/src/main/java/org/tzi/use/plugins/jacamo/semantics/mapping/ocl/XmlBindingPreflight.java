@@ -49,10 +49,10 @@ public final class XmlBindingPreflight {
                         "status",writes.isEmpty()?(observer?"OBSERVER_REQUIRES_QUALIFIED_PROJECTION":"INCOMPLETE_NO_DECLARED_WRITE"):"DECLARED_NOT_OBSERVED"));
             }
             for(var type:visitor.populationTypes().stream().sorted(Comparator.comparing(MClassifier::name)).toList())reads.add(Map.of("contract",entry.getKey(),"population",type.name(),"status","REQUIRES_COMPLETE_POPULATION"));
-            for(var navigation:visitor.navigationReads())reads.add(Map.of("contract",entry.getKey(),
+            for(var scoped:visitor.scopedNavigationReads()){var navigation=scoped.expression();reads.add(Map.of("contract",entry.getKey(),
                     "association",navigation.getDestination().association().name(),"fromType",navigation.getSource().cls().name(),
                     "toType",navigation.getDestination().cls().name(),"fromRole",navigation.getSource().nameAsRolename(),
-                    "toRole",navigation.getDestination().nameAsRolename(),"preState",navigation.isPre(),"status","REQUIRES_COMPLETE_LINK_POPULATION"));
+                    "toRole",navigation.getDestination().nameAsRolename(),"preState",scoped.preState(),"status","REQUIRES_COMPLETE_LINK_POPULATION"));}
         }
         var readSet=ObservationReadSet.compile(expressions);
         var scope=org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.SelectedObservationPlanner.compile(program.xmlPlan().inputs().specification(),readSet.hash(),program.xmlPlan().requirements());

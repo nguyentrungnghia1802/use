@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "install": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\single-agent-final-o92o20fm\\use-7.5.0",
+  "driverRoot": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\single-agent-final-o92o20fm\\isolated-driver",
+  "archiveSha256": "39509b346f52fa6ce0038d87142dd5dd0ea22a86e260d7403432775f93f5e5d5",
+  "currentAuctionBytesEqualPackage": true,
+  "testedNativeClassesEqualPackage": true,
+  "originalMarkingClassesUnchanged": {
+    "GoalMarking": "56c9e566cd2f45ee4aa662257ef51eaa02e2836453eb5b05e2d80d83c95f4540",
+    "TaskMarking": "a3d1cf1437f4bb1fedc583f1086b695c3a22267ddd5a37117df340980135748a",
+    "IStarMarking": "07d383707a76f2b7227391b69275bb2d79e64cfb77f474e98d496f2553c0f922",
+    "IStarPropagation": "9f80d5c1b836a23c0d7f055baac2a895048dd53f44b1177f4b77680f8fdc9d75"
+  }
+}

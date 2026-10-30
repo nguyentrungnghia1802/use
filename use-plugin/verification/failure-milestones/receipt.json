@@ -1,0 +1,52 @@
+{
+  "status": "PASS_FOR_MILESTONE_FAILURE_NAVIGATION",
+  "createdAt": "2026-10-29T10:33:45.723549+00:00",
+  "scope": "Presentation only: milestone labels by business phase, explicit audit numbering; exact failure cut and evidence preserved. No verification/backend changes.",
+  "focusedTests": 33,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "log": "package-final.log",
+  "package": {
+    "status": "PASS",
+    "install": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\failure-milestone-3tcvxlqp\\use-7.5.0",
+    "isolatedDriver": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\failure-milestone-3tcvxlqp\\isolated-driver",
+    "archiveSha256": "3c25a149e5049be13aa58ee69b65b982b25be7227653667920e3d8aa84fd434b",
+    "liveImplementationEntriesEqualPackage": 114,
+    "packagedUiClassesEqualTested": 110,
+    "originalEngineClassesEqualPriorAcceptedPackage": 297,
+    "originalMarkingHashes": {
+      "GoalMarking": "56c9e566cd2f45ee4aa662257ef51eaa02e2836453eb5b05e2d80d83c95f4540",
+      "TaskMarking": "a3d1cf1437f4bb1fedc583f1086b695c3a22267ddd5a37117df340980135748a",
+      "IStarMarking": "07d383707a76f2b7227391b69275bb2d79e64cfb77f474e98d496f2553c0f922",
+      "IStarPropagation": "9f80d5c1b836a23c0d7f055baac2a895048dd53f44b1177f4b77680f8fdc9d75"
+    },
+    "currentCaseFilesEqualPackage": true,
+    "liveEvidence": "use-plugin\\verification\\live-results-ui\\auction-10902800656564572545"
+  },
+  "sourceSha256": {
+    "use-plugin/docs/project/use4goal-run.md": "0b403f8f64fc4f0190165ed2bdb396e6bfee0b64295b71112540639b243abe36",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/BusinessTimeline.java": "c2384caeefeede96c108eab9ab9ba0b8335d05d365983d3b52f6192b050cf3e7",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel.java": "045cdce835518812f8c858882cba301fc7a1c5ffe9354d2b613576ddee28bd0f",
+    "use-plugin/src/main/resources/META-INF/use4goal-workflow-provenance.json": "c673eed9eb3cc6e406ae5042ae2b710063c7acc8c9c9e4031fb3b219927a5c9a",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/BusinessTimelineTest.java": "eacae5dfb54831841e685e69b4702d828572b66038aaaac3a84eff0ab7fd16fb",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/FailurePointNavigationTest.java": "88cd6105b6833a885e9584b86ec2c07bf3e6de6dd5b959aa41841b9c009853bc"
+  },
+  "changedProductionComparedWithPreviousFreeze": [
+    "use-plugin/src/main/resources/META-INF/use4goal-workflow-provenance.json",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/BusinessTimeline.java",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel.java"
+  ],
+  "visualInspection": "failure-navigation.png",
+  "testsCover": [
+    "Milestone numbering by default; Audit details toggles to boundary and back without changing selected failure.",
+    "Recurring business state maps to its own phase, never a future state.",
+    "Failure before first admitted state has no fabricated milestone.",
+    "Background refresh preserves exact selected evidence; all failure filters/navigation remain available."
+  ],
+  "limits": [
+    "No new JaCaMo run or replay needed for this UI-only update: all 114 live-frozen backend resources/classes and 297 original engine classes match the accepted build.",
+    "Swing offscreen visual render inspected; no fresh manual desktop GUI exercise.",
+    "No commit/push."
+  ]
+}

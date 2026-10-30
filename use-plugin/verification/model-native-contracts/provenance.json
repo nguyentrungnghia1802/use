@@ -1,0 +1,31 @@
+{
+  "version": "AUCTION_SYSTEM_SPECIFICATIONS/4.0",
+  "drawioSources": {
+    "auction_csl.drawio": "14fe0e1c39c7cc6e84af48ea99318cc832d47f0a9ce75960e8c5fad8f64485de",
+    "auction_istar_final_fixed.drawio": "8398c2ca21b6bafd03471d320804878c6ab2450d12a5dda2887270a0de07fdef"
+  },
+  "currentFiles": {
+    "auction.csl": "f08d62f3f9cd2f7a64b5567e9aa439e8f2519edb267d60f72e7d53dd23490cb1",
+    "auction.istar": "e978e038c2b2da11377d641b3b5da510271020eb9fb856199674d766cb472e35",
+    "auction-mapping.xml": "a34ac5be62aab5fd1cdabf74fb29722b65f34e50eac77a8b90b1cd5621e4f35e",
+    "auction.ocl": "16837702e057006d2083142a32f3a9791a1d2b86523115e2ede2a30e33902141"
+  },
+  "decisions": [
+    "CSL structural text follows embedded cslSource; visible Atom/Real belief labels do not override exact tuple/annotation JSON semantics.",
+    "Role capability and original task owners retained; stale participates-in metadata is not interpreted as an invented generic relationship.",
+    "Latest previously agreed attempt+accepted-bid policy remains an explicit delta from strict success-only diagram notes.",
+    "Observer helpers remain outside domain CSL classifiers.",
+    "Original parsers unchanged; native OCL annotation is an explicit versioned tool extension, executed by native USE compiler.",
+    "External .ocl is optional extra property specification, currently comment-only."
+  ],
+  "runtimeInput": "JaCaMo project (.jcm + project source/resources)",
+  "systemSpecifications": "Hand-authored CSL/iStar/XML/optional extra OCL; selected/imported manually, not runtime-source inputs",
+  "annotationFormat": "MODEL_NATIVE_OCL/1.0 via /* @use-native-ocl 1 ... */; explicit plugin extension with native USE compilation, original CSL/iStar parsers unchanged",
+  "nativeClauseInventory": {
+    "cslPopulationInvariants": 2,
+    "embeddedOperationClauses": 5,
+    "embeddedObserverInvariants": 2,
+    "externalExtraClauses": 0
+  },
+  "mappingRole": "AUTHORED correspondence and runtime binding plan; no CSL/iStar construction actions"
+}

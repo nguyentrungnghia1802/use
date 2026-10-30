@@ -35,7 +35,7 @@ public final class Use4GoalRuntimeSessionAdapter implements AutoCloseable {
             GoalModelInstanceTranslator.InstanceContextMatcher matcher,String castRevision,EngineSemanticsProfile profile,EngineTopologyPolicy topologyPolicy) {
         this.profile=Objects.requireNonNull(profile);
         this.topologyPolicy=Objects.requireNonNull(topologyPolicy);
-        var admitted=RuntimeModelAdmission.admit(source,cast,matcher,profile);definition=new OwnedGoalModel(source,profile);
+        var admitted=RuntimeModelAdmission.admit(source,cast,matcher,profile,topologyPolicy);definition=new OwnedGoalModel(source,profile);
         Objects.requireNonNull(castRevision);
         if(castRevision.isBlank())throw new IllegalArgumentException("EXPLICIT_CAST_REVISION_REQUIRED");
         this.castRevision=castRevision;

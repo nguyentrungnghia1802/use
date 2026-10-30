@@ -31,9 +31,23 @@ public final class RuntimeFactSources {
     public static Map<String,List<String>> producerFields(MappingSpecification specification) {
         var names=new TreeSet<>(Set.of("normalizedEventKind","semanticId","name","active","agentDeclarationSemanticId","agentRuntimeSemanticId"));
         for(var section:specification.root().child("runtime").children("datasets"))for(var dataset:section.children("facts"))
-            if(dataset.attr("authority").equals("jason")&&dataset.attr("kind").equals("AGENT"))names.addAll(fields("jason",RuntimeFactKind.AGENT));
+            if(dataset.attr("authority").equals("jason")&&dataset.attr("kind").equals("AGENT"))
+                for(var tables:specification.root().child("runtime").children("tables"))for(var table:tables.children("table"))
+                    if(table.attr("dataset").equals(dataset.attr("id")))agentFieldReads(table,names);
         for(var section:specification.root().child("runtime").children("datasets"))if(!section.children("beliefViews").isEmpty())names.addAll(Set.of("cycles","storedBeliefObservation"));
         return Map.of("jason",List.copyOf(names));
+    }
+    private static void agentFieldReads(Node node,Set<String> selected) {
+        var available=fields("jason",RuntimeFactKind.AGENT);
+        for(var entry:node.attributes().entrySet())if(entry.getKey().equals("path")||entry.getKey().endsWith("Path")||entry.getKey().equals("groupPaths"))
+            for(String path:entry.getValue().split(" +")) {
+                if(path.equals("values"))selected.addAll(available); // Explicit whole-value read is conservatively broad.
+                else if(path.startsWith("values.")) {
+                    String field=path.substring(7).split("\\.",2)[0];
+                    if(available.contains(field))selected.add(field);
+                }
+            }
+        node.children().forEach(child->agentFieldReads(child,selected));
     }
     private record Definition(Node node,String authority,RuntimeFactKind kind,Set<String> fields) { }
     private final List<Definition> definitions;

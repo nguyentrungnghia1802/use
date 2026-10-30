@@ -133,6 +133,8 @@ final class MappingVocabulary {
         add(m,"capability/plan","trigger","context");
         add(m,"plan/step","task first after variables","artifactVariable artifactClass schemeVariable allowMissingArtifactAtEntry");
         add(m,"step/input","name variable type","");
+        add(m,"runtime/invariantActivations","","");
+        add(m,"invariantActivations/activate","id target tableRef contextColumn policy","");
         add(m,"runtime/inputs","","");
         add(m,"inputs/input","id identityKind","identityFields tableRef reconcileMissing reconcileScopeField");
         add(m,"input/field","name type required","");
@@ -155,6 +157,7 @@ final class MappingVocabulary {
         add(m,"scope/actor","actor tableRef scopeColumn scopeKey playerColumn kind cardinality","roleColumn roleLookup completeColumn");
         add(m,"scope/self","target origin","column optional");
         add(m,"scope/resource","target column type","");
+        add(m,"scope/observer","projectRef subjectColumn","");
         add(m,"runtime/taskDemands","","");
         add(m,"taskDemands/demand","id target scopeRef tableRef anchorColumn playerColumn requiredColumn episodeFields","completeColumn scopeColumn scopeKey");
         add(m,"runtime/datasets","","");

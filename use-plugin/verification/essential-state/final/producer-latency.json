@@ -1,0 +1,17 @@
+{
+  "recording": "use-plugin\\verification\\live-results-ui\\auction-17473406535072442727",
+  "scope": "Producer ENGINE_RESULT only; source observedAt to verifiedAt; manual/baseline excluded. Not exact domain transition time or caught-up guarantee.",
+  "count": 602,
+  "maxDelayMs": 41329.983,
+  "p95DelayMs": 38867.395,
+  "lastProducerCompletion": {
+    "source": "cartago",
+    "event": "aff639f2-8c42-47b0-a79a-d5b0055e15f2:cartago:334",
+    "stateVersion": 583,
+    "delayMs": 41329.983,
+    "acceptanceDelayMs": 41300.06,
+    "observedAt": "2026-10-28T15:23:14.251074900Z",
+    "verifiedAt": "2026-10-28T15:23:55.581057800Z"
+  },
+  "clockSkewSamples": 0
+}

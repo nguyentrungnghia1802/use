@@ -1,0 +1,189 @@
+@CslAgentDeclarations(payload64="W3siaWQiOiJiZWlkOnYxOmphY2Ftby9hZ2VudC9kZWNsYXJhdGlvbi9ob3VzZV9idWlsZGluZy9jb21wYW55QS9tb2RlbCIsImluc3RhbmNlcyI6MX0seyJpZCI6ImJlaWQ6djE6amFjYW1vL2FnZW50L2RlY2xhcmF0aW9uL2hvdXNlX2J1aWxkaW5nL2NvbXBhbnlCL21vZGVsIiwiaW5zdGFuY2VzIjoxfSx7ImlkIjoiYmVpZDp2MTpqYWNhbW8vYWdlbnQvZGVjbGFyYXRpb24vaG91c2VfYnVpbGRpbmcvY29tcGFueUMvbW9kZWwiLCJpbnN0YW5jZXMiOjV9LHsiaWQiOiJiZWlkOnYxOmphY2Ftby9hZ2VudC9kZWNsYXJhdGlvbi9ob3VzZV9idWlsZGluZy9jb21wYW55RC9tb2RlbCIsImluc3RhbmNlcyI6MTN9LHsiaWQiOiJiZWlkOnYxOmphY2Ftby9hZ2VudC9kZWNsYXJhdGlvbi9ob3VzZV9idWlsZGluZy9jb21wYW55RS9tb2RlbCIsImluc3RhbmNlcyI6MX0seyJpZCI6ImJlaWQ6djE6amFjYW1vL2FnZW50L2RlY2xhcmF0aW9uL2hvdXNlX2J1aWxkaW5nL2dpYWNvbW8vbW9kZWwiLCJpbnN0YW5jZXMiOjF9XQ")
+@Use4GoalCslV4(compatibility="true", players="true", profile="USE4GOAL_OBSERVED_V1", version="v4.0")
+@DeclarativeObserverView(mappingHash="85ddf0b8f8f854c10ee5a25b932c3020e57da2ed09f6bf41148167b45df3612d", version="2.0")
+@CanonicalSemanticProgram(cslHash="e967eb306daa2794f89b5afd0995d677b058c8df8918d84555dc09a3fb863cf8", goalHash="581749fea84d85c04f9efb86d4e64ab7affd95a4309eb9092a8f117e523231dd", mappingProfile="JACAMO_DECLARATIVE_XML", mappingVersion="2.0", programHash="d464bd46b9f9b17db4970fcead835198d7348b213581b1845bee50c0b20f4686", ruleHash="5059fd20c1f0659e0b30eebfcbbb4bae1d36971914071a4b95daabbb8bdf53d7", sourceHash="d909d158c6c888a15a4178a8663a872087662790cfcf2026b900f8c8ca08e14b", version="2.0")
+model HouseBuildingState
+
+
+@CanonicalSemanticBinding(kind="ENTITY", metadata64="e30", reason64="UGFzc2l2ZSBhcHBsaWNhdGlvbiBhcnRpZmFjdCBzdGF0ZSwgbm90IEphc29uIEFnZW50IG9yIGJlbGllZiB0cnV0aA", rule64="YmluZC1lbnRpdHk", source64="YXJ0aWZhY3QtY2xhc3M6dG9vbHMuQXVjdGlvbkFydA", target64="UHJvY3VyZW1lbnRBdWN0aW9u")
+@OriginalCslDeclaration(id64="UHJvY3VyZW1lbnRBdWN0aW9u", kind="ENTITY", owner64="")
+@DomainProjection(javaClass64="dG9vbHMuQXVjdGlvbkFydA", kind="artifact", sourceId64="YXJ0aWZhY3QtY2xhc3M6dG9vbHMuQXVjdGlvbkFydA")
+class ProcurementAuction < DomainEntity
+attributes
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="UHJvY3VyZW1lbnRBdWN0aW9uOjpjdXJyZW50Qmlk", mutable="true", optional="false")
+  currentBid : Real
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="UHJvY3VyZW1lbnRBdWN0aW9uOjpjdXJyZW50V2lubmVy", mutable="true", optional="false")
+  currentWinner : String
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="UHJvY3VyZW1lbnRBdWN0aW9uOjptYXhWYWx1ZQ==", mutable="false", optional="false")
+  maxValue : Integer
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="UHJvY3VyZW1lbnRBdWN0aW9uOjpuYW1l", mutable="false", optional="false")
+  name : String
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="UHJvY3VyZW1lbnRBdWN0aW9uOjp0YXNr", mutable="false", optional="false")
+  task : String
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="UHJvY3VyZW1lbnRBdWN0aW9uOjp3b3Jrc3BhY2U=", mutable="false", optional="false")
+  workspace : String
+operations
+  @CslInterfaceAuthority(bytecodeHash="614f8890acc1fae600da1e085e00f36be3a353355e0a4a77354329425ccfc7e0", kind="PRODUCER_REFLECTED_SOURCE_ACTION_OPERATION", sourceId64="amFzb246YWdlbnQtcHJvZ3JhbTpob3VzZV9idWlsZGluZzpnaWFjb21vOnBsYW4tbGlicmFyeTpwbGFuOjY6YjdlNjA4OTM0OWUzNDkzYWYxNWM0MDgyYzM5MGM0N2Q2NDVmYTRiMGQ0MjFiZjFhMmE3NjIzNjViNzc0OTllMzpib2R5OjE6MDI3NWRkMmQ1MmIyMDIwNTYxYzk2MmE4ZTllM2JhZjMzYzRiZjc3MDk1NzMwM2FkNGNmY2Q3Zjk5ZTcxNDZlMjphY3Rpb24", sourceReference64="amFzb246YWdlbnQtcHJvZ3JhbTpob3VzZV9idWlsZGluZzpnaWFjb21vOnBsYW4tbGlicmFyeTpwbGFuOjY6YjdlNjA4OTM0OWUzNDkzYWYxNWM0MDgyYzM5MGM0N2Q2NDVmYTRiMGQ0MjFiZjFhMmE3NjIzNjViNzc0OTllMzpib2R5OjE6MDI3NWRkMmQ1MmIyMDIwNTYxYzk2MmE4ZTllM2JhZjMzYzRiZjc3MDk1NzMwM2FkNGNmY2Q3Zjk5ZTcxNDZlMjphY3Rpb24", sourceUri64="ZmlsZTovRDovX0NPREVfQkFOSy9Qcm9qZWN0Xy8wOF9UaGVzaXMvdXNlL3VzZS1wbHVnaW4vdGFyZ2V0L293bmVkLXJ1bnRpbWUvNWUwODU5NjMtNWY5Yi00ZDkxLWFjYzgtZDNhNzU2ODRkYmFkL2V2aWRlbmNlLzIwMjYxMDI4LTA5MzkyMC00NTUtMzUwYjVlZTkvc3RhZ2luZy1ob3VzZS1idWlsZGluZy9idWlsZC9jbGFzc2VzL2phdmEvbWFpbi90b29scy9BdWN0aW9uQXJ0LmNsYXNz")
+  @OperationSource_ef1bf256bdd52b86(backingId64="amF2YS1tZXRob2Q6W3Rvb2xzLkF1Y3Rpb25BcnQsIGJpZCwgW2RvdWJsZV0sIHZvaWRd", descriptorId64="ZGVjbGFyZWQtaW50ZXJmYWNlOmphc29uOmFnZW50LXByb2dyYW06aG91c2VfYnVpbGRpbmc6Z2lhY29tbzpwbGFuLWxpYnJhcnk6cGxhbjo2OmI3ZTYwODkzNDllMzQ5M2FmMTVjNDA4MmMzOTBjNDdkNjQ1ZmE0YjBkNDIxYmYxYTJhNzYyMzY1Yjc3NDk5ZTM6Ym9keToxOjAyNzVkZDJkNTJiMjAyMDU2MWM5NjJhOGU5ZTNiYWYzM2M0YmY3NzA5NTczMDNhZDRjZmNkN2Y5OWU3MTQ2ZTI6YWN0aW9u")
+  @CartagoOperation(exposure="AUTHORED_NAMES_V1", javaName64="Ymlk", parameterAliases64="WyJhbW91bnQiXQ", policy="3.0.0", signature64="WyJ0b29scy5BdWN0aW9uQXJ0IiwiYmlkIixbImRvdWJsZSJdLCJ2b2lkIl0")
+  @DeclarativeOperationBinding(id="observed-operation", mappingHash="85ddf0b8f8f854c10ee5a25b932c3020e57da2ed09f6bf41148167b45df3612d", oclHash="c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca", task="")
+  bid(amount : Real)
+end
+
+@CanonicalSemanticBinding(kind="ORG_CONTEXT", metadata64="eyJjb250ZXh0QWJzdHJhY3Rpb24iOiJQUk9KRUNUX0VYRUNVVElPTl9WSUVXLzEuMCJ9", reason64="QXV0aG9yZWQgcGh5c2ljYWwgd29ya3NwYWNlIHZpZXdwb2ludDsgbm90IGEgc2Vjb25kIG9yZ2FuaXphdGlvbiBvciBydW5uaW5nIGFnZW50", rule64="YmluZC1jb250ZXh0", source64="amNtOnByb2plY3Q6aG91c2VfYnVpbGRpbmc6Y2IwYWNmODAzNjFmZWYxZTVhZWQ0YmYxYzYzMWIyMDYzNjgzMDEyMTYxZThlZDExOTYwNWRjNmQ5ZDIwMzFiYQ", target64="QnVpbGRpbmdSdW4")
+@OriginalCslDeclaration(id64="QnVpbGRpbmdSdW4=", kind="ORG_CONTEXT", owner64="")
+@DomainProjection(javaClass64="", kind="csl-org_context", sourceId64="amNtOnByb2plY3Q6aG91c2VfYnVpbGRpbmc6Y2IwYWNmODAzNjFmZWYxZTVhZWQ0YmYxYzYzMWIyMDYzNjgzMDEyMTYxZThlZDExOTYwNWRjNmQ5ZDIwMzFiYQ")
+class BuildingRun < OrgContext
+attributes
+  @OriginalCslAttribute(default64="", hasDefault="false", id64="QnVpbGRpbmdSdW46OndvcmtzcGFjZQ==", mutable="false", optional="false")
+  workspace : String
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOlJ1bnRpbWVQbGF5ZXI=", kind="M0_EXTENSION")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="aGVscGVyOlJ1bnRpbWVQbGF5ZXI")
+abstract class RuntimePlayer
+end
+
+@SemanticRuntimeHelper(kind="DECLARATION_SCOPE_ONLY", physicalOwnership="false")
+association CslEntityScopes between
+  OrgContext[0..1] role cslEntityScope
+  DomainEntity[*] role cslScopedEntities
+end
+
+association Plays between
+  RuntimePlayer[1] role player
+  RoleOccurrence[*] role enactedRoles
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOk9yZ0NvbnRleHQ=", kind="M0_EXTENSION")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="aGVscGVyOk9yZ0NvbnRleHQ")
+abstract class OrgContext < RuntimePlayer
+end
+
+@SemanticRuntimeHelper(kind="DECLARATION_SCOPE_ONLY", physicalOwnership="false")
+association CslContextScopes between
+  OrgContext[0..1] role cslScopeParent
+  OrgContext[*] role cslNestedContexts
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOldvcmtzcGFjZU9ic2VydmF0aW9u", kind="M0_EXTENSION")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="aGVscGVyOldvcmtzcGFjZU9ic2VydmF0aW9u")
+class WorkspaceObservation
+end
+
+@SemanticRuntimeHelper(id64="b2JzZXJ2ZXI6YnVpbGQtcHJvZ3Jlc3M=", kind="EXTERNAL_OBSERVER_VIEW")
+@DeclarativeObserverView(details64="eyJjYXRlZ29yeSI6IkNMQVNTIiwiaWQiOiJidWlsZC1wcm9ncmVzcyIsImtleUZpZWxkcyI6InV1aWQiLCJuYW1lIjoiQnVpbGRQcm9ncmVzcyJ9", keys64="dXVpZA==", mappingHash="85ddf0b8f8f854c10ee5a25b932c3020e57da2ed09f6bf41148167b45df3612d", sourceLine="242", version="2.0", view64="YnVpbGQtcHJvZ3Jlc3M=")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="b2JzZXJ2ZXI6YnVpbGQtcHJvZ3Jlc3M")
+class BuildProgress
+attributes
+  @DeclarativeObserverView(details64="eyJuYW1lIjoiYnVpbGRSb29mQXQiLCJvcmlnaW4iOiJGaXJzdCBjb3JyZWxhdGVkIHN1Y2Nlc3NmdWwgb3BlcmF0aW9uIHNvdXJjZSBzZXF1ZW5jZTsgLTEgb25seSB1bmRlciBjb21wbGV0ZSBjcmVhdGlvbiBoaXN0b3J5IiwidHlwZSI6IkludGVnZXIifQ==", field64="YnVpbGRSb29mQXQ=", keys64="dXVpZA==", mappingHash="85ddf0b8f8f854c10ee5a25b932c3020e57da2ed09f6bf41148167b45df3612d", sourceLine="247", version="2.0", view64="YnVpbGQtcHJvZ3Jlc3M=")
+  buildRoofAt : Integer
+  @DeclarativeObserverView(details64="eyJuYW1lIjoiYnVpbGRXYWxsc0F0Iiwib3JpZ2luIjoiRmlyc3QgY29ycmVsYXRlZCBzdWNjZXNzZnVsIG9wZXJhdGlvbiBzb3VyY2Ugc2VxdWVuY2U7IC0xIG9ubHkgdW5kZXIgY29tcGxldGUgY3JlYXRpb24gaGlzdG9yeSIsInR5cGUiOiJJbnRlZ2VyIn0=", field64="YnVpbGRXYWxsc0F0", keys64="dXVpZA==", mappingHash="85ddf0b8f8f854c10ee5a25b932c3020e57da2ed09f6bf41148167b45df3612d", sourceLine="246", version="2.0", view64="YnVpbGQtcHJvZ3Jlc3M=")
+  buildWallsAt : Integer
+  @DeclarativeObserverView(details64="eyJuYW1lIjoiZml0RG9vcnNBdCIsIm9yaWdpbiI6IkZpcnN0IGNvcnJlbGF0ZWQgc3VjY2Vzc2Z1bCBvcGVyYXRpb24gc291cmNlIHNlcXVlbmNlOyAtMSBvbmx5IHVuZGVyIGNvbXBsZXRlIGNyZWF0aW9uIGhpc3RvcnkiLCJ0eXBlIjoiSW50ZWdlciJ9", field64="Zml0RG9vcnNBdA==", keys64="dXVpZA==", mappingHash="85ddf0b8f8f854c10ee5a25b932c3020e57da2ed09f6bf41148167b45df3612d", sourceLine="249", version="2.0", view64="YnVpbGQtcHJvZ3Jlc3M=")
+  fitDoorsAt : Integer
+  @DeclarativeObserverView(details64="eyJuYW1lIjoiZml0V2luZG93c0F0Iiwib3JpZ2luIjoiRmlyc3QgY29ycmVsYXRlZCBzdWNjZXNzZnVsIG9wZXJhdGlvbiBzb3VyY2Ugc2VxdWVuY2U7IC0xIG9ubHkgdW5kZXIgY29tcGxldGUgY3JlYXRpb24gaGlzdG9yeSIsInR5cGUiOiJJbnRlZ2VyIn0=", field64="Zml0V2luZG93c0F0", keys64="dXVpZA==", mappingHash="85ddf0b8f8f854c10ee5a25b932c3020e57da2ed09f6bf41148167b45df3612d", sourceLine="248", version="2.0", view64="YnVpbGQtcHJvZ3Jlc3M=")
+  fitWindowsAt : Integer
+  @DeclarativeObserverView(details64="eyJuYW1lIjoiaW5zdGFsbEVsZWN0cmljYWxTeXN0ZW1BdCIsIm9yaWdpbiI6IkZpcnN0IGNvcnJlbGF0ZWQgc3VjY2Vzc2Z1bCBvcGVyYXRpb24gc291cmNlIHNlcXVlbmNlOyAtMSBvbmx5IHVuZGVyIGNvbXBsZXRlIGNyZWF0aW9uIGhpc3RvcnkiLCJ0eXBlIjoiSW50ZWdlciJ9", field64="aW5zdGFsbEVsZWN0cmljYWxTeXN0ZW1BdA==", keys64="dXVpZA==", mappingHash="85ddf0b8f8f854c10ee5a25b932c3020e57da2ed09f6bf41148167b45df3612d", sourceLine="251", version="2.0", view64="YnVpbGQtcHJvZ3Jlc3M=")
+  installElectricalSystemAt : Integer
+  @DeclarativeObserverView(details64="eyJuYW1lIjoiaW5zdGFsbFBsdW1iaW5nQXQiLCJvcmlnaW4iOiJGaXJzdCBjb3JyZWxhdGVkIHN1Y2Nlc3NmdWwgb3BlcmF0aW9uIHNvdXJjZSBzZXF1ZW5jZTsgLTEgb25seSB1bmRlciBjb21wbGV0ZSBjcmVhdGlvbiBoaXN0b3J5IiwidHlwZSI6IkludGVnZXIifQ==", field64="aW5zdGFsbFBsdW1iaW5nQXQ=", keys64="dXVpZA==", mappingHash="85ddf0b8f8f854c10ee5a25b932c3020e57da2ed09f6bf41148167b45df3612d", sourceLine="250", version="2.0", view64="YnVpbGQtcHJvZ3Jlc3M=")
+  installPlumbingAt : Integer
+  @DeclarativeObserverView(details64="eyJuYW1lIjoibGF5Rmxvb3JzQXQiLCJvcmlnaW4iOiJGaXJzdCBjb3JyZWxhdGVkIHN1Y2Nlc3NmdWwgb3BlcmF0aW9uIHNvdXJjZSBzZXF1ZW5jZTsgLTEgb25seSB1bmRlciBjb21wbGV0ZSBjcmVhdGlvbiBoaXN0b3J5IiwidHlwZSI6IkludGVnZXIifQ==", field64="bGF5Rmxvb3JzQXQ=", keys64="dXVpZA==", mappingHash="85ddf0b8f8f854c10ee5a25b932c3020e57da2ed09f6bf41148167b45df3612d", sourceLine="245", version="2.0", view64="YnVpbGQtcHJvZ3Jlc3M=")
+  layFloorsAt : Integer
+  @DeclarativeObserverView(details64="eyJuYW1lIjoicGFpbnRFeHRlcmlvckF0Iiwib3JpZ2luIjoiRmlyc3QgY29ycmVsYXRlZCBzdWNjZXNzZnVsIG9wZXJhdGlvbiBzb3VyY2Ugc2VxdWVuY2U7IC0xIG9ubHkgdW5kZXIgY29tcGxldGUgY3JlYXRpb24gaGlzdG9yeSIsInR5cGUiOiJJbnRlZ2VyIn0=", field64="cGFpbnRFeHRlcmlvckF0", keys64="dXVpZA==", mappingHash="85ddf0b8f8f854c10ee5a25b932c3020e57da2ed09f6bf41148167b45df3612d", sourceLine="252", version="2.0", view64="YnVpbGQtcHJvZ3Jlc3M=")
+  paintExteriorAt : Integer
+  @DeclarativeObserverView(details64="eyJuYW1lIjoicGFpbnRJbnRlcmlvckF0Iiwib3JpZ2luIjoiRmlyc3QgY29ycmVsYXRlZCBzdWNjZXNzZnVsIG9wZXJhdGlvbiBzb3VyY2Ugc2VxdWVuY2U7IC0xIG9ubHkgdW5kZXIgY29tcGxldGUgY3JlYXRpb24gaGlzdG9yeSIsInR5cGUiOiJJbnRlZ2VyIn0=", field64="cGFpbnRJbnRlcmlvckF0", keys64="dXVpZA==", mappingHash="85ddf0b8f8f854c10ee5a25b932c3020e57da2ed09f6bf41148167b45df3612d", sourceLine="253", version="2.0", view64="YnVpbGQtcHJvZ3Jlc3M=")
+  paintInteriorAt : Integer
+  @DeclarativeObserverView(details64="eyJuYW1lIjoicHJlcGFyZVNpdGVBdCIsIm9yaWdpbiI6IkZpcnN0IGNvcnJlbGF0ZWQgc3VjY2Vzc2Z1bCBvcGVyYXRpb24gc291cmNlIHNlcXVlbmNlOyAtMSBvbmx5IHVuZGVyIGNvbXBsZXRlIGNyZWF0aW9uIGhpc3RvcnkiLCJ0eXBlIjoiSW50ZWdlciJ9", field64="cHJlcGFyZVNpdGVBdA==", keys64="dXVpZA==", mappingHash="85ddf0b8f8f854c10ee5a25b932c3020e57da2ed09f6bf41148167b45df3612d", sourceLine="244", version="2.0", view64="YnVpbGQtcHJvZ3Jlc3M=")
+  prepareSiteAt : Integer
+  @DeclarativeObserverView(details64="eyJuYW1lIjoid29ya3NwYWNlIiwib3JpZ2luIjoiRXhhY3QgQ0FydEFnTyB3b3Jrc3BhY2Ugc2VtYW50aWMgaWRlbnRpdHkiLCJ0eXBlIjoiU3RyaW5nIn0=", field64="d29ya3NwYWNl", keys64="dXVpZA==", mappingHash="85ddf0b8f8f854c10ee5a25b932c3020e57da2ed09f6bf41148167b45df3612d", sourceLine="243", version="2.0", view64="YnVpbGQtcHJvZ3Jlc3M=")
+  workspace : String
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOlJvbGVPY2N1cnJlbmNl", kind="M0_EXTENSION")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="aGVscGVyOlJvbGVPY2N1cnJlbmNl")
+abstract class RoleOccurrence
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOkF0b21pY0FnZW50", kind="M0_EXTENSION")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="aGVscGVyOkF0b21pY0FnZW50")
+class AtomicAgent < RuntimePlayer
+end
+
+association InContext between
+  OrgContext[1]
+  RoleOccurrence[*] role roles
+end
+
+@SemanticRuntimeHelper(id64="aGVscGVyOkRvbWFpbkVudGl0eQ==", kind="M0_EXTENSION")
+@DomainProjection(javaClass64="", kind="observer-helper", sourceId64="aGVscGVyOkRvbWFpbkVudGl0eQ")
+abstract class DomainEntity
+end
+
+constraints
+context OrgContext inv CslV4RoleCompatibility:
+  self.roles->forAll( r1:RoleOccurrence, r2:RoleOccurrence | (((r1 = r2) or (r1.player <> r2.player)) or false) )
+
+context self : BuildProgress
+  @AuthoredOclSource(bodyEnd="582", bodyStart="486", clause64="Rmxvb3JBZnRlclNpdGU=", kind="INVARIANT", line="7", source64="YXV0aG9yZWQtb2Ns", sourceHash="c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca")
+  inv FloorAfterSite:
+    ((self.layFloorsAt < 0) or ((self.prepareSiteAt >= 0) and (self.prepareSiteAt < self.layFloorsAt)))
+
+context self : BuildProgress
+    @AuthoredOclSource(bodyEnd="2421", bodyStart="2129", clause64="SW50ZXJpb3JBZnRlclNlcnZpY2Vz", kind="INVARIANT", line="15", source64="YXV0aG9yZWQtb2Ns", sourceHash="c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca")
+    inv InteriorAfterServices:
+      ((self.paintInteriorAt < 0) or ((((self.installPlumbingAt >= 0) and (self.installPlumbingAt < self.paintInteriorAt)) and ((self.installElectricalSystemAt >= 0) and (self.installElectricalSystemAt < self.paintInteriorAt))) and ((self.paintExteriorAt >= 0) and (self.paintExteriorAt < self.paintInteriorAt))))
+
+context self : BuildProgress
+      @AuthoredOclSource(bodyEnd="719", bodyStart="625", clause64="V2FsbHNBZnRlckZsb29ycw==", kind="INVARIANT", line="8", source64="YXV0aG9yZWQtb2Ns", sourceHash="c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca")
+      inv WallsAfterFloors:
+        ((self.buildWallsAt < 0) or ((self.layFloorsAt >= 0) and (self.layFloorsAt < self.buildWallsAt)))
+
+context self : BuildProgress
+        @AuthoredOclSource(bodyEnd="859", bodyStart="765", clause64="YnVpbGRSb29mQWZ0ZXJXYWxscw==", kind="INVARIANT", line="9", source64="YXV0aG9yZWQtb2Ns", sourceHash="c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca")
+        inv buildRoofAfterWalls:
+          ((self.buildRoofAt < 0) or ((self.buildWallsAt >= 0) and (self.buildWallsAt < self.buildRoofAt)))
+
+context self : BuildProgress
+          @AuthoredOclSource(bodyEnd="1139", bodyStart="1047", clause64="Zml0RG9vcnNBZnRlcldhbGxz", kind="INVARIANT", line="11", source64="YXV0aG9yZWQtb2Ns", sourceHash="c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca")
+          inv fitDoorsAfterWalls:
+            ((self.fitDoorsAt < 0) or ((self.buildWallsAt >= 0) and (self.buildWallsAt < self.fitDoorsAt)))
+
+context self : BuildProgress
+            @AuthoredOclSource(bodyEnd="1002", bodyStart="906", clause64="Zml0V2luZG93c0FmdGVyV2FsbHM=", kind="INVARIANT", line="10", source64="YXV0aG9yZWQtb2Ns", sourceHash="c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca")
+            inv fitWindowsAfterWalls:
+              ((self.fitWindowsAt < 0) or ((self.buildWallsAt >= 0) and (self.buildWallsAt < self.fitWindowsAt)))
+
+context self : BuildProgress
+              @AuthoredOclSource(bodyEnd="1787", bodyStart="1503", clause64="aW5zdGFsbEVsZWN0cmljYWxTeXN0ZW1BZnRlclNoZWxs", kind="INVARIANT", line="13", source64="YXV0aG9yZWQtb2Ns", sourceHash="c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca")
+              inv installElectricalSystemAfterShell:
+                ((self.installElectricalSystemAt < 0) or ((((self.buildRoofAt >= 0) and (self.buildRoofAt < self.installElectricalSystemAt)) and ((self.fitWindowsAt >= 0) and (self.fitWindowsAt < self.installElectricalSystemAt))) and ((self.fitDoorsAt >= 0) and (self.fitDoorsAt < self.installElectricalSystemAt))))
+
+context self : BuildProgress
+                @AuthoredOclSource(bodyEnd="1443", bodyStart="1191", clause64="aW5zdGFsbFBsdW1iaW5nQWZ0ZXJTaGVsbA==", kind="INVARIANT", line="12", source64="YXV0aG9yZWQtb2Ns", sourceHash="c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca")
+                inv installPlumbingAfterShell:
+                  ((self.installPlumbingAt < 0) or ((((self.buildRoofAt >= 0) and (self.buildRoofAt < self.installPlumbingAt)) and ((self.fitWindowsAt >= 0) and (self.fitWindowsAt < self.installPlumbingAt))) and ((self.fitDoorsAt >= 0) and (self.fitDoorsAt < self.installPlumbingAt))))
+
+context self : BuildProgress
+                  @AuthoredOclSource(bodyEnd="2081", bodyStart="1837", clause64="cGFpbnRFeHRlcmlvckFmdGVyU2hlbGw=", kind="INVARIANT", line="14", source64="YXV0aG9yZWQtb2Ns", sourceHash="c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca")
+                  inv paintExteriorAfterShell:
+                    ((self.paintExteriorAt < 0) or ((((self.buildRoofAt >= 0) and (self.buildRoofAt < self.paintExteriorAt)) and ((self.fitWindowsAt >= 0) and (self.fitWindowsAt < self.paintExteriorAt))) and ((self.fitDoorsAt >= 0) and (self.fitDoorsAt < self.paintExteriorAt))))
+
+context self : ProcurementAuction
+                    @AuthoredOclSource(bodyEnd="69", bodyStart="46", clause64="Tm9ubmVnYXRpdmVCaWQ=", kind="INVARIANT", line="1", source64="YXV0aG9yZWQtb2Ns", sourceHash="c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca")
+                    inv NonnegativeBid:
+                      (self.currentBid >= 0)
+
+context self : ProcurementAuction
+                      @AuthoredOclSource(bodyEnd="148", bodyStart="113", clause64="V2l0aGluQnVkZ2V0", kind="INVARIANT", line="2", source64="YXV0aG9yZWQtb2Ns", sourceHash="c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca")
+                      inv WithinBudget:
+                        (self.currentBid <= self.maxValue)
+
+context ProcurementAuction::bid(amount : Real)
+                        @AuthoredOclSource(bodyEnd="445", bodyStart="254", clause64="QmVzdE9mZmVyUmV0YWluZWQ=", kind="POST", line="5", source64="YXV0aG9yZWQtb2Ns", sourceHash="c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca")
+                        post BestOfferRetained: (self.currentBid = if (amount < self.currentBid@pre) then amount else self.currentBid@pre endif)
+
+context ProcurementAuction::bid(amount : Real)
+                        @AuthoredOclSource(bodyEnd="231", bodyStart="217", clause64="Tm9ubmVnYXRpdmVPZmZlcg==", kind="PRE", line="4", source64="YXV0aG9yZWQtb2Ns", sourceHash="c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca")
+                        pre NonnegativeOffer: (amount >= 0)
+

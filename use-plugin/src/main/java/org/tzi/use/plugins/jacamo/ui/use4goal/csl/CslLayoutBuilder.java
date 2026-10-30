@@ -19,6 +19,10 @@ public final class CslLayoutBuilder {
     private CslLayoutBuilder() {}
 
     public static CslLayout build(CslModel model) {
+        return build(model,Map.of());
+    }
+    /** Dashed enactment possibilities come from validated mapping, not CSL ownership. */
+    public static CslLayout build(CslModel model,Map<String,java.util.Set<String>> enactments) {
         Map<String, CslNode> nodes = new LinkedHashMap<>();
         List<CslEdge> edges = new ArrayList<>();
         if (model == null) return new CslLayout(nodes, edges, 900, 600);
@@ -55,6 +59,10 @@ public final class CslLayoutBuilder {
                 roleId(value.fromRole()), roleId(value.toRole()), CslEdgeKind.COMPATIBILITY,
                 null, null, null, value.bidirectional(),
                 value.scope() == CslScope.INTER_GROUP)));
+        enactments.forEach((context,roles)->roles.forEach(role-> {
+            if(model.findOrgContext(context).isEmpty()||model.findRole(role).isEmpty())throw new IllegalArgumentException("UNRESOLVED_ENACTMENT_VIEW");
+            edges.add(CslEdge.of(groupId(context),roleId(role),CslEdgeKind.ENACTMENT,null,null,"may enact",false,false));
+        }));
         assignParallelRoutes(edges);
 
         int bottom = nodes.values().stream().mapToInt(value -> value.y + value.h).max().orElse(600);
@@ -113,7 +121,7 @@ public final class CslLayoutBuilder {
         int longest = Math.max(label.length(), details.stream().mapToInt(String::length).max().orElse(0));
         node.w = Math.max(MIN_WIDTH, Math.min(340, longest * 7 + 28));
         if(kind == CslNodeKind.ROLE)node.w = Math.max(node.w,label.length()*10+52);
-        node.h = 40 + (details.isEmpty() ? 10 : details.size() * DETAIL_HEIGHT + 10);
+        node.h = (kind==CslNodeKind.ORG_CONTEXT||kind==CslNodeKind.GROUP?55:40) + (details.isEmpty() ? 10 : details.size() * DETAIL_HEIGHT + 10);
         return node;
     }
 

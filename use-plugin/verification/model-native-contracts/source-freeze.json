@@ -1,0 +1,35 @@
+{
+  "createdAt": "2026-10-29T05:33:10.409871+00:00",
+  "files": {
+    "use-plugin/examples/auction/auction-mapping.xml": "a34ac5be62aab5fd1cdabf74fb29722b65f34e50eac77a8b90b1cd5621e4f35e",
+    "use-plugin/examples/auction/auction.csl": "f08d62f3f9cd2f7a64b5567e9aa439e8f2519edb267d60f72e7d53dd23490cb1",
+    "use-plugin/examples/auction/auction.istar": "e978e038c2b2da11377d641b3b5da510271020eb9fb856199674d766cb472e35",
+    "use-plugin/examples/auction/auction.jcm": "c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb",
+    "use-plugin/examples/auction/auction.ocl": "16837702e057006d2083142a32f3a9791a1d2b86523115e2ede2a30e33902141",
+    "use-plugin/examples/auction/build.gradle": "0c81b7f1b57c8f9b427280eb8967e820edaffe329540e4988ddd85e402175b40",
+    "use-plugin/examples/auction/README.md": "0e85985c57aafe194aea8b63c06a8e6ffaae6777c18ac6f96676d2fbff869605",
+    "use-plugin/examples/auction/src/agt/auction_capabilities.asl": "31679b13210114b211dad862ad86af352cc9003ac9527ea7268e3a1d0f9cfe1b",
+    "use-plugin/examples/auction/src/env/auction_env/AuctionArtifact.java": "34036fc220274853e39f93682cdb22c350fe6a06739669860f2a66afe606ff4b",
+    "use-plugin/examples/auction/src/org/auction-os.xml": "d2481d4ee3c45b2cead42f942a3943684e86facee992870356ca4d1e47d16f9a",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/evidence/SemanticProgramManifest.java": "eb0243b8df2ece317238d037b32d93585b986c2784ebd37d6141babbd3263a11",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/AuthoredOclSpecificationLoader.java": "22c484afe5e21ac0677d8fae51087dcf240732c0a7fd9b368157f7fe39cf8635",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/CslScopeModelAdapter.java": "121f29b3984f4f95186ca3f7bb74aac156bb029f4163af58265dd556146d5e41",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/ModelNativeContracts.java": "5d77267661ea88dd808bc6f618af1da2a8b91966011b86eec76abcfadaed5aae",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/ObservationReadSet.java": "ad5e1259e6f3adebcb0d3931d93818e2d4daf280de08ad4e7004926f2084df3e",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/ObserverSchema.java": "bbb3fe4dddf8feafcb7d7674d0501869147b829fef4efe6b7592e30bf1e08dfa",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/XmlBindingPreflight.java": "28c4fa6864f6118f5925f6811cb9f9567e01ad218a13621408e4e2464eb54b9c",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/XmlIntentionalOclBindings.java": "167185f98ed376d2f5d3a912f99320fd35e90b4f9792dc0e259fb53733cb0dbd",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/XmlNativePreparation.java": "975d43b66915cb0d19f099136aa63035dce97952a94fc66db691198b74e42f68",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/XmlOperationBindings.java": "9fbd81c0cfabcdc1fb70c77c33d4038b51b20f886e39f61c5481547f8d87bf56",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/ocl/XmlTaskOclBindings.java": "555966f2515c24dbc9c413d6cce8fd4ffb5d18f1aa35798a3c5cdcad1eae8c28",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/RequirementInventory.java": "fde0cf3dae26aada67d138829ec5e731ed3977314f7d7c1503e6c4c724226ca6",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ConformanceInputsPanel.java": "1f739761cf147cf942a88273644cf4a7fdbe650444532543acdd2adb57e975ad",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/xml/CurrentAuctionBundleTest.java": "fce87beb9cb295fcab3dad30fc0a05ab0902619a967c3b1cf4a2a11da328ce54",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/xml/ModelNativeContractsTest.java": "d4bacb67e5b2d4d4cc55a9fc18fd19b832d4cf8c81328c8ce453f860ff3613c7",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/AuthoredAuctionResultsIT.java": "ddc9ebf46dc42b84d4e2cf414e414f6dd0b0f3aceb3f99775dcb4edeafd43bfb"
+  },
+  "desktopDrawioReadOnly": {
+    "C:\\Users\\NTNghia\\OneDrive\\Desktop\\Thesis\\CSL\\Core\\auction\\auction_csl.drawio": "14fe0e1c39c7cc6e84af48ea99318cc832d47f0a9ce75960e8c5fad8f64485de",
+    "C:\\Users\\NTNghia\\OneDrive\\Desktop\\Thesis\\CSL\\Core\\auction\\auction_istar_final_fixed.drawio": "8398c2ca21b6bafd03471d320804878c6ab2450d12a5dda2887270a0de07fdef"
+  }
+}

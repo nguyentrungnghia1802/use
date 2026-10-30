@@ -111,7 +111,12 @@ public final class CslDiagram extends DiagramView {
             return;
         }
         useViewModel = CslUseViewModel.build(model,nativeModel);
-        CslLayout layout = CslLayoutBuilder.build(model);
+        var enactments=new java.util.TreeMap<String,java.util.Set<String>>();
+        if(nativeModel!=null)for(var cls:nativeModel.classes()) {
+            var roles=org.tzi.use.plugins.jacamo.semantics.mapping.CanonicalUseBindingAdapter.enactedRoles(cls);
+            if(!roles.isEmpty())enactments.put(cls.name(),roles);
+        }
+        CslLayout layout = CslLayoutBuilder.build(model,enactments);
         setPreferredSize(new Dimension(layout.width, layout.height));
         Font font = Font.getFont("use.gui.view.objectdiagram", getFont());
         for (CslNode item : layout.nodes.values()) {

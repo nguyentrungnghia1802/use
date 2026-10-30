@@ -1,0 +1,2 @@
+Exception in thread "main" java.lang.AssertionError: ReplayReport[complete=false, checkedEntries=0, finalStateHash=, finalResultHash=, diagnostics=[IllegalArgumentException:REPLAY_DECLARATIVE_IMPLEMENTATION_INCOMPATIBLE]]
+	at org.tzi.use.plugins.jacamo.semantics.CertifiedExecutionReplayMain.main(CertifiedExecutionReplayMain.java:25)

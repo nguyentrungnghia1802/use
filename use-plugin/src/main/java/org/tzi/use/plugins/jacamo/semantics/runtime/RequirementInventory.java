@@ -15,7 +15,7 @@ public final class RequirementInventory {
         program.cslModel().invariants().forEach(i->explicit.add("NATIVE:"+i.contextType()+"::"+i.name()));
         if(program.xmlPlan()!=null) {
             var source=program.xmlPlan().inputs().ocl();
-            var specification=new org.tzi.use.plugins.jacamo.semantics.mapping.ocl.AuthoredOclSpecificationLoader().parse(source.bytes(),source.id());
+            var specification=org.tzi.use.plugins.jacamo.semantics.mapping.ocl.ModelNativeContracts.read(program.xmlPlan().inputs());
             specification.clauses().stream().filter(c->c.kind()==org.tzi.use.plugins.jacamo.semantics.mapping.ocl.AuthoredOclSpecificationLoader.Kind.INVARIANT)
                 .forEach(c->explicit.add("NATIVE:"+c.context().owner()+"::"+c.name()));
         }

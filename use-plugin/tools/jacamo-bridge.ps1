@@ -60,10 +60,12 @@ if ($SemanticProfile -ne "NATIVE_CURRENT") {
     if (-not (Test-Path -LiteralPath $semanticSpecification -PathType Leaf) -or (Get-Item -LiteralPath $semanticSpecification).Length -gt 16777216) { throw "AUTHORED_SPECIFICATION_FILE_INVALID:$semanticSpecification" }
     if ($SemanticProfile -in @("JACAMO_DECLARATIVE_XML") -and -not $semanticSpecification.EndsWith('.xml', [StringComparison]::OrdinalIgnoreCase)) { throw "XML_SPECIFICATION_REQUIRED:$semanticSpecification" }
     if ($SemanticProfile -eq "JACAMO_DECLARATIVE_XML") {
-        if ([string]::IsNullOrWhiteSpace($AuthoredOclPath)) { throw "AUTHORED_OCL_FILE_REQUIRED:$SemanticProfile" }
-        $authoredOcl = [IO.Path]::GetFullPath($AuthoredOclPath)
-        if (-not (Test-Path -LiteralPath $authoredOcl -PathType Leaf) -or -not $authoredOcl.EndsWith('.ocl', [StringComparison]::OrdinalIgnoreCase)) { throw "AUTHORED_OCL_FILE_INVALID:$authoredOcl" }
-        $semanticJvmArguments += @("-Duse.jacamo.mapping.xml=$semanticSpecification", "-Duse.jacamo.mapping.ocl=$authoredOcl")
+        $semanticJvmArguments += "-Duse.jacamo.mapping.xml=$semanticSpecification"
+        if (-not [string]::IsNullOrWhiteSpace($AuthoredOclPath)) {
+            $authoredOcl = [IO.Path]::GetFullPath($AuthoredOclPath)
+            if (-not (Test-Path -LiteralPath $authoredOcl -PathType Leaf) -or -not $authoredOcl.EndsWith('.ocl', [StringComparison]::OrdinalIgnoreCase)) { throw "AUTHORED_OCL_FILE_INVALID:$authoredOcl" }
+            $semanticJvmArguments += "-Duse.jacamo.mapping.ocl=$authoredOcl"
+        }
     } else {
         $semanticProperty = if ($SemanticProfile -eq "USE4GOAL_OBSERVED_V1") { "use.jacamo.mapping.rules" } else { "use.jacamo.semantics.config" }
         $semanticJvmArguments += "-D${semanticProperty}=$semanticSpecification"

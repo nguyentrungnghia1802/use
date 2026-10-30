@@ -1,0 +1,120 @@
+{
+  "status": "PASS",
+  "scope": "Auction timeline/journal and Runtime libs chooser only; no full regression or cold live package claim",
+  "tests": 19,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "liveReceipt": "use-plugin\\verification\\auction-reported-fix\\run-6628491825461542022\\receipt.json",
+  "live": {
+    "auctions": [
+      {
+        "object": "Auction_7a9dff6efa07895b70f6",
+        "running": "false",
+        "winner": "'francois'"
+      },
+      {
+        "object": "Auction_b120935213aa63dd95f0",
+        "running": "false",
+        "winner": "'maria'"
+      }
+    ],
+    "coverage": "INCOMPLETE",
+    "engineCut": "PINNED_NATIVE_CUT",
+    "expectedTimelinePrefix": 1313,
+    "freshness": "CURRENT_OBSERVED",
+    "journalBytes": 97920538,
+    "journalEntries": 2199,
+    "journalGap": false,
+    "journalMaxBytes": 268435456,
+    "memoryTailEntries": 512,
+    "nativeKnownVerdicts": 22,
+    "producerGui": false,
+    "producerPid": 7440,
+    "runId": "20261027-230139-468-eb6e64a2",
+    "sameMSystem": true,
+    "samples": 371,
+    "source": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\auction\\auction.jcm",
+    "status": "PASS",
+    "timelineCuts": 1315,
+    "usePid": 2668
+  },
+  "defaultJournalMiB": 256,
+  "archiveSha256": "b2959875b06481e127fa045e715f396d4f13ab52b8881fb232971394e9874ba1",
+  "archive": "use-assembly\\target\\use-7.5.0-use-bin.zip",
+  "launcher": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\auction-timeline-fix-20261027\\use-7.5.0\\bin\\start_use.bat",
+  "installedPluginSha256": "7f593afc0da866c947cbf19bcad7e47e02ccfc248da3d26efefcc8ac18e3c6de",
+  "installedClassParity": [
+    "org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel.class",
+    "org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePresenter.class",
+    "org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.class"
+  ],
+  "sourceSha256": {
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel.java": "33ac3cd2920ab91d0b7a77f7d72d080f4c97f29aaf30949c48048db87581d23d",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePresenter.java": "5e34f753e3abc0d11b90df6e0b559cd029b8e2f2c6472bc67fb326314ac7b853",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java": "f8eff8b8f99116ce1590853d8cd194c563195ef848599cb28ba7884691c87b36",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/ObservedTimelineHistoryTest.java": "89f8f3f6b2cb3f3c34bc2900a574227fdd579b2e167ce2f2c35d96ea073c8fc2",
+    "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/AuctionReportedRuntimeRegressionIT.java": "de644f64759153e0cef940eaf40fa39de84eff781ef8f5983a6befa7228d0704"
+  },
+  "logsSha256": {
+    "timeline-baseline.log": "1609dfe5765e352a7444e8061cc01a4673a2c6fa6455fa52b9022ef68ad6ace5",
+    "timeline-auction-package.log": "1d55c943a54c97ab8ae0cb0864311a5928a918248d936031d71f4c81a09002c5",
+    "timeline-auction-final.log": "3b767475d90816a8f807413b3e5757266f0c98a645229734bde38b9646bb85d5",
+    "timeline-final-focused.log": "1a96a35755ee08648bafc64bb1604b0e08a3961c39deb7268b5f67d6211d3d3a",
+    "timeline-closeout-package.log": "aec8b3b7fee0cb6f9a606744ebc77284840924425fccb8ff156368527e702227"
+  },
+  "classpath": {
+    "file": "jacamo-bridge-jacamo\\target\\jacamo-bridge-classpath.txt",
+    "entries": 125,
+    "unique": 125,
+    "missing": [],
+    "sha256": "95aaf661c8c9b6d98ae0efc591850b256cf7eecbf3a409a69925a1756b45140c"
+  },
+  "limitations": [
+    "Coverage remains INCOMPLETE where evidence is insufficient",
+    "Historical full StateImage retention is unchanged; an expired image is explicitly unavailable",
+    "Quota overflow remains GAP; never discard history to claim completeness"
+  ],
+  "failedProbes": {
+    "timeline-baseline.log": "550 expected, 312 visible; corrupted persisted history ignored by the old presenter",
+    "timeline-auction-package.log": "Initial disk-scanning prototype delayed end-state projection",
+    "timeline-auction-final.log": "Explicit 64 MiB run reached JOURNAL_OVERFLOW and could not retain exact engine completion"
+  },
+  "nativeSemanticVerdicts": {
+    "PASS": 19,
+    "SKIPPED": 2,
+    "FAIL": 3
+  },
+  "nativeNonPass": [
+    {
+      "id": "NATIVE:AuctionMonitor::ConfirmedBidEvidence",
+      "verdict": "SKIPPED",
+      "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN",
+      "contextObject": ""
+    },
+    {
+      "id": "NATIVE:AuctionMonitor::ConfirmedSchemeOrder",
+      "verdict": "SKIPPED",
+      "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN",
+      "contextObject": ""
+    },
+    {
+      "id": "NATIVE:AuctionObligation::WithinDeadline",
+      "verdict": "FAIL",
+      "diagnostic": "",
+      "contextObject": "AuctionObligation_58e95a36e6c2acb6246c"
+    },
+    {
+      "id": "NATIVE:AuctionObligation::WithinDeadline",
+      "verdict": "FAIL",
+      "diagnostic": "",
+      "contextObject": "AuctionObligation_b39c7b827133e13b2c97"
+    },
+    {
+      "id": "NATIVE:AuctionObligation::WithinDeadline",
+      "verdict": "FAIL",
+      "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN",
+      "contextObject": ""
+    }
+  ]
+}

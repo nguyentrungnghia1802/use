@@ -72,6 +72,10 @@ public final class CslDiagramEdge extends EdgeBase {
                 drawMarker(g, endInside, end, Marker.OPEN_CIRCLE);
                 if (edge.bidirectional()) drawMarker(g, startInside, start, Marker.OPEN_CIRCLE);
             }
+            case ENACTMENT -> {
+                double angle=Math.atan2(end.getY()-endInside.getY(),end.getX()-endInside.getX());
+                for(double offset:new double[]{-.45,.45})g.draw(new java.awt.geom.Line2D.Double(end.getX(),end.getY(),end.getX()-12*Math.cos(angle+offset),end.getY()-12*Math.sin(angle+offset)));
+            }
             case ASSOCIATION -> { }
         }
     }
@@ -83,7 +87,7 @@ public final class CslDiagramEdge extends EdgeBase {
     }
 
     private void paintLabel(Graphics2D g, Point2D start, Point2D end) {
-        if (!fOpt.isShowAssocNames() || edge.label() == null || edge.label().isBlank()) return;
+        if ((!fOpt.isShowAssocNames() && edge.kind()!=CslEdgeKind.ENACTMENT) || edge.label() == null || edge.label().isBlank()) return;
         paintText(g, edge.label(), new Point2D.Double((start.getX() + end.getX()) / 2.0,
                 (start.getY() + end.getY()) / 2.0 - 7.0));
     }
@@ -149,7 +153,7 @@ public final class CslDiagramEdge extends EdgeBase {
     }
 
     private Stroke edgeStroke() {
-        if (edge.kind() == CslEdgeKind.COMPATIBILITY && edge.interGroup())
+        if (edge.kind() == CslEdgeKind.ENACTMENT || edge.kind() == CslEdgeKind.COMPATIBILITY && edge.interGroup())
             return DiagramVisualStyle.dashed();
         return DiagramVisualStyle.solid();
     }

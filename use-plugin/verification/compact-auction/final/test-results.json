@@ -1,0 +1,82 @@
+{
+  "status": "PASS",
+  "tests": [
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.BusinessTimelineTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.669"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.CertifiedGoalHistoryTest",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.035"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.semantics.DependencyGoalEvaluationTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.021"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.semantics.xml.CompactAuctionProfileTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.043"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.ObservedTimelineHistoryTest",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.633"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.ObservedConformanceWorkflowTest",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.443"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.codegrounded.runtime.DeclarativeOperationCheckpointTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "3.466"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.semantics.xml.XmlObserverCoverageTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.757"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.CompactAuctionRuntimeIT",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "49.32"
+    }
+  ],
+  "totalTests": 32,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "scope": "31 focused/nearby + 1 actual external Auction; no other live case or full regression"
+}

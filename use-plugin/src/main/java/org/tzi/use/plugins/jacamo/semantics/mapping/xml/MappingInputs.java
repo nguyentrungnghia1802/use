@@ -31,8 +31,8 @@ public final class MappingInputs {
     private static MappingInputs readSelected(Path jcm,Path xml,Path ocl,Path csl,Path istar,String policy) {
         try {
             Path project=jcm.toRealPath(),root=project.getParent();
-            byte[] specification=bounded(xml,MappingXmlReader.MAX_BYTES),authored=bounded(ocl,1024*1024);
-            if(policy!=null)specification=withPolicy(specification,policy);
+            byte[] specification=bounded(xml,MappingXmlReader.MAX_BYTES),authored=ocl==null?new byte[0]:bounded(ocl,1024*1024);
+            if(policy!=null||ocl==null)specification=withSelection(specification,policy,ocl==null);
             var spec=new MappingXmlReader().parse(specification,xml.toString());
             boolean validated=validated(spec);
             if(!spec.root().child("ocl").attr("sha256").equals(TraceComplement.Asset.of("check","bytes",authored).sha256()))
@@ -148,15 +148,20 @@ public final class MappingInputs {
         return new MappingInputs(spec,owned,xml,ocl);
     }
     private static boolean validated(MappingSpecification spec){return spec.root().optional("sourcePolicy").equals("VALIDATED_SOURCE_V1");}
-    private static byte[] withPolicy(byte[] xml,String policy) {
+    private static byte[] withSelection(byte[] xml,String policy,boolean omitExternalOcl) {
         // Validate before parsing again; DTD/entities/unknown instructions are forbidden.
         var original=new MappingXmlReader().parse(xml,"selected-mapping");
-        if(policy.equals("PINNED")&&!validated(original))return xml;
+        if(!omitExternalOcl&&policy.equals("PINNED")&&!validated(original))return xml;
         try {
             var factory=javax.xml.parsers.DocumentBuilderFactory.newDefaultInstance();factory.setNamespaceAware(true);
             factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl",true);
             factory.setAttribute(javax.xml.XMLConstants.ACCESS_EXTERNAL_DTD,"");factory.setAttribute(javax.xml.XMLConstants.ACCESS_EXTERNAL_SCHEMA,"");
-            var document=factory.newDocumentBuilder().parse(new java.io.ByteArrayInputStream(xml));document.getDocumentElement().setAttribute("sourcePolicy",policy);
+            var document=factory.newDocumentBuilder().parse(new java.io.ByteArrayInputStream(xml));
+            if(policy!=null)document.getDocumentElement().setAttribute("sourcePolicy",policy);
+            // Explicitly omitted extra constraints become an empty frozen OCL asset.
+            // Embedded model contracts remain required; supplied files still need the original digest.
+            if(omitExternalOcl)((org.w3c.dom.Element)document.getDocumentElement().getElementsByTagNameNS("*","ocl").item(0))
+                    .setAttribute("sha256",TraceComplement.Asset.of("authored-ocl","NATIVE_USE_OCL",new byte[0]).sha256());
             var transformers=javax.xml.transform.TransformerFactory.newDefaultInstance();transformers.setAttribute(javax.xml.XMLConstants.ACCESS_EXTERNAL_DTD,"");transformers.setAttribute(javax.xml.XMLConstants.ACCESS_EXTERNAL_STYLESHEET,"");
             var output=new java.io.ByteArrayOutputStream();transformers.newTransformer().transform(new javax.xml.transform.dom.DOMSource(document),new javax.xml.transform.stream.StreamResult(output));
             return output.toByteArray();

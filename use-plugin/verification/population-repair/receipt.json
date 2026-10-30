@@ -1,0 +1,139 @@
+{
+  "status": "PASS_FOR_DERIVED_COVERAGE_FAILURE_EPISODES_AND_OPERATIONAL_POPULATION",
+  "createdAt": "2026-10-29T13:20:58.805855+00:00",
+  "head": "cfea921064f7a4fcf4e7f76210987107fe5ae255",
+  "scope": [
+    "Transitive compiler-AST dependencies with exact derived receivers and conservative cycle/pre-state handling.",
+    "Persistent unresolved failure episodes across pending/SKIPPED cuts; qualified recovery only; aggregate/body duplicate removed from Failure Point.",
+    "Explicit per-context source-backed activation, predicate size() = 1 unchanged, later complete role loss stays FAIL."
+  ],
+  "focused": {
+    "tests": 51,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "log": "auction-live.log"
+  },
+  "packageChecks": {
+    "tests": 19,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "log": "package.log"
+  },
+  "liveEvidence": "use-plugin\\verification\\live-results-ui\\auction-1873398308936760061",
+  "live": {
+    "coverage": "INCOMPLETE",
+    "domainFailures": 0,
+    "fixedGoalTaskRows": 17,
+    "pid": 5988,
+    "sameMSystem": true,
+    "samples": 77,
+    "scope": "Audit, not assertion that full normative profile is satisfied",
+    "status": "PASS",
+    "winnerObservedForTwoArtifacts": true
+  },
+  "population": {
+    "finalBodies": [
+      {
+        "diagnostic": "",
+        "kind": "INVARIANT_BODY",
+        "verdict": "PASS",
+        "witness": {
+          "auctioneer": "null",
+          "coverageReason": "",
+          "fieldWitnesses": "{\"auctionGroup.auctioneer\":[{\"acceptedValueHash\":\"\",\"identity\":\"xml:m0:dbc3a89bb4eed2546b3d43e9a4e6055bf68d26098357243a4b96e2fdbaa2619b\",\"object\":\"auctionGroup_5ebef86ce4cd175a7e19\",\"sourceCut\":\"accepted-prefix:a5b80172-35f4-4ec6-9168-ebea1a76a8b3:cartago:334\"}]}",
+          "invariantActivation": "{\"context\":\"auctionGroup_5ebef86ce4cd175a7e19\",\"cut\":\"accepted-prefix:a5b80172-35f4-4ec6-9168-ebea1a76a8b3:cartago:150\",\"epoch\":\"3163caf022d57a7dd84844f03f2f1117f40b4c76a2be666df1cd09d514b07b73\",\"hash\":\"52044a900844d11836dbaf750e1e82206d883883df072809a71f36edaf92497b\",\"policy\":\"LATCH_ONCE_QUALIFIED/1.0\",\"program\":\"e28b1557f613d8ebe7cd4910b569591e4425a7e429b0ead4c0caff3a514fe7f4\",\"sourceProofs\":{\"join:readyAuctioneer:moise-population-inventory\":\"7670917281a54363c92fbbc4de571e3ff74c5de77246eb2c496fcbab8d80970a\",\"join:readyAuctioneer:physical-identity\":\"beid:v1:moise/organisation/group-board/aorg/agrp/a5b80172-35f4-4ec6-9168-ebea1a76a8b3%3A4f33f354-b447-4f7a-b33f-58e106aa11fb\",\"join:readyAuctioneer:source-cut\":\"7670917281a54363c92fbbc4de571e3ff74c5de77246eb2c496fcbab8d80970a\",\"moise-population-inventory\":\"7670917281a54363c92fbbc4de571e3ff74c5de77246eb2c496fcbab8d80970a\",\"physical-identity\":\"beid:v1:moise/organisation/group-board/aorg/agrp/a5b80172-35f4-4ec6-9168-ebea1a76a8b3%3A4f33f354-b447-4f7a-b33f-58e106aa11fb\",\"source-cut\":\"7670917281a54363c92fbbc4de571e3ff74c5de77246eb2c496fcbab8d80970a\"},\"table\":\"population-ready-groups\"}",
+          "mappingPlanHash": "1f665571dfa10ed7e54ad9b6e25444ba9dbb724d139b26f1f26cfbb146f41fd9",
+          "mappingSpecificationHash": "28da92a8981d6dc8a181a7181b08f716b27c965f0f80f74e9ca7e95e9d8b765b",
+          "observationQuality": "COMPLETE_FOR_EXPRESSION",
+          "participant": "null",
+          "programHash": "e28b1557f613d8ebe7cd4910b569591e4425a7e429b0ead4c0caff3a514fe7f4",
+          "requiredFields": "[\"auctionGroup.auctioneer\"]",
+          "requiredPopulations": "[]",
+          "scopeProof": "accepted-prefix:a5b80172-35f4-4ec6-9168-ebea1a76a8b3:cartago:334",
+          "sourceCompleteness": "{\"bridge:platform\":\"COMPLETE\",\"cartago\":\"COMPLETE\",\"jason\":\"PARTIAL\",\"moise.domain\":\"COMPLETE\",\"moise:aorg\":\"PARTIAL\",\"moise:dynamic\":\"PARTIAL\",\"npl\":\"PARTIAL\",\"observer:verification\":\"PARTIAL\"}"
+        }
+      },
+      {
+        "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+        "kind": "INVARIANT",
+        "verdict": "PASS",
+        "witness": {
+          "body:auctionGroup_5ebef86ce4cd175a7e19": "PASS",
+          "bodyCount": "1",
+          "contextType": "auctionGroup",
+          "negated": "false",
+          "observationQuality": "PROVED_QUANTIFIED_RESULT",
+          "population": "COMPLETE",
+          "quantifier": "FOR_ALL",
+          "sourceCompleteness": "{\"bridge:platform\":\"COMPLETE\",\"cartago\":\"COMPLETE\",\"jason\":\"PARTIAL\",\"moise.domain\":\"COMPLETE\",\"moise:aorg\":\"PARTIAL\",\"moise:dynamic\":\"PARTIAL\",\"npl\":\"PARTIAL\",\"observer:verification\":\"PARTIAL\"}"
+        }
+      }
+    ],
+    "startupFailures": 0,
+    "waitingObserved": true
+  },
+  "essentialStates": {
+    "auditBoundaries": 1045,
+    "completionDelayLatestVerifiedMs": 22,
+    "completionDelayMaxMs": 43385,
+    "latestVerifiedEventId": "manual",
+    "latestVerifiedEventSource": "user",
+    "milestones": 17,
+    "optionalBeliefsAcquired": false,
+    "pinnedResultHash": "0c818c3ca277a6ec5e32176efc909d62812c7be5b2260d2f374c45514a693dd2",
+    "presentationMode": "DOMAIN"
+  },
+  "selectedVerdict": "COMPLETE_OBSERVED",
+  "sourceReplay": {
+    "entries": 1655,
+    "status": "PASS"
+  },
+  "installedReplay": {
+    "status": "PASS",
+    "entries": 1655,
+    "finalStateHash": "653f263ceacd8f29ad9b42141c401787c474b3fa57f9ce8a784755bcff8c0aed",
+    "finalResultHash": "0c818c3ca277a6ec5e32176efc909d62812c7be5b2260d2f374c45514a693dd2",
+    "matchesSourceManifest": true,
+    "log": "installed-replay.log"
+  },
+  "package": {
+    "status": "PASS",
+    "install": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\population-final-ic47f4a4\\use-7.5.0",
+    "isolatedDriver": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\population-final-ic47f4a4\\isolated-driver",
+    "archiveSha256": "f44a7812d82f0db501029613ad613b4e5c3542c60da826f0143b3a4005d06d7c",
+    "liveImplementationEntriesEqualPackage": 119,
+    "packagedUiClassesEqualTested": 110,
+    "originalEngineClassesEqualPriorAcceptedPackage": 297,
+    "originalMarkingHashes": {
+      "GoalMarking": "56c9e566cd2f45ee4aa662257ef51eaa02e2836453eb5b05e2d80d83c95f4540",
+      "TaskMarking": "a3d1cf1437f4bb1fedc583f1086b695c3a22267ddd5a37117df340980135748a",
+      "IStarMarking": "07d383707a76f2b7227391b69275bb2d79e64cfb77f474e98d496f2553c0f922",
+      "IStarPropagation": "9f80d5c1b836a23c0d7f055baac2a895048dd53f44b1177f4b77680f8fdc9d75"
+    },
+    "currentCaseFilesEqualPackage": true,
+    "liveEvidence": "use-plugin\\verification\\live-results-ui\\auction-1873398308936760061"
+  },
+  "sourceFreezeSha256": "f76a2553275813a360773674d5aaae8447435a235e5bd2acbf47a010baa95d73",
+  "startupBodySemantics": "Awaiting readiness is SKIPPED, never PASS; activated current incomplete role evidence remains SKIPPED; complete zero roles remains FAIL.",
+  "testCounterexamples": [
+    "Partial role evidence rejects both true and false derived predicate values.",
+    "Complete empty roles FAIL; complete one role PASS; complete removal FAIL.",
+    "Nested derived read uses exact iterator object; transitive role navigation enters observation read set.",
+    "Derived cycle is unsupported; derived @pre without supported pre-view cannot borrow current state.",
+    "Partial source roster or partial native role materialization cannot activate.",
+    "Activation remains after role loss and rejects another epoch.",
+    "Pending and SKIPPED cannot clear failures; only qualified PASS/FULFILLED permits recurrence.",
+    "Multiple failing groups keep separate witnesses; matching aggregate is not a duplicate Failure Point."
+  ],
+  "limits": [
+    "Current-cut selected completion is separate from all skill summaries and overall source coverage. UNKNOWN/MIXED remain conservative.",
+    "This is source/service live Auction plus original Swing offscreen visual QA; no new manual desktop GUI exercise.",
+    "Original use4Goal marking/propagation class bytes unchanged; sibling JaCaMo and Desktop diagrams unchanged.",
+    "No full clean verify, no other live case studies, no commit/push."
+  ],
+  "baselineLogs": [
+    "focused.log"
+  ]
+}

@@ -11,6 +11,24 @@ import org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SingleOwnerContextTopologyTest {
+    @Test void singleOwnerBoundIsLinearWhileOriginalCrossProductGuardRemainsStrict() {
+        var model=new GoalModel("IndependentDelegations");var cast=new ArrayList<ScenarioInstance>();
+        for(int i=0;i<12;i++) {
+            model.addActor(new Role("Role"+i,List.of(new Goal("goal"+i,GoalType.ACHIEVE)),List.of(),List.of(),List.of(),List.of(),List.of()));
+            cast.add(new ScenarioInstance("actor"+i,"Role"+i));
+        }
+        model.addDependency(new Dependency("Role0","goal0",new Goal("delegation",GoalType.ACHIEVE),"Role1","goal1"));
+        var admitted=RuntimeModelAdmission.admit(model,cast,(a,x,b,y)->true,profile,EngineTopologyPolicy.SINGLE_OWNER_CONTEXT_V1);
+        assertEquals(12,admitted.occurrenceUpperBound());
+        assertThrows(org.tzi.use.semantic.engine.api.EngineAdmissionException.class,()->RuntimeModelAdmission.admit(model,cast,(a,x,b,y)->true,profile),"Original topology must retain its conservative cross-product bound");
+        try(var session=new Use4GoalRuntimeSessionAdapter(model,cast,(a,x,b,y)->true,"linear",profile,EngineTopologyPolicy.SINGLE_OWNER_CONTEXT_V1)) {assertEquals(12,session.topology().occurrences().size());}
+        var ambiguous=new ArrayList<>(cast);ambiguous.add(new ScenarioInstance("duplicate","Role2"));
+        assertThrows(org.tzi.use.semantic.engine.api.EngineAdmissionException.class,()->RuntimeModelAdmission.admit(model,ambiguous,(a,x,b,y)->true,profile,EngineTopologyPolicy.SINGLE_OWNER_CONTEXT_V1));
+        var oversized=new GoalModel("Oversized");var nodes=new ArrayList<IntentionalElement>();
+        for(int i=0;i<4097;i++)nodes.add(new Goal("g"+i,GoalType.ACHIEVE));
+        oversized.addActor(new Role("Many",nodes,List.of(),List.of(),List.of(),List.of(),List.of()));
+        assertThrows(org.tzi.use.semantic.engine.api.EngineAdmissionException.class,()->RuntimeModelAdmission.admit(oversized,List.of(new ScenarioInstance("many","Many")),(a,x,b,y)->true,profile,EngineTopologyPolicy.SINGLE_OWNER_CONTEXT_V1));
+    }
     private final EngineSemanticsProfile profile=EngineSemanticsProfile.DERIVED_AND_RESOURCE_V1;
     private GoalModel model(){return new IStarFrontend().compile("istar Context { role R { goal root : Achieve goal receiver : Achieve > root goal sibling : Achieve > root condition {[ true ]} } role S { goal work : Achieve task x > work pre {[ true ]} post {[ true ]} task y > work pre {[ true ]} post {[ true ]} } depend R.receiver -> goal request -> S.work }","context.istar",profile).requireModel();}
     private List<ScenarioInstance> cast(){return List.of(new ScenarioInstance("one","R"),new ScenarioInstance("two","S"));}

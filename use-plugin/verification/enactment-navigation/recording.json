@@ -1,0 +1,7 @@
+{
+  "source": "use-plugin\\verification\\live-results-ui\\auction-10902800656564572545\\result.json",
+  "fixture": "use-plugin\\src\\test\\resources\\semantics\\recorded-enactment-result.json.gz",
+  "rawSha256": "9b8b36199630fa546880dc8c272c64c1c590c441f05bd85576d1623a6b3733e6",
+  "gzipSha256": "8bed0ef72092fe3cc8e4a1d59e5828844ac2399aefb196347300dbaa5cf80df4",
+  "resultHash": "d6b5ad5b59319e67db78125bbf8b3b8b699b63c227bd0ff5a8166bf80b58af60"
+}

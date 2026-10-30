@@ -7,6 +7,20 @@ import org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.SelectedObservat
 import static org.junit.jupiter.api.Assertions.*;
 
 class SelectedObservationPlannerTest {
+    @Test void requestingAgentIdentityDoesNotSubscribeToReasoningCyclesUnlessXmlReadsThem() {
+        String runtime="""
+          <runtime><datasets><facts id="agents" authority="jason" kind="AGENT"/></datasets>
+            <tables><table id="names" dataset="agents"><column name="name" path="values.name" required="true"/></table></tables>
+          </runtime>
+          """;
+        var spec=MappingXmlReaderTest.parse(MappingXmlReaderTest.XML.replace("<runtime/>",runtime));
+        var fields=org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.producerFields(spec).get("jason");
+        assertTrue(fields.contains("name"));assertFalse(fields.contains("cycles"));
+        var cycles=MappingXmlReaderTest.parse(MappingXmlReaderTest.XML.replace("<runtime/>",runtime.replace("values.name","values.cycles")));
+        assertTrue(org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.producerFields(cycles).get("jason").contains("cycles"));
+        var whole=MappingXmlReaderTest.parse(MappingXmlReaderTest.XML.replace("<runtime/>",runtime.replace("values.name","values")));
+        assertTrue(org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.producerFields(whole).get("jason").contains("cycles"));
+    }
     @Test void realAuthoredSecondCaseCompilesSelectedReadsWithoutRequestingMentalStateOrOptionalObservers() throws Exception {
         var root=java.nio.file.Path.of("examples/csl-counter");var inputs=root.resolve("authored-v1");
         var source=GenericMappingEngineTest.official(root.resolve("counter.jcm"));

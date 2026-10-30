@@ -1,0 +1,116 @@
+{
+  "status": "EXPLAINED_NOT_FORCED_TO_PASS",
+  "definitions": 12,
+  "counts": {
+    "FULFILLED": 10,
+    "UNKNOWN": 2
+  },
+  "rows": [
+    {
+      "id": "O_root",
+      "label": "Auction::O_root",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "O_start",
+      "label": "Auction::O_start",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "O_bid",
+      "label": "Auction::O_bid",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "O_decide",
+      "label": "Auction::O_decide",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "A_start",
+      "label": "Auctioneer::A_start",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "A_start_t1",
+      "label": "Auctioneer::A_start_t1",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "A_start_t2",
+      "label": "Auctioneer::A_start_t2",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "A_decide",
+      "label": "Auctioneer::A_decide",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "A_decide_t2",
+      "label": "Auctioneer::A_decide_t2",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "P_bid",
+      "label": "Participant::P_bid",
+      "status": "UNKNOWN"
+    },
+    {
+      "id": "P_bid_t1",
+      "label": "Participant::P_bid_t1",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "P_bid_t2",
+      "label": "Participant::P_bid_t2",
+      "status": "UNKNOWN"
+    }
+  ],
+  "remainingUnknown": [
+    {
+      "id": "P_bid",
+      "unqualifiedInstances": [
+        {
+          "status": "UNKNOWN | UNAVAILABLE:CURRENT_SCOPE | original aggregate=UNKNOWN | leaf raw=UNAVAILABLE",
+          "player": "beid:v1:jason/agent/runtime-agent/auction/alice/89aa0c5f-3b6c-4193-8e06-0cb8867b8df3",
+          "hasCertificate": false,
+          "detail": "No admitted completion certificate for this exact task/derived branch episode. A received bid or another winner is insufficient."
+        },
+        {
+          "status": "UNKNOWN | UNAVAILABLE:CURRENT_SCOPE | original aggregate=UNKNOWN | leaf raw=UNAVAILABLE",
+          "player": "beid:v1:jason/agent/runtime-agent/auction/alice/89aa0c5f-3b6c-4193-8e06-0cb8867b8df3",
+          "hasCertificate": false,
+          "detail": "No admitted completion certificate for this exact task/derived branch episode. A received bid or another winner is insufficient."
+        }
+      ]
+    },
+    {
+      "id": "P_bid_t2",
+      "unqualifiedInstances": [
+        {
+          "status": "UNKNOWN | UNAVAILABLE:CURRENT_SCOPE | original aggregate=UNKNOWN | leaf raw=UNKNOWN",
+          "player": "beid:v1:jason/agent/runtime-agent/auction/alice/89aa0c5f-3b6c-4193-8e06-0cb8867b8df3",
+          "hasCertificate": false,
+          "detail": "No admitted completion certificate for this exact task/derived branch episode. A received bid or another winner is insufficient."
+        },
+        {
+          "status": "UNKNOWN | UNAVAILABLE:CURRENT_SCOPE | original aggregate=UNKNOWN | leaf raw=UNKNOWN",
+          "player": "beid:v1:jason/agent/runtime-agent/auction/alice/89aa0c5f-3b6c-4193-8e06-0cb8867b8df3",
+          "hasCertificate": false,
+          "detail": "No admitted completion certificate for this exact task/derived branch episode. A received bid or another winner is insufficient."
+        }
+      ]
+    }
+  ],
+  "sourceNote": "Source reports Alice late and dropped intentions; latest task diagnostics have 15 PRE PASS, 13 POST PASS, no POST FAIL. Missing terminal completion is not inferred false or fulfilled. Cannot infer every precise cancellation cause from console.",
+  "systemFixes": [
+    "OR/ANY qualified through original propagation over certified leaves",
+    "Internal dependency receivers excluded from duplicate source model rows",
+    "Unavailable current cast retains existing historical certificates only; current binding remains SKIPPED"
+  ],
+  "remainingLimitations": [
+    "BidEvidence and SchemeOrder exact observer fields remain unavailable; INCOMPLETE is correct for those active requirements",
+    "Consumer backlog remains about 41 seconds in this run; no gap is detected, not proof of full source observability"
+  ]
+}

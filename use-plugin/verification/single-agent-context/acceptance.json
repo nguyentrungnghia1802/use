@@ -1,0 +1,148 @@
+{
+  "status": "PASS_FOR_SINGLETON_AGENT_CONTEXT_AND_SELECTED_AUCTION_REQUIREMENTS",
+  "createdAt": "2026-10-29T08:42:08.096820+00:00",
+  "focused": {
+    "engineTests": 3,
+    "pluginTests": 58,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "log": "../model-native-contracts/single-agent-live-final.log",
+    "note": "Focused tests passed; initial live attempt failed separately. Final actual live pass is the diagnostic-live log."
+  },
+  "liveLog": "../model-native-contracts/single-agent-diagnostic-live.log",
+  "liveEvidence": "use-plugin\\verification\\live-results-ui\\auction-293052928902650835",
+  "liveReceipt": {
+    "coverage": "INCOMPLETE",
+    "domainFailures": 0,
+    "fixedGoalTaskRows": 17,
+    "pid": 14252,
+    "sameMSystem": true,
+    "samples": 71,
+    "scope": "Audit, not assertion that full normative profile is satisfied",
+    "status": "PASS",
+    "winnerObservedForTwoArtifacts": true
+  },
+  "selectedVerdict": "COMPLETE_OBSERVED",
+  "sourceReplay": {
+    "entries": 1601,
+    "status": "PASS"
+  },
+  "samePlayerStops": [
+    {
+      "context": "xml-occurrence:536f82982da59870ec02e0a6826f7fb882093b78320f34cd01c1a90251ee8889",
+      "auctioneerPlayer": "beid:v1:jason/agent/runtime-agent/auction/bob/cac87c8a-46f5-477a-9d17-3e13388d6c50",
+      "stopOriginal": "FULFILLED",
+      "stopQuality": "KNOWN_HISTORY",
+      "stopEvidence": {
+        "A_decide_t2_ca7db663b8a5a499539a4487__cast_90e2e79d619d1398d38f42519519dd08a623758f99e97ac2982791d6239724bf": {
+          "invocation": "",
+          "key": {
+            "context": "xml-occurrence:536f82982da59870ec02e0a6826f7fb882093b78320f34cd01c1a90251ee8889",
+            "occurrence": {
+              "bindingStack": [
+                {
+                  "actorType": "auction_capabilities_90e2e79d619d1398d38f4251",
+                  "instanceId": "cast_90e2e79d619d1398d38f42519519dd08a623758f99e97ac2982791d6239724bf"
+                }
+              ],
+              "episode": "cf477e14671fe763cc0372cdab747d00793b1d647942651c3881becc1456bd9d",
+              "sourceElementId": "A_decide_t2_ca7db663b8a5a499539a4487"
+            }
+          },
+          "kind": "TASK",
+          "policy": "CERTIFIED_EXECUTION/1.0",
+          "stateHash": "9e402b3f86563b3b84078ff6e4a1c25a02a33ad6917df9ac4820a984af13f1f9",
+          "stateVersion": 505
+        }
+      }
+    },
+    {
+      "context": "xml-occurrence:8f236f1f726871565753c7e3f168a1b8938c56adc739f767bbd2803d890e36da",
+      "auctioneerPlayer": "beid:v1:jason/agent/runtime-agent/auction/bob/cac87c8a-46f5-477a-9d17-3e13388d6c50",
+      "stopOriginal": "FULFILLED",
+      "stopQuality": "KNOWN_HISTORY",
+      "stopEvidence": {
+        "A_decide_t2_109d41905a7403fe0d715db2__cast_1cec5f36d8fd655e4ce322fc041b396100396cb6f8c7e3e4048f8ab48490552a": {
+          "invocation": "",
+          "key": {
+            "context": "xml-occurrence:8f236f1f726871565753c7e3f168a1b8938c56adc739f767bbd2803d890e36da",
+            "occurrence": {
+              "bindingStack": [
+                {
+                  "actorType": "auction_capabilities_1cec5f36d8fd655e4ce322fc",
+                  "instanceId": "cast_1cec5f36d8fd655e4ce322fc041b396100396cb6f8c7e3e4048f8ab48490552a"
+                }
+              ],
+              "episode": "3d089faeb1e576f5bd9aab00ee5497a0932f10ac9f4d2d4c313f39d41e59bf76",
+              "sourceElementId": "A_decide_t2_109d41905a7403fe0d715db2"
+            }
+          },
+          "kind": "TASK",
+          "policy": "CERTIFIED_EXECUTION/1.0",
+          "stateHash": "ca809723f6a637a0dc05d65a996388d1824ed11514c17c15ec2cad87d97abf55",
+          "stateVersion": 551
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "Runtime input is .jcm plus project; CSL/iStar/XML/optional OCL are authored system specifications.",
+    "Agent type has all capability tasks; undemanded or unobserved skills remain UNKNOWN, never invented as fulfilled. Role responsibilities and selected collective root fulfilled.",
+    "Native OrgContext helper compatibility aggregate SKIPPED for POPULATION_UNPROVEN; selected requirements are KNOWN, overall source coverage INCOMPLETE.",
+    "Historical failed attempts preserved: unrequested cycles overflow; conservative original topology bound; incorrect test assumption that every agent commits to every scheme; source cast PARTIAL in another run. Final successful live test did not relax source/Stop/quality assertions.",
+    "No fresh manual GUI click-through; focused Swing views plus actual live ISCN topology check passed.",
+    "Deadline remains disabled by prior user request. No full-source completeness or every task of every player completed claim.",
+    "No commit/push."
+  ],
+  "installedReplay": {
+    "status": "PASS",
+    "entries": 1601,
+    "finalResultHash": "88399046ab97842f2f493d299eb6e18dfd82b443ffd3d3c13fae05816168bff7",
+    "sourceResultHashEqual": true,
+    "log": "installed-replay.log",
+    "classSourceGuard": "installed plugin jar only, standalone driver"
+  },
+  "package": {
+    "status": "PASS",
+    "install": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\single-agent-final-o92o20fm\\use-7.5.0",
+    "driverRoot": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\single-agent-final-o92o20fm\\isolated-driver",
+    "archiveSha256": "39509b346f52fa6ce0038d87142dd5dd0ea22a86e260d7403432775f93f5e5d5",
+    "currentAuctionBytesEqualPackage": true,
+    "testedNativeClassesEqualPackage": true,
+    "originalMarkingClassesUnchanged": {
+      "GoalMarking": "56c9e566cd2f45ee4aa662257ef51eaa02e2836453eb5b05e2d80d83c95f4540",
+      "TaskMarking": "a3d1cf1437f4bb1fedc583f1086b695c3a22267ddd5a37117df340980135748a",
+      "IStarMarking": "07d383707a76f2b7227391b69275bb2d79e64cfb77f474e98d496f2553c0f922",
+      "IStarPropagation": "9f80d5c1b836a23c0d7f055baac2a895048dd53f44b1177f4b77680f8fdc9d75"
+    }
+  },
+  "sourceFreezeSha256": "d03ba5a634c77dc522b4f89d2a673ecf876c57e6e919f63dabd9a20b64d24707",
+  "nativeInvariants": [
+    {
+      "id": "NATIVE:AuctionMonitor::ConfirmedSchemeOrder",
+      "verdict": "PASS",
+      "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE"
+    },
+    {
+      "id": "NATIVE:AuctionMonitor::ObservedBidEvidence",
+      "verdict": "PASS",
+      "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE"
+    },
+    {
+      "id": "NATIVE:OrgContext::CslV4RoleCompatibility",
+      "verdict": "SKIPPED",
+      "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN"
+    },
+    {
+      "id": "NATIVE:auctionGroup::AuctioneerPopulation",
+      "verdict": "PASS",
+      "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE"
+    },
+    {
+      "id": "NATIVE:auctionGroup::ParticipantPopulation",
+      "verdict": "PASS",
+      "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE"
+    }
+  ]
+}

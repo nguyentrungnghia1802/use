@@ -1,0 +1,112 @@
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+Oct 30, 2026 11:22:46 AM jacamo.platform.Moise start
+INFO: OrgBoard aorg created.
+Oct 30, 2026 11:22:46 AM jacamo.platform.Moise createGroup
+INFO: group created: agrp: auctionGroup using artifact ora4mas.nopl.GroupBoard
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: join workspace /main/aorg: done
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: join workspace /main/aorg: done
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focusing on artifact agrp (at workspace /main/aorg) using namespace default
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focusing on artifact agrp (at workspace /main/aorg) using namespace default
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focus on agrp: done
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focus on agrp: done
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focusing on artifact aorg (at workspace /main/aorg) using namespace default
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focusing on artifact aorg (at workspace /main/aorg) using namespace default
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focus on aorg: done
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focus on aorg: done
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: join workspace /main/aorg: done
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: join workspace /main/aorg: done
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: join workspace /main/aorg: done
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focusing on artifact agrp (at workspace /main/aorg) using namespace default
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focusing on artifact agrp (at workspace /main/aorg) using namespace default
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focus on agrp: done
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focus on agrp: done
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focusing on artifact aorg (at workspace /main/aorg) using namespace default
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focusing on artifact aorg (at workspace /main/aorg) using namespace default
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focus on aorg: done
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focus on aorg: done
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focusing on artifact agrp (at workspace /main/aorg) using namespace default
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focus on agrp: done
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focusing on artifact aorg (at workspace /main/aorg) using namespace default
+Oct 30, 2026 11:22:52 AM jason.stdlib.println execute
+INFO: focus on aorg: done
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+Oct 30, 2026 11:22:53 AM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a2... doing so
+Oct 30, 2026 11:22:53 AM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a1... doing so
+Oct 30, 2026 11:22:53 AM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a2... doing so
+Oct 30, 2026 11:22:53 AM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a1... doing so
+Oct 30, 2026 11:22:53 AM jason.stdlib.println execute
+INFO: I am obliged to commit to mAuctioneer on sch_a2... doing so
+Oct 30, 2026 11:22:53 AM jason.stdlib.println execute
+INFO: I am obliged to commit to mAuctioneer on sch_a1... doing so
+Oct 30, 2026 11:22:53 AM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a2... doing so
+Oct 30, 2026 11:22:53 AM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a1... doing so
+Oct 30, 2026 11:22:53 AM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a2... doing so
+Oct 30, 2026 11:22:53 AM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a1... doing so
+Oct 30, 2026 11:22:54 AM jason.stdlib.println execute
+INFO: Start scheme sch_a1 for flight_ticket(paris,athens,date(15,12,2015))
+Oct 30, 2026 11:22:54 AM jason.stdlib.println execute
+INFO: Start scheme sch_a2 for flight_ticket(athens,paris,date(18,12,2015))
+Oct 30, 2026 11:22:56 AM jason.stdlib.println execute
+INFO: I am not obliged to achieve start for scheme sch_a1 anymore, dropping the intention.
+Oct 30, 2026 11:23:00 AM jason.stdlib.println execute
+INFO: The following error in console is normal, it is due to the fail while bidding.
+Oct 30, 2026 11:23:01 AM jason.asSemantics.TransitionSystem generateGoalDeletion
+WARNING: No failure event was generated for +!bid[code(.fail),code_line(41),code_src("file:src/agt/auction_capabilities.asl"),error(ia_failed),error_msg(""),scheme(sch_a2),source(self)]
+intention 47: 
+    +!bid[scheme(sch_a2),source(self)] <- ... .fail; org.jacamo.bridge.adapter.JasonPlanInstrumentation$Marker("P_bid_t2","SUCCEEDED") / {Sch=sch_a2, Id=a2, AId=cobj_11}
+    +!fulfill_obligation(sch_a2,bid,cobj_7,mParticipant)[source(self)] <- ... !Goal[scheme(Scheme)]; goalAchieved(Goal)[artifact_id(ArtId)] / {Goal=bid, Scheme=sch_a2, ArtId=cobj_7, Mission=mParticipant}
+    +obligation(alice,enabled(sch_a2,bid),done(sch_a2,bid,alice),"2026-10-30 11:23:7")[artifact_id(cobj_7),artifact_name(sch_a2),norm(ngoal,[["A",alice],["S",sch_a2],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a2,bid,alice)]]),percept_type(obs_prop),source(percept),workspace("/main/aorg",cobj_2)] <- ... !fulfill_obligation(Scheme,Goal,ArtId,Mission) / {Goal=bid, Scheme=sch_a2, Ag=alice, Deadline="2026-10-30 11:23:7", ArtId=cobj_7, _60=ngoal, Norm=enabled(sch_a2,bid), Un=[["A",alice],["S",sch_a2],["D","10 seconds"],["G",bid],["M",mParticipant],["What",done(sch_a2,bid,alice)]], Mission=mParticipant, What=done(sch_a2,bid,alice)}
+
+Oct 30, 2026 11:23:01 AM jason.stdlib.println execute
+INFO: I am not obliged to achieve bid for scheme sch_a1 anymore, dropping the intention.
+Oct 30, 2026 11:23:03 AM jason.stdlib.println execute
+INFO: I am not obliged to achieve bid for scheme sch_a1 anymore, dropping the intention.
+Oct 30, 2026 11:23:03 AM jason.stdlib.println execute
+INFO: I am not obliged to achieve bid for scheme sch_a1 anymore, dropping the intention.
+Oct 30, 2026 11:23:05 AM jason.stdlib.println execute
+INFO: I Won!
+Oct 30, 2026 11:23:05 AM jason.stdlib.println execute
+INFO: Winner for flight_ticket(paris,athens,date(15,12,2015)) is giacomo with 12.716182822397217
+Oct 30, 2026 11:23:07 AM jason.stdlib.println execute
+INFO: Participant alice didn't bid on time! S/he will be placed in a block list
+Oct 30, 2026 11:23:08 AM jason.stdlib.println execute
+INFO: Winner for flight_ticket(athens,paris,date(18,12,2015)) is francois with 67.97513467494593
+Oct 30, 2026 11:23:08 AM jason.stdlib.println execute
+INFO: I Won!

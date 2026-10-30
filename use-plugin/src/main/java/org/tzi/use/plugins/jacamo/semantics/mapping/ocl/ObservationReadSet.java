@@ -31,16 +31,18 @@ public record ObservationReadSet(List<Map<String,Object>> attributes,
         for (var entry : new TreeMap<>(expressions).entrySet()) {
             var visitor = ExternalOclConstraintService.dependencyVisitor();
             entry.getValue().processWithVisitor(visitor);
+            if(!visitor.unavailableReason().isEmpty())throw new IllegalArgumentException(visitor.unavailableReason());
             for (var read : visitor.attributeReads()) {
                 var attribute = read.attribute();
                 attributes.add(Map.of("contract", entry.getKey(), "field", attribute.owner().name() + "::" + attribute.name(),
                         "directSelf", read.directSelf(), "preState", read.preState()));
             }
-            for (var read : visitor.navigationReads()) {
+            for (var scoped : visitor.scopedNavigationReads()) {
+                var read=scoped.expression();
                 navigation.add(Map.of("contract", entry.getKey(), "association", read.getDestination().association().name(),
                         "fromType", read.getSource().cls().name(), "toType", read.getDestination().cls().name(),
                         "fromRole", read.getSource().nameAsRolename(), "toRole", read.getDestination().nameAsRolename(),
-                        "preState", read.isPre()));
+                        "preState", scoped.preState()));
             }
             for (var population : visitor.populationTypes()) populations.add(Map.of("contract", entry.getKey(),
                     "population", population.name(), "status", "REQUIRES_COMPLETE_POPULATION"));

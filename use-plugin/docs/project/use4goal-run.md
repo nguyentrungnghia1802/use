@@ -20,10 +20,15 @@ result giữ INCOMPLETE. Chỉ invariant helper do backend tạo mới có thể
 mọi FAIL thật vẫn hiển thị VIOLATION. COMPLETE_OBSERVED chỉ nói về requirement được
 khai báo và observed prefix, không chứng minh toàn bộ source coverage hoặc realtime.
 
-## Main authored five-input UI
+## Main authored project and model-folder UI
 
-Plugins → JaCaMo / use4Goal verification...: chọn CSL, JCM, iStar, mapping XML
-và authored OCL, Prepare + Import rồi Start Runtime. Kết quả mở trong cửa sổ
+Plugins → JaCaMo / use4Goal verification...: chọn project `.jcm` ở dòng đầu,
+sau đó Browse **System model folder**. Thư mục phải chứa đúng một `.csl`,
+một `.istar`, một `.xml` và tối đa một `.ocl` (không bắt buộc); tên file bất kỳ,
+đuôi file không phân biệt hoa/thường. Chỉ đọc trực tiếp thư mục được chọn,
+không quét thư mục con. Thiếu loại bắt buộc hoặc trùng bất kỳ loại nào đều báo lỗi;
+Prepare kiểm tra lại thư mục. `.jcm` có thể nằm ở thư mục project khác.
+Prepare + Import rồi Start Runtime. Kết quả mở trong cửa sổ
 modeless riêng; Show results mở lại. Các tabs CSL/iStar/verification dùng cùng
 facade/MSystem với input. Đóng kết quả chỉ ẩn; đóng input dispose kết quả và
 đóng phiên như trước. Main Results có state selector/Previous/Next/failure checkpoint trở lại,
@@ -36,6 +41,30 @@ riêng; FAIL giữ expression/witness thật. Winning Artifact không chứng mi
 norm/deadline hoặc mọi Task đã đạt. Ví dụ input và phạm vi requirements ở
 `examples/auction/README.md` và `src/test/resources/auction-reference/compact-v1/README.md`.
 Forensic Workbench APIs/navigation, raw journal và replay vẫn giữ nguyên.
+
+Runtime classpath tự điền từ `use.jacamo.runtime.classpath-file` nếu có override,
+nếu không thì dùng file checkout đã build tại
+`D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt`;
+nếu máy không có đường dẫn này thì dùng mặc định do facade cung cấp từ installation.
+Giữ ô đường dẫn và nút Runtime libs để thay thủ công. Không tự tải thư viện qua mạng;
+file classpath vẫn phải tồn tại và các JAR bên trong phải hợp lệ khi khởi chạy producer.
+
+Không chọn file `.ocl` nghĩa là không thêm ràng buộc ngoài. Hệ thống freeze một asset
+OCL rỗng và pin digest rỗng trong bản XML hiệu lực, không sửa XML trên đĩa; các luật
+nhúng trong `.csl`/`.istar` vẫn được compile và yêu cầu đầy đủ. Nếu chọn `.ocl`,
+checksum phải khớp XML như trước. Binding tham chiếu luật không tồn tại vẫn bị reject.
+
+Compatibility profile là cách diễn giải/project dữ liệu sang USE, không phải chế độ
+nới lỏng kiểm chứng. Chọn `JACAMO_DECLARATIVE_XML` cho bộ model hiện tại:
+XML khai báo các binding, nguồn quan sát và requirements. `NATIVE_CURRENT` dùng
+projection native hiện tại; `USE4GOAL_OBSERVED_V1` dùng bộ mapping JSON cũ;
+`CSL_OBSERVER_V1`/`V2` dùng cấu hình observer CSL JSON cũ, khác version capability.
+Các profile cũ được giữ để tương thích và cần đúng cấu hình của chúng.
+
+Trong profile XML, `AUTHORED` đọc model `.csl`/`.istar` viết tay, XML nối ngữ nghĩa
+với JaCaMo. `GENERATED` tạo model từ rule trong XML và source project; XML phải được
+viết cho chế độ generated. Đây không phải tự suy luận ngữ nghĩa từ mọi project.
+Chuyển dropdown không tự chuyển đổi bộ model. Các case study hiện tại dùng `AUTHORED`.
 
 ## Build và thử từ source
 
@@ -194,3 +223,111 @@ không kết thúc. Diagnostics `ENGINE_INSTALLATION_*` chặn thiếu/trùng en
 grammar, provenance, license, sai host7.5/ANTLR4.9.3; sửa bản cài thay vì fallback.
 
 Auction: các input hiện hành nằm trực tiếp trong `use-plugin/examples/auction`: `auction.csl`, `auction.jcm`, `auction.istar`, `auction-mapping.xml`, `auction.ocl`. ZIP: `examples/auction-current`. Các profile/oracle cũ nằm trong `src/test/resources/auction-reference`, không phải input mặc định.
+
+
+## Xem state theo instance: AOL và ISCN
+
+Sau Prepare + Import / Start Runtime, cửa sổ kết quả có:
+- **Execution & Results**: chọn milestone/boundary, xem Goal/Task/OCL và verdict.
+- **CSL state (AOL)**: renderer AOL gốc hiển thị instance/attribute của CSL projection được XML chọn ở đúng state đó. Undefined không thành false. Links chỉ lấy từ native state image được giữ lại, không suy ra từ tên hoặc dựng MSystem khác.
+- **iStar instances (ISCN)**: chọn context cụ thể ở combobox; actor instances và goal/task occurrences tách theo player/role. Huy hiệu xanh F = fulfilled, vàng P = pending, xám ? = unknown; failed/violated có dấu !. Tên ngắn phục vụ hiển thị; identity đầy đủ vẫn nằm trong evidence. Instance graph dùng original topology/renderer và chính marking đã ghi tại cut; không compile/evaluate một scenario mới để thay kết quả verification.
+- **Advanced / Diagnostics**: CSL definitions, iStar definitions, Verification Details. Projection Rules / Program trace / Observation plan đã bỏ khỏi authored workflow; debug Workbench cũ giữ nguyên.
+
+Đổi milestone ở Execution & Results rồi mở AOL/ISCN để xem cùng cut. Đổi context
+không trộn actor hoặc episode; topology không khớp hoặc cut đang pending phải báo
+unavailable. Reset/reimport/dispose xóa nội dung view. Đây là observed-state viewer,
+không phải full-state acquisition hay whole-process exploration từ BPMN.
+
+
+## Project input và đặc tả hệ thống
+
+Project JaCaMo (.jcm cùng ASL/MOISE/Artifact/resources) là input nguồn thực thi.
+CSL/iStar/mapping XML/extra OCL là các đặc tả hệ thống được tác giả soạn thủ công
+và chọn/import theo project; việc chọn file không biến chúng thành source runtime.
+XML mode AUTHORED nối identity, source features, runtime observations, context,
+player, task/goal và native contracts; không tự dịch project thành model ở mode này.
+
+Tool hỗ trợ annotation `/* @use-native-ocl 1 ... */` trong file CSL/iStar để đặt
+native USE operation/observer contracts cạnh model. Đây là extension có version
+của adapter, không tuyên bố là cú pháp core của use4Goal. Original parser/model và
+native USE compiler vẫn là authority. Model bytes được pin trong XML và replay;
+clauses nhúng cùng file .ocl bổ sung được kiểm inventory/context/type/collision.
+CSL invariant và iStar condition/pre/post gốc vẫn dùng cú pháp chuẩn sẵn có.
+File .ocl ngoài có thể comment-only khi không thêm requirement; base contracts
+không lặp lại ở file này. Thêm yêu cầu mới cần bổ sung binding XML tương ứng.
+
+## Enactment và điểm lỗi
+
+CSL definitions: OrgCtx đại diện Agent có đường nét đứt `may enact` theo correspondence
+`enactsRoles` trong mapping XML. Đây là khả năng ở cấp định nghĩa, không phải sở hữu Role.
+AOL: đường `enacts` đòi hỏi cùng frozen cut có Context–Agent và Agent–Role (`Plays`)
+đúng identity. Đổi state dùng lại link đã lưu; Role bị gỡ thì state mới mất link.
+
+**Failure Point** mở lỗi đầu tiên theo bộ lọc. Dropdown chọn các lỗi khác theo boundary;
+Goal/Task, OCL/constraints và Diagnostics được tách riêng. Lỗi giữ nguyên qua nhiều
+boundary xuất hiện một lần; sau phục hồi rồi tái diễn là điểm mới. UNKNOWN/SKIPPED
+không là failure. Supporting Task failure không tự biến selected requirement thành VIOLATION.
+Nút **Milestones** trở về state nghiệp vụ sau khi mở một lỗi ở audit boundary.
+
+Đã bỏ Inspect Milestone Interval khỏi Execution & Results. Khi cần truy nguyên,
+**Audit details → Show all audit boundaries** mở lịch sử kỹ thuật đầy đủ. Đây là
+chế độ chẩn đoán, không làm tăng số milestone nghiệp vụ mặc định hoặc thay verdict.
+
+Failure Point mặc định ghi số milestone của state nghiệp vụ liên quan. Tool giữ
+nguyên exact snapshot/evidence của lỗi, kể cả lỗi ở giữa hai milestone. Bật
+**Audit details** chuyển cả danh sách điểm lỗi và chọn state sang số boundary;
+tắt để trở về milestone. Lỗi trước khi có state được nhận ghi Before first milestone.
+Milestone là snapshot CSL/USE đã chiếu từ JaCaMo theo `presentation/state` trong
+mapping (object, thuộc tính, liên kết được chọn); Goal/Task và OCL là kết quả
+đánh giá gắn với snapshot. Event kỹ thuật không đổi state được gộp; vẫn giữ
+initial/latest cuts và audit đầy đủ.
+
+Invariant lifecycle: mapping may declare `runtime/invariantActivations/activate`
+with `LATCH_ONCE_QUALIFIED/1.0`, an exact native CSL invariant target, qualified
+table and context identity column. It starts operational scope for that context
+incarnation only; it never changes predicate truth or clears later violations.
+Readiness needs a complete source table/row and complete same-cut native roles.
+Before readiness the rule is unavailable, not vacuously passing. The source-backed
+activation certificate is included in invariant body evidence. Raw native USE
+checks outside this observed workflow still evaluate the unconditional predicate.
+
+Derived attributes now contribute transitive native AST dependencies. Receiver
+identity and enclosing iterator bindings are preserved; cycles and derived @pre
+reads lacking a supported pinned pre-view are rejected as unsupported rather than
+borrowing current values. Failure Point retains an unresolved episode across
+pending/SKIPPED cuts; qualified PASS/FULFILLED is required before a repeat becomes
+a new episode. Body counterexamples remain individually inspectable, without an
+extra duplicate entry for the matching aggregate.
+
+## Kiểm chứng riêng từng execution/Entity CSL
+
+Execution & Results bắt buộc chọn một execution đã quan sát; không có All executions.
+Mỗi root Goal là một instance riêng trong context/episode của execution, không phải
+hai root đóng góp vào một Goal chung. Dòng Goal/Task mang nhãn Entity đang chọn.
+Milestone phản ánh các giá trị Entity đã bind của execution đó; Audit details vẫn
+trỏ về exact native cut/boundary trong một MSystem chung.
+
+Mỗi context freeze bộ native OCL riêng. Outer owner population là tập object đã bind
+với scope: Entity/resource/self, role/player/context và structural ancestors. Observer
+được nối tường minh bằng `<scope><observer projectRef="..." subjectColumn="..."/>`:
+program, epoch, project và physical subject phải khớp đúng một object. Không ghép
+bằng tên class/agent, vị trí, id a1/a2 hoặc suy đoán từ giá trị thuộc tính.
+
+Native USE vẫn đánh giá nguyên predicate và giữ existential/negation, @pre/invocation
+và coverage gates. Scope thiếu/không duy nhất owner hoặc thiếu required aggregate giữ
+INCOMPLETE. Shared structural/group constraints được kiểm tra trong mỗi scope liên
+quan; biểu thức chủ động đọc dữ liệu chung vẫn giữ nguyên nghĩa đó. Generated helper
+requirements giữ phân loại supporting/required trong native inventory. COMPLETE_OBSERVED
+ở pane kết quả yêu cầu root iStar và toàn bộ OCL bắt buộc của execution có bằng chứng.
+
+CSL State (AOL) và ISCN có bộ chọn execution đồng bộ với Results. AOL là projection
+của trạng thái native ở exact cut: chỉ hiển thị Entity và các context/role/player đã
+bind. Nét liền là liên kết cấu trúc native; nét đứt xanh `participates (execution)` là
+liên kết trình bày có cast/role-lifetime/commitment witness. Nó không tạo association
+CSL mới hay thay đổi MSystem. Cùng ở group chưa đủ để tự nối tham gia mọi Entity.
+Một agent có thể có liên kết ở cả hai auction khi có binding tham gia cho cả hai.
+
+`presentationState.objectQuality` giữ chất lượng riêng từng object: một Entity chưa
+có dữ liệu không được che mất Entity độc lập đã có dữ liệu. Các giá trị không đủ
+bằng chứng và scope thiếu vẫn unavailable; nguồn coverage được báo riêng. Không tạo
+MSystem, model hành vi hoặc engine đánh giá thứ hai. Source/replay ghi đủ evidence gốc.

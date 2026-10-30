@@ -62,6 +62,9 @@ public final class OccurrenceProjection {
                         if(!roleBinding.name().equals("static")||!roleBinding.attr("kind").equals("ROLE")||role==null||!role.isSubClassifierOf(model.getClass("RoleOccurrence")))throw actor.location().error("OCCURRENCE_EXACT_ROLE_TYPE_REQUIRED");
                     }
                     case "CONTEXT_VIEWPOINT" -> {if(!actor.optional("roleColumn").isEmpty()||!actor.optional("roleLookup").isEmpty()||!actor.attr("cardinality").equals("ONE"))throw actor.location().error("OCCURRENCE_CONTEXT_VIEWPOINT_INVALID");}
+                    case "RUNTIME_AGENT" -> {
+                        if(goals==null||!(goals.findActor(actor.attr("actor")).orElseThrow() instanceof org.vnu.sme.goal.dsl.istar.mm.Agent)||!binding.optional("roleBindingRef").isBlank()||!actor.optional("roleColumn").isBlank()||!actor.optional("roleLookup").isBlank())throw actor.location().error("OCCURRENCE_RUNTIME_AGENT_REQUIRED");
+                    }
                     default -> throw actor.location().error("UNSUPPORTED:OCCURRENCE_ACTOR_KIND");
                 }
                 actors.add(new ActorRule(actor,role));
@@ -83,6 +86,12 @@ public final class OccurrenceProjection {
             for(Node resource:scope.children("resource")) {
                 MClass type=model.getClass(resource.attr("type"));
                 if(!resources.add(resource.attr("target"))||!originalResources.contains(resource.attr("target"))||!columns.contains(resource.attr("column"))||type==null||!(type.isSubClassifierOf(model.getClass("DomainEntity"))||type.isSubClassifierOf(model.getClass("OrgContext"))))throw resource.location().error("UNSUPPORTED:OCCURRENCE_NATIVE_RESOURCE_BINDING");
+            }
+            for(Node observer:scope.children("observer")){
+                Node project=specification.requireId(observer.attr("projectRef"));
+                if(!project.name().equals("project")||!columns.contains(observer.attr("subjectColumn")))throw observer.location().error("EXECUTION_OBSERVER_BINDING_INVALID");
+                Node view=specification.requireId(project.attr("viewRef"));
+                if(!view.attr("category").equals("CLASS")||model.getClass(view.attr("name"))==null)throw observer.location().error("EXECUTION_OBSERVER_CLASS_REQUIRED");
             }
             compiled.add(new Definition(scope,List.copyOf(actors),scope.children("self"),scope.children("resource")));
         }
@@ -138,6 +147,11 @@ public final class OccurrenceProjection {
                             if(role==null||!role.cls().isSubClassifierOf(actor.roleType())||!player.cls().isSubClassifierOf(model.getClass("RuntimePlayer"))||!current(port,role,epoch,cut)||context==null
                                     ||!primary(port,player).equals(port.metadata(role,"rolePlayer"))||!primary(port,context).equals(port.metadata(role,"roleContext"))||!linked(port,"Plays",player,role)||!linked(port,"InContext",context,role)) {issues.add("EXACT_NATIVE_ENACTMENT_UNAVAILABLE:"+rule.attr("actor"));continue;}
                             interval=port.metadata(role,"xml:m0:lifetime");if(interval.isBlank()){issues.add("ENACTMENT_INTERVAL_UNAVAILABLE");continue;}
+                        }else if(rule.attr("kind").equals("RUNTIME_AGENT")) {
+                            var singleton=agentContext(port,player,epoch,cut);
+                            if(!player.cls().isSubClassifierOf(model.getClass("AtomicAgent"))||singleton==null) {issues.add("CURRENT_PHYSICAL_AGENT_UNAVAILABLE");continue;}
+                            interval=port.metadata(singleton,"xml:m0:lifetime");
+                            if(interval.isBlank()){issues.add("AGENT_INTERVAL_UNAVAILABLE");continue;}
                         }else {
                             if(!player.cls().isSubClassifierOf(model.getClass("OrgContext"))||!current(port,player,epoch,cut)){issues.add("CONTEXT_VIEWPOINT_UNAVAILABLE");continue;}
                             actorContext=primary(port,player);
@@ -186,6 +200,10 @@ public final class OccurrenceProjection {
             for(var member:scope.members()) {
                 var player=port.find(member.player());var context=port.find(member.context());
                 if(player==null||context==null||!current(port,context,epoch,scope.cut()))issues.add("CURRENT_CAST_BINDING_UNAVAILABLE");
+                if(player!=null&&member.role().isBlank()&&player.cls().isSubClassifierOf(model.getClass("AtomicAgent"))) {
+                    var singleton=agentContext(port,player,epoch,scope.cut());
+                    if(singleton==null||!member.interval().equals(port.metadata(singleton,"xml:m0:lifetime")))issues.add("CURRENT_PHYSICAL_AGENT_UNAVAILABLE");
+                }
                 if(!member.role().isBlank()) {var role=port.find(member.role());if(role==null||!current(port,role,epoch,scope.cut())||!member.interval().equals(port.metadata(role,"xml:m0:lifetime"))||player==null||context==null||!linked(port,"Plays",player,role)||!linked(port,"InContext",context,role))issues.add("CURRENT_ENACTMENT_INTERVAL_UNAVAILABLE");}
                 for(var self:member.selves().values()) {var nativeSelf=port.find(self);if(nativeSelf==null||!current(port,nativeSelf,epoch,scope.cut()))issues.add("CURRENT_NATIVE_SELF_UNAVAILABLE");}
             }
@@ -208,6 +226,11 @@ public final class OccurrenceProjection {
     }
     private static Map<String,String> stringMap(Object raw){var result=new TreeMap<String,String>();CanonicalJson.object(raw).forEach((k,v)->result.put(k,(String)v));return result;}
     private boolean current(Port port,MObject object,String epoch,String cut){return program.equals(port.metadata(object,"xml:m0:program"))&&epoch.equals(port.metadata(object,"xml:m0:epoch"))&&"COMPLETE".equals(port.metadata(object,"xml:m0:quality"))&&cut.equals(port.metadata(object,"xml:m0:cut"));}
+    private MObject agentContext(Port port,MObject player,String epoch,String cut) {
+        String physical=primary(port,player);
+        var matches=port.objects().stream().filter(o->current(port,o,epoch,cut)&&physical.equals(port.metadata(o,"xml:m0:representedPlayer"))&&linked(port,org.tzi.use.plugins.jacamo.semantics.mapping.ocl.CslScopeModelAdapter.AGENT_CONTEXTS,o,player)).toList();
+        return matches.size()==1?matches.getFirst():null;
+    }
     private static boolean linked(Port port,String association,MObject first,MObject second){return port.readState()!=null&&port.readState().allLinks().stream().anyMatch(l->l.association().name().equals(association)&&l.linkedObjects().equals(List.of(first,second)));}
     private static String primary(Port port,MObject object){String id=port.metadata(object,"semanticId");if(id.isBlank())throw new IllegalArgumentException("OCCURRENCE_NATIVE_IDENTITY_REQUIRED");return id;}
     private static RuntimeTables.Result table(Map<String,RuntimeTables.Result> tables,String id){var value=tables.get(id);if(value==null)throw new IllegalArgumentException("OCCURRENCE_TABLE_UNAVAILABLE:"+id);return value;}

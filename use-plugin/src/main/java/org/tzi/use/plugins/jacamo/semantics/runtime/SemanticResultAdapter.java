@@ -137,17 +137,42 @@ public final class SemanticResultAdapter {
     }
     private static Map<String,Object> presentation(SemanticProgram program,org.tzi.use.uml.sys.MSystemState state) {
         if(program.xmlPlan()==null)return Map.of();
-        var selected=new TreeMap<String,Object>();boolean qualified=true;
+        var selected=new TreeMap<String,Object>();var objectQuality=new TreeMap<String,Object>();boolean qualified=true;
         for(var section:program.xmlPlan().inputs().specification().root().children("presentation"))for(var selection:section.children("state")) {
             var cls=state.system().model().getClass(selection.attr("owner"));
             if(cls==null)throw selection.location().error("PRESENTATION_CLASS_UNRESOLVED");
             for(var object:state.objectsOfClassAndSubClasses(cls)) {
-                var attributes=new TreeMap<String,Object>();
-                for(String field:selection.optional("attributes").isBlank()?List.<String>of():Arrays.asList(selection.attr("attributes").trim().split("\\s+"))){var value=object.state(state).attributeValue(field);qualified&=!value.isUndefined();attributes.put(field,value.toString());}
-                selected.put(selection.attr("owner")+":"+object.name(),attributes);
+                var attributes=new TreeMap<String,Object>();boolean objectQualified=true;
+                for(String field:selection.optional("attributes").isBlank()?List.<String>of():Arrays.asList(selection.attr("attributes").trim().split("\\s+"))){var value=object.state(state).attributeValue(field);qualified&=!value.isUndefined();objectQualified&=!value.isUndefined();attributes.put(field,value.toString());}
+                selected.put(selection.attr("owner")+":"+object.name(),attributes);objectQuality.put(selection.attr("owner")+":"+object.name(),objectQualified);
             }
         }
-        return program.xmlPlan().inputs().specification().root().children("presentation").isEmpty()?Map.of():Map.of("version","DECLARATIVE_PRESENTATION/1.0","objects",selected,"hash",SemanticJson.hash(selected),"qualifiedValues",qualified,"executionMilestones",!program.xmlPlan().inputs().specification().root().child("presentation").optional("milestones").equals("DOMAIN"));
+        // Freeze links from this exact authoritative cut. View-only enactment is the
+        // witnessed join Context -> represented AtomicAgent -> actual RoleOccurrence.
+        boolean enactment=state.system().model().classes().stream().anyMatch(c->!org.tzi.use.plugins.jacamo.semantics.mapping.CanonicalUseBindingAdapter.enactedRoles(c).isEmpty());
+        if(enactment) {
+            var ids=selected.keySet().stream().map(k->k.substring(k.indexOf(':')+1)).collect(java.util.stream.Collectors.toSet());
+            var links=presentationLinks(state,ids);
+            return Map.of("version","DECLARATIVE_PRESENTATION/1.2","objects",selected,"objectQuality",objectQuality,"links",links,"hash",SemanticJson.hash(Map.of("objects",selected,"links",links)),"qualifiedValues",qualified,"executionMilestones",!program.xmlPlan().inputs().specification().root().child("presentation").optional("milestones").equals("DOMAIN"));
+        }
+        return program.xmlPlan().inputs().specification().root().children("presentation").isEmpty()?Map.of():Map.of("version","DECLARATIVE_PRESENTATION/1.2","objects",selected,"objectQuality",objectQuality,"hash",SemanticJson.hash(selected),"qualifiedValues",qualified,"executionMilestones",!program.xmlPlan().inputs().specification().root().child("presentation").optional("milestones").equals("DOMAIN"));
+    }
+    /** Pure frozen view projection: no native mutations or marking/evaluation. */
+    public static List<Map<String,Object>> presentationLinks(org.tzi.use.uml.sys.MSystemState state,Set<String> ids) {
+            var links=new ArrayList<Map<String,Object>>();
+            var nativeLinks=state.allLinks().stream().sorted(Comparator.comparing(Object::toString)).toList();
+            for(var link:nativeLinks)if(link.linkedObjects().size()==2&&link.linkedObjects().stream().allMatch(o->ids.contains(o.name())))
+                links.add(Map.of("association",link.association().name(),"participants",link.linkedObjects().stream().map(o->o.name()).toList()));
+            for(var represented:nativeLinks)if(represented.association().name().equals(org.tzi.use.plugins.jacamo.semantics.mapping.ocl.CslScopeModelAdapter.AGENT_CONTEXTS)) {
+                var context=represented.linkedObjects().getFirst();var agent=represented.linkedObjects().get(1);
+                var allowed=org.tzi.use.plugins.jacamo.semantics.mapping.CanonicalUseBindingAdapter.enactedRoles(context.cls());
+                if(!ids.contains(context.name())||allowed.isEmpty())continue;
+                for(var play:nativeLinks)if(play.association().name().equals("Plays")&&play.linkedObjects().getFirst().equals(agent)) {
+                    var role=play.linkedObjects().get(1);
+                    if(ids.contains(role.name())&&allowed.contains(role.cls().name()))links.add(Map.of("association","enacts","participants",List.of(context.name(),role.name()),"via",agent.name(),"witness",List.of(represented.association().name(),play.association().name())));
+                }
+            }
+        return List.copyOf(links);
     }
     public static SemanticVerificationEnvelope pending(SemanticProgram program,String boundary,String reason) {
         var observed=new TreeMap<String,Object>();observed.put("originalEngine",Map.of("version","1.0","programHash",program.hash(),"evaluated",reason));

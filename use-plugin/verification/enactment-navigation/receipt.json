@@ -1,0 +1,93 @@
+{
+  "status": "PASS_FOR_ENACTMENT_VIEWS_AND_FAILURE_NAVIGATION",
+  "createdAt": "2026-10-29T10:14:28.851503+00:00",
+  "head": "cfea921064f7a4fcf4e7f76210987107fe5ae255",
+  "focusedTests": {
+    "uniqueTestsPassed": 43,
+    "lastPresentationRefreshPassed": 12,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "logs": [
+      "package.log",
+      "package-final2.log"
+    ]
+  },
+  "live": {
+    "coverage": "INCOMPLETE",
+    "domainFailures": 0,
+    "fixedGoalTaskRows": 17,
+    "pid": 3420,
+    "sameMSystem": true,
+    "samples": 79,
+    "scope": "Audit, not assertion that full normative profile is satisfied",
+    "status": "PASS",
+    "winnerObservedForTwoArtifacts": true
+  },
+  "liveEvidence": "use-plugin\\verification\\live-results-ui\\auction-10902800656564572545",
+  "liveLog": "auction-live-final.log",
+  "pinnedCut": {
+    "source": "use-plugin\\verification\\live-results-ui\\auction-10902800656564572545\\result.json",
+    "fixture": "use-plugin\\src\\test\\resources\\semantics\\recorded-enactment-result.json.gz",
+    "rawSha256": "9b8b36199630fa546880dc8c272c64c1c590c441f05bd85576d1623a6b3733e6",
+    "gzipSha256": "8bed0ef72092fe3cc8e4a1d59e5828844ac2399aefb196347300dbaa5cf80df4",
+    "resultHash": "d6b5ad5b59319e67db78125bbf8b3b8b699b63c227bd0ff5a8166bf80b58af60"
+  },
+  "essentialStates": {
+    "auditBoundaries": 1028,
+    "completionDelayLatestVerifiedMs": 45950,
+    "completionDelayMaxMs": 46290,
+    "latestVerifiedEventId": "66a9a401-1d59-4db6-b720-3d400b35ab40:cartago:338",
+    "latestVerifiedEventSource": "cartago",
+    "milestones": 19,
+    "optionalBeliefsAcquired": false,
+    "pinnedResultHash": "d6b5ad5b59319e67db78125bbf8b3b8b699b63c227bd0ff5a8166bf80b58af60",
+    "presentationMode": "DOMAIN"
+  },
+  "sourceReplay": {
+    "entries": 1618,
+    "status": "PASS"
+  },
+  "installedReplay": {
+    "status": "PASS",
+    "entries": 1618,
+    "finalStateHash": "f8ece3f63442ffdbd02cf43c9e20d91d7db0bb73ad059cd7d48936c0148021f2",
+    "finalResultHash": "bfa47603fe7ed90e206963f677ff77673c9f7825d37ca5e904a6a1334ab2bf05",
+    "matchesSourceManifest": true,
+    "log": "installed-replay.log"
+  },
+  "package": {
+    "status": "PASS",
+    "install": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\enactment-final-agt4ias1\\use-7.5.0",
+    "isolatedDriver": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\enactment-final-agt4ias1\\isolated-driver",
+    "archiveSha256": "e1c4e4e69c8d1863328783b6af590e991e9b9a9b218c4155e729560563206c5b",
+    "liveImplementationEntriesEqualPackage": 114,
+    "packagedUiClassesEqualTested": 110,
+    "originalEngineClassesEqualPriorAcceptedPackage": 297,
+    "originalMarkingHashes": {
+      "GoalMarking": "56c9e566cd2f45ee4aa662257ef51eaa02e2836453eb5b05e2d80d83c95f4540",
+      "TaskMarking": "a3d1cf1437f4bb1fedc583f1086b695c3a22267ddd5a37117df340980135748a",
+      "IStarMarking": "07d383707a76f2b7227391b69275bb2d79e64cfb77f474e98d496f2553c0f922",
+      "IStarPropagation": "9f80d5c1b836a23c0d7f055baac2a895048dd53f44b1177f4b77680f8fdc9d75"
+    },
+    "currentCaseFilesEqualPackage": true,
+    "liveEvidence": "use-plugin\\verification\\live-results-ui\\auction-10902800656564572545"
+  },
+  "freeze": "source-freeze.json",
+  "freezeSha256": "43d423fde7c4c2645720da8734ac97d021a8285773bc19441c4a20e0bbf1746f",
+  "images": [
+    "enactment-csl-final.png",
+    "enactment-aol-final.png",
+    "failure-navigation.png"
+  ],
+  "limits": [
+    "Service-level live Auction plus offscreen Swing rendering; no new manual desktop GUI exercise.",
+    "COMPLETE_OBSERVED covers selected observed requirements; supporting skills and source coverage may remain UNKNOWN/INCOMPLETE.",
+    "No commit/push; sibling JaCaMo source and Desktop diagrams unchanged."
+  ],
+  "baselineLogs": [
+    "enactment-focused.log",
+    "auction-live.log",
+    "package-final.log"
+  ]
+}

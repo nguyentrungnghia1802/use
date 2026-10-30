@@ -2,6 +2,150 @@
   "version": "LOSSLESS_EVIDENCE_ARCHIVES/1.0",
   "files": [
     {
+      "path": "additional-cases/hello-world-10561338361112361009/replay/runtime.jsonl",
+      "bytes": 10479267,
+      "sha256": "62f6eb07d3c3f865883fd502a00f7640da001449dbf956161a42805ac184235d",
+      "compressed": "additional-cases/hello-world-10561338361112361009/replay/runtime.jsonl.gz",
+      "compressedBytes": 714274,
+      "compressedSha256": "ea1abd924fc4c13463206f6e9d4cc4e79004c0f1d9c951977e446ee447ad4318"
+    },
+    {
+      "path": "additional-cases/hello-world-1314074680076268596/cartago-events.jsonl",
+      "bytes": 40743627,
+      "sha256": "9428fd23c17279b5d265039936371fc14b69599ba82724a539cc0375f6c8ebf9",
+      "compressed": "additional-cases/hello-world-1314074680076268596/cartago-events.jsonl.gz",
+      "compressedBytes": 1597358,
+      "compressedSha256": "5282b380a4d619a4cbaeb48aacf5c0de167be8fe9dbc58b2334e128598d792cb"
+    },
+    {
+      "path": "additional-cases/hello-world-1314074680076268596/replay/runtime.jsonl",
+      "bytes": 46859651,
+      "sha256": "fa881859c8c9fb230db3e16777016bff37d6ab42547da9feed8ec5ddd71b1e87",
+      "compressed": "additional-cases/hello-world-1314074680076268596/replay/runtime.jsonl.gz",
+      "compressedBytes": 2081059,
+      "compressedSha256": "00200b826bdcaa390f993e93422649260f032e742c2aefe93113cb2a3f10a4e1"
+    },
+    {
+      "path": "additional-cases/hello-world-13359590008232446702/cartago-events.jsonl",
+      "bytes": 29676803,
+      "sha256": "2ab92f61c41e2354b0f264c86a30c6dbc157310faa099f17bdd078c447faadca",
+      "compressed": "additional-cases/hello-world-13359590008232446702/cartago-events.jsonl.gz",
+      "compressedBytes": 1158161,
+      "compressedSha256": "9dce736112c0dff6ec8a11e185e390dfc96d7bd9349c5f07e80faca193b91f46"
+    },
+    {
+      "path": "additional-cases/hello-world-13359590008232446702/replay/runtime.jsonl",
+      "bytes": 35586708,
+      "sha256": "700b1b0f9c8576f3e44728da7bb254a7c435afb95220c18060e188c4c95c97fb",
+      "compressed": "additional-cases/hello-world-13359590008232446702/replay/runtime.jsonl.gz",
+      "compressedBytes": 1627810,
+      "compressedSha256": "ced367e6b2ed65d7dad770dad15d06d739638e6c4643a8c0ce6467198f1f1e97"
+    },
+    {
+      "path": "additional-cases/hello-world-2123578817593806409/replay/runtime.jsonl",
+      "bytes": 10479473,
+      "sha256": "2fde3ff95197de63f1593d7d21304b74c831dd9c6c31271ea4c00f6e42d5aac4",
+      "compressed": "additional-cases/hello-world-2123578817593806409/replay/runtime.jsonl.gz",
+      "compressedBytes": 716804,
+      "compressedSha256": "2b7dcb729e15ca46edc967d45e981dfa75fd38e843655ae60dbe08a007f47cef"
+    },
+    {
+      "path": "additional-cases/hello-world-2901354043011864963/cartago-events.jsonl",
+      "bytes": 38512771,
+      "sha256": "5cba8763d299c438bfc7d8643bdb1fe0375b9eed5c8471a036dcfda5d879c25b",
+      "compressed": "additional-cases/hello-world-2901354043011864963/cartago-events.jsonl.gz",
+      "compressedBytes": 1503659,
+      "compressedSha256": "e06a40bf902c938a003a5b3b210f102d5d5ea347972af083ea7b83189b9df4e3"
+    },
+    {
+      "path": "additional-cases/hello-world-9596413875591659644/cartago-events.jsonl",
+      "bytes": 54100577,
+      "sha256": "7117888c810dd4258c267c39e7a8a2d162ab851394f5403cd689f0e26c284aef",
+      "compressed": "additional-cases/hello-world-9596413875591659644/cartago-events.jsonl.gz",
+      "compressedBytes": 2110075,
+      "compressedSha256": "dd309983f649426b13616e74fe23c398a3711efbc847372f0d9b405d1bea6c9d"
+    },
+    {
+      "path": "additional-cases/hello-world-9596413875591659644/replay/runtime.jsonl",
+      "bytes": 60411778,
+      "sha256": "ddd54c1fbb89d7d145f248f966f110709a53b493ce052eeedfa09710f46e0af4",
+      "compressed": "additional-cases/hello-world-9596413875591659644/replay/runtime.jsonl.gz",
+      "compressedBytes": 2618424,
+      "compressedSha256": "30ccddad8289952ec9f1d79eb1c5231d138b72a50f7102442824c5b9a0a927f6"
+    },
+    {
+      "path": "additional-cases/house-building-10349910220100358256/cartago-events.jsonl",
+      "bytes": 26898864,
+      "sha256": "f14012fb45a74f8acc6e975e1f2ace2b2850da4febaf571ea2cdf943e74a0309",
+      "compressed": "additional-cases/house-building-10349910220100358256/cartago-events.jsonl.gz",
+      "compressedBytes": 989135,
+      "compressedSha256": "09065e8481a206e58a2d23e1e1e85e55c5808e19c47a04a7217485601f99a0a1"
+    },
+    {
+      "path": "additional-cases/house-building-13904830026144831340/cartago-events.jsonl",
+      "bytes": 13856677,
+      "sha256": "549bdd8f95aab5cd59b5b7b41ed0de625036201244bc0cbfb9b5e0344f3bdfb5",
+      "compressed": "additional-cases/house-building-13904830026144831340/cartago-events.jsonl.gz",
+      "compressedBytes": 533570,
+      "compressedSha256": "e868617d709b81cb056159551a4009cbf14982b28f6ac22b3e19fbf152edea6f"
+    },
+    {
+      "path": "additional-cases/house-building-13987166061723392334/cartago-events.jsonl",
+      "bytes": 27704923,
+      "sha256": "90333aacbb59b206233a3ccb65d680b480bb27902e5ed965eb6f557aadadd458",
+      "compressed": "additional-cases/house-building-13987166061723392334/cartago-events.jsonl.gz",
+      "compressedBytes": 1021680,
+      "compressedSha256": "1a227c4fd2a0416ad5cdf9ecc874f2e0a9ce473994b7958a1e7355f62eac3729"
+    },
+    {
+      "path": "additional-cases/house-building-13987166061723392334/replay/runtime.jsonl",
+      "bytes": 86991798,
+      "sha256": "49e2db203d5bec3f18e9ecce8ff72f9a6944d6a3b77be2b6e30bc87104ac3515",
+      "compressed": "additional-cases/house-building-13987166061723392334/replay/runtime.jsonl.gz",
+      "compressedBytes": 6085171,
+      "compressedSha256": "1e05465edb83f7669b3d7694f65e6ec834745ebfa9c4ec7e5403407d4271b572"
+    },
+    {
+      "path": "additional-cases/house-building-15893434256893100409/replay/runtime.jsonl",
+      "bytes": 88640252,
+      "sha256": "64dd33c67589691a3df5cdcfbce6eb6b6efff5b388dcae27714aa5e4a55e5cc4",
+      "compressed": "additional-cases/house-building-15893434256893100409/replay/runtime.jsonl.gz",
+      "compressedBytes": 6198383,
+      "compressedSha256": "d6f0c2f5a219d3239b48608c4e3527b38c41a5407e2667a52b3f6a625c32490e"
+    },
+    {
+      "path": "additional-cases/house-building-3346879667629127010/cartago-events.jsonl",
+      "bytes": 12920569,
+      "sha256": "2d8c6f9fa66fbb68f63b54a8100eca5aebc475ff023f474db59ed591bcee9dc7",
+      "compressed": "additional-cases/house-building-3346879667629127010/cartago-events.jsonl.gz",
+      "compressedBytes": 464317,
+      "compressedSha256": "d5774b8cfecdff0195e390e17dde2bd9164885397aa9b001d4317a1c1b5f71e6"
+    },
+    {
+      "path": "additional-cases/house-building-3676368246113313720/cartago-events.jsonl",
+      "bytes": 32851568,
+      "sha256": "a0996ce02934d90dd6d090ab7ca49b0062d33c1342af37277ea3d6439fb2716f",
+      "compressed": "additional-cases/house-building-3676368246113313720/cartago-events.jsonl.gz",
+      "compressedBytes": 1220972,
+      "compressedSha256": "a6312bf64ef1edba8e9c39889d16ac5e2d64d56328e81730da6a45e594ef03ed"
+    },
+    {
+      "path": "additional-cases/house-building-3676368246113313720/replay/runtime.jsonl",
+      "bytes": 93771601,
+      "sha256": "533a609cb3537f3255a5c3bc5ea75837f13c37d47577a23a91390e1c77a11191",
+      "compressed": "additional-cases/house-building-3676368246113313720/replay/runtime.jsonl.gz",
+      "compressedBytes": 6364351,
+      "compressedSha256": "8f4c4f697b7a099ebd6defc397202514372cd2a59c7d9a84ef996121801262d0"
+    },
+    {
+      "path": "additional-cases/house-building-409965555452055426/cartago-events.jsonl",
+      "bytes": 29075383,
+      "sha256": "f4d87d2ca5afcdc79d1b8a6165e518838ea68f072bc873fb07224d19ff3a3674",
+      "compressed": "additional-cases/house-building-409965555452055426/cartago-events.jsonl.gz",
+      "compressedBytes": 1071677,
+      "compressedSha256": "a99e4fd64ad24be4fccdd8597cbebceca098ab9622d656c775afbe678afbcb01"
+    },
+    {
       "path": "authored-models/P05-domain-live/run-11008457034790524280/journal.jsonl",
       "bytes": 109178292,
       "sha256": "6fb820a3e5aaeb86c40f01d628f3b1d2359e53bb03b84c2af3893a861d2de890",
@@ -248,6 +392,190 @@
       "compressed": "authored-models/P09-cold-installed/auction-confirmed-7529741196779809784/replay/runtime.jsonl.gz",
       "compressedBytes": 7237344,
       "compressedSha256": "623bcaa911ffeae85060bc4cdfadeb0fb34f3391db1ebf25d8ce6acb532c21b6"
+    },
+    {
+      "path": "live-results-ui/auction-10080899007607398949/replay/runtime.jsonl",
+      "bytes": 92913988,
+      "sha256": "f31725bf4599d834fd0abc8ac37754e7d434e09c9415750bc9bdef510ca09e4b",
+      "compressed": "live-results-ui/auction-10080899007607398949/replay/runtime.jsonl.gz",
+      "compressedBytes": 7573197,
+      "compressedSha256": "c09c6b894ce3bf8c4e79cbadf4af60ba99d8ba8345f263a2263bdb04cc9401cb"
+    },
+    {
+      "path": "live-results-ui/auction-10735054887355189034/replay/runtime.jsonl",
+      "bytes": 164141379,
+      "sha256": "9f76961686447fe2e51f9edb06e5c22ac8ad469d659d8b255a8e55e68375b1af",
+      "compressed": "live-results-ui/auction-10735054887355189034/replay/runtime.jsonl.gz",
+      "compressedBytes": 11216821,
+      "compressedSha256": "0d61c5663fc26c39f907fabab92d710d4b85b6f8d73d22921e7969a26048da3e"
+    },
+    {
+      "path": "live-results-ui/auction-10849287875472857408/replay/runtime.jsonl",
+      "bytes": 95950184,
+      "sha256": "048694693429de2777abf7db0a15c85c60f3ab17777f72389d745e9b29330d6e",
+      "compressed": "live-results-ui/auction-10849287875472857408/replay/runtime.jsonl.gz",
+      "compressedBytes": 7621995,
+      "compressedSha256": "332a34b581881e118a19b8d482f9e6cee50b812cb1d6350e5e5a2497cbc9031b"
+    },
+    {
+      "path": "live-results-ui/auction-10902800656564572545/replay/runtime.jsonl",
+      "bytes": 140316029,
+      "sha256": "c215904f6603b4eaf9a95f59710a1ac67bfc25b4c92d54167bd10c59f23e9cc1",
+      "compressed": "live-results-ui/auction-10902800656564572545/replay/runtime.jsonl.gz",
+      "compressedBytes": 10983733,
+      "compressedSha256": "3b13ad31c71a2b64330b6f956ccab0a1e1cca4e3985e41ccffd15b27a069af26"
+    },
+    {
+      "path": "live-results-ui/auction-14077818521943702388/replay/runtime.jsonl",
+      "bytes": 97844285,
+      "sha256": "1376e05b994abd31035df18337e9a9d942137005a13528dca010b6eae9bd6236",
+      "compressed": "live-results-ui/auction-14077818521943702388/replay/runtime.jsonl.gz",
+      "compressedBytes": 7869593,
+      "compressedSha256": "126f5274d9d64bcf2d0154c994ca00c6ccb067f08eb3cad5f6a170fb344341ce"
+    },
+    {
+      "path": "live-results-ui/auction-16619791341345676774/replay/runtime.jsonl",
+      "bytes": 89024728,
+      "sha256": "d878589a68a03d0a459da70f285d9762fba24a2d30d86d1bc5e5f28dd5244c5a",
+      "compressed": "live-results-ui/auction-16619791341345676774/replay/runtime.jsonl.gz",
+      "compressedBytes": 7241955,
+      "compressedSha256": "dfa1381e4667d9c305fa9d6395a1ff8a1970de973248d679ec14010316a51d3e"
+    },
+    {
+      "path": "live-results-ui/auction-16697455635546969058/replay/runtime.jsonl",
+      "bytes": 157157458,
+      "sha256": "e8a6d2eeeeced8dca223a3461d759314b502d102a7c72f96ced91443e6c2f0f8",
+      "compressed": "live-results-ui/auction-16697455635546969058/replay/runtime.jsonl.gz",
+      "compressedBytes": 10871409,
+      "compressedSha256": "3d0d49b8673496f50aaf3c5c06eef38c9739bee0708007e6fdf4d6c34c4a4e7a"
+    },
+    {
+      "path": "live-results-ui/auction-17473406535072442727/replay/runtime.jsonl",
+      "bytes": 90845209,
+      "sha256": "51227f2f19b3502133627dab35542b0b53818e96272cfb9728dbd43cceb6a515",
+      "compressed": "live-results-ui/auction-17473406535072442727/replay/runtime.jsonl.gz",
+      "compressedBytes": 7428606,
+      "compressedSha256": "e4f425ee7764001e98a2dc58069e34a3c1c5bbffb9ab295f60e0f8a3604b1cee"
+    },
+    {
+      "path": "live-results-ui/auction-1873398308936760061/replay/runtime.jsonl",
+      "bytes": 144159731,
+      "sha256": "96a5e76a527894174fa442e3c899821fb1b864c5beb904b14b6a9dc3f0d738e5",
+      "compressed": "live-results-ui/auction-1873398308936760061/replay/runtime.jsonl.gz",
+      "compressedBytes": 11430197,
+      "compressedSha256": "757f117592954c1ba7ec056c8815ee68f33eaad1bb1e3317311b480bb9c497c4"
+    },
+    {
+      "path": "live-results-ui/auction-2036460005824313625/replay/runtime.jsonl",
+      "bytes": 162973693,
+      "sha256": "e722b3bd71fdadf2ef6aa89507e1bc340914a41e60dedcf0d1040cf9819e93d8",
+      "compressed": "live-results-ui/auction-2036460005824313625/replay/runtime.jsonl.gz",
+      "compressedBytes": 11235440,
+      "compressedSha256": "1c7233911d92389b195a0d79876fe4574027e00a77f5e6584217c77587b3577b"
+    },
+    {
+      "path": "live-results-ui/auction-2104563255162029220/replay/runtime.jsonl",
+      "bytes": 143508642,
+      "sha256": "472d11a90357b6805bc8f75426b1c97fd714b9bbebf89e2e8b3d0030c7f85ca4",
+      "compressed": "live-results-ui/auction-2104563255162029220/replay/runtime.jsonl.gz",
+      "compressedBytes": 11608602,
+      "compressedSha256": "afbc9e1f158cd525546b32bf68a2d6d368065046343dbf102556a8cc1394719a"
+    },
+    {
+      "path": "live-results-ui/auction-2757639195188820282/replay/runtime.jsonl",
+      "bytes": 95356166,
+      "sha256": "36faa602b5593b5b4fa49fabc47f8bcd71f6b30573c492939d5e295d76ad1516",
+      "compressed": "live-results-ui/auction-2757639195188820282/replay/runtime.jsonl.gz",
+      "compressedBytes": 7692214,
+      "compressedSha256": "ebd2fdc85204f22351839111aa52f6acffd2f28cf69f9d55e98bd0c2fc4d1bb3"
+    },
+    {
+      "path": "live-results-ui/auction-293052928902650835/replay/runtime.jsonl",
+      "bytes": 139706885,
+      "sha256": "12bd6d83f01759259a49605a1afd79f0b767ded72c4759233bde3d048cc025b6",
+      "compressed": "live-results-ui/auction-293052928902650835/replay/runtime.jsonl.gz",
+      "compressedBytes": 10948224,
+      "compressedSha256": "cd3ec5e5f85fc5ef45cc1135f516358920efeb8b047c0e1b10cc2526cf04eeaf"
+    },
+    {
+      "path": "live-results-ui/auction-3514017882445095492/replay/runtime.jsonl",
+      "bytes": 174813796,
+      "sha256": "82cff4f74f9de5079795a4ada84ea50eee9dc686e0cc3a2657a027db4456a859",
+      "compressed": "live-results-ui/auction-3514017882445095492/replay/runtime.jsonl.gz",
+      "compressedBytes": 14330278,
+      "compressedSha256": "f969b1cb243a3fd7cb0a39095b39125883e4727194cf2b403346d8f1dea34305"
+    },
+    {
+      "path": "live-results-ui/auction-4471281074889294652/diagnostic-replay/runtime.jsonl",
+      "bytes": 169148734,
+      "sha256": "9632889b9a638d39a63bda8211338c60bd5e002ad199e6a4980c972db67c9cfd",
+      "compressed": "live-results-ui/auction-4471281074889294652/diagnostic-replay/runtime.jsonl.gz",
+      "compressedBytes": 13981653,
+      "compressedSha256": "71b6c47349c20178b3de85f006ae4a93e16d85451929a5cdf81f3da8fb147947"
+    },
+    {
+      "path": "live-results-ui/auction-4745023566282880147/replay/runtime.jsonl",
+      "bytes": 65435663,
+      "sha256": "01223c84becb2f5cfce96dd26a5068f01683fbdd3b414823eb950f2b29b9f852",
+      "compressed": "live-results-ui/auction-4745023566282880147/replay/runtime.jsonl.gz",
+      "compressedBytes": 5662782,
+      "compressedSha256": "00845a0af33cef9601860958cc91bcd6fe21dc179084d66ea620e4c6d9f26f63"
+    },
+    {
+      "path": "live-results-ui/auction-5087048315378906970/replay/runtime.jsonl",
+      "bytes": 63567876,
+      "sha256": "d68151bfc16087c0602e11f2c154901b0e446597b37efb3820de688e168ae0e4",
+      "compressed": "live-results-ui/auction-5087048315378906970/replay/runtime.jsonl.gz",
+      "compressedBytes": 5543948,
+      "compressedSha256": "ff83bc9a21e8b41ef67c754d17db2f25ea845ebae53897199b03e1088604d906"
+    },
+    {
+      "path": "live-results-ui/auction-5174455660464896815/replay/runtime.jsonl",
+      "bytes": 172043728,
+      "sha256": "6e63c4432d907e9a34180b861489b33201161056eee88ae58130594a68285ac3",
+      "compressed": "live-results-ui/auction-5174455660464896815/replay/runtime.jsonl.gz",
+      "compressedBytes": 11842076,
+      "compressedSha256": "030c7f056cc5914499586454536b9b071ed64e4b30787e417e6c0ede8b277a3d"
+    },
+    {
+      "path": "live-results-ui/auction-5275946803128123890/replay/runtime.jsonl",
+      "bytes": 88515315,
+      "sha256": "0eb93f82f65aa824746633b0284a5283a622eabe5cf9adc84b3c8590a7fcf6c1",
+      "compressed": "live-results-ui/auction-5275946803128123890/replay/runtime.jsonl.gz",
+      "compressedBytes": 7195839,
+      "compressedSha256": "19558b178b32cb6a66e3d0374d5bf2b7ac632312e273ab7c93e64ed8bdc2c836"
+    },
+    {
+      "path": "live-results-ui/auction-6641115257691176122/diagnostic-replay/runtime.jsonl",
+      "bytes": 170677983,
+      "sha256": "a1f4450aa3a27a5d932926d79b34713ae178bccb869c1c81aa45d7f228362e62",
+      "compressed": "live-results-ui/auction-6641115257691176122/diagnostic-replay/runtime.jsonl.gz",
+      "compressedBytes": 14149932,
+      "compressedSha256": "46e5f4d5c1e503d5a2c21c39bb5c681ef4a808e23b341c3e0e46697ebe433152"
+    },
+    {
+      "path": "live-results-ui/auction-6996477376524121754/diagnostic-replay/runtime.jsonl",
+      "bytes": 119460429,
+      "sha256": "0d5e1968a7027196fbca818943dfe41efda036c2269f52392b56a399e9df0a80",
+      "compressed": "live-results-ui/auction-6996477376524121754/diagnostic-replay/runtime.jsonl.gz",
+      "compressedBytes": 9607961,
+      "compressedSha256": "a64bd975658a708a2de82ab642d50e4917ace6cb91d20dd7013e4f06dc3783d3"
+    },
+    {
+      "path": "live-results-ui/auction-7831997453405771525/diagnostic-replay/runtime.jsonl",
+      "bytes": 172288496,
+      "sha256": "61626f5481368cdfde6c755b481cfcd8c0e87d2776379366123762140f58c597",
+      "compressed": "live-results-ui/auction-7831997453405771525/diagnostic-replay/runtime.jsonl.gz",
+      "compressedBytes": 14181890,
+      "compressedSha256": "8a12e19fdeb208198283d71b117aa1ba55c47619a79c032a890e8a41c1e1bf9e"
+    },
+    {
+      "path": "live-results-ui/auction-9141219160766461805/replay/runtime.jsonl",
+      "bytes": 85669312,
+      "sha256": "1f5ccfe3a6c48a7d9e3eae323a130348851ae4561e9beeb4d75c10bd24670667",
+      "compressed": "live-results-ui/auction-9141219160766461805/replay/runtime.jsonl.gz",
+      "compressedBytes": 7132062,
+      "compressedSha256": "81da46032ed1b108113144e3f4eaa15996769b5f6ae217cdc8f0bfa782833d35"
     }
   ]
 }

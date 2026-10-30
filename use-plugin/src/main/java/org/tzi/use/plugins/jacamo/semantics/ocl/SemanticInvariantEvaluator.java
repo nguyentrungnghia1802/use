@@ -24,8 +24,10 @@ public final class SemanticInvariantEvaluator {
         if(inv.var()!=null&&inv.var().contains(","))unavailable="UNSUPPORTED:MULTI_CONTEXT_VARIABLE_BINDING";
         var bodies=new ArrayList<PreparedBody>();
         for(var object:engine.system().state().objectsOfClassAndSubClasses(inv.cls()).stream().sorted(Comparator.comparing(MObject::name)).toList()) {
-            String missing=unavailable.isBlank()?coverage.unavailableSelf(inv.bodyExpression(),engine,object,sources,lost,fresh):unavailable;
+            String activation=org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.InvariantActivation.unavailable(inv,engine,object);
+            String missing=!unavailable.isBlank()?unavailable:!activation.isBlank()?activation:coverage.unavailableSelf(inv.bodyExpression(),engine,object,sources,lost,fresh);
             var witness=new TreeMap<>(coverage.witness(inv.bodyExpression(),engine,object,sources,missing));
+            if(inv.getAnnotation(org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.InvariantActivation.ANNOTATION)!=null)witness.put("invariantActivation",org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.InvariantActivation.evidence(inv,engine,object));
             if(engine.xmlCase()) {
                 witness.put("mappingPlanHash",engine.canonicalProgram().xmlPlan().hash());witness.put("mappingSpecificationHash",engine.canonicalProgram().xmlPlan().inputs().xml().sha256());witness.put("programHash",engine.canonicalProgramHash());
             }

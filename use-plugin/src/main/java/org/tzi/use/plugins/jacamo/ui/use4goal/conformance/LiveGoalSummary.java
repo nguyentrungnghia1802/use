@@ -7,7 +7,7 @@ import org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePan
 /** Presentation only: fixed M1 rows, conservative summary of the current admitted
  * occurrences. Original iStar marking/quantifiers remain the semantic authority. */
 public final class LiveGoalSummary {
- public record Row(String id,String label,String status,String originalStatus,String detail){}
+ public record Row(String id,String label,String status,String originalStatus,String detail,String resultRole,String counts,List<Evaluation> instances){public Row{instances=List.copyOf(instances);}}
  private final Map<String,String> declarations=new LinkedHashMap<>();
  public LiveGoalSummary(GoalModel model){
   for(var actor:model.getActors())for(var e:actor.elements())if(e instanceof Goal||e instanceof Task)declarations.put(e.id(),actor.name()+"::"+e.id());
@@ -23,10 +23,13 @@ public final class LiveGoalSummary {
    String status=instances.isEmpty()?"UNKNOWN":instances.stream().anyMatch(r->r.status().equals("VIOLATED")&&Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(r.quality()))?"VIOLATED":instances.stream().anyMatch(r->r.status().equals("FAILED")&&Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(r.quality()))?"FAILED":instances.stream().anyMatch(r->!Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(r.quality())||!Set.of("FULFILLED","PENDING").contains(r.status()))?"UNKNOWN":instances.stream().allMatch(r->r.status().equals("FULFILLED"))?"FULFILLED":"PENDING";
    var originalStatuses=instances.stream().map(Evaluation::originalStatus).filter(x->!x.isBlank()).distinct().toList();
    String original=originalStatuses.isEmpty()?"UNKNOWN":originalStatuses.size()==1?originalStatuses.getFirst():"MIXED";
-   var detail=new StringBuilder(definition.getValue()+"\nOriginal history is the engine aggregate. Certified execution may report FAILED separately from raw TaskMarking PENDING; evidence is scoped to the exact episode.\nExecution summary covers observed instances only, not an unobserved population.\nInstances: "+instances.size()+"\n");
+   String resultRole=instances.isEmpty()?"No admitted evidence":instances.stream().anyMatch(Evaluation::required)?"Selected requirement":"Supporting";
+   var counts=new TreeMap<String,Long>();instances.forEach(i->counts.merge(i.status(),1L,Long::sum));
+   String countText=counts.isEmpty()?"0 observed":counts.entrySet().stream().map(e->e.getValue()+" "+e.getKey()).collect(java.util.stream.Collectors.joining(", "));
+   var detail=new StringBuilder(definition.getValue()+"\nResult role: "+resultRole+"\nInstance evidence: "+countText+"\nOriginal history is the engine aggregate. Certified execution may report FAILED separately from raw TaskMarking PENDING; evidence is scoped to the exact episode.\nExecution summary covers observed instances only, not an unobserved population. UNKNOWN may mean missing demand or missing execution evidence; it is not automatically NOT_APPLICABLE. This definition need not be assigned to every player. The selected requirement is evaluated through its declared refinement/dependency rules, not this definition-wide summary.\nInstances: "+instances.size()+"\n");
    if(instances.isEmpty())detail.append("No admitted occurrence at this cut. Missing evidence is UNKNOWN.\n");
    for(var instance:instances)detail.append("\n").append(instance.status()).append(" | ").append(instance.quality()).append(" | original aggregate=").append(instance.originalStatus()).append(" | leaf raw=").append(instance.raw()).append("\n").append(instance.evidence()).append("\nLast certified history: ").append(instance.certifiedHistory()).append("\n");
-   rows.add(new Row(definition.getKey(),definition.getValue(),status,original,detail.toString()));
+   rows.add(new Row(definition.getKey(),definition.getValue(),status,original,detail.toString(),resultRole,countText,instances));
   }
   return List.copyOf(rows);
  }

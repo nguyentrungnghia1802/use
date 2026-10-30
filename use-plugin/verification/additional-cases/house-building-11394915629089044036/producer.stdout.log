@@ -1,0 +1,45 @@
+REAL_JACAMO_INIT project=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\owned-runtime\647a0807-fb69-4bf8-b79d-96b62bac736d\evidence\20261028-001014-105-d357d172\staging-house-building\house-building.jcm headless=true
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+REAL_JACAMO_INIT_OK
+CArtAgO Http Server running on http://192.168.0.103:3273
+Agent mind inspector is running at http://192.168.0.103:3272
+REAL_JACAMO_CREATE_OK platforms=3 agents=22
+REAL_JACAMO_MANAGED_WAIT_START run=20261028-001014-105-d357d172
+BRIDGE_OBSERVATION_PLAN_ACTIVE program=290738d62caed714b175cad8592df325f062b3a3ea59426af6c9eab57673a929 requests=1 capabilities=[Capability[name=construction-operations, status=COMPLETE, evidenceIds=[CARTAGO_OPERATION_HISTORY/1.0], reason=Run-owned verified framework provider; per-cut quality remains authoritative]]
+REAL_JACAMO_MANAGED_START_ACK run=20261028-001014-105-d357d172
+REAL_JACAMO_START_OK
+REAL_JACAMO_BRIDGE_READY port=63685 session=d0b1312f-fd8a-47ef-8020-7e74faacad31 agents=22
+Waiting bids for 5 seconds...
+Winner of task WindowsDoors is companyD2 for 1126
+Winner of task Painting is companyC5 for 1100
+Winner of task ElectricalSystem is companyC3 for 300
+Winner of task Plumbing is companyA for 300
+Winner of task Roof is companyE for 1090
+Winner of task Walls is companyE for 890
+Winner of task Floors is companyE for 890
+Winner of task SitePreparation is companyB for 1850
+
+*** Execution Phase ***
+
+Moise Http Server running on http://192.168.0.103:3271
+Contracting companyD2 for WindowsDoors
+Contracting companyC5 for Painting
+Contracting companyC3 for ElectricalSystem
+Contracting companyA for Plumbing
+Contracting companyE for Roof
+Contracting companyE for Walls
+Contracting companyE for Floors
+Contracting companyB for SitePreparation
+REAL_JACAMO_BRIDGE_FINAL_READINESS {agents=State[readiness=READY, detail=BridgeAgArch=org.jacamo.bridge.adapter.BridgeAgArch; injected=6], bridge=State[readiness=CONFIGURED, detail=session=d0b1312f-fd8a-47ef-8020-7e74faacad31], events=State[readiness=ATTACHED, detail=bounded observer attached], observation=State[readiness=ATTACHED, detail=program=290738d62caed714b175cad8592df325f062b3a3ea59426af6c9eab57673a929; requests=1; requiredUnavailable=[]], project=State[readiness=READY, detail=modelRevision=d6e94e2b5cdf75104a19f6ba5b3d9f0684603e11444402a396d65148291ffcdf], runtime=State[readiness=READY, detail=snapshot=snapshot:74c77276ad849d7fd87c8417acbf38b175c58633c3474942fa838eb2b74ba158; facts=543; sourceCompleteness={cartago=PARTIAL, npl=PARTIAL, observer:verification=PARTIAL, moise:dynamic=PARTIAL, jason=PARTIAL, bridge:platform=COMPLETE}], transport=State[readiness=READY, detail=loopback TCP port=63685]}
+REAL_JACAMO_BRIDGE_STOP_REQUESTED
+REAL_JACAMO_BRIDGE_STOPPED

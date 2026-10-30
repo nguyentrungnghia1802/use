@@ -116,3 +116,23 @@
 "src/test/java/org/jacamo/bridge/adapter/TcpBridgeServerMain.java" text eol=crlf
 "src/test/java/org/jacamo/bridge/adapter/TypedBindingObservationTest.java" text eol=lf
 "src/test/java/org/jacamo/bridge/adapter/VerificationObservationSourceTest.java" text eol=lf
+
+# Preserve final tested source-freeze bytes for repository delivery.
+"pom.xml" text eol=crlf
+"src/main/java/org/jacamo/bridge/adapter/AdapterEvidence.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/adapter/AdapterReadiness.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/adapter/AdapterReadinessRegistry.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/adapter/ArtifactFieldObservation.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/adapter/BridgeRuntimeRegistry.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/adapter/JasonPlanInstrumentation.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/adapter/LocalTcpBridgeServer.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/adapter/MoiseSchemeRead.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/adapter/NplBoardSnapshotSource.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/adapter/NplSnapshotSource.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/adapter/NplSourceClockObservation.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/adapter/OfficialProjectLoader.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/adapter/RuntimeDistributionFingerprintMain.java" text eol=crlf
+
+# Reproduce frozen checkout bytes independent of core.autocrlf.
+"src/main/java/org/jacamo/bridge/adapter/JaCaMoBridgePlatform.java" text eol=lf
+"src/main/java/org/jacamo/bridge/adapter/JasonStepObservation.java" text eol=lf

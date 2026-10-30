@@ -1,0 +1,143 @@
+{
+  "status": "PASS_FOR_MODEL_NATIVE_OCL_AND_CURRENT_AUCTION_SYSTEM_SPECIFICATION",
+  "focusedTests": 47,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "liveTests": 1,
+  "actualLiveEvidence": "use-plugin/verification/live-results-ui/auction-2757639195188820282",
+  "liveReceipt": {
+    "coverage": "INCOMPLETE",
+    "domainFailures": 0,
+    "fixedGoalTaskRows": 14,
+    "pid": 24664,
+    "sameMSystem": true,
+    "samples": 75,
+    "scope": "Audit, not assertion that full normative profile is satisfied",
+    "status": "PASS",
+    "winnerObservedForTwoArtifacts": true
+  },
+  "selectedVerdict": "COMPLETE_OBSERVED",
+  "goalStatuses": [
+    {
+      "id": "O_root",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "O_start",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "O_bid",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "O_bid_attempt",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "O_bid_accepted",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "O_decide",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "A_start",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "A_start_t1",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "A_start_t2",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "A_decide",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "A_decide_t2",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "P_bid",
+      "status": "UNKNOWN"
+    },
+    {
+      "id": "P_bid_t1",
+      "status": "FULFILLED"
+    },
+    {
+      "id": "P_bid_t2",
+      "status": "UNKNOWN"
+    }
+  ],
+  "nativeInvariants": [
+    [
+      "NATIVE:AuctionMonitor::ConfirmedSchemeOrder",
+      "PASS"
+    ],
+    [
+      "NATIVE:AuctionMonitor::ObservedBidEvidence",
+      "PASS"
+    ],
+    [
+      "NATIVE:OrgContext::CslV4RoleCompatibility",
+      "PASS"
+    ],
+    [
+      "NATIVE:auctionGroup::AuctioneerPopulation",
+      "PASS"
+    ],
+    [
+      "NATIVE:auctionGroup::ParticipantPopulation",
+      "PASS"
+    ]
+  ],
+  "externalExtraOclClauses": 0,
+  "embeddedNativeClauses": 7,
+  "sourceReplay": {
+    "entries": 1611,
+    "status": "PASS"
+  },
+  "installedReplay": {
+    "status": "PASS",
+    "entries": 1611,
+    "finalResultHash": "13a3cce31adade6e855c14bb413e761361cb46e22ff4cde465837293145ae8cb",
+    "applicationClasspath": "Only installed lib/* plus a standalone replay driver; plugin and original TaskMarking code sources checked"
+  },
+  "package": {
+    "status": "PASS",
+    "install": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\model-native-final-ecj8rkx4\\use-7.5.0",
+    "driverRoot": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\model-native-final-ecj8rkx4\\isolated-driver",
+    "archiveSha256": "6fa89939ba224a0d4d0c8ec82571eb4c838df8ed72e0b3e6418554885f68a3ce",
+    "originalMarkingClassesUnchanged": {
+      "GoalMarking": "56c9e566cd2f45ee4aa662257ef51eaa02e2836453eb5b05e2d80d83c95f4540",
+      "TaskMarking": "a3d1cf1437f4bb1fedc583f1086b695c3a22267ddd5a37117df340980135748a",
+      "IStarMarking": "07d383707a76f2b7227391b69275bb2d79e64cfb77f474e98d496f2553c0f922",
+      "IStarPropagation": "9f80d5c1b836a23c0d7f055baac2a895048dd53f44b1177f4b77680f8fdc9d75"
+    },
+    "nativeContractUiClassesMatchTested": [
+      "org/tzi/use/plugins/jacamo/semantics/mapping/ocl/ModelNativeContracts.class",
+      "org/tzi/use/plugins/jacamo/semantics/mapping/ocl/AuthoredOclSpecificationLoader.class",
+      "org/tzi/use/plugins/jacamo/semantics/mapping/ocl/XmlNativePreparation.class",
+      "org/tzi/use/plugins/jacamo/semantics/runtime/RequirementInventory.class",
+      "org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ConformanceInputsPanel.class"
+    ],
+    "sourceAndDesktopHashesUnchanged": true,
+    "sourceFreezeSha256": "3c3a522c909d3e4c81bb84ba4cde5e3d9631c3866a3e7704b8a5d0dbfcafdec1",
+    "activeCaseBytesEqualPackage": true
+  },
+  "limitations": [
+    "Desktop Draw.io has contradictory metadata/notes. Kept previous explicit capability Role+specialization/task owner and attempt-vs-accepted-bid semantics, documented as a policy delta; alternative question unanswered. No claim of literal diagram graph equivalence.",
+    "Native OCL block annotation is a versioned plugin extension; original core parsers skip these comments. The actual tool adapter compiles the bodies with native USE.",
+    "Some Participant occurrences lack terminal marker and remain UNKNOWN; organization ANY/root completion does not credit every participant.",
+    "Deadline requirement remains disabled as previously requested; overall source coverage remains INCOMPLETE.",
+    "No fresh manual GUI exercise; focused Swing workflow, actual TCP live and installed cold replay passed.",
+    "No commit/push."
+  ]
+}

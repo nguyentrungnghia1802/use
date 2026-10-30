@@ -15,30 +15,34 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslDiagram.java",
       "sourceSha256": "dfd747f4e51e9e23eb73331ad4be28f94ec641734066934f036eb97968f2c899",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/csl/CslDiagram.java",
-      "targetSha256": "cfdd71e6a6cb2e40490bab4ad6864787f311d3fb5ab97cc9c37801a6aaeb0697",
+      "targetSha256": "fe9fa1d358dc12f1dfbde43d23af655a38e5b4e8799936b659bc62faae931511",
       "patches": [
         "PACKAGE_RELOCATION",
-        "BORROW_AUTHORITATIVE_NATIVE_MODEL"
+        "BORROW_AUTHORITATIVE_NATIVE_MODEL",
+        "VALIDATED_ENACTMENT_OVERLAY_AND_ORGCTX_LABELS"
       ]
     },
     {
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslDiagramEdge.java",
       "sourceSha256": "feb55b9e66a5d1ac5a787f03aaa93a7ef7b2bed6e9eb6e5e9f88ff70a8d48a9b",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/csl/CslDiagramEdge.java",
-      "targetSha256": "95a2bcce09486293ec6ec85a315fd18b9e1664c1c43f92303b67afcdbd20a18a",
+      "targetSha256": "31eb5e2cdfcb8b53fe25354071b13b1a01cc55a6415900d050f2edfd587a177d",
       "patches": [
         "PACKAGE_RELOCATION",
-        "RESPECT_ASSOCIATION_LABEL_TOGGLE"
+        "RESPECT_ASSOCIATION_LABEL_TOGGLE",
+        "VALIDATED_ENACTMENT_OVERLAY_AND_ORGCTX_LABELS",
+        "FROZEN_PLAYER_LABELS_AND_COMPACT_STATE_ROWS"
       ]
     },
     {
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslDiagramNode.java",
       "sourceSha256": "ea5f405e94e9a97d3b2e310d0955c7e624754f11debe0318a236c9be00c5f7ae",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/csl/CslDiagramNode.java",
-      "targetSha256": "603d8c528533db0c15f8d3788c629978c03f367a6867f23780fcb79552663150",
+      "targetSha256": "7bc469cc9102fb183e1fc6de89a99faea0dd4ff9ce8356c85a9b033db258d247",
       "patches": [
         "PACKAGE_RELOCATION",
-        "ROLE_HEADER_ICON_WIDTH"
+        "ROLE_HEADER_ICON_WIDTH",
+        "VALIDATED_ENACTMENT_OVERLAY_AND_ORGCTX_LABELS"
       ]
     },
     {
@@ -64,9 +68,10 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslEdgeKind.java",
       "sourceSha256": "28274fdc5319d04744e60ae30d52c556eccfa064907aa06d147574028f39310e",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/csl/CslEdgeKind.java",
-      "targetSha256": "96c189fcf35ec8af61bd597aa5785224470b93485dbecef00403308c43fe5467",
+      "targetSha256": "40c0f4a6d51f2179ee42cef576d29198d917e9e9009076dc1485fbf6499987e7",
       "patches": [
-        "PACKAGE_RELOCATION"
+        "PACKAGE_RELOCATION",
+        "VALIDATED_ENACTMENT_OVERLAY_AND_ORGCTX_LABELS"
       ]
     },
     {
@@ -91,10 +96,11 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslLayoutBuilder.java",
       "sourceSha256": "2143de32dc4fc355999e6f4893dfe2ba94b55954109df332615cf702de248a98",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/csl/CslLayoutBuilder.java",
-      "targetSha256": "9455321582138d648cdcf05997b7c40eca1379cc38e034e1104385b85f0603e9",
+      "targetSha256": "3bb57c0d330f87b234e9d51694a0c9d01130568bf45cea3f31952f3027876f0b",
       "patches": [
         "PACKAGE_RELOCATION",
-        "LAYOUT_ROLE_NAME_MINIMUM"
+        "LAYOUT_ROLE_NAME_MINIMUM",
+        "VALIDATED_ENACTMENT_OVERLAY_AND_ORGCTX_LABELS"
       ]
     },
     {
@@ -138,13 +144,14 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslView.java",
       "sourceSha256": "c87a98474c51fb73dadc22109a1363b0ceb7e707c57546525cc562012adbda2c",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/csl/CslView.java",
-      "targetSha256": "cd46dbd6dc37b8e9ef10e7d485781cca5482924657cc95ad7df60cc78e28263c",
+      "targetSha256": "b718bff98767f689e2fc4d657caa5eaf16fe308689c5d8b7c7201363436d0c1e",
       "patches": [
         "PACKAGE_RELOCATION",
         "EMBEDDED_VIEW_FACTORY",
         "EXPLICIT_SHARED_MODEL_ENTRYPOINTS",
         "DETACH_CLEANUP",
-        "NO_PROCESS_CONSOLE_FALLBACK"
+        "NO_PROCESS_CONSOLE_FALLBACK",
+        "EXPLICIT_ENACTMENT_VIEW_AND_FAILURE_NAVIGATION"
       ]
     },
     {
@@ -281,10 +288,12 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/gui/DiagramModelBrowser.java",
       "sourceSha256": "a812493f3d1df03f0eaab2908d3b3a68c2c3fc3e2006b06b83245e499ee8d772",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/gui/DiagramModelBrowser.java",
-      "targetSha256": "7dd6c74ede2739dd0241e37940d145618909d21e9f1067f15ebde8623072d777",
+      "targetSha256": "a3de89f117a450994ba18d7c64b686dfb5cdaad46e533d475c940d19dc9275e7",
       "patches": [
         "PACKAGE_RELOCATION",
-        "SELECT_CSL_ISTAR_BROWSER_ONLY"
+        "SELECT_CSL_ISTAR_BROWSER_ONLY",
+        "VALIDATED_ENACTMENT_OVERLAY_AND_ORGCTX_LABELS",
+        "EXPLICIT_ENACTMENT_VIEW_AND_FAILURE_NAVIGATION"
       ]
     },
     {

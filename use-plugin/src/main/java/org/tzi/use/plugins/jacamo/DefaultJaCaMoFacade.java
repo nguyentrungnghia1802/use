@@ -573,6 +573,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         bridgeDiagnostic = "";
     }
 
+    @Override public Path defaultRuntimeClasspathFile(){return OwnedJaCaMoRuntime.defaultClasspath(checkout);}
     @Override public boolean ownedProducerSupported(){return true;}
     @Override public boolean journalBudgetSupported(){return true;}
     @Override public long nextJournalBudgetBytes(){var selected=selectedJournalBudget;return selected==null?RuntimeVerificationCoordinator.defaultJournalMaxBytes():selected;}
@@ -1069,7 +1070,6 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             if(profile!=org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.NATIVE_CURRENT&&request.specification()==null)throw new IllegalArgumentException("AUTHORED_SPECIFICATION_FILE_REQUIRED:"+profile);
             org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs declarative=null;
             if(profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.JACAMO_DECLARATIVE_XML) {
-                if(request.ocl()==null)throw new IllegalArgumentException("AUTHORED_OCL_FILE_REQUIRED");
                 declarative=org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.read(jcm,request.specification(),request.ocl(),request.csl(),request.istar(),request.strictSourceChecksums());
             }
             var rules=profile==org.tzi.use.plugins.jacamo.semantics.profile.SemanticProjectionProfile.USE4GOAL_OBSERVED_V1?org.tzi.use.plugins.jacamo.semantics.mapping.MappingRuleSet.read(request.specification()):null;

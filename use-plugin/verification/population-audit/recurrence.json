@@ -1,0 +1,41 @@
+{
+  "aggregateCountsSinceFirstFailure": {
+    "FAIL": 7,
+    "NOT_EVALUATED": 5
+  },
+  "lastCutsAroundFirstMilestone6Failure": [
+    {
+      "ordinal": 26,
+      "cut": "66a9a401-1d59-4db6-b720-3d400b35ab40:1:3e13839423dd4560a2d8086d7cb38413c17fa0f98d5f6de5a26a42da77de85d1:9:66a9a401-1d59-4db6-b720-3d400b35ab40:jason:e6a59560-4869-4139-9aca-24bef239c7a7:3:",
+      "event": "66a9a401-1d59-4db6-b720-3d400b35ab40:jason:e6a59560-4869-4139-9aca-24bef239c7a7:3",
+      "coverage": "NOT_EVALUATED",
+      "populationRows": []
+    },
+    {
+      "ordinal": 27,
+      "cut": "66a9a401-1d59-4db6-b720-3d400b35ab40:1:3e13839423dd4560a2d8086d7cb38413c17fa0f98d5f6de5a26a42da77de85d1:9:66a9a401-1d59-4db6-b720-3d400b35ab40:jason:1d56540a-b436-4a9f-a32a-e0eb011cf360:3:",
+      "event": "66a9a401-1d59-4db6-b720-3d400b35ab40:jason:1d56540a-b436-4a9f-a32a-e0eb011cf360:3",
+      "coverage": "NOT_EVALUATED",
+      "populationRows": []
+    },
+    {
+      "ordinal": 29,
+      "cut": "66a9a401-1d59-4db6-b720-3d400b35ab40:1:3e13839423dd4560a2d8086d7cb38413c17fa0f98d5f6de5a26a42da77de85d1:10:boundary:66a9a401-1d59-4db6-b720-3d400b35ab40:2:stream_boundary:10:boundary:66a9a401-1d59-4db6-b720-3d400b35ab40:2",
+      "event": "boundary:66a9a401-1d59-4db6-b720-3d400b35ab40:2",
+      "coverage": "INCOMPLETE",
+      "populationRows": [
+        [
+          "INVARIANT_BODY",
+          "FAIL",
+          ""
+        ],
+        [
+          "INVARIANT",
+          "FAIL",
+          "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE"
+        ]
+      ]
+    }
+  ],
+  "noPassBeforeRepeatedFailure": true
+}

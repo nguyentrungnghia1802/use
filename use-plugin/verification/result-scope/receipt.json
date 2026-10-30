@@ -1,0 +1,46 @@
+{
+  "status": "PASS_FOR_RESULT_SCOPE_AND_INSTANCE_EVIDENCE_PRESENTATION",
+  "createdAt": "2026-10-29T09:20:45.981074+00:00",
+  "focusedTests": 37,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "finalLog": "result-scope-final-package.log",
+  "baselineFailureLog": "result-scope-focused.log",
+  "scope": "UI presentation and fail-closed missing-result guard only",
+  "changedProductionSourcesAndMetadata": [
+    "use-plugin/src/main/resources/META-INF/use4goal-workflow-provenance.json",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/LiveGoalSummary.java",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel.java",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePresenter.java"
+  ],
+  "productionHashes": {
+    "use-plugin/src/main/resources/META-INF/use4goal-workflow-provenance.json": "3c2b9fe503f61000fc2509db2d407a39327c08427e2175bd48a373942a883d81",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/LiveGoalSummary.java": "68e220eeca77e40503853eef9f9643e523dbb367dc85b539c4b516262f66fb48",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel.java": "39d9d6f537e21843c2762e60f76d390ed8ab964a17d3ac39f8c2fe1a8f9cd43c",
+    "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePresenter.java": "881b337ba168cbe97eda336458293ed2aeb924a3e7d302b2c5e8d7ec33498161"
+  },
+  "backendClassBytesUnchanged": 657,
+  "auctionSpecificationBytesUnchanged": true,
+  "readOnlySourceAndDesktopHashesUnchanged": true,
+  "recordedFixture": {
+    "path": "use-plugin\\src\\test\\resources\\semantics\\recorded-agent-result.json.gz",
+    "gzipSha256": "d2f91ca4bd7b1987ab28eda5d805e6bca17180ed4a0d2d8c5320f00b96caa785",
+    "uncompressedSha256": "387408e07c3d9efe30656967812e4b15817b2d58e7c8092b774ab4239382a7b4",
+    "sourceReceipt": "use-plugin/verification/live-results-ui/auction-293052928902650835",
+    "resultHash": "88399046ab97842f2f493d299eb6e18dfd82b443ffd3d3c13fae05816168bff7",
+    "startTasks": {
+      "fulfilled": 2,
+      "unknown": 8
+    }
+  },
+  "install": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\result-scope-final-0n1cjj0f\\use-7.5.0",
+  "archiveSha256": "f8107b73e113eec85f966ea079c12fff30d205d6a4dd3aa1b450ede8c1b787cb",
+  "packagedUiClassesEqualTested": true,
+  "limitations": [
+    "No new live producer run or fresh manual GUI exercise; genuine frozen TCP result rendered with focused Swing tests.",
+    "UNKNOWN remains UNKNOWN; missing demand is not automatically NOT_APPLICABLE.",
+    "Selected requirement result is separate from all skill summaries and overall source coverage.",
+    "No commit/push."
+  ]
+}

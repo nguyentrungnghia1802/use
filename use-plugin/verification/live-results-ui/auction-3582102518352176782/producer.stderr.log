@@ -1,0 +1,87 @@
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+Oct 29, 2026 12:57:08 PM jacamo.platform.Moise start
+INFO: OrgBoard aorg created.
+Oct 29, 2026 12:57:08 PM jacamo.platform.Moise createGroup
+INFO: group created: agrp: auctionGroup using artifact ora4mas.nopl.GroupBoard
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: join workspace /main/aorg: done
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: join workspace /main/aorg: done
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: join workspace /main/aorg: done
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: join workspace /main/aorg: done
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focusing on artifact agrp (at workspace /main/aorg) using namespace default
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focusing on artifact agrp (at workspace /main/aorg) using namespace default
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focus on agrp: done
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focus on agrp: done
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focusing on artifact aorg (at workspace /main/aorg) using namespace default
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focusing on artifact aorg (at workspace /main/aorg) using namespace default
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focus on aorg: done
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focus on aorg: done
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: join workspace /main/aorg: done
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focusing on artifact agrp (at workspace /main/aorg) using namespace default
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focus on agrp: done
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focusing on artifact aorg (at workspace /main/aorg) using namespace default
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focus on aorg: done
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focusing on artifact agrp (at workspace /main/aorg) using namespace default
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focus on agrp: done
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focusing on artifact aorg (at workspace /main/aorg) using namespace default
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focusing on artifact agrp (at workspace /main/aorg) using namespace default
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focus on aorg: done
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focus on agrp: done
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focusing on artifact aorg (at workspace /main/aorg) using namespace default
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: focus on aorg: done
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a2... doing so
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a1... doing so
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a1... doing so
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a2... doing so
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a1... doing so
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a2... doing so
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a2... doing so
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mParticipant on sch_a1... doing so
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mAuctioneer on sch_a2... doing so
+Oct 29, 2026 12:57:15 PM jason.stdlib.println execute
+INFO: I am obliged to commit to mAuctioneer on sch_a1... doing so
+Oct 29, 2026 12:57:16 PM jason.stdlib.println execute
+INFO: Start scheme sch_a1 for flight_ticket(paris,athens,date(15,12,2015))
+Oct 29, 2026 12:57:17 PM jason.stdlib.println execute
+INFO: Start scheme sch_a2 for flight_ticket(athens,paris,date(18,12,2015))
+Oct 29, 2026 12:57:21 PM org.jacamo.bridge.adapter.LocalTcpBridgeServer$Subscriber offer
+WARNING: BRIDGE_SUBSCRIBER_OVERFLOW count=8192/8192 bytes=48978740/67108864 frameBytes=5786

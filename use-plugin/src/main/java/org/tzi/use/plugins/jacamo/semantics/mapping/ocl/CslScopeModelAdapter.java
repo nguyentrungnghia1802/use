@@ -15,6 +15,7 @@ import org.vnu.sme.goal.dsl.csl.mm.CslModel;
 public class CslScopeModelAdapter {
     public static final String CONTEXT_SCOPES = "CslContextScopes";
     public static final String ENTITY_SCOPES = "CslEntityScopes";
+    public static final String AGENT_CONTEXTS = "CslAgentContexts";
 
     public Use75ModelBinding compile(CslModel source) {
         return new Use75CslModelBackend().compile(source, M0ExtensionSpec.observedPlayers(), this::prepare);
@@ -27,6 +28,9 @@ public class CslScopeModelAdapter {
         // Declaration scope is observed membership, never physical ownership or disposal cascade.
         api.createAssociation(CONTEXT_SCOPES, "OrgContext", "cslScopeParent", "0..1", 0, "OrgContext", "cslNestedContexts", "*", 0);
         api.createAssociation(ENTITY_SCOPES, "OrgContext", "cslEntityScope", "0..1", 0, "DomainEntity", "cslScopedEntities", "*", 0);
+        api.createAssociation(AGENT_CONTEXTS, "OrgContext", "singletonContexts", "*", 0, "AtomicAgent", "representedAgent", "0..1", 0);
+        api.getModel().getAssociation(AGENT_CONTEXTS).addAnnotation(new MElementAnnotation(Use75CslModelBackend.HELPER,
+                Map.of("kind", "SINGLE_AGENT_CONTEXT_REPRESENTATION", "createsAgent", "false")));
         for (String association : new String[]{CONTEXT_SCOPES, ENTITY_SCOPES})
             api.getModel().getAssociation(association).addAnnotation(new MElementAnnotation(Use75CslModelBackend.HELPER,
                     Map.of("kind", "DECLARATION_SCOPE_ONLY", "physicalOwnership", "false")));

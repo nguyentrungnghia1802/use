@@ -13,7 +13,9 @@ class BusinessTimelineTest {
    var panel=ObservedConformancePanel.liveResults(LiveGoalSummaryTest.model());panel.setCuts(input);
    var button=DetachedAuthoredWorkflowTest.find(panel,"observed-failure",javax.swing.JButton.class);assertTrue(button.isEnabled());button.doClick();
    assertEquals("run:1",panel.selectedCut().id());assertTrue(panel.selectedCut().failed());assertEquals("native state 1",panel.selectedCut().state());
-   var toggle=DetachedAuthoredWorkflowTest.find(panel,"observed-details",javax.swing.JCheckBox.class);assertTrue(toggle.isSelected());toggle.doClick();assertFalse(toggle.isSelected());assertEquals(2,((javax.swing.JComboBox<?>)components(panel).stream().filter(c->c instanceof javax.swing.JComboBox).findFirst().orElseThrow()).getItemCount());
+   var toggle=DetachedAuthoredWorkflowTest.find(panel,"observed-details",javax.swing.JCheckBox.class);assertFalse(toggle.isSelected());
+   var audit=DetachedAuthoredWorkflowTest.find(panel,"observed-audit-toggle",javax.swing.JToggleButton.class);audit.doClick();assertTrue(toggle.isSelected());assertEquals("run:1",panel.selectedCut().id());audit.doClick();assertFalse(toggle.isSelected());
+   DetachedAuthoredWorkflowTest.find(panel,"observed-milestones",javax.swing.JButton.class).doClick();assertEquals(2,DetachedAuthoredWorkflowTest.find(panel,"observed-state-selector",javax.swing.JComboBox.class).getItemCount());
   });
  }
  @Test void xmlDomainPolicyExcludesPerPlayerStepNoiseButKeepsFailuresAndAuditInput() {
@@ -41,7 +43,7 @@ class BusinessTimelineTest {
   javax.swing.SwingUtilities.invokeAndWait(()->{
    var panel=new ObservedConformancePanel();var input=new ArrayList<Cut>();
    for(int n=0;n<30;n++)input.add(new Cut("run:"+n,"trace","full audit state",List.of(),"INCOMPLETE","CURRENT_OBSERVED",false,n<10?"initial":n<20?"opened":"closed","Requirements: KNOWN","small selected projection"));
-   panel.setCuts(input);var combo=(javax.swing.JComboBox<?>)components(panel).stream().filter(c->c instanceof javax.swing.JComboBox).findFirst().orElseThrow();assertEquals(3,combo.getItemCount());
+   panel.setCuts(input);var combo=DetachedAuthoredWorkflowTest.find(panel,"observed-state-selector",javax.swing.JComboBox.class);assertEquals(3,combo.getItemCount());
    assertTrue(components(panel).stream().filter(c->c instanceof javax.swing.JTextArea).map(c->((javax.swing.JTextArea)c).getText()).anyMatch(t->t.equals("small selected projection")));
    ((javax.swing.JButton)components(panel).stream().filter(c->"observed-interval-details".equals(c.getName())).findFirst().orElseThrow()).doClick();
    assertEquals(10,combo.getItemCount());assertEquals("run:29",panel.selectedCut().id());
@@ -62,6 +64,18 @@ class BusinessTimelineTest {
   var created=new Cut("created","source","native",List.of(),"INCOMPLETE","CURRENT_OBSERVED",false,"object-hash","","selected object",false,true,false);
   var removed=new Cut("removed","source","native",List.of(),"INCOMPLETE","CURRENT_OBSERVED",false,"empty-hash","","selected empty",false,true,true);
   assertTrue(BusinessTimeline.summarize(List.of(empty)).isEmpty());assertEquals(List.of(created,removed),BusinessTimeline.summarize(List.of(empty,created,removed)));
+ }
+ @Test void failureMilestoneAssociationStaysInItsOwnBusinessPhaseWhenAStateReturnsLater() {
+  var input=new ArrayList<Cut>();for(int i=0;i<100;i++)input.add(cut(i,i<80?"open":i<90?"closed":"open",List.of(),"CURRENT_OBSERVED"));
+  var milestones=BusinessTimeline.summarize(input);var numbers=BusinessTimeline.milestoneNumbers(input,milestones);
+  assertEquals(1,numbers.get("run:75"));assertEquals(2,numbers.get("run:85"));assertEquals(3,numbers.get("run:95"));
+  assertEquals(3,milestones.size());assertEquals(100,input.size());
+ }
+ @Test void errorsBeforeAnyAdmittedBusinessStateDoNotInventAMilestone() {
+  var pending=new Cut("pending","trace","raw state",List.of(),"INCOMPLETE","CURRENT_OBSERVED",true,"","","",false);
+  var known=new Cut("known","trace","state",List.of(),"INCOMPLETE","CURRENT_OBSERVED",false,"one","","business",false);
+  var input=List.of(pending,known);var numbers=BusinessTimeline.milestoneNumbers(input,BusinessTimeline.summarize(input));
+  assertEquals(0,numbers.get("pending"));assertEquals(1,numbers.get("known"));
  }
  private List<java.awt.Component> components(java.awt.Container parent){var result=new ArrayList<java.awt.Component>();for(var child:parent.getComponents()){result.add(child);if(child instanceof java.awt.Container nested)result.addAll(components(nested));}return result;}
 }

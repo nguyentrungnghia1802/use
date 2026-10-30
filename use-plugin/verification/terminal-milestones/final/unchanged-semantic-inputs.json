@@ -1,0 +1,10 @@
+{
+  "use-plugin/examples/auction/authored-v1/auction_csl.csl": "0d0872612661235c0d7865c177dc31dfe2ef649913a99750eb9e42f87163de37",
+  "use-plugin/examples/auction/authored-v1/auction_istar_final.istar": "a3bb1203367f570d8a3cb9b9f5b1a6619d5e4db189ef304f409ca6cb49aea2a9",
+  "use-plugin/examples/auction/authored-v1/auction-mapping.xml": "f31bea3acf30ace170ea632c4deddcf92a5b0257d29d24cfa5feabf47d63bae8",
+  "use-plugin/examples/auction/authored-v1/auction_constraints_final_fixed.ocl": "891c77f07981e03c808cfdaf23285d5a6d9050859954f5f561f7308aab81039a",
+  "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/GoalMarking.java": "e9ddcc1bfbafef0c987be6c7a017f8ce88c56a16e3c757bc637d1e1246660f48",
+  "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/TaskMarking.java": "e5eae4cd7b10994e5d71c5c7782ff04de3972352f17f5c5fa0732d39eb9af07d",
+  "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/IStarMarking.java": "c93e88db8bf323991d3ae66f64cca1f3106edaa5ed9bde19fafbc057dc48910f",
+  "use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/IStarPropagation.java": "90e8ff0662f03889a4ec977cd1296c57f4dbdde2a0cbcde76afe937b25e35de3"
+}

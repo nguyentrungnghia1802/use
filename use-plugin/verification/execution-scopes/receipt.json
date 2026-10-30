@@ -1,0 +1,100 @@
+{
+  "status": "PASS",
+  "scope": "Independent exact execution views with bound Entity labels, Goal/Task results and domain milestones; whole-state OCL retained separately",
+  "auditFinding": "Backend already had two distinct execution contexts and two independent O_root results. Definition-wide Execution summaries and anonymous ISCN Context labels obscured the distinction.",
+  "install": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\execution-final-1orh6dgi\\use-7.5.0",
+  "launcher": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\execution-final-1orh6dgi\\use-7.5.0\\bin\\start_use.bat",
+  "archiveSha256": "86f2da98af1883345d3f4a8120df4b155acdf493d34a5140ae5bd352fdc3b6bc",
+  "liveEvidence": "use-plugin\\verification\\live-results-ui\\auction-2104563255162029220",
+  "executions": [
+    {
+      "boundaries": 1020,
+      "context": "xml-occurrence:1553a0add72a9ca0c966d4dfe5256c24b002d37a10ef50142a2336e5dcea9337",
+      "entities": {
+        "Auction:Auction_6a237860047dd3cfd006": {
+          "attributes": {
+            "best_bid": "21.17976336380444",
+            "currentWinner": "'alice'",
+            "id": "'a2'",
+            "running": "false",
+            "task": "'flight_ticket(athens,paris,date(18,12,2015))'",
+            "winner": "'alice'"
+          },
+          "identity": "xml:m0:c1e0756ed7c491a2af6914e4d0e7d147a31b85d74bf546e5796ae834d698a411"
+        }
+      },
+      "label": "Execution 1 — Auction · id='a2'",
+      "milestones": 5,
+      "root": "FULFILLED"
+    },
+    {
+      "boundaries": 1020,
+      "context": "xml-occurrence:f5ed397b5ca4ccb9d5ff31f71cef95d66591d8120bab76f900f5897580af2798",
+      "entities": {
+        "Auction:Auction_c299310b978f00709e32": {
+          "attributes": {
+            "best_bid": "17.553304030924913",
+            "currentWinner": "'giacomo'",
+            "id": "'a1'",
+            "running": "false",
+            "task": "'flight_ticket(paris,athens,date(15,12,2015))'",
+            "winner": "'giacomo'"
+          },
+          "identity": "xml:m0:2403855107e578f217b28c82fcd93c9c1b4fa5af96d879b09c3fe2628a8f1e4f"
+        }
+      },
+      "label": "Execution 2 — Auction · id='a1'",
+      "milestones": 5,
+      "root": "FULFILLED"
+    }
+  ],
+  "focusedTests": 62,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "externalAuctionIT": "PASS",
+  "sourceReplay": {
+    "entries": 1608,
+    "status": "PASS"
+  },
+  "installedFinalReplay": {
+    "entries": 1608,
+    "status": "PASS",
+    "finalStateHash": "7409f47deaffcb753df51c3a8ae4c198e20d6022818852015a9127780c5dfc49",
+    "finalResultHash": "5d14745f38005664683a00f484cfdc560e6d88d2a228bf0137f138e17abf9c04"
+  },
+  "negativeChecks": [
+    "Context one pending cannot borrow context two fulfillment",
+    "Missing selected context stays unavailable in ISCN and Results",
+    "Other execution changes do not change selected Entity business key",
+    "Global OCL failures/evidence remain visible separately",
+    "Overview and ISCN selections synchronize exact context IDs",
+    "Full native audit state/boundaries retained"
+  ],
+  "packageChecks": {
+    "status": "PASS",
+    "install": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\execution-final-1orh6dgi\\use-7.5.0",
+    "isolatedDriver": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\execution-final-1orh6dgi\\isolated-driver",
+    "archiveSha256": "86f2da98af1883345d3f4a8120df4b155acdf493d34a5140ae5bd352fdc3b6bc",
+    "liveImplementationEntriesEqualPackage": 119,
+    "packagedUiClassesEqualTested": 113,
+    "originalEngineClassesEqualPriorAcceptedPackage": 297,
+    "originalMarkingHashes": {
+      "GoalMarking": "56c9e566cd2f45ee4aa662257ef51eaa02e2836453eb5b05e2d80d83c95f4540",
+      "TaskMarking": "a3d1cf1437f4bb1fedc583f1086b695c3a22267ddd5a37117df340980135748a",
+      "IStarMarking": "07d383707a76f2b7227391b69275bb2d79e64cfb77f474e98d496f2553c0f922",
+      "IStarPropagation": "9f80d5c1b836a23c0d7f055baac2a895048dd53f44b1177f4b77680f8fdc9d75"
+    },
+    "currentCaseFilesEqualPackage": true,
+    "liveEvidence": "use-plugin\\verification\\live-results-ui\\auction-2104563255162029220"
+  },
+  "sourceFrozenFiles": 707,
+  "sourceFreeze": "source-freeze.json",
+  "visualQa": "Offscreen original Swing diagrams inspected for both a1/a2; full native topology and exact per-context badges",
+  "manualDesktopGuiTest": false,
+  "engineMarkingChanges": false,
+  "caseSpecificationChanges": false,
+  "fullCleanVerify": false,
+  "otherLiveCaseStudies": false,
+  "commitOrPush": false
+}

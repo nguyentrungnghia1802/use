@@ -19,6 +19,8 @@ public interface JaCaMoFacade {
     default ProjectSummary importProject(Path jcmFile) { throw new UnsupportedOperationException("IMPORT_NOT_CONFIGURED"); }
     /** Selection is input to Import; changing a widget never changes a live owner. */
     default ImportSelection importSelection() { return null; }
+    /** Default producer dependency file; a UI override is captured only at import. */
+    default Path defaultRuntimeClasspathFile() { return null; }
     default ProjectSummary importProject(Path jcmFile, ImportSelection selection) {
         if(selection!=null)throw new UnsupportedOperationException("SEMANTIC_SELECTION_NOT_CONFIGURED");
         return importProject(jcmFile);

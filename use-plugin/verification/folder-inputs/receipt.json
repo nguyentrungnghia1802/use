@@ -1,0 +1,60 @@
+{
+  "status": "PASS",
+  "scope": "Project-first model-folder inputs; optional external OCL; automatic producer classpath selection",
+  "install": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\folder-inputs-d55zwk00\\use-7.5.0",
+  "launcher": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\folder-inputs-d55zwk00\\use-7.5.0\\bin\\start_use.bat",
+  "archive": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\use-7.5.0-use-bin.zip",
+  "archiveSha256": "0adb8242d40422829e1b918d0504ab41cc06a61f088cda4b4e65717c6b552575",
+  "tests": [
+    {
+      "name": "ui.CaseStudyFilesTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "ui.ObservedConformanceWorkflowTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "ui.JaCaMoWorkbenchPanelTest",
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "semantics.xml.MappingInputsTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "semantics.xml.CurrentAuctionBundleTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "testedUiClassesEqualPackage": 111,
+  "originalEngineClassesUnchanged": 297,
+  "classpath": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\jacamo-bridge-jacamo\\target\\jacamo-bridge-classpath.txt",
+  "allClasspathEntriesPresent": 125,
+  "scriptSyntax": "PASS",
+  "sourceFreeze": "source-freeze.json",
+  "sourceAndInstalledOptionalOclAssets": "empty frozen asset; supplied hashes remain enforced; 7 embedded Auction clauses retained by native build test",
+  "freshLiveProducerTest": false,
+  "manualDesktopGuiTest": false,
+  "visualEvidence": [
+    "inputs.png",
+    "inputs-advanced.png"
+  ],
+  "package": "BUILD SUCCESS",
+  "installedUiRender": "PASS (installed host/plugin JARs only; offscreen Swing)"
+}

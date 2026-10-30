@@ -1232,3 +1232,6 @@
 "src/test/resources/org/tzi/use/parser/t9.use" text eol=crlf
 "src/test/resources/org/tzi/use/parser/test_expr.in" text eol=crlf
 "src/test/resources/org/tzi/use/parser/test_spec.use" text eol=crlf
+
+# Preserve final tested source-freeze bytes for repository delivery.
+"pom.xml" text eol=crlf

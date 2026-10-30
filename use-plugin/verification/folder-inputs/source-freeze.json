@@ -1,0 +1,11 @@
+{
+  "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/CaseStudyFiles.java": "916c17c8a6b009e49763104cf39cf2e358d22ef25ffd30c3b41e19aa0f679a56",
+  "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel.java": "2ceb9b0d02f1e0799f327896f05798fc6bb0ccd8ae22ba0c3fca11f4c07b8eeb",
+  "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ConformanceInputsPanel.java": "1d41eb0f712d15adac65143d4fc53815a7bad2009929323b7e7ff500a95705d9",
+  "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/JaCaMoFacade.java": "1e63c0873ea17a3d83716506b3bd85e9b5de72d4d44483d69547d331be9ef92d",
+  "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java": "5c3fddab8529833b684d8fb3a19e275a887cb0d4a4c1da0248e63886dca4bd11",
+  "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/MappingInputs.java": "236cff1f861d9d938270122c3b71e25ce828048e57ba9b7a1c2a41754f3c1431",
+  "use-plugin/tools/jacamo-bridge.ps1": "a2502c14067c554be2dd9eac92fa7afbbc0800097b52766eafe0f3cbc4fedecc",
+  "use-plugin/src/main/resources/META-INF/use4goal-workflow-provenance.json": "68abe04d885f0e5b193e543a407af615bf5dbd488657bd7fa96ced59a1555076",
+  "use-plugin/docs/project/use4goal-run.md": "8844324fb63992831ccf3fd1ce9d658bd5e1b4dae35d13cdbe420c8237a80b6f"
+}

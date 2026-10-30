@@ -1,0 +1,2 @@
+AUDIT cuts=1028 milestones=19 population={FAIL=39, PASS=290, SKIPPED=261}
+DERIVED_COVERAGE_PROBE {derivedAttribute=self.roles->select(r : RoleOccurrence | r.oclIsKindOf(auctioneer))->collect(r : RoleOccurrence | r.oclAsType(auctioneer))->asSet, coverageReason=, bodyVerdict=FAIL, directAttributeReads=[auctionGroup::auctioneer], rolesQuality=INCOMPLETE, navigationReadCount=0}

@@ -1,0 +1,6 @@
+{
+  "source": "use-plugin\\verification\\live-results-ui\\auction-3514017882445095492\\result.json",
+  "sourceSha256": "71cf822e44aecbf0f2b62f22bd8b125dc582055e933df8bad78498364cf07bfe",
+  "fixture": "use-plugin\\src\\test\\resources\\semantics\\recorded-scoped-native-execution.json.gz",
+  "fixtureSha256": "ecb499885ccca37849c35f7e03e222c441ba3ff88fb26862658b55a879c26649"
+}

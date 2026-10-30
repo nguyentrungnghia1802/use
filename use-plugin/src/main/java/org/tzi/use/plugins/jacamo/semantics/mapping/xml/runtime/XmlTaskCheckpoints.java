@@ -68,7 +68,14 @@ public final class XmlTaskCheckpoints {
             }
         if(candidates.size()!=1){if(!step.phase().equals("ENABLED"))active.remove(step.invocation());unavailable(step,"EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE");return;}
         var candidate=candidates.getFirst();var member=candidate.member();var scope=candidate.scope();var demand=candidate.demand();
-        var role=engine.objectForSemanticId(member.role());String floor=role==null?"":engine.metadata(role,"xml:m0:observer-floor");
+        var role=engine.objectForSemanticId(member.role());
+        if(member.role().isBlank()) {
+            var contexts=engine.system().state().allObjects().stream().filter(o->program.hash().equals(engine.metadata(o,"xml:m0:program"))
+                    &&member.player().equals(engine.metadata(o,"xml:m0:representedPlayer"))
+                    &&!member.interval().isBlank()&&member.interval().equals(engine.metadata(o,"xml:m0:lifetime"))).toList();
+            if(contexts.size()==1)role=contexts.getFirst();
+        }
+        String floor=role==null?"":engine.metadata(role,"xml:m0:observer-floor");
         try{if(floor.isBlank()||event.sourceSequence()<=Long.parseLong(floor)){unavailable(step,"STEP_PRECEDES_OBSERVED_ROLE_INTERVAL");return;}}catch(NumberFormatException invalid){unavailable(step,"OBSERVED_ROLE_INTERVAL_FLOOR_UNAVAILABLE");return;}
         String references=referenceHash(bindings.slots().get(step.task()).definition(),scope,member,step.task());
         var marker=new Marker(scope.id(),member.actor(),member.player(),member.role(),member.interval(),step.task(),demand.episode(),step.goalInvocation(),step.invocation(),step.phase(),event.sourceSequence(),references,"");String slot=key(marker);

@@ -1,0 +1,177 @@
+{
+  "license": "GPL-3.0",
+  "upstreamCommit": "6f3e73801239fd8bfb94ca8d04ba531b903c0ac9",
+  "files": [
+    {
+      "upstream": "..\\use4Goal\\goal\\src\\main\\java\\org\\vnu\\sme\\goal\\dsl\\aol\\mm\\AolEntityInstance.java",
+      "sourceSha256": "aac21d3f8752906463ce2d165ec33887357393c0c6836c1549899b5bea52d448",
+      "target": "use-plugin\\src\\main\\java\\org\\tzi\\use\\plugins\\jacamo\\ui\\use4goal\\aol\\mm\\AolEntityInstance.java",
+      "patches": [
+        "relocate UI namespace",
+        "replace legacy state type with immutable accepted-state presentation DTO; no evaluator"
+      ],
+      "targetSha256": "b253db25a32ef97e450fb35f26b91d14382428820b08e230ed539da56f359f20"
+    },
+    {
+      "upstream": "..\\use4Goal\\goal\\src\\main\\java\\org\\vnu\\sme\\goal\\dsl\\aol\\mm\\AolGroupInstance.java",
+      "sourceSha256": "65e35b453dafab730177d05a17b0df774051db98e10fc39180a366f863b6dad4",
+      "target": "use-plugin\\src\\main\\java\\org\\tzi\\use\\plugins\\jacamo\\ui\\use4goal\\aol\\mm\\AolGroupInstance.java",
+      "patches": [
+        "relocate UI namespace",
+        "replace legacy state type with immutable accepted-state presentation DTO; no evaluator"
+      ],
+      "targetSha256": "d407d3c70ccf0309671c150e5cdecefb01dd833b257f1fc3934d286dd8bbb1e5"
+    },
+    {
+      "upstream": "..\\use4Goal\\goal\\src\\main\\java\\org\\vnu\\sme\\goal\\dsl\\aol\\mm\\AolLink.java",
+      "sourceSha256": "16b5618fd4ac78f4c2055403e79fa5b26c15f3d4260b891afd53b5973aaafb15",
+      "target": "use-plugin\\src\\main\\java\\org\\tzi\\use\\plugins\\jacamo\\ui\\use4goal\\aol\\mm\\AolLink.java",
+      "patches": [
+        "relocate UI namespace",
+        "replace legacy state type with immutable accepted-state presentation DTO; no evaluator"
+      ],
+      "targetSha256": "728e31a9d6a17ddccae9e5cfcae433ddbf7874555641bf8355267f3e1dcb0822"
+    },
+    {
+      "upstream": "..\\use4Goal\\goal\\src\\main\\java\\org\\vnu\\sme\\goal\\dsl\\aol\\mm\\AolModel.java",
+      "sourceSha256": "1c0ce7480f9b7bad0d5795c0456c3ccd5838b788aee6a31b93e26bf536d6f929",
+      "target": "use-plugin\\src\\main\\java\\org\\tzi\\use\\plugins\\jacamo\\ui\\use4goal\\aol\\mm\\AolModel.java",
+      "patches": [
+        "relocate UI namespace",
+        "replace legacy state type with immutable accepted-state presentation DTO; no evaluator"
+      ],
+      "targetSha256": "15dea5f7d5a11ada0128ca58657511e14f5c057af575b8e500494acb411ee254"
+    },
+    {
+      "upstream": "..\\use4Goal\\goal\\src\\main\\java\\org\\vnu\\sme\\goal\\dsl\\aol\\mm\\AolPlay.java",
+      "sourceSha256": "dc5f8807671d76e8c2c8e4b24d5d63e77d1c391365adb8fc18fb97fae78db6b0",
+      "target": "use-plugin\\src\\main\\java\\org\\tzi\\use\\plugins\\jacamo\\ui\\use4goal\\aol\\mm\\AolPlay.java",
+      "patches": [
+        "relocate UI namespace",
+        "replace legacy state type with immutable accepted-state presentation DTO; no evaluator"
+      ],
+      "targetSha256": "61d8186df97a1361e5f6c7d91e0e4fbed69bdf6e02bbfbe7e9ef24c9f84498a2"
+    },
+    {
+      "upstream": "..\\use4Goal\\goal\\src\\main\\java\\org\\vnu\\sme\\goal\\dsl\\aol\\view\\AolDiagram.java",
+      "sourceSha256": "9081670f4220ac18ce0163b8aaae0ed22a3dcb3e0315cbde8cc58cd08004ed77",
+      "target": "use-plugin\\src\\main\\java\\org\\tzi\\use\\plugins\\jacamo\\ui\\use4goal\\aol\\view\\AolDiagram.java",
+      "patches": [
+        "relocate UI namespace",
+        "replace legacy state type with immutable accepted-state presentation DTO; no evaluator",
+        "ROUTE_MEMBERSHIP_LINKS_AROUND_ATTRIBUTE_BOXES"
+      ],
+      "targetSha256": "e4c55987cc1c49718ccd1aef3cbe6633d94d2c3f29bd58583f0ad93e0e31e691"
+    },
+    {
+      "upstream": "..\\use4Goal\\goal\\src\\main\\java\\org\\vnu\\sme\\goal\\dsl\\aol\\view\\AolDiagramEdge.java",
+      "sourceSha256": "8b64c70e138580ee76c7830232951ac6e3795ea596e5d4094879423e5cd13a0a",
+      "target": "use-plugin\\src\\main\\java\\org\\tzi\\use\\plugins\\jacamo\\ui\\use4goal\\aol\\view\\AolDiagramEdge.java",
+      "patches": [
+        "relocate UI namespace",
+        "replace legacy state type with immutable accepted-state presentation DTO; no evaluator",
+        "EXPLICIT_ENACTMENT_VIEW_AND_FAILURE_NAVIGATION",
+        "ROUTE_MEMBERSHIP_LINKS_AROUND_ATTRIBUTE_BOXES"
+      ],
+      "targetSha256": "bedb1acced8f8874fef7afcd641523c675f3fbfdfe233d119b95ab6629775217"
+    },
+    {
+      "upstream": "..\\use4Goal\\goal\\src\\main\\java\\org\\vnu\\sme\\goal\\dsl\\aol\\view\\AolDiagramNode.java",
+      "sourceSha256": "a62a04051c001dec3ca8217b181f4b3b1af3d02da254a41d4ab28d76ea8f1fc8",
+      "target": "use-plugin\\src\\main\\java\\org\\tzi\\use\\plugins\\jacamo\\ui\\use4goal\\aol\\view\\AolDiagramNode.java",
+      "patches": [
+        "relocate UI namespace",
+        "replace legacy state type with immutable accepted-state presentation DTO; no evaluator"
+      ],
+      "targetSha256": "c957c5b91a9b3721e963928cb2066910e94624e31e5a45a797ac19bf61079b39"
+    },
+    {
+      "upstream": "..\\use4Goal\\goal\\src\\main\\java\\org\\vnu\\sme\\goal\\dsl\\aol\\view\\AolDiagramOptions.java",
+      "sourceSha256": "200d5b9403743b77e0e72eafca32144bba52a844cd59e13a629033861f99adc0",
+      "target": "use-plugin\\src\\main\\java\\org\\tzi\\use\\plugins\\jacamo\\ui\\use4goal\\aol\\view\\AolDiagramOptions.java",
+      "patches": [
+        "relocate UI namespace",
+        "replace legacy state type with immutable accepted-state presentation DTO; no evaluator"
+      ],
+      "targetSha256": "b66d5fffd002f45f5a5dfb1c043e5665b68f66a7f4ff85b420b23bdbd12254c4"
+    },
+    {
+      "upstream": "..\\use4Goal\\goal\\src\\main\\java\\org\\vnu\\sme\\goal\\dsl\\aol\\view\\AolEdge.java",
+      "sourceSha256": "77d057b48c577d68ed7f8afd89291f54c328378516568cb311c09181999b85f2",
+      "target": "use-plugin\\src\\main\\java\\org\\tzi\\use\\plugins\\jacamo\\ui\\use4goal\\aol\\view\\AolEdge.java",
+      "patches": [
+        "relocate UI namespace",
+        "replace legacy state type with immutable accepted-state presentation DTO; no evaluator"
+      ],
+      "targetSha256": "0d13a6165bebe646840f83263900921447b7828c7992767167db7f8839152bb4"
+    },
+    {
+      "upstream": "..\\use4Goal\\goal\\src\\main\\java\\org\\vnu\\sme\\goal\\dsl\\aol\\view\\AolEdgeKind.java",
+      "sourceSha256": "b28c654d17f657051c7939078a39f3ceb6fabf6a5c6322b8a0963293665cdccd",
+      "target": "use-plugin\\src\\main\\java\\org\\tzi\\use\\plugins\\jacamo\\ui\\use4goal\\aol\\view\\AolEdgeKind.java",
+      "patches": [
+        "relocate UI namespace",
+        "replace legacy state type with immutable accepted-state presentation DTO; no evaluator"
+      ],
+      "targetSha256": "567ff523c164269a3894822227fc46ff3bd83eff2b99a7ecfee59c5a6a4d1d39"
+    },
+    {
+      "upstream": "..\\use4Goal\\goal\\src\\main\\java\\org\\vnu\\sme\\goal\\dsl\\aol\\view\\AolLayout.java",
+      "sourceSha256": "1e53f03552f311141cd77d8eaca11f6fb137fdf899c6ac1d4c1d2b547eb6c039",
+      "target": "use-plugin\\src\\main\\java\\org\\tzi\\use\\plugins\\jacamo\\ui\\use4goal\\aol\\view\\AolLayout.java",
+      "patches": [
+        "relocate UI namespace",
+        "replace legacy state type with immutable accepted-state presentation DTO; no evaluator"
+      ],
+      "targetSha256": "39530c5861ab9f08d151fe7b30b2218080db569941660706fef8f75bb22cc209"
+    },
+    {
+      "upstream": "..\\use4Goal\\goal\\src\\main\\java\\org\\vnu\\sme\\goal\\dsl\\aol\\view\\AolLayoutBuilder.java",
+      "sourceSha256": "07a2a6fa9042bbbb3245a26821c6558254ea55db624ac17dc5df7d754e01d913",
+      "target": "use-plugin\\src\\main\\java\\org\\tzi\\use\\plugins\\jacamo\\ui\\use4goal\\aol\\view\\AolLayoutBuilder.java",
+      "patches": [
+        "relocate UI namespace",
+        "replace legacy state type with immutable accepted-state presentation DTO; no evaluator",
+        "EXPLICIT_ENACTMENT_VIEW_AND_FAILURE_NAVIGATION",
+        "FROZEN_PLAYER_LABELS_AND_COMPACT_STATE_ROWS"
+      ],
+      "targetSha256": "40ec61c43fd11a7ec9908522cc44d1237c60c4c6abc56d9cccf4a7e55f838ebc"
+    },
+    {
+      "upstream": "..\\use4Goal\\goal\\src\\main\\java\\org\\vnu\\sme\\goal\\dsl\\aol\\view\\AolNode.java",
+      "sourceSha256": "ef44939a06442135f874381b356091940a8e2fe2d62106540c845ec9cf74b72f",
+      "target": "use-plugin\\src\\main\\java\\org\\tzi\\use\\plugins\\jacamo\\ui\\use4goal\\aol\\view\\AolNode.java",
+      "patches": [
+        "relocate UI namespace",
+        "replace legacy state type with immutable accepted-state presentation DTO; no evaluator"
+      ],
+      "targetSha256": "f27a825a7825fbbdd2eb9252b837889bd4f019145e96487742481a64116954d4"
+    },
+    {
+      "upstream": "..\\use4Goal\\goal\\src\\main\\java\\org\\vnu\\sme\\goal\\dsl\\aol\\view\\AolNodeKind.java",
+      "sourceSha256": "a9ae91c8ba41f52d1341f6fc64644988d6c3e301e5b087b2b845269a578f117c",
+      "target": "use-plugin\\src\\main\\java\\org\\tzi\\use\\plugins\\jacamo\\ui\\use4goal\\aol\\view\\AolNodeKind.java",
+      "patches": [
+        "relocate UI namespace",
+        "replace legacy state type with immutable accepted-state presentation DTO; no evaluator"
+      ],
+      "targetSha256": "89685686f40c842afc520174c69322be2ecf6c976430cbf2a60bccaca8a28592"
+    },
+    {
+      "upstream": "..\\use4Goal\\goal\\src\\main\\java\\org\\vnu\\sme\\goal\\dsl\\aol\\view\\AolSpecText.java",
+      "sourceSha256": "c372d2e17c8e38d3f836d171e9e091fa7ad71806cf5715d4ee0e9fd1835ae464",
+      "target": "use-plugin\\src\\main\\java\\org\\tzi\\use\\plugins\\jacamo\\ui\\use4goal\\aol\\view\\AolSpecText.java",
+      "patches": [
+        "relocate UI namespace",
+        "replace legacy state type with immutable accepted-state presentation DTO; no evaluator"
+      ],
+      "targetSha256": "811490a9fac7e6660e57f9e7b4f095fd81affa1c06688472ede1c6b59dd0d717"
+    }
+  ],
+  "iscnReuse": {
+    "renderer": "Existing migrated IStarView and instance label/badge APIs, following original IStarScenarioView approach",
+    "topology": "Existing OccurrenceGoalModelExpander rebuilds display-only instance graph; exact source/actor/player/role/kind trace bijection required before overlay",
+    "evaluation": "Never executes IStarScenarioCompiler or original marking again; qualified statuses are borrowed from selected recorded cut"
+  },
+  "stateAdapter": "AOL renderer only; no legacy CslSystemState evaluator or name-convention backend is used. AcceptedAolState is immutable presentation data, not an authoritative runtime."
+}

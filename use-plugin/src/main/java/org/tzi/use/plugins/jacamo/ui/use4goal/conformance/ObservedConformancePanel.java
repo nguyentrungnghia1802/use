@@ -14,35 +14,54 @@ import javax.swing.table.DefaultTableModel;
  * This component owns immutable presentation values only.
  */
 public final class ObservedConformancePanel extends JPanel {
-    public record Evaluation(String element, String raw, String status, String quality, String evidence,String certifiedHistory,boolean required,String kind,String originalStatus) {
+    public record Evaluation(String element, String raw, String status, String quality, String evidence,String certifiedHistory,boolean required,String kind,String originalStatus,String player,String context,String occurrence) {
+        public Evaluation(String element,String raw,String status,String quality,String evidence,String history,boolean required,String kind,String originalStatus){this(element,raw,status,quality,evidence,history,required,kind,originalStatus,"","","");}
         public Evaluation(String element,String raw,String status,String quality,String evidence,String history,boolean required,String kind){this(element,raw,status,quality,evidence,history,required,kind,kind.equals("GOAL_TASK")?raw:"");}
         public Evaluation(String element,String raw,String status,String quality,String evidence,String history,boolean required){this(element,raw,status,quality,evidence,history,required,"");}
         public Evaluation(String element,String raw,String status,String quality,String evidence,String history){this(element,raw,status,quality,evidence,history,true);}
         public Evaluation(String element,String raw,String status,String quality,String evidence){this(element,raw,status,quality,evidence,"",true);}
     }
     public record Cut(String id, String trace, String state, List<Evaluation> evaluations,
-                      String coverage, String freshness, boolean failed,String businessKey,String requirements,String businessState,boolean executionMilestones,boolean selectedRequirements,boolean businessPopulationEmpty) {
+                      String coverage, String freshness, boolean failed,String businessKey,String requirements,String businessState,boolean executionMilestones,boolean selectedRequirements,boolean businessPopulationEmpty,java.util.Map<String,Object> visualEvidence) {
+        public Cut(String id,String trace,String state,List<Evaluation> evaluations,String coverage,String freshness,boolean failed,String businessKey,String requirements,String businessState,boolean executionMilestones,boolean selectedRequirements,boolean businessPopulationEmpty){this(id,trace,state,evaluations,coverage,freshness,failed,businessKey,requirements,businessState,executionMilestones,selectedRequirements,businessPopulationEmpty,java.util.Map.of());}
         public Cut(String id,String trace,String state,List<Evaluation> evaluations,String coverage,String freshness,boolean failed,String businessKey,String requirements,String businessState,boolean executionMilestones,boolean selectedRequirements){this(id,trace,state,evaluations,coverage,freshness,failed,businessKey,requirements,businessState,executionMilestones,selectedRequirements,false);}
         public Cut(String id,String trace,String state,List<Evaluation> evaluations,String coverage,String freshness,boolean failed,String businessKey,String requirements,String businessState,boolean executionMilestones){this(id,trace,state,evaluations,coverage,freshness,failed,businessKey,requirements,businessState,executionMilestones,false);}
         public Cut(String id,String trace,String state,List<Evaluation> evaluations,String coverage,String freshness,boolean failed,String businessKey,String requirements,String businessState){this(id,trace,state,evaluations,coverage,freshness,failed,businessKey,requirements,businessState,true);}
         public Cut(String id,String trace,String state,List<Evaluation> evaluations,String coverage,String freshness,boolean failed,String businessKey,String requirements){this(id,trace,state,evaluations,coverage,freshness,failed,businessKey,requirements,"");}
         public Cut(String id,String trace,String state,List<Evaluation> evaluations,String coverage,String freshness,boolean failed){this(id,trace,state,evaluations,coverage,freshness,failed,state,"","");}
-        public Cut { evaluations = List.copyOf(evaluations); }
+        public Cut { evaluations = List.copyOf(evaluations); visualEvidence=java.util.Map.copyOf(visualEvidence); }
     }
     private final boolean liveOnly;
     private LiveGoalSummary liveSummary;
     private java.util.List<LiveGoalSummary.Row> liveRows=java.util.List.of();
-    private final DefaultTableModel liveGoals=new DefaultTableModel(new String[]{"Goal / Task","Original history (raw)","Certified execution"},0){@Override public boolean isCellEditable(int r,int c){return false;}};
+    private List<Evaluation> displayedInstances=List.of();
+    private final DefaultTableModel liveGoals=new DefaultTableModel(new String[]{"Goal / Task","Raw summary","Certified summary","Result role","Instance evidence"},0){@Override public boolean isCellEditable(int r,int c){return false;}};
+    private final DefaultTableModel liveInstances=new DefaultTableModel(new String[]{"Player","Context","Raw","Certified","Quality / reason"},0){@Override public boolean isCellEditable(int r,int c){return false;}};
+    private final JTable liveInstanceTable=named(new JTable(liveInstances),"live-goal-instances");
+    private final JTabbedPane liveDetailTabs=named(new JTabbedPane(),"live-detail-tabs");
+    private final JLabel requirementScope=named(new JLabel("No selected verification state"),"observed-requirement-scope");
     private final DefaultTableModel liveChecks=new DefaultTableModel(new String[]{"OCL / Binding check","Result","Quality / reason","Context / invocation / expression / witness"},0){@Override public boolean isCellEditable(int r,int c){return false;}};
+    private final JTable liveCheckTable=named(new JTable(liveChecks),"live-ocl-checks");
     private final JTable liveGoalTable=named(new JTable(liveGoals),"live-goal-status");
     private final JTextArea liveDetails=named(new JTextArea(),"live-evidence-details");
     private final JTextArea counterexampleTraceArea = new JTextArea();
     private final JTextArea stateSnapshotText = new JTextArea();
-    private final JComboBox<String> stateSelectorCombo = new JComboBox<>();
+    private final JComboBox<String> stateSelectorCombo = named(new JComboBox<>(),"observed-state-selector");
     private final JButton statePrevButton = named(new JButton("< Previous State"), "observed-previous");
     private final JButton stateNextButton = named(new JButton("Next State >"), "observed-next");
-    private final JButton jumpCheckpointButton = named(new JButton("Go to Failure Checkpoint"), "observed-failure");
-    private final JLabel stateStepInfoLabel = new JLabel("State 0 / 0");
+    private final JButton jumpCheckpointButton = named(new JButton("Failure Point"), "observed-failure");
+    private record FailurePoint(Cut cut,Evaluation evaluation,String category,int boundary,int milestone,boolean audit) {
+        @Override public String toString(){return (audit?"Boundary "+boundary:milestone==0?"Before first milestone":"Milestone "+milestone)+" · "+category+" · "+(evaluation==null?"verification failure":evaluation.element()+" ["+evaluation.status()+"]");}
+    }
+    private final JComboBox<String> failureFilter=named(new JComboBox<>(new String[]{"All failures","Goal / Task","OCL / constraints","Diagnostics"}),"observed-failure-filter");
+    private final JComboBox<FailurePoint> failurePoints=named(new JComboBox<>(),"observed-failure-points");
+    private boolean updatingFailures;
+    private FailurePoint failureFocus;
+    private List<Cut> businessMilestones=List.of();
+    private java.util.Map<String,Integer> milestoneNumbers=java.util.Map.of();
+    private final JToggleButton auditToggle=named(new JToggleButton("Audit details"),"observed-audit-toggle");
+    private final JButton milestonesButton=named(new JButton("Milestones"),"observed-milestones");
+    private final JLabel stateStepInfoLabel = named(new JLabel("State 0 / 0"),"observed-state-position");
     private final JLabel conformanceResultLabel = new JLabel("NOT_EVALUATED", SwingConstants.CENTER);
     private final JLabel riskResultLabel = named(new JLabel("UNAVAILABLE", SwingConstants.CENTER), "observed-quality");
     private final DefaultTableModel oclGoalModel = new DefaultTableModel(
@@ -51,7 +70,26 @@ public final class ObservedConformancePanel extends JPanel {
     };
     private final JTable oclGoalTable = named(new JTable(oclGoalModel), "observed-goals");
     private List<Cut> currentCounterexampleStates = List.of();
-    private List<Cut> auditCuts=List.of();
+    private List<Cut> auditCuts=List.of(),allCuts=List.of();
+    private final JComboBox<String> executionSelector=named(new JComboBox<>(),"execution-scope-selector");
+    private java.util.Map<String,String> executionLabels=java.util.Map.of();
+    private boolean updatingExecutions;
+    private String executionScope="";
+    private java.util.function.Consumer<String> executionListener=id->{};
+    public void onExecutionSelected(java.util.function.Consumer<String> listener){executionListener=java.util.Objects.requireNonNull(listener);}
+    public void selectExecution(String id){
+        if(id==null||id.isBlank()||java.util.Objects.equals(executionScope,id))return;
+        executionScope=id==null?"":id;failureFocus=null;intervalIds=null;selectedStateIndex=-1;
+        setCuts(allCuts);executionListener.accept(executionScope);
+    }
+    private void refreshExecutions(){
+        updatingExecutions=true;
+        try{executionLabels=ExecutionScopeViews.choices(allCuts);executionSelector.removeAllItems();
+            executionLabels.keySet().forEach(executionSelector::addItem);
+            if(!executionLabels.containsKey(executionScope))executionScope=executionLabels.isEmpty()?"":executionLabels.keySet().iterator().next();
+            executionSelector.setSelectedItem(executionScope);
+        }finally{updatingExecutions=false;}
+    }
     private java.util.Set<String> intervalIds;
     private final JCheckBox details=named(new JCheckBox("Show all audit boundaries",false),"observed-details");
     private int selectedStateIndex = -1;
@@ -71,7 +109,8 @@ public final class ObservedConformancePanel extends JPanel {
             @Override public Component getListCellRendererComponent(JList<?> list,Object value,int index,boolean selected,boolean focus){
                 super.getListCellRendererComponent(list,value,index,selected,focus);
                 int ordinal=index<0?selectedStateIndex:index;
-                setText(ordinal<0?"Select state":(details.isSelected()?"Boundary ":"Milestone ")+(ordinal+1));setToolTipText(value==null?null:value.toString());return this;
+                int shown=details.isSelected()&&value!=null?java.util.stream.IntStream.range(0,auditCuts.size()).filter(i->auditCuts.get(i).id().equals(value)).findFirst().orElse(ordinal):liveOnly&&value!=null?milestoneNumbers.getOrDefault(value,0)-1:ordinal;
+                setText(shown<0?(value==null?"Select state":"Before first milestone"):(details.isSelected()?"Boundary ":"Milestone ")+(shown+1));setToolTipText(value==null?null:value.toString());return this;
             }
         });
         if(liveOnly){setName("use4goal-live-results");add(buildLiveResults(),BorderLayout.CENTER);return;}
@@ -79,7 +118,7 @@ public final class ObservedConformancePanel extends JPanel {
         var controls=new JPanel(new FlowLayout(FlowLayout.LEFT,8,3));
         controls.add(details);
         add(controls,BorderLayout.NORTH);
-        details.addActionListener(e->{intervalIds=null;details.setText("Show all audit boundaries");setCuts(auditCuts);});
+        details.addActionListener(e->{intervalIds=null;details.setText("Show all audit boundaries");setCuts(allCuts);});
         var intervalButton=named(new JButton("Inspect milestone interval"),"observed-interval-details");
         controls.add(intervalButton);intervalButton.addActionListener(e->inspectInterval());
         statePrevButton.setEnabled(false);
@@ -87,16 +126,32 @@ public final class ObservedConformancePanel extends JPanel {
         jumpCheckpointButton.setEnabled(false);
     }
 
+    private java.util.function.Consumer<Cut> selectionListener=cut->{};
+    public void onSelectedCut(java.util.function.Consumer<Cut> listener){selectionListener=java.util.Objects.requireNonNull(listener);}
     public Cut selectedCut() {
         return selectedStateIndex < 0 ? null : currentCounterexampleStates.get(selectedStateIndex);
     }
 
     public void setCuts(List<Cut> cuts) {
         if (!SwingUtilities.isEventDispatchThread()) throw new IllegalStateException("OBSERVED_VIEW_REQUIRES_EDT");
-        auditCuts=List.copyOf(cuts);
+        allCuts=List.copyOf(cuts);
+        if(liveOnly)refreshExecutions();
+        boolean awaitingExecution=liveOnly&&executionScope.isBlank()&&allCuts.stream().anyMatch(c->c.visualEvidence().containsKey("originalEngine"));
+        auditCuts=awaitingExecution?List.of():executionScope.isBlank()?allCuts:allCuts.stream().map(c->ExecutionScopeViews.project(c,executionScope)).toList();
+        businessMilestones=BusinessTimeline.summarize(auditCuts);
+        // Keep latest epistemic diagnostics visible at the last business milestone,
+        // without inventing an Entity-state transition or copying old values.
+        if(!executionScope.isBlank()&&!businessMilestones.isEmpty()&&!auditCuts.isEmpty()&&auditCuts.getLast().businessKey().isBlank()){
+            var last=auditCuts.getLast();var retained=new java.util.ArrayList<Cut>(businessMilestones);var phase=retained.getLast();
+            retained.set(retained.size()-1,new Cut(last.id(),last.trace(),last.state(),last.evaluations(),last.coverage(),last.freshness(),last.failed(),phase.businessKey(),last.requirements(),last.businessState(),last.executionMilestones(),last.selectedRequirements(),last.businessPopulationEmpty(),last.visualEvidence()));
+            businessMilestones=List.copyOf(retained);
+        }
+        milestoneNumbers=BusinessTimeline.milestoneNumbers(auditCuts,businessMilestones);
+        if(failureFocus!=null&&auditCuts.stream().noneMatch(c->c.id().equals(failureFocus.cut().id())))failureFocus=null;
+        if(liveOnly)refreshFailurePoints();
         if(intervalIds!=null&&auditCuts.stream().noneMatch(c->intervalIds.contains(c.id()))){intervalIds=null;details.setSelected(false);details.setText("Show all audit boundaries");}
-        cuts=details.isSelected()?(intervalIds==null?auditCuts:auditCuts.stream().filter(c->intervalIds.contains(c.id())).toList()):BusinessTimeline.summarize(auditCuts);
-        if (currentCounterexampleStates.equals(cuts)) {if(liveOnly)jumpCheckpointButton.setEnabled(auditCuts.stream().anyMatch(ObservedConformancePanel::failureBoundary));return;}
+        cuts=intervalIds!=null?auditCuts.stream().filter(c->intervalIds.contains(c.id())).toList():details.isSelected()?auditCuts:businessMilestones;
+        if (currentCounterexampleStates.equals(cuts)) {if(liveOnly){jumpCheckpointButton.setEnabled(failurePoints.getItemCount()>0);if(selectedCut()!=null)updatePosition(selectedCut());stateSelectorCombo.repaint();}return;}
         String selected = selectedCut() == null ? "" : selectedCut().id();
         boolean follow = selectedStateIndex == currentCounterexampleStates.size() - 1;
         currentCounterexampleStates = List.copyOf(cuts);
@@ -113,16 +168,62 @@ public final class ObservedConformancePanel extends JPanel {
             }
         } finally { updatingStateComboInternal = false; }
         updateSelectedCounterexampleState(target);
-        if(liveOnly)jumpCheckpointButton.setEnabled(auditCuts.stream().anyMatch(ObservedConformancePanel::failureBoundary));
+        if(liveOnly)jumpCheckpointButton.setEnabled(failurePoints.getItemCount()>0);
     }
 
-    private static boolean failureBoundary(Cut cut){return cut.failed()||cut.evaluations().stream().anyMatch(r->java.util.Set.of("FAIL","FAILED","VIOLATED","ERROR").contains(r.status()));}
-    private void openAuditedFailure() {
-        var first=auditCuts.stream().filter(ObservedConformancePanel::failureBoundary).findFirst();if(first.isEmpty())return;
-        for(int i=0;i<currentCounterexampleStates.size();i++)if(currentCounterexampleStates.get(i).id().equals(first.get().id())){updateSelectedCounterexampleState(i);return;}
-        // A diagnostic boundary is not a new business state. Open the exact
-        // retained audit cut without synthesizing a state or dropping history.
-        intervalIds=java.util.Set.of(first.get().id());details.setSelected(true);details.setText("Failure checkpoint (audit)");setCuts(auditCuts);
+    private static boolean failureBoundary(Cut cut){return cut.failed()||cut.evaluations().stream().anyMatch(ObservedConformancePanel::failureEvaluation);}
+    private static boolean failureEvaluation(Evaluation row){
+        if(row.kind().equals("GOAL_TASK"))return java.util.Set.of("FAILED","VIOLATED").contains(row.status())&&java.util.Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(row.quality());
+        return java.util.Set.of("FAIL","FAILED","VIOLATED","ERROR","EXECUTION_FAILED").contains(row.status());
+    }
+    private String failureKey(Evaluation row){return row.kind()+"\u0000"+row.element()+"\u0000"+row.context()+"\u0000"+row.occurrence();}
+    private void refreshFailurePoints(){
+        var selected=(FailurePoint)failurePoints.getSelectedItem();updatingFailures=true;
+        try {
+            failurePoints.removeAllItems();var active=new java.util.HashSet<String>();int ordinal=0;String owner="";
+            for(var cut:auditCuts){ordinal++;boolean found=false;
+                Object core=cut.visualEvidence().get("originalEngine");
+                String currentOwner=core instanceof java.util.Map<?,?> engine&&engine.get("identity")!=null?org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(engine.get("identity")):"";
+                if(!currentOwner.isBlank()&&!currentOwner.equals(owner)){active.clear();owner=currentOwner;}
+                var failedBodies=cut.evaluations().stream().filter(r->r.kind().equals("INVARIANT_BODY")&&failureEvaluation(r)).map(Evaluation::element).collect(java.util.stream.Collectors.toSet());
+                for(var row:cut.evaluations()) {
+                    String key=failureKey(row);
+                    boolean recovered=row.kind().equals("GOAL_TASK")?row.status().equals("FULFILLED")&&java.util.Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(row.quality()):row.status().equals("PASS");
+                    if(recovered){active.remove(key);continue;}
+                    if(!failureEvaluation(row))continue;
+                    found=true;
+                    // The aggregate summarizes these exact counterexamples. Keep
+                    // each object witness once instead of adding a second failure.
+                    if(row.kind().equals("INVARIANT")&&failedBodies.contains(row.element()))continue;
+                    if(!active.add(key))continue;
+                    String category=row.status().equals("ERROR")?"Diagnostics":java.util.Set.of("GOAL_TASK","EXECUTION_OUTCOME").contains(row.kind())?"Goal / Task":"OCL / constraints";
+                    if(failureFilter.getSelectedIndex()==0||category.equals(failureFilter.getSelectedItem()))failurePoints.addItem(new FailurePoint(cut,row,category,ordinal,milestoneNumbers.getOrDefault(cut.id(),0),details.isSelected()));
+                }
+                if(cut.failed()&&!found&&active.add("boundary:"+cut.id())&&(failureFilter.getSelectedIndex()==0||"Diagnostics".equals(failureFilter.getSelectedItem())))failurePoints.addItem(new FailurePoint(cut,null,"Diagnostics",ordinal,milestoneNumbers.getOrDefault(cut.id(),0),details.isSelected()));
+            }
+            failurePoints.setSelectedIndex(-1);
+            if(selected!=null)for(int i=0;i<failurePoints.getItemCount();i++){var point=failurePoints.getItemAt(i);if(point.cut().id().equals(selected.cut().id())&&java.util.Objects.equals(point.evaluation(),selected.evaluation())){failurePoints.setSelectedIndex(i);break;}}
+            failurePoints.setEnabled(failurePoints.getItemCount()>0);jumpCheckpointButton.setEnabled(failurePoints.getItemCount()>0);
+        }finally{updatingFailures=false;}
+    }
+    private void openAuditedFailure(){
+        if(failurePoints.getItemCount()==0)return;
+        failurePoints.setSelectedIndex(0);openFailure(failurePoints.getItemAt(0));
+    }
+    private void openFailure(FailurePoint point){
+        if(point==null)return;
+        failureFocus=point;
+        int target=-1;for(int i=0;i<currentCounterexampleStates.size();i++)if(currentCounterexampleStates.get(i).id().equals(point.cut().id())){target=i;break;}
+        if(target<0){intervalIds=java.util.Set.of(point.cut().id());setCuts(allCuts);target=0;}
+        updateSelectedCounterexampleState(target);
+        var row=point.evaluation();if(row==null){liveDetails.setText(point.cut().trace());liveDetailTabs.setSelectedIndex(1);return;}
+        if(row.kind().equals("GOAL_TASK"))for(int i=0;i<liveRows.size();i++)if(liveRows.get(i).id().equals(row.element())){
+            liveGoalTable.setRowSelectionInterval(i,i);showGoalInstances(i);
+            for(int j=0;j<displayedInstances.size();j++)if(displayedInstances.get(j).equals(row)){liveInstanceTable.setRowSelectionInterval(j,j);break;}
+            break;
+        }
+        liveDetails.setText(row.element()+"\n"+row.status()+" | "+row.quality()+"\n"+row.evidence()+"\n"+row.certifiedHistory());liveDetails.setCaretPosition(0);liveDetailTabs.setSelectedIndex(1);
+        if(!row.kind().equals("GOAL_TASK"))for(int i=0;i<liveChecks.getRowCount();i++)if(row.element().equals(liveChecks.getValueAt(i,0))&&row.evidence().equals(liveChecks.getValueAt(i,3))){liveCheckTable.setRowSelectionInterval(i,i);liveCheckTable.scrollRectToVisible(liveCheckTable.getCellRect(i,0,true));break;}
     }
 
     private void inspectInterval() {
@@ -130,10 +231,11 @@ public final class ObservedConformancePanel extends JPanel {
         String previous=selectedStateIndex==0?"":currentCounterexampleStates.get(selectedStateIndex-1).id();String end=selectedCut().id();
         var ids=new java.util.LinkedHashSet<String>();boolean include=previous.isEmpty();
         for(var cut:auditCuts){if(include)ids.add(cut.id());if(cut.id().equals(previous))include=true;if(cut.id().equals(end))break;}
-        intervalIds=java.util.Set.copyOf(ids);details.setSelected(true);details.setText("Milestone interval details");setCuts(auditCuts);
+        intervalIds=java.util.Set.copyOf(ids);details.setSelected(true);details.setText("Milestone interval details");setCuts(allCuts);
     }
     private void navigateStateStep(int delta) {
         if (currentCounterexampleStates.isEmpty()) return;
+        failureFocus=null;
         updateSelectedCounterexampleState(Math.max(0, Math.min(currentCounterexampleStates.size() - 1, selectedStateIndex + delta)));
     }
 
@@ -145,6 +247,7 @@ public final class ObservedConformancePanel extends JPanel {
             stateStepInfoLabel.setText("State 0 / 0");
             conformanceResultLabel.setText("NOT_EVALUATED"); riskResultLabel.setText("UNAVAILABLE");
             statePrevButton.setEnabled(false); stateNextButton.setEnabled(false); jumpCheckpointButton.setEnabled(false);
+            selectionListener.accept(null);
             if(liveOnly)renderLive(null);
             return;
         }
@@ -155,10 +258,12 @@ public final class ObservedConformancePanel extends JPanel {
         Cut cut = selectedCut();
         statePrevButton.setEnabled(selectedStateIndex > 0);
         stateNextButton.setEnabled(selectedStateIndex < currentCounterexampleStates.size() - 1);
-        jumpCheckpointButton.setEnabled(currentFailureCheckpoint >= 0 || liveOnly&&auditCuts.stream().anyMatch(ObservedConformancePanel::failureBoundary));
-        stateStepInfoLabel.setText((details.isSelected()?"Boundary ":"Milestone ") + (selectedStateIndex + 1) + " / " + currentCounterexampleStates.size()+" ("+auditCuts.size()+" audit boundaries)");
-        stateSnapshotText.setText(!details.isSelected()&&!cut.businessState().isBlank()?cut.businessState():cut.state()); stateSnapshotText.setCaretPosition(0);
+        jumpCheckpointButton.setEnabled(liveOnly?failurePoints.getItemCount()>0:currentFailureCheckpoint>=0);
+        milestonesButton.setVisible(details.isSelected()||failureFocus!=null);
+        updatePosition(cut);
+        stateSnapshotText.setText((!executionScope.isBlank()||!details.isSelected())&&!cut.businessState().isBlank()?cut.businessState():cut.state()); stateSnapshotText.setCaretPosition(0);
         counterexampleTraceArea.setText(cut.trace()); counterexampleTraceArea.setCaretPosition(0);
+        selectionListener.accept(cut);
         if(liveOnly){renderLive(cut);return;}
         for (Evaluation row : cut.evaluations()) if(details.isSelected()||row.required()||java.util.Set.of("FAIL","ERROR","VIOLATED").contains(row.status()))oclGoalModel.addRow(new Object[]{row.element(), row.raw(), row.status(), row.quality(), row.evidence(),row.certifiedHistory()});
         conformanceResultLabel.setText(cut.failed() ? "Observed violation" : "Observed prefix");
@@ -166,22 +271,49 @@ public final class ObservedConformancePanel extends JPanel {
         riskResultLabel.setText("<html>"+cut.requirements()+"<br>Overall sources: "+cut.coverage()+" / "+cut.freshness()+"</html>");
     }
 
+    private void updatePosition(Cut cut){
+        stateStepInfoLabel.setText(details.isSelected()?"Boundary "+(auditCuts.indexOf(cut)+1)+" / "+auditCuts.size():((milestoneNumbers.getOrDefault(cut.id(),0)==0?"Before first milestone":"Milestone "+milestoneNumbers.get(cut.id())+" / "+businessMilestones.size())+(failureFocus==null?"":" — Failure Point")));
+    }
+
     private JPanel buildLiveResults(){
-        var goals=liveGoalTable;var checks=named(new JTable(liveChecks),"live-ocl-checks");
+        var goals=liveGoalTable;var checks=liveCheckTable;
+        int[] widths={260,110,130,135,185};for(int i=0;i<widths.length;i++)goals.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
+        int[] instanceWidths={110,110,100,100,350};for(int i=0;i<instanceWidths.length;i++)liveInstanceTable.getColumnModel().getColumn(i).setPreferredWidth(instanceWidths[i]);
         goals.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);liveDetails.setEditable(false);liveDetails.setLineWrap(true);liveDetails.setWrapStyleWord(true);
-        goals.getSelectionModel().addListSelectionListener(e->{if(!e.getValueIsAdjusting()){int row=goals.getSelectedRow();if(row>=0&&row<liveRows.size()){liveDetails.setText(liveRows.get(row).detail());liveDetails.setCaretPosition(0);}}});
-        checks.getSelectionModel().addListSelectionListener(e->{if(!e.getValueIsAdjusting()){int row=checks.getSelectedRow();if(row>=0){liveDetails.setText(checks.getValueAt(row,0)+"\n"+checks.getValueAt(row,1)+" | "+checks.getValueAt(row,2)+"\n"+checks.getValueAt(row,3));liveDetails.setCaretPosition(0);}}});
-        var upper=new JSplitPane(JSplitPane.VERTICAL_SPLIT,section("Goal & Task Status — model definitions",new JScrollPane(goals)),section("OCL / runtime binding checks",new JScrollPane(checks)));upper.setResizeWeight(.55);
-        var right=new JSplitPane(JSplitPane.VERTICAL_SPLIT,upper,section("Selected evidence / instance details",new JScrollPane(liveDetails)));right.setResizeWeight(.7);
+        goals.getSelectionModel().addListSelectionListener(e->{if(!e.getValueIsAdjusting()){showGoalInstances(goals.getSelectedRow());if(goals.getSelectedRow()>=0)liveDetailTabs.setSelectedIndex(0);}});
+        checks.getSelectionModel().addListSelectionListener(e->{if(!e.getValueIsAdjusting()){int row=checks.getSelectedRow();if(row>=0){liveDetails.setText(checks.getValueAt(row,0)+"\n"+checks.getValueAt(row,1)+" | "+checks.getValueAt(row,2)+"\n"+checks.getValueAt(row,3));liveDetails.setCaretPosition(0);liveDetailTabs.setSelectedIndex(1);}}});
+        liveInstanceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        liveInstanceTable.getSelectionModel().addListSelectionListener(e->{if(!e.getValueIsAdjusting())showInstanceEvidence();});
+        liveDetailTabs.addTab("Instances",new JScrollPane(liveInstanceTable));liveDetailTabs.addTab("Evidence",new JScrollPane(liveDetails));
+        goals.setToolTipText("Each row summarizes one definition across observed instances. MIXED/UNKNOWN is not a verdict for the selected requirement. Select a row to inspect each player.");
+        var upper=new JSplitPane(JSplitPane.VERTICAL_SPLIT,section("Goal & Task Status — selected execution",new JScrollPane(goals)),section("OCL / runtime binding checks — selected execution",new JScrollPane(checks)));upper.setResizeWeight(.55);
+        var right=new JSplitPane(JSplitPane.VERTICAL_SPLIT,upper,section("Selected evidence / instance details",liveDetailTabs));right.setResizeWeight(.7);
         stateSnapshotText.setEditable(false);var split=new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,section("Accepted CSL / USE state (read-only)",new JScrollPane(stateSnapshotText)),right);split.setResizeWeight(.4);
         var panel=new JPanel(new BorderLayout(5,5));
         var navigation=new JPanel(new BorderLayout());navigation.setBorder(BorderFactory.createTitledBorder("State navigation"));
-        var buttons=new JPanel(new FlowLayout(FlowLayout.LEFT,6,3));buttons.add(new JLabel("Go to State:"));buttons.add(stateSelectorCombo);buttons.add(statePrevButton);buttons.add(stateNextButton);buttons.add(jumpCheckpointButton);buttons.add(stateStepInfoLabel);
-        var options=new JPanel(new FlowLayout(FlowLayout.LEFT,6,3));options.add(details);var interval=named(new JButton("Inspect milestone interval"),"observed-interval-details");options.add(interval);
-        navigation.add(buttons,BorderLayout.CENTER);navigation.add(options,BorderLayout.SOUTH);
+        executionSelector.setPrototypeDisplayValue("Execution 123 — Entity · id='value'");
+        executionSelector.setRenderer(new DefaultListCellRenderer(){@Override public Component getListCellRendererComponent(JList<?> list,Object value,int index,boolean selected,boolean focus){
+            var label=(JLabel)super.getListCellRendererComponent(list,value,index,selected,focus);String id=java.util.Objects.toString(value,"");
+            label.setText(executionLabels.getOrDefault(id,id.isBlank()?"No admitted execution":id));label.setToolTipText(id);return label;}});
+        executionSelector.addActionListener(e->{if(!updatingExecutions)selectExecution((String)executionSelector.getSelectedItem());});
+        var buttons=new JPanel(new FlowLayout(FlowLayout.LEFT,6,3));buttons.add(new JLabel("Execution:"));buttons.add(executionSelector);buttons.add(new JLabel("Go to State:"));buttons.add(stateSelectorCombo);buttons.add(statePrevButton);buttons.add(stateNextButton);buttons.add(jumpCheckpointButton);buttons.add(milestonesButton);buttons.add(stateStepInfoLabel);
+        var options=new JPanel(new FlowLayout(FlowLayout.LEFT,6,3));
+        options.add(failureFilter);failurePoints.setPrototypeDisplayValue(new FailurePoint(new Cut("","","",List.of(),"","",false),new Evaluation("Constraint or Task definition","","FAIL","",""),"OCL / constraints",9999,9999,false));options.add(failurePoints);
+        options.add(auditToggle);details.setVisible(false);options.add(details);
+        auditToggle.addActionListener(e->{
+            var focus=failureFocus;String selected=selectedCut()==null?"":selectedCut().id();
+            details.setSelected(auditToggle.isSelected());intervalIds=null;setCuts(allCuts);
+            if(focus!=null)openFailure(focus);
+            else for(int i=0;i<currentCounterexampleStates.size();i++)if(currentCounterexampleStates.get(i).id().equals(selected)){updateSelectedCounterexampleState(i);break;}
+            stateSelectorCombo.repaint();
+        });
+        milestonesButton.setVisible(false);milestonesButton.addActionListener(e->{failureFocus=null;intervalIds=null;auditToggle.setSelected(false);details.setSelected(false);details.setText("Show all audit boundaries");setCuts(allCuts);if(selectedStateIndex>=0)updateSelectedCounterexampleState(selectedStateIndex);});
+        failureFilter.addActionListener(e->{refreshFailurePoints();});failurePoints.addActionListener(e->{if(!updatingFailures)openFailure((FailurePoint)failurePoints.getSelectedItem());});
+        failurePoints.setToolTipText("New failures in time order. Persistent failures appear once; only qualified PASS/FULFILLED starts recovery. Pending/SKIPPED never erase a failure. Supporting Task failure does not automatically violate a selected requirement.");
+        navigation.add(requirementScope,BorderLayout.NORTH);navigation.add(buttons,BorderLayout.CENTER);navigation.add(options,BorderLayout.SOUTH);
         statePrevButton.addActionListener(e->navigateStateStep(-1));stateNextButton.addActionListener(e->navigateStateStep(1));jumpCheckpointButton.addActionListener(e->openAuditedFailure());
-        stateSelectorCombo.addActionListener(e->{if(!updatingStateComboInternal&&stateSelectorCombo.getSelectedIndex()>=0)updateSelectedCounterexampleState(stateSelectorCombo.getSelectedIndex());});
-        details.addActionListener(e->{intervalIds=null;details.setText("Show all audit boundaries");setCuts(auditCuts);});interval.addActionListener(e->inspectInterval());
+        stateSelectorCombo.addActionListener(e->{if(!updatingStateComboInternal&&stateSelectorCombo.getSelectedIndex()>=0){failureFocus=null;updateSelectedCounterexampleState(stateSelectorCombo.getSelectedIndex());}});
+        details.addActionListener(e->{intervalIds=null;details.setText("Show all audit boundaries");setCuts(allCuts);});
         conformanceResultLabel.setName("observed-verdict");conformanceResultLabel.setFont(new Font(Font.SANS_SERIF,Font.BOLD,16));riskResultLabel.setFont(new Font(Font.SANS_SERIF,Font.BOLD,14));
         var footer=new JPanel(new GridLayout(1,2,5,5));footer.setPreferredSize(new Dimension(800,95));footer.add(section("Verification result",conformanceResultLabel));footer.add(section("Completeness / freshness",riskResultLabel));
         panel.add(navigation,BorderLayout.NORTH);panel.add(split,BorderLayout.CENTER);panel.add(footer,BorderLayout.SOUTH);return panel;
@@ -191,21 +323,64 @@ public final class ObservedConformancePanel extends JPanel {
         if(liveSummary==null)return;
         liveRows=liveSummary.rows(cut==null?List.of():cut.evaluations());
         // The M1 row set/order never depends on callback count or runtime population.
-        if(liveGoals.getRowCount()!=liveRows.size()){liveGoals.setRowCount(0);for(var row:liveRows)liveGoals.addRow(new Object[]{row.label(),row.originalStatus(),row.status()});}
-        else for(int i=0;i<liveRows.size();i++){liveGoals.setValueAt(liveRows.get(i).originalStatus(),i,1);liveGoals.setValueAt(liveRows.get(i).status(),i,2);}
+        if(liveGoals.getRowCount()!=liveRows.size()){liveGoals.setRowCount(0);for(var row:liveRows)liveGoals.addRow(new Object[]{scopedLabel(row.label(),cut),row.originalStatus(),row.status(),row.resultRole(),row.counts()});}
+        else for(int i=0;i<liveRows.size();i++){liveGoals.setValueAt(scopedLabel(liveRows.get(i).label(),cut),i,0);liveGoals.setValueAt(liveRows.get(i).originalStatus(),i,1);liveGoals.setValueAt(liveRows.get(i).status(),i,2);liveGoals.setValueAt(liveRows.get(i).resultRole(),i,3);liveGoals.setValueAt(liveRows.get(i).counts(),i,4);}
         liveChecks.setRowCount(0);
-        if(cut==null){conformanceResultLabel.setText("NOT_EVALUATED");riskResultLabel.setText("UNAVAILABLE");stateSnapshotText.setText("");statePrevButton.setEnabled(false);stateNextButton.setEnabled(false);jumpCheckpointButton.setEnabled(false);return;}
+        if(cut==null){conformanceResultLabel.setText("NOT_EVALUATED");riskResultLabel.setText("UNAVAILABLE");requirementScope.setText("No selected verification state");displayedInstances=List.of();liveInstances.setRowCount(0);liveDetails.setText("");stateSnapshotText.setText("");statePrevButton.setEnabled(false);stateNextButton.setEnabled(false);jumpCheckpointButton.setEnabled(false);return;}
+        var selected=liveRows.stream().filter(r->r.resultRole().equals("Selected requirement")).map(LiveGoalSummary.Row::label).toList();
+        Object inventory=cut.visualEvidence().get("requirementInventory");
+        boolean explicitSelection=cut.selectedRequirements()||inventory instanceof java.util.Map<?,?> values&&values.get("selectedIntentionalElements") instanceof List<?> ids&&!ids.isEmpty();
+        String scope=explicitSelection?"Selected Goal/Task requirements: "+(selected.isEmpty()?"no admitted result":String.join(", ",selected)):"Goal/Task requirements: all model definitions in observed instances";
+        requirementScope.setText(scope+" | Every authored OCL invariant remains required.");
+        requirementScope.setToolTipText("COMPLETE_OBSERVED applies to these requirements at the selected observed cut. Supporting skill summaries may remain UNKNOWN. Missing demand is not proof of non-applicability; overall source coverage is reported separately.");
         for(var row:cut.evaluations())if(!row.kind().equals("GOAL_TASK"))liveChecks.addRow(new Object[]{row.element(),row.status(),row.quality(),row.evidence()});
-        stateSnapshotText.setText(!details.isSelected()&&!cut.businessState().isBlank()?cut.businessState():cut.state());stateSnapshotText.setCaretPosition(0);
+        stateSnapshotText.setText((!executionScope.isBlank()||!details.isSelected())&&!cut.businessState().isBlank()?cut.businessState():cut.state());stateSnapshotText.setCaretPosition(0);
         conformanceResultLabel.setText(verdict(cut));
+        conformanceResultLabel.setToolTipText("Selected execution: independent Goal/Task root and scoped native OCL, including applicable shared structural rules");
         riskResultLabel.setToolTipText(cut.trace());
-        riskResultLabel.setText("<html>"+cut.requirements().replace(" | Last completion delay:","<br>Last completion delay:")+"<br>Sources: "+cut.coverage()+" / "+cut.freshness()+"</html>");
-        int selected=liveGoalTable.getSelectedRow();if(selected>=0&&selected<liveRows.size()){liveDetails.setText(liveRows.get(selected).detail());liveDetails.setCaretPosition(0);}
+        String overall="";
+        riskResultLabel.setText("<html>"+overall+cut.requirements().replace(" | Last completion delay:","<br>Last completion delay:")+"<br>Sources: "+cut.coverage()+" / "+cut.freshness()+"</html>");
+        showGoalInstances(liveGoalTable.getSelectedRow());
+    }
+
+    private String scopedLabel(String label,Cut cut){
+        if(cut==null||executionScope.isBlank())return label;
+        var context=ExecutionScopeViews.contexts(cut).stream().filter(c->executionScope.equals(c.get("context"))).findFirst().orElse(java.util.Map.of());
+        return label+" · "+ExecutionScopeViews.actorLabel(context,new java.util.ArrayList<>(executionLabels.keySet()).indexOf(executionScope)+1);
+    }
+    private void showGoalInstances(int index){
+        int prior=liveInstanceTable.getSelectedRow();
+        String selected=prior>=0&&prior<displayedInstances.size()?displayedInstances.get(prior).occurrence():"";
+        liveInstances.setRowCount(0);
+        displayedInstances=List.of();
+        if(index<0||index>=liveRows.size()){liveDetails.setText("");return;}
+        var row=liveRows.get(index);liveDetails.setText(row.detail());liveDetails.setCaretPosition(0);
+        displayedInstances=row.instances();
+        var contexts=new java.util.TreeSet<String>();displayedInstances.stream().map(Evaluation::context).filter(c->!c.isBlank()).forEach(contexts::add);
+        var contextLabels=new java.util.LinkedHashMap<String,String>();for(String context:contexts)contextLabels.put(context,executionLabels.getOrDefault(context,context.length()>30?"Context "+(contextLabels.size()+1):context));
+        for(var instance:displayedInstances)liveInstances.addRow(new Object[]{playerLabel(instance.player()),contextLabels.getOrDefault(instance.context(),"Unavailable"),instance.originalStatus(),instance.status(),instance.quality()});
+        if(!selected.isBlank())for(int i=0;i<displayedInstances.size();i++)if(selected.equals(displayedInstances.get(i).occurrence())){liveInstanceTable.setRowSelectionInterval(i,i);break;}
+    }
+    private void showInstanceEvidence(){
+        int goal=liveGoalTable.getSelectedRow(),instance=liveInstanceTable.getSelectedRow();
+        if(goal<0||goal>=liveRows.size()||instance<0||instance>=displayedInstances.size())return;
+        var row=liveRows.get(goal);var evidence=displayedInstances.get(instance);
+        liveDetails.setText(row.label()+"\nPlayer: "+evidence.player()+"\nContext: "+evidence.context()+"\nOccurrence: "+evidence.occurrence()+"\nRaw: "+evidence.originalStatus()+" | Certified: "+evidence.status()+"\nQuality: "+evidence.quality()+"\n"+evidence.evidence()+"\n"+evidence.certifiedHistory());liveDetails.setCaretPosition(0);
+    }
+    private static String playerLabel(String identity){
+        if(identity.isBlank())return "Unavailable";
+        try{return org.jacamo.bridge.contract.BridgeEntityId.parse(identity).localId();}catch(org.jacamo.bridge.contract.ContractException invalid){return identity;}
     }
 
     private String verdict(Cut cut){
-        if(cut.failed())return "VIOLATION";
+        if(cut.failed()||cut.evaluations().stream().anyMatch(r->!java.util.Set.of("GOAL_TASK","EXECUTION_OUTCOME").contains(r.kind())&&java.util.Set.of("FAIL","VIOLATED").contains(r.status())))return "VIOLATION";
         if(cut.evaluations().isEmpty())return "NOT_EVALUATED";
+        // Direct/older cuts may not carry the presenter's missing-result rows.
+        // Passing OCL alone cannot certify an unobserved declared Goal or Task.
+        if(!cut.selectedRequirements()&&liveRows.stream().anyMatch(r->r.instances().isEmpty()))return "INCOMPLETE";
+        Object inventory=cut.visualEvidence().get("requirementInventory");
+        if(inventory instanceof java.util.Map<?,?> values&&values.get("selectedIntentionalElements") instanceof List<?> targets)
+            for(Object target:targets)if(cut.evaluations().stream().noneMatch(r->r.kind().equals("GOAL_TASK")&&r.element().equals(target)))return "INCOMPLETE";
         if(cut.evaluations().stream().filter(Evaluation::required).anyMatch(r->r.kind().equals("GOAL_TASK")&&r.status().equals("UNKNOWN")))return "INCOMPLETE";
         if(!cut.selectedRequirements()&&!java.util.Set.of("COMPLETE","COMPLETE_OBSERVED").contains(cut.coverage())||!cut.freshness().equals("CURRENT_OBSERVED")
                 ||cut.evaluations().stream().filter(Evaluation::required).anyMatch(r->java.util.Set.of("UNKNOWN","UNAVAILABLE","UNDEFINED","SKIPPED","UNSUPPORTED","INCONCLUSIVE","ERROR").contains(r.status())))return "INCOMPLETE";

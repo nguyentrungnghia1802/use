@@ -13,7 +13,7 @@ import org.vnu.sme.goal.dsl.iscn.mm.ScenarioInstance;
  * the original CSL/iStar engines and their marking recurrence are untouched. */
 public final class OccurrenceGoalModelExpander {
     public static final String VERSION="DECLARED_OCCURRENCE_GRAPH/1.0";
-    public enum Quantifier { ALL, ANY }
+    public enum Quantifier { ALL, ANY, SAME_PLAYER }
     public record Player(String sourceActor,String actorType,String instance,String player,String role,String roleInterval) {
         public Player {for(String value:List.of(sourceActor,actorType,instance,player))if(value.isBlank())throw new IllegalArgumentException("OCCURRENCE_PLAYER_IDENTITY_REQUIRED");Objects.requireNonNull(role);Objects.requireNonNull(roleInterval);}
     }
@@ -51,7 +51,7 @@ public final class OccurrenceGoalModelExpander {
         var bySource=new TreeMap<String,List<Player>>();rows.forEach(p->bySource.computeIfAbsent(p.sourceActor(),k->new ArrayList<>()).add(p));
         for(var original:source.getActors())if(bySource.getOrDefault(original.name(),List.of()).isEmpty()
                 &&!(profile.roleSpecialization()&&RoleSpecialization.definitionOnly(source,original)))throw new IllegalArgumentException("OCCURRENCE_EXPANSION_MISSING_ACTOR:"+original.name());
-        var targets=source.getDependencies().stream().filter(d->bySource.get(d.dependee()).size()>1).toList();
+        var targets=source.getDependencies().stream().filter(d->bySource.get(d.dependee()).size()>1&&policies.get(d.dependum().id())!=Quantifier.SAME_PLAYER).toList();
         for(var dependency:targets) {
             if(!policies.containsKey(dependency.dependum().id()))throw new IllegalArgumentException("OCCURRENCE_EXPLICIT_QUANTIFIER_REQUIRED:"+dependency.dependum().id());
             if(!(source.findElement(dependency.dependerElmt()).orElse(null) instanceof Goal)||!(dependency.dependum() instanceof Goal))throw new IllegalArgumentException("OCCURRENCE_POPULATION_GOAL_DEPENDENCY_REQUIRED");
@@ -83,8 +83,16 @@ public final class OccurrenceGoalModelExpander {
                     traces.put(key,new Trace(key,relation.target(),player.sourceActor(),player.player(),player.role(),"DEFINITION_ONLY_SPECIALIZATION"));
                     continue;
                 }
-                var target=bySource.get(relation.target());if(target==null||target.size()!=1)throw new IllegalArgumentException("OCCURRENCE_EXPANSION_ASSOCIATION_AMBIGUOUS");
-                associations.add(new Association(player.actorType(),relation.kind(),target.getFirst().actorType()));
+                var target=bySource.getOrDefault(relation.target(),List.of());
+                if(relation.kind()==AssocKind.PARTICIPATES_IN) {
+                    if(!(original instanceof Agent)||!(source.findActor(relation.target()).orElseThrow() instanceof Role))throw new IllegalArgumentException("OCCURRENCE_PARTICIPATION_REQUIRES_AGENT_ROLE");
+                    var matching=target.stream().filter(p->p.player().equals(player.player())).toList();
+                    if(matching.size()>1)throw new IllegalArgumentException("OCCURRENCE_PARTICIPATION_AMBIGUOUS");
+                    matching.forEach(p->associations.add(new Association(player.actorType(),relation.kind(),p.actorType())));
+                }else {
+                    if(target.size()!=1)throw new IllegalArgumentException("OCCURRENCE_EXPANSION_ASSOCIATION_AMBIGUOUS");
+                    associations.add(new Association(player.actorType(),relation.kind(),target.getFirst().actorType()));
+                }
             }
             if(!original.contributions().isEmpty()||!original.qualifications().isEmpty())throw new IllegalArgumentException("OCCURRENCE_EXPANSION_RELATION_UNSUPPORTED");
             Actor actor=original instanceof Role?new Role(player.actorType(),elements,refinements,List.of(),List.of(),resources,associations):new Agent(player.actorType(),elements,refinements,List.of(),List.of(),resources,associations);
@@ -92,11 +100,20 @@ public final class OccurrenceGoalModelExpander {
         }
         var expanded=new GoalModel(executionName);actors.values().forEach(expanded::addActor);
         for(var dependency:source.getDependencies()) {
-            var dependers=bySource.get(dependency.depender());if(dependers.size()!=1)throw new IllegalArgumentException("OCCURRENCE_EXPANSION_DEPENDER_AMBIGUOUS");var depender=dependers.getFirst();var recipients=bySource.get(dependency.dependee());
+            var dependers=bySource.get(dependency.depender());
+            boolean same=policies.get(dependency.dependum().id())==Quantifier.SAME_PLAYER;
+            if(!same&&dependers.size()!=1)throw new IllegalArgumentException("OCCURRENCE_EXPANSION_DEPENDER_AMBIGUOUS");
+            for(var depender:dependers) {
+            var recipients=bySource.get(dependency.dependee());
+            if(same) {
+                recipients=recipients.stream().filter(p->p.player().equals(depender.player())).toList();
+                if(recipients.size()!=1)throw new IllegalArgumentException("OCCURRENCE_SAME_PLAYER_DEPENDENCY_NOT_UNIQUE:"+dependency.dependum().id());
+            }
             for(var recipient:recipients) {
-                String dependum=recipients.size()==1?dependency.dependum().id():dependency.dependum().id()+"_"+suffix(recipient);
+                String dependum=same?dependency.dependum().id()+"_"+suffix(depender):recipients.size()==1?dependency.dependum().id():dependency.dependum().id()+"_"+suffix(recipient);
                 expanded.addDependency(new Dependency(depender.actorType(),recipients.size()==1?id(depender,dependency.dependerElmt()):receiver(dependency,recipient),copy(dependency.dependum(),dependum),recipient.actorType(),id(recipient,dependency.dependeeElmt())));
                 traces.put(dependum,new Trace(dependum,dependency.dependum().id(),depender.sourceActor(),recipient.player(),recipient.role(),recipients.size()==1?"SOURCE_DEPENDENCY":policies.get(dependency.dependum().id())+"_DEPENDENCY"));
+            }
             }
         }
         var owned=new OwnedGoalModel(expanded,profile);assertUnchanged();

@@ -25,7 +25,7 @@ class DetachedAuthoredWorkflowTest {
  @Test void technicalTabsAreNestedInAdvancedInsteadOfTheMainResultsSurface()throws Exception {
   SwingUtilities.invokeAndWait(()->{var panel=new JaCaMoWorkbenchPanel(facade(),m->fail(m),true);var tabs=panel.resultsContent();
    assertEquals(1,tabs.getTabCount());assertEquals("Advanced / Diagnostics",tabs.getTitleAt(0));
-   var nested=find(tabs,"diagnostic-tabs",JTabbedPane.class);assertNotNull(nested);assertEquals(2,nested.getTabCount());assertEquals("Projection Rules",nested.getTitleAt(0));assertEquals("Program / trace",nested.getTitleAt(1));
+   var nested=find(tabs,"diagnostic-tabs",JTabbedPane.class);assertNotNull(nested);assertEquals(0,nested.getTabCount(),"Unnecessary technical tabs are removed from the authored workflow");
   });
  }
 

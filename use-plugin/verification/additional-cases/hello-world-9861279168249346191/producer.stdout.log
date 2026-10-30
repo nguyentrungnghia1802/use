@@ -1,0 +1,25 @@
+REAL_JACAMO_INIT project=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\owned-runtime\708a937d-da76-4f8a-b13a-bd8852443072\evidence\20261027-233245-608-790b77e8\staging-helloworld\helloworld.jcm headless=true
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+REAL_JACAMO_INIT_OK
+CArtAgO Http Server running on http://192.168.0.103:3273
+Agent mind inspector is running at http://192.168.0.103:3272
+REAL_JACAMO_CREATE_OK platforms=4 agents=5
+Moise Http Server running on http://192.168.0.103:3271
+REAL_JACAMO_MANAGED_WAIT_START run=20261027-233245-608-790b77e8
+BRIDGE_OBSERVATION_PLAN_ACTIVE program=074c10cc1d2e9997336dc3542a187c840f646e2ec61863bcd5403b4d83d32cd9 requests=0 capabilities=[]
+REAL_JACAMO_MANAGED_START_ACK run=20261027-233245-608-790b77e8
+REAL_JACAMO_START_OK
+REAL_JACAMO_BRIDGE_READY port=52423 session=e59b4aca-519c-4528-bcb5-cfb567eab162 agents=5
+REAL_JACAMO_BRIDGE_FINAL_READINESS {agents=State[readiness=READY, detail=BridgeAgArch=org.jacamo.bridge.adapter.BridgeAgArch; injected=5], bridge=State[readiness=CONFIGURED, detail=session=e59b4aca-519c-4528-bcb5-cfb567eab162], events=State[readiness=ATTACHED, detail=bounded observer attached], observation=State[readiness=ATTACHED, detail=program=074c10cc1d2e9997336dc3542a187c840f646e2ec61863bcd5403b4d83d32cd9; requests=0; requiredUnavailable=[]], project=State[readiness=READY, detail=modelRevision=9c23180dcf55bc8ccfd968502eb6a8120327f272ac15d02ee01455c66c339f5d], runtime=State[readiness=READY, detail=snapshot=snapshot:0ce987f97d67e9299782d1bf47676ec126817fa3950cf61c31bffc7edc6be953; facts=124; sourceCompleteness={moise:dynamic=PARTIAL, jason=PARTIAL, moise:hello_org=PARTIAL, observer:verification=PARTIAL, cartago=PARTIAL, npl=PARTIAL, bridge:platform=COMPLETE}], transport=State[readiness=READY, detail=loopback TCP port=52423]}
+REAL_JACAMO_BRIDGE_STOP_REQUESTED
+REAL_JACAMO_BRIDGE_STOPPED

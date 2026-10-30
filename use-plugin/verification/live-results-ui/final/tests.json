@@ -1,0 +1,55 @@
+{
+  "status": "PASS",
+  "tests": [
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.DetachedAuthoredWorkflowTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.241"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.LiveGoalSummaryTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.016"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.CertifiedGoalHistoryTest",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.06"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.ObservedConformanceWorkflowTest",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.434"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.BusinessTimelineTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.353"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.AuthoredAuctionResultsIT",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "152.699"
+    }
+  ],
+  "total": 24,
+  "scope": "23 focused/nearby + 1 external full-authored Auction; no other live case, no full regression"
+}

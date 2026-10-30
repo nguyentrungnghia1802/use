@@ -18,7 +18,7 @@ class OccurrenceGoalModelExpanderTest {
     }
     static List<OccurrenceGoalModelExpander.Player> cast(){return List.of(new OccurrenceGoalModelExpander.Player("Dispatch","Dispatch","dispatch-instance","org","",""),new OccurrenceGoalModelExpander.Player("Carrier","Carrier_A","carrier-a","physical-A","role-A","interval-A"),new OccurrenceGoalModelExpander.Player("Carrier","Carrier_B","carrier-b","physical-B","role-B","interval-B"));}
     @Test void explicitAllAndAnyUseOriginalMarkingsAndPropagationWithoutOverwritingOneDependencyReceiver() {
-        for(var quantifier:OccurrenceGoalModelExpander.Quantifier.values()) {
+        for(var quantifier:List.of(OccurrenceGoalModelExpander.Quantifier.ALL,OccurrenceGoalModelExpander.Quantifier.ANY)) {
             var model=source();String canonical=OwnedGoalModel.fingerprint(model);var expander=new OccurrenceGoalModelExpander(model,EngineSemanticsProfile.DERIVED_AND_RESOURCE_V1,Map.of("shipment",quantifier));
             var expanded=expander.expand(cast(),"ShipmentOccurrences");assertEquals(expanded.owned().hash(),expander.expand(cast(),"ShipmentOccurrences").owned().hash());assertEquals(2,expanded.model().getDependencies().size());
             try(var engine=new Use4GoalRuntimeSessionAdapter(expanded.model(),expanded.cast(),(a,x,b,y)->true,"scope-one",EngineSemanticsProfile.DERIVED_AND_RESOURCE_V1,EngineTopologyPolicy.SINGLE_OWNER_CONTEXT_V1)) {
@@ -36,6 +36,45 @@ class OccurrenceGoalModelExpanderTest {
             }
             assertEquals(canonical,OwnedGoalModel.fingerprint(model));
         }
+    }
+
+    @Test void agentCapabilitiesDelegateOnlyToTheSamePhysicalPlayerAndKeepOriginalEngine() {
+        var model=org.vnu.sme.goal.dsl.istar.parser.IStarCompiler.compile("""
+          istar Delivery {
+            role Courier { goal delivered : Achieve }
+            agent Skills {
+              Skills participates-in Courier
+              goal capable : Achieve
+              task act > capable pre {[ true ]} post {[ true ]}
+            }
+            depend Courier.delivered -> goal execution -> Skills.capable
+          }
+          """,EngineSemanticsProfile.ROLE_SPECIALIZATION_V1.validationPolicy()).model();
+        var members=new ArrayList<OccurrenceGoalModelExpander.Player>();
+        for(String player:List.of("A","B")) {
+            members.add(new OccurrenceGoalModelExpander.Player("Courier","Courier_"+player,"role"+player,player,"role"+player,"interval"+player));
+            members.add(new OccurrenceGoalModelExpander.Player("Skills","Skills_"+player,"agent"+player,player,"",""));
+        }
+        var expander=new OccurrenceGoalModelExpander(model,EngineSemanticsProfile.ROLE_SPECIALIZATION_V1,Map.of("execution",OccurrenceGoalModelExpander.Quantifier.SAME_PLAYER));
+        var expanded=expander.expand(members,"DeliveryRun");
+        assertEquals(2,expanded.model().getDependencies().size());
+        for(var dependency:expanded.model().getDependencies())assertEquals(expanded.trace().get(dependency.dependerElmt()).player(),expanded.trace().get(dependency.dependeeElmt()).player());
+        for(var actor:expanded.model().getActors())for(var association:actor.associations())assertEquals(actor.name().substring(actor.name().length()-1),association.target().substring(association.target().length()-1));
+        try(var engine=new Use4GoalRuntimeSessionAdapter(expanded.model(),expanded.cast(),(a,x,b,y)->true,"delivery",EngineSemanticsProfile.ROLE_SPECIALIZATION_V1,EngineTopologyPolicy.SINGLE_OWNER_CONTEXT_V1)) {
+            var tasks=new TreeMap<String,EngineInputs.TaskInput>();
+            for(var occurrence:engine.topology().occurrences().values()) {
+                var trace=expanded.trace().get(occurrence.sourceElementId());
+                if(trace.source().equals("act"))tasks.put(occurrence.occurrenceId(),new EngineInputs.TaskInput("episode:"+trace.player(),true,true,trace.player().equals("A")));
+            }
+            var result=engine.step(new EngineInputs(Map.of(),tasks,Map.of()));
+            assertTrue(result.originalApiCalls().contains("TaskMarking.update"));
+            for(var occurrence:engine.topology().occurrences().values()) {
+                var trace=expanded.trace().get(occurrence.sourceElementId());
+                if(trace.source().equals("delivered"))assertEquals(trace.player().equals("A"),result.aggregate().goalTaskStatus(occurrence.occurrenceId())==GoalTaskStatus.FULFILLED);
+            }
+        }
+        var missing=new ArrayList<>(members);missing.removeIf(p->p.sourceActor().equals("Skills")&&p.player().equals("B"));
+        assertThrows(IllegalArgumentException.class,()->expander.expand(missing,"MissingPlayer"));
     }
     static EngineInputs input(Use4GoalRuntimeSessionAdapter engine,OccurrenceGoalModelExpander.Expansion expanded,Set<String> complete,boolean known) {
         var tasks=new TreeMap<String,EngineInputs.TaskInput>();var goals=new TreeMap<String,EngineInputs.GoalInput>();var resources=new HashMap<EngineInputs.ResourceKey,EngineInputs.ResourceInput>();

@@ -1,0 +1,25 @@
+REAL_JACAMO_INIT project=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\owned-runtime\b925b749-fbc5-436a-a3ac-8ac067f02f07\evidence\20261028-092504-551-3cfbac54\staging-helloworld\helloworld.jcm headless=true
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+REAL_JACAMO_INIT_OK
+CArtAgO Http Server running on http://10.11.187.118:3273
+Agent mind inspector is running at http://10.11.187.118:3272
+REAL_JACAMO_CREATE_OK platforms=4 agents=5
+Moise Http Server running on http://10.11.187.118:3271
+REAL_JACAMO_MANAGED_WAIT_START run=20261028-092504-551-3cfbac54
+BRIDGE_OBSERVATION_PLAN_ACTIVE program=24412b07fb97d3d8de0f210a58abd12477df1793ae99edeca387feb6d8effd2e requests=1 capabilities=[Capability[name=console-operations, status=COMPLETE, evidenceIds=[CARTAGO_OPERATION_HISTORY/1.0], reason=Run-owned verified framework provider; per-cut quality remains authoritative]]
+REAL_JACAMO_MANAGED_START_ACK run=20261028-092504-551-3cfbac54
+REAL_JACAMO_START_OK
+REAL_JACAMO_BRIDGE_READY port=50294 session=8bc522da-42d4-4027-83bb-757d8f472697 agents=5
+REAL_JACAMO_BRIDGE_FINAL_READINESS {agents=State[readiness=READY, detail=BridgeAgArch=org.jacamo.bridge.adapter.BridgeAgArch; injected=5], bridge=State[readiness=CONFIGURED, detail=session=8bc522da-42d4-4027-83bb-757d8f472697], events=State[readiness=ATTACHED, detail=bounded observer attached], observation=State[readiness=ATTACHED, detail=program=24412b07fb97d3d8de0f210a58abd12477df1793ae99edeca387feb6d8effd2e; requests=1; requiredUnavailable=[]], project=State[readiness=READY, detail=modelRevision=1509765b242ba297478a0bb44acdaafd1628def4df9fe4678c8f5ff07e19b158], runtime=State[readiness=READY, detail=snapshot=snapshot:d899d4a419405229ec4c0d39b0786ef31d9120781dff7cd216d8b30b3742f3c0; facts=124; sourceCompleteness={moise:hello_org=PARTIAL, jason=PARTIAL, moise:dynamic=PARTIAL, bridge:platform=COMPLETE, npl=PARTIAL, cartago=PARTIAL, observer:verification=PARTIAL}], transport=State[readiness=READY, detail=loopback TCP port=50294]}
+REAL_JACAMO_BRIDGE_STOP_REQUESTED
+REAL_JACAMO_BRIDGE_STOPPED

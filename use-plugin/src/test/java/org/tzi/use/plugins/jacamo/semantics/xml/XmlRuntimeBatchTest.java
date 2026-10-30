@@ -7,6 +7,30 @@ import org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeBatch;
 import org.tzi.use.uml.ocl.value.*;
 import static org.junit.jupiter.api.Assertions.*;
 class XmlRuntimeBatchTest {
+    @Test void singletonAgentContextIsAnExplicitViewOfOneRealAgentNotASecondPlayerOrEntity()throws Exception {
+        var helper=new M0RuleExecutorTest();helper.temp=temp;var f=helper.fixture(M0RuleExecutorTest.RUNTIME,true);
+        String plan="""
+          <runtime><datasets><facts id="agents" authority="jason" kind="AGENT"/></datasets><tables>
+            <table id="contexts" dataset="agents"><column name="player" path="identity" required="true"/><identity mode="PHYSICAL" path="identity"/></table>
+          </tables><inputs><input id="context-input" tableRef="contexts" identityKind="PHYSICAL" identityFields="player"><field name="player" type="String" required="true"/></input></inputs>
+          <converters/>
+          <rule id="single-agent" inputRef="context-input"><requireEvidence proof="source-cut"/><upsertInstance targetType="Team" keyFields="player" playerFrom="player"/></rule>
+          </runtime>
+          """;
+        var id=new BridgeEntityId("jason","agent","runtime-agent","/example","worker","incarnation-one");
+        var agent=f.port().upsert(id.canonical(),"AtomicAgent","worker");
+        var fact=new RuntimeFact(id,RuntimeFactKind.AGENT,Map.of("name","worker"),List.of(),ProjectionStatus.MATERIALIZED_FAITHFULLY,Completeness.COMPLETE,List.of());
+        var batch=batch(f,plan);var result=batch.apply(f.port(),"run",0,RuntimeFactSourcesTest.cut(List.of(fact),Map.of("jason",Completeness.COMPLETE)));
+        var context=result.stream().filter(o->o.rule().equals("single-agent")).findFirst().orElseThrow().object();
+        assertNotNull(context);assertNotSame(agent,context);
+        assertEquals(id.canonical(),f.port().metadata(context,"xml:m0:representedPlayer"));
+        assertEquals(1,f.engine().system().state().allObjects().stream().filter(o->o.cls().name().equals("AtomicAgent")).count());
+        assertTrue(f.engine().system().state().allLinks().stream().anyMatch(l->l.association().name().equals("CslAgentContexts")&&l.linkedObjects().equals(List.of(context,agent))));
+        var saved=f.engine().savepoint();batch.apply(f.port(),"run",0,RuntimeFactSourcesTest.cut(List.of(),Map.of()));
+        assertEquals("INCOMPLETE",f.port().metadata(context,"xml:m0:quality"));
+        f.engine().rollback(saved);assertEquals("COMPLETE",f.port().metadata(context,"xml:m0:quality"));
+        assertThrows(IllegalArgumentException.class,()->batch(f,plan.replace("playerFrom=\"player\"", "")),"Agent-to-context must be explicit");
+    }
     @TempDir java.nio.file.Path temp;
     static final String PLAN=M0RuleExecutorTest.RUNTIME.replace("<runtime>","""
       <runtime><datasets><facts id="raw-objects" authority="cartago" kind="ARTIFACT"/></datasets>

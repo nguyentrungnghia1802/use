@@ -18,7 +18,11 @@ public final class RuntimeModelAdmission {
         return admit(model,cast,matcher,EngineSemanticsProfile.USE4GOAL_OBSERVED_V1);
     }
     public static Admitted admit(GoalModel model,List<ScenarioInstance> cast,InstanceContextMatcher matcher,EngineSemanticsProfile profile) {
+        return admit(model,cast,matcher,profile,EngineTopologyPolicy.ORIGINAL_CONTEXT_PATHS);
+    }
+    public static Admitted admit(GoalModel model,List<ScenarioInstance> cast,InstanceContextMatcher matcher,EngineSemanticsProfile profile,EngineTopologyPolicy topology) {
         Objects.requireNonNull(matcher,"EXPLICIT_CONTEXT_MATCHER_REQUIRED");
+        boolean single=Objects.requireNonNull(topology)==EngineTopologyPolicy.SINGLE_OWNER_CONTEXT_V1;
         var limits=Objects.requireNonNull(profile);
         long elements=model.getActors().stream().mapToLong(a->a.elements().size()).sum();
         if(elements>limits.maxOccurrences()||cast.size()>limits.maxOccurrences())reject("ENGINE_GRAPH_SIZE_LIMIT",model.getName());
@@ -38,10 +42,11 @@ public final class RuntimeModelAdmission {
             reject("CAST_CONTEXT_NOT_PROVEN",first.name()+":"+second.name());
         boolean crossActor=model.getDependencies().size()>0||model.getActors().stream().flatMap(a->a.contributions().stream())
                 .anyMatch(c->!model.ownerOf(c.element()).equals(model.ownerOf(c.quality())));
-        long bound=crossActor?Math.max(1,elements):0;
+        long bound=crossActor&&!single?Math.max(1,elements):0;
         for(var actor:model.getActors()) {
             int count=counts.get(actor.name());
-            if(crossActor) {
+            if(single&&count!=1)reject("SINGLE_OWNER_CONTEXT_REQUIRES_UNIQUE_ACTOR_INSTANCES",actor.name());
+            if(crossActor&&!single) {
                 // A source node may occur with partial and complete binding stacks.
                 // Each actor is absent or bound to one of count instances.
                 if(bound>limits.maxOccurrences()/(count+1))reject("ENGINE_CONTEXT_CROSS_PRODUCT_LIMIT",actor.name());

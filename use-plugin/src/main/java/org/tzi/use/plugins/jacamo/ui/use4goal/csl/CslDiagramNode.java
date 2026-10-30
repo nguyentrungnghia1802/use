@@ -23,7 +23,7 @@ public final class CslDiagramNode extends CompartmentNode implements ToolTipProv
     private static final int V_PAD = 5;
     private static final int ROLE_HEADER = 40;
     private static final int ENTITY_HEADER = 48;
-    private static final int GROUP_HEADER = 38;
+    private static final int GROUP_HEADER = 53;
     private static final int ENUM_HEADER = 38;
     private static final int GROUP_TAB_WIDTH = 30;
     private static final int GROUP_TAB_HEIGHT = 11;
@@ -118,10 +118,12 @@ public final class CslDiagramNode extends CompartmentNode implements ToolTipProv
 
     private void drawGroup(Graphics2D g) {
         g.setColor(getTextColor());
+        g.setFont(getFont().deriveFont(Font.PLAIN, 11f));
+        drawCentered(g,node.kind==CslNodeKind.ORG_CONTEXT?"«OrgCtx»":"«Group»",new Rectangle2D.Double(getX()+H_PAD,getY()+GROUP_TAB_HEIGHT,getWidth()-H_PAD*2,16));
         g.setFont(getFont().deriveFont(Font.BOLD, DiagramVisualStyle.FONT_NODE_NAME));
         drawCentered(g, node.label, new Rectangle2D.Double(
-                getX() + H_PAD, getY() + GROUP_TAB_HEIGHT,
-                getWidth() - H_PAD * 2, GROUP_HEADER - GROUP_TAB_HEIGHT));
+                getX() + H_PAD, getY() + GROUP_TAB_HEIGHT+16,
+                getWidth() - H_PAD * 2, GROUP_HEADER - GROUP_TAB_HEIGHT-16));
 
         g.setColor(getFrameColor());
         g.draw(new Line2D.Double(getX(), getY() + GROUP_HEADER,

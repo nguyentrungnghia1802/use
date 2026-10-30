@@ -424,11 +424,19 @@ public final class ExternalOclConstraintService {
     public static DependencyVisitor dependencyVisitor() {return new DependencyVisitor();}
     public static final class DependencyVisitor extends CoverageCalculationVisitor {
         public record IteratorRange(String variable,Expression range){}
-        public record AttributeRead(org.tzi.use.uml.mm.MAttribute attribute,boolean directSelf,Expression receiver,java.util.List<IteratorRange> iterators,boolean preState){
-            public AttributeRead{iterators=java.util.List.copyOf(iterators);}
-            public AttributeRead(org.tzi.use.uml.mm.MAttribute attribute,boolean directSelf,Expression receiver){this(attribute,directSelf,receiver,java.util.List.of(),false);}
-            public AttributeRead(org.tzi.use.uml.mm.MAttribute attribute,boolean directSelf,Expression receiver,java.util.List<IteratorRange> iterators){this(attribute,directSelf,receiver,iterators,false);}
+        public record DerivedFrame(Expression receiver,java.util.List<IteratorRange> iterators,boolean preState){public DerivedFrame{iterators=java.util.List.copyOf(iterators);}}
+        public record AttributeRead(org.tzi.use.uml.mm.MAttribute attribute,boolean directSelf,Expression receiver,java.util.List<IteratorRange> iterators,boolean preState,java.util.List<DerivedFrame> frames){
+            public AttributeRead {iterators=java.util.List.copyOf(iterators);frames=java.util.List.copyOf(frames);}
+            public AttributeRead(org.tzi.use.uml.mm.MAttribute a,boolean self,Expression receiver,java.util.List<IteratorRange> iterators,boolean pre){this(a,self,receiver,iterators,pre,java.util.List.of());}
+            public AttributeRead(org.tzi.use.uml.mm.MAttribute a,boolean self,Expression receiver){this(a,self,receiver,java.util.List.of(),false);}
+            public AttributeRead(org.tzi.use.uml.mm.MAttribute a,boolean self,Expression receiver,java.util.List<IteratorRange> iterators){this(a,self,receiver,iterators,false);}
         }
+        public record NavigationRead(org.tzi.use.uml.ocl.expr.ExpNavigation expression,java.util.List<IteratorRange> iterators,boolean preState,java.util.List<DerivedFrame> frames){public NavigationRead{iterators=java.util.List.copyOf(iterators);frames=java.util.List.copyOf(frames);}}
+        private final java.util.List<DerivedFrame> derivedFrames=new java.util.ArrayList<>();
+        private final Set<org.tzi.use.uml.mm.MAttribute> deriving=java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+        private String unavailable="";
+        public String unavailableReason(){return unavailable;}
+        private boolean inheritedPre(){return derivedFrames.stream().anyMatch(DerivedFrame::preState);}
         private final java.util.List<IteratorRange> iterators=new java.util.ArrayList<>();
         @Override public void visitQuery(org.tzi.use.uml.ocl.expr.ExpQuery expression) {
             expression.getRangeExpression().processWithVisitor(this);
@@ -441,14 +449,21 @@ public final class ExternalOclConstraintService {
         }
         private final java.util.List<AttributeRead> reads=new java.util.ArrayList<>();
         public java.util.List<AttributeRead> attributeReads(){return java.util.List.copyOf(reads);}
-        private final java.util.List<org.tzi.use.uml.ocl.expr.ExpNavigation> navigations=new java.util.ArrayList<>();
-        public java.util.List<org.tzi.use.uml.ocl.expr.ExpNavigation> navigationReads(){return java.util.List.copyOf(navigations);}
+        private final java.util.List<NavigationRead> navigations=new java.util.ArrayList<>();
+        public java.util.List<NavigationRead> scopedNavigationReads(){return java.util.List.copyOf(navigations);}
+        public java.util.List<org.tzi.use.uml.ocl.expr.ExpNavigation> navigationReads(){return navigations.stream().map(NavigationRead::expression).toList();}
         @Override public void visitNavigation(org.tzi.use.uml.ocl.expr.ExpNavigation expression) {
-            navigations.add(expression);super.visitNavigation(expression);
+            navigations.add(new NavigationRead(expression,iterators,expression.isPre()||inheritedPre(),derivedFrames));super.visitNavigation(expression);
         }
         @Override public void visitAttrOp(org.tzi.use.uml.ocl.expr.ExpAttrOp expression) {
-            reads.add(new AttributeRead(expression.attr(),expression.objExp() instanceof org.tzi.use.uml.ocl.expr.ExpVariable variable && variable.getVarname().equals("self"),expression.objExp(),iterators,expression.isPre()));
+            reads.add(new AttributeRead(expression.attr(),derivedFrames.isEmpty()&&expression.objExp() instanceof org.tzi.use.uml.ocl.expr.ExpVariable variable && variable.getVarname().equals("self"),expression.objExp(),iterators,expression.isPre()||inheritedPre(),derivedFrames));
             super.visitAttrOp(expression);
+            if(!expression.attr().isDerived())return;
+            if(deriving.size()>=32||!deriving.add(expression.attr())){unavailable="UNSUPPORTED:DERIVED_ATTRIBUTE_DEPENDENCY_CYCLE_OR_DEPTH";return;}
+            var outer=java.util.List.copyOf(iterators);
+            derivedFrames.add(new DerivedFrame(expression.objExp(),outer,expression.isPre()||inheritedPre()));iterators.clear();
+            try {expression.attr().getDeriveExpression().processWithVisitor(this);}
+            finally {iterators.clear();iterators.addAll(outer);derivedFrames.removeLast();deriving.remove(expression.attr());}
         }
         private final Set<org.tzi.use.uml.mm.MClassifier> populations=new java.util.HashSet<>();
         private DependencyVisitor(){super(true);}

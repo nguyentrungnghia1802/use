@@ -10,7 +10,7 @@
       "sourceSha256": "c82d9cac5acb5a5a6156aa800ec2e595894851eb5b6e1b71e3657bc0b4aeefab",
       "sourceFixture": "src/test/resources/semantics/use4goal-workflow/CslStateEvaluatorForm.java.txt",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel.java",
-      "targetSha256": "29f1bf44a07aba719e7d8ba4c359ec3cf406d4bc2cbd45a4c6dba457a5438465",
+      "targetSha256": "597b92ec90e154eca7e5f8c768771e8be7de4cb2696584ec0f9d7e5c74eed13d",
       "reuseMode": "PATCHED_WITH_PROVENANCE",
       "retainedMethods": [
         "buildConformanceAolPanel layout",
@@ -33,7 +33,15 @@
         "DOMAIN_ONLY_STATES_WITH_EXACT_AUDIT_FAILURE_NAVIGATION",
         "SELECTED_REQUIREMENTS_COVERAGE_SEPARATE_FROM_OVERALL_SOURCES_V1",
         "TERMINAL_FAILURE_CERTIFICATES_AND_DOMAIN_ONLY_NO_PENDING_SOIL_FALLBACK",
-        "XML_SELECTED_ROOT_REQUIREMENTS_EXECUTION_FAILURE_NOT_VIOLATION_V3"
+        "XML_SELECTED_ROOT_REQUIREMENTS_EXECUTION_FAILURE_NOT_VIOLATION_V3",
+        "SELECTED_CUT_READ_ONLY_AOL_ISCN_VIEW_CALLBACK",
+        "EXPLICIT_SELECTED_REQUIREMENT_SCOPE_AND_PER_PLAYER_INSTANCE_EVIDENCE",
+        "BLOCK_OCL_ONLY_CUT_WITH_MISSING_DECLARED_GOAL_TASK",
+        "EXPLICIT_ENACTMENT_VIEW_AND_FAILURE_NAVIGATION",
+        "MILESTONE_FAILURE_LABELS_WITH_EXPLICIT_AUDIT_MODE",
+        "QUALIFIED_FAILURE_EPISODES_AND_GROUPED_INVARIANT_WITNESSES",
+        "EXACT_EXECUTION_SELECTOR_AND_BOUND_ENTITY_TIMELINES_WITH_GLOBAL_CONSTRAINT_SCOPE",
+        "SINGLE_EXECUTION_ONLY_NATIVE_SCOPED_OCL_WITH_SHARED_RULES_AND_WITNESSED_AOL"
       ]
     },
     {
@@ -41,7 +49,7 @@
       "sourceSha256": "c82d9cac5acb5a5a6156aa800ec2e595894851eb5b6e1b71e3657bc0b4aeefab",
       "sourceFixture": "src/test/resources/semantics/use4goal-workflow/CslStateEvaluatorForm.java.txt",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ConformanceInputsPanel.java",
-      "targetSha256": "080f16cc1fa1786032cd23f1cad327f8def5c84d123254be9940d49c781bcdf8",
+      "targetSha256": "1d41eb0f712d15adac65143d4fc53815a7bad2009929323b7e7ff500a95705d9",
       "reuseMode": "PATCHED_WITH_PROVENANCE",
       "retainedMethods": [
         "buildInputs layout, file-selection rows and verification action workflow"
@@ -52,7 +60,9 @@
         "REPLACE_BPMN_WITH_JCM_AND_BOUNDARY_WITH_MAPPING_XML",
         "ADD_AUTHORED_OCL_FILE_ROW",
         "REPLACE_WHOLE_PROCESS_SOLVER_ACTION_WITH_PREPARE_IMPORT",
-        "KEEP_NATIVE_SESSION_OWNERSHIP_OUTSIDE_UI"
+        "KEEP_NATIVE_SESSION_OWNERSHIP_OUTSIDE_UI",
+        "DISTINGUISH_PROJECT_INPUT_FROM_SYSTEM_MODELS_MAPPING_AND_OPTIONAL_OCL",
+        "PROJECT_FIRST_WITH_VALIDATED_SYSTEM_SPECIFICATION_FOLDER_AND_OPTIONAL_EXTRA_OCL"
       ]
     }
   ]

@@ -1,0 +1,188 @@
+{
+  "status": "PASS",
+  "createdAt": "2026-10-30T05:14:29.409987+00:00",
+  "scope": "Strict independent execution Goal/Task, native OCL, domain milestones, AOL and ISCN views; no aggregate selection",
+  "findings": [
+    "Independent root identities already existed in the engine. Aggregate views obscured them.",
+    "Previous per-execution Goal view still displayed whole-state OCL and AOL. Replaced with exact frozen scope projections.",
+    "Structural group/enactment links remain valid. Execution participation is an explicit witnessed overlay, not inferred group membership."
+  ],
+  "install": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\single-execution-final-f8kelj4p\\use-7.5.0",
+  "launcher": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\single-execution-final-f8kelj4p\\use-7.5.0\\bin\\start_use.bat",
+  "archiveSha256": "64e10b1e12742374eee862545f282497e7110c9c903c7363df31950ea76ffb1c",
+  "liveEvidence": "use-plugin\\verification\\live-results-ui\\auction-3514017882445095492",
+  "executions": [
+    {
+      "context": "xml-occurrence:1097c6af790f8e1306ae31d499e0f6d6e13abb5ffaaae15806d5a431e32e719c",
+      "label": "Execution 1 — Auction · id='a1'",
+      "entities": {
+        "Auction:Auction_e936c74c8f7f5b39cb55": {
+          "attributes": {
+            "best_bid": "18.815110492822075",
+            "currentWinner": "'maria'",
+            "id": "'a1'",
+            "running": "false",
+            "task": "'flight_ticket(paris,athens,date(15,12,2015))'",
+            "winner": "'maria'"
+          },
+          "identity": "xml:m0:fc4c673c2ab38728e2edd17b4da06e973f4b74e523f6b4c174cf3153498d9121"
+        }
+      },
+      "root": "FULFILLED",
+      "milestones": 5,
+      "auditBoundaries": 1025,
+      "participationWitnesses": 5,
+      "nativeInvariants": [
+        {
+          "id": "NATIVE:AuctionMonitor::ConfirmedSchemeOrder",
+          "verdict": "PASS",
+          "bodyCount": "1"
+        },
+        {
+          "id": "NATIVE:AuctionMonitor::ObservedBidEvidence",
+          "verdict": "PASS",
+          "bodyCount": "1"
+        },
+        {
+          "id": "NATIVE:OrgContext::CslV4RoleCompatibility",
+          "verdict": "PASS",
+          "bodyCount": "7"
+        },
+        {
+          "id": "NATIVE:auctionGroup::AuctioneerPopulation",
+          "verdict": "PASS",
+          "bodyCount": "1"
+        },
+        {
+          "id": "NATIVE:auctionGroup::ParticipantPopulation",
+          "verdict": "PASS",
+          "bodyCount": "1"
+        }
+      ]
+    },
+    {
+      "context": "xml-occurrence:89ef30b3f5c55582e4a169dd21d8ff5672830c431662c7cd0841353ae39c8f4e",
+      "label": "Execution 2 — Auction · id='a2'",
+      "entities": {
+        "Auction:Auction_c633a2b1a6284164a534": {
+          "attributes": {
+            "best_bid": "20.41975936028271",
+            "currentWinner": "'giacomo'",
+            "id": "'a2'",
+            "running": "false",
+            "task": "'flight_ticket(athens,paris,date(18,12,2015))'",
+            "winner": "'giacomo'"
+          },
+          "identity": "xml:m0:1682d3feda95f4a88f67dace2249d636f0a69be39e9215857c508f2fd9cdb6ef"
+        }
+      },
+      "root": "FULFILLED",
+      "milestones": 6,
+      "auditBoundaries": 1025,
+      "participationWitnesses": 5,
+      "nativeInvariants": [
+        {
+          "id": "NATIVE:AuctionMonitor::ConfirmedSchemeOrder",
+          "verdict": "PASS",
+          "bodyCount": "1"
+        },
+        {
+          "id": "NATIVE:AuctionMonitor::ObservedBidEvidence",
+          "verdict": "PASS",
+          "bodyCount": "1"
+        },
+        {
+          "id": "NATIVE:OrgContext::CslV4RoleCompatibility",
+          "verdict": "PASS",
+          "bodyCount": "7"
+        },
+        {
+          "id": "NATIVE:auctionGroup::AuctioneerPopulation",
+          "verdict": "PASS",
+          "bodyCount": "1"
+        },
+        {
+          "id": "NATIVE:auctionGroup::ParticipantPopulation",
+          "verdict": "PASS",
+          "bodyCount": "1"
+        }
+      ]
+    }
+  ],
+  "focusedRegression": {
+    "tests": 59,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "finalUiCloseout": {
+    "tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "sourceAcceptance": {
+    "tests": 50,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "sourceReplay": {
+    "entries": 1615,
+    "status": "PASS"
+  },
+  "installedFinalReplay": {
+    "status": "PASS",
+    "entries": 1615,
+    "finalStateHash": "140ab28a99a76247c7daf78959b710113ac3e940f8024992b21d25dde57bce2b",
+    "finalResultHash": "abe96c2740ec832ba3396e9c7810282e68077ea58af6661c0016c71adcfc39f8"
+  },
+  "negativeChecks": [
+    "Missing selected scope does not display a different execution",
+    "Missing owner, missing native scalar evidence and incomplete positive population cannot produce aggregate PASS",
+    "Native existential/negation retained; a qualified universal counterexample remains decisive with partial population",
+    "Foreign scope/occurrence checks rejected even with shared owner",
+    "Foreign Entity changes/undefined values do not alter the selected Entity milestone stream",
+    "Group membership alone cannot create execution participation",
+    "Context-one pending/failure cannot borrow context-two fulfillment/PASS",
+    "No case constants in production mapping/producer/semantic source or retained case bytecode"
+  ],
+  "packageChecks": {
+    "status": "PASS",
+    "install": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\single-execution-final-f8kelj4p\\use-7.5.0",
+    "isolatedDriver": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\single-execution-final-f8kelj4p\\isolated-driver",
+    "archiveSha256": "64e10b1e12742374eee862545f282497e7110c9c903c7363df31950ea76ffb1c",
+    "liveImplementationEntriesEqualPackage": 120,
+    "packagedUiClassesEqualTested": 113,
+    "originalEngineClassesEqualPriorAcceptedPackage": 297,
+    "originalMarkingHashes": {
+      "GoalMarking": "56c9e566cd2f45ee4aa662257ef51eaa02e2836453eb5b05e2d80d83c95f4540",
+      "TaskMarking": "a3d1cf1437f4bb1fedc583f1086b695c3a22267ddd5a37117df340980135748a",
+      "IStarMarking": "07d383707a76f2b7227391b69275bb2d79e64cfb77f474e98d496f2553c0f922",
+      "IStarPropagation": "9f80d5c1b836a23c0d7f055baac2a895048dd53f44b1177f4b77680f8fdc9d75"
+    },
+    "currentCaseFilesEqualPackage": true,
+    "liveEvidence": "use-plugin\\verification\\live-results-ui\\auction-3514017882445095492"
+  },
+  "sourceFrozenFiles": 737,
+  "sourceFreeze": "source-freeze.json",
+  "sourceFreezeSha256": "ca736cf2cb124761e06b9619b38c5e1dadc23efaf5dc96f10eb759c96809774c",
+  "visualQa": "Final offscreen native Swing Results/AOL/ISCN views for both exact source executions; packaged UI class bytes equal inspected render classes",
+  "manualDesktopGuiTest": false,
+  "engineMarkingChanges": false,
+  "casePredicateChanges": false,
+  "caseMappingChange": "One explicit observer projectRef/subjectColumn binding; no native CSL/iStar/OCL predicate changes",
+  "hardcodedCaseSelection": false,
+  "milestoneCap": false,
+  "fullCleanVerify": false,
+  "otherLiveCaseStudies": false,
+  "commitOrPush": false,
+  "retainedFailedAttempts": [
+    "focused.log",
+    "live.log",
+    "live-final.log",
+    "acceptance.log",
+    "regression.log",
+    "package-final.log"
+  ]
+}

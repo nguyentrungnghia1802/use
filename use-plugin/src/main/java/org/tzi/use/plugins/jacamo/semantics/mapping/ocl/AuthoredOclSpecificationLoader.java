@@ -70,7 +70,12 @@ public class AuthoredOclSpecificationLoader {
             return parse(source,name);
         }catch(CharacterCodingException invalid){throw new IllegalArgumentException("OCL_SPEC_UTF8_REQUIRED:"+name,invalid);}
     }
-    public Specification parse(String source,String name) {
+    public Specification parseOptional(byte[] bytes,String name) {
+        try{return parse(StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(bytes)).toString(),name,true);}
+        catch(CharacterCodingException invalid){throw new IllegalArgumentException("OCL_SPEC_UTF8_REQUIRED:"+name,invalid);}
+    }
+    public Specification parse(String source,String name) {return parse(source,name,false);}
+    private Specification parse(String source,String name,boolean allowEmpty) {
         Objects.requireNonNull(source);Objects.requireNonNull(name);
         if(!StandardCharsets.UTF_8.newEncoder().canEncode(source))throw new IllegalArgumentException("OCL_SPEC_UTF8_REQUIRED:"+name);
         byte[] bytes=source.getBytes(StandardCharsets.UTF_8);
@@ -107,7 +112,7 @@ public class AuthoredOclSpecificationLoader {
             clauses.add(new Clause(id,kind,context,body,bodyStart,bodyEnd,start.getLine(),start.getCharPositionInLine()+1));
             if(clauses.size()>64)throw cursor.error("CLAUSE_CAPACITY");needsClause=false;
         }
-        if(clauses.isEmpty()||needsClause)throw cursor.error("NAMED_CLAUSE_REQUIRED");
+        if(!allowEmpty&&clauses.isEmpty()||needsClause)throw cursor.error("NAMED_CLAUSE_REQUIRED");
         return new Specification(name,ExternalOclConstraintService.sha256(bytes),source,clauses);
     }
     public Prepared compile(Specification source,Use75ModelBinding binding,String expectedHash,Map<String,Context> expectedBindings) {
@@ -117,7 +122,7 @@ public class AuthoredOclSpecificationLoader {
     private Prepared compileChecked(Specification source,Use75ModelBinding binding,String expectedHash,Map<String,Context> expectedBindings) {
         // Public value records are not a provenance attestation. Reparse the
         // frozen text, then enforce the XML input pin before compiling bodies.
-        if(!source.equals(parse(source.source(),source.sourceName())))throw new IllegalArgumentException("OCL_SPEC_PARSED_SOURCE_MISMATCH");
+        if(!source.equals(parse(source.source(),source.sourceName(),true)))throw new IllegalArgumentException("OCL_SPEC_PARSED_SOURCE_MISMATCH");
         if(!source.sourceHash().equals(expectedHash))throw new IllegalArgumentException("OCL_SPEC_SOURCE_HASH_MISMATCH");
         validateBindings(source,expectedBindings);
         var model=binding.model();var rows=new ArrayList<CompiledClause>();var factory=new ModelFactory();

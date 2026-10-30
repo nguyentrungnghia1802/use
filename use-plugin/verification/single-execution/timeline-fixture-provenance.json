@@ -1,0 +1,8 @@
+{
+  "source": "use-plugin\\verification\\live-results-ui\\auction-7831997453405771525\\diagnostic-replay\\runtime.jsonl",
+  "sourceSha256": "61626f5481368cdfde6c755b481cfcd8c0e87d2776379366123762140f58c597",
+  "fixture": "use-plugin\\src\\test\\resources\\semantics\\scoped-timeline-original-projections.json.gz",
+  "fixtureSha256": "f9c1b5b7bf5e3e8d5659d28fba3e832729de4833409e2c46256885eddedd3693",
+  "projectionCuts": 591,
+  "scope": "Only original frozen presentation and scope bindings; no re-evaluation or rewritten values"
+}

@@ -74,7 +74,10 @@ public final class M0RuleExecutor {
                 if(!Set.of("orgctx","entities","roles").contains(write.attr("membership")))throw write.location().error("M0_MEMBERSHIP_UNSUPPORTED");
                 if(write.attr("membership").equals("roles")&&write.optional("playerFrom").isBlank())throw write.location().error("M0_ROLE_PLAYER_BINDING_REQUIRED");
             }
-            if(!write.optional("playerFrom").isBlank())field(write.attr("playerFrom"),fields,write);
+            if(!write.optional("playerFrom").isBlank()) {
+                field(write.attr("playerFrom"),fields,write);
+                if(type.isSubClassifierOf(model.getClass("OrgContext"))&&(!write.name().equals("upsertInstance")||!write.attr("keyFields").equals(write.attr("playerFrom"))||!write.optional("contextType").isBlank()))throw write.location().error("M0_SINGLE_AGENT_CONTEXT_REQUIRES_PHYSICAL_PLAYER_KEY");
+            }
             if(!write.optional("aliasFrom").isBlank())field(write.attr("aliasFrom"),fields,write);
             rules.put(node.attr("id"),new Rule(node,input,write,Collections.unmodifiableMap(fields)));
         }
@@ -111,6 +114,7 @@ public final class M0RuleExecutor {
             if(!write.optional("playerFrom").isBlank()) {
                 player=port.find(string(input.values,write.attr("playerFrom")));
                 if(player==null||!player.cls().isSubClassifierOf(model.getClass("RuntimePlayer")))throw missing("ACTUAL_PLAYER_UNAVAILABLE");
+                if(model.getClass(type).isSubClassifierOf(model.getClass("OrgContext"))&&(!player.cls().isSubClassifierOf(model.getClass("AtomicAgent"))||!string(input.values,write.attr("playerFrom")).equals(input.authorityIdentity)))throw missing("SINGLE_AGENT_CONTEXT_IDENTITY_UNAVAILABLE");
             }
             String alias=write.optional("aliasFrom").isEmpty()?"":string(input.values,write.attr("aliasFrom"));
             if(!alias.isEmpty()&&!input.sourceAliases.contains(alias))throw new IllegalArgumentException("M0_SOURCE_ALIAS_NOT_IN_VERIFIED_IDENTITIES");
@@ -127,6 +131,10 @@ public final class M0RuleExecutor {
                 case "entities"->port.connect(CslScopeModelAdapter.ENTITY_SCOPES,context,object);
                 case "roles"->{port.connect("InContext",context,object);port.connect("Plays",player,object);port.metadata(object,"roleContext",port.metadata(context,"semanticId"));port.metadata(object,"rolePlayer",port.metadata(player,"semanticId"));}
                 default->throw new IllegalStateException("ADMITTED_MEMBERSHIP_CHANGED");
+            }
+            if(player!=null&&object.cls().isSubClassifierOf(model.getClass("OrgContext"))) {
+                port.connect(CslScopeModelAdapter.AGENT_CONTEXTS,object,player);
+                port.metadata(object,"xml:m0:representedPlayer",port.metadata(player,"semanticId"));
             }
             if(!alias.isEmpty())port.alias(alias,object);
             for(var assignment:values.entrySet()) {

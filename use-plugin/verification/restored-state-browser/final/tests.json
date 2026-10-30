@@ -1,0 +1,89 @@
+{
+  "status": "PASS",
+  "total": 37,
+  "focused": 36,
+  "actualAuctionLiveAndReplay": 1,
+  "tests": [
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.RestoredStateBrowserTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.295"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.PersistedStateBrowsingTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.034"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.LiveGoalSummaryTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.233"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.CertifiedGoalHistoryTest",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.267"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.ObservedConformanceWorkflowTest",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.411"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.ObservedTimelineHistoryTest",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.736"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.BusinessTimelineTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.733"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.DetachedAuthoredWorkflowTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.208"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.codegrounded.runtime.CanonicalReplayBudgetTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "0.029"
+    },
+    {
+      "name": "org.tzi.use.plugins.jacamo.ui.AuthoredAuctionResultsIT",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "234.888"
+    }
+  ],
+  "scope": "Only related UI/journal/replay tests and actual external Auction; no full regression or other live cases"
+}

@@ -89,11 +89,13 @@ public final class CslView extends JPanel implements View, PrintableView {
             diagramContent.add(new JScrollPane(diagram), BorderLayout.CENTER);
         } else {
             JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                    DiagramModelBrowser.forCsl(model), new JScrollPane(diagram));
+                    DiagramModelBrowser.forCsl(model,diagram.nativeModel()), new JScrollPane(diagram));
             split.setDividerLocation(280);
             split.setResizeWeight(0.23);
             split.setOneTouchExpandable(true);
             diagramContent.add(split, BorderLayout.CENTER);
+            if(diagram.nativeModel()!=null&&diagram.nativeModel().classes().stream().anyMatch(c->!org.tzi.use.plugins.jacamo.semantics.mapping.CanonicalUseBindingAdapter.enactedRoles(c).isEmpty()))
+                diagramContent.add(new javax.swing.JLabel("Dashed may enact = explicit mapping possibility. AOL shows actual enactment via the represented Agent."),BorderLayout.NORTH);
         }
         diagramContent.revalidate();
         diagramContent.repaint();

@@ -684,3 +684,6 @@
 "src/test/java/org/tzi/use/gui/views/diagrams/util/DirectionTest.java" text eol=crlf
 "src/test/java/org/tzi/use/util/test/DiagramUtilTest.java" text eol=crlf
 "src/test/resources/archunit.properties" -text
+
+# Preserve final tested source-freeze bytes for repository delivery.
+"pom.xml" text eol=crlf

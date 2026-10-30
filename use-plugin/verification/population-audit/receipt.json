@@ -1,0 +1,113 @@
+{
+  "createdAt": "2026-10-29T11:43:03.467907+00:00",
+  "status": "AUDIT_COMPLETED_WITH_CONFIRMED_ISSUES",
+  "productionChanged": false,
+  "caseChanged": false,
+  "sourceIntegrity": {
+    "productionFilesVerifiedAgainstPriorFreeze": 650,
+    "drift": [],
+    "caseConstantScanJavaFiles": 613,
+    "caseConstantHits": [],
+    "readOnlyProjectAndDiagramsUnchanged": true,
+    "fixture": "accepted recorded live Auction; 19 milestones, not the user screenshot session with 17 milestones",
+    "auditProbe": {
+      "bodyVerdict": "FAIL",
+      "coverageReason": "",
+      "derivedAttribute": "self.roles->select(r : RoleOccurrence | r.oclIsKindOf(auctioneer))->collect(r : RoleOccurrence | r.oclAsType(auctioneer))->asSet",
+      "directAttributeReads": [
+        "auctionGroup::auctioneer"
+      ],
+      "expandedEquivalentCoverageReason": "XML_CURRENT_ROLE_MATERIALIZATION_INCOMPLETE",
+      "navigationReadCount": 0,
+      "rolesQuality": "INCOMPLETE"
+    },
+    "finalNativeInvariantStatuses": [
+      {
+        "id": "NATIVE:AuctionMonitor::ConfirmedSchemeOrder",
+        "verdict": "PASS"
+      },
+      {
+        "id": "NATIVE:AuctionMonitor::ObservedBidEvidence",
+        "verdict": "PASS"
+      },
+      {
+        "id": "NATIVE:OrgContext::CslV4RoleCompatibility",
+        "verdict": "SKIPPED"
+      },
+      {
+        "id": "NATIVE:auctionGroup::AuctioneerPopulation",
+        "verdict": "PASS"
+      },
+      {
+        "id": "NATIVE:auctionGroup::ParticipantPopulation",
+        "verdict": "PASS"
+      }
+    ]
+  },
+  "recording": "use-plugin\\verification\\live-results-ui\\auction-10902800656564572545\\replay",
+  "auditCuts": 1028,
+  "milestones": 19,
+  "recurrence": {
+    "aggregateCountsSinceFirstFailure": {
+      "FAIL": 7,
+      "NOT_EVALUATED": 5
+    },
+    "lastCutsAroundFirstMilestone6Failure": [
+      {
+        "ordinal": 26,
+        "cut": "66a9a401-1d59-4db6-b720-3d400b35ab40:1:3e13839423dd4560a2d8086d7cb38413c17fa0f98d5f6de5a26a42da77de85d1:9:66a9a401-1d59-4db6-b720-3d400b35ab40:jason:e6a59560-4869-4139-9aca-24bef239c7a7:3:",
+        "event": "66a9a401-1d59-4db6-b720-3d400b35ab40:jason:e6a59560-4869-4139-9aca-24bef239c7a7:3",
+        "coverage": "NOT_EVALUATED",
+        "populationRows": []
+      },
+      {
+        "ordinal": 27,
+        "cut": "66a9a401-1d59-4db6-b720-3d400b35ab40:1:3e13839423dd4560a2d8086d7cb38413c17fa0f98d5f6de5a26a42da77de85d1:9:66a9a401-1d59-4db6-b720-3d400b35ab40:jason:1d56540a-b436-4a9f-a32a-e0eb011cf360:3:",
+        "event": "66a9a401-1d59-4db6-b720-3d400b35ab40:jason:1d56540a-b436-4a9f-a32a-e0eb011cf360:3",
+        "coverage": "NOT_EVALUATED",
+        "populationRows": []
+      },
+      {
+        "ordinal": 29,
+        "cut": "66a9a401-1d59-4db6-b720-3d400b35ab40:1:3e13839423dd4560a2d8086d7cb38413c17fa0f98d5f6de5a26a42da77de85d1:10:boundary:66a9a401-1d59-4db6-b720-3d400b35ab40:2:stream_boundary:10:boundary:66a9a401-1d59-4db6-b720-3d400b35ab40:2",
+        "event": "boundary:66a9a401-1d59-4db6-b720-3d400b35ab40:2",
+        "coverage": "INCOMPLETE",
+        "populationRows": [
+          [
+            "INVARIANT_BODY",
+            "FAIL",
+            ""
+          ],
+          [
+            "INVARIANT",
+            "FAIL",
+            "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE"
+          ]
+        ]
+      }
+    ],
+    "noPassBeforeRepeatedFailure": true
+  },
+  "installedReplay": {
+    "complete": true,
+    "entries": 1618,
+    "finalStateHash": "f8ece3f63442ffdbd02cf43c9e20d91d7db0bb73ad059cd7d48936c0148021f2",
+    "finalResultHash": "bfa47603fe7ed90e206963f677ff77673c9f7825d37ca5e904a6a1334ab2bf05"
+  },
+  "confirmedIssues": [
+    "Derived role attribute coverage gate bypass",
+    "Failure recurrence without qualified recovery",
+    "Body and aggregate failure duplicate presentation"
+  ],
+  "report": "REPORT.md",
+  "evidenceSha256": {
+    "audit-final.log": "6388d4e204ee01004cdc97ec97ac7b3c99f483bc1140ca54ea680fa1aed4da5d",
+    "audit.log": "d034292912cb22687ba970b3c6b4b9eae54961bf7861e6d180df0d2ff6807f00",
+    "findings.json": "fa4b5c6075eadc3e1ed8aace2011783990f345d0016d96ec79aa3c532c1b78e1",
+    "installed-replay.log": "45f10c4a9554a08d1f9a55938225fae187b9912ce0148aecf34d8b23e3803b06",
+    "integrity.json": "8457d7db1bb77afd131af83d10d2504adb754fa8e7dd4b9a0d7f326d9447e6f0",
+    "PopulationAudit.java": "f8ca7a1a0bedebd010831093b05ee4731c57ee21e12051bbffcef7ee174b9764",
+    "recurrence.json": "88304ef78a9453784d2ba9986c5feaf40bbda15e12a2ab52c5dfa88b4cf5ba5c",
+    "REPORT.md": "f71fedd741b7769b816bedc6777dc112a35c73d604b5cf3df50e33ec849bdc51"
+  }
+}

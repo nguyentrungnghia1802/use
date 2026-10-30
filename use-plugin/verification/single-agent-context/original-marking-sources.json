@@ -1,0 +1,25 @@
+{
+  "status": "UNCHANGED_FROM_HEAD_EXCEPT_CHECKOUT_LINE_ENDINGS",
+  "sources": {
+    "GoalMarking": {
+      "workingSha256": "e9ddcc1bfbafef0c987be6c7a017f8ce88c56a16e3c757bc637d1e1246660f48",
+      "headSha256": "ae3034c69e6c8382fcd39169d2fe188fe25cfb1fc0aa68bc532014237cd22c4a",
+      "lineEndingNormalizedEqual": true
+    },
+    "TaskMarking": {
+      "workingSha256": "e5eae4cd7b10994e5d71c5c7782ff04de3972352f17f5c5fa0732d39eb9af07d",
+      "headSha256": "6a46283b4355363b6cae1bacc6410bb4ee7299409b56db4a88f88799e4524efd",
+      "lineEndingNormalizedEqual": true
+    },
+    "IStarMarking": {
+      "workingSha256": "c93e88db8bf323991d3ae66f64cca1f3106edaa5ed9bde19fafbc057dc48910f",
+      "headSha256": "759c448457b0a8ffa82537aac5d13dc609aa7da485a95bd0d404984677dc1069",
+      "lineEndingNormalizedEqual": true
+    },
+    "IStarPropagation": {
+      "workingSha256": "90e8ff0662f03889a4ec977cd1296c57f4dbdde2a0cbcde76afe937b25e35de3",
+      "headSha256": "1021562b911706fbf21705cf6ad0aa67f21a863b1300ddb71fe75b6d208575a5",
+      "lineEndingNormalizedEqual": true
+    }
+  }
+}

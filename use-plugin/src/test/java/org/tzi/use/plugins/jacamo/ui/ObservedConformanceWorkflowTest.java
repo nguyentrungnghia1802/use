@@ -98,6 +98,53 @@ class ObservedConformanceWorkflowTest {
             assertTrue(find(panel,"advanced-controls",JPanel.class).isVisible());
         });
     }
+    @Test void folderSelectionIsAtomicRevalidatedAndCapturesAbsentOptionalOcl()throws Exception {
+        var root=java.nio.file.Files.createTempDirectory("model-folder-");
+        try {
+            for(String extension:List.of("csl","istar","xml"))java.nio.file.Files.writeString(root.resolve("neutral."+extension),"");
+            var entered=new java.util.concurrent.CountDownLatch(1);
+            var selection=new java.util.concurrent.atomic.AtomicReference<JaCaMoFacade.ImportSelection>();
+            var errors=new java.util.concurrent.CopyOnWriteArrayList<String>();
+            var facade=new JaCaMoFacade(){public String status(){return "folder";}
+                public ImportSelection importSelection(){return new ImportSelection("NATIVE_CURRENT",null);}
+                public ProjectSummary prepareOwnedProducer(java.nio.file.Path project,ImportSelection input,java.nio.file.Path cp){
+                    assertFalse(SwingUtilities.isEventDispatchThread());selection.set(input);entered.countDown();return null;}};
+            var panel=new java.util.concurrent.atomic.AtomicReference<JaCaMoWorkbenchPanel>();
+            SwingUtilities.invokeAndWait(()->{
+                var view=new JaCaMoWorkbenchPanel(facade,errors::add,true);panel.set(view);view.selectCaseFolder(root);
+                find(view,"selected-jcm",JTextField.class).setText("separate/project.jcm");
+                assertFalse(find(view,"authored-csl",JTextField.class).isEditable());
+                assertEquals("",find(view,"authored-ocl",JTextField.class).getText());
+                var rows=find(view,"use4goal-conformance-inputs",JPanel.class).getComponent(0);
+                assertSame(((Container)rows).getComponent(0),find(view,"selected-jcm",JTextField.class).getParent());
+                assertSame(((Container)rows).getComponent(1),find(view,"case-folder",JTextField.class).getParent());
+                assertNotNull(find(view,"choose-case-folder",JButton.class));
+            });
+            var duplicate=java.nio.file.Files.writeString(root.resolve("duplicate.xml"),"");
+            SwingUtilities.invokeAndWait(()->find(panel.get(),"prepare-producer",JButton.class).doClick());
+            assertEquals(1,errors.size());assertTrue(errors.getFirst().contains("DUPLICATE_TYPE"));assertNull(selection.get());
+            java.nio.file.Files.delete(duplicate);
+            SwingUtilities.invokeAndWait(()->find(panel.get(),"prepare-producer",JButton.class).doClick());
+            assertTrue(entered.await(5,java.util.concurrent.TimeUnit.SECONDS));
+            assertNull(selection.get().ocl());assertEquals(root.resolve("neutral.xml"),selection.get().specification());
+            assertEquals(root.resolve("neutral.csl"),selection.get().csl());
+        }finally{try(var files=java.nio.file.Files.list(root)){for(var file:files.toList())java.nio.file.Files.delete(file);}java.nio.file.Files.delete(root);}
+    }
+    @Test void runtimeClasspathLoadsAutomaticallyAndStillAllowsExplicitOverride()throws Exception {
+        String property="use.jacamo.runtime.classpath-file",previous=System.getProperty(property);
+        try {
+            System.clearProperty(property);
+            SwingUtilities.invokeAndWait(()->{
+                var view=new JaCaMoWorkbenchPanel(new JaCaMoFacade(){public String status(){return "classpath";}},message->fail(message),true);
+                assertEquals(java.nio.file.Path.of("D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt"),java.nio.file.Path.of(find(view,"runtime-classpath",JTextField.class).getText()));
+                assertNotNull(find(view,"choose-runtime-classpath",JButton.class));
+                find(view,"runtime-classpath",JTextField.class).setText("manual.txt");
+                assertEquals("manual.txt",find(view,"runtime-classpath",JTextField.class).getText());
+            });
+            System.setProperty(property,"explicit.txt");
+            SwingUtilities.invokeAndWait(()->assertEquals("explicit.txt",find(new JaCaMoWorkbenchPanel(()->"configured",message->fail(message),true),"runtime-classpath",JTextField.class).getText()));
+        }finally{if(previous==null)System.clearProperty(property);else System.setProperty(property,previous);}
+    }
     @Test void historicalNavigationBorrowsTheMatchingRetainedImageInsteadOfTheCurrentLiveState() {
         var now=Instant.EPOCH;
         var first=new RuntimeVerificationResult("run",1,"revision",1,"one","cartago",1,now,now,now,"c1","contracts","state1",List.of(),0,"COMPLETE","CURRENT_OBSERVED","",null);

@@ -1,0 +1,28 @@
+REAL_JACAMO_INIT project=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\owned-runtime\26bdc1d7-8330-41c2-8f79-67c3295ab5e1\evidence\20261030-113506-024-500e1e23\staging-auction\auction.jcm headless=true
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2\jason-interpreter-3.3.2.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2/jason-interpreter-3.3.2.jar
+
+
+Using the jason.jar from classpath
+
+REAL_JACAMO_INIT_OK
+CArtAgO Http Server running on http://192.168.0.103:3273
+Agent mind inspector is running at http://192.168.0.103:3272
+REAL_JACAMO_CREATE_OK platforms=4 agents=5
+Moise Http Server running on http://192.168.0.103:3271
+REAL_JACAMO_MANAGED_WAIT_START run=20261030-113506-024-500e1e23
+BRIDGE_OBSERVATION_PLAN_ACTIVE program=ba3972bbb3c4bea4f438052d520e221b2272186ab3bb83d55119745ef8d54af6 requests=8 capabilities=[Capability[name=scheme-operations, status=COMPLETE, evidenceIds=[CARTAGO_OPERATION_HISTORY/1.0], reason=Run-owned verified framework provider; per-cut quality remains authoritative], Capability[name=workspace-operations, status=COMPLETE, evidenceIds=[CARTAGO_OPERATION_HISTORY/1.0], reason=Run-owned verified framework provider; per-cut quality remains authoritative], Capability[name=candidate-field, status=COMPLETE, evidenceIds=[67830177f2cb450876ac3b43aa90741cbc0b72079f5fcdc8320ff2f11b17c012], reason=Run-owned verified framework provider; per-cut quality remains authoritative], Capability[name=auction-operations, status=COMPLETE, evidenceIds=[CARTAGO_OPERATION_HISTORY/1.0], reason=Run-owned verified framework provider; per-cut quality remains authoritative], Capability[name=scheme-history, status=COMPLETE, evidenceIds=[d2481d4ee3c45b2cead42f942a3943684e86facee992870356ca4d1e47d16f9a, 2b7d0415c5ec0bcf060a430c7d12753aa02bdf769172922d10ff2909870161a8], reason=Run-owned verified framework provider; per-cut quality remains authoritative], Capability[name=source-clock, status=COMPLETE, evidenceIds=[NPL_SYSTEM_WALL_CLOCK/1.0], reason=Run-owned verified framework provider; per-cut quality remains authoritative], Capability[name=norm-lifecycle, status=COMPLETE, evidenceIds=[NPL_OBSERVATION/1.0], reason=Run-owned verified framework provider; per-cut quality remains authoritative], Capability[name=execution-steps, status=COMPLETE, evidenceIds=[c0c17fb4f17f84a60448fa765b76304177e103f6d88f1f7d4a935c48a8517013, a2f382f9df9096bdd5346e14738d2dece357e2249ca87fd1b47c63a15ebd6f45, 4ea4e8ef7ac8956072e94d85f02b236151e85ece127194aa92d87397a6ffaf7c, b3e2a8b475e0f2c98050df1897c1ce6f6f4658dd2533c988d5aa560aaeb15445, c07a5a003bf55484031183b087ead298f764911694941bda7400acff226dc850], reason=Run-owned verified framework provider; per-cut quality remains authoritative]]
+REAL_JACAMO_MANAGED_START_ACK run=20261030-113506-024-500e1e23
+REAL_JACAMO_START_OK
+REAL_JACAMO_BRIDGE_READY port=63813 session=ae89f148-5932-4907-a1b5-1b0140cf5c03 agents=5
+Received bid 83.36702099033704 from giacomo for flight_ticket(paris,athens,date(15,12,2015))
+Received bid 71.58009796113029 from maria for flight_ticket(paris,athens,date(15,12,2015))
+Received bid 101.74856949771724 from giacomo for flight_ticket(athens,paris,date(18,12,2015))
+Received bid 97.61875053293996 from alice for flight_ticket(athens,paris,date(18,12,2015))
+Received bid 74.59910824360867 from maria for flight_ticket(athens,paris,date(18,12,2015))
+Received bid 93.08186384518386 from francois for flight_ticket(athens,paris,date(18,12,2015))

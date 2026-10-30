@@ -40,6 +40,9 @@ public final class DiagramModelBrowser extends JPanel {
     }
 
     public static DiagramModelBrowser forCsl(CslModel model) {
+        return forCsl(model,null);
+    }
+    public static DiagramModelBrowser forCsl(CslModel model,org.tzi.use.uml.mm.MModel nativeModel) {
         DefaultMutableTreeNode root = node("CSL: " + model.name(), "CSL state specification",
                 "Version", model.version(),
                 model.rootGroup().isOrganizationalContext() ? "Root organizational context" : "Root group",
@@ -60,7 +63,14 @@ public final class DiagramModelBrowser extends JPanel {
             entities.add(entityNode);
             entity.attributes().forEach(a -> entityNode.add(attribute(a)));
         });
-        root.add(cslGroup(model.rootGroup(), true));
+        var nested=model.groups().stream().flatMap(g->g.subgroups().stream()).map(g->g.group().name()).collect(java.util.stream.Collectors.toSet());
+        model.groups().stream().filter(g->!nested.contains(g.name())).forEach(g->root.add(cslGroup(g,true)));
+        if(nativeModel!=null){
+            var enactments=new DefaultMutableTreeNode("Enactment possibilities (mapping)");
+            for(var cls:nativeModel.classes())for(String role:org.tzi.use.plugins.jacamo.semantics.mapping.CanonicalUseBindingAdapter.enactedRoles(cls))
+                enactments.add(node(cls.name()+" -> "+role,"Mapped enactment possibility","Meaning","The represented agent may enact this role; actual instances need a frozen Plays link."));
+            if(enactments.getChildCount()>0)root.add(enactments);
+        }
         return new DiagramModelBrowser(root);
     }
 
@@ -95,6 +105,7 @@ public final class DiagramModelBrowser extends JPanel {
         DefaultMutableTreeNode result = node(prefix + value.name(),
                 value.isOrganizationalContext()
                         ? "CSL organizational context" : "CSL group specification");
+        value.attributes().forEach(a->result.add(attribute(a)));
         DefaultMutableTreeNode roles = group(result, "Role memberships", value.roles().size());
         value.roles().forEach(v -> roles.add(node(v.roleName() + " " + cardinality(v.cardinality()), "Role membership")));
         DefaultMutableTreeNode entities = group(result, "Entity memberships", value.entities().size());

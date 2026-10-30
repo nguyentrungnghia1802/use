@@ -65,3 +65,31 @@
 "src/test/java/org/jacamo/bridge/contract/SnapshotAdmissionTest.java" text eol=lf
 "src/test/java/org/jacamo/bridge/contract/VerificationObservationTest.java" text eol=lf
 "src/test/java/org/jacamo/bridge/contract/semantic/SemanticContractTest.java" text eol=lf
+
+# Preserve final tested source-freeze bytes for repository delivery.
+"pom.xml" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/BridgeEntityId.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/BridgeRelationId.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/CanonicalJson.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/Capability.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/CapabilityStatus.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/Completeness.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/ContractCodec.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/ContractEnvelope.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/ContractException.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/ContractSupport.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/ContractValidator.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/DistributionFingerprint.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/EventLedger.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/Evidence.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/MessageType.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/ModelFact.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/ModelSnapshot.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/ProjectionStatus.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/RelationCardinality.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/RuntimeEvent.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/RuntimeEventKind.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/RuntimeFact.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/SourceWatermark.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/UnresolvedFact.java" text eol=crlf
+"src/main/java/org/jacamo/bridge/contract/UseDisplayNameAllocator.java" text eol=crlf

@@ -4,6 +4,21 @@ import org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePan
 /** Immutable UI grouping only. Every input boundary remains available in detail/replay. */
 public final class BusinessTimeline {
  private BusinessTimeline(){}
+ /** Associates exact audit cuts with their compact business milestone, without
+  * replacing the cut or importing an unrelated future state with the same hash. */
+ public static Map<String,Integer> milestoneNumbers(List<Cut> input,List<Cut> milestones) {
+  var ordinalById=new HashMap<String,Integer>();for(int i=0;i<milestones.size();i++)ordinalById.put(milestones.get(i).id(),i+1);
+  var numbers=new LinkedHashMap<String,Integer>();String phase="";int start=0,previous=0;
+  for(int end=0;end<=input.size();end++) {
+   String key=end==input.size()?null:input.get(end).businessKey().isBlank()?phase:input.get(end).businessKey();
+   if(end<input.size()&&key.equals(phase))continue;
+   int first=0;for(int j=start;j<end;j++)if(ordinalById.containsKey(input.get(j).id())){first=ordinalById.get(input.get(j).id());break;}
+   int current=first==0?previous:first;
+   for(int j=start;j<end;j++){var cut=input.get(j);current=ordinalById.getOrDefault(cut.id(),current);numbers.put(cut.id(),current);}
+   previous=current;start=end;phase=key;
+  }
+  return Map.copyOf(numbers);
+ }
  public static List<Cut> summarize(List<Cut> input) {
   var output=new ArrayList<Cut>();var reached=new HashSet<String>();String priorBusiness="",priorHealth="",priorFailure="";
   var eligible=new ArrayList<Cut>();boolean observedDomain=false;

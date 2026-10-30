@@ -18,6 +18,7 @@ public final class XmlRuntimeBatch {
     private final RuntimeTables tables;
     private final M0RuleExecutor writer;
     private final ObserverProjection observers;
+    private final InvariantActivation invariantActivation;
     private final OccurrenceProjection occurrences;
     private final TaskDemandProjection taskDemands;
     private final RoleBeliefProjection beliefViews;
@@ -36,6 +37,7 @@ public final class XmlRuntimeBatch {
         sources=new RuntimeFactSources(specification,source,requests);tables=new RuntimeTables(specification,bindings);
         currentInventory=specification.nodes().stream().anyMatch(n->MoisePopulationClosure.POLICY.equals(n.optional("population")));
         observers=new ObserverProjection(specification,model,programHash);
+        invariantActivation=new InvariantActivation(specification,model,programHash);
         occurrences=new OccurrenceProjection(specification,model,programHash,goals);
         taskDemands=new TaskDemandProjection(specification,programHash,goals);
         beliefViews=new RoleBeliefProjection(specification,model,programHash);
@@ -72,6 +74,8 @@ public final class XmlRuntimeBatch {
                 if(entity&&!category.equals("cartago:ARTIFACT")
                     ||role&&!(category.equals("moise:GROUP_BOARD")&&mode.equals("LOGICAL_ROLE"))
                     ||context&&!Set.of("cartago:WORKSPACE","moise:GROUP_BOARD","moise:SCHEME_BOARD").contains(category)
+                        &&!(category.equals("jason:AGENT")&&write.name().equals("upsertInstance")&&mode.equals("PHYSICAL")
+                            &&write.optional("playerFrom").equals(write.attr("keyFields"))&&!write.optional("playerFrom").isBlank())
                     ||!entity&&!role&&!context)throw write.location().error("XML_RUNTIME_SOURCE_TARGET_CATEGORY_MISMATCH");
                 if(!input.optional("reconcileMissing").isEmpty()&&(!role||!write.name().equals("upsertInstance")))throw input.location().error("XML_ONLY_LOGICAL_ROLE_POPULATION_RECONCILIATION_SUPPORTED");
                 if(!input.optional("reconcileScopeField").isEmpty()) {
@@ -150,7 +154,8 @@ public final class XmlRuntimeBatch {
                     port.metadata(outcome.object(),"xml:m0:table",rule.table().attr("id"));
                     port.metadata(outcome.object(),"xml:m0:input",rule.input().attr("id"));
                     if(!scopeField.isEmpty()&&outcome.status().equals("MAPPED"))port.metadata(outcome.object(),"xml:m0:reconcile-scope",(String)row.values().get(scopeField));
-                    if(outcome.object().cls().isSubClassifierOf(port.readState().system().model().getClass("RoleOccurrence"))
+                    if((outcome.object().cls().isSubClassifierOf(port.readState().system().model().getClass("RoleOccurrence"))
+                            ||!port.metadata(outcome.object(),"xml:m0:representedPlayer").isBlank())
                             &&Set.of("","UNAVAILABLE").contains(port.metadata(outcome.object(),"xml:m0:observer-floor"))) {
                         var mark=cut.endWatermarks().get(VerificationObservation.SOURCE_ID);
                         boolean known=mark!=null&&mark.equals(cut.startWatermarks().get(VerificationObservation.SOURCE_ID))&&cut.sourceCompleteness().getOrDefault(VerificationObservation.SOURCE_ID,Completeness.UNAVAILABLE)!=Completeness.UNAVAILABLE;
@@ -179,6 +184,7 @@ public final class XmlRuntimeBatch {
             port.metadata(object,"xml:m0:roles-quality",roleScopes.getOrDefault(object,true)?"COMPLETE":"INCOMPLETE");
             port.metadata(object,"xml:m0:roles-cut",cut.snapshotId());
         }
+        invariantActivation.apply(port,epoch,cut.snapshotId(),selected);
         outcomes.addAll(beliefViews.apply(port,epoch,cut.snapshotId(),captured));
         outcomes.addAll(observers.apply(port,epoch,cut.snapshotId(),selected,run,generation));
         outcomes.addAll(occurrences.apply(port,epoch,cut.snapshotId(),selected));

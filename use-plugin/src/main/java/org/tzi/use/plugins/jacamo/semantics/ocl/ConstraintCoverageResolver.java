@@ -15,6 +15,7 @@ public final class ConstraintCoverageResolver {
     public String unavailablePopulations(Expression expression,NativeRuntimeMutationEngine engine,Map<String,Completeness> sources,boolean lost) {
         if(lost)return "COVERAGE_LOST";
         var visitor=ExternalOclConstraintService.dependencyVisitor();expression.processWithVisitor(visitor);
+        if(!visitor.unavailableReason().isEmpty())return visitor.unavailableReason();
         for(var cls:visitor.populationTypes().stream().sorted(Comparator.comparing(org.tzi.use.uml.mm.MClassifier::name)).toList())
             if(!populationComplete(cls,sources,engine)) {
                 if(cls.getAnnotation("FunctionalObservation")!=null)return "FUNCTIONAL_GLOBAL_POPULATION_UNPROVEN";
@@ -75,16 +76,20 @@ public final class ConstraintCoverageResolver {
         if(engine.xmlCase())for(var association:visitor.getCoverageData().getAssociationCoverage().keySet())if(association.getAnnotation("OriginalCslAssociation")!=null) {
             String source=engine.system().model().getAnnotationValue("CanonicalTupleAuthority","sourceId");if(source.isBlank()||sources.get(source)!=Completeness.COMPLETE)return "AUTHORITATIVE_ASSOCIATION_TUPLE_POPULATION_UNPROVEN:"+association.name();
         }
-        if(engine.xmlCase())for(var navigation:visitor.navigationReads()) {
-            String reference=xmlReferenceUnavailable(navigation,engine,self);if(!reference.isBlank())return reference;
-            if(navigation.getDestination().association().name().equals("InContext")&&navigation.getDestination().nameAsRolename().equals("roles"))try {
-                var variables=new org.tzi.use.uml.ocl.value.VarBindings(engine.system().state());variables.push("self",self.value());
-                var value=new org.tzi.use.uml.ocl.expr.Evaluator().eval(navigation.getObjectExpression(),engine.system().state(),variables);
-                if(value instanceof org.tzi.use.uml.ocl.value.ObjectValue object&&!engine.metadata(object.value(),"xml:m0:population-authority").isBlank()
-                        &&(!"COMPLETE".equals(engine.metadata(object.value(),"xml:m0:roles-quality"))||!engine.metadata(object.value(),"xml:m0:cut").equals(engine.metadata(object.value(),"xml:m0:roles-cut"))))return "XML_CURRENT_ROLE_MATERIALIZATION_INCOMPLETE";
-            }catch(RuntimeException unavailable){return "XML_ROLE_SCOPE_RECEIVER_UNAVAILABLE";}
+        if(engine.xmlCase())for(var scoped:visitor.scopedNavigationReads()) {
+            var navigation=scoped.expression();
+            if(!scoped.frames().isEmpty()&&scoped.preState())return "UNSUPPORTED:DERIVED_PRE_STATE_COVERAGE_REQUIRES_PRE_VIEW";
+            var receivers=OclReadReceivers.resolve(navigation.getObjectExpression(),scoped.iterators(),scoped.frames(),engine.system().state(),self);
+            if(receivers==null)return "XML_NAVIGATION_RECEIVER_UNAVAILABLE";
+            for(var receiver:receivers) {
+                String reference=xmlReferenceUnavailable(navigation,engine,receiver);if(!reference.isBlank())return reference;
+                if(navigation.getDestination().association().name().equals("InContext")&&navigation.getDestination().nameAsRolename().equals("roles")
+                        &&!engine.metadata(receiver,"xml:m0:population-authority").isBlank()
+                        &&(!"COMPLETE".equals(engine.metadata(receiver,"xml:m0:roles-quality"))||!engine.metadata(receiver,"xml:m0:cut").equals(engine.metadata(receiver,"xml:m0:roles-cut"))))return "XML_CURRENT_ROLE_MATERIALIZATION_INCOMPLETE";
+            }
         }
         for(var read:visitor.attributeReads()) {
+            if(!read.frames().isEmpty()&&read.preState())return "UNSUPPORTED:DERIVED_PRE_STATE_COVERAGE_REQUIRES_PRE_VIEW";
             var candidates=receivers(read,engine,self);if(candidates==null)return "NATIVE_ATTRIBUTE_RECEIVER_UNAVAILABLE:"+read.attribute().owner().name()+"."+read.attribute().name();
             if(engine.xmlCase()&&read.attribute().getAnnotation("DeclarativeObserverView")!=null) {
                 for(var object:candidates) {
@@ -95,7 +100,8 @@ public final class ConstraintCoverageResolver {
                 }
             }
 
-            var attribute=read.attribute();String annotation=attribute.getAnnotation(org.tzi.use.semantic.engine.use75.Use75CslModelBackend.ATTRIBUTE)!=null?org.tzi.use.semantic.engine.use75.Use75CslModelBackend.ATTRIBUTE:"CslAttribute";
+            var attribute=read.attribute();if(attribute.isDerived())continue;
+            String annotation=attribute.getAnnotation(org.tzi.use.semantic.engine.use75.Use75CslModelBackend.ATTRIBUTE)!=null?org.tzi.use.semantic.engine.use75.Use75CslModelBackend.ATTRIBUTE:"CslAttribute";
             if(attribute.getAnnotation(annotation)==null)continue;
             boolean canonical=engine.canonicalMappingConfigured()&&annotation.equals(org.tzi.use.semantic.engine.use75.Use75CslModelBackend.ATTRIBUTE);
             boolean optional="true".equals(attribute.getAnnotationValue(annotation,"optional"));
@@ -114,26 +120,11 @@ public final class ConstraintCoverageResolver {
         return "";
     }
     private List<MObject> receivers(ExternalOclConstraintService.DependencyVisitor.AttributeRead read,NativeRuntimeMutationEngine engine,MObject self) {
-        if(read.directSelf()&&self.cls().isSubClassifierOf(read.attribute().owner()))return List.of(self);
-        if(engine.xmlCase()&&read.receiver() instanceof org.tzi.use.uml.ocl.expr.ExpVariable variable) {
-            // Only compiler-bound, direct allInstances iterators have a closed
-            // receiver range here. The caller separately requires population
-            // completeness and checks every selected object's accepted values.
-            // Arbitrary unbound variables/navigation keep the old fail-closed path.
-            for(var iterator:read.iterators().reversed())if(iterator.variable().equals(variable.getVarname())) {
-                if(iterator.range() instanceof org.tzi.use.uml.ocl.expr.ExpAllInstances population
-                        &&population.getSourceType() instanceof org.tzi.use.uml.mm.MClass type
-                        &&type.isSubClassifierOf(read.attribute().owner()))
-                    return engine.system().state().allObjects().stream().filter(o->o.cls().isSubClassifierOf(type)).toList();
-                break;
-            }
+        if(engine.xmlCase()) {
+            var objects=OclReadReceivers.resolve(read.receiver(),read.iterators(),read.frames(),engine.system().state(),self);
+            return objects==null||objects.stream().anyMatch(o->!o.cls().isSubClassifierOf(read.attribute().owner()))?null:objects;
         }
-        if(engine.xmlCase())try {
-            var variables=new org.tzi.use.uml.ocl.value.VarBindings(engine.system().state());variables.push("self",self.value());
-            var value=new org.tzi.use.uml.ocl.expr.Evaluator().eval(read.receiver(),engine.system().state(),variables);
-            if(value instanceof org.tzi.use.uml.ocl.value.ObjectValue object&&object.value().cls().isSubClassifierOf(read.attribute().owner()))return List.of(object.value());
-            return null; // Unbound iterator/undefined navigation is not an empty observed population.
-        }catch(RuntimeException unavailable){return null;}
+        if(read.directSelf()&&self.cls().isSubClassifierOf(read.attribute().owner()))return List.of(self);
         return engine.system().state().allObjects().stream().filter(o->o.cls().isSubClassifierOf(read.attribute().owner())).toList();
     }
     private String xmlReferenceUnavailable(org.tzi.use.uml.ocl.expr.ExpNavigation navigation,NativeRuntimeMutationEngine engine,MObject self) {
@@ -143,14 +134,13 @@ public final class ConstraintCoverageResolver {
         // Inverse collections require separate population authority, not a forward-reference certificate.
         if(!field.equals(navigation.getDestination().nameAsRolename()))return "UNSUPPORTED:XML_OBSERVER_INVERSE_REFERENCE_COVERAGE";
         try {
-            var variables=new org.tzi.use.uml.ocl.value.VarBindings(engine.system().state());variables.push("self",self.value());
-            var source=new org.tzi.use.uml.ocl.expr.Evaluator().eval(navigation.getObjectExpression(),engine.system().state(),variables);
-            if(!(source instanceof org.tzi.use.uml.ocl.value.ObjectValue object)||!xmlObserverOwned(engine,object.value()))return "XML_OBSERVER_REFERENCE_RECEIVER_UNAVAILABLE:"+field;
-            String quality=engine.metadata(object.value(),"xml:observer:quality:"+field);
+            if(!xmlObserverOwned(engine,self))return "XML_OBSERVER_REFERENCE_RECEIVER_UNAVAILABLE:"+field;
+            var object=self;
+            String quality=engine.metadata(object,"xml:observer:quality:"+field);
             if(!Set.of("COMPLETE","HISTORICAL_COMPLETE").contains(quality))return (quality.equals("ERROR")?"ERROR:":"")+"XML_OBSERVER_REFERENCE_UNAVAILABLE:"+field+":"+quality;
-            String expected=engine.metadata(object.value(),"xml:observer:reference-target:"+field);
-            var targets=object.value().getNavigableObjects(engine.system().state(),navigation.getSource(),navigation.getDestination(),List.of());
-            if(expected.isBlank()||targets.size()!=1||!targets.getFirst().name().equals(expected)||!xmlObserverOwned(engine,targets.getFirst()))return "ERROR:XML_OBSERVER_REFERENCE_DIFFERS_FROM_ACCEPTED_OBSERVATION:"+object.value().name()+":"+field;
+            String expected=engine.metadata(object,"xml:observer:reference-target:"+field);
+            var targets=object.getNavigableObjects(engine.system().state(),navigation.getSource(),navigation.getDestination(),List.of());
+            if(expected.isBlank()||targets.size()!=1||!targets.getFirst().name().equals(expected)||!xmlObserverOwned(engine,targets.getFirst()))return "ERROR:XML_OBSERVER_REFERENCE_DIFFERS_FROM_ACCEPTED_OBSERVATION:"+object.name()+":"+field;
             return "";
         }catch(RuntimeException unavailable){return "XML_OBSERVER_REFERENCE_RECEIVER_UNAVAILABLE:"+field;}
     }

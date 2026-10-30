@@ -966,3 +966,200 @@ unchanged. No unrelated case live tests/full clean reactor, branch or commit/pus
 ## Clean Auction layout
 
 - [x] Move old profiles/oracles/provenance to `use-plugin/src/test/resources/auction-reference`; promote current inputs to `use-plugin/examples/auction/{auction.csl,auction.istar,auction-mapping.xml,auction.ocl}`, with project/source and README. Exact source/model/contract bytes retained. Tests, docs, package inventory and acceptance script paths updated. 51 focused tests PASS; package BUILD SUCCESS. Final ZIP has active bundle `examples/auction-current`, fixtures `reference/auction`, zero stale `examples/auction-semantic` entries. Old native toy ZIP path remains compatible. Stage and ZIP byte checks PASS, formal inputs pinned with -text attributes. Evidence: `use-plugin/verification/auction-layout/receipt.json`. No semantic change or fresh live acceptance claim.
+
+
+## UI instance-state views — AOL / ISCN
+
+- [x] SV01 — Audit original use4Goal IStarScenarioView/IStarScenarioViewModel and AOL renderer. Reuse AOL diagram/layout sources with pinned license/source/target hashes; replace legacy CslSystemState parameter with immutable accepted-state presentation DTO, never a legacy evaluator. Provenance: META-INF/use4goal-state-views-provenance.json.
+- [x] SV02 — Selected immutable Cut carries its observation payload; state navigation notifies read-only views and empty history clears them. AOL uses XML-selected CSL instance values plus exact retained native binary links. ISCN uses each recorded context's source/actor/player/role/kind trace and original instance expansion/renderer. Require bijective topology agreement, borrow qualified markings; missing raw fulfilled cannot create a badge. No extra MSystem/OCL/marking engine or case constants.
+- [x] SV03 — Main tabs Execution & Results / CSL state (AOL) / iStar instances (ISCN). Advanced contains model definitions and Verification Details only; original debug Workbench unchanged. Player display names short; context/player identities preserved in evidence.
+- [x] SV04 — 42 focused UI/history/architecture tests PASS, no failures/errors/skips. Genuine recorded Auction cut covers 2 contexts, 6 actor instances per context; neutral Parcel case verifies attributes and links; missing evidence UNKNOWN; navigation/reset and original view provenance/lifecycle pass. Rendered AOL/ISCN images inspected. Evidence under use-plugin/verification/state-views. No fresh manual desktop GUI/live producer run claimed; these are presentation adapters over already verified cuts, with semantics unchanged.
+
+
+## Auction system specifications / model-native OCL
+
+- [x] MS01 — Read both current Desktop Draw.io files recursively (cells, ownership, edges, embedded cslSource and semanticAudit). Preserve copies/hashes in auction-reference/diagram-v4. Explicitly record contradictions: capability Role versus OrgCtx/Agent labels, stale task owners/participates-in, strict success-only versus previously user-approved attempt semantics. Historical v4 default retained capability Role/specialization pending clarification; user has now explicitly selected Agent/OrgCtx. Superseded by AC01–AC03 below. Do not claim all visual metadata agrees or graph is a verbatim Draw.io copy.
+- [x] MS02 — Current CSL structure matches embedded Draw.io cslSource; operation OCL resides in explicit @use-native-ocl 1 block. iStar keeps original Goal/Task predicates and Artifact Resources, with observer contracts in versioned block. Optional .ocl is comment-only; XML AUTHORED binds source/identity/context/field/operation/task/goal/capability, has no model-generation actions. Current hashes updated.
+- [x] MS03 — Implement generic ModelNativeContracts collection from pinned CSL/iStar comments plus optional external native OCL; original DSL parsers and native USE compiler remain unchanged. Empty optional file allowed; wrong annotation version, non-Boolean, duplicate clauses and missing XML bindings fail closed. RequirementInventory includes embedded clauses. Replay implementation fence includes new adapter. UI labels distinguish runtime project input from hand-authored system specs.
+- [x] MS04 — Final focused regression + actual external Auction using current root specification files, source replay, package/cold installed replay and exact byte/hash checks. Only tick after executable receipts. Source freeze and evidence in verification/model-native-contracts. No commit/push.
+
+
+MS04 evidence: verification/model-native-contracts/acceptance.json. Final focused
+47 tests PASS + 1 actual Auction over TCP PASS, same MSystem, zero native failures;
+optional .ocl comment-only, all 7 embedded native clauses compiled and installed,
+CSL structure matches pinned Draw.io cslSource. Live selected root COMPLETE_OBSERVED,
+11 domain milestones / 1022 audit boundaries. Participant raw/qualified UNKNOWN
+remains visible where no exact terminal marker was admitted; no blanket success.
+Source replay and isolated installed-JAR replay PASS 1611 entries with identical
+final result hash 13a3cce31adade6e855c14bb413e761361cb46e22ff4cde465837293145ae8cb.
+Package BUILD SUCCESS; current Auction files equal final ZIP bytes; relevant
+native/UI classes match tested targets. Original GoalMarking/TaskMarking/
+IStarMarking/IStarPropagation unchanged; Desktop source hashes unchanged.
+This MS04 receipt describes the historical v4 default. User clarification now
+selects Agent/OrgCtx; AC01–AC03 below supersede its model and runtime bindings.
+No claim of verbatim graph equivalence to contradictory diagram metadata. Deadline remains disabled; no manual GUI/full-source completeness claim.
+
+## User-selected singleton Agent/OrgCtx revision (supersedes MS01/MS02 defaults)
+
+- [x] AC01 — Capability is a concrete iStar Agent, one occurrence per exact physical player; Tasks/resources move inside Agent, Role responsibilities delegate by SAME_PLAYER. CSL capability becomes a separate singleton-agent OrgCtx, not Role inheritance. Keep original unary-realization admission profile and marking core; no fabricated operation success.
+- [x] AC02 — Neutral singleton context representation, same-player dependency expansion and Agent interval/checkpoint binding. Preserve exact run/incarnation/scheme/invocation, rollback and unavailable semantics; no case constants in Java. Focused negative tests must forbid cross-player credit and missing context evidence.
+- [x] AC03 — Actual Auction TCP with current specifications, same MSystem, task checkpoints, native contracts, source replay; rebuild distribution and verify package bytes. Update README/evidence after executable gates.
+
+Bid policy: completed participation attempt and accepted Artifact bid are distinct. Exact simulated terminal failure may close the attempt; it never proves accepted bid. Non-improving operation success is still an attempt. Administrative scheme progress alone never proves an accepted bid.
+
+AC01–AC03 executable evidence: `use-plugin/verification/single-agent-context/acceptance.json`.
+61 focused tests pass (3 semantic topology adapter + 58 plugin tests), no failure/error/skip.
+Actual external Auction final gate: `model-native-contracts/single-agent-diagnostic-live.log` BUILD SUCCESS;
+`live-results-ui/auction-293052928902650835`: same authoritative MSystem, five distinct singleton
+Agent contexts linked bijectively to physical AtomicAgent objects; exact same-player responsibility
+and Task stop certificates; original collective root FULFILLED; selected COMPLETE_OBSERVED;
+no domain failures; both observer invariants PASS. Source replay and isolated final installed-JAR
+replay PASS 1601 entries, identical final result hash
+88399046ab97842f2f493d299eb6e18dfd82b443ffd3d3c13fae05816168bff7.
+Package BUILD SUCCESS; active Auction bytes and tested classes equal ZIP; original marking/propagation
+class hashes unchanged. Source freeze covers final production/tests and read-only project/diagrams.
+
+Limits retained: capability Agent declares all skills; tasks not demanded/executed for a player
+remain UNKNOWN, not falsely fulfilled. XML selects the collective requirement; COMPLETE_OBSERVED
+is not all capabilities of all agents or full source coverage. OrgContext helper population invariant
+can remain SKIPPED for POPULATION_UNPROVEN. Historical failed live attempts are retained, including
+source cast PARTIAL; no quality/Stop assertion was disabled to obtain the successful final run.
+No fresh manual desktop GUI test, no commit/push.
+
+## Result scope and instance evidence presentation
+
+- [x] RV01 — Display selected Goal/Task requirements explicitly; keep raw/certified summary and UNKNOWN unchanged. Mark supporting definitions, show counts by certified status; no unsupported N/A inference.
+- [x] RV02 — Inspect exact player/context/occurrence evidence from presenter metadata, never parse identities from free text. State navigation/reset clears stale details; original verdict/marking/mapping remain unchanged.
+- [x] RV03 — Focused scope/summary/history/negative tests, visual render inspection, package build and final ZIP class-byte check. No repeat of unrelated live cases/full regression for this presentation-only change.
+
+RV01–RV03 evidence: `use-plugin/verification/result-scope/receipt.json`.
+Only 3 UI sources and their provenance metadata changed since the Agent/OrgCtx freeze.
+Fixed an existing UI footer guard: OCL-only legacy/direct cuts with missing declared Goal/Task,
+and explicit selected targets with no occurrence, must be INCOMPLETE. Reproduced by the existing
+RestoredStateBrowserTest without changing its expected result; baseline failure retained.
+37 focused tests PASS, zero failures/errors/skips, final package BUILD SUCCESS. A pinned genuine
+Auction cut verifies 2 fulfilled Start instances and 8 UNKNOWN skill instances; identity/evidence
+remain exact and original result hash is unchanged. Rendered images inspected. Backend semantic
+and original use4Goal class bytes equal previous accepted installed package; Auction specification
+bytes equal final ZIP. No fresh live producer or manual desktop GUI test claimed for this UI-only
+change. No commit/push.
+
+
+## Enactment views and failure navigation
+
+- [x] EV01 — Validate explicit singleton-context enactment mapping; render M1 possibilities and frozen M0 actual-player links without changing marking semantics.
+- [x] EV02 — Failure Point selects chronological Goal/Task, OCL and diagnostic points with exact evidence; simplify main navigation.
+- [x] EV03 — Focused negative tests, Auction live/replay, visual inspection and final package/source receipt.
+
+EV01–EV03 evidence: `use-plugin/verification/enactment-navigation/receipt.json`.
+43 focused tests PASS; 12 relevant view/navigation/isolation tests re-run PASS after final UI geometry changes.
+Actual external Auction + source replay PASS (1618 entries, 19 domain milestones).
+Final isolated installed-JAR replay PASS with exact source-manifest final state/result hashes.
+114 live implementation resources/classes match final archive; 110 tested UI classes match package;
+297 original engine class bytes equal prior accepted package. Frozen same-cut enactment joins are
+checked against actual CslAgentContexts and Plays links for all 5 players. No cross-player
+inference; removed Role changes current view but cannot erase a frozen historical view.
+Failure selector distinguishes Goal/Task, OCL and Diagnostics; missing evidence is not a failure.
+Default interval inspection removed from main live results; audit remains optional.
+Original marking/selected requirements unchanged. New source freeze and read-only source hashes
+verified. Source/service acceptance and offscreen visual QA, not a fresh manual desktop GUI claim.
+Prior failed logs retained (test render harness defaults, compile-time UI generic type), no semantic
+assertion weakened. No commit/push.
+
+## Failure Point milestone labels
+- [x] FP01 — Default failure labels use associated business milestones; exact failure evidence retained; Audit details alone switches to boundary numbering.
+- [x] FP02 — Focused navigation/grouping tests, package and source-byte checks; explain milestone scope from actual presentation specification.
+
+FP01–FP02 evidence: `use-plugin/verification/failure-milestones/receipt.json`.
+33 focused tests PASS; package BUILD SUCCESS. Default dropdown and selected-state caption
+use the associated milestone; Audit details explicitly switches to exact boundary numbers.
+Exact failure cuts/evidence remain unchanged, including after background refresh and mode
+switches. Repeated state phases and pre-first-state diagnostics have negative tests.
+114 accepted live backend resources/classes and 297 original engine classes match final
+package. Only 2 UI sources and workflow attribution metadata changed in production.
+No new live MAS/replay or manual desktop GUI claim for this presentation-only adjustment.
+
+## Population correctness repair
+- [x] PC01 — Transitive derived-attribute AST dependencies: exact receivers, cycle/pre-state fail-closed handling, shared coverage/read-set scheduling; partial roles cannot become PASS/FAIL.
+- [x] PC02 — Persistent failure episodes across pending/unknown cuts; qualified recovery only; merge aggregate/body display without dropping object witnesses.
+- [x] PC03 — Explicit XML activation for an authored invariant after qualified source roster and matching materialized context; latch per context incarnation, keep later complete-empty failure. Original invariant predicate unchanged.
+- [x] PC04 — Focused negative/regression tests, external Auction only, source and installed replay, final package/provenance/source freeze. No full clean verify or unrelated case study.
+
+PC01–PC04 evidence: `use-plugin/verification/population-repair/receipt.json`.
+51 focused tests and 19 package/navigation/provenance/isolation tests PASS. Actual external
+Auction PASS with 17 milestones / 1045 audit cuts, same authoritative MSystem and unmodified
+source; zero startup population FAILs, qualified waiting observed, operational population
+body and aggregate genuinely PASS with source activation certificate. Source and final
+isolated installed-JAR replay both PASS 1655 entries and identical final state/result hashes.
+119 live implementation resources/classes equal final package, 110 tested UI class bytes
+equal package; 297 original engine classes equal the prior accepted archive. Predicate
+size() = 1 unchanged; activation is explicit mapping semantics, not inferred from outcome.
+Negative tests retain genuine complete-empty/removal failures and unavailable evidence;
+cycle/@pre receiver cases fail closed. UNKNOWN/MIXED of supporting skills stay unchanged.
+Final source freeze verified. No fresh manual desktop GUI claim, unrelated live cases,
+full clean verify, commit or push.
+
+## Project-first specification folder selection
+- [x] UI01 — JCM first; one model-folder picker; exact direct-child CSL/iStar/XML required, external OCL optional; reject duplicate/missing types and revalidate before preparation.
+- [x] UI02 — Automatically select producer classpath file, retain manual Runtime libs override; explain compatibility and model input modes.
+- [x] UI03 — Focused folder/UI/optional-OCL tests, package and visual QA. Preserve model predicates and runtime semantics.
+
+UI01–UI03 evidence: `use-plugin/verification/folder-inputs/receipt.json`.
+40 focused folder/UI/input/native-model tests PASS; package BUILD SUCCESS. Missing/duplicate
+required types and duplicate optional OCL reject; arbitrary filenames and nested-file exclusion
+verified. Prepare rescans the selected folder before producer creation. Omitted external OCL
+freezes as an empty asset in effective XML (original file unchanged); all 7 embedded Auction
+contracts remain installed, supplied OCL checksum mismatch still rejects, frozen inputs replay
+round-trip verified. Source and installed-JAR offscreen Swing render inspected; 111 UI class
+bytes and changed backend classes equal final package, 297 original engine classes unchanged.
+125 entries in the automatically selected producer classpath exist. Runtime libs/manual override
+preserved. Script syntax PASS. No fresh live MAS/manual desktop exercise, full clean verify,
+other case-study execution, commit or push for this input-selection change.
+
+## Per-execution/entity verification views
+- [x] EX01 — Audit exact scope/entity bindings and two independent engine contexts; freeze display-only native entity references under the writer barrier.
+- [x] EX02 — Separate execution selector, scoped Goal/Task summaries and domain milestones; retain whole-state OCL/run verdict visibly; synchronize ISCN context labels and selection.
+- [x] EX03 — Negative isolation/history/navigation tests, actual external Auction only, replay/package and visual QA; no case-name inference or engine marking changes.
+
+EX01–EX03 evidence: `use-plugin/verification/execution-scopes/receipt.json`.
+Audit found two already independent engine contexts; UI definition-wide aggregation and
+anonymous context labels caused ambiguity. Added exact scope/native Entity view receipts
+under the writer barrier, execution selector, per-scope Goal/Task summaries and domain
+milestones; ISCN labels and selection synchronize by exact context ID. Missing selected
+context clears the graph, never substitutes another. AOL and OCL retain full shared state.
+62 focused tests PASS; actual external Auction PASS with same authoritative MSystem,
+unmodified source, two distinct Entity/root bindings and 5 milestones per execution.
+Source and final isolated installed-JAR replay PASS 1608 entries, identical final hashes.
+119 live implementation entries equal final package; 113 tested UI class bytes match;
+297 original engine classes unchanged. Source freeze707 checked; packaged case bytes equal
+source, with no case specification edits. Both original Swing ISCN diagrams and Execution
+views rendered/visually inspected. No fresh manual desktop GUI claim, other live case
+studies, full clean verify, marking changes, commit or push. Preserved failed harness logs
+for first-combo selector and missing explicit test quantifier configuration; semantic
+assertions were not weakened.
+
+## Strict single-execution Goal/OCL/AOL views
+- [x] SX01 — Remove aggregate execution selection; keep independent per-context root identities and explicit Entity labels.
+- [x] SX02 — Native OCL checks scoped to explicit bound owners/observer subjects, retain shared structural constraints, missing/ambiguous bindings fail closed.
+- [x] SX03 — Scoped AOL graph with witnessed execution participation links; synchronize all selectors without inferring membership from shared group.
+- [x] SX04 — Focused isolation/quantifier/negative UI tests, external Auction only, source and installed replay, final source/package/visual evidence.
+
+SX01–SX04 evidence: `use-plugin/verification/single-execution/receipt.json`.
+Two independent native root/Entity bindings now drive one mandatory execution selector;
+there is no aggregate option. Results, AOL and ISCN synchronize exact context identity.
+Native OCL outer owners are scoped by explicit bindings; a private monitor matches
+program/epoch/project/physical subject, while shared group contracts still apply to
+both relevant executions. Native predicates/quantifiers/coverage gates are unchanged.
+AOL keeps native structure and adds witnessed participation as a presentation overlay,
+never derives participation from shared group membership or asserts bid success.
+59 focused regression tests PASS; final UI/provenance closeout 12 tests PASS.
+Actual unmodified external Auction PASS: roots independently FULFILLED, 5/6 dynamic
+business milestones, one private monitor per execution and all 5 native invariants PASS.
+Source and final isolated installed-JAR replay PASS 1615 entries, identical final hashes.
+120 live implementation entries match final archive, 113 tested UI class bytes match,
+297 original engine classes remain unchanged. Offscreen Swing Results/AOL/ISCN renders
+inspected for both executions. Source/input/build/test freeze verified. Existing failed
+harness/regression attempts and the final renderer provenance mismatch are retained;
+the latter was corrected by recording the changed source hash, without weakening tests.
+No fresh manual desktop GUI claim, unrelated live case studies, full clean verify,
+marking changes, commit or push.

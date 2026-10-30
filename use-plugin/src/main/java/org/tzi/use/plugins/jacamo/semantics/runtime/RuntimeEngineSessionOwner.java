@@ -28,9 +28,9 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
     public record GoalRead(String element,NativeOclBackend.Compiled expression,Map<String,Value> variables,String unavailable) {public GoalRead{variables=Map.copyOf(variables);}}
     public record XmlTaskRead(TaskDemandProjection.Demand demand,XmlTaskCheckpoints.Marker marker,String episode) { }
     public record PreparedCast(JaCaMoOccurrenceBindingAdapter.ContextCast cast,Map<String,GoalRead> goals,boolean exact,
-            org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.OccurrenceProjection.Scope xmlScope,OccurrenceGoalModelExpander.Expansion xmlExpansion,Map<String,XmlTaskRead> xmlTasks) {
-        public PreparedCast{goals=Map.copyOf(goals);xmlTasks=Map.copyOf(xmlTasks);}
-        public PreparedCast(JaCaMoOccurrenceBindingAdapter.ContextCast cast,Map<String,GoalRead> goals,boolean exact){this(cast,goals,exact,null,null,Map.of());}
+            org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.OccurrenceProjection.Scope xmlScope,OccurrenceGoalModelExpander.Expansion xmlExpansion,Map<String,XmlTaskRead> xmlTasks,Map<String,Object> scopeView,List<org.tzi.use.plugins.jacamo.semantics.ocl.SemanticInvariantEvaluator.Prepared> scopeChecks) {
+        public PreparedCast{goals=Map.copyOf(goals);xmlTasks=Map.copyOf(xmlTasks);scopeView=SemanticJson.object(scopeView);scopeChecks=List.copyOf(scopeChecks);}
+        public PreparedCast(JaCaMoOccurrenceBindingAdapter.ContextCast cast,Map<String,GoalRead> goals,boolean exact){this(cast,goals,exact,null,null,Map.of(),Map.of(),List.of());}
         public boolean expanded(){return xmlExpansion!=null;}
         public GoalModel model(GoalModel original){return xmlExpansion!=null?xmlExpansion.model():original;}
         public String sourceElement(String element){return xmlExpansion!=null?xmlExpansion.trace().get(element).source():element;}
@@ -155,7 +155,7 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
         }}
         requireOpen();program.assertUnchanged();if(estimatedBytes<0||estimatedBytes>16L*1024*1024)throw new IllegalStateException("ENGINE_PIN_BYTE_CAPACITY");
         var casts=new ArrayList<PreparedCast>();
-        if(program.xmlPlan()!=null)prepareXml(casts,sources,lost);
+        if(program.xmlPlan()!=null)prepareXml(casts,sources,lost,nativeChecks);
         else for(var cast:bindings.resolve(program,nativeEngine)) {
             var reads=new TreeMap<String,GoalRead>();
             for(var item:conditions.entrySet()) {
@@ -171,7 +171,7 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
         }
         return new Cut(owner,identity,ticket.get(),version,boundary,stateHash,UseStateReadView.pin(null,nativeEngine.system().state()),casts,advance,lost,invocation,nativeChecks,Math.max(1024,estimatedBytes),sources,work);
     }
-    private void prepareXml(List<PreparedCast> result,Map<String,Completeness> sources,boolean lost) {
+    private void prepareXml(List<PreparedCast> result,Map<String,Completeness> sources,boolean lost,ExternalOclConstraintService.PreparedEvaluation nativeChecks) {
         var expander=new OccurrenceGoalModelExpander(program.goalModel(),program.profile().engine(),program.xmlPlan().dependencyPopulations());
         var demands=nativeEngine.xmlTaskDemands(identity.run(),identity.generation(),identity.revision());
         for(var scope:nativeEngine.xmlOccurrences(identity.run(),identity.generation(),identity.revision())) {
@@ -208,7 +208,8 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
                 reads.put(trace.expanded(),new GoalRead(trace.expanded(),expression,variables,reason));
             }
             var cast=new JaCaMoOccurrenceBindingAdapter.ContextCast(scope.id(),scope.revision(),expansion==null?List.of():expansion.cast(),actors,selves,scope.unavailable());
-            result.add(new PreparedCast(cast,reads,scope.complete(),scope,expansion,taskReads));
+            var view=ExecutionConstraintScope.capture(program,nativeEngine,scope);
+            result.add(new PreparedCast(cast,reads,scope.complete(),scope,expansion,taskReads,view,ExecutionConstraintScope.prepare(nativeChecks,view)));
         }
     }
     public CompletableFuture<Evaluation> submit(Cut cut) {
@@ -299,7 +300,9 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
                 if(cut.advance())sessions.put(cast.contextId(),new ContextSession(owned.revision(),owned.engine(),result));
                 if(prepared.xmlExpansion()!=null&&result!=null)result.deferred().forEach(id->{if("KNOWN".equals(statusQuality.get(id)))statusQuality.put(id,"UNAVAILABLE:ORIGINAL_ENGINE_DEFERRED_INPUT_OR_RESOURCE");});
                 var rendered=prepared.xmlExpansion()!=null?SemanticResultAdapter.xmlContext(cast,owned.engine(),result,before,input,statusQuality,cut.advance(),prepared.xmlExpansion(),prepared.xmlScope(),program):SemanticResultAdapter.context(cast,owned.engine(),result,before,input,statusQuality,cut.advance());
-                var execution=certifyExecution?SemanticResultAdapter.execution(rendered,owned.engine(),cut,executionEvidence):rendered;
+                var withView=new TreeMap<String,Object>(CanonicalJson.object(rendered));
+                if(prepared.xmlScope()!=null)withView.put("scopeView",prepared.scopeView());
+                var execution=certifyExecution?SemanticResultAdapter.execution(withView,owned.engine(),cut,executionEvidence):withView;
                 contexts.add(execution);appendTerminalOutcomes(execution,cut,rows);
                 if(cut.advance())sessions.put(cast.contextId(),new ContextSession(owned.revision(),owned.engine(),result,CanonicalJson.object(execution)));
             }
@@ -313,6 +316,14 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
             cut.casts().forEach(c->c.xmlTasks().values().forEach(t->{if(t.marker()!=null)heldInvocations.add(t.marker().invocation());}));
             taskRows.keySet().retainAll(heldInvocations);
             if(taskRows.size()>4096)throw new IllegalStateException("DECLARATIVE_TASK_HISTORY_CAPACITY");
+            contexts.replaceAll(raw->{var context=CanonicalJson.object(raw);
+                var prepared=cut.casts().stream().filter(p->p.cast().contextId().equals(context.get("context"))&&p.xmlScope()!=null).findFirst().orElse(null);
+                if(prepared==null)return raw;
+                var scoped=new TreeMap<String,Object>(context);var view=new TreeMap<String,Object>(prepared.scopeView());
+                view.put("occurrenceIds",CanonicalJson.object(context.getOrDefault("occurrences",Map.of())).keySet().stream().sorted().toList());scoped.put("scopeView",view);
+                scoped.put("executionConstraints",SemanticJson.tree(ExecutionConstraintScope.evaluate(prepared.scopeChecks(),cut.state().after(),rows,view,prepared.cast().contextId(),cut.version())));
+                return scoped;
+            });
             var result=SemanticResultAdapter.result(program,cut,rows,nativeResults,contexts,originalClasses,discontinuous,requirementInventory);
             savedSessions.values().stream().filter(old->sessions.values().stream().noneMatch(now->now.engine()==old.engine())).forEach(old->old.engine().close());
             return result;

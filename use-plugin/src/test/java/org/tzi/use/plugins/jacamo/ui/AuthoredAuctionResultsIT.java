@@ -8,12 +8,12 @@ import org.tzi.use.plugins.jacamo.codegrounded.runtime.*;
 import static org.junit.jupiter.api.Assertions.*;
 class AuthoredAuctionResultsIT {
  @Test @Timeout(420) void fullAuthoredAuctionKeepsFixedModelRowsAndReportsRealConstraintsEvenAfterWinner()throws Exception {
-  Path checkout=Path.of("..").toAbsolutePath().normalize(),project=checkout.getParent().resolve("jacamo/examples/auction/auction.jcm"),inputs=checkout.resolve("use-plugin/src/test/resources/auction-reference/authored-v1");
+  Path checkout=Path.of("..").toAbsolutePath().normalize(),project=checkout.getParent().resolve("jacamo/examples/auction/auction.jcm"),inputs=checkout.resolve("use-plugin/examples/auction");
   Path evidence=Files.createTempDirectory(Files.createDirectories(checkout.resolve("use-plugin/verification/live-results-ui")),"auction-");
   byte[] source=Files.readAllBytes(project);var session=new Session();long pid=0;
   try(var facade=new DefaultJaCaMoFacade(checkout,session)){
    try{
-    var selection=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",inputs.resolve("auction-mapping.xml"),inputs.resolve("auction_constraints_final_fixed.ocl"),inputs.resolve("auction_csl.csl"),inputs.resolve("auction_istar_final.istar"),false);
+    var selection=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",inputs.resolve("auction-mapping.xml"),inputs.resolve("auction.ocl"),inputs.resolve("auction.csl"),inputs.resolve("auction.istar"),false);
     facade.prepareOwnedProducer(project,selection,null,false);pid=facade.ownedProducerStatus().pid();var system=session.system();assertNotEquals(ProcessHandle.current().pid(),pid);
     var definitions=new LiveGoalSummary(facade.semanticModels().goals());int expected=definitions.rows(List.of()).size();assertTrue(expected>0);
     var view=new java.util.concurrent.atomic.AtomicReference<ObservedConformancePanel>();SwingUtilities.invokeAndWait(()->view.set(ObservedConformancePanel.liveResults(facade.semanticModels().goals())));
@@ -28,13 +28,100 @@ class AuthoredAuctionResultsIT {
     while(!stopReceiptsComplete(facade)&&System.nanoTime()<stopDeadline)Thread.sleep(200);
     assertTrue(stopReceiptsComplete(facade),"Both source stop terminal receipts must be processed before freezing final verification");
     var coordinator=coordinator(facade);var result=completedObserverCut(facade,coordinator);assertNotNull(result.semantic());
+    coordinator.read(()->{
+     var contexts=system.state().allObjects().stream().filter(o->o.cls().name().equals("auction_capabilities")).toList();
+     assertEquals(5,contexts.size(),"Each source agent has its own singleton context, not one shared capability player");
+     var represented=new HashSet<String>();
+     for(var context:contexts){var links=system.state().allLinks().stream().filter(l->l.association().name().equals("CslAgentContexts")&&l.linkedObjects().getFirst()==context).toList();assertEquals(1,links.size());var agent=links.getFirst().linkedObjects().get(1);assertEquals("AtomicAgent",agent.cls().name());assertTrue(represented.add(agent.name()),"No two capability contexts represent the same agent");}
+     return null;
+    });
+    var presentation=CanonicalJson.object(result.semantic().observation().get("presentationState"));
+    assertEquals("DECLARATIVE_PRESENTATION/1.2",presentation.get("version"));
+    var objectQuality=CanonicalJson.object(presentation.get("objectQuality"));
+    assertEquals(CanonicalJson.object(presentation.get("objects")).keySet(),objectQuality.keySet());
+    assertTrue(objectQuality.values().stream().allMatch(Boolean.TRUE::equals),"The final accepted source cut has qualified values for every selected presentation object");
+    var visualLinks=((List<?>)presentation.get("links")).stream().map(CanonicalJson::object).filter(l->"enacts".equals(l.get("association"))).toList();
+    assertEquals(5,visualLinks.size(),"One exact actual Role enactment for each of the five agents, never all-to-all");
+    coordinator.read(()->{for(var link:visualLinks){var ends=(List<?>)link.get("participants");var nativeLinks=system.state().allLinks();
+      assertTrue(nativeLinks.stream().anyMatch(l->l.association().name().equals("CslAgentContexts")&&l.linkedObjects().getFirst().name().equals(ends.getFirst())&&l.linkedObjects().get(1).name().equals(link.get("via"))));
+      assertTrue(nativeLinks.stream().anyMatch(l->l.association().name().equals("Plays")&&l.linkedObjects().getFirst().name().equals(link.get("via"))&&l.linkedObjects().get(1).name().equals(ends.get(1))));
+    }return null;});
+    var aolState=org.tzi.use.plugins.jacamo.ui.use4goal.state.RuntimeStateViews.aol(facade.semanticModels().csl(),result.semantic().observation(),"!new Unrelated('not_a_state_image')");
+    assertEquals(5,aolState.associationLinks().stream().filter(l->l.relationName().equals("enacts")).count(),"Browsing must use frozen presentation links even without JSON image");
+    // Offscreen original diagrams need the same official USE defaults as the desktop.
+    var defaults=new Properties();try(var stream=getClass().getResourceAsStream("/etc/use.properties")){defaults.load(stream);}
+    var introduced=new HashSet<String>();for(String key:defaults.stringPropertyNames())if(System.getProperty(key)==null){introduced.add(key);System.setProperty(key,defaults.getProperty(key));}
+    try {SwingUtilities.invokeAndWait(()->{try{
+      var cslView=org.tzi.use.plugins.jacamo.ui.use4goal.csl.CslView.embedded(facade.semanticModels().csl(),system.model());
+      LiveGoalSummaryTest.renderPanel(cslView,"enactment-csl.png");cslView.detachModel();
+      var views=new org.tzi.use.plugins.jacamo.ui.use4goal.state.RuntimeStateViews(facade.semanticModels().csl(),facade.semanticModels().goals(),Map.of());
+      views.select(new org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.Cut("visual","trace","{}",List.of(),"INCOMPLETE","CURRENT_OBSERVED",false,"key","known","state",false,true,false,result.semantic().observation()));
+      LiveGoalSummaryTest.renderPanel(views.aolPanel,"enactment-aol.png");views.dispose();
+    }catch(Exception e){throw new RuntimeException(e);}});}finally{introduced.forEach(System::clearProperty);}
+    var visualCore=CanonicalJson.object(result.semantic().observation().get("originalEngine"));
+    for(Object raw:(List<?>)visualCore.get("contexts")) {
+     var expanded=org.tzi.use.plugins.jacamo.ui.use4goal.state.RuntimeStateViews.expand(facade.semanticModels().goals(),CanonicalJson.object(raw),org.tzi.use.semantic.engine.api.EngineSemanticsProfile.ROLE_SPECIALIZATION_V1,Map.of("D_bid",org.tzi.use.plugins.jacamo.semantics.runtime.OccurrenceGoalModelExpander.Quantifier.ANY,"D_capability_start",org.tzi.use.plugins.jacamo.semantics.runtime.OccurrenceGoalModelExpander.Quantifier.SAME_PLAYER,"D_capability_bid",org.tzi.use.plugins.jacamo.semantics.runtime.OccurrenceGoalModelExpander.Quantifier.SAME_PLAYER,"D_capability_decide",org.tzi.use.plugins.jacamo.semantics.runtime.OccurrenceGoalModelExpander.Quantifier.SAME_PLAYER));
+     var agents=expanded.trace().values().stream().filter(t->t.actor().equals("auction_capabilities")&&t.kind().equals("SOURCE_ELEMENT")).map(t->t.player()).collect(java.util.stream.Collectors.toSet());
+     var rolePlayers=expanded.trace().values().stream().filter(t->Set.of("Auctioneer","Participant").contains(t.actor())&&t.kind().equals("SOURCE_ELEMENT")).map(t->t.player()).collect(java.util.stream.Collectors.toSet());
+     assertTrue(agents.containsAll(rolePlayers),"Every admitted role player has its own capability Agent");
+     assertTrue(agents.size()<=5,"A scheme may admit fewer than all five agents: role enactment is not mission commitment");
+     for(var dependency:expanded.model().getDependencies())if(dependency.dependum().id().startsWith("D_capability_"))assertEquals(expanded.trace().get(dependency.dependerElmt()).player(),expanded.trace().get(dependency.dependeeElmt()).player(),"Live capability delegation must never cross physical players");
+    }
     Files.write(evidence.resolve("result.json"),CanonicalJson.encode(result.toMap()));
     var objects=coordinator.read(()->system.state().allObjects().stream().filter(o->Set.of("Auction","AuctionMonitor","AuctionObligation").contains(o.cls().name())).map(o->{var fields=new TreeMap<String,String>();o.state(system.state()).attributeValueMap().forEach((a,v)->fields.put(a.name(),v.toString()));return Map.of("class",o.cls().name(),"object",o.name(),"fields",fields);}).toList());Files.write(evidence.resolve("domain-and-observer-state.json"),CanonicalJson.encode(objects));
     var browsable=presenter.capture();assertTrue(browsable.size()>2);
+    var populationHistory=browsable.stream().flatMap(c->c.evaluations().stream()).filter(r->r.element().equals("NATIVE:auctionGroup::AuctioneerPopulation")).toList();
+    assertTrue(populationHistory.stream().anyMatch(r->r.quality().equals("CONSTRAINT_AWAITING_QUALIFIED_ACTIVATION")),"The real initialization state must wait for qualified roster readiness, not be coerced into PASS");
+    assertTrue(populationHistory.stream().noneMatch(r->r.status().equals("FAIL")),"This unchanged source keeps its one auctioneer after readiness; startup/unassessed cuts cannot create violations");
+    assertTrue(result.semantic().constraints().stream().anyMatch(r->r.id().equals("NATIVE:auctionGroup::AuctioneerPopulation")&&r.kind().equals("INVARIANT")&&r.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.PASS),"The operational population rule must genuinely run and PASS, not remain permanently skipped");
+    assertTrue(result.semantic().constraints().stream().filter(r->r.id().equals("NATIVE:auctionGroup::AuctioneerPopulation")&&r.kind().equals("INVARIANT_BODY")).allMatch(r->!r.witness().getOrDefault("invariantActivation","").isBlank()),"Operational applicability must carry its latched source proof");
+    Files.write(evidence.resolve("population-activation.json"),CanonicalJson.encode(Map.of("waitingObserved",true,"startupFailures",populationHistory.stream().filter(r->r.status().equals("FAIL")).count(),"finalBodies",result.semantic().constraints().stream().filter(r->r.id().equals("NATIVE:auctionGroup::AuctioneerPopulation")).map(r->Map.of("kind",r.kind(),"verdict",r.verdict().name(),"diagnostic",r.diagnostic(),"witness",r.witness())).toList())));
+
     // Pin result.json and UI summary to the SAME completed native cut. A new
     // live pending boundary must not be substituted for this verified receipt.
     var pinned=browsable.stream().filter(c->c.trace().contains("Result hash: "+result.resultHash())).findFirst().orElseThrow();
     var rows=definitions.rows(pinned.evaluations());assertEquals(expected,rows.size());
+    var executionChoices=ExecutionScopeViews.choices(List.of(pinned));
+    assertEquals(2,executionChoices.size(),"The two source schemes must retain distinct execution contexts");
+    var boundEntities=new HashSet<String>();var scopedReceipts=new ArrayList<Object>();
+    for(var choice:executionChoices.entrySet()){
+     var context=ExecutionScopeViews.contexts(pinned).stream().filter(c->choice.getKey().equals(c.get("context"))).findFirst().orElseThrow();
+     var entities=CanonicalJson.object(CanonicalJson.object(context.get("scopeView")).get("entities"));
+     assertEquals(1,entities.size(),"This source binds exactly one physical Auction to each execution");
+     var scopeChecks=((List<?>)context.get("executionConstraints")).stream().map(CanonicalJson::object).toList();
+     var monitorBodies=scopeChecks.stream().filter(r->"INVARIANT_BODY".equals(r.get("kind"))&&"AuctionMonitor".equals(r.get("contextClass"))).toList();
+     assertEquals(1,monitorBodies.stream().map(r->r.get("contextObject")).distinct().count(),"Only the exact scheme's observer may enter scoped OCL");
+     assertTrue(scopeChecks.stream().filter(r->"INVARIANT".equals(r.get("kind"))).allMatch(r->"PASS".equals(r.get("verdict"))),"Every required native scoped invariant must actually evaluate PASS");
+     var aol=org.tzi.use.plugins.jacamo.ui.use4goal.state.RuntimeStateViews.aol(facade.semanticModels().csl(),ExecutionScopeViews.project(pinned,choice.getKey()).visualEvidence(),"");
+     assertEquals(1,aol.objects().values().stream().filter(o->o.kind()==org.tzi.use.plugins.jacamo.ui.use4goal.state.AcceptedAolState.Kind.ENTITY).count());
+     var links=aol.associationLinks().stream().filter(l->l.relationName().equals("participates (execution)")).toList();
+     var participation=(List<?>)CanonicalJson.object(context.get("scopeView")).get("participation");
+     assertFalse(participation.isEmpty());assertEquals(participation.size(),links.size(),"Each execution link must have an exact cast/role/interval witness");
+     SwingUtilities.invokeAndWait(()->{
+      var sceneDefaults=new Properties();try(var input=getClass().getResourceAsStream("/etc/use.properties")){sceneDefaults.load(input);}catch(Exception failure){throw new RuntimeException(failure);}
+      var addedSceneProperties=new HashSet<String>();for(String name:sceneDefaults.stringPropertyNames())if(System.getProperty(name)==null){System.setProperty(name,sceneDefaults.getProperty(name));addedSceneProperties.add(name);}
+      try{var diagram=new org.tzi.use.plugins.jacamo.ui.use4goal.aol.view.AolDiagram(new java.io.PrintWriter(java.io.Writer.nullWriter()));
+       try{diagram.setState(aol);LiveGoalSummaryTest.renderPanel(new JPanel(new java.awt.BorderLayout()){{add(new JScrollPane(diagram));}},"scoped-aol-"+choice.getValue().replaceAll("[^a-zA-Z0-9]","_")+".png");}finally{diagram.stopLayoutThread();}
+      }finally{addedSceneProperties.forEach(System::clearProperty);}
+     });
+
+     assertTrue(boundEntities.add(entities.keySet().iterator().next()),"Separate schemes cannot borrow the same Entity binding");
+     var scoped=ExecutionScopeViews.project(pinned,choice.getKey());
+     var scopedRoots=scoped.evaluations().stream().filter(r->r.kind().equals("GOAL_TASK")&&r.element().equals("O_root")).toList();
+     assertEquals(1,scopedRoots.size());assertEquals(choice.getKey(),scopedRoots.getFirst().context());
+     assertEquals("FULFILLED",scopedRoots.getFirst().status(),"Each source execution must certify its own root independently");
+     var localTimeline=BusinessTimeline.summarize(browsable.stream().map(c->ExecutionScopeViews.project(c,choice.getKey())).toList());
+     assertFalse(localTimeline.isEmpty());assertTrue(localTimeline.size()<=30);
+     SwingUtilities.invokeAndWait(()->{view.get().setCuts(browsable);view.get().selectExecution(choice.getKey());
+      assertEquals(choice.getKey(),ExecutionScopeViews.selected(view.get().selectedCut()));
+      assertTrue(view.get().selectedCut().evaluations().stream().filter(r->r.kind().equals("GOAL_TASK")).allMatch(r->r.context().equals(choice.getKey())));
+      LiveGoalSummaryTest.renderPanel(view.get(),"execution-"+choice.getValue().replaceAll("[^a-zA-Z0-9]","_")+".png");
+     });
+     scopedReceipts.add(Map.of("context",choice.getKey(),"label",choice.getValue(),"entities",entities,"root",scopedRoots.getFirst().status(),"milestones",localTimeline.size(),"boundaries",browsable.size(),"scopedChecks",scopeChecks,"participation",participation));
+    }
+    SwingUtilities.invokeAndWait(()->view.get().selectExecution(""));
+    Files.write(evidence.resolve("execution-scopes.json"),CanonicalJson.encode(scopedReceipts));
+
     assertTrue(pinned.selectedRequirements(),"Selected-requirement policy must come from the production runtime result");
     var declaredIds=new HashSet<String>();definitions.rows(List.of()).forEach(r->declaredIds.add(r.id()));
     assertTrue(pinned.evaluations().stream().filter(r->r.kind().equals("GOAL_TASK")).allMatch(r->declaredIds.contains(r.element())),"Resources cannot become hidden Goal/Task UNKNOWN requirements");
@@ -84,6 +171,7 @@ class AuthoredAuctionResultsIT {
     var replay=facade.replayRuntime(evidence.resolve("replay"));assertTrue(replay.complete(),replay.toString());Files.write(evidence.resolve("replay-receipt.json"),CanonicalJson.encode(Map.of("status","PASS","entries",replay.checkedEntries())));
     Files.write(evidence.resolve("receipt.json"),CanonicalJson.encode(Map.of("status","PASS","pid",pid,"sameMSystem",true,"fixedGoalTaskRows",expected,"samples",samples,"winnerObservedForTwoArtifacts",true,"coverage",result.coverage(),"domainFailures",result.count(org.tzi.use.plugins.jacamo.verification.VerificationOutcome.FAIL),"scope","Audit, not assertion that full normative profile is satisfied")));
    }finally{diagnostics(facade,evidence);
+    if(!Files.exists(evidence.resolve("receipt.json"))&&coordinatorOrNull(facade)!=null)facade.exportRuntimeReplay(evidence.resolve("diagnostic-replay"));
     var owned=facade.ownedProducerStatus();
     Path preparedRoot=checkout.resolve("use-plugin/target/owned-runtime");
     if(Files.isDirectory(preparedRoot))try(var dirs=Files.list(preparedRoot)){for(var dir:dirs.toList()){var manifest=dir.resolve("prepared.json");if(!Files.isRegularFile(manifest)||!Files.readString(manifest).contains(owned.runId()))continue;for(String name:List.of("producer.stdout.log","producer.stderr.log"))if(Files.isRegularFile(dir.resolve(name)))Files.copy(dir.resolve(name),evidence.resolve(name),StandardCopyOption.REPLACE_EXISTING);}}
@@ -93,8 +181,18 @@ class AuthoredAuctionResultsIT {
  private static boolean stopReceiptsComplete(DefaultJaCaMoFacade facade){
   var history=facade.runtimeVerificationHistory();
   for(int i=history.size()-1;i>=0;i--){var r=history.get(i);if(r.semantic()==null||!(r.semantic().observation().get("originalEngine") instanceof Map<?,?> value))continue;var core=CanonicalJson.object(value);if(!"PINNED_NATIVE_CUT".equals(core.get("evaluated")))continue;
-   var stops=((List<?>)core.getOrDefault("contexts",List.of())).stream().map(CanonicalJson::object).flatMap(c->CanonicalJson.object(c.getOrDefault("occurrences",Map.of())).values().stream()).map(CanonicalJson::object).filter(o->"A_decide_t2".equals(o.get("sourceElement"))&&"SOURCE_ELEMENT".equals(o.get("expansionKind"))).toList();
-   if(stops.size()==2&&stops.stream().allMatch(o->"FULFILLED".equals(o.get("aggregateStatus"))&&Set.of("KNOWN","KNOWN_HISTORY").contains(o.get("executionQuality"))))return true;
+   var contexts=((List<?>)core.getOrDefault("contexts",List.of())).stream().map(CanonicalJson::object).toList();
+   if(contexts.size()!=2)continue;boolean certified=true;
+   for(var context:contexts) {
+    var rows=CanonicalJson.object(context.getOrDefault("occurrences",Map.of())).values().stream().map(CanonicalJson::object).filter(o->"SOURCE_ELEMENT".equals(o.get("expansionKind"))).toList();
+    var owners=rows.stream().filter(o->"A_decide".equals(o.get("sourceElement"))).toList();
+    if(owners.size()!=1){certified=false;break;}
+    // Tasks now belong to the Agent capability. Only the same physical player
+    // holding the Auctioneer responsibility can supply its stop certificate.
+    var stops=rows.stream().filter(o->"A_decide_t2".equals(o.get("sourceElement"))&&Objects.equals(o.get("player"),owners.getFirst().get("player"))).toList();
+    if(stops.size()!=1||!"FULFILLED".equals(stops.getFirst().get("aggregateStatus"))||!Set.of("KNOWN","KNOWN_HISTORY").contains(stops.getFirst().get("executionQuality")))certified=false;
+   }
+   if(certified)return true;
   }return false;
  }
  private static void diagnostics(DefaultJaCaMoFacade facade,Path evidence)throws Exception{

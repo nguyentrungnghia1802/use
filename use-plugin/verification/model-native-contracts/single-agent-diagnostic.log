@@ -1,0 +1,35 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------------< org.tzi.use:use-plugin >-----------------------
+[INFO] Building USE JaCaMo Plugin 1.0.1
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[WARNING] The POM for org.tzi.use:use-jacamo-semantic-engine:jar:7.5.0 is missing, no dependency information available
+[WARNING] The POM for org.tzi.use:jacamo-bridge-contract:jar:1.0.0-SNAPSHOT is missing, no dependency information available
+[WARNING] The POM for org.tzi.use:jacamo-bridge-jacamo:jar:1.0.0-SNAPSHOT is missing, no dependency information available
+[WARNING] The POM for org.tzi.use:use-gui:jar:7.5.0 is missing, no dependency information available
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.717 s
+[INFO] Finished at: 2026-10-29T13:14:27+07:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal on project use-plugin: Could not resolve dependencies for project org.tzi.use:use-plugin:jar:1.0.1
+[ERROR] dependency: org.tzi.use:use-jacamo-semantic-engine:jar:7.5.0 (compile)
+[ERROR] 	Cannot access jacamo (https://raw.githubusercontent.com/jacamo-lang/mvn-repo/master) in offline mode and the artifact org.tzi.use:use-jacamo-semantic-engine:jar:7.5.0 has not been downloaded from it before.
+[ERROR] 	Cannot access central (https://repo.maven.apache.org/maven2) in offline mode and the artifact org.tzi.use:use-jacamo-semantic-engine:jar:7.5.0 has not been downloaded from it before.
+[ERROR] dependency: org.tzi.use:jacamo-bridge-contract:jar:1.0.0-SNAPSHOT (compile)
+[ERROR] 	Cannot access jacamo (https://raw.githubusercontent.com/jacamo-lang/mvn-repo/master) in offline mode and the artifact org.tzi.use:jacamo-bridge-contract:jar:1.0.0-SNAPSHOT has not been downloaded from it before.
+[ERROR] dependency: org.tzi.use:jacamo-bridge-jacamo:jar:1.0.0-SNAPSHOT (test)
+[ERROR] 	Cannot access jacamo (https://raw.githubusercontent.com/jacamo-lang/mvn-repo/master) in offline mode and the artifact org.tzi.use:jacamo-bridge-jacamo:jar:1.0.0-SNAPSHOT has not been downloaded from it before.
+[ERROR] dependency: org.tzi.use:use-gui:jar:7.5.0 (provided)
+[ERROR] 	Cannot access jacamo (https://raw.githubusercontent.com/jacamo-lang/mvn-repo/master) in offline mode and the artifact org.tzi.use:use-gui:jar:7.5.0 has not been downloaded from it before.
+[ERROR] 	Cannot access central (https://repo.maven.apache.org/maven2) in offline mode and the artifact org.tzi.use:use-gui:jar:7.5.0 has not been downloaded from it before.
+[ERROR] 
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException

@@ -1,5 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<mapping xmlns="urn:use:jacamo-mapping:2" version="2.0" id="auction-attempt-and-accepted-bid-v3" engineProfile="ROLE_SPECIALIZATION_V1" jcmRef="src-jcm" xmlns:os="http://moise.sourceforge.net/os">
+<!-- System correspondence specification: binds source selections, runtime identities,
+     CSL/iStar occurrences, native contract contexts and capability requirements.
+     AUTHORED mode loads hand-authored models; these are not translation rules. -->
+<mapping xmlns="urn:use:jacamo-mapping:2" version="2.0" id="auction-single-agent-context-v5" engineProfile="ROLE_SPECIALIZATION_V1" jcmRef="src-jcm" xmlns:os="http://moise.sourceforge.net/os">
   <sources>
     <file id="src-jcm" path="auction.jcm" sha256="c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb" kind="JCM" />
     <file id="src-os" path="src/org/auction-os.xml" sha256="d2481d4ee3c45b2cead42f942a3943684e86facee992870356ca4d1e47d16f9a" kind="MOISE" />
@@ -7,8 +10,8 @@
     <file id="src-artifact" path="src/env/auction_env/AuctionArtifact.java" sha256="34036fc220274853e39f93682cdb22c350fe6a06739669860f2a66afe606ff4b" kind="JAVA" />
     <file id="src-build" path="build.gradle" sha256="0c81b7f1b57c8f9b427280eb8967e820edaffe329540e4988ddd85e402175b40" kind="RESOURCE" />
   </sources>
-  <ocl sha256="891c77f07981e03c808cfdaf23285d5a6d9050859954f5f561f7308aab81039a" />
-  <models mode="AUTHORED" cslSha256="0d0872612661235c0d7865c177dc31dfe2ef649913a99750eb9e42f87163de37" istarSha256="4e2ccc86a980cb3f010cb13eaf051dd2f76529f1214031924f44afcaf5ecfed9" />
+  <ocl sha256="16837702e057006d2083142a32f3a9791a1d2b86523115e2ede2a30e33902141" />
+  <models mode="AUTHORED" cslSha256="0b63df2e539ccc0af965cba1d42b40167545601fe69fbcfc775f98d75a79cff8" istarSha256="ec98189dbdecd123b9eb862f5ce714e0fa3e7cd6b636e093fc032945217b784e" />
   <assertions>
     <require selectorRef="sel-org" field="instance" equals="aorg" />
     <require selectorRef="sel-org" field="spec" equals="auction-os.xml" />
@@ -16,6 +19,7 @@
     <require selectorRef="sel-os-group" field="id" equals="auctionGroup" />
     <require selectorRef="sel-group-config" field="spec" equals="auctionGroup" />
     <require selectorRef="sel-group-config" field="instance" equals="agrp" />
+    <requireSet selectorRef="sel-agents" field="agent" values="bob alice maria giacomo francois" />
     <requireSet selectorRef="sel-role-definitions" field="id" values="auctioneer participant" />
     <requireSameSet leftSelectorRef="sel-role-definitions" leftField="id" rightSelectorRef="sel-role-bounds" rightField="id" />
     <require selectorRef="sel-class" field="name" equals="AuctionArtifact" />
@@ -90,6 +94,7 @@
     </istar>
   <runtime>
     <datasets>
+      <facts id="source-agents" authority="jason" kind="AGENT" />
       <clock id="source-clock-cut" requestRef="source-clock" />
       <facts id="source-workspaces" authority="cartago" kind="WORKSPACE" />
       <facts id="source-artifacts" authority="cartago" kind="ARTIFACT" />
@@ -114,6 +119,14 @@
 
     </datasets>
     <tables>
+      <table id="capability-agents" dataset="source-agents">
+        <whereAny path="localId" type="String">
+          <value equals="bob" /><value equals="alice" /><value equals="maria" /><value equals="giacomo" /><value equals="francois" />
+        </whereAny>
+        <column name="player" path="identity" required="true" />
+        <column name="name" path="values.name" required="true" />
+        <identity mode="PHYSICAL" path="identity" />
+      </table>
       <table id="observed-workspaces" dataset="source-workspaces">
         <column name="uuid" path="identity" required="true" />
         <column name="semantic" path="values.semanticId" required="true" />
@@ -158,6 +171,13 @@
         <column name="player" path="player.agentSemanticId" required="true" />
         <column name="role" path="player.roleSemanticId" required="true" />
         <identity mode="LOGICAL_ROLE" fields="group player role" as="occurrence" />
+      </table>
+      <!-- Operational scope starts only after a qualified roster contains the bound auctioneer.
+           The runtime additionally requires complete same-cut native role materialization. -->
+      <table id="population-ready-groups" dataset="source-groups">
+        <whereExists tableRef="observed-auctioneer" leftPath="identity" rightPath="group" as="readyAuctioneer" />
+        <column name="group" path="identity" required="true" />
+        <identity mode="PHYSICAL" path="identity" />
       </table>
       <table id="qualified-creations" dataset="source-creations">
         <where path="javaClass" type="String" equals="auction_env.AuctionArtifact" />
@@ -345,6 +365,12 @@
         <column name="castComplete" path="members.complete" required="true" />
         <identity mode="PHYSICAL" path="identity" />
       </table>
+      <table id="execution-agents" dataset="source-scheme-history">
+        <where path="commitmentBindings.complete" type="Boolean" equals="true" />
+        <expand path="commitmentBindings.rows" as="member" />
+        <column name="scheme" path="identity" required="true" />
+        <column name="player" path="member.runtimePlayer" required="true" />
+      </table>
       <table id="execution-auctioneers" dataset="source-scheme-history">
         <where path="commitmentBindings.complete" type="Boolean" equals="true" />
         <expand path="commitmentBindings.rows" as="member" />
@@ -417,6 +443,10 @@
       </table>
     </tables>
     <inputs>
+      <input id="capability-agent-input" tableRef="capability-agents" identityKind="PHYSICAL" identityFields="player">
+        <field name="player" type="String" required="true" />
+        <field name="name" type="String" required="true" />
+      </input>
       <input id="organization-input" tableRef="qualified-organizations" identityKind="PHYSICAL" identityFields="uuid">
         <field name="uuid" type="String" required="true" />
       </input>
@@ -460,6 +490,12 @@
       <converter id="runtime-atom" inputType="JasonAtom" outputType="String" algorithm="extract-Atom-name-without-term-pretty-print-quotes" onMismatch="incomplete" />
       <converter id="runtime-real" inputType="JavaBinary64" outputType="Real" algorithm="preserve-the-finite-source-value-with-binary64-round-trip-or-exact-real-decoding" onMismatch="incomplete" onOverflowOrUnsupportedBackend="incomplete-do-not-clamp" sentinelReplacement="forbidden" />
     </converters>
+    <rule id="capability-agent-context" inputRef="capability-agent-input">
+      <requireEvidence proof="source-cut" />
+      <upsertInstance targetType="auction_capabilities" keyFields="player" playerFrom="player">
+        <assign target="name" sourceField="name" converter="runtime-string" write="create-or-identity-check" />
+      </upsertInstance>
+    </rule>
     <rule id="organization-instance" inputRef="organization-input">
       <requireEvidence proof="source-cut" />
       <upsertInstance targetType="AuctionOrg" keyFields="uuid" aliasFrom="uuid" />
@@ -499,9 +535,14 @@
       <requireEvidence proof="source-cut" />
       <removeInstance targetType="Auction" keyFields="uuid" authorityProof="removed-identity" />
     </rule>
+    <invariantActivations>
+      <activate id="operational-auctioneer-population" target="auctionGroup::AuctioneerPopulation" tableRef="population-ready-groups" contextColumn="group" policy="LATCH_ONCE_QUALIFIED/1.0" />
+    </invariantActivations>
     <occurrences>
       <scope id="auction-execution" tableRef="execution-scopes" anchorColumn="group" contextColumn="group" keyFields="group scheme">
+        <observer projectRef="project-monitor" subjectColumn="scheme" />
         <actor actor="Auction" tableRef="execution-scopes" scopeColumn="scheme" scopeKey="scheme" playerColumn="group" kind="CONTEXT_VIEWPOINT" cardinality="ONE" completeColumn="castComplete" />
+        <actor actor="auction_capabilities" tableRef="execution-agents" scopeColumn="scheme" scopeKey="scheme" playerColumn="player" kind="RUNTIME_AGENT" cardinality="MANY_NONEMPTY" completeColumn="castComplete" />
         <actor actor="Auctioneer" tableRef="execution-auctioneers" scopeColumn="scheme" scopeKey="scheme" playerColumn="player" kind="ROLE_OCCURRENCE" cardinality="ONE" roleLookup="EXACT_NATIVE_ENACTMENT" completeColumn="castComplete" />
         <actor actor="Participant" tableRef="execution-participants" scopeColumn="scheme" scopeKey="scheme" playerColumn="player" kind="ROLE_OCCURRENCE" cardinality="MANY_NONEMPTY" roleLookup="EXACT_NATIVE_ENACTMENT" completeColumn="castComplete" />
         <self target="O_bid_accepted" origin="COLUMN" column="domain" optional="true" />
@@ -591,6 +632,9 @@
     <actorRuntime actor="Auctioneer" bindingRef="bind-actor-Auctioneer" contextBindingRef="bind-group" activationPolicy="OBSERVED_SCHEME_COMMITMENT" episodePolicy="RUN_SCHEME_PLAYER_INVOCATION" roleBindingRef="bind-role-auctioneer" />
     <static id="bind-actor-Participant" kind="ACTOR" target="Participant" sourceKind="MOISE_ROLE" feature="roleId" value="participant" reason="Reviewed intentional abstraction; organization actor is only a context viewpoint" />
     <actorRuntime actor="Participant" bindingRef="bind-actor-Participant" contextBindingRef="bind-group" activationPolicy="OBSERVED_SCHEME_COMMITMENT" episodePolicy="RUN_SCHEME_PLAYER_INVOCATION" roleBindingRef="bind-role-participant" />
+    <elementRuntime target="C_start" actor="auction_capabilities" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original AND refinement over exact player task evidence" />
+    <elementRuntime target="C_decide" actor="auction_capabilities" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original AND refinement over exact player task evidence" />
+    <elementRuntime target="C_bid" actor="auction_capabilities" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original AND refinement over exact player task evidence" />
     <elementRuntime target="O_root" actor="Auction" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original refinement/dependency result" />
     <elementRuntime target="O_start" actor="Auction" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original refinement/dependency result" />
     <elementRuntime target="O_bid" actor="Auction" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original refinement/dependency result" />
@@ -598,22 +642,22 @@
     <elementRuntime target="O_bid_accepted" actor="Auction" self="Auction" derived="false" selfKind="ARTIFACT" reason="Source-backed Artifact field proves an actual accepted bid independently of participant attempts" />
     <elementRuntime target="O_decide" actor="Auction" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original refinement/dependency result" />
     <elementRuntime target="A_start" actor="Auctioneer" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original refinement/dependency result" />
-    <elementRuntime target="A_start_t1" actor="Auctioneer" self="Auction" derived="false" selfKind="ARTIFACT" reason="Exact declared Jason step, never state-only task completion" stepScope="auction-execution" scopePolicy="EXACT_REFERENCES" stepSchemeColumn="scheme" stepArtifactColumn="domain" entryPolicy="ALLOW_UNBOUND_SELF_FOR_PURE_CALLBACK" failurePolicy="EVALUATE_PURE_CALLBACK_POST">
+    <elementRuntime target="A_start_t1" actor="auction_capabilities" self="Auction" derived="false" selfKind="ARTIFACT" reason="Exact declared Jason step, never state-only task completion" stepScope="auction-execution" scopePolicy="EXACT_REFERENCES" stepSchemeColumn="scheme" stepArtifactColumn="domain" entryPolicy="ALLOW_UNBOUND_SELF_FOR_PURE_CALLBACK" failurePolicy="EVALUATE_PURE_CALLBACK_POST">
       <variable name="step" viewRef="view-step" origin="STEP_TUPLE" />
     </elementRuntime>
-    <elementRuntime target="A_start_t2" actor="Auctioneer" self="Auction" derived="false" selfKind="ARTIFACT" reason="Exact declared Jason step, never state-only task completion" stepScope="auction-execution" scopePolicy="EXACT_REFERENCES" stepSchemeColumn="scheme" stepArtifactColumn="domain" entryPolicy="EXACT_SELF" failurePolicy="EVALUATE_PURE_CALLBACK_POST">
+    <elementRuntime target="A_start_t2" actor="auction_capabilities" self="Auction" derived="false" selfKind="ARTIFACT" reason="Exact declared Jason step, never state-only task completion" stepScope="auction-execution" scopePolicy="EXACT_REFERENCES" stepSchemeColumn="scheme" stepArtifactColumn="domain" entryPolicy="EXACT_SELF" failurePolicy="EVALUATE_PURE_CALLBACK_POST">
       <actionReceipt operationRef="op-start" />
       <variable name="service" type="String" origin="STEP_INPUT:service" />
     </elementRuntime>
     <elementRuntime target="A_decide" actor="Auctioneer" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original refinement/dependency result" />
-    <elementRuntime target="A_decide_t2" actor="Auctioneer" self="Auction" derived="false" selfKind="ARTIFACT" reason="Exact declared Jason step, never state-only task completion" stepScope="auction-execution" scopePolicy="EXACT_REFERENCES" stepSchemeColumn="scheme" stepArtifactColumn="domain" entryPolicy="EXACT_SELF" failurePolicy="EVALUATE_PURE_CALLBACK_POST">
+    <elementRuntime target="A_decide_t2" actor="auction_capabilities" self="Auction" derived="false" selfKind="ARTIFACT" reason="Exact declared Jason step, never state-only task completion" stepScope="auction-execution" scopePolicy="EXACT_REFERENCES" stepSchemeColumn="scheme" stepArtifactColumn="domain" entryPolicy="EXACT_SELF" failurePolicy="EVALUATE_PURE_CALLBACK_POST">
       <actionReceipt operationRef="op-stop" />
     </elementRuntime>
     <elementRuntime target="P_bid" actor="Participant" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original refinement/dependency result" />
-    <elementRuntime target="P_bid_t1" actor="Participant" self="Auction" derived="false" selfKind="ARTIFACT" reason="Exact declared Jason step, never state-only task completion" stepScope="auction-execution" scopePolicy="EXACT_REFERENCES" stepSchemeColumn="scheme" stepArtifactColumn="domain" entryPolicy="ALLOW_UNBOUND_SELF_FOR_PURE_CALLBACK" failurePolicy="EVALUATE_PURE_CALLBACK_POST">
+    <elementRuntime target="P_bid_t1" actor="auction_capabilities" self="Auction" derived="false" selfKind="ARTIFACT" reason="Exact declared Jason step, never state-only task completion" stepScope="auction-execution" scopePolicy="EXACT_REFERENCES" stepSchemeColumn="scheme" stepArtifactColumn="domain" entryPolicy="ALLOW_UNBOUND_SELF_FOR_PURE_CALLBACK" failurePolicy="EVALUATE_PURE_CALLBACK_POST">
       <variable name="step" viewRef="view-step" origin="STEP_TUPLE" />
     </elementRuntime>
-    <elementRuntime target="P_bid_t2" actor="Participant" self="Auction" derived="false" selfKind="ARTIFACT" reason="Exact declared Jason step, never state-only task completion" stepScope="auction-execution" scopePolicy="EXACT_REFERENCES" stepSchemeColumn="scheme" stepArtifactColumn="domain" entryPolicy="EXACT_SELF" failurePolicy="EVALUATE_PURE_CALLBACK_POST">
+    <elementRuntime target="P_bid_t2" actor="auction_capabilities" self="Auction" derived="false" selfKind="ARTIFACT" reason="Exact declared Jason step, never state-only task completion" stepScope="auction-execution" scopePolicy="EXACT_REFERENCES" stepSchemeColumn="scheme" stepArtifactColumn="domain" entryPolicy="EXACT_SELF" failurePolicy="EVALUATE_PURE_CALLBACK_POST">
       <actionReceipt operationRef="op-bid" />
       <acceptedFailure term=".fail" bodyType="internalAction" line="41" sourceFailure="GOAL_LISTENER_FAILED:ia_failed" />
       <variable name="step" viewRef="view-step" origin="STEP_TUPLE" />
@@ -630,12 +674,16 @@
     <operation id="op-bid" owner="Auction" signature="[&quot;auction_env.AuctionArtifact&quot;,&quot;bid&quot;,[&quot;double&quot;],&quot;void&quot;]" clauses="RunningForBid" task="P_bid_t2" />
     <operation id="op-stop" owner="Auction" signature="[&quot;auction_env.AuctionArtifact&quot;,&quot;stop&quot;,[],&quot;void&quot;]" clauses="RunningForStop Closed" task="A_decide_t2" />
     <dependencyPopulation target="D_bid" quantifier="ANY" />
+    <dependencyPopulation target="D_capability_start" quantifier="SAME_PLAYER" />
+    <dependencyPopulation target="D_capability_decide" quantifier="SAME_PLAYER" />
+    <dependencyPopulation target="D_capability_bid" quantifier="SAME_PLAYER" />
     <requirement target="O_root" />
-    <static id="bind-capability-role" kind="ROLE" target="auction_capabilities" sourceKind="JASON_AGENT_PROGRAM" feature="declarationId" value="bob" reason="Shared authored ASL capability role, anchored by exact source declaration; not a separately adopted MOISE role">
-      <metadata key="roleAbstraction" value="ASL_CAPABILITY_VIEW" />
+    <static id="bind-capability-context" kind="ORG_CONTEXT" target="auction_capabilities" sourceKind="JACAMO_PROJECT" feature="name" value="auction" reason="Each XML-selected physical Jason agent is represented as a singleton OrgCtx, not a MOISE role">
+      <metadata key="contextAbstraction" value="SINGLE_AGENT_CONTEXT/1.0" />
+      <metadata key="enactsRoles" value="auctioneer participant" />
     </static>
-    <static id="bind-capability-actor" kind="ACTOR" target="auction_capabilities" sourceKind="JASON_AGENT_PROGRAM" feature="declarationId" value="bob" reason="Empty intentional capability abstraction of the shared program, not an independent actor occurrence" />
-    <actorRuntime actor="auction_capabilities" bindingRef="bind-capability-actor" activationPolicy="MODEL_ONLY_CAPABILITY_ROLE" episodePolicy="MODEL_REVISION" />
+    <static id="bind-capability-actor" kind="ACTOR" target="auction_capabilities" sourceKind="JACAMO_ORGANIZATION_DEPLOYMENT" feature="name" value="aorg" reason="Capability actor type; concrete players are selected by exact runtime scheme commitments, not by this static type provenance" />
+    <actorRuntime actor="auction_capabilities" bindingRef="bind-capability-actor" contextBindingRef="bind-group" activationPolicy="OBSERVED_SCHEME_COMMITMENT" episodePolicy="RUN_SCHEME_PLAYER_INVOCATION" />
   </bindings>
   <requirements>
     <capability id="scheme-operations" provider="cartago.operation-history.v1" required="true" class="ora4mas.nopl.SchemeBoard" hash="79f28443c5701d5b424de5d952db81f17274a7d3c170c2fc2f9ab6dbb4628ba6" operations="admCommand" />
@@ -677,6 +725,7 @@
   </omittedConcepts>
   <!-- Business-state browser only. All verification audit boundaries remain recorded. -->
   <presentation milestones="DOMAIN">
+    <state owner="auction_capabilities" attributes="name" />
     <state owner="AuctionOrg" />
     <state owner="auctionGroup" />
     <state owner="auctioneer" />

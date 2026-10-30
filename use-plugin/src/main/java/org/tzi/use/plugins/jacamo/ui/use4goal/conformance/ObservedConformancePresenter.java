@@ -202,7 +202,7 @@ public final class ObservedConformancePresenter {
                             certificates.put(certificateKey,certificate);updates.put(certificateKey,certificate);
                         }
                         rows.add(new Evaluation(Objects.toString(occurrence.getOrDefault("sourceElement", entry.getKey())),
-                                Objects.toString(occurrence.getOrDefault("leafStatus", "UNAVAILABLE")), qualified, quality, identity,historical?"Retained runtime execution certificate: "+executionEvidence:certificates.getOrDefault(certificateKey,"No certified result for this episode"),requiredElement,"GOAL_TASK",propagated));
+                                Objects.toString(occurrence.getOrDefault("leafStatus", "UNAVAILABLE")), qualified, quality, identity,historical?"Retained runtime execution certificate: "+executionEvidence:certificates.getOrDefault(certificateKey,"No certified result for this episode"),requiredElement,"GOAL_TASK",propagated,Objects.toString(occurrence.getOrDefault("player","")),Objects.toString(context.getOrDefault("context","")),entry.getKey()));
                     }
                 }
             }
@@ -216,7 +216,7 @@ public final class ObservedConformancePresenter {
                 // being false is not itself an iStar violation.
                 String status=execution?"EXECUTION_FAILED":condition&&constraint.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.FAIL?"CONDITION_FALSE":condition&&constraint.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.PASS?"CONDITION_TRUE":constraint.verdict().name();
                 rows.add(new Evaluation(constraint.id(), constraint.backendValue(), status,
-                        constraint.diagnostic(), constraint.contextObject() + " / " + constraint.invocation() + " / expression="+constraint.expression()+" / witness=" + constraint.witness(),"",!condition&&!execution&&(!constraint.kind().equals("INVARIANT_BODY")||semantic.constraints().stream().noneMatch(c->c.id().equals(constraint.id())&&c.kind().equals("INVARIANT")))&&(!Set.of("INVARIANT","INVARIANT_BODY").contains(constraint.kind())||requiredInvariants.contains(constraint.id())||!supportingInvariants.contains(constraint.id())),constraint.kind()));
+                        constraint.diagnostic(), constraint.contextObject() + " / " + constraint.invocation() + " / expression="+constraint.expression()+" / witness=" + constraint.witness(),"",!condition&&!execution&&(!constraint.kind().equals("INVARIANT_BODY")||semantic.constraints().stream().noneMatch(c->c.id().equals(constraint.id())&&c.kind().equals("INVARIANT")))&&(!Set.of("INVARIANT","INVARIANT_BODY").contains(constraint.kind())||requiredInvariants.contains(constraint.id())||!supportingInvariants.contains(constraint.id())),constraint.kind(),"","",constraint.contextObject(),constraint.invocation()));
             }
             for(var required:requiredElements)if(rows.stream().noneMatch(r->r.kind().equals("GOAL_TASK")&&r.element().equals(required)))
                 rows.add(new Evaluation(Objects.toString(required),"UNAVAILABLE","UNKNOWN","REQUIRED_INTENTIONAL_RESULT_MISSING","No admitted occurrence for selected requirement","",true,"GOAL_TASK"));
@@ -254,6 +254,6 @@ public final class ObservedConformancePresenter {
         String scoped="Requirements: "+(rows.isEmpty()?"NOT_EVALUATED":failed?"VIOLATION":missing>0?"INCOMPLETE ("+missing+" unavailable)":"KNOWN")+" | Overall source coverage: "+result.coverage()+" | Last completion delay: "+Math.max(0,java.time.Duration.between(result.observedAt(),result.verifiedAt()).toMillis())+" ms ["+result.sourceId()+"] ("+(result.eventId().equals("manual")?"local check, not producer lag":"not a caught-up assertion")+")";
         boolean selectedRequirements=result.semantic()!=null&&"SELECTED_REQUIREMENTS/1.0".equals(result.semantic().observation().get("requirementCoveragePolicy"))
                 &&result.semantic().observation().get("originalEngine") instanceof Map<?,?> engine&&"PINNED_NATIVE_CUT".equals(engine.get("evaluated"))&&"OBSERVED_PREFIX".equals(engine.get("historyQuality"));
-        return new Cut(boundaryKey(result), trace+"\nResult hash: "+hash, state, rows, result.coverage(), result.freshness(), failed,businessKey,scoped,businessState,executionMilestones,selectedRequirements,businessPopulationEmpty);
+        return new Cut(boundaryKey(result), trace+"\nResult hash: "+hash, state, rows, result.coverage(), result.freshness(), failed,businessKey,scoped,businessState,executionMilestones,selectedRequirements,businessPopulationEmpty,result.semantic()==null?Map.of():result.semantic().observation());
     }
 }

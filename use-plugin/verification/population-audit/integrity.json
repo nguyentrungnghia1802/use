@@ -1,0 +1,41 @@
+{
+  "productionFilesVerifiedAgainstPriorFreeze": 650,
+  "drift": [],
+  "caseConstantScanJavaFiles": 613,
+  "caseConstantHits": [],
+  "readOnlyProjectAndDiagramsUnchanged": true,
+  "fixture": "accepted recorded live Auction; 19 milestones, not the user screenshot session with 17 milestones",
+  "auditProbe": {
+    "bodyVerdict": "FAIL",
+    "coverageReason": "",
+    "derivedAttribute": "self.roles->select(r : RoleOccurrence | r.oclIsKindOf(auctioneer))->collect(r : RoleOccurrence | r.oclAsType(auctioneer))->asSet",
+    "directAttributeReads": [
+      "auctionGroup::auctioneer"
+    ],
+    "expandedEquivalentCoverageReason": "XML_CURRENT_ROLE_MATERIALIZATION_INCOMPLETE",
+    "navigationReadCount": 0,
+    "rolesQuality": "INCOMPLETE"
+  },
+  "finalNativeInvariantStatuses": [
+    {
+      "id": "NATIVE:AuctionMonitor::ConfirmedSchemeOrder",
+      "verdict": "PASS"
+    },
+    {
+      "id": "NATIVE:AuctionMonitor::ObservedBidEvidence",
+      "verdict": "PASS"
+    },
+    {
+      "id": "NATIVE:OrgContext::CslV4RoleCompatibility",
+      "verdict": "SKIPPED"
+    },
+    {
+      "id": "NATIVE:auctionGroup::AuctioneerPopulation",
+      "verdict": "PASS"
+    },
+    {
+      "id": "NATIVE:auctionGroup::ParticipantPopulation",
+      "verdict": "PASS"
+    }
+  ]
+}
