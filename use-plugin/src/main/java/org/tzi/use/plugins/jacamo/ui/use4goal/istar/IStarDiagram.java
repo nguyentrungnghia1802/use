@@ -51,7 +51,7 @@ public final class IStarDiagram extends DiagramView {
     private boolean showContributions = true;
     private boolean showDependencies = true;
     private boolean showRefinements = true;
-    private boolean showOclContracts = true;
+    private boolean showOclContracts = false;
 
     public IStarDiagram(PrintWriter log) {
         super(new IStarDiagramOptions(), log);

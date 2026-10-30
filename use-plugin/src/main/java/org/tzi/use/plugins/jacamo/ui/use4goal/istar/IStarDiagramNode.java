@@ -233,6 +233,10 @@ public final class IStarDiagramNode extends PlaceableNode implements ToolTipProv
         }
     }
 
+    double actorHeaderTop(Graphics2D g) {
+        return node.actorBoundary ? getY()-actorCircleDiameter(g)/2.0 : getY();
+    }
+
     private double actorCircleDiameter(Graphics2D g) {
         FontMetrics fm = g.getFontMetrics(getFont().deriveFont(Font.PLAIN, 11f));
         String label = displayLabel();

@@ -43,6 +43,7 @@ public final class TaskDemandProjection {
                     ||!node.optional("completeColumn").isBlank()&&!columns.contains(node.attr("completeColumn")))throw node.location().error("TASK_DEMAND_COLUMNS_REQUIRED");
             if(node.optional("scopeColumn").isBlank()!=node.optional("scopeKey").isBlank()
                     ||!node.optional("scopeColumn").isBlank()&&(!columns.contains(node.attr("scopeColumn"))||!words(scope.attr("keyFields")).contains(node.attr("scopeKey"))))throw node.location().error("TASK_DEMAND_EXACT_SCOPE_KEY_REQUIRED");
+            if(!node.optional("assignmentColumn").isBlank()&&!columns.contains(node.attr("assignmentColumn")))throw node.location().error("TASK_ASSIGNMENT_COLUMN_REQUIRED");
             compiled.add(new Rule(node,actor));
         }
         if(compiled.size()>128)throw specification.root().location().error("TASK_DEMAND_RULE_CAPACITY");rules=List.copyOf(compiled);
@@ -80,6 +81,12 @@ public final class TaskDemandProjection {
                         if(row.quality()!=Completeness.COMPLETE||!complete||!row.proofs().containsKey("source-cut"))reason="TASK_DEMAND_SOURCE_INCOMPLETE";
                         witness.put("demandSourceHash",SemanticJson.hash(row.values()));witness.put("demandSourceProofs",SemanticJson.hash(row.proofs()));
                         Object actual=row.values().get(node.attr("requiredColumn"));
+                        if(!node.optional("assignmentColumn").isBlank()) {
+                            Object assigned=row.values().get(node.attr("assignmentColumn"));
+                            if(!(assigned instanceof Boolean))reason="TASK_ASSIGNMENT_VALUE_UNAVAILABLE";
+                            else if(Boolean.FALSE.equals(assigned)&&!Boolean.FALSE.equals(actual))reason="ERROR:TASK_ASSIGNMENT_DEMAND_CONTRADICTION";
+                            else if(reason.isBlank())witness.put("assigned",assigned.toString());
+                        }
                         if(actual!=null&&!(actual instanceof Boolean))reason="ERROR:TASK_DEMAND_BOOLEAN_TYPE";else if(actual==null)reason="TASK_DEMAND_REQUIRED_VALUE_UNAVAILABLE";
                         var activation=new TreeMap<String,Object>();
                         for(String field:words(node.attr("episodeFields"))) {

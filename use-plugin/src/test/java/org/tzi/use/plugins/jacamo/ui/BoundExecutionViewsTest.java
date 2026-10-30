@@ -41,7 +41,12 @@ class BoundExecutionViewsTest {
    var views=new RuntimeStateViews(csl,goals,policies);
    var panel=ObservedConformancePanel.liveResults(goals);
    panel.onSelectedCut(views::select);panel.onExecutionSelected(views::selectScope);views.onScopeSelected(panel::selectExecution);
-   try{panel.setCuts(List.of(cut));int ordinal=0;
+   try{
+    views.setActive(false,false);panel.setCuts(List.of(cut));
+    assertEquals(0,DetachedAuthoredWorkflowTest.find(views.iscnPanel,"iscn-context-selector",JComboBox.class).getItemCount(),"Hidden graphs retain the cut without building a topology");
+    views.setActive(true,true);
+    assertEquals(2,DetachedAuthoredWorkflowTest.find(views.iscnPanel,"iscn-context-selector",JComboBox.class).getItemCount(),"Opening a graph must show the latest retained cut");
+    int ordinal=0;
     for(var choice:choices.entrySet()){
      // Selecting in ISCN must drive the exact same execution in Results.
      views.selectScope(choice.getKey());panel.selectExecution(choice.getKey());

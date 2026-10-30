@@ -10,7 +10,7 @@
       "sourceSha256": "c82d9cac5acb5a5a6156aa800ec2e595894851eb5b6e1b71e3657bc0b4aeefab",
       "sourceFixture": "src/test/resources/semantics/use4goal-workflow/CslStateEvaluatorForm.java.txt",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel.java",
-      "targetSha256": "73c8dca310d800439ffff70bc47f39c0ed73e7919c2466015a766aa0f7daba87",
+      "targetSha256": "2eeda3e5ef214a79a29e297e1e136b592dd6ad6c9d331822fbcb64fad7cb7b28",
       "reuseMode": "PATCHED_WITH_PROVENANCE",
       "retainedMethods": [
         "buildConformanceAolPanel layout",
@@ -42,7 +42,8 @@
         "QUALIFIED_FAILURE_EPISODES_AND_GROUPED_INVARIANT_WITNESSES",
         "EXACT_EXECUTION_SELECTOR_AND_BOUND_ENTITY_TIMELINES_WITH_GLOBAL_CONSTRAINT_SCOPE",
         "SINGLE_EXECUTION_ONLY_NATIVE_SCOPED_OCL_WITH_SHARED_RULES_AND_WITNESSED_AOL",
-        "EXECUTION_COUNTEREXAMPLE_NAVIGATION_AND_SEPARATE_UNMET_CONDITIONS"
+        "EXECUTION_COUNTEREXAMPLE_NAVIGATION_AND_SEPARATE_UNMET_CONDITIONS",
+        "BACKGROUND_SCOPED_TIMELINE_AND_FAILURE_PREPARATION"
       ]
     },
     {

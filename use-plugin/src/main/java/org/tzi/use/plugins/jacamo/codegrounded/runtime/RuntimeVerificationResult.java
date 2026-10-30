@@ -46,9 +46,10 @@ public record RuntimeVerificationResult(String sessionId, long generation, Strin
     public String resultHash() { return ExternalOclConstraintService.sha256(CanonicalJson.encode(semanticEvidence())); }
     public Map<String, Object> toMap() {
         Map<String, Object> map = new LinkedHashMap<>(semanticEvidence());
+        String hash=ExternalOclConstraintService.sha256(CanonicalJson.encode(map));
         map.put("observedAt", observedAt.toString()); map.put("appliedAt", appliedAt.toString());
         map.put("verifiedAt", verifiedAt.toString()); map.put("durationNanos", durationNanos);
-        map.put("resultHash", resultHash()); return Map.copyOf(map);
+        map.put("resultHash", hash); return Map.copyOf(map);
     }
     public static RuntimeVerificationResult fromMap(Map<String,Object> value) {
         List<ExternalOclConstraintService.Outcome> outcomes = ((List<?>)value.get("outcomes")).stream().map(raw -> {

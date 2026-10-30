@@ -395,15 +395,16 @@
         <where path="commitmentBindings.complete" type="Boolean" equals="true" />
         <expand path="publicGoals" as="goal" />
         <where path="goal.name" type="String" equals="start" />
-        <test as="required" path="goal.state" type="String" equals="WAITING" negate="true" />
-        <expand path="goal.committed" as="committer" valueType="String" />
+        <test as="enabled" path="goal.state" type="String" equals="WAITING" negate="true" />
         <expand path="commitmentBindings.rows" as="member" />
-        <whereFieldsEqual leftPath="member.sourcePlayer" rightPath="committer.value" type="String" />
+        <testContains as="assigned" path="goal.committed" valuePath="member.sourcePlayer" type="String" />
+        <choose as="required" conditionPath="assigned" truePath="enabled" falsePath="assigned" />
         <expand path="responsibleGroups" as="group" valueType="String" />
         <column name="group" path="group.value" required="true" />
         <column name="player" path="member.runtimePlayer" required="true" />
         <column name="scheme" path="identity" required="true" />
         <column name="goal" path="goal.definition" required="true" />
+        <column name="assigned" path="assigned" required="true" />
         <column name="required" path="required" required="true" />
         <column name="complete" path="commitmentBindings.complete" required="true" />
       </table>
@@ -412,15 +413,16 @@
         <where path="commitmentBindings.complete" type="Boolean" equals="true" />
         <expand path="publicGoals" as="goal" />
         <where path="goal.name" type="String" equals="bid" />
-        <test as="required" path="goal.state" type="String" equals="WAITING" negate="true" />
-        <expand path="goal.committed" as="committer" valueType="String" />
+        <test as="enabled" path="goal.state" type="String" equals="WAITING" negate="true" />
         <expand path="commitmentBindings.rows" as="member" />
-        <whereFieldsEqual leftPath="member.sourcePlayer" rightPath="committer.value" type="String" />
+        <testContains as="assigned" path="goal.committed" valuePath="member.sourcePlayer" type="String" />
+        <choose as="required" conditionPath="assigned" truePath="enabled" falsePath="assigned" />
         <expand path="responsibleGroups" as="group" valueType="String" />
         <column name="group" path="group.value" required="true" />
         <column name="player" path="member.runtimePlayer" required="true" />
         <column name="scheme" path="identity" required="true" />
         <column name="goal" path="goal.definition" required="true" />
+        <column name="assigned" path="assigned" required="true" />
         <column name="required" path="required" required="true" />
         <column name="complete" path="commitmentBindings.complete" required="true" />
       </table>
@@ -429,15 +431,16 @@
         <where path="commitmentBindings.complete" type="Boolean" equals="true" />
         <expand path="publicGoals" as="goal" />
         <where path="goal.name" type="String" equals="decide" />
-        <test as="required" path="goal.state" type="String" equals="WAITING" negate="true" />
-        <expand path="goal.committed" as="committer" valueType="String" />
+        <test as="enabled" path="goal.state" type="String" equals="WAITING" negate="true" />
         <expand path="commitmentBindings.rows" as="member" />
-        <whereFieldsEqual leftPath="member.sourcePlayer" rightPath="committer.value" type="String" />
+        <testContains as="assigned" path="goal.committed" valuePath="member.sourcePlayer" type="String" />
+        <choose as="required" conditionPath="assigned" truePath="enabled" falsePath="assigned" />
         <expand path="responsibleGroups" as="group" valueType="String" />
         <column name="group" path="group.value" required="true" />
         <column name="player" path="member.runtimePlayer" required="true" />
         <column name="scheme" path="identity" required="true" />
         <column name="goal" path="goal.definition" required="true" />
+        <column name="assigned" path="assigned" required="true" />
         <column name="required" path="required" required="true" />
         <column name="complete" path="commitmentBindings.complete" required="true" />
       </table>
@@ -556,11 +559,11 @@
       </scope>
     </occurrences>
     <taskDemands>
-      <demand id="require-A_start_t1" target="A_start_t1" scopeRef="auction-execution" tableRef="demand-start" anchorColumn="group" playerColumn="player" requiredColumn="required" scopeColumn="scheme" scopeKey="scheme" episodeFields="scheme goal" completeColumn="complete" />
-      <demand id="require-A_start_t2" target="A_start_t2" scopeRef="auction-execution" tableRef="demand-start" anchorColumn="group" playerColumn="player" requiredColumn="required" scopeColumn="scheme" scopeKey="scheme" episodeFields="scheme goal" completeColumn="complete" />
-      <demand id="require-A_decide_t2" target="A_decide_t2" scopeRef="auction-execution" tableRef="demand-decide" anchorColumn="group" playerColumn="player" requiredColumn="required" scopeColumn="scheme" scopeKey="scheme" episodeFields="scheme goal" completeColumn="complete" />
-      <demand id="require-P_bid_t1" target="P_bid_t1" scopeRef="auction-execution" tableRef="demand-bid" anchorColumn="group" playerColumn="player" requiredColumn="required" scopeColumn="scheme" scopeKey="scheme" episodeFields="scheme goal" completeColumn="complete" />
-      <demand id="require-P_bid_t2" target="P_bid_t2" scopeRef="auction-execution" tableRef="demand-bid" anchorColumn="group" playerColumn="player" requiredColumn="required" scopeColumn="scheme" scopeKey="scheme" episodeFields="scheme goal" completeColumn="complete" />
+      <demand id="require-A_start_t1" target="A_start_t1" scopeRef="auction-execution" tableRef="demand-start" anchorColumn="group" playerColumn="player" requiredColumn="required" scopeColumn="scheme" scopeKey="scheme" episodeFields="scheme goal" completeColumn="complete" assignmentColumn="assigned" />
+      <demand id="require-A_start_t2" target="A_start_t2" scopeRef="auction-execution" tableRef="demand-start" anchorColumn="group" playerColumn="player" requiredColumn="required" scopeColumn="scheme" scopeKey="scheme" episodeFields="scheme goal" completeColumn="complete" assignmentColumn="assigned" />
+      <demand id="require-A_decide_t2" target="A_decide_t2" scopeRef="auction-execution" tableRef="demand-decide" anchorColumn="group" playerColumn="player" requiredColumn="required" scopeColumn="scheme" scopeKey="scheme" episodeFields="scheme goal" completeColumn="complete" assignmentColumn="assigned" />
+      <demand id="require-P_bid_t1" target="P_bid_t1" scopeRef="auction-execution" tableRef="demand-bid" anchorColumn="group" playerColumn="player" requiredColumn="required" scopeColumn="scheme" scopeKey="scheme" episodeFields="scheme goal" completeColumn="complete" assignmentColumn="assigned" />
+      <demand id="require-P_bid_t2" target="P_bid_t2" scopeRef="auction-execution" tableRef="demand-bid" anchorColumn="group" playerColumn="player" requiredColumn="required" scopeColumn="scheme" scopeKey="scheme" episodeFields="scheme goal" completeColumn="complete" assignmentColumn="assigned" />
     </taskDemands>
     <!-- Optional epistemic attributes are not inputs to these OCL/iStar requirements.
          Do not acquire full belief/cycle streams; leave those optional values undefined. -->

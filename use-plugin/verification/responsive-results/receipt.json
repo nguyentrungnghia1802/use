@@ -1,0 +1,15 @@
+{
+  "status": "PERFORMANCE_SCOPE_PASS_WITH_LIVE_TEST_LIMITATION",
+  "liveEvidence": "use-plugin\\verification\\live-results-ui\\auction-17579300591258698629",
+  "liveRoots": "both FULFILLED with native execution qualification",
+  "liveJournalGap": false,
+  "unresolvedGate": "AuthoredAuctionResultsIT expects five capability occurrences per execution; actual captured source scope has fewer admitted players. Original assertion retained; two failing attempts preserved. No full-case PASS claimed.",
+  "archiveSha256": "bc52badb2daa0f6704faea2c2e6dda12ea1953b690de5b9385ef9392c44132f9",
+  "testedClassParity": 817,
+  "launcher": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bin\\start_use.bat",
+  "sourceFreezeSha256": "5136bb76d762504163fb72632f79e958dd154398e934163016273960ab34a28a",
+  "manualDesktopGui": false,
+  "otherLiveCases": false,
+  "installedReplay": "INSTALLED_CERTIFIED_EXECUTION_REPLAY_PASS ReplayReport[complete=true, checkedEntries=1544, finalStateHash=53c26737efbc609f9dfb4d6e03c17d604c7cce4bd5941b8107568abdcc1ba5b6, finalResultHash=ba3681fb83054a6b61375797908ec505473dad65c5a46c3a674159401c7c60c9, diagnostics=[OBSERVED_SUPPORTED_PROJECTION_ONLY]]",
+  "finalBackendEqualRecordedReplayImplementation": true
+}

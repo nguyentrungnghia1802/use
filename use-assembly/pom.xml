@@ -48,6 +48,36 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- One stable runnable installation; replace it only after extraction succeeds. -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>publish-latest-runnable-install</id>
+                        <phase>package</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <delete dir="${project.build.directory}/new-staging"/>
+                                <mkdir dir="${project.build.directory}/new-staging"/>
+                                <unzip src="${project.build.directory}/use-${project.version}-use-bin.zip"
+                                       dest="${project.build.directory}/new-staging">
+                                    <mapper type="glob" from="use-${project.version}/*" to="*"/>
+                                </unzip>
+                                <available file="${project.build.directory}/new-staging/bin/start_use.bat"
+                                           property="latest.launcher.present"/>
+                                <fail unless="latest.launcher.present">Latest installation has no launcher; previous installation retained.</fail>
+                                <move todir="${project.build.directory}/new-staging/work">
+                                    <fileset dir="${project.build.directory}/new/work" erroronmissingdir="false"/>
+                                </move>
+                                <delete dir="${project.build.directory}/new"/>
+                                <move file="${project.build.directory}/new-staging" tofile="${project.build.directory}/new"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

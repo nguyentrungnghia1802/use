@@ -10,6 +10,16 @@ import org.tzi.use.plugins.jacamo.codegrounded.runtime.*;
 import org.tzi.use.plugins.jacamo.verification.VerificationOutcome;
 
 class RuntimeHistoryTest {
+    @Test void journalSingleSerializationRetainsExactCanonicalBytesAndHashChain()throws Exception{
+        var journal=new RuntimeEventJournal(root,4,1024*1024);
+        var now=java.time.Instant.EPOCH;
+        var result=new RuntimeVerificationResult("run",1,"rev",1,"evt","source",1,now,now,now,"cut","set","state",java.util.List.of(),0,"PARTIAL","CURRENT_OBSERVED","");
+        assertTrue(journal.append("EVENT",java.util.Map.of("text","unicode λ and escaped \"value\""),result));
+        String line=Files.readString(journal.path()).stripTrailing();
+        var body=org.jacamo.bridge.contract.CanonicalJson.object(org.jacamo.bridge.contract.CanonicalJson.decode(line.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+        assertArrayEquals(org.jacamo.bridge.contract.CanonicalJson.encode(body),line.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        assertEquals(result.resultHash(),journal.page(0,4).entries().getFirst().result().resultHash());
+    }
     @TempDir Path root;
     @Test void journalPreservesABAAndDuplicateVersionsAndProfileIntervals() throws Exception {
         try (var projector = projector()) {

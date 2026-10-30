@@ -80,6 +80,8 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult observedDisplayedResult;
     private boolean observedRefreshPending;
     private long observedDisplayedHistory=-1;
+    private final org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparationCache observedPreparation=new org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparationCache();
+    private final JLabel runtimeProgress=named(new JLabel("Waiting for runtime observations"),"runtime-progress");
     private org.tzi.use.uml.mm.MModel displayedNativeModel;
     private int backgroundOperations;
     private long viewEpoch;
@@ -115,6 +117,8 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         this.observedWorkflow=observedWorkflow;
         this.facade = java.util.Objects.requireNonNull(facade, "facade");
         this.observedPresenter = new org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePresenter(facade);
+        tabs.addChangeListener(e->refreshGraphVisibility());
+        tabs.addHierarchyListener(e->{if((e.getChangeFlags()&java.awt.event.HierarchyEvent.SHOWING_CHANGED)!=0)refreshGraphVisibility();});
         this.errorPresenter = errorPresenter!=null?errorPresenter:message->JOptionPane.showMessageDialog(this,new JLabel(displayMessage(message)),"JaCaMo",JOptionPane.ERROR_MESSAGE);
         var selection=facade.importSelection();selectable=selection!=null;
         if(selectable){engineProfile.setSelectedItem(selection.profile());mappingFile.setText(selection.specification()==null?"":selection.specification().toString());authoredOcl.setText(selection.ocl()==null?"":selection.ocl().toString());}
@@ -239,10 +243,10 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         refreshSemanticViews();
         var result=facade.runtimeVerificationResult();
         refreshObservedConformance(result);
-        if(istarView!=null)istarView.setNodeBadges(SemanticDiagramBadges.from(result));
+        if(istarView!=null&&istarView.isShowing())istarView.setNodeBadges(SemanticDiagramBadges.from(result));
         if(result!=null && result.semantic()!=null) {
             if(semanticEvidence==null){semanticEvidence=new SemanticEvidencePanel();diagnosticTabs().addTab(observedWorkflow?"Verification Details":"Semantic verification",semanticEvidence);}
-            semanticEvidence.refresh(result);
+            if(semanticEvidence.isShowing())semanticEvidence.refresh(result);
         } else if(semanticEvidence!=null) {diagnosticTabs().remove(semanticEvidence);semanticEvidence=null;}
     }
     private void detachSemanticViews() {
@@ -253,18 +257,30 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         observedDisplayedResult=null;observedDisplayedHistory=-1;
         displayedNativeModel=null;
     }
+    private void refreshGraphVisibility(){
+        if(runtimeStateViews!=null)runtimeStateViews.setActive(tabs.isShowing()&&tabs.getSelectedComponent()==runtimeStateViews.aolPanel,tabs.isShowing()&&tabs.getSelectedComponent()==runtimeStateViews.iscnPanel);
+    }
     private void refreshObservedConformance(org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult result) {
         if(observedConformance==null || observedRefreshPending)return;
         long history=facade.runtimeHistoryTail().persistedEntries();
         if(result==observedDisplayedResult&&history==observedDisplayedHistory)return;
         var panel=observedConformance;var model=displayedNativeModel;long epoch=viewEpoch;
         observedRefreshPending=true;
-        new javax.swing.SwingWorker<java.util.List<org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.Cut>,Void>() {
-            @Override protected java.util.List<org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.Cut> doInBackground(){return observedPresenter.capture();}
+        String requestedScope=panel.executionScope();
+        runtimeProgress.setText("Updating results in background · journal records: "+history);
+        new javax.swing.SwingWorker<org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparedCuts,Void>() {
+            private String progress;
+            @Override protected org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparedCuts doInBackground(){
+                var cuts=observedPresenter.capture();
+                var tail=facade.runtimeHistoryTail();var snapshot=facade.verificationSnapshot();
+                long verified=tail.entries().stream().map(org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeHistoryPage.Entry::result).filter(r->r.freshness().equals("CURRENT_OBSERVED")&&r.semantic()!=null&&"PINNED_NATIVE_CUT".equals(CanonicalJson.object(r.semantic().observation().getOrDefault("originalEngine",Map.of())).get("evaluated"))).mapToLong(org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult::stateVersion).max().orElse(-1);
+                progress="USE state: "+snapshot.currentVersion()+" · latest verified state: "+(verified<0?"pending":verified)+" · "+(tail.gap()?"GAP: "+tail.diagnostic():verified<snapshot.currentVersion()?"processing / awaiting evidence":"no state-version backlog")+" · journal: "+tail.persistedEntries();
+                return observedPreparation.prepare(cuts,requestedScope,observedWorkflow);
+            }
             @Override protected void done(){
                 try {
                     var cuts=get();
-                    if(epoch==viewEpoch && observedConformance==panel && displayedNativeModel==model){panel.setCuts(cuts);observedDisplayedResult=result;observedDisplayedHistory=history;}
+                    if(epoch==viewEpoch && observedConformance==panel && displayedNativeModel==model&&panel.executionScope().equals(requestedScope)){panel.applyPrepared(cuts);runtimeProgress.setText(progress);observedDisplayedResult=result;observedDisplayedHistory=history;}
                 }catch(Exception error){
                     if(epoch==viewEpoch && observedConformance==panel)setStatus("Observed evidence unavailable: "+error.getMessage());
                 }finally{observedRefreshPending=false;}
@@ -284,6 +300,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
             var declarative=CanonicalJson.object(facade.semanticProgramEvidence().getOrDefault("declarativeProgram",Map.of()));
             CanonicalJson.object(declarative.getOrDefault("dependencyPopulations",Map.of())).forEach((id,value)->policies.put(id,org.tzi.use.plugins.jacamo.semantics.runtime.OccurrenceGoalModelExpander.Quantifier.valueOf(value.toString())));
             runtimeStateViews=new org.tzi.use.plugins.jacamo.ui.use4goal.state.RuntimeStateViews(models.csl(),models.goals(),policies);
+            runtimeStateViews.setActive(false,false);
             observedConformance.onSelectedCut(runtimeStateViews::select);
             observedConformance.onExecutionSelected(runtimeStateViews::selectScope);
             runtimeStateViews.onScopeSelected(observedConformance::selectExecution);
@@ -325,7 +342,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         controls.add(showProducerGui);controls.add(button("Show results","show-results",this::showResultsWindow));
         var advancedToggle=named(new javax.swing.JToggleButton("Advanced controls"),"show-advanced");controls.add(advancedToggle);panel.add(controls);
         var sourceStatus=new JPanel(new FlowLayout(FlowLayout.LEADING));sourceStatus.add(new JLabel("Workflow:"));sourceStatus.add(workflowState);sourceStatus.add(new JLabel("Bridge:"));sourceStatus.add(runtimeState);panel.add(sourceStatus);
-        panel.add(producerState);panel.add(programSummary);
+          panel.add(producerState);panel.add(programSummary);panel.add(runtimeProgress);
         var advanced=named(new JPanel(new GridLayout(0,1)),"advanced-controls");advanced.setVisible(false);
         var transport=new JPanel(new FlowLayout(FlowLayout.LEADING));transport.add(button("Import external project","import-project",()->prepareObservedProject(false)));
         transport.add(stopMonitor);transport.add(restartMonitor);advanced.add(transport);

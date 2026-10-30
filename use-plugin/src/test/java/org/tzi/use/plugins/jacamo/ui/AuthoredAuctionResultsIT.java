@@ -107,6 +107,13 @@ class AuthoredAuctionResultsIT {
 
      assertTrue(boundEntities.add(entities.keySet().iterator().next()),"Separate schemes cannot borrow the same Entity binding");
      var scoped=ExecutionScopeViews.project(pinned,choice.getKey());
+     var startSkills=scoped.evaluations().stream().filter(r->r.kind().equals("GOAL_TASK")&&r.element().equals("A_start_t1")).toList();
+     assertEquals(5,startSkills.size());
+     assertEquals(4,startSkills.stream().filter(r->r.status().equals("NOT_ASSIGNED")&&r.quality().equals("SOURCE_NOT_ASSIGNED")).count(),"Complete source commitment evidence excludes participants from the start task");
+     assertEquals(1,startSkills.stream().filter(r->r.status().equals("FULFILLED")).count());
+     var bidSkills=scoped.evaluations().stream().filter(r->r.kind().equals("GOAL_TASK")&&r.element().equals("P_bid_t1")).toList();
+     assertEquals(1,bidSkills.stream().filter(r->r.status().equals("NOT_ASSIGNED")).count(),"Auctioneer has no bid assignment");
+     Files.write(evidence.resolve("applicability-"+scopedReceipts.size()+".json"),CanonicalJson.encode(Map.of("start",startSkills.stream().map(Object::toString).toList(),"bid",bidSkills.stream().map(Object::toString).toList())));
      var scopedRoots=scoped.evaluations().stream().filter(r->r.kind().equals("GOAL_TASK")&&r.element().equals("O_root")).toList();
      assertEquals(1,scopedRoots.size());assertEquals(choice.getKey(),scopedRoots.getFirst().context());
      assertEquals("FULFILLED",scopedRoots.getFirst().status(),"Each source execution must certify its own root independently");

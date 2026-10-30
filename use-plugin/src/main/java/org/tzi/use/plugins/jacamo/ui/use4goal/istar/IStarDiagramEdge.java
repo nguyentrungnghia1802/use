@@ -30,6 +30,16 @@ public final class IStarDiagramEdge extends EdgeBase {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setColor(isSelected() ? fOpt.getEDGE_SELECTED_COLOR() : Color.BLACK);
         g2.setStroke(stroke());
+        if(edge.kind()==IStarEdgeKind.ASSOCIATION){
+            // Actor associations belong to the actor headers. Connecting the
+            // complete rationale rectangles would cut through owned Tasks.
+            double sx=source().getX()+source().getWidth()/2,tx=target().getX()+target().getWidth()/2;
+            double sy=actorTop(source(),g2),ty=actorTop(target(),g2);
+            double lane=Math.max(24,Math.min(sy,ty)-20-Math.abs(tx-sx)/40);
+            var route=new java.awt.geom.Path2D.Double();route.moveTo(sx,sy);route.lineTo(sx,lane);route.lineTo(tx,lane);route.lineTo(tx,ty);g2.draw(route);
+            DirectedEdgeFactory.drawArrow(g2,(int)tx,(int)lane,(int)tx,(int)ty,ArrowStyle.FILLED);
+            paintLabel(g2,new Point2D.Double(sx,lane),new Point2D.Double(tx,lane));g2.dispose();return;
+        }
         Point2D last = null;
         Point2D first = null;
         if (!getWayPoints().isEmpty()) {
@@ -53,6 +63,11 @@ public final class IStarDiagramEdge extends EdgeBase {
         }
         paintLabel(g2, first, last);
         g2.dispose();
+    }
+
+    private static double actorTop(PlaceableNode node,Graphics2D graphics){
+        if(node instanceof IStarDiagramNode actor)return actor.actorHeaderTop(graphics);
+        return node.getY();
     }
 
     @Override

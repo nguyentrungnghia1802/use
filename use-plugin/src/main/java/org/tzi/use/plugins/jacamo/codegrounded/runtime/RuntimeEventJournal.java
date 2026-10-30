@@ -44,9 +44,16 @@ public final class RuntimeEventJournal {
                     + ":profile:" + result.stateVersion() + ":" + result.constraintSetHash();
             if (installedInterval != null) interval = installedInterval;
             body.put("verificationInterval", interval);
-            String hash = ExternalOclConstraintService.sha256(CanonicalJson.encode(body));
-            body.put("entryHash", hash);
-            byte[] line = (new String(CanonicalJson.encode(body), StandardCharsets.UTF_8) + "\n").getBytes(StandardCharsets.UTF_8);
+            byte[] unsigned=CanonicalJson.encode(body);
+            String hash = ExternalOclConstraintService.sha256(unsigned);
+            // entryHash sorts before every existing top-level field. Prefix the
+            // identical canonical bytes instead of serializing the large result twice.
+            byte[] prefix=("{\"entryHash\":\""+hash+"\",").getBytes(StandardCharsets.UTF_8);
+            byte[] line=new byte[prefix.length+unsigned.length];
+            if(line.length-1>CanonicalJson.DEFAULT_MAX_BYTES)throw new IllegalArgumentException("JOURNAL_ENCODED_SIZE_LIMIT");
+            System.arraycopy(prefix,0,line,0,prefix.length);
+            System.arraycopy(unsigned,1,line,prefix.length,unsigned.length-1);
+            line[line.length-1]='\n';
             if (bytes + line.length > maxBytes - 4096) { fail("JOURNAL_OVERFLOW"); return false; }
             Files.write(path, line, StandardOpenOption.APPEND);
             bytes += line.length; chain = hash; add(new RuntimeHistoryPage.Entry(ordinal++, kind, interval, result, true,stateCommands)); return true;

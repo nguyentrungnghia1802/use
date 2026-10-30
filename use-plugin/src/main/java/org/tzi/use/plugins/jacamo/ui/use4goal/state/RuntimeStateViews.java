@@ -25,6 +25,13 @@ public final class RuntimeStateViews {
  public void onScopeSelected(java.util.function.Consumer<String> listener){scopeListener=Objects.requireNonNull(listener);}
  public void selectScope(String id){if(!id.isBlank()&&!id.equals(contextSelector.getSelectedItem()))contextSelector.setSelectedItem(id);}
  private Cut selected;private List<Map<String,Object>> contexts=List.of();private boolean loading;
+ private boolean aolActive=true,iscnActive=true;
+ public void setActive(boolean showAol,boolean showIscn){
+  if(aolActive==showAol&&iscnActive==showIscn)return;
+  aolActive=showAol;iscnActive=showIscn;var pending=selected;selected=null;
+  if(pending==null){aol.setState(null);iscn.setModel(null);contexts=List.of();return;}
+  select(pending);
+ }
  public RuntimeStateViews(CslModel csl,GoalModel goals,Map<String,OccurrenceGoalModelExpander.Quantifier> policies){
   this.csl=csl;this.goals=goals;this.policies=Map.copyOf(policies);
   aolPanel.setName("runtime-aol-view");iscnPanel.setName("runtime-iscn-view");contextSelector.setName("iscn-context-selector");aolSelector.setName("aol-context-selector");
@@ -36,14 +43,14 @@ public final class RuntimeStateViews {
   aolPanel.add(aolToolbar,BorderLayout.NORTH);aolPanel.add(new JScrollPane(aol),BorderLayout.CENTER);
   var toolbar=new JPanel(new BorderLayout());toolbar.add(contextSelector,BorderLayout.NORTH);toolbar.add(iscnStatus,BorderLayout.SOUTH);iscnPanel.add(toolbar,BorderLayout.NORTH);iscnPanel.add(iscn,BorderLayout.CENTER);
   contextSelector.addActionListener(e->{if(!loading){String id=Objects.toString(contextSelector.getSelectedItem(),"");
-   loading=true;try{aolSelector.setSelectedItem(id);}finally{loading=false;}renderContext();scopeListener.accept(id);}});
+   loading=true;try{aolSelector.setSelectedItem(id);}finally{loading=false;}if(iscnActive)renderContext();scopeListener.accept(id);}});
   aolSelector.addActionListener(e->{if(!loading)contextSelector.setSelectedItem(aolSelector.getSelectedItem());});
  }
  public void select(Cut cut){
-  if(selected==cut)return;selected=cut;contexts=List.of();String previous=cut==null?"":ExecutionScopeViews.selected(cut);if(previous.isBlank())previous=(String)contextSelector.getSelectedItem();loading=true;contextSelector.removeAllItems();aolSelector.removeAllItems();
+  if(selected==cut)return;selected=cut;if(!aolActive&&!iscnActive)return;contexts=List.of();String previous=cut==null?"":ExecutionScopeViews.selected(cut);if(previous.isBlank())previous=(String)contextSelector.getSelectedItem();loading=true;contextSelector.removeAllItems();aolSelector.removeAllItems();
   try{
    if(cut==null){aol.setState(null);iscn.setModel(null);aolStatus.setText("No selected CSL state");iscnStatus.setText("No selected iStar state");return;}
-   var evidence=cut.visualEvidence();aol.setState(aol(csl,evidence,cut.state()));
+   var evidence=cut.visualEvidence();if(aolActive)aol.setState(aol(csl,evidence,cut.state()));
    aolStatus.setText("AOL — selected execution projection; dashed blue = witnessed participation | "+cut.coverage()+" / "+cut.freshness()+(Boolean.TRUE.equals(object(evidence.get("presentationState")).get("qualifiedValues"))?"":" | State unavailable: projection pending or incomplete"));
    var core=object(evidence.get("originalEngine"));
    if(!"PINNED_NATIVE_CUT".equals(core.get("evaluated")))throw new IllegalArgumentException("Verification still pending; no qualified ISCN at this boundary");
@@ -56,7 +63,7 @@ public final class RuntimeStateViews {
    aolSelector.setSelectedIndex(contextSelector.getSelectedIndex());
   }catch(RuntimeException unavailable){iscn.setModel(null);iscnStatus.setText("ISCN unavailable: "+unavailable.getMessage());}
   finally{loading=false;}
-  renderContext();
+  if(iscnActive)renderContext();
  }
  static Map<String,Object> object(Object raw){return raw instanceof Map<?,?>?CanonicalJson.object(raw):Map.of();}
  public static AcceptedAolState aol(CslModel csl,Map<String,Object> evidence,String stateJson){
@@ -99,13 +106,14 @@ public final class RuntimeStateViews {
     String element=expanded.trace().entrySet().stream().filter(e->signature(trace).equals(signature(e.getValue()))).map(Map.Entry::getKey).findFirst().orElseThrow();nodeLabels.put(element,Objects.toString(occurrence.get("sourceElement"),element));
     var stack=(List<?>)occurrence.getOrDefault("stack",List.of());if(!stack.isEmpty()){var binding=object(stack.getFirst());actorLabels.put(Objects.toString(binding.get("actorType")),Objects.equals(occurrence.get("player"),context.get("anchor"))?ExecutionScopeViews.actorLabel(context,index+1):playerLabel(Objects.toString(occurrence.get("player"))));}
     String status=qualifiedStatus(context,occurrence);Color color=switch(status){case "FULFILLED"->new Color(30,150,60);case "PENDING"->new Color(180,130,0);case "FAILED","VIOLATED"->new Color(170,30,30);default->Color.GRAY;};
-    badges.put(element,new NodeBadge(color,status.equals("FULFILLED")?"F":status.equals("PENDING")?"P":status.equals("UNKNOWN")?"?":"!",status+" | player="+occurrence.get("player")+" | role="+occurrence.get("role")));
+    badges.put(element,new NodeBadge(color,status.equals("FULFILLED")?"F":status.equals("PENDING")?"P":status.equals("NOT_ASSIGNED")?"–":status.equals("UNKNOWN")?"?":"!",status+" | player="+occurrence.get("player")+" | role="+occurrence.get("role")));
    }
    iscn.setActorLabelOverrides(actorLabels);iscn.setNodeLabelOverrides(nodeLabels);iscn.setNodeBadges(badges);
-   iscnStatus.setText("ISCN — actor instances in selected context | green=fulfilled, amber=pending, gray=unknown; "+selected.freshness());
+   iscnStatus.setText("ISCN — actor instances in selected context | F=fulfilled, P=pending, –=not assigned, ?=unknown; "+selected.freshness());
   }catch(RuntimeException unavailable){iscn.setModel(null);iscnStatus.setText("ISCN unavailable: "+unavailable.getMessage());}
  }
  public static String qualifiedStatus(Map<String,Object> context,Map<String,Object> row){
+  if("SOURCE_NOT_ASSIGNED".equals(row.get("executionQuality"))&&"ORIGINAL_PROPAGATION_ON_ADMITTED_LEAVES/1.0".equals(context.get("executionQualification")))return "NOT_ASSIGNED";
   String quality=Objects.toString(row.get("executionQuality"),"");boolean history=Set.of("KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(quality)&&!object(row.get("executionEvidence")).isEmpty();
   boolean current=Set.of("KNOWN","KNOWN_DERIVED").contains(quality)&&"ORIGINAL_PROPAGATION_ON_ADMITTED_LEAVES/1.0".equals(context.get("executionQualification"));
   if(!history&&!current)return "UNKNOWN";

@@ -1,5 +1,29 @@
 # Hello World và House Building — authored case studies
 
+## Responsive runtime results
+- [x] RL01 — Prepare scoped timeline/failure data on background worker with immutable projection cache; keep navigation/evidence semantics.
+- [x] RL02 — Coalesce UI publication, defer hidden graphs/diagnostics, expose received/verified state progress.
+- [ ] RL03 — Reduce repeated certificate/hash work; focused tests, Auction regression and new package only.
+
+RL evidence: use-plugin/verification/responsive-results. Immutable presentation
+preparation is off EDT; exact-cut projection reuse, selected-scope/import guards,
+one worker at a time and lazy visible graph rendering preserve audit records.
+Journal single serialization retains canonical bytes and hash-chain validation.
+Repeated same-record UI application benchmark: 83.3 ms before, 0.2 ms after;
+linked application with hidden graphs: 311.7 ms before, 6.6 ms after. Cold load
+still has setup cost; these isolated figures are not an end-to-end latency claim.
+Full Auction gate remains unchecked: two source runs reach two qualified fulfilled
+roots with no journal gap, but AuthoredAuctionResultsIT asserts five capability
+players per execution while the captured admitted scope contains fewer. Original
+assertion and both failing attempts retained; no case-wide PASS claimed or semantic
+assertion weakened. Focused verification and final package receipts are recorded
+separately from that unresolved case acceptance assumption.
+
+Build/run convention (2026-10-30): keep one runnable installation at
+use-assembly/target/new/bin/start_use.bat. Maven package replaces that directory
+after staging succeeds and preserves its work directory. Do not create extra
+randomly named runnable installations for routine verification or delivery.
+
 Repo sửa: `use`; branch hiện tại `main`; không commit/push. `jacamo` và
 `use4Goal` chỉ đọc. Kế hoạch này thay plan cũ theo yêu cầu; evidence lịch sử
 trong `use-plugin/verification` được giữ nguyên.
@@ -1186,3 +1210,22 @@ The proposed source-backed NOT_ASSIGNED distinction is not implemented or inferr
 Retained red tests and stale legacy aggregate-GUI expectation failure; the legacy
 fixture/hash and raw 2-fulfilled/8-unknown assertions remain unchanged, while its UI
 check now tests independent scopes and rejects missing scoped-native OCL evidence.
+
+## Source-backed applicability and iStar associations
+- [x] AP01 — Typed membership of source-confirmed committed-goal players; explicit assignment witness, no negative inference from absent rows.
+- [x] AP02 — Present NOT_ASSIGNED independently from missing evidence, preserve raw native history and selected-root verification.
+- [x] AP03 — Render declared actor associations in SR/SD, reduce default contract clutter, preserve the authored semantics.
+- [x] AP04 — Recheck scoped failure categories and queue/gap behavior; focused regression, external Auction, package.
+
+AP01–AP04: evidence at use-plugin/verification/capability-applicability/receipt.json
+and live-results-ui/auction-13471184572337605195. Focused core/navigation suite:
+38 tests PASS; external Auction service test PASS with two separate fulfilled
+roots, exact 1 fulfilled + 4 not-assigned start performers per execution and one
+not-assigned bid performer. Source replay PASS 1622 entries. The recorded scoped
+false checks are only unmet GOAL_CONDITION values, no failed native invariant.
+Latest completion delay was 46290 ms; transport journal reports no gap. This
+supports ordered accepted-prefix correctness for this run, not full source
+coverage or unlimited buffering. UI/provenance closeout checks and package source
+parity are recorded in the final receipt. Fresh offscreen Swing rendering and
+actual external MAS execution, no fresh manual desktop GUI claim. Raw native
+engine sources and unmodified external project remain semantic authorities.

@@ -6,6 +6,13 @@ import org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeTables;
 import static org.junit.jupiter.api.Assertions.*;
 /** Bounded relational interpreter units; source qualification has its own executable gates. */
 class RuntimeTablesTest {
+    @Test void typedMembershipPreservesUnknownAndExplicitAbsence() {
+        String plan="<runtime><tables><table id=\"assignment\" dataset=\"source\"><testContains as=\"assigned\" path=\"players\" valuePath=\"player\" type=\"String\"/><column name=\"assigned\" path=\"assigned\" required=\"true\"/></table></tables></runtime>";
+        var data=new RuntimeTables.Dataset(List.of(row("yes",Map.of("players",List.of("p"),"player","p")),row("no",Map.of("players",List.of(),"player","p")),row("missing",Map.of("player","p"))),Completeness.COMPLETE);
+        var result=tables(plan).execute(Map.of("source",data)).get("assignment");
+        assertEquals(true,result.rows().get(0).values().get("assigned"));assertEquals(false,result.rows().get(1).values().get("assigned"));
+        assertEquals(Completeness.PARTIAL,result.rows().get(2).quality());assertFalse(result.rows().get(2).values().containsKey("assigned"));
+    }
     @Test void typedComparisonProducesAnExplicitMappingBooleanWithoutGuessingMissingSourceState() {
         String plan="<runtime><tables><table id=\"demands\" dataset=\"goals\"><test as=\"required\" path=\"state\" type=\"String\" equals=\"WAITING\" negate=\"true\"/><column name=\"required\" path=\"required\" required=\"true\"/></table></tables></runtime>";
         var rows=new ArrayList<RuntimeTables.Row>();for(String state:List.of("WAITING","ENABLED","SATISFIED"))rows.add(row(state,Map.of("state",state)));rows.add(row("missing",Map.of()));

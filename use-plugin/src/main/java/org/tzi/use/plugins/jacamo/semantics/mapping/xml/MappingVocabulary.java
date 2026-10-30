@@ -159,7 +159,8 @@ final class MappingVocabulary {
         add(m,"scope/resource","target column type","");
         add(m,"scope/observer","projectRef subjectColumn","");
         add(m,"runtime/taskDemands","","");
-        add(m,"taskDemands/demand","id target scopeRef tableRef anchorColumn playerColumn requiredColumn episodeFields","completeColumn scopeColumn scopeKey");
+        add(m,"taskDemands/demand","id target scopeRef tableRef anchorColumn playerColumn requiredColumn episodeFields","completeColumn scopeColumn scopeKey assignmentColumn");
+        add(m,"table/testContains","path valuePath type as","");
         add(m,"runtime/datasets","","");
         add(m,"datasets/facts","id authority kind","population");
         add(m,"datasets/removals","id authority kind","");

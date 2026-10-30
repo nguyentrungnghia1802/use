@@ -78,6 +78,7 @@ public final class IStarLayoutBuilder {
         }
 
         List<IStarEdge> edges = new ArrayList<>();
+        addAssociations(model, edges);
         int depIndex = 0;
         for (Dependency dep : model.getDependencies()) {
             String depNodeId = addDependumNode(nodes, model, dep, depIndex++, dep.depender(), dep.dependee(), MARGIN + ACTOR_D + 26);
@@ -148,6 +149,7 @@ public final class IStarLayoutBuilder {
         }
 
         List<IStarEdge> edges = new ArrayList<>();
+        addAssociations(model, edges);
         for (Actor actor : model.getActors()) {
             for (Refinement ref : actor.refinements()) {
                 switch (ref) {
@@ -182,6 +184,11 @@ public final class IStarLayoutBuilder {
                 .mapToInt(n -> n.y + n.h).max().orElse(500) + MARGIN;
 
         return new IStarLayout(nodes, edges, Math.max(totalW, 900), Math.max(maxH, 600));
+    }
+
+    private static void addAssociations(GoalModel model, List<IStarEdge> edges) {
+        for(Actor actor:model.getActors())for(var relation:actor.associations())
+            edges.add(new IStarEdge(actor.name(), relation.target(), IStarEdgeKind.ASSOCIATION, relation.kind().toString().toLowerCase().replace('_','-'), null));
     }
 
     private static String addDependumNode(Map<String, IStarNode> nodes, GoalModel model, Dependency dep,

@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "liveEvidence": "use-plugin\\verification\\live-results-ui\\auction-13471184572337605195",
+  "replay": {
+    "entries": 1622,
+    "status": "PASS"
+  },
+  "falseScopedChecks": {
+    "GOAL_CONDITION": 139
+  },
+  "note": "Unmet GOAL_CONDITION is separately navigable, not an invariant failure.",
+  "archiveSha256": "ebe0fd7d265c17b837f6fe19dfa91713ca54fa85eecc827b551681cc23b74aba",
+  "testedPluginClassesEqualArchive": 815,
+  "launcher": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bin\\start_use.bat",
+  "sourceFreezeSha256": "4d2f6aa96d2eeac7200a3ac5c944562494b3fa69ce214f5e7b622d93b26bb7b3",
+  "freshLiveAuction": true,
+  "freshManualDesktopGui": false,
+  "otherLiveCases": false
+}

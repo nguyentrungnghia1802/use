@@ -67,7 +67,7 @@ public final class ObservedConformancePresenter {
         for(var retained:retainedSnapshots){rememberImage(images,retained);rememberCheckpoint(checkpoints,retained);}
         rememberImage(images,snapshot);
         rememberCheckpoint(checkpoints,snapshot);
-        var cuts=new ArrayList<Cut>();String previousHash="";var certificates=new HashMap<String,String>();
+        var cuts=new ArrayList<Cut>();String previousHash="";var certificates=new HashMap<String,String>();String certificatePrefix="";
         for(var result:results.values()){
             String hash=hash(result),key=boundaryKey(result);
             String kind=checkpoints.getOrDefault(hash,"HISTORY_RECORD");
@@ -77,12 +77,14 @@ public final class ObservedConformancePresenter {
             String description=category+" / "+kind;var image=images.get(hash);
             if(image==null&&persistedStateCommands.containsKey(result.stateHash()))image=new VerificationSnapshot.StateImage(Map.of(),List.of(),persistedStateCommands.get(result.stateHash()));
             var cached=rendered.get(key);
-            String priorCertificates=org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(certificates);
+            String priorCertificates=certificatePrefix;
             if(cached==null||cached.result()!=result||cached.image()!=(image!=null)||!cached.category().equals(description)||!cached.priorCertificates().equals(priorCertificates)) {
                 var updates=new HashMap<String,String>();
                 cached=new Rendered(result,image!=null,description,cut(result,image,description,hash,certificates,updates),Map.copyOf(updates),priorCertificates);rendered.put(key,cached);
             }
-            certificates.putAll(cached.certifications());cuts.add(cached.cut());previousHash=result.stateHash();
+            certificates.putAll(cached.certifications());
+            if(!cached.certifications().isEmpty())certificatePrefix=org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(List.of(certificatePrefix,cached.certifications()));
+            cuts.add(cached.cut());previousHash=result.stateHash();
         }
         rendered.keySet().retainAll(results.keySet());
         var retainedResults=Collections.newSetFromMap(new IdentityHashMap<RuntimeVerificationResult,Boolean>());
@@ -188,6 +190,7 @@ public final class ObservedConformancePresenter {
                         if(historical||currentProof){qualified=propagated;quality=executionQuality;}
                         boolean terminalFailure=historical&&"FAILED".equals(occurrence.get("executionStatus"))&&executionEvidence.values().stream().map(CanonicalJson::object).anyMatch(p->"TASK_FAILED".equals(p.get("kind"))&&"CERTIFIED_TERMINAL_EXECUTION/1.0".equals(p.get("policy"))&&!Objects.toString(p.get("invocation"),"").isBlank());
                         if(terminalFailure)qualified="FAILED";
+                        if("SOURCE_NOT_ASSIGNED".equals(executionQuality)&&"PINNED_NATIVE_CUT".equals(core.get("evaluated"))&&"OBSERVED_PREFIX".equals(core.get("historyQuality"))){qualified="NOT_ASSIGNED";quality=executionQuality;}
                         boolean requiredElement=requiredElements.isEmpty()||requiredElements.contains(occurrence.getOrDefault("sourceElement",entry.getKey()));
                         failed |= requiredElement&&qualified.equals("VIOLATED");
                         String identity = "context=" + context.getOrDefault("context", "UNAVAILABLE")
@@ -195,7 +198,8 @@ public final class ObservedConformancePresenter {
                                 + "; role=" + occurrence.getOrDefault("role", "UNAVAILABLE")
                                 + "; raw propagated=" + propagated
                                 + "; current observation="+occurrence.getOrDefault("quality","UNAVAILABLE")
-                                + "; execution evidence="+executionEvidence;
+                                + "; execution evidence="+executionEvidence
+                                + "; assignment evidence="+occurrence.getOrDefault("assignmentEvidence",Map.of());
                         String certificateKey=result.sessionId()+":"+result.generation()+":"+result.modelRevision()+":"+context.get("context")+":"+entry.getKey()+":"+occurrence.get("player")+":"+occurrence.get("role")+":"+Objects.toString(occurrence.get("key"),"NO_EPISODE");
                         if(known) {
                             String certificate=qualified+" @ state "+result.stateVersion()+"; result="+hash;

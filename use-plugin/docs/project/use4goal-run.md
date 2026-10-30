@@ -351,3 +351,47 @@ không được giao. Vì vậy MIXED/UNKNOWN của supporting skills không ch�
 lỗi, và cũng không được đổi thành FULFILLED từ console winner. Muốn phân biệt rõ
 NOT_ASSIGNED với thiếu evidence cần bổ sung applicability có chứng cứ âm từ nguồn
 đầy đủ; đó là thay đổi mapping/contract riêng, chưa được suy diễn trong giao diện.
+### Running the latest build
+
+Results refresh now prepares scope projections, milestones and failure episodes
+on one background worker. An immutable-cut cache avoids repeating projection for
+unchanged boundaries. Only the latest applicable batch is installed on Swing;
+switching execution or import invalidates a pending publication. No accepted
+state or audit record is dropped. Hidden AOL/ISCN graphs render the latest
+selected cut when their tab opens; hidden diagnostics do not rebuild on each tick.
+The progress line compares the accepted USE state version with the most recent
+verified native cut in the retained tail. Equal versions are not a claim of full
+source coverage, drained transport, or complete receipt of all JaCaMo events.
+
+After Maven package succeeds, run use-assembly/target/new/bin/start_use.bat.
+The package step prepares a complete staging installation before replacing new.
+Close USE and its owned JaCaMo runtime before rebuilding this installation.
+There is one runnable installation; ZIP/TAR and staging metadata are build artifacts.
+
+### Capability applicability and state delivery
+
+The bridge has bounded per-subscriber FIFO transport queues and resume history.
+The consumer admits events in source sequence, journals them and evaluates pinned
+native cuts in one ordered engine lane. A later mutation cannot overwrite an
+already pinned cut. Queue, pin or journal exhaustion reports GAP/resync/incomplete;
+these buffers are bounded and do not guarantee unlimited lossless capture.
+An observed prefix is not a claim to capture every internal JaCaMo microstate.
+
+Auction's declarative demand tables now compare each source-bound scheme member
+with the public goal's committed-player collection, under complete source bindings.
+Only a qualified explicit assignment=false row can show NOT_ASSIGNED. Missing rows,
+missing collections, incomplete bindings and assigned players lacking execution
+proof stay UNKNOWN. NOT_ASSIGNED instances are excluded from the certified skill
+summary; raw original-engine history remains visible and may still be MIXED.
+Assignment witnesses are retained alongside each Task occurrence. A selected
+organization root and mandatory OCL contracts continue to determine the verdict.
+
+Failure Point opens recorded qualified Goal/Task failures and native OCL
+counterexamples within the selected execution. A false achievement condition is
+progress evidence in Unmet conditions, and UNKNOWN or NOT_ASSIGNED is not a failure.
+An empty All failures or Diagnostics list disables the button deliberately.
+
+The iStar renderer now includes the model's actor associations in SR and SD views.
+The authored Agent participates-in Role direction is retained; the association
+does not assert that every player executes every skill. OCL text inside diagram
+nodes is hidden initially and remains available through the diagram's context menu.

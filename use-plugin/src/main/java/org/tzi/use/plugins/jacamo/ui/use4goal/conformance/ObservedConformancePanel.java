@@ -136,25 +136,46 @@ public final class ObservedConformancePanel extends JPanel {
         return selectedStateIndex < 0 ? null : currentCounterexampleStates.get(selectedStateIndex);
     }
 
+    public record PreparedCuts(List<Cut> all,java.util.Map<String,String> labels,String scope,List<Cut> audit,List<Cut> milestones,java.util.Map<String,Integer> numbers,List<FailurePoint> failures) {}
+    /** Worker-owned cache. Reuse projections only for the identical immutable cut. */
+    public static final class PreparationCache {
+        private final java.util.IdentityHashMap<Cut,java.util.Map<String,Cut>> projections=new java.util.IdentityHashMap<>();
+        public PreparedCuts prepare(List<Cut> input,String requested,boolean live){
+            var all=List.copyOf(input);var labels=live?ExecutionScopeViews.choices(all):java.util.Map.<String,String>of();
+            String scope=requested;
+            if(live&&!labels.containsKey(scope))scope=labels.isEmpty()?"":labels.keySet().iterator().next();
+            boolean awaiting=live&&scope.isBlank()&&all.stream().anyMatch(c->c.visualEvidence().containsKey("originalEngine"));
+            var audit=new java.util.ArrayList<Cut>();
+            if(!awaiting)for(var cut:all){String selected=scope;audit.add(scope.isBlank()?cut:projections.computeIfAbsent(cut,k->new java.util.HashMap<>()).computeIfAbsent(scope,k->ExecutionScopeViews.project(cut,selected)));}
+            var milestones=BusinessTimeline.summarize(audit);
+            if(!scope.isBlank()&&!milestones.isEmpty()&&!audit.isEmpty()&&audit.getLast().businessKey().isBlank()){
+                var last=audit.getLast();var retained=new java.util.ArrayList<Cut>(milestones);var phase=retained.getLast();
+                retained.set(retained.size()-1,new Cut(last.id(),last.trace(),last.state(),last.evaluations(),last.coverage(),last.freshness(),last.failed(),phase.businessKey(),last.requirements(),last.businessState(),last.executionMilestones(),last.selectedRequirements(),last.businessPopulationEmpty(),last.visualEvidence()));milestones=List.copyOf(retained);
+            }
+            var numbers=BusinessTimeline.milestoneNumbers(audit,milestones);
+            var keep=java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<Cut,Boolean>());keep.addAll(all);projections.keySet().retainAll(keep);
+            return new PreparedCuts(all,labels,scope,List.copyOf(audit),milestones,numbers,live?collectFailurePoints(audit,numbers):List.of());
+        }
+    }
+    public String executionScope(){return executionScope;}
+    private List<FailurePoint> preparedFailures=List.of();
+
     public void setCuts(List<Cut> cuts) {
         if (!SwingUtilities.isEventDispatchThread()) throw new IllegalStateException("OBSERVED_VIEW_REQUIRES_EDT");
-        allCuts=List.copyOf(cuts);
-        if(liveOnly)refreshExecutions();
-        boolean awaitingExecution=liveOnly&&executionScope.isBlank()&&allCuts.stream().anyMatch(c->c.visualEvidence().containsKey("originalEngine"));
-        auditCuts=awaitingExecution?List.of():executionScope.isBlank()?allCuts:allCuts.stream().map(c->ExecutionScopeViews.project(c,executionScope)).toList();
-        businessMilestones=BusinessTimeline.summarize(auditCuts);
-        // Keep latest epistemic diagnostics visible at the last business milestone,
-        // without inventing an Entity-state transition or copying old values.
-        if(!executionScope.isBlank()&&!businessMilestones.isEmpty()&&!auditCuts.isEmpty()&&auditCuts.getLast().businessKey().isBlank()){
-            var last=auditCuts.getLast();var retained=new java.util.ArrayList<Cut>(businessMilestones);var phase=retained.getLast();
-            retained.set(retained.size()-1,new Cut(last.id(),last.trace(),last.state(),last.evaluations(),last.coverage(),last.freshness(),last.failed(),phase.businessKey(),last.requirements(),last.businessState(),last.executionMilestones(),last.selectedRequirements(),last.businessPopulationEmpty(),last.visualEvidence()));
-            businessMilestones=List.copyOf(retained);
-        }
-        milestoneNumbers=BusinessTimeline.milestoneNumbers(auditCuts,businessMilestones);
+        applyPrepared(new PreparationCache().prepare(cuts,executionScope,liveOnly));
+    }
+    public void applyPrepared(PreparedCuts prepared){
+        if(!SwingUtilities.isEventDispatchThread())throw new IllegalStateException("OBSERVED_VIEW_REQUIRES_EDT");
+        allCuts=prepared.all();executionScope=prepared.scope();
+        if(liveOnly){updatingExecutions=true;try{
+            if(!executionLabels.equals(prepared.labels())){executionLabels=prepared.labels();executionSelector.setModel(new DefaultComboBoxModel<>(executionLabels.keySet().toArray(String[]::new)));}
+            executionSelector.setSelectedItem(executionScope);
+        }finally{updatingExecutions=false;}}
+        auditCuts=prepared.audit();businessMilestones=prepared.milestones();milestoneNumbers=prepared.numbers();preparedFailures=prepared.failures();
         if(failureFocus!=null&&auditCuts.stream().noneMatch(c->c.id().equals(failureFocus.cut().id())))failureFocus=null;
         if(liveOnly)refreshFailurePoints();
         if(intervalIds!=null&&auditCuts.stream().noneMatch(c->intervalIds.contains(c.id()))){intervalIds=null;details.setSelected(false);details.setText("Show all audit boundaries");}
-        cuts=intervalIds!=null?auditCuts.stream().filter(c->intervalIds.contains(c.id())).toList():details.isSelected()?auditCuts:businessMilestones;
+        var cuts=intervalIds!=null?auditCuts.stream().filter(c->intervalIds.contains(c.id())).toList():details.isSelected()?auditCuts:businessMilestones;
         if (currentCounterexampleStates.equals(cuts)) {if(liveOnly){jumpCheckpointButton.setEnabled(failurePoints.getItemCount()>0);if(selectedCut()!=null)updatePosition(selectedCut());stateSelectorCombo.repaint();}return;}
         String selected = selectedCut() == null ? "" : selectedCut().id();
         boolean follow = selectedStateIndex == currentCounterexampleStates.size() - 1;
@@ -180,12 +201,10 @@ public final class ObservedConformancePanel extends JPanel {
         if(row.kind().equals("GOAL_TASK"))return java.util.Set.of("FAILED","VIOLATED").contains(row.status())&&java.util.Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(row.quality());
         return java.util.Set.of("FAIL","FAILED","VIOLATED","ERROR","EXECUTION_FAILED").contains(row.status());
     }
-    private String failureKey(Evaluation row){return row.kind()+"\u0000"+row.element()+"\u0000"+row.context()+"\u0000"+row.occurrence();}
+    private static String failureKey(Evaluation row){return row.kind()+"\u0000"+row.element()+"\u0000"+row.context()+"\u0000"+row.occurrence();}
     private static boolean unmetCondition(Evaluation row){return java.util.Set.of("GOAL_CONDITION","TASK_PRE","TASK_POST").contains(row.kind())&&row.status().equals("CONDITION_FALSE");}
-    private void refreshFailurePoints(){
-        var selected=(FailurePoint)failurePoints.getSelectedItem();updatingFailures=true;
-        try {
-            failurePoints.removeAllItems();var active=new java.util.HashSet<String>();int ordinal=0;String owner="";
+    private static List<FailurePoint> collectFailurePoints(List<Cut> auditCuts,java.util.Map<String,Integer> milestoneNumbers){
+            var points=new java.util.ArrayList<FailurePoint>();var active=new java.util.HashSet<String>();int ordinal=0;String owner="";
             for(var cut:auditCuts){ordinal++;boolean found=false;
                 Object core=cut.visualEvidence().get("originalEngine");
                 String currentOwner=core instanceof java.util.Map<?,?> engine&&engine.get("identity")!=null?org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(engine.get("identity")):"";
@@ -208,10 +227,17 @@ public final class ObservedConformancePanel extends JPanel {
                     if(row.kind().equals("INVARIANT")&&failedBodies.contains(row.element()))continue;
                     if(!active.add(key))continue;
                     String category=unmet?"Unmet conditions":row.status().equals("ERROR")?"Diagnostics":java.util.Set.of("GOAL_TASK","EXECUTION_OUTCOME").contains(row.kind())?"Goal / Task":"OCL / constraints";
-                    if(failureFilter.getSelectedIndex()==0&&!unmet||category.equals(failureFilter.getSelectedItem()))failurePoints.addItem(new FailurePoint(cut,row,category,ordinal,milestoneNumbers.getOrDefault(cut.id(),0),details.isSelected()));
+                    points.add(new FailurePoint(cut,row,category,ordinal,milestoneNumbers.getOrDefault(cut.id(),0),false));
                 }
-                if(cut.failed()&&!found&&active.add("boundary:"+cut.id())&&(failureFilter.getSelectedIndex()==0||"Diagnostics".equals(failureFilter.getSelectedItem())))failurePoints.addItem(new FailurePoint(cut,null,"Diagnostics",ordinal,milestoneNumbers.getOrDefault(cut.id(),0),details.isSelected()));
+                if(cut.failed()&&!found&&active.add("boundary:"+cut.id()))points.add(new FailurePoint(cut,null,"Diagnostics",ordinal,milestoneNumbers.getOrDefault(cut.id(),0),false));
             }
+            return List.copyOf(points);
+    }
+    private void refreshFailurePoints(){
+        var selected=(FailurePoint)failurePoints.getSelectedItem();updatingFailures=true;
+        try {
+            var visible=preparedFailures.stream().filter(p->failureFilter.getSelectedIndex()==0?!p.category().equals("Unmet conditions"):p.category().equals(failureFilter.getSelectedItem())).map(p->new FailurePoint(p.cut(),p.evaluation(),p.category(),p.boundary(),p.milestone(),details.isSelected())).toArray(FailurePoint[]::new);
+            failurePoints.setModel(new DefaultComboBoxModel<>(visible));
             failurePoints.setSelectedIndex(-1);
             if(selected!=null)for(int i=0;i<failurePoints.getItemCount();i++){var point=failurePoints.getItemAt(i);if(point.cut().id().equals(selected.cut().id())&&java.util.Objects.equals(point.evaluation(),selected.evaluation())){failurePoints.setSelectedIndex(i);break;}}
             failurePoints.setEnabled(failurePoints.getItemCount()>0);jumpCheckpointButton.setEnabled(failurePoints.getItemCount()>0);

@@ -279,7 +279,7 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
                         if(program.xmlPlan()!=null) {
                             var taskRead=prepared.xmlTasks().get(occurrence.sourceElementId());var tuple=xmlTaskInput(taskRead,exact,cut.lost());
                             Boolean required=!exact||taskRead==null||taskRead.demand()==null||taskRead.demand().quality()!=Completeness.COMPLETE?null:taskRead.demand().required();
-                            tasks.put(id,new EngineInputs.TaskInput(episode,required,tuple[0],tuple[1]));statusQuality.put(id,gaps.contains(key)?"HISTORY_GAP":Boolean.FALSE.equals(required)?"INACTIVE_SOURCE_DEMAND":tuple[0]!=null&&tuple[1]!=null&&exact?"KNOWN":xmlTaskOcl.slots().containsKey(template.elementId())?"XML_TASK_TUPLE_UNAVAILABLE:"+xmlTaskUnavailable(taskRead,exact,cut.lost()):"UNSUPPORTED:XML_TASK_OBSERVATION_BINDING_REQUIRED");
+                            tasks.put(id,new EngineInputs.TaskInput(episode,required,tuple[0],tuple[1]));statusQuality.put(id,gaps.contains(key)?"HISTORY_GAP":Boolean.FALSE.equals(required)?"false".equals(taskRead.demand().witness().get("assigned"))?"SOURCE_NOT_ASSIGNED":"INACTIVE_SOURCE_DEMAND":tuple[0]!=null&&tuple[1]!=null&&exact?"KNOWN":xmlTaskOcl.slots().containsKey(template.elementId())?"XML_TASK_TUPLE_UNAVAILABLE:"+xmlTaskUnavailable(taskRead,exact,cut.lost()):"UNSUPPORTED:XML_TASK_OBSERVATION_BINDING_REQUIRED");
                             if(certifyExecution&&cut.advance()&&exact&&taskRead!=null&&taskRead.marker()!=null
                                     &&"FAILED".equals(taskRead.marker().phase())&&Boolean.TRUE.equals(required)
                                     &&tuple[0]!=null&&Boolean.FALSE.equals(tuple[1]))
@@ -301,6 +301,16 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
                 if(prepared.xmlExpansion()!=null&&result!=null)result.deferred().forEach(id->{if("KNOWN".equals(statusQuality.get(id)))statusQuality.put(id,"UNAVAILABLE:ORIGINAL_ENGINE_DEFERRED_INPUT_OR_RESOURCE");});
                 var rendered=prepared.xmlExpansion()!=null?SemanticResultAdapter.xmlContext(cast,owned.engine(),result,before,input,statusQuality,cut.advance(),prepared.xmlExpansion(),prepared.xmlScope(),program):SemanticResultAdapter.context(cast,owned.engine(),result,before,input,statusQuality,cut.advance());
                 var withView=new TreeMap<String,Object>(CanonicalJson.object(rendered));
+                if(prepared.xmlExpansion()!=null) {
+                    var occurrenceRows=new TreeMap<String,Object>();
+                    CanonicalJson.object(withView.get("occurrences")).forEach((id,value)->{
+                        var row=new TreeMap<String,Object>(CanonicalJson.object(value));
+                        var read=prepared.xmlTasks().get(Objects.toString(row.get("executionElement"),""));
+                        if(read!=null&&read.demand()!=null)row.put("assignmentEvidence",SemanticJson.tree(read.demand()));
+                        occurrenceRows.put(id,row);
+                    });
+                    withView.put("occurrences",occurrenceRows);
+                }
                 if(prepared.xmlScope()!=null)withView.put("scopeView",prepared.scopeView());
                 var execution=certifyExecution?SemanticResultAdapter.execution(withView,owned.engine(),cut,executionEvidence):withView;
                 contexts.add(execution);appendTerminalOutcomes(execution,cut,rows);

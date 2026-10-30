@@ -9,6 +9,18 @@ import org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class XmlTaskDemandTest {
+    @Test void assignmentNeedsAnExplicitQualifiedBooleanAndCannotContradictDemand() throws Exception {
+        var f=fixture(s->s.replace("episodeFields=\"activation\"","episodeFields=\"activation\" assignmentColumn=\"assigned\"")
+            .replace("<column name=\"activation\" path=\"activation\" required=\"false\"/>","<column name=\"activation\" path=\"activation\" required=\"false\"/><column name=\"assigned\" path=\"assigned\" required=\"false\"/>"));
+        for(boolean complete:List.of(true,false)) {
+            var data=new RuntimeTables.Result(List.of(f.helper().row("negative",Map.of("domain","parcel","player","player:alpha","required",false,"assigned",false,"activation","first"),complete?Completeness.COMPLETE:Completeness.PARTIAL)),Completeness.COMPLETE,List.of());
+            apply(f,data);var demand=read(f).stream().filter(d->d.player().contains("alpha")).findFirst().orElseThrow();
+            assertEquals(complete?Boolean.FALSE:null,demand.required());
+            assertEquals(complete?"false":null,demand.witness().get("assigned"));
+        }
+        apply(f,rows(f,Completeness.COMPLETE,false,"first"));
+        assertTrue(read(f).stream().allMatch(d->d.required()==null),"Missing assignment evidence cannot become NOT_ASSIGNED");
+    }
     @TempDir Path temp;
     Path project=GenericMappingEngineTest.JCM;
     static final String TABLE="""

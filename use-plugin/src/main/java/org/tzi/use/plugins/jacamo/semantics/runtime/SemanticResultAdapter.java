@@ -49,6 +49,7 @@ public final class SemanticResultAdapter {
         if(!stack.add(id)||dependencies.getOrDefault(id,Set.of()).isEmpty())return "DERIVED_INPUT_UNAVAILABLE";
         var sources=dependencies.get(id).stream().map(child->derivedQuality(child,inputs,dependencies,new HashSet<>(stack))).toList();
         if(sources.stream().anyMatch("HISTORY_GAP"::equals))return "HISTORY_GAP";
+        if(sources.stream().allMatch("SOURCE_NOT_ASSIGNED"::equals))return "SOURCE_NOT_ASSIGNED";
         return sources.stream().allMatch(value->value.equals("KNOWN")||value.equals("KNOWN_DERIVED"))?"KNOWN_DERIVED":"DERIVED_INPUT_UNAVAILABLE";
     }
     /** Adds execution qualification without overwriting current observation quality.
@@ -120,6 +121,7 @@ public final class SemanticResultAdapter {
         if(qualities.containsKey(id))return qualities.get(id);
         if(!visited.add(id)||dependencies.getOrDefault(id,Set.of()).isEmpty())return "DERIVED_INPUT_UNAVAILABLE";
         var values=dependencies.get(id).stream().map(child->executionQuality(child,qualities,dependencies,new HashSet<>(visited))).toList();
+        if(values.stream().allMatch("SOURCE_NOT_ASSIGNED"::equals))return "SOURCE_NOT_ASSIGNED";
         if(!values.stream().allMatch(v->Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(v)))return "DERIVED_INPUT_UNAVAILABLE";
         return values.stream().anyMatch(v->v.endsWith("HISTORY"))?"KNOWN_DERIVED_HISTORY":"KNOWN_DERIVED";
     }

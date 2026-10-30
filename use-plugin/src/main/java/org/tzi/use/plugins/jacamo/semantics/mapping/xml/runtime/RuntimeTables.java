@@ -81,6 +81,10 @@ public final class RuntimeTables {
                         beforeProjection(projected,operation);path(operation.attr("path"),operation);
                         literal(operation.attr("equals"),operation.attr("type"),operation);
                     }
+                    case "testContains" -> {
+                        beforeProjection(projected,operation);path(operation.attr("path"),operation);path(operation.attr("valuePath"),operation);name(operation.attr("as"),operation);
+                        if(!Set.of("String","Boolean","Integer").contains(operation.attr("type"))||!aliases.add(operation.attr("as")))throw operation.location().error("TABLE_MEMBERSHIP_TYPE_OR_ALIAS");
+                    }
                     case "test" -> {
                         beforeProjection(projected,operation);path(operation.attr("path"),operation);name(operation.attr("as"),operation);bool(operation,"negate");literal(operation.attr("equals"),operation.attr("type"),operation);
                         if(!aliases.add(operation.attr("as")))throw operation.location().error("DUPLICATE_TABLE_ALIAS");
@@ -220,6 +224,11 @@ public final class RuntimeTables {
                             Object value=resolve(row.data(),op.attr("path"));Object expected=literal(op.attr("equals"),op.attr("type"),op);
                             if(!type(value,op.attr("type"))) { next.add(row.partial());diagnose(diagnostics,op,"WHERE_VALUE_UNAVAILABLE"); }
                             else if(equal(value,expected)!=op.name().equals("whereNot"))next.add(row);
+                        }
+                        case "testContains" -> {
+                            Object collection=resolve(row.data(),op.attr("path")),value=resolve(row.data(),op.attr("valuePath"));
+                            if(!(collection instanceof List<?> list)||!type(value,op.attr("type"))||list.stream().anyMatch(v->!type(v,op.attr("type")))){next.add(row.partial());diagnose(diagnostics,op,"MEMBERSHIP_VALUE_UNAVAILABLE");}
+                            else {bounded(list.size());for(Object ignored:list)budget.spend();next.add(row.data(withAlias(row.data(),op.attr("as"),list.stream().anyMatch(v->equal(v,value)),op)));}
                         }
                         case "test" -> {
                             Object value=resolve(row.data(),op.attr("path"));

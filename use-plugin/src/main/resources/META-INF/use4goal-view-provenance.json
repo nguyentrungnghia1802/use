@@ -158,7 +158,7 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarDiagram.java",
       "sourceSha256": "637b2f6e8595064253eaaee3acf7af087b2810382b96597edbd947898eb77198",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/istar/IStarDiagram.java",
-      "targetSha256": "3c1f6ee67d1338acb11861b15d700f09fe5b3c4466dbdad11f5f7e33f09a35d3",
+      "targetSha256": "6c0a9bb78685a501cb776c1a6f0fad8773afc28035bff8d3c4208964ebdc3ef6",
       "patches": [
         "PACKAGE_RELOCATION",
         "INITIAL_LAYOUT_CANVAS_SIZE"
@@ -168,18 +168,20 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarDiagramEdge.java",
       "sourceSha256": "b751422adba307ad9f2cb117a1e9d257d2ff8711db0eac656628477f93fb33ae",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/istar/IStarDiagramEdge.java",
-      "targetSha256": "b4f22e39368074a1dd6126f85907608ff73756fb1cd2582dcda86adc1f80ef64",
+      "targetSha256": "b74785445de36dd4eab8748e58c40203f7fe48bd110f2e93471d693955f1c5b7",
       "patches": [
-        "PACKAGE_RELOCATION"
+        "PACKAGE_RELOCATION",
+        "ACTOR_ASSOCIATION_HEADER_ROUTES"
       ]
     },
     {
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarDiagramNode.java",
       "sourceSha256": "d8eafe3b069463ec4e6647e064dbfcf1eb35870b7818ce7a698a7b2628f3398f",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/istar/IStarDiagramNode.java",
-      "targetSha256": "1266f9b24358b1badc8e139a5fc4783ea3488cee3a9d95cdbcd65227034d6fe8",
+      "targetSha256": "c76b65b68771319b2f42305d1170ea675fb35fdb7ccc45ef39b98083b4f40319",
       "patches": [
-        "PACKAGE_RELOCATION"
+        "PACKAGE_RELOCATION",
+        "EXACT_ACTOR_HEADER_ATTACHMENT"
       ]
     },
     {
@@ -204,9 +206,10 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarEdgeKind.java",
       "sourceSha256": "aa8027bab98904736a0398753f903fdccb0f7613e7a578fc6e2bca8113bb1f64",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/istar/IStarEdgeKind.java",
-      "targetSha256": "e52386dea96a66e177cd0d18189b8c851d4bedf5efc1b769a9e1dfe4137460a2",
+      "targetSha256": "fdd48a5d8ed64e23e5c73838c6dbedc26e131b303f2a131d06d7a5b0c3755737",
       "patches": [
-        "PACKAGE_RELOCATION"
+        "PACKAGE_RELOCATION",
+        "DECLARED_ACTOR_ASSOCIATIONS"
       ]
     },
     {
@@ -222,10 +225,11 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarLayoutBuilder.java",
       "sourceSha256": "384ac25df1df6c291f8fbf7a2979a41241bd25d8cb3b38d685909434efab913f",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/istar/IStarLayoutBuilder.java",
-      "targetSha256": "60ef1e5408e433e70dc34c474b6c5de0d980dc1b1b1a452b90fab17a6c2dab49",
+      "targetSha256": "319fd4d9f1cc8857f210dacd40c86547795df97b04a255eb26c5c3f6737470e2",
       "patches": [
         "PACKAGE_RELOCATION",
-        "ACTOR_CIRCLE_LABEL_HEADROOM"
+        "ACTOR_CIRCLE_LABEL_HEADROOM",
+        "DECLARED_ACTOR_ASSOCIATIONS"
       ]
     },
     {
