@@ -1289,6 +1289,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         }catch(InterruptedException interrupted){Thread.currentThread().interrupt();throw new IllegalStateException("CANONICAL_INGRESS_INTERRUPTED",interrupted);}
         catch(java.util.concurrent.ExecutionException|java.util.concurrent.TimeoutException failure){throw new IllegalStateException("CANONICAL_INGRESS_UNAVAILABLE",failure);}
     }
+    @Override public Map<String,Object> ingressProgress(){var client=bridgeClient;return client==null?Map.of():client.ingressProgress();}
 
     private Path runtimeRoot() {
         String configured = System.getProperty("use.jacamo.runtime.root", "").trim();

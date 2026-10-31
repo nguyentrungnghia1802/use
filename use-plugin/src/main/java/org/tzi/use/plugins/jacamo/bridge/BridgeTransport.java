@@ -14,6 +14,9 @@ public interface BridgeTransport extends AutoCloseable {
         return subscribe(resumeToken, receiver);
     }
     void acknowledge(String resumeToken);
+    default java.util.Map<String,Object> ingressProgress(){return java.util.Map.of();}
+    default void pauseDelivery(){}
+    default void resumeDelivery(){}
     interface Subscription extends AutoCloseable { @Override void close(); }
     @Override void close();
 }

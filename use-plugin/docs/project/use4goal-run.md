@@ -1,5 +1,29 @@
 # Chạy CSL/iStar gốc trên USE 7.5
 
+Runtime reception uses append-only disk spools for source callbacks, outbound
+replay and incoming TCP frames. The socket reader persists each complete frame
+before the ordered mapping worker can consume it. Slow verification therefore
+creates a visible backlog rather than a bounded subscriber-queue overflow. ACK
+still follows normal validated processing; outbound frames remain retained for
+the life of the producer. Resume tokens keep their original source semantics.
+
+`Events saved / processed / waiting` counts transport frames, not business
+milestones or a proof of complete source coverage. A separate state/evaluation
+indicator reports native verification progress. The results window opens when
+Start is requested; history is published in batches of at most 64 journal records
+per background refresh, with all audit records retained. The refresh timer is
+200 ms, not a guaranteed rendering or verification deadline.
+
+Spools live under `jacamo.bridge.spool.root` (default: the OS temporary directory),
+in `jacamo-bridge-spool`. Each frame has a length and SHA-256 checksum and is forced
+to disk before publication. Incoming snapshot envelopes are retained alongside
+the spool. `.cursor` records consumption progress. Closing does not delete pending
+frames; automatic recovery into a newly imported session is not enabled. Keep the
+run's spool files for investigation/recovery. Disk exhaustion, corruption or write
+failure is an explicit coverage error. The existing verification journal quota
+still applies independently. Native MSystem mutation remains on the sole Swing
+writer, so expensive individual mutations can still delay painting.
+
 Thực hiện trong repository **use**; `use4Goal` và `jacamo` chỉ là nguồn tham
 chiếu. Runtime JaCaMo chạy JVM riêng, Bridge TCP authenticated. Engine CSL/iStar
 nằm trong plugin USE, dùng native USE 7.5 OCL và cùng một Session/MSystem.

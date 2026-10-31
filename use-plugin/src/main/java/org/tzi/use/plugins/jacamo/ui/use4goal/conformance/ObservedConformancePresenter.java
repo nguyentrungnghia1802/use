@@ -16,11 +16,13 @@ public final class ObservedConformancePresenter {
     // The existing hash-checked disk journal remains the history authority.
     private final LinkedHashMap<String,RuntimeVerificationResult> persistedResults=new LinkedHashMap<>();
     private final Map<RuntimeVerificationResult,String> hashes=new IdentityHashMap<>();
-    private record Rendered(RuntimeVerificationResult result,boolean image,String category,Cut cut,Map<String,String> certifications,String priorCertificates) { }
+    private record Rendered(RuntimeVerificationResult result,boolean image,String category,Cut cut,Map<String,String> certifications,String priorCertificates,String nextCertificates) { }
     private final Map<String,Rendered> rendered=new HashMap<>();
     private final Map<String,String> persistedStateCommands=new HashMap<>();
     private String historyOwner="";
     private long nextOrdinal, lastVersion;
+    private volatile boolean historyPending;
+    public boolean historyPending(){return historyPending;}
     public ObservedConformancePresenter(JaCaMoFacade facade) { this.facade = Objects.requireNonNull(facade); }
 
     private String liveOwner="";
@@ -42,20 +44,24 @@ public final class ObservedConformancePresenter {
     }
 
     public synchronized List<Cut> capture() {
+        return capture(Integer.MAX_VALUE);
+    }
+    public synchronized List<Cut> captureIncremental(){return capture(64);}
+    private List<Cut> capture(int budget) {
         // This immutable snapshot is the ownership anchor. History may advance
         // concurrently, so do not join evidence from a different epoch/revision.
         var snapshot = facade.verificationSnapshot();
         var latest = snapshot.result();
         var results = new LinkedHashMap<String, RuntimeVerificationResult>();
         if(latest!=null) {
-            loadPersistedHistory(latest);
+            loadPersistedHistory(latest,budget);
             for(var result:persistedResults.values())if(result.stateVersion()<=latest.stateVersion())results.put(boundaryKey(result),result);
         }
-        for (var result : facade.runtimeVerificationHistory()) {
+        for (var result : historyPending?List.<RuntimeVerificationResult>of():facade.runtimeVerificationHistory()) {
             if (latest == null || sameOwner(latest, result) && result.stateVersion() <= latest.stateVersion())
                 results.put(boundaryKey(result), result);
         }
-        if (latest != null) {
+        if (latest != null && !historyPending) {
             var completed=results.get(boundaryKey(latest));
             // An immutable pending anchor may lag the checked journal completion
             // for this SAME cut. This never certifies a different/newer cut.
@@ -80,10 +86,12 @@ public final class ObservedConformancePresenter {
             String priorCertificates=certificatePrefix;
             if(cached==null||cached.result()!=result||cached.image()!=(image!=null)||!cached.category().equals(description)||!cached.priorCertificates().equals(priorCertificates)) {
                 var updates=new HashMap<String,String>();
-                cached=new Rendered(result,image!=null,description,cut(result,image,description,hash,certificates,updates),Map.copyOf(updates),priorCertificates);rendered.put(key,cached);
+                var renderedCut=cut(result,image,description,hash,certificates,updates);
+                String next=updates.isEmpty()?certificatePrefix:org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(List.of(certificatePrefix,updates));
+                cached=new Rendered(result,image!=null,description,renderedCut,Map.copyOf(updates),priorCertificates,next);rendered.put(key,cached);
             }
             certificates.putAll(cached.certifications());
-            if(!cached.certifications().isEmpty())certificatePrefix=org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(List.of(certificatePrefix,cached.certifications()));
+            certificatePrefix=cached.nextCertificates();
             cuts.add(cached.cut());previousHash=result.stateHash();
         }
         rendered.keySet().retainAll(results.keySet());
@@ -101,7 +109,7 @@ public final class ObservedConformancePresenter {
                 &&"CURRENT_OBSERVED".equals(completed.freshness())&&completed.semantic().observation().get("originalEngine") instanceof Map<?,?> core&&"PINNED_NATIVE_CUT".equals(core.get("evaluated"));
     }
     private String hash(RuntimeVerificationResult result){return hashes.computeIfAbsent(result,RuntimeVerificationResult::resultHash);}
-    private void loadPersistedHistory(RuntimeVerificationResult latest) {
+    private void loadPersistedHistory(RuntimeVerificationResult latest,int budget) {
         String owner=latest.sessionId()+":"+latest.generation()+":"+latest.modelRevision();
         var tail=facade.runtimeHistoryTail();
         // A stopped monitor exposes its frozen snapshot and RAM tail, with no live
@@ -110,7 +118,7 @@ public final class ObservedConformancePresenter {
             persistedResults.clear();persistedStateCommands.clear();hashes.clear();rendered.clear();nextOrdinal=0;historyOwner=owner;
         }
         // Capture a finite prefix so an active producer cannot keep this worker busy forever.
-        long end=tail.persistedEntries(), offset=nextOrdinal;
+        long end=Math.min(tail.persistedEntries(),nextOrdinal+(long)budget), offset=nextOrdinal;
         var additions=new LinkedHashMap<String,RuntimeVerificationResult>();
         while(offset<end) {
             // Normal refreshes can advance from the successfully persisted writer
@@ -135,6 +143,7 @@ public final class ObservedConformancePresenter {
         }
         // Publish the cache/cursor only after all pages passed the existing integrity checks.
         persistedResults.putAll(additions);nextOrdinal=offset;lastVersion=latest.stateVersion();
+        historyPending=nextOrdinal<tail.persistedEntries();
     }
     private void rememberCommands(org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeHistoryPage.Entry entry){
         if(!entry.stateCommands().isBlank())persistedStateCommands.putIfAbsent(entry.result().stateHash(),entry.stateCommands());

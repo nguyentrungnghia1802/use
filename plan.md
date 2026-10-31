@@ -1,9 +1,34 @@
 # Hello World và House Building — authored case studies
 
+## Durable ingress and progressive results (2026-10-30)
+- [x] DQ01 — Persist source events, outbound replay and incoming frames before consumption; retain queued records on shutdown and fail visibly on persistence loss.
+- [x] DQ02 — Consume saved frames in order independently of socket reception; publish backlog counters and bounded history batches without skipping audit cuts.
+- [x] DQ03 — Exercise slow consumer/resume/integrity/cleanup, actual external Auction and final package; record GUI responsiveness limits honestly.
+
+The authoritative native MSystem remains on its existing Swing writer. Raw disk
+spools isolate reception from that writer; this does not promise equal execution
+speed or an unlimited disk budget. Journal quota and native evidence gates remain
+active. Spools retain unprocessed frames after close; cross-process automatic
+recovery is not advertised. No semantic success or missing evidence is inferred
+from transport completion.
+
+Evidence: `use-plugin/verification/durable-ingress/receipt.json`. Slow-consumer
+test saves all 299 delayed/resumed frames despite a transport RAM budget of two;
+bootstrap reception stays on disk until snapshot handoff completes. Integrity,
+ACK, idle/disconnect, progressive history and retiring-worker guards pass.
+External Auction PASS with independent roots, exact witnessed casts and all native
+requirements unchanged; source replay PASS 1728 records. Final installed offscreen
+Swing probe publishes milestones progressively (0 to 5 in the selected execution),
+saves/processes 1064 frames and drains pending to zero. A 100 ms heartbeat measured
+p95 157 ms, maximum 256 ms in this run; this is not a manual desktop or universal
+latency guarantee. Final source/class/archive parity and source freeze are linked
+by the receipt. The last transport guard after that GUI probe is independently
+tested; no new verification or UI semantics were introduced by that guard.
+
 ## Responsive runtime results
 - [x] RL01 — Prepare scoped timeline/failure data on background worker with immutable projection cache; keep navigation/evidence semantics.
 - [x] RL02 — Coalesce UI publication, defer hidden graphs/diagnostics, expose received/verified state progress.
-- [ ] RL03 — Reduce repeated certificate/hash work; focused tests, Auction regression and new package only.
+- [x] RL03 — Reduce repeated certificate/hash work; focused tests, Auction regression and new package only.
 
 RL evidence: use-plugin/verification/responsive-results. Immutable presentation
 preparation is off EDT; exact-cut projection reuse, selected-scope/import guards,
@@ -12,12 +37,12 @@ Journal single serialization retains canonical bytes and hash-chain validation.
 Repeated same-record UI application benchmark: 83.3 ms before, 0.2 ms after;
 linked application with hidden graphs: 311.7 ms before, 6.6 ms after. Cold load
 still has setup cost; these isolated figures are not an end-to-end latency claim.
-Full Auction gate remains unchecked: two source runs reach two qualified fulfilled
-roots with no journal gap, but AuthoredAuctionResultsIT asserts five capability
-players per execution while the captured admitted scope contains fewer. Original
-assertion and both failing attempts retained; no case-wide PASS claimed or semantic
-assertion weakened. Focused verification and final package receipts are recorded
-separately from that unresolved case acceptance assumption.
+The historical fixed-five assertion and its two failed attempts remain recorded
+in responsive-results. The current Auction regression instead compares exact
+player sets and assigned/unassigned statuses against each execution's witnessed
+participation, preserving root and native OCL assertions. Actual external Auction
+and source replay now PASS (1728 records): live-results-ui/auction-14420620117277149684.
+Final delivery checks and runtime UI measurements are recorded in durable-ingress.
 
 Build/run convention (2026-10-30): keep one runnable installation at
 use-assembly/target/new/bin/start_use.bat. Maven package replaces that directory

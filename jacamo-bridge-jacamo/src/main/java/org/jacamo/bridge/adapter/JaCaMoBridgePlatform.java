@@ -51,7 +51,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
     private static final String BRIDGE_ARCH = BridgeAgArch.class.getName();
 
     private final AdapterReadinessRegistry readiness = new AdapterReadinessRegistry();
-    private final ArrayBlockingQueue<RuntimeEvent> events = new ArrayBlockingQueue<>(EVENT_CAPACITY);
+    private final DurableRuntimeEventQueue events = new DurableRuntimeEventQueue();
     private final java.util.concurrent.atomic.AtomicBoolean publicationGap = new java.util.concurrent.atomic.AtomicBoolean();
     private volatile String publicationFailure="TRANSPORT_SUBSCRIBER_OVERFLOW_OR_UNKNOWN_RESUME_TOKEN";
     private final AtomicLong generations = new AtomicLong();
@@ -96,6 +96,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
     }
 
     @Override public synchronized void init(String[] args) {
+        events.reopen();
         if (project == null) throw new IllegalStateException("BRIDGE_PROJECT_NOT_SET");
         for (String arg : args == null ? new String[0] : args) {
             if (arg.startsWith("eventCapacity="))
@@ -300,10 +301,11 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
     }
 
     private void enqueueEvent(RuntimeEvent event) {
-        if (!events.offer(event)) {
-            publicationFailure="PLATFORM_EVENT_QUEUE_OVERFLOW";publicationGap.set(true);
+        try { events.offer(event); } catch(RuntimeException failure) {
+            publicationFailure="PLATFORM_EVENT_PERSIST_FAILED:"+failure.getMessage();publicationGap.set(true);
+            var transport=server;if(transport!=null)transport.persistenceLost();
             readiness.update("events", AdapterReadiness.FAILED,
-                    "bounded event queue overflow; resync required");
+                    publicationFailure);
         }
     }
 

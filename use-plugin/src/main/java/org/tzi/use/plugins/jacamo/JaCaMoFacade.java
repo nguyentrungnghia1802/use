@@ -79,6 +79,7 @@ public interface JaCaMoFacade {
     default void stopMonitorSession() { throw new UnsupportedOperationException("MONITOR_NOT_CONFIGURED"); }
     default void restartMonitorSession() { throw new UnsupportedOperationException("MONITOR_NOT_CONFIGURED"); }
     default RuntimeStatus runtimeStatus() { return RuntimeStatus.offline(); }
+    default Map<String,Object> ingressProgress(){return Map.of();}
     default org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult runtimeVerificationResult() { return null; }
     default org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot verificationSnapshot() {
         return new org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot(0, runtimeVerificationResult(), null);

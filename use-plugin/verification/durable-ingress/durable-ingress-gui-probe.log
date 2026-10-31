@@ -1,0 +1,39 @@
+UI=milestones=0 progress=Events saved: 472 � processed: 238 � waiting: 234 � USE state: 74 � latest verified state: 74 � no state-version backlog � journal: 330
+elapsed=5s EDT_tickMaxMs=153 ticks=46 status=LIVE ingress={processed=239, spool=C:\WINDOWS\TEMP\jacamo-bridge-spool\consumer-8356672642347169862.frames, saved=477, failure=, pending=238}
+UI=milestones=0 progress=Events saved: 874 � processed: 495 � waiting: 379 � USE state: 170 � latest verified state: 170 � no state-version backlog � journal: 688
+elapsed=10s EDT_tickMaxMs=153 ticks=93 status=LIVE ingress={processed=497, spool=C:\WINDOWS\TEMP\jacamo-bridge-spool\consumer-8356672642347169862.frames, saved=874, failure=, pending=377}
+UI=milestones=0 progress=Events saved: 1048 � processed: 587 � waiting: 461
+elapsed=15s EDT_tickMaxMs=162 ticks=138 status=LIVE ingress={processed=588, spool=C:\WINDOWS\TEMP\jacamo-bridge-spool\consumer-8356672642347169862.frames, saved=1048, failure=, pending=460}
+UI=milestones=1 progress=Events saved: 1064 � processed: 640 � waiting: 424 � USE state: 272 � latest verified state: 272 � no state-version backlog � journal: 935
+elapsed=20s EDT_tickMaxMs=178 ticks=184 status=LIVE ingress={processed=642, spool=C:\WINDOWS\TEMP\jacamo-bridge-spool\consumer-8356672642347169862.frames, saved=1064, failure=, pending=422}
+UI=milestones=2 progress=Events saved: 1064 � processed: 687 � waiting: 377
+elapsed=25s EDT_tickMaxMs=195 ticks=230 status=LIVE ingress={processed=691, spool=C:\WINDOWS\TEMP\jacamo-bridge-spool\consumer-8356672642347169862.frames, saved=1064, failure=, pending=373}
+UI=milestones=2 progress=Events saved: 1064 � processed: 753 � waiting: 311
+elapsed=30s EDT_tickMaxMs=195 ticks=276 status=LIVE ingress={processed=753, spool=C:\WINDOWS\TEMP\jacamo-bridge-spool\consumer-8356672642347169862.frames, saved=1064, failure=, pending=311}
+UI=milestones=2 progress=Events saved: 1064 � processed: 795 � waiting: 269
+elapsed=35s EDT_tickMaxMs=256 ticks=319 status=LIVE ingress={processed=797, spool=C:\WINDOWS\TEMP\jacamo-bridge-spool\consumer-8356672642347169862.frames, saved=1064, failure=, pending=267}
+UI=milestones=3 progress=Events saved: 1064 � processed: 843 � waiting: 221
+elapsed=40s EDT_tickMaxMs=256 ticks=363 status=LIVE ingress={processed=844, spool=C:\WINDOWS\TEMP\jacamo-bridge-spool\consumer-8356672642347169862.frames, saved=1064, failure=, pending=220}
+UI=milestones=4 progress=Events saved: 1064 � processed: 898 � waiting: 166 � USE state: 475 � latest verified state: 474 � processing / awaiting evidence � journal: 1395
+elapsed=45s EDT_tickMaxMs=256 ticks=409 status=LIVE ingress={processed=898, spool=C:\WINDOWS\TEMP\jacamo-bridge-spool\consumer-8356672642347169862.frames, saved=1064, failure=, pending=166}
+UI=milestones=4 progress=Events saved: 1064 � processed: 945 � waiting: 119 � USE state: 513 � latest verified state: 513 � no state-version backlog � journal: 1481
+elapsed=50s EDT_tickMaxMs=256 ticks=454 status=LIVE ingress={processed=946, spool=C:\WINDOWS\TEMP\jacamo-bridge-spool\consumer-8356672642347169862.frames, saved=1064, failure=, pending=118}
+UI=milestones=4 progress=Events saved: 1064 � processed: 993 � waiting: 71
+elapsed=55s EDT_tickMaxMs=256 ticks=499 status=LIVE ingress={processed=994, spool=C:\WINDOWS\TEMP\jacamo-bridge-spool\consumer-8356672642347169862.frames, saved=1064, failure=, pending=70}
+UI=milestones=4 progress=Events saved: 1064 � processed: 1040 � waiting: 24
+elapsed=60s EDT_tickMaxMs=256 ticks=544 status=LIVE ingress={processed=1042, spool=C:\WINDOWS\TEMP\jacamo-bridge-spool\consumer-8356672642347169862.frames, saved=1064, failure=, pending=22}
+UI=milestones=5 progress=Events saved: 1064 � processed: 1064 � waiting: 0
+elapsed=65s EDT_tickMaxMs=256 ticks=590 status=LIVE ingress={processed=1064, spool=C:\WINDOWS\TEMP\jacamo-bridge-spool\consumer-8356672642347169862.frames, saved=1064, failure=, pending=0}
+UI=milestones=5 progress=Events saved: 1064 � processed: 1064 � waiting: 0
+elapsed=70s EDT_tickMaxMs=256 ticks=636 status=LIVE ingress={processed=1064, spool=C:\WINDOWS\TEMP\jacamo-bridge-spool\consumer-8356672642347169862.frames, saved=1064, failure=, pending=0}
+UI=milestones=5 progress=Events saved: 1064 � processed: 1064 � waiting: 0
+elapsed=75s EDT_tickMaxMs=256 ticks=682 status=LIVE ingress={processed=1064, spool=C:\WINDOWS\TEMP\jacamo-bridge-spool\consumer-8356672642347169862.frames, saved=1064, failure=, pending=0}
+UI=milestones=5 progress=Events saved: 1064 � processed: 1064 � waiting: 0
+elapsed=80s EDT_tickMaxMs=256 ticks=728 status=LIVE ingress={processed=1064, spool=C:\WINDOWS\TEMP\jacamo-bridge-spool\consumer-8356672642347169862.frames, saved=1064, failure=, pending=0}
+UI=milestones=5 progress=Events saved: 1064 � processed: 1064 � waiting: 0
+elapsed=85s EDT_tickMaxMs=256 ticks=773 status=LIVE ingress={processed=1064, spool=C:\WINDOWS\TEMP\jacamo-bridge-spool\consumer-8356672642347169862.frames, saved=1064, failure=, pending=0}
+UI=milestones=5 progress=Events saved: 1064 � processed: 1064 � waiting: 0
+elapsed=90s EDT_tickMaxMs=256 ticks=819 status=LIVE ingress={processed=1064, spool=C:\WINDOWS\TEMP\jacamo-bridge-spool\consumer-8356672642347169862.frames, saved=1064, failure=, pending=0}
+HEARTBEAT p95Ms=157 maxMs=256
+METRICS={control={percentileScope=EXACT_NEAREST_RANK_RECENT_1024_SAMPLES_PER_METRIC, timings={}, elapsedNanos=91822899600, scope=Observed verifier/control wall-time cost, not an uninstrumented JaCaMo slowdown comparison}, verification={statistics={percentileScope=EXACT_NEAREST_RANK_RECENT_1024_SAMPLES_PER_METRIC, timings={USE_EXPORT={totalNanos=166714300, samples=1067, meanNanos=156245, maxNanos=6389600, p99Nanos=451300, lastNanos=93300, p95Nanos=287700, p50Nanos=120200, recentSamples=1024}, USE_MUTATION={totalNanos=25550757200, samples=1065, meanNanos=23991321, maxNanos=140254100, p99Nanos=101469400, lastNanos=66155800, p95Nanos=82151400, p50Nanos=1399600, recentSamples=1024}, WRITER_WAIT={totalNanos=31897652600, samples=2917, meanNanos=10935088, maxNanos=160499000, p99Nanos=99248500, lastNanos=27500, p95Nanos=61194900, p50Nanos=1182500, recentSamples=1024}}, elapsedNanos=92162159100, scope=Observed verifier/control wall-time cost, not an uninstrumented JaCaMo slowdown comparison}, snapshotsByCheckpoint={AFTER_MUTATION=447, SNAPSHOT=3, OPERATION_POST=12, OPERATION_PRE=12, STREAM_BOUNDARY=95, TASK_POST=24, TASK_PRE=24}, verificationCount=617, retainedSerializedBytes=5952403, tailSnapshots=8, lastSnapshotSerializedBytes=672817, writerHighWatermark=2}}
+RESULT=CURRENT_OBSERVED 

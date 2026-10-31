@@ -62,6 +62,16 @@ class ObservedTimelineHistoryTest {
         java.nio.file.Files.writeString(source.journal.path(),"corrupted\n");
         assertThrows(RuntimeException.class,()->new ObservedConformancePresenter(source).capture());
     }
+    @Test void incrementalPublicationShowsEveryPrefixAndEventuallyTheExactFullHistory() {
+        var source=new Source(new RuntimeEventJournal(directory,128,8*1024*1024));
+        for(int i=1;i<=200;i++)source.append("run",i,false);
+        var presenter=new ObservedConformancePresenter(source);
+        var first=presenter.captureIncremental();assertEquals(64,first.size());assertTrue(presenter.historyPending());
+        assertTrue(first.getLast().id().contains(":event-64:"),"Live tail cannot skip ahead of the published prefix");
+        assertEquals(128,presenter.captureIncremental().size());assertEquals(192,presenter.captureIncremental().size());
+        var finalCuts=presenter.captureIncremental();assertEquals(200,finalCuts.size());assertFalse(presenter.historyPending());
+        assertEquals(new ObservedConformancePresenter(source).capture(),finalCuts);
+    }
 
     @Test void normalRefreshConsumesThePersistedWriterTailWithoutRepeatedDiskPrefixScans() {
         var source=new Source(new RuntimeEventJournal(directory,512,8*1024*1024));

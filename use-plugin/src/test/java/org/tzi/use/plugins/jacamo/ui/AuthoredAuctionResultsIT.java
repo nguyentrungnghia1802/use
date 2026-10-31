@@ -108,11 +108,15 @@ class AuthoredAuctionResultsIT {
      assertTrue(boundEntities.add(entities.keySet().iterator().next()),"Separate schemes cannot borrow the same Entity binding");
      var scoped=ExecutionScopeViews.project(pinned,choice.getKey());
      var startSkills=scoped.evaluations().stream().filter(r->r.kind().equals("GOAL_TASK")&&r.element().equals("A_start_t1")).toList();
-     assertEquals(5,startSkills.size());
-     assertEquals(4,startSkills.stream().filter(r->r.status().equals("NOT_ASSIGNED")&&r.quality().equals("SOURCE_NOT_ASSIGNED")).count(),"Complete source commitment evidence excludes participants from the start task");
+     var cast=participation.stream().map(CanonicalJson::object).collect(java.util.stream.Collectors.toMap(p->p.get("player").toString(),p->p.get("actor").toString(),(a,b)->{assertEquals(a,b);return a;}));
+     assertEquals(cast.keySet(),startSkills.stream().map(r->org.jacamo.bridge.contract.BridgeEntityId.parse(r.player()).localId()).collect(java.util.stream.Collectors.toSet()),"Capability occurrences must match this execution's witnessed cast, not a fixed global count");
+     assertEquals(cast.values().stream().filter("Participant"::equals).count(),startSkills.stream().filter(r->r.status().equals("NOT_ASSIGNED")&&r.quality().equals("SOURCE_NOT_ASSIGNED")).count(),"Only witnessed participants are unassigned to start");
+     for(var skill:startSkills)assertEquals(cast.get(org.jacamo.bridge.contract.BridgeEntityId.parse(skill.player()).localId()).equals("Auctioneer")?"FULFILLED":"NOT_ASSIGNED",skill.status());
      assertEquals(1,startSkills.stream().filter(r->r.status().equals("FULFILLED")).count());
      var bidSkills=scoped.evaluations().stream().filter(r->r.kind().equals("GOAL_TASK")&&r.element().equals("P_bid_t1")).toList();
+     assertEquals(cast.keySet(),bidSkills.stream().map(r->org.jacamo.bridge.contract.BridgeEntityId.parse(r.player()).localId()).collect(java.util.stream.Collectors.toSet()));
      assertEquals(1,bidSkills.stream().filter(r->r.status().equals("NOT_ASSIGNED")).count(),"Auctioneer has no bid assignment");
+     for(var skill:bidSkills)assertEquals(cast.get(org.jacamo.bridge.contract.BridgeEntityId.parse(skill.player()).localId()).equals("Auctioneer")?"NOT_ASSIGNED":"FULFILLED",skill.status());
      Files.write(evidence.resolve("applicability-"+scopedReceipts.size()+".json"),CanonicalJson.encode(Map.of("start",startSkills.stream().map(Object::toString).toList(),"bid",bidSkills.stream().map(Object::toString).toList())));
      var scopedRoots=scoped.evaluations().stream().filter(r->r.kind().equals("GOAL_TASK")&&r.element().equals("O_root")).toList();
      assertEquals(1,scopedRoots.size());assertEquals(choice.getKey(),scopedRoots.getFirst().context());

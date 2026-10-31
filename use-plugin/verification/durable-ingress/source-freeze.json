@@ -1,0 +1,21 @@
+{
+  "jacamo-bridge-contract/src/main/java/org/jacamo/bridge/contract/DurableFrameLog.java": "b6c6dc63d31a5333eb77e5e494baf2e5ee40038da089f121225e523a9e46f78d",
+  "jacamo-bridge-contract/src/test/java/org/jacamo/bridge/contract/DurableFrameLogTest.java": "85f650b4fa5976296d0906f1bce5a295a8e9e73544f240b40f417b3c1ee573c5",
+  "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/DurableRuntimeEventQueue.java": "d0793bd4197614b9832a04365674376264493a6f67938fbeedb1a75c5141cd70",
+  "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/bridge/DurableIngressTest.java": "722f5ead72ef2bfa1bd76a7ef0a95c421bd71ad3d32ffa1df4c8fa8a847c5ab2",
+  "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/JaCaMoBridgePlatform.java": "2ee1e6934d397a3c950e893d1318d9dde6dbdf86b60082b552ba65ddf17eb691",
+  "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/LocalTcpBridgeServer.java": "807f2aeec30031d9816ef76656ba3aab8bc4d8f0283be9a11264e1c6cfb66130",
+  "plan.md": "543a748d12c9532466f734f5777b3d4cddea90a3b6b9bd69d3a822f3ae65b91b",
+  "use-plugin/docs/project/use4goal-run.md": "68a0b7705ed8b5ee79e0996b2b8ae5aa4d8583d813650bf2986b3f7153378fbe",
+  "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java": "67cf59df805c1104a5522037f141f586627323ee53ca41e6ed194b616f6b1c3d",
+  "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/JaCaMoFacade.java": "8466c96007e8da91d379e6b6a73ae4381567cd159f3be2c553d124ff26131e10",
+  "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/bridge/BridgeClient.java": "12de0d2df1f9a4a37d9897c5734175df5546515b0b493b9e26175656e87a5492",
+  "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/bridge/BridgeTransport.java": "4edae296aff51dc2086d2f7efbeed5470d2aacf3288e0289b890e30c4cd79290",
+  "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/bridge/LocalTcpBridgeTransport.java": "56236f41d7c070660fd3f75b6c25993e6e44e4e44eef11c62f6d2796902198d8",
+  "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel.java": "3172f113a336fefcd60a328bcaebd02f3b5a6470f4ca126a471a108e2e9d3e61",
+  "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel.java": "9c174656291578a059335372e4d63605359a27b806af4606b77a1936af37f631",
+  "use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePresenter.java": "e0414bacd36f8a07c6cbce845fce2b511fce6d754787bf76eced82bc50a2430f",
+  "use-plugin/src/main/resources/META-INF/use4goal-workflow-provenance.json": "b3d35f12ab4d76d1b38a82cdbeb4dcb6b6df8570d32cb25ec9a0df7f5497cf2a",
+  "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/AuthoredAuctionResultsIT.java": "41137a4c267972ae3cbfcc04bf1bed4330e8afe76c60532b7b16b2a7d54d2ddb",
+  "use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/ObservedTimelineHistoryTest.java": "4deb67b6462a61e71438cd38468e2b980a0ba173703e5db5b5903b3b8de38551"
+}

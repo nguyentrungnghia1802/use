@@ -1,0 +1,52 @@
+{
+  "status": "PASS_WITH_NATIVE_WRITER_LATENCY_LIMIT",
+  "liveEvidence": "use-plugin\\verification\\live-results-ui\\auction-14420620117277149684",
+  "sourceReplayEntries": 1728,
+  "finalBackendMatchesSourceReplay": true,
+  "testedClassParity": {
+    "use-plugin": 817,
+    "jacamo-bridge-contract": 124,
+    "jacamo-bridge-jacamo": 117
+  },
+  "archiveSha256": "b3f4fadefff637537d569cbd627fb6abe55bd887d0d0a20d4d306689c3e5a4a8",
+  "sourceFreezeSha256": "542052e7980ec41ef349bb3219a062567f9db6ce26c7560b412f655545358027",
+  "heartbeatMs": {
+    "timer": 100,
+    "p95": 157,
+    "max": 256
+  },
+  "milestoneSamples": [
+    0,
+    0,
+    0,
+    1,
+    2,
+    2,
+    2,
+    3,
+    4,
+    4,
+    4,
+    4,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5
+  ],
+  "finalPendingFrames": 0,
+  "manualDesktopGui": false,
+  "otherLiveCases": false,
+  "nativeWriterRemainsOnEdt": true,
+  "automaticCrossSessionRecovery": false,
+  "launcher": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bin\\start_use.bat",
+  "closedSpoolIntegrity": {
+    "path": "C:\\WINDOWS\\TEMP\\jacamo-bridge-spool\\consumer-8356672642347169862.frames",
+    "frames": 1064,
+    "allHashesValid": true,
+    "consumptionCursorMatches": true
+  },
+  "guiProbePluginSha256": "bae8b4ada642452583d9ebaa498aac9d1a59bb2eccb13c445311d2a21a726d29",
+  "afterGuiProbe": "Only additional transport lifecycle guard: reject a second subscription while the previous delivery worker retires. Covered by final DurableIngressTest; UI and native verification unchanged."
+}

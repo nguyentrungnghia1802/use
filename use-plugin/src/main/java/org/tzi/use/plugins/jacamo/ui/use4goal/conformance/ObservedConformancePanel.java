@@ -184,10 +184,9 @@ public final class ObservedConformancePanel extends JPanel {
         int target = cuts.size() - 1;
         updatingStateComboInternal = true;
         try {
-            stateSelectorCombo.removeAllItems();
+            stateSelectorCombo.setModel(new DefaultComboBoxModel<>(cuts.stream().map(Cut::id).toArray(String[]::new)));
             for (int i = 0; i < cuts.size(); i++) {
                 Cut cut = cuts.get(i);
-                stateSelectorCombo.addItem(cut.id());
                 if (!follow && cut.id().equals(selected)) target = i;
                 if (currentFailureCheckpoint < 0 && cut.failed()) currentFailureCheckpoint = i;
             }

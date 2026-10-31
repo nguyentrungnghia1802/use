@@ -81,6 +81,7 @@ public final class BridgeClient implements AutoCloseable {
         admitModel.accept(model);
         synchronized(buffered){
             buffered.clear(); asynchronousFailure=null; bootstrapping=true;
+            transport.pauseDelivery();
             subscription=transport.subscribe("",this::acceptSubscriptionEvent,this::acceptSubscriptionFailure);
         }
         beforeSnapshot.run();
@@ -92,6 +93,7 @@ public final class BridgeClient implements AutoCloseable {
             while(!buffered.isEmpty())applyBufferedEvent(buffered.removeFirst(),runtime);
             bootstrapping=false;
         }
+        transport.resumeDelivery();
         var versions=new java.util.TreeMap<String,String>(handshake.distribution().components());
         versions.put("jacamo",handshake.distribution().jacamoVersion()); versions.put("contract",handshake.schemaVersion());
         return new Accepted(model,runtime,handshake.distribution().distributionDigest(),handshake.projectKey(),
@@ -142,6 +144,7 @@ public final class BridgeClient implements AutoCloseable {
         transport.acknowledge(event.sourceId()+":"+event.sourceSequence());return result;
     }
     public long snapshotCoveredEvents(){return snapshotCoveredEvents.get();}
+    public java.util.Map<String,Object> ingressProgress(){return transport.ingressProgress();}
     private ContractEnvelope decode(byte[] bytes,MessageType expected){try{ContractEnvelope value=ContractCodec.decode(bytes,org.jacamo.bridge.contract.CanonicalJson.DEFAULT_MAX_BYTES,64,256*1024);new ContractValidator().validate(value);if(value.messageType()!=expected)throw fail("BRIDGE_MESSAGE_TYPE:"+value.messageType());return value;}catch(BridgeProtocolException e){throw e;}catch(RuntimeException e){throw fail("BRIDGE_ENVELOPE_REJECTED",e);}}
     private void requireSame(ContractEnvelope value){if(!value.sessionId().equals(mirror.sessionId()))throw fail("BRIDGE_SESSION_STALE");if(value.generation()!=mirror.generation())throw fail("BRIDGE_GENERATION_STALE");if(!value.modelRevision().equals(mirror.modelRevision()))throw fail("BRIDGE_MODEL_REVISION_STALE");}
     private BridgeProtocolException fail(String message){mirror.transition(BridgeClientState.RESYNC_REQUIRED);coverageFailure.accept(null,message);return new BridgeProtocolException(message);}

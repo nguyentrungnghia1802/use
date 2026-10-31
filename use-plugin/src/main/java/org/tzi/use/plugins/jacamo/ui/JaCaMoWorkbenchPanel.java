@@ -86,10 +86,14 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private int backgroundOperations;
     private long viewEpoch;
     // Refresh only cached facade status, never start a second runtime or a network resync.
-    private final javax.swing.Timer runtimeStatusTimer = new javax.swing.Timer(1000, event -> {
+    private final javax.swing.Timer runtimeStatusTimer = new javax.swing.Timer(200, event -> {
         refreshRuntimeIfIdle();
     });
-    private void refreshRuntimeIfIdle() { if (backgroundOperations == 0 && !facade.stepReplayBusy()) refreshRuntime(); }
+    private void refreshRuntimeIfIdle() {
+        var ingress=facade.ingressProgress();
+        if(!ingress.isEmpty())runtimeProgress.setText("Events saved: "+ingress.get("saved")+" · processed: "+ingress.get("processed")+" · waiting: "+ingress.get("pending")+(ingress.getOrDefault("failure","").toString().isBlank()?"":" · "+ingress.get("failure")));
+        if (backgroundOperations == 0 && !facade.stepReplayBusy()) refreshRuntime();
+    }
 
     @Override public void addNotify() {
         super.addNotify();
@@ -203,6 +207,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     }
 
     public void startRuntime() {
+        showResultsWindow();
         executeBackground("Runtime start failed", facade::startRuntime, ()->{refreshRuntime();showResultsWindow();});
     }
     public void stopMonitorSession(){if(backgroundOperations!=0){setStatus("WORKBENCH_BUSY: wait for the current operation");return;}viewEpoch++;executeBackground("Stop monitor failed",facade::stopMonitorSession,this::refreshRuntime);}
@@ -263,18 +268,18 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private void refreshObservedConformance(org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult result) {
         if(observedConformance==null || observedRefreshPending)return;
         long history=facade.runtimeHistoryTail().persistedEntries();
-        if(result==observedDisplayedResult&&history==observedDisplayedHistory)return;
+        if(result==observedDisplayedResult&&history==observedDisplayedHistory&&!observedPresenter.historyPending())return;
         var panel=observedConformance;var model=displayedNativeModel;long epoch=viewEpoch;
         observedRefreshPending=true;
         String requestedScope=panel.executionScope();
-        runtimeProgress.setText("Updating results in background · journal records: "+history);
         new javax.swing.SwingWorker<org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparedCuts,Void>() {
             private String progress;
             @Override protected org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparedCuts doInBackground(){
-                var cuts=observedPresenter.capture();
+                var cuts=observedPresenter.captureIncremental();
                 var tail=facade.runtimeHistoryTail();var snapshot=facade.verificationSnapshot();
                 long verified=tail.entries().stream().map(org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeHistoryPage.Entry::result).filter(r->r.freshness().equals("CURRENT_OBSERVED")&&r.semantic()!=null&&"PINNED_NATIVE_CUT".equals(CanonicalJson.object(r.semantic().observation().getOrDefault("originalEngine",Map.of())).get("evaluated"))).mapToLong(org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult::stateVersion).max().orElse(-1);
                 progress="USE state: "+snapshot.currentVersion()+" · latest verified state: "+(verified<0?"pending":verified)+" · "+(tail.gap()?"GAP: "+tail.diagnostic():verified<snapshot.currentVersion()?"processing / awaiting evidence":"no state-version backlog")+" · journal: "+tail.persistedEntries();
+                var ingress=facade.ingressProgress();if(!ingress.isEmpty())progress="Events saved: "+ingress.get("saved")+" · processed: "+ingress.get("processed")+" · waiting: "+ingress.get("pending")+" · "+progress;
                 return observedPreparation.prepare(cuts,requestedScope,observedWorkflow);
             }
             @Override protected void done(){
