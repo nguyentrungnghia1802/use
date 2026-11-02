@@ -9,7 +9,10 @@ public class BridgeControlledLauncher extends JaCaMoLauncher {
     @Override public void create() throws JasonException {
         super.create();
         if(getProject().isJade() || getControllerInfraTier()!=null || getProject().getControlClass()!=null
-                || getAgs().values().stream().anyMatch(a->a.getClass()!=LocalAgArch.class))return;
+                || getAgs().values().stream().anyMatch(a->a.getClass()!=LocalAgArch.class)) {
+            if(jacamo.checkpoint.CheckpointBoot.verified())throw new IllegalStateException("CHECKPOINT_AGENT_SCHEDULER_UNSUPPORTED");
+            return;
+        }
         var execution=new BridgeLocalExecutionControl(this);
         control=execution;BridgeRuntimeRegistry.controller(execution);
         getAgs().values().forEach(execution::admit);

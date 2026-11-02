@@ -9,10 +9,9 @@ public final class MoisePublicConfirmation {
     public static final String VERSION="MOISE_PUBLIC_CONFIRMATION/1.0";
     private MoisePublicConfirmation(){ }
     public static boolean clockQualified(Object raw) {
-        return raw instanceof Map<?,?> proof&&proof.keySet().equals(Set.of("version","workspaceClassSha256","status","unit","authority"))
-                &&"CARTAGO_PUBLICATION_CLOCK/1.0".equals(proof.get("version"))&&"COMPLETE".equals(proof.get("status"))
-                &&"0578556e6977dd23d04de4b5f55a293be9ba7da0fa14d16254ae804b10af4798".equals(proof.get("workspaceClassSha256"))
-                &&"EPOCH_MILLISECONDS".equals(proof.get("unit"))&&"WORKSPACE_NEW_PERCEPT_LOGGER_SYSTEM_CURRENT_TIME_MILLIS".equals(proof.get("authority"));
+        if(!(raw instanceof Map<?,?> proof)||!proof.keySet().equals(Set.of("version","workspaceClassSha256","status","unit","authority"))||!"COMPLETE".equals(proof.get("status"))||!"EPOCH_MILLISECONDS".equals(proof.get("unit")))return false;
+        return "CARTAGO_PUBLICATION_CLOCK/1.0".equals(proof.get("version"))&&"0578556e6977dd23d04de4b5f55a293be9ba7da0fa14d16254ae804b10af4798".equals(proof.get("workspaceClassSha256"))&&"WORKSPACE_NEW_PERCEPT_LOGGER_SYSTEM_CURRENT_TIME_MILLIS".equals(proof.get("authority"))
+                ||"CARTAGO_PUBLICATION_CLOCK/1.1".equals(proof.get("version"))&&org.jacamo.bridge.contract.PinnedRuntimeClassProfiles.supportsPatchedWorkspaceHash(proof.get("workspaceClassSha256"))&&"WORKSPACE_NEW_PERCEPT_LOGGER_EXECUTION_BARRIER_NOW_MILLIS".equals(proof.get("authority"));
     }
     public static boolean complete(boolean continuous,List<Map<String,Object>> transitions) {
         if(!continuous||transitions.isEmpty())return false;

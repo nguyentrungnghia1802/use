@@ -15,6 +15,18 @@ import org.tzi.use.plugins.jacamo.verification.VerificationReport;
 @FunctionalInterface
 public interface JaCaMoFacade {
     String status();
+    default void verifiedCheckpointMode(boolean enabled){if(enabled)throw new UnsupportedOperationException("VERIFIED_CHECKPOINTS_UNSUPPORTED");}
+    default boolean verifiedCheckpointMode(){return false;}
+    @FunctionalInterface interface CheckpointPresenter {
+        java.util.concurrent.CompletableFuture<Void> present(
+            org.tzi.use.plugins.jacamo.codegrounded.runtime.VerifiedCheckpointService.View checkpoint,
+            org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot cut,
+            Map<String,org.jacamo.bridge.contract.VerifiedCheckpointProtocol.Check> checks);
+    }
+    /** The interactive owner acknowledges rendering this immutable cut before release. */
+    default AutoCloseable registerCheckpointPresenter(CheckpointPresenter presenter){return ()->{};}
+    default org.tzi.use.plugins.jacamo.codegrounded.runtime.VerifiedCheckpointService.View verifiedCheckpointState(){return org.tzi.use.plugins.jacamo.codegrounded.runtime.VerifiedCheckpointService.View.idle();}
+    default java.util.concurrent.CompletableFuture<?> acknowledgeVerifiedCheckpoint(String token,String reviewedResultHash){throw new UnsupportedOperationException("VERIFIED_CHECKPOINT_REVIEW_UNAVAILABLE");}
 
     default ProjectSummary importProject(Path jcmFile) { throw new UnsupportedOperationException("IMPORT_NOT_CONFIGURED"); }
     /** Selection is input to Import; changing a widget never changes a live owner. */

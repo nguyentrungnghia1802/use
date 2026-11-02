@@ -8,6 +8,7 @@ public interface BridgeTransport extends AutoCloseable {
     byte[] modelSnapshot();
     byte[] runtimeSnapshot();
     default byte[] control(org.jacamo.bridge.contract.RuntimeControlContract.Request request) {throw new BridgeProtocolException("BRIDGE_CONTROL_UNSUPPORTED");}
+    default byte[] checkpoint(org.jacamo.bridge.contract.VerifiedCheckpointProtocol.Command request){throw new BridgeProtocolException("VERIFIED_CHECKPOINTS_UNSUPPORTED");}
     Subscription subscribe(String resumeToken, Consumer<byte[]> receiver);
     default Subscription subscribe(String resumeToken, Consumer<byte[]> receiver,
                                    Consumer<RuntimeException> failure) {

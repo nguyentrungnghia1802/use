@@ -119,7 +119,16 @@ public final class SemanticProgramManifest {
         return Map.copyOf(result);
     }
     private static String resource(String path) {
-        try(var input=SemanticProgramManifest.class.getResourceAsStream(path)) {
+        // A class in a named USE module may not expose its package as an
+        // absolute resource through the plugin loader. Ask the actual defining
+        // class/module for its own bytes; never substitute checkout file bytes.
+        Class<?> owner=SemanticProgramManifest.class;
+        String selected=path;
+        if(path.endsWith(".class"))try {
+            owner=Class.forName(path.substring(1,path.length()-6).replace('/','.'),false,SemanticProgramManifest.class.getClassLoader());
+            selected=path.substring(path.lastIndexOf('/')+1);
+        }catch(ClassNotFoundException missing){throw new IllegalArgumentException("REPLAY_IMPLEMENTATION_CLASS_MISSING:"+path,missing);}
+        try(var input=owner.getResourceAsStream(selected)) {
             if(input==null)throw new IllegalArgumentException("REPLAY_IMPLEMENTATION_RESOURCE_MISSING:"+path);
             return ExternalOclConstraintService.sha256(input.readAllBytes());
         }catch(java.io.IOException error){throw new IllegalArgumentException("REPLAY_IMPLEMENTATION_HASH_UNAVAILABLE:"+path,error);}

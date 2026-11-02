@@ -16,11 +16,12 @@ final class CanonicalReplaySupport {
     static final String BUDGETED_CASE_VERSION="3.2.0";
     static final String DECLARATIVE_VERSION="3.3.0";
     static final String BUDGETED_DECLARATIVE_VERSION="3.4.0";
+    static final String COMPRESSED_SOURCE_VERSION="3.5.0";
     static final long CASE_ARCHIVE_BYTES=256L*1024*1024;
     static final String PROGRAM="program.json";
     static boolean caseVersion(Object version){return CASE_VERSION.equals(version)||BUDGETED_CASE_VERSION.equals(version);}
-    static boolean declarativeVersion(Object version){return DECLARATIVE_VERSION.equals(version)||BUDGETED_DECLARATIVE_VERSION.equals(version);}
-    static boolean budgeted(Object version){return BUDGETED_CASE_VERSION.equals(version)||BUDGETED_DECLARATIVE_VERSION.equals(version);}
+    static boolean declarativeVersion(Object version){return DECLARATIVE_VERSION.equals(version)||BUDGETED_DECLARATIVE_VERSION.equals(version)||COMPRESSED_SOURCE_VERSION.equals(version);}
+    static boolean budgeted(Object version){return BUDGETED_CASE_VERSION.equals(version)||BUDGETED_DECLARATIVE_VERSION.equals(version)||COMPRESSED_SOURCE_VERSION.equals(version);}
     static boolean canonical(Object version){return VERSION.equals(version)||caseVersion(version)||declarativeVersion(version);}
     private static long fileLimit(Object version,String file){return (CASE_VERSION.equals(version)||DECLARATIVE_VERSION.equals(version))&&"runtime.jsonl".equals(file)?CASE_ARCHIVE_BYTES:64L*1024*1024;}
     static long fileLimit(Map<String,Object> manifest,String file) {
@@ -33,11 +34,13 @@ final class CanonicalReplaySupport {
         long bytes;
         try{bytes=new java.math.BigDecimal(number.toString()).longValueExact();}
         catch(ArithmeticException|NumberFormatException error){throw new IllegalArgumentException("REPLAY_RUNTIME_BUDGET_INVALID",error);}
-        if(bytes<=CASE_ARCHIVE_BYTES||bytes>1024L*1024*1024)throw new IllegalArgumentException("REPLAY_RUNTIME_BUDGET_INVALID");
+        long minimum=COMPRESSED_SOURCE_VERSION.equals(version)?32767:CASE_ARCHIVE_BYTES;
+        long maximum=COMPRESSED_SOURCE_VERSION.equals(version)?8L*1024*1024*1024:1024L*1024*1024;
+        if(bytes<=minimum||bytes>maximum)throw new IllegalArgumentException("REPLAY_RUNTIME_BUDGET_INVALID");
         return "runtime.jsonl".equals(file)?bytes:64L*1024*1024;
     }
     private record Cut(SemanticProgram program,Path journal,Path baseline,Map<String,Object> bindings,
-            String profile,long entries,long bytes,long budget,String version,String baselineHash,RuntimeVerificationResult result,String finalResultHash) { }
+            String profile,long entries,long bytes,long decodedBytes,long budget,String version,String baselineHash,RuntimeVerificationResult result,String finalResultHash) { }
     static void export(NativeRuntimeProjector projector,String model,Path directory) {
         if(javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("SEMANTIC_REPLAY_EXPORT_REQUIRES_WORKER");
         if(model==null||model.isBlank())throw new IllegalArgumentException("SEMANTIC_REPLAY_BASELINE_MODEL_REQUIRED");
@@ -53,10 +56,13 @@ final class CanonicalReplaySupport {
                         ||projector.mutations().xmlCase()&&last.freshness().equals("TRACE_ONLY")&&"TRACE_ONLY_NO_SEMANTIC_INPUT_CHANGE".equals(core.get("evaluated"))))
                 throw new IllegalStateException("SEMANTIC_REPLAY_EXPORT_REQUIRES_STABLE_COMPLETED_CUT");
             long budget=coordinator.journal().maxBytes();
+            boolean compressed=coordinator.journal().compressed();
+            if(compressed)budget=Math.max(budget,Math.addExact(Math.multiplyExact(coordinator.journal().decodedBytes(),2),4096));
             String version=projector.mutations().xmlCase()?(budget>CASE_ARCHIVE_BYTES?BUDGETED_DECLARATIVE_VERSION:DECLARATIVE_VERSION)
                     :VERSION;
+            if(compressed)version=COMPRESSED_SOURCE_VERSION;
             var policy=new TreeMap<String,Object>();policy.put("schemaVersion",version);if(budgeted(version))policy.put("runtimeByteLimit",budget);
-            if(coordinator.journal().persistedBytes()>fileLimit(policy,"runtime.jsonl"))throw new IllegalStateException("SEMANTIC_REPLAY_ARCHIVE_CAPACITY_EXCEEDED");
+            if(coordinator.journal().decodedBytes()>fileLimit(policy,"runtime.jsonl"))throw new IllegalStateException("SEMANTIC_REPLAY_ARCHIVE_CAPACITY_EXCEEDED");
             var profile=coordinator.constraints().profile();
             // An earlier accepted cut may complete after a later trace-only callback.
             // Live lastObservation still belongs to that callback, while replay's final
@@ -65,7 +71,7 @@ final class CanonicalReplaySupport {
             var tail=coordinator.journal().history();
             if(tail.isEmpty())throw new IllegalStateException("SEMANTIC_REPLAY_JOURNAL_TAIL_REQUIRED");
             return new Cut(projector.mutations().canonicalProgram(),coordinator.journal().path(),coordinator.checkpoints().baseline().commands(),
-                    projector.mutations().baselineBindings(),profile==null?"":profile.source(),coordinator.journal().persistedEntries(),coordinator.journal().persistedBytes(),
+                    projector.mutations().baselineBindings(),profile==null?"":profile.source(),coordinator.journal().persistedEntries(),coordinator.journal().persistedBytes(),coordinator.journal().decodedBytes(),
                     budget,version,coordinator.checkpoints().baseline().stateHash(),last,tail.getLast().resultHash());
         });
         Path output=directory.toAbsolutePath().normalize();
@@ -78,13 +84,7 @@ final class CanonicalReplaySupport {
             Files.write(output.resolve("bindings.json"),CanonicalJson.encode(cut.bindings()));
             Files.writeString(output.resolve("constraints.ocl"),cut.profile(),StandardCharsets.UTF_8);
             Files.write(output.resolve(PROGRAM),new SemanticProgramManifest().encode(cut.program()));
-            try(var input=Files.newInputStream(cut.journal());var target=Files.newOutputStream(output.resolve("runtime.jsonl"))) {
-                byte[] buffer=new byte[65536];long remaining=cut.bytes();
-                while(remaining>0){int read=input.read(buffer,0,(int)Math.min(buffer.length,remaining));
-                    if(read<0)throw new IllegalArgumentException("SEMANTIC_REPLAY_JOURNAL_PREFIX_TRUNCATED");
-                    target.write(buffer,0,read);remaining-=read;
-                }
-            }
+            coordinator.journal().exportPlain(output.resolve("runtime.jsonl"),cut.bytes(),cut.decodedBytes());
             var hashes=new TreeMap<String,Object>();var names=new ArrayList<>(NativeRuntimeReplay.FILES);names.add(PROGRAM);
             for(String name:names)hashes.put(name,fileHash(output.resolve(name)));
             var manifest=new TreeMap<String,Object>(Map.of("schemaVersion",cut.version(),"files",hashes,"entries",cut.entries(),
@@ -92,6 +92,7 @@ final class CanonicalReplaySupport {
                     "scope","OBSERVED_SUPPORTED_PROJECTION_ONLY","temporalOrder","ACCEPTED_NATIVE_BOUNDARIES_AND_EXACT_ENGINE_COMPLETIONS","programHash",cut.program().hash()));
             manifest.put("executionEvidencePolicy",projector.coordinator().originalEngine().executionEvidencePolicy());
             if(budgeted(cut.version()))manifest.put("runtimeByteLimit",cut.budget());
+            if(COMPRESSED_SOURCE_VERSION.equals(cut.version()))manifest.put("sourceJournalCodec","GZIP_JSONL_MEMBERS/1.0");
             Files.write(output.resolve("manifest.json"),CanonicalJson.encode(manifest));
         }catch(java.io.IOException error){throw new IllegalStateException("SEMANTIC_REPLAY_EXPORT_IO_FAILED",error);}
     }

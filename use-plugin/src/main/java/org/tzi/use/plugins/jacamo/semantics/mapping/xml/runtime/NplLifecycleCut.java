@@ -17,13 +17,13 @@ public final class NplLifecycleCut {
         need("NPL_OBSERVATION/1.0".equals(raw.get("observationVersion"))&&"BOUND_PUBLIC_CREATED_ANNOTATION".equals(raw.get("activationIdentityStatus"))&&raw.containsKey("sourceLifecycle"),"UNSUPPORTED_ACTIVATION_EVIDENCE");
         var norm=NormativeObservation.decode(identity,raw);need(identity.incarnation().equals(run+":"+norm.boardUuid()),"EPOCH_MISMATCH");
         var binary=CanonicalJson.object(raw.get("sourceArtifact"));
-        need(nplHash.equals(binary.get("artifactSha256"))&&"0.6.1".equals(binary.get("artifactVersion"))&&"SUPPORTED_PINNED_BINARY".equals(binary.get("admission"))
-            &&"1a14085372cf52cc96b49f8835f6b5ac987763c0d3b240b3bf6424d86be38e43".equals(raw.get("nplNormInstanceClassSha256")),"BINARY_MISMATCH");
+        need(PinnedRuntimeClassProfiles.matchesNplBinary(nplHash,binary.get("artifactSha256"))&&Set.of("0.6.1","0.6.1-checkpoint-SNAPSHOT").contains(binary.get("artifactVersion"))&&"SUPPORTED_PINNED_BINARY".equals(binary.get("admission"))
+            &&PinnedRuntimeClassProfiles.supportsNplNormInstanceHash(raw.get("nplNormInstanceClassSha256")),"BINARY_MISMATCH");
         var proof=CanonicalJson.object(raw.get("sourceLifecycle"));var unsigned=new LinkedHashMap<>(proof);Object hash=unsigned.remove("hash");need(SemanticJson.hash(unsigned).equals(hash),"TIME_PROOF_HASH_MISMATCH");
         need("NPL_TIME_ANNOTATIONS/1.0".equals(proof.get("version"))&&"NPL061_PUBLIC_TIMETERM_ANNOTATION_EPOCH_MILLISECONDS".equals(proof.get("authority"))&&norm.state().name().equals(proof.get("state")),"TIME_PROOF_STATE_OR_VERSION");
-        var basis=CanonicalJson.object(raw.get("timeBasis"));String clock="npl-system-wall:"+run+":"+generation;
-        need(clock.equals(proof.get("clockIdentity"))&&clock.equals(basis.get("clockIdentity"))&&"EPOCH_MILLISECONDS".equals(basis.get("unit"))&&"JAVA_SYSTEM_CURRENT_TIME_MILLIS_SAME_PROCESS_AS_PINNED_NPL".equals(basis.get("authority"))
-            &&"UNPROVEN_WALL_CLOCK".equals(basis.get("monotonicity"))&&nplHash.equals(CanonicalJson.object(basis.get("nplArtifact")).get("artifactSha256")),"TIME_BASIS_MISMATCH");
+        var basis=CanonicalJson.object(raw.get("timeBasis"));boolean logical="CHECKPOINT_RUNTIME_LOGICAL_EPOCH_MILLISECONDS_SAME_PROCESS_AS_PINNED_NPL".equals(basis.get("authority"));String clock=(logical?"npl-logical-source:":"npl-system-wall:")+run+":"+generation;
+        need(clock.equals(proof.get("clockIdentity"))&&clock.equals(basis.get("clockIdentity"))&&"EPOCH_MILLISECONDS".equals(basis.get("unit"))&&(logical?"CHECKPOINT_RUNTIME_LOGICAL_EPOCH_MILLISECONDS_SAME_PROCESS_AS_PINNED_NPL":"JAVA_SYSTEM_CURRENT_TIME_MILLIS_SAME_PROCESS_AS_PINNED_NPL").equals(basis.get("authority"))
+            &&(logical?"SOURCE_OWNED_LOGICAL_CLOCK":"UNPROVEN_WALL_CLOCK").equals(basis.get("monotonicity"))&&(!logical||"0.6.1-checkpoint-SNAPSHOT".equals(binary.get("artifactVersion")))&&PinnedRuntimeClassProfiles.matchesNplBinary(nplHash,CanonicalJson.object(basis.get("nplArtifact")).get("artifactSha256")),"TIME_BASIS_MISMATCH");
         var board=CanonicalJson.object(raw.get("boardObservationProof"));
         need("NPL_BOARD_SUBSCRIPTION/1.0".equals(board.get("version"))&&norm.boardUuid().equals(board.get("boardArtifactIdentity"))
             &&!text(board,"artifactName").isBlank()&&!text(board,"artifactClass").isBlank()&&identity.scope().equals(text(board,"workspaceFullName")+":"+text(board,"artifactName")),"BOARD_BINDING_MISMATCH");

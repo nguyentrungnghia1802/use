@@ -26,7 +26,7 @@ final class MoisePopulationClosure {
                     ||!(hierarchy.get("types") instanceof List<?> types)||types.isEmpty()||types.size()>64)return false;
             var first=CanonicalJson.object(types.getFirst());var last=CanonicalJson.object(types.getLast());
             if(!Objects.equals(first.get("javaClass"),provider.get("javaClass"))||!Objects.equals(first.get("classHash"),provider.get("classHash"))
-                    ||!ARTIFACT.equals(last.get("javaClass"))||!ARTIFACT_HASH.equals(last.get("classHash")))return false;
+                    ||!ARTIFACT.equals(last.get("javaClass"))||!PinnedRuntimeClassProfiles.supportsCartagoArtifactHash(last.get("classHash")))return false;
             var names=new HashSet<String>();boolean selected=false;
             for(var entry:types) {
                 var type=CanonicalJson.object(entry);

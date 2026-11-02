@@ -6,6 +6,36 @@ import org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeTables;
 import static org.junit.jupiter.api.Assertions.*;
 /** Bounded relational interpreter units; source qualification has its own executable gates. */
 class RuntimeTablesTest {
+    @Test void renamedRelationalJoinCarriesPhysicalOwnerIdentityRatherThanColumnNameInference(){
+        String plan="""
+          <runtime><tables>
+           <table id="owners" dataset="roots"><column name="lookup" path="key" required="true"/></table>
+           <table id="members" dataset="items"><join tableRef="owners" leftPath="foreign" rightPath="lookup" as="declaredParent" cardinality="ONE" required="true"/>
+            <column name="arbitraryName" path="value" required="true"/></table>
+          </tables></runtime>
+          """;
+        var result=tables(plan).execute(Map.of("roots",new RuntimeTables.Dataset(List.of(row("physical-root-A",Map.of("key","join-key"))),Completeness.COMPLETE),
+                "items",new RuntimeTables.Dataset(List.of(row("physical-member",Map.of("foreign","join-key","value",9))),Completeness.COMPLETE))).get("members");
+        var identities=org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.SourceJoinOwnership.decode(org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.SourceJoinOwnership.encode(result.rows().getFirst().proofs()));
+        assertEquals(Set.of("physical-root-A"),identities);assertFalse(identities.contains("join-key"));assertFalse(identities.contains("physical-root-B"));
+    }
+    @Test void optionalFutureTimestampDoesNotDiscardProvenPopulationAndRequiredTimestampStaysUnknown() {
+        String plan="""
+          <runtime><datasets><clock id="clock-data" requestRef="clock"/></datasets><tables><table id="scopes" dataset="source">
+          <relativeTime as="time" requestRef="clock" epochPath="futureTime" sourceClockPath="clockId" onMissing="unavailable-value"/>
+          <column name="id" path="id" required="true"/><column name="time" path="time" required="false"/>
+          </table></tables></runtime>
+          """;
+        var source=Map.of("source",new RuntimeTables.Dataset(List.of(row("scope",Map.of("id","scope","clockId","source-clock"))),Completeness.COMPLETE));
+        String xml=MappingXmlReaderTest.XML.replace("<runtime/>",plan).replace("<requirements/>","<requirements><capability id=\"clock\" provider=\"npl.source-clock.v1\" required=\"true\" hash=\""+"1".repeat(64)+"\"/></requirements>");
+        var optional=new RuntimeTables(MappingXmlReaderTest.parse(xml)).execute(source).get("scopes");
+        assertEquals(Completeness.COMPLETE,optional.populationQuality());
+        assertFalse(optional.rows().getFirst().values().containsKey("time"));
+        assertFalse(optional.diagnostics().isEmpty());
+        var required=new RuntimeTables(MappingXmlReaderTest.parse(xml.replace("name=\"time\" path=\"time\" required=\"false\"","name=\"time\" path=\"time\" required=\"true\""))).execute(source).get("scopes");
+        assertEquals(Completeness.PARTIAL,required.populationQuality());
+        assertFalse(required.rows().getFirst().values().containsKey("time"));
+    }
     @Test void typedMembershipPreservesUnknownAndExplicitAbsence() {
         String plan="<runtime><tables><table id=\"assignment\" dataset=\"source\"><testContains as=\"assigned\" path=\"players\" valuePath=\"player\" type=\"String\"/><column name=\"assigned\" path=\"assigned\" required=\"true\"/></table></tables></runtime>";
         var data=new RuntimeTables.Dataset(List.of(row("yes",Map.of("players",List.of("p"),"player","p")),row("no",Map.of("players",List.of(),"player","p")),row("missing",Map.of("player","p"))),Completeness.COMPLETE);

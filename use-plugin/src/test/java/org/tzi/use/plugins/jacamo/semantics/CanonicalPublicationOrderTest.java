@@ -12,6 +12,20 @@ import org.tzi.use.uml.ocl.value.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CanonicalPublicationOrderTest {
+    @Test void evictedExactCompletionIsRecoveredFromCheckedJournalRatherThanNewerResult() throws Exception {
+        try(var f=new CanonicalRuntimeFixture(CslCounterArtifact.class,CanonicalGoalMappingTest::rules)) {
+            f.settled();var c=f.projector.coordinator();cut(c,"evicted-original",true);var accepted=c.latest();f.settled();
+            var exact=c.awaitEvaluation(accepted,5000);
+            cut(c,"later-completed",true);f.settled();var later=c.latest();
+            // Evict at the same native version: tail membership, not version alone,
+            // determines whether the exact earlier completion is still available.
+            for(int i=0;i<520;i++)assertTrue(c.journal().append("EVIDENCE",Map.of("tail",i),later));
+            assertFalse(c.journal().history().contains(exact));
+            var recovered=c.awaitEvaluation(accepted,5000);
+            assertEquals(exact.resultHash(),recovered.resultHash());assertEquals("evicted-original",recovered.eventId());
+            assertEquals("later-completed",c.latest().eventId());
+        }
+    }
     @Test void alreadyCompletedBootstrapCutDoesNotWaitForANewerBlockedEvaluation() throws Exception {
         try(var f=new CanonicalRuntimeFixture(CslCounterArtifact.class,CanonicalGoalMappingTest::rules)) {
             f.settled();var c=f.projector.coordinator();var requested=c.manualVerify();f.settled();var gate=installGate(f);

@@ -73,6 +73,16 @@ class ProductionObservationSessionTest {
             var currentReceipts=CanonicalJson.object(current.values().get(CapabilityObservation.KEY));
             assertEquals(boundary.sourceSequence(),CapabilityObservation.require(currentReceipts.get(field.id()),field).scope().sourceSequence());
             assertEquals(boundary.sourceSequence(),((Number)CapabilityObservation.require(currentReceipts.get(operation.id()),operation).data().get("lastSourceSequence")).longValue());
+            var attempts=new java.util.concurrent.atomic.AtomicInteger();var artifact=id;
+            source.publishObservation(()->{
+                // Real operations invalidate two complete reads. A third stable
+                // interval must still be eligible after a >1s population read.
+                if(attempts.incrementAndGet()<=2){actor.doAction(artifact,new Op("bump"),5000);Thread.sleep(600);}
+                return null;
+            },()->{});
+            assertEquals(3,attempts.get());
+            var retried=CartagoSourceCut.require(events.getLast());assertEquals(3,retried.validationAttempts());
+            assertEquals(Completeness.COMPLETE,retried.sourceCompleteness().get("cartago"));
             providers.close();assertThrows(IllegalStateException.class,providers::capabilities);
             assertDoesNotThrow(norms::capture,"Capability close must not close the shared authoritative NPL source");
         }finally {

@@ -23,13 +23,15 @@ class BridgeExecutionControlTest {
     @Test void partialTimeoutArrivalDepartureAndReplacementNeverInventAck() throws Exception {child("membership");}
     @Test void inFlightRealCartagoOperationCompletesWhileJasonAgentsStayPaused() throws Exception {child("inflight");}
     @Test void inFlightOrgBoardActivityCompletesWhileJasonAgentsStayPaused() throws Exception {child("organisation");}
+    @Test void internalTimerAndNewExternalActionMutateWhileJasonAgentsStayPaused() throws Exception {child("autonomous");}
+    @Test void actualNplDeadlineExpiresWhileJasonAgentsStayPaused() throws Exception {child("deadline");}
     private void child(String scenario) throws Exception {
         Path log=root.resolve(scenario+".log");
         var p=new ProcessBuilder(Path.of(System.getProperty("java.home"),"bin","java").toString(),"-Djava.awt.headless=true",
                 "-cp",System.getProperty("java.class.path"),getClass().getName(),scenario,root.toString()).redirectErrorStream(true).redirectOutput(log.toFile()).start();
         try {assertTrue(p.waitFor(35,TimeUnit.SECONDS),"Control runtime timeout: "+Files.readString(log));
             assertEquals(0,p.exitValue(),Files.readString(log));
-            Path evidence=Path.of("target/runtime-control-api");Files.createDirectories(evidence);
+            Path evidence=Path.of("target/checkpoint-feasibility");Files.createDirectories(evidence);
             Files.copy(root.resolve(scenario+".json"),evidence.resolve("execution-"+scenario+".json"),StandardCopyOption.REPLACE_EXISTING);
         } finally {if(p.isAlive())p.destroyForcibly();}
     }
@@ -60,6 +62,32 @@ class BridgeExecutionControlTest {
         @cartago.OPERATION void completeLater() {
             entered.countDown();try {release.await(10,TimeUnit.SECONDS);done.countDown();}
             catch(InterruptedException e){Thread.currentThread().interrupt();failed("interrupted");}
+        }
+    }
+    public static final class TimedArtifact extends cartago.Artifact {
+        static final CountDownLatch entered=new CountDownLatch(1),done=new CountDownLatch(1);
+        void init() {defineObsProperty("value",0);}
+        @cartago.OPERATION void arm() {execInternalOp("expire");}
+        @cartago.INTERNAL_OPERATION void expire() {
+            entered.countDown();await_time(2000);updateObsProperty("value",1);done.countDown();
+        }
+        @cartago.OPERATION void external() {updateObsProperty("value",2);}
+    }
+    public static final class ActionCounter extends cartago.AbstractWSPRuleEngine {
+        final AtomicInteger actions=new AtomicInteger();
+        @Override protected void processActionRequest(cartago.OpRequestInfo info) {actions.incrementAndGet();}
+    }
+    public static final class DeadlineBoard extends ora4mas.nopl.NormativeBoard {
+        static volatile DeadlineBoard instance;
+        @Override public void init() {
+            var config=jason.util.Config.get();
+            synchronized(config) {
+                String previous=config.getProperty(jason.util.Config.START_WEB_OI);
+                config.setProperty(jason.util.Config.START_WEB_OI,"false");
+                try {super.init();}
+                finally {if(previous==null)config.remove(jason.util.Config.START_WEB_OI);else config.setProperty(jason.util.Config.START_WEB_OI,previous);}
+            }
+            instance=this;getNormativeEngine().setUpdateInterval(10);
         }
     }
     /** A real GroupBoard/NPL operation, held only by this diagnostic test fixture. */
@@ -118,18 +146,35 @@ class BridgeExecutionControlTest {
                         "departedAgentDidNotAck",true,"replacementIdentityIsDistinct",true,"explicitNewCohortAllAck",true)));
             } else {
                 cartago.CartagoEnvironment cartagoEnvironment=null;
+                cartago.util.agent.CartagoBasicContext context=null;
+                cartago.ArtifactId timedArtifact=null;
+                ActionCounter rules=null;
                 if(scenario.equals("inflight")) {
                     cartagoEnvironment=cartago.CartagoEnvironment.getInstance();cartagoEnvironment.init();
-                    var context=new cartago.util.agent.CartagoBasicContext("inflightObserver");
+                    context=new cartago.util.agent.CartagoBasicContext("inflightObserver");
                     var artifact=context.makeArtifact(context.getJoinedWspId("main"),"inflight",InFlightArtifact.class.getName());
                     context.doAction(artifact,new cartago.Op("completeLater"));assertTrue(InFlightArtifact.entered.await(3,TimeUnit.SECONDS));
                 } else if(scenario.equals("organisation")) {
                     cartagoEnvironment=cartago.CartagoEnvironment.getInstance();cartagoEnvironment.init();
                     var specification=new moise.os.OSBuilder();specification.addRootGroup("team");specification.addRole("team","worker");
                     Path file=root.resolve("control-organisation.xml");specification.save(file.toString());
-                    var context=new cartago.util.agent.CartagoBasicContext("organisationObserver");
+                    context=new cartago.util.agent.CartagoBasicContext("organisationObserver");
                     var board=context.makeArtifact(context.getJoinedWspId("main"),"organisation",InFlightGroupBoard.class.getName(),new Object[]{file.toString(),"team"});
                     context.doAction(board,new cartago.Op("completeRoleLater"));assertTrue(InFlightGroupBoard.entered.await(3,TimeUnit.SECONDS));
+                } else if(scenario.equals("autonomous")) {
+                    cartagoEnvironment=cartago.CartagoEnvironment.getInstance();cartagoEnvironment.init();
+                    context=new cartago.util.agent.CartagoBasicContext("timerObserver");
+                    timedArtifact=context.makeArtifact(context.getJoinedWspId("main"),"timed",TimedArtifact.class.getName());
+                    rules=new ActionCounter();cartagoEnvironment.getRootWSP().getWorkspace().addWSPRuleEngine(rules);
+                    context.doAction(timedArtifact,new cartago.Op("arm"));
+                    assertTrue(TimedArtifact.entered.await(3,TimeUnit.SECONDS));
+                } else if(scenario.equals("deadline")) {
+                    cartagoEnvironment=cartago.CartagoEnvironment.getInstance();cartagoEnvironment.init();
+                    context=new cartago.util.agent.CartagoBasicContext("deadlineObserver");
+                    var board=context.makeArtifact(context.getJoinedWspId("main"),"deadline",DeadlineBoard.class.getName());
+                    context.doAction(board,new cartago.Op("load","scope probe { norm due: start -> obligation(worker,true,missing,`now`+`2 seconds`). }"));
+                    context.doAction(board,new cartago.Op("addFact","start"));
+                    await(()->!DeadlineBoard.instance.getNormativeEngine().getActive().isEmpty());
                 }
                 send(control,Action.PAUSE,"pause-all");await(()->send(control,Action.STATUS,"s").state()==PAUSED);
                 var paused=send(control,Action.STATUS,"s");assertEquals(2,paused.requiredAgents().size());assertEquals(paused.requiredAgents(),paused.acknowledgedAgents());
@@ -143,6 +188,22 @@ class BridgeExecutionControlTest {
                     assertNotNull(InFlightGroupBoard.completed);
                     assertEquals(1,InFlightGroupBoard.completed.getGrpState().getPlayers().size(),"Official GroupBoard operation must have changed its actual Moise state");
                     assertEquals(PAUSED,send(control,Action.STATUS,"s").state());assertEquals(before,List.of(cycles(a),cycles(b)));
+                } else if(scenario.equals("autonomous")) {
+                    int afterArm=rules.actions.get();assertTrue(afterArm>0);
+                    assertTrue(TimedArtifact.done.await(4,TimeUnit.SECONDS));
+                    assertEquals(afterArm,rules.actions.get(),"Internal timer bypasses the action-request hook");
+                    var workspace=cartagoEnvironment.getRootWSP().getWorkspace();
+                    assertEquals(1,workspace.getController().getArtifactInfo("timed").getObsProperties().stream()
+                            .filter(p->p.getName().equals("value")).findFirst().orElseThrow().intValue());
+                    context.doAction(timedArtifact,new cartago.Op("external"));
+                    assertTrue(rules.actions.get()>afterArm,"A new external action was admitted while Jason paused");
+                    assertEquals(2,workspace.getController().getArtifactInfo("timed").getObsProperties().stream()
+                            .filter(p->p.getName().equals("value")).findFirst().orElseThrow().intValue());
+                    assertEquals(PAUSED,send(control,Action.STATUS,"s").state());assertEquals(before,List.of(cycles(a),cycles(b)));
+                } else if(scenario.equals("deadline")) {
+                    assertTrue(DeadlineBoard.instance.getNormativeEngine().getUnFulfilled().isEmpty(),"Deadline must still be active at the pause ACK");
+                    await(()->!DeadlineBoard.instance.getNormativeEngine().getUnFulfilled().isEmpty());
+                    assertEquals(PAUSED,send(control,Action.STATUS,"s").state());assertEquals(before,List.of(cycles(a),cycles(b)));
                 }
                 send(control,Action.RESUME,"resume-all");await(()->send(control,Action.STATUS,"s").state()==RUNNING);
                 await(()->cycles(a)>before.get(0) && cycles(b)>before.get(1));
@@ -150,6 +211,8 @@ class BridgeExecutionControlTest {
                 Files.write(root.resolve(scenario+".json"),CanonicalJson.encode(Map.of("pauseAck",paused.payload(),"cyclesWhilePaused",before,
                         "resumed",true,"repeatedPauseDeduplicated",true,"cartagoCompletedWhilePaused",scenario.equals("inflight"),
                         "orgBoardCompletedWhilePaused",scenario.equals("organisation"),
+                        "internalTimerAndExternalActionMutatedWhilePaused",scenario.equals("autonomous"),
+                        "nplDeadlineExpiredWhilePaused",scenario.equals("deadline"),
                         "wholePlatformAtomicPause",false,"recordedAt",Instant.now().toString())));
             }
         } finally {Probe.release.countDown();InFlightArtifact.release.countDown();InFlightGroupBoard.release.countDown();control.stop();

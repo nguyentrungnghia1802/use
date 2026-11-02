@@ -72,6 +72,22 @@ class ObservedTimelineHistoryTest {
         var finalCuts=presenter.captureIncremental();assertEquals(200,finalCuts.size());assertFalse(presenter.historyPending());
         assertEquals(new ObservedConformancePresenter(source).capture(),finalCuts);
     }
+    @Test void liveSourceCheckpointsDoNotWalkOrAnimateTheAuditBacklog() {
+        var source=new Source(new RuntimeEventJournal(directory,128,8*1024*1024));
+        for(int i=1;i<=200;i++)source.append("run",i,false);
+        var presenter=new ObservedConformancePresenter(source);
+        var checks=Map.of("prefix:old-pre",new org.jacamo.bridge.contract.VerifiedCheckpointProtocol.Check("FAIL","APPLICABLE","Original native PRE failed"));
+        var checkpoint=new VerifiedCheckpointService.View("VERIFYING","token-one","source-post","","producer","use","result",Set.of("scope"),false,false,Map.of());
+        var cuts=presenter.captureCheckpoint(source.verificationSnapshot(),checkpoint,checks);
+        assertEquals(0,source.pageReads);assertEquals(1,cuts.size());assertTrue(cuts.getFirst().id().contains("event-200"));
+        assertEquals("token-one",cuts.getFirst().visualEvidence().get("verifiedCheckpointToken"));
+        assertTrue(cuts.getFirst().evaluations().stream().anyMatch(r->r.kind().equals("CHECKPOINT_CHECK")&&r.status().equals("FAIL")));
+        var another=new VerifiedCheckpointService.View("VERIFYING","token-two","source-post","","producer","use","result",Set.of("scope"),false,false,Map.of());
+        cuts=presenter.captureCheckpoint(source.verificationSnapshot(),another,checks);
+        assertEquals(2,cuts.size());assertNotEquals(cuts.getFirst().id(),cuts.getLast().id(),"Equal native states still belong to different source tokens");
+        assertEquals(2,new org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparationCache().prepare(cuts,"",false,true).milestones().size());
+        assertEquals(200,presenter.capture().size(),"The complete audit history remains independently available");
+    }
 
     @Test void normalRefreshConsumesThePersistedWriterTailWithoutRepeatedDiskPrefixScans() {
         var source=new Source(new RuntimeEventJournal(directory,512,8*1024*1024));
@@ -108,7 +124,7 @@ class ObservedTimelineHistoryTest {
     @Test void journalDefaultMatchesTheDeclarativeLauncherAndExplicitQuotaIsStillHonored() {
         String key="use.jacamo.runtime.journal.maxBytes",previous=System.getProperty(key);
         try {
-            System.clearProperty(key);assertEquals(256L*1024*1024,RuntimeVerificationCoordinator.defaultJournalMaxBytes());
+            System.clearProperty(key);assertEquals(512L*1024*1024,RuntimeVerificationCoordinator.defaultJournalMaxBytes());
             System.setProperty(key,"67108864");assertEquals(64L*1024*1024,RuntimeVerificationCoordinator.defaultJournalMaxBytes());
         } finally {if(previous==null)System.clearProperty(key);else System.setProperty(key,previous);}
     }

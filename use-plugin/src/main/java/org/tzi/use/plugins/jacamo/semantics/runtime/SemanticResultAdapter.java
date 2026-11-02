@@ -139,6 +139,7 @@ public final class SemanticResultAdapter {
     }
     private static Map<String,Object> presentation(SemanticProgram program,org.tzi.use.uml.sys.MSystemState state) {
         if(program.xmlPlan()==null)return Map.of();
+        if(program.xmlPlan().inputs().specification().root().children("presentation").isEmpty())return authoredPresentation(program,state);
         var selected=new TreeMap<String,Object>();var objectQuality=new TreeMap<String,Object>();boolean qualified=true;
         for(var section:program.xmlPlan().inputs().specification().root().children("presentation"))for(var selection:section.children("state")) {
             var cls=state.system().model().getClass(selection.attr("owner"));
@@ -158,6 +159,37 @@ public final class SemanticResultAdapter {
             return Map.of("version","DECLARATIVE_PRESENTATION/1.2","objects",selected,"objectQuality",objectQuality,"links",links,"hash",SemanticJson.hash(Map.of("objects",selected,"links",links)),"qualifiedValues",qualified,"executionMilestones",!program.xmlPlan().inputs().specification().root().child("presentation").optional("milestones").equals("DOMAIN"));
         }
         return program.xmlPlan().inputs().specification().root().children("presentation").isEmpty()?Map.of():Map.of("version","DECLARATIVE_PRESENTATION/1.2","objects",selected,"objectQuality",objectQuality,"hash",SemanticJson.hash(selected),"qualifiedValues",qualified,"executionMilestones",!program.xmlPlan().inputs().specification().root().child("presentation").optional("milestones").equals("DOMAIN"));
+    }
+    /** No case-specific presentation XML is required. Project exactly the admitted
+     * authored CSL classifiers and observer classes from the same frozen state. */
+    private static Map<String,Object> authoredPresentation(SemanticProgram program,org.tzi.use.uml.sys.MSystemState state){
+        var fields=new TreeMap<String,Set<String>>();var required=new TreeMap<String,Set<String>>();
+        java.util.function.BiConsumer<String,List<org.vnu.sme.goal.dsl.csl.mm.CslAttribute>> add=(type,attributes)->{
+            var names=fields.computeIfAbsent(type,k->new TreeSet<>());var needed=required.computeIfAbsent(type,k->new TreeSet<>());
+            for(var attribute:attributes){names.add(attribute.name());if(!attribute.optional())needed.add(attribute.name());}
+        };
+        for(var declaration:program.cslModel().entities())add.accept(declaration.name(),declaration.attributes());
+        for(var declaration:program.cslModel().roles())add.accept(declaration.name(),declaration.attributes());
+        for(var declaration:program.cslModel().groups())add.accept(declaration.name(),declaration.attributes());
+        for(var declaration:program.cslModel().orgContexts())add.accept(declaration.name(),declaration.attributes());
+        boolean changed=true;while(changed){changed=false;for(var inheritance:program.cslModel().generalizations()){
+            if(fields.containsKey(inheritance.specific())&&fields.containsKey(inheritance.general())){
+                changed|=fields.get(inheritance.specific()).addAll(fields.get(inheritance.general()));required.get(inheritance.specific()).addAll(required.get(inheritance.general()));
+            }
+        }}
+        for(var declaration:program.xmlPlan().inputs().specification().root().child("observers").children("view"))if(declaration.attr("category").equals("CLASS")){
+            var names=fields.computeIfAbsent(declaration.attr("name"),k->new TreeSet<>());var needed=required.computeIfAbsent(declaration.attr("name"),k->new TreeSet<>());
+            for(var field:declaration.children("field")){names.add(field.attr("name"));needed.add(field.attr("name"));}
+        }
+        var objects=new TreeMap<String,Object>();var quality=new TreeMap<String,Object>();boolean qualified=true;
+        for(var object:state.allObjects())if(fields.containsKey(object.cls().name())){
+            var values=new TreeMap<String,Object>();boolean known=true;
+            for(String field:fields.get(object.cls().name())){var value=object.state(state).attributeValue(field);values.put(field,value.toString());if(required.get(object.cls().name()).contains(field))known&=!value.isUndefined();}
+            String key=object.cls().name()+":"+object.name();objects.put(key,values);quality.put(key,known);qualified&=known;
+        }
+        var ids=objects.keySet().stream().map(key->key.substring(key.indexOf(':')+1)).collect(java.util.stream.Collectors.toSet());var links=presentationLinks(state,ids);
+        return Map.of("version","DECLARATIVE_PRESENTATION/1.3","selectionPolicy","AUTHORED_DECLARATIONS/1.0","objects",objects,"objectQuality",quality,"links",links,
+                "hash",SemanticJson.hash(Map.of("objects",objects,"links",links)),"qualifiedValues",qualified,"executionMilestones",false);
     }
     /** Pure frozen view projection: no native mutations or marking/evaluation. */
     public static List<Map<String,Object>> presentationLinks(org.tzi.use.uml.sys.MSystemState state,Set<String> ids) {

@@ -175,6 +175,7 @@ public final class ConstraintCoverageResolver {
     public boolean populationComplete(org.tzi.use.uml.mm.MClassifier cls,Map<String,Completeness> sources,NativeRuntimeMutationEngine engine) {
         if(engine!=null&&engine.xmlCase()&&cls.getAnnotation("DeclarativeObserverView")!=null
                 &&sources.get("cartago")==Completeness.COMPLETE) {
+            if(org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.EmptyObserverPopulation.complete(cls,engine))return true;
             var objects=engine.system().state().allObjects().stream().filter(o->o.cls().isSubClassifierOf(cls)).toList();
             if(!objects.isEmpty()&&objects.stream().allMatch(o->xmlObserverOwned(engine,o)
                     &&"COMPLETE".equals(engine.metadata(o,"xml:observer:population"))

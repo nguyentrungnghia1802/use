@@ -106,9 +106,10 @@ public final class MoiseSchemeCapability implements ObservationCapabilityRegistr
         String hash="";
         try {var binary=DeclaredArtifactTypeProof.readActualBinary(Workspace.class);if(binary!=null)hash=AdapterEvidence.digest(binary.bytes());}
         catch(Exception|LinkageError unavailable){ /* Independent public state remains readable. */ }
-        return Map.of("version","CARTAGO_PUBLICATION_CLOCK/1.0","workspaceClassSha256",hash,
-                "status",hash.equals("0578556e6977dd23d04de4b5f55a293be9ba7da0fa14d16254ae804b10af4798")?"COMPLETE":"UNSUPPORTED",
-                "unit","EPOCH_MILLISECONDS","authority","WORKSPACE_NEW_PERCEPT_LOGGER_SYSTEM_CURRENT_TIME_MILLIS");
+        boolean patched=org.jacamo.bridge.contract.PinnedRuntimeClassProfiles.supportsPatchedWorkspaceHash(hash);
+        return Map.of("version",patched?"CARTAGO_PUBLICATION_CLOCK/1.1":"CARTAGO_PUBLICATION_CLOCK/1.0","workspaceClassSha256",hash,
+                "status",patched||hash.equals("0578556e6977dd23d04de4b5f55a293be9ba7da0fa14d16254ae804b10af4798")?"COMPLETE":"UNSUPPORTED",
+                "unit","EPOCH_MILLISECONDS","authority",patched?"WORKSPACE_NEW_PERCEPT_LOGGER_EXECUTION_BARRIER_NOW_MILLIS":"WORKSPACE_NEW_PERCEPT_LOGGER_SYSTEM_CURRENT_TIME_MILLIS");
     }
     @Override public synchronized Capability capability(){return new Capability(request.id(),closed?CapabilityStatus.UNAVAILABLE:CapabilityStatus.COMPLETE,List.of(reader.osHash,MoiseSchemeRead.MOISE_SHA),closed?"PROVIDER_CLOSED":"Public MOISE state; internal transition times remain unavailable");}
     @Override public synchronized void close(){closed=true;histories.clear();}

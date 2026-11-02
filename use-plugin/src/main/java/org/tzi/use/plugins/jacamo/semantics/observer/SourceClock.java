@@ -24,16 +24,18 @@ public record SourceClock(String clockIdentity,Long anchorEpochMillis,Long nowEp
         // time basis or use it for a deadline. Qualified claims stay strict.
         if(!qualified(observation)&&observation.quality()!=Completeness.COMPLETE&&time.status().equals("UNAVAILABLE"))
             return new SourceClock((String)data.get("clockIdentity"),null,null,Completeness.UNAVAILABLE,"SOURCE_CLOCK_PROOF_UNSUPPORTED:"+observation.diagnostic(),proof);
-        String identity="npl-system-wall:"+run+":"+generation;
+        boolean logical="NPL_LOGICAL_SOURCE_CLOCK/1.0".equals(proof.get("version"));
+        String authority=logical?"CHECKPOINT_RUNTIME_LOGICAL_EPOCH_MILLISECONDS_SAME_PROCESS_AS_PINNED_NPL":AUTHORITY;
+        String identity=(logical?"npl-logical-source:":"npl-system-wall:")+run+":"+generation;
         need(proof.keySet().equals(Set.of("version","sessionId","generation","modelRevision","anchorEpochMillis","previousEpochMillis","highWaterEpochMillis","clockIdentity","unit","authority","monotonicity","nplArtifact","sampler","anchorMeaning","diagnostic")),"PROOF_FIELDS");
         need(identity.equals(observation.subject())&&identity.equals(data.get("clockIdentity"))&&identity.equals(proof.get("clockIdentity")),"IDENTITY");
-        need("NPL_SYSTEM_WALL_CLOCK/1.0".equals(proof.get("version"))&&run.equals(proof.get("sessionId"))&&generation==integer(proof.get("generation"))&&revision.equals(proof.get("modelRevision")),"SCOPE_OR_VERSION");
-        need("EPOCH_MILLISECONDS".equals(proof.get("unit"))&&AUTHORITY.equals(proof.get("authority"))&&"UNPROVEN_WALL_CLOCK".equals(proof.get("monotonicity"))
-                &&"System.currentTimeMillis".equals(proof.get("sampler"))&&"FIRST_SOURCE_SAMPLE_REFERENCE_ONLY_NOT_ACTIVATION".equals(proof.get("anchorMeaning")),"TIME_BASIS");
-        var binary=CanonicalJson.object(proof.get("nplArtifact"));need(nplHash!=null&&nplHash.equals(binary.get("artifactSha256"))&&"0.6.1".equals(binary.get("artifactVersion"))&&"SUPPORTED_PINNED_BINARY".equals(binary.get("admission")),"BINARY");
+        need((logical||"NPL_SYSTEM_WALL_CLOCK/1.0".equals(proof.get("version")))&&run.equals(proof.get("sessionId"))&&generation==integer(proof.get("generation"))&&revision.equals(proof.get("modelRevision")),"SCOPE_OR_VERSION");
+        need("EPOCH_MILLISECONDS".equals(proof.get("unit"))&&authority.equals(proof.get("authority"))&&(logical?"SOURCE_OWNED_LOGICAL_CLOCK":"UNPROVEN_WALL_CLOCK").equals(proof.get("monotonicity"))
+                &&(logical?"ExecutionBarrier.nowMillis":"System.currentTimeMillis").equals(proof.get("sampler"))&&(logical?"SOURCE_RUN_CLOCK_ORIGIN":"FIRST_SOURCE_SAMPLE_REFERENCE_ONLY_NOT_ACTIVATION").equals(proof.get("anchorMeaning")),"TIME_BASIS");
+        var binary=CanonicalJson.object(proof.get("nplArtifact"));need(PinnedRuntimeClassProfiles.matchesNplBinary(nplHash,binary.get("artifactSha256"))&&Set.of("0.6.1","0.6.1-checkpoint-SNAPSHOT").contains(binary.get("artifactVersion"))&&(!logical||"0.6.1-checkpoint-SNAPSHOT".equals(binary.get("artifactVersion")))&&"SUPPORTED_PINNED_BINARY".equals(binary.get("admission")),"BINARY");
         long anchor=epoch(proof,"anchorEpochMillis"),previous=epoch(proof,"previousEpochMillis"),high=epoch(proof,"highWaterEpochMillis");
         need(anchor>=0&&previous>=0&&high>=anchor&&high>=previous&&observation.diagnostic().equals(proof.get("diagnostic")),"ANCHOR_OR_DIAGNOSTIC");
-        Long now=null;if(time.status().equals("OBSERVED")){need(identity.equals(time.clockId())&&AUTHORITY.equals(time.authority()),"SOURCE_TIME");now=Long.valueOf(time.rawValue());need(high>=now,"HIGH_WATER");}
+        Long now=null;if(time.status().equals("OBSERVED")){need(identity.equals(time.clockId())&&authority.equals(time.authority()),"SOURCE_TIME");now=Long.valueOf(time.rawValue());need(high>=now,"HIGH_WATER");}
         var result=new SourceClock(identity,anchor,now,observation.quality(),observation.diagnostic(),proof);
         if(observation.quality()==Completeness.COMPLETE)need(now!=null&&now>=previous&&high==now&&result.relative(now).value()!=null,"FALSE_COMPLETENESS");
         if(now!=null&&now<high)need(observation.diagnostic().contains("REGRESSION"),"REGRESSION_UNREPORTED");
@@ -62,7 +64,7 @@ public record SourceClock(String clockIdentity,Long anchorEpochMillis,Long nowEp
         need(epoch(value,"highWaterEpochMillis")>=epoch(old,"highWaterEpochMillis"),"HIGH_WATER_REGRESSED");
         if(previous.diagnostic().contains("REGRESSION"))need(next.diagnostic().contains("REGRESSION"),"REGRESSION_HISTORY_LOST");
     }
-    public static boolean qualified(VerificationObservation value){return value.kind()==VerificationObservation.Kind.CLOCK&&"NPL_SYSTEM_WALL_CLOCK/1.0".equals(CanonicalJson.object(value.data().get("sourceProof")).get("version"));}
+    public static boolean qualified(VerificationObservation value){return value.kind()==VerificationObservation.Kind.CLOCK&&Set.of("NPL_SYSTEM_WALL_CLOCK/1.0","NPL_LOGICAL_SOURCE_CLOCK/1.0").contains(CanonicalJson.object(value.data().get("sourceProof")).get("version"));}
     private static long epoch(Map<String,Object> map,String key){try{if(!(map.get(key) instanceof String text))throw invalid(key);return Long.parseLong(text);}catch(NumberFormatException invalid){throw invalid(key);}}
     private static long integer(Object value){try{if(!(value instanceof Number))throw invalid("INTEGER");return new java.math.BigDecimal(value.toString()).longValueExact();}catch(ArithmeticException|NumberFormatException invalid){throw invalid("INTEGER");}}
     private static void need(boolean condition,String reason){if(!condition)throw invalid(reason);}

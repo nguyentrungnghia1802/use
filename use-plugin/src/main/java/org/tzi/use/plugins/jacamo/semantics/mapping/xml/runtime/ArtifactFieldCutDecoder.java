@@ -59,7 +59,7 @@ public final class ArtifactFieldCutDecoder {
             var evidence=CanonicalJson.object(data.get("probeEvidence"));
             if(!proof.provider().equals(evidence.get("provider"))||!proof.resource().equals(evidence.get("resource"))||!artifact.id().incarnation().equals(evidence.get("artifactUuid"))
                     ||!workspace.id().incarnation().equals(evidence.get("workspaceUuid"))||!(type+"."+field+":"+javaType).equals(evidence.get("field"))
-                    ||!FRAMEWORK_HASH.equals(evidence.get("frameworkArtifactHash"))||!"CARTAGO31_PRIVATE_REENTRANT_TRYLOCK_READ_V1".equals(evidence.get("lockPolicy"))
+                    ||!PinnedRuntimeClassProfiles.supportsCartagoArtifactHash(evidence.get("frameworkArtifactHash"))||!"CARTAGO31_PRIVATE_REENTRANT_TRYLOCK_READ_V1".equals(evidence.get("lockPolicy"))
                     ||!"FIXED_MEMBERS_TRY_SET_ACCESSIBLE_APPROVED".equals(evidence.get("accessOutcome")))throw invalid("FIELD_CUT_PROVIDER_OR_ACCESS_MISMATCH");
             var rawProperties=CanonicalJson.object(data.get("properties"));var rawFields=CanonicalJson.object(data.get("fields"));
             if(!rawProperties.keySet().equals(properties.keySet())||!rawFields.keySet().equals(Set.of(field)))throw invalid("FIELD_CUT_INTERFACE_MISMATCH");

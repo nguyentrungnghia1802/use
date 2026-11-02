@@ -44,6 +44,9 @@ public final class LocalTcpBridgeServer implements AutoCloseable {
     private final Set<Socket> clients=ConcurrentHashMap.newKeySet();
     private ServerSocket server;private Thread acceptThread;private ThreadPoolExecutor workers;
     private final java.util.function.Function<org.jacamo.bridge.contract.RuntimeControlContract.Request,byte[]> control;
+    private java.util.function.Function<org.jacamo.bridge.contract.VerifiedCheckpointProtocol.Command,byte[]> checkpoint=request->{throw new IllegalStateException("VERIFIED_CHECKPOINTS_UNAVAILABLE");};
+    private Runnable observerDisconnected=()->{};
+    public void checkpointHandler(java.util.function.Function<org.jacamo.bridge.contract.VerifiedCheckpointProtocol.Command,byte[]> handler,Runnable disconnected){checkpoint=java.util.Objects.requireNonNull(handler);observerDisconnected=java.util.Objects.requireNonNull(disconnected);}
 
     public LocalTcpBridgeServer(InetAddress address,int port,byte[] secret,int maxFrameBytes,int queueCount,long queueBytes,
                                 Supplier<byte[]> handshake,Supplier<byte[]> model,Supplier<byte[]> runtime,Supplier<byte[]> gap){
@@ -78,6 +81,7 @@ public final class LocalTcpBridgeServer implements AutoCloseable {
     private void handle(Socket socket){try(socket){Map<String,Object> request=readRequest(socket);String operation=(String)request.get("operation");String resume=(String)request.get("resumeToken");switch(operation){
             case "HANDSHAKE"->write(socket,handshake.get());case "MODEL_SNAPSHOT"->write(socket,model.get());case "RUNTIME_SNAPSHOT"->write(socket,runtime.get());
             case "CONTROL"->write(socket,control.apply(org.jacamo.bridge.contract.RuntimeControlContract.Request.decode(CanonicalJson.object(request.get("control")))));
+            case "CHECKPOINT"->write(socket,checkpoint.apply(org.jacamo.bridge.contract.VerifiedCheckpointProtocol.Command.decode(CanonicalJson.object(request.get("checkpoint")))));
             case "ACK"->{lastAcknowledgement=resume;acknowledgements.incrementAndGet();write(socket,new byte[]{'O','K'});}case "SUBSCRIBE"->subscribe(socket,resume);default->throw new IllegalArgumentException("BRIDGE_OPERATION_REJECTED");}}
         catch(Exception failure){
             // Diagnostics stay local; authentication/protocol details are never reflected to peers.
@@ -92,14 +96,14 @@ public final class LocalTcpBridgeServer implements AutoCloseable {
         ready.flush();
         if(cursor<0){write(socket,gap.get());return;}
         subscriber.drain();
-    }finally{subscribers.remove(subscriber);}}
+    }finally{subscribers.remove(subscriber);if(running.get()&&subscribers.isEmpty())observerDisconnected.run();}}
     private Map<String,Object> readRequest(Socket socket)throws Exception{byte[] bytes=readFrame(new DataInputStream(socket.getInputStream()));Map<String,Object> map=CanonicalJson.object(CanonicalJson.decode(bytes,maxFrameBytes,32,8192));
-        boolean controlled="CONTROL".equals(map.get("operation"));
-        if(!map.keySet().equals(controlled?Set.of("operation","resumeToken","nonce","mac","control"):Set.of("operation","resumeToken","nonce","mac")))throw new IllegalArgumentException("BRIDGE_REQUEST_SCHEMA");
+        boolean verified="CHECKPOINT".equals(map.get("operation")),controlled=verified||"CONTROL".equals(map.get("operation"));String commandKey=verified?"checkpoint":"control";
+        if(!map.keySet().equals(controlled?Set.of("operation","resumeToken","nonce","mac",commandKey):Set.of("operation","resumeToken","nonce","mac")))throw new IllegalArgumentException("BRIDGE_REQUEST_SCHEMA");
         String operation=text(map,"operation"),resume=text(map,"resumeToken"),nonce=text(map,"nonce"),mac=text(map,"mac");
         if(nonce.length()>128||resume.length()>1024||!nonces.add(nonce))throw new IllegalArgumentException("BRIDGE_NONCE_REJECTED");
         if(controlled && !resume.isEmpty())throw new IllegalArgumentException("BRIDGE_CONTROL_RESUME_TOKEN_REJECTED");
-        String body=controlled?new String(CanonicalJson.encode(CanonicalJson.object(map.get("control"))),StandardCharsets.UTF_8):"";
+        String body=controlled?new String(CanonicalJson.encode(CanonicalJson.object(map.get(commandKey))),StandardCharsets.UTF_8):"";
         if(nonces.size()>16384)nonces.clear();String expected=hmac(operation+"\n"+resume+"\n"+nonce+(controlled?"\n"+body:""));
         if(!MessageDigest.isEqual(expected.getBytes(StandardCharsets.US_ASCII),mac.getBytes(StandardCharsets.US_ASCII)))throw new IllegalArgumentException("BRIDGE_AUTH_REJECTED");return map;}
     private String text(Map<String,Object> map,String key){Object value=map.get(key);if(!(value instanceof String text))throw new IllegalArgumentException("BRIDGE_REQUEST_FIELD:"+key);return text;}

@@ -99,6 +99,10 @@ public final class NativeRuntimeProjector implements AutoCloseable {
         this(pipeline.nativeResult().state().system(),pipeline.nativeResult().state().semanticObjectIndex(),session,generation,revision,new CodeGroundedRuntimeRuleRegistry(),directory,pipeline.program(),journalBytes);
         installCaptureScope(pipeline);
     }
+    public NativeRuntimeProjector(CodeGroundedNativePipeline.CanonicalBuildResult pipeline,String session,long generation,String revision,Path directory,long journalBytes,boolean compressed){
+        this(pipeline.nativeResult().state().system(),pipeline.nativeResult().state().semanticObjectIndex(),session,generation,revision,new CodeGroundedRuntimeRuleRegistry(),directory,pipeline.program(),journalBytes,compressed);
+        installCaptureScope(pipeline);
+    }
     private void installCaptureScope(CodeGroundedNativePipeline.CanonicalBuildResult pipeline) {
         if(pipeline.xmlPreparation()!=null&&pipeline.xmlPreparation().preflight().get("captureScope") instanceof Map<?,?> scope)
             expectedCaptureScope=ObservationCaptureScope.fromMap(CanonicalJson.object(scope));
@@ -109,6 +113,10 @@ public final class NativeRuntimeProjector implements AutoCloseable {
     }
     private NativeRuntimeProjector(MSystem system,NativeObjectBindings index,String session,long generation,String revision,
             CodeGroundedRuntimeRuleRegistry registry,Path runtimeDirectory,org.tzi.use.plugins.jacamo.semantics.mapping.SemanticProgram program,long journalBytes) {
+        this(system,index,session,generation,revision,registry,runtimeDirectory,program,journalBytes,false);
+    }
+    private NativeRuntimeProjector(MSystem system,NativeObjectBindings index,String session,long generation,String revision,
+            CodeGroundedRuntimeRuleRegistry registry,Path runtimeDirectory,org.tzi.use.plugins.jacamo.semantics.mapping.SemanticProgram program,long journalBytes,boolean compressed){
         if (session == null || session.isBlank() || revision == null || revision.isBlank() || generation < 0)
             throw new IllegalArgumentException("NATIVE_RUNTIME_IDENTITY_REQUIRED");
         this.sessionId = session; this.generation = generation; this.modelRevision = revision;
@@ -117,7 +125,7 @@ public final class NativeRuntimeProjector implements AutoCloseable {
         xmlCartagoPopulationKinds=program!=null&&program.xmlPlan()!=null?org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.producerCartagoKinds(program.xmlPlan().inputs().specification()):java.util.Set.of(RuntimeFactKind.values());
         coordinator = new RuntimeVerificationCoordinator(mutations, session, generation, revision,
                 runtimeDirectory==null?RuntimeVerificationCoordinator.createEphemeralDirectory(RuntimeVerificationCoordinator.defaultRuntimeRoot()):runtimeDirectory,
-                512, journalBytes, true);
+                512, journalBytes, true,compressed);
     }
     @Override public void close() { coordinator.close(); }
     public MSystem system() { return mutations.system(); }

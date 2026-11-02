@@ -14,7 +14,7 @@ public final class NplLifecycleCapability implements ObservationCapabilityRegist
     public NplLifecycleCapability(ObservationCapabilityRequest request,FrameworkObservationProviders.Context context) {
         if(!request.provider().equals(PROVIDER)||!request.parameters().keySet().equals(Set.of("hash")))throw new IllegalArgumentException("NPL_LIFECYCLE_REQUEST_UNSUPPORTED");
         NplRuntimeProfile.requireSupported();
-        if(!NplRuntimeProfile.evidence().get("artifactSha256").equals(request.parameters().get("hash")))throw new IllegalArgumentException("NPL_LIFECYCLE_REQUESTED_BINARY_MISMATCH");
+        if(!PinnedRuntimeClassProfiles.matchesNplBinary((String)request.parameters().get("hash"),NplRuntimeProfile.evidence().get("artifactSha256")))throw new IllegalArgumentException("NPL_LIFECYCLE_REQUESTED_BINARY_MISMATCH");
         this.request=request;
         ownsSource=context.nplSource()==null;
         source=ownsSource?new NplBoardSnapshotSource(context.run(),context.generation(),context.source().modelRevision(),

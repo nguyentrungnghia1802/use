@@ -68,6 +68,8 @@
                                 <available file="${project.build.directory}/new-staging/bin/start_use.bat"
                                            property="latest.launcher.present"/>
                                 <fail unless="latest.launcher.present">Latest installation has no launcher; previous installation retained.</fail>
+                                <!-- First installation has no work directory; Ant move still validates its base directory. -->
+                                <mkdir dir="${project.build.directory}/new/work"/>
                                 <move todir="${project.build.directory}/new-staging/work">
                                     <fileset dir="${project.build.directory}/new/work" erroronmissingdir="false"/>
                                 </move>

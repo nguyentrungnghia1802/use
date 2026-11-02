@@ -36,6 +36,11 @@ class MoiseFactQualificationTest {
                 assertThrows(IllegalArgumentException.class,()->dataset.capture(replace(cut,fact,values),"run",1));
                 var definition=new LinkedHashMap<>(CanonicalJson.object(fact.values().get("organisationDefinition")));definition.put("name","mutated-name");var changed=new LinkedHashMap<>(fact.values());changed.put("organisationDefinition",definition);
                 assertThrows(IllegalArgumentException.class,()->dataset.capture(replace(cut,fact,changed),"run",1));
+                var provenance=new LinkedHashMap<>(CanonicalJson.object(fact.values().get("organisationDefinition")));
+                var metadata=new LinkedHashMap<>(CanonicalJson.object(provenance.get("metadata")));metadata.put("evidence",List.of());provenance.put("metadata",metadata);
+                var unproven=new LinkedHashMap<>(fact.values());unproven.put("organisationDefinition",provenance);
+                assertThrows(IllegalArgumentException.class,()->dataset.capture(replace(cut,fact,unproven),"run",1),"A cached shape must never admit different provenance");
+                assertEquals(first,dataset.capture(cut,"run",1).get("groups"));
             }
         }finally {
             if(artifact!=null){CslGroupBoard.instance.getNormativeEngine().stop();environment.getController("/main").removeArtifact(artifact.getName());}

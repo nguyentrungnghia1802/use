@@ -16,7 +16,7 @@ public final class ArtifactFieldObservation implements ObservationCapabilityRegi
     private final ObservationCapabilityRequest request;
     private final String selectedClass,selectedField,selectedType;
     private final Map<String,String> propertyTypes;
-    private static final String CARTAGO_ARTIFACT_HASH="67830177f2cb450876ac3b43aa90741cbc0b72079f5fcdc8320ff2f11b17c012";
+    private static final String CARTAGO_ARTIFACT_HASH=CartagoArtifactReadScope.ARTIFACT_SHA;
     private record Reference(String hash,String resource,String provider) { }
     private record Access(Field candidate,Field lock,Field identity) { }
     private final CartagoEnvironment environment;
@@ -75,7 +75,7 @@ public final class ArtifactFieldObservation implements ObservationCapabilityRegi
     public String diagnostic(){return unavailable;}
     private void verifyType(Class<?> type,Reference expected)throws Exception {
         var framework=DeclaredArtifactTypeProof.readActualBinary(Artifact.class);
-        if(framework==null||!CARTAGO_ARTIFACT_HASH.equals(AdapterEvidence.digest(framework.bytes())))throw new IllegalArgumentException("CARTAGO_LOCK_IMPLEMENTATION_UNSUPPORTED");
+        if(framework==null||!org.jacamo.bridge.contract.PinnedRuntimeClassProfiles.supportsCartagoArtifactHash(AdapterEvidence.digest(framework.bytes())))throw new IllegalArgumentException("CARTAGO_LOCK_IMPLEMENTATION_UNSUPPORTED");
         if(!type.getName().equals(selectedClass)||!Artifact.class.isAssignableFrom(type))throw new IllegalArgumentException("ACTUAL_CLASS_NOT_ALLOWLISTED");
         var bytes=DeclaredArtifactTypeProof.readActualBinary(type);
         if(bytes==null||!expected.hash().equals(AdapterEvidence.digest(bytes.bytes()))||!expected.resource().equals(bytes.resource().toExternalForm())

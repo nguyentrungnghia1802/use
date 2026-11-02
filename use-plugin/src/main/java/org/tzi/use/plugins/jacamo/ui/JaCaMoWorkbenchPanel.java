@@ -68,6 +68,11 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private final Map<String, JButton> actionButtons = new LinkedHashMap<>();
     private boolean autoImportStarted;
     private javax.swing.JDialog resultsWindow;
+    private final JLabel checkpointMode=named(new JLabel("Verified checkpoints"),"checkpoint-execution-mode");
+    private final JLabel checkpointStatus=named(new JLabel("Passive observation"),"verified-checkpoint-status");
+    private final JLabel checkpointResultStatus=named(new JLabel("Passive observation"),"verified-checkpoint-result-status");
+    private final JButton acknowledgeCheckpoint=named(new JButton("Acknowledge & Continue"),"acknowledge-checkpoint");
+    private final JButton acknowledgeResultCheckpoint=named(new JButton("Acknowledge & Continue"),"acknowledge-result-checkpoint");
     private final JTabbedPane tabs=named(new JTabbedPane(),"workbench-tabs");
     private final JTabbedPane diagnostics=named(new JTabbedPane(),"diagnostic-tabs");
     private org.tzi.use.plugins.jacamo.ui.use4goal.state.RuntimeStateViews runtimeStateViews;
@@ -79,6 +84,9 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private final org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePresenter observedPresenter;
     private org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult observedDisplayedResult;
     private boolean observedRefreshPending;
+    private AutoCloseable checkpointPresentation;
+    private boolean checkpointLive;
+    private long presentationEpoch;
     private long observedDisplayedHistory=-1;
     private final org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparationCache observedPreparation=new org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparationCache();
     private final JLabel runtimeProgress=named(new JLabel("Waiting for runtime observations"),"runtime-progress");
@@ -97,11 +105,14 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
 
     @Override public void addNotify() {
         super.addNotify();
+        registerCheckpointPresentation();
         runtimeStatusTimer.start();
     }
 
     @Override public void removeNotify() {
         runtimeStatusTimer.stop();
+        if(checkpointPresentation!=null){try{checkpointPresentation.close();}catch(Exception ignored){}checkpointPresentation=null;}
+        presentationEpoch++;
         if(resultsWindow!=null){resultsWindow.dispose();resultsWindow=null;}
         detachSemanticViews();
         viewEpoch++;
@@ -148,7 +159,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         Path checkoutClasspath=RUNTIME_LIBS_BROWSE_FOLDER.resolve("jacamo-bridge-classpath.txt");
         Path suggestedClasspath=facade.defaultRuntimeClasspathFile();
         runtimeClasspath.setText(!configuredClasspath.isEmpty()?configuredClasspath:
-                Files.isRegularFile(checkoutClasspath)?checkoutClasspath.toString():suggestedClasspath==null?"":suggestedClasspath.toString());
+                suggestedClasspath!=null&&Files.isRegularFile(suggestedClasspath)?suggestedClasspath.toString():Files.isRegularFile(checkoutClasspath)?checkoutClasspath.toString():suggestedClasspath==null?"":suggestedClasspath.toString());
         runtimeClasspath.setToolTipText("Loaded automatically for producer startup; Runtime libs can override the selection");
         engineProfile.setToolTipText("Projection compatibility: use JACAMO_DECLARATIVE_XML for current model folders");
         modelInputMode.setToolTipText("AUTHORED loads CSL/iStar files; GENERATED builds models from explicit XML rules");
@@ -161,7 +172,48 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         if(!observedWorkflow)add(tabs, BorderLayout.CENTER);
         add(status, BorderLayout.SOUTH);
         refreshRuntime();
+        registerCheckpointPresentation();
         autoImportIfConfigured();
+    }
+    private void registerCheckpointPresentation(){
+        if(observedWorkflow&&checkpointPresentation==null)checkpointPresentation=facade.registerCheckpointPresenter(this::presentCheckpoint);
+    }
+    private java.util.concurrent.CompletableFuture<Void> presentCheckpoint(
+            org.tzi.use.plugins.jacamo.codegrounded.runtime.VerifiedCheckpointService.View checkpoint,
+            org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot cut,
+            Map<String,org.jacamo.bridge.contract.VerifiedCheckpointProtocol.Check> checks) {
+        var displayed=new java.util.concurrent.CompletableFuture<Void>();
+        javax.swing.SwingUtilities.invokeLater(()->{
+            try {
+                if(checkpointPresentation==null||!java.awt.GraphicsEnvironment.isHeadless()&&!isShowing())throw new IllegalStateException("CHECKPOINT_VIEW_NOT_SHOWING");
+                refreshSemanticViews();showResultsWindow();
+                var panel=observedConformance;if(panel==null)throw new IllegalStateException("CHECKPOINT_MODEL_VIEW_UNAVAILABLE");
+                long ticket=++presentationEpoch,epoch=viewEpoch;String scope=panel.executionScope();checkpointLive=true;
+                new javax.swing.SwingWorker<org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparedCuts,Void>() {
+                    @Override protected org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparedCuts doInBackground(){
+                        var cuts=observedPresenter.captureCheckpoint(cut,checkpoint,checks);
+                        return new org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparationCache().prepare(cuts,scope,true,true);
+                    }
+                    @Override protected void done(){
+                        try {
+                            if(ticket!=presentationEpoch||epoch!=viewEpoch||panel!=observedConformance||checkpointPresentation==null)throw new IllegalStateException("CHECKPOINT_VIEW_REPLACED");
+                            var prepared=get();
+                            // The user may switch execution while this worker prepares
+                            // the immutable cut. Preserve that choice at publication.
+                            if(!panel.executionScope().equals(scope))prepared=new org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparationCache().prepare(prepared.all(),panel.executionScope(),true,true);
+                            panel.showCheckpoint(prepared);observedDisplayedResult=cut.result();
+                            runtimeProgress.setText("Checkpoint "+checkpoint.checkpoint()+" · USE state "+cut.currentVersion()+" · evaluated and displayed · JaCaMo waiting for decision");
+                            refreshRuntime();
+                            // Flush this exact immutable cut before acknowledging presentation.
+                            // Native work, disk history and layout preparation have already finished.
+                            if(tabs.isShowing())tabs.paintImmediately(tabs.getVisibleRect());
+                            displayed.complete(null);
+                        }catch(Exception failure){displayed.completeExceptionally(failure);}
+                    }
+                }.execute();
+            }catch(Exception failure){displayed.completeExceptionally(failure);}
+        });
+        return displayed;
     }
 
     public void importProject(Path jcmFile) {
@@ -195,7 +247,9 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         try{long mib=Long.parseLong(journalBudget.getText().trim());if(mib<1||mib>1024)throw new NumberFormatException();budget=mib*1048576;}
         catch(NumberFormatException invalid){errorPresenter.accept("Journal quota must be an integer from 1 to 1024 MiB");return;}
         boolean showGui=showProducerGui.isSelected();
-        executeBackground("Import failed", () -> {if(facade.journalBudgetSupported())facade.nextJournalBudgetBytes(budget);if(owned)facade.prepareOwnedProducer(normalized,selection,classpath,showGui);else if(selection==null)facade.importProject(normalized);else facade.importProject(normalized,selection);}, () -> {
+        boolean verified=observedWorkflow||facade.verifiedCheckpointMode();
+        executeBackground("Import failed", () -> {if(owned)facade.verifiedCheckpointMode(verified);if(facade.journalBudgetSupported())facade.nextJournalBudgetBytes(budget);if(owned)facade.prepareOwnedProducer(normalized,selection,classpath,showGui);else if(selection==null)facade.importProject(normalized);else facade.importProject(normalized,selection);}, () -> {
+            checkpointLive=false;presentationEpoch++;
             refreshRuntime();
             setStatus("Imported " + normalized);
             writeReadyEvidence(normalized);
@@ -225,6 +279,20 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
 
     public void refreshRuntime() {
         refreshWorkflowControls();
+        var held=facade.verifiedCheckpointState();
+        String checkpointText=switch(held.state()) {
+            case "QUIESCING","VERIFYING"->"Waiting for verification";
+            case "HELD_FAILURE"->"Held — violation";
+            case "HELD_UNVERIFIED"->"Held — verification unavailable";
+            case "RUNNING"->"Running";
+            default->observedWorkflow||facade.verifiedCheckpointMode()?"Verified checkpoints — ready to start":"Passive observation";
+        };
+        if(held.pending())checkpointText="Continuing";
+        if(!held.checkpoint().isBlank())checkpointText+=" · "+held.checkpoint();
+        checkpointStatus.setText(checkpointText);checkpointResultStatus.setText(checkpointText);
+        String checkpointTip=held.reason()+" | executions="+held.executionScope()+" | token="+held.token()+" | result="+held.resultHash();
+        checkpointStatus.setToolTipText(checkpointTip);checkpointResultStatus.setToolTipText(checkpointTip);
+        acknowledgeCheckpoint.setEnabled(held.reviewable());acknowledgeResultCheckpoint.setEnabled(held.reviewable());
         runtimeState.setText(facade.runtimeStatus().state().name());
         var program=facade.semanticProgramEvidence();
         if(program!=displayedProgram&&!program.equals(displayedProgram)) {
@@ -266,26 +334,29 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         if(runtimeStateViews!=null)runtimeStateViews.setActive(tabs.isShowing()&&tabs.getSelectedComponent()==runtimeStateViews.aolPanel,tabs.isShowing()&&tabs.getSelectedComponent()==runtimeStateViews.iscnPanel);
     }
     private void refreshObservedConformance(org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult result) {
+        boolean settledCheckpoint=checkpointLive&&facade.verifiedCheckpointState().state().equals("RUNNING");
+        if(checkpointLive&&!settledCheckpoint)return;
         if(observedConformance==null || observedRefreshPending)return;
         long history=facade.runtimeHistoryTail().persistedEntries();
         if(result==observedDisplayedResult&&history==observedDisplayedHistory&&!observedPresenter.historyPending())return;
         var panel=observedConformance;var model=displayedNativeModel;long epoch=viewEpoch;
+        long presentation=presentationEpoch;
         observedRefreshPending=true;
         String requestedScope=panel.executionScope();
         new javax.swing.SwingWorker<org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparedCuts,Void>() {
             private String progress;
             @Override protected org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparedCuts doInBackground(){
-                var cuts=observedPresenter.captureIncremental();
+                var cuts=settledCheckpoint?observedPresenter.captureSettled():observedWorkflow&&!facade.verifiedCheckpointState().token().isBlank()?observedPresenter.captureCurrent():observedPresenter.captureIncremental();
                 var tail=facade.runtimeHistoryTail();var snapshot=facade.verificationSnapshot();
                 long verified=tail.entries().stream().map(org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeHistoryPage.Entry::result).filter(r->r.freshness().equals("CURRENT_OBSERVED")&&r.semantic()!=null&&"PINNED_NATIVE_CUT".equals(CanonicalJson.object(r.semantic().observation().getOrDefault("originalEngine",Map.of())).get("evaluated"))).mapToLong(org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult::stateVersion).max().orElse(-1);
                 progress="USE state: "+snapshot.currentVersion()+" · latest verified state: "+(verified<0?"pending":verified)+" · "+(tail.gap()?"GAP: "+tail.diagnostic():verified<snapshot.currentVersion()?"processing / awaiting evidence":"no state-version backlog")+" · journal: "+tail.persistedEntries();
                 var ingress=facade.ingressProgress();if(!ingress.isEmpty())progress="Events saved: "+ingress.get("saved")+" · processed: "+ingress.get("processed")+" · waiting: "+ingress.get("pending")+" · "+progress;
-                return observedPreparation.prepare(cuts,requestedScope,observedWorkflow);
+                return observedPreparation.prepare(cuts,requestedScope,observedWorkflow,settledCheckpoint);
             }
             @Override protected void done(){
                 try {
                     var cuts=get();
-                    if(epoch==viewEpoch && observedConformance==panel && displayedNativeModel==model&&panel.executionScope().equals(requestedScope)){panel.applyPrepared(cuts);runtimeProgress.setText(progress);observedDisplayedResult=result;observedDisplayedHistory=history;}
+                    if(presentation==presentationEpoch&&(!checkpointLive||settledCheckpoint&&facade.verifiedCheckpointState().state().equals("RUNNING"))&&epoch==viewEpoch && observedConformance==panel && displayedNativeModel==model&&panel.executionScope().equals(requestedScope)){if(settledCheckpoint)panel.showCheckpoint(cuts);else panel.applyPrepared(cuts);runtimeProgress.setText(progress);observedDisplayedResult=result;observedDisplayedHistory=history;}
                 }catch(Exception error){
                     if(epoch==viewEpoch && observedConformance==panel)setStatus("Observed evidence unavailable: "+error.getMessage());
                 }finally{observedRefreshPending=false;}
@@ -331,7 +402,10 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         if(resultsWindow==null||!resultsWindow.isDisplayable()){
             resultsWindow=new javax.swing.JDialog(owner,"use4Goal — Verification results",java.awt.Dialog.ModalityType.MODELESS);
             resultsWindow.setName("use4goal-results-window");resultsWindow.setDefaultCloseOperation(javax.swing.JDialog.HIDE_ON_CLOSE);
-            resultsWindow.add(tabs,BorderLayout.CENTER);resultsWindow.setSize(1250,780);resultsWindow.setLocationRelativeTo(owner);
+            resultsWindow.add(tabs,BorderLayout.CENTER);
+            var checkpointControls=new JPanel(new FlowLayout(FlowLayout.LEADING));checkpointControls.add(checkpointResultStatus);checkpointControls.add(acknowledgeResultCheckpoint);
+            acknowledgeResultCheckpoint.addActionListener(event->reviewActiveCheckpoint());resultsWindow.add(checkpointControls,BorderLayout.NORTH);
+            resultsWindow.setSize(1250,780);resultsWindow.setLocationRelativeTo(owner);
         }
         return resultsWindow;
     }
@@ -343,12 +417,15 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
                 prepareProducer,()->prepareObservedProject(true));
         registerInputButtons(inputs);panel.add(inputs);
         var controls=new JPanel(new FlowLayout(FlowLayout.LEADING));
-        controls.add(startRuntime);controls.add(pauseRuntime);controls.add(resumeRuntime);controls.add(stopProducer);controls.add(restartProducer);
+        controls.add(startRuntime);controls.add(stopProducer);controls.add(restartProducer);
+        acknowledgeCheckpoint.addActionListener(event->reviewActiveCheckpoint());
         controls.add(showProducerGui);controls.add(button("Show results","show-results",this::showResultsWindow));
         var advancedToggle=named(new javax.swing.JToggleButton("Advanced controls"),"show-advanced");controls.add(advancedToggle);panel.add(controls);
+        var checkpointControls=new JPanel(new FlowLayout(FlowLayout.LEADING));checkpointControls.add(checkpointMode);checkpointControls.add(checkpointStatus);checkpointControls.add(acknowledgeCheckpoint);panel.add(checkpointControls);
         var sourceStatus=new JPanel(new FlowLayout(FlowLayout.LEADING));sourceStatus.add(new JLabel("Workflow:"));sourceStatus.add(workflowState);sourceStatus.add(new JLabel("Bridge:"));sourceStatus.add(runtimeState);panel.add(sourceStatus);
           panel.add(producerState);panel.add(programSummary);panel.add(runtimeProgress);
         var advanced=named(new JPanel(new GridLayout(0,1)),"advanced-controls");advanced.setVisible(false);
+        var cycleControls=new JPanel(new FlowLayout(FlowLayout.LEADING));cycleControls.add(new JLabel("Jason cycle controls:"));cycleControls.add(pauseRuntime);cycleControls.add(resumeRuntime);advanced.add(cycleControls);
         var transport=new JPanel(new FlowLayout(FlowLayout.LEADING));transport.add(button("Import external project","import-project",()->prepareObservedProject(false)));
         transport.add(stopMonitor);transport.add(restartMonitor);advanced.add(transport);
         var profiles=new JPanel(new FlowLayout(FlowLayout.LEADING));profiles.add(new JLabel("Compatibility profile:"));profiles.add(engineProfile);profiles.add(modelInputMode);profiles.add(strictSourceChecksums);advanced.add(profiles);
@@ -617,6 +694,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         boolean ownedActive=java.util.Set.of("PREPARING","WAITING_FOR_START","RUNNING","EXITED").contains(producer.state());
         producerState.setText(producer.state()+" | JaCaMo PID="+producer.pid()+" | USE PID="+ProcessHandle.current().pid());producerState.setToolTipText(producer.diagnostic());
         prepareProducer.setEnabled(!busy&&!replayActive&&!ownedActive);
+        checkpointMode.setEnabled(!busy&&!replayActive&&!ownedActive);
         showProducerGui.setEnabled(!busy&&!replayActive&&!ownedActive);
         stopProducer.setEnabled(!replayActive&&ownedActive);
         restartProducer.setEnabled(!busy&&!replayActive&&!producer.runId().isBlank()&&!producer.state().equals("ERROR"));
@@ -635,6 +713,15 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     }
 
     private void setStatus(String message) { status.setText(displayMessage(message)); }
+    private void reviewActiveCheckpoint(){
+        var active=facade.verifiedCheckpointState();
+        if(!active.reviewable())return;
+        acknowledgeCheckpoint.setEnabled(false);acknowledgeResultCheckpoint.setEnabled(false);
+        var result=facade.acknowledgeVerifiedCheckpoint(active.token(),active.resultHash());
+        result.whenComplete((receipt,error)->javax.swing.SwingUtilities.invokeLater(()->{
+            if(error!=null)errorPresenter.accept("Checkpoint continuation unavailable: "+error.getMessage());refreshRuntime();
+        }));
+    }
 
     static String displayMessage(String message) {
         return "<html>" + escapeHtml(wrapMessage(message)).replace("\n", "<br>") + "</html>";

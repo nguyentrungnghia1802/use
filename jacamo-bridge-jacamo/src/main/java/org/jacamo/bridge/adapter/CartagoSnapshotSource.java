@@ -140,7 +140,10 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
     }
     public void publishObservation(java.util.concurrent.Callable<Void> refreshOtherSources,Runnable callback) throws Exception {
         synchronized(captureLock) {
-            long deadline=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(1);
+            // A complete population read can itself take over one second. Keep
+            // the same stable-watermark proof and attempt bound; a short wall
+            // budget must not discard a valid next interval on larger graphs.
+            long deadline=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
             var rejected=new ArrayList<String>();
             for(int attempt=0;attempt<16&&System.nanoTime()<deadline;attempt++) {
                 long before=sequence.get();var started=Instant.now();String topology=readTopologyFingerprint();
@@ -568,6 +571,7 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
         var payload=new java.util.LinkedHashMap<String,Object>();
         payload.put("operationLifecycleCoverage","PARTIAL");payload.put("suspendResumeObservation","UNSUPPORTED_CARTAGO_3_1_AWAIT_NO_LOGGER_HOOKS");
         payload.put("phase",phase);payload.put("operation",op.getName());payload.put("opId",id.toString());
+        payload.put("artifactTypeJavaClassName",artifact.getArtifactType());
         payload.put("artifactSemanticId",OfficialCartagoAdapter.artifactId(environment.getId().toString(),artifact));
         AgentId performer=id.getAgentBodyId();
         if(performer!=null && artifact.equals(id.getArtifactId())) {

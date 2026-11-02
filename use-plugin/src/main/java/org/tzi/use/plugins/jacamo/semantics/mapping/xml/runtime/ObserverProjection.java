@@ -77,6 +77,12 @@ public final class ObserverProjection {
     }
     public List<M0RuleExecutor.Outcome> apply(Port port,String epoch,String cut,Map<String,RuntimeTables.Result> tables,String run,long generation)throws UseApiException {
         var result=new ArrayList<M0RuleExecutor.Outcome>();
+        var emptyPopulations=new TreeMap<String,Object>();
+        for(Project project:projects){var table=tables.get(project.node().attr("tableRef"));
+            if(project.view().attr("category").equals("CLASS")&&table!=null&&table.populationQuality()==Completeness.COMPLETE&&table.rows().isEmpty())
+                emptyPopulations.put(project.type().name(),Map.of("project",project.node().attr("id"),"table",project.node().attr("tableRef"),"rowCount","0"));
+        }
+        EmptyObserverPopulation.record(port,program,epoch,cut,emptyPopulations);
         long work=0;
         for(Project project:projects){var table=tables.get(project.node().attr("tableRef"));if(table==null)throw project.node().location().error("OBSERVER_TABLE_UNAVAILABLE");work+=(long)table.rows().size()*(project.writes().size()+project.references().size()+project.derived().stream().mapToInt(e->1+e.arguments()).sum());}
         if(work>65536)throw new IllegalArgumentException("OBSERVER_PROJECTION_WORK_CAPACITY");
@@ -101,6 +107,7 @@ public final class ObserverProjection {
                 if(!owns(port,object,project,epoch))throw new IllegalArgumentException("OBSERVER_EXISTING_OWNER_MISMATCH");
                 boolean complete=project(port,object,project,row,epoch,cut,run,generation);touched.add(object);
                 port.metadata(object,"xml:observer:population",table.populationQuality().name());port.metadata(object,"xml:observer:cut",cut);
+                port.metadata(object,"xml:observer:source-joins",SourceJoinOwnership.encode(row.proofs()));
                 // Dataset/table admission has already checked the entire selected
                 // population and every required join/row. MOISE keeps its stronger
                 // inventory certificate; ordinary controller/capability datasets

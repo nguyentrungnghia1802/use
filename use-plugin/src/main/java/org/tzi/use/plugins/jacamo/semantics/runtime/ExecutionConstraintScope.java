@@ -7,6 +7,7 @@ import org.tzi.use.plugins.jacamo.codegrounded.constraint.ExternalOclConstraintS
 import org.tzi.use.plugins.jacamo.semantics.mapping.SemanticProgram;
 import org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.OccurrenceProjection;
 import org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeTables;
+import org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.SourceJoinOwnership;
 import org.tzi.use.plugins.jacamo.semantics.ocl.SemanticInvariantEvaluator;
 import org.tzi.use.plugins.jacamo.semantics.evidence.*;
 import org.tzi.use.uml.sys.MObject;
@@ -35,6 +36,24 @@ public final class ExecutionConstraintScope {
   var declaration=specification.requireId(scope.definition());
   var table=specification.requireId(declaration.attr("tableRef"));var columns=RuntimeTables.outputColumns(table);
   var anchor=engine.objectForSemanticId(scope.anchor());String epoch=anchor==null?"":engine.metadata(anchor,"xml:occurrence:epoch");
+  var domainType=state.system().model().getClass("DomainEntity");
+  boolean domainBound=declaration.children("resource").stream().anyMatch(r->state.system().model().getClass(r.attr("type")).isSubClassifierOf(domainType))
+    ||declaration.children("self").stream().anyMatch(r->specification.root().child("bindings").children("elementRuntime").stream().anyMatch(e->e.attr("target").equals(r.attr("target"))&&state.system().model().getClass(e.attr("self")).isSubClassifierOf(domainType)));
+  // Project/workspace viewpoints have no domain resource slot. Their population
+  // is the exact set of mapped objects whose admitted table joins reach this
+  // physical context identity, not every object in the MSystem.
+  if(!domainBound&&anchor!=null){
+   var identities=new HashSet<String>();
+   for(String contextId:new TreeSet<>(List.of(scope.anchor(),scope.context()))){
+    var owner=engine.objectForSemanticId(contextId);if(owner==null)continue;
+    String identity=engine.metadata(owner,"xml:m0:identity");if(!identity.isBlank())identities.add(identity);
+   }
+   String m0Epoch=engine.metadata(anchor,"xml:m0:epoch");
+   for(var candidate:state.allObjects())for(String prefix:List.of("xml:m0:","xml:observer:")){
+    if(!program.hash().equals(engine.metadata(candidate,prefix+"program"))||!m0Epoch.equals(engine.metadata(candidate,prefix+"epoch")))continue;
+    if(!Collections.disjoint(identities,SourceJoinOwnership.decode(engine.metadata(candidate,prefix+"source-joins"))))selected.add(candidate);
+   }
+  }
   for(var binding:declaration.children("observer")){
    var project=specification.requireId(binding.attr("projectRef"));
    if(!project.name().equals("project")||!columns.contains(binding.attr("subjectColumn")))throw binding.location().error("EXECUTION_OBSERVER_BINDING_INVALID");
@@ -50,9 +69,6 @@ public final class ExecutionConstraintScope {
     entities.put(object.cls().name()+":"+object.name(),Map.of("identity",engine.metadata(object,"semanticId"),"attributes",attributes));
    }
   }
-  var domainType=state.system().model().getClass("DomainEntity");
-  boolean domainBound=declaration.children("resource").stream().anyMatch(r->state.system().model().getClass(r.attr("type")).isSubClassifierOf(domainType))
-    ||declaration.children("self").stream().anyMatch(r->specification.root().child("bindings").children("elementRuntime").stream().anyMatch(e->e.attr("target").equals(r.attr("target"))&&state.system().model().getClass(e.attr("self")).isSubClassifierOf(domainType)));
   return Map.of("domainBound",domainBound,"version","BOUND_EXECUTION_VIEW/2.0","entities",entities,"owners",owners,"participation",participants,"bindings",scope.bindings(),"definition",scope.definition(),"complete",scope.complete()&&issues.isEmpty(),"unavailable",issues);
  }
  public static List<SemanticInvariantEvaluator.Prepared> prepare(ExternalOclConstraintService.PreparedEvaluation nativeChecks,Map<String,Object> view){
@@ -62,7 +78,8 @@ public final class ExecutionConstraintScope {
    if(original==null){result.add(new SemanticInvariantEvaluator.Prepared(invariant.id(),invariant.context(),invariant.body()==null?"":invariant.body().toString(),"self",invariant.body(),List.of(),false,false,false,"UNSUPPORTED:EXECUTION_NATIVE_COVERAGE_BINDING_REQUIRED",Map.of()));continue;}
    boolean qualified=Boolean.TRUE.equals(view.get("complete"));
    var bodies=original.bodies().stream().filter(b->owners.containsKey(b.object())).toList();
-   String missing=!original.unavailable().isBlank()?original.unavailable():bodies.isEmpty()?"EXECUTION_CONSTRAINT_OWNER_UNAVAILABLE":"";
+   boolean provedGloballyEmpty=original.complete()&&original.bodies().isEmpty();
+   String missing=!original.unavailable().isBlank()?original.unavailable():bodies.isEmpty()&&!provedGloballyEmpty?"EXECUTION_CONSTRAINT_OWNER_UNAVAILABLE":"";
    var witness=new TreeMap<String,String>(original.witness());witness.put("scopePolicy","EXACT_BOUND_OWNER_POPULATION/1.0");
    witness.put("globalBodyCount",Integer.toString(original.bodies().size()));witness.put("bodyCount",Integer.toString(bodies.size()));
    result.add(new SemanticInvariantEvaluator.Prepared(original.id(),original.context(),original.text(),original.variable(),original.expression(),bodies,qualified&&missing.isBlank(),original.existential(),original.negated(),missing,witness));

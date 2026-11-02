@@ -8,11 +8,16 @@ import org.jacamo.bridge.contract.DistributionFingerprint;
 
 /** Machine-derived identity for the exact JaCaMo/Bridge classes loaded by this JVM. */
 public final class RuntimeDistributionFingerprint {
-    public static final String JACAMO_VERSION = "1.3.1";
+    public static final String JACAMO_VERSION = "1.3.1-checkpoint-SNAPSHOT";
 
     private RuntimeDistributionFingerprint() { }
 
     public static DistributionFingerprint compute() {
+        return DistributionFingerprint.fromCodeSources(JACAMO_VERSION, codeSources());
+    }
+
+    /** Actual defining locations; a sibling checkout is not evidence of loading it. */
+    public static Map<String, Path> codeSources() {
         var classes = new LinkedHashMap<String, Class<?>>();
         classes.put("bridge-contract", org.jacamo.bridge.contract.ContractEnvelope.class);
         classes.put("bridge-jacamo", JaCaMoBridgePlatform.class);
@@ -21,9 +26,10 @@ public final class RuntimeDistributionFingerprint {
         classes.put("cartago", cartago.CartagoEnvironment.class);
         classes.put("moise", moise.os.OS.class);
         classes.put("npl", npl.NPLInterpreter.class);
+        classes.put("checkpoint-runtime", org.jacamo.checkpoint.runtime.ExecutionBarrier.class);
         var paths = new LinkedHashMap<String, Path>();
         classes.forEach((name, type) -> paths.put(name, codeSource(type)));
-        return DistributionFingerprint.fromCodeSources(JACAMO_VERSION, paths);
+        return Map.copyOf(paths);
     }
 
     private static Path codeSource(Class<?> type) {

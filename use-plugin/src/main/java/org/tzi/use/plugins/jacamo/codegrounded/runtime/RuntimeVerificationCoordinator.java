@@ -36,7 +36,7 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
     private final RuntimeCheckpointStore checkpoints;
     private final Set<String> baselineOperations;
     private final Path directory;
-    private final boolean cleanupOnClose;
+    private volatile boolean cleanupOnClose;
     private final Thread shutdownHook;
     private final AtomicBoolean closed = new AtomicBoolean();
     private final java.util.concurrent.CompletableFuture<Void> fileCleanup = new java.util.concurrent.CompletableFuture<>();
@@ -191,6 +191,9 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
     }
     public RuntimeVerificationCoordinator(NativeRuntimeMutationEngine engine, String sessionId, long generation,
             String revision, Path directory, int tail, long bytes, boolean cleanupOnClose) {
+        this(engine,sessionId,generation,revision,directory,tail,bytes,cleanupOnClose,false);
+    }
+    public RuntimeVerificationCoordinator(NativeRuntimeMutationEngine engine,String sessionId,long generation,String revision,Path directory,int tail,long bytes,boolean cleanupOnClose,boolean compressed){
         this.engine = engine; this.sessionId = sessionId; this.generation = generation; this.modelRevision = revision;
         operations=new NativeOperationCheckpoints(engine);
         semanticVerifier=engine.cslProfile()?new org.tzi.use.plugins.jacamo.semantics.runtime.SemanticRuntimeVerifier(engine):null;
@@ -203,11 +206,11 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
             if (deferredNotifications != null) deferredNotifications.add(event);
             else system().getEventBus().post(event);
         });
-        journal = new RuntimeEventJournal(this.directory, tail, bytes);
+        journal = new RuntimeEventJournal(this.directory, tail, bytes,compressed);
         checkpoints = new RuntimeCheckpointStore(this.directory.resolve("checkpoints"));
         Thread hook = null;
         if (cleanupOnClose) {
-            hook = new Thread(this::cleanupDirectory, "jacamo-runtime-cleanup");
+            hook = new Thread(()->{if(this.cleanupOnClose)cleanupDirectory();}, "jacamo-runtime-cleanup");
             try { Runtime.getRuntime().addShutdownHook(hook); }
             catch (IllegalStateException ignored) { hook = null; }
         }
@@ -221,11 +224,15 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
         return baselineOperations.contains(operation.cls().qualifiedName()+"::"+operation.name());
     }
     public Path directory() { return directory; }
+    /** Verified-cut audit remains reviewable after monitor retirement/owned Stop.
+     * Keep the existing journal/store, not a second native runtime. */
+    public void retainRecording(){cleanupOnClose=false;}
     /** Disk budget, captured per run; overflow remains a coverage failure. */
     public static long defaultJournalMaxBytes() {
-        // Match the declarative launcher budget; 64 MiB overflows on an ordinary
-        // declarative observation prefix. Explicit caller limits still fail closed.
-        String configured = System.getProperty("use.jacamo.runtime.journal.maxBytes", "268435456");
+        // Retained native engine completions are larger than source frames. The
+        // default must accommodate a normal verified run without dropping them;
+        // explicit caller limits and quota-loss holds remain unchanged.
+        String configured = System.getProperty("use.jacamo.runtime.journal.maxBytes", "536870912");
         try {
             long bytes = Long.parseLong(configured);
             if (bytes < 32768 || bytes > 1024L * 1024 * 1024) throw new NumberFormatException();
@@ -692,6 +699,7 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
     /** Background-only lookup of the completion for this exact accepted cut.
      * Reuses the bounded journal; a newer live result cannot stand in for it. */
     public RuntimeVerificationResult awaitEvaluation(RuntimeVerificationResult accepted,long timeoutMillis) {
+        if(journal.hasGap())throw new IllegalStateException("ENGINE_COMPLETION_PERSISTENCE_UNAVAILABLE:"+journal.diagnostic());
         if(originalEngine==null)return accepted;
         if(SwingUtilities.isEventDispatchThread())throw new IllegalStateException("ENGINE_COMPLETION_WAIT_ON_EDT");
         if(accepted==null||accepted.semantic()==null||timeoutMillis<1)throw new IllegalArgumentException("ENGINE_COMPLETION_REQUEST_INVALID");
@@ -701,18 +709,29 @@ public final class RuntimeVerificationCoordinator implements AutoCloseable {
         catch(InterruptedException interrupted){Thread.currentThread().interrupt();throw new IllegalStateException("ENGINE_COMPLETION_INTERRUPTED",interrupted);}
         catch(java.util.concurrent.ExecutionException|java.util.concurrent.TimeoutException failure){throw new IllegalStateException("ENGINE_COMPLETION_UNAVAILABLE",failure);}
         retained=retainedCompletion(accepted);
-        if(retained==null)throw new IllegalStateException("ENGINE_COMPLETION_NOT_RETAINED");return retained;
+        if(retained==null&&!journal.hasGap()){
+            var recovered=new java.util.concurrent.atomic.AtomicReference<RuntimeVerificationResult>();
+            journal.visitRange(0,journal.persistedEntries(),entry->{if(completionMatches(entry.result(),accepted))recovered.set(entry.result());});
+            retained=recovered.get();
+            // A disk scan cannot authorize an owner which was replaced meanwhile.
+            retainedCompletion(accepted);
+        }
+        if(retained==null)throw new IllegalStateException(journal.hasGap()?"ENGINE_COMPLETION_PERSISTENCE_UNAVAILABLE:"+journal.diagnostic():"ENGINE_COMPLETION_NOT_RETAINED");return retained;
     }
     private RuntimeVerificationResult retainedCompletion(RuntimeVerificationResult accepted) {
         return read(()->{
             if(!sessionId.equals(accepted.sessionId())||generation!=accepted.generation()||!modelRevision.equals(accepted.modelRevision()))throw new IllegalStateException("ENGINE_COMPLETION_OWNER_REPLACED");
             RuntimeVerificationResult found=null;
-            for(var result:journal.history())if(result.semantic()!=null&&result.semantic().boundary().equals(accepted.semantic().boundary())
-                    &&result.stateVersion()==accepted.stateVersion()&&result.stateHash().equals(accepted.stateHash())&&result.constraintSetHash().equals(accepted.constraintSetHash())
-                    &&result.semantic().observation().get("originalEngine") instanceof Map<?,?> core
-                    &&java.util.Set.of("PINNED_NATIVE_CUT","ERROR").contains(core.get("evaluated")))found=result;
+            for(var result:journal.history())if(completionMatches(result,accepted))found=result;
             return found;
         });
+    }
+    private boolean completionMatches(RuntimeVerificationResult result,RuntimeVerificationResult accepted){
+        return result.sessionId().equals(accepted.sessionId())&&result.generation()==accepted.generation()&&result.modelRevision().equals(accepted.modelRevision())
+                    &&result.semantic()!=null&&result.semantic().boundary().equals(accepted.semantic().boundary())
+                    &&result.stateVersion()==accepted.stateVersion()&&result.stateHash().equals(accepted.stateHash())&&result.constraintSetHash().equals(accepted.constraintSetHash())
+                    &&result.semantic().observation().get("originalEngine") instanceof Map<?,?> core
+                    &&java.util.Set.of("PINNED_NATIVE_CUT","ERROR").contains(core.get("evaluated"));
     }
     public VerificationSnapshot completedSnapshot(RuntimeVerificationResult accepted,long timeoutMillis) {
         if(originalEngine==null)return verificationSnapshot();

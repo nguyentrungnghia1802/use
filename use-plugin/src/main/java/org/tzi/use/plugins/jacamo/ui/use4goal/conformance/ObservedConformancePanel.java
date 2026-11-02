@@ -79,13 +79,18 @@ public final class ObservedConformancePanel extends JPanel {
     private java.util.Map<String,String> executionLabels=java.util.Map.of();
     private boolean updatingExecutions;
     private String executionScope="";
+    private boolean checkpointTimeline;
+    private record Cursor(String cut,boolean follow){}
+    private final java.util.Map<String,Cursor> executionCursors=new java.util.HashMap<>();
     private java.util.function.Consumer<String> executionListener=id->{};
     public void onExecutionSelected(java.util.function.Consumer<String> listener){executionListener=java.util.Objects.requireNonNull(listener);}
     public void selectExecution(String id){
         if(id==null||id.isBlank()||java.util.Objects.equals(executionScope,id))return;
-        executionScope=id==null?"":id;failureFocus=null;intervalIds=null;selectedStateIndex=-1;
-        setCuts(allCuts);executionListener.accept(executionScope);
+        rememberCursor();executionScope=id;failureFocus=null;intervalIds=null;selectedStateIndex=-1;
+        setCuts(allCuts);restoreCursor();executionListener.accept(executionScope);
     }
+    private void rememberCursor(){if(!executionScope.isBlank()&&selectedCut()!=null)executionCursors.put(executionScope,new Cursor(selectedCut().id(),selectedStateIndex==currentCounterexampleStates.size()-1));}
+    private void restoreCursor(){var cursor=executionCursors.get(executionScope);if(cursor==null||cursor.follow())return;for(int i=0;i<currentCounterexampleStates.size();i++)if(currentCounterexampleStates.get(i).id().equals(cursor.cut())||!details.isSelected()&&milestoneNumbers.containsKey(cursor.cut())&&milestoneNumbers.get(cursor.cut()).equals(milestoneNumbers.get(currentCounterexampleStates.get(i).id()))){updateSelectedCounterexampleState(i);break;}}
     private void refreshExecutions(){
         updatingExecutions=true;
         try{executionLabels=ExecutionScopeViews.choices(allCuts);executionSelector.removeAllItems();
@@ -136,37 +141,53 @@ public final class ObservedConformancePanel extends JPanel {
         return selectedStateIndex < 0 ? null : currentCounterexampleStates.get(selectedStateIndex);
     }
 
-    public record PreparedCuts(List<Cut> all,java.util.Map<String,String> labels,String scope,List<Cut> audit,List<Cut> milestones,java.util.Map<String,Integer> numbers,List<FailurePoint> failures) {}
+    public record PreparedCuts(List<Cut> all,java.util.Map<String,String> labels,String scope,List<Cut> audit,List<Cut> milestones,java.util.Map<String,Integer> numbers,List<FailurePoint> failures,boolean checkpoints) {}
     /** Worker-owned cache. Reuse projections only for the identical immutable cut. */
     public static final class PreparationCache {
         private final java.util.IdentityHashMap<Cut,java.util.Map<String,Cut>> projections=new java.util.IdentityHashMap<>();
         public PreparedCuts prepare(List<Cut> input,String requested,boolean live){
-            var all=List.copyOf(input);var labels=live?ExecutionScopeViews.choices(all):java.util.Map.<String,String>of();
+            return prepare(input,requested,live,false);
+        }
+        public PreparedCuts prepare(List<Cut> input,String requested,boolean live,boolean checkpoints){
+            var all=List.copyOf(input);var labels=live?(checkpoints?ExecutionScopeViews.admittedChoices(all):ExecutionScopeViews.choices(all)):java.util.Map.<String,String>of();
             String scope=requested;
             if(live&&!labels.containsKey(scope))scope=labels.isEmpty()?"":labels.keySet().iterator().next();
             boolean awaiting=live&&scope.isBlank()&&all.stream().anyMatch(c->c.visualEvidence().containsKey("originalEngine"));
             var audit=new java.util.ArrayList<Cut>();
-            if(!awaiting)for(var cut:all){String selected=scope;audit.add(scope.isBlank()?cut:projections.computeIfAbsent(cut,k->new java.util.HashMap<>()).computeIfAbsent(scope,k->ExecutionScopeViews.project(cut,selected)));}
-            var milestones=BusinessTimeline.summarize(audit);
-            if(!scope.isBlank()&&!milestones.isEmpty()&&!audit.isEmpty()&&audit.getLast().businessKey().isBlank()){
+            if(!awaiting)for(var cut:all){String selected=scope;
+                var projected=scope.isBlank()?cut:projections.computeIfAbsent(cut,k->new java.util.HashMap<>()).computeIfAbsent(scope,k->ExecutionScopeViews.project(cut,selected));
+                if(checkpoints&&!scope.isBlank()){
+                    var context=ExecutionScopeViews.contexts(cut).stream().filter(c->selected.equals(c.get("context"))).findFirst().orElse(java.util.Map.of());
+                    if(!ExecutionScopeViews.boundContext(context)||!Boolean.TRUE.equals(ExecutionScopeViews.object(projected.visualEvidence().get("presentationState")).get("qualifiedValues")))continue;
+                }
+                audit.add(projected);
+            }
+            var grouping=checkpoints&&!scope.isBlank()?CheckpointTimeline.group(audit):null;
+            var milestones=grouping!=null?grouping.milestones():checkpoints?List.copyOf(audit):BusinessTimeline.summarize(audit);
+            if(!checkpoints&&!scope.isBlank()&&!milestones.isEmpty()&&!audit.isEmpty()&&audit.getLast().businessKey().isBlank()){
                 var last=audit.getLast();var retained=new java.util.ArrayList<Cut>(milestones);var phase=retained.getLast();
                 retained.set(retained.size()-1,new Cut(last.id(),last.trace(),last.state(),last.evaluations(),last.coverage(),last.freshness(),last.failed(),phase.businessKey(),last.requirements(),last.businessState(),last.executionMilestones(),last.selectedRequirements(),last.businessPopulationEmpty(),last.visualEvidence()));milestones=List.copyOf(retained);
             }
-            var numbers=BusinessTimeline.milestoneNumbers(audit,milestones);
+            var numbers=grouping!=null?grouping.numbers():BusinessTimeline.milestoneNumbers(audit,milestones);
             var keep=java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<Cut,Boolean>());keep.addAll(all);projections.keySet().retainAll(keep);
-            return new PreparedCuts(all,labels,scope,List.copyOf(audit),milestones,numbers,live?collectFailurePoints(audit,numbers):List.of());
+            return new PreparedCuts(all,labels,scope,List.copyOf(audit),milestones,numbers,live?collectFailurePoints(audit,numbers):List.of(),checkpoints);
         }
     }
     public String executionScope(){return executionScope;}
+    public void showCheckpoint(PreparedCuts prepared){
+        rememberCursor();
+        failureFocus=null;intervalIds=null;details.setSelected(false);
+        applyPrepared(prepared);restoreCursor();
+    }
     private List<FailurePoint> preparedFailures=List.of();
 
     public void setCuts(List<Cut> cuts) {
         if (!SwingUtilities.isEventDispatchThread()) throw new IllegalStateException("OBSERVED_VIEW_REQUIRES_EDT");
-        applyPrepared(new PreparationCache().prepare(cuts,executionScope,liveOnly));
+        applyPrepared(new PreparationCache().prepare(cuts,executionScope,liveOnly,checkpointTimeline));
     }
     public void applyPrepared(PreparedCuts prepared){
         if(!SwingUtilities.isEventDispatchThread())throw new IllegalStateException("OBSERVED_VIEW_REQUIRES_EDT");
-        allCuts=prepared.all();executionScope=prepared.scope();
+        checkpointTimeline=prepared.checkpoints();allCuts=prepared.all();executionScope=prepared.scope();
         if(liveOnly){updatingExecutions=true;try{
             if(!executionLabels.equals(prepared.labels())){executionLabels=prepared.labels();executionSelector.setModel(new DefaultComboBoxModel<>(executionLabels.keySet().toArray(String[]::new)));}
             executionSelector.setSelectedItem(executionScope);
@@ -187,7 +208,7 @@ public final class ObservedConformancePanel extends JPanel {
             stateSelectorCombo.setModel(new DefaultComboBoxModel<>(cuts.stream().map(Cut::id).toArray(String[]::new)));
             for (int i = 0; i < cuts.size(); i++) {
                 Cut cut = cuts.get(i);
-                if (!follow && cut.id().equals(selected)) target = i;
+                if (!follow && (cut.id().equals(selected)||!details.isSelected()&&milestoneNumbers.containsKey(selected)&&milestoneNumbers.get(selected).equals(milestoneNumbers.get(cut.id())))) target = i;
                 if (currentFailureCheckpoint < 0 && cut.failed()) currentFailureCheckpoint = i;
             }
         } finally { updatingStateComboInternal = false; }
@@ -417,7 +438,7 @@ public final class ObservedConformancePanel extends JPanel {
     }
 
     private String verdict(Cut cut){
-        if(cut.failed()||cut.evaluations().stream().anyMatch(r->!java.util.Set.of("GOAL_TASK","EXECUTION_OUTCOME").contains(r.kind())&&java.util.Set.of("FAIL","VIOLATED").contains(r.status())))return "VIOLATION";
+        if(cut.failed()||cut.evaluations().stream().anyMatch(r->!java.util.Set.of("GOAL_TASK","EXECUTION_OUTCOME","CHECKPOINT_CHECK").contains(r.kind())&&java.util.Set.of("FAIL","VIOLATED").contains(r.status())))return "VIOLATION";
         if(cut.evaluations().isEmpty())return "NOT_EVALUATED";
         // Direct/older cuts may not carry the presenter's missing-result rows.
         // Passing OCL alone cannot certify an unobserved declared Goal or Task.

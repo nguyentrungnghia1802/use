@@ -263,6 +263,17 @@ final class NativeOperationCheckpoints {
         return List.copyOf(rows);
     }
     private SemanticConstraintResult detail(String id,String kind,OperationCheck check,SemanticVerdict verdict,String backend,String diagnostic,Map<String,String> witness){var object=engine.system().state().objectByName(check.request().objectName());String expression=java.util.stream.Stream.concat(check.operation().preConditions().stream(),check.operation().postConditions().stream()).filter(c->conditionId(c).equals(id)).map(c->c.expression().toString()).findFirst().orElse("");return new SemanticConstraintResult(id,kind,check.operation().cls().name(),check.request().objectName(),object==null?"":engine.metadata(object,"semanticId"),expression,verdict,backend,diagnostic,0,check.request().correlationId(),witness);}
-    private List<Outcome> classified(SemanticVerdict verdict,String reason,RuntimeEvent event){if(semanticProfile())addDetailed(List.of(new SemanticConstraintResult("OPERATION:"+event.correlationId(),"INVOCATION","","","","",verdict,"",reason,0,event.correlationId(),Map.of())));return List.of(new Outcome("OPERATION:"+event.correlationId(),"",VerificationOutcome.SKIPPED,reason,""));}
+    private List<Outcome> classified(SemanticVerdict verdict,String reason,RuntimeEvent event){
+        if(semanticProfile()) {
+            var receiver=operationReceiver(event);
+            String signature=event.after().get("operationSignature") instanceof List<?> value?NativeUseModelBuilder.canonicalJson(value):"";
+            boolean declared=receiver!=null&&!signature.isBlank()&&receiver.cls().allOperations().stream().anyMatch(op->signature.equals(DomainProjection.decode(op.getAnnotationValue("CartagoOperation","signature64")))&&(!op.preConditions().isEmpty()||!op.postConditions().isEmpty()));
+            // Keep an unavailable declared contract applicable, even when its
+            // matching PRE receipt is missing. Unmapped framework calls do not
+            // acquire an invented business contract.
+            addDetailed(List.of(new SemanticConstraintResult("OPERATION:"+event.correlationId(),"INVOCATION",declared?receiver.cls().name():"",declared?receiver.name():"",declared?engine.metadata(receiver,"semanticId"):"","",verdict,"",reason,0,event.correlationId(),Map.of())));
+        }
+        return List.of(new Outcome("OPERATION:"+event.correlationId(),"",VerificationOutcome.SKIPPED,reason,""));
+    }
     void clear(){active.clear();detailed=List.of();prepared=List.of();}
 }

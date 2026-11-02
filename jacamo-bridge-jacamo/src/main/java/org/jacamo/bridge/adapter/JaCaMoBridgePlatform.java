@@ -79,6 +79,9 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
     private LocalTcpBridgeServer server;
     private volatile boolean publishing;
     private volatile boolean started;
+    private final Object checkpointObservationLock=new Object();
+    private volatile VerifiedCheckpointBridge verifiedCheckpoints;
+    private static boolean sourceFrozen(){return org.jacamo.checkpoint.runtime.ExecutionBarrier.enabled()&&org.jacamo.checkpoint.runtime.ExecutionBarrier.proof().clockFrozen();}
     private Thread publisher;
 
     @Override public synchronized void setJcmProject(JaCaMoProject project) {
@@ -197,6 +200,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
 
 
     private static boolean neutralObservationConfigured(){return !System.getProperty(org.jacamo.bridge.contract.ObservationRequestPlan.PROPERTY,"").isBlank();}
+    public boolean holdOnObserverLoss(){var checkpoints=verifiedCheckpoints;if(checkpoints==null)return false;checkpoints.disconnected();return true;}
 
     static void publishStepBoundary(CartagoSnapshotSource cartago,List<SnapshotSource> independent,List<SnapshotSource> boards,Runnable callback)throws Exception {
         // Jason/NPL own independent source watermarks, not CArtAgO's stable
@@ -218,6 +222,10 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
         var context=new FrameworkObservationProviders.Context(CartagoEnvironment.getInstance(),modelSnapshot,resolveProjectFile().getParent(),sessionId,generation(),
                 observation->{
                     if(observation.kind()==org.jacamo.bridge.contract.VerificationObservation.Kind.JASON_STEP) {
+                        // Close admission at the selected source marker, before
+                        // reading its population. This callback's existing permit
+                        // keeps READY impossible until its evidence is published.
+                        var checkpoints=verifiedCheckpoints;if(checkpoints!=null)checkpoints.beforeObservation(observation);
                         try{publishStepBoundary(cartagoSource,List.of(jasonSource,nplSource),new ArrayList<SnapshotSource>(moiseSources),()->verificationSource.publish(observation,observation.subject(),""));}
                         catch(Exception unavailable){
                             java.util.logging.Logger.getLogger(JaCaMoBridgePlatform.class.getName()).log(java.util.logging.Level.WARNING,"OBSERVATION_BOUNDARY_CAPTURE_FAILED",unavailable);
@@ -246,6 +254,10 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
             }
             cartagoSource.capabilities(owned);cartagoSource.observationsReady();observationSession=owned;owned.pulse(nplSource.hasPendingTimedObligations());
             cartagoSource.publishObservation(()->{runtimeCoordinator.poll();return null;},()->{});
+            if(jacamo.checkpoint.CheckpointBoot.verified()) {
+                verifiedCheckpoints=new VerifiedCheckpointBridge(sessionId,System.getProperty("jacamo.execution.run",org.jacamo.checkpoint.runtime.ExecutionBarrier.proof().run()),generation(),modelSnapshot.modelRevision(),plan,
+                        this::captureVerifiedCut,jacamo.checkpoint.CheckpointBoot::sourcesUnchanged);
+            }
             readiness.update("observation",AdapterReadiness.ATTACHED,"program="+plan.programHash()+"; requests="+plan.requests().size()+"; requiredUnavailable="+owned.requiredUnavailable());
             System.out.println("BRIDGE_OBSERVATION_PLAN_ACTIVE program="+plan.programHash()+" requests="+plan.requests().size()+" capabilities="+owned.capabilities());
         }catch(Exception|Error failure){for(var arch:stepArchitectures)arch.retireStepObservation();stepArchitectures.clear();owned.close();throw failure;}
@@ -307,6 +319,18 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
             readiness.update("events", AdapterReadiness.FAILED,
                     publicationFailure);
         }
+        var checkpoints=verifiedCheckpoints;if(checkpoints!=null)checkpoints.observe(event);
+    }
+
+    private RuntimeSnapshot captureVerifiedCut() {
+        synchronized(checkpointObservationLock) {
+            try {
+                var observations=observationSession;if(observations!=null)observations.frozenCut();
+                runtimeCoordinator.poll();
+                cartagoSource.publishObservation(()->{for(var source:moiseSources)source.poll();return null;},()->{});
+                return captureRuntime();
+            }catch(Exception unavailable){throw new IllegalStateException("CHECKPOINT_FROZEN_CAPTURE_FAILED",unavailable);}
+        }
     }
 
     private void startServer(long generation) throws Exception {
@@ -344,6 +368,11 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
         server = new LocalTcpBridgeServer(InetAddress.getLoopbackAddress(), bridgePort, secret, MAX_FRAME_BYTES,
                 EVENT_CAPACITY, 64L * 1024 * 1024, handshake, model, runtime, gap,request->encode(MessageType.CONTROL_STATUS,
                         projectKey,generation,distribution,capabilities(latestRuntimeSnapshot),Completeness.COMPLETE,control(request).payload()));
+        server.checkpointHandler(command->{
+            var checkpoints=verifiedCheckpoints;
+            Map<String,Object> payload=checkpoints==null?Map.of("version",org.jacamo.bridge.contract.VerifiedCheckpointProtocol.VERSION,"state","NOT_STARTED","diagnostic",jacamo.checkpoint.CheckpointBoot.verified()?"WAITING_FOR_ADMITTED_POLICY":"PASSIVE_MODE"):checkpoints.command(command);
+            return encode(MessageType.CHECKPOINT_STATUS,projectKey,generation,distribution,capabilities(latestRuntimeSnapshot),Completeness.COMPLETE,payload);
+        },()->{var checkpoints=verifiedCheckpoints;if(checkpoints!=null)checkpoints.disconnected();});
         java.util.Arrays.fill(secret, (byte) 0);
         server.start();
         publishing = true;
@@ -368,24 +397,24 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
                         if (count == 31 || System.nanoTime() >= batchDeadline) break;
                         event = events.poll();
                     }
-                    if(cause!=null) {
+                    if(cause!=null&&!sourceFrozen()) {synchronized(checkpointObservationLock) {if(!sourceFrozen()) {
                         // Preserve every callback, but observe boards once per bounded batch,
                         // after real source callbacks, including qualified CLOCK observations.
                         runtimeCoordinator.poll();
                         checkpointSource.boundary(cause);
                         nextObservation=System.nanoTime()+TimeUnit.SECONDS.toNanos(5);
-                    }
-                    if(System.nanoTime()>=nextObservation) {
+                    }}}
+                    if(!sourceFrozen()&&System.nanoTime()>=nextObservation) {synchronized(checkpointObservationLock) {if(!sourceFrozen()) {
                         // Fallback drift observation only; this timer does not invent a checkpoint.
                         runtimeCoordinator.poll();
                         nextObservation=System.nanoTime()+TimeUnit.SECONDS.toNanos(5);
-                    }
+                    }}}
                     // A callback advances the shared CArtAgO watermark, so a
                     // different Artifact's old field receipt is no longer a
                     // current-cut proof. Refresh the negotiated scope after the
                     // callback burst, without fabricating receipt carry-forward.
                     // Raw events and exact Task/operation checkpoints stay intact.
-                    if(refreshCartago&&observationSession!=null&&events.isEmpty()&&System.nanoTime()>=retryCartagoAfter) {
+                    if(!sourceFrozen()&&refreshCartago&&observationSession!=null&&events.isEmpty()&&System.nanoTime()>=retryCartagoAfter) {synchronized(checkpointObservationLock) {if(!sourceFrozen()) {
                         try {
                             publishStepBoundary(cartagoSource,List.of(),new ArrayList<SnapshotSource>(moiseSources),()->{});
                             refreshCartago=false;
@@ -395,7 +424,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
                             // when idle; a required step capture still emits GAP.
                             retryCartagoAfter=System.nanoTime()+TimeUnit.MILLISECONDS.toNanos(100);
                         }
-                    }
+                    }}}
                 } catch (InterruptedException interrupted) {
                     Thread.currentThread().interrupt();
                     return;
@@ -419,6 +448,8 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
     }
 
     private RuntimeSnapshot captureRuntime() {
+        var checkpoints=verifiedCheckpoints;
+        if(sourceFrozen()&&checkpoints!=null){var frozen=checkpoints.frozenSnapshot();if(frozen!=null)return frozen;}
         RuntimeSnapshot last = latestRuntimeSnapshot;
         Exception lastFailure = null;
         long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(12);
@@ -470,6 +501,9 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
         boolean runtimeReady = snapshot != null && !snapshot.facts().isEmpty()
                 && snapshot.sourceCompleteness().values().stream().noneMatch(value -> value == Completeness.UNAVAILABLE);
         var capabilities=new ArrayList<>(List.of(
+                new Capability(org.jacamo.bridge.contract.VerifiedCheckpointProtocol.CAPABILITY,jacamo.checkpoint.CheckpointBoot.verified()?CapabilityStatus.COMPLETE:CapabilityStatus.UNAVAILABLE,List.of(org.jacamo.bridge.contract.VerifiedCheckpointProtocol.VERSION),jacamo.checkpoint.CheckpointBoot.verified()?"Owned local source barrier; versioned policy admission required before reasoning":"PASSIVE_MODE"),
+                new Capability("runtime.checkpoint.feasibility.v1",jacamo.checkpoint.CheckpointFeasibility.strictSupported()?CapabilityStatus.COMPLETE:CapabilityStatus.UNAVAILABLE,List.of(),
+                        jacamo.checkpoint.CheckpointFeasibility.diagnostic()),
                 new Capability("cartago.invocation.suspend-resume.v1",CapabilityStatus.UNAVAILABLE,List.of(),"CARTAGO_3_1_AWAIT_NO_LOGGER_HOOKS; invocation intervals remain observed shared-state prefixes"),
                 new Capability("official.model", CapabilityStatus.COMPLETE, List.of(), ""),
                 new Capability("runtime.snapshot", runtimeReady ? CapabilityStatus.COMPLETE : CapabilityStatus.PARTIAL,
@@ -545,6 +579,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
         Exception failure = null;
         started = false;
         publishing = false;
+        var checkpointOwner=verifiedCheckpoints;verifiedCheckpoints=null;if(checkpointOwner!=null)checkpointOwner.close();
         if(workspaceObserverHandle!=null){try{workspaceObserverHandle.close();}catch(Exception error){failure=error;}workspaceObserverHandle=null;}
         for(var arch:stepArchitectures)arch.retireStepObservation();stepArchitectures.clear();
         var neutral=observationSession;observationSession=null;if(neutral!=null)try{neutral.close();}catch(RuntimeException error){failure=error;}

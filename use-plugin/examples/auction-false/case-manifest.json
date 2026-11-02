@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "profile": "JACAMO_DECLARATIVE_XML",
+  "modelMode": "AUTHORED",
+  "inputs": {
+    "jcm": "auction.jcm",
+    "mapping": "auction-mapping.xml",
+    "csl": "auction.csl",
+    "istar": "auction.istar",
+    "ocl": "auction.ocl"
+  },
+  "sha256": {
+    "auction.jcm": "c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb",
+    "auction-mapping.xml": "58c843d4e62f4e95ba88d96af66ba2d3d8f3386bd8aa000498511101f83ab6e7",
+    "auction.csl": "0b63df2e539ccc0af965cba1d42b40167545601fe69fbcfc775f98d75a79cff8",
+    "auction.istar": "ec98189dbdecd123b9eb862f5ce714e0fa3e7cd6b636e093fc032945217b784e",
+    "auction.ocl": "16837702e057006d2083142a32f3a9791a1d2b86523115e2ede2a30e33902141"
+  },
+  "fault": {
+    "id": "MISSING_RUNNING_FALSE_IN_STOP",
+    "source": "src/env/auction_env/AuctionArtifact.java",
+    "sourceSha256": "f80f98185518348b3d62656aba6856fe6f2e20514e8f90ace29a6d07ac971563",
+    "behavior": "stop publishes winner and returns without setting running=false"
+  },
+  "scope": "Intentional application bug; native assertions and verification policy unchanged"
+}

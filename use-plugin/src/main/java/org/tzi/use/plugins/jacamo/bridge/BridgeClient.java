@@ -22,6 +22,17 @@ public final class BridgeClient implements AutoCloseable {
     }
     private final BridgeTransport transport; private final BridgeMirrorStateMachine mirror;
     private final String requiredDistribution; private final Set<String> requiredCapabilities;
+    public java.util.Map<String,Object> checkpoint(org.jacamo.bridge.contract.VerifiedCheckpointProtocol.Command command){
+        var response=decode(transport.checkpoint(command),MessageType.CHECKPOINT_STATUS);requireSame(response);
+        if(!requiredDistribution.equals(response.distribution().distributionDigest()))throw new BridgeProtocolException("CHECKPOINT_DISTRIBUTION_CHANGED");
+        return response.payload();
+    }
+    /** Delivery fence only, never the socket reader/durable ingress. Caller must be off EDT. */
+    public <T> T exactCut(java.util.concurrent.Callable<T> action) {
+        transport.pauseDelivery();try{synchronized(deliveryLock){return action.call();}}
+        catch(RuntimeException failed){throw failed;}catch(Exception failed){throw new BridgeProtocolException("CHECKPOINT_EXACT_CUT_FAILED",failed);}
+        finally{transport.resumeDelivery();}
+    }
     private final java.util.function.Consumer<RuntimeEvent> acceptedEvent;
     private final java.util.function.BiConsumer<RuntimeEvent, String> coverageFailure;
     private final Object deliveryLock = new Object();

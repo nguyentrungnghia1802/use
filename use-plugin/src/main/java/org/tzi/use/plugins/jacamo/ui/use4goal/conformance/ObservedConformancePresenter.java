@@ -27,6 +27,36 @@ public final class ObservedConformancePresenter {
 
     private String liveOwner="";
     private final Map<String,String> liveCertificates=new HashMap<>();
+    private final LinkedHashMap<String,Cut> checkpointCuts=new LinkedHashMap<>();
+    private RuntimeVerificationResult settledResult;
+    public synchronized List<Cut> captureSettled(){
+        var snapshot=facade.verificationSnapshot();var result=snapshot.result();
+        if(result==null||result==settledResult||!"CURRENT_OBSERVED".equals(result.freshness())||result.semantic()==null
+                ||!"PINNED_NATIVE_CUT".equals(CanonicalJson.object(result.semantic().observation().getOrDefault("originalEngine",Map.of())).get("evaluated")))return List.copyOf(checkpointCuts.values());
+        String owner=result.sessionId()+":"+result.generation()+":"+result.modelRevision();
+        if(!owner.equals(liveOwner)){checkpointCuts.clear();liveCertificates.clear();liveOwner=owner;}
+        var image=snapshot.currentVersion()==result.stateVersion()?snapshot.image():null;
+        var base=cut(result,image,"Settled native source evidence",result.resultHash(),liveCertificates,new HashMap<>());
+        checkpointCuts.put("settled:"+boundaryKey(result),base);settledResult=result;
+        return List.copyOf(checkpointCuts.values());
+    }
+    /** Source checkpoints have their own live presentation sequence. Reading a
+     * disk audit prefix must never animate old states over the active source cut. */
+    public synchronized List<Cut> captureCheckpoint(VerificationSnapshot snapshot,
+            org.tzi.use.plugins.jacamo.codegrounded.runtime.VerifiedCheckpointService.View checkpoint,
+            Map<String,org.jacamo.bridge.contract.VerifiedCheckpointProtocol.Check> checks) {
+        var result=Objects.requireNonNull(snapshot.result());
+        String owner=result.sessionId()+":"+result.generation()+":"+result.modelRevision();
+        if(!owner.equals(liveOwner)){checkpointCuts.clear();liveCertificates.clear();liveOwner=owner;}
+        var base=cut(result,snapshot.image(),"Verified source checkpoint "+checkpoint.checkpoint(),result.resultHash(),liveCertificates,new HashMap<>());
+        var rows=new ArrayList<Evaluation>();
+        new TreeMap<>(checks).forEach((id,check)->{if(check.applicability().equals("APPLICABLE")&&!check.truth().equals("PASS"))rows.add(new Evaluation("Checkpoint (whole MAS) / "+id,check.truth(),check.truth(),"MAS_CHECKPOINT_INVENTORY",check.diagnostic(),"",false,"CHECKPOINT_CHECK","","","whole MAS",checkpoint.token()));});
+        rows.addAll(base.evaluations());
+        var evidence=new LinkedHashMap<>(base.visualEvidence());
+        evidence.put("verifiedCheckpointToken",checkpoint.token());evidence.put("verifiedCheckpointResultHash",checkpoint.resultHash());evidence.put("verifiedCheckpointUseHash",checkpoint.useHash());
+        var shown=new Cut("source-checkpoint:"+checkpoint.token()+":"+base.id(),base.trace(),base.state(),rows,base.coverage(),base.freshness(),base.failed()||checks.values().stream().anyMatch(c->c.truth().equals("FAIL")),"checkpoint:"+checkpoint.token(),base.requirements(),base.businessState(),base.executionMilestones(),base.selectedRequirements(),base.businessPopulationEmpty(),evidence);
+        checkpointCuts.put(checkpoint.token(),shown);return List.copyOf(checkpointCuts.values());
+    }
     /** Live window has no historical navigation: never parse the disk prefix or
      * hash every retained snapshot on a refresh. All audit cuts stay in capture/replay. */
     public synchronized List<Cut> captureCurrent(){

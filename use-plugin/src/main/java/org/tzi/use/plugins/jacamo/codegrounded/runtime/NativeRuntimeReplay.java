@@ -199,7 +199,7 @@ public final class NativeRuntimeReplay {
                 if(!built.nativeResult().export().useText().equals(Files.readString(root.resolve("model.use"))))throw new IllegalArgumentException("REPLAY_CANONICAL_BASELINE_MODEL_MISMATCH");
                 if(!new NativeUseSoilExporter().export(built.nativeResult().state().system()).commands().equals(Files.readString(root.resolve("baseline.cmd"))))throw new IllegalArgumentException("REPLAY_CANONICAL_BASELINE_STATE_MISMATCH");
                 String run;long generation;String revision;
-                try(var input=Files.newBufferedReader(root.resolve("runtime.jsonl"),StandardCharsets.UTF_8)) {
+                try(var input=JournalStreams.reader(root.resolve("runtime.jsonl"),Files.size(root.resolve("runtime.jsonl")),false)) {
                     var first=CanonicalJson.object(CanonicalJson.decode(input.readLine().getBytes(StandardCharsets.UTF_8)));
                     var result=RuntimeVerificationResult.fromMap(CanonicalJson.object(first.get("result")));run=result.sessionId();generation=result.generation();revision=result.modelRevision();
                 }
@@ -254,7 +254,7 @@ public final class NativeRuntimeReplay {
             this.bundle=bundle; this.system=system; this.index=index;
             projector=canonical;
             if(canonical!=null)canonical.coordinator().originalEngine().recordedExecutionEvidencePolicy((String)bundle.manifest.getOrDefault("executionEvidencePolicy","CURRENT_CUT_ONLY/1.0")).join();
-            reader=Files.newBufferedReader(bundle.root.resolve("runtime.jsonl"),StandardCharsets.UTF_8);
+            reader=JournalStreams.reader(bundle.root.resolve("runtime.jsonl"),Files.size(bundle.root.resolve("runtime.jsonl")),false);
             nextLine=reader.readLine();
         }
         public NativeRuntimeProjector projector() { return projector; }
@@ -270,7 +270,7 @@ public final class NativeRuntimeReplay {
         public RuntimeHistoryPage recordedPage(long offset,int limit) {
             requireWorker();if(offset<0||limit<1||limit>128)throw new IllegalArgumentException("REPLAY_HISTORY_RANGE_INVALID");
             long end=ordinal;var page=new ArrayList<RuntimeHistoryPage.Entry>();long position=0;String previous="";
-            try(var input=Files.newBufferedReader(bundle.root.resolve("runtime.jsonl"),StandardCharsets.UTF_8)) {
+            try(var input=JournalStreams.reader(bundle.root.resolve("runtime.jsonl"),Files.size(bundle.root.resolve("runtime.jsonl")),false)) {
                 while(position<end&&position<offset+limit){var line=input.readLine();var record=parse(line,position,previous);previous=record.hash();
                     if(position>=offset){var body=CanonicalJson.object(CanonicalJson.decode(line.getBytes(StandardCharsets.UTF_8)));page.add(new RuntimeHistoryPage.Entry(position,record.kind(),(String)body.getOrDefault("verificationInterval","CORE_ONLY"),RuntimeVerificationResult.fromMap(record.expected()),true));}position++;
                 }
@@ -335,7 +335,7 @@ public final class NativeRuntimeReplay {
             } else actual=c.read(()->{applyEntry(projector,record.kind(),record.payload(),record.expected(),true);return c.lastObservation();});
             if(!actual.resultHash().equals(expected.resultHash())||!actual.stateHash().equals(expected.stateHash())||actual.stateVersion()!=expected.stateVersion())throw new IllegalArgumentException("REPLAY_STATE_OR_RESULT_MISMATCH:"+ordinal+":"+record.kind());
             recordedLast=expected;
-            if(!record.kind().equals("ENGINE_RESULT")) {
+            if(!record.kind().equals("ENGINE_RESULT")&&!record.kind().equals("CHECKPOINT_AUDIT")) {
                 // Preserve recorded publication order even though the offline lane
                 // settles eagerly. A future completion is not yet visible in UI.
                 var formal=c.read(c::latest);
@@ -441,6 +441,13 @@ public final class NativeRuntimeReplay {
                 projector.coordinator().loadProfileSource((String)payload.get("sourceFile"),(String)payload.get("source"),enabled,negated);
             }
             case "MANUAL" -> projector.coordinator().manualVerify();
+            case "CHECKPOINT_AUDIT" -> {
+                var audit=CanonicalJson.object(payload.get("checkpointAudit"));
+                if(!org.jacamo.bridge.contract.VerifiedCheckpointProtocol.hash(audit).equals(payload.get("checkpointAuditHash")))throw new IllegalArgumentException("CHECKPOINT_REPLAY_AUDIT_HASH_MISMATCH");
+                if(audit.get("request") instanceof Map<?,?> request)org.jacamo.bridge.contract.VerifiedCheckpointProtocol.requireRequest(CanonicalJson.object(request));
+                if(audit.get("command") instanceof Map<?,?> command)org.jacamo.bridge.contract.VerifiedCheckpointProtocol.Command.decode(CanonicalJson.object(command));
+                // Validate stored evidence only. Replay never sends live control.
+            }
             case "COVERAGE" -> projector.coordinator().coverageGap(payload.containsKey("event")
                     ? ContractPayloads.event(CanonicalJson.object(payload.get("event"))) : null,(String)payload.get("diagnostic"));
             case "REJECTED" -> {

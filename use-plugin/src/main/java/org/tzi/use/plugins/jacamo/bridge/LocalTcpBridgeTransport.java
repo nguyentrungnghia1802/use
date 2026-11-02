@@ -44,6 +44,16 @@ public final class LocalTcpBridgeTransport implements BridgeTransport {
     @Override public byte[] handshake(){return request("HANDSHAKE","");}
     @Override public byte[] modelSnapshot(){return request("MODEL_SNAPSHOT","");}
     @Override public byte[] runtimeSnapshot(){return request("RUNTIME_SNAPSHOT","");}
+    @Override public byte[] checkpoint(org.jacamo.bridge.contract.VerifiedCheckpointProtocol.Command request) {
+        ensureOpen();try(Socket socket=connect()) {
+            String nonce=UUID.randomUUID().toString();var body=request.payload();
+            String content="CHECKPOINT\n\n"+nonce+"\n"+new String(CanonicalJson.encode(body),StandardCharsets.UTF_8);
+            byte[] payload=CanonicalJson.encode(Map.of("operation","CHECKPOINT","resumeToken","","nonce",nonce,"mac",hmac(content),"checkpoint",body));
+            if(payload.length>maxFrameBytes)throw new BridgeProtocolException("BRIDGE_REQUEST_TOO_LARGE");
+            var out=new DataOutputStream(socket.getOutputStream());out.writeInt(payload.length);out.write(payload);out.flush();
+            return readFrame(new DataInputStream(socket.getInputStream()));
+        }catch(Exception failed){throw new BridgeProtocolException("VERIFIED_CHECKPOINT_REQUEST_FAILED",failed);}
+    }
     @Override public byte[] control(org.jacamo.bridge.contract.RuntimeControlContract.Request request) {
         ensureOpen();try(Socket socket=connect()) {
             String nonce=UUID.randomUUID().toString();var body=request.payload();

@@ -23,7 +23,7 @@ public final class RuntimeStateViews {
  private final CslModel csl;private final GoalModel goals;private final Map<String,OccurrenceGoalModelExpander.Quantifier> policies;
  private java.util.function.Consumer<String> scopeListener=id->{};
  public void onScopeSelected(java.util.function.Consumer<String> listener){scopeListener=Objects.requireNonNull(listener);}
- public void selectScope(String id){if(!id.isBlank()&&!id.equals(contextSelector.getSelectedItem()))contextSelector.setSelectedItem(id);}
+ public void selectScope(String id){if(!id.isBlank()&&!id.equals(contextSelector.getSelectedItem())){loading=true;try{contextSelector.setSelectedItem(id);aolSelector.setSelectedItem(id);}finally{loading=false;}if(iscnActive)renderContext();}}
  private Cut selected;private List<Map<String,Object>> contexts=List.of();private boolean loading;
  private boolean aolActive=true,iscnActive=true;
  public void setActive(boolean showAol,boolean showIscn){

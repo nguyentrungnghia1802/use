@@ -7,7 +7,7 @@ import org.jacamo.bridge.contract.*;
 /** Bounded actual logger receipts for an explicitly pinned Artifact class. No operation/goal credit policy. */
 public final class CartagoOperationHistory implements ObservationCapabilityRegistry.Handle {
     public static final String PROVIDER="cartago.operation-history.v1",VERSION="CARTAGO_OPERATION_HISTORY/1.0";
-    private static final String FRAMEWORK="67830177f2cb450876ac3b43aa90741cbc0b72079f5fcdc8320ff2f11b17c012";
+    private static final String FRAMEWORK=CartagoArtifactReadScope.ARTIFACT_SHA;
     private final ObservationCapabilityRequest request;
     private final FrameworkObservationProviders.Context context;
     private final String type,hash,resource,provider;
@@ -29,7 +29,7 @@ public final class CartagoOperationHistory implements ObservationCapabilityRegis
         ProviderSourcePin.require(request,context.root());
         Class<?> selected=Class.forName(type,false,Thread.currentThread().getContextClassLoader());
         var binary=DeclaredArtifactTypeProof.readActualBinary(selected);var framework=DeclaredArtifactTypeProof.readActualBinary(Artifact.class);
-        if(!Artifact.class.isAssignableFrom(selected)||binary==null||framework==null||!hash.equals(AdapterEvidence.digest(binary.bytes()))||!FRAMEWORK.equals(AdapterEvidence.digest(framework.bytes())))throw new IllegalArgumentException("OPERATION_HISTORY_BINARY_MISMATCH");
+        if(!Artifact.class.isAssignableFrom(selected)||binary==null||framework==null||!hash.equals(AdapterEvidence.digest(binary.bytes()))||!org.jacamo.bridge.contract.PinnedRuntimeClassProfiles.supportsCartagoArtifactHash(AdapterEvidence.digest(framework.bytes())))throw new IllegalArgumentException("OPERATION_HISTORY_BINARY_MISMATCH");
         resource=binary.resource().toExternalForm();provider=selected.getProtectionDomain().getCodeSource().getLocation().toExternalForm();
         // CArtAgO's public operation interface includes annotated package/protected methods.
         // Java getMethods() omits WorkspaceArtifact.makeArtifact even though the official adapter exposes it.

@@ -52,9 +52,13 @@ public final class MoiseSchemeCutDecoder {
             if(clockProof)expectedKeys.add("publicationClockProof");keys(data,expectedKeys);
             need("COMPLETE".equals(data.get("status"))&&run.equals(data.get("sessionId"))&&generation==integer(data.get("generation"))&&cut.modelRevision().equals(data.get("modelRevision")),"SOURCE_SCOPE_OR_VERSION");
             need(board.id().canonical().equals(data.get("schemeIdentity"))&&Objects.equals(artifact.values().get("semanticId"),data.get("artifactIdentity"))&&artifact.id().incarnation().equals(data.get("artifactUuid"))&&workspace.id().incarnation().equals(data.get("workspaceUuid")),"SOURCE_IDENTITY_MISMATCH");
-            need(osHash.equals(data.get("sourceOsSha256"))&&MOISE_HASH.equals(data.get("moiseArtifactSha256"))&&CARTAGO_HASH.equals(data.get("cartagoArtifactClassSha256"))&&definition.metadata().semanticId().equals(data.get("schemeDefinition"))
+            need(osHash.equals(data.get("sourceOsSha256"))&&MOISE_HASH.equals(data.get("moiseArtifactSha256"))&&PinnedRuntimeClassProfiles.supportsCartagoArtifactHash(data.get("cartagoArtifactClassSha256"))&&definition.metadata().semanticId().equals(data.get("schemeDefinition"))
                 &&"PINNED_CARTAGO_TRYLOCK_PUBLIC_SCHEME_READ".equals(data.get("coherence"))&&data.get("lockAlreadyHeld") instanceof Boolean,"SOURCE_BINARY_OR_DEFINITION_MISMATCH");
-            need(TIME.equals(data.get("timeAuthority"))&&("npl-system-wall:"+run+":"+generation).equals(data.get("clockIdentity")),"TIME_AUTHORITY_MISMATCH");
+            boolean logical=("npl-logical-source:"+run+":"+generation).equals(data.get("clockIdentity"));
+            boolean logicalProof=logical&&cut.facts().stream().filter(f->f.values().containsKey(VerificationObservation.KEY))
+                    .map(f->VerificationObservation.require(f,cut,run,generation)).anyMatch(o->o.kind()==VerificationObservation.Kind.CLOCK
+                            &&o.subject().equals(data.get("clockIdentity"))&&"NPL_LOGICAL_SOURCE_CLOCK/1.0".equals(CanonicalJson.object(o.data().get("sourceProof")).get("version")));
+            need(TIME.equals(data.get("timeAuthority"))&&(logicalProof||("npl-system-wall:"+run+":"+generation).equals(data.get("clockIdentity"))),"TIME_AUTHORITY_MISMATCH");
             epoch(text(data,"publicationEpochMillis"));
             var unsigned=new LinkedHashMap<>(data);String hash=text(unsigned,"cutHash");unsigned.remove("cutHash");need(hash.equals(SemanticJson.hash(unsigned)),"CUT_HASH_MISMATCH");
             long sequence=integer(data.get("sequence")),birth=integer(data.get("birthSequence"));need(sequence>0&&birth>=0&&birth<=sequence,"SEQUENCE_INVALID");

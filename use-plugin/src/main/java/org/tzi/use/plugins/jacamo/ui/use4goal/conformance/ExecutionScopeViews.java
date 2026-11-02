@@ -14,7 +14,7 @@ public final class ExecutionScopeViews {
   return rows instanceof List<?> list?list.stream().map(ExecutionScopeViews::object).toList():List.of();
  }
  public static Map<String,String> choices(List<Cut> cuts){
-  var contexts=new TreeMap<String,Map<String,Object>>();
+  var contexts=new LinkedHashMap<String,Map<String,Object>>();
   for(var cut:cuts)for(var context:contexts(cut)){
    String id=Objects.toString(context.get("context"),"");
    if(!id.isBlank()&&(!contexts.containsKey(id)||!object(object(context.get("scopeView")).get("entities")).isEmpty()))contexts.put(id,context);
@@ -22,6 +22,19 @@ public final class ExecutionScopeViews {
   var result=new LinkedHashMap<String,String>();int ordinal=0;
   for(var entry:contexts.entrySet())result.put(entry.getKey(),label(entry.getValue(),++ordinal));
   return Collections.unmodifiableMap(result);
+ }
+ public static boolean boundContext(Map<String,Object> context){
+  var scope=object(context.get("scopeView"));
+  if(Boolean.FALSE.equals(scope.get("domainBound")))return "BOUND_EXECUTION_VIEW/2.0".equals(scope.get("version"))
+    &&Boolean.TRUE.equals(scope.get("complete"))&&!object(scope.get("owners")).isEmpty()
+    &&!object(scope.get("bindings")).isEmpty()&&!Objects.toString(context.get("context"),"").isBlank();
+  return !object(scope.get("entities")).isEmpty()&&!Boolean.FALSE.equals(scope.get("domainBound"));
+ }
+ public static Map<String,String> admittedChoices(List<Cut> cuts){
+  var admitted=new LinkedHashMap<String,Map<String,Object>>();
+  for(var cut:cuts)for(var context:contexts(cut))if(boundContext(context))admitted.put(Objects.toString(context.get("context")),context);
+  var labels=new LinkedHashMap<String,String>();int n=0;for(var e:admitted.entrySet())labels.put(e.getKey(),label(e.getValue(),++n));
+  return Collections.unmodifiableMap(labels);
  }
  public static String label(Map<String,Object> context,int ordinal){
   var entities=object(object(context.get("scopeView")).get("entities"));
@@ -31,6 +44,7 @@ public final class ExecutionScopeViews {
    // This is a display label only; exact context and native IDs remain authoritative.
    String id=Objects.toString(attributes.get("id"),"");names.add(type+(id.isBlank()?"":" · id="+id));
   }
+  if(names.isEmpty()&&boundContext(context))return "Execution "+ordinal+" — "+Objects.toString(object(context.get("scopeView")).get("definition"),"context");
   return "Execution "+ordinal+(names.isEmpty()?" · entity binding unavailable":" — "+String.join(", ",names));
  }
  /** Short actor caption avoids expanding the original circular actor over its goals.
@@ -87,12 +101,15 @@ public final class ExecutionScopeViews {
    if(rows.stream().noneMatch(r->r.kind().equals("GOAL_TASK")&&r.element().equals(target)))
     rows.add(new Evaluation(target.toString(),"UNAVAILABLE","UNKNOWN","EXECUTION_RESULT_UNAVAILABLE",
       "No admitted result for this exact execution at this cut","",true,"GOAL_TASK","", "",id,""));
+  // Admission is global even when the user inspects one execution. Keep its
+  // exact inventory visible and explicitly labelled whole-MAS evidence.
+  rows.addAll(0,cut.evaluations().stream().filter(row->row.kind().equals("CHECKPOINT_CHECK")).toList());
   var evidence=new TreeMap<String,Object>(cut.visualEvidence());evidence.put("selectedExecution",id);
   var projection=object(evidence.get("presentationState"));var selected=new TreeMap<String,Object>();
   var entityKeys=object(object(context.get("scopeView")).get("entities")).keySet();
   var objects=object(projection.get("objects"));var objectQuality=object(projection.get("objectQuality"));
   for(String key:entityKeys)if(Boolean.TRUE.equals(objectQuality.getOrDefault(key,projection.get("qualifiedValues")))&&objects.containsKey(key))selected.put(key,objects.get(key));
-  evidence.put("selectedEntityState",selected);
+  evidence.put("selectedEntityState",Map.copyOf(selected));
   // Native structural membership remains intact. The additional links are explicit
   // execution-cast witnesses, never inferred from group membership.
   var owners=object(object(context.get("scopeView")).get("owners"));var scopedObjects=new TreeMap<String,Object>();
@@ -116,12 +133,17 @@ public final class ExecutionScopeViews {
   // alternating qualified/unavailable source cuts into hundreds of milestones.
   var scopeView=object(context.get("scopeView"));
   boolean domainBound=!scopeView.isEmpty()&&!Boolean.FALSE.equals(scopeView.get("domainBound"));
-  if(!domainBound&&selected.isEmpty())scopedObjects.forEach((k,v)->{if(Boolean.TRUE.equals(objectQuality.getOrDefault(k,projection.get("qualifiedValues"))))selected.put(k,v);});
+  // The text and diagram describe the same scoped graph, including declared
+  // observer progress. Hidden observer changes must not look like duplicate states.
+  selected.clear();selected.putAll(scopedObjects);
   var text=new StringBuilder("Selected execution business state\n");
-  selected.forEach((key,value)->{text.append(key).append('\n');object(value).forEach((field,v)->text.append("  ").append(field).append(" = ").append(v).append('\n'));});
+  selected.forEach((key,value)->{text.append(key).append('\n');new TreeMap<>(object(value)).forEach((field,v)->text.append("  ").append(field).append(" = ").append(v).append('\n'));});
+  var relationText=new TreeSet<String>();for(var raw:links){var link=object(raw);relationText.add(Objects.toString(link.get("association"))+" "+link.get("participants"));}
+  if(!relationText.isEmpty()){text.append("Relations\n");relationText.forEach(relation->text.append("  ").append(relation).append('\n'));}
   if(selected.isEmpty())text.append("No qualified bound Entity state at this cut. No other execution is substituted.\n");
-  String key="PINNED_NATIVE_CUT".equals(object(cut.visualEvidence().get("originalEngine")).get("evaluated"))&&(!domainBound||!selected.isEmpty())?SemanticJson.hash(List.of(id,selected,context.isEmpty())):"";
-  boolean failed=rows.stream().anyMatch(r->!Set.of("GOAL_TASK","EXECUTION_OUTCOME").contains(r.kind())&&r.status().equals("FAIL")||r.kind().equals("GOAL_TASK")&&r.required()&&r.status().equals("VIOLATED"));
+  boolean stateKnown=Boolean.TRUE.equals(scopedProjection.get("qualifiedValues"))&&(!domainBound||!object(evidence.get("selectedEntityState")).isEmpty());
+  String key="PINNED_NATIVE_CUT".equals(object(cut.visualEvidence().get("originalEngine")).get("evaluated"))&&stateKnown?SemanticJson.hash(List.of(id,selected,relationText)):"";
+  boolean failed=rows.stream().anyMatch(r->!Set.of("GOAL_TASK","EXECUTION_OUTCOME","CHECKPOINT_CHECK").contains(r.kind())&&r.status().equals("FAIL")||r.kind().equals("GOAL_TASK")&&r.required()&&r.status().equals("VIOLATED"));
   long missing=rows.stream().filter(Evaluation::required).filter(r->Set.of("UNKNOWN","SKIPPED","UNSUPPORTED","INCONCLUSIVE","UNDEFINED","ERROR").contains(r.status())).count();
   String requirements="Selected execution requirements: "+(failed?"VIOLATION":missing>0?"INCOMPLETE ("+missing+" unavailable)":"KNOWN")+" | Shared group rules apply to this execution too";
   return new Cut(cut.id(),cut.trace(),cut.state(),rows,cut.coverage(),cut.freshness(),failed,key,

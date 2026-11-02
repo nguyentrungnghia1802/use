@@ -16,18 +16,23 @@ public final class RuntimeEventJournal {
     private final Path path;
     private final int capacity;
     private final long maxBytes;
+    private final boolean compressed;
     private final ArrayDeque<RuntimeHistoryPage.Entry> history = new ArrayDeque<>();
     private String interval = "CORE_ONLY";
     private String chain = "";
-    private long ordinal, bytes;
+    private long ordinal, bytes, decodedBytes;
     private boolean gap;
     private String diagnostic = "";
     public RuntimeEventJournal(Path directory, int capacity, long maxBytes) {
+        this(directory,capacity,maxBytes,false);
+    }
+    public RuntimeEventJournal(Path directory,int capacity,long maxBytes,boolean compressed){
         if (capacity < 1 || maxBytes < 32_768) throw new IllegalArgumentException("JOURNAL_LIMIT_INVALID");
         this.capacity = capacity; this.maxBytes = maxBytes;
+        this.compressed=compressed;
         try {
             Files.createDirectories(directory);
-            path = Files.createTempFile(directory, "runtime-", ".jsonl");
+            path = Files.createTempFile(directory, "runtime-", compressed?".jsonl.gz":".jsonl");
         } catch (java.io.IOException error) { throw new IllegalStateException("JOURNAL_CREATE_FAILED", error); }
     }
     public synchronized boolean append(String kind, Map<String, Object> payload, RuntimeVerificationResult result) {
@@ -54,9 +59,10 @@ public final class RuntimeEventJournal {
             System.arraycopy(prefix,0,line,0,prefix.length);
             System.arraycopy(unsigned,1,line,prefix.length,unsigned.length-1);
             line[line.length-1]='\n';
-            if (bytes + line.length > maxBytes - 4096) { fail("JOURNAL_OVERFLOW"); return false; }
-            Files.write(path, line, StandardOpenOption.APPEND);
-            bytes += line.length; chain = hash; add(new RuntimeHistoryPage.Entry(ordinal++, kind, interval, result, true,stateCommands)); return true;
+            byte[] stored=compressed?JournalStreams.compress(line):line;
+            if (bytes + stored.length > maxBytes - 4096) { fail("JOURNAL_OVERFLOW"); return false; }
+            Files.write(path, stored, StandardOpenOption.APPEND);
+            bytes += stored.length;decodedBytes+=line.length;chain = hash; add(new RuntimeHistoryPage.Entry(ordinal++, kind, interval, result, true,stateCommands)); return true;
         } catch (RuntimeException | java.io.IOException error) { fail("JOURNAL_IO_OR_PAYLOAD_ERROR:" + error.getMessage()); return false; }
     }
     private void fail(String reason) {
@@ -66,7 +72,8 @@ public final class RuntimeEventJournal {
             marker.put("ordinal", ordinal); marker.put("previousHash", chain); marker.put("kind", "GAP");
             marker.put("diagnostic", reason);
             marker.put("entryHash", ExternalOclConstraintService.sha256(CanonicalJson.encode(marker)));
-            Files.writeString(path, new String(CanonicalJson.encode(marker), StandardCharsets.UTF_8) + "\n", StandardOpenOption.APPEND);
+            byte[] line=(new String(CanonicalJson.encode(marker), StandardCharsets.UTF_8)+"\n").getBytes(StandardCharsets.UTF_8);
+            Files.write(path,compressed?JournalStreams.compress(line):line,StandardOpenOption.APPEND);
         } catch (java.io.IOException ignored) { /* In-memory gap remains visible; export is explicitly rejected. */ }
     }
     synchronized void markGap(String reason) {if(!gap)fail(reason);}
@@ -78,6 +85,7 @@ public final class RuntimeEventJournal {
         history.addLast(entry);
     }
     public synchronized List<RuntimeVerificationResult> history() { return history.stream().map(RuntimeHistoryPage.Entry::result).toList(); }
+    public synchronized List<RuntimeHistoryPage.Entry> retainedEntries(){return List.copyOf(history);}
     public synchronized RuntimeHistoryPage tailPage(int limit) {
         checkLimit(limit);
         return new RuntimeHistoryPage(history.stream().skip(Math.max(0, history.size()-limit)).toList(), ordinal,
@@ -88,14 +96,14 @@ public final class RuntimeEventJournal {
         if (javax.swing.SwingUtilities.isEventDispatchThread()) throw new IllegalStateException("PERSISTED_HISTORY_REQUIRES_WORKER");
         checkLimit(limit);
         if (offset < 0) throw new IllegalArgumentException("HISTORY_OFFSET_INVALID");
-        long end; long retained; boolean lost; String reason;
-        synchronized (this) { end=ordinal; retained=history.isEmpty()?ordinal:history.getFirst().ordinal(); lost=gap; reason=diagnostic; }
+        long end,physical; long retained; boolean lost; String reason;
+        synchronized (this) { end=ordinal;physical=bytes; retained=history.isEmpty()?ordinal:history.getFirst().ordinal(); lost=gap; reason=diagnostic; }
         if (offset >= end) return new RuntimeHistoryPage(List.of(),end,end,retained,lost,reason,true);
         var entries = new java.util.ArrayList<RuntimeHistoryPage.Entry>(limit);
         String previous="", activeInterval="CORE_ONLY"; long position=0;
         try {
             if (Files.isSymbolicLink(path) || Files.size(path) > maxBytes) throw new IllegalStateException("HISTORY_FILE_UNSAFE");
-            try (var reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+            try (var reader = JournalStreams.reader(path,physical,compressed)) {
                 while (position < end && position < offset + limit) {
                     String line=reader.readLine(); if (line == null) throw new IllegalStateException("HISTORY_TRUNCATED");
                     var body=new LinkedHashMap<>(CanonicalJson.object(CanonicalJson.decode(line.getBytes(StandardCharsets.UTF_8))));
@@ -111,6 +119,7 @@ public final class RuntimeEventJournal {
                     if (position >= offset) entries.add(new RuntimeHistoryPage.Entry(position,kind,activeInterval,result,true,stateCommands(CanonicalJson.object(body.get("payload")),result)));
                     position++;
                 }
+                if(position==end&&reader.readLine()!=null)throw new IllegalStateException("HISTORY_PREFIX_LENGTH_MISMATCH");
             }
             return new RuntimeHistoryPage(entries, position, end, retained, lost, reason, true);
         } catch (java.io.IOException error) { throw new IllegalStateException("HISTORY_READ_FAILED", error); }
@@ -123,6 +132,25 @@ public final class RuntimeEventJournal {
     }
     private static void checkLimit(int limit) { if (limit < 1 || limit > 128) throw new IllegalArgumentException("HISTORY_PAGE_LIMIT_INVALID"); }
     public Path path() { return path; }
+    /** One checked streaming scan for a prefix no longer in the RAM tail. The
+     * visitor must not mutate the journal; parsing/IO stays off the native EDT. */
+    public void visitRange(long from,long end,java.util.function.Consumer<RuntimeHistoryPage.Entry> visitor){
+        if(javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("PERSISTED_HISTORY_REQUIRES_WORKER");
+        long physical,total;synchronized(this){if(from<0||end<from||end>ordinal||gap)throw new IllegalStateException("HISTORY_PREFIX_UNAVAILABLE:"+diagnostic);physical=bytes;total=ordinal;}
+        try{if(Files.isSymbolicLink(path)||Files.size(path)>maxBytes)throw new IllegalStateException("HISTORY_FILE_UNSAFE");}catch(java.io.IOException error){throw new IllegalStateException("HISTORY_READ_FAILED",error);}
+        String previous="",activeInterval="CORE_ONLY";
+        try(var reader=JournalStreams.reader(path,physical,compressed)){
+            for(long position=0;position<end;position++){
+                String line=reader.readLine();if(line==null)throw new IllegalStateException("HISTORY_TRUNCATED");
+                var body=new LinkedHashMap<>(CanonicalJson.object(CanonicalJson.decode(line.getBytes(StandardCharsets.UTF_8))));
+                String hash=(String)body.remove("entryHash");
+                if(((Number)body.get("ordinal")).longValue()!=position||!previous.equals(body.get("previousHash"))||!ExternalOclConstraintService.sha256(CanonicalJson.encode(body)).equals(hash))throw new IllegalStateException("HISTORY_CHAIN_CORRUPT:"+position);
+                previous=hash;if(body.containsKey("verificationInterval"))activeInterval=(String)body.get("verificationInterval");
+                if(position>=from){var result=RuntimeVerificationResult.fromMap(CanonicalJson.object(body.get("result")));visitor.accept(new RuntimeHistoryPage.Entry(position,(String)body.get("kind"),activeInterval,result,true));}
+            }
+            if(end==total&&reader.readLine()!=null)throw new IllegalStateException("HISTORY_PREFIX_LENGTH_MISMATCH");
+        }catch(java.io.IOException error){throw new IllegalStateException("HISTORY_READ_FAILED",error);}
+    }
     public synchronized boolean hasGap() { return gap; }
     public synchronized String diagnostic() { return diagnostic; }
     public synchronized long persistedEntries() { return ordinal; }
@@ -130,5 +158,12 @@ public final class RuntimeEventJournal {
     public synchronized long persistedBytes() { return bytes; }
     /** Immutable budget captured when this run was created. */
     public long maxBytes() { return maxBytes; }
+    public boolean compressed(){return compressed;}
+    public synchronized long decodedBytes(){return decodedBytes;}
+    public void exportPlain(Path output,long physical,long decoded)throws java.io.IOException{
+        try(var input=JournalStreams.input(path,physical,compressed);var target=Files.newOutputStream(output)){
+            long copied=input.transferTo(target);if(copied!=decoded)throw new java.io.IOException("JOURNAL_DECODED_PREFIX_SIZE_MISMATCH");
+        }
+    }
     public synchronized long retainedFromVersion() { return history.isEmpty() ? 0 : history.getFirst().result().stateVersion(); }
 }

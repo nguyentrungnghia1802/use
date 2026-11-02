@@ -141,6 +141,7 @@ public final class M0RuleExecutor {
                 port.value(object,assignment.getKey(),assignment.getValue());CanonicalObservationMappingBindings.recordPropertyWritten(port,object,object.cls().attribute(assignment.getKey(),true),assignment.getValue());
             }
             port.metadata(object,"xml:m0:key",key);port.metadata(object,"xml:m0:quality","COMPLETE");port.metadata(object,"xml:m0:rule",ruleId);port.metadata(object,"xml:m0:cut",input.sourceCut);
+            port.metadata(object,"xml:m0:source-joins",SourceJoinOwnership.encode(input.proofs));
             return outcome(rule,"MAPPED",key,object,"");
         }catch(RuntimeValueConverters.Unavailable unavailable) {
             if(object!=null) {

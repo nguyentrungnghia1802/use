@@ -1,0 +1,137 @@
+{
+  "copies": [
+    {
+      "original": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\auction",
+      "copy": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\auction-false",
+      "originalFiles": [
+        {
+          "path": "auction.jcm",
+          "sha256": "d138c2c08ca68c05dfe0d86c6e4ede9b622a3e4b45a87b19cb8882f277e14c49"
+        },
+        {
+          "path": "build.gradle",
+          "sha256": "0c81b7f1b57c8f9b427280eb8967e820edaffe329540e4988ddd85e402175b40"
+        },
+        {
+          "path": "gradle/wrapper/gradle-wrapper.jar",
+          "sha256": "2db75c40782f5e8ba1fc278a5574bab070adccb2d21ca5a6e5ed840888448046"
+        },
+        {
+          "path": "gradle/wrapper/gradle-wrapper.properties",
+          "sha256": "dafb226d06402c4b7d9c1a9b6833c26eaa117c08d2b4a16636a2d54ea8abc33f"
+        },
+        {
+          "path": "gradlew",
+          "sha256": "1ce03a421a975125820e1e4b7230f6a151617255b39cf84758505c7e67b316fa"
+        },
+        {
+          "path": "gradlew.bat",
+          "sha256": "2209f919a22528af59a2af2ad97e8d056cca18e39f7d87aa3fd549a73b180150"
+        },
+        {
+          "path": "logging.properties",
+          "sha256": "ebdd68146d523b3105fe112c9c89b4601aec89f38dba94a2f4fb9faa967dae79"
+        },
+        {
+          "path": "readme.txt",
+          "sha256": "e4d83b69b3674918b33800dc8490af8f55f335422c467b710de6aef8a28e08a3"
+        },
+        {
+          "path": "src/agt/auction_capabilities.asl",
+          "sha256": "31679b13210114b211dad862ad86af352cc9003ac9527ea7268e3a1d0f9cfe1b"
+        },
+        {
+          "path": "src/env/auction_env/AuctionArtifact.java",
+          "sha256": "34036fc220274853e39f93682cdb22c350fe6a06739669860f2a66afe606ff4b"
+        },
+        {
+          "path": "src/org/auction-os.xml",
+          "sha256": "d2481d4ee3c45b2cead42f942a3943684e86facee992870356ca4d1e47d16f9a"
+        }
+      ],
+      "excludedGeneratedFiles": [
+        ".gradle/8.10.2/checksums/checksums.lock",
+        ".gradle/8.10.2/dependencies-accessors/gc.properties",
+        ".gradle/8.10.2/executionHistory/executionHistory.bin",
+        ".gradle/8.10.2/executionHistory/executionHistory.lock",
+        ".gradle/8.10.2/fileChanges/last-build.bin",
+        ".gradle/8.10.2/fileHashes/fileHashes.bin",
+        ".gradle/8.10.2/fileHashes/fileHashes.lock",
+        ".gradle/8.10.2/fileHashes/resourceHashesCache.bin",
+        ".gradle/8.10.2/gc.properties",
+        ".gradle/buildOutputCleanup/buildOutputCleanup.lock",
+        ".gradle/buildOutputCleanup/cache.properties",
+        ".gradle/buildOutputCleanup/outputFiles.bin",
+        ".gradle/file-system.probe",
+        ".gradle/vcs-1/gc.properties",
+        ".jcm-deps.gradle",
+        "build/classes/java/main/auction_env/AuctionArtifact.class",
+        "build/tmp/compileJava/compileTransaction/stash-dir/GUIConsole$Display$1.class.uniqueId2",
+        "build/tmp/compileJava/compileTransaction/stash-dir/GUIConsole$Display$2.class.uniqueId1",
+        "build/tmp/compileJava/compileTransaction/stash-dir/GUIConsole$Display.class.uniqueId3",
+        "build/tmp/compileJava/compileTransaction/stash-dir/GUIConsole.class.uniqueId0",
+        "build/tmp/compileJava/previous-compilation-data.bin"
+      ],
+      "fault": "MISSING_RUNNING_FALSE_IN_STOP",
+      "originalJavaSha256": "34036fc220274853e39f93682cdb22c350fe6a06739669860f2a66afe606ff4b",
+      "falseJavaSha256": "f80f98185518348b3d62656aba6856fe6f2e20514e8f90ace29a6d07ac971563",
+      "changedCopiedFiles": [
+        "src/env/auction_env/AuctionArtifact.java"
+      ]
+    },
+    {
+      "original": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\examples\\auction",
+      "copy": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\examples\\auction-false",
+      "originalFiles": [
+        {
+          "path": "auction-mapping.xml",
+          "sha256": "ba793ea359256683c3dce5c57fcefbc8664cb192156e92988f7c93907e7de64c"
+        },
+        {
+          "path": "auction.csl",
+          "sha256": "0b63df2e539ccc0af965cba1d42b40167545601fe69fbcfc775f98d75a79cff8"
+        },
+        {
+          "path": "auction.istar",
+          "sha256": "ec98189dbdecd123b9eb862f5ce714e0fa3e7cd6b636e093fc032945217b784e"
+        },
+        {
+          "path": "auction.jcm",
+          "sha256": "c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb"
+        },
+        {
+          "path": "auction.ocl",
+          "sha256": "16837702e057006d2083142a32f3a9791a1d2b86523115e2ede2a30e33902141"
+        },
+        {
+          "path": "build.gradle",
+          "sha256": "0c81b7f1b57c8f9b427280eb8967e820edaffe329540e4988ddd85e402175b40"
+        },
+        {
+          "path": "README.md",
+          "sha256": "21b7eccd467e9be06da29416f0c39a548dff8689d98232f064674974e2325bbd"
+        },
+        {
+          "path": "src/agt/auction_capabilities.asl",
+          "sha256": "31679b13210114b211dad862ad86af352cc9003ac9527ea7268e3a1d0f9cfe1b"
+        },
+        {
+          "path": "src/env/auction_env/AuctionArtifact.java",
+          "sha256": "34036fc220274853e39f93682cdb22c350fe6a06739669860f2a66afe606ff4b"
+        },
+        {
+          "path": "src/org/auction-os.xml",
+          "sha256": "d2481d4ee3c45b2cead42f942a3943684e86facee992870356ca4d1e47d16f9a"
+        }
+      ],
+      "excludedGeneratedFiles": [],
+      "fault": "MISSING_RUNNING_FALSE_IN_STOP",
+      "originalJavaSha256": "34036fc220274853e39f93682cdb22c350fe6a06739669860f2a66afe606ff4b",
+      "falseJavaSha256": "f80f98185518348b3d62656aba6856fe6f2e20514e8f90ace29a6d07ac971563",
+      "changedCopiedFiles": [
+        "auction-mapping.xml",
+        "src/env/auction_env/AuctionArtifact.java"
+      ]
+    }
+  ]
+}

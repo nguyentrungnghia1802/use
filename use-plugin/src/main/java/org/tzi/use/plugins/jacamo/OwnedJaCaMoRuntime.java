@@ -16,6 +16,7 @@ import org.tzi.use.plugins.jacamo.bridge.BridgeConnectionConfig;
 final class OwnedJaCaMoRuntime implements AutoCloseable {
     static final String CLASSPATH_PROPERTY="use.jacamo.runtime.classpath-file";
     private final Path checkout;
+    private final boolean verified;
     private final Thread shutdown;
     private volatile Attempt active;
     private volatile View view=new View("IDLE",0,"","");
@@ -29,6 +30,10 @@ final class OwnedJaCaMoRuntime implements AutoCloseable {
         Attempt(Path root,String nonce){this.root=root;this.nonce=nonce;}
     }
     OwnedJaCaMoRuntime(Path checkout) {
+        this(checkout,false);
+    }
+    OwnedJaCaMoRuntime(Path checkout,boolean verified) {
+        this.verified=verified;
         this.checkout=checkout.toAbsolutePath().normalize();
         shutdown=Thread.ofPlatform().unstarted(this::close);
         Runtime.getRuntime().addShutdownHook(shutdown);
@@ -71,6 +76,8 @@ final class OwnedJaCaMoRuntime implements AutoCloseable {
             var manifest=readPreparation(result,a.root,a.nonce,source);
             a.stop=inside(a.root,string(manifest,"stopFile"));a.stage=inside(a.root,string(manifest,"stagedProject"));a.run=string(manifest,"runId");
             Path project=inside(a.root,string(manifest,"derivedJcm")),startup=inside(a.root,string(manifest,"startupDirectory"));
+            Path checkpointPolicy=Path.of(string(manifest,"observationPlan")+".checkpoints.json");
+            if(verified)Files.writeString(checkpointPolicy,"{}");
             Path observations=string(manifest,"observationPlan").isBlank()?null:inside(a.root,string(manifest,"observationPlan"));
             var bridge=new BridgeConnectionConfig(URI.create(string(manifest,"endpoint")),inside(a.root,string(manifest,"secretFile")),
                     string(manifest,"distributionSha256"),Set.of("official.model","runtime.snapshot"),CanonicalJson.DEFAULT_MAX_BYTES,60_000,1024);
@@ -81,6 +88,7 @@ final class OwnedJaCaMoRuntime implements AutoCloseable {
                 if(!(item instanceof String option)||!option.startsWith("-Djacamo.bridge.")||option.indexOf('\0')>=0)throw new IllegalArgumentException("PRODUCER_JVM_ARGUMENT_INVALID");
                 java.add(option);
             }
+            if(verified)java.addAll(List.of("-Djacamo.execution.mode=VERIFIED_CHECKPOINTS","-Djacamo.checkpoint.policy="+checkpointPolicy));
             var owner=ProcessOwnerLease.current();
             java.addAll(List.of("-cp",string(manifest,"classpath"),"jason.infra.local.LiveJaCaMoLauncherMain",project.toString(),a.stop.toString(),
                     "0",Boolean.toString(!showGui),"",string(manifest,"startupSeconds"),startup.toString(),a.run,Long.toString(owner.pid()),Long.toString(owner.startedAtEpochMillis())));
@@ -101,7 +109,9 @@ final class OwnedJaCaMoRuntime implements AutoCloseable {
     }
     static Path defaultClasspath(Path checkout) {
         String configured=System.getProperty(CLASSPATH_PROPERTY,"").trim();
-        return configured.isEmpty()?checkout.resolve("jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt"):Path.of(configured).toAbsolutePath().normalize();
+        if(!configured.isEmpty())return Path.of(configured).toAbsolutePath().normalize();
+        Path installed=checkout.resolve("bridge/runtime-classpath.txt");
+        return Files.isRegularFile(installed)?installed:checkout.resolve("jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt");
     }
     private static String consolePosition() throws Exception {
         String configured=System.getProperty("use.jacamo.runtime.gui.position","").trim();
@@ -192,7 +202,13 @@ final class OwnedJaCaMoRuntime implements AutoCloseable {
         try{if(!process.waitFor(1500,TimeUnit.MILLISECONDS))process.destroyForcibly();}catch(InterruptedException e){Thread.currentThread().interrupt();process.destroyForcibly();}
         children.stream().filter(ProcessHandle::isAlive).forEach(ProcessHandle::destroyForcibly);
     }
-    @Override public void close(){closed=true;stop();if(Thread.currentThread()!=shutdown)try{Runtime.getRuntime().removeShutdownHook(shutdown);}catch(IllegalStateException ignored){/* JVM shutdown already owns cleanup. */}}
+    @Override public void close(){
+        closed=true;
+        // Closing the monitor/application is observer loss in strict mode.
+        // Explicit stop() remains the only owned-runtime termination command.
+        if(!verified||!view.state().equals("RUNNING"))stop();
+        if(Thread.currentThread()!=shutdown)try{Runtime.getRuntime().removeShutdownHook(shutdown);}catch(IllegalStateException ignored){/* JVM shutdown already owns cleanup. */}
+    }
     /** Fixed memory and file bounds even when a child never emits a newline. */
     static final class Capture implements AutoCloseable {
         private final InputStream input;private final Thread reader;private final StringBuilder tail=new StringBuilder();

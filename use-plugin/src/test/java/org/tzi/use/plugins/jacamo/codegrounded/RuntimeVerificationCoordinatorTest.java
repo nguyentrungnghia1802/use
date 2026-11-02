@@ -21,11 +21,11 @@ class RuntimeVerificationCoordinatorTest {
     static final String PROFILE = "context LiveRuntimePropertyArtifact inv NoB: self.status <> 'B'";
     public static final class DiscoveredArtifact extends cartago.Artifact { }
 
-    @Test void configuredJournalBudgetIsBoundedAndDefaultsTo64MiB() {
+    @Test void configuredJournalBudgetIsBoundedAndDefaultsTo512MiB() {
         String key="use.jacamo.runtime.journal.maxBytes", previous=System.getProperty(key);
         try {
             System.clearProperty(key);
-            assertEquals(64L*1024*1024,RuntimeVerificationCoordinator.defaultJournalMaxBytes());
+            assertEquals(512L*1024*1024,RuntimeVerificationCoordinator.defaultJournalMaxBytes());
             System.setProperty(key,"536870912");
             assertEquals(512L*1024*1024,RuntimeVerificationCoordinator.defaultJournalMaxBytes());
             for(String invalid:List.of("0","-1","32767","1073741825","unbounded")) {

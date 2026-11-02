@@ -64,13 +64,13 @@
         <dependency>
             <groupId>io.github.jason-lang</groupId>
             <artifactId>jason-interpreter</artifactId>
-            <version>3.3.2</version>
+            <version>3.3.2-checkpoint-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jacamo</groupId>
             <artifactId>cartago</artifactId>
-            <version>3.1</version>
+            <version>3.1-checkpoint-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

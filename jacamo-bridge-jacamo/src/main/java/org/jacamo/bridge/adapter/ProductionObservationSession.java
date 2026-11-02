@@ -35,6 +35,7 @@ public final class ProductionObservationSession implements AutoCloseable {
     }
     public synchronized List<Capability> requiredUnavailable(){var required=requests.stream().filter(ObservationCapabilityRequest::required).map(ObservationCapabilityRequest::id).collect(java.util.stream.Collectors.toSet());return capabilities().stream().filter(c->required.contains(c.name())&&c.status()!=CapabilityStatus.COMPLETE).toList();}
     public void pulse(boolean pending) {for(var r:requests)runtime.handle(r.id(),NplClockCapability.class).ifPresent(clock->clock.pulse(pending));}
+    public void frozenCut(){for(var r:requests)runtime.handle(r.id(),NplClockCapability.class).ifPresent(NplClockCapability::frozenCut);}
     /** Positive public descriptor closure of explicitly requested histories; no case rules. */
     boolean observesOperation(ArtifactId artifact,IArtifactOp operation) {
         if(!(operation instanceof ArtifactOpMethod method))return false;

@@ -88,7 +88,7 @@ public final class BridgeLocalExecutionControl extends LocalExecutionControl {
             epoch=gate.epoch();if(!pending.add(agent.identity()))return;
         }
         try {signals.execute(()->{
-            try {
+            try(var sourceStep=org.jacamo.checkpoint.runtime.ExecutionBarrier.enter("jason.control-grant")) {
                 int cycle;
                 synchronized(this) {
                     if(runner.getAg(agent.name())!=agent.architecture() || agent.architecture().getThread()==null || !agent.architecture().getThread().isAlive())return;
@@ -98,6 +98,7 @@ public final class BridgeLocalExecutionControl extends LocalExecutionControl {
                 // Same official infra-tier mechanism, addressed to the revalidated object.
                 // The base implementation looks up by name again and could release a replacement incarnation.
                 agent.architecture().getFirstAgArch().setCycleNumber(cycle);
+                org.jacamo.checkpoint.runtime.ExecutionBarrier.queued(agent.architecture());
                 agent.architecture().receiveSyncSignal();
                 synchronized(this) {
                     if(runner.getAg(agent.name())==agent.architecture() && agent.architecture().isRunning())gate.resumeAcknowledged(agent.identity(),epoch);

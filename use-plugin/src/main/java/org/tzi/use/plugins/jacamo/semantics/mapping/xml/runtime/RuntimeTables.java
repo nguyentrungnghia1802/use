@@ -32,6 +32,7 @@ public final class RuntimeTables {
         Working data(Map<String,Object> next){return new Working(source,next,columns,quality,identity,aliases,proofs);}
         Working evidence(String alias,Row joined) {
             var enriched=new LinkedHashMap<>(proofs);
+            if(enriched.putIfAbsent("join:"+alias+":identity",joined.identity())!=null)throw new IllegalArgumentException("RUNTIME_JOIN_IDENTITY_COLLISION");
             joined.proofs().forEach((key,value)->{
                 String name="join:"+alias+":"+key;
                 if(name.length()>512||enriched.putIfAbsent(name,value)!=null)throw new IllegalArgumentException("RUNTIME_JOIN_PROOF_COLLISION_OR_DEPTH");
@@ -372,7 +373,10 @@ public final class RuntimeTables {
             }
             var output=new ArrayList<Row>();
             for(Working row:rows){population=merge(population,row.quality());output.add(new Row(row.identity(),row.columns(),row.quality(),row.proofs(),row.aliases()));}
-            if(!diagnostics.isEmpty())population=merge(population,Completeness.PARTIAL);
+            // Diagnostics may describe an explicitly optional value (for example a
+            // future transition has no timestamp). They do not enumerate rows.
+            // Unknown selectors/required values already mark their Working row
+            // partial; preserve that distinction from the source population proof.
             results.put(table.node().attr("id"),new Result(output,population,diagnostics));
         }
         return Collections.unmodifiableMap(results);

@@ -6,6 +6,16 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CanonicalReplayBudgetTest {
+    @Test void losslessCompressedSourceHasExplicitDecodedBudgetWithoutRaisingAssetLimits() {
+        String version="3.5.0";
+        assertTrue(CanonicalReplaySupport.declarativeVersion(version));
+        var policy=Map.<String,Object>of("schemaVersion",version,"runtimeByteLimit",2147483648L);
+        assertEquals(2147483648L,CanonicalReplaySupport.fileLimit(policy,"runtime.jsonl"));
+        assertEquals(67108864L,CanonicalReplaySupport.fileLimit(policy,"program.json"));
+        for(Object invalid:List.of(32767,8589934593L,new BigDecimal("536870912.5"),"536870912"))
+            assertThrows(IllegalArgumentException.class,()->CanonicalReplaySupport.fileLimit(Map.of("schemaVersion",version,"runtimeByteLimit",invalid),"runtime.jsonl"));
+        assertThrows(IllegalArgumentException.class,()->CanonicalReplaySupport.fileLimit(Map.of("schemaVersion",version),"runtime.jsonl"));
+    }
     @Test void legacyLimitsCannotBeRaisedByAddingBudgetMetadata() {
         for(String version:List.of("2.0.0","3.0.0","3.1.0","3.3.0")) {
             assertEquals(version.equals("3.1.0")||version.equals("3.3.0")?268435456L:67108864L,CanonicalReplaySupport.fileLimit(Map.of("schemaVersion",version),"runtime.jsonl"));

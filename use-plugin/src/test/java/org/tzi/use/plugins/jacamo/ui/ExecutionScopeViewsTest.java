@@ -4,6 +4,19 @@ import org.tzi.use.plugins.jacamo.ui.use4goal.conformance.*;
 import org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.*;
 import static org.junit.jupiter.api.Assertions.*;
 class ExecutionScopeViewsTest {
+ @Test void sourceCheckpointHistoriesStaySeparateAndKeepTheirModeAcrossScopeChanges()throws Exception {
+  var cuts=new ArrayList<Cut>();for(int i=0;i<13;i++)cuts.add(cut("source-"+i,"state-"+i,"unchanged",List.of(goal("one","PENDING"),goal("two","PENDING"))));
+  SwingUtilities.invokeAndWait(()->{
+   var panel=ObservedConformancePanel.liveResults(LiveGoalSummaryTest.model());
+   panel.showCheckpoint(new ObservedConformancePanel.PreparationCache().prepare(cuts,"one",true,true));
+   var selector=DetachedAuthoredWorkflowTest.find(panel,"observed-state-selector",JComboBox.class);assertEquals(13,selector.getItemCount());
+   selector.setSelectedIndex(7);String retained=panel.selectedCut().id();
+   for(int i=0;i<5;i++){panel.selectExecution("two");assertEquals(1,selector.getItemCount(),"Other execution transitions must not add milestones here");assertTrue(panel.selectedCut().businessState().contains("unchanged"));panel.selectExecution("one");assertEquals(13,selector.getItemCount());assertEquals(retained,panel.selectedCut().id());}
+   var missing=new TreeMap<String,Object>(cuts.getLast().visualEvidence());missing.put("originalEngine",Map.of("evaluated","PINNED_NATIVE_CUT","contexts",List.of(context("two","y"))));
+   var latest=new Cut("unrelated","trace","native",List.of(goal("two","FULFILLED")),"INCOMPLETE","CURRENT_OBSERVED",false,"other","","",false,true,false,missing);
+   cuts.add(latest);panel.showCheckpoint(new ObservedConformancePanel.PreparationCache().prepare(cuts,"one",true,true));assertEquals(13,selector.getItemCount());assertEquals(retained,panel.selectedCut().id());assertFalse(panel.selectedCut().businessState().isBlank());
+  });
+ }
  static Map<String,Object> context(String id,String entity){return Map.of("context",id,"executionConstraints",List.of(check(entity,"PASS")),"scopeView",Map.of("version","BOUND_EXECUTION_VIEW/2.0","complete",true,"owners",Map.of(entity,Map.of("type","Parcel")),"entities",Map.of("Parcel:"+entity,Map.of("identity","source:"+entity,"attributes",Map.of("id","'"+entity+"'")))));}
  static Map<String,Object> check(String entity,String status){return Map.of("id","Rule","kind","INVARIANT","contextClass","Parcel","contextObject",entity,"verdict",status,"backendValue",status.equals("PASS")?"true":"false","expression","self.valid","diagnostic","EXACT_SCOPE","witness",Map.of("owner",entity));}
  static Evaluation goal(String scope,String status){return new Evaluation("Done","UNAVAILABLE",status,"KNOWN_HISTORY","exact evidence","retained",true,"GOAL_TASK",status,"player",scope,"occurrence:"+scope);}
@@ -20,6 +33,13 @@ class ExecutionScopeViewsTest {
   assertEquals(1,one.evaluations().stream().filter(r->r.kind().equals("GOAL_TASK")).count());assertEquals("one",one.evaluations().getFirst().context());
   assertEquals("INCOMPLETE",ExecutionScopeViews.goalVerdict(ExecutionScopeViews.project(all,"unknown")));
   assertEquals("VIOLATION",ExecutionScopeViews.goalVerdict(ExecutionScopeViews.project(cut("2","x","y",List.of(goal("one","VIOLATED"),goal("two","FULFILLED"))),"one")));
+ }
+ @Test void wholeMasAdmissionFailureStaysVisibleWithoutChangingAnotherExecutionsVerdict()throws Exception {
+  var global=new Evaluation("Checkpoint (whole MAS) / prefix:PRE","FAIL","FAIL","MAS_CHECKPOINT_INVENTORY","Original failed PRE in another execution","",false,"CHECKPOINT_CHECK","","","whole MAS","token");
+  var all=cut("1","open","done",List.of(goal("one","PENDING"),goal("two","FULFILLED"),global));
+  var two=ExecutionScopeViews.project(all,"two");assertFalse(two.failed());assertEquals(global,two.evaluations().getFirst());
+  assertEquals("COMPLETE_OBSERVED",ExecutionScopeViews.goalVerdict(two));
+  SwingUtilities.invokeAndWait(()->{var panel=ObservedConformancePanel.liveResults(LiveGoalSummaryTest.model());panel.setCuts(List.of(all));panel.selectExecution("two");assertEquals("COMPLETE_OBSERVED",DetachedAuthoredWorkflowTest.find(panel,"observed-verdict",JLabel.class).getText());assertEquals(global.element(),DetachedAuthoredWorkflowTest.find(panel,"live-ocl-checks",JTable.class).getValueAt(0,0));});
  }
  @Test void entityStateAndMilestonesAreScopedButNativeAuditAndGlobalOclRemainExact(){
   var failure=new Evaluation("Invariant","false","FAIL","KNOWN","evidence","",true,"INVARIANT_BODY","","","global","invocation");

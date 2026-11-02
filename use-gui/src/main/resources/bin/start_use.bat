@@ -7,12 +7,18 @@ if "%OS%"=="Windows_NT" @setlocal
 
 rem CONFIGURATION
 rem Add -Xss20m to VMARGS when using the generator
-set VMARGS=
+REM Keep Swing painting reliable with Windows capture/remote and hybrid GPU drivers.
+set VMARGS=-Dsun.java2d.d3d=false -Dsun.java2d.noddraw=true
 
 set BIN_DIR=%~dp0
 set USE_HOME=%BIN_DIR%..
 set USE_JAR="%USE_HOME%\lib\use-gui.jar"
 set JAVAFX_LIB="%USE_HOME%\lib\javafx-sdk-21.0.5\lib"
+IF EXIST "%USE_HOME%\bridge\dependency-lock.json" (
+    powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "%USE_HOME%\tools\prepare-runtime-classpath.ps1"
+    IF ERRORLEVEL 1 goto end
+    set VMARGS=%VMARGS% "-Duse.jacamo.runtime.classpath-file=%USE_HOME%\bridge\runtime-classpath.txt"
+)
 
 IF NOT EXIST %USE_JAR% (
 	echo Cannot find USE executable. Please provide correct path to use.jar.

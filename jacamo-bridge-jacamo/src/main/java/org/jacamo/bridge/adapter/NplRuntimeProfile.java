@@ -12,9 +12,10 @@ public final class NplRuntimeProfile {
         try {
             var path=Path.of(npl.NormInstance.class.getProtectionDomain().getCodeSource().getLocation().toURI());
             String hash=Files.isRegularFile(path)?AdapterEvidence.digest(Files.readAllBytes(path)):"UNAVAILABLE_EXPLODED_CLASSES";
-            String version=hash.equals(SUPPORTED_SHA256)?"0.6.1":hash.equals("fdf43a2cec55145fd31531c5eda95fa96c6440322887d2ff3b0598da3f2f1d43")?"0.6":"UNIDENTIFIED";
+            boolean patched=jacamo.checkpoint.CheckpointBuildIdentity.supports("npl",npl.NormInstance.class);
+            String version=patched?"0.6.1-checkpoint-SNAPSHOT":hash.equals(SUPPORTED_SHA256)?"0.6.1":hash.equals("fdf43a2cec55145fd31531c5eda95fa96c6440322887d2ff3b0598da3f2f1d43")?"0.6":"UNIDENTIFIED";
             return Map.of("artifactVersion",version,"artifactSha256",hash,"apiProfile","NPL_PUBLIC_CREATED_ANNOTATION_V1",
-                "admission",hash.equals(SUPPORTED_SHA256)?"SUPPORTED_PINNED_BINARY":"UNSUPPORTED_BINARY");
+                "admission",patched||hash.equals(SUPPORTED_SHA256)?"SUPPORTED_PINNED_BINARY":"UNSUPPORTED_BINARY");
         } catch(Exception error) {throw new IllegalStateException("NPL_BINARY_IDENTITY_UNAVAILABLE",error);}
     }
     public static Map<String,Object> evidence() {return EVIDENCE;}

@@ -23,6 +23,7 @@ public final class LiveJaCaMoLauncherMain {
         java.io.PrintStream processOut=System.out, processErr=System.err;
         if (args.length < 2) throw new IllegalArgumentException("REAL_JACAMO_ARGS_REQUIRED");
         Path project = Path.of(args[0]).toAbsolutePath().normalize();
+        if(jacamo.checkpoint.CheckpointBoot.verified())System.setProperty("jacamo.checkpoint.projectRoot",project.getParent().toString());
         Path stop = Path.of(args[1]).toAbsolutePath().normalize();
         long timeoutSeconds = args.length > 2 ? Long.parseLong(args[2]) : 60L;
         boolean headless = args.length <= 3 || Boolean.parseBoolean(args[3]);
@@ -31,6 +32,7 @@ public final class LiveJaCaMoLauncherMain {
         long startupSeconds = args.length > 5 ? Long.parseLong(args[5]) : 60L;
         Path startupDirectory = args.length > 6 && !args[6].isBlank() ? Path.of(args[6]).toAbsolutePath().normalize() : null;
         String runId = args.length > 7 ? args[7] : "";
+        if(!runId.isBlank())System.setProperty("jacamo.execution.run",runId);
         var ownerLease=args.length>9?new org.jacamo.bridge.contract.ProcessOwnerLease(Long.parseLong(args[8]),Long.parseLong(args[9])):null;
         Path controlledProject = project;
         if (consumerReady != null && startupSeconds < 1)
@@ -46,7 +48,11 @@ public final class LiveJaCaMoLauncherMain {
             Thread.ofPlatform().daemon().name("jacamo-use-owner-lease").start(()->{
                 try {
                     while(!Files.exists(stop,LinkOption.NOFOLLOW_LINKS)) {
-                        if(!ownerLease.alive()){Files.writeString(stop,"OWNER_PROCESS_EXITED_OR_REUSED",java.nio.charset.StandardCharsets.UTF_8,java.nio.file.StandardOpenOption.CREATE,java.nio.file.StandardOpenOption.TRUNCATE_EXISTING,LinkOption.NOFOLLOW_LINKS);return;}
+                        if(!ownerLease.alive()){
+                            if(jacamo.checkpoint.CheckpointBoot.verified()&&BaseLocalMAS.getRunner() instanceof JaCaMoLauncher owned
+                                    &&owned.getPlatforms().stream().filter(JaCaMoBridgePlatform.class::isInstance).map(JaCaMoBridgePlatform.class::cast).anyMatch(JaCaMoBridgePlatform::holdOnObserverLoss))return;
+                            Files.writeString(stop,"OWNER_PROCESS_EXITED_OR_REUSED",java.nio.charset.StandardCharsets.UTF_8,java.nio.file.StandardOpenOption.CREATE,java.nio.file.StandardOpenOption.TRUNCATE_EXISTING,LinkOption.NOFOLLOW_LINKS);return;
+                        }
                         Thread.sleep(250);
                     }
                 }catch(InterruptedException interrupted){Thread.currentThread().interrupt();}
@@ -58,6 +64,12 @@ public final class LiveJaCaMoLauncherMain {
         JaCaMoLauncher launcher = new org.jacamo.bridge.adapter.BridgeControlledLauncher() {
             /** Official platforms (including Bridge) start before RunLocalMAS calls this hook. */
             @Override protected void startAgs() {
+                long initialHold=0;
+                if(jacamo.checkpoint.CheckpointBoot.verified()) {
+                    initialHold=org.jacamo.checkpoint.runtime.ExecutionBarrier.closeAdmission();
+                    try{org.jacamo.checkpoint.runtime.ExecutionBarrier.awaitFrozen(initialHold,java.time.Duration.ofSeconds(15));}
+                    catch(InterruptedException interrupted){Thread.currentThread().interrupt();throw new IllegalStateException("CHECKPOINT_STARTUP_DRAIN_INTERRUPTED",interrupted);}
+                }
                 if (startupDirectory != null) {
                     var owner = org.jacamo.bridge.contract.ManagedStartupControl.owner(runId, controlledProject,
                             System.getProperty("jacamo.bridge.session", ""),
@@ -69,6 +81,7 @@ public final class LiveJaCaMoLauncherMain {
                     try {
                         var request = org.jacamo.bridge.contract.ManagedStartupControl.awaitRequest(startupDirectory, owner, stop);
                         activateObservationPlan();
+                        if(initialHold>0)org.jacamo.checkpoint.runtime.ExecutionBarrier.release(initialHold);
                         super.startAgs();
                         org.jacamo.bridge.contract.ManagedStartupControl.acknowledged(startupDirectory, request);
                         System.out.println("REAL_JACAMO_MANAGED_START_ACK run=" + runId);
@@ -89,6 +102,7 @@ public final class LiveJaCaMoLauncherMain {
                     System.out.flush();
                 }
                 activateObservationPlan();
+                if(initialHold>0)org.jacamo.checkpoint.runtime.ExecutionBarrier.release(initialHold);
                 super.startAgs();
             }
             private void activateObservationPlan() {

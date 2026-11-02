@@ -1,0 +1,73 @@
+// SINGLE_AGENT_CONTEXT: each auction_capabilities instance represents one physical Agent.
+// Its possible enacts relations to auctioneer/participant are explicit mapping correspondences;
+// an actual enactment requires that same Agent's observed Plays link (not context ownership).
+// Auction CSL system specification. Project .jcm is the runtime input;
+// this hand-authored model and mapping XML are system specifications.
+// User-approved revision of Desktop diagram: capability is a singleton-agent
+// OrgCtx as pictured, overriding the embedded legacy capability Role. Atom maps to String.
+// Belief attributes are optional exact per-player JSON tuple views, not world truth.
+// @use-native-ocl 1 is an explicit USE plugin annotation. The original CSL parser
+// parses the structure/invariants; the plugin compiles this native contract block.
+csl v4.0 AuctionState {
+    orgContext AuctionOrg {
+        orgContext auctionGroup {
+            role auctioneer;
+            role participant;
+        }
+        // Model scope: the organization coordinates the named auction artifacts.
+        // This is not physical ownership of a CArtAgO workspace/artifact.
+        entity Auction {
+            attribute id : String required;
+            attribute running : Boolean required mutable default false;
+            attribute task : String required mutable default 'no_task';
+            // Initial source value is Double.MAX_VALUE; retain it in a snapshot.
+            // No invented numeric default or bounded-domain sentinel is used.
+            attribute best_bid : Real required mutable;
+            attribute winner : String required mutable default 'no_winner';
+            // Source field, not an observable property. Requires explicit access.
+            attribute currentWinner : String required mutable default 'no_winner';
+        }
+    }
+
+    // One context instance represents exactly one physical Jason agent.
+    // It is not an adopted MOISE role and does not inherit from either role.
+    orgContext auction_capabilities {
+        attribute name : String required;
+        attribute beliefBase : String optional mutable;
+        attribute belief_joinedWsp : String optional mutable;
+        attribute belief_focusing : String optional mutable;
+        attribute belief_goalArgument : String optional mutable;
+        attribute belief_play : String optional mutable;
+        attribute belief_running : String optional mutable;
+        attribute belief_task : String optional mutable;
+        attribute belief_best_bid : String optional mutable;
+        attribute belief_winner : String optional mutable;
+    }
+
+    // Source role-population constraints, distinct from declaration containment.
+    // Operational invariant: XML activates this rule once a qualified source roster
+    // and complete matching native Role population establish readiness. Activation
+    // stays true for this group incarnation, so later role loss still violates it.
+    context auctionGroup inv AuctioneerPopulation:
+        self.auctioneer->size() = 1;
+    context auctionGroup inv ParticipantPopulation:
+        self.participant->size() <= 300;
+}
+
+/* @use-native-ocl 1
+context Auction::start(service : String)
+pre Idle:
+    not self.running
+post Opened:
+    self.running and self.task = service
+
+context Auction::bid(amount : Real)
+pre RunningForBid:
+    self.running
+
+context Auction::stop()
+pre RunningForStop:
+    self.running
+post Closed:
+    not self.running
+*/

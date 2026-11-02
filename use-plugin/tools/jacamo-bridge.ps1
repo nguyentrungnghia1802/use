@@ -41,7 +41,7 @@ if ($ObservationProfile -eq "AUTO") {
 if ($SemanticProfile -eq "JACAMO_DECLARATIVE_XML" -and -not $PSBoundParameters.ContainsKey('RuntimeJournalMaxBytes')) {
     # Declarative observers retain exact source cuts and original-engine history.
     # Keep a finite archive budget; callers may select a smaller/larger explicit bound.
-    $RuntimeJournalMaxBytes = 268435456
+    $RuntimeJournalMaxBytes = 536870912
 }
 $producerObservationArguments = @("-Djacamo.bridge.structured-observation=$(([bool]($ObservationProfile -eq 'FULL')).ToString().ToLowerInvariant())")
 $semanticJvmArguments = @("-Duse.jacamo.semantics.profile=$SemanticProfile", "-Duse.jacamo.runtime.journal.maxBytes=$RuntimeJournalMaxBytes")
@@ -264,7 +264,10 @@ try {
             "-Dmdep.outputFile=target/jacamo-bridge-classpath.txt", "-Dmdep.includeScope=runtime")
     }
 
-    $bridgeClasspathFile = if (-not [string]::IsNullOrWhiteSpace($RuntimeClasspathFile)) { [IO.Path]::GetFullPath($RuntimeClasspathFile) } else { Join-Path $useRoot "jacamo-bridge-jacamo\target\jacamo-bridge-classpath.txt" }
+    $bridgeClasspathFile = if (-not [string]::IsNullOrWhiteSpace($RuntimeClasspathFile)) { [IO.Path]::GetFullPath($RuntimeClasspathFile) } elseif ($installedLayout -and (Test-Path -LiteralPath (Join-Path $useRoot 'bridge/dependency-lock.json'))) {
+        & (Join-Path $useRoot 'tools/prepare-runtime-classpath.ps1')
+        Join-Path $useRoot 'bridge/runtime-classpath.txt'
+    } else { Join-Path $useRoot "jacamo-bridge-jacamo\target\jacamo-bridge-classpath.txt" }
     if (-not (Test-Path -LiteralPath $bridgeClasspathFile -PathType Leaf)) {
         throw "BRIDGE_CLASSPATH_MISSING:$bridgeClasspathFile"
     }

@@ -8,12 +8,17 @@
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
+        <fileSet><directory>../jacamo-bridge-jacamo/target/producer-runtime</directory><outputDirectory>bridge/runtime</outputDirectory><includes><include>*.jar</include></includes></fileSet>
         <fileSet><directory>examples/auction</directory><outputDirectory>examples/auction-current</outputDirectory></fileSet>
+        <fileSet><directory>examples/auction-false</directory><outputDirectory>examples/auction-false</outputDirectory></fileSet>
         <fileSet><directory>src/test/resources/auction-reference/compact-v1</directory><outputDirectory>reference/auction/compact-v1</outputDirectory></fileSet>
         <fileSet><directory>examples/hello-world</directory><outputDirectory>examples/hello-world</outputDirectory></fileSet>
         <fileSet><directory>examples/house-building</directory><outputDirectory>examples/house-building</outputDirectory></fileSet>
     </fileSets>
     <files>
+        <file><source>docs/project/verified-checkpoints.md</source><outputDirectory>docs</outputDirectory></file>
+        <file><source>tools/prepare-runtime-classpath.ps1</source><outputDirectory>tools</outputDirectory></file>
+        <file><source>../../jacamo/checkpoint-dependencies/dependency-lock.json</source><outputDirectory>bridge</outputDirectory></file>
         <file><source>${project.build.directory}/${project.build.finalName}.jar</source><outputDirectory>lib/plugins</outputDirectory><destName>use-jacamo-plugin-1.0.1.jar</destName></file>
         <file><source>../jacamo-bridge-contract/target/jacamo-bridge-contract-1.0.0-SNAPSHOT.jar</source><outputDirectory>bridge/lib</outputDirectory><destName>jacamo-bridge-contract-1.0.0.jar</destName></file>
         <file><source>../jacamo-bridge-jacamo/target/jacamo-bridge-jacamo-1.0.0-SNAPSHOT.jar</source><outputDirectory>bridge/lib</outputDirectory><destName>jacamo-bridge-jacamo-1.0.0.jar</destName></file>
