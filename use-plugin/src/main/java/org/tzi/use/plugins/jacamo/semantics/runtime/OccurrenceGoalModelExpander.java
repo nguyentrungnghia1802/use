@@ -85,10 +85,15 @@ public final class OccurrenceGoalModelExpander {
                 }
                 var target=bySource.getOrDefault(relation.target(),List.of());
                 if(relation.kind()==AssocKind.PARTICIPATES_IN) {
-                    if(!(original instanceof Agent)||!(source.findActor(relation.target()).orElseThrow() instanceof Role))throw new IllegalArgumentException("OCCURRENCE_PARTICIPATION_REQUIRES_AGENT_ROLE");
-                    var matching=target.stream().filter(p->p.player().equals(player.player())).toList();
-                    if(matching.size()>1)throw new IllegalArgumentException("OCCURRENCE_PARTICIPATION_AMBIGUOUS");
-                    matching.forEach(p->associations.add(new Association(player.actorType(),relation.kind(),p.actorType())));
+                    var targetActor=source.findActor(relation.target()).orElseThrow();
+                    if(original instanceof Agent&&targetActor instanceof Role) {
+                        var matching=target.stream().filter(p->p.player().equals(player.player())).toList();
+                        if(matching.size()>1)throw new IllegalArgumentException("OCCURRENCE_PARTICIPATION_AMBIGUOUS");
+                        matching.forEach(p->associations.add(new Association(player.actorType(),relation.kind(),p.actorType())));
+                    }else if(original instanceof Role&&targetActor instanceof Agent) {
+                        if(target.size()!=1)throw new IllegalArgumentException("OCCURRENCE_EXPANSION_ASSOCIATION_AMBIGUOUS");
+                        associations.add(new Association(player.actorType(),relation.kind(),target.getFirst().actorType()));
+                    }else throw new IllegalArgumentException("OCCURRENCE_PARTICIPATION_REQUIRES_AGENT_ROLE");
                 }else {
                     if(target.size()!=1)throw new IllegalArgumentException("OCCURRENCE_EXPANSION_ASSOCIATION_AMBIGUOUS");
                     associations.add(new Association(player.actorType(),relation.kind(),target.getFirst().actorType()));

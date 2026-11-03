@@ -184,7 +184,7 @@ public final class SemanticResultAdapter {
         var objects=new TreeMap<String,Object>();var quality=new TreeMap<String,Object>();boolean qualified=true;
         for(var object:state.allObjects())if(fields.containsKey(object.cls().name())){
             var values=new TreeMap<String,Object>();boolean known=true;
-            for(String field:fields.get(object.cls().name())){var value=object.state(state).attributeValue(field);values.put(field,value.toString());if(required.get(object.cls().name()).contains(field))known&=!value.isUndefined();}
+            for(String field:fields.get(object.cls().name())){if(object.cls().attribute(field,true)==null)continue;var value=object.state(state).attributeValue(field);values.put(field,value.toString());if(required.get(object.cls().name()).contains(field))known&=!value.isUndefined();}
             String key=object.cls().name()+":"+object.name();objects.put(key,values);quality.put(key,known);qualified&=known;
         }
         var ids=objects.keySet().stream().map(key->key.substring(key.indexOf(':')+1)).collect(java.util.stream.Collectors.toSet());var links=presentationLinks(state,ids);

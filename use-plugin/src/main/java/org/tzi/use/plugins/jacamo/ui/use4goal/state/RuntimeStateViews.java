@@ -16,7 +16,7 @@ import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
  * No native reads, evaluation, inferred success or modifications of semantic history. */
 public final class RuntimeStateViews {
  public final JPanel aolPanel=new JPanel(new BorderLayout()),iscnPanel=new JPanel(new BorderLayout());
- private final AolDiagram aol=new AolDiagram(new java.io.PrintWriter(System.out,true));
+ private final AolDiagram aol=new AolDiagram(new java.io.PrintWriter(java.io.Writer.nullWriter()));
  private final IStarView iscn=new IStarView();
  private final JComboBox<String> contextSelector=new JComboBox<>(),aolSelector=new JComboBox<>();
  private final JLabel aolStatus=new JLabel("Select a verified state"),iscnStatus=new JLabel("Select a verified state");

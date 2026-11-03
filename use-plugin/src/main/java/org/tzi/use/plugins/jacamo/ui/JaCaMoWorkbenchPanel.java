@@ -22,9 +22,16 @@ import org.tzi.use.plugins.jacamo.JaCaMoFacade;
 
 /** Import, OCL loading and runtime controls over the existing facade; native USE owns checking/views. */
 public final class JaCaMoWorkbenchPanel extends JPanel {
-    private static final Path AUTHORED_BROWSE_FOLDER=Path.of("D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/examples");
-    private static final Path JACAMO_BROWSE_FOLDER=Path.of("D:/_CODE_BANK/Project_/08_Thesis/jacamo/examples");
-    private static final Path RUNTIME_LIBS_BROWSE_FOLDER=Path.of("D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/target");
+    private static Path resolveExisting(String fallback, String... candidates) {
+        for (String candidate : candidates) {
+            Path p = Path.of(candidate).toAbsolutePath().normalize();
+            if (Files.exists(p)) return p;
+        }
+        return Path.of(fallback).toAbsolutePath().normalize();
+    }
+    static final Path AUTHORED_BROWSE_FOLDER = resolveExisting("examples", "examples", "use-plugin/examples", "../use-plugin/examples");
+    static final Path JACAMO_BROWSE_FOLDER = resolveExisting("../jacamo/examples", "../jacamo/examples", "../../jacamo/examples", "jacamo/examples");
+    static final Path RUNTIME_LIBS_BROWSE_FOLDER = resolveExisting("../jacamo-bridge-jacamo/target", "../jacamo-bridge-jacamo/target", "jacamo-bridge-jacamo/target", "use/jacamo-bridge-jacamo/target");
     /** Optional launch-time hint used by the interactive demo to open Import at its derived JCM. */
     static final String PROJECT_FILE_HINT_PROPERTY = "use.jacamo.workbench.project-file";
     /** One-shot launch flag: the generic launcher supplies the JCM once; the panel consumes it. */
@@ -248,7 +255,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         catch(NumberFormatException invalid){errorPresenter.accept("Journal quota must be an integer from 1 to 1024 MiB");return;}
         boolean showGui=showProducerGui.isSelected();
         boolean verified=observedWorkflow||facade.verifiedCheckpointMode();
-        executeBackground("Import failed", () -> {if(owned)facade.verifiedCheckpointMode(verified);if(facade.journalBudgetSupported())facade.nextJournalBudgetBytes(budget);if(owned)facade.prepareOwnedProducer(normalized,selection,classpath,showGui);else if(selection==null)facade.importProject(normalized);else facade.importProject(normalized,selection);}, () -> {
+        executeBackground("Import failed", () -> {if(owned){try{facade.verifiedCheckpointMode(verified);}catch(UnsupportedOperationException ignored){}}if(facade.journalBudgetSupported())facade.nextJournalBudgetBytes(budget);if(owned)facade.prepareOwnedProducer(normalized,selection,classpath,showGui);else if(selection==null)facade.importProject(normalized);else facade.importProject(normalized,selection);}, () -> {
             checkpointLive=false;presentationEpoch++;
             refreshRuntime();
             setStatus("Imported " + normalized);

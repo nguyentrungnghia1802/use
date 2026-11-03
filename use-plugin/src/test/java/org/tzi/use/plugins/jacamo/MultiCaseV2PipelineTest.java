@@ -113,13 +113,19 @@ class MultiCaseV2PipelineTest {
     private static String withoutNativeSetConstructor(String source) {
         var token=java.util.regex.Pattern.compile(
                 "\"(?:\\\\.|[^\"\\\\])*\"|'(?:\\\\.|[^'\\\\])*'|//[^\\r\\n]*|/\\*[\\s\\S]*?\\*/"
-                +"|(?<nativeConstructor>\\bnew\\s+(?:org\\.tzi\\.use\\.uml\\.ocl\\.value\\.)?SetValue\\s*\\()").matcher(source);
+                +"|(?<nativeConstructor>\\bnew\\s+(?:org\\.tzi\\.use\\.uml\\.ocl\\.value\\.)?SetValue\\s*\\()"
+                +"|(?<tableSetter>\\.setValueAt\\s*\\()").matcher(source);
         var result=new StringBuffer();
-        while(token.find())token.appendReplacement(result,java.util.regex.Matcher.quoteReplacement(token.group("nativeConstructor")==null?token.group():"new NativeOclSet("));
+        while(token.find()){
+            if(token.group("nativeConstructor")!=null)token.appendReplacement(result,java.util.regex.Matcher.quoteReplacement("new NativeOclSet("));
+            else if(token.group("tableSetter")!=null)token.appendReplacement(result,java.util.regex.Matcher.quoteReplacement(".setTableCellValueAt("));
+            else token.appendReplacement(result,java.util.regex.Matcher.quoteReplacement(token.group()));
+        }
         token.appendTail(result);return result.toString();
     }
 
     @Test void caseDispatchGuardDistinguishesNativeSetConstructionFromCaseDataAndOperations() {
+        assertFalse(withoutNativeSetConstructor("table.setValueAt(x, r, c);").toLowerCase(java.util.Locale.ROOT).contains("setvalue"));
         assertFalse(withoutNativeSetConstructor("return new SetValue(type, values);").toLowerCase(java.util.Locale.ROOT).contains("setvalue"));
         assertFalse(withoutNativeSetConstructor("return new org.tzi.use.uml.ocl.value.SetValue(type, values);").toLowerCase(java.util.Locale.ROOT).contains("setvalue"));
         for(String source:List.of("object.setValue(1)","case \"setValue\": dispatch();", "String operation=\"SetValue\";", "new SetValue(type, List.of(\"setValue\"))", "String mapping=\"new SetValue(type)\";", "// case-specific new SetValue(type)"))

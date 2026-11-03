@@ -19,8 +19,8 @@ jobs:
     - name: Check out audited JaCaMo case studies
       uses: actions/checkout@v4
       with:
-        repository: nguyentrungnghia1802/jacamo
-        ref: main
+        repository: jacamo-lang/jacamo
+        ref: 3866858a7ebf6be85d9199c13a09cf4bfb8191be
         path: jacamo
         persist-credentials: false
     - name: Preserve legacy fixture path casing

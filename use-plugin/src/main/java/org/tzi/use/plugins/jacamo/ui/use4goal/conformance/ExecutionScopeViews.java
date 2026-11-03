@@ -141,7 +141,7 @@ public final class ExecutionScopeViews {
   var relationText=new TreeSet<String>();for(var raw:links){var link=object(raw);relationText.add(Objects.toString(link.get("association"))+" "+link.get("participants"));}
   if(!relationText.isEmpty()){text.append("Relations\n");relationText.forEach(relation->text.append("  ").append(relation).append('\n'));}
   if(selected.isEmpty())text.append("No qualified bound Entity state at this cut. No other execution is substituted.\n");
-  boolean stateKnown=Boolean.TRUE.equals(scopedProjection.get("qualifiedValues"))&&(!domainBound||!object(evidence.get("selectedEntityState")).isEmpty());
+  boolean stateKnown=Boolean.TRUE.equals(scopedObjects.isEmpty()?projection.get("qualifiedValues"):scopedProjection.get("qualifiedValues"))&&(!domainBound||!object(evidence.get("selectedEntityState")).isEmpty());
   String key="PINNED_NATIVE_CUT".equals(object(cut.visualEvidence().get("originalEngine")).get("evaluated"))&&stateKnown?SemanticJson.hash(List.of(id,selected,relationText)):"";
   boolean failed=rows.stream().anyMatch(r->!Set.of("GOAL_TASK","EXECUTION_OUTCOME","CHECKPOINT_CHECK").contains(r.kind())&&r.status().equals("FAIL")||r.kind().equals("GOAL_TASK")&&r.required()&&r.status().equals("VIOLATED"));
   long missing=rows.stream().filter(Evaluation::required).filter(r->Set.of("UNKNOWN","SKIPPED","UNSUPPORTED","INCONCLUSIVE","UNDEFINED","ERROR").contains(r.status())).count();

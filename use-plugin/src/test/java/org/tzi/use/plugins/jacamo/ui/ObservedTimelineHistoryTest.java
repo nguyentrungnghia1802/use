@@ -115,7 +115,7 @@ class ObservedTimelineHistoryTest {
     @Test void runtimeLibraryBrowseStartsInTheRequestedTargetDirectory() throws Exception {
         javax.swing.SwingUtilities.invokeAndWait(()->{
             var chooser=JaCaMoWorkbenchPanel.createRuntimeLibrariesChooser();
-            assertEquals(Path.of("D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/target").toFile(),chooser.getCurrentDirectory());
+            assertEquals(JaCaMoWorkbenchPanel.RUNTIME_LIBS_BROWSE_FOLDER.toFile(),chooser.getCurrentDirectory());
             assertTrue(chooser.getFileFilter().accept(Path.of("jacamo-bridge-classpath.txt").toFile()));
             assertFalse(chooser.getFileFilter().accept(Path.of("library.jar").toFile()));
         });

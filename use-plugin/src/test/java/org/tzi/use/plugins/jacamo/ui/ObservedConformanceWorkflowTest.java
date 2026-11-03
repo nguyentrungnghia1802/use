@@ -136,7 +136,7 @@ class ObservedConformanceWorkflowTest {
             System.clearProperty(property);
             SwingUtilities.invokeAndWait(()->{
                 var view=new JaCaMoWorkbenchPanel(new JaCaMoFacade(){public String status(){return "classpath";}},message->fail(message),true);
-                assertEquals(java.nio.file.Path.of("D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt"),java.nio.file.Path.of(find(view,"runtime-classpath",JTextField.class).getText()));
+                assertEquals(JaCaMoWorkbenchPanel.RUNTIME_LIBS_BROWSE_FOLDER.resolve("jacamo-bridge-classpath.txt").normalize(),java.nio.file.Path.of(find(view,"runtime-classpath",JTextField.class).getText()).normalize());
                 assertNotNull(find(view,"choose-runtime-classpath",JButton.class));
                 find(view,"runtime-classpath",JTextField.class).setText("manual.txt");
                 assertEquals("manual.txt",find(view,"runtime-classpath",JTextField.class).getText());
