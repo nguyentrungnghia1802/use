@@ -1,0 +1,550 @@
+{
+  "sources": [
+    {
+      "path": "use/jacamo-bridge-contract/src/main/java/org/jacamo/bridge/contract/MessageType.java",
+      "sha256": "26deb37e9bd98af23a938e861954ef390debc6699be6040fb2547570300f549c"
+    },
+    {
+      "path": "use/jacamo-bridge-contract/src/main/java/org/jacamo/bridge/contract/PinnedRuntimeClassProfiles.java",
+      "sha256": "ebec358e2c53faeefc24743c4ec37a97cb556a96d725740bee1e8b70ce9b733a"
+    },
+    {
+      "path": "use/jacamo-bridge-contract/src/main/java/org/jacamo/bridge/contract/VerifiedCheckpointProtocol.java",
+      "sha256": "ca783508df2f7a3927a151176cc04eb83711c78b89337f0d562f1e59006cbb2a"
+    },
+    {
+      "path": "use/jacamo-bridge-contract/src/test/java/org/jacamo/bridge/contract/VerifiedCheckpointProtocolTest.java",
+      "sha256": "6fff3dbec14ee3189b257c8844718f2673cdf04b4bef7c04fed6d2a155e6577c"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/pom.xml",
+      "sha256": "ac89e7c7ff3353aa8e5e5fe9ba780ecc6ba589e0a2d57ce1bf6acc6576b0d953"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/jason/infra/local/LiveJaCaMoLauncherMain.java",
+      "sha256": "ae1e99a0c7ec67703c016a7aca11cfb845d8a0fdce6a4ac21eb8f09d7c15ee53"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/ArtifactFieldObservation.java",
+      "sha256": "a4bcd8a9cbba6a59a3f8ca2022ace80d0cbb1d6134d8f636d4e24206a4e90f67"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/BridgeControlledLauncher.java",
+      "sha256": "37a169ed3e014aec750c8a08bcaf94b08bc1669b4ca6ecef0520e0c6f8f03f61"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/BridgeLocalExecutionControl.java",
+      "sha256": "7ead385a0cf0abb91e4ca2e9909b807ff548301229f636e5d0449b9023c5fb82"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/BridgeRuntimeServices.java",
+      "sha256": "aa0e4d2e01dfb3df977eabed4a738d288eab4117140dfa12debe0b341279e5c6"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/CartagoArtifactReadScope.java",
+      "sha256": "903fd2d09de6ce482d9480fd8567655610f3849dd7ac94675f8e23e365015e88"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/CartagoOperationHistory.java",
+      "sha256": "8d323d6636fb0701a99dfcc8fb14da3237ae28360cbc56969ee8787136162cc9"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/CartagoSnapshotSource.java",
+      "sha256": "d70b2dbb6548cb11e3c87c3fd0980c1b300f2f28cde61b64ed2dd6e54b5f21a5"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/JaCaMoBridgePlatform.java",
+      "sha256": "3bacc696c939c57f1ca277eb1af5bfb3d40b19d0cb598d166da2a0e2d5c296d6"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/LocalTcpBridgeServer.java",
+      "sha256": "f41912b3c0e485db07ed7a5b55450adf9a29c22b202709898c8b711226363fd4"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/MoiseSchemeCapability.java",
+      "sha256": "67af6bb7e120de5e0f2320dda810ad22d24cf353fb8713b8ae6c8027519097bc"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/NplClockCapability.java",
+      "sha256": "a0db5d38a502859d76b757af52d752b26158509874770c9bf318dab009d09e0e"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/NplLifecycleCapability.java",
+      "sha256": "eca1446ee300abf64bee746ae744bb09d6cdea3e9db734c716877feeac44fce7"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/NplRuntimeProfile.java",
+      "sha256": "87ded4ebb7b04634edca4ab9fc797f1f74e9b8fb382ea93587201b98494d41f4"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/NplSourceClockObservation.java",
+      "sha256": "98b9688e5e9c652e1fd91295b2022c433ce0a8b92d00d5a4777cbefddf0a7a92"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/ProductionObservationSession.java",
+      "sha256": "45cdd48ba03717ff4482d4c52682480e7cd490042eb1e304de51098fd9c7c548"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/RuntimeDistributionFingerprint.java",
+      "sha256": "cb7605885cb86fe160ee0a1fc67e7a8990aac8adc7ba8ff469a9d60c671e5abc"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/RuntimeDistributionFingerprintMain.java",
+      "sha256": "bbe90eb50b79b802c94ab4e08ca9d88c41ecf56533a3b3a6ae4d911f90d593bf"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/VerifiedCheckpointBridge.java",
+      "sha256": "0cfda8acc26c5a4723569abc6ddfc9dbcb2bbc43cabe0cf9c99ecb857ed34320"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/BridgeExecutionControlTest.java",
+      "sha256": "cea8b75b290c3cb2890cb13e92da73c129f6c233e92470e7e526054e3dfc005d"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/CheckpointFeasibilityTest.java",
+      "sha256": "aa07a85b19da432273bb407639ea3418b745ab89c2072f92297cbf97d668ac1b"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/NplRuntimeProfileTest.java",
+      "sha256": "00a64ecd119a77c52888fafea81795cbd67bd1a067d4c3bcc1f826e317635832"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/ProductionObservationSessionTest.java",
+      "sha256": "a87f792240d3d074921b2d89c9e4667c53f9df3519fa41bdb838aa83195cc2c0"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/VerifiedCheckpointAuthenticationTest.java",
+      "sha256": "e9ff22c93150a01d5ae83b2cc511b11c4af5246d3b6fc68f7493899263a98f32"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/VerifiedCheckpointEarlyBoundaryTest.java",
+      "sha256": "6050dfc90d44da65c57e3dceca0da88b747aa33fafff94e27776956dba0198db"
+    },
+    {
+      "path": "use/jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/VerifiedCheckpointGapTest.java",
+      "sha256": "272736c72f2e43303fb4d3de4d7596758c1f87e7b215a8e8131075eb388eed55"
+    },
+    {
+      "path": "use/pom.xml",
+      "sha256": "b77bdde5fbf344cb117d26106f7114e42c9420255df450e928c00fe6b6601a01"
+    },
+    {
+      "path": "use/use-assembly/pom.xml",
+      "sha256": "fde72eeb3b58dd72b0da1458d0b068de2c2084200866ec50ec42386e6a162fde"
+    },
+    {
+      "path": "use/use-gui/src/main/resources/bin/start_use.bat",
+      "sha256": "758721cad9b464abb4b3bee4e9cac6f35a829cbae1f1db55a8f540b0263a3b81"
+    },
+    {
+      "path": "use/use-plugin/pom.xml",
+      "sha256": "1460a556064ec9273064f544becd40a10d0c117d6278d96964cdc34a1c87b398"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java",
+      "sha256": "14fae694621f161b2e58288c7004831099d1191a6c685dcd7ed53e28e1add71a"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/JaCaMoFacade.java",
+      "sha256": "17365e04e47cf3a94678adf91aa1ac67f8b5d1cc390510d8a299ca7726065959"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/OwnedJaCaMoRuntime.java",
+      "sha256": "6d4abd8db5c53096527cc41481104bb8acf92241a29ec562813c9722004b47b1"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/bridge/BridgeClient.java",
+      "sha256": "534530d00330402f147547f8998ce490bb6e7e1023f3aeb117d53c6f0d755b2b"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/bridge/BridgeTransport.java",
+      "sha256": "75b50d65e77d1523a2e7e368ff01dbdafd389e9e937b42b98a6e47749a159346"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/bridge/LocalTcpBridgeTransport.java",
+      "sha256": "35110e6e63380811d09db238e3551d2b45cbad87d0acf07e183c8ff7378d38d3"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/CanonicalReplaySupport.java",
+      "sha256": "e8fa580d30e5ed94fcfa34deea6674a56919648f73b20001808b20cb41574ee0"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/CheckpointPolicySelection.java",
+      "sha256": "9404cccfbefad52303a33e1d0562a207052216b66ff0ab640f437e0aa547d5f2"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/JournalStreams.java",
+      "sha256": "dcf162da957e60766e9bde536dbd95c2a9963aaeb0b17c33e0cfb99e6c18587a"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeOperationCheckpoints.java",
+      "sha256": "0f14c0e047713dd3200b780c3105070407bbeb6d357129c00d6b707d72116859"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeProjector.java",
+      "sha256": "0fa73aaa2cca4b595f0f2e3b6c6a679877c25b84bb1339d6fff4797640139aa7"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeReplay.java",
+      "sha256": "deffac1cc982b4cf568b7228e6e8f4278c8ee97a0419103f69578a7bc4d76ea4"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeEventJournal.java",
+      "sha256": "456334b99dd2134148c88c3ea491b724743b88358b2f2ac46942875a9ea1309f"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java",
+      "sha256": "3e467e470864042da6e788ed2f5b22c852944fe76fc1af2c7fa2e49e182d922d"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/VerifiedCheckpointInventory.java",
+      "sha256": "56af920f5cd83b0937c095b83c120ab74bda60530861817879dd9d09fa0de8ea"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/VerifiedCheckpointService.java",
+      "sha256": "e2112a06bf1ebc6c4d45d6432d65fce4ebcba222bb8dcdd60c5f47a68afe31a4"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/evidence/SemanticProgramManifest.java",
+      "sha256": "b9023a430a4290b16edc145a43cfd1f029f64a33a4571ce297a15f92537ac0a1"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/SemanticBindingIndex.java",
+      "sha256": "df108a4a517b8011cfbe98a7d38d29a397aa740029d7897513f7d556d511092a"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/ArtifactFieldCutDecoder.java",
+      "sha256": "8a59640070c3516f3b86c3001a68a9317056e4382c9f09516c50f2c036160379"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/EmptyObserverPopulation.java",
+      "sha256": "f71018bdddb3a2ea4836124b008ddfc1edac9e5d434f55ca62ef07a36eacb40c"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/M0RuleExecutor.java",
+      "sha256": "75ff06468815e731c3bbe9ddeb2bab18879f46bfba8af17f92dfc33d276cb867"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/MoiseFactQualification.java",
+      "sha256": "3a9a0a4b31971d28b97475aa5005ce5dc34468ac9c150b73da6e2241c935504d"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/MoisePopulationClosure.java",
+      "sha256": "af806cdbd33bc6b9ba3689369b3f00356734b6dd9f9328214f6b400524ffa00d"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/MoisePublicConfirmation.java",
+      "sha256": "351d0a310cd08016935e3f9bdc8ecab734b67b05de37b5e9883a0478f1239a7a"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/MoiseSchemeCutDecoder.java",
+      "sha256": "72e10baf66dc3d0a8c0bb3c662d70722b067c52a4df6a06c2491c26a142907ce"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/NplLifecycleCut.java",
+      "sha256": "acf1ad3a69b8716570aca97f9c7dd1e64e56e05c7250ec872f0cf6faf962bfd2"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/ObserverProjection.java",
+      "sha256": "f08c335f0daff97e4d0019d70f52dba3fb2fb48b7f230b0d35ea9ba03aa11644"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/OperationHistoryCutDecoder.java",
+      "sha256": "d778e9cb45e4ba4e82be319c331b6fc8c86b593f91fedc9b32a476ea5381f456"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/RuntimeTables.java",
+      "sha256": "d9db1b061568cb4cc3b6d7c2a33e92c69c59068304382d1f5512bc381ec7aa1d"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/runtime/SourceJoinOwnership.java",
+      "sha256": "4f541dce2b24704434b279c87becf1bc18fc21e4daa83126dc0f624ca815949b"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/observer/SourceClock.java",
+      "sha256": "cf717523d1b74ca49a2bf4ca45c078ec00732e3cad72c127695686b1e6099af6"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/ocl/ConstraintCoverageResolver.java",
+      "sha256": "f26e9f2d49ba489acb81b8a68aa12b9669b061e5ffd49cd7f4637ade115d61f6"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/ExecutionConstraintScope.java",
+      "sha256": "b5375f9afa6e94f1f55f381c046702714bd554e5725ca037b9a019f1eb25d8f8"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/SemanticResultAdapter.java",
+      "sha256": "c6524638a3699e2a8c8ded4e2cd7207b0c4948ea34da237f085f78bf4728b856"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/JaCaMoWorkbenchPanel.java",
+      "sha256": "35ebbdc091aa6cd484697fa99c1758dff74ab01d93504093b4dbbbdf75687af9"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/CheckpointTimeline.java",
+      "sha256": "ac5f8a3f5fdde4dbc6440225432fcdb558482f3d8202b55b267c84204c63557e"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ExecutionScopeViews.java",
+      "sha256": "5ace39d561f8d0b6a70e090ad99391b6416a70adcd7165ea68ffa7a13a6adb7a"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePanel.java",
+      "sha256": "5773456f412c3a15e82d8915b207324dfacbd0f4fe0cf2233c253460be7eba50"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/conformance/ObservedConformancePresenter.java",
+      "sha256": "2b32735a42797b268904b391dfeb184d125f5d034fe5736b65d38a1764c22149"
+    },
+    {
+      "path": "use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/state/RuntimeStateViews.java",
+      "sha256": "7ea35535fb7f77f1469fe5d94cfeaf3a32621f2616af5558b37d8b6e63b6afce"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/AuctionEvidenceInputAgent.java",
+      "sha256": "0501fbf7350dd5e7eef1abfe876c8712ffd8b15045cb4128a17c97d519593b98"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/CheckpointMilestoneAuctionIT.java",
+      "sha256": "1cbb608c5cbe63502dba17dce8bdfb77eba8cec0b0d14738709fc47ba9956342"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/CheckpointStabilityAuctionIT.java",
+      "sha256": "b09c30d4c7eb5e1900e36352f7e1564ef0803b3e5c334de0936b9efb52edc311"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/VerifiedCheckpointUiAuctionIT.java",
+      "sha256": "99b51ee68a15869622f3fa525f9004aa4d464109359f7416c5ce03eaf00c3a3a"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/VerifiedCheckpointsAuctionIT.java",
+      "sha256": "32cd3e0f17a6899bac7e64c00b363a2b1e59ff7bb003a600e502574a11256bfe"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/codegrounded/CheckpointPolicySelectionTest.java",
+      "sha256": "049fdaba488437a9304602d982420ea087c29db6f741e1fca9b4a68b7b6fe9e0"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/codegrounded/CompressedRuntimeHistoryTest.java",
+      "sha256": "264d5b7c30226b561df0a7e25cf581f75e2d7ddeaa2d170f0022875966f62a2e"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/codegrounded/RuntimeVerificationCoordinatorTest.java",
+      "sha256": "2f45139c9436de0ffdfe205156bb80513d5e8c90d154c45fd075cfa1446b003e"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/codegrounded/VerifiedCheckpointInventoryTest.java",
+      "sha256": "7577e83fcf49a57e70200910480c3065913d4554baa8ca7ef6181bae727dcfdd"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/codegrounded/VerifiedCheckpointServiceTest.java",
+      "sha256": "18e747680d3b40e5cc95c1ecab5288c05df355ea061ad3b56a1236800d8a1446"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/CanonicalReplayBudgetTest.java",
+      "sha256": "01e363692fbb2a5f645f4d8decd4631112e134240edb3b205ea6d95e244e1a94"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/CanonicalPublicationOrderTest.java",
+      "sha256": "df3a3a6c9680c7abb9ca2c3c9f3548168e396ac56bf567569937e4056cf92390"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/xml/AuthoredPresentationTest.java",
+      "sha256": "f9a95e6d5a86df62c0c70a5bb13ac042fd070e924d66605ba60b0f97790f61ee"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/xml/EmptyObserverPopulationTest.java",
+      "sha256": "41c294b3f4e0deeb56cebbee6eb79173ff7885d5a3e01eb0dfa4805fea011b13"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/xml/MoiseFactQualificationTest.java",
+      "sha256": "f1388540a784f60f580de80708fd1a596f90940f25c08718cf3db8aec83cb970"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/xml/RuntimeTablesTest.java",
+      "sha256": "22b751d43f1c358f038ed21ea2fadb553c7c5b4f5613665c104365fed622890f"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/CheckpointMilestoneIsolationTest.java",
+      "sha256": "c55fedeeadf57f9b4c6a5c7aae75fa3d344dd8708e61b635d6c1ed5c5962e61d"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/ExecutionScopeViewsTest.java",
+      "sha256": "b56b82c37281b28987aa55265cac5f61f1ab09a97203d894ee545d8c52fcda1b"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/ObservedTimelineHistoryTest.java",
+      "sha256": "9919b9602aedb9e78fe84aef3ae29cb8c78ea8104d431ba1255fe6155e045bb0"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/VerifiedCheckpointControlsTest.java",
+      "sha256": "3bb5cf14c2b4d63eb49e6b3ba79379be007f63234a8df38a0dd0144e1238d17c"
+    },
+    {
+      "path": "use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/ui/WorkspaceExecutionViewTest.java",
+      "sha256": "791041b62c28ce7a8c33b03cef1a56026cb8fcfd708b672e5a0a0356b1198384"
+    },
+    {
+      "path": "use/use-plugin/tools/jacamo-bridge.ps1",
+      "sha256": "0e93a8a01c3f1ff60c78799d78ec0831353aae5c4eb178cc4bbe58918be332c0"
+    },
+    {
+      "path": "use/use-plugin/tools/prepare-runtime-classpath.ps1",
+      "sha256": "5e13bd4ecaf3bdaada7fa4d6486e61b3f6c79af7cee16a3911950930b2031c67"
+    },
+    {
+      "path": "jacamo/build.gradle",
+      "sha256": "2f4c5637e924a89b99418246d2ae44feebaf07041bf36e5d6fe32276fb7be2cd"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/build.py",
+      "sha256": "ee85d5548c67f949fabdeb42da2cd27fe427739732e60e0411f750bba8aa0976"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/dependency-lock.json",
+      "sha256": "7e89b5342485d02f8f7ea85bfb8af6a7a3bdddb1885abf8b21ffb543f0d0da3c"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/prepare_sources.py",
+      "sha256": "c12e212096db99b8445a1ac586868a8d6878a839a2cc8123206aca555426a31a"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/record-jacamo-build.py",
+      "sha256": "1d5ad403e98239ff3b01117bef5691993aa10ad7a7a95b4996fce315fa5a5376"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/run-probes.py",
+      "sha256": "4b4c0579ab18fa1b1df0e165b1afed31d1d5902e767da3d0d18de37d0cc52a81"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/runtime/src/main/java/org/jacamo/checkpoint/runtime/ExecutionBarrier.java",
+      "sha256": "423aa61fec75a75ff206d818ec0e65bae9f3e14a14752316abf3771e67a78e2c"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/runtime/src/main/java/org/jacamo/checkpoint/runtime/GuiCallbackAdmission.java",
+      "sha256": "933e6435a95c4cb0fcdf46d8740a9b1cb917bbfc27d80bc9d015adde804b5848"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/runtime/src/main/java/org/jacamo/checkpoint/runtime/SourceAdmission.java",
+      "sha256": "20c8217ef4bc028995c255ca7616653c3b7157669c31b9a7168c90bf402f3e79"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/runtime/src/main/java/org/jacamo/checkpoint/runtime/SourceClockWeaver.java",
+      "sha256": "01fe664d620fed70be193ae27c5edca08340cc6198fc3f69e11f07813b1f9a83"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/source-provenance.json",
+      "sha256": "a43b5c97c6df8e5318e8aac4bbe06f6a9e14b891e9765feb42e8a52cf6ead907"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/src/cartago/cartago/Artifact.java",
+      "sha256": "40efa4f57cfd37e90fd9094a0c499d54873578d7ef3feeb3a1f31ad1fdde71c4"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/src/cartago/cartago/CartagoEnvironment.java",
+      "sha256": "ab051ddface1ce51953d9832ba6253752cc00777a62c6ade1839dbcf462f5ac1"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/src/cartago/cartago/Workspace.java",
+      "sha256": "7949a508d2d8388ab62f3b41211230163c5b29db0336fa6f8896950b627f2339"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/src/jason/jason/infra/local/LocalAgArch.java",
+      "sha256": "ab2ada4efcf4633ee7d67cb58ef69d2ba749a52d609778aae0e428f9c35f3775"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/src/jason/jason/stdlib/wait.java",
+      "sha256": "dcaa39691bc34db4f4fa944c66dd622542cdbdf08e4adac12dd470cbf4d4cd99"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/src/npl/npl/NPLInterpreter.java",
+      "sha256": "ef9f22b031e4e65ba2f94f1cda5543942713833063d98f15169a661c81d15c43"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/src/npl/npl/NormInstance.java",
+      "sha256": "bc1b8c9518a340290b498d9e48e4848218a095d1037541328b3dbc260a24ca5b"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/src/npl/npl/StateTransitions.java",
+      "sha256": "a38b48aea273129d486ace1997526584a8cd0aa0821c9f72a928fef371dbdadb"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/src/npl/npl/StateTransitionsThread.java",
+      "sha256": "22b42606f8a0790be8e0146fd7ca650f695b716473de560434795fc19cf1a603"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/src/npl/npl/TimeTerm.java",
+      "sha256": "63fb618cc99c1f8ae8d04516f82a931568ac00400dd2f3a3b57c7077f309f52f"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/tests/GenericGuiBoundaryProbe.java",
+      "sha256": "6ae6760d5c02b093669b39f7977e38521daaf7a7fe045fed98ce1d3dd964512f"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/tests/S01LifecycleProbe.java",
+      "sha256": "a395caa46338fcb97b0b03b4210982808d2a51105f549756dc6a15535e8d2296"
+    },
+    {
+      "path": "jacamo/checkpoint-dependencies/tests/S01PositiveBoundaryProbe.java",
+      "sha256": "7f856f41140039fc9bf2c03791b07b667cb0403d015fa9b6822240b80d344ff1"
+    },
+    {
+      "path": "jacamo/src/main/java/jacamo/checkpoint/CheckpointBoot.java",
+      "sha256": "b43f2d814c2405abad9cd3049031b44fb38e7c1dcfbde117d30aeb74ecd2345e"
+    },
+    {
+      "path": "jacamo/src/main/java/jacamo/checkpoint/CheckpointBuildIdentity.java",
+      "sha256": "526b8a3b1079b858c2324d4e4222753b62ccc8caa5694ce20adc7259391b7716"
+    },
+    {
+      "path": "jacamo/src/main/java/jacamo/checkpoint/CheckpointFeasibility.java",
+      "sha256": "e898c1ed4b3ac23c9ccfc7930c0423dd99c5cc6c269012b031458ac9fb7a445e"
+    },
+    {
+      "path": "jacamo/src/main/java/jacamo/checkpoint/VerifiedCheckpointCoordinator.java",
+      "sha256": "5576c7a566f9afd9bfeb80bbc12768b5efd009b002e01c4517db726be7c4300a"
+    },
+    {
+      "path": "jacamo/src/main/java/jacamo/infra/JaCaMoLauncher.java",
+      "sha256": "6fb6c82e7ef5ae3a8e251d06e10e28e116538f98f52bfb4fd3dad0dda8e3091b"
+    },
+    {
+      "path": "jacamo/src/test/java/CheckpointCoordinatorTest.java",
+      "sha256": "49288311d614f29f4fca34713672fde81cd594e624b6c1e06f603e33aaf09161"
+    },
+    {
+      "path": "jacamo/src/test/java/CheckpointFeasibilityTest.java",
+      "sha256": "4c2f0a35ce30a386babdf2785b1651da46c655188ad04d60b2bb12e4fb63f563"
+    },
+    {
+      "path": "jacamo/src/test/java/jacamo/infra/CheckpointSourceAdmissionTest.java",
+      "sha256": "063f78cf907415165c145191ebbec82da52b63825f999d1021f135b8c4bc48ee"
+    },
+    {
+      "path": "jacamo/src/test/java/jacamo/infra/GenericSourceAdmissionTest.java",
+      "sha256": "3a269c8ed1cd63702a023707bb9bea5772904b3eaf0f9083bcc8ad64cdbbe7fc"
+    }
+  ],
+  "installedArtifacts": [
+    {
+      "path": "use/use-assembly/target/new/bin/start_use.bat",
+      "sha256": "758721cad9b464abb4b3bee4e9cac6f35a829cbae1f1db55a8f540b0263a3b81"
+    },
+    {
+      "path": "use/use-assembly/target/new/tools/prepare-runtime-classpath.ps1",
+      "sha256": "5e13bd4ecaf3bdaada7fa4d6486e61b3f6c79af7cee16a3911950930b2031c67"
+    },
+    {
+      "path": "use/use-assembly/target/new/lib/plugins/use-jacamo-plugin-1.0.1.jar",
+      "sha256": "47f0a9924d63f803d97978898cb7438036226fc7a7956bb79f517b74877270ca"
+    },
+    {
+      "path": "use/use-assembly/target/new/bridge/lib/jacamo-bridge-jacamo-1.0.0.jar",
+      "sha256": "c354e14cc95edd80cd756636514e680c46116c1565c40a52955bd5c60a26764a"
+    },
+    {
+      "path": "use/use-assembly/target/new/bridge/runtime/jacamo-1.3.1-checkpoint-SNAPSHOT.jar",
+      "sha256": "7f3e0a1267d8bc6e20a2a975e6e3600eb6064d0a13b93b7c843d1c81d1bf33b2"
+    }
+  ]
+}

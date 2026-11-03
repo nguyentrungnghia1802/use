@@ -1,0 +1,67 @@
+{
+  "status": "S01_FEASIBILITY_BLOCKED",
+  "uniqueFocusedTests": [
+    {
+      "name": "jacamo-startup",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "bridge-feasibility",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime-boundary",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "cycle-ledger",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "existing-control-contract",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "testsTotal": 17,
+  "strictSupported": false,
+  "requestedFeatureComplete": false,
+  "s01PositiveGateComplete": false,
+  "S02_S05_S07Implemented": false,
+  "sourceFreezeSha256": "befa8dd488ca1925ec95df6c6d9eadaf56ffe0fb3bef7009167bfd442eb50bf3",
+  "packagedClassParity": {
+    "org/jacamo/bridge/adapter/JaCaMoBridgePlatform.class": true,
+    "org/jacamo/bridge/adapter/RuntimeDistributionFingerprint.class": true,
+    "org/jacamo/bridge/adapter/RuntimeDistributionFingerprintMain.class": true,
+    "jacamo/checkpoint/CheckpointFeasibility.class": true,
+    "jacamo/infra/JaCaMoLauncher.class": true
+  },
+  "artifacts": {
+    "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\lib\\jacamo-bridge-contract-1.0.0.jar": "370f30b206d40cd61963fddc6bf87c8a3dcadfe4925675e47212535368f3f2f1",
+    "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\lib\\jacamo-bridge-jacamo-1.0.0.jar": "91660cfd35999d6706050220e34ed2037ffc9df6cfb08e52ae2da863472a2d4b",
+    "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jacamo-1.3.1-checkpoint-s01-SNAPSHOT.jar": "9b0e87eb22b644433612f97b66ad91219a6149a6c8e69796a1a85595627cdcd9",
+    "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\lib\\plugins\\use-jacamo-plugin-1.0.1.jar": "a4757a31ec4624baa5df5f5b81f90159b0d9976341f73aec3edcc331645738ea",
+    "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\lib\\use-gui.jar": "5fc2f534b1707e151eca8686d32936a8b4f8005c95c35ee163bf0520d86a072e"
+  },
+  "unchangedExternalAuctionGitDiff": true,
+  "build": "package only; no clean/full verify",
+  "liveAuctionVerifiedCheckpointAcceptance": false,
+  "manualDesktopAcceptance": false,
+  "baseMavenZipIncludesPostBuildRuntimeStaging": false,
+  "launcher": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bin\\start_use_s01.bat",
+  "noCommitOrPush": true
+}

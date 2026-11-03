@@ -1,0 +1,767 @@
+{
+  "verifiedAcceptance": false,
+  "productionChanged": false,
+  "cases": {
+    "hello-world": {
+      "verifiedStatus": "REJECTED_BEFORE_REASONING",
+      "tokens": 0,
+      "originalInputsAndSourcesMatchPins": true,
+      "distinctSourceReasonPairs": 46,
+      "rejectionGroups": {
+        "UNADMITTED_QUALIFIED_PROVIDER": 23,
+        "UNADMITTED_EXTERNAL_PROVIDER": 22,
+        "UNMANAGED_CLOCK": 1
+      },
+      "rejections": [
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.FlowLayout"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:javax.swing.Box"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:javax.swing.BoxLayout"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:javax.swing.JFrame"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:javax.swing.JLabel"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:javax.swing.JPanel"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:javax.swing.JTextArea"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:javax.swing.SwingConstants"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:javax.swing.SwingUtilities"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.FlowLayout"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.GraphicsEnvironment"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:javax.swing.Box"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:javax.swing.BoxLayout"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:javax.swing.JFrame"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:javax.swing.JLabel"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:javax.swing.JPanel"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:javax.swing.JTextArea"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:javax.swing.SwingConstants"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:javax.swing.SwingUtilities"
+        },
+        {
+          "source": "src/env/display/GUIConsole.java",
+          "reason": "UNMANAGED_CLOCK"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.FlowLayout"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Font"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.GridLayout"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:javax.swing.Box"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:javax.swing.BoxLayout"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:javax.swing.JFrame"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:javax.swing.JLabel"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:javax.swing.JPanel"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:javax.swing.JTextArea"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:javax.swing.SwingConstants"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:javax.swing.SwingUtilities"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.FlowLayout"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Font"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.GridLayout"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:javax.swing.Box"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:javax.swing.BoxLayout"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:javax.swing.JFrame"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:javax.swing.JLabel"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:javax.swing.JPanel"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:javax.swing.JTextArea"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:javax.swing.SwingConstants"
+        },
+        {
+          "source": "src/env/display/GridDisplay.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:javax.swing.SwingUtilities"
+        }
+      ],
+      "observedControl": "PASS",
+      "observedGoalStatuses": {
+        "NonnegativeCounts": "FULFILLED",
+        "TwelveMessagesObserved": "FULFILLED"
+      },
+      "observedCoverage": "INCOMPLETE",
+      "frozenCheckpointUi": {
+        "nativeContexts": 1,
+        "admittedExecutions": 0,
+        "milestones": 0
+      },
+      "controlEvidence": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-cases\\hello-world-2710205972145095189"
+    },
+    "house-building": {
+      "verifiedStatus": "REJECTED_BEFORE_REASONING",
+      "tokens": 0,
+      "originalInputsAndSourcesMatchPins": true,
+      "distinctSourceReasonPairs": 94,
+      "rejectionGroups": {
+        "UNADMITTED_QUALIFIED_PROVIDER": 40,
+        "UNADMITTED_ASL_INCLUDE": 14,
+        "UNADMITTED_EXTERNAL_PROVIDER": 38,
+        "UNADMITTED_FRAMEWORK_TOOL_PRODUCER": 1,
+        "UNADMITTED_INTERNAL_ACTION": 1
+      },
+      "rejections": [
+        {
+          "source": "src/agt/companyA.asl",
+          "reason": "UNADMITTED_ASL_INCLUDE:common.asl"
+        },
+        {
+          "source": "src/agt/companyA.asl",
+          "reason": "UNADMITTED_ASL_INCLUDE:org_code.asl"
+        },
+        {
+          "source": "src/agt/companyB.asl",
+          "reason": "UNADMITTED_ASL_INCLUDE:common.asl"
+        },
+        {
+          "source": "src/agt/companyB.asl",
+          "reason": "UNADMITTED_ASL_INCLUDE:org_code.asl"
+        },
+        {
+          "source": "src/agt/companyC.asl",
+          "reason": "UNADMITTED_ASL_INCLUDE:common.asl"
+        },
+        {
+          "source": "src/agt/companyC.asl",
+          "reason": "UNADMITTED_ASL_INCLUDE:org_code.asl"
+        },
+        {
+          "source": "src/agt/companyC.asl",
+          "reason": "UNADMITTED_ASL_INCLUDE:org_goals.asl"
+        },
+        {
+          "source": "src/agt/companyD.asl",
+          "reason": "UNADMITTED_ASL_INCLUDE:common.asl"
+        },
+        {
+          "source": "src/agt/companyD.asl",
+          "reason": "UNADMITTED_ASL_INCLUDE:org_code.asl"
+        },
+        {
+          "source": "src/agt/companyD.asl",
+          "reason": "UNADMITTED_ASL_INCLUDE:org_goals.asl"
+        },
+        {
+          "source": "src/agt/companyE.asl",
+          "reason": "UNADMITTED_ASL_INCLUDE:common.asl"
+        },
+        {
+          "source": "src/agt/companyE.asl",
+          "reason": "UNADMITTED_ASL_INCLUDE:org_code.asl"
+        },
+        {
+          "source": "src/agt/companyE.asl",
+          "reason": "UNADMITTED_ASL_INCLUDE:org_goals.asl"
+        },
+        {
+          "source": "src/agt/giacomo.asl",
+          "reason": "UNADMITTED_ASL_INCLUDE:common.asl"
+        },
+        {
+          "source": "src/agt/inc/org_code.asl",
+          "reason": "UNADMITTED_INTERNAL_ACTION:intend"
+        },
+        {
+          "source": "src/env/simulator/Doors.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/Doors.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/Doors.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/Doors.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/Doors.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/Doors.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/ElectricalSystem.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/ElectricalSystem.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/ElectricalSystem.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/ElectricalSystem.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/ElectricalSystem.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/ElectricalSystem.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/ExteriorPainting.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/ExteriorPainting.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/ExteriorPainting.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/ExteriorPainting.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/ExteriorPainting.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/ExteriorPainting.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/Floor.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/Floor.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/Floor.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/Floor.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/Floor.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/Floor.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/House.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/House.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/House.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Graphics"
+        },
+        {
+          "source": "src/env/simulator/House.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/House.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:javax.swing.JFrame"
+        },
+        {
+          "source": "src/env/simulator/House.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:javax.swing.JPanel"
+        },
+        {
+          "source": "src/env/simulator/House.java",
+          "reason": "UNADMITTED_FRAMEWORK_TOOL_PRODUCER"
+        },
+        {
+          "source": "src/env/simulator/House.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:cartago.tools.GUIArtifact"
+        },
+        {
+          "source": "src/env/simulator/House.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/House.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/House.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Graphics"
+        },
+        {
+          "source": "src/env/simulator/House.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/House.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.GraphicsEnvironment"
+        },
+        {
+          "source": "src/env/simulator/House.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:javax.swing.JFrame"
+        },
+        {
+          "source": "src/env/simulator/House.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:javax.swing.JPanel"
+        },
+        {
+          "source": "src/env/simulator/HousePart.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/HousePart.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/HousePart.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/HousePart.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/InteriorPainting.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/InteriorPainting.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/InteriorPainting.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/InteriorPainting.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/InteriorPainting.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/InteriorPainting.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/Plumbing.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/Plumbing.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/Plumbing.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/Plumbing.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/Plumbing.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/Plumbing.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/Roof.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/Roof.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/Roof.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/Roof.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/Roof.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/Roof.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/Site.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/Site.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/Site.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/Site.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/Site.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/Site.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/Walls.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/Walls.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/Walls.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/Walls.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/Walls.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/Walls.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/Windows.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/Windows.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/Windows.java",
+          "reason": "UNADMITTED_EXTERNAL_PROVIDER:java.awt.Graphics2D"
+        },
+        {
+          "source": "src/env/simulator/Windows.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Color"
+        },
+        {
+          "source": "src/env/simulator/Windows.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Dimension"
+        },
+        {
+          "source": "src/env/simulator/Windows.java",
+          "reason": "UNADMITTED_QUALIFIED_PROVIDER:java.awt.Graphics2D"
+        }
+      ],
+      "observedControl": "PASS",
+      "observedGoalStatuses": {
+        "ConstructionCompleted": "FULFILLED",
+        "ContractsAwarded": "FULFILLED",
+        "DoorsFitted": "FULFILLED",
+        "ElectricalInstalled": "FULFILLED",
+        "ExteriorPainted": "FULFILLED",
+        "FloorsLaid": "FULFILLED",
+        "HouseRealized": "FULFILLED",
+        "InteriorPainted": "FULFILLED",
+        "PeeCompleted": "FULFILLED",
+        "PlumbingInstalled": "FULFILLED",
+        "RoofBuilt": "FULFILLED",
+        "RwdCompleted": "FULFILLED",
+        "SitePrepared": "FULFILLED",
+        "WallsBuilt": "FULFILLED",
+        "WindowsFitted": "FULFILLED"
+      },
+      "observedCoverage": "INCOMPLETE",
+      "frozenCheckpointUi": {
+        "nativeContexts": 1,
+        "admittedExecutions": 0,
+        "milestones": 0
+      },
+      "controlEvidence": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-cases\\house-building-10184017443313623345"
+    }
+  },
+  "files": [
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\AdditionalVerifiedProbe.java",
+      "sha256": "44deee3ad926aa6781626a4d6ec8bcd657362ad109283a52ff11c44c0b9600d0"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\bundle-tests.log",
+      "sha256": "eb3ac0c973b08bdcda087e61843cfd303fde31b7e60de1146b7fe6ac4e594695"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\diagnostic-classpath.txt",
+      "sha256": "059ea6955da9725205e2a7cd11a13b7f640d002a35392c59ea1befc56ac1c324"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\hello-world\\frozen-ui.json",
+      "sha256": "54ad12da0b73ad1573de9b3494cb03803c17a13f67ec8c19409f328b8e359b3e"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\hello-world\\observation-receipt.json",
+      "sha256": "c4404e5290ef1a86658bcfee6660e3ef2c536823714e74a688a9aa5c2f0839a8"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\hello-world\\observation-result.json",
+      "sha256": "94de650fb20f342930650c63baa105fb1bc6d941b9836186d36d7008be8eacd7"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\hello-world\\prepare.stderr.log",
+      "sha256": "88ed766a09427b96486eb37cb2ec8fa1ccb2bb5ee2847255391cd13b03f64d58"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\hello-world\\prepare.stdout.log",
+      "sha256": "396f9219971506080da6b5c73671ad41262ee720f571a03cc7f7e1d0227eba42"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\hello-world\\prepared.json",
+      "sha256": "a1f61d48b878da5763569d0bd20a28f3363e7fe2801bfc3c97752d68d0088183"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\hello-world\\probe.json",
+      "sha256": "6432665de4869970f64412d9a912d8aae58cb419369894bee5b89ffd3cfb005a"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\hello-world\\producer.stderr.log",
+      "sha256": "f9bafa8029031ae334db240e89196433057ef13b8fa72ee1238dfea82e0b66a8"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\hello-world\\producer.stdout.log",
+      "sha256": "9c44e9042e39d99ef6b24e0b8da74e785a333927960568ae743cab7fe54fb9e4"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\hello-world\\replay-error.txt",
+      "sha256": "38e311535a6b7f1eb64887a4d4add577b786a43de618c27e55258f203dab009a"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\hello-world.log",
+      "sha256": "363123568fe1931b82be9ed04da43f1aa8a9c831190e160564506ce692299851"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\house-building\\frozen-ui.json",
+      "sha256": "3b15ca6ff6efc31b8e23bf84599172eaa61873f2a271534ee5c362deb80e0d6f"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\house-building\\observation-receipt.json",
+      "sha256": "76f8eac7b88561ac539b727658ef2ccde50d0c4107b4a23f67c71e9dfd1dc5ad"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\house-building\\observation-result.json",
+      "sha256": "280fe1969d6b2b1f49adae675e14be31615702995b7b76954515cb01a202d718"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\house-building\\prepare.stderr.log",
+      "sha256": "478d4f47e8571c0791cb86e7aa5044a17b90bf32c9434f353b4e695973c0b57c"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\house-building\\prepare.stdout.log",
+      "sha256": "396f9219971506080da6b5c73671ad41262ee720f571a03cc7f7e1d0227eba42"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\house-building\\prepared.json",
+      "sha256": "6eb6bdea0dbe2e88be736e1c9fd7ed873a433dda486a4a631161a24a9bf7d7de"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\house-building\\probe.json",
+      "sha256": "6ab36fb2dc7cf96df2467a5d3a8c811d7ee0ac136f976d926788d0b6dc3bd9c2"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\house-building\\producer.stderr.log",
+      "sha256": "c74bb1e3d428cc34ae965ffc8b4f117cf162eca34c9247db1bd42812094e30da"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\house-building\\producer.stdout.log",
+      "sha256": "f489cfaa3b45dabd543777c6b8068cde07280810eddafc04fb11bb62664a4935"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\house-building\\replay-error.txt",
+      "sha256": "38e311535a6b7f1eb64887a4d4add577b786a43de618c27e55258f203dab009a"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\house-building.log",
+      "sha256": "09e495b6ce7d407dda8b8919f7fd7a71bd60be6a604ecc89c3738b0b49e90e89"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\observation-control-tests.log",
+      "sha256": "44dc2e5cf05c89b98429f72e2bacccd5257819dbcc602faa1aa8be52cd43e402"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\REPORT.md",
+      "sha256": "f0ea8000168a13e386fb681cecc7f67c210abe6f876f0f93161ea664598012de"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\runtime-code-sources.log",
+      "sha256": "5d4e475b10ede3a6ab0502059b3fc51545076f9152f6dc5256da0ff24da71e5b"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\ScopePresentationProbe.java",
+      "sha256": "6f7285bb260afb93eed082a073572f38502c38a59e006dac264c522353e0acd7"
+    },
+    {
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-verified-20261102\\summarize.py",
+      "sha256": "0ce9035212105f653747939802a61177a1ecfe3673c4428c3a47654014c4e9d1"
+    }
+  ],
+  "focusedTests": {
+    "bundle": {
+      "run": 5,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "liveObservedControl": {
+      "run": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  }
+}

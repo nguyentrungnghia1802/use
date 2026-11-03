@@ -1,0 +1,526 @@
+{
+  "status": "PACKAGED_PINNED_RUNTIME_AND_PLUGIN_LOADER_PASS",
+  "launcher": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bin\\start_use.bat",
+  "jacamoCodeSource": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jacamo-1.3.1-checkpoint-SNAPSHOT.jar",
+  "jacamoSha256": "7f3e0a1267d8bc6e20a2a975e6e3600eb6064d0a13b93b7c843d1c81d1bf33b2",
+  "jacamoVersion": "1.3.1-checkpoint-SNAPSHOT",
+  "strictSourceHooks": true,
+  "installedPluginLoader": true,
+  "currentBuildBytesVerified": true,
+  "manualDesktopAcceptance": false,
+  "commitOrPush": false,
+  "files": [
+    {
+      "sha256": "14a633681df23d987549b37570b9c310e01cee93ea6d9e68830316ffa948f417",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\lib\\jacamo-bridge-contract-1.0.0.jar"
+    },
+    {
+      "sha256": "c354e14cc95edd80cd756636514e680c46116c1565c40a52955bd5c60a26764a",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\lib\\jacamo-bridge-jacamo-1.0.0.jar"
+    },
+    {
+      "sha256": "a31f74f3d00929ed0028f0d5c58c9a549c5885ef7d90db06f5ba1737e9c4520b",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\ant-1.10.5.jar"
+    },
+    {
+      "sha256": "0387dc76d0ac68ba08a8eac53bc175cb505cd5625cc1b6c49727dfe20def455b",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\ant-launcher-1.10.5.jar"
+    },
+    {
+      "sha256": "68bf9f5a33dfcb34033495c587e6236bef4e37aa6612919f5b1e843b90669fb9",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\antlr-runtime-3.5.3.jar"
+    },
+    {
+      "sha256": "d957656b132a052fa66c08b9d1a4a9a9e8275720f6f62e43c72d1de2bfcdc388",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\antlr4-4.12.0.jar"
+    },
+    {
+      "sha256": "db353b34927d6e10cd790905cea3c8e17283db464daf572e3eadbb9ee569da34",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\antlr4-runtime-4.12.0.jar"
+    },
+    {
+      "sha256": "bad77f9278d753406360af9e4747bd9b3161554ea9cd3d62411a0ae1f2c141fd",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\aopalliance-repackaged-2.6.1.jar"
+    },
+    {
+      "sha256": "adf46d5e34940bdf148ecdd26a9ee8eea94496a72034ff7141066b3eea5c4e9d",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\asm-9.7.jar"
+    },
+    {
+      "sha256": "bf45e218ffe1fe559c977f77f098340df226c27d1cc694fc48f3d81aa56a2ac6",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-anim-1.10.jar"
+    },
+    {
+      "sha256": "ca50d95a2445dfe6a5d7e15d9bc4877b2cf78df5431c54fe18b633f65858e9e4",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-awt-util-1.10.jar"
+    },
+    {
+      "sha256": "6728c53e575c90a246ad5eae4a77e87c60fc8816a9c0b16b69d15626be9c4548",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-bridge-1.10.jar"
+    },
+    {
+      "sha256": "1f6241370f7367e71f17089cc0bcf025cc69fdbe5fc22379758210462d8d57e0",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-codec-1.10.jar"
+    },
+    {
+      "sha256": "2a89443c5a11cc24d8a88b1d4d7a177c9869c1ac6e57bccde81bb51e21858333",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-constants-1.10.jar"
+    },
+    {
+      "sha256": "e84bc046c4c3318ca6df9e8e25aede23c22a9f76d62945fdb87cef3216242721",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-css-1.10.jar"
+    },
+    {
+      "sha256": "f6740942a0744b5624b8ddace3c3d3d26b629288b925e1653f6a419eebdd40eb",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-dom-1.10.jar"
+    },
+    {
+      "sha256": "bf643bc8692768662f1f0c328ec32ddef94958b498fb114863afdf22b2f71448",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-ext-1.10.jar"
+    },
+    {
+      "sha256": "08ee7b5caf6c854343098247af9a993b8368f406d4ead22ae108243a41812e90",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-gvt-1.10.jar"
+    },
+    {
+      "sha256": "b3db8447ceb159328e64ae8a8bb25b7cd95147554e04bc097823c57e0adb70b7",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-i18n-1.10.jar"
+    },
+    {
+      "sha256": "323d8bc4e31d046518f6eb480ba51ce96fbf3c087f4872500b0897dcebad181a",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-parser-1.10.jar"
+    },
+    {
+      "sha256": "9a0e7f48e0782a6db8eb6e135a7a83f3f527f97cb022f40814de2650bfdab101",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-rasterizer-1.10.jar"
+    },
+    {
+      "sha256": "2cb7e7570f6ca415214670d14fb3991f5c79b3aa631232ff277fd4cffde2a180",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-script-1.10.jar"
+    },
+    {
+      "sha256": "482df89aa9f57e7f34eed6c7bc2019647a21753bdc17d02fd1c16d7251f53168",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-svg-dom-1.10.jar"
+    },
+    {
+      "sha256": "a51d3a8528991df805b469f144a60f29c855860ed7773831cc12c504d06fe6b7",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-svggen-1.10.jar"
+    },
+    {
+      "sha256": "384232745ae7041df039cbe3b78f9fadfdab387f640afea6e3ef34202bc89604",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-svgrasterizer-1.10.jar"
+    },
+    {
+      "sha256": "f9fc3012576133ecbd73cb79dce463fc8daf5796b49a09d9edf89ed34c90e3ac",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-transcoder-1.10.jar"
+    },
+    {
+      "sha256": "c7b94a7855dd988c96805b54596cd4ad563de846455036d080212110cc1def6c",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-util-1.10.jar"
+    },
+    {
+      "sha256": "aa3721b0ba2859283e1e68580a86f0978781728d2e8eb018a24765cf77646c11",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\batik-xml-1.10.jar"
+    },
+    {
+      "sha256": "b41bf68920c95d2cf903c5222c615a73ad7e28f7598952870668cec814d0f16a",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\cartago-3.1-checkpoint-SNAPSHOT.jar"
+    },
+    {
+      "sha256": "0d7909c60a88f96c5e98a3241ec62ac2edd3fa85f6d8ccd2c4561803b9b33d2e",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\checkpoint-runtime-1.0.0-SNAPSHOT.jar"
+    },
+    {
+      "sha256": "cb49812dc1bfb0ea4f20f398bcae1a88c6406e213e67f7524fb10d4f8ad9347b",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\commons-exec-1.3.jar"
+    },
+    {
+      "sha256": "f877d304660ac2a142f3865badfc971dec7ed73c747c7f8d5d2f5139ca736513",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\commons-io-2.6.jar"
+    },
+    {
+      "sha256": "d21349ab21a5585414942b952d1a4feda61d3c3076b92b93e34a4bf93e0503c6",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\graphviz-java-0.7.0.jar"
+    },
+    {
+      "sha256": "3b47e048326a2326a484a51af32f946a9d244d46d6e4a1ed25bd3d49a9794c2a",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\grizzly-framework-2.4.4.jar"
+    },
+    {
+      "sha256": "e73dc6d771734ed6c5560f51a9915ddc70f182cde570299752711d9ee7d0a833",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\grizzly-http-2.4.4.jar"
+    },
+    {
+      "sha256": "34b6750a671d3ffd577dd4fa08ae1ab2e01bfa80fc851f109d9ea3c0d7388c94",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\grizzly-http-server-2.4.4.jar"
+    },
+    {
+      "sha256": "233a0149fc365c9f6edbd683cfe266b19bdc773be98eabdaf6b3c924b48e7d81",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\gson-2.8.5.jar"
+    },
+    {
+      "sha256": "e144a0ec7f5139c58d4f3729ccfb4240f9c576a1aa43790e4090e09316129ee1",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\guava-11.0.2.jar"
+    },
+    {
+      "sha256": "c2cb80a01e58440ae57d5ee59af4d4d94e5180e04aff112b0cb611c07d61e773",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\hk2-api-2.6.1.jar"
+    },
+    {
+      "sha256": "febc668deb9f2000c76bd4918d8086c0a4c74d07bd0c60486b72c6bd38b62874",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\hk2-locator-2.6.1.jar"
+    },
+    {
+      "sha256": "30727f79086452fdefdab08451d982c2082aa239d9f75cdeb1ba271e3c887036",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\hk2-utils-2.6.1.jar"
+    },
+    {
+      "sha256": "91c4f8ebf0ceb489547098fe9d5c09a65eb419caea6ed714867f5280800bcf1a",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\icu4j-71.1.jar"
+    },
+    {
+      "sha256": "d99d9df734222c5ad87654ec5157ff5fe9007e081a91dee6a6760f43e16b8f7b",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\intmas-1.0.0.jar"
+    },
+    {
+      "sha256": "5664ef83b026b061275ef0911016c2c7cbd245eea00d78b44e8e32aa38a710ea",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\j2v8_linux_x86_64-4.6.0.jar"
+    },
+    {
+      "sha256": "7d944fb89aa16ac50edc1914307cfba9af41f8cfd2882a00bdafe837f08404ab",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\j2v8_macosx_x86_64-4.6.0.jar"
+    },
+    {
+      "sha256": "878c8906838bbfbeb1c7782e022596a2e35371323a0a387bb974a6407378f313",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\j2v8_win32_x86_64-4.6.0.jar"
+    },
+    {
+      "sha256": "7adfa333469184edf3aa07340f038e98eb7123151df5a2c1c20748bf14209f28",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\j2v8_win32_x86-4.6.0.jar"
+    },
+    {
+      "sha256": "f53745d4c0202ab2cb0f9b7eee9f7d21d6ef621706f8bb9b49ed09e63638f72d",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jaca-3.1.jar"
+    },
+    {
+      "sha256": "7f3e0a1267d8bc6e20a2a975e6e3600eb6064d0a13b93b7c843d1c81d1bf33b2",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jacamo-1.3.1-checkpoint-SNAPSHOT.jar"
+    },
+    {
+      "sha256": "e61d83225cea181918657a7b04af1ceddeb5c4a47993b1756a3dbbd126af6409",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jacamo-rest-0.9-SNAPSHOT.jar"
+    },
+    {
+      "sha256": "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jackson-annotations-2.9.0.jar"
+    },
+    {
+      "sha256": "d934dab0bd48994eeea2c1b493cb547158a338a80b58c4fbc8e85fb0905e105f",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jackson-core-2.9.8.jar"
+    },
+    {
+      "sha256": "2351c3eba73a545db9079f5d6d768347ad72666537362c8220fe3e950a55a864",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jackson-databind-2.9.8.jar"
+    },
+    {
+      "sha256": "1b091f881673a5bb275afc1713e6db7da43038e193ef50d477ed65d4e3274f43",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jackson-module-jaxb-annotations-2.9.9.jar"
+    },
+    {
+      "sha256": "5d0a30d1f102f60b94e5e7dbd09be418efc8855f4c58c71e593290106773d8fa",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jade-4.3.jar"
+    },
+    {
+      "sha256": "d84d4ba8b55cdb7fdcbb885e6939386367433f56f5ab8cfdc302a7c3587fa92b",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jakarta.activation-1.2.1.jar"
+    },
+    {
+      "sha256": "8b0a0f52fa8b05c5431921a063ed866efaa41dadf2e3a7ee3e1961f2b0d9645b",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jakarta.activation-api-1.2.1.jar"
+    },
+    {
+      "sha256": "85fb03fc054cdf4efca8efd9b6712bbb418e1ab98241c4539c8585bbc23e1b8a",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jakarta.annotation-api-1.3.5.jar"
+    },
+    {
+      "sha256": "5e88c123b3e41bca788b2683118867d9b6dec714247ea91c588aed46a36ee24f",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jakarta.inject-2.6.1.jar"
+    },
+    {
+      "sha256": "b42d42428f3d922c892a909fa043287d577c0c5b165ad9b7d568cebf87fc9ea4",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jakarta.validation-api-2.0.2.jar"
+    },
+    {
+      "sha256": "4cea299c846c8a6e6470cbfc2f7c391bc29b9caa2f9264ac1064ba91691f4adf",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jakarta.ws.rs-api-2.1.6.jar"
+    },
+    {
+      "sha256": "69156304079bdeed9fc0ae3b39389f19b3cc4ba4443bc80508995394ead742ea",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jakarta.xml.bind-api-2.3.2.jar"
+    },
+    {
+      "sha256": "e1a7a84bf20018189d660a19ad0cf65fef2e5ab2a9417061a28608cbb28d2646",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jason-interpreter-3.3.2-checkpoint-SNAPSHOT.jar"
+    },
+    {
+      "sha256": "230267ffd7bfe404c1b87faf215dd012f607ba3151bd7099562c305c09de6a7a",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\javassist-3.22.0-CR2.jar"
+    },
+    {
+      "sha256": "43fdef0b5b6ceb31b0424b208b930c74ab58fac2ceeb7b3f6fd3aeb8b5ca4393",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\javax.activation-api-1.2.0.jar"
+    },
+    {
+      "sha256": "17fdeb7e22375a7fb40bb0551306f6dcf2b5743078668adcdf6c642c9a9ec955",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\javax.json-1.1.4.jar"
+    },
+    {
+      "sha256": "0bdb79a0a5e0cce2d8d2d339ad53453cdf90045fe34c5e4b19b064bb1aee5876",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\javax.json-api-1.1.4.jar"
+    },
+    {
+      "sha256": "88b955a0df57880a26a74708bc34f74dcaf8ebf4e78843a28b50eae945732b06",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jaxb-api-2.3.1.jar"
+    },
+    {
+      "sha256": "d2ecba63615f317a11fb55c6468f6a9480f6411c10951d9881bafd9a9a8d0467",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jaxb-core-2.3.0.1.jar"
+    },
+    {
+      "sha256": "e6c9e0f1830fd5f7c30c25ecf5e2046c5668b06d304add89d2f027d5072297d0",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jaxb-impl-2.3.1.jar"
+    },
+    {
+      "sha256": "5e938457e79efcbfb3ab64bc29c43ec6c3b95fffcda3c155f4a86cc320c11e14",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jcl-over-slf4j-1.7.25.jar"
+    },
+    {
+      "sha256": "6613da4538dd43a246669f15e3b2a71c258c385328268c956b5e959aeb9e0d2a",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jersey-client-2.29.1.jar"
+    },
+    {
+      "sha256": "923c7b4af55430c80ce33e39731d6f7b1db6746e8aa6d4009eeb154a3e1e0f32",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jersey-common-2.29.1.jar"
+    },
+    {
+      "sha256": "d29156f2570faa3a7a8019ffdd435fd9540883274380500f8eaedd38aa45ee5f",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jersey-container-grizzly2-http-2.29.1.jar"
+    },
+    {
+      "sha256": "77aeb07fc5bbd7e474c6874663d755dc150ab18c86c4ecfdacd8d5db817cad6f",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jersey-container-servlet-2.29.1.jar"
+    },
+    {
+      "sha256": "0e53974f2433b484b6f0d97bb274f44a0fd6503e019e03c8d19f670f01368c4f",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jersey-container-servlet-core-2.29.1.jar"
+    },
+    {
+      "sha256": "0a132b0799e915ed413abc687499ab7eba9442e884c00c4932f40fc175cb174f",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jersey-entity-filtering-2.29.1.jar"
+    },
+    {
+      "sha256": "eb74851a7fa38003877ec90dd413c404c862bd3e313b0ab884c74bf16fc76579",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jersey-hk2-2.29.1.jar"
+    },
+    {
+      "sha256": "01c6106a563856baeaf8fc8158712ea5277d574b6e7457a5b393047c0974bc5e",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jersey-media-jaxb-2.29.1.jar"
+    },
+    {
+      "sha256": "8b2f3779e7707a3cd33ad76466df810774491677cf226525ed13289f35d7dacb",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jersey-media-json-jackson-2.29.1.jar"
+    },
+    {
+      "sha256": "a90fb0b6c72f0e624af70d6afd0d1059075e15e2270e9423dd9f19b1f249549d",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jersey-media-multipart-2.29.1.jar"
+    },
+    {
+      "sha256": "f1cf3207d190bc29f4f19da5f2f69d362dfbd3aff51776d72b2afd8b33411ec8",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jersey-server-2.29.1.jar"
+    },
+    {
+      "sha256": "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jsr305-3.0.2.jar"
+    },
+    {
+      "sha256": "416c5a0c145ad19526e108d44b6bf77b75412d47982cce6ce8d43abdbdbb0fac",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jul-to-slf4j-1.7.25.jar"
+    },
+    {
+      "sha256": "4fbb738d8f9ca41c2f9d1ea43866624037a8df1f63fe5abe7df6ea10e3f92d4c",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\kryo-4.0.0.jar"
+    },
+    {
+      "sha256": "de9157fdd82c91620b9be05019d4a667408a34d8575ae32e329720c547607686",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\kryo-serializers-0.42.jar"
+    },
+    {
+      "sha256": "92ec1fd36ab3bc09de6198d2d7c0914685c0f7127ea931acc32fd2ecdd82ea89",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\log4j-api-2.23.1.jar"
+    },
+    {
+      "sha256": "7079368005fc34f56248f57f8a8a53361c3a53e9007d556dbc66fc669df081b5",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\log4j-core-2.23.1.jar"
+    },
+    {
+      "sha256": "fcc0f68d71152112ce7ca9bf2388dc6d735beee9b699da230a94deef7f4c81c8",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\log4j-slf4j2-impl-2.23.1.jar"
+    },
+    {
+      "sha256": "58a29baedb4d7affdcc35624f3fd0674b6de3fbb188afb8515ae1b52ffedaf69",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\mimepull-1.9.11.jar"
+    },
+    {
+      "sha256": "f7b399d3a5478a4f3e0d98bd1c9f47766119c66414bc33aa0f6cde0066f24cc2",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\minlog-1.3.0.jar"
+    },
+    {
+      "sha256": "2b7d0415c5ec0bcf060a430c7d12753aa02bdf769172922d10ff2909870161a8",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\moise-1.1.jar"
+    },
+    {
+      "sha256": "1d2d9df4c0450d4fb1ef6dbe8c1d850b7a9a6c92eb6d817b62e4429ea8de4dfe",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\nashorn-promise-0.1.1.jar"
+    },
+    {
+      "sha256": "dac32e67876f416e0526c457bbb4d4a7b245d2d6977a39e3ed54484370d86d6e",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\netty-buffer-4.1.30.Final.jar"
+    },
+    {
+      "sha256": "ca9873b1a4419dd3d5455afa8351279e5c9c834b86118c5e345ff7751492bd30",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\netty-codec-4.1.30.Final.jar"
+    },
+    {
+      "sha256": "27cd13191ef86525c132ca98bfacf06cadb5511bdf6d6fec0bd3e2659579e140",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\netty-codec-dns-4.1.30.Final.jar"
+    },
+    {
+      "sha256": "0beb4874977de5cb2b4f1e5b4f986050208c49bf485c093ae6e3681b9eba8d6c",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\netty-codec-http-4.1.30.Final.jar"
+    },
+    {
+      "sha256": "8636be7896f88e4d1a363875d53c8521a90913915854a3cfed0486024ba4a07f",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\netty-codec-http2-4.1.30.Final.jar"
+    },
+    {
+      "sha256": "cff97f4b618ab0a1a3664bc1716a98389d477f6c1412275af34cb8e60cd3f1a9",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\netty-codec-socks-4.1.30.Final.jar"
+    },
+    {
+      "sha256": "b5f23d82aab356751db417829536267886ad835d314b4ae4425736cf8a0a9a2a",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\netty-common-4.1.30.Final.jar"
+    },
+    {
+      "sha256": "416a61a489ebddb668a721401bb08ee0796768801ec27cf05f5e528c76236e8d",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\netty-handler-4.1.30.Final.jar"
+    },
+    {
+      "sha256": "8553f0eaac3a21f25e485eb5191d21c69837deb5acc74b9cdf987820eaee3b54",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\netty-handler-proxy-4.1.30.Final.jar"
+    },
+    {
+      "sha256": "c975aed0421009c6f762afa4d7182eee51a9fc00f3d238f24950e2225c3e882f",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\netty-resolver-4.1.30.Final.jar"
+    },
+    {
+      "sha256": "e6953e152ee747fa91962dc102e2b7a0706fb21c83db5db3bba6fdf7b00d08b7",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\netty-resolver-dns-4.1.30.Final.jar"
+    },
+    {
+      "sha256": "8b2ac95f7ad8ba53847a7724e45b5d68ebc84bb058093f493424df9fc2ecf2fa",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\netty-transport-4.1.30.Final.jar"
+    },
+    {
+      "sha256": "d1666fbdaa816d99b6837c0dd68ce57b3f30815b460e8cd9ad295f4695408056",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\npl-0.6.1-checkpoint-SNAPSHOT.jar"
+    },
+    {
+      "sha256": "2ee6c7e5a871d3f007b5a0c08c89b3b50772f345d45376c8ddc564647eb9aabe",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\objenesis-2.2.jar"
+    },
+    {
+      "sha256": "fa5e31395c39c2e7d46aca0f81f72060931607b2fa41bd36038eb2cb6fb93326",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\org.abego.treelayout.core-1.0.3.jar"
+    },
+    {
+      "sha256": "aab5d7849f7cfcda2cc7c541ba1bd365151d42276f151c825387245dfde3dd74",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\osgi-resource-locator-1.0.3.jar"
+    },
+    {
+      "sha256": "90b6578842a9ffc54480a091891f92d563a7ebb7e52ac2322b6d6fcbfb87ed4d",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\quasar-core-0.7.10-jdk8.jar"
+    },
+    {
+      "sha256": "a61b1919fc26262d1c95b0167f87e6985cdd90be3dab1a14479fb351d08c63d4",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\reflectasm-1.11.3.jar"
+    },
+    {
+      "sha256": "22d163d2e694fe64cfc6d3b0ffca25033805d6629c5721a3ecd107312f0c2c7d",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\sai-0.5.4.jar"
+    },
+    {
+      "sha256": "e8f5b4340d3b12a0cfa44ac2db4be4e0639e479ae847df04c4ed8b521734bb4a",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\serializer-2.7.2.jar"
+    },
+    {
+      "sha256": "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\slf4j-api-1.7.25.jar"
+    },
+    {
+      "sha256": "f927ac384c46d749f8b5ec68972a53aed21e00313509299616edb73bfa15ff33",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\ST4-4.3.4.jar"
+    },
+    {
+      "sha256": "12fd3a7a3cfdbc6834e55b8756d2c1c608d82c8218a788fe1c2577b7d3542d85",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\swagger-annotations-1.6.5.jar"
+    },
+    {
+      "sha256": "c633f1a2af7edf5d90cc195d5447932d950c9cb1d72636afffe42a6a79615cec",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\vertx-auth-common-3.7.0.jar"
+    },
+    {
+      "sha256": "ba4f950487d56ed6c62f1f10d2d3573068a6c5874500a4d60f3e04cab1c437a7",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\vertx-bridge-common-3.7.0.jar"
+    },
+    {
+      "sha256": "70198fc998ef01220bbddc78b1d390c2e1d81bb33fc5884963cf522b3802c81f",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\vertx-core-3.7.0.jar"
+    },
+    {
+      "sha256": "d36ed5b533b913bc369f3e72928a945663da651728b3c6fdea7c8a322c9ac217",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\vertx-sync-3.7.0.jar"
+    },
+    {
+      "sha256": "5c96289c123b302a40085485e8853e15241f09d12184068a7a2740f20bd3c5e2",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\vertx-unit-3.7.0.jar"
+    },
+    {
+      "sha256": "20569b0e18f2ec3129c5428c8ae6e4c66db38fdd55b9f10a854b685d38fd60d9",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\vertx-web-3.7.0.jar"
+    },
+    {
+      "sha256": "8e87594703876f8768b2a26b209f9e8cc3f1120601a827d98548607a02333f46",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\vertx-web-client-3.7.0.jar"
+    },
+    {
+      "sha256": "567211c836d16f2ef20e5779a5ef943de6e09e091b9a9772e04668d80cdb1b3f",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\vertx-web-common-3.7.0.jar"
+    },
+    {
+      "sha256": "a44bd80e82cb0f4cfac0dac8575746223802514e3cec9dc75235bc0de646af14",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\xalan-2.7.2.jar"
+    },
+    {
+      "sha256": "d404aa881eb9c5f7a4fb546e84ea11506cd417a72b5972e88eff17f43f9f8a64",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\xml-apis-1.3.04.jar"
+    },
+    {
+      "sha256": "d0b4887dc34d57de49074a58affad439a013d0baffa1a8034f8ef2a5ea191646",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\xml-apis-ext-1.3.04.jar"
+    },
+    {
+      "sha256": "1fb91bac2795f7a768a7665f40cde996023a489ecc43e5ee67ad40fbaa79e194",
+      "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\xmlgraphics-commons-2.3.jar"
+    }
+  ]
+}

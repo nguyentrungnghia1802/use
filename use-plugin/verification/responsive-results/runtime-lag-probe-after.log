@@ -1,0 +1,4 @@
+loaded=614
+cuts=50 captureMs=62.9 preparationMs=30.2 EDT_firstApplyMs=0.8 EDT_repeatApplyMs=0.1 EDT_linkedApplyMs=0.0 diagnosticsExplicitMs=17.8
+cuts=250 captureMs=274.9 preparationMs=52.0 EDT_firstApplyMs=0.4 EDT_repeatApplyMs=0.0 EDT_linkedApplyMs=0.3 diagnosticsExplicitMs=8.4
+cuts=614 captureMs=2254.0 preparationMs=95.2 EDT_firstApplyMs=441.8 EDT_repeatApplyMs=0.2 EDT_linkedApplyMs=6.6 diagnosticsExplicitMs=7.5

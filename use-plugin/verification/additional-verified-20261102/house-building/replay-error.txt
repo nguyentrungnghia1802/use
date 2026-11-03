@@ -1,0 +1,1 @@
+java.lang.IllegalStateException: NATIVE_EXPORT_REQUIRES_CODE_GROUNDED_NATIVE

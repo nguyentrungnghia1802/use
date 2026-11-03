@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="CheckpointFeasibilityTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-10-31T09:00:04.679Z" hostname="ACERNITRO5-NTNG" time="0.031">
+  <properties/>
+  <testcase name="unsupportedPlatformNeverAdmitsStrictStartup" classname="CheckpointFeasibilityTest" time="0.015"/>
+  <testcase name="initCreateAndStartRejectBeforePlatformSideEffects" classname="CheckpointFeasibilityTest" time="0.013"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

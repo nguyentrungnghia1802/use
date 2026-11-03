@@ -1,0 +1,21 @@
+EXEC 1 M1 ordinal=978 sameCSL=false changedRows=58
+EXEC 1 M2 ordinal=1084 sameCSL=false changedRows=34
+EXEC 1 M3 ordinal=1383 sameCSL=true changedRows=41
+  GOAL_TASK / P_bid_t1 / beid:v1:jason/agent/runtime-agent/auction/alice/315f0cd1-c4a9-4012-8a66-6e3203c15621 / xml-occurrence:2d8aab1822cfee2e082d64e3c08d2a3a7d45510ce6962e738dbfadb309a6fad9 / P_bid_t1_1d241f75a4e83c599cd4a06e__cast_e84f207a42eba25d211b3f36d858675bb3f0ae6381775b6da0ab25bfc8c529a1: UNKNOWN -> FULFILLED raw UNKNOWN -> FULFILLED
+  GOAL_TASK / P_bid_t1 / beid:v1:jason/agent/runtime-agent/auction/francois/fbbde9e9-0270-41e8-bb41-519a044f9158 / xml-occurrence:2d8aab1822cfee2e082d64e3c08d2a3a7d45510ce6962e738dbfadb309a6fad9 / P_bid_t1_fc7f7aa9c55a38691be5652e__cast_e3b9f5694ac08eb2820c81525b530582f3ec7667be5d062f99116c2db55617a0: UNKNOWN -> FULFILLED raw UNKNOWN -> FULFILLED
+  GOAL_TASK / P_bid_t1 / beid:v1:jason/agent/runtime-agent/auction/giacomo/94cae083-b3f9-4061-a204-cf1d722a648f / xml-occurrence:2d8aab1822cfee2e082d64e3c08d2a3a7d45510ce6962e738dbfadb309a6fad9 / P_bid_t1_eb5e3cad8aa9cf8864be0cc8__cast_fa59ba57f63ed83c3bc4172bc1d743faf6b3082c88fff621d2fe1ee790d4208e: UNKNOWN -> FULFILLED raw UNKNOWN -> FULFILLED
+  GOAL_TASK / P_bid_t1 / beid:v1:jason/agent/runtime-agent/auction/maria/d008711a-b04f-4e0d-904d-34f8fe6f79bb / xml-occurrence:2d8aab1822cfee2e082d64e3c08d2a3a7d45510ce6962e738dbfadb309a6fad9 / P_bid_t1_ec4df7906177eb4b084dc878__cast_fc79832e5c40a870c22fd9166786f2e57f95e97868497c74e6b31e0525da6c25: UNKNOWN -> FULFILLED raw UNKNOWN -> FULFILLED
+EXEC 1 M4 ordinal=1517 sameCSL=false changedRows=39
+EXEC 1 M5 ordinal=1678 sameCSL=true changedRows=35
+  GOAL_TASK / C_bid / beid:v1:jason/agent/runtime-agent/auction/giacomo/94cae083-b3f9-4061-a204-cf1d722a648f / xml-occurrence:2d8aab1822cfee2e082d64e3c08d2a3a7d45510ce6962e738dbfadb309a6fad9 / C_bid_eb5e3cad8aa9cf8864be0cc8__cast_fa59ba57f63ed83c3bc4172bc1d743faf6b3082c88fff621d2fe1ee790d4208e: UNKNOWN -> FULFILLED raw UNAVAILABLE -> UNAVAILABLE
+  GOAL_TASK / P_bid / beid:v1:jason/agent/runtime-agent/auction/giacomo/94cae083-b3f9-4061-a204-cf1d722a648f / xml-occurrence:2d8aab1822cfee2e082d64e3c08d2a3a7d45510ce6962e738dbfadb309a6fad9 / P_bid_638811ed134240691b887e5a__cast_7083490edba12644aa82ebd330efbb814eeda24028cfe21705aa16db56bcc990: UNKNOWN -> FULFILLED raw UNAVAILABLE -> UNAVAILABLE
+  GOAL_TASK / P_bid_t2 / beid:v1:jason/agent/runtime-agent/auction/giacomo/94cae083-b3f9-4061-a204-cf1d722a648f / xml-occurrence:2d8aab1822cfee2e082d64e3c08d2a3a7d45510ce6962e738dbfadb309a6fad9 / P_bid_t2_eb5e3cad8aa9cf8864be0cc8__cast_fa59ba57f63ed83c3bc4172bc1d743faf6b3082c88fff621d2fe1ee790d4208e: UNKNOWN -> FULFILLED raw UNKNOWN -> FULFILLED
+EXEC 1 M6 ordinal=1756 sameCSL=true changedRows=35
+  GOAL_TASK / C_bid / beid:v1:jason/agent/runtime-agent/auction/alice/315f0cd1-c4a9-4012-8a66-6e3203c15621 / xml-occurrence:2d8aab1822cfee2e082d64e3c08d2a3a7d45510ce6962e738dbfadb309a6fad9 / C_bid_1d241f75a4e83c599cd4a06e__cast_e84f207a42eba25d211b3f36d858675bb3f0ae6381775b6da0ab25bfc8c529a1: UNKNOWN -> FULFILLED raw UNAVAILABLE -> UNAVAILABLE
+  GOAL_TASK / P_bid / beid:v1:jason/agent/runtime-agent/auction/alice/315f0cd1-c4a9-4012-8a66-6e3203c15621 / xml-occurrence:2d8aab1822cfee2e082d64e3c08d2a3a7d45510ce6962e738dbfadb309a6fad9 / P_bid_a6d2635dd2337b75c1744428__cast_0c3bb84a64cf6155d404b8194ff26838920b2ece9f6fa11b9ecb6202916045f0: UNKNOWN -> FULFILLED raw UNAVAILABLE -> UNAVAILABLE
+  GOAL_TASK / P_bid_t2 / beid:v1:jason/agent/runtime-agent/auction/alice/315f0cd1-c4a9-4012-8a66-6e3203c15621 / xml-occurrence:2d8aab1822cfee2e082d64e3c08d2a3a7d45510ce6962e738dbfadb309a6fad9 / P_bid_t2_1d241f75a4e83c599cd4a06e__cast_e84f207a42eba25d211b3f36d858675bb3f0ae6381775b6da0ab25bfc8c529a1: UNKNOWN -> FULFILLED raw UNKNOWN -> FULFILLED
+EXEC 1 M7 ordinal=1869 sameCSL=false changedRows=34
+EXEC 2 M1 ordinal=1084 sameCSL=false changedRows=58
+EXEC 2 M2 ordinal=1383 sameCSL=false changedRows=43
+EXEC 2 M3 ordinal=1517 sameCSL=false changedRows=37
+EXEC 2 M4 ordinal=1869 sameCSL=false changedRows=34

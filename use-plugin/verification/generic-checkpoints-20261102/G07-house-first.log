@@ -1,0 +1,45 @@
+MANIFEST={version=1.0, profile=JACAMO_DECLARATIVE_XML, modelMode=AUTHORED, inputs={jcm=house-building.jcm, csl=house.csl, istar=house.istar, mapping=house-mapping.xml, ocl=house.ocl}, sha256={house-building.jcm=c14ae6299b0d2e0034d7daaa233b9bf1b94a7b337aa39477ec865c52ca5fef08, house.csl=e6d8620aa3503fa687330403311a6cfa78af9ee0d83934c744b7078bcc8d43f3, house.istar=5ac21d7b700b003d3b164121e928186311c03e7e5c0ad17a3c135ab3963163df, house-mapping.xml=85ddf0b8f8f854c10ee5a25b932c3020e57da2ed09f6bf41148167b45df3612d, house.ocl=c642f27c7fc2bc55bdd66adae060d127047c5ac2dfe0a5c0190629c3e145d4ca}, scope=Observed world state/outcome requirements; not complete mental or normative compliance}
+USE version 7.5.0, Copyright (C) 1999-2025 University of Bremen & University of Applied Sciences Hamburg
+PLUGIN=file:/D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/target/classes/
+java.lang.IllegalStateException: OWNED_PRODUCER_BOOTSTRAP_FAILED:
+GUI_JACAMO_PREPARED_NO_PROCESS_STARTED
+
+Note: D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\owned-runtime\b0ad61f6-af9d-45de-80e0-ebf0a448f41a\evidence\20261102-010904-905-51c62a61\staging-house-building\src\env\simulator\House.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+REAL_JACAMO_INIT project=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\target\owned-runtime\b0ad61f6-af9d-45de-80e0-ebf0a448f41a\evidence\20261102-010904-905-51c62a61\staging-house-building\house-building.jcm headless=true
+
+
+*** The jason.jar from classpath is different than jason.jar from configuration, consider to delete the configuration (file ~/.jason/user.properties) or 'unset JASON_HOME'.
+Classpath is
+   C:\Users\NTNghia\.m2\repository\io\github\jason-lang\jason-interpreter\3.3.2-checkpoint-SNAPSHOT\jason-interpreter-3.3.2-checkpoint-SNAPSHOT.jar
+Config    is
+   /C:/Users/NTNghia/.m2/repository/io/github/jason-lang/jason-interpreter/3.3.2-checkpoint-SNAPSHOT/jason-interpreter-3.3.2-checkpoint-SNAPSHOT.jar
+
+
+Using the jason.jar from classpath
+
+REAL_JACAMO_INIT_OK
+
+java.lang.IllegalArgumentException: CHECKPOINT_SOURCE_UNSUPPORTED:[Rejection[source=src/agt/companyA.asl, reason=UNADMITTED_ASL_INCLUDE:common.asl], Rejection[source=src/agt/companyA.asl, reason=UNADMITTED_ASL_INCLUDE:org_code.asl], Rejection[source=src/agt/companyB.asl, reason=UNADMITTED_ASL_INCLUDE:common.asl], Rejection[source=src/agt/companyB.asl, reason=UNADMITTED_ASL_INCLUDE:org_code.asl], Rejection[source=src/agt/companyC.asl, reason=UNADMITTED_ASL_INCLUDE:common.asl], Rejection[source=src/agt/companyC.asl, reason=UNADMITTED_ASL_INCLUDE:org_code.asl], Rejection[source=src/agt/companyC.asl, reason=UNADMITTED_ASL_INCLUDE:org_goals.asl], Rejection[source=src/agt/companyD.asl, reason=UNADMITTED_ASL_INCLUDE:common.asl], Rejection[source=src/agt/companyD.asl, reason=UNADMITTED_ASL_INCLUDE:org_code.asl], Rejection[source=src/agt/companyD.asl, reason=UNADMITTED_ASL_INCLUDE:org_goals.asl], Rejection[source=src/agt/companyE.asl, reason=UNADMITTED_ASL_INCLUDE:common.asl], Rejection[source=src/agt/companyE.asl, reason=UNADMITTED_ASL_INCLUDE:org_code.asl], Rejection[source=src/agt/companyE.asl, reason=UNADMITTED_ASL_INCLUDE:org_goals.asl], Rejection[source=src/agt/giacomo.asl, reason=UNADMITTED_ASL_INCLUDE:common.asl]]
+	at org.jacamo.checkpoint.runtime.SourceAdmission$Report.requireSupported(SourceAdmission.java:18)
+	at jacamo.checkpoint.CheckpointBoot.admit(CheckpointBoot.java:38)
+	at jacamo.infra.JaCaMoLauncher.create(JaCaMoLauncher.java:347)
+	at org.jacamo.bridge.adapter.BridgeControlledLauncher.create(BridgeControlledLauncher.java:10)
+	at jason.infra.local.LiveJaCaMoLauncherMain.main(LiveJaCaMoLauncherMain.java:175)
+Exception in thread "main" java.lang.IllegalArgumentException: CHECKPOINT_SOURCE_UNSUPPORTED:[Rejection[source=src/agt/companyA.asl, reason=UNADMITTED_ASL_INCLUDE:common.asl], Rejection[source=src/agt/companyA.asl, reason=UNADMITTED_ASL_INCLUDE:org_code.asl], Rejection[source=src/agt/companyB.asl, reason=UNADMITTED_ASL_INCLUDE:common.asl], Rejection[source=src/agt/companyB.asl, reason=UNADMITTED_ASL_INCLUDE:org_code.asl], Rejection[source=src/agt/companyC.asl, reason=UNADMITTED_ASL_INCLUDE:common.asl], Rejection[source=src/agt/companyC.asl, reason=UNADMITTED_ASL_INCLUDE:org_code.asl], Rejection[source=src/agt/companyC.asl, reason=UNADMITTED_ASL_INCLUDE:org_goals.asl], Rejection[source=src/agt/companyD.asl, reason=UNADMITTED_ASL_INCLUDE:common.asl], Rejection[source=src/agt/companyD.asl, reason=UNADMITTED_ASL_INCLUDE:org_code.asl], Rejection[source=src/agt/companyD.asl, reason=UNADMITTED_ASL_INCLUDE:org_goals.asl], Rejection[source=src/agt/companyE.asl, reason=UNADMITTED_ASL_INCLUDE:common.asl], Rejection[source=src/agt/companyE.asl, reason=UNADMITTED_ASL_INCLUDE:org_code.asl], Rejection[source=src/agt/companyE.asl, reason=UNADMITTED_ASL_INCLUDE:org_goals.asl], Rejection[source=src/agt/giacomo.asl, reason=UNADMITTED_ASL_INCLUDE:common.asl]]
+	at org.jacamo.checkpoint.runtime.SourceAdmission$Report.requireSupported(SourceAdmission.java:18)
+	at jacamo.checkpoint.CheckpointBoot.admit(CheckpointBoot.java:38)
+	at jacamo.infra.JaCaMoLauncher.create(JaCaMoLauncher.java:347)
+	at org.jacamo.bridge.adapter.BridgeControlledLauncher.create(BridgeControlledLauncher.java:10)
+	at jason.infra.local.LiveJaCaMoLauncherMain.main(LiveJaCaMoLauncherMain.java:175)
+
+	at org.tzi.use.plugins.jacamo.OwnedJaCaMoRuntime.prepare(OwnedJaCaMoRuntime.java:98)
+	at org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade.prepareOwnedProducer(DefaultJaCaMoFacade.java:627)
+	at GenericVerifiedProbe.main(GenericVerifiedProbe.java:44)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at jdk.compiler/com.sun.tools.javac.launcher.Main.execute(Main.java:484)
+	at jdk.compiler/com.sun.tools.javac.launcher.Main.run(Main.java:208)
+	at jdk.compiler/com.sun.tools.javac.launcher.Main.main(Main.java:135)
+DIAGNOSTIC_RESULT=ERROR

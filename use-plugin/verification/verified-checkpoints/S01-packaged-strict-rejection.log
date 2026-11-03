@@ -1,0 +1,11 @@
+REAL_JACAMO_INIT project=D:\_CODE_BANK\Project_\08_Thesis\jacamo\examples\auction\auction.jcm headless=true
+java.lang.IllegalStateException: VERIFIED_CHECKPOINTS_UNSUPPORTED:S01:[MissingHook[owner=CArtAgO, hook=all-operation admission, in-flight/await drain and internal/linked/external mutation barrier], MissingHook[owner=Moise/NPL, hook=normative transition admission and quiescence with board mutation watermark], MissingHook[owner=NPL, hook=source-owned deadline clock and scheduler using the same frozen logical time], MissingHook[owner=Jason, hook=source-owned .wait/timer clock and asynchronous intention admission]]
+	at jacamo.checkpoint.CheckpointFeasibility.requireSupported(CheckpointFeasibility.java:30)
+	at jacamo.checkpoint.CheckpointFeasibility.requireConfiguredModeSupported(CheckpointFeasibility.java:38)
+	at jacamo.infra.JaCaMoLauncher.init(JaCaMoLauncher.java:93)
+	at jason.infra.local.LiveJaCaMoLauncherMain.main(LiveJaCaMoLauncherMain.java:148)
+Exception in thread "main" java.lang.IllegalStateException: VERIFIED_CHECKPOINTS_UNSUPPORTED:S01:[MissingHook[owner=CArtAgO, hook=all-operation admission, in-flight/await drain and internal/linked/external mutation barrier], MissingHook[owner=Moise/NPL, hook=normative transition admission and quiescence with board mutation watermark], MissingHook[owner=NPL, hook=source-owned deadline clock and scheduler using the same frozen logical time], MissingHook[owner=Jason, hook=source-owned .wait/timer clock and asynchronous intention admission]]
+	at jacamo.checkpoint.CheckpointFeasibility.requireSupported(CheckpointFeasibility.java:30)
+	at jacamo.checkpoint.CheckpointFeasibility.requireConfiguredModeSupported(CheckpointFeasibility.java:38)
+	at jacamo.infra.JaCaMoLauncher.init(JaCaMoLauncher.java:93)
+	at jason.infra.local.LiveJaCaMoLauncherMain.main(LiveJaCaMoLauncherMain.java:148)

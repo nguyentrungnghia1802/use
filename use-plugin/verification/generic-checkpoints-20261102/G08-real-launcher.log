@@ -1,0 +1,7 @@
+D:\_CODE_BANK\Project_\08_Thesis\use\use-assembly\target\new\tools\prepare-runtime-classpath.ps1 : The term 
+'Get-FileHash' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the 
+spelling of the name, or if a path was included, verify that the path is correct and try again.
+    + CategoryInfo          : ObjectNotFound: (Get-FileHash:String) [prepare-runtime-classpath.ps1], CommandNotFoundEx 
+   ception
+    + FullyQualifiedErrorId : CommandNotFoundException,prepare-runtime-classpath.ps1
+ 

@@ -218,3 +218,18 @@ fabric.properties
 /use-plugin/verification/live-results-ui/auction-6996477376524121754/diagnostic-replay/runtime.jsonl
 /use-plugin/verification/live-results-ui/auction-7831997453405771525/diagnostic-replay/runtime.jsonl
 /use-plugin/verification/live-results-ui/auction-9141219160766461805/replay/runtime.jsonl
+
+# Large raw execution journals and live test run outputs
+use-plugin/verification/**/replay/runtime.jsonl
+use-plugin/verification/**/cartago-events.jsonl
+use-plugin/verification/**/journal.jsonl
+use-plugin/verification/**/retained-native-journal.jsonl.gz
+use-plugin/verification/additional-cases/hello-world-*/
+use-plugin/verification/additional-cases/house-building-*/
+use-plugin/verification/auction-false/live-direct/
+use-plugin/verification/checkpoint-stability/live-*/
+use-plugin/verification/generic-checkpoints-20261102/G07-*/
+use-plugin/verification/live-results-ui/
+use-plugin/verification/milestone-isolation/live-*/
+use-plugin/verification/verified-checkpoints/live-auction-*/
+use-plugin/verification/verified-checkpoints/ui-auction-*/

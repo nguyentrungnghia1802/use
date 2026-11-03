@@ -1,0 +1,22 @@
+[
+  {
+    "path": "C:\\Users\\NTNghia\\.m2\\repository\\io\\github\\jason-lang\\jason-interpreter\\3.3.2\\jason-interpreter-3.3.2.jar",
+    "sha256": "cd79268ddcfa45599284bda64bd6980dbd86eec6c862028cc276495aab49154c"
+  },
+  {
+    "path": "C:\\Users\\NTNghia\\.m2\\repository\\org\\jacamo\\cartago\\3.1\\cartago-3.1.jar",
+    "sha256": "bf03b37b28e304b2d784c8d77267e56c12b943ff70eed35b533c6323e0736866"
+  },
+  {
+    "path": "C:\\Users\\NTNghia\\.m2\\repository\\org\\jacamo\\jaca\\3.1\\jaca-3.1.jar",
+    "sha256": "f53745d4c0202ab2cb0f9b7eee9f7d21d6ef621706f8bb9b49ed09e63638f72d"
+  },
+  {
+    "path": "C:\\Users\\NTNghia\\.m2\\repository\\org\\jacamo\\moise\\1.1\\moise-1.1.jar",
+    "sha256": "2b7d0415c5ec0bcf060a430c7d12753aa02bdf769172922d10ff2909870161a8"
+  },
+  {
+    "path": "C:\\Users\\NTNghia\\.m2\\repository\\org\\jacamo\\npl\\0.6.1\\npl-0.6.1.jar",
+    "sha256": "956818edfe9aeff7c4fde35bf1dd276cd71e1da62daf77a2a15ab08f87903332"
+  }
+]
