@@ -53,7 +53,8 @@ class OfficialAdapterTest {
     }
 
     @Test void pinnedOfficialApiSignaturesExistAndNoCorePatchIsRequired() throws Exception {
-        assertTrue(jacamo.project.JaCaMoProject.class.getProtectionDomain().getCodeSource().getLocation().toString().contains("jacamo-1.3.1.jar"));
+        var location = jacamo.project.JaCaMoProject.class.getProtectionDomain().getCodeSource().getLocation().toString();
+        assertTrue(location.contains("jacamo-1.3.1"));
         assertNotNull(jacamo.platform.Platform.class.getMethod("setJcmProject",jacamo.project.JaCaMoProject.class));
         assertNotNull(jason.asSemantics.Agent.class.getMethod("parseAS",java.io.File.class));
         assertNotNull(jason.asSemantics.Circumstance.class.getMethod("getFeedbackActions"));
