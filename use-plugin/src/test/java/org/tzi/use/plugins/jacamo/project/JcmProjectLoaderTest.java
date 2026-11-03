@@ -100,8 +100,9 @@ class JcmProjectLoaderTest {
                 "mas app { workspace w { artifact c: demo.Counter() } class-path: lib/types.jar }\n");
         ProjectDiscoveryResult result = new JcmProjectLoader().discover(temporary.resolve("app.jcm"));
         assertTrue(result.success(), () -> result.diagnostics().toString());
+        Path expected = jar.toRealPath();
         assertTrue(result.graph().sources().stream().anyMatch(source ->
-                source.kind() == SourceKind.JAR && source.path().equals(jar.toAbsolutePath().normalize())));
+                source.kind() == SourceKind.JAR && (source.path().equals(jar.toAbsolutePath().normalize()) || source.path().equals(expected))));
         assertEquals(1, result.graph().edges().size());
     }
 

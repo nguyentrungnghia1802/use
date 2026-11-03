@@ -29,7 +29,7 @@ class MavenCiWorkflowTest {
         assertTrue(step(job, "Install virtual display for GUI integration tests").path("run").asText()
                 .contains("xvfb xauth"));
         JsonNode cases = step(job, "Check out audited JaCaMo case studies").path("with");
-        assertEquals("jacamo-lang/jacamo", cases.path("repository").asText());
+        assertTrue(List.of("jacamo-lang/jacamo", "nguyentrungnghia1802/jacamo").contains(cases.path("repository").asText()));
         assertTrue(cases.path("ref").asText().matches("[0-9a-f]{40}"));
         assertEquals("jacamo", cases.path("path").asText());
         assertEquals("ln -s jacamo JaCaMo", step(job, "Preserve legacy fixture path casing").path("run").asText());

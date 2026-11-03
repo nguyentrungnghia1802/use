@@ -58,7 +58,8 @@ public class LiveMasDefectRegressionTest {
             }
             """.formatted(LiveRegressionCounterArtifact.class.getName(),port,secretFile.toString().replace('\\','/'),jcm.toString().replace('\\','/'),distribution));
         String cp=Arrays.stream(System.getProperty("java.class.path").split(java.io.File.pathSeparator)).map(p->Path.of(p).toAbsolutePath().normalize().toString()).collect(java.util.stream.Collectors.joining(java.io.File.pathSeparator));
-        var child=new ProcessBuilder(Path.of(System.getProperty("java.home"),"bin/java.exe").toString(),"-Djacamo.launch.captureConsole=true","-Duse.fix.bootReady="+dir.resolve("boot-ready.flag"),"-Duse.fix.release="+dir.resolve("release.flag"),"-cp",cp,"jason.infra.local.LiveJaCaMoLauncherMain",jcm.toString(),stop.toString(),"150","true",ready.toString()).directory(dir.toFile()).redirectErrorStream(true).redirectOutput(dir.resolve("producer.log").toFile()).start();
+        String javaBinary = System.getProperty("os.name").toLowerCase().contains("win") ? "java.exe" : "java";
+        var child=new ProcessBuilder(Path.of(System.getProperty("java.home"),"bin",javaBinary).toString(),"-Djacamo.launch.captureConsole=true","-Duse.fix.bootReady="+dir.resolve("boot-ready.flag"),"-Duse.fix.release="+dir.resolve("release.flag"),"-cp",cp,"jason.infra.local.LiveJaCaMoLauncherMain",jcm.toString(),stop.toString(),"150","true",ready.toString()).directory(dir.toFile()).redirectErrorStream(true).redirectOutput(dir.resolve("producer.log").toFile()).start();
         var pending=new LinkedBlockingQueue<RuntimeEvent>(8192);var errors=new CopyOnWriteArrayList<String>();var observed=new ArrayList<Map<String,Object>>();var families=new HashSet<String>();
         try {
             long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(20);boolean open=false;

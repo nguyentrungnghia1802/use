@@ -3,7 +3,9 @@
 "pom.xml" text eol=lf
 
 # Formal case inputs and pinned reference fixtures are byte-hashed.
-/use-plugin/examples/** -text
+/use-plugin/examples/auction/** -text
+/use-plugin/examples/hello-world/** text eol=crlf
+/use-plugin/examples/house-building/** text eol=crlf
 /use-plugin/src/test/resources/auction-reference/** -text
 
 # Preserve final tested source-freeze bytes for repository delivery.

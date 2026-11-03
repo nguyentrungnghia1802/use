@@ -36,6 +36,8 @@ docs/project/evidence/v2-final/v2-final-evidence.zip binary
 "Core/Metamodel/jacamo-source-v2/jacamo_v2.ecore" text eol=lf
 "Core/Metamodel/version-1/JaCaMo-Metamodel.ecore" text eol=lf
 "Core/Metamodel/version-2/jacamo_v2_complete.ecore" text eol=lf
+examples/hello-world/** text eol=crlf
+examples/house-building/** text eol=crlf
 "examples/auction/README.md" text eol=lf
 "examples/auction/auction-mapping.xml" text eol=crlf
 "examples/auction/auction.jcm" text eol=crlf
