@@ -3,41 +3,94 @@ package org.tzi.use.plugins.jacamo.ui.use4goal.conformance;
 import java.awt.*;
 import javax.swing.*;
 
-/** Adapted buildInputs workflow from use4Goal CslStateEvaluatorForm (GPL-3.0).
- * Project input is separate from the manually authored system specification folder.
- * Components/actions belong to the existing facade-backed controller.
+/** Adapted inputs panel for use4Goal conformance.
+ * Project input (.jcm) and system specification (.mrv) pointing to .csl, .istar, .xml, .ocl.
  * See META-INF/use4goal-workflow-provenance.json for source attribution. */
 public final class ConformanceInputsPanel extends JPanel {
     public ConformanceInputsPanel(JTextField jcm, JTextField folder, JTextField csl, JTextField istar,
             JTextField mapping, JTextField ocl, Runnable chooseJcm, Runnable chooseFolder,
             JButton prepareButton, Runnable prepare) {
-        super(new BorderLayout());setName("use4goal-conformance-inputs");
-        var inputs=new JPanel();inputs.setLayout(new BoxLayout(inputs,BoxLayout.Y_AXIS));
-        inputs.add(row("Project input (.jcm):",jcm,browse("choose-jcm",chooseJcm)));
+        super(new BorderLayout());
+        setName("use4goal-conformance-inputs");
+        setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
+
+        var inputs = new JPanel();
+        inputs.setLayout(new BoxLayout(inputs, BoxLayout.Y_AXIS));
+
+        // Row 0: Project input (.jcm)
+        jcm.setColumns(42);
+        inputs.add(row("Project input (.jcm):", jcm, browse("choose-jcm", chooseJcm)));
+
+        // Row 1: System model (.mrv)
         folder.setEditable(false);
-        folder.setToolTipText("One .csl, one .istar, one .xml; zero or one .ocl, directly inside this folder");
-        inputs.add(row("System model folder:",folder,browse("choose-case-folder",chooseFolder)));
-        for(var field:new JTextField[]{csl,istar,mapping,ocl})field.setEditable(false);
-        inputs.add(row("CSL model:",csl,null));
-        inputs.add(row("iStar model:",istar,null));
-        inputs.add(row("Semantic mapping XML:",mapping,null));
-        inputs.add(row("Extra OCL (optional):",ocl,null));
-        ocl.setToolTipText("Empty means no additional external constraints; embedded model constraints still apply");
+        folder.setColumns(42);
+        folder.setToolTipText("A .mrv specification file pointing to .csl, .istar, .xml, and optional .ocl files");
+        inputs.add(row("System model (.mrv):", folder, browse("choose-case-folder", chooseFolder)));
+
+        // Non-visual holders for backend mapping/model logic
+        var hidden = new JPanel();
+        hidden.setVisible(false);
+        for (var field : new JTextField[]{csl, istar, mapping, ocl}) {
+            field.setEditable(false);
+            hidden.add(field);
+        }
+        inputs.add(hidden);
+
         prepareButton.setText("Prepare + Import");
         prepareButton.setFont(prepareButton.getFont().deriveFont(Font.BOLD));
         prepareButton.setEnabled(true);
-        prepareButton.setToolTipText("Validate the specification folder and prepare the selected external JaCaMo project");
-        prepareButton.addActionListener(e->prepare.run());
-        var actions=new JPanel(new FlowLayout(FlowLayout.LEFT,6,2));actions.add(prepareButton);
-        actions.add(new JLabel("Required: .csl / .istar / .xml; optional: .ocl. Missing evidence remains unknown."));
-        inputs.add(actions);add(inputs,BorderLayout.CENTER);
+        prepareButton.setToolTipText("Validate the specification .mrv file and prepare the selected external JaCaMo project");
+        prepareButton.addActionListener(e -> prepare.run());
+
+        var actions = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 2));
+        actions.add(prepareButton);
+        var reqLabel = new JLabel("Required in .mrv: .csl / .istar / .xml; optional: .ocl. Missing evidence remains unknown.");
+        reqLabel.setFont(reqLabel.getFont().deriveFont(11f));
+        reqLabel.setForeground(Color.GRAY);
+        actions.add(reqLabel);
+
+        add(inputs, BorderLayout.CENTER);
+        add(actions, BorderLayout.SOUTH);
     }
-    private static JButton browse(String name,Runnable action) {
-        var button=new JButton("Browse...");button.setName(name);button.addActionListener(e->action.run());return button;
+
+    private static JPanel row(String labelText, JTextField field, JButton browseButton) {
+        var panel = new JPanel(new GridBagLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
+        var gbc = new GridBagConstraints();
+        gbc.insets = new Insets(1, 4, 1, 4);
+
+        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.LINE_END;
+        gbc.weightx = 0.0;
+        var label = new JLabel(labelText);
+        label.setPreferredSize(new Dimension(145, 22));
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        panel.add(label, gbc);
+
+        gbc.gridx = 1; gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        panel.add(field, gbc);
+
+        gbc.gridx = 2; gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0.0;
+        if (browseButton != null) {
+            panel.add(browseButton, gbc);
+        } else {
+            var spacer = new JPanel();
+            spacer.setPreferredSize(new Dimension(75, 22));
+            panel.add(spacer, gbc);
+        }
+        return panel;
     }
-    private static JPanel row(String title,JTextField field,JButton button) {
-        var row=new JPanel(new FlowLayout(FlowLayout.LEFT,6,2));var label=new JLabel(title);
-        label.setPreferredSize(new Dimension(155,label.getPreferredSize().height));row.add(label);row.add(field);
-        if(button!=null)row.add(button);return row;
+
+    private static JButton browse(String name, Runnable action) {
+        var btn = new JButton("Browse...");
+        btn.setName(name);
+        btn.setPreferredSize(new Dimension(75, 22));
+        btn.setMargin(new Insets(1, 4, 1, 4));
+        btn.addActionListener(e -> action.run());
+        return btn;
     }
 }

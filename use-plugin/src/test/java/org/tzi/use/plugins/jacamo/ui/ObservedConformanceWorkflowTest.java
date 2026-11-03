@@ -102,6 +102,8 @@ class ObservedConformanceWorkflowTest {
         var root=java.nio.file.Files.createTempDirectory("model-folder-");
         try {
             for(String extension:List.of("csl","istar","xml"))java.nio.file.Files.writeString(root.resolve("neutral."+extension),"");
+            var mrvFile=root.resolve("case.mrv");
+            java.nio.file.Files.writeString(mrvFile,"csl = neutral.csl\nistar = neutral.istar\nxml = neutral.xml\n");
             var entered=new java.util.concurrent.CountDownLatch(1);
             var selection=new java.util.concurrent.atomic.AtomicReference<JaCaMoFacade.ImportSelection>();
             var errors=new java.util.concurrent.CopyOnWriteArrayList<String>();
@@ -111,7 +113,7 @@ class ObservedConformanceWorkflowTest {
                     assertFalse(SwingUtilities.isEventDispatchThread());selection.set(input);entered.countDown();return null;}};
             var panel=new java.util.concurrent.atomic.AtomicReference<JaCaMoWorkbenchPanel>();
             SwingUtilities.invokeAndWait(()->{
-                var view=new JaCaMoWorkbenchPanel(facade,errors::add,true);panel.set(view);view.selectCaseFolder(root);
+                var view=new JaCaMoWorkbenchPanel(facade,errors::add,true);panel.set(view);view.selectCaseFolder(mrvFile);
                 find(view,"selected-jcm",JTextField.class).setText("separate/project.jcm");
                 assertFalse(find(view,"authored-csl",JTextField.class).isEditable());
                 assertEquals("",find(view,"authored-ocl",JTextField.class).getText());
@@ -120,10 +122,10 @@ class ObservedConformanceWorkflowTest {
                 assertSame(((Container)rows).getComponent(1),find(view,"case-folder",JTextField.class).getParent());
                 assertNotNull(find(view,"choose-case-folder",JButton.class));
             });
-            var duplicate=java.nio.file.Files.writeString(root.resolve("duplicate.xml"),"");
+            java.nio.file.Files.writeString(mrvFile,"csl = neutral.csl\nistar = neutral.istar\nxml = neutral.xml\nxml = neutral.xml\n");
             SwingUtilities.invokeAndWait(()->find(panel.get(),"prepare-producer",JButton.class).doClick());
             assertEquals(1,errors.size());assertTrue(errors.getFirst().contains("DUPLICATE_TYPE"));assertNull(selection.get());
-            java.nio.file.Files.delete(duplicate);
+            java.nio.file.Files.writeString(mrvFile,"csl = neutral.csl\nistar = neutral.istar\nxml = neutral.xml\n");
             SwingUtilities.invokeAndWait(()->find(panel.get(),"prepare-producer",JButton.class).doClick());
             assertTrue(entered.await(5,java.util.concurrent.TimeUnit.SECONDS));
             assertNull(selection.get().ocl());assertEquals(root.resolve("neutral.xml"),selection.get().specification());

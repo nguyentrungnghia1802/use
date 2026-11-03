@@ -29,8 +29,16 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         }
         return Path.of(fallback).toAbsolutePath().normalize();
     }
-    static final Path AUTHORED_BROWSE_FOLDER = resolveExisting("examples", "examples", "use-plugin/examples", "../use-plugin/examples");
-    static final Path JACAMO_BROWSE_FOLDER = resolveExisting("../jacamo/examples", "../jacamo/examples", "../../jacamo/examples", "jacamo/examples");
+    static final Path AUTHORED_BROWSE_FOLDER = resolveExisting(
+            "D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/examples",
+            "D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/examples",
+            "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\examples",
+            "examples", "use-plugin/examples", "../use-plugin/examples", "../../use-plugin/examples");
+    static final Path JACAMO_BROWSE_FOLDER = resolveExisting(
+            "D:/_CODE_BANK/Project_/vnu-sme-lab/jacamo/examples",
+            "D:/_CODE_BANK/Project_/vnu-sme-lab/jacamo/examples",
+            "D:\\_CODE_BANK\\Project_\\vnu-sme-lab\\jacamo\\examples",
+            "../jacamo/examples", "../../jacamo/examples", "jacamo/examples");
     static final Path RUNTIME_LIBS_BROWSE_FOLDER = resolveExisting("../jacamo-bridge-jacamo/target", "../jacamo-bridge-jacamo/target", "jacamo-bridge-jacamo/target", "use/jacamo-bridge-jacamo/target");
     /** Optional launch-time hint used by the interactive demo to open Import at its derived JCM. */
     static final String PROJECT_FILE_HINT_PROPERTY = "use.jacamo.workbench.project-file";
@@ -45,14 +53,14 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private final JLabel status = named(new JLabel(displayMessage("Select a .jcm project")), "workbench-status");
     private final JLabel workflowState = named(new JLabel("NOT_IMPORTED"), "workflow-state");
     private final JLabel runtimeState = named(new JLabel("OFFLINE"), "runtime-state");
-    private final JButton startRuntime = named(new JButton("Start Runtime"), "start-runtime");
+    private final JButton startRuntime = named(new JButton("Start", WorkbenchIcons.getStartIcon()), "start-runtime");
     private final JButton pauseRuntime = named(new JButton("Pause Jason"), "pause-runtime");
     private final JButton resumeRuntime = named(new JButton("Resume Jason"), "resume-runtime");
     private final JButton stopMonitor = named(new JButton("Stop monitor"), "stop-monitor");
     private final JButton restartMonitor = named(new JButton("Restart monitor"), "restart-monitor");
     private final JButton prepareProducer=named(new JButton("Prepare + Import..."),"prepare-producer");
-    private final JButton stopProducer=named(new JButton("Stop JaCaMo"),"stop-producer");
-    private final JButton restartProducer=named(new JButton("Restart JaCaMo"),"restart-producer");
+    private final JButton stopProducer=named(new JButton("Stop", WorkbenchIcons.getStopIcon()),"stop-producer");
+    private final JButton restartProducer=named(new JButton("Restart", WorkbenchIcons.getRestartIcon()),"restart-producer");
     private final javax.swing.JCheckBox strictSourceChecksums=named(new javax.swing.JCheckBox("Strict source checksums",false),"strict-source-checksums");
     private final javax.swing.JCheckBox showProducerGui=named(new javax.swing.JCheckBox("Show JaCaMo GUI",true),"show-producer-gui");
     private final javax.swing.JTextField runtimeClasspath=named(new javax.swing.JTextField(48),"runtime-classpath");
@@ -426,11 +434,12 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         var controls=new JPanel(new FlowLayout(FlowLayout.LEADING));
         controls.add(startRuntime);controls.add(stopProducer);controls.add(restartProducer);
         acknowledgeCheckpoint.addActionListener(event->reviewActiveCheckpoint());
-        controls.add(showProducerGui);controls.add(button("Show results","show-results",this::showResultsWindow));
+        controls.add(button("Show results","show-results",this::showResultsWindow));
         var advancedToggle=named(new javax.swing.JToggleButton("Advanced controls"),"show-advanced");controls.add(advancedToggle);panel.add(controls);
-        var checkpointControls=new JPanel(new FlowLayout(FlowLayout.LEADING));checkpointControls.add(checkpointMode);checkpointControls.add(checkpointStatus);checkpointControls.add(acknowledgeCheckpoint);panel.add(checkpointControls);
-        var sourceStatus=new JPanel(new FlowLayout(FlowLayout.LEADING));sourceStatus.add(new JLabel("Workflow:"));sourceStatus.add(workflowState);sourceStatus.add(new JLabel("Bridge:"));sourceStatus.add(runtimeState);panel.add(sourceStatus);
-          panel.add(producerState);panel.add(programSummary);panel.add(runtimeProgress);
+        var checkpointControls=new JPanel(new FlowLayout(FlowLayout.LEADING, 6, 2));checkpointControls.add(checkpointMode);checkpointControls.add(new JLabel("·"));checkpointControls.add(checkpointStatus);checkpointControls.add(acknowledgeCheckpoint);panel.add(checkpointControls);
+        var sourceStatus=new JPanel(new FlowLayout(FlowLayout.LEADING, 6, 2));sourceStatus.add(new JLabel("Bridge:"));sourceStatus.add(runtimeState);sourceStatus.add(new JLabel("·"));sourceStatus.add(producerState);panel.add(sourceStatus);
+        var progressRow=new JPanel(new FlowLayout(FlowLayout.LEADING, 6, 1));progressRow.add(runtimeProgress);panel.add(progressRow);
+        var summaryRow=new JPanel(new FlowLayout(FlowLayout.LEADING, 6, 1));summaryRow.add(programSummary);panel.add(summaryRow);
         var advanced=named(new JPanel(new GridLayout(0,1)),"advanced-controls");advanced.setVisible(false);
         var cycleControls=new JPanel(new FlowLayout(FlowLayout.LEADING));cycleControls.add(new JLabel("Jason cycle controls:"));cycleControls.add(pauseRuntime);cycleControls.add(resumeRuntime);advanced.add(cycleControls);
         var transport=new JPanel(new FlowLayout(FlowLayout.LEADING));transport.add(button("Import external project","import-project",()->prepareObservedProject(false)));
@@ -441,19 +450,35 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         var exports=new JPanel(new FlowLayout(FlowLayout.LEADING));
         exports.add(new JLabel("Journal quota (MiB):"));exports.add(journalBudget);advanced.add(exports);panel.add(advanced);
         advancedToggle.addActionListener(event->{advanced.setVisible(advancedToggle.isSelected());revalidate();var owner=javax.swing.SwingUtilities.getWindowAncestor(this);if(owner!=null)owner.setSize(owner.getWidth(),Math.max(440,owner.getPreferredSize().height));});
+        var footer=new JPanel(new FlowLayout(FlowLayout.LEADING,6,2));footer.add(showProducerGui);panel.add(footer);
         return panel;
     }
     private void registerInputButtons(java.awt.Container parent){for(var child:parent.getComponents()){
         if(child instanceof JButton button&&button.getName()!=null&&!button.getName().equals("prepare-producer"))actionButtons.put(button.getName(),button);
         if(child instanceof java.awt.Container nested)registerInputButtons(nested);
     }}
-    private void chooseObservedJcm(){var chooser=createProjectChooser(jcmBrowseHint());if(chooser.showOpenDialog(this)==JFileChooser.APPROVE_OPTION)selectedJcm.setText(chooser.getSelectedFile().toPath().toString());}
-    private void chooseCaseFolder(){
-        var chooser=authoredInputChooser();chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setDialogTitle("Select system model folder (.csl, .istar, .xml; optional .ocl)");
-        if(!caseFolder.getText().isBlank())chooser.setCurrentDirectory(Path.of(caseFolder.getText()).toFile());
+    private void chooseObservedJcm(){
+        var chooser=createProjectChooser(jcmBrowseHint());
+        if(!selectedJcm.getText().isBlank()){
+            Path current=Path.of(selectedJcm.getText().trim());
+            if(Files.exists(current))chooser.setSelectedFile(current.toFile());
+        }
         if(chooser.showOpenDialog(this)==JFileChooser.APPROVE_OPTION)
-            execute("Model folder selection failed",()->selectCaseFolder(chooser.getSelectedFile().toPath()));
+            selectedJcm.setText(chooser.getSelectedFile().toPath().toString());
+    }
+    private void chooseCaseFolder(){
+        var chooser=authoredInputChooser();chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setDialogTitle("Select system model specification (*.mrv)");
+        chooser.resetChoosableFileFilters();chooser.setAcceptAllFileFilterUsed(false);
+        chooser.setFileFilter(new FileNameExtensionFilter("System model (*.mrv)","mrv"));
+
+        if(!caseFolder.getText().isBlank()){
+            Path current=Path.of(caseFolder.getText().trim());
+            if(Files.exists(current))chooser.setSelectedFile(current.toFile());
+            else if(Files.isDirectory(AUTHORED_BROWSE_FOLDER))chooser.setCurrentDirectory(AUTHORED_BROWSE_FOLDER.toFile());
+        }
+        if(chooser.showOpenDialog(this)==JFileChooser.APPROVE_OPTION)
+            execute("Model file selection failed",()->selectCaseFolder(chooser.getSelectedFile().toPath()));
     }
     void selectCaseFolder(Path directory){
         var selected=CaseStudyFiles.read(directory);
@@ -465,7 +490,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         try {
             if(selectedJcm.getText().isBlank()){chooseObservedJcm();if(selectedJcm.getText().isBlank())return;}
             if(!caseFolder.getText().isBlank())selectCaseFolder(Path.of(caseFolder.getText()));
-            if(mappingFile.getText().isBlank()||authoredCsl.getText().isBlank()||authoredIstar.getText().isBlank())throw new IllegalArgumentException("SELECT_SYSTEM_MODEL_FOLDER_WITH_CSL_ISTAR_XML");
+            if(mappingFile.getText().isBlank()||authoredCsl.getText().isBlank()||authoredIstar.getText().isBlank())throw new IllegalArgumentException("SELECT_SYSTEM_MODEL_MRV_WITH_CSL_ISTAR_XML");
             importSelectedProject(Path.of(selectedJcm.getText().trim()),owned);
         }catch(RuntimeException error){setStatus("Import failed: "+error.getMessage());errorPresenter.accept("Import failed: "+error.getMessage());}
     }

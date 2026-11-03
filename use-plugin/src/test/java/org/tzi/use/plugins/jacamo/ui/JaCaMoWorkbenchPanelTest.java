@@ -150,7 +150,7 @@ class JaCaMoWorkbenchPanelTest {
             var tabs = component(panel, "workbench-tabs", JTabbedPane.class);
             assertEquals(1, tabs.getTabCount());
             assertEquals("Projection Rules", tabs.getTitleAt(0));
-            assertEquals(List.of("Import JaCaMo Project...", "Load OCL...", "Start Runtime",
+            assertEquals(List.of("Import JaCaMo Project...", "Load OCL...", "Start",
                     "Pause Jason", "Resume Jason",
                     "Stop monitor", "Restart monitor",
                     "Export .use...", "Export .cmd..."),

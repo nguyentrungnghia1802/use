@@ -4,27 +4,101 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 
-/** Exact, non-recursive selection of manually authored system specifications. */
-record CaseStudyFiles(Path folder,Path csl,Path istar,Path mapping,Path ocl) {
-    static CaseStudyFiles read(Path directory) {
-        Path folder=directory.toAbsolutePath().normalize();
-        if(!Files.isDirectory(folder))throw new IllegalArgumentException("CASE_FOLDER_NOT_FOUND: "+folder);
-        var byType=new LinkedHashMap<String,List<Path>>();
-        for(String extension:List.of("csl","istar","xml","ocl"))byType.put(extension,new ArrayList<>());
-        try(var entries=Files.list(folder)) {
-            for(Path file:entries.sorted().toList()) {
-                String name=file.getFileName().toString().toLowerCase(Locale.ROOT);
-                int dot=name.lastIndexOf('.');if(dot<0)continue;
-                var matches=byType.get(name.substring(dot+1));if(matches==null)continue;
-                if(Files.isSymbolicLink(file))throw new IllegalArgumentException("CASE_FILE_SYMLINK_UNSUPPORTED: "+file.getFileName());
-                if(Files.isRegularFile(file))matches.add(file);
-            }
-        }catch(IOException error){throw new IllegalArgumentException("CASE_FOLDER_UNREADABLE: "+folder,error);}
-        for(var entry:byType.entrySet()) {
-            if(entry.getValue().size()>1)throw new IllegalArgumentException("CASE_FOLDER_DUPLICATE_TYPE: ."+entry.getKey()+" — "+entry.getValue().stream().map(p->p.getFileName().toString()).toList());
-            if(!entry.getKey().equals("ocl")&&entry.getValue().isEmpty())throw new IllegalArgumentException("CASE_FOLDER_MISSING_REQUIRED: ."+entry.getKey());
+/** Exact selection of manually authored system specifications defined in a .mrv file. */
+record CaseStudyFiles(Path mrvFile, Path csl, Path istar, Path mapping, Path ocl) {
+    public Path folder() { return mrvFile; }
+
+    static CaseStudyFiles read(Path path) {
+        Path file = java.util.Objects.requireNonNull(path, "path").toAbsolutePath().normalize();
+        if (Files.isDirectory(file)) {
+            throw new IllegalArgumentException("EXPECTED_MRV_FILE: " + file);
         }
-        return new CaseStudyFiles(folder,byType.get("csl").getFirst(),byType.get("istar").getFirst(),
-                byType.get("xml").getFirst(),byType.get("ocl").isEmpty()?null:byType.get("ocl").getFirst());
+        if (!Files.isRegularFile(file)) {
+            throw new IllegalArgumentException("MRV_FILE_NOT_FOUND: " + file);
+        }
+        String fileName = file.getFileName().toString().toLowerCase(Locale.ROOT);
+        if (!fileName.endsWith(".mrv")) {
+            throw new IllegalArgumentException("NOT_A_MRV_FILE: " + file);
+        }
+
+        List<String> lines;
+        try {
+            lines = Files.readAllLines(file, java.nio.charset.StandardCharsets.UTF_8);
+        } catch (IOException error) {
+            throw new IllegalArgumentException("MRV_FILE_UNREADABLE: " + file, error);
+        }
+
+        Map<String, Path> resolved = new LinkedHashMap<>();
+        Path baseDir = file.getParent() != null ? file.getParent() : Path.of(".");
+
+        for (int i = 0; i < lines.size(); i++) {
+            String line = lines.get(i);
+            if (line.startsWith("\uFEFF")) {
+                line = line.substring(1);
+            }
+            line = line.strip();
+            if (line.isEmpty() || line.startsWith("#") || line.startsWith("//")) {
+                continue;
+            }
+
+            String key;
+            String val;
+            int colon = line.indexOf(':');
+            int eq = line.indexOf('=');
+            int sep = -1;
+            if (colon >= 0 && eq >= 0) sep = Math.min(colon, eq);
+            else if (colon >= 0) sep = colon;
+            else if (eq >= 0) sep = eq;
+
+            if (sep >= 0) {
+                key = line.substring(0, sep).strip().toLowerCase(Locale.ROOT);
+                val = line.substring(sep + 1).strip();
+            } else {
+                val = line;
+                int dot = val.lastIndexOf('.');
+                key = dot >= 0 ? val.substring(dot + 1).strip().toLowerCase(Locale.ROOT) : "";
+            }
+
+            if (val.startsWith("\"") && val.endsWith("\"") && val.length() >= 2) {
+                val = val.substring(1, val.length() - 1).strip();
+            } else if (val.startsWith("'") && val.endsWith("'") && val.length() >= 2) {
+                val = val.substring(1, val.length() - 1).strip();
+            }
+
+            String targetKey = switch (key) {
+                case "csl" -> "csl";
+                case "istar" -> "istar";
+                case "xml", "mapping" -> "xml";
+                case "ocl" -> "ocl";
+                default -> throw new IllegalArgumentException("MRV_UNKNOWN_ENTRY: " + key + " (line " + (i + 1) + " in " + file.getFileName() + ")");
+            };
+
+            if (resolved.containsKey(targetKey)) {
+                throw new IllegalArgumentException("CASE_FOLDER_DUPLICATE_TYPE: ." + targetKey + " (line " + (i + 1) + " in " + file.getFileName() + ")");
+            }
+
+            Path target = Path.of(val);
+            if (!target.isAbsolute()) {
+                target = baseDir.resolve(target);
+            }
+            target = target.normalize();
+
+            if (Files.isSymbolicLink(target)) {
+                throw new IllegalArgumentException("CASE_FILE_SYMLINK_UNSUPPORTED: " + target.getFileName());
+            }
+            if (!Files.isRegularFile(target)) {
+                throw new IllegalArgumentException("MRV_TARGET_NOT_FOUND: " + target + " (line " + (i + 1) + " in " + file.getFileName() + ")");
+            }
+
+            resolved.put(targetKey, target);
+        }
+
+        for (String req : List.of("csl", "istar", "xml")) {
+            if (!resolved.containsKey(req)) {
+                throw new IllegalArgumentException("CASE_FOLDER_MISSING_REQUIRED: ." + req);
+            }
+        }
+
+        return new CaseStudyFiles(file, resolved.get("csl"), resolved.get("istar"), resolved.get("xml"), resolved.get("ocl"));
     }
 }
