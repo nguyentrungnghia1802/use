@@ -11,7 +11,8 @@ import jacamo.checkpoint.VerifiedCheckpointCoordinator;
 import static org.junit.jupiter.api.Assertions.*;
 class VerifiedCheckpointEarlyBoundaryTest {
  @Test void selectedMarkerClosesAdmissionBeforePopulationCaptureButReadyWaitsForPublishedEvidence()throws Exception{
-  var child=new ProcessBuilder(Path.of(System.getProperty("java.home"),"bin","java.exe").toString(),"-cp",System.getProperty("java.class.path"),getClass().getName()).redirectErrorStream(true).start();
+  String javaBinary = System.getProperty("os.name").toLowerCase().contains("win") ? "java.exe" : "java";
+  var child=new ProcessBuilder(Path.of(System.getProperty("java.home"),"bin",javaBinary).toString(),"-cp",System.getProperty("java.class.path"),getClass().getName()).redirectErrorStream(true).start();
   assertTrue(child.waitFor(25,TimeUnit.SECONDS));assertEquals(0,child.exitValue(),new String(child.getInputStream().readAllBytes()));
  }
  public static void main(String[] args)throws Exception{
