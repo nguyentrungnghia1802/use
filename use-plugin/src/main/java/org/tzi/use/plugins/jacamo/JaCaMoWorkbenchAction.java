@@ -47,7 +47,7 @@ public final class JaCaMoWorkbenchAction implements IPluginActionDelegate {
             existing.toFront();
             return;
         }
-        JDialog dialog = new JDialog(parent, observedWorkflow?"use4Goal — Goal–Execution Conformance":"USE JaCaMo Workbench", false);
+        JDialog dialog = new JDialog(parent, observedWorkflow ? "Multi-Agent System Verification" : "USE JaCaMo Workbench", false);
         dialogs.put(parent, dialog);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.addWindowListener(new WindowAdapter() {
@@ -59,7 +59,7 @@ public final class JaCaMoWorkbenchAction implements IPluginActionDelegate {
         });
         dialog.setLayout(new BorderLayout());
         dialog.add(observedWorkflow?JaCaMoWorkbenchPanel.authoredWorkflow(facade):new JaCaMoWorkbenchPanel(facade), BorderLayout.CENTER);
-        dialog.setSize(1100, observedWorkflow?440:720);
+        dialog.setSize(1100, observedWorkflow ? 400 : 720);
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
     }

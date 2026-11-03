@@ -89,6 +89,8 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private final JButton acknowledgeCheckpoint=named(new JButton("Acknowledge & Continue"),"acknowledge-checkpoint");
     private final JButton acknowledgeResultCheckpoint=named(new JButton("Acknowledge & Continue"),"acknowledge-result-checkpoint");
     private final JTabbedPane tabs=named(new JTabbedPane(),"workbench-tabs");
+    private final JTabbedPane cslTabs=named(new JTabbedPane(),"csl-tabs");
+    private final JTabbedPane istarTabs=named(new JTabbedPane(),"istar-tabs");
     private final JTabbedPane diagnostics=named(new JTabbedPane(),"diagnostic-tabs");
     private org.tzi.use.plugins.jacamo.ui.use4goal.state.RuntimeStateViews runtimeStateViews;
     private SemanticEvidencePanel semanticEvidence;
@@ -148,6 +150,8 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         this.facade = java.util.Objects.requireNonNull(facade, "facade");
         this.observedPresenter = new org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePresenter(facade);
         tabs.addChangeListener(e->refreshGraphVisibility());
+        cslTabs.addChangeListener(e->refreshGraphVisibility());
+        istarTabs.addChangeListener(e->refreshGraphVisibility());
         tabs.addHierarchyListener(e->{if((e.getChangeFlags()&java.awt.event.HierarchyEvent.SHOWING_CHANGED)!=0)refreshGraphVisibility();});
         this.errorPresenter = errorPresenter!=null?errorPresenter:message->JOptionPane.showMessageDialog(this,new JLabel(displayMessage(message)),"JaCaMo",JOptionPane.ERROR_MESSAGE);
         var selection=facade.importSelection();selectable=selection!=null;
@@ -181,10 +185,11 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         journalBudget.setText(Long.toString((facade.nextJournalBudgetBytes()+1048575)/1048576));
         journalBudget.setToolTipText("Disk journal quota for the next new monitor, 1–1024 MiB. Exhaustion keeps a coverage GAP; no old evidence is discarded to manufacture completeness.");
         add(observedWorkflow?observedToolbar():toolbar(), BorderLayout.NORTH);
-        if(observedWorkflow)tabs.addTab("Advanced / Diagnostics",diagnostics);
+        if(observedWorkflow){tabs.addTab("CSL",cslTabs);tabs.addTab("iStar",istarTabs);tabs.addTab("Advanced",diagnostics);}
         if(!observedWorkflow)diagnosticTabs().addTab("Projection Rules", new MappingRulesPanel());
         if(selectable&&!observedWorkflow){programTrace.setEditable(false);programTrace.setLineWrap(true);diagnosticTabs().addTab("Program / trace",new javax.swing.JScrollPane(programTrace));}
         if(!observedWorkflow)add(tabs, BorderLayout.CENTER);
+        if(observedWorkflow)status.setVisible(false);
         add(status, BorderLayout.SOUTH);
         refreshRuntime();
         registerCheckpointPresentation();
@@ -338,15 +343,19 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         } else if(semanticEvidence!=null) {diagnosticTabs().remove(semanticEvidence);semanticEvidence=null;}
     }
     private void detachSemanticViews() {
-        if(runtimeStateViews!=null){runtimeStateViews.dispose();tabs.remove(runtimeStateViews.aolPanel);tabs.remove(runtimeStateViews.iscnPanel);runtimeStateViews=null;}
-        if(cslView!=null){cslView.detachModel();diagnosticTabs().remove(cslView);cslView=null;}
-        if(istarView!=null){istarView.detachModel();diagnosticTabs().remove(istarView);istarView=null;}
-        if(observedConformance!=null){tabs.remove(observedConformance);observedConformance=null;}
+        if(runtimeStateViews!=null){runtimeStateViews.dispose();if(observedWorkflow){cslTabs.remove(runtimeStateViews.aolPanel);istarTabs.remove(runtimeStateViews.iscnPanel);}else{tabs.remove(runtimeStateViews.aolPanel);tabs.remove(runtimeStateViews.iscnPanel);}runtimeStateViews=null;}
+        if(cslView!=null){cslView.detachModel();if(observedWorkflow)cslTabs.remove(cslView);else diagnosticTabs().remove(cslView);cslView=null;}
+        if(istarView!=null){istarView.detachModel();if(observedWorkflow)istarTabs.remove(istarView);else diagnosticTabs().remove(istarView);istarView=null;}
+        if(observedConformance!=null){if(observedWorkflow){cslTabs.remove(observedConformance.cslVerificationPanel());istarTabs.remove(observedConformance);}else tabs.remove(observedConformance);observedConformance=null;}
         observedDisplayedResult=null;observedDisplayedHistory=-1;
         displayedNativeModel=null;
     }
     private void refreshGraphVisibility(){
-        if(runtimeStateViews!=null)runtimeStateViews.setActive(tabs.isShowing()&&tabs.getSelectedComponent()==runtimeStateViews.aolPanel,tabs.isShowing()&&tabs.getSelectedComponent()==runtimeStateViews.iscnPanel);
+        if(runtimeStateViews!=null){
+            boolean aolVisible = observedWorkflow ? tabs.isShowing()&&tabs.getSelectedComponent()==cslTabs&&cslTabs.getSelectedComponent()==runtimeStateViews.aolPanel : tabs.isShowing()&&tabs.getSelectedComponent()==runtimeStateViews.aolPanel;
+            boolean iscnVisible = observedWorkflow ? tabs.isShowing()&&tabs.getSelectedComponent()==istarTabs&&istarTabs.getSelectedComponent()==runtimeStateViews.iscnPanel : tabs.isShowing()&&tabs.getSelectedComponent()==runtimeStateViews.iscnPanel;
+            runtimeStateViews.setActive(aolVisible, iscnVisible);
+        }
     }
     private void refreshObservedConformance(org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult result) {
         boolean settledCheckpoint=checkpointLive&&facade.verifiedCheckpointState().state().equals("RUNNING");
@@ -395,14 +404,20 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
             observedConformance.onSelectedCut(runtimeStateViews::select);
             observedConformance.onExecutionSelected(runtimeStateViews::selectScope);
             runtimeStateViews.onScopeSelected(observedConformance::selectExecution);
-            tabs.insertTab("Execution & Results",null,observedConformance,null,0);
-            tabs.insertTab("CSL state (AOL)",null,runtimeStateViews.aolPanel,null,1);tabs.insertTab("iStar instances (ISCN)",null,runtimeStateViews.iscnPanel,null,2);
-            diagnostics.addTab("CSL definitions",cslView);diagnostics.addTab("iStar definitions",istarView);
+            cslTabs.removeAll();
+            cslTabs.addTab("Model", cslView);
+            cslTabs.addTab("State", runtimeStateViews.aolPanel);
+            cslTabs.addTab("Verification", observedConformance.cslVerificationPanel());
+            istarTabs.removeAll();
+            istarTabs.addTab("Model", istarView);
+            istarTabs.addTab("State", runtimeStateViews.iscnPanel);
+            istarTabs.addTab("Verification", observedConformance);
+
         }else{
             tabs.addTab("use4Goal observed execution",observedConformance);
             tabs.addTab("CSL model",cslView);tabs.addTab("iStar model",istarView);
         }displayedNativeModel=models.nativeModel();
-        if(observedWorkflow)tabs.setSelectedComponent(observedConformance);
+        if(observedWorkflow)tabs.setSelectedComponent(cslTabs);
     }
 
     private JTabbedPane diagnosticTabs(){return observedWorkflow?diagnostics:tabs;}
@@ -418,7 +433,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
             resultsWindow=new javax.swing.JDialog(owner,"use4Goal — Verification results",java.awt.Dialog.ModalityType.MODELESS);
             resultsWindow.setName("use4goal-results-window");resultsWindow.setDefaultCloseOperation(javax.swing.JDialog.HIDE_ON_CLOSE);
             resultsWindow.add(tabs,BorderLayout.CENTER);
-            var checkpointControls=new JPanel(new FlowLayout(FlowLayout.LEADING));checkpointControls.add(checkpointResultStatus);checkpointControls.add(acknowledgeResultCheckpoint);
+            var checkpointControls=new JPanel(new BorderLayout());checkpointControls.setBorder(javax.swing.BorderFactory.createEmptyBorder(6,12,6,12));checkpointControls.add(checkpointResultStatus,BorderLayout.WEST);checkpointControls.add(acknowledgeResultCheckpoint,BorderLayout.EAST);
             acknowledgeResultCheckpoint.addActionListener(event->reviewActiveCheckpoint());resultsWindow.add(checkpointControls,BorderLayout.NORTH);
             resultsWindow.setSize(1250,780);resultsWindow.setLocationRelativeTo(owner);
         }
