@@ -24,7 +24,7 @@ class NewCaseStudyBundlesTest {
             for(Object entry:(List<?>)manifest.get("files")) {
                 var file=CanonicalJson.object(entry);
                 assertEquals(file.get("localSha256"),sha(root.resolve((String)file.get("path"))));
-                assertEquals(file.get("upstreamSha256"),sha(Path.of((String)file.get("upstream"))),"Reference source must remain unchanged");
+                assertEquals(file.get("upstreamSha256"),sha(resolveUpstream((String)file.get("upstream"))),"Reference source must remain unchanged");
                 if(!file.get("localSha256").equals(file.get("upstreamSha256")))assertFalse(((List<?>)file.get("patches")).isEmpty());
             }
             var input=MappingInputs.read(root.resolve((String)manifest.get("jcm")),root.resolve(prefix+"-mapping.xml"),root.resolve(prefix+".ocl"),root.resolve(prefix+".csl"),root.resolve(prefix+".istar"));
@@ -74,6 +74,22 @@ class NewCaseStudyBundlesTest {
         for(Object bad:List.of("NaN","Infinity","1e9999","abc","", " 300 ",300))assertThrows(RuntimeValueConverters.Unavailable.class,()->RuntimeValueConverters.decode(node,bad));
     }
     private static String sha(Path path)throws Exception{return TraceComplement.Asset.of("hash","bytes",Files.readAllBytes(path)).sha256();}
+    private static Path resolveUpstream(String raw) {
+        Path direct = Path.of(raw);
+        if (Files.exists(direct)) return direct;
+        String normalized = raw.replace('\\', '/');
+        int idx = normalized.indexOf("/jacamo/");
+        if (idx >= 0) {
+            String subpath = normalized.substring(idx + "/jacamo/".length());
+            for (Path candidate : List.of(
+                    Path.of("..", "..", "jacamo", subpath),
+                    Path.of("..", "jacamo", subpath),
+                    Path.of("jacamo", subpath))) {
+                if (Files.exists(candidate)) return candidate;
+            }
+        }
+        return direct;
+    }
 
     @Test void projectExecutionContextRequiresAnExplicitVersionedAbstractionAndNeverAnAgentSource() throws Exception {
         var csl=org.vnu.sme.goal.dsl.csl.parser.CslCompiler.compile("csl v4.0 ContextView { orgContext Run {} }").model();

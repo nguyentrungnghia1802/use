@@ -29,17 +29,17 @@ class MoiseTransitionEvidenceTest {
             workspace.registerLogger(logger);
             try {
                 var feedback=new OpFeedbackParam<ArtifactId>();actor.doAction(new Op("makeArtifact","transitionSource","ora4mas.nopl.SchemeBoard",new Object[]{root.resolve("src/org/organization.xml").toString(),"work"},feedback),actor.getJoinedWspId("main"),5000);artifacts.add(feedback.get());
-                var baseline=provider.capture(feedback.get(),"SNAPSHOT",0,"",null,"");assertEquals("COMPLETE",baseline.get("status"),baseline.toString());assertEquals("COMPLETE",baseline.get("historyQuality"),"baseline="+baseline+"; callbacks="+frames);
+                var baseline=captureUntilComplete(provider,feedback.get());assertEquals("COMPLETE",baseline.get("status"),baseline.toString());assertEquals("COMPLETE",baseline.get("historyQuality"),"baseline="+baseline+"; callbacks="+frames);
                 assertTrue(baseline.containsKey("transitions"),"Frozen membership must come from a retained source transition cut, not the later consumer snapshot");
                 var done=baseline.get("done");actor.doAction(feedback.get(),new Op("admCommand","goalSatisfied(first)"),5000);
-                var after=provider.capture(feedback.get(),"SNAPSHOT",0,"",null,"");assertEquals("COMPLETE",after.get("status"),after.toString());
+                var after=captureUntilComplete(provider,feedback.get());assertEquals("COMPLETE",after.get("status"),after.toString());
                 var transitions=((List<?>)after.get("transitions")).stream().map(CanonicalJson::object).toList();
                 assertTrue(transitions.stream().anyMatch(t->t.get("goal").equals("first")&&t.get("state").equals("SATISFIED")));
                 assertEquals(done,after.get("done"),"Administrative satisfaction does not create an actual goalAchieved/done witness");
                 assertTrue(transitions.stream().allMatch(t->t.get("timeAuthority").equals("PUBLICATION_ONLY_INTERNAL_TRANSITION_TIME_UNAVAILABLE")));
                 var frozen=transitions.stream().filter(t->t.get("goal").equals("first")&&t.get("state").equals("SATISFIED")).findFirst().orElseThrow();
                 assertTrue(frozen.containsKey("committed")&&frozen.containsKey("achieved")&&frozen.containsKey("done"));assertFalse(after.containsKey("adminBidOverride"));
-                assertEquals(frozen,((List<?>)provider.capture(feedback.get(),"SNAPSHOT",0,"",null,"").get("transitions")).stream().map(CanonicalJson::object).filter(t->t.get("id").equals(frozen.get("id"))).findFirst().orElseThrow());
+                assertEquals(frozen,((List<?>)captureUntilComplete(provider,feedback.get()).get("transitions")).stream().map(CanonicalJson::object).filter(t->t.get("id").equals(frozen.get("id"))).findFirst().orElseThrow());
                 var board=(ora4mas.nopl.SchemeBoard)workspace.getArtifactDescriptor(feedback.get().getName()).getArtifact();
                 var cartago=new CartagoSnapshotSource(environment,List.of("/main"),"run",source);var moise=new MoiseBoardSnapshotSource(board.getOEId(),"run",List::of,()->List.of(board),source.semanticContract(),root);
                 try(var snapshots=new SnapshotCoordinator(List.of(cartago,moise),256)) {
@@ -48,7 +48,7 @@ class MoiseTransitionEvidenceTest {
                     var physicalWorkspace=cut.facts().stream().filter(f->f.kind()==RuntimeFactKind.WORKSPACE&&Objects.equals(f.values().get("semanticId"),physical.values().get("workspaceSemanticId"))).findFirst().orElseThrow();
                     var publicBoard=cut.facts().stream().filter(f->f.kind()==RuntimeFactKind.SCHEME_BOARD&&f.id().incarnation().endsWith(":"+feedback.get().getId())).findFirst().orElseThrow();
                     var receiptScope=new CapabilityObservation.Scope("run",1,source.modelRevision(),"cartago",cut.endWatermarks().get("cartago").sequence());
-                    var raw=provider.capture(feedback.get(),"SNAPSHOT",0,"",null,"");var receipt=CapabilityObservation.of(request,receiptScope,Completeness.COMPLETE,"",raw);var decoder=new MoiseSchemeCutDecoder(source,request);
+                    var raw=captureUntilComplete(provider,feedback.get());var receipt=CapabilityObservation.of(request,receiptScope,Completeness.COMPLETE,"",raw);var decoder=new MoiseSchemeCutDecoder(source,request);
                     var decoded=decoder.decode(receipt.payload(),physical,physicalWorkspace,publicBoard,cut,"run",1);assertEquals(Completeness.COMPLETE,decoded.quality(),decoded.diagnostic());
                     var legacy=new LinkedHashMap<String,Object>(raw);legacy.put("version","MOISE_SCHEME_CUT/2.1");legacy.remove("commitmentBindings");legacy.remove("publicationClockProof");
                     legacy.put("transitions",((List<?>)legacy.get("transitions")).stream().map(CanonicalJson::object).map(t->{var old=new LinkedHashMap<>(t);old.remove("commitmentBindings");return old;}).toList());
@@ -103,5 +103,14 @@ class MoiseTransitionEvidenceTest {
             for(var id:artifacts){var board=(ora4mas.nopl.SchemeBoard)workspace.getArtifactDescriptor(id.getName()).getArtifact();board.getNormativeEngine().stop();environment.getController("/main").removeArtifact(id.getName());}
             CslRuntimeTestRegistry.closeCartagoContext(actor);environment.shutdown();if(web==null)config.remove(jason.util.Config.START_WEB_OI);else config.setProperty(jason.util.Config.START_WEB_OI,web);
         }
+    }
+    private static Map<String,Object> captureUntilComplete(MoiseSchemeCapability provider, ArtifactId artifact) throws Exception {
+        Map<String,Object> result = null;
+        for (int i = 0; i < 60; i++) {
+            result = provider.capture(artifact, "SNAPSHOT", 0, "", null, "");
+            if ("COMPLETE".equals(result.get("status"))) return result;
+            Thread.sleep(50);
+        }
+        return result;
     }
 }
