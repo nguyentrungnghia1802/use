@@ -4,43 +4,68 @@ on:
   push:
     tags:
       - 'v*.*.*'
-    
+
 jobs:
   generate-release-archive:
-     name: Generate release archive
-     runs-on: windows-latest
-     
-     permissions:
-       contents: write
-       issues: write
+    name: Generate release archive
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: use
 
-     steps:
-       - name: Checkout
-         uses: actions/checkout@v3
-         with:
-           fetch-depth: 0
+    permissions:
+      contents: write
+      issues: write
 
-       - name: Set up JDK
-         uses: actions/setup-java@v3
-         with:
-           java-version: '21'
-           distribution: 'adopt'
-           cache: maven
+    steps:
+      - name: Checkout USE
+        uses: actions/checkout@v4
+        with:
+          path: use
+          fetch-depth: 0
 
-       - name: Build with Maven
-         run: mvn --batch-mode --update-snapshots verify
-  
-       - name: Create release
-         uses: ncipollo/release-action@v1
-         with:
-           artifacts: "use-assembly/target/*.zip"
-           generateReleaseNotes: true
+      - name: Checkout JaCaMo
+        uses: actions/checkout@v4
+        with:
+          repository: nguyentrungnghia1802/jacamo
+          ref: main
+          path: jacamo
+          persist-credentials: false
 
-       - name: Create "Bump Version" Issue
-         uses: JasonEtco/create-an-issue@v2
-         env:
-           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-           OLD_USE_VERSION: ${{github.ref_name}}
-         with:
-           filename: .github/ISSUE_TEMPLATE/version_update.md
-           
+      - name: Preserve legacy fixture path casing
+        shell: pwsh
+        working-directory: .
+        run: |
+          if (-not (Test-Path -LiteralPath JaCaMo)) {
+            New-Item -ItemType Junction -Path JaCaMo -Target jacamo
+          }
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+          cache-dependency-path: use/**/pom.xml
+
+      - name: Install pinned checkpoint runtime artifacts
+        run: python install-checkpoint-artifacts.py
+
+      - name: Build with Maven
+        run: mvn --batch-mode --update-snapshots verify
+
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ github.ref_name }}
+          artifacts: "use/use-assembly/target/*.zip"
+          generateReleaseNotes: true
+
+      - name: Create "Bump Version" Issue
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OLD_USE_VERSION: ${{ github.ref_name }}
+        with:
+          filename: use/.github/ISSUE_TEMPLATE/version_update.md

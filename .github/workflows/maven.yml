@@ -19,8 +19,8 @@ jobs:
     - name: Check out audited JaCaMo case studies
       uses: actions/checkout@v4
       with:
-        repository: jacamo-lang/jacamo
-        ref: 3866858a7ebf6be85d9199c13a09cf4bfb8191be
+        repository: nguyentrungnghia1802/jacamo
+        ref: main
         path: jacamo
         persist-credentials: false
     - name: Preserve legacy fixture path casing
@@ -33,6 +33,8 @@ jobs:
         distribution: 'temurin'
         cache: maven
         cache-dependency-path: use/**/pom.xml
+    - name: Install pinned checkpoint runtime artifacts
+      run: python3 install-checkpoint-artifacts.py
     - name: Install virtual display for GUI integration tests
       run: |
         sudo apt-get update
