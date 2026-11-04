@@ -1,0 +1,78 @@
+Invariant
+
+- Cardinality hợp lệ: minCardinality không được âm; maxCardinality phải là "unlimited" hoặc một giá trị số không nhỏ hơn minCardinality.
+- Arity của Action, Operation, Property và Signal phải >= 0.
+- Identifier/name trong cùng phạm vi quản lý nên là duy nhất để tránh hai phần tử không thể phân biệt.
+- Link.sourceRole và Link.targetRole phải tham chiếu tới các Role hợp lệ trong cấu trúc tổ chức liên quan.
+- Norm.role và Norm.mission phải tham chiếu tới các phần tử tồn tại trong cùng Organization.
+- Mission.goals phải tham chiếu tới các OGoal thuộc Scheme phù hợp.
+- Không tạo vòng containment bất hợp lệ trong cấu trúc Group/subGroups hoặc OGoal/OPlan/subGoals.
+
+
+OCL:
+
+1. Cardinality hợp lệ
+context Cardinality
+inv ValidMin:
+    self.minCardinality >= 0
+
+context Cardinality
+inv ValidMax:
+    self.maxCardinality = 'unlimited'
+    or self.maxCardinality >= self.minCardinality
+
+
+2. Arity không âm
+context Action
+inv NonNegativeArity:
+    self.arity >= 0
+
+context Operation
+inv NonNegativeArity:
+    self.arity >= 0
+
+context Property
+inv NonNegativeArity:
+    self.arity >= 0
+
+context Signal
+inv NonNegativeArity:
+    self.arity >= 0
+
+
+3. Identifier/name duy nhất trong cùng phạm vi
+context Container
+inv UniqueNames:
+    self.elements->isUnique(e | e.name)
+
+
+4. Link phải tham chiếu tới Role hợp lệ
+context Link
+inv ValidRoles:
+    self.organization.roles->includes(self.sourceRole)
+    and self.organization.roles->includes(self.targetRole)
+
+
+5. Norm phải tham chiếu tới Role và Mission hợp lệ
+context Norm
+inv ValidReferences:
+    self.organization.roles->includes(self.role)
+    and self.organization.missions->includes(self.mission)
+
+
+6. Goal của Mission phải thuộc Scheme phù hợp
+context Mission
+inv GoalsBelongToScheme:
+    self.goals->forAll(g |
+        self.scheme.goals->includes(g)
+    )
+
+
+7. Không có vòng containment
+context Group
+inv NoContainmentCycle:
+    not self.allSubGroups()->includes(self)
+
+context OGoal
+inv NoContainmentCycle:
+    not self.allSubGoals()->includes(self)

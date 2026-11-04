@@ -1,0 +1,5 @@
+Vậy giải thích là:
+Auction case study có goal model như sau:
+Có Actor Auction và 2 role Auctioneer với Participant, 2 role này tham gia vào Auction để nhận nhiệm vụ.
+Trong organization có goal chính là: auction (Id, Service) được chia thành 3 goal con mang tính tuần tự là: start, bid và decide (Bắt buộc phải đạt được cả 3 mới hoàn thành goal chính.
+Goal start của Auction được giao cho role Auctioneer, vì trong ký pháp istar không có assigned-to nên em vẫn đang dùng Dependency.
