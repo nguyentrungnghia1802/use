@@ -336,7 +336,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         refreshSemanticViews();
         var result=facade.runtimeVerificationResult();
         refreshObservedConformance(result);
-        if(istarView!=null&&istarView.isShowing())istarView.setNodeBadges(SemanticDiagramBadges.from(result));
+        // The Model tab shows authored types. Runtime badges belong to State only.
         if(result!=null && result.semantic()!=null) {
             if(semanticEvidence==null){semanticEvidence=new SemanticEvidencePanel();diagnosticTabs().addTab(observedWorkflow?"Verification Details":"Semantic verification",semanticEvidence);}
             if(semanticEvidence.isShowing())semanticEvidence.refresh(result);

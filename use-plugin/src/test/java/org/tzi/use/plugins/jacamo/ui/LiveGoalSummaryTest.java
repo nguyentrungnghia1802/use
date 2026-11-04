@@ -16,7 +16,7 @@ class LiveGoalSummaryTest {
    panel.setCuts(List.of(new Cut("one","trace","state",values,"INCOMPLETE","CURRENT_OBSERVED",false,"key","Requirements: KNOWN","state",false,true)));
    assertEquals("COMPLETE_OBSERVED",DetachedAuthoredWorkflowTest.find(panel,"observed-verdict",JLabel.class).getText());
    var scope=DetachedAuthoredWorkflowTest.find(panel,"observed-requirement-scope",JLabel.class);assertTrue(scope.getText().contains("Observer::Done"));assertFalse(scope.getText().contains("Observer::Work"));
-   var goals=DetachedAuthoredWorkflowTest.find(panel,"live-goal-status",JTable.class);assertEquals("Supporting",goals.getValueAt(1,3));goals.setRowSelectionInterval(1,1);
+   var goals=DetachedAuthoredWorkflowTest.find(panel,"live-goal-status",JTable.class);assertEquals("Unknown",goals.getValueAt(1,1));goals.setRowSelectionInterval(1,1);
    var instances=DetachedAuthoredWorkflowTest.find(panel,"live-goal-instances",JTable.class);assertEquals(2,instances.getRowCount());assertEquals("worker",instances.getValueAt(0,0));assertEquals("observer",instances.getValueAt(1,0));assertEquals("UNKNOWN",instances.getValueAt(1,3));
    instances.setRowSelectionInterval(1,1);assertTrue(DetachedAuthoredWorkflowTest.find(panel,"live-evidence-details",JTextArea.class).getText().contains("work-two"));
    renderPanel(panel,"requirement-scope.png");
@@ -74,8 +74,8 @@ class LiveGoalSummaryTest {
    var goals=DetachedAuthoredWorkflowTest.find(panel,"live-goal-status",JTable.class);assertEquals(2,goals.getRowCount());
    var failure=new Evaluation("Invariant","false","FAIL","KNOWN","object=source; expression=false; witness=actual","",true,"INVARIANT");
    panel.setCuts(List.of(new Cut("run:1","trace","accepted state",List.of(instance("Done","FULFILLED","alice"),failure),"INCOMPLETE","CURRENT_OBSERVED",true)));
-   assertEquals(2,goals.getRowCount());assertEquals("FULFILLED",goals.getValueAt(0,1));var checks=DetachedAuthoredWorkflowTest.find(panel,"live-ocl-checks",JTable.class);assertEquals(1,checks.getRowCount());assertEquals("FAIL",checks.getValueAt(0,1));checks.setRowSelectionInterval(0,0);assertTrue(DetachedAuthoredWorkflowTest.find(panel,"live-evidence-details",JTextArea.class).getText().contains("witness=actual"));
-   panel.setCuts(List.of(new Cut("run:2","trace","state2",List.of(),"INCOMPLETE","CURRENT_OBSERVED",false)));assertEquals(2,goals.getRowCount());assertEquals("UNKNOWN",goals.getValueAt(0,1));
+   assertEquals(2,goals.getRowCount());assertEquals("Complete",goals.getValueAt(0,1));var checks=DetachedAuthoredWorkflowTest.find(panel,"live-ocl-checks",JTable.class);assertEquals(1,checks.getRowCount());assertEquals("False",checks.getValueAt(0,2));checks.setRowSelectionInterval(0,0);assertTrue(DetachedAuthoredWorkflowTest.find(panel,"live-evidence-details",JTextArea.class).getText().contains("witness=actual"));
+   panel.setCuts(List.of(new Cut("run:2","trace","state2",List.of(),"INCOMPLETE","CURRENT_OBSERVED",false)));assertEquals(2,goals.getRowCount());assertEquals("Unknown",goals.getValueAt(0,1));
   });
  }
 }

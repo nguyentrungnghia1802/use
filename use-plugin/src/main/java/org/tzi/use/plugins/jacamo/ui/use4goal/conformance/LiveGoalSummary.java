@@ -10,7 +10,7 @@ public final class LiveGoalSummary {
  public record Row(String id,String label,String status,String originalStatus,String detail,String resultRole,String counts,List<Evaluation> instances){public Row{instances=List.copyOf(instances);}}
  private final Map<String,String> declarations=new LinkedHashMap<>();
  public LiveGoalSummary(GoalModel model){
-  for(var actor:model.getActors())for(var e:actor.elements())if(e instanceof Goal||e instanceof Task)declarations.put(e.id(),actor.name()+"::"+e.id());
+  for(var actor:model.getActors())for(var e:actor.elements())if(e instanceof Goal||e instanceof Task)declarations.put(e.id(),(e instanceof Goal?"Goal: ":"Task: ")+actor.name()+"::"+e.id());
   // The original marking indexes actor elements, not social dependum declarations.
   // Dependencies stay visible in the model/evidence; do not invent extra occurrences.
  }

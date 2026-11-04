@@ -91,7 +91,7 @@ class ReusedSemanticViewsTest {
         double scale=Math.min((width-20)/Math.max(1,view.getContentWidth()),(height-20)/Math.max(1,view.getContentHeight()));graphics.translate(10,10);graphics.scale(scale,scale);view.export(graphics);graphics.dispose();
         long ink=0;for(int y=0;y<height;y++)for(int x=0;x<width;x++)if((image.getRGB(x,y)&0xffffff)!=0xffffff)ink++;
         assertTrue(ink>1000,"Export must contain actual model glyphs and edges, not a blank bitmap: "+ink);
-        Path target=Path.of("verification/authored-models",name);Files.createDirectories(target.getParent());assertTrue(ImageIO.write(image,"png",target.toFile()));
+        Path target=Path.of("target/ui-model-review",name);Files.createDirectories(target.getParent());assertTrue(ImageIO.write(image,"png",target.toFile()));
     }
     private static <T> T find(Container parent,Class<T> type){for(var c:parent.getComponents()){if(type.isInstance(c))return type.cast(c);if(c instanceof Container nested&&contains(nested,type))return find(nested,type);}throw new AssertionError(type.getName());}
     private static boolean contains(Container parent,Class<?> type){for(var c:parent.getComponents()){if(type.isInstance(c))return true;if(c instanceof Container nested&&contains(nested,type))return true;}return false;}

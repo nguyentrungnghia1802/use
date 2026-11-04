@@ -40,6 +40,7 @@ public final class IStarLayoutBuilder {
     private static final int ACTOR_PAD = 22;
     private static final int ACTOR_HDR = 28;
     private static final int HGAP      = 56;
+    private static final int ACTOR_GAP = 200;
     private static final int ELEM_GAP  = 12;
     private static final int GW = 126, GH = 36;
     private static final int TW = 108, TH = 44;
@@ -67,14 +68,14 @@ public final class IStarLayoutBuilder {
         if (model == null) return new IStarLayout(nodes, List.of(), 900, 600);
 
         int ax = MARGIN;
-        for (Actor actor : model.getActors()) {
+        for (Actor actor : orderedActors(model)) {
             IStarNode aNode = new IStarNode(actor.name(), actor.name(), IStarNodeKind.ACTOR, null, actor instanceof Role);
             aNode.x = ax;
             aNode.y = MARGIN;
             aNode.w = actorDiameter(actor.name());
             aNode.h = aNode.w;
             nodes.put(aNode.id, aNode);
-            ax += aNode.w + HGAP;
+            ax += aNode.w + ACTOR_GAP;
         }
 
         List<IStarEdge> edges = new ArrayList<>();
@@ -101,7 +102,7 @@ public final class IStarLayoutBuilder {
         int top = MARGIN + model.getActors().stream().mapToInt(a->Math.max(ACTOR_D,a.name().length()*8+32)/2).max().orElse(ACTOR_D/2);
 
         int ax = MARGIN;
-        for (Actor actor : model.getActors()) {
+        for (Actor actor : orderedActors(model)) {
             IStarNode aNode = new IStarNode(actor.name(), actor.name(), IStarNodeKind.ACTOR, null,
                     actor instanceof Role, true, false);
             aNode.x = ax;
@@ -141,11 +142,35 @@ public final class IStarLayoutBuilder {
                 nodes.put(n.id, n);
             }
 
-            aNode.w = Math.max(maxW + ACTOR_PAD * 2, actorDiameter(actor.name()) + ACTOR_PAD);
-            aNode.h = cy - MARGIN + ACTOR_PAD;
-            for (IStarNode cn : children) cn.x = ax + (aNode.w - cn.w) / 2;
+            // Layer declared refinements from parent to children, rather than drawing
+            // long edges through a single vertical stack of unrelated elements.
+            var ranks=new java.util.HashMap<String,Integer>();
+            children.forEach(c->ranks.put(c.id,0));
+            for(int pass=0;pass<children.size();pass++){
+                boolean changed=false;
+                for(var refinement:actor.refinements()){
+                    java.util.List<String> ids=refinement instanceof AndRefinement and?and.children():java.util.List.of(((OrRefinement)refinement).child());
+                    for(String id:ids)if(ranks.containsKey(id)&&ranks.containsKey(refinement.parent())){
+                        int rank=Math.min(children.size(),ranks.get(refinement.parent())+1);
+                        if(rank>ranks.get(id)){ranks.put(id,rank);changed=true;}
+                    }
+                }
+                if(!changed)break;
+            }
+            var layers=new java.util.TreeMap<Integer,java.util.List<IStarNode>>();
+            children.forEach(c->layers.computeIfAbsent(ranks.get(c.id),k->new ArrayList<>()).add(c));
+            int width=layers.values().stream().mapToInt(row->row.stream().mapToInt(c->c.w).sum()+Math.max(0,row.size()-1)*HGAP).max().orElse(maxW);
+            aNode.w=Math.max(width+ACTOR_PAD*2,actorDiameter(actor.name())+ACTOR_PAD);
+            cy=top+ACTOR_HDR+ACTOR_PAD;
+            for(var row:layers.values()){
+                int rowWidth=row.stream().mapToInt(c->c.w).sum()+Math.max(0,row.size()-1)*HGAP;
+                int x=ax+(aNode.w-rowWidth)/2;
+                for(var child:row){child.x=x;child.y=cy;x+=child.w+HGAP;}
+                cy+=row.stream().mapToInt(c->c.h).max().orElse(GH)+HGAP;
+            }
+            aNode.h=cy-top+ACTOR_PAD;
 
-            ax += aNode.w + HGAP;
+            ax += aNode.w + ACTOR_GAP;
         }
 
         List<IStarEdge> edges = new ArrayList<>();
@@ -180,7 +205,6 @@ public final class IStarLayoutBuilder {
 
         int totalW = ax + MARGIN;
         int maxH = nodes.values().stream()
-                .filter(n -> n.kind == IStarNodeKind.ACTOR)
                 .mapToInt(n -> n.y + n.h).max().orElse(500) + MARGIN;
 
         return new IStarLayout(nodes, edges, Math.max(totalW, 900), Math.max(maxH, 600));
@@ -189,6 +213,25 @@ public final class IStarLayoutBuilder {
     private static void addAssociations(GoalModel model, List<IStarEdge> edges) {
         for(Actor actor:model.getActors())for(var relation:actor.associations())
             edges.add(new IStarEdge(actor.name(), relation.target(), IStarEdgeKind.ASSOCIATION, relation.kind().toString().toLowerCase().replace('_','-'), null));
+    }
+
+    /** Put actors sharing dependencies beside each other; empty specialization
+     * declarations must not occupy the corridor between a depender and dependee. */
+    private static List<Actor> orderedActors(GoalModel model) {
+        var candidates=new ArrayList<>(model.getActors());
+        java.util.function.ToIntFunction<Actor> degree=a->(int)model.getDependencies().stream().filter(d->d.depender().equals(a.name())||d.dependee().equals(a.name())).count();
+        candidates.sort(java.util.Comparator.comparingInt(degree).reversed());
+        var result=new ArrayList<Actor>();
+        for(var actor:candidates){
+            int position=result.size(),best=Integer.MAX_VALUE;
+            if(degree.applyAsInt(actor)>0)for(int i=0;i<=result.size();i++){
+                var trial=new ArrayList<>(result);trial.add(i,actor);var indices=new java.util.HashMap<String,Integer>();for(int j=0;j<trial.size();j++)indices.put(trial.get(j).name(),j);
+                int cost=0;for(var dep:model.getDependencies())if(indices.containsKey(dep.depender())&&indices.containsKey(dep.dependee()))cost+=Math.abs(indices.get(dep.depender())-indices.get(dep.dependee()));
+                if(cost<best){best=cost;position=i;}
+            }
+            result.add(position,actor);
+        }
+        return result;
     }
 
     private static String addDependumNode(Map<String, IStarNode> nodes, GoalModel model, Dependency dep,
@@ -206,12 +249,25 @@ public final class IStarLayoutBuilder {
         if (from != null && to != null) {
             int cx = (from.x + from.w / 2 + to.x + to.w / 2) / 2;
             int cy = (from.y + from.h / 2 + to.y + to.h / 2) / 2;
+            IStarNode fromActor=from.actorId==null?from:nodes.get(from.actorId);
+            IStarNode toActor=to.actorId==null?to:nodes.get(to.actorId);
+            if(fromActor!=null&&toActor!=null&&fromActor!=toActor){
+                IStarNode left=fromActor.x<toActor.x?fromActor:toActor;
+                IStarNode right=left==fromActor?toActor:fromActor;
+                cx=(left.x+left.w+right.x)/2;
+            }
             n.x = cx - n.w / 2;
             n.y = cy - n.h / 2;
+            // A non-adjacent dependency uses an outside lane instead of placing
+            // its dependum on top of an unrelated actor's rationale.
+            if(nodes.values().stream().anyMatch(a->a.actorBoundary&&a!=fromActor&&a!=toActor&&new java.awt.Rectangle(n.x,n.y,n.w,n.h).intersects(a.x,a.y,a.w,a.h)))
+                n.y=nodes.values().stream().filter(a->a.actorBoundary).mapToInt(a->a.y+a.h).max().orElse(n.y)+ACTOR_PAD+index*DEP_Y_GAP;
         } else {
             n.x = MARGIN + index * (n.w + ELEM_GAP);
             n.y = yFallback > 0 ? yFallback + index * DEP_Y_GAP : MARGIN + index * DEP_Y_GAP;
         }
+        boolean overlaps;
+        do{overlaps=false;for(var prior:nodes.values())if(prior.dependencyMarker&&new java.awt.Rectangle(n.x-8,n.y-8,n.w+16,n.h+16).intersects(prior.x,prior.y,prior.w,prior.h)){n.y=prior.y+prior.h+24;overlaps=true;break;}}while(overlaps);
         nodes.put(n.id, n);
         return n.id;
     }

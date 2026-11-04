@@ -18,6 +18,9 @@ import org.tzi.use.plugins.jacamo.ui.use4goal.gui.DiagramVisualStyle;
 
 public final class IStarDiagramEdge extends EdgeBase {
     private static final Font EDGE_FONT = DiagramVisualStyle.EDGE_FONT;
+    private final org.tzi.use.plugins.jacamo.ui.use4goal.gui.DiagramEdgeRouter router=new org.tzi.use.plugins.jacamo.ui.use4goal.gui.DiagramEdgeRouter();
+    private java.util.Collection<? extends PlaceableNode> obstacles=java.util.List.of();
+    public IStarDiagramEdge(IStarEdge edge,PlaceableNode source,PlaceableNode target,IStarDiagramOptions opt,java.util.Collection<? extends PlaceableNode> obstacles){this(edge,source,target,opt);this.obstacles=java.util.List.copyOf(obstacles);}
     private final IStarEdge edge;
 
     public IStarDiagramEdge(IStarEdge edge, PlaceableNode source, PlaceableNode target, IStarDiagramOptions opt) {
@@ -40,28 +43,14 @@ public final class IStarDiagramEdge extends EdgeBase {
             DirectedEdgeFactory.drawArrow(g2,(int)tx,(int)lane,(int)tx,(int)ty,ArrowStyle.FILLED);
             paintLabel(g2,new Point2D.Double(sx,lane),new Point2D.Double(tx,lane));g2.dispose();return;
         }
-        Point2D last = null;
-        Point2D first = null;
-        if (!getWayPoints().isEmpty()) {
-            Iterator<WayPoint> it = getWayPoints().iterator();
-            WayPoint previous = it.next();
-            first = previous.getCenter();
-            previous.draw(g2);
-            while (it.hasNext()) {
-                WayPoint current = it.next();
-                current.draw(g2);
-                Point2D p1 = previous.getCenter();
-                Point2D p2 = current.getCenter();
-                if (!it.hasNext()) {
-                    drawEnd(g2, p1, p2);
-                    last = p2;
-                } else {
-                    g2.drawLine((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
-                }
-                previous = current;
-            }
+        var anchors=new java.util.ArrayList<Point2D>();
+        for(var waypoint:getWayPoints()){waypoint.draw(g2);anchors.add(waypoint.getCenter());}
+        var points=router.route(anchors,source(),target(),obstacles);
+        for(int i=1;i<points.size();i++){
+            var a=points.get(i-1);var b=points.get(i);
+            if(i==points.size()-1)drawEnd(g2,a,b);else g2.draw(new java.awt.geom.Line2D.Double(a,b));
         }
-        paintLabel(g2, first, last);
+        if(points.size()>1)paintLabel(g2,points.get(points.size()/2-1),points.get(points.size()/2));
         g2.dispose();
     }
 

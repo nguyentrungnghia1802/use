@@ -41,7 +41,6 @@ public final class AolDiagramOptions extends DiagramOptions {
     @Override
     public void setShowMutliplicities(boolean showMutliplicities) {}
 
-    private boolean showAssociationNames = true;
-    public boolean isShowAssociationNames() { return showAssociationNames; }
-    public void setShowAssociationNames(boolean v) { this.showAssociationNames = v; }
+    public boolean isShowAssociationNames() { return isShowAssocNames(); }
+    public void setShowAssociationNames(boolean v) { setShowAssocNames(v); }
 }

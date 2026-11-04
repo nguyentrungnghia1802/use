@@ -7,6 +7,26 @@ import org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePan
 
 /** Read-only projections of frozen execution evidence. No evaluation or identity inference. */
 public final class ExecutionScopeViews {
+ public static final String ALL="__ALL_EXECUTIONS__";
+ public static Map<String,String> withAll(Map<String,String> choices){
+  var result=new LinkedHashMap<String,String>(choices);result.put(ALL,"All");return Collections.unmodifiableMap(result);
+ }
+ /** Presentation-only union. Keep context identities and native verdicts intact. */
+ public static Cut all(Cut cut){
+  return all(cut,contexts(cut).stream().filter(ExecutionScopeViews::boundContext).map(c->Objects.toString(c.get("context"))).toList());
+ }
+ public static Cut all(Cut cut,Collection<String> scopes){
+  var rows=new ArrayList<Evaluation>();
+  rows.addAll(cut.evaluations().stream().filter(r->r.kind().equals("CHECKPOINT_CHECK")).toList());
+  for(String scope:scopes)
+   rows.addAll(project(cut,scope).evaluations().stream().filter(r->!r.kind().equals("CHECKPOINT_CHECK")).toList());
+  if(scopes.isEmpty())rows.addAll(cut.evaluations().stream().filter(r->!r.kind().equals("CHECKPOINT_CHECK")).toList());
+  for(var row:cut.evaluations())if(!row.kind().equals("GOAL_TASK")&&rows.stream().noneMatch(r->r.kind().equals(row.kind())&&r.element().equals(row.element())))rows.add(row);
+  if(rows.isEmpty())rows.addAll(cut.evaluations());
+  var evidence=new TreeMap<String,Object>(cut.visualEvidence());evidence.put("selectedExecution",ALL);
+  boolean failed=cut.failed()||rows.stream().anyMatch(r->r.required()&&Set.of("FAIL","VIOLATED").contains(r.status()));
+  return new Cut(cut.id(),cut.trace(),cut.state(),rows,cut.coverage(),cut.freshness(),failed,cut.businessKey(),cut.requirements(),cut.businessState(),cut.executionMilestones(),cut.selectedRequirements(),cut.businessPopulationEmpty(),evidence);
+ }
  private ExecutionScopeViews(){}
  public static Map<String,Object> object(Object value){return value instanceof Map<?,?>?CanonicalJson.object(value):Map.of();}
  public static List<Map<String,Object>> contexts(Cut cut){
@@ -110,22 +130,14 @@ public final class ExecutionScopeViews {
   var objects=object(projection.get("objects"));var objectQuality=object(projection.get("objectQuality"));
   for(String key:entityKeys)if(Boolean.TRUE.equals(objectQuality.getOrDefault(key,projection.get("qualifiedValues")))&&objects.containsKey(key))selected.put(key,objects.get(key));
   evidence.put("selectedEntityState",Map.copyOf(selected));
-  // Native structural membership remains intact. The additional links are explicit
-  // execution-cast witnesses, never inferred from group membership.
+  // Render native structural membership only. Execution cast witnesses remain
+  // evidence; they do not declare additional CSL associations.
   var owners=object(object(context.get("scopeView")).get("owners"));var scopedObjects=new TreeMap<String,Object>();
   objects.forEach((key,value)->{int colon=key.indexOf(':');if(colon>=0&&owners.containsKey(key.substring(colon+1)))scopedObjects.put(key,value);});
   var nativeIds=new HashSet<String>();scopedObjects.keySet().forEach(k->nativeIds.add(k.substring(k.indexOf(':')+1)));
   var links=new ArrayList<Object>();for(Object raw:(List<?>)projection.getOrDefault("links",List.of())){
-   var link=object(raw);if(((List<?>)link.getOrDefault("participants",List.of())).stream().allMatch(nativeIds::contains))links.add(link);
+   var link=object(raw);if(!"participates (execution)".equals(link.get("association"))&&((List<?>)link.getOrDefault("participants",List.of())).stream().allMatch(nativeIds::contains))links.add(link);
   }
-  Object participants=object(context.get("scopeView")).get("participation");
-  if(Boolean.TRUE.equals(object(context.get("scopeView")).get("complete"))&&participants instanceof List<?> list)
-   for(Object raw:list){var participant=object(raw);String role=Objects.toString(participant.get("role"),"");
-    if(!nativeIds.contains(role))continue;
-    for(String entityKey:entityKeys){String entity=entityKey.substring(entityKey.indexOf(':')+1);
-     if(nativeIds.contains(entity))links.add(Map.of("association","participates (execution)","participants",List.of(role,entity),"witness",participant));
-    }
-   }
   var scopedProjection=new TreeMap<String,Object>(projection);scopedProjection.put("objects",scopedObjects);scopedProjection.put("links",links);
   scopedProjection.put("qualifiedValues",!scopedObjects.isEmpty()&&!context.isEmpty()&&scopedObjects.keySet().stream().allMatch(k->Boolean.TRUE.equals(objectQuality.getOrDefault(k,projection.get("qualifiedValues")))));
   evidence.put("presentationState",scopedProjection);

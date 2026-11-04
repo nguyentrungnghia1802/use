@@ -29,9 +29,9 @@ class RuntimeStateViewsTest {
    var workbench=new JaCaMoWorkbenchPanel(facade,m->fail(m),true);var tabs=workbench.resultsContent();assertEquals(3,tabs.getTabCount());assertEquals("CSL",tabs.getTitleAt(0));assertEquals("iStar",tabs.getTitleAt(1));assertEquals("Advanced",tabs.getTitleAt(2));
    var cslTabs=DetachedAuthoredWorkflowTest.find(tabs,"csl-tabs",JTabbedPane.class);assertEquals(3,cslTabs.getTabCount());assertEquals("Model",cslTabs.getTitleAt(0));assertEquals("State",cslTabs.getTitleAt(1));assertEquals("Verification",cslTabs.getTitleAt(2));
    var views=new RuntimeStateViews(csl,goals,policies);views.select(new Cut("state","trace","{}",List.of(),"INCOMPLETE","CURRENT_OBSERVED",false,"key","known","state",false,true,false,evidence));assertNotNull(DetachedAuthoredWorkflowTest.find(views.iscnPanel,"iscn-context-selector",JComboBox.class));assertTrue(labels(views.iscnPanel).stream().anyMatch(t->t.startsWith("ISCN — actor instances")),labels(views.iscnPanel).toString());
-   var selector=DetachedAuthoredWorkflowTest.find(views.iscnPanel,"iscn-context-selector",JComboBox.class);assertEquals(2,selector.getItemCount());selector.setSelectedIndex(1);
+   var selector=DetachedAuthoredWorkflowTest.find(views.iscnPanel,"iscn-context-selector",JComboBox.class);assertEquals(3,selector.getItemCount());selector.setSelectedIndex(1);
    assertTrue(labels(views.iscnPanel).stream().anyMatch(t->t.startsWith("ISCN — actor instances")));
-   try{render(views.aolPanel,"aol.png");render(views.iscnPanel,"iscn.png");}catch(Exception e){throw new RuntimeException(e);}views.dispose();});}finally{introduced.forEach(System::clearProperty);}
+   try{render(views.aolPanel,"aol.png");render(views.iscnPanel,"iscn.png");selector.setSelectedItem(org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ExecutionScopeViews.ALL);assertTrue(labels(views.iscnPanel).contains("All executions — separate admitted instance graphs"));render(views.iscnPanel,"iscn-all.png");}catch(Exception e){throw new RuntimeException(e);}views.dispose();});}finally{introduced.forEach(System::clearProperty);}
  }
  @Test void anotherCaseRetainsNativeLinksAndUnavailableDoesNotFabricateObjects(){
   var csl=new CslFrontend().compile("csl v4.0 Warehouse { entity Parcel { weight : Integer mutable; } }","neutral").requireModel();

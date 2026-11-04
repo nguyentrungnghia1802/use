@@ -143,7 +143,7 @@ public final class CslDiagram extends DiagramView {
                     fGraph.addEdge(BinaryAssociationOrLinkEdge.create(source, target,
                             ends.next(), ends.next(), this, association));
                 } else {
-                    fGraph.addEdge(new CslDiagramEdge(item, source, target, getOptions()));
+                    fGraph.addEdge(new CslDiagramEdge(item, source, target, getOptions(),nodeMap.values()));
                 }
             }
         }

@@ -15,23 +15,25 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslDiagram.java",
       "sourceSha256": "dfd747f4e51e9e23eb73331ad4be28f94ec641734066934f036eb97968f2c899",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/csl/CslDiagram.java",
-      "targetSha256": "fe9fa1d358dc12f1dfbde43d23af655a38e5b4e8799936b659bc62faae931511",
+      "targetSha256": "cc38d88b874f0a0c49db65ddf056698c3b5435c57b82189503cfadff813f14c0",
       "patches": [
         "PACKAGE_RELOCATION",
         "BORROW_AUTHORITATIVE_NATIVE_MODEL",
-        "VALIDATED_ENACTMENT_OVERLAY_AND_ORGCTX_LABELS"
+        "VALIDATED_ENACTMENT_OVERLAY_AND_ORGCTX_LABELS",
+        "USE_ROUTING_AND_DECLARATIVE_MODEL_PRESENTATION_20261104"
       ]
     },
     {
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslDiagramEdge.java",
       "sourceSha256": "feb55b9e66a5d1ac5a787f03aaa93a7ef7b2bed6e9eb6e5e9f88ff70a8d48a9b",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/csl/CslDiagramEdge.java",
-      "targetSha256": "31eb5e2cdfcb8b53fe25354071b13b1a01cc55a6415900d050f2edfd587a177d",
+      "targetSha256": "3ffc4081fa56096b44e2032f129912b924aa0ba9a2d68e3395f699590687783c",
       "patches": [
         "PACKAGE_RELOCATION",
         "RESPECT_ASSOCIATION_LABEL_TOGGLE",
         "VALIDATED_ENACTMENT_OVERLAY_AND_ORGCTX_LABELS",
-        "FROZEN_PLAYER_LABELS_AND_COMPACT_STATE_ROWS"
+        "FROZEN_PLAYER_LABELS_AND_COMPACT_STATE_ROWS",
+        "USE_ROUTING_AND_DECLARATIVE_MODEL_PRESENTATION_20261104"
       ]
     },
     {
@@ -158,20 +160,22 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarDiagram.java",
       "sourceSha256": "637b2f6e8595064253eaaee3acf7af087b2810382b96597edbd947898eb77198",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/istar/IStarDiagram.java",
-      "targetSha256": "6c0a9bb78685a501cb776c1a6f0fad8773afc28035bff8d3c4208964ebdc3ef6",
+      "targetSha256": "039607d511ee8a9b1fda2243f9b428d21e6b2d8def3b183aa338334d7ac889a3",
       "patches": [
         "PACKAGE_RELOCATION",
-        "INITIAL_LAYOUT_CANVAS_SIZE"
+        "INITIAL_LAYOUT_CANVAS_SIZE",
+        "USE_ROUTING_AND_DECLARATIVE_MODEL_PRESENTATION_20261104"
       ]
     },
     {
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarDiagramEdge.java",
       "sourceSha256": "b751422adba307ad9f2cb117a1e9d257d2ff8711db0eac656628477f93fb33ae",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/istar/IStarDiagramEdge.java",
-      "targetSha256": "b74785445de36dd4eab8748e58c40203f7fe48bd110f2e93471d693955f1c5b7",
+      "targetSha256": "b85f56f0373bae5e671e5d42e77fc9e5fc8cbb475039b9aee381826e39bbf430",
       "patches": [
         "PACKAGE_RELOCATION",
-        "ACTOR_ASSOCIATION_HEADER_ROUTES"
+        "ACTOR_ASSOCIATION_HEADER_ROUTES",
+        "USE_ROUTING_AND_DECLARATIVE_MODEL_PRESENTATION_20261104"
       ]
     },
     {
@@ -225,11 +229,12 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarLayoutBuilder.java",
       "sourceSha256": "384ac25df1df6c291f8fbf7a2979a41241bd25d8cb3b38d685909434efab913f",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/istar/IStarLayoutBuilder.java",
-      "targetSha256": "319fd4d9f1cc8857f210dacd40c86547795df97b04a255eb26c5c3f6737470e2",
+      "targetSha256": "edd46bba7058f3e8a7056cc0bd7f626d8d0df259a14779fdf58e2d12b564dcec",
       "patches": [
         "PACKAGE_RELOCATION",
         "ACTOR_CIRCLE_LABEL_HEADROOM",
-        "DECLARED_ACTOR_ASSOCIATIONS"
+        "DECLARED_ACTOR_ASSOCIATIONS",
+        "USE_ROUTING_AND_DECLARATIVE_MODEL_PRESENTATION_20261104"
       ]
     },
     {
@@ -263,11 +268,12 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarView.java",
       "sourceSha256": "87e24b31b69fb9a7518a1a75e24d1e24cc474ac9b77ab63ddcedc8cbb2e35c95",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/istar/IStarView.java",
-      "targetSha256": "4856b38c5b187a8a8f2ce21e793d61c91ec5c0cd27c8fe7cbcd705a8eb7eb256",
+      "targetSha256": "e5caea80833dbf0be47f9433d2fe6253924baec7e646ec0528b623feb7fc1b2e",
       "patches": [
         "PACKAGE_RELOCATION",
         "DETACH_CLEANUP",
-        "NO_PROCESS_CONSOLE_FALLBACK"
+        "NO_PROCESS_CONSOLE_FALLBACK",
+        "USE_ROUTING_AND_DECLARATIVE_MODEL_PRESENTATION_20261104"
       ]
     },
     {

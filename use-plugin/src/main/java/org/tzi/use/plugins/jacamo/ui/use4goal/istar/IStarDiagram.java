@@ -162,7 +162,7 @@ public final class IStarDiagram extends DiagramView {
             PlaceableNode source = nodeMap.get(item.fromId());
             PlaceableNode target = nodeMap.get(item.toId());
             if (source != null && target != null) {
-                fGraph.addEdge(new IStarDiagramEdge(item, source, target, getOptions()));
+                fGraph.addEdge(new IStarDiagramEdge(item, source, target, getOptions(),nodeMap.values()));
             }
         }
         applyBadges();
@@ -276,8 +276,9 @@ public final class IStarDiagram extends DiagramView {
 
     @Override
     protected PopupMenuInfo unionOfPopUpMenu() {
-        JPopupMenu menu = new JPopupMenu();
-        PopupMenuInfo info = new PopupMenuInfo(menu);
+        PopupMenuInfo info = super.unionOfPopUpMenu();
+        JPopupMenu menu = info.popupMenu;
+        menu.addSeparator();
         ButtonGroup group = new ButtonGroup();
         JRadioButtonMenuItem sr = new JRadioButtonMenuItem("SR view", mode == IStarViewMode.SR);
         sr.addActionListener(e -> setMode(IStarViewMode.SR));
@@ -288,12 +289,7 @@ public final class IStarDiagram extends DiagramView {
         menu.add(sr);
         menu.add(sd);
         menu.addSeparator();
-        menu.add(getMenuItemCommentNode(info));
-        menu.addSeparator();
-        menu.add(getMenuAlign());
-        menu.add(getMenuItemAntiAliasing());
-        menu.add(getMenuItemShowGrid());
-        menu.add(getMenuItemGrayscale());
+
         menu.addSeparator();
         addVisibilityMenuItems(menu);
         menu.addSeparator();
@@ -325,7 +321,7 @@ public final class IStarDiagram extends DiagramView {
                 openSpecificationWindow();
             }
         });
-        addLayoutMenuItems(menu);
+
         return info;
     }
 

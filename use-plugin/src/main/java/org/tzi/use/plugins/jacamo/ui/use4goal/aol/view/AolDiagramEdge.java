@@ -21,6 +21,7 @@ public final class AolDiagramEdge extends EdgeBase {
     private static final double MARKER_LENGTH = 13.0;
     private static final double MARKER_HALF_WIDTH = 5.0;
 
+    private final org.tzi.use.plugins.jacamo.ui.use4goal.gui.DiagramEdgeRouter router=new org.tzi.use.plugins.jacamo.ui.use4goal.gui.DiagramEdgeRouter();
     private final AolEdge edge;
     private final AolDiagramOptions opt;
     private final java.util.Collection<PlaceableNode> obstacles;
@@ -53,18 +54,8 @@ public final class AolDiagramEdge extends EdgeBase {
 
         Point2D start = points.get(0);
         Point2D end = points.get(points.size() - 1);
-        if(points.size()==2&&edge.kind()==AolEdgeKind.LINK&&fSource.getY()+fSource.getHeight()+28<fTarget.getY()) {
-            // Keep membership links away from intervening attribute boxes. This
-            // is geometry only: source/target identities and association stay exact.
-            double x=fSource.getCenter().getX(),y=fSource.getY()+fSource.getHeight();
-            double targetX=fTarget.getCenter().getX(),busY=fTarget.getY()-18;
-            var candidates=new java.util.TreeSet<Double>(java.util.Comparator.comparingDouble(v->Math.abs(v-x)));
-            candidates.add(x);
-            for(var node:obstacles)if(node!=fSource&&node!=fTarget&&node.getY()<busY&&node.getY()+node.getHeight()>y+10){candidates.add(node.getX()-12);candidates.add(node.getX()+node.getWidth()+12);}
-            double trunk=candidates.stream().filter(v->obstacles.stream().filter(n->n!=fSource&&n!=fTarget).noneMatch(n->new java.awt.geom.Rectangle2D.Double(n.getX()-8,n.getY()-8,n.getWidth()+16,n.getHeight()+16).intersectsLine(v,y+10,v,busY))).findFirst().orElse(x);
-            points=List.of(new Point2D.Double(x,y),new Point2D.Double(x,y+10),new Point2D.Double(trunk,y+10),new Point2D.Double(trunk,busY),new Point2D.Double(targetX,busY),new Point2D.Double(targetX,fTarget.getY()));
-            start=points.get(3);end=points.getLast();
-        }
+        points=router.route(points,fSource,fTarget,obstacles);
+        start=points.get(0);end=points.getLast();
         for (int i = 1; i < points.size(); i++) {
             Point2D from = points.get(i - 1);
             Point2D to = points.get(i);
@@ -74,7 +65,7 @@ public final class AolDiagramEdge extends EdgeBase {
         Point2D endInside = points.get(points.size() - 2);
 
         paintEndMarker(g, endInside, end);
-        paintLabel(g, start, points.size()==6?points.get(4):end);
+        paintLabel(g, points.get(points.size()/2-1),points.get(points.size()/2));
         g.dispose();
     }
 

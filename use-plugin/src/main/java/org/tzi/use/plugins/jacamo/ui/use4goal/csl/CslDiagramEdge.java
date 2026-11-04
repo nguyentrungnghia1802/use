@@ -23,6 +23,9 @@ public final class CslDiagramEdge extends EdgeBase {
     private static final Font EDGE_FONT = DiagramVisualStyle.EDGE_FONT;
     private static final double MARKER_LENGTH = 14.0;
     private static final double MARKER_HALF_WIDTH = 5.5;
+    private final org.tzi.use.plugins.jacamo.ui.use4goal.gui.DiagramEdgeRouter router=new org.tzi.use.plugins.jacamo.ui.use4goal.gui.DiagramEdgeRouter();
+    private java.util.Collection<? extends PlaceableNode> obstacles=List.of();
+    public CslDiagramEdge(CslEdge edge, PlaceableNode source, PlaceableNode target, CslDiagramOptions opt,java.util.Collection<? extends PlaceableNode> obstacles){this(edge,source,target,opt);this.obstacles=List.copyOf(obstacles);}
     private final CslEdge edge;
     private final CslDiagramOptions opt;
 
@@ -40,6 +43,7 @@ public final class CslDiagramEdge extends EdgeBase {
         for (WayPoint point : getWayPoints()) { point.draw(g); points.add(point.getCenter()); }
         if (points.size() < 2) { g.dispose(); return; }
 
+        points=router.route(points,fSource,fTarget,obstacles);
         Point2D start = points.get(0), end = points.get(points.size() - 1);
         Point2D startInside, endInside;
         if (edge.routeCount() > 1 && points.size() == 2 && start.distance(end) > 1.0) {
@@ -57,7 +61,7 @@ public final class CslDiagramEdge extends EdgeBase {
         paintMarkers(g, start, startInside, endInside, end);
         paintNearEnd(g, start, startInside, edge.sourceCardinality());
         paintNearEnd(g, end, endInside, edge.targetCardinality());
-        paintLabel(g, start, end);
+        paintLabel(g, points.get(points.size()/2-1),points.get(points.size()/2));
         g.dispose();
     }
 

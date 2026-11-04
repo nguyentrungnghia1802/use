@@ -61,7 +61,7 @@ class ExecutionScopeViewsTest {
   var b=cut("2","closed","open",List.of(goal("one","FULFILLED"),goal("two","FULFILLED")));
   SwingUtilities.invokeAndWait(()->{
    var panel=ObservedConformancePanel.liveResults(model);panel.setCuts(List.of(a,b));
-   var selector=DetachedAuthoredWorkflowTest.find(panel,"execution-scope-selector",JComboBox.class);assertEquals(2,selector.getItemCount());assertNotEquals("",selector.getSelectedItem());
+   var selector=DetachedAuthoredWorkflowTest.find(panel,"execution-scope-selector",JComboBox.class);assertEquals(3,selector.getItemCount());assertNotEquals("",selector.getSelectedItem());
    panel.selectExecution("one");assertEquals("one",ExecutionScopeViews.selected(panel.selectedCut()));
    assertTrue(panel.selectedCut().evaluations().stream().filter(r->r.kind().equals("GOAL_TASK")).allMatch(r->r.context().equals("one")));
    panel.selectExecution("two");assertEquals("two",ExecutionScopeViews.selected(panel.selectedCut()));
@@ -81,7 +81,7 @@ class ExecutionScopeViewsTest {
   var one=ExecutionScopeViews.project(source,"one");var two=ExecutionScopeViews.project(source,"two");
   assertTrue(one.failed());assertFalse(two.failed());assertTrue(two.evaluations().stream().noneMatch(r->r.status().equals("FAIL")));
   var projection=ExecutionScopeViews.object(one.visualEvidence().get("presentationState"));
-  var links=(List<?>)projection.get("links");assertEquals(1,links.size());assertFalse(links.toString().contains("r2"));
+  var links=(List<?>)projection.get("links");assertTrue(links.isEmpty(),"Execution participation is evidence, not a CSL association");assertFalse(links.toString().contains("r2"));
   SwingUtilities.invokeAndWait(()->{var panel=ObservedConformancePanel.liveResults(LiveGoalSummaryTest.model());panel.setCuts(List.of(source));
    panel.selectExecution("one");assertEquals("VIOLATION",DetachedAuthoredWorkflowTest.find(panel,"observed-verdict",JLabel.class).getText());
    panel.selectExecution("two");assertEquals("COMPLETE_OBSERVED",DetachedAuthoredWorkflowTest.find(panel,"observed-verdict",JLabel.class).getText());

@@ -113,21 +113,8 @@ public final class AolDiagram extends DiagramView {
 
     @Override
     protected PopupMenuInfo unionOfPopUpMenu() {
-        JPopupMenu popupMenu = new JPopupMenu();
-        PopupMenuInfo popupInfo = new PopupMenuInfo(popupMenu);
-        popupMenu.add(getMenuItemCommentNode(popupInfo));
-        popupMenu.addSeparator();
-        popupMenu.add(getMenuAlign());
-        popupMenu.add(getMenuItemAntiAliasing());
-        popupMenu.add(getMenuItemShowGrid());
-        popupMenu.add(getMenuItemGrayscale());
-        javax.swing.JCheckBoxMenuItem assocNamesItem = new javax.swing.JCheckBoxMenuItem(
-                "Assoc. names", getOptions().isShowAssociationNames());
-        assocNamesItem.addActionListener(e -> {
-            getOptions().setShowAssociationNames(assocNamesItem.isSelected());
-            repaint();
-        });
-        popupMenu.add(assocNamesItem);
+        PopupMenuInfo popupInfo = super.unionOfPopUpMenu();
+        JPopupMenu popupMenu = popupInfo.popupMenu;
         if (switchAction != null && switchActionLabel != null) {
             popupMenu.addSeparator();
             popupMenu.add(new AbstractAction(switchActionLabel) {
@@ -137,7 +124,7 @@ public final class AolDiagram extends DiagramView {
                 }
             });
         }
-        addLayoutMenuItems(popupMenu);
+
         return popupInfo;
     }
 

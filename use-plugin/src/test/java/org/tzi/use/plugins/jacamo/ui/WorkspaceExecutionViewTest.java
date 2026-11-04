@@ -10,7 +10,7 @@ class WorkspaceExecutionViewTest {
   var context=Map.<String,Object>of("context","one","scopeView",view,"executionConstraints",List.of());
   var cut=new Cut("cut","trace","native",List.of(ExecutionScopeViewsTest.goal("one","PENDING")),"INCOMPLETE","CURRENT_OBSERVED",false,"key","","",false,true,false,
    Map.of("originalEngine",Map.of("evaluated","PINNED_NATIVE_CUT","contexts",List.of(context)),"presentationState",Map.of("qualifiedValues",true,"objects",Map.of("RunView:scopeA",Map.of("root","source-A"),"Other:scopeB",Map.of("secret","other")),"links",List.of())));
-  var prepared=new PreparationCache().prepare(List.of(cut),"one",true,true);assertEquals(1,prepared.labels().size());assertEquals(1,prepared.milestones().size());
+  var prepared=new PreparationCache().prepare(List.of(cut),"one",true,true);assertEquals(2,prepared.labels().size());assertEquals("All",prepared.labels().get(ExecutionScopeViews.ALL));assertEquals(1,prepared.milestones().size());
   assertFalse(prepared.milestones().getFirst().businessState().contains("secret"));assertTrue(prepared.milestones().getFirst().businessState().contains("source-A"));
   var incomplete=new TreeMap<String,Object>(view);incomplete.put("complete",false);assertFalse(ExecutionScopeViews.boundContext(Map.of("context","one","scopeView",incomplete)));
  }

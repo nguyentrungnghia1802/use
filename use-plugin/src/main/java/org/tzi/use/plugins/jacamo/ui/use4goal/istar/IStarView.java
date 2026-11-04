@@ -134,6 +134,7 @@ public final class IStarView extends JPanel implements View, PrintableView {
     }
 
     public void setModel(GoalModel model) {
+        if(this.model==model)return;
         this.model = model;
         diagram.setModel(model);
         modelContent.removeAll();
